@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 
+#include <type_traits>
+
 #include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -43,6 +45,19 @@ media::VideoFrame::ID GetFrameId(
 
 media::VideoFrame::ID GetFrameId(const scoped_refptr<media::AudioBuffer>&) {
   NOTREACHED();
+}
+
+// Closes a frame created by MakeBlinkFrame().
+template <typename NativeFrameType>
+void CloseBlinkFrame(ScriptWrappable* blink_frame) {
+  if constexpr (std::is_same_v<NativeFrameType,
+                               scoped_refptr<media::VideoFrame>>) {
+    static_cast<VideoFrame*>(blink_frame)->close();
+  } else {
+    static_assert(
+        std::is_same_v<NativeFrameType, scoped_refptr<media::AudioBuffer>>);
+    static_cast<AudioData*>(blink_frame)->close();
+  }
 }
 }  // namespace
 
@@ -498,13 +513,16 @@ template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::EnqueueBlinkFrame(
     ScriptWrappable* blink_frame) const {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  // Controller() is null until the stream starts this source. For example, a
-  // transferred source is only started after the stream it is concatenated
-  // with has been fully read.
+  // Enqueue the frame if the stream can still take it. Otherwise, close it
+  // immediately: this task is the only delivery attempt, and the stream cannot
+  // take it before it starts this source or after it is closed or cancelled.
   if (Controller() && GetExecutionContext() &&
-      !GetExecutionContext()->IsContextDestroyed()) {
+      !GetExecutionContext()->IsContextDestroyed() &&
+      Controller()->CanCloseOrEnqueue()) {
     Controller()->Enqueue(blink_frame);
+    return;
   }
+  CloseBlinkFrame<NativeFrameType>(blink_frame);
 }
 
 template <typename NativeFrameType>
