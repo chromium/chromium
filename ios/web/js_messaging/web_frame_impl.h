@@ -156,6 +156,10 @@ class WebFrameImpl final : public WebFrame,
       JavaScriptContentWorld* content_world,
       bool reply_with_result);
 
+  // Returns true if the owning `WebState` is being destroyed or has already
+  // been destroyed.
+  bool IsWebStateDestroyed() const;
+
   // Detaches the receiver from the associated  WebState.
   void DetachFromWebState();
 

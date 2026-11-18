@@ -14,9 +14,11 @@
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/json/json_reader.h"
+#import "base/location.h"
 #import "base/run_loop.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -58,6 +60,86 @@ NSError* CreateUnsupportedResultTypeError() {
   return [NSError errorWithDomain:WKErrorDomain
                              code:WKErrorJavaScriptResultTypeIsUnsupported
                          userInfo:nil];
+}
+
+// `FakeWebState` subclass allowing tests to control `IsBeingDestroyed()`.
+class TestFakeWebState : public web::FakeWebState {
+ public:
+  bool IsBeingDestroyed() const override { return is_being_destroyed_; }
+
+  void set_is_being_destroyed(bool is_being_destroyed) {
+    is_being_destroyed_ = is_being_destroyed;
+  }
+
+ private:
+  bool is_being_destroyed_ = false;
+};
+
+// Verifies that all JavaScript execution entry points on `web_frame` return
+// `false` without reaching the `WKWebView` or invoking any callbacks.
+void ExpectAllJavaScriptExecutionPrevented(
+    std::unique_ptr<web::WebFrameImpl> web_frame,
+    web::BrowserState* browser_state) {
+  web::JavaScriptContentWorld* content_world =
+      web::JavaScriptFeatureManager::GetContentWorldForBrowserState(
+          web::ContentWorld::kPageContentWorld, browser_state);
+  ASSERT_TRUE(content_world);
+
+  int callback_count = 0;
+  auto make_value_callback = [&]() {
+    return base::BindOnce([](int* count, const base::Value*) { (*count)++; },
+                          base::Unretained(&callback_count));
+  };
+  auto make_error_callback = [&]() {
+    return base::BindOnce(
+        [](int* count, const base::Value*, NSError*) { (*count)++; },
+        base::Unretained(&callback_count));
+  };
+
+  // Public `WebFrame` entry points.
+  EXPECT_FALSE(
+      web_frame->CallJavaScriptFunction("api.functionName", base::ListValue()));
+  EXPECT_FALSE(web_frame->CallJavaScriptFunction(
+      "api.functionName", base::ListValue(), make_value_callback(),
+      base::TimeDelta()));
+  EXPECT_FALSE(web_frame->ExecuteJavaScript(u"__gCrWeb.fakeFunction()"));
+  EXPECT_FALSE(web_frame->ExecuteJavaScript(u"__gCrWeb.fakeFunction()",
+                                            make_value_callback()));
+  EXPECT_FALSE(web_frame->ExecuteJavaScript(u"__gCrWeb.fakeFunction()",
+                                            make_error_callback()));
+  EXPECT_FALSE(web_frame->ExecuteAsyncJavaScript(
+      u"return 'js_response';", base::DictValue(), make_error_callback()));
+  EXPECT_FALSE(web_frame->CallAsyncJavaScriptFunction(
+      "api.functionName", base::DictValue(), make_error_callback()));
+
+  // `WebFrameInternal` (`WebFrameContentWorldAPI`) entry points.
+  EXPECT_FALSE(web_frame->CallJavaScriptFunctionInContentWorld(
+      "api.functionName", base::ListValue(), content_world));
+  EXPECT_FALSE(web_frame->CallJavaScriptFunctionInContentWorld(
+      "api.functionName", base::ListValue(), content_world,
+      make_value_callback(), base::TimeDelta()));
+  EXPECT_FALSE(web_frame->ExecuteJavaScriptInContentWorld(
+      u"__gCrWeb.fakeFunction()", content_world, make_error_callback()));
+  EXPECT_FALSE(web_frame->ExecuteAsyncJavaScriptInContentWorld(
+      u"return 'js_response';", base::DictValue(), content_world,
+      make_error_callback()));
+  EXPECT_FALSE(web_frame->CallAsyncJavaScriptFunctionInContentWorld(
+      "api.functionName", base::DictValue(), content_world,
+      make_error_callback()));
+
+  // Flush the task runner before and after destroying `web_frame` to verify no
+  // timeout task was posted and destroying `web_frame` does not cancel or
+  // invoke any pending callbacks.
+  auto flush_tasks = []() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  };
+  flush_tasks();
+  web_frame.reset();
+  flush_tasks();
+  EXPECT_EQ(0, callback_count);
 }
 
 }  // namespace
@@ -738,6 +820,46 @@ TEST_F(WebFrameImplTest, IgnoresErrorsAfterWebStateDestroyed) {
   EXPECT_NSEQ(expected_error, received_error);
   EXPECT_TRUE(execute_success_called);
   histogram_tester.ExpectTotalCount(kInterestingScriptErrorHistogram, 0);
+}
+
+// Tests that `WebFrameImpl` returns `false` without reaching the `WKWebView` or
+// invoking callbacks when `WebState::IsBeingDestroyed()` is true.
+TEST_F(WebFrameImplTest, DoesNotExecuteJavaScriptWhenWebStateIsBeingDestroyed) {
+  id strict_web_view = OCMStrictClassMock([WKWebView class]);
+  id frame_info = OCMClassMock([WKFrameInfo class]);
+  OCMStub([frame_info webView]).andReturn(strict_web_view);
+
+  TestFakeWebState fake_web_state;
+  fake_web_state.SetBrowserState(GetBrowserState());
+  auto web_frame = std::make_unique<WebFrameImpl>(
+      frame_info, kFrameId, /*is_main_frame=*/true, security_origin_,
+      &fake_web_state, ContentWorld::kPageContentWorld);
+
+  fake_web_state.set_is_being_destroyed(true);
+  EXPECT_EQ(&fake_web_state, web_frame->GetWebState());
+  EXPECT_EQ(GetBrowserState(), web_frame->GetBrowserState());
+  ExpectAllJavaScriptExecutionPrevented(std::move(web_frame),
+                                        GetBrowserState());
+}
+
+// Tests that `WebFrameImpl` returns `false` without reaching the `WKWebView` or
+// invoking callbacks after its `WebState` has been destroyed.
+TEST_F(WebFrameImplTest, DoesNotExecuteJavaScriptAfterWebStateDestroyed) {
+  id strict_web_view = OCMStrictClassMock([WKWebView class]);
+  id frame_info = OCMClassMock([WKFrameInfo class]);
+  OCMStub([frame_info webView]).andReturn(strict_web_view);
+
+  auto fake_web_state = std::make_unique<FakeWebState>();
+  fake_web_state->SetBrowserState(GetBrowserState());
+  auto web_frame = std::make_unique<WebFrameImpl>(
+      frame_info, kFrameId, /*is_main_frame=*/true, security_origin_,
+      fake_web_state.get(), ContentWorld::kPageContentWorld);
+
+  fake_web_state.reset();
+  EXPECT_EQ(nullptr, web_frame->GetWebState());
+  EXPECT_EQ(nullptr, web_frame->GetBrowserState());
+  ExpectAllJavaScriptExecutionPrevented(std::move(web_frame),
+                                        GetBrowserState());
 }
 
 }  // namespace web

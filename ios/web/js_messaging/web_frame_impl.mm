@@ -264,7 +264,7 @@ GURL WebFrameImpl::GetUrl() const {
 }
 
 BrowserState* WebFrameImpl::GetBrowserState() {
-  return GetWebState()->GetBrowserState();
+  return GetWebState() ? GetWebState()->GetBrowserState() : nullptr;
 }
 
 bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
@@ -272,6 +272,10 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const base::ListValue& parameters,
     JavaScriptContentWorld* content_world,
     bool reply_with_result) {
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
+
   int message_id = next_message_id_;
   next_message_id_++;
 
@@ -285,6 +289,10 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
 
 bool WebFrameImpl::CallJavaScriptFunction(const std::string& name,
                                           const base::ListValue& parameters) {
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
+
   JavaScriptContentWorld* content_world =
       JavaScriptFeatureManager::GetContentWorldForBrowserState(
           content_world_, GetBrowserState());
@@ -306,6 +314,10 @@ bool WebFrameImpl::CallJavaScriptFunction(
     const base::ListValue& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
+
   JavaScriptContentWorld* content_world =
       JavaScriptFeatureManager::GetContentWorldForBrowserState(
           content_world_, GetBrowserState());
@@ -319,6 +331,10 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     JavaScriptContentWorld* content_world,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
+
   int message_id = next_message_id_;
 
   auto timeout_callback = std::make_unique<TimeoutCallback>(base::BindOnce(
@@ -351,6 +367,10 @@ bool WebFrameImpl::ExecuteJavaScript(const std::u16string& script) {
 bool WebFrameImpl::ExecuteJavaScript(
     const std::u16string& script,
     base::OnceCallback<void(const base::Value*)> callback) {
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
+
   ExecuteJavaScriptCallbackWithError callback_with_error =
       ExecuteJavaScriptCallbackAdapter(std::move(callback));
 
@@ -360,6 +380,10 @@ bool WebFrameImpl::ExecuteJavaScript(
 bool WebFrameImpl::ExecuteJavaScript(
     const std::u16string& script,
     ExecuteJavaScriptCallbackWithError callback) {
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
+
   JavaScriptContentWorld* content_world =
       JavaScriptFeatureManager::GetContentWorldForBrowserState(
           content_world_, GetBrowserState());
@@ -377,6 +401,9 @@ bool WebFrameImpl::ExecuteJavaScriptInContentWorld(
     JavaScriptContentWorld* content_world,
     ExecuteJavaScriptCallbackWithError callback) {
   DCHECK(frame_info_);
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
 
   NSString* ns_script = base::SysUTF16ToNSString(script);
   ScriptContext context(web_state_->GetWeakPtr(),
@@ -396,6 +423,10 @@ bool WebFrameImpl::ExecuteAsyncJavaScript(
     const std::u16string& script,
     const base::DictValue& parameters,
     ExecuteJavaScriptCallbackWithError callback) {
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
+
   JavaScriptContentWorld* content_world =
       JavaScriptFeatureManager::GetContentWorldForBrowserState(
           content_world_, GetBrowserState());
@@ -410,6 +441,9 @@ bool WebFrameImpl::ExecuteAsyncJavaScriptInContentWorld(
     JavaScriptContentWorld* content_world,
     ExecuteJavaScriptCallbackWithError callback) {
   DCHECK(frame_info_);
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
 
   NSString* ns_script = base::SysUTF16ToNSString(script);
 
@@ -432,6 +466,10 @@ bool WebFrameImpl::CallAsyncJavaScriptFunction(
     const std::string& name,
     const base::DictValue& parameters,
     ExecuteJavaScriptCallbackWithError callback) {
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
+
   JavaScriptContentWorld* content_world =
       JavaScriptFeatureManager::GetContentWorldForBrowserState(
           content_world_, GetBrowserState());
@@ -444,6 +482,10 @@ bool WebFrameImpl::CallAsyncJavaScriptFunctionInContentWorld(
     const base::DictValue& parameters,
     JavaScriptContentWorld* content_world,
     ExecuteJavaScriptCallbackWithError callback) {
+  if (IsWebStateDestroyed()) {
+    return false;
+  }
+
   base::DictValue arguments;
   arguments.Set("crw_args", parameters.Clone());
 
@@ -542,6 +584,10 @@ void WebFrameImpl::CancelPendingRequests() {
     CompleteRequest(std::move(it.second), /*result=*/nullptr);
   }
   pending_requests_.clear();
+}
+
+bool WebFrameImpl::IsWebStateDestroyed() const {
+  return !web_state_ || web_state_->IsBeingDestroyed();
 }
 
 void WebFrameImpl::DetachFromWebState() {

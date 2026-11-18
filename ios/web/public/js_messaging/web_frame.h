@@ -42,7 +42,8 @@ class WebFrame : public base::SupportsUserData {
   // `GURL` and an `Origin` are not interchangeable.
   virtual GURL GetUrl() const = 0;
 
-  // Returns the BrowserState associated with this WebFrame.
+  // Returns the BrowserState associated with this WebFrame. May return
+  // `nullptr`, for example, if the WebState has been destroyed.
   virtual BrowserState* GetBrowserState() = 0;
 
   // Calls the JavaScript function `name` in the frame context. For example, to
