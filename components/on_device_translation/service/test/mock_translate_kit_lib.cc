@@ -325,6 +325,13 @@ DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslateKitSplitSentences(
   if (input_string == "SIMULATE_ERROR") {
     return false;
   }
+  // Match the real library by failing when the language code includes a
+  // subtag such as zh-Hant.
+  if (std::string_view(source_lang.language_code,
+                       source_lang.language_code_size)
+          .find('-') != std::string_view::npos) {
+    return false;
+  }
 
   std::vector<std::string_view> sentences = base::SplitStringPiece(
       input_string, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);

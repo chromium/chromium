@@ -375,9 +375,15 @@ std::vector<std::string> TranslateKitClient::TranslatorImpl::SplitSentences(
     sentences->push_back(std::move(sentence));
   };
 
+  // The library sentence splitter expects a primary language subtag and
+  // rejects tags with subtags such as zh-Hant. Sentence boundaries are the
+  // same across scripts and regions of a language, so pass the subtag before
+  // any hyphen.
+  const std::string_view split_lang =
+      std::string_view(source_lang_).substr(0, source_lang_.find('-'));
   if (!client_->translate_kit_sentence_split_func_(
           TranslateKitInputText(text.c_str(), text.length()),
-          TranslateKitLanguage(source_lang_.c_str(), source_lang_.length()),
+          TranslateKitLanguage(split_lang.data(), split_lang.length()),
           sentence_callback, reinterpret_cast<std::uintptr_t>(&sentences))) {
     return std::vector<std::string>{text};
   }

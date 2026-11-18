@@ -251,6 +251,21 @@ TEST_F(TranslateKitClientTest, SplitSentences) {
   ASSERT_EQ(sentences.size(), 2u);
 }
 
+// Tests that SplitSentences splits text when the source language code includes
+// a script subtag.
+TEST_F(TranslateKitClientTest, SplitSentencesWithScriptSubtag) {
+  auto client = CreateClient(GetMockLibraryPath(), {{"zh-Hant", "en"}},
+                             {
+                                 {"0/dict.dat", "ZhHant to En - "},
+                             });
+  ASSERT_OK_AND_ASSIGN(auto* translator,
+                       client->GetTranslator("zh-Hant", "en"));
+  ASSERT_TRUE(translator);
+  std::vector<std::string> sentences =
+      translator->SplitSentences("This is a sentence. This is another one.");
+  ASSERT_EQ(sentences.size(), 2u);
+}
+
 // Tests that the SplitSentences method handles empty input.
 TEST_F(TranslateKitClientTest, SplitSentencesEmptyInput) {
   auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}},
