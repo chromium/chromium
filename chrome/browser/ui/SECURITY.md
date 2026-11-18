@@ -1,4 +1,4 @@
-# Browser UI Re-entrancy and Lifetime Guidance
+# Browser UI Security Guidance
 
 Consult [content/browser/SECURITY.md][content-browser-sec],
 [ui/views/SECURITY.md][views-sec], and [Security for Agents][sec-agents] first
@@ -25,6 +25,29 @@ mechanisms and constraints described in
 
 while outer stack frames still hold raw pointers to those objects.
 
+## ChromeOS Locked Fullscreen (Out of Scope)
+
+See [chrome/browser/ui/chromeos/locked_state/SECURITY.md][locked-state-sec]
+for the full security policy covering ChromeOS locked fullscreen and
+trusted-pinned mode (`chromeos::LockedStateController`,
+`platform_util::IsBrowserLockedFullscreen()`, `lockWindowFullscreenPrivate`, and
+OnTask locked states).
+
+* **Locked fullscreen is not a security boundary:** ChromeOS locked fullscreen
+  (`WindowPinType::kTrustedPinned`) is a UX/workflow confinement feature, not a
+  security boundary or part of Chromium's security threat model. Confinement
+  bypasses or escapes while a window is locked fullscreen (such as background
+  tabs activating themselves via `beforeunload` / `ActivateContents()`, unclosed
+  bubbles or UI surfaces like Tab Search or Glic, keyboard shortcuts/commands,
+  active-user switches, or pre-staged user tabs) are **out of scope** and are
+  **not** security vulnerabilities (file as functional bugs only if
+  unintended).
+* **Security features take precedence:** Existing browser security defenses
+  (such as activating the requesting tab before showing an app-modal dialog to
+  prevent cross-origin dialog spoofing) must not be disabled solely to maintain
+  locked-fullscreen confinement.
+
 [content-browser-sec]: /content/browser/SECURITY.md
 [views-sec]: /ui/views/SECURITY.md
 [sec-agents]: /docs/security/security-for-agents.md
+[locked-state-sec]: /chrome/browser/ui/chromeos/locked_state/SECURITY.md
