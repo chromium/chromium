@@ -2000,4 +2000,113 @@ IN_PROC_BROWSER_TEST_P(XMLHttpRequestLoadIgnoreLimitsTest, WorkerContext) {
             (bool)(worker_sync_request->load_flags & net::LOAD_IGNORE_LIMITS));
 }
 
+// Regression test for https://crbug.com/571966729.
+IN_PROC_BROWSER_TEST_F(WorkerTest,
+                       SharedWorkerInPagehideDuringCrossOriginCommit) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+
+  // Opt out of Origin-Agent-Cluster so `a.test` and `sub.a.test` share a
+  // site-keyed SiteInstance even when kOriginKeyedProcessesByDefault is
+  // enabled, ensuring the initial empty document navigation reuses the same
+  // RenderFrameHostImpl.
+  const GURL main_url =
+      ssl_server()->GetURL("a.test", "/set-header?Origin-Agent-Cluster: ?0");
+  const GURL target_url = ssl_server()->GetURL(
+      "sub.a.test", "/set-header?Origin-Agent-Cluster: ?0");
+  const GURL data_worker_url(
+      "data:text/javascript,let count = 0; onconnect = (e) => { count++; "
+      "e.ports[0].postMessage('count:' + count); };");
+
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create a subframe on `sub.a.test` and start a named data: URL SharedWorker.
+  ASSERT_TRUE(ExecJs(shell(), JsReplace(R"(
+    new Promise(resolve => {
+      const f1 = document.createElement('iframe');
+      f1.id = 'f1';
+      f1.src = $1;
+      f1.onload = resolve;
+      document.body.appendChild(f1);
+    })
+  )",
+                                        target_url)));
+
+  RenderFrameHostImpl* main_rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  ASSERT_EQ(1u, main_rfh->child_count());
+  RenderFrameHostImpl* target_rfh = main_rfh->child_at(0)->current_frame_host();
+
+  EXPECT_EQ("count:1", EvalJs(target_rfh, JsReplace(R"(
+    new Promise(resolve => {
+      window.w1 = new SharedWorker($1, 'shared_name');
+      window.w1.port.onmessage = (e) => resolve(e.data);
+    })
+  )",
+                                                    data_worker_url)));
+
+  // Create a second blank iframe (initial empty document on `a.test`).
+  // Navigating this initial empty document to `sub.a.test` (same-site,
+  // cross-origin) reuses the same RenderFrameHostImpl. Calling `new
+  // SharedWorker()` inside `pagehide` must not connect to `sub.a.test`'s
+  // SharedWorker.
+  ASSERT_TRUE(ExecJs(shell(), R"(
+    const f2 = document.createElement('iframe');
+    f2.id = 'f2';
+    document.body.appendChild(f2);
+  )"));
+  ASSERT_EQ(2u, main_rfh->child_count());
+  RenderFrameHostImpl* navigating_rfh =
+      main_rfh->child_at(1)->current_frame_host();
+
+  ASSERT_TRUE(ExecJs(shell(), JsReplace(R"(
+    new Promise(resolve => {
+      const f2 = document.getElementById('f2');
+      const win = f2.contentWindow;
+      win.addEventListener('pagehide', () => {
+        window.pagehideWorker = new win.SharedWorker($1, 'shared_name');
+      });
+      f2.onload = resolve;
+      f2.src = $2;
+    })
+  )",
+                                        data_worker_url, target_url)));
+
+  EXPECT_EQ(navigating_rfh, main_rfh->child_at(1)->current_frame_host());
+
+  // Verify that `sub.a.test`'s worker did not receive a connection from the
+  // `pagehide` handler: connecting again from `target_rfh` should observe
+  // `count:2` rather than `count:3`.
+  EXPECT_EQ("count:2", EvalJs(target_rfh, JsReplace(R"(
+    new Promise(resolve => {
+      window.w2 = new SharedWorker($1, 'shared_name');
+      window.w2.port.onmessage = (e) => resolve(e.data);
+    })
+  )",
+                                                    data_worker_url)));
+
+  // Also verify that when an initial empty document creates a SharedWorker and
+  // then navigates same-origin (reusing LocalDOMWindow in Blink while resetting
+  // DocumentAssociatedData in the browser), the newly committed document can
+  // immediately create a SharedWorker upon load.
+  EXPECT_EQ("count:1", EvalJs(shell(), JsReplace(R"(
+    new Promise(resolve => {
+      const f3 = document.createElement('iframe');
+      f3.id = 'f3';
+      document.body.appendChild(f3);
+      const initialWorker = new f3.contentWindow.SharedWorker($1, 'initial');
+      initialWorker.port.onmessage = () => {
+        f3.onload = () => {
+          const w3 = new f3.contentWindow.SharedWorker(
+              $1, 'after_same_origin_nav');
+          w3.port.onmessage = (e) => resolve(e.data);
+        };
+        f3.src = $2;
+      };
+    })
+  )",
+                                                 data_worker_url, main_url)));
+}
+
 }  // namespace content

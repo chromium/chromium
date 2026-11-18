@@ -537,7 +537,7 @@ void BindQuotaManagerHost(
 void BindSharedWorkerConnector(
     RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::SharedWorkerConnector> receiver) {
-  SharedWorkerConnectorImpl::Create(host->GetGlobalId(), std::move(receiver));
+  SharedWorkerConnectorImpl::Create(*host, std::move(receiver));
 }
 
 #if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS))

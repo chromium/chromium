@@ -212,7 +212,7 @@ void StorageAccessHandle::BindBroadcastChannel(
 void StorageAccessHandle::BindSharedWorker(
     mojo::PendingReceiver<blink::mojom::SharedWorkerConnector> receiver) {
   SharedWorkerConnectorImpl::Create(
-      PassKey(), render_frame_host().GetGlobalId(),
+      PassKey(), render_frame_host(),
       blink::StorageKey::CreateFirstParty(
           render_frame_host().GetStorageKey().origin()),
       std::move(receiver));
