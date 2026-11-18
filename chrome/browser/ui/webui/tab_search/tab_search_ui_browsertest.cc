@@ -380,6 +380,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
                                    ->GetController()
                                    ->template GetAs<TabSearchUI>();
   ASSERT_TRUE(tab_search_ui);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_search_ui->page_handler_for_testing() != nullptr; }));
   TabSearchPageHandler* page_handler =
       tab_search_ui->page_handler_for_testing();
   ASSERT_TRUE(page_handler);
