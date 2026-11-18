@@ -11,12 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/linux/fontconfig_util.h"
+#include "ui/gfx/switches.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/fake_linux_ui.h"
@@ -383,6 +385,33 @@ TEST_F(FontRenderParamsTest, ForceSubpixelPositioning) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
     SetFontRenderParamsDeviceScaleFactor(1.0f);
   }
+}
+
+TEST_F(FontRenderParamsTest, DisableSubpixelPositioningSwitch) {
+  ASSERT_TRUE(LoadConfigDataIntoFontconfig(
+      std::string(kFontconfigFileHeader) + kFontconfigMatchPatternHeader +
+      CreateFontconfigEditStanza("antialias", "bool", "true") +
+      CreateFontconfigEditStanza("hinting", "bool", "true") +
+      CreateFontconfigEditStanza("hintstyle", "const", "hintslight") +
+      kFontconfigMatchFooter + kFontconfigFileFooter));
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableFontSubpixelPositioning);
+
+  // The switch should disable subpixel positioning at every scale factor
+  // without discarding the configured hinting.
+  for (float scale_factor : {1.0f, 1.25f, 2.0f}) {
+    SCOPED_TRACE(scale_factor);
+    ClearFontRenderParamsCache();
+    SetFontRenderParamsDeviceScaleFactor(scale_factor);
+    FontRenderParams params =
+        GetFontRenderParams(FontRenderParamsQuery(), nullptr);
+    EXPECT_TRUE(params.antialiasing);
+    EXPECT_FALSE(params.subpixel_positioning);
+    EXPECT_EQ(FontRenderParams::HINTING_SLIGHT, params.hinting);
+  }
+  SetFontRenderParamsDeviceScaleFactor(1.0f);
 }
 
 #if BUILDFLAG(IS_LINUX)

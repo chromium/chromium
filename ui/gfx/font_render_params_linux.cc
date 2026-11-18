@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cmath>
+#include <limits>
 #include <memory>
 
 #include "base/command_line.h"
@@ -74,6 +76,24 @@ int FontWeightToFCWeight(Font::Weight weight) {
     return FC_WEIGHT_ULTRABOLD;
   else
     return FC_WEIGHT_BLACK;
+}
+
+// Returns whether glyphs should be positioned at subpixel offsets. Fontconfig
+// has no setting for this, so it is derived from the device scale factor.
+bool ShouldUseSubpixelPositioning(bool antialiasing,
+                                  float device_scale_factor) {
+  // Requesting subpixel positioning doesn't make sense without antialiasing.
+  if (!antialiasing || base::CommandLine::ForCurrentProcess()->HasSwitch(
+                           switches::kDisableFontSubpixelPositioning)) {
+    return false;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  // Only fractional scale factors use subpixel positioning.
+  return std::abs(std::round(device_scale_factor) - device_scale_factor) >
+         std::numeric_limits<float>::epsilon();
+#else
+  return device_scale_factor > 1.0f;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // A device scale factor used to determine if subpixel positioning
@@ -244,32 +264,21 @@ FontRenderParams GetFontRenderParams(const FontRenderParamsQuery& query,
 #endif
   QueryFontconfig(actual_query, &params, family_out);
 
-  if (force_disable_subpixel_font_rendering) {
+  // Requesting subpixel rendering doesn't make sense without antialiasing.
+  if (force_disable_subpixel_font_rendering || !params.antialiasing) {
     params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_NONE;
   }
 
+  params.subpixel_positioning = ShouldUseSubpixelPositioning(
+      params.antialiasing, actual_query.device_scale_factor);
+
   if (!params.antialiasing) {
     // Cairo forces full hinting when antialiasing is disabled, since anything
-    // less than that looks awful; do the same here. Requesting subpixel
-    // rendering or positioning doesn't make sense either.
+    // less than that looks awful; do the same here.
     params.hinting = FontRenderParams::HINTING_FULL;
-    params.subpixel_rendering = FontRenderParams::SUBPIXEL_RENDERING_NONE;
-    params.subpixel_positioning = false;
-  } else if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-                 switches::kDisableFontSubpixelPositioning)) {
-#if BUILDFLAG(IS_CHROMEOS)
-    // We want to enable subpixel positioning for fractional dsf.
-    params.subpixel_positioning =
-        std::abs(std::round(actual_query.device_scale_factor) -
-                 actual_query.device_scale_factor) >
-        std::numeric_limits<float>::epsilon();
-#else
-    params.subpixel_positioning = actual_query.device_scale_factor > 1.0f;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-    // To enable subpixel positioning, we need to disable hinting.
-    if (params.subpixel_positioning)
-      params.hinting = FontRenderParams::HINTING_NONE;
+  } else if (params.subpixel_positioning) {
+    // Subpixel positioning requires hinting to be disabled.
+    params.hinting = FontRenderParams::HINTING_NONE;
   }
 
   // Use the first family from the list if Fontconfig didn't suggest a family.
