@@ -21,7 +21,6 @@
 #include "base/timer/timer.h"
 
 namespace base::android {
-class MemoryPurgeManagerAndroid;
 
 // Starting from Android U, apps are frozen shortly after being backgrounded
 // (with some exceptions). This causes some background tasks for reclaiming
@@ -148,9 +147,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
  private:
   friend class base::NoDestructor<PreFreezeBackgroundMemoryTrimmer>;
-  friend bool JNI_MemoryPurgeManager_IsOnPreFreezeMemoryTrimEnabled(
-      JNIEnv* env);
-  friend class base::android::MemoryPurgeManagerAndroid;
   friend class base::OneShotDelayedBackgroundTimer;
   friend class SelfCompactionManager;
   friend class PreFreezeBackgroundMemoryTrimmerTest;

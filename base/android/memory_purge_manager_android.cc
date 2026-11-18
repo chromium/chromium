@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/memory_purge_manager_android.h"
+#include <stdint.h>
 
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/post_delayed_memory_reduction_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
