@@ -67,17 +67,15 @@ AutofillDriverIOSFactory::~AutofillDriverIOSFactory() {
 void AutofillDriverIOSFactory::WebStateDestroyed(
     web::WebState* destroyed_web_state) {
   CHECK(web_state());
-  if (web_state()) {
-    for (const auto& [frame_id, driver] : driver_map_) {
-      if (driver) {
-        SetLifecycleStateAndNotifyObservers(*driver,
-                                            LifecycleState::kPendingDeletion);
-      }
+  for (const auto& [frame_id, driver] : driver_map_) {
+    if (driver) {
+      SetLifecycleStateAndNotifyObservers(*driver,
+                                          LifecycleState::kPendingDeletion);
     }
-    driver_map_.clear();
-    GetWebFramesManager().RemoveObserver(this);
-    web_state()->RemoveObserver(this);
   }
+  driver_map_.clear();
+  GetWebFramesManager().RemoveObserver(this);
+  web_state()->RemoveObserver(this);
   web_state_destroyed_ = true;
 }
 
