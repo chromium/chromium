@@ -10895,9 +10895,13 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   if (IsHighlightPseudoElement(pseudo_element_specifier)) {
     const ComputedStyle* highlight_element_style = nullptr;
     if (Element* parent = LayoutTreeBuilderTraversal::ParentElement(*this)) {
+      const StyleHighlightData& parent_highlights =
+          parent->GetComputedStyle()->HighlightData();
       highlight_element_style =
-          parent->GetComputedStyle()->HighlightData().Style(
-              pseudo_element_specifier, pseudo_argument);
+          pseudo_element_specifier == kPseudoIdHighlight
+              ? parent_highlights.CustomHighlightOrUniversal(pseudo_argument)
+              : parent_highlights.Style(pseudo_element_specifier,
+                                        pseudo_argument);
     }
     style_request.parent_override = highlight_element_style;
     // All properties that apply to highlight pseudos are treated as inherited,
