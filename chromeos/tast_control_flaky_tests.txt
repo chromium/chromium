@@ -22,9 +22,6 @@ tast.camera.CCAUISmoke.fake_vcd
 # b/580937362
 tast.hwsec.CrossVersionChromeLogin.ti50_r120
 
-# b/580727944
-tast.crostini.AppFirefoxNonalphanumericInput.bookworm_clamshell_stable
-
 # b/576091588
 tast.bruschetta.CopyPaste.x11_to_x11
 
