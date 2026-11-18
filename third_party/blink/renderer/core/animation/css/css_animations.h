@@ -93,6 +93,12 @@ class CORE_EXPORT CSSAnimations final {
   static void CalculateTimelineUpdate(CSSAnimationUpdate&,
                                       Element& animating_element,
                                       const ComputedStyleBuilder&);
+  // Sets NeedsNamedTriggerUpdate() on the update if the triggers declared by
+  // trigger-instantiating properties (e.g. timeline-trigger) don't match the
+  // triggers |animating_element| currently has. See UpdateNamedTriggers().
+  static void CalculateNamedTriggerUpdate(CSSAnimationUpdate&,
+                                          Element& animating_element,
+                                          const ComputedStyleBuilder&);
   static void CalculateAnimationUpdate(CSSAnimationUpdate&,
                                        Element& animating_element,
                                        Element&,
