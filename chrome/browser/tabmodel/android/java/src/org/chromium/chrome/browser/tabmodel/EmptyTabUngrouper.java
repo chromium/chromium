@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class EmptyTabUngrouper implements TabUngrouper {
 
     @Override
     public void ungroupTabGroup(
-            Token tabGroupId,
+            TabGroupId tabGroupId,
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {}

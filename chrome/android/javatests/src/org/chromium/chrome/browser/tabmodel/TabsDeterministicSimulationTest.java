@@ -25,6 +25,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -347,7 +348,9 @@ public class TabsDeterministicSimulationTest {
                         // Ungroup the whole group.
                         Log.i(TAG, "ungroupTabsOrGroup: ungroupTabGroup(" + groupId + ")");
                         ungrouper.ungroupTabGroup(
-                                groupId, mGlobalRandom.nextBoolean(), /* allowDialog= */ false);
+                                TabGroupId.fromRawToken(groupId),
+                                mGlobalRandom.nextBoolean(),
+                                /* allowDialog= */ false);
                     }
                 });
     }

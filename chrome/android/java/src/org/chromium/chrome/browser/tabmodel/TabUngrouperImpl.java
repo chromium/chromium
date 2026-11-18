@@ -62,7 +62,7 @@ public class TabUngrouperImpl implements TabUngrouper {
 
     @Override
     public void ungroupTabGroup(
-            Token tabGroupId,
+            TabGroupId tabGroupId,
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {

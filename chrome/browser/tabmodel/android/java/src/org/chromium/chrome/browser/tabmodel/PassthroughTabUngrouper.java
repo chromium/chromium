@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,7 +44,7 @@ public class PassthroughTabUngrouper implements TabUngrouper {
 
     @Override
     public void ungroupTabGroup(
-            Token tabGroupId,
+            TabGroupId tabGroupId,
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener) {
@@ -59,7 +58,7 @@ public class PassthroughTabUngrouper implements TabUngrouper {
             Function<TabModel, List<Tab>> tabsFetcher,
             boolean trailing,
             @Nullable TabModelActionListener listener,
-            @Nullable Token tabGroupId) {
+            @Nullable TabGroupId tabGroupId) {
         TabModelInternal tabModel = getTabModelInternal();
         @Nullable List<Tab> tabs = tabsFetcher.apply(tabModel);
         if (tabs == null || tabs.isEmpty()) return;
@@ -68,7 +67,7 @@ public class PassthroughTabUngrouper implements TabUngrouper {
             listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         }
         if (tabGroupId != null) {
-            tabModel.notifyWillRemoveTabGroup(TabGroupId.fromRawToken(tabGroupId));
+            tabModel.notifyWillRemoveTabGroup(tabGroupId);
         }
         doUngroupTabs(tabModel, tabs, trailing);
         if (listener != null) {
@@ -83,8 +82,8 @@ public class PassthroughTabUngrouper implements TabUngrouper {
         }
     }
 
-    static List<Tab> getTabsToUngroup(TabModel tabModel, Token token) {
-        return tabModel.getTabsInGroup(token);
+    static List<Tab> getTabsToUngroup(TabModel tabModel, TabGroupId tabGroupId) {
+        return tabModel.getTabsInGroup(tabGroupId.getToken());
     }
 
     private TabModelInternal getTabModelInternal() {

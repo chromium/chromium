@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -58,16 +58,16 @@ public interface TabUngrouper {
      *     process.
      */
     void ungroupTabGroup(
-            Token tabGroupId,
+            TabGroupId tabGroupId,
             boolean trailing,
             boolean allowDialog,
             @Nullable TabModelActionListener listener);
 
     /**
-     * {@link #ungroupTabGroup(Token, boolean, boolean, TabModelActionListener)} without the {@code
-     * listener}
+     * {@link #ungroupTabGroup(TabGroupId, boolean, boolean, TabModelActionListener)} without the
+     * {@code listener}
      */
-    default void ungroupTabGroup(Token tabGroupId, boolean trailing, boolean allowDialog) {
+    default void ungroupTabGroup(TabGroupId tabGroupId, boolean trailing, boolean allowDialog) {
         ungroupTabGroup(tabGroupId, trailing, allowDialog, /* listener= */ null);
     }
 }

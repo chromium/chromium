@@ -642,7 +642,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
 
             @Override
             public void ungroupTabGroup(
-                    Token tabGroupId,
+                    TabGroupId tabGroupId,
                     boolean trailing,
                     boolean allowDialog,
                     @Nullable TabModelActionListener listener) {

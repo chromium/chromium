@@ -129,7 +129,10 @@ public class TabUngrouperImplUnitTest {
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
-                tabGroupId, /* trailing= */ true, /* allowDialog= */ true, mListener);
+                TabGroupId.fromRawToken(tabGroupId),
+                /* trailing= */ true,
+                /* allowDialog= */ true,
+                mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
         TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
 
@@ -180,7 +183,10 @@ public class TabUngrouperImplUnitTest {
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
-                tabGroupId, /* trailing= */ true, /* allowDialog= */ true, mListener);
+                TabGroupId.fromRawToken(tabGroupId),
+                /* trailing= */ true,
+                /* allowDialog= */ true,
+                mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
         TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
 
@@ -200,7 +206,10 @@ public class TabUngrouperImplUnitTest {
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
-                tabGroupId, /* trailing= */ true, /* allowDialog= */ true, mListener);
+                TabGroupId.fromRawToken(tabGroupId),
+                /* trailing= */ true,
+                /* allowDialog= */ true,
+                mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
         TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
 
@@ -247,7 +256,10 @@ public class TabUngrouperImplUnitTest {
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
-                tabGroupId, /* trailing= */ false, /* allowDialog= */ true, mListener);
+                TabGroupId.fromRawToken(tabGroupId),
+                /* trailing= */ false,
+                /* allowDialog= */ true,
+                mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
         TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
 

@@ -41,6 +41,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogUtils;
 
@@ -120,7 +121,10 @@ public class TabUiUtils {
         if (!tabModel.containsTabGroup(tabGroupId)) return;
 
         tabModel.getTabUngrouper()
-                .ungroupTabGroup(tabGroupId, /* trailing= */ false, /* allowDialog= */ true);
+                .ungroupTabGroup(
+                        TabGroupId.fromRawToken(tabGroupId),
+                        /* trailing= */ false,
+                        /* allowDialog= */ true);
     }
 
     /**
