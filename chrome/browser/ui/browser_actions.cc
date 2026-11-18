@@ -4176,7 +4176,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             kActionShowOffersAndLoyaltyCards,
             IDS_OFFERS_AND_LOYALTY_CARDS_SUBMENU_OPTION,
             IDS_OFFERS_AND_LOYALTY_CARDS_SUBMENU_OPTION,
-            vector_icons::kLoyaltyProgramsIcon,
+            vector_icons::kSellIcon,
             /*is_pinnable=*/false)
             .Build());
   }

@@ -789,8 +789,7 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
           autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings)) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_SHOW_OFFERS_AND_LOYALTY_CARDS,
-        IDS_OFFERS_AND_LOYALTY_CARDS_SUBMENU_OPTION,
-        vector_icons::kLoyaltyProgramsIcon);
+        IDS_OFFERS_AND_LOYALTY_CARDS_SUBMENU_OPTION, vector_icons::kSellIcon);
     SetElementIdentifierAt(
         GetIndexOfCommandId(IDC_SHOW_OFFERS_AND_LOYALTY_CARDS).value(),
         AppMenuModel::kOffersAndLoyaltyCardsMenuItem);
