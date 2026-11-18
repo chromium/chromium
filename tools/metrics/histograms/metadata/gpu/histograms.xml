@@ -3072,9 +3072,9 @@ chromium-metrics-reviews@google.com.
     NV12 copy until the result comes back.
 
     Note: The histogram logging was adjusted in M102 to align with how
-    `Viz.FrameSinkVideoCapturer.[RGBA/I420].CaptureDuration` histograms behave.
-    After the change, this histogram also started including the time taken to
-    set the color space on a video frame.
+    `Viz.FrameSinkVideoCapturer.I420.CaptureDuration` histogram behaves. After
+    the change, this histogram also started including the time taken to set the
+    color space on a video frame.
 
     Warning: this histogram was expired from 2023-07-15 to 2026-06-10; data may
     be missing.
@@ -3105,17 +3105,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2023-07-15 to 2026-06-10; data may
     be missing.
-  </summary>
-</histogram>
-
-<histogram name="Viz.FrameSinkVideoCapturer.RGBA.CaptureDuration" units="ms"
-    expires_after="2023-07-15">
-  <owner>jonross@chromium.org</owner>
-  <owner>viz-team-wat@google.com</owner>
-  <summary>
-    The time it took from when FrameSinkVideoCapturerImpl sent a request for an
-    RGBA readback until the result comes back and ReadRGBAPlane successfully
-    finishes.
   </summary>
 </histogram>
 

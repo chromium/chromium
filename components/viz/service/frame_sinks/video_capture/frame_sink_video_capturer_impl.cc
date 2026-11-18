@@ -1416,8 +1416,10 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       bool success = result->ReadRGBAPlane(pixels, stride);
       if (success) {
         frame->set_color_space(result->GetRGBAColorSpace());
-        UMA_HISTOGRAM_CAPTURE_DURATION(
-            "RGBA", base::TimeTicks::Now() - frame_capture.request_time);
+        UMA_HISTOGRAM_CUSTOM_TIMES(
+            "Viz.FrameSinkVideoCapturer.CaptureDuration",
+            base::TimeTicks::Now() - frame_capture.request_time,
+            base::Milliseconds(1), base::Seconds(1), 50);
         frame_capture.CaptureSucceeded();
       } else {
         frame_capture.CaptureFailed(CaptureResult::kARGBReadbackFailed);
@@ -1433,8 +1435,10 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
         frame_capture.CaptureFailed(
             CaptureResult::kMappableSharedImageReadbackFailed);
       } else {
-        UMA_HISTOGRAM_CAPTURE_DURATION(
-            "RGBA", base::TimeTicks::Now() - frame_capture.request_time);
+        UMA_HISTOGRAM_CUSTOM_TIMES(
+            "Viz.FrameSinkVideoCapturer.CaptureDuration",
+            base::TimeTicks::Now() - frame_capture.request_time,
+            base::Milliseconds(1), base::Seconds(1), 50);
         frame_capture.CaptureSucceeded();
       }
       UMA_HISTOGRAM_CAPTURE_SUCCEEDED("RGBA", !result->IsEmpty());
