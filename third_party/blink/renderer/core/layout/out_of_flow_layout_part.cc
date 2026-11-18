@@ -2885,9 +2885,11 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
   fragment.GetMutableForPositioned().SetUsedPositionInsets(
       offset_info.insets_for_get_computed_style);
 
-  layout_result->GetMutableForOutOfFlow().SetNeedsScrollAdjustment(
-      offset_info.needs_scroll_adjustment_in_x,
-      offset_info.needs_scroll_adjustment_in_y);
+  if (fragment.IsFirstForNode()) {
+    layout_result->GetMutableForOutOfFlow().SetNeedsScrollAdjustment(
+        offset_info.needs_scroll_adjustment_in_x,
+        offset_info.needs_scroll_adjustment_in_y);
+  }
 
   layout_result->GetMutableForOutOfFlow().SetNonOverflowingScrollRanges(
       offset_info.non_overflowing_scroll_ranges);

@@ -4484,33 +4484,15 @@ void LayoutBox::NotifyContainingDisplayLocksForAnchorPositioning(
 bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInX() const {
   NOT_DESTROYED();
   const auto& layout_results = GetLayoutResults();
-  if (layout_results.empty()) {
-    return false;
-  }
-  // We only need to check the first fragment, because when the box is
-  // fragmented, position fallback results are duplicated on all fragments.
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  AssertSameDataOnLayoutResults(layout_results, [](const auto& result) {
-    return result->NeedsAnchorPositionScrollAdjustmentInX();
-  });
-#endif
-  return layout_results.front()->NeedsAnchorPositionScrollAdjustmentInX();
+  return !layout_results.empty() &&
+         layout_results.front()->NeedsAnchorPositionScrollAdjustmentInX();
 }
 
 bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInY() const {
   NOT_DESTROYED();
   const auto& layout_results = GetLayoutResults();
-  if (layout_results.empty()) {
-    return false;
-  }
-  // We only need to check the first fragment, because when the box is
-  // fragmented, position fallback results are duplicated on all fragments.
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  AssertSameDataOnLayoutResults(layout_results, [](const auto& result) {
-    return result->NeedsAnchorPositionScrollAdjustmentInY();
-  });
-#endif
-  return layout_results.front()->NeedsAnchorPositionScrollAdjustmentInY();
+  return !layout_results.empty() &&
+         layout_results.front()->NeedsAnchorPositionScrollAdjustmentInY();
 }
 
 std::optional<PhysicalRect> LayoutBox::InsetModifiedContainingBlockRect()

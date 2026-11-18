@@ -384,9 +384,13 @@ void LayoutResult::CheckSameForSimplifiedLayout(
 #endif
 
 #if DCHECK_IS_ON()
-void LayoutResult::AssertSoleBoxFragment() const {
+void LayoutResult::AssertFirstBoxFragment() const {
   DCHECK(physical_fragment_->IsBox());
   DCHECK(To<PhysicalBoxFragment>(GetPhysicalFragment()).IsFirstForNode());
+}
+
+void LayoutResult::AssertSoleBoxFragment() const {
+  AssertFirstBoxFragment();
   DCHECK(!physical_fragment_->GetBreakToken());
 }
 #endif

@@ -180,10 +180,16 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   }
 
   bool NeedsAnchorPositionScrollAdjustmentInX() const {
+    // Positioning is done when at the first fragment. This value is meaningless
+    // for subsequent fragments.
+    AssertFirstBoxFragment();
     return rare_data_ &&
            rare_data_->needs_anchor_position_scroll_adjustment_in_x();
   }
   bool NeedsAnchorPositionScrollAdjustmentInY() const {
+    // Positioning is done when at the first fragment. This value is meaningless
+    // for subsequent fragments.
+    AssertFirstBoxFragment();
     return rare_data_ &&
            rare_data_->needs_anchor_position_scroll_adjustment_in_y();
   }
@@ -484,6 +490,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     void SetNeedsScrollAdjustment(bool needs_scroll_adjustment_in_x,
                                   bool needs_scroll_adjustment_in_y) {
+      // Positioning is done when at the first fragment. This value is
+      // meaningless for subsequent fragments.
+      layout_result_->AssertFirstBoxFragment();
+
       if (!needs_scroll_adjustment_in_x && !needs_scroll_adjustment_in_y) {
         return;
       }
@@ -714,7 +724,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   RareData* EnsureRareData();
 
 #if DCHECK_IS_ON()
+  void AssertFirstBoxFragment() const;
   void AssertSoleBoxFragment() const;
+#else
+  void AssertFirstBoxFragment() const {}
 #endif
 
   struct Bitfields {
