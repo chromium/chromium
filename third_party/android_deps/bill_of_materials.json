@@ -1567,22 +1567,22 @@
     {
         "name": "error_prone_annotation",
         "group": "com.google.errorprone",
-        "version": "2.52.0"
+        "version": "2.53.0"
     },
     {
         "name": "error_prone_annotations",
         "group": "com.google.errorprone",
-        "version": "2.52.0"
+        "version": "2.53.0"
     },
     {
         "name": "error_prone_check_api",
         "group": "com.google.errorprone",
-        "version": "2.52.0"
+        "version": "2.53.0"
     },
     {
         "name": "error_prone_test_helpers",
         "group": "com.google.errorprone",
-        "version": "2.52.0"
+        "version": "2.53.0"
     },
     {
         "name": "firebase-annotations",
@@ -1647,7 +1647,7 @@
     {
         "name": "google-java-format",
         "group": "com.google.googlejavaformat",
-        "version": "1.37.0"
+        "version": "2.0.0"
     },
     {
         "name": "failureaccess",
@@ -2147,17 +2147,17 @@
     {
         "name": "annotations",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "junit",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "nativeruntime",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "nativeruntime-dist-compat",
@@ -2167,47 +2167,47 @@
     {
         "name": "pluginapi",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "plugins-maven-dependency-resolver",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "resources",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "robolectric",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "sandbox",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "shadowapi",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "shadows-framework",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "utils",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "utils-reflector",
         "group": "org.robolectric",
-        "version": "4.18"
+        "version": "4.18.1"
     },
     {
         "name": "safere",
