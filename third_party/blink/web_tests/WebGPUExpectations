@@ -60,3 +60,4 @@ crbug.com/587050639 [ Win ] wpt_internal/webgpu/external_image_hdr_headroom_vali
 crbug.com/587079348 [ Win ] wpt_internal/webgpu/fast_api/GPUPipelineError.https.html [ Crash Failure Pass ]
 crbug.com/587088110 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque_copy.https.html [ Crash Pass ]
 crbug.com/587079348 [ Win ] wpt_internal/webgpu/fast_api/crashtests/GPURenderPassEncode.setBindGroup.https.html [ Crash Pass ]
+crbug.com/587155691 [ Win ] wpt_internal/webgpu/web_platform/canvas/copy_element_image_to_texture-clipped.https.html [ Crash Failure Pass ]
