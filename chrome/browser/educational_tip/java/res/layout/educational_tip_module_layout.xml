@@ -58,10 +58,10 @@ found in the LICENSE file.
             android:layout_height="wrap_content">
             <org.chromium.components.browser_ui.widget.RoundedCornerImageView
                 android:id="@+id/educational_tip_module_content_image"
-                app:cornerRadiusBottomEnd="@dimen/single_tab_thumbnail_radius"
-                app:cornerRadiusBottomStart="@dimen/single_tab_thumbnail_radius"
-                app:cornerRadiusTopEnd="@dimen/single_tab_thumbnail_radius"
-                app:cornerRadiusTopStart="@dimen/single_tab_thumbnail_radius"
+                app:cornerRadiusBottomEnd="@dimen/educational_tip_module_content_image_radius"
+                app:cornerRadiusBottomStart="@dimen/educational_tip_module_content_image_radius"
+                app:cornerRadiusTopEnd="@dimen/educational_tip_module_content_image_radius"
+                app:cornerRadiusTopStart="@dimen/educational_tip_module_content_image_radius"
                 android:layout_height="@dimen/educational_tip_module_content_image_size"
                 android:layout_width="@dimen/educational_tip_module_content_image_size"
                 android:scaleType="centerCrop"
