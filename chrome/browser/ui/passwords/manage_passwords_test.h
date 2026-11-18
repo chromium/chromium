@@ -56,8 +56,9 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
   void ExecuteManagePasswordsCommand();
 
   // Put the controller, icon, and bubble into a managing-password state.
-  // TODO(crbug.com/41491760): Make password form url stable without having to
-  // override it.
+  // By default the password form URL is derived from
+  // `embedded_test_server()`, whose port is dynamic. Pass `password_form_url`
+  // to override it with a fixed value, e.g. to keep pixel tests stable.
   void SetupManagingPasswords(const GURL& password_form_url = GURL());
 
   // Put the controller, icon, and bubble into the confirmation state.
