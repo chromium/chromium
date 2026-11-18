@@ -369,8 +369,9 @@ std::optional<fuchsia::web::WebMessage> FidlWebMessageFromBlink(
 
   std::u16string data_utf16 = std::move(blink_message.data);
   std::string data_utf8;
-  if (!base::UTF16ToUTF8(data_utf16.data(), data_utf16.size(), &data_utf8))
+  if (!base::UTF16ToUTF8(data_utf16, &data_utf8)) {
     return std::nullopt;
+  }
 
   base::STLClearObject(&data_utf16);
 

@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardInputTest, CharacterInBmp) {
       CreateCharacterKeyEvent(kSigma, KeyEventType::kReleased));
 
   std::string expected_utf8;
-  ASSERT_TRUE(base::WideToUTF8(&kSigma, 1, &expected_utf8));
+  ASSERT_TRUE(base::WideToUTF8(std::wstring_view(&kSigma, 1), &expected_utf8));
   ExpectKeyEventsEqual(ExpectedKeyValue("", expected_utf8, kKeyDown),
                        ExpectedKeyValue("", expected_utf8, kKeyPress),
                        ExpectedKeyValue("", expected_utf8, kKeyUp));
