@@ -178,15 +178,19 @@ export function getHtml(this: SettingsSecurityPageElement) {
         sub-label="${this.getHttpsFirstModeSubLabel_()}"
         .numericCheckedValue="${HttpsFirstModeSetting.ENABLED_FULL}">
     </settings-toggle-button>
+<if expr="not is_chromeos">
     ${this.showSecureDnsSetting_ ? html`
       <settings-secure-dns id="secureDnsSettingOld"></settings-secure-dns>
     ` : ''}
+</if>
   ` : ''}
+<if expr="not is_chromeos">
   ${this.enableHttpsFirstModeNewSettings_ && this.showSecureDnsSetting_ ?
       html`
     <settings-secure-dns class="hr" id="secureDnsSettingNew">
     </settings-secure-dns>
   ` : ''}
+</if>
 <if expr="is_chromeos">
   ${this.showSecureDnsSettingLink_ ? html`
     <cr-link-row id="openChromeOSSecureDnsSettings"

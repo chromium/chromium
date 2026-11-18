@@ -47,9 +47,11 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, SyncPage) {
   RunTest("settings/people_page_sync_page_interactive_test.js", "mocha.run()");
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, SecureDns) {
   RunTest("settings/security/secure_dns_interactive_test.js", "mocha.run()");
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, StartupUrlsPage) {
   RunTest("settings/startup_urls_page_focus_test.js", "mocha.run()");

@@ -282,8 +282,10 @@ export {PrivacyGuideSafeBrowsingFragmentElement} from './privacy_page/privacy_gu
 export {PrivacyGuideWelcomeFragmentElement} from './privacy_page/privacy_guide/privacy_guide_welcome_fragment.js';
 export {FINGERPRINT_CHECK_DARK_URL, FINGERPRINT_CHECK_LIGHT_URL, FINGERPRINT_SCANNED_ICON_DARK, FINGERPRINT_SCANNED_ICON_LIGHT, FingerprintProgressArcElement, PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK, PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT, PROGRESS_CIRCLE_FILL_COLOR_DARK, PROGRESS_CIRCLE_FILL_COLOR_LIGHT} from './privacy_page/security/fingerprint_progress_arc.js';
 export {SafeBrowsingSetting} from './privacy_page/security/safe_browsing_types.js';
+// <if expr="not is_chromeos">
 export {SecureDnsResolverType, SettingsSecureDnsElement} from './privacy_page/security/secure_dns.js';
 export {SecureDnsInputElement} from './privacy_page/security/secure_dns_input.js';
+// </if>
 export {BioEnrollDialogPage, SettingsSecurityKeysBioEnrollDialogElement} from './privacy_page/security/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security/security_keys_browser_proxy.js';
 export type {Credential, CredentialManagementResponse, Enrollment, EnrollmentResponse, SecurityKeysBioEnrollProxy, SecurityKeysCredentialBrowserProxy, SecurityKeysPinBrowserProxy, SecurityKeysResetBrowserProxy, SensorInfo, SetPinResponse, StartCredentialManagementResponse} from './privacy_page/security/security_keys_browser_proxy.js';

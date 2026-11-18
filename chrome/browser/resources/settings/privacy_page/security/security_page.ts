@@ -13,7 +13,9 @@ import '../../controls/settings_toggle_button.js';
 import '../../icons.html.js';
 import '../../settings_page/settings_subpage.js';
 import '../../simple_confirmation_dialog.js';
+// <if expr="not is_chromeos">
 import './secure_dns.js';
+// </if>
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
@@ -104,10 +106,12 @@ export class SettingsSecurityPageElement extends
 
   static override get properties() {
     return {
+      // <if expr="not is_chromeos">
       /**
        * Whether the secure DNS setting should be displayed.
        */
       showSecureDnsSetting_: {type: Boolean},
+      // </if>
 
       // <if expr="is_chromeos">
       /**
@@ -153,8 +157,10 @@ export class SettingsSecurityPageElement extends
     };
   }
 
+  // <if expr="not is_chromeos">
   protected accessor showSecureDnsSetting_: boolean =
       loadTimeData.getBoolean('showSecureDnsSetting');
+  // </if>
 
   // <if expr="is_chromeos">
   protected accessor showSecureDnsSettingLink_: boolean =
