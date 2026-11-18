@@ -47,10 +47,6 @@ void TabModalDialogManager::CloseDialogWithReason(DismissalCause reason) {
   CloseDialog(reason, false, std::u16string());
 }
 
-bool TabModalDialogManager::HasDialogOrPendingDialog() const {
-  return dialog_ || pending_dialog_;
-}
-
 void TabModalDialogManager::SetDialogShownCallbackForTesting(
     base::OnceClosure callback) {
   dialog_shown_ = std::move(callback);

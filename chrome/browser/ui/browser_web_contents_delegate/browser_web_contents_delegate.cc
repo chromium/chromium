@@ -11,7 +11,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/actor/actor_util.h"
-#include "chrome/browser/actor/javascript_dialog_interceptor.h"
 #include "chrome/browser/background/background_contents.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
@@ -1182,10 +1181,6 @@ void BrowserWebContentsDelegate::RendererResponsive(
 content::JavaScriptDialogManager*
 BrowserWebContentsDelegate::GetJavaScriptDialogManager(
     content::WebContents* source) {
-  if (content::JavaScriptDialogManager* interceptor =
-          actor::JavaScriptDialogInterceptor::MaybeGetForWebContents(source)) {
-    return interceptor;
-  }
   return javascript_dialogs::TabModalDialogManager::FromWebContents(source);
 }
 

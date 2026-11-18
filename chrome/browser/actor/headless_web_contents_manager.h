@@ -16,7 +16,6 @@
 
 namespace content {
 class BrowserContext;
-class JavaScriptDialogManager;
 class WebContents;
 }  // namespace content
 
@@ -81,8 +80,6 @@ class HeadlessWebContentsManager : public content::WebContentsDelegate {
   // Intentionally does not destroy `source`: a headless page outlives
   // window.close() and is destroyed only through Destroy().
   void CloseContents(content::WebContents* source) override;
-  content::JavaScriptDialogManager* GetJavaScriptDialogManager(
-      content::WebContents* source) override;
 
  private:
   // A headless page and what keeps it rendering.
