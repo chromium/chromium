@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_track_processor.h"
 
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -35,6 +37,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
@@ -565,6 +568,110 @@ TEST_F(MediaStreamTrackProcessorTest, TransferAfterClearDoesNotTransfer) {
   // already cleared.
   EXPECT_EQ(source_b->TotalFrames(), 0u);
   EXPECT_EQ(source_a->DiscardedFrames(), 1u);
+}
+
+namespace {
+
+// Returns {host, transferred}: a host source whose stream was transferred to a
+// source sharing its queue, as when a MediaStreamTrackProcessor's readable is
+// transferred to a worker.
+std::pair<TestVideoFrameQueueUnderlyingSource*,
+          TestVideoFrameQueueUnderlyingSource*>
+CreateTransferredSources(ScriptState* script_state,
+                         const std::string& device_id) {
+  auto* host = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
+      script_state, /*queue_size=*/1u, device_id, /*frame_pool_size=*/2u,
+      std::nullopt);
+  auto* transferred = MakeGarbageCollected<TestVideoFrameQueueUnderlyingSource>(
+      script_state, host);
+  host->TransferSource(transferred);
+  return {host, transferred};
+}
+
+}  // namespace
+
+// Checks that a frame that reaches the host after the transferred source has
+// closed does not leak a VideoFrameMonitor entry when the host closes.
+TEST_F(MediaStreamTrackProcessorTest,
+       TransferredSourceClosedFirstDoesNotLeakMonitoredFrames) {
+  V8TestingScope v8_scope;
+  const std::string kDeviceId = "monitor_leak_transferred_closed_first";
+  auto [host, transferred] =
+      CreateTransferredSources(v8_scope.GetScriptState(), kDeviceId);
+
+  // The transferred source closes first, as when a worker cancels the
+  // transferred stream. A frame then reaches the host before the host closes.
+  transferred->Close();
+  host->QueueFrame(media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5)));
+
+  // The frame was dropped without being monitored.
+  EXPECT_EQ(VideoFrameMonitor::Instance().NumFrames(kDeviceId), 0u);
+  EXPECT_EQ(host->TotalFrames(), 1u);
+  EXPECT_EQ(host->DiscardedFrames(), 1u);
+
+  host->Close();
+
+  EXPECT_EQ(VideoFrameMonitor::Instance().NumFrames(kDeviceId), 0u);
+}
+
+// Same as above, but the host releases the queue in ClearTransferredSource()
+// rather than Close(). A closing transferred source posts the host's Close()
+// before ClearTransferredSource(), so this order is only a defensive check.
+TEST_F(MediaStreamTrackProcessorTest,
+       TransferredSourceClosedThenClearedDoesNotLeakMonitoredFrames) {
+  V8TestingScope v8_scope;
+  const std::string kDeviceId = "monitor_leak_transferred_closed_then_cleared";
+  auto [host, transferred] =
+      CreateTransferredSources(v8_scope.GetScriptState(), kDeviceId);
+
+  transferred->Close();
+  host->QueueFrame(media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5)));
+
+  // The frame was dropped without being monitored.
+  EXPECT_EQ(VideoFrameMonitor::Instance().NumFrames(kDeviceId), 0u);
+  EXPECT_EQ(host->TotalFrames(), 1u);
+  EXPECT_EQ(host->DiscardedFrames(), 1u);
+
+  host->ClearTransferredSource();
+
+  EXPECT_EQ(VideoFrameMonitor::Instance().NumFrames(kDeviceId), 0u);
+}
+
+// Checks that a frame that reaches an unmonitored host after the transferred
+// source has closed is dropped right away, instead of staying in the queue
+// until the host releases it.
+TEST_F(MediaStreamTrackProcessorTest,
+       TransferredSourceClosedFirstDropsUnmonitoredFrames) {
+  V8TestingScope v8_scope;
+  // An empty device ID means the host doesn't use the VideoFrameMonitor.
+  auto [host, transferred] =
+      CreateTransferredSources(v8_scope.GetScriptState(), /*device_id=*/"");
+
+  transferred->Close();
+  scoped_refptr<media::VideoFrame> frame =
+      media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5));
+  host->QueueFrame(frame);
+
+  // Only `frame` holds a reference, so the closed queue didn't keep it.
+  EXPECT_TRUE(frame->HasOneRef());
+  EXPECT_EQ(host->TotalFrames(), 1u);
+  EXPECT_EQ(host->DiscardedFrames(), 1u);
+}
+
+// Checks that no VideoFrameMonitor entry leaks when the host closes before the
+// transferred source, as when the host's track ends.
+TEST_F(MediaStreamTrackProcessorTest,
+       HostClosedFirstDoesNotLeakMonitoredFrames) {
+  V8TestingScope v8_scope;
+  const std::string kDeviceId = "monitor_leak_host_closed_first";
+  auto [host, transferred] =
+      CreateTransferredSources(v8_scope.GetScriptState(), kDeviceId);
+
+  host->QueueFrame(media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5)));
+  host->Close();
+  transferred->Close();
+
+  EXPECT_EQ(VideoFrameMonitor::Instance().NumFrames(kDeviceId), 0u);
 }
 
 TEST_F(MediaStreamTrackProcessorTest,

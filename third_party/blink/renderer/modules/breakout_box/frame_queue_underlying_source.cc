@@ -233,6 +233,9 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
     if (frame_queue) {
       base::AutoLock queue_locker(frame_queue->GetLock());
       if (!transferred_source_handle) {
+        // Close the queue under the same lock as the discard below, so that no
+        // frame can be pushed after it.
+        frame_queue->CloseLocked();
         // This source is the active consumer of the queue, so its pending
         // pulls are no longer relevant. If the source was transferred, the
         // pending pulls belong to the transferred source, which will reset
@@ -291,47 +294,60 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
     }
 
     // Push `media_frame` under `lock_`, before checking for pending pulls.
-    // Holding `lock_` keeps `Close()` from draining the queue between
-    // getting `frame_queue` and the push.
-    if (MustUseMonitor()) {
+    // Holding `lock_` keeps this source's `Close()` from draining the queue
+    // between getting `frame_queue` and the push. A transferred consumer's
+    // `Close()` doesn't hold `lock_`. It marks the queue closed while draining
+    // it under the queue lock, so the closed check below drops any frame that
+    // arrives after that drain.
+    {
+      // Hold the queue lock only for the closed check and the push; copying
+      // the transferred source handle below takes a process-wide lock.
       base::AutoLock queue_locker(frame_queue->GetLock());
-      base::AutoLock monitor_locker(GetMonitorLock());
-      std::optional<NativeFrameType> oldest_frame = frame_queue->PeekLocked();
-      NewFrameAction action = AnalyzeNewFrameLocked(media_frame, oldest_frame);
-      switch (action) {
-        case NewFrameAction::kPush: {
-          MonitorPushFrameLocked(media_frame);
-          std::optional<NativeFrameType> replaced_frame =
-              frame_queue->PushLocked(std::move(media_frame));
-          if (replaced_frame.has_value()) {
-            MonitorPopFrameLocked(replaced_frame.value());
-          }
-          break;
-        }
-        case NewFrameAction::kReplace: {
-          MonitorPushFrameLocked(media_frame);
-          if (oldest_frame.has_value()) {
-            MonitorPopFrameLocked(oldest_frame.value());
-          }
-
-          // Explicitly pop the old frame and push the new one since the
-          // `frame_pool_size_` limit has been reached and it may be smaller
-          // than the maximum size of `frame_queue`.
-          if (frame_queue->PopLocked().has_value()) {
-            frame_queue->IncrementDiscardedFramesLocked();
-          }
-          // Pushing should be safe without drop since we just popped a frame.
-          frame_queue->PushLocked(std::move(media_frame));
-          break;
-        }
-        case NewFrameAction::kDrop:
-          // Drop `media_frame` by returning without doing anything with it.
-          frame_queue->IncrementTotalFramesLocked();
-          frame_queue->IncrementDiscardedFramesLocked();
-          return;
+      if (frame_queue->IsClosedLocked()) {
+        frame_queue->IncrementTotalFramesLocked();
+        frame_queue->IncrementDiscardedFramesLocked();
+        return;
       }
-    } else {
-      frame_queue->Push(std::move(media_frame));
+      if (MustUseMonitor()) {
+        base::AutoLock monitor_locker(GetMonitorLock());
+        std::optional<NativeFrameType> oldest_frame = frame_queue->PeekLocked();
+        NewFrameAction action =
+            AnalyzeNewFrameLocked(media_frame, oldest_frame);
+        switch (action) {
+          case NewFrameAction::kPush: {
+            MonitorPushFrameLocked(media_frame);
+            std::optional<NativeFrameType> replaced_frame =
+                frame_queue->PushLocked(std::move(media_frame));
+            if (replaced_frame.has_value()) {
+              MonitorPopFrameLocked(replaced_frame.value());
+            }
+            break;
+          }
+          case NewFrameAction::kReplace: {
+            MonitorPushFrameLocked(media_frame);
+            if (oldest_frame.has_value()) {
+              MonitorPopFrameLocked(oldest_frame.value());
+            }
+
+            // Explicitly pop the old frame and push the new one since the
+            // `frame_pool_size_` limit has been reached and it may be smaller
+            // than the maximum size of `frame_queue`.
+            if (frame_queue->PopLocked().has_value()) {
+              frame_queue->IncrementDiscardedFramesLocked();
+            }
+            // Pushing should be safe without drop since we just popped a frame.
+            frame_queue->PushLocked(std::move(media_frame));
+            break;
+          }
+          case NewFrameAction::kDrop:
+            // Drop `media_frame` by returning without doing anything with it.
+            frame_queue->IncrementTotalFramesLocked();
+            frame_queue->IncrementDiscardedFramesLocked();
+            return;
+        }
+      } else {
+        frame_queue->PushLocked(std::move(media_frame));
+      }
     }
 
     if (transferred_source_handle_ && transferred_runner_) {
