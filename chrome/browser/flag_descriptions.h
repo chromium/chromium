@@ -3652,6 +3652,12 @@ inline constexpr char kOmniboxDebounceKeyboardVisibilityDescription[] =
     "Enables debouncing of show and hide transitions for the soft keyboard in "
     "the Omnibox.";
 
+inline constexpr char kOmniboxUrlBarAimNaturalTextImeName[] =
+    "Omnibox UrlBar AI Mode Natural Text IME";
+inline constexpr char kOmniboxUrlBarAimNaturalTextImeDescription[] =
+    "Switches the UrlBar IME configuration between URL entry for conventional "
+    "requests and natural text composition for AI Mode requests.";
+
 inline constexpr char kOmniboxDiagnosticsName[] =
     "Omnibox Diagnostics (restart twice)";
 inline constexpr char kOmniboxDiagnosticsDescription[] =

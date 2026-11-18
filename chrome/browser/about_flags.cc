@@ -7055,6 +7055,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxDebounceKeyboardVisibility)},
 
+    {"omnibox-url-bar-aim-natural-text-ime",
+     flag_descriptions::kOmniboxUrlBarAimNaturalTextImeName,
+     flag_descriptions::kOmniboxUrlBarAimNaturalTextImeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxUrlBarAimNaturalTextIme)},
+
     {"omnibox-fusebox-async-inflation",
      flag_descriptions::kOmniboxFuseboxAsyncInflationName,
      flag_descriptions::kOmniboxFuseboxAsyncInflationDescription, kOsAndroid,

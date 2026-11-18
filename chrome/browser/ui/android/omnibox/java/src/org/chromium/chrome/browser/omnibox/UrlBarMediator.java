@@ -29,9 +29,11 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.components.omnibox.TextSelection;
+import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -61,6 +63,8 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     private final @Nullable Callback<UrlBarTextChangeInfo> mRichTextChangeListener;
     private final Callback<@DisplayState Integer> mDisplayStateObserver =
             this::onDisplayStateChanged;
+    private final Callback<@AutocompleteRequestType Integer> mRequestTypeObserver =
+            this::onRequestTypeChanged;
 
     /**
      * Creates a URLBarMediator.
@@ -82,6 +86,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
 
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, this);
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, false);
+        mModel.set(UrlBarProperties.USE_NATURAL_TEXT_IME, false);
         mModel.set(UrlBarProperties.HAS_URL_SUGGESTIONS, false);
         mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, this::onTextChanged);
         mModel.set(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER, this::onRichTextChanged);
@@ -96,9 +101,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     }
 
     public void destroy() {
-        if (mCurrentInput != null) {
-            mCurrentInput.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
-        }
+        detachCurrentInputObservers();
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, null);
         mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, null);
         mModel.set(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER, null);
@@ -107,20 +110,21 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
 
     /** Signals that the Omnibox input session has begun. */
     void beginInput(FuseboxSessionState sessionState) {
-        if (mCurrentInput != null) {
-            mCurrentInput.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
-        }
+        detachCurrentInputObservers();
         mCurrentInput = sessionState.getAutocompleteInput();
         mCurrentInput
                 .getDisplayStateSupplier()
                 .addSyncObserverAndCallIfNonNull(mDisplayStateObserver);
+        mCurrentInput
+                .getRequestTypeSupplier()
+                .addSyncObserverAndCallIfNonNull(mRequestTypeObserver);
         pushCurrentInputToModel();
     }
 
     /** Signals that the Omnibox input session has ended. */
     void endInput() {
         if (!isInInputSession()) return;
-        mCurrentInput.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
+        detachCurrentInputObservers();
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, false);
         var pageUrl = mCurrentInput.getPageUrl();
         mCurrentInput = null;
@@ -131,9 +135,22 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         setUrlBarData(data, ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_END);
     }
 
+    private void detachCurrentInputObservers() {
+        if (mCurrentInput == null) return;
+        mCurrentInput.getDisplayStateSupplier().removeObserver(mDisplayStateObserver);
+        mCurrentInput.getRequestTypeSupplier().removeObserver(mRequestTypeObserver);
+    }
+
     private void onDisplayStateChanged(@DisplayState int displayState) {
         boolean allowMultiline = displayState == DisplayState.SUGGESTIONS;
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, allowMultiline);
+    }
+
+    private void onRequestTypeChanged(@AutocompleteRequestType int requestType) {
+        boolean useNaturalTextIme =
+                OmniboxFeatures.isUrlBarAimNaturalTextImeEnabled()
+                        && ToolModeUtils.isAimRequest(requestType);
+        mModel.set(UrlBarProperties.USE_NATURAL_TEXT_IME, useNaturalTextIme);
     }
 
     /** Sets the current selection for the active input session. */

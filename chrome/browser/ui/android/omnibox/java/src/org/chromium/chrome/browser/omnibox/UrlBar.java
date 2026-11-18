@@ -33,6 +33,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.autofill.AutofillManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputMethodManager;
 import android.view.textclassifier.TextClassifier;
 import android.widget.TextView;
 
@@ -149,6 +150,7 @@ public class UrlBar extends AutocompleteEditText {
     private boolean mAllowFocus = true;
     private boolean mAllowMultilineInput;
     private boolean mCurrentInputCanBeWrapped;
+    private boolean mUseNaturalTextIme;
 
     /** Tracks whether a long-press was performed during the current touch gesture. */
     private boolean mLongPressPerformed;
@@ -603,6 +605,41 @@ public class UrlBar extends AutocompleteEditText {
         if (mAllowMultilineInput == allowMultiline) return;
         mAllowMultilineInput = allowMultiline;
         updateUrlBarForMultilineInput();
+    }
+
+    /**
+     * Sets whether this {@link UrlBar} should configure the IME for natural text composition (e.g.
+     * for AI Mode) rather than URL entry, restarting input if the view is active with the IME.
+     */
+    void setUseNaturalTextIme(boolean useNaturalTextIme) {
+        if (mUseNaturalTextIme == useNaturalTextIme) return;
+        mUseNaturalTextIme = useNaturalTextIme;
+        if (useNaturalTextIme) {
+            if (hasAutocomplete()) {
+                setAutocompleteText(
+                        getTextWithoutAutocomplete(),
+                        /* inlineAutocompleteText= */ null,
+                        /* additionalText= */ null,
+                        /* siteSearchLabel= */ null);
+            }
+        } else {
+            clearComposingText();
+        }
+        if (!mFocused) return;
+        InputMethodManager imm =
+                (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null && imm.isActive(this)) {
+            imm.restartInput(this);
+        }
+    }
+
+    @Override
+    public boolean shouldAutocomplete() {
+        return !mUseNaturalTextIme && super.shouldAutocomplete();
+    }
+
+    boolean getUseNaturalTextImeForTesting() {
+        return mUseNaturalTextIme;
     }
 
     private void updateUrlBarForMultilineInput() {
@@ -1764,14 +1801,30 @@ public class UrlBar extends AutocompleteEditText {
         if (mUrlBarDelegate == null || !mUrlBarDelegate.allowKeyboardLearning()) {
             outAttrs.imeOptions |= EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
         }
-        // Note: we apply this text variation here (as opposed to Constructor), because we want the
-        // Editor to behave slightly differently than Keyboards:
-        // - we want Editor to permit word selection on long-press, and
-        // - we want Soft keyboards to stop auto-correcting user input.
-        // This happens with certain modern soft keyboards, such as SwiftKey, that corrects spelling
-        // of some urls (e.g. "flipkart.com" -> "flip cart. com" or "flipkart. com") despite
-        // TYPE_TEXT_FLAG_NO_SUGGESTIONS and lack of TYPE_TEXT_FLAG_AUTO_CORRECT.
-        outAttrs.inputType |= EditorInfo.TYPE_TEXT_VARIATION_URI;
+        if (mUseNaturalTextIme) {
+            // Configure IME for natural text composition (e.g. AI Mode): allow auto-correct,
+            // sentence capitalization, and dictionary suggestions (which also switches ',' in place
+            // of '/' on soft keyboards).
+            outAttrs.inputType &= ~EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+            outAttrs.inputType |=
+                    EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT
+                            | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES;
+            Editable text = getText();
+            int selectionStart = getSelectionStart();
+            if (text != null && selectionStart >= 0) {
+                outAttrs.initialCapsMode =
+                        TextUtils.getCapsMode(text, selectionStart, outAttrs.inputType);
+            }
+        } else {
+            // Note: we apply this text variation here (as opposed to Constructor), because we want
+            // the Editor to behave slightly differently than Keyboards:
+            // - we want Editor to permit word selection on long-press, and
+            // - we want Soft keyboards to stop auto-correcting user input.
+            // This happens with certain modern soft keyboards, such as SwiftKey, that corrects
+            // spelling of some urls (e.g. "flipkart.com" -> "flip cart. com" or "flipkart. com")
+            // despite TYPE_TEXT_FLAG_NO_SUGGESTIONS and lack of TYPE_TEXT_FLAG_AUTO_CORRECT.
+            outAttrs.inputType |= EditorInfo.TYPE_TEXT_VARIATION_URI;
+        }
         outAttrs.inputType &= ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
         outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
         return connection;

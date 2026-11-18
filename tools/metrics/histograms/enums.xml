@@ -9792,6 +9792,7 @@ from previous Chrome versions.
   <int value="-1575375861" label="enable-captive-portal-random-url"/>
   <int value="-1575131701" label="AppServiceAsh:disabled"/>
   <int value="-1575043928" label="OriginKeyedProcessesByDefault:enabled"/>
+  <int value="-1574955365" label="OmniboxUrlBarAimNaturalTextIme:enabled"/>
   <int value="-1574799991" label="SkipServiceWorkerForInstallPromot:enabled"/>
   <int value="-1574315456" label="ArchiveTabService:disabled"/>
   <int value="-1573494098"
@@ -11487,6 +11488,7 @@ from previous Chrome versions.
   <int value="-1077716638" label="FirstRunDesktopRevamp:enabled"/>
   <int value="-1077534880" label="OmniboxDynamicMaxAutocomplete:enabled"/>
   <int value="-1077006912" label="ReadAnythingOmniboxIcon:disabled"/>
+  <int value="-1076994168" label="OmniboxUrlBarAimNaturalTextIme:disabled"/>
   <int value="-1076662984"
       label="AccessibilityManifestV3SwitchAccess:disabled"/>
   <int value="-1076661289"

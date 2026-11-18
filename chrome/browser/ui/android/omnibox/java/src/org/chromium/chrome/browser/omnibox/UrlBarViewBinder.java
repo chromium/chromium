@@ -120,6 +120,8 @@ class UrlBarViewBinder {
                     model.get(UrlBarProperties.TEXT_WRAPPED_CALLBACK));
         } else if (propertyKey == UrlBarProperties.URL_DIRECTION_LISTENER) {
             view.setUrlDirectionListener(model.get(UrlBarProperties.URL_DIRECTION_LISTENER));
+        } else if (propertyKey == UrlBarProperties.USE_NATURAL_TEXT_IME) {
+            view.setUseNaturalTextIme(model.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
         } else if (propertyKey == UrlBarProperties.USE_SMALL_TEXT) {
             boolean useSmallText = model.get(UrlBarProperties.USE_SMALL_TEXT);
             // Small text mode is used in a state where available vertical space is much lower and

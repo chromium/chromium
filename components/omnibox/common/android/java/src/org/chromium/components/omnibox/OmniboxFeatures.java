@@ -77,6 +77,7 @@ public class OmniboxFeatures {
     // Each flag created via newFlag() will be automatically added to this list.
     private static final List<CachedFlag> sCachedFlags = new ArrayList<>();
     private static final List<CachedFeatureParam<?>> sCachedParams = new ArrayList<>();
+    private static @Nullable Boolean sUrlBarAimNaturalTextImeForTesting;
 
     public static final CachedFlag sTouchDownTriggerForPrefetch =
             newFlag(
@@ -105,6 +106,11 @@ public class OmniboxFeatures {
             newFlag(
                     OmniboxFeatureList.URL_BAR_NO_HANDWRITING_BOUNDS_ABOVE,
                     FeatureState.ENABLED_IN_PROD);
+
+    public static final CachedFlag sUrlBarAimNaturalTextIme =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_URL_BAR_AIM_NATURAL_TEXT_IME,
+                    FeatureState.DISABLED_IN_PROD);
 
     public static final CachedFlag sXGeoFailClosedOnPreciseLeak =
             newFlag(
@@ -449,6 +455,23 @@ public class OmniboxFeatures {
     public static void setDebounceKeyboardVisibilityForTesting(@Nullable Boolean value) {
         sDebounceKeyboardVisibilityForTesting = value;
         ResettersForTesting.register(() -> sDebounceKeyboardVisibilityForTesting = null);
+    }
+
+    /**
+     * Returns whether the UrlBar should switch IME configuration between URL entry and natural text
+     * composition based on the active request type.
+     */
+    public static boolean isUrlBarAimNaturalTextImeEnabled() {
+        if (sUrlBarAimNaturalTextImeForTesting != null) {
+            return sUrlBarAimNaturalTextImeForTesting;
+        }
+        return sUrlBarAimNaturalTextIme.isEnabled();
+    }
+
+    /** Modifies the output of {@link #isUrlBarAimNaturalTextImeEnabled()} for testing. */
+    public static void setUrlBarAimNaturalTextImeForTesting(@Nullable Boolean value) {
+        sUrlBarAimNaturalTextImeForTesting = value;
+        ResettersForTesting.register(() -> sUrlBarAimNaturalTextImeForTesting = null);
     }
 
     /**

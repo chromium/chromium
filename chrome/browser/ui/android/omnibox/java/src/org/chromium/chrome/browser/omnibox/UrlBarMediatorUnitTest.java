@@ -47,7 +47,9 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSecurityErrorSpan;
@@ -956,6 +958,57 @@ public class UrlBarMediatorUnitTest {
 
         input.setDisplayState(DisplayState.SUGGESTIONS);
         assertFalse(mModel.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
+    }
+
+    @Test
+    public void testUseNaturalTextIme_drivenByRequestTypeWhenFlagEnabled() {
+        OmniboxFeatures.setUrlBarAimNaturalTextImeForTesting(true);
+        assertFalse(mModel.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
+
+        var session = new FuseboxSessionState();
+        var input = session.getAutocompleteInput();
+        doReturn(UrlBarData.EMPTY).when(mDelegate).getUrlBarDataForCurrentInput();
+
+        mMediator.beginInput(session);
+        assertFalse(mModel.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
+
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        assertTrue(mModel.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
+
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        assertFalse(mModel.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
+
+        input.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        assertTrue(mModel.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
+
+        input.setRequestType(AutocompleteRequestType.SEARCH_PREFETCH);
+        assertFalse(mModel.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
+
+        input.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
+        assertTrue(mModel.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
+
+        mMediator.endInput();
+        // Ending input detaches the observer without forcing an IME mode switch while UrlBar may
+        // still be focused; subsequent changes on the old session are ignored, and the next
+        // beginInput() updates the mode.
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        assertTrue(mModel.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
+
+        var nextSession = new FuseboxSessionState();
+        mMediator.beginInput(nextSession);
+        assertFalse(mModel.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
+    }
+
+    @Test
+    public void testUseNaturalTextIme_disabledWhenFlagDisabled() {
+        OmniboxFeatures.setUrlBarAimNaturalTextImeForTesting(false);
+        var session = new FuseboxSessionState();
+        var input = session.getAutocompleteInput();
+        doReturn(UrlBarData.EMPTY).when(mDelegate).getUrlBarDataForCurrentInput();
+
+        mMediator.beginInput(session);
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        assertFalse(mModel.get(UrlBarProperties.USE_NATURAL_TEXT_IME));
     }
 
     @Test

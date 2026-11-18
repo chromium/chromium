@@ -2447,4 +2447,34 @@ public class UrlBarUnitTest {
         assertTrue(mUrlBar.isHorizontallyScrollable());
         assertEquals(0, mUrlBar.getScrollY());
     }
+
+    @Test
+    public void onCreateInputConnection_naturalTextIme() {
+        focusUrlBar();
+        mUrlBar.setUseNaturalTextIme(true);
+        assertFalse(mUrlBar.shouldAutocomplete());
+        var info = new EditorInfo();
+        mUrlBar.onCreateInputConnection(info);
+        assertEquals(0, info.inputType & EditorInfo.TYPE_TEXT_VARIATION_URI);
+        assertEquals(0, info.inputType & EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        assertEquals(
+                EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT,
+                info.inputType & EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT);
+        assertEquals(
+                EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES,
+                info.inputType & EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        assertEquals(
+                TextUtils.getCapsMode(
+                        mUrlBar.getText(), mUrlBar.getSelectionStart(), info.inputType),
+                info.initialCapsMode);
+        assertEquals(0, info.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+
+        mUrlBar.setUseNaturalTextIme(false);
+        var urlInfo = new EditorInfo();
+        mUrlBar.onCreateInputConnection(urlInfo);
+        assertEquals(
+                EditorInfo.TYPE_TEXT_VARIATION_URI,
+                urlInfo.inputType & EditorInfo.TYPE_TEXT_VARIATION_URI);
+        assertEquals(0, urlInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT);
+    }
 }
