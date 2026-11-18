@@ -1216,14 +1216,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="64830" label="0xfd3e, Intel Wildcatlake"/>
 </enum>
 
-<enum name="MaximumGLESVersion">
-  <summary>The maximum GLES version supported.</summary>
-  <int value="0" label="GLES2.0"/>
-  <int value="1" label="GLES3.0"/>
-  <int value="2" label="GLES3.1"/>
-  <int value="3" label="GLES3.2"/>
-</enum>
-
 <enum name="MetalFamilyMac">
   <int value="0" label="Mac1"/>
   <int value="1" label="Mac2"/>

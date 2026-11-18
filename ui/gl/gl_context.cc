@@ -33,19 +33,6 @@ namespace gl {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-// Used to represent maximum GLES version for UMA.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class MaximumGLESVersion {
-  kGLES2_0 = 0,
-  kGLES3_0 = 1,
-  kGLES3_1 = 2,
-  kGLES3_2 = 3,
-  kMaxValue = kGLES3_2
-};
-#endif
-
 constinit thread_local GLContext* current_context = nullptr;
 constinit thread_local GLContext* current_real_context = nullptr;
 
@@ -118,29 +105,8 @@ bool GLContext::MakeCurrent(GLSurface* surface) {
     return false;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // Record the maximum GLES version supported for metrics if not using ANGLE
-  // (we don't record this for ANGLE currently because ANGLE reports the exact
-  // version recorded by the client, which is always <= 3.0 for Chrome).
-  static bool recorded_max_gles_version_if_feasible = false;
-  if (!recorded_max_gles_version_if_feasible) {
-    const GLVersionInfo* version_info = GetVersionInfo();
-    DCHECK(version_info);
-    if (!version_info->is_angle) {
-      MaximumGLESVersion max_gles_version = MaximumGLESVersion::kGLES2_0;
-      if (current_gl_->Version->IsAtLeastGLES(3, 2)) {
-        max_gles_version = MaximumGLESVersion::kGLES3_2;
-      } else if (current_gl_->Version->IsAtLeastGLES(3, 1)) {
-        max_gles_version = MaximumGLESVersion::kGLES3_1;
-      } else if (current_gl_->Version->IsAtLeastGLES(3, 0)) {
-        max_gles_version = MaximumGLESVersion::kGLES3_0;
-      }
-      base::UmaHistogramEnumeration("GPU.MaximumGLESVersion", max_gles_version);
-    }
-    recorded_max_gles_version_if_feasible = true;
-  }
-#elif (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-       BUILDFLAG(IS_WIN))
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+     BUILDFLAG(IS_WIN))
   static bool recorded_emulated_gles_version = false;
   if (!recorded_emulated_gles_version) {
     base::UmaHistogramBoolean("GPU.ANGLECanEmulateGLES3",
