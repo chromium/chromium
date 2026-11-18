@@ -181,7 +181,10 @@ void VideoCaptureDeviceFactoryWebRtc::OnCameraPortalResult(
 void VideoCaptureDeviceFactoryWebRtc::OnInitialized(
     webrtc::VideoCaptureOptions::Status status) {
   if (status != webrtc::VideoCaptureOptions::Status::SUCCESS) {
-    options_.reset();
+    // WebRTC may call this from inside the PipeWire session that `options_`
+    // owns, with the locks of the session held. Destroying the session there
+    // would wait for those locks forever, so destroy it after this returns.
+    origin_task_runner_->DeleteSoon(FROM_HERE, std::move(options_));
   }
 
   status_ = status;
