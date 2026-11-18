@@ -34,7 +34,6 @@
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "components/strings/grit/components_locale_settings.h"
-#include "content/public/browser/browser_thread.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/win/shell.h"
 
@@ -115,11 +114,10 @@ void DoPostImportPlatformSpecificTasks() {
   // Trigger the Active Setup command for system-level Chromes to finish
   // configuring this user's install (e.g. per-user shortcuts).
   if (!InstallUtil::IsPerUserInstall()) {
-    content::BrowserThread::PostBestEffortTask(
+    base::ThreadPool::PostTask(
         FROM_HERE,
-        base::ThreadPool::CreateTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&InstallUtil::TriggerActiveSetupCommand));
   }
 }

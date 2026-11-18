@@ -32,7 +32,6 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/installer/util/install_util.h"
@@ -239,15 +238,11 @@ void DowngradeManager::DeleteMovedUserDataSoon(
     const base::FilePath& user_data_dir,
     DowngradeManagerDelegate* delegate) {
   CHECK(!user_data_dir.empty(), base::NotFatalUntil::M161);
-  // IWYU note: base/location.h and base/task/task_traits.h are guaranteed to be
-  // available via base/task/thread_pool.h.
-  content::BrowserThread::PostBestEffortTask(
-      FROM_HERE,
-      base::ThreadPool::CreateTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
-      base::BindOnce(&DeleteMovedUserData, user_data_dir,
-                     delegate->GetDiskCacheDir()));
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                             base::BindOnce(&DeleteMovedUserData, user_data_dir,
+                                            delegate->GetDiskCacheDir()));
 }
 
 void DowngradeManager::ProcessDowngrade(const base::FilePath& user_data_dir,

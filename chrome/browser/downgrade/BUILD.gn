@@ -50,7 +50,6 @@ source_set("impl") {
     "//chrome/installer/util:with_no_strings",
     "//components/prefs",
     "//components/version_info",
-    "//content/public/browser",
   ]
 
   if (enable_downgrade_processing) {
@@ -68,6 +67,7 @@ source_set("impl") {
       "//components/sessions",
       "//components/strike_database",
       "//components/webdata/common",
+      "//content/public/browser",
     ]
     if (is_win) {
       deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
@@ -91,6 +91,7 @@ source_set("unit_tests") {
       "//base",
       "//chrome/installer/util:with_no_strings",
       "//chrome/test:test_support",
+      "//content/public/browser",
       "//testing/gmock",
       "//testing/gtest",
     ]
@@ -111,6 +112,7 @@ source_set("interactive_ui_tests") {
       "//base",
       "//chrome/browser:chrome_browser_main",
       "//chrome/test:test_support",
+      "//content/public/browser",
       "//content/test:test_support",
       "//testing/gmock",
     ]
@@ -123,6 +125,7 @@ source_set("interactive_ui_tests") {
       "//base",
       "//chrome/browser:chrome_browser_main",
       "//chrome/test:test_support",
+      "//content/public/browser",
       "//content/test:test_support",
       "//testing/gmock",
     ]
