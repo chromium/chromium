@@ -126,7 +126,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/renderer_context_menu:renderer_context_menu",
   "//chrome/browser/safe_browsing:safe_browsing",
   "//chrome/browser/search:search",
-  "//chrome/browser/security_events:security_events",
   "//chrome/browser/sync:sync",
   "//chrome/browser/touch_to_fill/password_manager:impl",
   "//chrome/browser/ui/android/autofill:autofill",
