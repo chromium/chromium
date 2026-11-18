@@ -7016,6 +7016,35 @@ TEST_F(SessionServiceImplTest,
   EXPECT_EQ(future2_retry.Take(), RefreshResult::kRefreshed);
 }
 
+TEST_F(SessionServiceImplTest, CrossSiteRefreshSessionConfigTerminatesSession) {
+  base::HistogramTester histograms;
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  SessionKey session_key{SchemefulSite(kTestUrl), Session::Id(kSessionId)};
+  ASSERT_NE(service().GetSession(session_key), nullptr);
+
+  auto scoped_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::kCrossSiteRefreshSessionConfig, kRefreshUrlString);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  DbscRequest dbsc_request(request.get());
+
+  base::test::TestFuture<RefreshResult> future;
+  service().DeferRequestForRefresh(
+      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
+      future.GetCallback());
+
+  EXPECT_EQ(future.Take(), RefreshResult::kFatalError);
+  EXPECT_EQ(service().GetSession(session_key), nullptr);
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RefreshResult",
+                                SessionError::kCrossSiteRefreshSessionConfig,
+                                1);
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.DeletionReason",
+                                DeletionReason::kRefreshFatalError, 1);
+}
+
 TEST_F(SessionServiceImplPreProvisionedKeyTest,
        HandleGenerateKeyHeader_FeatureDisabled) {
   AddProviderSessionWithAttestationKey();
@@ -7300,5 +7329,4 @@ TEST_F(SessionServiceImplPreProvisionedKeyTest,
   // The quota unit is not refunded.
   ExhaustProviderSigningQuota(service(), 5);
 }
-
 }  // namespace net::device_bound_sessions

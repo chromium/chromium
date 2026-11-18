@@ -422,6 +422,9 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
       case kFederatedRegistrationRedirected:
         return network::mojom::DeviceBoundSessionError::
             kFederatedRegistrationRedirected;
+      case kCrossSiteRefreshSessionConfig:
+        return network::mojom::DeviceBoundSessionError::
+            kCrossSiteRefreshSessionConfig;
     }
   }
 
@@ -622,6 +625,9 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
       case network::mojom::DeviceBoundSessionError::
           kFederatedRegistrationRedirected:
         return kFederatedRegistrationRedirected;
+      case network::mojom::DeviceBoundSessionError::
+          kCrossSiteRefreshSessionConfig:
+        return kCrossSiteRefreshSessionConfig;
     }
     NOTREACHED();
   }

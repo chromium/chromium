@@ -34,6 +34,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/request_priority.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session.h"
@@ -56,6 +57,9 @@
 #include "url/origin.h"
 
 namespace net::device_bound_sessions {
+
+BASE_FEATURE(kDeviceBoundSessionsRequireSameSiteRefresh,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -1047,6 +1051,24 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         [this](SessionError error) {
           RunCallback(CreateErrorRegistrationResult(std::move(error)));
         });
+
+    // A refresh may not move a session to another site. Because
+    // `Session::CreateIfValid()` requires the scope origin to be same-site with
+    // `final_registration_url`, a cross-site responder can at most return an
+    // empty-body refresh, terminate the session (`continue: false`), or
+    // redirect back to the original site.
+    // TODO(crbug.com/516490575): Propose this restriction to the DBSC spec
+    // (https://w3c.github.io/webappsec-dbsc/#algo-refresh-request).
+    if (IsForRefreshRequest() &&
+        !SchemefulSite(fetcher_endpoint_)
+             .IsSameSiteWith(final_registration_url) &&
+        base::FeatureList::IsEnabled(
+            kDeviceBoundSessionsRequireSameSiteRefresh)) {
+      RunCallback(CreateErrorRegistrationResult(
+          SessionError(SessionError::kCrossSiteRefreshSessionConfig)));
+      // `this` may be deleted.
+      return;
+    }
 
     params.key_id = CHECK_DEREF(key_id_);
     params.attestation_key_id = attestation_key_id_;
