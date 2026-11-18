@@ -159,7 +159,8 @@ class VkTestXkbKeyboardLayoutEngine : public XkbKeyboardLayoutEngine {
 // as the current layout of |layout_engine|. Uses gtest assertions, so callers
 // should wrap it in ASSERT_NO_FATAL_FAILURE.
 void SetLayoutFromName(XkbKeyboardLayoutEngine& layout_engine,
-                       const char* layout) {
+                       const char* layout,
+                       const char* variant = "") {
   std::unique_ptr<xkb_context, XkbContextDeleter> xkb_context(
       xkb_context_new(XKB_CONTEXT_NO_FLAGS));
   ASSERT_TRUE(xkb_context);
@@ -167,7 +168,7 @@ void SetLayoutFromName(XkbKeyboardLayoutEngine& layout_engine,
       .rules = nullptr,
       .model = "pc101",
       .layout = layout,
-      .variant = "",
+      .variant = variant,
       .options = "",
   };
   std::unique_ptr<xkb_keymap, XkbKeymapDeleter> xkb_keymap(
@@ -372,7 +373,7 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForPrintable) {
       /* 82 */ {{0x002F, 0x2460, 0x2461, DomCode::SLASH}, VKEY_OEM_2},
       // solidus, *, *
       /* 83 */
-      {{0x002F, 0x2460, 0x2461, DomCode::CONTROL_RIGHT}, VKEY_RCONTROL},
+      {{0x002F, 0x2460, 0x2461, DomCode::CONTROL_RIGHT}, VKEY_OEM_2},
       // colon, *, *
       /* 84 */ {{0x003A, 0x2460, 0x2461, DomCode::DIGIT1}, VKEY_1},
       // colon, *, *
@@ -800,6 +801,9 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForPrintable) {
       /* 295 */ {{'z', 'Z', '!', DomCode::NONE}, VKEY_Z},
       /* 296 */ {{'9', '(', '+', DomCode::NONE}, VKEY_9},
       /* 297 */ {{'0', ')', '-', DomCode::NONE}, VKEY_0},
+
+      // solidus, *, * on IntlRo (Brazilian ABNT2).
+      /* 298 */ {{0x002F, 0x2460, 0x2461, DomCode::INTL_RO}, VKEY_OEM_2},
 
   });
 
@@ -1256,6 +1260,48 @@ TEST(XkbKeyboardLayoutEngineTest, RussianSlashKey) {
       layout_engine.Lookup(DomCode::SLASH, EF_NONE, &dom_key, &key_code));
   EXPECT_EQ(DomKey::FromCharacter('.'), dom_key);
   EXPECT_EQ(VKEY_OEM_2, key_code);
+}
+
+// Regression test for crbug.com/470131728. The Brazilian layouts put '/' on
+// IntlRo (ABNT2) or on ControlRight (ThinkPad). It must map to VKEY_OEM_2,
+// matching X11, rather than to the US layout VKEY of the physical key.
+TEST(XkbKeyboardLayoutEngineTest, BrazilianSlash) {
+  XkbEvdevCodes evdev_codes;
+  const struct {
+    const char* variant;
+    DomCode dom_code;
+  } kTestCases[] = {
+      {"", DomCode::INTL_RO},
+      {"thinkpad", DomCode::CONTROL_RIGHT},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.variant);
+    XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+    ASSERT_NO_FATAL_FAILURE(
+        SetLayoutFromName(layout_engine, "br", test_case.variant));
+
+    DomKey dom_key = DomKey::NONE;
+    KeyboardCode key_code = VKEY_UNKNOWN;
+    EXPECT_TRUE(
+        layout_engine.Lookup(test_case.dom_code, EF_NONE, &dom_key, &key_code));
+    EXPECT_EQ(DomKey::FromCharacter('/'), dom_key);
+    EXPECT_EQ(VKEY_OEM_2, key_code);
+
+    dom_key = DomKey::NONE;
+    key_code = VKEY_UNKNOWN;
+    EXPECT_TRUE(layout_engine.Lookup(test_case.dom_code, EF_SHIFT_DOWN,
+                                     &dom_key, &key_code));
+    EXPECT_EQ(DomKey::FromCharacter('?'), dom_key);
+    EXPECT_EQ(VKEY_OEM_2, key_code);
+
+    // Ctrl+/ is a common shortcut.
+    dom_key = DomKey::NONE;
+    key_code = VKEY_UNKNOWN;
+    EXPECT_TRUE(layout_engine.Lookup(test_case.dom_code, EF_CONTROL_DOWN,
+                                     &dom_key, &key_code));
+    EXPECT_EQ(DomKey::FromCharacter('/'), dom_key);
+    EXPECT_EQ(VKEY_OEM_2, key_code);
+  }
 }
 
 TEST(XkbKeyboardLayoutEngineTest, NoStateBeforeKeymap) {

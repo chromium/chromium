@@ -195,7 +195,9 @@ const PrintableSubEntry kU002F[] = {
     {DomCode::BACKQUOTE, false, false, kAny, kAny, VKEY_OEM_7},
     {DomCode::BACKSLASH, false, false, kAny, kAny, VKEY_OEM_5},
     {DomCode::SLASH, false, false, kAny, kAny, VKEY_OEM_2},
-    {DomCode::CONTROL_RIGHT, false, false, kAny, kAny, VKEY_RCONTROL},
+    // Brazilian ABNT2 (IntlRo) and ThinkPad (ControlRight) layouts.
+    {DomCode::INTL_RO, false, false, kAny, kAny, VKEY_OEM_2},
+    {DomCode::CONTROL_RIGHT, false, false, kAny, kAny, VKEY_OEM_2},
     {DomCode::DIGIT3, true, false, 0x0033, kAny, VKEY_3},       // 3
     {DomCode::DIGIT3, true, false, 0x003F, kAny, VKEY_OEM_2},   // ?
     {DomCode::DIGIT0, true, false, 0x0030, kAny, VKEY_0},       // 0
