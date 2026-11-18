@@ -37,6 +37,7 @@
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/sync/service/sync_service.h"
+#import "components/translate/core/browser/language_state.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/webauthn/ios/features.h"
@@ -460,10 +461,22 @@ url::Origin IOSChromePasswordManagerClient::GetLastCommittedOrigin() const {
 }
 
 autofill::LanguageCode IOSChromePasswordManagerClient::GetPageLanguage() const {
-  // TODO(crbug.com/41430413): Add WebState to the
-  // IOSChromePasswordManagerClient to be able to get the pages LanguageState
-  // from the TranslateManager.
-  return autofill::LanguageCode();
+  web::WebState* web_state = bridge_.webState;
+  if (!web_state) {
+    return autofill::LanguageCode();
+  }
+  ChromeIOSTranslateClient* translate_client =
+      ChromeIOSTranslateClient::FromWebState(web_state);
+  if (!translate_client) {
+    return autofill::LanguageCode();
+  }
+  translate::TranslateManager* translate_manager =
+      translate_client->GetTranslateManager();
+  if (!translate_manager) {
+    return autofill::LanguageCode();
+  }
+  return autofill::LanguageCode(
+      translate_manager->GetLanguageState()->source_language());
 }
 
 const password_manager::CredentialsFilter*

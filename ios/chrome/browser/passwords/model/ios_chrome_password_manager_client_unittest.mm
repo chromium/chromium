@@ -30,6 +30,8 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/test/test_sync_service.h"
+#import "components/translate/core/browser/language_state.h"
+#import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/enterprise/common/test/mock_reporting_event_router.h"
@@ -46,6 +48,7 @@
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
@@ -579,4 +582,39 @@ TEST_F(IOSChromePasswordManagerClientTest, TestIsActorTaskActive) {
 
   actor_tab_helper->SetControlState(ActorControlState::kInactive);
   EXPECT_FALSE(client->IsActorTaskActive());
+}
+
+// Tests that `GetPageLanguage()` returns an empty language when no translate
+// client is attached to the WebState.
+TEST_F(IOSChromePasswordManagerClientTest,
+       GetPageLanguageWithoutTranslateClient) {
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  EXPECT_TRUE(client->GetPageLanguage().value().empty());
+}
+
+// Tests that `GetPageLanguage()` returns the source language of the page
+// determined by the WebState's translate client.
+TEST_F(IOSChromePasswordManagerClientTest, GetPageLanguageFromTranslateClient) {
+  PasswordManagerClient* client = passwordController_.passwordManagerClient;
+  InfoBarManagerImpl::CreateForWebState(web_state());
+  ChromeIOSTranslateClient::CreateForWebState(
+      web_state(), InfoBarManagerImpl::FromWebState(web_state()));
+  translate::LanguageState* language_state =
+      ChromeIOSTranslateClient::FromWebState(web_state())
+          ->GetTranslateManager()
+          ->GetLanguageState();
+
+  language_state->SetSourceLanguage("fr");
+  EXPECT_EQ("fr", client->GetPageLanguage().value());
+}
+
+// Tests that `GetPageLanguage()` returns an empty language when the client's
+// bridge has no WebState.
+TEST_F(IOSChromePasswordManagerClientTest, GetPageLanguageWithoutWebState) {
+  // Unstubbed methods of the nice protocol mock, like `webState`, return nil.
+  id bridge = OCMProtocolMock(@protocol(IOSChromePasswordManagerClientBridge));
+  OCMStub([bridge profile]).andReturn(profile_.get());
+  IOSChromePasswordManagerClient client(bridge);
+
+  EXPECT_TRUE(client.GetPageLanguage().value().empty());
 }
