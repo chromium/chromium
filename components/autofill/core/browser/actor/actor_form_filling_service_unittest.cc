@@ -1144,21 +1144,16 @@ TEST_F(ActorFormFillingServiceTest, FillSuggestions_FilledData) {
   EXPECT_THAT(*parsed_json, base::test::IsJson(expected_filled_entities));
 }
 
-TEST(ActorFormFillingServiceJournalTest,
-     FillWithInvalidSuggestionId_LogsToJournal) {
-  base::test::TaskEnvironment task_environment;
-  TestAutofillClient client;
-  client.AllowNullPrimaryMainFrameDriver(true);
-  ::actor::AggregatedJournal journal;
-  MockJournalObserver observer(journal);
+TEST_F(ActorFormFillingServiceTest, FillWithInvalidSuggestionId_LogsToJournal) {
+  MockJournalObserver observer(journal());
 
-  EXPECT_CALL(observer, WillAddJournalEntry(JournalEntryWithError(
-                            "Autofill manager not available")));
+  EXPECT_CALL(
+      observer,
+      WillAddJournalEntry(JournalEntryWithError(
+          "Could not find the FillData with the given ActorSuggestionId.")));
 
-  ActorFormFillingServiceImpl service(journal.GetSafeRef(), ::actor::TaskId(1));
-
-  service.FillForm(client, /*form_index=*/0,
-                   ActorFormFillingSelection(ActorSuggestionId(123)));
+  service().FillForm(client(), /*form_index=*/0,
+                     ActorFormFillingSelection(ActorSuggestionId(123)));
 }
 
 TEST_F(ActorFormFillingServiceTest, LogsMultipleSkipReasonsToJournal) {
