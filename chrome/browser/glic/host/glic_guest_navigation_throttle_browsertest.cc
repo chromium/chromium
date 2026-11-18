@@ -412,9 +412,17 @@ IN_PROC_BROWSER_TEST_F(GlicGeicGuestNavigationThrottleBrowserTest,
 // (`https://evil.example.com`) without visiting the Workforce Auth Portal is
 // classified as `kOriginBlocked`
 // (`ErrorPanelType::kError`).
+// TODO(crbug.com/587110784): Re-enable this test
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired \
+  DISABLED_CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired
+#else
+#define MAYBE_CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired \
+  CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired
+#endif
 IN_PROC_BROWSER_TEST_F(
     GlicGeicGuestNavigationThrottleBrowserTest,
-    CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired) {
+    MAYBE_CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired) {
   base::Lock mode_lock;
   bool redirect_via_auth_portal = true;
   SetRequestHandler(base::BindLambdaForTesting(
