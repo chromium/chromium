@@ -24,6 +24,7 @@ TEST(EGLInitializationDisplaysTest, DisableD3D11) {
 
   // using disable-d3d11 workaround with the default --use-angle should never
   // return D3D11.
+  gl::GlWorkarounds old_workarounds = gl::GetGlWorkarounds();
   gl::GlWorkarounds workarounds = {
       .disable_d3d11 = true,
   };
@@ -48,6 +49,8 @@ TEST(EGLInitializationDisplaysTest, DisableD3D11) {
   gl::init::GetEGLInitDisplaysForTesting(false, true, true, true, true, true,
                                          true, command_line.get(), &displays);
   EXPECT_FALSE(std::ranges::contains(displays, gl::ANGLE_D3D11));
+
+  gl::SetGlWorkarounds(old_workarounds);
 }
 
 TEST(EGLInitializationDisplaysTest, DefaultRenderers) {
