@@ -25,10 +25,27 @@ class NavigationHandle;
 class WebContents;
 }  // namespace content
 
-// Contains data that is passed from the UI thread to the IO thread at the
-// beginning of each navigation. The class is instantiated on the UI thread,
-// then a copy created using Clone is passed to the content::ResourceRequestInfo
-// on the IO thread.
+// Carries `//chrome` navigation metadata across navigation params,
+// `NavigationHandle`, and `NavigationURLLoader` on the UI thread.
+//
+// Lifecycle events:
+//
+// - Creation: Either created upfront by the caller before the navigation
+//   starts (e.g. main-frame navigations via `Navigate()`), or created by
+//   `//content` from the `NavigationHandle` right before the request starts if
+//   no upfront instance was supplied. In the latter case, fields set by the
+//   caller keep their default values.
+// - Same-navigation copy: A copy is made for use within the same navigation
+//   (e.g. for the `NavigationURLLoader`), taking the field values at that
+//   point.
+// - Loader update: The loader updates its copy while the request is in
+//   flight.
+// - Re-dispatch: A throttle restarts the navigation as a new one derived from
+//   the `NavigationHandle` (e.g. an HTTP fallback), possibly to a different
+//   URL.
+//
+// Each field documents its behavior on these events. Events that a field does
+// not mention leave it unchanged.
 class ChromeNavigationUIData : public content::NavigationUIData {
  public:
   ChromeNavigationUIData();
@@ -103,16 +120,32 @@ class ChromeNavigationUIData : public content::NavigationUIData {
 
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  // Manages the lifetime of optional ExtensionNavigationUIData information.
+  // Lifecycle:
+  //
+  // - Creation: Snapshotted from the `WebContents` (via
+  //   `CreateForMainFrameNavigation()`) or the `NavigationHandle` (created by
+  //   `//content`); left unset for direct `ChromeNavigationUIData()` callers.
+  // - Same-navigation copy: Copied.
+  // - Re-dispatch: Dropped.
   std::unique_ptr<extensions::ExtensionNavigationUIData> extension_data_;
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  // Manages the lifetime of optional OfflinePageNavigationUIData information.
+  // Lifecycle:
+  //
+  // - Loader update: Set by `OfflinePageURLLoader` on the loader's copy.
+  // - Same-navigation copy: Copied.
+  // - Re-dispatch: Dropped.
   std::unique_ptr<offline_pages::OfflinePageNavigationUIData>
       offline_page_data_;
 #endif
 
+  // Lifecycle:
+  //
+  // - Creation: Snapshotted from the `WebContents` when created by
+  //   `//content`; left false for upfront instances.
+  // - Same-navigation copy: Copied.
+  // - Re-dispatch: Dropped.
   bool is_no_state_prefetching_ = false;
 
   // True if the navigation was initiated by typing in the omnibox but the typed
@@ -120,33 +153,80 @@ class ChromeNavigationUIData : public content::NavigationUIData {
   // https was used as the default scheme for the navigation. This is used by
   // TypedNavigationUpgradeThrottle to determine if the navigation should be
   // observed and fall back to using http scheme if necessary.
+  //
+  // Lifecycle:
+  //
+  // - Creation: Set by the caller.
+  // - Same-navigation copy: Copied.
+  // - Re-dispatch: Dropped.
   bool is_using_https_as_default_scheme_ = false;
 
   // True if the navigation should be excluded from HTTPS upgrades.
   // This can happen in the following cases:
-  // - the navigatioon was initiated by typing in the omnibox, and the
-  // typed text had an explicit http scheme.
+  //
+  // - the navigation was initiated by typing in the omnibox, and the
+  //   typed text had an explicit http scheme.
   // - the navigation was initiated as a captive portal login.
+  //
+  // Lifecycle:
+  //
+  // - Creation: Set by the caller.
+  // - Same-navigation copy: Copied.
+  // - Re-dispatch: Dropped.
   bool force_no_https_upgrade_ = false;
 
   // Id of the bookmark which started this navigation.
+  //
+  // Lifecycle:
+  //
+  // - Creation: Set by the caller on Android.
+  // - Same-navigation copy: Copied.
+  // - Re-dispatch: Dropped.
+  //
+  // Exception: On desktop, bookmark UIs set this on the `NavigationHandle`'s
+  // instance after `Navigate()` returns, i.e. after the navigation has
+  // started, because `Navigate()` cannot take upfront `NavigationUIData`. It
+  // works only because `HistoryTabHelper` reads it from the
+  // `NavigationHandle`'s instance later in the navigation; it is unavailable
+  // at `DidStartNavigation()` and may be missing from copies made earlier.
+  // TODO(https://crbug.com/517725655): Set it upfront at creation instead.
   std::optional<int64_t> bookmark_id_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Unique token generated in Java to identify a TWA launch associated with
   // this navigation.
+  //
+  // Lifecycle:
+  //
+  // - Creation: Set by the caller.
+  // - Same-navigation copy: Copied.
+  // - Re-dispatch: Dropped.
   std::optional<int64_t> twa_launch_token_;
 #endif
 
   // True if the navigation was initiated in response to a sync message. This is
   // used in tab group sync to identify the sync initiated navigations and
-  // blocking them from sending back to sync which would otherwise cause
+  // blocking them from sending back to sync which would otherwise cause a
   // ping-pong issue. They will still be allowed to load locally like a normal
   // navigation.
+  //
+  // Lifecycle:
+  //
+  // - Creation: Set by the caller.
+  // - Same-navigation copy: Copied.
+  // - Re-dispatch: Dropped.
   bool navigation_initiated_from_sync_ = false;
 
   // Id of the actor task active during this navigation. Set only if actor was
   // acting on the tab when the navigation started.
+  //
+  // Lifecycle:
+  //
+  // - Creation: Snapshotted from the `WebContents` (via
+  //   `CreateForMainFrameNavigation()` or when created by `//content`); left
+  //   unset for direct `ChromeNavigationUIData()` callers.
+  // - Same-navigation copy: Copied.
+  // - Re-dispatch: Dropped.
   actor::TaskId actor_task_id_;
 };
 
