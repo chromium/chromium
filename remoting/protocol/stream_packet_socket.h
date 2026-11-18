@@ -10,6 +10,8 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 
@@ -27,7 +29,6 @@ class StreamPacketProcessor;
 
 // An AsyncPacketSocket implementation that runs on top of a StreamSocket. It is
 // usually used for TCP connections.
-// TODO(yuweih): Write unittest
 class StreamPacketSocket final : public webrtc::AsyncPacketSocket {
  public:
   StreamPacketSocket();
@@ -86,12 +87,15 @@ class StreamPacketSocket final : public webrtc::AsyncPacketSocket {
   bool HandleReadResult(int result);
   void OnAsyncReadCompleted(int result);
 
-  // Translates net_error to errno and set it on error_, then closes the socket
-  // and reports the error.
+  // Translates net_error to errno and sets it on error_, then closes the socket
+  // and posts an asynchronous close notification.
   // If you only need to set the error code (in errno), call SetError instead.
   void CloseWithNetError(int net_error);
 
-  std::unique_ptr<net::StreamSocket> socket_;
+  // Invoked via a posted task from CloseWithNetError() to notify listeners
+  // after the current call stack unwinds. Cancelled by Close() or destruction.
+  void RunNotifyClosed(int error);
+
   raw_ptr<StreamPacketProcessor> packet_processor_;
 
   // Note that a packet can be partially sent, where the number of bytes sent
@@ -99,6 +103,7 @@ class StreamPacketSocket final : public webrtc::AsyncPacketSocket {
   base::circular_deque<PendingPacket> send_queue_;
 
   bool send_pending_ = false;
+  bool in_do_write_ = false;
 
   // The offset denotes the position for new data to arrive, whereas data
   // between [0, offset) are arrived but not processed.
@@ -112,6 +117,20 @@ class StreamPacketSocket final : public webrtc::AsyncPacketSocket {
   // they generally return -1 and expect the caller to call GetError() to know
   // the reason.
   int error_ = 0;
+
+  // Must be declared after all members referenced by pending I/O callbacks
+  // (bound with base::Unretained(this)) so it is destroyed first, cancelling
+  // those callbacks before the state and buffers they use are released.
+  std::unique_ptr<net::StreamSocket> socket_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Invalidated in Close() to cancel pending RunNotifyClosed() tasks while
+  // keeping `weak_factory_` valid across Close() so DoWrite() and
+  // OnAsyncWriteCompleted() still reset `in_do_write_` unless `this` was
+  // destroyed.
+  base::WeakPtrFactory<StreamPacketSocket> close_weak_factory_{this};
+  base::WeakPtrFactory<StreamPacketSocket> weak_factory_{this};
 };
 
 }  // namespace remoting::protocol
