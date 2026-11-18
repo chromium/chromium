@@ -98,6 +98,10 @@ class USER_MANAGER_EXPORT User {
   // Returns whether the User is managed by policy.
   const std::optional<bool>& is_managed() const;
 
+  // Returns whether the User is affiliated to the device, or `std::nullopt` if
+  // affiliation has not been determined yet.
+  const std::optional<bool>& is_affiliated() const;
+
   // True if the user is affiliated to the device. Returns false if the
   // affiliation is not known. Use IsAffiliatedAsync if it's possible the call
   // is done before affiliation is established.

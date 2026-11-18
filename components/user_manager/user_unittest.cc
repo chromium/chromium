@@ -17,6 +17,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,6 +43,9 @@ TEST(UserTest, DeviceLocalAccountAffiliation) {
     ~ScopedUser() { delete user_; }
 
     bool IsAffiliated() const { return user_ && user_->IsAffiliated(); }
+    std::optional<bool> is_affiliated() const {
+      return user_ ? user_->is_affiliated() : std::nullopt;
+    }
 
    private:
     const raw_ptr<const User, DanglingUntriaged> user_;
@@ -60,6 +64,12 @@ TEST(UserTest, DeviceLocalAccountAffiliation) {
 
   ScopedUser arcvm_kiosk_user(User::CreateKioskArcvmAppUser(account_id));
   EXPECT_TRUE(arcvm_kiosk_user.IsAffiliated());
+  EXPECT_EQ(true, arcvm_kiosk_user.is_affiliated());
+
+  ScopedUser regular_user(
+      User::CreateRegularUser(account_id, UserType::kRegular));
+  EXPECT_FALSE(regular_user.IsAffiliated());
+  EXPECT_EQ(std::nullopt, regular_user.is_affiliated());
 }
 
 TEST(UserTest, GetDirName) {
@@ -113,6 +123,41 @@ TEST_F(UserGetPathTest, GetPath) {
   EXPECT_EQ(base::PathService::CheckedGet(ash::DIR_USER_DATA)
                 .Append("u-" + user->username_hash()),
             user->GetPath());
+}
+
+using UserAffiliationTest = UserGetPathTest;
+
+TEST_F(UserAffiliationTest, UnmanagedUserAffiliation) {
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
+  User* user = user_session_test_environment().AddRegularUser(account_id);
+  ASSERT_TRUE(user);
+
+  EXPECT_EQ(std::nullopt, user->is_affiliated());
+  EXPECT_FALSE(user->IsAffiliated());
+
+  UserManager::Get()->SetUserPolicyStatus(account_id, /*is_managed=*/false,
+                                          /*is_affiliated=*/false);
+  EXPECT_EQ(false, user->is_affiliated());
+  EXPECT_FALSE(user->IsAffiliated());
+}
+
+TEST_F(UserAffiliationTest, ManagedUserAffiliationTransition) {
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
+  User* user = user_session_test_environment().AddRegularUser(account_id);
+  ASSERT_TRUE(user);
+
+  EXPECT_EQ(std::nullopt, user->is_affiliated());
+  EXPECT_FALSE(user->IsAffiliated());
+
+  UserManager::Get()->SetUserPolicyStatus(account_id, /*is_managed=*/true,
+                                          /*is_affiliated=*/false);
+  EXPECT_EQ(false, user->is_affiliated());
+  EXPECT_FALSE(user->IsAffiliated());
+
+  UserManager::Get()->SetUserPolicyStatus(account_id, /*is_managed=*/true,
+                                          /*is_affiliated=*/true);
+  EXPECT_EQ(true, user->is_affiliated());
+  EXPECT_TRUE(user->IsAffiliated());
 }
 
 }  // namespace user_manager

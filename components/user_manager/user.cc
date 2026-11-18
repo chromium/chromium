@@ -259,6 +259,10 @@ const std::optional<bool>& User::is_managed() const {
   return is_managed_;
 }
 
+const std::optional<bool>& User::is_affiliated() const {
+  return is_affiliated_;
+}
+
 bool User::IsAffiliated() const {
   return is_affiliated_.value_or(false);
 }
