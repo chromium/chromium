@@ -18,7 +18,6 @@
 #include "base/memory/stack_allocated.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -30,7 +29,6 @@
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/program_cache.h"
-#include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
@@ -88,13 +86,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   CommandBufferStub& operator=(const CommandBufferStub&) = delete;
 
   ~CommandBufferStub() override;
-
-  // Exposes a SequencedTaskRunner which can be used to schedule tasks in
-  // sequence with this CommandBufferStub -- that is, on the same gpu::Scheduler
-  // sequence. Does not support nested loops or delayed tasks.
-  scoped_refptr<base::SequencedTaskRunner> task_runner() const {
-    return scheduler_task_runner_;
-  }
 
   // This must leave the GL context associated with the newly-created
   // CommandBufferStub current, so the GpuChannel can initialize
@@ -263,7 +254,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   const CommandBufferId command_buffer_id_;
   const SequenceId sequence_id_;
-  const scoped_refptr<SchedulerTaskRunner> scheduler_task_runner_;
   const int32_t stream_id_;
   const int32_t route_id_;
 

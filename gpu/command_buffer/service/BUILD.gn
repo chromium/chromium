@@ -50,6 +50,8 @@ source_set("service_sources") {
     "gpu_command_buffer_service_export.h",
     "gpu_switches.cc",
     "gpu_switches.h",
+    "gpu_task_priority.cc",
+    "gpu_task_priority.h",
     "memory_tracking.cc",
     "memory_tracking.h",
     "retaining_one_shot_timer_holder.cc",

@@ -10,12 +10,12 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 
 namespace gpu {
 class Scheduler;
-class SchedulerTaskRunner;
 }  // namespace gpu
 
 namespace webnn {
@@ -41,7 +41,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GpuTaskScheduler {
 
   // Exposes a SequencedTaskRunner which is used to run Mojo messages in this
   // gpu sequence. Does not support nested loops or delayed tasks.
-  const scoped_refptr<gpu::SchedulerTaskRunner>& scheduler_task_runner() const {
+  const scoped_refptr<base::SequencedTaskRunner>& scheduler_task_runner()
+      const {
     return scheduler_task_runner_;
   }
 
@@ -58,8 +59,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GpuTaskScheduler {
  private:
   // Binds to the sequence that first schedules GPU work. All accesses to
   // `weak_factory_` and destruction of this object must happen on that same
-  // sequence, which requires `scheduler_task_runner_` to be shut down on that
-  // sequence before destruction.
+  // sequence. Tasks still queued on `scheduler_task_runner_` are dropped when
+  // the sequence is destroyed.
   SEQUENCE_CHECKER(sequence_checker_);
 
   void ScheduleGpuTaskImpl(base::OnceClosure task_closure,
@@ -70,7 +71,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GpuTaskScheduler {
   const gpu::CommandBufferId command_buffer_id_;
   const gpu::CommandBufferNamespace namespace_id_;
   const gpu::SequenceId sequence_id_;
-  const scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner_;
 
   // Marks shutdown of this sequence to prevent tasks from running after
   // destruction.

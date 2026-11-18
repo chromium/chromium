@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
+#include "gpu/command_buffer/service/gpu_task_priority.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -216,6 +217,9 @@ TestGpuServiceHolder::TestGpuServiceHolder(
 #elif BUILDFLAG(IS_MAC)
   gpu_thread_options.message_pump_type = base::MessagePumpType::UI;
 #endif
+  gpu_thread_options.sequence_manager_settings =
+      gpu::CreateGpuSequenceManagerSettings(
+          gpu_thread_options.message_pump_type);
 
     CHECK(gpu_main_thread_.StartWithOptions(std::move(gpu_thread_options)));
     CHECK(io_thread_.Start());

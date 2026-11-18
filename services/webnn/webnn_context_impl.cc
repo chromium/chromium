@@ -265,10 +265,11 @@ WebNNContextImpl::~WebNNContextImpl() {
   }
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 
-  // Destroy the GPU task scheduler before signaling destruction. This releases
-  // any pending MultiplexRouter refs held by queued tasks (via WrapRefCounted).
-  // The callback must fire after this to guarantee the router is fully cleaned
-  // up.
+  // Resetting `gpu_task_scheduler_` invalidates its WeakPtrs so already-
+  // scheduled GPU tasks are skipped. Tasks still queued on the sequence's task
+  // runner (and the MultiplexRouter refs they hold) are dropped when
+  // `DestroyAndRemoveGpuSequence()` destroys the sequence on the main sequence,
+  // posted below.
   gpu_task_scheduler_.reset();
 
   // Sequence destruction must happen on the provider main sequence, and only

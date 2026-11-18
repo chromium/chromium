@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/command_buffer/service/scheduler_task_runner.h"
 
 namespace webnn {
 
@@ -18,9 +17,7 @@ GpuTaskScheduler::GpuTaskScheduler(gpu::Scheduler& scheduler,
       command_buffer_id_(command_buffer_id),
       namespace_id_(namespace_id),
       sequence_id_(sequence_id),
-      scheduler_task_runner_(
-          base::MakeRefCounted<gpu::SchedulerTaskRunner>(*scheduler_,
-                                                         sequence_id_)) {
+      scheduler_task_runner_(scheduler_->GetTaskRunner(sequence_id_)) {
   // Detach so the checker binds to whichever thread first schedules a task.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -28,9 +25,8 @@ GpuTaskScheduler::GpuTaskScheduler(gpu::Scheduler& scheduler,
 GpuTaskScheduler::~GpuTaskScheduler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Note: ShutDown() prevents new tasks from being scheduled and drops existing
-  // ones from executing.
-  scheduler_task_runner_->ShutDown();
+  // Note: `scheduler_task_runner_` is shut down when the sequence is destroyed
+  // with Scheduler::DestroySequence().
 
   // Prevent pending scheduled tasks from running after DestroySequence() is
   // called.

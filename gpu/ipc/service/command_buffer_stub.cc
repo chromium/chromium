@@ -30,7 +30,6 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/query_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_crash_keys.h"
@@ -131,9 +130,6 @@ CommandBufferStub::CommandBufferStub(
       initialized_(false),
       command_buffer_id_(command_buffer_id),
       sequence_id_(sequence_id),
-      scheduler_task_runner_(
-          base::MakeRefCounted<SchedulerTaskRunner>(*channel_->scheduler(),
-                                                    sequence_id_)),
       stream_id_(stream_id),
       route_id_(route_id),
       last_flush_id_(0),
@@ -359,14 +355,7 @@ void CommandBufferStub::Destroy() {
 
   command_buffer_.reset();
 
-  scheduler_task_runner_->ShutDown();
-
-  // Note: `receiver_` runs tasks on `scheduler_task_runner_`, which is not the
-  // current task runner when this method runs. Hence we must use this unsafe
-  // reset to elide sequence safety checks. Its safety is guaranteed by the
-  // above ShutDown() call which ensures no further tasks will run on the
-  // sequence.
-  receiver_.ResetFromAnotherSequenceUnsafe();
+  receiver_.reset();
   client_.reset();
 }
 
@@ -717,7 +706,8 @@ void CommandBufferStub::BindEndpoints(
   DCHECK(!client_);
 
   IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
-  receiver_.Bind(std::move(receiver), scheduler_task_runner_);
+  receiver_.Bind(std::move(receiver),
+                 channel_->scheduler()->GetTaskRunner(sequence_id_));
   client_.Bind(std::move(client), std::move(io_task_runner));
 }
 

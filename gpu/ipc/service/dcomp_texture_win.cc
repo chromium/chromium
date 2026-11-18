@@ -13,7 +13,6 @@
 #include "base/win/windows_types.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -124,10 +123,9 @@ DCOMPTexture::DCOMPTexture(
       sequence_(channel_->scheduler()->CreateSequence(SchedulingPriority::kLow,
                                                       channel_->task_runner())),
       receiver_(this) {
-  auto runner = base::MakeRefCounted<SchedulerTaskRunner>(
-      *channel_->scheduler(), sequence_);
   IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
-  receiver_.Bind(std::move(receiver), runner);
+  receiver_.Bind(std::move(receiver),
+                 channel_->scheduler()->GetTaskRunner(sequence_));
   context_state_->AddContextLostObserver(this);
   base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   channel_->AddRoute(route_id, sequence_);
@@ -151,7 +149,7 @@ void DCOMPTexture::ReleaseChannel() {
   DVLOG(1) << __func__;
   DCHECK(channel_);
 
-  receiver_.ResetFromAnotherSequenceUnsafe();
+  receiver_.reset();
   channel_->RemoveRoute(route_id_);
   channel_->scheduler()->DestroySequence(sequence_);
   sequence_ = SequenceId();

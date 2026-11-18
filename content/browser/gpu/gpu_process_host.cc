@@ -71,6 +71,7 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "gpu/command_buffer/service/gpu_task_priority.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -968,6 +969,8 @@ bool GpuProcessHost::Init() {
     options.message_pump_type = base::MessagePumpType::UI;
 #endif
     options.thread_type = base::ThreadType::kPresentation;
+    options.sequence_manager_settings =
+        gpu::CreateGpuSequenceManagerSettings(options.message_pump_type);
     in_process_gpu_thread_->StartWithOptions(std::move(options));
   } else if (!LaunchGpuProcess()) {
     return false;

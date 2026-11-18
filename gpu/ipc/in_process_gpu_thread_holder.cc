@@ -10,6 +10,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/command_buffer/service/gpu_task_priority.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -34,7 +35,10 @@ InProcessGpuThreadHolder::InProcessGpuThreadHolder()
   gpu_feature_info_ = gpu::ComputeGpuFeatureInfo(gpu_info, gpu_preferences_,
                                                  command_line, nullptr);
 
-  Start();
+  base::Thread::Options options;
+  options.sequence_manager_settings =
+      CreateGpuSequenceManagerSettings();
+  StartWithOptions(std::move(options));
 }
 
 InProcessGpuThreadHolder::~InProcessGpuThreadHolder() {

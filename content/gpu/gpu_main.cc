@@ -57,6 +57,7 @@
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "content/public/gpu/content_gpu_client.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "gpu/command_buffer/service/gpu_task_priority.h"
 #include "gpu/config/gpu_driver_bug_list.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -311,56 +312,39 @@ int GpuMain(MainFunctionParams parameters) {
   // this.
   // TODO(ericrk): Revisit this once we assess its impact on crbug.com/662802
   // and crbug.com/609252.
-  std::unique_ptr<base::SingleThreadTaskExecutor> main_thread_task_executor;
   std::unique_ptr<ui::PlatformEventSource> event_source;
-  if (command_line.HasSwitch(switches::kHeadless)) {
 #if BUILDFLAG(IS_MAC)
-    // CADisplayLink (Mac HW VSync) callback only works with NS_RUNLOOP.
-    main_thread_task_executor =
-        std::make_unique<base::SingleThreadTaskExecutor>(
-            base::MessagePumpType::NS_RUNLOOP, /*is_main_thread=*/true);
-    main_thread_task_executor->SetWorkBatchSize(2);
+  // Cross-process CoreAnimation requires a CFRunLoop to function at all, and
+  // requires a NSRunLoop to not starve under heavy load. See:
+  // https://crbug.com/312462#c51 and https://crbug.com/783298
+  // CADisplayLink (Mac HW VSync) callback only works with NS_RUNLOOP (even in
+  // headless mode). DEFAULT type does not support NSObject.
+  base::MessagePumpType message_pump_type = base::MessagePumpType::NS_RUNLOOP;
 #else
-    main_thread_task_executor =
-        std::make_unique<base::SingleThreadTaskExecutor>(
-            base::MessagePumpType::DEFAULT, /*is_main_thread=*/true);
-#endif
-  } else {
-#if BUILDFLAG(IS_WIN)
-    // The GpuMain thread should not be pumping Windows messages because no UI
-    // is expected to run on this thread.
-    main_thread_task_executor =
-        std::make_unique<base::SingleThreadTaskExecutor>(
-            base::MessagePumpType::DEFAULT, /*is_main_thread=*/true);
-#elif BUILDFLAG(IS_OZONE)
+  // On Windows, the GpuMain thread should not be pumping Windows messages
+  // because no UI is expected to run on this thread.
+  base::MessagePumpType message_pump_type = base::MessagePumpType::DEFAULT;
+  if (!command_line.HasSwitch(switches::kHeadless)) {
+#if BUILDFLAG(IS_OZONE)
     // The MessagePump type required depends on the Ozone platform selected at
     // runtime.
-    if (!main_thread_task_executor) {
-      main_thread_task_executor =
-          std::make_unique<base::SingleThreadTaskExecutor>(
-              gpu_preferences.message_pump_type, /*is_main_thread=*/true);
-    }
+    message_pump_type = gpu_preferences.message_pump_type;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #error "Unsupported Linux platform."
-#elif BUILDFLAG(IS_MAC)
-    // Cross-process CoreAnimation requires a CFRunLoop to function at all, and
-    // requires a NSRunLoop to not starve under heavy load. See:
-    // https://crbug.com/312462#c51 and https://crbug.com/783298
-    // CADisplayLink (Mac HW VSync) callback only works with NS_RUNLOOP. DEFAULT
-    // type does not support NSObject.
-    main_thread_task_executor =
-        std::make_unique<base::SingleThreadTaskExecutor>(
-            base::MessagePumpType::NS_RUNLOOP, /*is_main_thread=*/true);
-    // As part of the migration to DoWork(), this policy is required to keep
-    // previous behavior and avoid regressions.
-    // TODO(crbug.com/40668161): Consider updating the policy.
-    main_thread_task_executor->SetWorkBatchSize(2);
-#else
-    main_thread_task_executor =
-        std::make_unique<base::SingleThreadTaskExecutor>(
-            base::MessagePumpType::DEFAULT, /*is_main_thread=*/true);
 #endif
   }
+#endif
+
+  auto main_thread_task_executor =
+      std::make_unique<base::SingleThreadTaskExecutor>(
+          message_pump_type, /*is_main_thread=*/true,
+          gpu::CreateGpuPrioritySettings());
+#if BUILDFLAG(IS_MAC)
+  // As part of the migration to DoWork(), this policy is required to keep
+  // previous behavior and avoid regressions.
+  // TODO(crbug.com/40668161): Consider updating the policy.
+  main_thread_task_executor->SetWorkBatchSize(2);
+#endif
 
   base::PlatformThread::SetName("CrGpuMain");
   mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics("GpuMain");

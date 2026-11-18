@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -22,10 +23,13 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
+class SequencedTaskRunner;
 class SingleThreadTaskRunner;
 }
 
 namespace gpu {
+
+class SchedulerTaskRunner;
 
 class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
  public:
@@ -134,6 +138,12 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
   // Changes a sequence's priority. Used in WaitForGetOffset/TokenInRange to
   // temporarily increase a sequence's priority.
   void SetSequencePriority(SequenceId sequence_id, SchedulingPriority priority)
+      LOCKS_EXCLUDED(lock());
+
+  // Returns a task runner that schedules posted tasks on the sequence. It is
+  // shared by all users of the sequence and shut down by DestroySequence(),
+  // after which posting to it fails.
+  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner(SequenceId sequence_id)
       LOCKS_EXCLUDED(lock());
 
   // Schedules task to run on the sequence. The task is blocked until the sync
@@ -285,6 +295,11 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
     // overhead. See raw_ptr.h for more info.
     const raw_ptr<Scheduler, UnprotectedInRelease> scheduler_ = nullptr;
     const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+    // Created lazily by Scheduler::GetTaskRunner() and shut down in
+    // DestroySequence().
+    scoped_refptr<SchedulerTaskRunner> scheduler_task_runner_
+        GUARDED_BY(lock());
 
     const SchedulingPriority default_priority_;
     SchedulingPriority current_priority_ GUARDED_BY(lock());

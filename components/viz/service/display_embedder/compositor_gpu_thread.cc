@@ -17,6 +17,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/command_buffer/service/gpu_task_priority.h"
 #include "gpu/command_buffer/service/vulkan_context_provider.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
@@ -241,6 +242,8 @@ bool CompositorGpuThread::Initialize() {
   // std::unique_ptr<base::SingleThreadTaskExecutor> thread_task_executor;
   // thread_task_executor->SetWorkBatchSize(2);
 #endif
+  thread_options.sequence_manager_settings =
+      gpu::CreateGpuSequenceManagerSettings(thread_options.message_pump_type);
   StartWithOptions(std::move(thread_options));
 
   // Wait until thread is started and Init() is executed in order to return
