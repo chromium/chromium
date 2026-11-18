@@ -25,6 +25,7 @@ import static org.chromium.base.test.transit.ViewFinder.waitForView;
 
 import androidx.test.filters.MediumTest;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,6 +45,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.WebSigninRedirectCoordinator;
+import org.chromium.chrome.browser.signin.services.WebSigninTrackerBridge.NativeWebSigninTrackerBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -60,7 +62,7 @@ import org.chromium.url.GURL;
 @Features.EnableFeatures(SigninFeatures.ENABLE_WEB_SIGNIN_LOADING_DIALOG)
 @Batch(Batch.PER_CLASS)
 public class WebSigninLoadingDialogTest {
-    private static final long NATIVE_WEB_SIGNIN_TRACKER_BRIDGE = 1000L;
+    private static final long NATIVE_SIGNIN_TRACKER_PTR = 1L;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -108,7 +110,7 @@ public class WebSigninLoadingDialogTest {
     @MediumTest
     public void testDialogShownAfterDelay() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(any(), anyString(), any()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         mCoordinator = new WebSigninRedirectCoordinator();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -128,7 +130,7 @@ public class WebSigninLoadingDialogTest {
     @Features.EnableFeatures(SigninFeatures.FORCE_SHOW_WEB_SIGNIN_LOADING_DIALOG)
     public void testForceShowDialog() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(any(), anyString(), any()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         mCoordinator = new WebSigninRedirectCoordinator();
         mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
 
@@ -167,7 +169,7 @@ public class WebSigninLoadingDialogTest {
 
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -191,7 +193,7 @@ public class WebSigninLoadingDialogTest {
     public void testSigninResultAfterDestroy() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         mCoordinator = new WebSigninRedirectCoordinator();
 
         HistogramWatcher watcher =
@@ -235,7 +237,7 @@ public class WebSigninLoadingDialogTest {
     public void testDialogNotShownBeforeDelay() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         mCoordinator = new WebSigninRedirectCoordinator();
         mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
         HistogramWatcher watcher =
@@ -270,7 +272,7 @@ public class WebSigninLoadingDialogTest {
     public void testDialogNotShownBeforeDelayAborted() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         mCoordinator = new WebSigninRedirectCoordinator();
         mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
         HistogramWatcher watcher =
@@ -302,7 +304,7 @@ public class WebSigninLoadingDialogTest {
     public void testDialogShownForAtLeastMinimumTime() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         mCoordinator = new WebSigninRedirectCoordinator();
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -373,7 +375,7 @@ public class WebSigninLoadingDialogTest {
     public void testRedirectWhenUrlMatches() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         Tab spyTab = spy(mActivityTestRule.getActivityTab());
         when(spyTab.getWebContents()).thenReturn(mMockWebContents);
         when(mMockWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://initial.url"));
@@ -406,16 +408,18 @@ public class WebSigninLoadingDialogTest {
     @Test
     @MediumTest
     public void testRedirectWhenResultReportedSynchronously() {
+        JniUniquePtr<NativeWebSigninTrackerBridge> nativeBridge =
+                spy(JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenReturn(nativeBridge);
         doAnswer(
                         invocation -> {
                             mCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
                             return null;
                         })
                 .when(mWebSigninTrackerBridgeMocks)
-                .start(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .start(nativeBridge);
         Tab spyTab = spy(mActivityTestRule.getActivityTab());
         when(spyTab.getWebContents()).thenReturn(mMockWebContents);
         when(mMockWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://initial.url"));
@@ -446,7 +450,7 @@ public class WebSigninLoadingDialogTest {
         ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(spyTab).loadUrl(captor.capture());
         Assert.assertEquals("https://continue.url/", captor.getValue().getUrl());
-        verify(mWebSigninTrackerBridgeMocks).destroy(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+        verify(nativeBridge).destroy();
         verify(mMockShowDialogTimer, never()).startTimer(anyLong(), any());
         Assert.assertNull(mCoordinator.getDialogModelForTesting());
         watcher.assertExpected();
@@ -457,7 +461,7 @@ public class WebSigninLoadingDialogTest {
     public void testNoRedirectWhenUrlMismatches() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         Tab spyTab = spy(mActivityTestRule.getActivityTab());
         when(spyTab.getWebContents()).thenReturn(mMockWebContents);
         when(mMockWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://mismatch.url"));
@@ -485,7 +489,7 @@ public class WebSigninLoadingDialogTest {
     public void testCoordinatorReUseResetsState() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         Tab spyTab = spy(mActivityTestRule.getActivityTab());
         when(spyTab.getWebContents()).thenReturn(mMockWebContents);
         when(mMockWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://initial.url"));
@@ -560,7 +564,7 @@ public class WebSigninLoadingDialogTest {
     public void testShownRecordedWhenResultArrivesDuringDeferral() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         mCoordinator = new WebSigninRedirectCoordinator();
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
@@ -618,7 +622,7 @@ public class WebSigninLoadingDialogTest {
     public void testAuthErrorWithoutDialog() {
         when(mWebSigninTrackerBridgeMocks.createWithEmail(
                         any(), anyString(), mCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_SIGNIN_TRACKER_PTR));
         mCoordinator = new WebSigninRedirectCoordinator();
         mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
         HistogramWatcher watcher =

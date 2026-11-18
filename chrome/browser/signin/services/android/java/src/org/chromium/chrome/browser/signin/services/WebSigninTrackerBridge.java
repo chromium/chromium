@@ -8,11 +8,15 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.google_apis.gaia.CoreAccountId;
@@ -59,7 +63,10 @@ public class WebSigninTrackerBridge {
         }
     }
 
-    private long mNativeWebSigninTrackerBridge;
+    @JniType("::WebSigninTrackerBridge")
+    interface NativeWebSigninTrackerBridge extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativeWebSigninTrackerBridge> mNativeWebSigninTrackerBridge;
 
     /**
      * Notifies the passed {@link Listener} when the sign-in process completes either successfully
@@ -80,7 +87,7 @@ public class WebSigninTrackerBridge {
                         .createWithCoreAccountId(
                                 profile, accountId, createDestroyCallback(callback));
 
-        assert mNativeWebSigninTrackerBridge != 0
+        assert mNativeWebSigninTrackerBridge != null
                 : "Couldn't create native WebSigninTrackerBridge object!";
     }
 
@@ -99,7 +106,7 @@ public class WebSigninTrackerBridge {
         mNativeWebSigninTrackerBridge =
                 WebSigninTrackerBridgeJni.get()
                         .createWithEmail(profile, email, createDestroyCallback(callback));
-        assert mNativeWebSigninTrackerBridge != 0
+        assert mNativeWebSigninTrackerBridge != null
                 : "Couldn't create native WebSigninTrackerBridge object!";
     }
 
@@ -121,17 +128,19 @@ public class WebSigninTrackerBridge {
      * method, so callers should store this object before calling it.
      */
     public void start() {
-        assert mNativeWebSigninTrackerBridge != 0 : "WebSigninTrackerBridge is already destroyed!";
+        assert mNativeWebSigninTrackerBridge != null
+                : "WebSigninTrackerBridge is already destroyed!";
         WebSigninTrackerBridgeJni.get().start(mNativeWebSigninTrackerBridge);
     }
 
     /** Releases native resources used by this class. */
     public void destroy() {
-        if (mNativeWebSigninTrackerBridge == 0) return;
+        if (mNativeWebSigninTrackerBridge == null) return;
 
-        long nativeWebSigninTrackerBridge = mNativeWebSigninTrackerBridge;
-        mNativeWebSigninTrackerBridge = 0;
-        WebSigninTrackerBridgeJni.get().destroy(nativeWebSigninTrackerBridge);
+        JniUniquePtr<NativeWebSigninTrackerBridge> nativeWebSigninTrackerBridge =
+                mNativeWebSigninTrackerBridge;
+        mNativeWebSigninTrackerBridge = null;
+        nativeWebSigninTrackerBridge.destroy();
     }
 
     @VisibleForTesting
@@ -144,18 +153,16 @@ public class WebSigninTrackerBridge {
 
     @NativeMethods
     interface Natives {
-        long createWithCoreAccountId(
+        JniUniquePtr<NativeWebSigninTrackerBridge> createWithCoreAccountId(
                 @JniType("Profile*") Profile profile,
                 @JniType("CoreAccountId") CoreAccountId account,
                 Callback<@WebSigninTrackerResult Integer> callback);
 
-        long createWithEmail(
+        JniUniquePtr<NativeWebSigninTrackerBridge> createWithEmail(
                 @JniType("Profile*") Profile profile,
                 @JniType("std::string") String email,
                 Callback<@WebSigninTrackerResult Integer> callback);
 
-        void start(long webSigninTrackerBridgePtr);
-
-        void destroy(long webSigninTrackerBridgePtr);
+        void start(JniPtr<NativeWebSigninTrackerBridge> webSigninTrackerBridgePtr);
     }
 }

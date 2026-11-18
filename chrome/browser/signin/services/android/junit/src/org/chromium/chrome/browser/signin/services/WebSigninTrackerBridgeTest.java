@@ -5,13 +5,14 @@
 package org.chromium.chrome.browser.signin.services;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniUniquePtr;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.WebSigninTrackerBridge.NativeWebSigninTrackerBridge;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.google_apis.gaia.GaiaId;
@@ -35,11 +37,10 @@ import org.chromium.google_apis.gaia.GaiaId;
 public class WebSigninTrackerBridgeTest {
     private static final CoreAccountInfo CORE_ACCOUNT_INFO =
             CoreAccountInfo.createFromEmailAndGaiaId("user@domain.com", new GaiaId("gaia-id-user"));
-    private static final long NATIVE_WEB_SIGNIN_TRACKER_BRIDGE = 1000L;
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WebSigninTrackerBridge.Natives mNativeMock;
+    private JniUniquePtr<NativeWebSigninTrackerBridge> mNativeWebSigninTrackerBridge;
 
     @Mock private Profile mProfileMock;
 
@@ -53,9 +54,17 @@ public class WebSigninTrackerBridgeTest {
     @Before
     public void setUp() {
         WebSigninTrackerBridgeJni.setInstanceForTesting(mNativeMock);
+        mNativeWebSigninTrackerBridge = JniUniquePtr.createForTesting(1L);
         when(mNativeMock.createWithCoreAccountId(
                         eq(mProfileMock), eq(CORE_ACCOUNT_INFO.getId()), any()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenReturn(mNativeWebSigninTrackerBridge);
+    }
+
+    @After
+    public void tearDown() {
+        if (mNativeWebSigninTrackerBridge != null) {
+            mNativeWebSigninTrackerBridge.destroy();
+        }
     }
 
     @Test
@@ -80,14 +89,14 @@ public class WebSigninTrackerBridgeTest {
 
         mWebSigninCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
 
-        verify(mNativeMock).destroy(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+        mNativeWebSigninTrackerBridge = null;
     }
 
     @Test
     public void testFactoryCreateDoesNotStart() {
         mFactory.createWithCoreAccountId(mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock);
 
-        verify(mNativeMock, never()).start(anyLong());
+        verify(mNativeMock, never()).start(any());
     }
 
     @Test
@@ -98,7 +107,7 @@ public class WebSigninTrackerBridgeTest {
 
         webSigninTrackerBridge.start();
 
-        verify(mNativeMock).start(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+        verify(mNativeMock).start(mNativeWebSigninTrackerBridge);
     }
 
     @Test
@@ -107,7 +116,7 @@ public class WebSigninTrackerBridgeTest {
                         eq(mProfileMock),
                         eq(CORE_ACCOUNT_INFO.getId()),
                         mWebSigninCallbackCaptor.capture()))
-                .thenReturn(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .thenReturn(mNativeWebSigninTrackerBridge);
         // Native reports the result from start() if it's already known, e.g. if the account is
         // already in cookies.
         doAnswer(
@@ -118,7 +127,7 @@ public class WebSigninTrackerBridgeTest {
                             return null;
                         })
                 .when(mNativeMock)
-                .start(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+                .start(mNativeWebSigninTrackerBridge);
         WebSigninTrackerBridge webSigninTrackerBridge =
                 mFactory.createWithCoreAccountId(
                         mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock);
@@ -126,7 +135,7 @@ public class WebSigninTrackerBridgeTest {
         webSigninTrackerBridge.start();
 
         verify(mCallbackMock).onResult(WebSigninTrackerResult.SUCCESS);
-        verify(mNativeMock).destroy(NATIVE_WEB_SIGNIN_TRACKER_BRIDGE);
+        mNativeWebSigninTrackerBridge = null;
     }
 
     @Test

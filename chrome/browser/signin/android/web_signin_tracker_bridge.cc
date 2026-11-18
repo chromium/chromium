@@ -13,6 +13,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/signin/services/android/jni_headers/WebSigninTrackerBridge_jni.h"
@@ -46,7 +47,8 @@ void WebSigninTrackerBridge::Start() {
   tracker_.Start();
 }
 
-static int64_t JNI_WebSigninTrackerBridge_CreateWithCoreAccountId(
+static jni_zero::JniUniquePtr<WebSigninTrackerBridge>
+JNI_WebSigninTrackerBridge_CreateWithCoreAccountId(
     JNIEnv* env,
     Profile* profile,
     const CoreAccountId& account_id,
@@ -61,16 +63,16 @@ static int64_t JNI_WebSigninTrackerBridge_CreateWithCoreAccountId(
       on_signin_completed = base::BindOnce(
           &ForwardOnSigninCompletedToJava,
           base::android::ScopedJavaGlobalRef<jobject>(j_listener));
-  return reinterpret_cast<intptr_t>(
-      new WebSigninTrackerBridge(identity_manager, account_reconcilor,
-                                 account_id, std::move(on_signin_completed)));
+  return jni_zero::MakeUnique<WebSigninTrackerBridge>(
+      identity_manager, account_reconcilor, account_id,
+      std::move(on_signin_completed));
 }
 
-static int64_t JNI_WebSigninTrackerBridge_CreateWithEmail(
-    JNIEnv* env,
-    Profile* profile,
-    const std::string& account_email,
-    const JavaRef<jobject>& j_listener) {
+static jni_zero::JniUniquePtr<WebSigninTrackerBridge>
+JNI_WebSigninTrackerBridge_CreateWithEmail(JNIEnv* env,
+                                           Profile* profile,
+                                           const std::string& account_email,
+                                           const JavaRef<jobject>& j_listener) {
   CHECK(j_listener) << "Listener should be non-null";
 
   signin::IdentityManager* identity_manager =
@@ -81,22 +83,16 @@ static int64_t JNI_WebSigninTrackerBridge_CreateWithEmail(
       on_signin_completed = base::BindOnce(
           &ForwardOnSigninCompletedToJava,
           base::android::ScopedJavaGlobalRef<jobject>(j_listener));
-  return reinterpret_cast<intptr_t>(new WebSigninTrackerBridge(
+  return jni_zero::MakeUnique<WebSigninTrackerBridge>(
       identity_manager, account_reconcilor, account_email,
-      std::move(on_signin_completed)));
+      std::move(on_signin_completed));
 }
 
 static void JNI_WebSigninTrackerBridge_Start(
     JNIEnv* env,
-    int64_t web_signin_tracker_bridge) {
+    WebSigninTrackerBridge* web_signin_tracker_bridge) {
   // May destroy the bridge if the result is already known.
-  reinterpret_cast<WebSigninTrackerBridge*>(web_signin_tracker_bridge)->Start();
-}
-
-static void JNI_WebSigninTrackerBridge_Destroy(
-    JNIEnv* env,
-    int64_t web_signin_tracker_bridge) {
-  delete reinterpret_cast<WebSigninTrackerBridge*>(web_signin_tracker_bridge);
+  web_signin_tracker_bridge->Start();
 }
 
 DEFINE_JNI(WebSigninTrackerBridge)
