@@ -690,6 +690,46 @@ BPF_TEST_C(BaselinePolicy, OldMmapEnosys, BaselinePolicy) {
 }
 #endif  // defined(__i386__)
 
+// Added in Linux 6.10: (F_LINUX_SPECIFIC_BASE + 3).
+#if !defined(F_DUPFD_QUERY)
+#define F_DUPFD_QUERY 1027
+#endif
+
+BPF_TEST_C(BaselinePolicy, FcntlDupfdQuery, BaselinePolicy) {
+  int pipefd[2];
+  BPF_ASSERT_EQ(0, pipe(pipefd));
+  base::ScopedFD read_end(pipefd[0]);
+  base::ScopedFD write_end(pipefd[1]);
+
+  errno = 0;
+  int ret = fcntl(read_end.get(), F_DUPFD_QUERY, read_end.get());
+  if (ret == -1 && errno == EINVAL) {
+    // Kernel older than 6.10 does not support F_DUPFD_QUERY.
+    return;
+  }
+  BPF_ASSERT_EQ(1, ret);
+  BPF_ASSERT_EQ(0, fcntl(read_end.get(), F_DUPFD_QUERY, write_end.get()));
+
+  base::ScopedFD dup_read(dup(read_end.get()));
+  BPF_ASSERT_LE(0, dup_read.get());
+  BPF_ASSERT_EQ(1, fcntl(read_end.get(), F_DUPFD_QUERY, dup_read.get()));
+
+  errno = 0;
+  BPF_ASSERT_EQ(-1, fcntl(-1, F_DUPFD_QUERY, read_end.get()));
+  BPF_ASSERT_EQ(EBADF, errno);
+
+  errno = 0;
+  BPF_ASSERT_EQ(-1, fcntl(read_end.get(), F_DUPFD_QUERY, -1));
+  BPF_ASSERT_EQ(EBADF, errno);
+}
+
+BPF_DEATH_TEST_C(BaselinePolicy,
+                 FcntlDisallowedCommandCrashes,
+                 DEATH_SEGV_MESSAGE(GetErrorMessageContentForTests()),
+                 BaselinePolicy) {
+  fcntl(0, F_NOTIFY, 0);
+}
+
 }  // namespace
 
 }  // namespace sandbox

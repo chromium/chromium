@@ -63,6 +63,11 @@
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Added in Linux 6.10: (F_LINUX_SPECIFIC_BASE + 3).
+#if !defined(F_DUPFD_QUERY)
+#define F_DUPFD_QUERY 1027
+#endif
+
 #if defined(__arm__) && !defined(MAP_STACK)
 #define MAP_STACK 0x20000  // Daisy build environment has old headers.
 #endif
@@ -334,7 +339,8 @@ ResultExpr RestrictFcntlCommands() {
               F_SETLKW,
               F_GETLK,
               F_DUPFD,
-              F_DUPFD_CLOEXEC},
+              F_DUPFD_CLOEXEC,
+              F_DUPFD_QUERY},
              Allow())
       .Case(F_SETFL,
             If((long_arg & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS()))

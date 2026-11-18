@@ -60,7 +60,7 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMprotectFlags();
 
 // Restrict fcntl(2) cmd argument to:
 // We allow F_GETFL, F_SETFL, F_GETFD, F_SETFD, F_DUPFD, F_DUPFD_CLOEXEC,
-// F_SETLK, F_SETLKW and F_GETLK.
+// F_DUPFD_QUERY, F_SETLK, F_SETLKW, F_GETLK, F_GET_SEALS and F_ADD_SEALS.
 // Also, in F_SETFL, restrict the allowed flags to: O_ACCMODE | O_APPEND |
 // O_NONBLOCK | O_SYNC | O_LARGEFILE | O_CLOEXEC | O_NOATIME.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictFcntlCommands();
