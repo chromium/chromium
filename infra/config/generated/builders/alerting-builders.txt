@@ -496,6 +496,7 @@ try/android-desktop-arm64-official
 try/android-desktop-x64-clobber-rel
 try/android-desktop-x64-official
 try/android-desktop-x64-rel
+try/android-desktop-x64-rel-17-tests
 try/android-official
 try/android-webview-10-x86-rel-tests
 try/android-webview-12-x64-dbg

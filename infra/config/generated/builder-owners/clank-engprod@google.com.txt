@@ -34,7 +34,6 @@ ci/android-bfcache-rel
 ci/android-binary-size-generator
 ci/android-canary-x64-fyi-rel
 ci/android-desktop-15-x64-fyi-rel
-ci/android-desktop-17-x64-fyi-rel
 ci/android-desktop-arm64-archive-rel
 ci/android-desktop-arm64-compile-dbg
 ci/android-desktop-arm64-compile-rel
@@ -48,6 +47,7 @@ ci/android-desktop-x64-deterministic-dbg
 ci/android-desktop-x64-deterministic-rel
 ci/android-desktop-x64-official
 ci/android-desktop-x64-rel-15-tests
+ci/android-desktop-x64-rel-17-tests
 ci/android-official
 ci/android-x86-code-coverage
 reviver/android-12l-x64-dbg-launcher
@@ -86,7 +86,6 @@ try/android-bfcache-rel
 try/android-canary-x64-fyi-rel
 try/android-clobber-rel
 try/android-desktop-15-x64-fyi-rel
-try/android-desktop-17-x64-fyi-rel
 try/android-desktop-arm64-binary-size
 try/android-desktop-arm64-clobber-rel
 try/android-desktop-arm64-compile-dbg
@@ -101,6 +100,7 @@ try/android-desktop-x64-deterministic-dbg
 try/android-desktop-x64-deterministic-rel
 try/android-desktop-x64-official
 try/android-desktop-x64-rel
+try/android-desktop-x64-rel-17-tests
 try/android-desktop-x64-rel-compilator
 try/android-official
 try/android-webview-12-x64-dbg

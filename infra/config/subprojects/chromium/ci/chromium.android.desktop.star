@@ -300,6 +300,10 @@ ci.thin_tester(
                     shards = 50,
                 ),
             ),
+            "chrome_public_test_apk": targets.mixin(
+                # Due to the capacity concern, this suite will run as ci_only.
+                ci_only = True,
+            ),
             "chrome_public_test_apk_desktop": targets.mixin(
                 args = [
                     "--annotation=Restriction=Desktop,Restriction=TabletOrDesktop,ImportantFormFactors=Desktop,ImportantFormFactors=TabletOrDesktop",
@@ -340,6 +344,113 @@ ci.thin_tester(
         short_name = "15-rel",
     ),
     cq_mirrors_console_view = "mirrors",
+)
+
+ci.thin_tester(
+    name = "android-desktop-x64-rel-17-tests",
+    # TODO(crbug.com/558813685): Enable branch_selector and gardening when green.
+    description_html = "Android desktop x64 release tests on Android 17.",
+    parent = "ci/android-desktop-x64-compile-rel",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "main_builder",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "base_config",
+        ),
+    ),
+    targets = targets.bundle(
+        targets = [
+            "android_desktop_junit_tests",
+            targets.bundle(
+                targets = "android_desktop_gtests",
+                mixins = [
+                    "17-desktop-x64-emulator",
+                    "emulator-8-cores",
+                    "force-main-user",
+                ],
+            ),
+            targets.bundle(
+                targets = "android_desktop_isolated_script_tests",
+                mixins = [
+                    "17-desktop-x64-emulator",
+                    "emulator-8-cores",
+                ],
+            ),
+        ],
+        mixins = [
+            "isolate_profile_data",
+        ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_17.android_browsertests.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 30,
+                ),
+            ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    # TODO(crbug.com/587393092): Re-enable once VerticalTabListCoordinator
+                    # shares TabSwitcherBackPressHandlerManager with Hub.
+                    "--gtest_filter=-org.chromium.chrome.browser.app.tab_activity_glue.TabletPhoneLayoutChangeTest.testTabSwitcherStateRetention_FlakeCheck",
+                ],
+                swarming = targets.swarming(
+                    shards = 40,
+                ),
+            ),
+            "chrome_public_test_apk_desktop": targets.mixin(
+                args = [
+                    "--annotation=Restriction=Desktop,Restriction=DesktopFreeform,Restriction=TabletOrDesktop,ImportantFormFactors=Desktop,ImportantFormFactors=DesktopFreeform,ImportantFormFactors=TabletOrDesktop",
+                ],
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 5,
+                ),
+            ),
+            "media_unittests": targets.mixin(
+                args = [
+                    # crbug.com/391490503: AACAudioEncoderTest.FullCycleEncodeDecode*
+                    # TODO(crbug.com/558813685): Re-enable PaintCanvasVideoRendererWithGLTest.*
+                    # once emulator is updated past 37.1.11 with the Gfxstream
+                    # VK_EXT_host_image_copy fix.
+                    "--gtest_filter=-AAC/AACAudioEncoderTest.FullCycleEncodeDecode*:PaintCanvasVideoRendererWithGLTest.*",
+                ],
+            ),
+            "unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
+    builderless = True,
+    cores = 8,
+    ssd = None,
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|x64",
+        short_name = "17-rel",
+    ),
 )
 
 ci.builder(

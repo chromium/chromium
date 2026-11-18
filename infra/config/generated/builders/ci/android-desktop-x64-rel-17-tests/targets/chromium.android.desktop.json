@@ -1,5 +1,5 @@
 {
-  "android-desktop-17-x64-fyi-rel": {
+  "android-desktop-x64-rel-17-tests": {
     "gtest_tests": [
       {
         "args": [
@@ -10,6 +10,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_37_desktop_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -58,11 +59,12 @@
           "--timeout-scale=2.0",
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb",
           "--force-main-user",
+          "--gtest_filter=-org.chromium.chrome.browser.app.tab_activity_glue.TabletPhoneLayoutChangeTest.testTabSwitcherStateRetention_FlakeCheck",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
         "description": "Run with android_37_desktop_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -121,6 +123,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_37_desktop_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -177,6 +180,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_37_desktop_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -232,6 +236,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_37_desktop_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -282,6 +287,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_37_desktop_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -331,6 +337,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_37_desktop_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -381,6 +388,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_37_desktop_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--bucket",
@@ -436,6 +444,7 @@
           "--avd-config=../../tools/android/avd/proto/android_37_desktop_x64.textpb"
         ],
         "description": "Run with android_37_desktop_x64",
+        "isolate_profile_data": true,
         "merge": {
           "args": [
             "--verbose"
@@ -477,6 +486,7 @@
         "test_id_prefix": "ninja://chrome/android:chrome_public_wpt/"
       },
       {
+        "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

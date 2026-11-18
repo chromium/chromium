@@ -384,8 +384,6 @@ targets.bundle(
                 # TODO(crbug.com/444753297): Remove this config.
                 "--timeout-scale=2.0",
             ],
-            # Due to the capacity concern, this suite will run as ci_only.
-            ci_only = True,
             swarming = targets.swarming(
                 shards = 30,
             ),

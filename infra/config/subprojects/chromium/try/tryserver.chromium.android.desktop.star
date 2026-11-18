@@ -257,13 +257,15 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-desktop-17-x64-fyi-rel",
+    name = "android-desktop-x64-rel-17-tests",
+    description_html = "Run Chromium tests on Android 17 Desktop emulator.",
     mirrors = [
-        "ci/android-desktop-17-x64-fyi-rel",
+        "ci/android-desktop-x64-compile-rel",
+        "ci/android-desktop-x64-rel-17-tests",
     ],
     gn_args = gn_args.config(
         configs = [
-            "ci/android-desktop-17-x64-fyi-rel",
+            "ci/android-desktop-x64-compile-rel",
             "release_try_builder",
         ],
     ),
