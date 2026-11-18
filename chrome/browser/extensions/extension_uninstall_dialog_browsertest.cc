@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -212,14 +213,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogBrowserTest,
                        UninstallURLSkipsNonStandardTabModels) {
   auto get_models = [this]() {
-    TabModelList::TabModelVector models;
+    std::vector<TabModel*> models;
     TabModelList::ForEach(profile(), [&models](TabModel* model) {
       models.push_back(model);
       return true;
     });
     return models;
   };
-  TabModelList::TabModelVector initial_models = get_models();
+  std::vector<TabModel*> initial_models = get_models();
   ASSERT_EQ(1u, initial_models.size());
   TabModel* standard_tab_model = initial_models[0];
 
@@ -234,9 +235,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogBrowserTest,
   // Move the standard tab model to the end of the list.
   TabModelList::RemoveTabModel(standard_tab_model);
   TabModelList::AddTabModel(standard_tab_model);
-  ASSERT_EQ(
-      (TabModelList::TabModelVector{&headless_tab_model, standard_tab_model}),
-      get_models());
+  ASSERT_EQ((std::vector<TabModel*>{&headless_tab_model, standard_tab_model}),
+            get_models());
 
   scoped_refptr<const Extension> extension = LoadExtensionWithUninstallUrl();
   ASSERT_TRUE(extension);

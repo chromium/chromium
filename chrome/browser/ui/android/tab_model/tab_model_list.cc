@@ -34,6 +34,8 @@ using GlobalObserverList =
 using ProfileObserverList =
     base::ObserverList<TabModelListObserver, /*check_empty=*/true>::Unchecked;
 
+using TabModelVector = std::vector<raw_ptr<TabModel, VectorExperimental>>;
+
 const int kProfileTabModelDataKey = 0;
 
 void AssertOnUiThread() {
@@ -49,7 +51,7 @@ void AssertOnUiThread() {
 struct ProfileTabModelData;
 
 struct TabModelListStorage {
-  TabModelList::TabModelVector models;
+  TabModelVector models;
   GlobalObserverList global_observers{base::ObserverListPolicy::EXISTING_ONLY};
   std::vector<raw_ptr<ProfileTabModelData>> active_profile_data;
 };
@@ -102,7 +104,7 @@ struct ProfileTabModelData : public base::SupportsUserData::Data {
   }
 
   const std::uintptr_t profile_key;
-  TabModelList::TabModelVector models;
+  TabModelVector models;
   ProfileObserverList observers{base::ObserverListPolicy::EXISTING_ONLY};
   // Monotonic registration epoch per observer so profile observers added during
   // `global_observers` dispatch have `epoch >= snapshot_epoch` and are skipped.
@@ -116,7 +118,7 @@ struct ProfileTabModelData : public base::SupportsUserData::Data {
 // `TabModel` removed mid-iteration.
 class TabModelListEnumerator : public TabModelListObserver {
  public:
-  explicit TabModelListEnumerator(TabModelList::TabModelVector models)
+  explicit TabModelListEnumerator(TabModelVector models)
       : models_(std::move(models)) {
     TabModelList::AddGlobalObserver(this);
   }
@@ -144,7 +146,7 @@ class TabModelListEnumerator : public TabModelListObserver {
     }
   }
 
-  TabModelList::TabModelVector models_;
+  TabModelVector models_;
 };
 
 void NotifyObservers(TabModel* tab_model,
@@ -274,14 +276,6 @@ void TabModelList::RemoveGlobalObserver(TabModelListObserver* observer) {
   GetStorage().global_observers.RemoveObserver(observer);
 }
 
-void TabModelList::AddObserver(TabModelListObserver* observer) {
-  AddGlobalObserver(observer);
-}
-
-void TabModelList::RemoveObserver(TabModelListObserver* observer) {
-  RemoveGlobalObserver(observer);
-}
-
 void TabModelList::HandlePopupNavigation(NavigateParams* params) {
   AssertOnUiThread();
   TabAndroid* tab = TabAndroid::FromWebContents(params->source_contents);
@@ -361,12 +355,6 @@ bool TabModelList::IsOffTheRecordSessionActive() {
   return std::ranges::any_of(GetStorage().models, [](const TabModel* model) {
     return model->IsOffTheRecord() && model->GetTabCount() > 0;
   });
-}
-
-// static
-const TabModelList::TabModelVector& TabModelList::models() {
-  AssertOnUiThread();
-  return GetStorage().models;
 }
 
 // static

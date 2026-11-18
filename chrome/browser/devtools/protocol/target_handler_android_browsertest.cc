@@ -47,6 +47,15 @@ class TargetHandlerAndroidIsolatedContextBrowserTest
   }
 
  protected:
+  size_t GetTabModelCount() {
+    size_t count = 0;
+    TabModelList::ForEachAll([&](TabModel*) {
+      ++count;
+      return true;
+    });
+    return count;
+  }
+
   TabModel* GetInitialRegularModel() {
     content::WebContents* initial_web_contents = web_contents();
     if (!initial_web_contents) {
@@ -122,13 +131,13 @@ IN_PROC_BROWSER_TEST_F(TargetHandlerAndroidIsolatedContextBrowserTest,
   TabModel* regular_model = GetInitialRegularModel();
   ASSERT_TRUE(regular_model);
   const int initial_regular_tab_count = regular_model->GetTabCount();
-  const size_t initial_model_count = TabModelList::models().size();
+  const size_t initial_model_count = GetTabModelCount();
 
   const std::string context_id = CreateBrowserContext();
   ASSERT_FALSE(context_id.empty());
   // Creating an empty browser context must not eagerly register an OTR
   // TabModel in TabModelList.
-  EXPECT_EQ(initial_model_count, TabModelList::models().size());
+  EXPECT_EQ(initial_model_count, GetTabModelCount());
 
   auto [first_target_id, first_agent_host] =
       CreateTarget(/*new_window=*/true, context_id);
@@ -158,13 +167,13 @@ IN_PROC_BROWSER_TEST_F(TargetHandlerAndroidIsolatedContextBrowserTest,
   EXPECT_NE(regular_model, context_model);
   EXPECT_EQ(1, context_model->GetTabCount());
   EXPECT_EQ(initial_regular_tab_count, regular_model->GetTabCount());
-  EXPECT_EQ(initial_model_count + 1, TabModelList::models().size());
+  EXPECT_EQ(initial_model_count + 1, GetTabModelCount());
 
   // Closing the last isolated OTR target tears down the underlying
   // IncognitoTabModel delegate, and creating another target in the same
   // browser context recreates it cleanly.
   CloseTargetAndWait(first_target_id, first_otr_web_contents);
-  EXPECT_EQ(initial_model_count, TabModelList::models().size());
+  EXPECT_EQ(initial_model_count, GetTabModelCount());
 
   auto [second_target_id, second_agent_host] =
       CreateTarget(/*new_window=*/false, context_id);
@@ -172,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(TargetHandlerAndroidIsolatedContextBrowserTest,
   content::WebContents* second_otr_web_contents =
       second_agent_host->GetWebContents();
   ASSERT_TRUE(second_otr_web_contents);
-  EXPECT_EQ(initial_model_count + 1, TabModelList::models().size());
+  EXPECT_EQ(initial_model_count + 1, GetTabModelCount());
 
   // Default-profile targets continue to attach to the regular TabModel while
   // the isolated DevTools OTR TabModel is registered.
@@ -195,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(TargetHandlerAndroidIsolatedContextBrowserTest,
   DisposeBrowserContext(context_id);
   second_destroyed_watcher.Wait();
   EXPECT_FALSE(second_agent_host->GetWebContents());
-  EXPECT_EQ(initial_model_count, TabModelList::models().size());
+  EXPECT_EQ(initial_model_count, GetTabModelCount());
 }
 
 IN_PROC_BROWSER_TEST_F(TargetHandlerAndroidIsolatedContextBrowserTest,
@@ -210,11 +219,11 @@ IN_PROC_BROWSER_TEST_F(TargetHandlerAndroidIsolatedContextBrowserTest,
   TabModel* regular_model = GetInitialRegularModel();
   ASSERT_TRUE(regular_model);
   const int initial_regular_tab_count = regular_model->GetTabCount();
-  const size_t initial_model_count = TabModelList::models().size();
+  const size_t initial_model_count = GetTabModelCount();
 
   const std::string context_id = CreateBrowserContext();
   ASSERT_FALSE(context_id.empty());
-  EXPECT_EQ(initial_model_count, TabModelList::models().size());
+  EXPECT_EQ(initial_model_count, GetTabModelCount());
 
   // When ShouldOpenIncognitoAsWindow() is false, kEnforceIncognitoIsolation is
   // a no-op and isolated browser context targets continue to attach to the
@@ -236,13 +245,13 @@ IN_PROC_BROWSER_TEST_F(TargetHandlerAndroidIsolatedContextBrowserTest,
   EXPECT_NE(regular_model, context_model);
   EXPECT_EQ(1, context_model->GetTabCount());
   EXPECT_EQ(initial_regular_tab_count, regular_model->GetTabCount());
-  EXPECT_EQ(initial_model_count + 1, TabModelList::models().size());
+  EXPECT_EQ(initial_model_count + 1, GetTabModelCount());
 
   content::WebContentsDestroyedWatcher destroyed_watcher(otr_web_contents);
   DisposeBrowserContext(context_id);
   destroyed_watcher.Wait();
   EXPECT_FALSE(agent_host->GetWebContents());
-  EXPECT_EQ(initial_model_count, TabModelList::models().size());
+  EXPECT_EQ(initial_model_count, GetTabModelCount());
 }
 
 }  // namespace

@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_LIST_H_
 #define CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_LIST_H_
 
-#include <vector>
-
 #include "base/functional/function_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 
 class Profile;
@@ -27,8 +24,6 @@ class WebContents;
 // `BrowserThread::UI` is initialized).
 class TabModelList {
  public:
-  using TabModelVector = std::vector<raw_ptr<TabModel, VectorExperimental>>;
-
   TabModelList() = delete;
   TabModelList(const TabModelList& other) = delete;
   TabModelList& operator=(const TabModelList& other) = delete;
@@ -76,21 +71,11 @@ class TabModelList {
   static void AddGlobalObserver(TabModelListObserver* observer);
   static void RemoveGlobalObserver(TabModelListObserver* observer);
 
-  // TODO(crbug.com/580974657): Migrate callers to profile-keyed
-  // `AddObserver(observer, profile)` / `RemoveObserver(observer, profile)` or
-  // explicit `AddGlobalObserver` / `RemoveGlobalObserver`.
-  static void AddObserver(TabModelListObserver* observer);
-  static void RemoveObserver(TabModelListObserver* observer);
-
   static TabModel* GetTabModelForWebContents(
       content::WebContents* web_contents);
   static TabModel* GetTabModelForTabAndroid(TabAndroid* tab_android);
   static TabModel* FindTabModelWithWindowSessionId(SessionID desired_id);
   static bool IsOffTheRecordSessionActive();
-
-  // TODO(crbug.com/580974657): Migrate callers to `ForEach(profile, ...)` or
-  // `ForEachAll(...)`.
-  static const TabModelVector& models();
 
   static void SetArchivedTabModel(TabModel* archived_tab_model);
   static void RemoveArchivedTabModel(TabModel* archived_tab_model);
