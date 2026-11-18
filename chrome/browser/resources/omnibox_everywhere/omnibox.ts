@@ -173,7 +173,11 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
         attribute: 'is-active',
       },
-      isLensHelpBubbleShowing: {type: Boolean},
+      isLensHelpBubbleShowing: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'is-lens-help-bubble-showing',
+      },
       showLensPlaceholder_: {type: Boolean},
     };
   }

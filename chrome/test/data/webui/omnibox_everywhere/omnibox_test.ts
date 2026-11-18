@@ -3417,6 +3417,62 @@ suite('OmniboxEverywhereAppTest', () => {
         assertFalse(mvContainer.hidden);
       });
 
+  test('Lens help bubble hides MVT container until dismissed', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      omniboxEverywhereMostVisitedEnabled: true,
+      initialFreStage: 0,
+    });
+    const mvHandler = TestMock.fromClass(MostVisitedPageHandlerRemote);
+    const {instance: mvInstance, remote: mvRemote} =
+        browserProxyFactory.createForTest(mvHandler);
+    browserProxyFactory.setInstance(mvInstance);
+    mvHandler.setResultFor(
+        'getMostVisitedExpandedState', Promise.resolve({isExpanded: false}));
+
+    const appWithMv = document.createElement('omnibox-everywhere-app');
+    document.body.appendChild(appWithMv);
+    await microtasksFinished();
+
+    const mvContainer = appWithMv.shadowRoot.querySelector<HTMLElement>(
+        '#mostVisitedContainer')!;
+    const omnibox =
+        appWithMv.shadowRoot.querySelector<OmniboxEverywhereOmniboxElement>(
+            'omnibox-everywhere-omnibox')!;
+    assertTrue(!!mvContainer);
+    assertTrue(!!omnibox);
+
+    mvRemote.setMostVisitedInfo({
+      customLinksEnabled: false,
+      enterpriseShortcutsEnabled: false,
+      tiles: [{
+        title: 'Google',
+        titleDirection: TextDirection.LEFT_TO_RIGHT,
+        url: 'https://www.google.com/',
+        source: 0,
+        titleSource: 0,
+        isQueryTile: false,
+        allowUserEdit: false,
+        allowUserDelete: false,
+      }],
+      visible: true,
+    });
+    await mvRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertNotEquals('none', getComputedStyle(mvContainer).display);
+
+    omnibox.isLensHelpBubbleShowing = true;
+    await microtasksFinished();
+    assertTrue(omnibox.hasAttribute('is-lens-help-bubble-showing'));
+    assertEquals('none', getComputedStyle(mvContainer).display);
+
+    omnibox.isLensHelpBubbleShowing = false;
+    await microtasksFinished();
+    assertFalse(omnibox.hasAttribute('is-lens-help-bubble-showing'));
+    assertNotEquals('none', getComputedStyle(mvContainer).display);
+  });
+
   test('smallLoomnibox controls max-tiles and attribute', async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({

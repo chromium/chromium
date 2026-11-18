@@ -363,6 +363,7 @@ cr-most-visited:not([hide-title]) {
 #content:has([is-context-menu-open]) #mostVisitedContainer,
 #content:has([is-screenshot-menu-open]) #mostVisitedContainer,
 #content:has([is-overflow-menu-open]) #mostVisitedContainer,
+#content:has([is-lens-help-bubble-showing]) #mostVisitedContainer,
 #content:has(#composebox) #mostVisitedContainer,
 #mostVisitedContainer[hidden],
 #mostVisitedContainer:has(cr-most-visited:not([visible_])),
