@@ -7,10 +7,13 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/base/wayland/wayland_client_input_types.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -139,30 +142,57 @@ ZwpTextInputV3Impl::ZwpTextInputV3Impl(
 ZwpTextInputV3Impl::~ZwpTextInputV3Impl() = default;
 
 void ZwpTextInputV3Impl::Reset() {
+  // There is no explicit reset API in v3. See [1].
+  //
+  // If the input method has a preedit, Chrome has just committed or canceled
+  // the composition (e.g. by a mouse click in the text field), but the input
+  // method keeps composing and would later commit the preedit text again at
+  // the new caret position. Disable and enable text input to make the input
+  // method drop its composition, as it does when another text field gets
+  // focus. Anything the input method commits in response usually arrives
+  // shortly after the reset, while InputMethodAuraLinux still ignores commits.
+  //
+  // The enable is posted, so that a focus change right after the reset (see
+  // InputMethodAuraLinux::OnWillChangeFocusedClient()) disables and enables
+  // only once, and with the new client's state.
+  //
+  // Disabling and enabling on every reset made the input method grab the
+  // keyboard unexpectedly on mutter and kwin (crbug.com/412266383), e.g. on
+  // tab switches, so only do it when there is a preedit to drop.
+  //
+  // [1]
+  // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/merge_requests/34
+  const bool has_preedit =
+      enabled_content_type_ && !applied_input_events_.preedit->text.empty();
+
   // Clear last committed values.
   committed_ime_data_.Reset();
-  // There is no explicit reset API in v3. See [1].
-  // Disable+enable to force a reset has been discussed as a possible solution.
-  // But this is not implemented yet in compositors. In fact, it was seen in
-  // both mutter and kwin that it can cause the IME to enter a grab state
-  // unexpectedly. So at this point, leave it unimplemented.
-  //
-  // If no reset is implemented at all, it can lead to bad user experience,
-  // e.g. preedit being duplicated if composition is aborted on the chromium
-  // side by clicking in the input field. So the logic below is still needed
-  // until a proper fix is in place.
-  //
   // Even though chromium expects only preedit to be reset, the surrounding text
   // in fact could change along with reset being called if composition was
   // canceled internally. So we shouldn't keep old surrounding text anyway. See
   // related crbug.com/353915732 where surrounding text update is not sent after
   // reset when composition is canceled.
-  //
-  // [1]
-  // https://gitlab.freedesktop.org/wayland/wayland-protocols/-/merge_requests/34
   pending_ime_data_.Reset();
   pending_input_events_.Reset();
   applied_input_events_.Reset();
+
+  if (has_preedit) {
+    // The cached surrounding text still has the caret at the start of the
+    // dropped preedit, without the text that was just committed. Don't resend
+    // it on enable; the client sends the updated text afterwards.
+    latest_surrounding_text_.reset();
+    zwp_text_input_v3_disable(obj_.get());
+    Commit();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ZwpTextInputV3Impl::EnableAfterReset,
+                                  enable_after_reset_factory_.GetWeakPtr()));
+  }
+}
+
+void ZwpTextInputV3Impl::EnableAfterReset() {
+  if (enabled_content_type_) {
+    SendEnable(*enabled_content_type_);
+  }
 }
 
 void ZwpTextInputV3Impl::SetClient(ZwpTextInputV3Client* context) {
@@ -180,6 +210,11 @@ void ZwpTextInputV3Impl::OnClientDestroyed(ZwpTextInputV3Client* context) {
 void ZwpTextInputV3Impl::Enable(ui::TextInputType type,
                                 uint32_t flags,
                                 bool should_do_learning) {
+  SendEnable(GetContentType(type, flags, should_do_learning));
+}
+
+void ZwpTextInputV3Impl::SendEnable(const ContentType& content_type) {
+  enable_after_reset_factory_.InvalidateWeakPtrs();
   // Pending state is reset on enable.
   pending_ime_data_.Reset();
   pending_input_events_.Reset();
@@ -187,11 +222,11 @@ void ZwpTextInputV3Impl::Enable(ui::TextInputType type,
   committed_ime_data_.Reset();
 
   zwp_text_input_v3_enable(obj_.get());
-  auto content_type = std::make_unique<ContentType>(
-      GetContentType(type, flags, should_do_learning));
-  zwp_text_input_v3_set_content_type(obj_.get(), content_type->content_hint,
-                                     content_type->content_purpose);
-  committed_ime_data_.content_type = std::move(content_type);
+  zwp_text_input_v3_set_content_type(obj_.get(), content_type.content_hint,
+                                     content_type.content_purpose);
+  committed_ime_data_.content_type =
+      std::make_unique<ContentType>(content_type);
+  enabled_content_type_ = content_type;
 
   // Per the protocol, all state is reset by the compositor on each committed
   // enable request, so any previously sent state is no longer valid. Resend the
@@ -221,10 +256,16 @@ void ZwpTextInputV3Impl::ClearCachedState() {
 }
 
 void ZwpTextInputV3Impl::Disable() {
+  enabled_content_type_.reset();
   // Avoid sending pending requests if done is received after disabling.
   pending_ime_data_.Reset();
   // Do not process pending input events after deactivating.
   pending_input_events_.Reset();
+  if (enable_after_reset_factory_.HasWeakPtrs()) {
+    // Reset() has already disabled text input; just drop its pending enable.
+    enable_after_reset_factory_.InvalidateWeakPtrs();
+    return;
+  }
   zwp_text_input_v3_disable(obj_.get());
   Commit();
 }
@@ -334,6 +375,9 @@ void ZwpTextInputV3Impl::SetContentType(ui::TextInputType type,
                                         bool should_do_learning) {
   auto content_type = std::make_unique<ContentType>(
       GetContentType(type, flags, should_do_learning));
+  if (enabled_content_type_) {
+    enabled_content_type_ = *content_type;
+  }
   if (committed_ime_data_.content_type &&
       *committed_ime_data_.content_type == *content_type) {
     return;

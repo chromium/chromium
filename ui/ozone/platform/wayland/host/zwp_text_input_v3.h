@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
@@ -175,6 +176,13 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
                                     uint32_t flags,
                                     bool should_do_learning);
 
+  // Sends an enable request along with `content_type` and the latest
+  // surrounding text and cursor rectangle.
+  void SendEnable(const ContentType& content_type);
+  // Enables text input again after Reset() disabled it, unless text input was
+  // disabled or enabled in the meantime.
+  void EnableAfterReset();
+
   bool SendCursorRect();
   bool SendContentType();
   bool SendSurroundingText();
@@ -228,6 +236,14 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
   // text-input-v3 state is reset by the compositor on each enable.
   std::optional<SurroundingText> latest_surrounding_text_;
   std::optional<gfx::Rect> latest_cursor_rect_;
+
+  // The most recently requested content type while text input is enabled, or
+  // nullopt while it is disabled.
+  std::optional<ContentType> enabled_content_type_;
+
+  // Has a weak pointer while Reset() has disabled text input and the enable
+  // that follows is still pending.
+  base::WeakPtrFactory<ZwpTextInputV3Impl> enable_after_reset_factory_{this};
 };
 
 }  // namespace ui
