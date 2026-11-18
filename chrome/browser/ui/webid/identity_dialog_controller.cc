@@ -490,11 +490,19 @@ bool IdentityDialogController::ShowLoadingDialog(
     NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
     return false;
   }
-  // Because the loading dialog is not interactable, we do not count it for
-  // did_show_ui_, as it is not useful for IDPs in calculating a click-through
-  // rate.
+
+  // Do not access any member variables if the loading dialog is not shown, as
+  // `account_view_->ShowLoadingDialog()` may have called `OnDismiss()` and
+  // destroyed `this`. It is not known to destroy `this` when returning true,
+  // but check `weak_this` as a preventative measure.
+  base::WeakPtr<IdentityDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   if (account_view_->ShowLoadingDialog(rp_data, idp_for_display, rp_context,
-                                       rp_mode)) {
+                                       rp_mode) &&
+      weak_this) {
+    // Because the loading dialog is not interactable, we do not count it for
+    // `did_show_ui_`, as it is not useful for IDPs in calculating a
+    // click-through rate.
     did_show_loading_ui_ = true;
     return true;
   }

@@ -1258,6 +1258,31 @@ TEST_F(IdentityDialogControllerTest, ActiveModeDismissedWhenActorStopsActing) {
   controller->SetActingTaskIdForTesting(actor::TaskId());
 }
 
+// Tests that the controller does not access its members when it gets destroyed
+// while showing the loading dialog, even if `ShowLoadingDialog()` returns true.
+TEST_F(IdentityDialogControllerTest,
+       ControllerDestroyedDuringShowLoadingDialog) {
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  IdentityDialogController* controller_ptr = controller.get();
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  // The view reports that the dialog was shown even though the controller was
+  // destroyed. The controller should report that the dialog was not shown.
+  EXPECT_CALL(*mock_view_ptr, ShowLoadingDialog).WillOnce([&controller]() {
+    controller.reset();
+    return true;
+  });
+  EXPECT_FALSE(controller_ptr->ShowLoadingDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                /*iframe_for_display=*/u""),
+      kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode::kActive,
+      /*dismiss_callback=*/base::DoNothing()));
+  EXPECT_FALSE(controller);
+}
+
 TEST_F(IdentityDialogControllerTest, ShowNativeAppUiSuccess) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents());
