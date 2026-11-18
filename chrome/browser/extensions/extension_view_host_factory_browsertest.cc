@@ -25,11 +25,9 @@ using ExtensionViewHostFactoryTest = ExtensionBrowserTest;
 
 // Tests that ExtensionHosts are created with the correct type and profiles.
 IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {
-  // Load a very simple extension with just a background page.
+  // Load a simple MV3 extension.
   scoped_refptr<const Extension> extension =
-      LoadExtension(test_data_dir_.AppendASCII("api_test")
-                        .AppendASCII("browser_action")
-                        .AppendASCII("none"));
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
   ASSERT_TRUE(extension);
 
   content::BrowserContext* browser_context = profile();
@@ -46,14 +44,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {
   ASSERT_TRUE(autofill_client);
 }
 
-// TODO(crbug.com/458688998): Desktop Android doesn't support side panel yet.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 // Tests that side panel hosts are created with the correct profile and
 // browsers.
 IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
                        CreateExtensionSidePanelHost) {
-  // Load a very simple extension with just a background page.
+  // Load a simple MV3 extension.
   scoped_refptr<const Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("api_test")
                         .AppendASCII("side_panel")
@@ -66,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
     // Create a side panel host with a browser passed in.
     std::unique_ptr<ExtensionViewHost> host =
         ExtensionViewHostFactory::CreateSidePanelHost(
-            *extension, extension->url(), browser(),
+            *extension, extension->url(), GetBrowserWindowInterface(),
             /*tab_interface=*/nullptr);
     EXPECT_EQ(extension.get(), host->extension());
     EXPECT_EQ(browser_context, host->browser_context());
@@ -88,7 +83,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
               host->extension_host_type());
   }
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions
