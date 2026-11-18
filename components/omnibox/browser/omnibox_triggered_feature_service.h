@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "components/omnibox/browser/autocomplete_match.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 // Tracks the features that trigger during an omnibox session and records them
@@ -20,20 +19,12 @@ class OmniboxTriggeredFeatureService {
   OmniboxTriggeredFeatureService();
   ~OmniboxTriggeredFeatureService();
 
-  // Records `features_triggered_[in_session_]` to the params. Records UMA
-  // histograms for any non-omnibox-event-protobuf features (i.e.
-  // `rich_autocompletion_types_`).
+  // Records `features_triggered_[in_session_]` to the params.
   void RecordToLogs(Features* features_triggered,
                     Features* features_triggered_in_session) const;
 
   // Invoked to indicate `feature` was triggered.
   void FeatureTriggered(Feature feature);
-
-  // Invoked to indicate `rich_autocompletion_type` was triggered. Multiple
-  // types can be triggered in a session. Does not automatically trigger
-  // `kRichAutocompletion`.
-  void RichAutocompletionTypeTriggered(
-      AutocompleteMatch::RichAutocompletionType rich_autocompletion_type);
 
   // Returns whether `FeatureTriggered()` was called with `feature` since the
   // last `ResetSession()`.
@@ -42,9 +33,8 @@ class OmniboxTriggeredFeatureService {
   // Invoked when a new omnibox input starts. Clears `features_triggered_`.
   void ResetInput();
 
-  // Invoked when a new omnibox session starts. Clears `features_triggered_`,
-  // `features_triggered_in_session_`, and
-  // `rich_autocompletion_types_in_session_`.
+  // Invoked when a new omnibox session starts. Clears `features_triggered_` and
+  // `features_triggered_in_session_`.
   void ResetSession();
 
  private:
@@ -52,11 +42,6 @@ class OmniboxTriggeredFeatureService {
   // `FeatureTriggered()`.
   std::set<Feature> features_triggered_;
   std::set<Feature> features_triggered_in_session_;
-
-  // The set of rich autocompletion types triggered in the current omnibox
-  // session via `RichAutocompletionTypeTriggered()`.
-  std::set<AutocompleteMatch::RichAutocompletionType>
-      rich_autocompletion_types_in_session_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_TRIGGERED_FEATURE_SERVICE_H_

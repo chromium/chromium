@@ -4,8 +4,7 @@
 
 #include "omnibox_triggered_feature_service.h"
 
-#include "base/test/metrics/histogram_tester.h"
-#include "components/omnibox/browser/autocomplete_match.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
@@ -32,15 +31,10 @@ class OmniboxTriggeredFeatureServiceTest : public testing::Test {
   OmniboxTriggeredFeatureService service_;
   OmniboxTriggeredFeatureService::Features feature_triggered_;
   OmniboxTriggeredFeatureService::Features feature_triggered_in_session_;
-  base::HistogramTester histogram_;
 };
 
 TEST_F(OmniboxTriggeredFeatureServiceTest, NoFeaturesTriggered) {
   RecordAndExpectFeatures({});
-
-  histogram_.ExpectTotalCount("Omnibox.RichAutocompletion.Triggered", 0);
-  histogram_.ExpectUniqueSample("Omnibox.RichAutocompletion.Triggered.Any",
-                                false, 1);
 }
 
 TEST_F(OmniboxTriggeredFeatureServiceTest, TwoFeaturesTriggered) {
@@ -54,79 +48,21 @@ TEST_F(OmniboxTriggeredFeatureServiceTest, TwoFeaturesTriggered) {
        metrics::
            OmniboxEventProto_Feature_SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH});
 
-  histogram_.ExpectTotalCount("Omnibox.RichAutocompletion.Triggered", 0);
-  histogram_.ExpectUniqueSample("Omnibox.RichAutocompletion.Triggered.Any",
-                                false, 1);
-
   service_.ResetSession();
   RecordAndExpectFeatures({});
 }
 
-TEST_F(OmniboxTriggeredFeatureServiceTest, TriggerRichAutocompletionType_kNo) {
-  // Simulate 2 updates in the session, neither of which had rich
-  // autocompletion.
-  service_.RichAutocompletionTypeTriggered(
-      AutocompleteMatch::RichAutocompletionType::kNone);
-  service_.RichAutocompletionTypeTriggered(
-      AutocompleteMatch::RichAutocompletionType::kNone);
-
-  RecordAndExpectFeatures({});
-
-  histogram_.ExpectUniqueSample(
-      "Omnibox.RichAutocompletion.Triggered",
-      AutocompleteMatch::RichAutocompletionType::kNone, 1);
-  histogram_.ExpectUniqueSample("Omnibox.RichAutocompletion.Triggered.Any",
-                                false, 1);
-
-  {
-    SCOPED_TRACE("Reset session");
-    base::HistogramTester histogram;
-    service_.ResetSession();
-    RecordAndExpectFeatures({});
-    histogram.ExpectTotalCount("Omnibox.RichAutocompletion.Triggered", 0);
-    histogram.ExpectUniqueSample("Omnibox.RichAutocompletion.Triggered.Any",
-                                 false, 1);
-  }
-}
-
-TEST_F(OmniboxTriggeredFeatureServiceTest, RichAutocompletionTypeTriggered) {
-  // Simulate 4 updates in the session, 3 of which had rich
-  // autocompletion, of 2 different types.
+TEST_F(OmniboxTriggeredFeatureServiceTest, RichAutocompletionFeatureTriggered) {
   service_.FeatureTriggered(
       metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION);
-  service_.RichAutocompletionTypeTriggered(
-      AutocompleteMatch::RichAutocompletionType::kShortcutTextPrefix);
-  service_.RichAutocompletionTypeTriggered(
-      AutocompleteMatch::RichAutocompletionType::kTitlePrefix);
-  service_.RichAutocompletionTypeTriggered(
-      AutocompleteMatch::RichAutocompletionType::kTitlePrefix);
-  service_.RichAutocompletionTypeTriggered(
-      AutocompleteMatch::RichAutocompletionType::kNone);
 
   RecordAndExpectFeatures(
       {metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION});
 
-  histogram_.ExpectTotalCount("Omnibox.RichAutocompletion.Triggered", 3);
-  histogram_.ExpectBucketCount(
-      "Omnibox.RichAutocompletion.Triggered",
-      AutocompleteMatch::RichAutocompletionType::kShortcutTextPrefix, 1);
-  histogram_.ExpectBucketCount(
-      "Omnibox.RichAutocompletion.Triggered",
-      AutocompleteMatch::RichAutocompletionType::kTitlePrefix, 1);
-  histogram_.ExpectBucketCount("Omnibox.RichAutocompletion.Triggered",
-                               AutocompleteMatch::RichAutocompletionType::kNone,
-                               1);
-  histogram_.ExpectUniqueSample("Omnibox.RichAutocompletion.Triggered.Any",
-                                true, 1);
-
   {
     SCOPED_TRACE("Reset session");
-    base::HistogramTester histogram;
     service_.ResetSession();
     RecordAndExpectFeatures({});
-    histogram.ExpectTotalCount("Omnibox.RichAutocompletion.Triggered", 0);
-    histogram.ExpectUniqueSample("Omnibox.RichAutocompletion.Triggered.Any",
-                                 false, 1);
   }
 }
 

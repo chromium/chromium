@@ -1830,8 +1830,6 @@ void AutocompleteController::PostProcessMatches() {
   // rich autocompleted.
   const auto top_match_rich_autocompletion_type =
       TopMatchRichAutocompletionType(internal_result_);
-  triggered_feature_service_->RichAutocompletionTypeTriggered(
-      top_match_rich_autocompletion_type);
   if (top_match_rich_autocompletion_type !=
       AutocompleteMatch::RichAutocompletionType::kNone) {
     triggered_feature_service_->FeatureTriggered(
