@@ -15,6 +15,11 @@ GeolocationContextBinder& GetGeolocationContextBinderOverride() {
   return *binder;
 }
 
+HapticsServiceBinder& GetHapticsServiceBinderOverride() {
+  static base::NoDestructor<HapticsServiceBinder> binder;
+  return *binder;
+}
+
 PressureManagerBinder& GetPressureManagerBinderOverride() {
   static base::NoDestructor<PressureManagerBinder> binder;
   return *binder;

@@ -18745,6 +18745,7 @@ from previous Chrome versions.
   <int value="1097339521"
       label="UserDisplayModeSyncStandaloneMitigation:disabled"/>
   <int value="1097429403" label="ShouldFreezeSelf:disabled"/>
+  <int value="1097631057" label="WebHaptics:disabled"/>
   <int value="1097764935" label="ReadAnythingDocsLoadMoreButton:disabled"/>
   <int value="1097935876" label="CrostiniShowMicSetting:enabled"/>
   <int value="1097981222" label="OneGoogleBarModalOverlays:disabled"/>
@@ -19830,6 +19831,7 @@ from previous Chrome versions.
   <int value="1408139320" label="disable-zip-archiver-packer"/>
   <int value="1408331660" label="enhanced-bookmarks-experiment"/>
   <int value="1409120591" label="PassiveMixedContentWarning:disabled"/>
+  <int value="1409230955" label="WebHaptics:enabled"/>
   <int value="1409437197" label="OfflinePagesLimitlessPrefetching:enabled"/>
   <int value="1409535553"
       label="PropagateDeviceContentFiltersToSupervisedUser:disabled"/>

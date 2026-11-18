@@ -23,9 +23,7 @@ class RenderFrameHost;
 // for API calls.
 //
 // It is a DocumentService, so its lifetime is bound to the document and the
-// Mojo pipe. On Windows the platform backend runs in the browser process and is
-// reached with a direct in-process call; there is no browser<->device-service
-// pipe.
+// Mojo pipe.
 class CONTENT_EXPORT HapticsServiceImpl final
     : public DocumentService<device::mojom::HapticsService> {
  public:

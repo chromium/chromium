@@ -10,8 +10,12 @@ for semantic tactile feedback (`hint`, `edge`, `tick`, `align`, `success`, and
 - [`blink::HapticsController`][controller]: Implements
   `navigator.playHaptics()` in Blink and communicates with the browser process
   over [`device.mojom.HapticsService`][haptics-mojom].
-- [`content::HapticsServiceImpl`][service-impl]: Per-document browser host that
-  validates requests before forwarding them to the platform backend.
+- [`content::HapticsServiceImpl`][service-impl]: Per-document browser host
+  (gated behind `blink::features::kWebHaptics`) that validates requests before
+  forwarding them to `content::HapticsManager` (using
+  [`content::HapticsManagerImpl`][content-manager-impl] on Android to bind
+  `device.mojom.HapticsService` via
+  `GetDeviceService().BindHapticsService()`).
 - [`device.mojom.HapticsService`][haptics-mojom]: Shared Mojo interface bound
   in the Device Service via `DeviceService::BindHapticsService` for triggering
   platform haptics.
@@ -60,6 +64,7 @@ blocked by `PermissionsPolicyFeature::kHaptics`, validates finite intensity in
 [controller]: /third_party/blink/renderer/modules/haptics/haptics_controller.h
 [haptics-mojom]: /services/device/public/mojom/haptics.mojom
 [service-impl]: /content/browser/haptics/haptics_service_impl.h
+[content-manager-impl]: /content/browser/haptics/haptics_manager_impl.h
 [manager-impl]: haptics_manager_impl.h
 [manager-android]: haptics_manager_android.h
 [manager-java]: android/java/src/org/chromium/device/haptics/HapticsManagerAndroid.java

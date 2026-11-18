@@ -27,6 +27,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
+#include "services/device/public/mojom/haptics.mojom.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
@@ -136,6 +137,12 @@ class DeviceService : public mojom::DeviceService {
       mojo::PendingReceiver<mojom::GeolocationContext>)>;
   static void OverrideGeolocationContextBinderForTesting(
       GeolocationContextBinder binder);
+
+  // Supports global override of HapticsService binding within the service.
+  using HapticsServiceBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<mojom::HapticsService>)>;
+  static void OverrideHapticsServiceBinderForTesting(
+      HapticsServiceBinder binder);
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   // Supports global override of PressureManager binding within the service.

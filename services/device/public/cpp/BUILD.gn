@@ -58,6 +58,8 @@ source_set("test_support") {
     "test/mock_usb_mojo_device.h",
     "test/scoped_geolocation_overrider.cc",
     "test/scoped_geolocation_overrider.h",
+    "test/scoped_haptics_service_overrider.cc",
+    "test/scoped_haptics_service_overrider.h",
     "test/scoped_usb_device_manager_overrider.cc",
     "test/scoped_usb_device_manager_overrider.h",
     "test/test_report_descriptors.cc",
@@ -68,6 +70,7 @@ source_set("test_support") {
 
   public_deps = [
     "//base",
+    "//mojo/public/cpp/bindings",
     "//services/device/public/cpp/generic_sensor",
     "//services/device/public/cpp/geolocation",
     "//services/device/public/cpp/hid",
@@ -75,14 +78,13 @@ source_set("test_support") {
     "//services/device/public/mojom",
     "//services/device/public/mojom:usb",
     "//services/service_manager/public/cpp",
+    "//testing/gmock",
   ]
 
   deps = [
-    "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//services/device:lib",
     "//services/device/hid",
-    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]

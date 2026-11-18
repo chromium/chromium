@@ -3271,6 +3271,8 @@ source_set("browser") {
       "font_unique_name_lookup/font_unique_name_lookup_android.h",
       "font_unique_name_lookup/font_unique_name_lookup_service.cc",
       "font_unique_name_lookup/font_unique_name_lookup_service.h",
+      "haptics/haptics_manager_impl.cc",
+      "haptics/haptics_manager_impl.h",
       "media/android/browser_gpu_video_accelerator_factories.cc",
       "media/android/browser_gpu_video_accelerator_factories.h",
       "media/flinging_renderer.cc",

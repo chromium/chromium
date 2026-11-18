@@ -5,8 +5,11 @@
 #include "content/browser/haptics/haptics_service_impl.h"
 
 #include <cmath>
+#include <memory>
 #include <utility>
 
+#include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -14,11 +17,15 @@
 #include "content/browser/haptics/haptics_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_switches.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "content/browser/haptics/haptics_manager_impl_win.h"
-#endif
+#elif BUILDFLAG(IS_ANDROID)
+#include "content/browser/haptics/haptics_manager_impl.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
@@ -35,9 +42,11 @@ std::unique_ptr<HapticsManager> CreateHapticsManager() {
   }
 #if BUILDFLAG(IS_WIN)
   return std::make_unique<HapticsManagerImplWin>();
-#else
+#elif BUILDFLAG(IS_ANDROID)
+  return std::make_unique<HapticsManagerImpl>();
+#else   // BUILDFLAG(IS_WIN)
   return nullptr;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace
@@ -62,6 +71,12 @@ void HapticsServiceImpl::Create(
     bad_message::ReceivedBadMessage(
         render_frame_host->GetProcess(),
         bad_message::HSI_PLAY_HAPTICS_BLOCKED_BY_PERMISSIONS_POLICY);
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(blink::features::kWebHaptics) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures)) {
     return;
   }
 

@@ -137,6 +137,12 @@ void DeviceService::OverrideGeolocationContextBinderForTesting(
   internal::GetGeolocationContextBinderOverride() = std::move(binder);
 }
 
+// static
+void DeviceService::OverrideHapticsServiceBinderForTesting(
+    HapticsServiceBinder binder) {
+  internal::GetHapticsServiceBinderOverride() = std::move(binder);
+}
+
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 // static
 void DeviceService::OverridePressureManagerBinderForTesting(
@@ -212,6 +218,12 @@ void DeviceService::BindVibrationManager(
 
 void DeviceService::BindHapticsService(
     mojo::PendingReceiver<mojom::HapticsService> receiver) {
+  const auto& binder_override = internal::GetHapticsServiceBinderOverride();
+  if (binder_override) {
+    binder_override.Run(std::move(receiver));
+    return;
+  }
+
   HapticsManagerImpl::Create(std::move(receiver));
 }
 
