@@ -17,6 +17,7 @@ source_set("private_insights") {
   deps = [
     "//base:fuzzing_buildflags",
     "//chrome/browser:browser_process",
+    "//components/metrics_services_manager",
   ]
 
   # FCP cannot be linked with libprotobuf-mutator used when fuzzing, because

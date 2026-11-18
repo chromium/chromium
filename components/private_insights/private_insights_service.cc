@@ -222,6 +222,26 @@ void PrivateInsightsService::Shutdown() {
   Stop();
 }
 
+void PrivateInsightsService::SetStorageAccessPermissionCallback(
+    StorageAccessPermissionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  storage_access_permission_ = std::move(callback);
+}
+
+bool PrivateInsightsService::IsStorageAccessPermitted() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return storage_access_permission_ && storage_access_permission_.Run();
+}
+
+void PrivateInsightsService::DropPendingStorageAccessEvents() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (storage_access_population_ &&
+      storage_access_population_->pending_event_count() > 0) {
+    // The batch is destroyed without being requeued.
+    storage_access_population_->TakePendingEvents();
+  }
+}
+
 void PrivateInsightsService::RegisterPopulation(
     std::unique_ptr<Population> population) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -242,7 +262,7 @@ void PrivateInsightsService::LogContextualCueEvent(
 void PrivateInsightsService::LogStorageAccessEvent(
     events::StorageAccessLogEvent event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (storage_access_population_) {
+  if (storage_access_population_ && IsStorageAccessPermitted()) {
     storage_access_population_->LogEvent(std::move(event));
   }
 }
@@ -305,6 +325,13 @@ void PrivateInsightsService::UploadNextInRound() {
   while (!upload_round_.empty()) {
     Population& population = *populations_[upload_round_.front()];
     upload_round_.pop_front();
+    // Last check before the batch leaves the main sequence: consent may have
+    // been withdrawn since the events were logged.
+    if (&population == storage_access_population_.get() &&
+        !IsStorageAccessPermitted()) {
+      DropPendingStorageAccessEvents();
+      continue;
+    }
     UploadPopulation(population);
     if (is_upload_running_) {
       return;  // Continues from OnUploadTaskComplete().

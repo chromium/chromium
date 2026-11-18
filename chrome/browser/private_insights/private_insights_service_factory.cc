@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/fuzzing_buildflags.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -63,6 +65,15 @@ PrivateInsightsServiceFactory::BuildServiceInstanceForBrowserContext(
       g_browser_process->local_state(), context->GetPath(),
       context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
+  // Storage Access requires UMA and UKM consent (go/dwa-to-pi-dd). Incognito
+  // profiles have no service.
+  service->SetStorageAccessPermissionCallback(base::BindRepeating([] {
+    metrics_services_manager::MetricsServicesManager* manager =
+        g_browser_process ? g_browser_process->GetMetricsServicesManager()
+                          : nullptr;
+    return manager && manager->IsMetricsReportingEnabled() &&
+           manager->IsUkmAllowedForAllProfiles();
+  }));
   service->Init();
   return service;
 #endif

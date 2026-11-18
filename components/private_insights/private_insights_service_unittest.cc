@@ -1025,6 +1025,8 @@ TEST_P(PrivateInsightsServicePopulationsTest,
                                  test_shared_url_loader_factory_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
 
+  service.SetStorageAccessPermissionCallback(
+      base::BindRepeating([] { return true; }));
   EXPECT_EQ(service.populations_.size(),
             contextual_cues_registered() ? 1u : 0u);
   EXPECT_EQ(service.storage_access_population_, nullptr);
@@ -1060,6 +1062,8 @@ TEST_P(PrivateInsightsServicePopulationsTest, StorageAccessLogsAndUploads) {
                                  test_shared_url_loader_factory_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
 
+  service.SetStorageAccessPermissionCallback(
+      base::BindRepeating([] { return true; }));
   ASSERT_EQ(service.populations_.size(),
             contextual_cues_registered() ? 2u : 1u);
   ASSERT_NE(service.storage_access_population_, nullptr);
@@ -1095,6 +1099,8 @@ TEST_P(PrivateInsightsServicePopulationsTest,
   PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
                                  test_shared_url_loader_factory_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+  service.SetStorageAccessPermissionCallback(
+      base::BindRepeating([] { return true; }));
 
   events::ContextualCueLogEvent cue_event;
   service.LogContextualCueEvent(cue_event);
@@ -1113,6 +1119,102 @@ TEST_P(PrivateInsightsServicePopulationsTest,
   EXPECT_EQ(RunUploadRound(service), expected);
   EXPECT_EQ(mock_run_federated_computation_call_count_, 2);
   EXPECT_TRUE(service.ContextualCueEventsForTesting().empty());
+  EXPECT_EQ(service.storage_access_population_->pending_event_count(), 0u);
+}
+
+TEST_P(PrivateInsightsServicePopulationsTest,
+       StorageAccessNotLoggedWithoutPermission) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPrivateInsightsStorageAccess);
+
+  TestingPrefServiceSimple local_state;
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+  ASSERT_NE(service.storage_access_population_, nullptr);
+
+  events::StorageAccessLogEvent event;
+  event.set_domain("example.com");
+
+  // No permission check set: not logged.
+  service.LogStorageAccessEvent(event);
+  EXPECT_EQ(service.storage_access_population_->pending_event_count(), 0u);
+
+  // Permission check set but denied: not logged.
+  service.SetStorageAccessPermissionCallback(
+      base::BindRepeating([] { return false; }));
+  service.LogStorageAccessEvent(event);
+  EXPECT_EQ(service.storage_access_population_->pending_event_count(), 0u);
+
+  EXPECT_TRUE(RunUploadRound(service).empty());
+  EXPECT_EQ(mock_run_federated_computation_call_count_, 0);
+}
+
+TEST_P(PrivateInsightsServicePopulationsTest,
+       StorageAccessDroppedWhenPermissionRevoked) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPrivateInsightsStorageAccess);
+
+  TestingPrefServiceSimple local_state;
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+  bool permitted = true;
+  service.SetStorageAccessPermissionCallback(
+      base::BindLambdaForTesting([&] { return permitted; }));
+
+  events::ContextualCueLogEvent cue_event;
+  service.LogContextualCueEvent(cue_event);
+  events::StorageAccessLogEvent sa_event;
+  sa_event.set_domain("example.com");
+  service.LogStorageAccessEvent(sa_event);
+  ASSERT_EQ(service.storage_access_population_->pending_event_count(), 1u);
+
+  // Revoked before the round: Storage Access is dropped, Contextual Cues isn't.
+  permitted = false;
+  EXPECT_EQ(RunUploadRound(service),
+            (std::vector<std::string>{kFcpPopulationNameContextualCues.Get()}));
+  EXPECT_EQ(service.storage_access_population_->pending_event_count(), 0u);
+}
+
+TEST_P(PrivateInsightsServicePopulationsTest,
+       StorageAccessDroppedWhenPermissionRevokedMidRound) {
+  if (!contextual_cues_registered()) {
+    GTEST_SKIP() << "Needs Contextual Cues to upload before Storage Access.";
+  }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPrivateInsightsStorageAccess);
+
+  // Consent is withdrawn while the Contextual Cues upload is in flight.
+  std::atomic<bool> permitted = true;
+  PrivateInsightsService::SetRunFederatedComputationForTesting(
+      base::BindLambdaForTesting(
+          [&](const PrivateInsightsService::FederatedComputationParams& params)
+              -> PrivateInsightsService::FederatedComputationResult {
+            GetUploadedPopulationNames().push_back(params.population_name);
+            permitted = false;
+            return {
+                .outcome = PrivateInsightsService::FederatedComputationOutcome::
+                    kSuccess,
+                .contributed_task_count = 1,
+            };
+          }));
+
+  TestingPrefServiceSimple local_state;
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+  service.SetStorageAccessPermissionCallback(
+      base::BindLambdaForTesting([&] { return permitted.load(); }));
+
+  events::ContextualCueLogEvent cue_event;
+  service.LogContextualCueEvent(cue_event);
+  events::StorageAccessLogEvent sa_event;
+  sa_event.set_domain("example.com");
+  service.LogStorageAccessEvent(sa_event);
+
+  EXPECT_EQ(RunUploadRound(service),
+            (std::vector<std::string>{kFcpPopulationNameContextualCues.Get()}));
   EXPECT_EQ(service.storage_access_population_->pending_event_count(), 0u);
 }
 

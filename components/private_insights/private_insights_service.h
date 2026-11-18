@@ -146,7 +146,14 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
 
   virtual void LogContextualCueEvent(events::ContextualCueLogEvent event);
 
-  // Queues `event` for upload. No-op unless `kPrivateInsightsStorageAccess`.
+  // Returns whether Storage Access events may be logged and uploaded.
+  using StorageAccessPermissionCallback = base::RepeatingCallback<bool()>;
+
+  // Until set, Storage Access events are not logged.
+  void SetStorageAccessPermissionCallback(
+      StorageAccessPermissionCallback callback);
+
+  // Queues `event` for upload if the population is registered and permitted.
   virtual void LogStorageAccessEvent(events::StorageAccessLogEvent event);
 
  private:
@@ -190,6 +197,11 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
 
   // Adds `population` to the set uploaded every round.
   void RegisterPopulation(std::unique_ptr<Population> population);
+
+  // Whether the Storage Access permission check is set and passes.
+  bool IsStorageAccessPermitted() const;
+  // Discards pending Storage Access events without uploading them.
+  void DropPendingStorageAccessEvents();
 
   // Starts an upload round: every registered population with pending events,
   // then (while Contextual Cues is not registered) its legacy queue. FCP
@@ -267,6 +279,8 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   raw_ptr<TypedPopulation<events::StorageAccessLogEvent>>
       storage_access_population_ GUARDED_BY_CONTEXT(sequence_checker_) =
           nullptr;
+  StorageAccessPermissionCallback storage_access_permission_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Legacy Contextual Cues queue, used iff `contextual_cue_population_` is
   // null.
@@ -319,6 +333,12 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
                            StorageAccessLogsAndUploads);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
                            StorageAccessAndContextualCuesUploadSeparately);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           StorageAccessNotLoggedWithoutPermission);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           StorageAccessDroppedWhenPermissionRevoked);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           StorageAccessDroppedWhenPermissionRevokedMidRound);
 };
 
 }  // namespace private_insights
