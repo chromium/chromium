@@ -682,12 +682,13 @@ LargestContentfulPaintCalculator::ComputeEffectiveVisualSize(
 
   // "8.1 If imageRequest’s response’s content length in bytes is less than
   //      size * 0.004, then return null.
-  //
-  // TODO(crbug.com/534835237): This constant differs from the spec, which uses
-  // 0.032 in the equivalent formulation.
-  constexpr double kMinimumEntropyForLCP = 0.05;
-  result.entropy = media_timing.ContentSizeForEntropy() * 8.0 / size;
-  result.is_min_entropy_met = result.entropy >= kMinimumEntropyForLCP;
+  if (size > 0) {
+    // TODO(crbug.com/534835237): This constant differs from the spec, which
+    // uses 0.032 in the equivalent formulation.
+    constexpr double kMinimumEntropyForLCP = 0.05;
+    result.entropy = media_timing.ContentSizeForEntropy() * 8.0 / size;
+    result.is_min_entropy_met = result.entropy >= kMinimumEntropyForLCP;
+  }
 
   result.size = size;
   return result;

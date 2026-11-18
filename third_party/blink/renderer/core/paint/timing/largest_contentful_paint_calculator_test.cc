@@ -616,4 +616,52 @@ TEST_F(LargestContentfulPaintCalculatorTest, OutOfLifecyclePaintsIgnored) {
   trace_analyzer::Stop();
 }
 
+TEST_F(LargestContentfulPaintCalculatorTest,
+       UpscaledClippedImageTruncatedToZeroSize) {
+  auto* client = MakeGarbageCollected<PaintTimingRecordObserverClient>();
+  GetPaintTiming().AddClient(client);
+
+  // 1x1 intrinsic image rendered at 200x200 inside a 10x10 overflow-clipped
+  // container: visible area (100) * natural area (1) / client area (40000) =
+  // 0.0025, which truncates to effective visual size 0.
+  SetMainFrameBodyContent(R"HTML(
+    <!DOCTYPE html>
+    <div style="overflow: hidden; width: 10px; height: 10px;">
+      <img id="target" width="200" height="200" />
+    </div>
+  )HTML");
+  ImageResourceContent* content = SetImageContent("target", 1, 1, 100);
+  SimulateRenderingAndPresentationTime();
+
+  EXPECT_EQ(client->ImageFirstPaintCount(), 0u);
+  EXPECT_EQ(client->PaintedImageRecordCount(), 0u);
+  EXPECT_EQ(LcpCandidateCount(), 0u);
+  EXPECT_FALSE(CurrentLcpCandidate());
+  EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 0u);
+
+  const LayoutObject* layout_object =
+      GetElementById("target")->GetLayoutObject();
+  ASSERT_TRUE(layout_object);
+
+  EffectiveVisualSizeResult truncated_result =
+      LargestContentfulPaintCalculator::ComputeEffectiveVisualSize(
+          *layout_object, *content, gfx::Rect(0, 0, 200, 200),
+          gfx::RectF(0, 0, 10, 10), gfx::Size(1, 1), /*viewport_area=*/480000u,
+          GetPaintTimingDetector());
+  EXPECT_EQ(truncated_result.size, 0u);
+  EXPECT_EQ(truncated_result.entropy, 0.0);
+  EXPECT_FALSE(truncated_result.is_viewport_covered);
+
+  EffectiveVisualSizeResult empty_rect_result =
+      LargestContentfulPaintCalculator::ComputeEffectiveVisualSize(
+          *layout_object, *content, gfx::Rect(0, 0, 200, 200), gfx::RectF(),
+          gfx::Size(200, 200), /*viewport_area=*/480000u,
+          GetPaintTimingDetector());
+  EXPECT_EQ(empty_rect_result.size, 0u);
+  EXPECT_EQ(empty_rect_result.entropy, 0.0);
+  EXPECT_FALSE(empty_rect_result.is_viewport_covered);
+
+  trace_analyzer::Stop();
+}
+
 }  // namespace blink
