@@ -39,6 +39,9 @@ class PointerEventsHitRules {
 
   PointerEventsHitRules(EHitTesting, const HitTestRequest&, EPointerEvents);
 
+  // Helper for containers to check if their bounding box should be hit-tested.
+  static bool CanHitBoundingBox(const HitTestRequest&, EPointerEvents);
+
   unsigned require_visible : 1;
   unsigned require_fill : 1;
   unsigned require_stroke : 1;

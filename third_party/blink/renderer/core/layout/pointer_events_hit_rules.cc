@@ -124,4 +124,12 @@ PointerEventsHitRules::PointerEventsHitRules(EHitTesting hit_testing,
   }
 }
 
+bool PointerEventsHitRules::CanHitBoundingBox(const HitTestRequest& request,
+                                              EPointerEvents pointer_events) {
+  if (request.SvgClipContent()) {
+    return false;
+  }
+  return pointer_events == EPointerEvents::kBoundingBox;
+}
+
 }  // namespace blink

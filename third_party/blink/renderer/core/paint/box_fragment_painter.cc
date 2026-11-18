@@ -2554,8 +2554,9 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
       hit_test_self =
           hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow();
     } else if (fragment.IsSvgText()) {
-      pointer_events_bounding_box =
-          fragment.Style().UsedPointerEvents() == EPointerEvents::kBoundingBox;
+      pointer_events_bounding_box = PointerEventsHitRules::CanHitBoundingBox(
+          hit_test.result->GetHitTestRequest(),
+          fragment.Style().UsedPointerEvents());
       hit_test_self =
           pointer_events_bounding_box ||
           hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow();
@@ -2922,12 +2923,16 @@ bool BoxFragmentPainter::HitTestChildBoxItem(
   }
 
   DCHECK(cursor.ContainerFragment().IsSvgText());
-  if (item.Style().UsedPointerEvents() != EPointerEvents::kBoundingBox)
+  if (!PointerEventsHitRules::CanHitBoundingBox(
+          hit_test.result->GetHitTestRequest(),
+          item.Style().UsedPointerEvents())) {
     return false;
+  }
   // Now hit test ourselves.
   if (hit_test.phase != HitTestPhase::kForeground ||
-      !IsVisibleToHitTest(item, hit_test.result->GetHitTestRequest()))
+      item.IsHiddenDueToLayout()) {
     return false;
+  }
   // In SVG <text>, we should not refer to the geometry of kBox
   // FragmentItems because they don't have final values.
   auto bounds_rect =
