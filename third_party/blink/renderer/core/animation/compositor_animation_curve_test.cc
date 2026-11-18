@@ -274,7 +274,7 @@ TEST_F(CompositorAnimationCurveTest,
   // `GetAnimationCurve()` -> `UpdateKeyframeSnapshot()` triggers slot
   // assignment recalculation, detaching `target` and canceling its animation.
   target->setAttribute(html_names::kSlotAttr, AtomicString("b"));
-  ASSERT_TRUE(target->GetComputedStyle());
+  UpdateAllLifecyclePhasesForTest();
 
   scoped_refptr<CompositorAnimationCurve> result_curve =
       npw_data->GetAnimationCurve();
@@ -308,7 +308,8 @@ TEST_F(CompositorAnimationCurveTest,
   // element mid-resolution should also return nullptr rather than a stale
   // curve, and `Create` on the detached element should return nullptr.
   sibling->setAttribute(html_names::kSlotAttr, AtomicString("b"));
-  ASSERT_TRUE(sibling->GetComputedStyle());
+  UpdateAllLifecyclePhasesForTest();
+
   EXPECT_FALSE(
       updated_sibling_curve->UpdateKeyframeSnapshot(sibling_animation));
   EXPECT_FALSE(sibling->GetComputedStyle());
