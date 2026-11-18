@@ -525,6 +525,9 @@ crbug.com/487128735 [ android android-pixel-2 passthrough ] conformance/extensio
 # the default 15 second heartbeat timeout because of that.
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/functional/gles3/uniformapi/random.html [ Slow ]
 
+[ android-pixel-2 ] deqp/functional/gles3/vertexarrays/multiple_attributes.stride.html [ Slow ]
+
+# Was still timing out sometimes with Slow
 [ win intel-0x4680 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
 ###################
