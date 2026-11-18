@@ -102,7 +102,7 @@ static const base::FilePath::CharType kTxtFileName[] =
 
 namespace safe_browsing {
 
-class LastDownloadFinderTest : public testing::TestWithParam<bool> {
+class LastDownloadFinderTest : public testing::Test {
  public:
   void NeverCalled(
       std::unique_ptr<ClientIncidentReport_DownloadDetails> download,
@@ -111,12 +111,10 @@ class LastDownloadFinderTest : public testing::TestWithParam<bool> {
     FAIL();
   }
 
-  // Creates a new profile that participates in safe browsing extended reporting
-  // and adds a download to its history.
+  // Creates a new profile that participates in safe browsing enhanced
+  // protection and adds a download to its history.
   void CreateProfileWithDownload() {
-    TestingProfile* profile =
-        CreateProfile(GetParam() ? ENHANCED_PROTECTION
-                                 : SAFE_BROWSING_AND_EXTENDED_REPORTING);
+    TestingProfile* profile = CreateProfile(ENHANCED_PROTECTION);
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS);
@@ -156,15 +154,6 @@ class LastDownloadFinderTest : public testing::TestWithParam<bool> {
 
   void SetUp() override {
     testing::Test::SetUp();
-    if (GetParam()) {
-      feature_list_.InitWithFeatures({kExtendedReportingRemovePrefDependency,
-                                      kHashPrefixRealTimeLookupsSamplePing},
-                                     {});
-    } else {
-      feature_list_.InitWithFeatures({},
-                                     {kExtendedReportingRemovePrefDependency,
-                                      kHashPrefixRealTimeLookupsSamplePing});
-    }
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -303,7 +292,6 @@ class LastDownloadFinderTest : public testing::TestWithParam<bool> {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   int profile_number_;
 
@@ -312,7 +300,7 @@ class LastDownloadFinderTest : public testing::TestWithParam<bool> {
 };
 
 // Tests that nothing happens if there are no profiles at all.
-TEST_P(LastDownloadFinderTest, NoProfiles) {
+TEST_F(LastDownloadFinderTest, NoProfiles) {
   std::unique_ptr<ClientIncidentReport_DownloadDetails> last_binary_download;
   std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>
       last_non_binary_download;
@@ -323,7 +311,7 @@ TEST_P(LastDownloadFinderTest, NoProfiles) {
 
 // Tests that nothing happens other than the callback being invoked if there are
 // no profiles participating in safe browsing.
-TEST_P(LastDownloadFinderTest, NoSafeBrowsingProfile) {
+TEST_F(LastDownloadFinderTest, NoSafeBrowsingProfile) {
   // Create a profile with a history service that is opted-out
   TestingProfile* profile = CreateProfile(EXTENDED_REPORTING_ONLY);
 
@@ -339,8 +327,8 @@ TEST_P(LastDownloadFinderTest, NoSafeBrowsingProfile) {
 }
 
 // Tests that nothing happens other than the callback being invoked if there are
-// no profiles participating in safe browsing extended reporting.
-TEST_P(LastDownloadFinderTest, NoExtendedReportingProfile) {
+// no profiles participating in safe browsing enhanced protection.
+TEST_F(LastDownloadFinderTest, NoEnhancedProtectionProfile) {
   // Create a profile with a history service that is opted-out
   TestingProfile* profile = CreateProfile(SAFE_BROWSING_ONLY);
 
@@ -356,10 +344,9 @@ TEST_P(LastDownloadFinderTest, NoExtendedReportingProfile) {
 }
 
 // Tests that a download is found from a single profile.
-TEST_P(LastDownloadFinderTest, SimpleEndToEnd) {
+TEST_F(LastDownloadFinderTest, SimpleEndToEnd) {
   // Create a profile with a history service that is opted-in.
-  TestingProfile* profile = CreateProfile(
-      GetParam() ? ENHANCED_PROTECTION : SAFE_BROWSING_AND_EXTENDED_REPORTING);
+  TestingProfile* profile = CreateProfile(ENHANCED_PROTECTION);
 
   // Add a binary and non-binary download.
   AddDownload(profile, CreateTestDownloadRow(kBinaryFileName, profile));
@@ -374,10 +361,9 @@ TEST_P(LastDownloadFinderTest, SimpleEndToEnd) {
 }
 
 // Tests that a non-binary download is found
-TEST_P(LastDownloadFinderTest, NonBinaryOnly) {
+TEST_F(LastDownloadFinderTest, NonBinaryOnly) {
   // Create a profile with a history service that is opted-in.
-  TestingProfile* profile = CreateProfile(
-      GetParam() ? ENHANCED_PROTECTION : SAFE_BROWSING_AND_EXTENDED_REPORTING);
+  TestingProfile* profile = CreateProfile(ENHANCED_PROTECTION);
 
   // Add a non-binary download.
   AddDownload(profile, CreateTestDownloadRow(kTxtFileName, profile));
@@ -392,10 +378,9 @@ TEST_P(LastDownloadFinderTest, NonBinaryOnly) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // Tests that nothing happens if the binary is an executable for a different OS.
-TEST_P(LastDownloadFinderTest, DownloadForDifferentOs) {
+TEST_F(LastDownloadFinderTest, DownloadForDifferentOs) {
   // Create a profile with a history service that is opted-in.
-  TestingProfile* profile = CreateProfile(
-      GetParam() ? ENHANCED_PROTECTION : SAFE_BROWSING_AND_EXTENDED_REPORTING);
+  TestingProfile* profile = CreateProfile(ENHANCED_PROTECTION);
 
   // Add a download.
   AddDownload(profile,
@@ -411,10 +396,9 @@ TEST_P(LastDownloadFinderTest, DownloadForDifferentOs) {
 #endif
 
 // Tests that there is no crash if the finder is deleted before results arrive.
-TEST_P(LastDownloadFinderTest, DeleteBeforeResults) {
+TEST_F(LastDownloadFinderTest, DeleteBeforeResults) {
   // Create a profile with a history service that is opted-in.
-  TestingProfile* profile = CreateProfile(
-      GetParam() ? ENHANCED_PROTECTION : SAFE_BROWSING_AND_EXTENDED_REPORTING);
+  TestingProfile* profile = CreateProfile(ENHANCED_PROTECTION);
 
   // Add a download.
   AddDownload(profile, CreateTestDownloadRow(kBinaryFileName, profile));
@@ -428,10 +412,9 @@ TEST_P(LastDownloadFinderTest, DeleteBeforeResults) {
 }
 
 // Tests that a download in profile added after the search is begun is found.
-TEST_P(LastDownloadFinderTest, AddProfileAfterStarting) {
+TEST_F(LastDownloadFinderTest, AddProfileAfterStarting) {
   // Create a profile with a history service that is opted-in.
-  CreateProfile(GetParam() ? ENHANCED_PROTECTION
-                           : SAFE_BROWSING_AND_EXTENDED_REPORTING);
+  CreateProfile(ENHANCED_PROTECTION);
 
   std::unique_ptr<ClientIncidentReport_DownloadDetails> last_binary_download;
   std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>
@@ -455,7 +438,5 @@ TEST_P(LastDownloadFinderTest, AddProfileAfterStarting) {
 
   ASSERT_TRUE(last_binary_download);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, LastDownloadFinderTest, testing::Bool());
 
 }  // namespace safe_browsing

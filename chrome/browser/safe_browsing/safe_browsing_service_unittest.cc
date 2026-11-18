@@ -81,11 +81,6 @@ class MockSecuritySettingsBundlePrefChangeHandler
 
 class SafeBrowsingServiceTest : public testing::Test {
  public:
-  SafeBrowsingServiceTest() {
-    feature_list_.InitAndDisableFeature(
-        safe_browsing::kExtendedReportingRemovePrefDependency);
-  }
-
   void SetUp() override {
     browser_process_ = TestingBrowserProcess::GetGlobal();
 
@@ -116,13 +111,6 @@ class SafeBrowsingServiceTest : public testing::Test {
   }
 
   Profile* profile() { return profile_.get(); }
-
-  void ResetAndReinitFeatures(
-      const std::vector<base::test::FeatureRef>& enabled_features,
-      const std::vector<base::test::FeatureRef>& disabled_features) {
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
 
  protected:
   void SetUpDownload() {
@@ -240,13 +228,13 @@ class SafeBrowsingServiceTest : public testing::Test {
 
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
-  base::test::ScopedFeatureList feature_list_;
   ChromePingManagerAllowerForTesting allow_ping_manager_;
 };
 
 TEST_F(SafeBrowsingServiceTest, SendDownloadReport_Success) {
   SetUpDownload();
-  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
 
   auto* ping_manager =
       ChromePingManagerFactory::GetForBrowserContext(profile());
@@ -281,9 +269,10 @@ TEST_F(SafeBrowsingServiceTest, SendDownloadReport_Success) {
 
 TEST_F(
     SafeBrowsingServiceTest,
-    SendDownloadReport_NoDownloadWarningActionWhenExtendedReportingDisabled) {
+    SendDownloadReport_NoDownloadWarningActionWhenEnhancedProtectionDisabled) {
   SetUpDownload();
-  SetExtendedReportingPrefForTests(profile_->GetPrefs(), false);
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       SafeBrowsingState::STANDARD_PROTECTION);
 
   auto* ping_manager =
       ChromePingManagerFactory::GetForBrowserContext(profile());
@@ -380,42 +369,13 @@ TEST_F(SafeBrowsingServiceTest, WhenUserIsInNoProtectionNormallyoReturnsFalse) {
   EXPECT_FALSE(SafeBrowsingService::IsUserEligibleForESBPromo(profile()));
 }
 
-TEST_F(SafeBrowsingServiceTest,
-       SaveExtendedReportingPrefValueOnProfileAddedFeatureFlagEnabled) {
-  ResetAndReinitFeatures(
-      {safe_browsing::kExtendedReportingRemovePrefDependency}, {});
+TEST_F(SafeBrowsingServiceTest, SaveExtendedReportingPrefValueOnProfileAdded) {
   SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
   sb_service_->OnProfileAdded(profile());
   // Since the user enabled Extended Reporting, the preference value used to
   // record the state of Extended Reporting before its deprecation should be set
   // to true.
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
-      prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated));
-}
-
-TEST_F(SafeBrowsingServiceTest,
-       SaveExtendedReportingPrefValueOnProfileAddedFeatureFlagDisabled) {
-  // SetUp:
-  //   * disable kExtendedReportingRemovePrefDependency
-  //   * Setup SBER enabled and
-  //   kSafeBrowsingScoutReportingEnabledWhenDeprecated true
-  ResetAndReinitFeatures(
-      {}, {safe_browsing::kExtendedReportingRemovePrefDependency});
-  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
-
-  // Simulate that kSafeBrowsingScoutReportingEnabledWhenDeprecated was set to
-  // true previously.
-  profile_->GetPrefs()->SetBoolean(
-      prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated, true);
-  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
-      prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated));
-
-  // Add the profile to trigger the function.
-  sb_service_->OnProfileAdded(profile());
-
-  // The value of the pref should be reverted to false because the feature is
-  // disabled now.
-  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kSafeBrowsingScoutReportingEnabledWhenDeprecated));
 }
 
@@ -687,7 +647,8 @@ TEST_F(SafeBrowsingServiceAntiPhishingTelemetryTest,
   const int kExpectedClickEventCount = 5;
   const int kExpectedKeyEventCount = 2;
   const int kExpectedPasteEventCount = 0;
-  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
   GURL test_url("http://phishing.com");
   GURL test_page_url("http://page_url.com");
   PhishySiteInteractionMap test_map = SetUpPhishyInteractionMap(
@@ -721,7 +682,8 @@ TEST_F(SafeBrowsingServiceAntiPhishingTelemetryTest,
   const int kExpectedClickEventCount = 5;
   const int kExpectedKeyEventCount = 2;
   const int kExpectedPasteEventCount = 0;
-  SetExtendedReportingPrefForTests(otr_profile_->GetPrefs(), true);
+  SetSafeBrowsingState(otr_profile_->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
   GURL test_url("http://phishing.com");
   GURL test_page_url("http://page_url.com");
   PhishySiteInteractionMap test_map = SetUpPhishyInteractionMap(
@@ -780,7 +742,8 @@ class SendNotificationsAcceptedTest : public SafeBrowsingServiceTest {
 TEST_F(SendNotificationsAcceptedTest, SendReportForAllowlistedURL) {
   EnableNotificationsAcceptedFeature();
   SetUrlIsAllowlistedForTesting();
-  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
   GURL notification_url1("http://www.notification1.com/");
   GURL notification_url2("http://www.notification2.com/");
   GURL notification_url3("http://www.notification3.com/");
@@ -809,7 +772,7 @@ TEST_F(SendNotificationsAcceptedTest, SendReportForAllowlistedURL) {
 }
 
 TEST_F(SendNotificationsAcceptedTest,
-       DontSendReportForNonExtendedReportingUser) {
+       DontSendReportForNonEnhancedProtectionUser) {
   EnableNotificationsAcceptedFeature();
   SetUrlIsAllowlistedForTesting();
   GURL notification_url1("http://www.notification1.com/");
@@ -824,7 +787,8 @@ TEST_F(SendNotificationsAcceptedTest,
 TEST_F(SendNotificationsAcceptedTest, DontSendReportWhenFeatureIsNotEnabled) {
   DisableNotificationsAcceptedFeature();
   SetUrlIsAllowlistedForTesting();
-  SetExtendedReportingPrefForTests(profile_->GetPrefs(), true);
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
   GURL notification_url1("http://www.notification1.com/");
   GURL notification_url2("http://www.notification2.com/");
   GURL notification_url3("http://www.notification3.com/");
@@ -852,7 +816,8 @@ TEST_F(SendNotificationsAcceptedTest, DontSendReportWhenFeatureIsNotEnabled) {
 TEST_F(SendNotificationsAcceptedTest, DontSendReportWhenUserIsIncognito) {
   // Set profile to incognito
   otr_profile_ = std::move(profile_builder_.BuildIncognito(profile_.get()));
-  SetExtendedReportingPrefForTests(otr_profile_->GetPrefs(), true);
+  SetSafeBrowsingState(otr_profile_->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
   EnableNotificationsAcceptedFeature();
   SetUrlIsAllowlistedForTesting();
 

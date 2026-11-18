@@ -10,7 +10,6 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/safe_browsing/interstitials/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/interstitials/chrome_ui_manager_delegate.h"
@@ -261,58 +260,8 @@ TEST_F(PhishyInteractionTrackerTest, CheckHistogramCountsOnPhishyUserEvents) {
       kExpectedPasteEventCount, 1);
 }
 
-TEST_F(PhishyInteractionTrackerTest,
-       CheckPhishyUserInteractionClientReport_WithoutSBERDeprecation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      safe_browsing::kExtendedReportingRemovePrefDependency);
-  safe_browsing::SetExtendedReportingPrefForTests(profile()->GetPrefs(), true);
-  const int kExpectedClickEventCount = 4;
-  const int kExpectedKeyEventCount = 1;
-  const int kExpectedPasteEventCount = 3;
-  auto* ping_manager =
-      safe_browsing::ChromePingManagerFactory::GetForBrowserContext(profile());
-  network::TestURLLoaderFactory test_url_loader_factory;
-  base::RunLoop run_loop;
-  test_url_loader_factory.SetInterceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest>
-            actual_request = GetActualRequest(request);
-        VerifyPhishyInteractionReport(
-            *actual_request.get(), kExpectedClickEventCount,
-            kExpectedKeyEventCount, kExpectedPasteEventCount);
-        run_loop.Quit();
-      }));
-  ping_manager->SetURLLoaderFactoryForTesting(
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory));
-
-  // Trigger kExpectedClickEventCount mouse events.
-  for (int i = 0; i < kExpectedClickEventCount; ++i) {
-    TriggerClickEvent();
-  }
-  // Trigger kExpectedKeyEventCount key events.
-  for (int i = 0; i < kExpectedKeyEventCount; ++i) {
-    TriggerKeyEvent();
-  }
-  // Trigger kExpectedPasteEventCount - 1 paste events so we can trigger a
-  // paste below.
-  for (int i = 0; i < kExpectedPasteEventCount - 1; ++i) {
-    TriggerPasteEvent();
-  }
-  // Set a null delay so that histograms get logged after this last user event.
-  SetNullDelayForTest();
-  TriggerPasteEvent();
-
-  run_loop.Run();
-}
-
 TEST_F(PhishyInteractionTrackerTest, CheckPhishyUserInteractionClientReport) {
-  base::test::ScopedFeatureList feature_list;
-  // Feature is enabled, so reporting relies on the ESB pref.
-  feature_list.InitAndEnableFeature(
-      safe_browsing::kExtendedReportingRemovePrefDependency);
-
+  // Reporting relies on the ESB pref, not the Extended Reporting pref.
   safe_browsing::SetExtendedReportingPrefForTests(profile()->GetPrefs(), false);
   safe_browsing::SetSafeBrowsingState(
       profile()->GetPrefs(),

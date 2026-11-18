@@ -282,12 +282,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   friend class SBSafeBrowsingServiceTest;
   friend class SendNotificationsAcceptedTest;
 
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingServiceTest,
-      SaveExtendedReportingPrefValueOnProfileAddedFeatureFlagEnabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      SafeBrowsingServiceTest,
-      SaveExtendedReportingPrefValueOnProfileAddedFeatureFlagDisabled);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingServiceTest,
+                           SaveExtendedReportingPrefValueOnProfileAdded);
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingServiceTest,
                            TestMinAllowedTimeForReferrerChains);
   FRIEND_TEST_ALL_PREFIXES(
