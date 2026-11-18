@@ -132,9 +132,9 @@ void ExtensionsToolbarButton::UpdateState(
       extensions_features::kExtensionsMenuAccessControl));
 
   SetVectorIcon(ExtensionsToolbarViewModel::GetToolbarButtonIcon(state));
+  UpdateCachedTooltipText(state);
   GetViewAccessibility().SetName(
       ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(state));
-  UpdateCachedTooltipText(state);
 }
 
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {

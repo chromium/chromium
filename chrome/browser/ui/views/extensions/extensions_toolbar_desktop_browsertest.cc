@@ -24,10 +24,17 @@
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_constants.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
+#include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -45,10 +52,13 @@
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/views_switches.h"
 
 namespace {
@@ -1253,6 +1263,98 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarDesktopBrowserTest,
 
   // Verify that action_view was safely removed from the extensions container.
   EXPECT_EQ(nullptr, extensions_container()->GetViewForId(extension->id()));
+}
+
+// Verifies that closing the sole tab synchronously during the extensions
+// button's kTextChanged event does not cause a WebContents UAF in
+// UpdateControlsVisibility().
+IN_PROC_BROWSER_TEST_F(
+    ExtensionsToolbarDesktopBrowserTest,
+    UpdateControlsVisibility_TabClosedDuringAccessibilityEvent) {
+  const GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.example", "/title2.html");
+
+  // Open a second browser with a single tab so closing it destroys WebContents
+  // synchronously while ExtensionsToolbarDesktop is still on the stack.
+  BrowserWindowInterface* browser2 = CreateBrowser(profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, allowed_url));
+  ASSERT_EQ(1, browser2->GetTabStripModel()->count());
+
+  BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
+  ASSERT_TRUE(browser_view2);
+  if (TabStrip* tab_strip = browser_view2->horizontal_tab_strip_for_testing()) {
+    tab_strip->StopAnimating();
+  } else if (auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
+                 browser_view2->tab_strip_view())) {
+    browser_view2->GetWidget()->LayoutRootViewIfNecessary();
+    if (auto* controller = region_view->GetTabStripCollectionController()) {
+      controller->animation_coordinator().StopAllAnimationsForTesting();
+    }
+  }
+  browser_view2->GetWidget()->LayoutRootViewIfNecessary();
+
+  ExtensionsToolbarDesktop* toolbar2 =
+      browser_view2->toolbar()->extensions_container_for_testing();
+  ASSERT_TRUE(toolbar2);
+  ExtensionsToolbarButton* ext_button2 = toolbar2->GetExtensionsButton();
+  ASSERT_TRUE(ext_button2);
+
+  content::WebContents* contents2 =
+      browser2->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(contents2);
+  base::WeakPtr<content::WebContents> weak_contents2 = contents2->GetWeakPtr();
+  EXPECT_EQ(toolbar2->GetToolbarViewModel()->GetButtonState(*contents2),
+            ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault);
+
+  views::View* sole_tab_view =
+      browser_view2->tab_strip_view()->GetTabAnchorView(
+          browser2->GetTabStripModel()->GetTabAtIndex(0)->GetHandle());
+  ASSERT_TRUE(sole_tab_view);
+  TabCloseButton* close_button = nullptr;
+  if (auto* tab = views::AsViewClass<Tab>(sole_tab_view)) {
+    close_button = tab->close_button();
+  } else if (auto* unified_tab = views::AsViewClass<TabView>(sole_tab_view)) {
+    close_button = unified_tab->close_button_for_testing();
+  }
+  ASSERT_TRUE(close_button);
+  ASSERT_FALSE(close_button->GetContentsBounds().IsEmpty());
+
+  // Close the tab via its close button's default accessibility action when
+  // kTextChanged fires inside ExtensionsToolbarButton::UpdateState().
+  bool invoked = false;
+  bool closed_synchronously = false;
+  ext_button2->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindRepeating(
+          [](ExtensionsToolbarButton* ext_button,
+             TabCloseButton* tab_close_button,
+             base::WeakPtr<content::WebContents> tracked_contents,
+             bool* already_invoked, bool* was_closed_synchronously,
+             const ui::AXPlatformNodeDelegate* delegate,
+             const ax::mojom::Event event_type) {
+            if (*already_invoked ||
+                event_type != ax::mojom::Event::kTextChanged) {
+              return;
+            }
+            *already_invoked = true;
+            ext_button->GetViewAccessibility()
+                .set_accessibility_events_callback(base::NullCallback());
+
+            ui::AXActionData action_data;
+            action_data.action = ax::mojom::Action::kDoDefault;
+            tab_close_button->HandleAccessibleAction(action_data);
+            *was_closed_synchronously = !tracked_contents;
+          },
+          base::Unretained(ext_button2), base::Unretained(close_button),
+          weak_contents2, base::Unretained(&invoked),
+          base::Unretained(&closed_synchronously)));
+
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(browser2);
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, allowed_url);
+  browser_destroyed_observer.Wait();
+  EXPECT_TRUE(invoked);
+  EXPECT_TRUE(closed_synchronously);
+  EXPECT_FALSE(weak_contents2);
 }
 
 class ExtensionsToolbarDesktopAccessControlDisabledBrowserTest

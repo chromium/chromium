@@ -10,13 +10,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -365,5 +368,115 @@ TEST_F(ToolbarActionViewUnitTest, TestKeyboardReordering) {
   send_key_press(ui::VKEY_LEFT, kCorrectModifierFlag);
   testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
 
+  Reset();
+}
+
+// Verifies that if SetTooltipText() synchronously switches the active tab (and
+// triggers a nested UpdateState()), the outer UpdateState() does not overwrite
+// the new tab's accessible name with the stale name from the previous tab.
+TEST_F(ToolbarActionViewUnitTest, UpdateState_TabSwitchedDuringTooltipUpdate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      extensions_features::kExtensionsMenuAccessControl);
+
+  TestingProfile profile;
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* web_contents_1 =
+      web_contents_factory.CreateWebContents(&profile);
+  content::WebContents* web_contents_2 =
+      web_contents_factory.CreateWebContents(&profile);
+  CreateSessionServiceTabHelper(web_contents_1);
+  CreateSessionServiceTabHelper(web_contents_2);
+
+  TestToolbarActionViewModel* model = view_model();
+  TestToolbarActionViewDelegate* view_delegate = action_view_delegate();
+  view_delegate->set_web_contents(web_contents_1);
+  model->SetAccessibleName(u"Initial Name");
+  model->SetTooltip(u"Initial Tooltip");
+
+  auto owned_view = std::make_unique<ToolbarActionView>(model, view_delegate);
+  ToolbarActionView* view = owned_view.get();
+  widget()->SetContentsView(std::move(owned_view));
+
+  bool switched_tabs = false;
+  base::CallbackListSubscription sub =
+      view->AddTooltipTextChangedCallback(base::BindRepeating(
+          [](TestToolbarActionViewDelegate* delegate,
+             TestToolbarActionViewModel* action_model,
+             content::WebContents* next_web_contents, bool* switched) {
+            if (*switched) {
+              return;
+            }
+            *switched = true;
+            delegate->set_web_contents(next_web_contents);
+            action_model->SetTooltip(u"Tab 2 Tooltip");
+            action_model->SetAccessibleName(u"Tab 2 Name");
+          },
+          base::Unretained(view_delegate), base::Unretained(model),
+          base::Unretained(web_contents_2), base::Unretained(&switched_tabs)));
+
+  model->SetAccessibleName(u"Tab 1 Name");
+  model->SetTooltip(u"Tab 1 Tooltip");
+
+  EXPECT_TRUE(switched_tabs);
+  EXPECT_EQ(u"Tab 2 Name", view->GetViewAccessibility().GetCachedName());
+
+  sub = {};
+  view_delegate->set_web_contents(nullptr);
+  Reset();
+}
+
+// Verifies that if SetTooltipText() synchronously closes the sole tab (so both
+// GetCurrentWebContents() and weak_contents become nullptr), the outer
+// UpdateState() bails out rather than writing a stale accessible name.
+TEST_F(ToolbarActionViewUnitTest,
+       UpdateState_SoleTabClosedDuringTooltipUpdate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      extensions_features::kExtensionsMenuAccessControl);
+
+  TestingProfile profile;
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* web_contents_1 =
+      web_contents_factory.CreateWebContents(&profile);
+  CreateSessionServiceTabHelper(web_contents_1);
+
+  TestToolbarActionViewModel* model = view_model();
+  TestToolbarActionViewDelegate* view_delegate = action_view_delegate();
+  view_delegate->set_web_contents(web_contents_1);
+  model->SetAccessibleName(u"Initial Name");
+  model->SetTooltip(u"Initial Tooltip");
+
+  auto owned_view = std::make_unique<ToolbarActionView>(model, view_delegate);
+  ToolbarActionView* view = owned_view.get();
+  widget()->SetContentsView(std::move(owned_view));
+
+  bool closed_sole_tab = false;
+  base::CallbackListSubscription sub =
+      view->AddTooltipTextChangedCallback(base::BindRepeating(
+          [](TestToolbarActionViewDelegate* delegate,
+             TestToolbarActionViewModel* action_model,
+             content::TestWebContentsFactory* factory,
+             base::WeakPtr<content::WebContents> contents_to_destroy,
+             bool* closed) {
+            if (*closed) {
+              return;
+            }
+            *closed = true;
+            delegate->set_web_contents(nullptr);
+            factory->DestroyWebContents(contents_to_destroy.get());
+            action_model->SetAccessibleName(u"No Tab Name");
+          },
+          base::Unretained(view_delegate), base::Unretained(model),
+          base::Unretained(&web_contents_factory), web_contents_1->GetWeakPtr(),
+          base::Unretained(&closed_sole_tab)));
+
+  model->SetAccessibleName(u"Tab 1 Name");
+  model->SetTooltip(u"Tab 1 Tooltip");
+
+  EXPECT_TRUE(closed_sole_tab);
+  EXPECT_EQ(u"No Tab Name", view->GetViewAccessibility().GetCachedName());
+
+  sub = {};
   Reset();
 }

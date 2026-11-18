@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -195,24 +197,33 @@ void ToolbarActionView::MaybeUpdateHoverCardStatus(
 
 void ToolbarActionView::UpdateState() {
   content::WebContents* web_contents = delegate_->GetCurrentWebContents();
-  GetViewAccessibility().SetName(view_model_->GetAccessibleName(web_contents));
-  if (!sessions::SessionTabHelper::IdForTab(web_contents).is_valid()) {
-    return;
+  const bool had_web_contents = web_contents != nullptr;
+  base::WeakPtr<content::WebContents> weak_contents =
+      web_contents ? web_contents->GetWeakPtr() : nullptr;
+  std::u16string accessible_name = view_model_->GetAccessibleName(web_contents);
+  if (sessions::SessionTabHelper::IdForTab(web_contents).is_valid()) {
+    ui::ImageModel icon =
+        view_model_->GetIcon(web_contents, GetPreferredSize());
+    if (!icon.IsEmpty()) {
+      SetImageModel(views::Button::STATE_NORMAL, icon);
+      SetImageModel(views::Button::STATE_DISABLED,
+                    ui::GetDefaultDisabledIconFromImageModel(icon));
+    }
+
+    SchedulePaint();
+
+    if (!base::FeatureList::IsEnabled(
+            extensions_features::kExtensionsMenuAccessControl)) {
+      base::WeakPtr<ToolbarActionView> weak_this = weak_factory_.GetWeakPtr();
+      SetTooltipText(view_model_->GetTooltip(web_contents));
+      if (!weak_this || (had_web_contents && !weak_contents) ||
+          delegate_->GetCurrentWebContents() != weak_contents.get()) {
+        return;
+      }
+    }
   }
 
-  ui::ImageModel icon = view_model_->GetIcon(web_contents, GetPreferredSize());
-  if (!icon.IsEmpty()) {
-    SetImageModel(views::Button::STATE_NORMAL, icon);
-    SetImageModel(views::Button::STATE_DISABLED,
-                  ui::GetDefaultDisabledIconFromImageModel(icon));
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    SetTooltipText(view_model_->GetTooltip(web_contents));
-  }
-
-  SchedulePaint();
+  GetViewAccessibility().SetName(std::move(accessible_name));
 }
 
 gfx::ImageSkia ToolbarActionView::GetIconForTest() {

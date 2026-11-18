@@ -6,8 +6,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -329,10 +331,15 @@ void ExtensionsToolbarDesktop::UpdateRequestAccessButton(
     return;
   }
 
+  base::WeakPtr<ExtensionsToolbarDesktop> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   ExtensionsToolbarViewModel::RequestAccessButtonParams button_params =
       toolbar_view_model_->GetRequestAccessButtonParams(&web_contents);
 
   request_access_button_->Update(button_params);
+  if (!weak_this) {
+    return;
+  }
 
   // Extensions button has left flat edge iff request access button is visible.
   // This will also update the button's background.
@@ -346,10 +353,31 @@ void ExtensionsToolbarDesktop::UpdateRequestAccessButton(
 }
 
 void ExtensionsToolbarDesktop::UpdateAllIcons() {
-  UpdateControlsVisibility();
+  base::WeakPtr<ExtensionsToolbarDesktop> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  content::WebContents* const web_contents = GetCurrentWebContents();
+  const bool had_web_contents = web_contents != nullptr;
+  base::WeakPtr<content::WebContents> weak_contents =
+      web_contents ? web_contents->GetWeakPtr() : nullptr;
+  auto was_invalidated = [&]() {
+    return !weak_this || (had_web_contents && !weak_contents) ||
+           GetCurrentWebContents() != weak_contents.get();
+  };
 
-  for (const auto& icon : icons_) {
-    icon.second->UpdateState();
+  UpdateControlsVisibility();
+  if (was_invalidated()) {
+    return;
+  }
+
+  const std::vector<ToolbarActionsModel::ActionId> action_ids =
+      base::ToVector(icons_, &ToolbarIcons::value_type::first);
+  for (const auto& action_id : action_ids) {
+    if (ToolbarActionView* action_view = GetViewForId(action_id)) {
+      action_view->UpdateState();
+      if (was_invalidated()) {
+        return;
+      }
+    }
   }
 
   if (close_side_panel_button_) {
@@ -831,9 +859,8 @@ void ExtensionsToolbarDesktop::OnActionAdded(
     UpdateContainerVisibility();
   }
 
-  UpdateControlsVisibility();
-
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
+  UpdateControlsVisibility();
 }
 
 void ExtensionsToolbarDesktop::OnActionRemoved(
@@ -850,25 +877,35 @@ void ExtensionsToolbarDesktop::OnActionRemoved(
     icons_.erase(action_id);
   }
 
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
   UpdateContainerVisibilityAfterAnimation();
   UpdateControlsVisibility();
-
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ExtensionsToolbarDesktop::OnActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  ToolbarActionViewModel* action =
-      toolbar_view_model_->GetActionModelForId(action_id);
+  base::WeakPtr<ExtensionsToolbarDesktop> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  const ToolbarActionsModel::ActionId id = action_id;
+  ToolbarActionViewModel* action = toolbar_view_model_->GetActionModelForId(id);
   if (action) {
-    ToolbarActionView* action_view = GetViewForId(action_id);
-    action_view->UpdateState();
+    if (ToolbarActionView* action_view = GetViewForId(id)) {
+      action_view->UpdateState();
+      if (!weak_this) {
+        return;
+      }
+    }
     // Only update hover card if it's currently showing for action, otherwise it
     // would mistakenly show the hover card.
-    if (action_hover_card_controller_->IsHoverCardShowingForAction(
+    if (ToolbarActionView* action_view = GetViewForId(id);
+        action_view &&
+        action_hover_card_controller_->IsHoverCardShowingForAction(
             action_view)) {
       action_hover_card_controller_->UpdateHoverCard(
           action_view, ToolbarActionHoverCardUpdateType::kToolbarActionUpdated);
+      if (!weak_this) {
+        return;
+      }
     }
   }
 
@@ -887,7 +924,22 @@ void ExtensionsToolbarDesktop::OnPinnedActionsChanged() {
 void ExtensionsToolbarDesktop::OnActiveWebContentsChanged(
     bool is_same_document,
     content::WebContents* current_web_contents) {
-  if (active_web_contents_.get() != current_web_contents) {
+  // Synchronous accessibility events during UI updates below can close or
+  // switch `current_web_contents` or destroy `this`.
+  base::WeakPtr<ExtensionsToolbarDesktop> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  const bool had_web_contents = current_web_contents != nullptr;
+  base::WeakPtr<content::WebContents> weak_contents =
+      current_web_contents ? current_web_contents->GetWeakPtr() : nullptr;
+  auto was_invalidated = [&]() {
+    return !weak_this || (had_web_contents && !weak_contents) ||
+           GetCurrentWebContents() != weak_contents.get();
+  };
+  const bool active_tab_changed =
+      active_web_contents_.get() != current_web_contents;
+  active_web_contents_ = weak_contents;
+
+  if (active_tab_changed) {
     // Tab switched
     BrowserUserEducationInterface::From(browser_)
         ->NotifyFeaturePromoFeatureUsed(
@@ -895,10 +947,16 @@ void ExtensionsToolbarDesktop::OnActiveWebContentsChanged(
             FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
     if (request_access_button_) {
       CollapseConfirmation();
+      if (was_invalidated()) {
+        return;
+      }
     }
-    if (current_web_contents) {
+    if (weak_contents) {
       extensions::MaybeShowExtensionControlledNewTabPage(browser_,
-                                                         current_web_contents);
+                                                         weak_contents.get());
+      if (was_invalidated()) {
+        return;
+      }
     }
   } else {
     // Navigation
@@ -907,18 +965,20 @@ void ExtensionsToolbarDesktop::OnActiveWebContentsChanged(
           feature_engagement::kIPHExtensionsMenuFeature);
     }
     if (request_access_button_ &&
-        request_access_button_->IsShowingConfirmation() &&
-        current_web_contents &&
+        request_access_button_->IsShowingConfirmation() && weak_contents &&
         !request_access_button_->IsShowingConfirmationFor(
-            current_web_contents->GetPrimaryMainFrame()
-                ->GetLastCommittedOrigin())) {
+            weak_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
       CollapseConfirmation();
+      if (was_invalidated()) {
+        return;
+      }
     }
   }
-  active_web_contents_ =
-      current_web_contents ? current_web_contents->GetWeakPtr() : nullptr;
 
   UpdateAllIcons();
+  if (was_invalidated()) {
+    return;
+  }
   MaybeShowIPH();
 }
 
@@ -1225,8 +1285,18 @@ void ExtensionsToolbarDesktop::UpdateControlsVisibility() {
     return;
   }
 
+  // UpdateExtensionsButton() fires a synchronous accessibility event that can
+  // close or switch `web_contents` or destroy `this`.
+  base::WeakPtr<ExtensionsToolbarDesktop> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<content::WebContents> weak_contents =
+      web_contents->GetWeakPtr();
   UpdateExtensionsButton(*web_contents);
-  UpdateRequestAccessButton(*web_contents);
+  if (!weak_this || !weak_contents ||
+      GetCurrentWebContents() != weak_contents.get()) {
+    return;
+  }
+  UpdateRequestAccessButton(*weak_contents);
 }
 
 void ExtensionsToolbarDesktop::CloseSidePanelButtonPressed() {
