@@ -127,21 +127,21 @@ std::optional<cbor::rust::Value> ConvertCppValueToRust(
         return cbor::rust::Value::String::Make(*str_ref);
       },
       [&](base::span<const Value> array) -> std::optional<cbor::rust::Value> {
-        rs::Vec<cbor::rust::Value> items =
-            cbor::rust::vec_with_capacity_values(array.size());
+        rs::Vec<cbor::rust::Value> items;
+        items.reserve(array.size());
         for (const Value& elem : array) {
           std::optional<cbor::rust::Value> converted = ConvertCppValueToRust(
               elem, max_nesting_level - 1, allow_invalid_utf8);
           if (!converted) {
             return std::nullopt;
           }
-          cbor::rust::vec_push_value(items, *std::move(converted));
+          items.push_back(*std::move(converted));
         }
         return cbor::rust::Value::Array::Make(std::move(items));
       },
       [&](const Value::MapValue& map) -> std::optional<cbor::rust::Value> {
-        rs::Vec<cbor::rust::MapEntry> entries =
-            cbor::rust::vec_with_capacity_entries(map.size());
+        rs::Vec<cbor::rust::MapEntry> entries;
+        entries.reserve(map.size());
         for (const auto& [cpp_key, cpp_value] : map) {
           std::optional<cbor::rust::MapKey> key = ConvertCppMapKeyToRust(
               cpp_key, max_nesting_level - 1, allow_invalid_utf8);
@@ -153,9 +153,7 @@ std::optional<cbor::rust::Value> ConvertCppValueToRust(
           if (!value) {
             return std::nullopt;
           }
-          cbor::rust::vec_push_entry(
-              entries,
-              cbor::rust::MapEntry{*std::move(key), *std::move(value)});
+          entries.emplace_back(*std::move(key), *std::move(value));
         }
         // `Value::MapValue` is already sorted in canonical CBOR order.
         return cbor::rust::Value::Map::Make(

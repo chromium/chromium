@@ -66,27 +66,6 @@ impl<'a> From<(MapKey<'a>, Value<'a>)> for MapEntry<'a> {
     }
 }
 
-// TODO(crbug.com/539701789): Remove these helpers once Crubit's
-// `rs_std::Vec<T>` bindings expose `with_capacity()` and `push()`. Crubit
-// instantiates the lifetime as `'static`, so the C++ caller must drop the `Vec`
-// before the buffers it borrows.
-
-pub fn vec_with_capacity_values(capacity: usize) -> Vec<Value<'static>> {
-    Vec::with_capacity(capacity)
-}
-
-pub fn vec_push_value(vec: &mut Vec<Value<'static>>, value: Value<'static>) {
-    vec.push(value);
-}
-
-pub fn vec_with_capacity_entries(capacity: usize) -> Vec<MapEntry<'static>> {
-    Vec::with_capacity(capacity)
-}
-
-pub fn vec_push_entry(vec: &mut Vec<MapEntry<'static>>, entry: MapEntry<'static>) {
-    vec.push(entry);
-}
-
 /// A wrapper around `Vec<MapEntry<'a>>` that represents a collection whose
 /// elements are guaranteed to be sorted by key and unique.
 #[derive(Debug, PartialEq, Clone, Default)]
