@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
@@ -69,11 +68,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Location on a website where the asset links file can be found, see
 // https://developers.google.com/digital-asset-links/v1/getting-started.
 const char kAssetLinksAbsolutePath[] = ".well-known/assetlinks.json";
-
-void RecordNumFingerprints(size_t num_fingerprints) {
-  base::UmaHistogramExactLinear("DigitalAssetLinks.NumFingerprints",
-                                num_fingerprints, 5);
-}
 
 GURL GetUrlForAssetLinks(const url::Origin& origin) {
   return origin.GetURL().Resolve(kAssetLinksAbsolutePath);
@@ -167,7 +161,6 @@ bool StatementHasMatchingFingerprint(
     return false;
   }
 
-  RecordNumFingerprints(fingerprints->size());
   for (const std::string& target_fingerprint : target_fingerprints) {
     bool verified_fingerprint = false;
     for (const auto& fingerprint : *fingerprints) {

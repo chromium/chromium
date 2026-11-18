@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/net_errors.h"
@@ -165,7 +164,6 @@ TEST_F(DigitalAssetLinksHandlerTest, CorrectAssetLinksUrl) {
 
 TEST_F(DigitalAssetLinksHandlerTest, PositiveResponse) {
   DigitalAssetLinksHandler handler(GetSharedURLLoaderFactory());
-  base::HistogramTester histogram_tester;
   handler.CheckDigitalAssetLinkRelationshipForAndroidApp(
       GetTestingOrigin(), kValidRelation, kValidFingerprint, kValidPackage,
       base::BindOnce(&DigitalAssetLinksHandlerTest::OnRelationshipCheckComplete,
@@ -174,8 +172,6 @@ TEST_F(DigitalAssetLinksHandlerTest, PositiveResponse) {
 
   EXPECT_EQ(1, num_invocations_);
   EXPECT_EQ(result_, RelationshipCheckResult::kSuccess);
-  histogram_tester.ExpectBucketCount("DigitalAssetLinks.NumFingerprints", 1, 1);
-  histogram_tester.ExpectBucketCount("DigitalAssetLinks.NumFingerprints", 2, 0);
 }
 
 TEST_F(DigitalAssetLinksHandlerTest, PackageMismatch) {
@@ -244,7 +240,6 @@ TEST_F(DigitalAssetLinksHandlerTest, BadAssetLinks_Empty) {
 
 TEST_F(DigitalAssetLinksHandlerTest, BadAssetLinks_NotList) {
   DigitalAssetLinksHandler handler(GetSharedURLLoaderFactory());
-  base::HistogramTester histogram_tester;
   handler.CheckDigitalAssetLinkRelationshipForAndroidApp(
       GetTestingOrigin(), kValidRelation, kValidFingerprint, kValidPackage,
       base::BindOnce(&DigitalAssetLinksHandlerTest::OnRelationshipCheckComplete,
@@ -253,8 +248,6 @@ TEST_F(DigitalAssetLinksHandlerTest, BadAssetLinks_NotList) {
 
   EXPECT_EQ(1, num_invocations_);
   EXPECT_EQ(result_, RelationshipCheckResult::kFailure);
-  histogram_tester.ExpectBucketCount("DigitalAssetLinks.NumFingerprints", 1, 0);
-  histogram_tester.ExpectBucketCount("DigitalAssetLinks.NumFingerprints", 2, 0);
 }
 
 TEST_F(DigitalAssetLinksHandlerTest, BadAssetLinks_StatementNotDict) {
