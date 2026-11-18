@@ -1310,6 +1310,9 @@ void HTMLInputElement::CloneNonAttributePropertiesFrom(const Element& source,
   SetChecked(source_element.is_checked_);
   dirty_checkedness_ = source_element.dirty_checkedness_;
   is_indeterminate_ = source_element.is_indeterminate_;
+  if (RuntimeEnabledFeatures::InputDefaultIndeterminateAttributeEnabled()) {
+    dirty_indeterminateness_ = source_element.dirty_indeterminateness_;
+  }
   input_type_->CopyNonAttributeProperties(source_element);
 
   TextControlElement::CloneNonAttributePropertiesFrom(source, data);

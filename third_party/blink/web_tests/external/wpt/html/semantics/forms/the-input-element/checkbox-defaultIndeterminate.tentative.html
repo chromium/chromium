@@ -144,4 +144,39 @@ test(() => {
   assert_true(input.indeterminate);
   assert_false(input.checked);
 }, "dirty indeterminateness doesn't trigger dirty checkedness");
+
+for (const value of [false, true]) {
+  test(() => {
+    const input = createCheckbox();
+    input.defaultIndeterminate = value;
+
+    const clone = input.cloneNode();
+    assert_equals(clone.defaultIndeterminate, value);
+    assert_equals(clone.indeterminate, value);
+
+    clone.defaultIndeterminate = !value;
+    assert_equals(clone.indeterminate, !value);
+    assert_equals(input.defaultIndeterminate, value);
+    assert_equals(input.indeterminate, value);
+  }, `cloneNode() preserves non-dirty indeterminate=${value}`);
+
+  for (const defaultValue of [false, true]) {
+    test(() => {
+      const input = createCheckbox();
+      input.defaultIndeterminate = defaultValue;
+      input.indeterminate = value;
+
+      const clone = input.cloneNode();
+      assert_equals(clone.defaultIndeterminate, defaultValue);
+      assert_equals(clone.indeterminate, value);
+
+      clone.defaultIndeterminate = value;
+      assert_equals(clone.indeterminate, value);
+      clone.defaultIndeterminate = !value;
+      assert_equals(clone.indeterminate, value);
+      assert_equals(input.defaultIndeterminate, defaultValue);
+      assert_equals(input.indeterminate, value);
+    }, `cloneNode() preserves dirty indeterminate=${value} with defaultIndeterminate=${defaultValue}`);
+  }
+}
 </script>
