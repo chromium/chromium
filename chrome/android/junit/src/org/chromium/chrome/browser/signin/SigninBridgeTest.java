@@ -48,6 +48,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -104,17 +105,34 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
 
-/** JUnit tests for the class {@link SigninBridge}. */
+/**
+ * JUnit tests for the class {@link SigninBridge}.
+ *
+ * <p>TODO(crbug.com/493130564): Remove MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2
+ * parameterization after launch.
+ */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class SigninBridgeTest {
     private static final String TEST_EXTENSION_NAME = "Test Extension";
 
-    @Parameters
+    @Parameters(name = "{index}_isWebSignin={0}_isIdentityMgrSourceOfAccounts={3}")
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[][] {
-                    {/* isWebSignin= */ true, SigninAccessPoint.WEB_SIGNIN, ""},
-                    {/* isWebSignin= */ false, SigninAccessPoint.EXTENSIONS, TEST_EXTENSION_NAME}
+                    {/* isWebSignin= */ true, SigninAccessPoint.WEB_SIGNIN, "", false},
+                    {/* isWebSignin= */ true, SigninAccessPoint.WEB_SIGNIN, "", true},
+                    {
+                        /* isWebSignin= */ false,
+                        SigninAccessPoint.EXTENSIONS,
+                        TEST_EXTENSION_NAME,
+                        false
+                    },
+                    {
+                        /* isWebSignin= */ false,
+                        SigninAccessPoint.EXTENSIONS,
+                        TEST_EXTENSION_NAME,
+                        true
+                    }
                 });
     }
 
@@ -138,6 +156,9 @@ public class SigninBridgeTest {
 
     @Parameter(2)
     public @Nullable String mExtensionName;
+
+    @Parameter(3)
+    public boolean mIsIdentityManagerSourceOfAccountsPart2;
 
     @Mock private Tab mTabMock;
 
@@ -171,6 +192,9 @@ public class SigninBridgeTest {
 
     @Before
     public void setUp() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2,
+                mIsIdentityManagerSourceOfAccountsPart2);
         mContinueUrl = new GURL("https://test-continue-url.com");
         mInitialTabUrl = new GURL("https://test-initial-tab-url.com");
         BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetControllerMock);
@@ -185,6 +209,9 @@ public class SigninBridgeTest {
         lenient().when(mTabMock.isUserInteractable()).thenReturn(true);
         lenient().when(mTabMock.getId()).thenReturn(TAB_ID);
         lenient().when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
+        lenient()
+                .when(mSigninManagerMock.getIdentityManager())
+                .thenReturn(mAccountManagerTestRule.getIdentityManager());
 
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         IdentityServicesProvider.setAccountPreviewDataServiceForTesting(
@@ -337,6 +364,53 @@ public class SigninBridgeTest {
                         eq(mIsWebSignin),
                         eq(mSigninAccessPoint),
                         eq(TestAccounts.ACCOUNT1.getId()));
+        if (!mIsWebSignin) {
+            verify(mOnFlowFinishedMock).run();
+        }
+    }
+
+    @Test
+    public void testAccountPickerSuppressedWhenAccountsLoading() {
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
+        mAccountManagerTestRule.blockGetAccountsUpdate();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        SigninBridge.openAccountPickerBottomSheet(
+                mTabMock,
+                mContinueUrl,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                TestAccounts.ACCOUNT1.getId(),
+                mExtensionName,
+                mIsWebSignin ? null : mOnFlowFinishedMock);
+
+        verify(mSigninMetricsUtilsJniMock)
+                .logAccountConsistencyPromoAction(
+                        AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS, mSigninAccessPoint);
+        verifyNoInteractions(mAccountPickerBottomSheetCoordinatorFactoryMock);
+        verifyNoInteractions(mCoordinatorMock);
+        if (!mIsWebSignin) {
+            verify(mOnFlowFinishedMock).run();
+        }
+    }
+
+    @Test
+    public void testAccountPickerSuppressedWhenAccountFetchFailed() {
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
+        mAccountManagerTestRule.setAccountFetchFailed();
+
+        SigninBridge.openAccountPickerBottomSheet(
+                mTabMock,
+                mContinueUrl,
+                mAccountPickerBottomSheetCoordinatorFactoryMock,
+                TestAccounts.ACCOUNT1.getId(),
+                mExtensionName,
+                mIsWebSignin ? null : mOnFlowFinishedMock);
+
+        verify(mSigninMetricsUtilsJniMock)
+                .logAccountConsistencyPromoAction(
+                        AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS, mSigninAccessPoint);
+        verifyNoInteractions(mAccountPickerBottomSheetCoordinatorFactoryMock);
+        verifyNoInteractions(mCoordinatorMock);
         if (!mIsWebSignin) {
             verify(mOnFlowFinishedMock).run();
         }
@@ -496,7 +570,8 @@ public class SigninBridgeTest {
         verifyNoInteractions(mAccountPickerBottomSheetCoordinatorFactoryMock);
         if (!mIsWebSignin) {
             InOrder inOrder = inOrder(mExtensionsSigninDelegate, mCoordinatorMock);
-            inOrder.verify(mExtensionsSigninDelegate).setOnFlowFinishedCallback(mOnFlowFinishedMock);
+            inOrder.verify(mExtensionsSigninDelegate)
+                    .setOnFlowFinishedCallback(mOnFlowFinishedMock);
             inOrder.verify(mCoordinatorMock).startSigninFlow(any());
             verifyNoInteractions(mOnFlowFinishedMock);
         } else {

@@ -62,6 +62,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.ExternalEntryPoint;
 import org.chromium.components.signin.base.SigninDeepLinkPayload;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.CrossDeviceInitialState;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -368,9 +369,7 @@ final class SigninBridge {
                     AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED, accessPoint);
             return false;
         }
-        List<AccountInfo> accounts =
-                AccountUtils.getAccountsIfFulfilledOrEmpty(
-                        AccountManagerFacadeProvider.getInstance().getAccounts());
+        List<AccountInfo> accounts = getAccounts(signinManager.getIdentityManager());
         if (accounts.isEmpty()) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS, accessPoint);
@@ -659,5 +658,19 @@ final class SigninBridge {
         }
 
         private SigninDeepLinkFlowStrings() {}
+    }
+
+    private static List<AccountInfo> getAccounts(IdentityManager identityManager) {
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            if (identityManager.getRefreshTokensLoadingState()
+                    != RefreshTokensLoadingState.SUCCEEDED) {
+                return List.of();
+            }
+            return identityManager.getExtendedAccountInfoForAccountsWithRefreshToken();
+        } else {
+            return AccountUtils.getAccountsIfFulfilledOrEmpty(
+                    AccountManagerFacadeProvider.getInstance().getAccounts());
+        }
     }
 }
