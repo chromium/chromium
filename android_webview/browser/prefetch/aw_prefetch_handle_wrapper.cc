@@ -43,8 +43,8 @@ void AwPrefetchHandleWrapper::CommitInitialPrefetchHandle(
   // A valid handle should be provided to commit.
   CHECK(prefetch_handle);
 
-  prefetch_handle_ =
-      content::CrossThreadPrefetchHandle::Create(std::move(prefetch_handle));
+  prefetch_handle_ = content::CrossThreadPrefetchHandle::CreateOnUIThread(
+      std::move(prefetch_handle));
   SetState(State::kPrefetchHandleCommitted);
 }
 
@@ -54,7 +54,7 @@ AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
     std::unique_ptr<content::PrefetchHandle> prefetch_handle)
     : url_(url),
       expected_no_vary_search_(std::move(expected_no_vary_search)),
-      prefetch_handle_(content::CrossThreadPrefetchHandle::Create(
+      prefetch_handle_(content::CrossThreadPrefetchHandle::CreateOnUIThread(
           std::move(prefetch_handle))),
       state_(State::kPrefetchHandleCommitted) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -140,8 +140,8 @@ void AwPrefetchHandleWrapper::CommitPrefetchHandleAfterConsume(
 
   // A valid handle should be provided to commit.
   CHECK(prefetch_handle);
-  prefetch_handle_ =
-      content::CrossThreadPrefetchHandle::Create(std::move(prefetch_handle));
+  prefetch_handle_ = content::CrossThreadPrefetchHandle::CreateOnUIThread(
+      std::move(prefetch_handle));
   SetState(State::kPrefetchHandleCommitted);
 }
 

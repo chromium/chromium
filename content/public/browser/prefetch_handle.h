@@ -20,7 +20,7 @@ struct URLLoaderCompletionStatus;
 
 namespace content {
 
-// Thread-safe state holding atomic staleness, decoupling worker-thread
+// Thread-safe state holding atomic staleness, decoupling non-UI-thread
 // reads from `PrefetchHandleImpl`'s UI-thread lifetime. A helper class is
 // used because `std::atomic<bool>` is not `base::RefCountedThreadSafe`.
 class CONTENT_EXPORT PrefetchStalenessAtomicState
@@ -91,10 +91,11 @@ class PrefetchHandle {
 // trivially called from non-UI thread.
 //
 // Threading model:
-// - Can be created, destroyed, moved, or called on any thread.
+// - `CreateOnUIThread()` must be called on the UI thread.
+// - Can be destroyed, moved, or have `IsPrefetchStale()` called on any thread.
 class CONTENT_EXPORT CrossThreadPrefetchHandle final {
  public:
-  static std::unique_ptr<CrossThreadPrefetchHandle> Create(
+  static std::unique_ptr<CrossThreadPrefetchHandle> CreateOnUIThread(
       std::unique_ptr<content::PrefetchHandle> prefetch_handle);
   ~CrossThreadPrefetchHandle();
 

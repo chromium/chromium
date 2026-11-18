@@ -18,8 +18,10 @@ PrefetchStalenessAtomicState::PrefetchStalenessAtomicState(
 PrefetchStalenessAtomicState::~PrefetchStalenessAtomicState() = default;
 
 // static
-std::unique_ptr<CrossThreadPrefetchHandle> CrossThreadPrefetchHandle::Create(
+std::unique_ptr<CrossThreadPrefetchHandle>
+CrossThreadPrefetchHandle::CreateOnUIThread(
     std::unique_ptr<content::PrefetchHandle> prefetch_handle) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!prefetch_handle) {
     return nullptr;
   }
