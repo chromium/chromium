@@ -5,7 +5,9 @@
 #include "chrome/browser/glic/browser_ui/glic_modal_android.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/android/jni_android.h"
@@ -18,8 +20,10 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
+#include "ui/color/color_provider.h"
 
 // JNI headers must be included after standard headers.
 #include "chrome/browser/glic/android/jni_headers/GlicModalCoordinator_jni.h"
@@ -61,6 +65,15 @@ bool GlicModalAndroid::ShowInternal(tabs::TabInterface& tab,
   modal_web_contents_->SetDelegate(this);
   Observe(modal_web_contents_.get());
 
+  std::optional<int32_t> background_color;
+  if (params.background_color_id.has_value()) {
+    if (const ui::ColorProvider* color_provider =
+            window_android->GetColorProvider()) {
+      background_color = static_cast<int32_t>(
+          color_provider->GetColor(*params.background_color_id));
+    }
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_obj =
       Java_GlicModalCoordinator_show(
@@ -70,7 +83,8 @@ bool GlicModalAndroid::ShowInternal(tabs::TabInterface& tab,
           params.landscape_max_size_dp.width(),
           params.landscape_max_size_dp.height(),
           params.show_android_close_button, params.loading_view,
-          params.size_to_content);
+          params.size_to_content, background_color,
+          params.deprecated_always_use_modal_dialog);
   if (!java_obj) {
     Observe(nullptr);
     modal_web_contents_->SetDelegate(nullptr);

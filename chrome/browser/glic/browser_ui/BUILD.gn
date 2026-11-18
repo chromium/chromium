@@ -16,6 +16,7 @@ source_set("modal") {
     "//base",
     "//ui/base",
     "//ui/base/interaction",
+    "//ui/color:color_headers",
     "//ui/gfx/geometry",
     "//url",
   ]
@@ -23,6 +24,7 @@ source_set("modal") {
     "//chrome/browser/profiles:profile",
     "//components/tabs:public",
     "//content/public/browser",
+    "//ui/color",
   ]
   if (!is_android) {
     sources += [ "glic_modal_desktop.cc" ]

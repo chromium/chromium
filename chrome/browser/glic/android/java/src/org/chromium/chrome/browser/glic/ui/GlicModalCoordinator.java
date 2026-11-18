@@ -20,6 +20,7 @@ import android.view.Window;
 import android.widget.FrameLayout;
 
 import androidx.activity.ComponentDialog;
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
@@ -103,6 +104,9 @@ public class GlicModalCoordinator {
     private final int mLandscapeHeightDp;
     private final boolean mShowCloseButton;
     private final boolean mEnableAutoResize;
+    private final @ColorInt int mBackgroundColor;
+    // TODO(b/586590010): Remove once <600dp opt-in -> Glic bottom-sheet transition lands.
+    private final boolean mAlwaysUseModalDialog;
 
     private @Nullable View mLoadingView;
     private boolean mRevealed;
@@ -181,7 +185,9 @@ public class GlicModalCoordinator {
             int landscapeHeightDp,
             boolean showCloseButton,
             @Nullable View loadingView,
-            boolean enableAutoResize) {
+            boolean enableAutoResize,
+            @JniType("std::optional<int32_t>") @Nullable @ColorInt Integer backgroundColor,
+            boolean alwaysUseModalDialog) {
         JniRawPtr<NativeGlicModalAndroid> ptrToRelease = nativePtr;
         try {
             if (windowAndroid.getActivity() == null) {
@@ -210,7 +216,9 @@ public class GlicModalCoordinator {
                             landscapeHeightDp,
                             showCloseButton,
                             loadingView,
-                            enableAutoResize);
+                            enableAutoResize,
+                            backgroundColor,
+                            alwaysUseModalDialog);
             if (!coordinator.showInternal()) {
                 ptrToRelease = null;
                 coordinator.destroy();
@@ -238,7 +246,9 @@ public class GlicModalCoordinator {
             int landscapeHeightDp,
             boolean showCloseButton,
             @Nullable View loadingView,
-            boolean enableAutoResize) {
+            boolean enableAutoResize,
+            @Nullable @ColorInt Integer backgroundColor,
+            boolean alwaysUseModalDialog) {
         mNativePtr = nativePtr;
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -252,12 +262,20 @@ public class GlicModalCoordinator {
         mShowCloseButton = showCloseButton;
         mLoadingView = loadingView;
         mEnableAutoResize = enableAutoResize;
+        mBackgroundColor =
+                backgroundColor != null
+                        ? backgroundColor
+                        : SemanticColorUtils.getDefaultBgColor(activity);
+        mAlwaysUseModalDialog = alwaysUseModalDialog;
         mRevealed = (loadingView == null);
         updateTargetSize(mActivity.getResources().getConfiguration());
     }
 
     private @ContainerMode int pickContainerMode(Configuration config) {
-        if (mBottomSheetController == null
+        // TODO(b/586590010): Remove `mAlwaysUseModalDialog` once <600dp opt-in -> Glic
+        // bottom-sheet transition lands.
+        if (mAlwaysUseModalDialog
+                || mBottomSheetController == null
                 || config.screenWidthDp == Configuration.SCREEN_WIDTH_DP_UNDEFINED
                 || config.screenWidthDp >= 600) {
             return ContainerMode.MODAL_DIALOG;
@@ -298,8 +316,6 @@ public class GlicModalCoordinator {
                 mWindowAndroid,
                 WebContents.createDefaultInternalsHolder());
 
-        int backgroundColor = SemanticColorUtils.getDefaultBgColor(mActivity);
-
         var tracker = mWindowAndroid.getIntentRequestTracker();
         if (tracker == null) {
             return false;
@@ -307,7 +323,7 @@ public class GlicModalCoordinator {
 
         ThinWebViewConstraints constraints = new ThinWebViewConstraints();
         constraints.supportsOpacity = true;
-        constraints.backgroundColor = backgroundColor;
+        constraints.backgroundColor = mBackgroundColor;
         mThinWebView =
                 ThinWebViewFactory.create(
                         mActivity, constraints, tracker, /* enablePermissionRequests= */ true);
@@ -376,7 +392,8 @@ public class GlicModalCoordinator {
         return null;
     }
 
-    private FrameLayout createContentContainer(ThinWebView thinWebView) {
+    private FrameLayout createContentContainer(
+            ThinWebView thinWebView, @ContainerMode int containerMode) {
         detachChildrenFromParent();
 
         FrameLayout container =
@@ -393,7 +410,12 @@ public class GlicModalCoordinator {
                                 mMaxOfferedHeightPx > 0
                                         ? Math.min(mTargetHeightPx, mMaxOfferedHeightPx)
                                         : capSizeToSpec(mTargetHeightPx, heightMeasureSpec);
-                        int availWidthPx = capSizeToSpec(mTargetWidthPx, widthMeasureSpec);
+                        int availWidthPx =
+                                (containerMode == ContainerMode.BOTTOM_SHEET
+                                                && MeasureSpec.getMode(widthMeasureSpec)
+                                                        != MeasureSpec.UNSPECIFIED)
+                                        ? MeasureSpec.getSize(widthMeasureSpec)
+                                        : capSizeToSpec(mTargetWidthPx, widthMeasureSpec);
 
                         float density = getResources().getDisplayMetrics().density;
                         int availWidthDip = (int) Math.floor(availWidthPx / density);
@@ -442,7 +464,8 @@ public class GlicModalCoordinator {
             return;
         }
 
-        FrameLayout cardContainer = createContentContainer(mThinWebView);
+        FrameLayout cardContainer =
+                createContentContainer(mThinWebView, ContainerMode.MODAL_DIALOG);
         cardContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(
                         LayoutParams.WRAP_CONTENT,
@@ -480,7 +503,8 @@ public class GlicModalCoordinator {
             return false;
         }
 
-        FrameLayout sheetContainer = createContentContainer(mThinWebView);
+        FrameLayout sheetContainer =
+                createContentContainer(mThinWebView, ContainerMode.BOTTOM_SHEET);
         sheetContainer.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
@@ -733,6 +757,11 @@ public class GlicModalCoordinator {
         @Override
         public boolean showHandlebar() {
             return true;
+        }
+
+        @Override
+        public @ColorInt int getSheetBackgroundColorOverride() {
+            return mBackgroundColor;
         }
 
         @Override

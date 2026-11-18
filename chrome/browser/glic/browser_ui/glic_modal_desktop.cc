@@ -124,6 +124,7 @@ class GlicModalDialogView : public views::DialogDelegate,
     SetModalType(ui::mojom::ModalType::kChild);
     set_esc_should_cancel_dialog_override(true);
     SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    background_color_id_ = params.background_color_id;
 
     auto web_view = std::make_unique<GlicModalWebView>(
         profile, tab, params.suppress_first_auto_resize, this);
@@ -287,6 +288,9 @@ class GlicModalDialogView : public views::DialogDelegate,
             views::ShapeContextTokens::kDialogRadius));
     if (views::BubbleFrameView* frame = GetBubbleFrameView()) {
       frame->SetRoundedCorners(corner_radii);
+      if (background_color_id_.has_value()) {
+        frame->SetBackgroundColor(*background_color_id_);
+      }
     }
     web_view_->holder()->SetNativeViewCornerRadii(corner_radii);
 
@@ -344,6 +348,7 @@ class GlicModalDialogView : public views::DialogDelegate,
   views::ViewTracker loading_view_tracker_;
   std::unique_ptr<views::WebView::ScopedAxDisconnectLock> ax_lock_;
   std::optional<gfx::Size> pending_auto_resize_;
+  std::optional<ui::ColorId> background_color_id_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>

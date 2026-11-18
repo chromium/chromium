@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_MODAL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -95,6 +97,18 @@ class GlicModal {
 
     // Whether to show a native overlay close button on Android.
     bool show_android_close_button = false;
+
+    // Optional ColorProvider color ID for the modal / bottom-sheet surface
+    // background. When unset, uses the platform default dialog/WebUI surface
+    // background.
+    std::optional<ui::ColorId> background_color_id;
+
+    // TODO(b/586590010): Remove once the <600dp experimental opt-in -> Glic
+    // bottom-sheet transition is finalized and
+    // `kGlicExperimentalOptInBottomSheet` is enabled by default. When true on
+    // Android, presents inside `ModalDialogManager` even on `<600dp` compact
+    // windows instead of `BottomSheetController`.
+    bool deprecated_always_use_modal_dialog = false;
 
     // Whether the WebView should be set as the initially focused view and
     // requested to focus when the primary main frame finishes loading.

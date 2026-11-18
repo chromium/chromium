@@ -21,8 +21,11 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/layout_provider.h"
@@ -31,6 +34,7 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
 namespace glic {
@@ -226,6 +230,36 @@ IN_PROC_BROWSER_TEST_F(GlicModalBrowserTest, AvailableSizeChangedCallback) {
   std::unique_ptr<GlicModal> modal = GlicModal::Show(*tab, std::move(params));
   ASSERT_TRUE(modal);
   EXPECT_EQ(received_size, gfx::Size(600, 700));
+
+  modal->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicModalBrowserTest,
+                       BackgroundColorIdAppliedToBubbleFrame) {
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  ASSERT_TRUE(tab);
+
+  GlicModal::Params params;
+  params.content_url = GURL(chrome::kChromeUIVersionURL);
+  params.background_color_id = ui::kColorSysBase;
+
+  std::unique_ptr<GlicModal> modal = GlicModal::Show(*tab, std::move(params));
+  ASSERT_TRUE(modal);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::View* tracked_view =
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          GlicModal::kDialogElementId,
+          views::ElementTrackerViews::GetContextForWidget(
+              browser_view->GetWidget()));
+  ASSERT_TRUE(tracked_view);
+  views::Widget* widget = tracked_view->GetWidget();
+  ASSERT_TRUE(widget);
+  auto* dialog_delegate = widget->widget_delegate()->AsDialogDelegate();
+  ASSERT_TRUE(dialog_delegate);
+  views::BubbleFrameView* frame = dialog_delegate->GetBubbleFrameView();
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->background_color(), ui::ColorVariant(ui::kColorSysBase));
 
   modal->Close();
 }

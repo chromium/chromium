@@ -56,6 +56,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightM
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -160,7 +161,9 @@ public class GlicModalCoordinatorUnitTest {
                 portraitHeightDp,
                 showCloseButton,
                 /* loadingView= */ null,
-                /* enableAutoResize= */ false);
+                /* enableAutoResize= */ false,
+                /* backgroundColor= */ null,
+                /* alwaysUseModalDialog= */ false);
     }
 
     private GlicModalCoordinator showCoordinator(
@@ -168,6 +171,22 @@ public class GlicModalCoordinatorUnitTest {
             boolean showCloseButton,
             @Nullable View loadingView,
             boolean enableAutoResize) {
+        return showCoordinator(
+                portraitHeightDp,
+                showCloseButton,
+                loadingView,
+                enableAutoResize,
+                /* backgroundColor= */ null,
+                /* alwaysUseModalDialog= */ false);
+    }
+
+    private GlicModalCoordinator showCoordinator(
+            int portraitHeightDp,
+            boolean showCloseButton,
+            @Nullable View loadingView,
+            boolean enableAutoResize,
+            @Nullable Integer backgroundColor,
+            boolean alwaysUseModalDialog) {
         return GlicModalCoordinator.show(
                 mNativePtr,
                 mWindowAndroid,
@@ -178,7 +197,9 @@ public class GlicModalCoordinatorUnitTest {
                 LANDSCAPE_HEIGHT_DP,
                 showCloseButton,
                 loadingView,
-                enableAutoResize);
+                enableAutoResize,
+                backgroundColor,
+                alwaysUseModalDialog);
     }
 
     @Test
@@ -879,6 +900,83 @@ public class GlicModalCoordinatorUnitTest {
                 MeasureSpec.makeMeasureSpec(dpToPx(350), MeasureSpec.EXACTLY));
         assertEquals(dpToPx(500), mWebView.getLayoutParams().height);
         assertEquals(dpToPx(500), card.getMeasuredHeight());
+    }
+
+    @Test
+    @Config(qualifiers = "sw411dp-w411dp-h891dp")
+    public void testBottomSheet_FillsFullWidthWiderThanPortraitMax() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.BOTTOM_SHEET, coordinator.getContainerModeForTesting());
+
+        BottomSheetContent sheetContent = coordinator.getBottomSheetContentForTesting();
+        assertNotNull(sheetContent);
+        View sheetView = sheetContent.getContentView();
+        sheetView.measure(
+                MeasureSpec.makeMeasureSpec(dpToPx(411), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(dpToPx(800), MeasureSpec.AT_MOST));
+
+        // Sheet container must span the full 411dp bottom sheet width rather than capping at
+        // PORTRAIT_WIDTH_DP (380dp).
+        assertEquals(dpToPx(411), sheetView.getMeasuredWidth());
+        assertEquals(dpToPx(PORTRAIT_HEIGHT_DP), sheetView.getMeasuredHeight());
+        verify(mNativeMock).onAvailableSizeChanged(eq(mNativePtr), eq(411), eq(PORTRAIT_HEIGHT_DP));
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testBottomSheet_BackgroundColorDefault() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator = showCoordinator(PORTRAIT_HEIGHT_DP, true);
+        assertNotNull(coordinator);
+        BottomSheetContent sheet = coordinator.getBottomSheetContentForTesting();
+        assertNotNull(sheet);
+        assertEquals(
+                SemanticColorUtils.getDefaultBgColor(mActivity),
+                sheet.getSheetBackgroundColorOverride());
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testBottomSheet_BackgroundColorCustomOverride() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator =
+                showCoordinator(
+                        PORTRAIT_HEIGHT_DP,
+                        /* showCloseButton= */ true,
+                        /* loadingView= */ null,
+                        /* enableAutoResize= */ false,
+                        Color.MAGENTA,
+                        /* alwaysUseModalDialog= */ false);
+        assertNotNull(coordinator);
+        BottomSheetContent sheet = coordinator.getBottomSheetContentForTesting();
+        assertNotNull(sheet);
+        assertEquals(Color.MAGENTA, sheet.getSheetBackgroundColorOverride());
+    }
+
+    @Test
+    @Config(qualifiers = "sw360dp-w360dp-h800dp")
+    public void testShow_AlwaysUseModalDialog_ForcesModalOnCompactWindow() {
+        BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
+
+        GlicModalCoordinator coordinator =
+                showCoordinator(
+                        PORTRAIT_HEIGHT_DP,
+                        /* showCloseButton= */ true,
+                        /* loadingView= */ null,
+                        /* enableAutoResize= */ false,
+                        /* backgroundColor= */ null,
+                        /* alwaysUseModalDialog= */ true);
+        assertNotNull(coordinator);
+        assertEquals(ContainerMode.MODAL_DIALOG, coordinator.getContainerModeForTesting());
+        assertNull(coordinator.getBottomSheetContentForTesting());
+        assertNotNull(coordinator.getPropertyModelForTesting());
+        verify(mModalDialogManager)
+                .showDialog(coordinator.getPropertyModelForTesting(), ModalDialogType.APP);
+        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
     }
 
     private void dispatchConfigurationChanged(Configuration config) {
