@@ -12,8 +12,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
+#include "build/build_config.h"
 #include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_provider.h"
+#include "components/metrics/metrics_upload_scheduler.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/structured_events.h"
@@ -453,5 +455,163 @@ TEST_F(StructuredMetricsServiceTest, RotateLogsWithUnsentLogsExtractsEvents) {
   service_->reporting_service_->log_store()->TrimAndPersistUnsentLogs(true);
   EXPECT_EQ(GetPersistedLogCount(), 2);
 }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// Entering the background must move in-memory events into the persisted log
+// store, since the process may be killed without running the destructor.
+TEST_F(StructuredMetricsServiceTest, OnAppEnterBackgroundFlushesEvents) {
+  Init();
+  EnableRecording();
+  EnableReporting();
+
+  StructuredMetricsClient::Record(
+      std::move(TestEventOne().SetTestMetricTwo(1)));
+  StructuredMetricsClient::Record(
+      std::move(TestEventSeven().SetTestMetricSeven(1)));
+  Wait();
+  ASSERT_TRUE(service_->recorder()->event_storage()->HasEvents());
+
+  service_->OnAppEnterBackground();
+  Wait();
+
+  EXPECT_FALSE(service_->recorder()->event_storage()->HasEvents());
+  const auto uma_proto = GetPersistedLog();
+  EXPECT_THAT(uma_proto.structured_data().events().size(), 2);
+}
+
+TEST_F(StructuredMetricsServiceTest, OnAppEnterBackgroundWithNoEvents) {
+  Init();
+  EnableRecording();
+  EnableReporting();
+
+  service_->OnAppEnterBackground();
+  Wait();
+
+  EXPECT_THAT(GetPersistedLogCount(), 0);
+}
+
+// The rotation scheduler stops while backgrounded and resumes in the
+// foreground.
+TEST_F(StructuredMetricsServiceTest,
+       SchedulerStopsInBackgroundAndResumesInForeground) {
+  Init();
+  EnableRecording();
+  EnableReporting();
+  Wait();
+  ASSERT_TRUE(service_->recorder()->CanProvideMetrics());
+
+  // Let the initial (empty) rotation happen so the scheduler is in its
+  // steady state.
+  task_environment_.FastForwardBy(base::Minutes(1));
+  Wait();
+
+  service_->OnAppEnterBackground();
+  Wait();
+  ASSERT_THAT(GetPersistedLogCount(), 0);
+
+  // An event recorded while backgrounded stays in memory: no rotation runs.
+  StructuredMetricsClient::Record(
+      std::move(TestEventOne().SetTestMetricTwo(1)));
+  Wait();
+  task_environment_.FastForwardBy(base::Minutes(15));
+  Wait();
+  EXPECT_TRUE(service_->recorder()->event_storage()->HasEvents());
+  EXPECT_FALSE(service_->log_store()->has_unsent_logs());
+
+  // Back in the foreground the scheduler rotates again.
+  service_->OnAppEnterForeground();
+  task_environment_.FastForwardBy(base::Minutes(15));
+  Wait();
+  EXPECT_FALSE(service_->recorder()->event_storage()->HasEvents());
+  EXPECT_TRUE(service_->log_store()->has_unsent_logs());
+  service_->reporting_service()->log_store()->TrimAndPersistUnsentLogs(true);
+  EXPECT_THAT(GetPersistedLogCount(), 1);
+}
+
+TEST_F(StructuredMetricsServiceTest,
+       OnAppEnterForegroundDoesNotStartSchedulerWhenReportingDisabled) {
+  Init();
+  EnableRecording();
+  Wait();
+  ASSERT_TRUE(service_->recorder()->CanProvideMetrics());
+
+  service_->OnAppEnterBackground();
+  service_->OnAppEnterForeground();
+
+  // Reporting was never enabled, so no rotation should ever store a log.
+  StructuredMetricsClient::Record(
+      std::move(TestEventOne().SetTestMetricTwo(1)));
+  Wait();
+  task_environment_.FastForwardBy(base::Minutes(15));
+  Wait();
+  EXPECT_TRUE(service_->recorder()->event_storage()->HasEvents());
+  EXPECT_FALSE(service_->log_store()->has_unsent_logs());
+}
+
+// A log flushed on backgrounding must be uploaded once the app returns to the
+// foreground, without waiting for the next rotation.
+TEST_F(StructuredMetricsServiceTest,
+       OnAppEnterForegroundUploadsLogsFlushedInBackground) {
+  Init();
+  EnableRecording();
+  EnableReporting();
+  Wait();
+  ASSERT_TRUE(service_->recorder()->CanProvideMetrics());
+
+  // Let the initial upload attempt and the first (empty) rotation run so the
+  // upload scheduler has stopped for lack of logs.
+  task_environment_.FastForwardBy(base::Minutes(2));
+  Wait();
+  MetricsUploadScheduler* upload_scheduler =
+      service_->reporting_service()->GetUploadSchedulerForTesting();
+  ASSERT_TRUE(upload_scheduler);
+  ASSERT_FALSE(upload_scheduler->IsRunning());
+
+  StructuredMetricsClient::Record(
+      std::move(TestEventOne().SetTestMetricTwo(1)));
+  Wait();
+  ASSERT_TRUE(service_->recorder()->event_storage()->HasEvents());
+
+  // Backgrounding flushes the event into the log store but does not start an
+  // upload.
+  service_->OnAppEnterBackground();
+  Wait();
+  ASSERT_TRUE(service_->log_store()->has_unsent_logs());
+  ASSERT_FALSE(upload_scheduler->IsRunning());
+
+  // Foregrounding starts the upload scheduler, which stages and uploads the
+  // flushed log after the unsent-logs interval.
+  service_->OnAppEnterForeground();
+  EXPECT_TRUE(upload_scheduler->IsRunning());
+  task_environment_.FastForwardBy(
+      MetricsUploadScheduler::GetUnsentLogsInterval());
+  Wait();
+  ASSERT_TRUE(client_.uploader());
+  EXPECT_TRUE(client_.uploader()->is_uploading());
+}
+
+TEST_F(StructuredMetricsServiceTest,
+       OnAppEnterForegroundDoesNotStartUploadWithoutUnsentLogs) {
+  Init();
+  EnableRecording();
+  EnableReporting();
+  Wait();
+  ASSERT_TRUE(service_->recorder()->CanProvideMetrics());
+
+  task_environment_.FastForwardBy(base::Minutes(2));
+  Wait();
+  MetricsUploadScheduler* upload_scheduler =
+      service_->reporting_service()->GetUploadSchedulerForTesting();
+  ASSERT_TRUE(upload_scheduler);
+  ASSERT_FALSE(upload_scheduler->IsRunning());
+
+  service_->OnAppEnterBackground();
+  Wait();
+  ASSERT_FALSE(service_->log_store()->has_unsent_logs());
+
+  service_->OnAppEnterForeground();
+  EXPECT_FALSE(upload_scheduler->IsRunning());
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 }  // namespace metrics::structured

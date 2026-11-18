@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
@@ -65,6 +66,16 @@ class StructuredMetricsService final {
 
   void EnableReporting();
   void DisableReporting();
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Called when the app moves to the background or returns to the foreground.
+  // On these platforms the process may be killed at any time while in the
+  // background without running ~StructuredMetricsService(), so entering the
+  // background flushes any in-memory events into the persisted log store and
+  // stops the log rotation scheduler; entering the foreground restarts it.
+  void OnAppEnterBackground();
+  void OnAppEnterForeground();
+#endif
 
   // Flushes any event currently in the recorder to prefs.
   void Flush(metrics::MetricsLogsEventManager::CreateReason reason);

@@ -26,6 +26,7 @@
 #include "components/activity_reporter/activity_reporter.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/structured/structured_metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/ukm_service.h"
@@ -108,10 +109,18 @@ void UmaSessionStats::UmaResumeSession() {
     // OnAppEnterForeground() -> ProvideCurrentSessionData().
     session_time_tracker_.ReportBackgroundSessionTime();
 
-    ukm::UkmService* ukm_service =
-        g_browser_process->GetMetricsServicesManager()->GetUkmService();
+    metrics_services_manager::MetricsServicesManager* services_manager =
+        g_browser_process->GetMetricsServicesManager();
+
+    ukm::UkmService* ukm_service = services_manager->GetUkmService();
     if (ukm_service) {
       ukm_service->OnAppEnterForeground();
+    }
+
+    metrics::structured::StructuredMetricsService* structured_metrics_service =
+        services_manager->GetStructuredMetricsService();
+    if (structured_metrics_service) {
+      structured_metrics_service->OnAppEnterForeground();
     }
 
     AndroidSessionDurationsServiceFactory::OnAppEnterForeground(
@@ -126,6 +135,18 @@ void UmaSessionStats::UmaEndSession() {
         session_time_tracker_.EndForegroundSession();
 
     CHECK(g_browser_process, base::NotFatalUntil::M161);
+    metrics_services_manager::MetricsServicesManager* services_manager =
+        g_browser_process->GetMetricsServicesManager();
+
+    // Flush structured metrics before MetricsService::OnAppEnterBackground()
+    // below, which commits local_state to disk: the flushed log then reaches
+    // disk in the same write instead of waiting for the next scheduled one.
+    metrics::structured::StructuredMetricsService* structured_metrics_service =
+        services_manager->GetStructuredMetricsService();
+    if (structured_metrics_service) {
+      structured_metrics_service->OnAppEnterBackground();
+    }
+
     // Tell the metrics services they were cleanly shutdown.
     metrics::MetricsService* metrics = g_browser_process->metrics_service();
     if (metrics) {
@@ -133,8 +154,7 @@ void UmaSessionStats::UmaEndSession() {
           base::FeatureList::IsEnabled(chrome::android::kUmaBackgroundSessions);
       metrics->OnAppEnterBackground(keep_reporting);
     }
-    ukm::UkmService* ukm_service =
-        g_browser_process->GetMetricsServicesManager()->GetUkmService();
+    ukm::UkmService* ukm_service = services_manager->GetUkmService();
     if (ukm_service) {
       ukm_service->OnAppEnterBackground();
     }

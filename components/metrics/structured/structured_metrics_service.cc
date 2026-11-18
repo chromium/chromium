@@ -133,6 +133,48 @@ void StructuredMetricsService::DisableReporting() {
   scheduler_->Stop();
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+void StructuredMetricsService::OnAppEnterBackground() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!structured_metrics_enabled_) {
+    return;
+  }
+
+  reporting_service_->OnAppEnterBackground();
+  scheduler_->Stop();
+
+  // Persist any in-memory events now: the process may be killed before the
+  // next scheduled rotation and the destructor will not run in that case.
+  // StoreLog() persists the unsent log store to prefs.
+  Flush(metrics::MetricsLogsEventManager::CreateReason::kBackgrounded);
+}
+
+void StructuredMetricsService::OnAppEnterForeground() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!structured_metrics_enabled_) {
+    return;
+  }
+
+  reporting_service_->OnAppEnterForeground();
+
+  // The scheduler is started by EnableReporting(); only resume it here if
+  // reporting is active. Start() is a no-op if it is already running.
+  if (!reporting_active()) {
+    return;
+  }
+  scheduler_->Start();
+
+  // Logs flushed on backgrounding are stored without starting an upload, and
+  // the rotation scheduler was just restarted with its full interval. Start
+  // the reporting service now so those logs are uploaded during this
+  // session instead of waiting for the next rotation, which a short session
+  // may never reach. Mirrors MetricsService::StartSchedulerIfNecessary().
+  if (reporting_service_->log_store()->has_unsent_logs()) {
+    reporting_service_->Start();
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
 void StructuredMetricsService::Flush(
     metrics::MetricsLogsEventManager::CreateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
