@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/actions/command_action_updater.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -83,16 +82,8 @@ void AppMenuButton::CloseMenu() {
   if (base::FeatureList::IsEnabled(features::kAppMenuGlowUp)) {
     if (action_menu_) {
       action_menu_->CloseMenu();
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(
-                         [](base::WeakPtr<AppMenuButton> self) {
-                           if (self && self->action_menu_ &&
-                               !self->action_menu_->IsShowing()) {
-                             self->action_menu_.reset();
-                           }
-                         },
-                         weak_ptr_factory_.GetWeakPtr()));
     }
+    action_menu_.reset();
   } else {
     if (menu_) {
       menu_->CloseMenu();

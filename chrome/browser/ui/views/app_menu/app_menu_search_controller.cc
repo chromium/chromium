@@ -227,10 +227,8 @@ void AppMenuSearchController::OnQueryChanged() {
     return;
   }
 
-  actions::ActionItem* results_ptr = results.get();
-  std::unique_ptr<actions::ActionItem> old_results = std::move(search_results_);
+  delegate_->ShowSearchResults(results.get());
   search_results_ = std::move(results);
-  delegate_->ShowSearchResults(results_ptr, std::move(old_results));
 }
 
 void AppMenuSearchController::RestoreMenu() {
@@ -238,7 +236,8 @@ void AppMenuSearchController::RestoreMenu() {
     return;
   }
 
-  delegate_->RestoreMenu(std::move(search_results_));
+  delegate_->RestoreMenu();
+  search_results_.reset();
 }
 
 void AppMenuSearchController::FlattenHierarchyRecursive(

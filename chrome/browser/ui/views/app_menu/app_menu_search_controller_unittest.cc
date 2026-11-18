@@ -49,14 +49,8 @@ namespace {
 
 class MockDelegate : public AppMenuSearchController::Delegate {
  public:
-  MOCK_METHOD(void,
-              ShowSearchResults,
-              (actions::ActionItem*, std::unique_ptr<actions::ActionItem>),
-              (override));
-  MOCK_METHOD(void,
-              RestoreMenu,
-              (std::unique_ptr<actions::ActionItem>),
-              (override));
+  MOCK_METHOD(void, ShowSearchResults, (actions::ActionItem*), (override));
+  MOCK_METHOD(void, RestoreMenu, (), (override));
 };
 
 class AppMenuSearchControllerTest
@@ -905,21 +899,16 @@ TEST_F(AppMenuSearchControllerTest, ChangingQueryReplacesResults) {
   controller_->InitializeSearchIndex();
 
   base::WeakPtr<actions::ActionItem> first_results;
-  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull(), testing::_))
-      .WillOnce(
-          [&first_results](actions::ActionItem* results,
-                           std::unique_ptr<actions::ActionItem> old_results) {
-            first_results = results->GetAsWeakPtr();
-          })
-      .WillOnce(
-          [&first_results](actions::ActionItem* results,
-                           std::unique_ptr<actions::ActionItem> old_results) {
-            // The previous results must outlive the call that replaces them, so
-            // the menu can remove the rows pointing into them first.
-            EXPECT_TRUE(first_results);
-            EXPECT_EQ(first_results.get(), old_results.get());
-            EXPECT_NE(results, first_results.get());
-          });
+  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull()))
+      .WillOnce([&first_results](actions::ActionItem* results) {
+        first_results = results->GetAsWeakPtr();
+      })
+      .WillOnce([&first_results](actions::ActionItem* results) {
+        // The previous results must outlive the call that replaces them, so
+        // the menu can remove the rows pointing into them first.
+        EXPECT_TRUE(first_results);
+        EXPECT_NE(results, first_results.get());
+      });
   search_bar_->SetText(u"New");
   search_bar_->SetText(u"Print");
   // The previous results are freed once the menu shows the new ones.
@@ -937,9 +926,8 @@ TEST_F(AppMenuSearchControllerTest, ShortQueryKeepsResults) {
   search_bar_->SetText(u"N");
 
   base::WeakPtr<actions::ActionItem> results;
-  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull(), testing::_))
-      .WillOnce([&results](actions::ActionItem* shown,
-                           std::unique_ptr<actions::ActionItem> old_results) {
+  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull()))
+      .WillOnce([&results](actions::ActionItem* shown) {
         results = shown->GetAsWeakPtr();
       });
   search_bar_->SetText(u"New");
@@ -959,18 +947,15 @@ TEST_F(AppMenuSearchControllerTest, EmptyQueryRestoresMenu) {
 
   base::WeakPtr<actions::ActionItem> results;
   testing::InSequence sequence;
-  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull(), testing::_))
-      .WillOnce([&results](actions::ActionItem* shown,
-                           std::unique_ptr<actions::ActionItem> old_results) {
+  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull()))
+      .WillOnce([&results](actions::ActionItem* shown) {
         results = shown->GetAsWeakPtr();
       });
-  EXPECT_CALL(delegate_, RestoreMenu(testing::_))
-      .WillOnce([&results](std::unique_ptr<actions::ActionItem> old_results) {
-        // The results must outlive the call so the menu can remove the rows
-        // pointing into them first.
-        EXPECT_TRUE(results);
-        EXPECT_EQ(results.get(), old_results.get());
-      });
+  EXPECT_CALL(delegate_, RestoreMenu()).WillOnce([&results] {
+    // The results must outlive the call so the menu can remove the rows
+    // pointing into them first.
+    EXPECT_TRUE(results);
+  });
   search_bar_->SetText(u"New");
   search_bar_->SetText(std::u16string());
   // The results are freed once the menu is restored.
@@ -985,8 +970,8 @@ TEST_F(AppMenuSearchControllerTest, WhitespaceQueryRestoresMenu) {
   controller_->InitializeSearchIndex();
 
   testing::InSequence sequence;
-  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull(), testing::_));
-  EXPECT_CALL(delegate_, RestoreMenu(testing::_));
+  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull()));
+  EXPECT_CALL(delegate_, RestoreMenu());
   search_bar_->SetText(u"New");
   search_bar_->SetText(u"   ");
 }
@@ -999,8 +984,8 @@ TEST_F(AppMenuSearchControllerTest, ClearButtonRestoresMenu) {
   controller_->InitializeSearchIndex();
 
   testing::InSequence sequence;
-  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull(), testing::_));
-  EXPECT_CALL(delegate_, RestoreMenu(testing::_));
+  EXPECT_CALL(delegate_, ShowSearchResults(testing::NotNull()));
+  EXPECT_CALL(delegate_, RestoreMenu());
   search_bar_->SetText(u"New");
   views::test::ButtonTestApi(
       views::Button::AsButton(search_bar_->GetViewByElementId(

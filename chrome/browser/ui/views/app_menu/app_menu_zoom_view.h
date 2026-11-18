@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -84,7 +83,6 @@ class AppMenuZoomView : public views::BoxLayoutView {
   raw_ptr<views::ImageButton> zoom_plus_button_ = nullptr;
   base::CallbackListSubscription zoom_label_subscription_;
   std::vector<base::CallbackListSubscription> button_subscriptions_;
-  base::WeakPtrFactory<AppMenuZoomView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_ZOOM_VIEW_H_

@@ -17,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -75,7 +74,6 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/branded_strings.h"
@@ -151,7 +149,6 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/menu_test_utils.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/view_observer.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -181,20 +178,6 @@ actions::BaseAction* AddChildBeforeFooter(
   return app_menu_root->AddChildAt(std::move(action),
                                    std::distance(children.begin(), footer));
 }
-
-class TestAppMenuButton : public AppMenuButton {
- public:
-  explicit TestAppMenuButton(BrowserWindowInterface* browser)
-      : AppMenuButton(views::Button::PressedCallback()), browser_(browser) {}
-  ~TestAppMenuButton() override = default;
-
-  void ShowMenuWithFlags(int run_types) override {
-    RunActionMenu(browser_, run_types);
-  }
-
- private:
-  raw_ptr<BrowserWindowInterface> browser_;
-};
 
 class ActionAppMenuTest : public ActionAppMenuTestBase {
  public:
@@ -431,71 +414,6 @@ TEST_F(ActionAppMenuTest, RunAndCloseMenu) {
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
   EXPECT_FALSE(menu.IsShowing());
-}
-
-TEST_F(ActionAppMenuTest, AppMenuButtonCloseMenuDefersActionMenuReset) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kAppMenuGlowUp);
-
-  auto local_window =
-      std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
-  test_tab_strip_model_delegate_.SetBrowserWindowInterface(local_window.get());
-  ON_CALL(*local_window, GetProfile())
-      .WillByDefault(testing::Return(profile_.get()));
-  ON_CALL(*local_window, GetTabStripModel())
-      .WillByDefault(testing::Return(tab_strip_model_.get()));
-  ON_CALL(testing::Const(*local_window), GetTabStripModel())
-      .WillByDefault(testing::Return(tab_strip_model_.get()));
-  ON_CALL(*local_window, GetFeatures())
-      .WillByDefault(testing::ReturnRef(features_));
-  ON_CALL(testing::Const(*local_window), GetFeatures())
-      .WillByDefault(testing::ReturnRef(features_));
-  ON_CALL(*local_window, GetWindow())
-      .WillByDefault(testing::Return(&mock_base_window_));
-
-  auto local_actions = std::make_unique<BrowserActions>(local_window.get());
-
-  std::unique_ptr<views::Widget> local_widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* test_button = local_widget->SetContentsView(
-      std::make_unique<TestAppMenuButton>(local_window.get()));
-
-  // 1. Normal close: menu closes, and the deferred task resets
-  // action_app_menu().
-  test_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
-  EXPECT_TRUE(test_button->IsMenuShowing());
-  EXPECT_NE(test_button->action_app_menu(), nullptr);
-
-  test_button->CloseMenu();
-  EXPECT_FALSE(test_button->IsMenuShowing());
-  EXPECT_NE(test_button->action_app_menu(), nullptr);
-
-  base::RunLoop normal_close_run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, normal_close_run_loop.QuitClosure());
-  normal_close_run_loop.Run();
-  EXPECT_EQ(test_button->action_app_menu(), nullptr);
-
-  // 2. Shutdown case: menu closes, but the button and window are destroyed
-  // before the deferred task runs. Destroying the button cleans up
-  // action_app_menu() synchronously, and the pending task safely no-ops.
-  test_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
-  EXPECT_TRUE(test_button->IsMenuShowing());
-  EXPECT_NE(test_button->action_app_menu(), nullptr);
-
-  test_button->CloseMenu();
-  EXPECT_FALSE(test_button->IsMenuShowing());
-  EXPECT_NE(test_button->action_app_menu(), nullptr);
-
-  local_widget.reset();
-  test_tab_strip_model_delegate_.SetBrowserWindowInterface(
-      &mock_window_interface_);
-  local_actions.reset();
-  local_window.reset();
-
-  base::RunLoop shutdown_run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, shutdown_run_loop.QuitClosure());
-  shutdown_run_loop.Run();
 }
 
 // On Windows, opening the menu from the keyboard selects the first item.
@@ -1882,61 +1800,6 @@ TEST_F(ActionAppMenuTest, ZoomLabelAccessibilityAnnouncementOnZoomChange) {
   menu.CloseMenu();
 }
 #endif  // !BUILDFLAG(IS_MAC)
-
-// Regression test for crbug.com/575090745: Firing a synchronous native
-// accessibility event during zoom label text updates can spin the Windows COM
-// STA message pump and re-entrantly close and destroy the menu.
-TEST_F(ActionAppMenuTest, ZoomLabelUpdateSurvivesReentrantMenuDestruction) {
-  content::RenderViewHostTestEnabler rvh_test_enabler;
-  tabs::MockTabInterface mock_tab;
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile_.get(),
-                                                        nullptr);
-  zoom::ZoomController::CreateForWebContents(web_contents.get());
-
-  EXPECT_CALL(mock_window_interface_, GetActiveTabInterface())
-      .WillRepeatedly(testing::Return(&mock_tab));
-  EXPECT_CALL(mock_tab, GetContents())
-      .WillRepeatedly(testing::Return(web_contents.get()));
-
-  auto menu = std::make_unique<ActionAppMenu>(&mock_window_interface_,
-                                              base::DoNothing());
-  menu->RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
-  ASSERT_TRUE(menu->IsShowing());
-
-  views::MenuItemView* const root = menu->root_menu_item_for_testing();
-  ASSERT_TRUE(root);
-
-  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
-  ASSERT_TRUE(zoom_item);
-
-  auto* zoom_view =
-      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
-  ASSERT_TRUE(zoom_view);
-
-  views::Label* const zoom_label = zoom_view->zoom_label_for_testing();
-  ASSERT_NE(zoom_label, nullptr);
-
-  // Simulate a UIA client re-entrantly invoking AppMenuButton::CloseMenu()
-  // during the kTextChanged accessibility event raise inside Label::SetText().
-  zoom_label->GetViewAccessibility().set_accessibility_events_callback(
-      base::BindLambdaForTesting(
-          [&menu](const ui::AXPlatformNodeDelegate*, ax::mojom::Event event) {
-            if (event == ax::mojom::Event::kTextChanged && menu) {
-              menu->CloseMenu();
-              menu.reset();
-            }
-          }));
-
-  actions::ActionItem* normal_action =
-      actions::ActionManager::Get().FindAction(kActionZoomNormal, nullptr);
-  ASSERT_TRUE(normal_action);
-
-  normal_action->SetText(base::FormatPercent(200));
-  EXPECT_EQ(zoom_label->GetText(), base::FormatPercent(200));
-  EXPECT_TRUE(menu->IsShowing());
-  menu->CloseMenu();
-}
 
 TEST_F(ActionAppMenuTest, FullscreenActionUpdatesAccessibilityName) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
@@ -3651,112 +3514,6 @@ TEST_F(ActionAppMenuWithSearchTest,
   menu.CloseMenu();
 }
 
-TEST_F(ActionAppMenuWithSearchTest, CloseMenuDuringLiveRebuildIsDeferred) {
-  struct CloseOnRowAdded : views::ViewObserver {
-    CloseOnRowAdded(views::View* submenu,
-                    std::unique_ptr<ActionAppMenu>* menu,
-                    const bool* closed_flag,
-                    base::OnceClosure quit_loop)
-        : menu(menu),
-          closed_flag(closed_flag),
-          quit_loop(std::move(quit_loop)) {
-      observation.Observe(submenu);
-    }
-    void OnChildViewAdded(views::View* observed_view,
-                          views::View* child) override {
-      if (!triggered) {
-        triggered = true;
-        observation.Reset();
-        (*menu)->CloseMenu();
-        auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
-        task_runner->DeleteSoon(FROM_HERE, std::move(*menu));
-        task_runner->PostTask(FROM_HERE, std::move(quit_loop));
-        EXPECT_EQ(*menu, nullptr);
-        EXPECT_FALSE(*closed_flag);
-      }
-    }
-    void OnViewIsDeleting(views::View* observed_view) override {
-      observation.Reset();
-    }
-    raw_ptr<std::unique_ptr<ActionAppMenu>> menu;
-    raw_ptr<const bool> closed_flag;
-    base::OnceClosure quit_loop;
-    bool triggered = false;
-    base::ScopedObservation<views::View, views::ViewObserver> observation{this};
-  };
-
-  // Closing and scheduling deletion inside ShowSearchResults() on keystroke.
-  {
-    widget_->Show();
-    base::MockCallback<base::RepeatingClosure> on_menu_closed;
-    auto menu = std::make_unique<ActionAppMenu>(&mock_window_interface_,
-                                                on_menu_closed.Get());
-    menu->RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
-    ASSERT_TRUE(menu->IsShowing());
-
-    views::MenuItemView* root = menu->root_menu_item_for_testing();
-    views::MenuController* controller = root->GetMenuController();
-    ASSERT_NE(controller, nullptr);
-    AppMenuSearchBarView* search_bar = menu->search_bar_for_testing();
-    search_bar->SetText(u"Newx");
-    GetSearchField(search_bar)->RequestFocus();
-    ASSERT_TRUE(controller->HasFocusedTextfield());
-
-    base::RunLoop run_loop;
-    bool closed_callback_ran = false;
-    EXPECT_CALL(on_menu_closed, Run()).Times(1).WillOnce([&] {
-      closed_callback_ran = true;
-    });
-    CloseOnRowAdded close_observer(root->GetSubmenu(), &menu,
-                                   &closed_callback_ran,
-                                   run_loop.QuitClosure());
-
-    ui::KeyEvent back_event(ui::EventType::kKeyPressed, ui::VKEY_BACK,
-                            ui::EF_NONE);
-    controller->OnWillDispatchKeyEvent(&back_event);
-    EXPECT_EQ(search_bar->GetText(), u"New");
-
-    EXPECT_EQ(menu, nullptr);
-    EXPECT_TRUE(close_observer.triggered);
-    EXPECT_TRUE(closed_callback_ran);
-    run_loop.Run();
-  }
-
-  // Closing and scheduling deletion inside RestoreMenu() without MenuController
-  // initially on the stack.
-  {
-    base::MockCallback<base::RepeatingClosure> on_menu_closed;
-    auto menu = std::make_unique<ActionAppMenu>(&mock_window_interface_,
-                                                on_menu_closed.Get());
-    menu->RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
-    ASSERT_TRUE(menu->IsShowing());
-
-    views::MenuItemView* root = menu->root_menu_item_for_testing();
-    AppMenuSearchBarView* search_bar = menu->search_bar_for_testing();
-    search_bar->SetText(u"Downloads");
-
-    base::RunLoop run_loop;
-    bool closed_callback_ran = false;
-    EXPECT_CALL(on_menu_closed, Run()).Times(1).WillOnce([&] {
-      closed_callback_ran = true;
-    });
-    CloseOnRowAdded close_observer(root->GetSubmenu(), &menu,
-                                   &closed_callback_ran,
-                                   run_loop.QuitClosure());
-
-    views::test::ButtonTestApi(GetClearButton(search_bar))
-        .NotifyDefaultMouseClick();
-
-    EXPECT_EQ(menu, nullptr);
-    EXPECT_TRUE(close_observer.triggered);
-    EXPECT_TRUE(closed_callback_ran);
-    run_loop.Run();
-  }
-}
-
-// Flat (search) headers all keep the default top margin: only card headers
-// after the first get the doubled margin that separates card groups. After the
-// normal menu is restored, its headers get 8dp / 16dp again.
 TEST_F(ActionAppMenuWithSearchTest, FlatHeadersKeepDefaultMargin) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
@@ -3788,7 +3545,7 @@ TEST_F(ActionAppMenuWithSearchTest, FlatHeadersKeepDefaultMargin) {
     section->AddChild(actions::ActionItem::Builder().SetText(title).Build());
     results->AddChild(std::move(section));
   }
-  menu.ShowSearchResults(results.get(), /*old_results=*/nullptr);
+  menu.ShowSearchResults(results.get());
 
   std::vector<views::MenuItemView*> flat_titles = root_titles();
   ASSERT_EQ(flat_titles.size(), 2u);
@@ -3797,7 +3554,7 @@ TEST_F(ActionAppMenuWithSearchTest, FlatHeadersKeepDefaultMargin) {
 
   // Restoring the normal menu (the results were injected directly, so call the
   // delegate method) brings back the card header spacing.
-  menu.RestoreMenu(/*old_results=*/nullptr);
+  menu.RestoreMenu();
   std::vector<views::MenuItemView*> card_titles = root_titles();
   ASSERT_GE(card_titles.size(), 2u);
   EXPECT_EQ(card_titles[0]->GetTopMargin(), header_margin);
