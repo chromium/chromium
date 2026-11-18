@@ -143,6 +143,7 @@ suite('SettingsSecureDnsInteractive', function() {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
 
@@ -241,6 +242,7 @@ suite('SettingsSecureDnsInteractive', function() {
       mode: SecureDnsMode.SECURE,
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
     assertEquals(
@@ -255,6 +257,7 @@ suite('SettingsSecureDnsInteractive', function() {
       mode: SecureDnsMode.SECURE,
       config: resolverList[1]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
 
@@ -329,6 +332,7 @@ suite('SettingsSecureDnsInteractive', function() {
       mode: SecureDnsMode.AUTOMATIC,
       config: resolverList[1]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
 
@@ -363,6 +367,7 @@ suite('SettingsSecureDnsInteractive', function() {
       mode: SecureDnsMode.AUTOMATIC,
       config: resolverList[1]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
     assertTrue(getResolverOptions().opened);
@@ -396,6 +401,7 @@ suite('SettingsSecureDnsInteractive', function() {
       mode: SecureDnsMode.SECURE,
       config: validEntry,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
     assertFalse(testElement.$.secureDnsInputContainer.hidden);
@@ -428,6 +434,7 @@ suite('SettingsSecureDnsInteractive', function() {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
     assertTrue(testElement.$.secureDnsInputContainer.hidden);
@@ -479,6 +486,7 @@ suite('SettingsSecureDnsInteractive', function() {
       mode: SecureDnsMode.SECURE,
       config: managedDoubleEntry,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
     assertFalse(testElement.$.secureDnsInputContainer.hidden);
@@ -495,6 +503,7 @@ suite('SettingsSecureDnsInteractive', function() {
       mode: SecureDnsMode.SECURE,
       config: 'https://dns.example/dns-query',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
 

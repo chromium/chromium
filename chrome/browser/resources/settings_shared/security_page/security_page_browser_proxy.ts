@@ -43,6 +43,11 @@ export interface SecureDnsSetting {
   mode: SecureDnsMode;
   config: string;
   managementMode: SecureDnsUiManagementMode;
+  // <if expr="not is_chromeos">
+  // Whether the provider options are shown: secure DNS is on and not enforced
+  // by policy. Settings search uses the same value.
+  showOptions: boolean;
+  // </if>
   // <if expr="is_chromeos">
   // Secure DNS mode and config of ChromeOS might differ with Chrome. This is
   // necessary when the DoH included or excluded domains config is set

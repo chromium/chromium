@@ -29,6 +29,9 @@ export class TestSecurityPageBrowserProxy extends TestBrowserProxy implements
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      // <if expr="not is_chromeos">
+      showOptions: true,
+      // </if>
       // <if expr="is_chromeos">
       osMode: SecureDnsMode.AUTOMATIC,
       osConfig: '',

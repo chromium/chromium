@@ -20,6 +20,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/country_codes/country_codes.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -43,16 +44,30 @@ namespace settings {
 
 namespace {
 
+SecureDnsConfig GetSecureDnsConfig() {
+  StubResolverConfigReader* reader =
+      SystemNetworkContextManager::GetStubResolverConfigReader();
+  CHECK(reader);
+  return reader->GetSecureDnsConfiguration(
+      true /* force_check_parental_controls_for_automatic_mode */);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+bool ShouldShowProviderOptionsFor(net::SecureDnsMode mode) {
+  return mode != net::SecureDnsMode::kOff &&
+         !g_browser_process->local_state()
+              ->FindPreference(prefs::kDnsOverHttpsMode)
+              ->IsManaged();
+}
+#endif
+
 base::DictValue CreateSecureDnsSettingDict(
     content::BrowserContext* browser_context) {
   // Fetch the current host resolver configuration. It is not sufficient to read
   // the secure DNS prefs directly since the host resolver configuration takes
   // other factors into account such as whether a managed environment or
   // parental controls have been detected.
-  SecureDnsConfig config =
-      SystemNetworkContextManager::GetStubResolverConfigReader()
-          ->GetSecureDnsConfiguration(
-              true /* force_check_parental_controls_for_automatic_mode */);
+  SecureDnsConfig config = GetSecureDnsConfig();
 
   base::DictValue dict;
   dict.Set("mode", SecureDnsConfig::ModeToString(config.mode()));
@@ -70,12 +85,21 @@ base::DictValue CreateSecureDnsSettingDict(
   dict.Set("configForDisplay",
            doh_with_identifiers_servers_for_display.value_or(std::string()));
   dict.Set("dohDomainConfigSet", secure_dns_manager->IsDohDomainConfigSet());
+#else
+  dict.Set("showOptions", ShouldShowProviderOptionsFor(config.mode()));
 #endif
   dict.Set("managementMode", static_cast<int>(config.management_mode()));
   return dict;
 }
 
 }  // namespace
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// static
+bool SecureDnsHandler::ShouldShowProviderOptions() {
+  return ShouldShowProviderOptionsFor(GetSecureDnsConfig().mode());
+}
+#endif
 
 SecureDnsHandler::SecureDnsHandler() = default;
 SecureDnsHandler::~SecureDnsHandler() = default;

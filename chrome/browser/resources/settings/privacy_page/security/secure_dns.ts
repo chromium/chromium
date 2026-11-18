@@ -19,7 +19,6 @@ import '../../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {ResolverOption, SecureDnsSetting, SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -45,8 +44,8 @@ export interface SettingsSecureDnsElement {
   };
 }
 
-const SettingsSecureDnsElementBase = PrefServiceObserverMixinLit(
-    WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
+const SettingsSecureDnsElementBase =
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
 /**
  * Enum for the categories of options in the secure DNS resolver select
@@ -97,12 +96,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addPrefObserver<boolean>(SECURE_DNS_TOGGLE_PREF_KEY, pref => {
-      this.showSecureDnsOptions_ =
-          pref.enforcement !== chrome.settingsPrivate.Enforcement.ENFORCED &&
-          pref.value;
-    });
-
     // Fetch the options for the dropdown menu before configuring the setting
     // to match the underlying host resolver configuration.
     this.browserProxy_.getSecureDnsResolverList().then(resolvers => {
@@ -143,6 +136,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     }
 
     this.updateManagementView_(setting, toggleValue);
+    this.showSecureDnsOptions_ = setting.showOptions;
   }
 
   /**
@@ -248,11 +242,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
       value: toggleValue,
     };
 
-    // The message to be displayed when the device is managed. On Chrome OS, if
-    // the effective template URI contains identifiers (which are
-    // hashed with a salt and hex encoded), then the message will contain the
-    // template URI for display in which the identifiers are shown in plain
-    // text.
     const secureDescription = loadTimeData.getString('secureDnsDescription');
     const modePref =
         PrefService.getInstance().getPref<SecureDnsMode>('dns_over_https.mode');

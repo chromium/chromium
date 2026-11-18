@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/net/dns_over_https_config_source.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -35,6 +36,14 @@ class SecureDnsHandler : public SettingsPageUIHandler {
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Whether the Security page shows the provider options (the "Select DNS
+  // provider" dropdown) for the current configuration: secure DNS is on and
+  // not enforced by policy. Sent to the page as "showOptions" and used by
+  // settings search, so the two can't disagree.
+  static bool ShouldShowProviderOptions();
+#endif
 
   // Get the list of dropdown resolver options. Each option is represented
   // as a dictionary with the following keys: "name" (the text to display in the

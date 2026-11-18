@@ -205,6 +205,7 @@ suite('SettingsSecureDns', function() {
       mode: SecureDnsMode.OFF,
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: false,
     });
     await microtasksFinished();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
@@ -223,6 +224,7 @@ suite('SettingsSecureDns', function() {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
     assertResolverSelectShown();
@@ -238,6 +240,7 @@ suite('SettingsSecureDns', function() {
       mode: SecureDnsMode.SECURE,
       config: resolverList[0]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: true,
     });
     await microtasksFinished();
     assertResolverSelectShown();
@@ -252,6 +255,7 @@ suite('SettingsSecureDns', function() {
       mode: SecureDnsMode.OFF,
       config: '',
       managementMode: SecureDnsUiManagementMode.DISABLED_MANAGED,
+      showOptions: false,
     });
     await microtasksFinished();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
@@ -270,6 +274,7 @@ suite('SettingsSecureDns', function() {
       mode: SecureDnsMode.OFF,
       config: '',
       managementMode: SecureDnsUiManagementMode.DISABLED_PARENTAL_CONTROLS,
+      showOptions: false,
     });
     await microtasksFinished();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
@@ -296,6 +301,7 @@ suite('SettingsSecureDns', function() {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      showOptions: false,
     });
     await microtasksFinished();
     assertTrue(secureDnsToggle.hasAttribute('checked'));
