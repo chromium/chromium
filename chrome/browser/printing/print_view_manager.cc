@@ -136,7 +136,9 @@ void PrintViewManager::BindPrintManagerHost(
 bool PrintViewManager::PrintForSystemDialogNow(
     base::OnceClosure dialog_shown_callback) {
   CHECK(dialog_shown_callback, base::NotFatalUntil::M162);
-  CHECK(!on_print_dialog_shown_callback_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/586904767): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!on_print_dialog_shown_callback_);
   on_print_dialog_shown_callback_ = std::move(dialog_shown_callback);
   is_switching_to_system_dialog_ = true;
 
