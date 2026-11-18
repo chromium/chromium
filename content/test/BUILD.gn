@@ -1518,6 +1518,7 @@ test("content_browsertests") {
     "../browser/devtools/protocol/media_recorder_browsertest.cc",
     "../browser/devtools/render_frame_devtools_agent_host_browsertest.cc",
     "../browser/devtools/site_per_process_devtools_browsertest.cc",
+    "../browser/devtools/tab_target_unloaded_browsertest.cc",
     "../browser/direct_sockets/direct_sockets_test_utils.cc",
     "../browser/direct_sockets/direct_sockets_test_utils.h",
     "../browser/display_cutout/display_cutout_browsertest.cc",

@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/protocol/io_handler.h"
@@ -17,6 +18,9 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/devtools_manager_delegate.h"
+#include "content/public/browser/favicon_status.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/common/content_features.h"
 
 namespace content {
@@ -200,6 +204,7 @@ void WebContentsDevToolsAgentHost::InnerAttach(WebContents* wc) {
   CHECK(inserted);
   auto_attacher_->SetWebContents(wc);
   Observe(wc);
+  is_unloaded_ = ComputeIsUnloaded();
   // Once created, persist till underlying WC is detached, so that
   // the target id is retained.
   AddRef();
@@ -285,24 +290,61 @@ std::string WebContentsDevToolsAgentHost::GetType() {
 std::string WebContentsDevToolsAgentHost::GetTitle() {
   if (DevToolsAgentHost* host = GetPrimaryFrameAgent())
     return host->GetTitle();
+  // Without a primary frame host (for example, for an unloaded tab), use the
+  // same sources as RenderFrameDevToolsAgentHost::GetTitle() for a primary
+  // main frame.
+  if (WebContents* wc = web_contents()) {
+    if (DevToolsManagerDelegate* delegate =
+            DevToolsManager::GetInstance()->delegate()) {
+      std::string title = delegate->GetTargetTitle(wc);
+      if (!title.empty()) {
+        return title;
+      }
+    }
+    return base::UTF16ToUTF8(wc->GetTitle());
+  }
   return "";
 }
 
 std::string WebContentsDevToolsAgentHost::GetDescription() {
   if (DevToolsAgentHost* host = GetPrimaryFrameAgent())
     return host->GetDescription();
+  // Match RenderFrameDevToolsAgentHost::GetDescription().
+  if (WebContents* wc = web_contents()) {
+    if (DevToolsManagerDelegate* delegate =
+            DevToolsManager::GetInstance()->delegate()) {
+      return delegate->GetTargetDescription(wc);
+    }
+  }
   return "";
 }
 
 GURL WebContentsDevToolsAgentHost::GetURL() {
   if (DevToolsAgentHost* host = GetPrimaryFrameAgent())
     return host->GetURL();
+  // Match RenderFrameDevToolsAgentHost::GetURL() for a primary main frame, so
+  // that the URL does not change when a primary frame host is created.
+  if (WebContents* wc = web_contents()) {
+    return wc->GetVisibleURL();
+  }
   return GURL();
+}
+
+std::string WebContentsDevToolsAgentHost::GetSubtype() {
+  // Compute the value, so that it is correct also if no notification has
+  // updated `is_unloaded_` yet.
+  return ComputeIsUnloaded() ? "unloaded" : "";
 }
 
 GURL WebContentsDevToolsAgentHost::GetFaviconURL() {
   if (DevToolsAgentHost* host = GetPrimaryFrameAgent())
     return host->GetFaviconURL();
+  // Match RenderFrameDevToolsAgentHost::GetFaviconURL() for a primary main
+  // frame.
+  if (WebContents* wc = web_contents()) {
+    NavigationEntry* entry = wc->GetController().GetLastCommittedEntry();
+    return entry ? entry->GetFavicon().url : GURL();
+  }
   return GURL();
 }
 
@@ -329,6 +371,10 @@ bool WebContentsDevToolsAgentHost::Close() {
 base::TimeTicks WebContentsDevToolsAgentHost::GetLastActivityTime() {
   if (DevToolsAgentHost* host = GetPrimaryFrameAgent())
     return host->GetLastActivityTime();
+  // Match RenderFrameDevToolsAgentHost::GetLastActivityTime().
+  if (WebContents* wc = web_contents()) {
+    return wc->GetLastActiveTimeTicks();
+  }
   return base::TimeTicks();
 }
 
@@ -395,6 +441,19 @@ void WebContentsDevToolsAgentHost::FrameDeleted(
   }
 }
 
+void WebContentsDevToolsAgentHost::WasDiscarded() {
+  // WebContentsImpl::Discard() sends this notification also if
+  // FrameTree::Discard() ignored the request, because a navigation is pending
+  // commit. ComputeIsUnloaded() reports only a discard that occurred.
+  UpdateIsUnloaded();
+}
+
+void WebContentsDevToolsAgentHost::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  // After a renderer crash, the primary main frame has no document.
+  UpdateIsUnloaded();
+}
+
 // DevToolsAgentHostImpl overrides.
 DevToolsSession::Mode WebContentsDevToolsAgentHost::GetSessionMode() {
   return DevToolsSession::Mode::kSupportsTabTarget;
@@ -459,8 +518,48 @@ WebContentsDevToolsAgentHost::RevalidateSessionAccess() {
 
 void WebContentsDevToolsAgentHost::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInPrimaryMainFrame() && navigation_handle->HasCommitted()) {
-    std::ignore = RevalidateSessionAccess();
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted()) {
+    scoped_refptr<WebContentsDevToolsAgentHost> retain_this =
+        RevalidateSessionAccess();
+    // A new document replaces the unloaded page. A navigation that does not
+    // commit (for example, a 204 response) does not get here.
+    UpdateIsUnloaded();
+  }
+}
+
+bool WebContentsDevToolsAgentHost::ComputeIsUnloaded() {
+  WebContents* wc = web_contents();
+  if (!wc) {
+    return false;
+  }
+  auto* rfh = static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
+  // An in-place discard (WebContents::Discard()) marks the document as
+  // discarded. If the renderer process is shared with other frames, the
+  // process stays alive, and the frame keeps its committed state.
+  if (rfh->document_associated_data().is_discarded()) {
+    return true;
+  }
+  // After a replacement discard, after session restore without load, and when
+  // the renderer process exits (because of a crash, or after an in-place
+  // discard in a dedicated process), the primary main frame has not committed
+  // a navigation. Exclude new tabs, which only have the initial entry.
+  if (rfh->has_committed_any_navigation()) {
+    return false;
+  }
+  NavigationEntry* entry = wc->GetController().GetLastCommittedEntry();
+  return entry && !entry->IsInitialEntry();
+}
+
+void WebContentsDevToolsAgentHost::UpdateIsUnloaded() {
+  const bool is_unloaded = ComputeIsUnloaded();
+  if (is_unloaded == is_unloaded_) {
+    return;
+  }
+  scoped_refptr<WebContentsDevToolsAgentHost> retain_this(this);
+  is_unloaded_ = is_unloaded;
+  if (web_contents()) {
+    NotifyNavigated();
   }
 }
 }  // namespace content

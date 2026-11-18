@@ -851,6 +851,7 @@ if (!is_android) {
       "protocol/devtools_extensions_browsertest.cc",
       "protocol/devtools_iwa_browsertest.cc",
       "protocol/devtools_pwa_browsertest.cc",
+      "protocol/devtools_tab_discard_browsertest.cc",
       "protocol/form_devtools_issues_browsertest.cc",
     ]
 
@@ -859,6 +860,7 @@ if (!is_android) {
       ":test_support",
       "//base",
       "//chrome/browser/badging",
+      "//chrome/browser/resource_coordinator",
       "//chrome/browser/ui:browser_window_deleter",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/extensions",

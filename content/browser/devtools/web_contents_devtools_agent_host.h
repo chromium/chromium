@@ -78,6 +78,7 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
       const std::string& id) override;
 
   // DevToolsAgentHostImpl overrides.
+  std::string GetSubtype() override;
   DevToolsSession::Mode GetSessionMode() override;
   bool AttachSession(DevToolsSession* session) override;
 
@@ -88,6 +89,20 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void FrameDeleted(FrameTreeNodeId frame_tree_node_id) override;
+  void WasDiscarded() override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
+
+  // Returns true if the tab has a history entry, but the primary main frame
+  // has no document for it. This occurs after a discard, after session restore
+  // without load, and after a renderer crash. The value stays true until a new
+  // document commits, also if a navigation does not commit (for example, a 204
+  // response). A new tab that has not navigated is not unloaded.
+  bool ComputeIsUnloaded();
+
+  // Sets `is_unloaded_` to ComputeIsUnloaded(), and notifies observers if the
+  // value changes.
+  void UpdateIsUnloaded();
 
   DevToolsAgentHostImpl* GetPrimaryFrameAgent();
   scoped_refptr<DevToolsAgentHost> GetOrCreatePrimaryFrameAgent();
@@ -97,6 +112,8 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   [[nodiscard]] scoped_refptr<WebContentsDevToolsAgentHost>
   RevalidateSessionAccess();
 
+  // The last value of ComputeIsUnloaded() that was sent to observers.
+  bool is_unloaded_ = false;
   std::unique_ptr<AutoAttacher> const auto_attacher_;
 };
 

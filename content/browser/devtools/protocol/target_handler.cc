@@ -547,6 +547,7 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
       agent_host_->DetachClient(this);
     }
     handler_->auto_attached_sessions_.erase(agent_host_.get());
+    handler_->UpdateAgentHostObserver();
     devtools_session_ = nullptr;
     agent_host_ = nullptr;
     handler_->attached_sessions_.erase(id_);
@@ -799,6 +800,7 @@ Response TargetHandler::Disable() {
   SetDiscoverTargets(false, {});
   hidden_target_manager_.Clear();
   auto_attached_sessions_.clear();
+  UpdateAgentHostObserver();
   // Destroying a session may synchronously close attached targets which can
   // try to detach sibling sessions, so move the map aside before releasing.
   auto attached_sessions = std::move(attached_sessions_);
@@ -936,11 +938,25 @@ void TargetHandler::SetAutoAttachInternal(bool auto_attach,
   }
 }
 
+bool TargetHandler::HasAutoAttachedTab() const {
+  for (const auto& entry : auto_attached_sessions_) {
+    if (entry.first->GetType() == DevToolsAgentHost::kTypeTab) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void TargetHandler::UpdateAgentHostObserver() {
-  if (discover() == observing_agent_hosts_) {
+  // Observe agent hosts during target discovery, and also while a tab target
+  // is auto-attached. A tab target does not have an auto-attacher event for
+  // changes of its target info (for example, of the "unloaded" subtype), so
+  // the observer is the only source of these events.
+  const bool should_observe = discover() || HasAutoAttachedTab();
+  if (should_observe == observing_agent_hosts_) {
     return;
   }
-  observing_agent_hosts_ = discover();
+  observing_agent_hosts_ = should_observe;
   if (observing_agent_hosts_) {
     DevToolsAgentHost::AddObserver(this);
   } else {
@@ -971,6 +987,7 @@ bool TargetHandler::AutoAttach(TargetAutoAttacher* source,
   Session* session = attached_sessions_[*session_id].get();
   session->auto_attacher_id_ = reinterpret_cast<uintptr_t>(source);
   auto_attached_sessions_[host] = session;
+  UpdateAgentHostObserver();
   return true;
 }
 
@@ -1120,7 +1137,15 @@ Response TargetHandler::SetDiscoverTargets(
     return Response::Success();
   }
   UpdateAgentHostObserver();
-  if (!TargetHandler::discover()) {
+  if (TargetHandler::discover()) {
+    // The handler can already observe agent hosts, while a tab target is
+    // auto-attached. Then UpdateAgentHostObserver() does not call
+    // AddObserver(), which reports the existing hosts. `reported_hosts_`
+    // prevents duplicate events.
+    for (const auto& target : DevToolsAgentHost::GetOrCreateAll()) {
+      DevToolsAgentHostCreated(target.get());
+    }
+  } else {
     reported_hosts_.clear();
   }
   return Response::Success();
@@ -1495,8 +1520,12 @@ bool TargetHandler::ShouldForceDevToolsAgentHostCreation() {
 }
 
 void TargetHandler::DevToolsAgentHostCreated(DevToolsAgentHost* host) {
-  CHECK(discover(), base::NotFatalUntil::M159);
   CHECK(host, base::NotFatalUntil::M159);
+  // The handler also observes agent hosts while a tab target is auto-attached.
+  // Report new targets only during target discovery.
+  if (!discover()) {
+    return;
+  }
   if (!discover_target_filter_->Match(*host)) {
     return;
   }
@@ -1509,6 +1538,12 @@ void TargetHandler::DevToolsAgentHostCreated(DevToolsAgentHost* host) {
 }
 
 void TargetHandler::DevToolsAgentHostNavigated(DevToolsAgentHost* host) {
+  // Without target discovery, the handler observes agent hosts only for
+  // auto-attached tab targets. Other auto-attached targets get
+  // Target.targetInfoChanged from their auto-attacher.
+  if (!discover() && host->GetType() != DevToolsAgentHost::kTypeTab) {
+    return;
+  }
   TargetInfoChanged(host);
 }
 
@@ -1521,10 +1556,16 @@ void TargetHandler::DevToolsAgentHostDestroyed(DevToolsAgentHost* host) {
 }
 
 void TargetHandler::DevToolsAgentHostAttached(DevToolsAgentHost* host) {
+  if (!discover()) {
+    return;
+  }
   TargetInfoChanged(host);
 }
 
 void TargetHandler::DevToolsAgentHostDetached(DevToolsAgentHost* host) {
+  if (!discover()) {
+    return;
+  }
   TargetInfoChanged(host);
 }
 

@@ -186,6 +186,8 @@ class TargetHandler : public DevToolsDomainHandler,
                              bool wait_for_debugger_on_start,
                              bool flatten,
                              base::OnceClosure callback);
+  // Returns true if an auto-attached session is attached to a tab target.
+  bool HasAutoAttachedTab() const;
   void UpdateAgentHostObserver();
 
   // DevToolsAgentHostObserver implementation.
