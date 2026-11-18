@@ -709,6 +709,35 @@ TEST_F(RecentTabHelperTest, NoCaptureOnErrorPage) {
   ASSERT_EQ(0U, GetAllPages().size());
 }
 
+// Verifies that committing an error page does not delete a previously saved
+// last_n snapshot for the tab, while a subsequent normal navigation does.
+TEST_F(RecentTabHelperTest, LastNSnapshotPreservedOnErrorPage) {
+  const GURL kTestUrl("http://mystery.site/foo.html");
+  NavigateAndCommit(kTestUrl);
+  recent_tab_helper()->DocumentOnLoadCompletedInPrimaryMainFrame();
+  FastForwardSnapshotController();
+  recent_tab_helper()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  RunUntilIdle();
+  EXPECT_EQ(1U, page_added_count());
+  EXPECT_EQ(0U, model_removed_count());
+  ASSERT_EQ(1U, GetAllPages().size());
+  const int64_t saved_offline_id = GetAllPages()[0].offline_id;
+
+  // Committing an error page preserves the saved last_n snapshot so the
+  // subsequent NET_ERROR reload can still serve it.
+  FailLoad(GURL("http://mystery.site/error.html"));
+  RunUntilIdle();
+  EXPECT_EQ(0U, model_removed_count());
+  ASSERT_EQ(1U, GetAllPages().size());
+  EXPECT_EQ(saved_offline_id, GetAllPages()[0].offline_id);
+
+  // A subsequent normal navigation still cleans up the previous snapshot.
+  NavigateAndCommitTyped(GURL("http://other.site/bar.html"));
+  RunUntilIdle();
+  EXPECT_EQ(1U, model_removed_count());
+  EXPECT_EQ(0U, GetAllPages().size());
+}
+
 // Simulates a download request to offline the current page made early during
 // loading. Should execute two captures but only the final one is kept.
 TEST_F(RecentTabHelperTest, DownloadRequestEarlyInLoad) {

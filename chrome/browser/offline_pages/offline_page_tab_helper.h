@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -116,10 +118,22 @@ class OfflinePageTabHelper
   // Returns trusted state of provisional offline page.
   OfflinePageTrustedState GetTrustedStateForTest() const;
 
+  using TabIdGetter =
+      base::RepeatingCallback<bool(content::WebContents*, int*)>;
+
   // Sets the target frame, useful for unit testing the MhtmlPageNotifier
   // interface.
   void SetCurrentTargetFrameForTest(
       content::RenderFrameHost* render_frame_host);
+
+  void SetTabIdGetterForTesting(TabIdGetter tab_id_getter) {
+    tab_id_getter_for_testing_ = std::move(tab_id_getter);
+  }
+
+  void SelectPagesForURLDoneForTesting(
+      const std::vector<OfflinePageItem>& offline_pages) {
+    SelectPagesForURLDone(offline_pages);
+  }
 
   // Helper function which normally should only be called by
   // OfflinePageUtils::ScheduleDownload to do the work. This is because we need
@@ -173,6 +187,8 @@ class OfflinePageTabHelper
   // Overridden from content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidRedirectNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -213,6 +229,7 @@ class OfflinePageTabHelper
   LoadedOfflinePageInfo offline_info_;
 
   bool reloading_url_on_net_error_ = false;
+  TabIdGetter tab_id_getter_for_testing_;
 
   // TODO(crbug.com/40569331): We only really want interface messages for the
   // main frame but this is not easily done with the current helper classes.

@@ -37,6 +37,7 @@
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/model/offline_page_model_taskified.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
+#include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_page_test_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_test_archiver.h"
 #include "components/offline_pages/core/page_criteria.h"
@@ -248,7 +249,8 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
   void InterceptRequest(const GURL& url,
                         const std::string& method,
                         const net::HttpRequestHeaders& extra_headers,
-                        bool is_outermost_main_frame);
+                        bool is_outermost_main_frame,
+                        const std::vector<GURL>& redirect_chain = {});
 
   OfflinePageRequestHandlerTest* test() { return test_; }
   const GURL& last_redirected_url() const {
@@ -265,7 +267,8 @@ class OfflinePageURLLoaderBuilder : public TestURLLoaderClient::Observer {
   void InterceptRequestInternal(const GURL& url,
                                 const std::string& method,
                                 const net::HttpRequestHeaders& extra_headers,
-                                bool is_outermost_main_frame);
+                                bool is_outermost_main_frame,
+                                const std::vector<GURL>& redirect_chain = {});
   void MaybeStartLoader(
       const network::ResourceRequest& request,
       content::URLLoaderRequestInterceptor::RequestHandler request_handler);
@@ -301,7 +304,8 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   void InterceptRequest(const GURL& url,
                         const std::string& method,
                         const net::HttpRequestHeaders& extra_headers,
-                        bool is_outermost_main_frame);
+                        bool is_outermost_main_frame,
+                        const std::vector<GURL>& redirect_chain = {});
   void SimulateHasNetworkConnectivity(bool has_connectivity);
   void RunUntilIdle();
   void WaitForAsyncOperation();
@@ -334,6 +338,10 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   void LoadPage(const GURL& url);
   void LoadPageWithHeaders(const GURL& url,
                            const net::HttpRequestHeaders& extra_headers);
+  void LoadPageWithHeadersAndRedirectChain(
+      const GURL& url,
+      const net::HttpRequestHeaders& extra_headers,
+      const std::vector<GURL>& redirect_chain);
 
   void ReadCompleted(const ResponseInfo& reponse,
                      bool is_offline_page_set_in_navigation_data);
@@ -516,11 +524,12 @@ void OfflinePageRequestHandlerTest::InterceptRequest(
     const GURL& url,
     const std::string& method,
     const net::HttpRequestHeaders& extra_headers,
-    bool is_outermost_main_frame) {
+    bool is_outermost_main_frame,
+    const std::vector<GURL>& redirect_chain) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  interceptor_factory_.InterceptRequest(url, method, extra_headers,
-                                        is_outermost_main_frame);
+  interceptor_factory_.InterceptRequest(
+      url, method, extra_headers, is_outermost_main_frame, redirect_chain);
 }
 
 void OfflinePageRequestHandlerTest::SimulateHasNetworkConnectivity(
@@ -755,6 +764,14 @@ void OfflinePageRequestHandlerTest::LoadPageWithHeaders(
                    true /* is_outermost_main_frame */);
 }
 
+void OfflinePageRequestHandlerTest::LoadPageWithHeadersAndRedirectChain(
+    const GURL& url,
+    const net::HttpRequestHeaders& extra_headers,
+    const std::vector<GURL>& redirect_chain) {
+  InterceptRequest(url, "GET", extra_headers,
+                   true /* is_outermost_main_frame */, redirect_chain);
+}
+
 void OfflinePageRequestHandlerTest::ReadCompleted(
     const ResponseInfo& response,
     bool is_offline_page_set_in_navigation_data) {
@@ -808,7 +825,8 @@ void OfflinePageURLLoaderBuilder::InterceptRequestInternal(
     const GURL& url,
     const std::string& method,
     const net::HttpRequestHeaders& extra_headers,
-    bool is_outermost_main_frame) {
+    bool is_outermost_main_frame,
+    const std::vector<GURL>& redirect_chain) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   last_request_url_ = url;
@@ -816,6 +834,7 @@ void OfflinePageURLLoaderBuilder::InterceptRequestInternal(
 
   network::ResourceRequest request = CreateResourceRequest(
       url, method, extra_headers, is_outermost_main_frame);
+  request.navigation_redirect_chain = redirect_chain;
 
   url_loader_ = OfflinePageURLLoader::Create(
       navigation_ui_data_.get(),
@@ -836,7 +855,8 @@ void OfflinePageURLLoaderBuilder::InterceptRequest(
     const GURL& url,
     const std::string& method,
     const net::HttpRequestHeaders& extra_headers,
-    bool is_outermost_main_frame) {
+    bool is_outermost_main_frame,
+    const std::vector<GURL>& redirect_chain) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Reset per-navigation state so sequential LoadPage() calls within a single
@@ -846,7 +866,8 @@ void OfflinePageURLLoaderBuilder::InterceptRequest(
   last_request_url_ = GURL();
   base::RunLoop loop;
   quit_closure_ = loop.QuitWhenIdleClosure();
-  InterceptRequestInternal(url, method, extra_headers, is_outermost_main_frame);
+  InterceptRequestInternal(url, method, extra_headers, is_outermost_main_frame,
+                           redirect_chain);
   loop.Run();
 }
 
@@ -1686,6 +1707,55 @@ TEST_F(OfflinePageRequestHandlerTest,
   EXPECT_EQ(0, bytes_read());
   EXPECT_FALSE(is_offline_page_set_in_navigation_data());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
+}
+
+TEST_F(OfflinePageRequestHandlerTest, IgnoreOfflineHeaderOnRedirectedRequest) {
+  SimulateHasNetworkConnectivity(true);
+
+  const GURL destination_url(kTestUrl);
+  int64_t offline_id =
+      SaveInternalPage(destination_url, GURL(), base::FilePath(kFilename1),
+                       kFileSize1, std::string());
+
+  net::HttpRequestHeaders extra_headers;
+  extra_headers.AddHeaderFromString(
+      UseOfflinePageHeader(OfflinePageHeader::Reason::NET_ERROR, 0));
+  const std::vector<GURL> redirect_chain = {GURL("https://other.example/start"),
+                                            destination_url};
+
+  LoadPageWithHeadersAndRedirectChain(destination_url, extra_headers,
+                                      redirect_chain);
+  ExpectNoOfflinePageServed(offline_id);
+}
+
+TEST_F(OfflinePageRequestHandlerTest, InvalidOfflineIdInHeaderFailsClosed) {
+  SimulateHasNetworkConnectivity(false);
+
+  const GURL destination_url(kTestUrl);
+  int64_t offline_id =
+      SaveInternalPage(destination_url, GURL(), base::FilePath(kFilename1),
+                       kFileSize1, std::string());
+
+  OfflinePageHeader malformed_id_header;
+  malformed_id_header.reason = OfflinePageHeader::Reason::NET_ERROR;
+  malformed_id_header.id = "not_an_int64";
+  net::HttpRequestHeaders malformed_headers;
+  malformed_headers.AddHeaderFromString(
+      malformed_id_header.GetCompleteHeaderString());
+
+  LoadPageWithHeaders(destination_url, malformed_headers);
+  ExpectNoOfflinePageServed(offline_id);
+
+  // An explicit kInvalidOfflineId ("0") must also fail closed rather than
+  // falling back to URL-based candidate selection.
+  malformed_id_header.id =
+      base::NumberToString(OfflinePageModel::kInvalidOfflineId);
+  net::HttpRequestHeaders invalid_id_headers;
+  invalid_id_headers.AddHeaderFromString(
+      malformed_id_header.GetCompleteHeaderString());
+
+  LoadPageWithHeaders(destination_url, invalid_id_headers);
+  ExpectNoOfflinePageServed(offline_id);
 }
 
 }  // namespace offline_pages

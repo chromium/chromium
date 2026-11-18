@@ -768,6 +768,7 @@
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #include "chrome/browser/offline_pages/offline_page_url_loader_request_interceptor.h"
+#include "chrome/browser/offline_pages/offline_page_url_loader_throttle.h"
 #endif
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
@@ -6250,6 +6251,13 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
   CHECK(browser_context, base::NotFatalUntil::M163);
   Profile* profile = Profile::FromBrowserContext(browser_context);
   CHECK(profile, base::NotFatalUntil::M163);
+
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  // Strip internal X-Chrome-offline headers before network dispatch or
+  // redirect.
+  result.push_back(
+      std::make_unique<offline_pages::OfflinePageURLLoaderThrottle>());
+#endif
 
   // TopChromeWebUIProfile only hosts Top Chrome WebUIs, and does not have the
   // keyed services and prefs that the throttles below depend on.

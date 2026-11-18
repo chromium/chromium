@@ -15,10 +15,12 @@
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_item.h"
+#include "components/offline_pages/core/request_header/offline_page_header.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/io_buffer.h"
+#include "net/http/http_request_headers.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -92,8 +94,14 @@ OfflinePageURLLoader::OfflinePageURLLoader(
   // |tentative_resource_request.headers| here, since throttles can rewrite
   // headers between now and when the request handler passed to
   // |loader_callback_| is invoked.
+  net::HttpRequestHeaders request_headers = tentative_resource_request.headers;
+  if (tentative_resource_request.navigation_redirect_chain.size() > 1) {
+    // Never honor X-Chrome-offline after a redirect hop, even if the request
+    // was not observed by OfflinePageTabHelper.
+    request_headers.RemoveHeader(kOfflinePageHeader);
+  }
   request_handler_ = std::make_unique<OfflinePageRequestHandler>(
-      tentative_resource_request.url, tentative_resource_request.headers, this);
+      tentative_resource_request.url, request_headers, this);
   request_handler_->Start();
 }
 

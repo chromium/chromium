@@ -232,8 +232,9 @@ void RecentTabHelper::DidFinishNavigation(
       OfflinePageUtils::GetOfflinePageFromWebContents(web_contents());
 
   // If the previous page was saved, delete it now unless we are currently
-  // loading that very snapshot.
-  if (last_n_latest_saved_snapshot_info_ &&
+  // loading that very snapshot or committing an error page (whose subsequent
+  // NET_ERROR reload needs the tab's saved last_n snapshot).
+  if (!navigation_handle->IsErrorPage() && last_n_latest_saved_snapshot_info_ &&
       (!current_offline_page ||
        current_offline_page->offline_id !=
            last_n_latest_saved_snapshot_info_->request_id)) {

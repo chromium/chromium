@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -199,6 +200,17 @@ void OfflinePageTabHelper::DidStartNavigation(
   provisional_offline_info_.Clear();
 }
 
+void OfflinePageTabHelper::DidRedirectNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  // Strip the internal offline header on any redirect (including same-origin
+  // redirects) so subsequent legs cannot re-trigger offline interception.
+  navigation_handle->RemoveRequestHeader(kOfflinePageHeader);
+}
+
 void OfflinePageTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Skips non-main frame.
@@ -207,6 +219,7 @@ void OfflinePageTabHelper::DidFinishNavigation(
   }
 
   if (!navigation_handle->HasCommitted()) {
+    reloading_url_on_net_error_ = false;
     return;
   }
 
@@ -228,7 +241,6 @@ void OfflinePageTabHelper::DidFinishNavigation(
   // This is a new navigation so we can invalidate any previously scheduled
   // operations.
   weak_ptr_factory_.InvalidateWeakPtrs();
-  reloading_url_on_net_error_ = false;
 
   FinalizeOfflineInfo(navigation_handle);
   provisional_offline_info_.Clear();
@@ -281,6 +293,13 @@ void OfflinePageTabHelper::FinalizeOfflineInfo(
 
 void OfflinePageTabHelper::TryLoadingOfflinePageOnNetError(
     content::NavigationHandle* navigation_handle) {
+  // Consume the reload guard here (rather than clearing it unconditionally at
+  // the top of DidFinishNavigation) so a NET_ERROR reload that fails again
+  // bails out after one attempt instead of looping when RecentTabHelper
+  // preserves the tab's last_n snapshot across error-page commits.
+  const bool was_reloading_on_net_error =
+      std::exchange(reloading_url_on_net_error_, false);
+
   // If the offline page has been loaded successfully, nothing more to do.
   net::Error error_code = navigation_handle->GetNetErrorCode();
   if (error_code == net::OK) {
@@ -290,7 +309,7 @@ void OfflinePageTabHelper::TryLoadingOfflinePageOnNetError(
   // We might be reloading the URL in order to fetch the offline page.
   // * If successful, nothing to do.
   // * Otherwise, we're hitting error again. Bail out to avoid loop.
-  if (reloading_url_on_net_error_) {
+  if (was_reloading_on_net_error) {
     return;
   }
 
@@ -311,7 +330,11 @@ void OfflinePageTabHelper::TryLoadingOfflinePageOnNetError(
   // When there is no valid tab android there is nowhere to show the offline
   // page, so we can leave.
   int tab_id;
-  if (!OfflinePageUtils::GetTabId(web_contents(), &tab_id)) {
+  const bool has_tab_id =
+      tab_id_getter_for_testing_
+          ? tab_id_getter_for_testing_.Run(web_contents(), &tab_id)
+          : OfflinePageUtils::GetTabId(web_contents(), &tab_id);
+  if (!has_tab_id) {
     // No need to report NO_TAB_ID since it should have already been detected
     // and reported in offline page request handler.
     return;
@@ -336,16 +359,24 @@ void OfflinePageTabHelper::SelectPagesForURLDone(
     return;
   }
 
-  reloading_url_on_net_error_ = true;
-
-  // Reloads the page with extra header set to force loading the offline page.
+  // Reloads the page with extra header set to force loading the matched offline
+  // page, and strip extra headers on cross-origin redirects. Arm
+  // `reloading_url_on_net_error_` after LoadURLWithParams() (only when a
+  // navigation or pending entry remains active) so synchronously aborting an
+  // earlier pending navigation inside LoadURLWithParams() cannot clear the
+  // guard, while a synchronously cancelled reload does not leave it stuck.
   content::NavigationController::LoadURLParams load_params(
       offline_pages.front().url);
   load_params.transition_type = ui::PAGE_TRANSITION_RELOAD;
   OfflinePageHeader offline_header;
   offline_header.reason = OfflinePageHeader::Reason::NET_ERROR;
+  offline_header.id = base::NumberToString(offline_pages.front().offline_id);
   load_params.extra_headers = offline_header.GetCompleteHeaderString();
-  web_contents()->GetController().LoadURLWithParams(load_params);
+  load_params.remove_extra_headers_on_cross_origin_redirect = true;
+  base::WeakPtr<content::NavigationHandle> reload_handle =
+      web_contents()->GetController().LoadURLWithParams(load_params);
+  reloading_url_on_net_error_ =
+      reload_handle || web_contents()->GetController().GetPendingEntry();
 }
 
 // This is a callback from network request interceptor. It happens between
