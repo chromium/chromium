@@ -1593,6 +1593,48 @@
           }
         ]
       },
+      "Dawn Win x86 DEPS Release (Software)": {
+        "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "Dawn Win x86 Release (Software)": {
+        "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "Dawn Win10 x64 ASAN Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [

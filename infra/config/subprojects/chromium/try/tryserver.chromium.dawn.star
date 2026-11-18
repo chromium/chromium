@@ -199,6 +199,7 @@ shared_gpu.try_.win_optional_builder(
         "ci/Dawn Win10 x86 DEPS Builder",
         "ci/Dawn Win10 x86 DEPS Release (Intel)",
         "ci/Dawn Win10 x86 DEPS Release (NVIDIA)",
+        "ci/Dawn Win x86 DEPS Release (Software)",
     ],
     gn_args = "ci/Dawn Win10 x86 DEPS Builder",
     check_for_flakiness = False,
@@ -588,6 +589,7 @@ shared_gpu.try_.win_manual_builder(
         "ci/Dawn Win10 x86 Builder",
         "ci/Dawn Win10 x86 Release (Intel)",
         "ci/Dawn Win10 x86 Release (NVIDIA)",
+        "ci/Dawn Win x86 Release (Software)",
     ],
     gn_args = "ci/Dawn Win10 x86 Builder",
     test_presentation = resultdb.test_presentation(

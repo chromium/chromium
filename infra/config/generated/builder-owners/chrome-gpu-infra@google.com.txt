@@ -49,6 +49,8 @@ ci/Dawn Mac x64 Release (AMD)
 ci/Dawn Mac x64 Release (Intel)
 ci/Dawn Win x64 DEPS Release (Software)
 ci/Dawn Win x64 Release (Software)
+ci/Dawn Win x86 DEPS Release (Software)
+ci/Dawn Win x86 Release (Software)
 ci/Dawn Win10 x64 ASAN Builder
 ci/Dawn Win10 x64 ASAN Release (Intel)
 ci/Dawn Win10 x64 ASAN Release (NVIDIA)

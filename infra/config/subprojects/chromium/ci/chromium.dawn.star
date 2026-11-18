@@ -3449,6 +3449,44 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Dawn Win x86 DEPS Release (Software)",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Runs DEPS-ed in Dawn tests on Windows with software renderers",
+    parent = "ci/Dawn Win10 x86 DEPS Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [],
+        mixins = [
+            "gpu_win_gce_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.WINDOWS,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Windows|x86",
+        short_name = "sw",
+    ),
+    cq_mirrors_console_view = "mirrors",
+)
+
+ci.thin_tester(
     name = "Dawn Win10 x86 Experimental Release (Intel)",
     description_html = "Runs ToT Dawn tests on experimental Windows 10/Intel UHD 630 configs",
     parent = "Dawn Win10 x86 Builder",
@@ -3690,5 +3728,41 @@ ci.thin_tester(
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Windows|x86|Nvidia",
         short_name = "1660",
+    ),
+)
+
+ci.thin_tester(
+    name = "Dawn Win x86 Release (Software)",
+    description_html = "Runs ToT Dawn tests on Windows with software renderers",
+    parent = "Dawn Win10 x86 Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [],
+        mixins = [
+            "gpu_win_gce_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.WINDOWS,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|x86",
+        short_name = "sw",
     ),
 )
