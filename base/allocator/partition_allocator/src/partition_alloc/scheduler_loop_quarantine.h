@@ -245,7 +245,11 @@ class SchedulerLoopQuarantineBranch {
       QuarantineTaskType task_type = QuarantineTaskType::kNormal)
     requires kThreadBound
   {
+    // TODO(crbug.com/586707590): Correct this PA_DCHECK for tests that fork and
+    // change tid.
+#if !PA_BUILDFLAG(IS_POSIX)
     PA_DCHECK(thread_id_ == base::PlatformThread::CurrentId());
+#endif  // !PA_BUILDFLAG(IS_POSIX)
     task_nesting_depth_++;
     // We only un-pause quarantine on entering the outermost task to avoid
     // decrementing `pause_quarantine_` multiple times in nested tasks.
@@ -273,7 +277,11 @@ class SchedulerLoopQuarantineBranch {
       QuarantineTaskType task_type = QuarantineTaskType::kNormal)
     requires kThreadBound
   {
+    // TODO(crbug.com/586707590): Correct this PA_DCHECK for tests that fork and
+    // change tid.
+#if !PA_BUILDFLAG(IS_POSIX)
     PA_DCHECK(thread_id_ == base::PlatformThread::CurrentId());
+#endif  // !PA_BUILDFLAG(IS_POSIX)
     // Both features require allowing scanless purge (and potentially purging)
     // after task execution.
     if (enable_task_controlled_purge_ || pause_in_between_tasks_ ||

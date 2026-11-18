@@ -267,9 +267,13 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Configure(
   // aware of the feature being enabled or disabled.
   PA_CHECK(allocator_root_ == &root.allocator_root_);
   if constexpr (kThreadBound) {
-    PA_CHECK(tcache_->GetRoot() == &root.allocator_root_);
+    // TODO(crbug.com/586707590): Correct this PA_DCHECK for tests that fork and
+    // change tid.
+#if !PA_BUILDFLAG(IS_POSIX)
     PA_DCHECK(tcache_->thread_id() ==
               internal::base::PlatformThread::CurrentId());
+#endif  // !PA_BUILDFLAG(IS_POSIX)
+    PA_CHECK(tcache_->GetRoot() == &root.allocator_root_);
   }
 
   ScopedGuardIfNeeded<kThreadBound> guard(lock_);

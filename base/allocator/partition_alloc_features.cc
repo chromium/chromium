@@ -138,35 +138,26 @@ constinit const FeatureParam<std::string>
     kPartitionAllocSchedulerLoopQuarantineConfig{
         &kPartitionAllocSchedulerLoopQuarantine,
         "PartitionAllocSchedulerLoopQuarantineConfig",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
         R"({
-          "browser":{
-            "main":{
-              "branch-capacity-in-bytes":524288,
-              "enable-quarantine":true,
-              "leak-on-destruction":false
+          "*": {
+            "amsc": {
+              "branch-capacity-in-bytes": 524288,
+              "enable-quarantine": true,
+              "enable-zapping": true,
+              "leak-on-destruction": false
             }
           },
-          "*":{
-            "amsc":{
-              "branch-capacity-in-bytes":524288,
-              "enable-quarantine":true,
-              "leak-on-destruction":false
+          "browser": {
+            "main": {
+              "branch-capacity-in-bytes": 2147483647,
+              "enable-quarantine": true,
+              "enable-task-controlled-purge": true,
+              "enable-zapping": true,
+              "leak-on-destruction": false,
+              "pause-in-between-tasks": true
             }
           }
-        })"
-#else
-        R"({
-          "*":{
-            "amsc":{
-              "branch-capacity-in-bytes":524288,
-              "enable-quarantine":true,
-              "leak-on-destruction":false
-            }
-          }
-        })"
-#endif
-};
+        })"};
 
 BASE_FEATURE(kPartitionAllocEventuallyZeroFreedMemory,
              FEATURE_DISABLED_BY_DEFAULT);
