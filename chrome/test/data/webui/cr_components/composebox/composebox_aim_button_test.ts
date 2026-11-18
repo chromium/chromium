@@ -6,7 +6,7 @@ import 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 
 import type {ComposeboxAimButtonElement} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 import {AimButtonMode} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
-import {assertEquals, assertFalse, assertNear, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 const FOCUS_OUTLINE_CLASS = 'focus-outline-visible';
@@ -109,6 +109,67 @@ suite('ComposeboxAimButtonTest', () => {
     await element.updateComplete;
     assertEquals('Send now', button.title);
     assertEquals('Send now', button.getAttribute('aria-label'));
+
+    // Enter mode falls back to sendTitle when enterTitle is unset, then uses
+    // enterTitle in both ENTER and unpressed (!isActive) SEND.
+    await setState(element, AimButtonMode.ENTER, false);
+    assertEquals('Send now', button.title);
+    element.isActive = false;
+    await setState(element, AimButtonMode.SEND, false);
+    assertEquals('Send now', button.title);
+    element.enterTitle = 'Enter AI Mode';
+    await setState(element, AimButtonMode.ENTER, false);
+    assertEquals('Enter AI Mode', button.title);
+    assertEquals('Enter AI Mode', button.getAttribute('aria-label'));
+    await setState(element, AimButtonMode.SEND, false);
+    assertEquals('Enter AI Mode', button.title);
+    element.isActive = true;
+    await element.updateComplete;
+    assertEquals('Send now', button.title);
+  });
+
+  test('EnterModeAndUnpressedActiveStyling', async () => {
+    const button = element.$.button;
+    const leadingIcon = $$(element, '#leadingIcon');
+    assertTrue(!!leadingIcon);
+    const trailingIcon = $$(element, '#trailingIcon');
+    assertTrue(!!trailingIcon);
+
+    element.style.setProperty(
+        '--color-composebox-submit-button-background', 'rgb(26, 115, 232)');
+    assertTrue(element.isActive);
+    assertTrue(element.hasAttribute('is-active'));
+    const activeBg = getComputedStyle(button).backgroundColor;
+    assertEquals('rgb(26, 115, 232)', activeBg);
+
+    // Simulate OS/browser dark-mode NTP tokens where the composebox plate stays
+    // light (#FFFFFF) while `--color-composebox-type-ahead-chip` turns dark
+    // charcoal (#4E5059): `!isActive` must ignore those tokens and stay on
+    // the high-contrast light-plate defaults (#F3F5F6 / #1F1F1F).
+    element.style.setProperty(
+        '--color-composebox-type-ahead-chip', 'rgb(78, 80, 89)');
+    element.style.setProperty('--color-searchbox-foreground', 'rgb(0, 0, 0)');
+    element.isActive = false;
+    // Even with showExitIcon=true, ENTER mode shows the leading spark icon and
+    // never renders the trailing X icon.
+    await setState(element, AimButtonMode.ENTER, true);
+    assertFalse(element.hasAttribute('is-active'));
+    assertIconShown(leadingIcon);
+    assertIconCollapsed(trailingIcon);
+
+    const style = getComputedStyle(button);
+    assertNotEquals(activeBg, style.backgroundColor);
+    assertEquals('rgb(243, 245, 246)', style.backgroundColor);
+    assertEquals('rgb(31, 31, 31)', style.color);
+
+    // Host surfaces (such as Omnibox) can theme the inactive chip via dedicated
+    // custom properties.
+    element.style.setProperty(
+        '--cr-composebox-aim-button-inactive-background', 'rgb(40, 42, 46)');
+    element.style.setProperty(
+        '--cr-composebox-aim-button-inactive-color', 'rgb(227, 227, 227)');
+    assertEquals('rgb(40, 42, 46)', getComputedStyle(button).backgroundColor);
+    assertEquals('rgb(227, 227, 227)', getComputedStyle(button).color);
   });
 
   test('ModeSwitchKeepsButtonAndFocusAndReusesTrailingIcon', async () => {
@@ -275,6 +336,14 @@ suite('ComposeboxAimButtonTest', () => {
     element.style.setProperty('--aim-motion-duration-long', '200ms');
     assertEquals('0.2s', getComputedStyle(leadingIcon).transitionDuration);
     assertEquals('0.2s', getComputedStyle(trailingIcon).transitionDuration);
+    await setState(element, AimButtonMode.ENTER, true);
+    assertIconShown(leadingIcon);
+    assertIconCollapsed(trailingIcon);
+    assertLayout();
+    assertEquals(exitWidth, button.getBoundingClientRect().width);
+    assertNear(restingLeft, label.getBoundingClientRect().left, 0.1);
+    assertEquals('0.2s', getComputedStyle(leadingIcon).transitionDuration);
+    assertEquals('0.2s', getComputedStyle(trailingIcon).transitionDuration);
     await setState(element, AimButtonMode.SEND, false);
     assertEquals('0.1s', getComputedStyle(leadingIcon).transitionDuration);
     assertEquals('0.1s', getComputedStyle(trailingIcon).transitionDuration);
@@ -315,8 +384,9 @@ suite('ComposeboxAimButtonTest', () => {
     await setState(element, AimButtonMode.SEND, false);
     assertEnergy(false);
 
-    // Flag on: SEND only, with #energy right after #button for the sibling
-    // selectors; EXIT keeps the plain button.
+    // Flag on: active SEND only, with #energy right after #button for the
+    // sibling selectors; ENTER, EXIT, and unpressed (!isActive) SEND keep
+    // the plain button.
     element.energyEffectAnimationEnabled = true;
     await element.updateComplete;
     assertEnergy(true);
@@ -325,6 +395,14 @@ suite('ComposeboxAimButtonTest', () => {
     assertEquals(energy, button.nextElementSibling);
     assertEquals(
         'blur(7px)', window.getComputedStyle(energy, '::after').filter);
+    element.isActive = false;
+    await element.updateComplete;
+    assertEnergy(false);
+    element.isActive = true;
+    await element.updateComplete;
+    assertEnergy(true);
+    await setState(element, AimButtonMode.ENTER, false);
+    assertEnergy(false);
     await setState(element, AimButtonMode.EXIT, false);
     assertEnergy(false);
     await setState(element, AimButtonMode.EXIT, true);
@@ -344,14 +422,18 @@ suite('ComposeboxAimButtonFocusTest', () => {
     const button = element.$.button;
     const classList = document.documentElement.classList;
     const hadClass = classList.contains(FOCUS_OUTLINE_CLASS);
-    const states: Array<[AimButtonMode, boolean]> = [
-      [AimButtonMode.EXIT, false],
-      [AimButtonMode.EXIT, true],
-      [AimButtonMode.SEND, false],
+    const states: Array<[AimButtonMode, boolean, boolean]> = [
+      [AimButtonMode.ENTER, false, false],
+      [AimButtonMode.ENTER, true, false],
+      [AimButtonMode.SEND, false, false],
+      [AimButtonMode.EXIT, false, true],
+      [AimButtonMode.EXIT, true, true],
+      [AimButtonMode.SEND, false, true],
     ];
 
     try {
-      for (const [mode, showExitIcon] of states) {
+      for (const [mode, showExitIcon, isActive] of states) {
+        element.isActive = isActive;
         await setState(element, mode, showExitIcon);
 
         classList.remove(FOCUS_OUTLINE_CLASS);

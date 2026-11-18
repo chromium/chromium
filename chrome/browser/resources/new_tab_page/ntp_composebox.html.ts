@@ -89,11 +89,13 @@ ${this.errorMessage ? html`
       ${this.persistentAimButtonEnabled_ ? html`
         <cr-composebox-aim-button slot="action-buttons"
             .mode="${this.getAimButtonMode()}"
+            .isActive="${this.willFulfillInAim}"
             .showExitIcon="${this.showAimButtonExitIcon_}"
             .disabled="${this.isAimButtonDisabled()}"
             .energyEffectAnimationEnabled="${
                 this.energyEffectAnimationEnabled}"
             .label="${this.i18n('searchboxComposeButtonText')}"
+            .enterTitle="${this.i18n('searchboxComposeButtonTitle')}"
             .exitTitle="${this.i18n('composeboxAimButtonExitTitle')}"
             .sendTitle="${this.i18n('composeboxAimButtonSendTitle')}"
             @aim-button-click="${this.onAimButtonClick}"

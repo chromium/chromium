@@ -409,6 +409,7 @@ export const ComposeboxEmbedderMixin =
         // `resetDelayedTabContextRequests_()` to cancel them.
         private pendingDelayedTabRequests_: Set<object> = new Set();
         private smartComposeAnnounceTimeout_: number|null = null;
+        private pendingAimEntryFocus_: boolean = false;
         // <if expr="not is_android">
         private smartTabSharingUpdateGeneration_: number = 0;
         // </if>
@@ -616,8 +617,16 @@ export const ComposeboxEmbedderMixin =
             });
           }
 
-          if (changedPrivateProperties.has('inputState') && this.inputState) {
+          // Hold `willFulfillInAim` steady while `submitting` (so clearing
+          // inputs on submit or entering AI Mode on SEND does not flash the UI
+          // before navigation), and reconcile once `submitting` clears.
+          if ((changedPrivateProperties.has('inputState') ||
+               changedPrivateProperties.has('submitting')) &&
+              !this.submitting && this.inputState) {
             this.willFulfillInAim = this.inputState.willFulfillInAim;
+          }
+
+          if (changedPrivateProperties.has('inputState') && this.inputState) {
             this.hasAllowedInputs =
                 (this.inputState.allowedModels.length > 0 ||
                  this.inputState.allowedTools.length > 0 ||
@@ -729,6 +738,12 @@ export const ComposeboxEmbedderMixin =
           }
           if (changedPrivateProperties.has('state') && this.state) {
             this.updateState(this.state);
+          }
+          if (this.pendingAimEntryFocus_ &&
+              changedProperties.get('willFulfillInAim') === false &&
+              this.willFulfillInAim && !this.submitting) {
+            this.pendingAimEntryFocus_ = false;
+            void this.focusInputAfterRender_();
           }
         }
 
@@ -1889,13 +1904,18 @@ export const ComposeboxEmbedderMixin =
             this.handleToolClick(mode, /*allowToggleOff=*/ false);
           }
 
-          if (model === ModelMode.kUnspecified) {
-            model = this.getDefaultModel_(state.enterAimMode);
+          if (model === ModelMode.kUnspecified && state.enterAimMode) {
+            this.enterAimMode_();
+          } else {
+            if (model === ModelMode.kUnspecified) {
+              model = this.getDefaultModel_();
+            }
+            // With dynamic AIM fulfillment, a model enters AI Mode and no model
+            // leaves it, including AI Mode left over from an outside-click
+            // close.
+            this.getSearchboxHandler().setActiveModelMode(
+                model, /*isSetByAim=*/ false);
           }
-          // With dynamic AIM fulfillment, a model enters AI Mode and no model
-          // leaves it, including AI Mode left over from an outside-click close.
-          this.getSearchboxHandler().setActiveModelMode(
-              model, /*isSetByAim=*/ false);
           this.updateInputPlaceholder();
 
           await this.updateComplete;
@@ -2083,16 +2103,17 @@ export const ComposeboxEmbedderMixin =
         }
 
         // SEND is held while a submission navigates away, so clearing the
-        // input on submit doesn't flash the button back to EXIT.
+        // input on submit doesn't flash the button back to EXIT/ENTER.
         getAimButtonMode(): AimButtonMode {
           if (this.submitEnabled || this.submitting) {
             return AimButtonMode.SEND;
           }
-          return AimButtonMode.EXIT;
+          return this.willFulfillInAim ? AimButtonMode.EXIT :
+                                         AimButtonMode.ENTER;
         }
 
-        // Only SEND depends on whether the query can be submitted, so EXIT
-        // is never disabled by an empty or invalid query.
+        // Only SEND depends on whether the query can be submitted, so
+        // ENTER/EXIT is never disabled by an empty or invalid query.
         isAimButtonDisabled(): boolean {
           return this.submitEnabled && !this.canSubmitFilesAndInput;
         }
@@ -2103,9 +2124,33 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        // Requests AI Mode via the default (or fallback) model;
+        // `InputStateModel` replies via `onInputStateChanged()` to update
+        // `willFulfillInAim`.
+        private enterAimMode_() {
+          this.getSearchboxHandler().setActiveModelMode(
+              this.getDefaultModel_(/*enterAimMode=*/ true),
+              /*isSetByAim=*/ false);
+        }
+
+        // Focuses the input once `<cr-composebox-input>` has rendered the new
+        // placeholder, so that screen readers announce the AI Mode placeholder
+        // on focus rather than the stale SRP one.
+        private async focusInputAfterRender_() {
+          await this.getInputElement().updateComplete;
+          if (!this.isConnected || !this.willFulfillInAim || this.submitting) {
+            return;
+          }
+          this.focusInput();
+        }
+
         onAimButtonClick(e: CustomEvent<KeyboardEvent|MouseEvent>) {
           const mode = this.getAimButtonMode();
           switch (mode) {
+            case AimButtonMode.ENTER:
+              this.pendingAimEntryFocus_ = true;
+              this.enterAimMode_();
+              return;
             case AimButtonMode.EXIT:
               // Closes the composebox directly. `onCancelClick()` is not reused
               // because with an active tool it clears the inputs instead of
@@ -2114,6 +2159,12 @@ export const ComposeboxEmbedderMixin =
               return;
             case AimButtonMode.SEND:
               if (this.submitEnabled) {
+                if (!this.willFulfillInAim && this.canSubmitQuery_()) {
+                  // `setActiveModelMode()` precedes `openAutocompleteMatch()` /
+                  // `submitQuery()` on the FIFO `searchboxHandler` pipe without
+                  // unselecting dropdown matches.
+                  this.enterAimMode_();
+                }
                 this.onSubmitClick(e.detail);
               }
               return;
@@ -2398,9 +2449,18 @@ export const ComposeboxEmbedderMixin =
         // dynamic AIM fulfillment, otherwise only to enter AI Mode (e.g. from
         // the AI Mode button).
         private getDefaultModel_(enterAimMode: boolean = false): ModelMode {
-          if ((!this.dynamicAimFulfillmentEnabled || enterAimMode) &&
-              this.inputState && this.inputState.allowedModels.length > 0) {
-            return this.inputState.allowedModels[0]!;
+          if (!this.dynamicAimFulfillmentEnabled || enterAimMode) {
+            if (this.inputState && this.inputState.allowedModels.length > 0) {
+              return this.inputState.allowedModels[0]!;
+            }
+            if (this.dynamicAimFulfillmentEnabled && enterAimMode) {
+              // Fall back to `kGeminiRegular` when `allowedModels` is empty so
+              // `InputStateModel::SetActiveModel()` still latches
+              // `aim_mode_active_` (`ComputeFulfillment()` clamps
+              // `active_model` back to `kUnspecified` and emits `udm=50` when
+              // `allowed_models` is empty).
+              return ModelMode.kGeminiRegular;
+            }
           }
           return ModelMode.kUnspecified;
         }
@@ -2439,6 +2499,7 @@ export const ComposeboxEmbedderMixin =
          *     close on submit themselves can skip the request.
          */
         closeComposebox(afterSubmit: boolean = false) {
+          this.pendingAimEntryFocus_ = false;
           this.resetDelayedTabContextRequests_();
           if (!afterSubmit) {
             this.resetModes();
@@ -2481,9 +2542,13 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        private canSubmitQuery_(): boolean {
+          return !this.hasPendingDelayedTabContext_() &&
+              this.canSubmitFilesAndInput && this.hasValidQuery();
+        }
+
         submitQuery(e?: KeyboardEvent|MouseEvent) {
-          if (this.hasPendingDelayedTabContext_() ||
-              !this.canSubmitFilesAndInput || !this.hasValidQuery()) {
+          if (!this.canSubmitQuery_()) {
             return;
           }
           // Submissions do not need a mouse or keyboard event to be submitted.
@@ -2710,6 +2775,7 @@ export const ComposeboxEmbedderMixin =
          * handover.
          */
         resetSession() {
+          this.pendingAimEntryFocus_ = false;
           // <if expr="not is_android">
           const wasSubmitting = this.submitting;
           // </if>

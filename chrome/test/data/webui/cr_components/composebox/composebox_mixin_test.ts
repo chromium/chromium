@@ -25,7 +25,7 @@ import {ContextUploadErrorType, ContextUploadStatus, InputType, ModelMode, ToolM
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createAutocompleteResult, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -1882,6 +1882,46 @@ suite('ComposeboxMixinTest', () => {
     assertEquals(
         ModelMode.kGeminiRegular,
         searchboxHandler.getArgs('setActiveModelMode')[0][0]);
+
+    // When `allowedModels` is empty, `enterAimMode` falls back to
+    // `kGeminiRegular` under dynamic AIM fulfillment, but stays `kUnspecified`
+    // when dynamic AIM fulfillment is disabled.
+    element.onInputStateChanged(new MockInputState({
+      allowedModels: [],
+      activeModel: ModelMode.kUnspecified,
+    }));
+    await element.updateComplete;
+    searchboxHandler.resetResolver('setActiveModelMode');
+
+    await element.updateState({
+      text: '',
+      files: [],
+      mode: ToolMode.kUnspecified,
+      model: ModelMode.kUnspecified,
+      enterAimMode: true,
+      // <if expr="not is_android">
+      smartTabSharingActive: false,
+      // </if>
+    });
+    assertEquals(
+        ModelMode.kGeminiRegular,
+        searchboxHandler.getArgs('setActiveModelMode')[0][0]);
+
+    element.dynamicAimFulfillmentEnabled = false;
+    searchboxHandler.resetResolver('setActiveModelMode');
+    await element.updateState({
+      text: '',
+      files: [],
+      mode: ToolMode.kUnspecified,
+      model: ModelMode.kUnspecified,
+      enterAimMode: true,
+      // <if expr="not is_android">
+      smartTabSharingActive: false,
+      // </if>
+    });
+    assertEquals(
+        ModelMode.kUnspecified,
+        searchboxHandler.getArgs('setActiveModelMode')[0][0]);
   });
 
   test('empty input computes canSubmitFilesAndInput as false', async () => {
@@ -3691,5 +3731,277 @@ suite('ComposeboxMixinTest', () => {
             searchboxHandler.getArgs('setActiveModelMode')[0]);
         assertEquals(2, closeDetails.length);
         assertFalse(closeDetails[1]!.afterSubmit);
+      });
+
+  test('onAimButtonClick enters AI Mode in ENTER and SRP SEND', async () => {
+    const hadSrpPlaceholder =
+        loadTimeData.valueExists('searchboxSrpComposePlaceholder');
+    const originalSrpPlaceholder = hadSrpPlaceholder ?
+        loadTimeData.getString('searchboxSrpComposePlaceholder') :
+        '';
+    const originalComposePlaceholder =
+        loadTimeData.getString('searchboxComposePlaceholder');
+    loadTimeData.overrideValues({
+      searchboxSrpComposePlaceholder: 'Ask Google',
+      searchboxComposePlaceholder: 'Ask anything',
+    });
+
+    try {
+      element.dynamicAimFulfillmentEnabled = true;
+      element.onInputStateChanged(new MockInputState({
+        allowedModels: [],
+        activeModel: ModelMode.kUnspecified,
+        willFulfillInAim: false,
+      }));
+      await element.updateComplete;
+
+      assertEquals(AimButtonMode.ENTER, element.getAimButtonMode());
+      assertFalse(element.willFulfillInAim);
+      assertEquals('Ask Google', element.inputPlaceholder);
+
+      const inputEl = element.getInputElement().inputElement;
+      inputEl.blur();
+      let placeholderAtFocus: string|null = null;
+      inputEl.addEventListener('focus', () => {
+        placeholderAtFocus = inputEl.getAttribute('placeholder');
+      }, {once: true});
+
+      searchboxHandler.resetResolver('setActiveModelMode');
+      element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+      await microtasksFinished();
+
+      // Waiting on `InputStateModel`: `willFulfillInAim` stays false and focus
+      // does not move with the stale SRP placeholder until
+      // `onInputStateChanged` arrives.
+      assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
+      assertDeepEquals(
+          [ModelMode.kGeminiRegular, false],
+          searchboxHandler.getArgs('setActiveModelMode')[0]);
+      assertFalse(element.willFulfillInAim);
+      assertEquals(AimButtonMode.ENTER, element.getAimButtonMode());
+      assertEquals(null, placeholderAtFocus);
+      assertNotEquals(element.getInputElement(), element.getActiveElement());
+
+      searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState({
+        allowedModels: [],
+        activeModel: ModelMode.kUnspecified,
+        willFulfillInAim: true,
+      }));
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      assertTrue(element.willFulfillInAim);
+      assertEquals(AimButtonMode.EXIT, element.getAimButtonMode());
+      assertEquals('Ask anything', placeholderAtFocus);
+      assertEquals(element.getInputElement(), element.getActiveElement());
+
+      // Closing or resetting before `InputStateModel` confirms cancels the
+      // deferred focus.
+      searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState({
+        allowedModels: [],
+        activeModel: ModelMode.kUnspecified,
+        willFulfillInAim: false,
+      }));
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      inputEl.blur();
+      element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+      await microtasksFinished();
+      element.closeComposebox(/*afterSubmit=*/ false);
+      searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState({
+        allowedModels: [],
+        activeModel: ModelMode.kUnspecified,
+        willFulfillInAim: true,
+      }));
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      assertNotEquals(element.getInputElement(), element.getActiveElement());
+
+      // Same cancellation via `resetSession()`, and a non-click AI Mode flip
+      // does not move focus to the input either.
+      searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState({
+        allowedModels: [],
+        activeModel: ModelMode.kUnspecified,
+        willFulfillInAim: false,
+      }));
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      inputEl.blur();
+      element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+      await microtasksFinished();
+      element.resetSession();
+      searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState({
+        allowedModels: [],
+        activeModel: ModelMode.kUnspecified,
+        willFulfillInAim: true,
+      }));
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      assertNotEquals(element.getInputElement(), element.getActiveElement());
+
+      searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState({
+        allowedModels: [],
+        activeModel: ModelMode.kUnspecified,
+        willFulfillInAim: false,
+      }));
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      inputEl.blur();
+      searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState({
+        allowedModels: [],
+        activeModel: ModelMode.kUnspecified,
+        willFulfillInAim: true,
+      }));
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      assertNotEquals(element.getInputElement(), element.getActiveElement());
+
+      // SRP SEND: activates AI Mode before opening the default match, skips
+      // backend resets on Ctrl+Click (`afterSubmit`), and holds
+      // `willFulfillInAim` while `submitting` until `submitting` clears.
+      element.onInputStateChanged(new MockInputState({
+        allowedModels: [ModelMode.kGeminiPro],
+        activeModel: ModelMode.kUnspecified,
+        willFulfillInAim: false,
+      }));
+      await element.updateComplete;
+      await simulateUserTextInput(element.getInputElement(), 'hello');
+      await showAndSelectMatch('hello');
+      assertEquals(AimButtonMode.SEND, element.getAimButtonMode());
+      assertFalse(element.willFulfillInAim);
+
+      const callOrder: string[] = [];
+      searchboxHandler.resetResolver('setActiveModelMode');
+      searchboxHandler.resetResolver('openAutocompleteMatch');
+      searchboxHandler.resetResolver('clearFiles');
+      searchboxHandler.setResultMapperFor('setActiveModelMode', () => {
+        callOrder.push('setActiveModelMode');
+        searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState({
+          allowedModels: [ModelMode.kGeminiPro],
+          activeModel: ModelMode.kGeminiPro,
+          willFulfillInAim: true,
+        }));
+      });
+      searchboxHandler.setResultMapperFor('openAutocompleteMatch', () => {
+        callOrder.push('openAutocompleteMatch');
+      });
+      searchboxHandler.setResultMapperFor('clearFiles', () => {
+        callOrder.push('clearFiles');
+      });
+
+      element.onAimButtonClick(
+          createClickEvent(new MouseEvent('click', {ctrlKey: true})));
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      assertDeepEquals(
+          ['setActiveModelMode', 'openAutocompleteMatch'], callOrder);
+      assertDeepEquals(
+          [ModelMode.kGeminiPro, false],
+          searchboxHandler.getArgs('setActiveModelMode')[0]);
+      assertEquals(0, searchboxHandler.getCallCount('clearFiles'));
+      assertTrue(element.submitting);
+      assertFalse(element.willFulfillInAim);
+      assertEquals(AimButtonMode.SEND, element.getAimButtonMode());
+
+      element.submitting = false;
+      await element.updateComplete;
+      assertTrue(element.willFulfillInAim);
+    } finally {
+      loadTimeData.overrideValues({
+        searchboxComposePlaceholder: originalComposePlaceholder,
+        ...(hadSrpPlaceholder ?
+                {searchboxSrpComposePlaceholder: originalSrpPlaceholder} :
+                {}),
+      });
+    }
+  });
+
+  test(
+      'onAimButtonClick SEND guards model activation on SRP and submittable ' +
+          'state',
+      async () => {
+        element.dynamicAimFulfillmentEnabled = true;
+
+        // 1. Already in AI Mode (`willFulfillInAim === true`): preserves the
+        // user's selected `kGeminiPro` instead of overwriting with default.
+        element.onInputStateChanged(new MockInputState({
+          allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
+          activeModel: ModelMode.kGeminiPro,
+          willFulfillInAim: true,
+        }));
+        await element.updateComplete;
+        await simulateUserTextInput(element.getInputElement(), 'hello');
+        searchboxHandler.resetResolver('setActiveModelMode');
+        searchboxHandler.resetResolver('submitQuery');
+
+        element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+        await microtasksFinished();
+
+        assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+        assertEquals(1, searchboxHandler.getCallCount('submitQuery'));
+        element.submitting = false;
+        await element.updateComplete;
+
+        // 2. Pending delayed tab context in SRP mode: aborts before activating
+        // AI Mode even while `canSubmitFilesAndInput` has not recomputed yet.
+        element.onInputStateChanged(new MockInputState({
+          allowedModels: [ModelMode.kGeminiRegular],
+          activeModel: ModelMode.kUnspecified,
+          willFulfillInAim: false,
+        }));
+        await element.updateComplete;
+        await simulateUserTextInput(element.getInputElement(), 'hello');
+        assertTrue(element.canSubmitFilesAndInput);
+        element.shouldWaitForDelayedTabContext = () => true;
+        const pendingTab = ComposeboxFile.createFromTab(
+            'delayed-tab-uuid', 1, 'Tab 1', 'https://example.com',
+            {delayUpload: true, status: ContextUploadStatus.kUploadStarted});
+        element.attachedContext = new Map([[pendingTab.uuid, pendingTab]]);
+        searchboxHandler.resetResolver('setActiveModelMode');
+        searchboxHandler.resetResolver('submitQuery');
+
+        element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+
+        assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+        assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
+        assertFalse(element.willFulfillInAim);
+        element.shouldWaitForDelayedTabContext = () => false;
+        element.attachedContext = new Map();
+        await microtasksFinished();
+
+        // 3. In-flight file upload (`!canSubmitFilesAndInput`): aborts before
+        // activating AI Mode.
+        await simulateUserTextInput(element.getInputElement(), '');
+        await attachFileWithStatus(
+            ContextUploadStatus.kNotUploaded, {supportsUnimodal: true});
+        assertTrue(element.submitEnabled);
+        assertFalse(element.canSubmitFilesAndInput);
+        searchboxHandler.resetResolver('setActiveModelMode');
+        searchboxHandler.resetResolver('submitQuery');
+
+        element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+        await microtasksFinished();
+
+        assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+        assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
+        assertFalse(element.willFulfillInAim);
+
+        // 4. Uploaded non-unimodal file with empty input (`!hasValidQuery()`):
+        // aborts before activating AI Mode even if clicked synchronously.
+        const nonUnimodal = ComposeboxFile.createFromFile(
+            'non-unimodal-token', {name: 'doc.pdf', type: 'application/pdf'},
+            ContextUploadStatus.kUploadSuccessful);
+        element.attachedContext = new Map([[nonUnimodal.uuid, nonUnimodal]]);
+        assertFalse(element.hasValidQuery());
+        searchboxHandler.resetResolver('setActiveModelMode');
+        searchboxHandler.resetResolver('submitQuery');
+
+        element.onAimButtonClick(createClickEvent(new MouseEvent('click')));
+        await microtasksFinished();
+
+        assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+        assertEquals(0, searchboxHandler.getCallCount('submitQuery'));
+        assertFalse(element.willFulfillInAim);
       });
 });

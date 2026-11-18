@@ -18,7 +18,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {RenderType, SideType, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createAutocompleteResult, createSearchMatch} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -3712,6 +3712,7 @@ suite('OmniboxComposeboxPersistentAimButtonTest', () => {
       composeboxPersistentAimButton: enabled,
       composeboxPersistentAimButtonWithX: withX,
       searchboxComposeButtonText: 'AI Mode',
+      searchboxComposeButtonTitle: 'Enter AI Mode',
       composeboxAimButtonExitTitle: 'Exit AI Mode',
       composeboxAimButtonSendTitle: 'Send',
     });
@@ -3760,8 +3761,10 @@ suite('OmniboxComposeboxPersistentAimButtonTest', () => {
             if (aimButton) {
               assertEquals(withX, aimButton.showExitIcon);
               assertEquals('AI Mode', aimButton.label);
+              assertEquals('Enter AI Mode', aimButton.enterTitle);
               assertEquals('Exit AI Mode', aimButton.exitTitle);
               assertEquals('Send', aimButton.sendTitle);
+              assertTrue(aimButton.isActive);
             }
           });
     });
@@ -3971,7 +3974,6 @@ suite('OmniboxComposeboxPersistentAimButtonTest', () => {
     }
   });
 });
-
 suite('OmniboxComposeboxDynamicAimFulfillmentTest', () => {
   let omniboxComposebox: OmniboxComposeboxElement;
   let testProxy: TestSearchboxBrowserProxy;
@@ -4027,6 +4029,94 @@ suite('OmniboxComposeboxDynamicAimFulfillmentTest', () => {
       dynamicAimFulfillmentEnabled: false,
     });
   });
+
+  test(
+      'SRP state renders unpressed ENTER/SEND and click activates AI Mode',
+      async () => {
+        loadTimeData.overrideValues({
+          composeboxPersistentAimButton: true,
+          composeboxPersistentAimButtonWithX: true,
+          searchboxComposeButtonText: 'AI Mode',
+          searchboxComposeButtonTitle: 'Enter AI Mode',
+          composeboxAimButtonExitTitle: 'Exit AI Mode',
+          composeboxAimButtonSendTitle: 'Send',
+        });
+        try {
+          testProxy.handler.setPromiseResolveFor('getInputState', {
+            state: {
+              ...createDefaultInputState(),
+              allowedModels: [ModelMode.kGeminiPro],
+              activeModel: ModelMode.kUnspecified,
+              willFulfillInAim: false,
+            },
+          });
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          omniboxComposebox = document.createElement('cr-omnibox-composebox');
+          document.body.appendChild(omniboxComposebox);
+          omniboxComposebox.setBaseSearchboxLayoutModeForTesting(
+              'TallBottomContext');
+          await microtasksFinished();
+
+          omniboxComposebox.style.setProperty(
+              '--color-omnibox-composebox-chip-background', 'rgb(40, 42, 46)');
+          omniboxComposebox.style.setProperty(
+              '--color-omnibox-text', 'rgb(227, 227, 227)');
+
+          const aimButton = omniboxComposebox.shadowRoot
+                                .querySelector<ComposeboxAimButtonElement>(
+                                    'cr-composebox-aim-button');
+          assertTrue(!!aimButton);
+          assertFalse(aimButton.isActive);
+          assertEquals(AimButtonMode.ENTER, aimButton.mode);
+          assertEquals('Enter AI Mode', aimButton.$.button.title);
+          const buttonStyle = getComputedStyle(aimButton.$.button);
+          assertEquals('rgb(40, 42, 46)', buttonStyle.backgroundColor);
+          assertEquals('rgb(227, 227, 227)', buttonStyle.color);
+
+          omniboxComposebox.input = 'test';
+          await microtasksFinished();
+          assertFalse(aimButton.isActive);
+          assertEquals(AimButtonMode.SEND, aimButton.mode);
+          assertEquals('Enter AI Mode', aimButton.$.button.title);
+
+          const callOrder: string[] = [];
+          testProxy.handler.resetResolver('setActiveModelMode');
+          testProxy.handler.setResultMapperFor('setActiveModelMode', () => {
+            callOrder.push('setActiveModelMode');
+            testProxy.page.onInputStateChanged({
+              ...createDefaultInputState(),
+              allowedModels: [ModelMode.kGeminiPro],
+              activeModel: ModelMode.kGeminiPro,
+              willFulfillInAim: true,
+            });
+          });
+          testProxy.handler.setResultMapperFor('submitQuery', () => {
+            callOrder.push('submitQuery');
+          });
+
+          aimButton.$.button.click();
+          await testProxy.page.$.flushForTesting();
+          await microtasksFinished();
+
+          assertDeepEquals(['setActiveModelMode', 'submitQuery'], callOrder);
+          assertDeepEquals(
+              [ModelMode.kGeminiPro, false],
+              testProxy.handler.getArgs('setActiveModelMode')[0]);
+          assertTrue(omniboxComposebox.submitting);
+          assertFalse(aimButton.isActive);
+          assertEquals(AimButtonMode.SEND, aimButton.mode);
+
+          omniboxComposebox.submitting = false;
+          await microtasksFinished();
+          assertTrue(aimButton.isActive);
+          assertEquals(AimButtonMode.EXIT, aimButton.mode);
+        } finally {
+          loadTimeData.overrideValues({
+            composeboxPersistentAimButton: false,
+            composeboxPersistentAimButtonWithX: false,
+          });
+        }
+      });
 
   async function setWillFulfillInAim(willFulfillInAim: boolean) {
     omniboxComposebox.inputState = {

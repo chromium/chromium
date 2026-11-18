@@ -94,6 +94,7 @@ export function setupComposeboxTest(): ComposeboxTestElement {
       'composeboxPersistentAimButton': false,
       'composeboxPersistentAimButtonWithX': false,
       'searchboxComposeButtonText': 'AI Mode',
+      'searchboxComposeButtonTitle': 'Enter AI Mode',
       'composeboxAimButtonExitTitle': 'Exit AI Mode',
       'composeboxAimButtonSendTitle': 'Send',
     });

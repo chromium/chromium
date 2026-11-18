@@ -13,6 +13,7 @@ import {getCss} from './composebox_aim_button.css.js';
 import {getHtml} from './composebox_aim_button.html.js';
 
 export enum AimButtonMode {
+  ENTER = 'enter',
   EXIT = 'exit',
   SEND = 'send',
 }
@@ -48,9 +49,11 @@ export class ComposeboxAimButtonElement extends CrLitElement {
   static override get properties() {
     return {
       mode: {type: String, reflect: true},
+      isActive: {type: Boolean, reflect: true},
       showExitIcon: {type: Boolean},
       disabled: {type: Boolean, reflect: true},
       label: {type: String},
+      enterTitle: {type: String},
       exitTitle: {type: String},
       sendTitle: {type: String},
       energyEffectAnimationEnabled: {type: Boolean},
@@ -58,9 +61,13 @@ export class ComposeboxAimButtonElement extends CrLitElement {
   }
 
   accessor mode: AimButtonMode = AimButtonMode.EXIT;
+  // Whether AI Mode fulfillment is active (`willFulfillInAim`); when false,
+  // renders as an unpressed SRP chip.
+  accessor isActive: boolean = true;
   accessor showExitIcon: boolean = false;
   accessor disabled: boolean = false;
   accessor label: string = '';
+  accessor enterTitle: string = '';
   accessor exitTitle: string = '';
   accessor sendTitle: string = '';
   accessor energyEffectAnimationEnabled: boolean = false;
@@ -86,16 +93,19 @@ export class ComposeboxAimButtonElement extends CrLitElement {
     this.$.button?.blur();
   }
 
-  // Only the exit state without X (exit icon) shows the leading icon. The
-  // returned class must match the stylesheet's `.collapsed` selector.
+  // Enter state (even with X configured) and exit state without X show the
+  // leading icon. The returned class must match the stylesheet's `.collapsed`
+  // selector.
   protected getLeadingIconClass_(): string {
-    const shown = this.mode === AimButtonMode.EXIT && !this.showExitIcon;
+    const shown = this.mode === AimButtonMode.ENTER ||
+        (this.mode === AimButtonMode.EXIT && !this.showExitIcon);
     return shown ? '' : 'collapsed';
   }
 
-  // The energy effect only runs in SEND; EXIT keeps the plain button.
+  // The energy effect only runs in active SEND; ENTER, EXIT, and unpressed SRP
+  // SEND keep the plain button.
   protected showEnergyEffect_(): boolean {
-    return this.energyEffectAnimationEnabled &&
+    return this.isActive && this.energyEffectAnimationEnabled &&
         this.mode === AimButtonMode.SEND;
   }
 
@@ -104,9 +114,12 @@ export class ComposeboxAimButtonElement extends CrLitElement {
   }
 
   // Send state shows the arrow icon; exit state with X (exit icon) shows the
-  // exit icon; exit state without X doesn't show any trailing icon.
+  // exit icon; enter state and exit state without X don't show any trailing
+  // icon.
   protected getTrailingIcon_(): TrailingIcon {
     switch (this.mode) {
+      case AimButtonMode.ENTER:
+        return TrailingIcon.NONE;
       case AimButtonMode.SEND:
         return TrailingIcon.ARROW;
       case AimButtonMode.EXIT:
@@ -118,10 +131,13 @@ export class ComposeboxAimButtonElement extends CrLitElement {
 
   protected getTitle_(): string {
     switch (this.mode) {
+      case AimButtonMode.ENTER:
+        return this.enterTitle || this.sendTitle;
       case AimButtonMode.EXIT:
         return this.exitTitle;
       case AimButtonMode.SEND:
-        return this.sendTitle;
+        return this.isActive ? this.sendTitle :
+                               (this.enterTitle || this.sendTitle);
       default:
         assertNotReachedCase(this.mode);
     }

@@ -1616,9 +1616,179 @@ suite('NewTabPageComposeboxTest', () => {
       await createWithAimButton(true, false);
       const aimButton = getAimButton();
       assertEquals('AI Mode', aimButton.label);
+      assertEquals('Enter AI Mode', aimButton.enterTitle);
       assertEquals('Exit AI Mode', aimButton.exitTitle);
       assertEquals('Send', aimButton.sendTitle);
+      assertTrue(aimButton.isActive);
     });
+
+    test(
+        'SRP empty state shows unpressed ENTER mode and click enters AI Mode',
+        async () => {
+          testProxy.searchboxHandler.setPromiseResolveFor('getInputState', {
+            state: new MockInputState({
+              allowedModels: [ModelMode.kGeminiPro],
+              activeModel: ModelMode.kUnspecified,
+              willFulfillInAim: false,
+            }),
+          });
+          await createWithAimButton(
+              true, /*withX=*/ true, {dynamicAimFulfillmentEnabled: true});
+          const aimButton = getAimButton();
+          assertEquals(AimButtonMode.ENTER, aimButton.mode);
+          assertFalse(aimButton.isActive);
+          assertEquals('Enter AI Mode', aimButton.$.button.title);
+
+          aimButton.focus();
+          assertEquals(aimButton, testProxy.element.getActiveElement());
+
+          testProxy.searchboxHandler.resetResolver('setActiveModelMode');
+          testProxy.searchboxHandler.setResultMapperFor(
+              'setActiveModelMode', () => {
+                testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+                    new MockInputState({
+                      allowedModels: [ModelMode.kGeminiPro],
+                      activeModel: ModelMode.kGeminiPro,
+                      willFulfillInAim: true,
+                    }));
+              });
+          aimButton.$.button.click();
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          assertEquals(AimButtonMode.EXIT, aimButton.mode);
+          assertTrue(aimButton.isActive);
+          assertEquals(
+              1, testProxy.searchboxHandler.getCallCount('setActiveModelMode'));
+          assertDeepEquals(
+              [ModelMode.kGeminiPro, false],
+              testProxy.searchboxHandler.getArgs('setActiveModelMode')[0]);
+          assertEquals(
+              0, testProxy.searchboxHandler.getCallCount('submitQuery'));
+          assertEquals(
+              testProxy.element.getInputElement(),
+              testProxy.element.getActiveElement());
+        });
+
+    test(
+        'SRP empty state falls back to kGeminiRegular when allowedModels is empty',
+        async () => {
+          testProxy.searchboxHandler.setPromiseResolveFor('getInputState', {
+            state: new MockInputState({
+              allowedModels: [],
+              activeModel: ModelMode.kUnspecified,
+              willFulfillInAim: false,
+            }),
+          });
+          await createWithAimButton(
+              true, false, {dynamicAimFulfillmentEnabled: true});
+          testProxy.searchboxHandler.resetResolver('setActiveModelMode');
+          testProxy.searchboxHandler.setResultMapperFor(
+              'setActiveModelMode', () => {
+                testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
+                    new MockInputState({
+                      allowedModels: [],
+                      activeModel: ModelMode.kUnspecified,
+                      willFulfillInAim: true,
+                    }));
+              });
+
+          getAimButton().$.button.click();
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          assertEquals(
+              1, testProxy.searchboxHandler.getCallCount('setActiveModelMode'));
+          assertDeepEquals(
+              [ModelMode.kGeminiRegular, false],
+              testProxy.searchboxHandler.getArgs('setActiveModelMode')[0]);
+          assertTrue(getAimButton().isActive);
+        });
+
+    test(
+        'SRP typed state enters AI Mode before opening default match or submitting',
+        async () => {
+          testProxy.searchboxHandler.setPromiseResolveFor('getInputState', {
+            state: new MockInputState({
+              allowedModels: [ModelMode.kGeminiPro],
+              activeModel: ModelMode.kUnspecified,
+              willFulfillInAim: false,
+            }),
+          });
+          await createWithAimButton(
+              true, false, {dynamicAimFulfillmentEnabled: true});
+          await typeInput('test');
+          await showMatch(/*allowedToBeDefaultMatch=*/ true);
+
+          const aimButton = getAimButton();
+          assertEquals(AimButtonMode.SEND, aimButton.mode);
+          assertFalse(aimButton.isActive);
+          assertEquals('Enter AI Mode', aimButton.$.button.title);
+          assertEquals(0, testProxy.element.selectedMatchIndex);
+
+          const callOrder: string[] = [];
+          testProxy.searchboxHandler.resetResolver('setActiveModelMode');
+          testProxy.searchboxHandler.setResultMapperFor(
+              'setActiveModelMode', () => {
+                callOrder.push('setActiveModelMode');
+              });
+          testProxy.searchboxHandler.setResultMapperFor(
+              'openAutocompleteMatch', () => {
+                callOrder.push('openAutocompleteMatch');
+              });
+
+          aimButton.$.button.click();
+          await microtasksFinished();
+
+          assertDeepEquals(
+              ['setActiveModelMode', 'openAutocompleteMatch'], callOrder);
+          assertDeepEquals(
+              [ModelMode.kGeminiPro, false],
+              testProxy.searchboxHandler.getArgs('setActiveModelMode')[0]);
+          assertEquals(
+              1,
+              testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'));
+        });
+
+    test(
+        'SRP file-only state enters AI Mode before calling submitQuery',
+        async () => {
+          testProxy.searchboxHandler.setPromiseResolveFor('getInputState', {
+            state: new MockInputState({
+              allowedModels: [ModelMode.kGeminiPro],
+              activeModel: ModelMode.kUnspecified,
+              willFulfillInAim: false,
+            }),
+          });
+          await createWithAimButton(
+              true, false, {dynamicAimFulfillmentEnabled: true});
+          testProxy.element.addFileContextForTesting(createComposeboxFile(1));
+          await microtasksFinished();
+
+          const aimButton = getAimButton();
+          assertEquals(AimButtonMode.SEND, aimButton.mode);
+          assertFalse(aimButton.isActive);
+
+          const callOrder: string[] = [];
+          testProxy.searchboxHandler.resetResolver('setActiveModelMode');
+          testProxy.searchboxHandler.setResultMapperFor(
+              'setActiveModelMode', () => {
+                callOrder.push('setActiveModelMode');
+              });
+          testProxy.searchboxHandler.setResultMapperFor('submitQuery', () => {
+            callOrder.push('submitQuery');
+          });
+
+          aimButton.$.button.click();
+          await microtasksFinished();
+
+          assertDeepEquals(['setActiveModelMode', 'submitQuery'], callOrder);
+          assertDeepEquals(
+              [ModelMode.kGeminiPro, false],
+              testProxy.searchboxHandler.getArgs('setActiveModelMode')[0]);
+          assertEquals(
+              1, testProxy.searchboxHandler.getCallCount('submitQuery'));
+        });
 
     test('mode follows the input and is held after submit', async () => {
       await createWithAimButton(

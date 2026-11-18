@@ -47,6 +47,33 @@
   padding-inline: var(--cr-composebox-aim-button-icon-inset);
 }
 
+:host(:not([is-active])) #button {
+  --cr-hover-background-color: var(
+      --color-composebox-aim-chip-hover-background,
+      var(--color-composebox-context-entrypoint-hover-background,
+          rgba(31, 31, 31, 0.06)));
+  background-color: var(
+      --cr-composebox-aim-button-inactive-background, #F3F5F6);
+  color: var(
+      --cr-composebox-aim-button-inactive-color,
+      var(--color-composebox-font-light, #1F1F1F));
+}
+
+@media (forced-colors: active) {
+  :host(:not([is-active])) #button {
+    --cr-hover-background-color: Highlight;
+    background-color: ButtonFace;
+    border: 1px solid ButtonText;
+    color: ButtonText;
+  }
+
+  :host(:not([is-active])) #button:hover {
+    background-color: Highlight;
+    border-color: HighlightText;
+    color: HighlightText;
+  }
+}
+
 :host-context(.focus-outline-visible) #button:focus {
   outline-color: var(
       --color-searchbox-results-icon-focused-outline,
