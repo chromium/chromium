@@ -21,6 +21,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/fake_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
@@ -39,6 +41,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -64,6 +67,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/content_extraction/script_tools.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "url/gurl.h"
 
@@ -2115,6 +2120,218 @@ TEST_F(ExecutionEngineUrlGatingTest,
 
   EXPECT_EQ(future.Get(), MayActOnUrlBlockReason::kAllowed);
 }
+
+// TODO(crbug.com/480230075): Crashing on Android.
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+mojom::ExecuteJsResponsePtr MakeForgedExecuteJsResponse() {
+  return mojom::ExecuteJsResponse::New(
+      /*result=*/"bad\xFF\xFEutf8" + std::string(kExecuteJsMaxResultBytes, 'r'),
+      /*truncated=*/false,
+      /*js_error_message=*/"bad\xFF\xFEmsg",
+      /*console_logs=*/"bad\xFF\xFElog" +
+          std::string(kExecuteJsMaxConsoleBytes, 'c'));
+}
+
+class ForgedExecuteJsResponseRenderFrame : public FakeChromeRenderFrame {
+ public:
+  void set_fail_initialize_tool(bool fail) { fail_initialize_tool_ = fail; }
+  void set_populate_script_tool_response(bool populate) {
+    populate_script_tool_response_ = populate;
+  }
+
+  int initialize_tool_calls() const { return initialize_tool_calls_; }
+  int execute_tool_calls() const { return execute_tool_calls_; }
+  int invoke_tool_calls() const { return invoke_tool_calls_; }
+
+  void InitializeTool(actor::mojom::ToolInvocationPtr request,
+                      InitializeToolCallback callback) override {
+    ++initialize_tool_calls_;
+    if (fail_initialize_tool_) {
+      mojom::ActionResultPtr error =
+          MakeResult(mojom::ActionResultCode::kInvalidDomNodeId,
+                     /*requires_page_stabilization=*/false, "Target not found");
+      error->execute_js_response = MakeForgedExecuteJsResponse();
+      std::move(callback).Run(
+          mojom::InitializeToolResult::NewErrorResult(std::move(error)));
+      return;
+    }
+    FakeChromeRenderFrame::InitializeTool(std::move(request),
+                                          std::move(callback));
+  }
+
+  void ExecuteTool(const actor::TaskId& task_id,
+                   ExecuteToolCallback callback) override {
+    ++execute_tool_calls_;
+    mojom::ActionResultPtr result = MakeOkResult();
+    result->execute_js_response = MakeForgedExecuteJsResponse();
+    std::move(callback).Run(std::move(result));
+  }
+
+  void InvokeTool(actor::mojom::ToolInvocationPtr request,
+                  InvokeToolCallback callback) override {
+    ++invoke_tool_calls_;
+    mojom::ActionResultPtr result = MakeOkResult();
+    if (populate_script_tool_response_) {
+      result->script_tool_response = mojom::ScriptToolResponse::New();
+      result->script_tool_response->tool = blink::mojom::ScriptTool::New();
+      result->script_tool_response->tool->name = "test_tool";
+      result->script_tool_response->result = "ok";
+    }
+    result->execute_js_response = MakeForgedExecuteJsResponse();
+    std::move(callback).Run(std::move(result));
+  }
+
+ private:
+  bool fail_initialize_tool_ = false;
+  bool populate_script_tool_response_ = false;
+  int initialize_tool_calls_ = 0;
+  int execute_tool_calls_ = 0;
+  int invoke_tool_calls_ = 0;
+};
+
+TEST_F(ExecutionEngineTest, PageToolInvokeStripsForgedExecuteJsResponse) {
+  base::test::ScopedFeatureList disable_split_mode;
+  disable_split_mode.InitAndDisableFeature(
+      features::kGlicActorSplitValidateAndExecute);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  ForgedExecuteJsResponseRenderFrame fake_render_frame;
+  fake_render_frame.OverrideBinder(main_rfh());
+
+  ActResultFuture result;
+  std::unique_ptr<ToolRequest> action =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  task_->Act(ToRequestList(action), result.GetCallback());
+
+  const auto& action_results = result.Get();
+  EXPECT_EQ(fake_render_frame.initialize_tool_calls(), 0);
+  EXPECT_EQ(fake_render_frame.execute_tool_calls(), 0);
+  EXPECT_EQ(fake_render_frame.invoke_tool_calls(), 1);
+  ASSERT_EQ(action_results.size(), 1u);
+  const mojom::ActionResultPtr& action_result =
+      action_results[0].tool_result.deprecated_action_result();
+  ASSERT_TRUE(action_result);
+  EXPECT_TRUE(IsOk(*action_result));
+  EXPECT_FALSE(action_result->execute_js_response);
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+  EXPECT_EQ(actions_result.execute_js_results_size(), 0);
+}
+
+TEST_F(ExecutionEngineTest,
+       PageToolSplitModeExecuteStripsForgedExecuteJsResponse) {
+  base::test::ScopedFeatureList split_features;
+  split_features.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicActorSplitValidateAndExecute,
+                            features::kGlicActorUiMagicCursor},
+      /*disabled_features=*/{});
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  ForgedExecuteJsResponseRenderFrame fake_render_frame;
+  fake_render_frame.OverrideBinder(main_rfh());
+
+  ActResultFuture result;
+  std::unique_ptr<ToolRequest> action =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  task_->Act(ToRequestList(action), result.GetCallback());
+
+  const auto& action_results = result.Get();
+  EXPECT_EQ(fake_render_frame.initialize_tool_calls(), 1);
+  EXPECT_EQ(fake_render_frame.execute_tool_calls(), 1);
+  EXPECT_EQ(fake_render_frame.invoke_tool_calls(), 0);
+  ASSERT_EQ(action_results.size(), 1u);
+  const mojom::ActionResultPtr& action_result =
+      action_results[0].tool_result.deprecated_action_result();
+  ASSERT_TRUE(action_result);
+  EXPECT_TRUE(IsOk(*action_result));
+  EXPECT_FALSE(action_result->execute_js_response);
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+  EXPECT_EQ(actions_result.execute_js_results_size(), 0);
+}
+
+TEST_F(ExecutionEngineTest,
+       PageToolSplitModeInitializeErrorStripsForgedExecuteJsResponse) {
+  base::test::ScopedFeatureList split_features;
+  split_features.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicActorSplitValidateAndExecute,
+                            features::kGlicActorUiMagicCursor},
+      /*disabled_features=*/{});
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  ForgedExecuteJsResponseRenderFrame fake_render_frame;
+  fake_render_frame.set_fail_initialize_tool(true);
+  fake_render_frame.OverrideBinder(main_rfh());
+
+  ActResultFuture result;
+  std::unique_ptr<ToolRequest> action =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  task_->Act(ToRequestList(action), result.GetCallback());
+
+  const auto& action_results = result.Get();
+  EXPECT_EQ(fake_render_frame.initialize_tool_calls(), 1);
+  EXPECT_EQ(fake_render_frame.execute_tool_calls(), 0);
+  EXPECT_EQ(fake_render_frame.invoke_tool_calls(), 0);
+  ASSERT_EQ(action_results.size(), 1u);
+  const mojom::ActionResultPtr& action_result =
+      action_results[0].tool_result.deprecated_action_result();
+  ASSERT_TRUE(action_result);
+  EXPECT_EQ(action_result->code, mojom::ActionResultCode::kInvalidDomNodeId);
+  EXPECT_FALSE(action_result->execute_js_response);
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+  EXPECT_EQ(actions_result.execute_js_results_size(), 0);
+}
+
+TEST_F(ExecutionEngineTest, ScriptToolHostStripsForgedExecuteJsResponse) {
+  base::test::ScopedFeatureList web_mcp_features;
+  web_mcp_features.InitAndEnableFeature(blink::features::kWebMCP);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  ForgedExecuteJsResponseRenderFrame fake_render_frame;
+  fake_render_frame.set_populate_script_tool_response(true);
+  fake_render_frame.OverrideBinder(main_rfh());
+
+  const base::UnguessableToken document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(main_rfh())
+              ->token();
+  std::unique_ptr<ToolRequest> action = std::make_unique<ScriptToolRequest>(
+      ActorSurfaceHandle::From(GetTab()->GetHandle()), document_id, "test_tool",
+      "{}");
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(action), result.GetCallback());
+
+  const auto& action_results = result.Get();
+  EXPECT_EQ(fake_render_frame.initialize_tool_calls(), 0);
+  EXPECT_EQ(fake_render_frame.execute_tool_calls(), 0);
+  EXPECT_EQ(fake_render_frame.invoke_tool_calls(), 1);
+  ASSERT_EQ(action_results.size(), 1u);
+  const mojom::ActionResultPtr& action_result =
+      action_results[0].tool_result.deprecated_action_result();
+  ASSERT_TRUE(action_result);
+  EXPECT_TRUE(IsOk(*action_result));
+  ASSERT_TRUE(action_result->script_tool_response);
+  EXPECT_EQ(action_result->script_tool_response->result, "ok");
+  EXPECT_FALSE(action_result->execute_js_response);
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+  EXPECT_EQ(actions_result.execute_js_results_size(), 0);
+}
+#endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 
 }  // namespace
 

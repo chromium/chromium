@@ -1097,7 +1097,8 @@ TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_PopulatesProto) {
   mojom::ActionResultPtr result = MakeOkResult();
   result->execute_js_response =
       mojom::ExecuteJsResponse::New("\"hello world\"", /*truncated=*/false,
-                                    /*js_error_message=*/std::nullopt);
+                                    /*js_error_message=*/std::nullopt,
+                                    /*console_logs=*/"");
   action_results.emplace_back(now, now, std::move(result));
 
   optimization_guide::proto::ActionsResult actions_result;
@@ -1109,6 +1110,31 @@ TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_PopulatesProto) {
   EXPECT_EQ(actions_result.execute_js_results(0).result(), "\"hello world\"");
   EXPECT_FALSE(actions_result.execute_js_results(0).truncated());
   EXPECT_FALSE(actions_result.execute_js_results(0).has_js_error_message());
+  EXPECT_FALSE(actions_result.execute_js_results(0).has_console_logs());
+}
+
+TEST_F(ActorProtoConversionTest,
+       CopyExecuteJsResults_CopiesConsoleLogsOnSuccess) {
+  std::vector<ToolResultWithLatencyInfo> action_results;
+  base::TimeTicks now = base::TimeTicks::Now();
+  mojom::ActionResultPtr result = MakeOkResult();
+  result->execute_js_response = mojom::ExecuteJsResponse::New(
+      "42", /*truncated=*/false,
+      /*js_error_message=*/std::nullopt, "[log] step 1\n[warn] caution");
+  action_results.emplace_back(now, now, std::move(result));
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+
+  ASSERT_EQ(actions_result.execute_js_results_size(), 1);
+  const optimization_guide::proto::ExecuteJsResult& execute_js_result =
+      actions_result.execute_js_results(0);
+  EXPECT_EQ(execute_js_result.index_of_execute_js_action(), 0);
+  EXPECT_EQ(execute_js_result.result(), "42");
+  EXPECT_FALSE(execute_js_result.truncated());
+  EXPECT_FALSE(execute_js_result.has_js_error_message());
+  ASSERT_TRUE(execute_js_result.has_console_logs());
+  EXPECT_EQ(execute_js_result.console_logs(), "[log] step 1\n[warn] caution");
 }
 
 TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_KeepsJsErrorMessage) {
@@ -1118,7 +1144,8 @@ TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_KeepsJsErrorMessage) {
       MakeResult(mojom::ActionResultCode::kExecuteJsScriptFailed,
                  /*requires_page_stabilization=*/false, "Script failed");
   result->execute_js_response = mojom::ExecuteJsResponse::New(
-      /*result=*/"", /*truncated=*/false, "Error: test_error");
+      /*result=*/"", /*truncated=*/false, "Error: test_error",
+      /*console_logs=*/"");
   action_results.emplace_back(now, now, std::move(result));
 
   optimization_guide::proto::ActionsResult actions_result;
@@ -1131,20 +1158,85 @@ TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_KeepsJsErrorMessage) {
   EXPECT_EQ(execute_js_result.js_error_message(), "Error: test_error");
   EXPECT_FALSE(execute_js_result.has_result());
   EXPECT_FALSE(execute_js_result.has_truncated());
+  EXPECT_FALSE(execute_js_result.has_console_logs());
 }
 
-// Failures without a JavaScript error from the renderer, e.g. ones the browser
-// reports, aren't ExecuteJs results, even with a partial response.
 TEST_F(ActorProtoConversionTest,
-       CopyExecuteJsResults_IgnoresFailuresWithoutJsError) {
+       CopyExecuteJsResults_CopiesConsoleLogsWithJsError) {
+  std::vector<ToolResultWithLatencyInfo> action_results;
+  base::TimeTicks now = base::TimeTicks::Now();
+  mojom::ActionResultPtr result =
+      MakeResult(mojom::ActionResultCode::kExecuteJsScriptFailed,
+                 /*requires_page_stabilization=*/false, "Error: boom");
+  result->execute_js_response = mojom::ExecuteJsResponse::New(
+      /*result=*/"", /*truncated=*/false, "Error: boom",
+      "[log] before throw\n[error] oops");
+  action_results.emplace_back(now, now, std::move(result));
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+
+  ASSERT_EQ(actions_result.execute_js_results_size(), 1);
+  const optimization_guide::proto::ExecuteJsResult& execute_js_result =
+      actions_result.execute_js_results(0);
+  EXPECT_EQ(execute_js_result.index_of_execute_js_action(), 0);
+  EXPECT_EQ(execute_js_result.js_error_message(), "Error: boom");
+  ASSERT_TRUE(execute_js_result.has_console_logs());
+  EXPECT_EQ(execute_js_result.console_logs(),
+            "[log] before throw\n[error] oops");
+  EXPECT_FALSE(execute_js_result.has_result());
+  EXPECT_FALSE(execute_js_result.has_truncated());
+}
+
+TEST_F(ActorProtoConversionTest,
+       CopyExecuteJsResults_CopiesConsoleLogsOnFailureWithoutJsError) {
+  std::vector<ToolResultWithLatencyInfo> action_results;
+  base::TimeTicks now = base::TimeTicks::Now();
+  mojom::ActionResultPtr result =
+      MakeResult(mojom::ActionResultCode::kExecuteJsTimeout,
+                 /*requires_page_stabilization=*/false, "Timed out");
+  result->execute_js_response = mojom::ExecuteJsResponse::New(
+      /*result=*/"", /*truncated=*/false, /*js_error_message=*/std::nullopt,
+      "[log] breadcrumb before timeout");
+  action_results.emplace_back(now, now, std::move(result));
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+
+  ASSERT_EQ(actions_result.execute_js_results_size(), 1);
+  const optimization_guide::proto::ExecuteJsResult& execute_js_result =
+      actions_result.execute_js_results(0);
+  EXPECT_EQ(execute_js_result.index_of_execute_js_action(), 0);
+  EXPECT_FALSE(execute_js_result.has_js_error_message());
+  ASSERT_TRUE(execute_js_result.has_console_logs());
+  EXPECT_EQ(execute_js_result.console_logs(),
+            "[log] breadcrumb before timeout");
+  EXPECT_FALSE(execute_js_result.has_result());
+  EXPECT_FALSE(execute_js_result.has_truncated());
+}
+
+// Failures without a JavaScript error or console output from the renderer,
+// e.g. ones the browser reports, aren't ExecuteJs results, even with a partial
+// response.
+TEST_F(ActorProtoConversionTest,
+       CopyExecuteJsResults_IgnoresFailuresWithoutJsErrorOrConsoleLogs) {
   std::vector<ToolResultWithLatencyInfo> action_results;
   base::TimeTicks now = base::TimeTicks::Now();
   mojom::ActionResultPtr result =
       MakeResult(mojom::ActionResultCode::kExecuteJsScriptFailed,
                  /*requires_page_stabilization=*/false, "Script failed");
   result->execute_js_response = mojom::ExecuteJsResponse::New(
-      "partial", /*truncated=*/false, /*js_error_message=*/std::nullopt);
+      "partial", /*truncated=*/false, /*js_error_message=*/std::nullopt,
+      /*console_logs=*/"");
   action_results.emplace_back(now, now, std::move(result));
+
+  mojom::ActionResultPtr timeout_result =
+      MakeResult(mojom::ActionResultCode::kExecuteJsTimeout,
+                 /*requires_page_stabilization=*/false, "Timed out");
+  timeout_result->execute_js_response = mojom::ExecuteJsResponse::New(
+      "partial", /*truncated=*/false, /*js_error_message=*/std::nullopt,
+      /*console_logs=*/"");
+  action_results.emplace_back(now, now, std::move(timeout_result));
 
   optimization_guide::proto::ActionsResult actions_result;
   CopyExecuteJsResults(actions_result, action_results);
@@ -1155,29 +1247,50 @@ TEST_F(ActorProtoConversionTest,
 TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_IndexesByAction) {
   std::vector<ToolResultWithLatencyInfo> action_results;
   base::TimeTicks now = base::TimeTicks::Now();
-  // An action that isn't ExecuteJs, followed by two ExecuteJs actions.
+  // An action that isn't ExecuteJs, followed by three ExecuteJs actions.
   action_results.emplace_back(now, now, MakeOkResult());
   mojom::ActionResultPtr first = MakeOkResult();
   first->execute_js_response = mojom::ExecuteJsResponse::New(
-      "1", /*truncated=*/false, /*js_error_message=*/std::nullopt);
+      "1", /*truncated=*/false, /*js_error_message=*/std::nullopt,
+      /*console_logs=*/"");
   action_results.emplace_back(now, now, std::move(first));
   mojom::ActionResultPtr second = MakeOkResult();
   second->execute_js_response = mojom::ExecuteJsResponse::New(
-      "\"abc", /*truncated=*/true, /*js_error_message=*/std::nullopt);
+      "\"abc", /*truncated=*/true, /*js_error_message=*/std::nullopt,
+      "[log] partial");
   action_results.emplace_back(now, now, std::move(second));
+  mojom::ActionResultPtr third =
+      MakeResult(mojom::ActionResultCode::kExecuteJsTimeout,
+                 /*requires_page_stabilization=*/false, "Timed out");
+  third->execute_js_response = mojom::ExecuteJsResponse::New(
+      /*result=*/"", /*truncated=*/false, /*js_error_message=*/std::nullopt,
+      "[log] timeout_log");
+  action_results.emplace_back(now, now, std::move(third));
 
   optimization_guide::proto::ActionsResult actions_result;
   CopyExecuteJsResults(actions_result, action_results);
 
-  ASSERT_EQ(actions_result.execute_js_results_size(), 2);
+  ASSERT_EQ(actions_result.execute_js_results_size(), 3);
   EXPECT_EQ(actions_result.execute_js_results(0).index_of_execute_js_action(),
             1);
   EXPECT_EQ(actions_result.execute_js_results(0).result(), "1");
   EXPECT_FALSE(actions_result.execute_js_results(0).truncated());
+  EXPECT_FALSE(actions_result.execute_js_results(0).has_console_logs());
   EXPECT_EQ(actions_result.execute_js_results(1).index_of_execute_js_action(),
             2);
   EXPECT_EQ(actions_result.execute_js_results(1).result(), "\"abc");
   EXPECT_TRUE(actions_result.execute_js_results(1).truncated());
+  ASSERT_TRUE(actions_result.execute_js_results(1).has_console_logs());
+  EXPECT_EQ(actions_result.execute_js_results(1).console_logs(),
+            "[log] partial");
+  EXPECT_EQ(actions_result.execute_js_results(2).index_of_execute_js_action(),
+            3);
+  EXPECT_FALSE(actions_result.execute_js_results(2).has_result());
+  EXPECT_FALSE(actions_result.execute_js_results(2).has_truncated());
+  EXPECT_FALSE(actions_result.execute_js_results(2).has_js_error_message());
+  ASSERT_TRUE(actions_result.execute_js_results(2).has_console_logs());
+  EXPECT_EQ(actions_result.execute_js_results(2).console_logs(),
+            "[log] timeout_log");
 }
 
 void CanConvertAnyProto(

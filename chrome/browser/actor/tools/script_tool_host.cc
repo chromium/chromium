@@ -266,14 +266,19 @@ void ScriptToolHost::OnToolInvokedInOldDocument(mojom::ActionResultPtr result) {
 
   CHECK(web_contents());
 
-  if (result && result->code == mojom::ActionResultCode::kOk) {
+  // Only ExecuteJsToolHost accepts and sanitizes `execute_js_response`.
+  // TODO(crbug.com/574534362): Enforce per-tool response fields in the type
+  // system instead of stripping unrelated fields here.
+  result->execute_js_response.reset();
+
+  if (result->code == mojom::ActionResultCode::kOk) {
     result->requires_page_stabilization =
         pending_result_->requires_page_stabilization;
     result->screenshot_policy = pending_result_->screenshot_policy;
     result->page_content_policy = pending_result_->page_content_policy;
   }
 
-  const bool has_tool_response = result && result->script_tool_response;
+  const bool has_tool_response = !result->script_tool_response.is_null();
   if (has_tool_response && result->script_tool_response->tool) {
     pending_result_->script_tool_response->tool =
         result->script_tool_response->tool.Clone();
