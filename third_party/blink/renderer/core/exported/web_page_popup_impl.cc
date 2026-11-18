@@ -172,11 +172,6 @@ class PagePopupChromeClient final : public EmptyChromeClient {
  public:
   explicit PagePopupChromeClient(WebPagePopupImpl* popup) : popup_(popup) {}
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(popup_);
-    EmptyChromeClient::Trace(visitor);
-  }
-
   void ChromeDestroyed() override {
     // `popup_` is about to get deleted.
     popup_ = nullptr;
@@ -384,14 +379,13 @@ class PagePopupChromeClient final : public EmptyChromeClient {
         delta, granularity, scrollable_area_element_id, injected_type);
   }
 
-  Member<WebPagePopupImpl> popup_;
+  raw_ptr<WebPagePopupImpl, UnprotectedInRelease | DanglingUntriaged> popup_;
   mutable display::ScreenInfos constrained_screen_infos_;
 };
 
 // WebPagePopupImpl ----------------------------------------------------------
 
 WebPagePopupImpl::WebPagePopupImpl(
-    PassKey,
     CrossVariantMojoAssociatedRemote<mojom::blink::PopupWidgetHostInterfaceBase>
         popup_widget_host,
     CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
@@ -407,6 +401,7 @@ WebPagePopupImpl::WebPagePopupImpl(
       local_frame_client_(MakeGarbageCollected<EmptyLocalFrameClient>()),
       page_(CreatePage(*chrome_client_, *opener_web_view)),
       popup_client_(popup_client),
+      popup_widget_host_(std::move(popup_widget_host)),
       widget_base_(std::make_unique<WidgetBase>(
           /*widget_base_client=*/this,
           std::move(widget_host),
@@ -418,10 +413,8 @@ WebPagePopupImpl::WebPagePopupImpl(
           /*is_for_scalable_page=*/true)),
       handle_(NextPopupHandle()) {
   DCHECK(popup_client_);
-  popup_widget_host_.Bind(std::move(popup_widget_host),
-                          agent_group_scheduler.DefaultTaskRunner());
   popup_widget_host_.set_disconnect_handler(blink::BindOnce(
-      &WebPagePopupImpl::WidgetHostDisconnected, WrapWeakPersistent(this)));
+      &WebPagePopupImpl::WidgetHostDisconnected, blink::Unretained(this)));
   if (auto* main_frame_widget = opener_web_view->MainFrameViewWidget()) {
     if (auto* device_emulator = main_frame_widget->DeviceEmulator()) {
       opener_widget_screen_origin_ = device_emulator->ViewRectOrigin();
@@ -498,7 +491,7 @@ WebPagePopupImpl::WebPagePopupImpl(
       popup_client_->OwnerElement().GetBoundingClientRect();
   popup_widget_host_->ShowPopup(initial_rect_, GetAnchorRectInScreen(),
                                 blink::BindOnce(&WebPagePopupImpl::DidShowPopup,
-                                                WrapWeakPersistent(this)));
+                                                blink::Unretained(this)));
   should_defer_setting_window_rect_ = false;
   widget_base_->SetPendingWindowRect(initial_rect_);
 
@@ -508,15 +501,6 @@ WebPagePopupImpl::WebPagePopupImpl(
 WebPagePopupImpl::~WebPagePopupImpl() {
   // Ensure DestroyPage was called.
   DCHECK(!page_);
-  // In production, `Close()` is normally invoked via `WidgetHostDisconnected()`
-  // when the browser closes the Mojo channel. However, in unit tests (or if
-  // garbage collection runs before the channel disconnect arrives), `Close()`
-  // may not have been called yet. Ensure `widget_base_` is shut down before
-  // destruction so that `WidgetBase::~WidgetBase()` does not fail its DCHECK.
-  if (widget_base_) {
-    widget_base_->Shutdown(/*delay_release=*/false);
-    widget_base_.reset();
-  }
 }
 
 void WebPagePopupImpl::DidShowPopup() {
@@ -738,7 +722,7 @@ void WebPagePopupImpl::SetWindowRect(const gfx::Rect& rect_in_screen) {
     widget_base_->SetPendingWindowRect(window_rect);
     popup_widget_host_->SetPopupBounds(
         window_rect, blink::BindOnce(&WebPagePopupImpl::DidSetBounds,
-                                     WrapWeakPersistent(this)));
+                                     blink::Unretained(this)));
   } else {
     initial_rect_ = window_rect;
   }
@@ -1051,6 +1035,7 @@ WebInputEventResult WebPagePopupImpl::DispatchBufferedTouchEvents() {
   if (closing_) {
     return WebInputEventResult::kNotHandled;
   }
+  scoped_refptr<WebPagePopupImpl> protector(this);
   return MainFrame().GetEventHandler().DispatchBufferedTouchEvents();
 }
 
@@ -1060,6 +1045,7 @@ WebInputEventResult WebPagePopupImpl::HandleInputEvent(
     return WebInputEventResult::kNotHandled;
   }
   DCHECK(!WebInputEvent::IsTouchEventType(event.Event().GetType()));
+  scoped_refptr<WebPagePopupImpl> protector(this);
   return WidgetEventHandler::HandleInputEvent(event, &MainFrame());
 }
 
@@ -1116,14 +1102,11 @@ KURL WebPagePopupImpl::GetURLForDebugTrace() {
 
 void WebPagePopupImpl::WidgetHostDisconnected() {
   Close();
+  // Careful, this is now destroyed.
 }
 
 void WebPagePopupImpl::WidgetHostDisconnectedForTesting() {
   WidgetHostDisconnected();
-
-  // Reset popup_widget_host_ so its mojo disconnect handler doesn't lead to
-  // calling WidgetHostDisconnected() again.
-  popup_widget_host_.reset();
 }
 
 void WebPagePopupImpl::Close() {
@@ -1157,6 +1140,9 @@ void WebPagePopupImpl::Close() {
   // for a crash.
   widget_base_->Shutdown(/*delay_release=*/false);
   widget_base_.reset();
+
+  // Self-delete on Close().
+  Release();
 }
 
 void WebPagePopupImpl::ClosePopup() {
@@ -1289,16 +1275,6 @@ Element& WebPagePopupImpl::OwnerElement() {
   return popup_client_->OwnerElement();
 }
 
-void WebPagePopupImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(chrome_client_);
-  visitor->Trace(local_frame_client_);
-  visitor->Trace(page_);
-  visitor->Trace(popup_client_);
-  visitor->Trace(popup_owner_client_rect_);
-  visitor->Trace(popup_widget_host_);
-  visitor->Trace(scrollable_node_);
-}
-
 // WebPagePopup ----------------------------------------------------------------
 
 WebPagePopupImpl* WebPagePopupImpl::Create(
@@ -1312,10 +1288,17 @@ WebPagePopupImpl* WebPagePopupImpl::Create(
     AgentGroupScheduler& agent_group_scheduler,
     const display::ScreenInfos& screen_infos,
     PagePopupClient* popup_client) {
-  return MakeGarbageCollected<WebPagePopupImpl>(
-      PassKey(), std::move(popup_widget_host), std::move(widget_host),
-      std::move(widget), opener_webview, agent_group_scheduler, screen_infos,
-      popup_client);
+  // A WebPagePopupImpl instance usually has two references.
+  //  - One owned by the instance itself. It represents the visible widget.
+  //  - One owned by a WebViewImpl. It's released when the WebViewImpl ask the
+  //    WebPagePopupImpl to close.
+  // We need them because the closing operation is asynchronous and the widget
+  // can be closed while the WebViewImpl is unaware of it.
+  auto popup = base::AdoptRef(new WebPagePopupImpl(
+      std::move(popup_widget_host), std::move(widget_host), std::move(widget),
+      opener_webview, agent_group_scheduler, screen_infos, popup_client));
+  popup->AddRef();
+  return popup.get();
 }
 
 }  // namespace blink

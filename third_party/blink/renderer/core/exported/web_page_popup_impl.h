@@ -33,7 +33,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
@@ -47,13 +46,10 @@
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/input/widget_event_handler.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace cc {
 class Layer;
@@ -72,15 +68,14 @@ class LocalDOMWindow;
 class WidgetBase;
 class DOMRect;
 
-class CORE_EXPORT WebPagePopupImpl final
-    : public GarbageCollected<WebPagePopupImpl>,
-      public WebPagePopup,
-      public WidgetEventHandler,
-      public PagePopup,
-      public WidgetBaseClient {
- public:
-  using PassKey = base::PassKey<WebPagePopupImpl>;
+class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
+                                           public WidgetEventHandler,
+                                           public PagePopup,
+                                           public RefCounted<WebPagePopupImpl>,
+                                           public WidgetBaseClient {
+  USING_FAST_MALLOC(WebPagePopupImpl);
 
+ public:
   WebPagePopupImpl(const WebPagePopupImpl&) = delete;
   WebPagePopupImpl& operator=(const WebPagePopupImpl&) = delete;
   ~WebPagePopupImpl() override;
@@ -203,21 +198,6 @@ class CORE_EXPORT WebPagePopupImpl final
 
   const display::ScreenInfo& GetScreenInfo() const;
 
-  void Trace(Visitor*) const;
-
-  WebPagePopupImpl(
-      PassKey,
-      CrossVariantMojoAssociatedRemote<
-          mojom::blink::PopupWidgetHostInterfaceBase> popup_widget_host,
-      CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
-          widget_host,
-      CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
-          widget,
-      WebViewImpl* opener_impl,
-      AgentGroupScheduler& agent_group_scheduler,
-      const display::ScreenInfos& screen_infos,
-      PagePopupClient*);
-
  private:
   // WidgetBaseClient overrides:
   void OnCommitRequested() override;
@@ -270,6 +250,18 @@ class CORE_EXPORT WebPagePopupImpl final
   AXObject* RootAXObject(Element* popover_owner) override;
   void SetWindowRect(const gfx::Rect&) override;
 
+  WebPagePopupImpl(
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::PopupWidgetHostInterfaceBase> popup_widget_host,
+      CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+          widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+          widget,
+      WebViewImpl* opener_impl,
+      AgentGroupScheduler& agent_group_scheduler,
+      const display::ScreenInfos& screen_infos,
+      PagePopupClient*);
+
   void DestroyPage();
   void MainFrameDetached();
   void SetRootLayer(scoped_refptr<cc::Layer>);
@@ -286,22 +278,22 @@ class CORE_EXPORT WebPagePopupImpl final
 
   // This is the WebView that opened the popup.
   raw_ptr<WebViewImpl, UnprotectedInRelease> opener_web_view_ = nullptr;
-  Member<PagePopupChromeClient> chrome_client_;
-  Member<EmptyLocalFrameClient> local_frame_client_;
+  Persistent<PagePopupChromeClient> chrome_client_;
+  Persistent<EmptyLocalFrameClient> local_frame_client_;
   // WebPagePopupImpl wraps its own Page that renders the content in the popup.
   // This member is non-null between the call to Initialize() and the call to
   // ClosePopup(). If page_ is non-null, it is guaranteed to have an attached
   // main LocalFrame with a corresponding non-null LocalFrameView and non-null
   // Document.
-  Member<Page> page_;
-  Member<PagePopupClient> popup_client_;
+  Persistent<Page> page_;
+  Persistent<PagePopupClient> popup_client_;
   bool closing_ = false;
 
   scoped_refptr<cc::Layer> root_layer_;
   base::TimeTicks raf_aligned_input_start_time_;
 
   bool suppress_next_keypress_event_ = false;
-  Member<DOMRect> popup_owner_client_rect_;
+  Persistent<DOMRect> popup_owner_client_rect_;
 
   // When emulation is enabled, and a popup widget is opened, the popup widget
   // needs these values to move between the popup's (non-emulated) coordinates
@@ -313,8 +305,7 @@ class CORE_EXPORT WebPagePopupImpl final
 
   // The channel associated with the browser. When this is closed the popup will
   // be destroyed.
-  HeapMojoAssociatedRemote<mojom::blink::PopupWidgetHost> popup_widget_host_{
-      nullptr};
+  mojo::AssociatedRemote<mojom::blink::PopupWidgetHost> popup_widget_host_;
 
   // The rect before the widget is shown.
   gfx::Rect initial_rect_;
@@ -328,7 +319,7 @@ class CORE_EXPORT WebPagePopupImpl final
 
   // Only used for Scroll Unification.
   // Will be set in GestureScrollBegin
-  WeakMember<Node> scrollable_node_;
+  WeakPersistent<Node> scrollable_node_;
 
   Handle handle_;
 
