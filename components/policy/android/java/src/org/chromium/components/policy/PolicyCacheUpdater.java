@@ -30,9 +30,7 @@ public class PolicyCacheUpdater {
                     Pair.create("ChromeVariations", PolicyCache.Type.INTEGER),
                     Pair.create("SafeSitesFilterBehavior", PolicyCache.Type.INTEGER),
                     Pair.create("URLAllowlist", PolicyCache.Type.LIST),
-                    Pair.create("URLBlocklist", PolicyCache.Type.LIST),
-                    Pair.create("FirstPartySetsEnabled", PolicyCache.Type.BOOLEAN),
-                    Pair.create("FirstPartySetsOverrides", PolicyCache.Type.DICT));
+                    Pair.create("URLBlocklist", PolicyCache.Type.LIST));
 
     @CalledByNative
     public static void cachePolicies(PolicyMap policyMap) {
