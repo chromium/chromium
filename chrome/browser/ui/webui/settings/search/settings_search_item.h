@@ -18,11 +18,14 @@ namespace settings_search {
 // FuzzySearchItem so FuzzyFinder can score it against a query.
 class SettingsSearchItem : public FuzzySearchItem {
  public:
+  // `bonus_weight` must be in [0.0, 1.0] (see FuzzySearchItem::GetBonusWeight()
+  // for how it affects ranking).
   SettingsSearchItem(mojom::SettingId id,
                      std::string route_path,
                      std::u16string title,
                      std::vector<std::u16string> breadcrumbs,
-                     std::vector<std::u16string> synonyms);
+                     std::vector<std::u16string> synonyms,
+                     double bonus_weight = 0.0);
 
   SettingsSearchItem(const SettingsSearchItem&) = delete;
   SettingsSearchItem& operator=(const SettingsSearchItem&) = delete;
@@ -51,6 +54,8 @@ class SettingsSearchItem : public FuzzySearchItem {
   // first. Already localized, like `title_` and `synonyms_`.
   std::vector<std::u16string> breadcrumbs_;
   std::vector<std::u16string> synonyms_;
+  // See FuzzySearchItem::GetBonusWeight(). In [0.0, 1.0].
+  double bonus_weight_;
 };
 
 }  // namespace settings_search

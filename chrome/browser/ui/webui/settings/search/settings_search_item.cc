@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
 
 namespace settings_search {
@@ -16,12 +17,17 @@ SettingsSearchItem::SettingsSearchItem(mojom::SettingId id,
                                        std::string route_path,
                                        std::u16string title,
                                        std::vector<std::u16string> breadcrumbs,
-                                       std::vector<std::u16string> synonyms)
+                                       std::vector<std::u16string> synonyms,
+                                       double bonus_weight)
     : id_(id),
       route_path_(std::move(route_path)),
       title_(std::move(title)),
       breadcrumbs_(std::move(breadcrumbs)),
-      synonyms_(std::move(synonyms)) {}
+      synonyms_(std::move(synonyms)),
+      bonus_weight_(bonus_weight) {
+  CHECK_GE(bonus_weight_, 0.0);
+  CHECK_LE(bonus_weight_, 1.0);
+}
 
 SettingsSearchItem::~SettingsSearchItem() = default;
 
@@ -38,7 +44,7 @@ base::span<const std::u16string> SettingsSearchItem::GetSynonyms() const {
 }
 
 double SettingsSearchItem::GetBonusWeight() const {
-  return 0.0;
+  return bonus_weight_;
 }
 
 }  // namespace settings_search

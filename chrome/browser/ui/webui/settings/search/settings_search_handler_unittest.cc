@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -39,9 +40,11 @@ std::unique_ptr<SettingsSearchItem> MakeItem(
     const std::string& route,
     const std::u16string& title,
     std::vector<std::u16string> breadcrumbs = {u"Appearance"},
-    std::vector<std::u16string> synonyms = {}) {
+    std::vector<std::u16string> synonyms = {},
+    double bonus_weight = 0.0) {
   return std::make_unique<SettingsSearchItem>(
-      id, route, title, std::move(breadcrumbs), std::move(synonyms));
+      id, route, title, std::move(breadcrumbs), std::move(synonyms),
+      bonus_weight);
 }
 
 std::vector<std::unique_ptr<SettingsSearchItem>> MakeAppearanceItems() {
@@ -272,6 +275,46 @@ TEST_F(SettingsSearchHandlerTest, TruncationTrimsTrailingWhitespace) {
   ASSERT_EQ(results.size(), 1u);
   EXPECT_THAT(results[0]->title_match_ranges,
               ElementsAre(gfx::Range(0, kMaxQueryLength - 1)));
+}
+
+TEST_F(SettingsSearchHandlerTest, BonusWeightRanksItemFirst) {
+  std::vector<std::unique_ptr<SettingsSearchItem>> items;
+  items.push_back(MakeItem(mojom::SettingId::kShowHomeButton, kAppearanceRoute,
+                           u"Show home page"));
+  items.push_back(MakeItem(mojom::SettingId::kShowBookmarksBar,
+                           kAppearanceRoute, u"Show bookmarks"));
+  CreateHandler(std::move(items));
+
+  // Without a bonus, equally matching items are returned in SettingId order.
+  auto default_results = Search(u"show");
+  ASSERT_EQ(default_results.size(), 2u);
+  ASSERT_EQ(default_results[0]->id, mojom::SettingId::kShowHomeButton);
+  ASSERT_EQ(default_results[1]->id, mojom::SettingId::kShowBookmarksBar);
+  EXPECT_DOUBLE_EQ(default_results[0]->score, default_results[1]->score);
+
+  // Giving the second item a bonus promotes it above the tie while leaving
+  // reported match scores unchanged.
+  registry().AddItem(MakeItem(mojom::SettingId::kShowBookmarksBar,
+                              kAppearanceRoute, u"Show bookmarks",
+                              {u"Appearance"}, /*synonyms=*/{},
+                              /*bonus_weight=*/0.01));
+  auto bonus_results = Search(u"show");
+  ASSERT_EQ(bonus_results.size(), 2u);
+  EXPECT_EQ(bonus_results[0]->id, mojom::SettingId::kShowBookmarksBar);
+  EXPECT_EQ(bonus_results[1]->id, mojom::SettingId::kShowHomeButton);
+  EXPECT_DOUBLE_EQ(bonus_results[0]->score, default_results[0]->score);
+  EXPECT_DOUBLE_EQ(bonus_results[1]->score, default_results[1]->score);
+}
+
+TEST_F(SettingsSearchHandlerTest, OutOfRangeBonusWeightCheckFails) {
+  EXPECT_CHECK_DEATH(MakeItem(mojom::SettingId::kShowBookmarksBar,
+                              kAppearanceRoute, u"Show bookmarks bar",
+                              {u"Appearance"}, /*synonyms=*/{},
+                              /*bonus_weight=*/-0.1));
+  EXPECT_CHECK_DEATH(MakeItem(mojom::SettingId::kShowBookmarksBar,
+                              kAppearanceRoute, u"Show bookmarks bar",
+                              {u"Appearance"}, /*synonyms=*/{},
+                              /*bonus_weight=*/1.1));
 }
 
 TEST_F(SettingsSearchHandlerTest, EmptyItemListReturnsNothing) {
