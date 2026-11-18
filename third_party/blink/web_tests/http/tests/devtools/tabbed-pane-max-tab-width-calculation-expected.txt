@@ -1,8 +1,0 @@
-Tests tabbed pane max tab element width calculation.
-
-measuredWidths = [20,50,70], totalWidth = 150, maxWidth = 70.
-measuredWidths = [20,50,80], totalWidth = 150, maxWidth = 80.
-measuredWidths = [20,50,90], totalWidth = 150, maxWidth = 80.
-measuredWidths = [20,90,90], totalWidth = 150, maxWidth = 65.
-measuredWidths = [70,80,90], totalWidth = 150, maxWidth = 50.
-
