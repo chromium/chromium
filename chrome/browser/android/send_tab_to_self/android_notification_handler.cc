@@ -226,8 +226,9 @@ void AndroidNotificationHandler::ShowNotification(
   }
 
   Java_NotificationManager_showNotification(
-      env, entry.GetGUID(), entry.GetURL().spec(), entry.GetTitle(),
-      entry.GetDeviceName(), expiration_time.InMillisecondsSinceUnixEpoch(),
+      env, &profile_.get(), entry.GetGUID(), entry.GetURL().spec(),
+      entry.GetTitle(), entry.GetDeviceName(),
+      expiration_time.InMillisecondsSinceUnixEpoch(),
       send_tab_to_self_notification_receiver_class,
       internal_scroll_to_text_fragment, page_context_bytes);
 }
