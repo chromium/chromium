@@ -62,6 +62,10 @@ inline constexpr int kBaseHintFontSize = 14;
 inline constexpr int kBaseVerticalSpacing = 16;
 inline constexpr int kBaseButtonTopOffset = 72;
 
+// Preferred horizontal screen-edge margin (in 96-DPI base pixels) on each side
+// of the Disconnect button dialog before wrapping onto multiple lines.
+inline constexpr int kBaseButtonOuterMargin = 16;
+
 // Maximum width ratio (numerator / denominator) of the monitor width allocated
 // to centered text blocks on the backdrop before word-wrapping.
 inline constexpr int kMaxTextWidthNumerator = 4;
@@ -166,6 +170,17 @@ bool GetControlTextWidth(HWND control,
                          std::wstring_view text,
                          bool is_rtl,
                          LONG* width);
+
+// Measures the multi-line word-wrapped pixel width and height of `text` within
+// `max_width` when rendered in `control`'s current font. Note that GDI
+// `DT_WORDBREAK` does not break within a single word, so `text_size->cx` may
+// exceed `max_width` when `text` contains an unbroken word wider than
+// `max_width`.
+bool MeasureControlWrappedText(HWND control,
+                               std::wstring_view text,
+                               bool is_rtl,
+                               LONG max_width,
+                               SIZE* text_size);
 
 // Loads a localized string resource from the current module's `STRINGTABLE`
 // using a zero-copy read-only resource pointer.

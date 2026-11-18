@@ -816,6 +816,7 @@ static_library("common") {
       "pairing_registry_delegate_win.cc",
       "pairing_registry_delegate_win.h",
       "privacy_overlay_win.cc",
+      "privacy_overlay_win.h",
       "remote_client_cert_store.cc",
       "remote_client_cert_store.h",
       "remote_ssl_private_key.cc",

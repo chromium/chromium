@@ -195,6 +195,55 @@ TEST(HostWindowWinUtilTest, ReadsFullWindowTextAndMeasuresWidth) {
   EXPECT_GT(width, 0);
 }
 
+TEST(HostWindowWinUtilTest, MeasuresWrappedAndUnbrokenControlText) {
+  const std::wstring text = L"Sample Control Text";
+  ScopedHwnd hwnd(CreateWindowExW(0, L"STATIC", text.c_str(), WS_POPUP, 0, 0,
+                                  200, 40, nullptr, nullptr, CURRENT_MODULE(),
+                                  nullptr));
+  ASSERT_NE(hwnd.get(), nullptr);
+
+  LONG width = 0;
+  ASSERT_TRUE(GetControlTextWidth(hwnd.get(), text, /*is_rtl=*/false, &width));
+  ASSERT_GT(width, 0);
+
+  SIZE single_line_size = {};
+  ASSERT_TRUE(MeasureControlWrappedText(hwnd.get(), text, /*is_rtl=*/false,
+                                        width, &single_line_size));
+  EXPECT_GT(single_line_size.cx, 0);
+  EXPECT_LE(single_line_size.cx, width);
+  EXPECT_GT(single_line_size.cy, 0);
+
+  // Constraining `max_width` below `width` wraps multi-word text onto multiple
+  // lines, strictly increasing the measured height.
+  SIZE wrapped_size = {};
+  ASSERT_TRUE(MeasureControlWrappedText(hwnd.get(), text, /*is_rtl=*/false,
+                                        std::max<LONG>(1, width / 2),
+                                        &wrapped_size));
+  EXPECT_GT(wrapped_size.cy, single_line_size.cy);
+
+  // A single unbroken word wider than `max_width` cannot break under
+  // `DT_WORDBREAK` and reports `cx > max_width` so callers can widen up to the
+  // full monitor bounds.
+  const std::wstring single_word = L"UnbrokenSingleWordButtonLabel";
+  LONG single_word_width = 0;
+  ASSERT_TRUE(GetControlTextWidth(hwnd.get(), single_word, /*is_rtl=*/false,
+                                  &single_word_width));
+  SIZE unbroken_size = {};
+  ASSERT_TRUE(MeasureControlWrappedText(
+      hwnd.get(), single_word,
+      /*is_rtl=*/false, std::max<LONG>(1, single_word_width / 2),
+      &unbroken_size));
+  EXPECT_EQ(unbroken_size.cx, single_word_width);
+
+  SIZE unused_size = {};
+  EXPECT_FALSE(MeasureControlWrappedText(nullptr, text, /*is_rtl=*/false, width,
+                                         &unused_size));
+  EXPECT_FALSE(MeasureControlWrappedText(hwnd.get(), L"", /*is_rtl=*/false,
+                                         width, &unused_size));
+  EXPECT_FALSE(MeasureControlWrappedText(hwnd.get(), text, /*is_rtl=*/false,
+                                         /*max_width=*/0, &unused_size));
+}
+
 TEST(HostWindowWinUtilTest, AppliesCaptureExclusionToLayeredPopupWindow) {
   base::AutoReset<bool> allow_capture_exclusion_failure =
       ScopedAllowCaptureExclusionFailureForTesting();

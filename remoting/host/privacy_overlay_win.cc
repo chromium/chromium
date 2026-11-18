@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/privacy_overlay_win.h"
+
 #include <windows.h>
 
 #include <algorithm>
@@ -11,10 +13,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -41,6 +45,17 @@
 namespace remoting {
 
 namespace {
+
+std::optional<ButtonDialogWidthOverrideForTesting>
+    g_max_button_dialog_width_override_for_testing;
+std::optional<std::wstring_view> g_button_text_override_for_testing;
+
+// Minimum width and extra slack passed to `MeasureControlWrappedText()` when
+// measuring a single unconstrained reference line, staying well within 32-bit
+// GDI `DrawTextW()` coordinate bounds while avoiding any 1px `DT_SINGLELINE` vs
+// `DT_WORDBREAK` wrap boundary.
+constexpr LONG kMinUnconstrainedTextWidthPx = 32767;
+constexpr LONG kUnconstrainedTextWidthSlackPx = 1024;
 
 // Registers the window class used by per-monitor privacy overlay backdrop
 // windows if it is not already registered in the current module.
@@ -151,8 +166,15 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
 
   // Resizes the Disconnect button dialog (`hwnd_`), its child button control
   // (`IDC_DISCONNECT`), its DPI- and text-scale-adjusted button font, and its
-  // rounded window region to match `dpi`.
-  void UpdateButtonLayoutForDpi(UINT dpi);
+  // rounded window region to match `dpi`, clamping `dialog_width` to
+  // `max_dialog_width` (when positive), growing the `BS_MULTILINE` button
+  // height so the wrapped label remains fully visible (widening up to
+  // `hard_max_dialog_width` if a single unbroken word exceeds the inner text
+  // width), and capping `dialog_height` to `max_dialog_height` (when positive).
+  void UpdateButtonLayoutForDpi(UINT dpi,
+                                int max_dialog_width,
+                                int hard_max_dialog_width,
+                                int max_dialog_height);
 
   // Returns the cached backdrop fonts and icon for `dpi`, creating and
   // inserting them into `backdrop_dpi_cache_` if not yet present.
@@ -240,9 +262,12 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   HMONITOR active_button_monitor_ = nullptr;
   RECT active_button_monitor_rect_ = {0, 0, 0, 0};
 
-  // The DPI for which `hwnd_`'s current size, font, border pen, and rounded
-  // region were computed.
+  // The DPI and monitor size budgets for which `hwnd_`'s current size, font,
+  // border pen, and rounded region were computed.
   UINT active_button_dpi_ = 0;
+  int active_button_max_width_ = 0;
+  int active_button_hard_max_width_ = 0;
+  int active_button_max_height_ = 0;
 
   // Cached OS text scale factor read once in `BeginOverlay()` so backdrop
   // painting, layout, and button sizing use a consistent scale without
@@ -430,6 +455,9 @@ BOOL PrivacyOverlayWin::OnDialogMessage(HWND hwnd,
         ResetRepositionAttempts();
         active_button_monitor_ = nullptr;
         active_button_dpi_ = 0;
+        active_button_max_width_ = 0;
+        active_button_hard_max_width_ = 0;
+        active_button_max_height_ = 0;
         POINT pt = {mouse_position_.x(), mouse_position_.y()};
         PositionDisconnectButton(pt);
         if (!is_button_hidden_) {
@@ -568,6 +596,11 @@ bool PrivacyOverlayWin::BeginOverlay() {
       !GetWindowTextString(hwnd_button, &button_text_)) {
     return false;
   }
+  if (g_button_text_override_for_testing.has_value()) {
+    button_text_.assign(g_button_text_override_for_testing->data(),
+                        g_button_text_override_for_testing->size());
+    SetWindowTextW(hwnd_button, button_text_.c_str());
+  }
 
   if (!hotkey_registered_) {
     if (RegisterDisconnectHotKey(hwnd_)) {
@@ -610,6 +643,12 @@ bool PrivacyOverlayWin::BeginOverlay() {
   ex_style &= ~(WS_EX_APPWINDOW | WS_EX_LAYOUTRTL);
   ex_style |= WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_LAYERED |
               WS_EX_TRANSPARENT | WS_EX_NOACTIVATE;
+
+  // Apply `BS_MULTILINE` at runtime rather than in `core.rc.jinja2` because
+  // `IDD_DISCONNECT` is shared with `DisconnectWindowWin`, which uses a fixed
+  // single-line 14-DLU button height.
+  LONG_PTR btn_style = GetWindowLongPtr(hwnd_button, GWL_STYLE);
+  SetWindowLongPtr(hwnd_button, GWL_STYLE, btn_style | BS_MULTILINE);
   if (is_rtl_) {
     ex_style |= WS_EX_RTLREADING;
     LONG_PTR btn_ex_style = GetWindowLongPtr(hwnd_button, GWL_EXSTYLE);
@@ -676,8 +715,6 @@ bool PrivacyOverlayWin::BeginOverlay() {
       1, MulDiv(button_height_px, USER_DEFAULT_SCREEN_DPI, initial_dpi));
   cached_text_scale_ = GetSystemTextScaleFactor();
 
-  UpdateButtonLayoutForDpi(initial_dpi);
-
   if (!UpdateBackdrops()) {
     return false;
   }
@@ -719,6 +756,9 @@ void PrivacyOverlayWin::EndOverlay() {
   active_button_monitor_ = nullptr;
   active_button_monitor_rect_ = {0, 0, 0, 0};
   active_button_dpi_ = 0;
+  active_button_max_width_ = 0;
+  active_button_hard_max_width_ = 0;
+  active_button_max_height_ = 0;
   cached_text_scale_ = kMinTextScaleFactor;
 
   if (hwnd_) {
@@ -746,9 +786,16 @@ bool PrivacyOverlayWin::GetControlRect(HWND control, RECT* rect) {
   return true;
 }
 
-void PrivacyOverlayWin::UpdateButtonLayoutForDpi(UINT dpi) {
+void PrivacyOverlayWin::UpdateButtonLayoutForDpi(UINT dpi,
+                                                 int max_dialog_width,
+                                                 int hard_max_dialog_width,
+                                                 int max_dialog_height) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!hwnd_ || dpi == 0 || dpi == active_button_dpi_) {
+  if (!hwnd_ || dpi == 0 ||
+      (dpi == active_button_dpi_ &&
+       max_dialog_width == active_button_max_width_ &&
+       hard_max_dialog_width == active_button_hard_max_width_ &&
+       max_dialog_height == active_button_max_height_)) {
     return;
   }
 
@@ -758,17 +805,24 @@ void PrivacyOverlayWin::UpdateButtonLayoutForDpi(UINT dpi) {
   }
 
   active_button_dpi_ = dpi;
+  active_button_max_width_ = max_dialog_width;
+  active_button_hard_max_width_ = hard_max_dialog_width;
+  active_button_max_height_ = max_dialog_height;
   button_border_pen_.reset();
 
   // Scale and assign the system UI font for the Disconnect button at `dpi` and
   // `cached_text_scale_`, replacing the font on `hwnd_button` via `WM_SETFONT`
   // before deleting any previous `button_font_` handle, and re-measure the
-  // localized button text width so the label is not clipped across mixed-DPI
+  // localized button text width so the label is never clipped across mixed-DPI
   // monitors or enlarged accessibility text sizes. `CreateOverlayFont()` takes
   // only the localized typeface from `lfMessageFont` and overrides `lfHeight`
   // explicitly, and `base_button_height_` comes from the fixed `IDD_DISCONNECT`
   // dialog-template font (unaffected by `TextScaleFactor`), so applying
-  // `cached_text_scale_` once avoids double-scaling.
+  // `cached_text_scale_` once avoids double-scaling. On narrow/high-DPI
+  // monitors where the single-line width exceeds `max_dialog_width`, clamp
+  // `dialog_width` and grow `button_height` for `BS_MULTILINE` word wrapping so
+  // the full localized label remains visible and the control's native
+  // accessible name (its window text) stays intact.
   int button_font_height =
       ScaleForDpiAndTextScale(kBaseButtonFontSize, dpi, cached_text_scale_);
   base::win::ScopedGDIObject<HFONT> new_button_font =
@@ -794,7 +848,69 @@ void PrivacyOverlayWin::UpdateButtonLayoutForDpi(UINT dpi) {
   int button_height =
       ScaleForDpiAndTextScale(base_button_height_, dpi, cached_text_scale_);
   int dialog_width = button_width + margin * 2;
+  if (max_dialog_width > 0 && dialog_width > max_dialog_width) {
+    dialog_width = max_dialog_width;
+    button_width = std::max(1, dialog_width - margin * 2);
+    // Reserve `margin` per side inside `hwnd_button` to match the unclamped
+    // horizontal padding (`button_width = button_text_width + margin * 2`),
+    // keeping the wrapping threshold continuous with `max_dialog_width` and
+    // conservatively exceeding Win32 `BUTTON`'s native border/focus-rect inset.
+    LONG max_text_width = std::max<LONG>(1, button_width - margin * 2);
+    SIZE wrapped_size = {};
+    if (MeasureControlWrappedText(hwnd_button, button_text_, is_rtl_,
+                                  max_text_width, &wrapped_size) &&
+        wrapped_size.cy > 0) {
+      // `DT_WORDBREAK` never breaks within a word; if an unbroken word exceeds
+      // `max_text_width`, widen up to `hard_max_dialog_width` (reclaiming outer
+      // monitor margins when available) before allowing horizontal clipping.
+      if (wrapped_size.cx > max_text_width &&
+          hard_max_dialog_width > dialog_width) {
+        dialog_width = std::min(hard_max_dialog_width,
+                                static_cast<int>(wrapped_size.cx) + margin * 4);
+        button_width = std::max(1, dialog_width - margin * 2);
+        LONG widened_max_text_width =
+            std::max<LONG>(1, button_width - margin * 2);
+        SIZE remeasured_size = {};
+        if (MeasureControlWrappedText(hwnd_button, button_text_, is_rtl_,
+                                      widened_max_text_width,
+                                      &remeasured_size) &&
+            remeasured_size.cy > 0) {
+          wrapped_size = remeasured_size;
+        }
+      }
+      // Measure a single reference line using an unconstrained width (and
+      // stripping any embedded newline) so a 1px extent discrepancy between
+      // `DT_SINGLELINE` and `DT_WORDBREAK` never wraps `single_line_size` onto
+      // two lines and under-grows `button_height`.
+      std::wstring_view first_line =
+          std::wstring_view(button_text_)
+              .substr(0, button_text_.find_first_of(L"\r\n"));
+      if (first_line.empty()) {
+        first_line = L" ";
+      }
+      LONG unconstrained_text_width =
+          std::max<LONG>(kMinUnconstrainedTextWidthPx,
+                         button_text_width + kUnconstrainedTextWidthSlackPx);
+      SIZE single_line_size = {};
+      if (MeasureControlWrappedText(hwnd_button, first_line, is_rtl_,
+                                    unconstrained_text_width,
+                                    &single_line_size) &&
+          single_line_size.cy > 0) {
+        if (wrapped_size.cy > single_line_size.cy) {
+          button_height +=
+              static_cast<int>(wrapped_size.cy - single_line_size.cy);
+        }
+      } else {
+        button_height =
+            std::max(button_height, static_cast<int>(wrapped_size.cy) + margin);
+      }
+    }
+  }
   int dialog_height = button_height + margin * 2;
+  if (max_dialog_height > 0 && dialog_height > max_dialog_height) {
+    dialog_height = max_dialog_height;
+    button_height = std::max(1, dialog_height - margin * 2);
+  }
   int border_radius = ScaleForDpi(kBaseWindowBorderRadius, dpi);
 
   SetWindowPos(hwnd_button, nullptr, margin, margin, button_width,
@@ -1007,12 +1123,43 @@ void PrivacyOverlayWin::PositionDisconnectButton(POINT screen_point,
     return;
   }
 
-  UpdateButtonLayoutForDpi(dpi);
-
   MONITORINFO monitor_info = {sizeof(monitor_info)};
+  if (!GetMonitorInfo(monitor, &monitor_info)) {
+    UpdateButtonLayoutForDpi(dpi, /*max_dialog_width=*/0,
+                             /*hard_max_dialog_width=*/0,
+                             /*max_dialog_height=*/0);
+    return;
+  }
+
+  int monitor_width =
+      monitor_info.rcMonitor.right - monitor_info.rcMonitor.left;
+  int monitor_height =
+      monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top;
+  int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
+  int outer_margin = ScaleForDpi(kBaseButtonOuterMargin, dpi);
+  int max_dialog_width = (monitor_width > outer_margin * 2)
+                             ? (monitor_width - outer_margin * 2)
+                             : std::max(1, monitor_width);
+  int hard_max_dialog_width = std::max(1, monitor_width);
+  int max_dialog_height = (monitor_height > spacing * 2)
+                              ? (monitor_height - spacing * 2)
+                              : std::max(1, monitor_height);
+  if (g_max_button_dialog_width_override_for_testing.has_value()) {
+    max_dialog_width =
+        g_max_button_dialog_width_override_for_testing->max_width;
+    hard_max_dialog_width =
+        g_max_button_dialog_width_override_for_testing->hard_max_width;
+    if (g_max_button_dialog_width_override_for_testing->max_height > 0) {
+      max_dialog_height =
+          g_max_button_dialog_width_override_for_testing->max_height;
+    }
+  }
+
+  UpdateButtonLayoutForDpi(dpi, max_dialog_width, hard_max_dialog_width,
+                           max_dialog_height);
+
   RECT window_rect;
-  if (!GetMonitorInfo(monitor, &monitor_info) ||
-      !GetWindowRect(hwnd_, &window_rect)) {
+  if (!GetWindowRect(hwnd_, &window_rect)) {
     return;
   }
 
@@ -1021,13 +1168,8 @@ void PrivacyOverlayWin::PositionDisconnectButton(POINT screen_point,
 
   int window_width = window_rect.right - window_rect.left;
   int window_height = window_rect.bottom - window_rect.top;
-  int monitor_width =
-      monitor_info.rcMonitor.right - monitor_info.rcMonitor.left;
-  int monitor_height =
-      monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top;
 
   int left = monitor_info.rcMonitor.left + (monitor_width - window_width) / 2;
-  int spacing = ScaleForDpi(kBaseVerticalSpacing, dpi);
   int min_top = monitor_info.rcMonitor.top + (monitor_height / 2) +
                 ScaleForDpi(kBaseButtonTopOffset, dpi);
   base::win::ScopedGetDC screen_dc(hwnd_);
@@ -1037,7 +1179,11 @@ void PrivacyOverlayWin::PositionDisconnectButton(POINT screen_point,
                        layout.below_center_height + spacing;
   int top = std::max(min_top, below_text_top);
 
-  // Clamp `top` so the button never clips off the bottom of the monitor.
+  // Clamp `top` so the Disconnect button never clips off the bottom of the
+  // monitor. On an unusually short display where a wrapped multi-line button
+  // cannot fit below the backdrop hint text, keeping the interactive Disconnect
+  // button fully on-screen intentionally takes precedence over avoiding overlap
+  // with the click-through backdrop text.
   int max_top = std::max(static_cast<int>(monitor_info.rcMonitor.top),
                          static_cast<int>(monitor_info.rcMonitor.bottom) -
                              window_height - spacing);
@@ -1349,6 +1495,32 @@ LRESULT CALLBACK PrivacyOverlayWin::BackdropWndProc(HWND hwnd,
 }
 
 }  // namespace
+
+base::AutoReset<std::optional<ButtonDialogWidthOverrideForTesting>>
+ScopedOverrideMaxButtonDialogWidthForTesting(int max_width,
+                                             std::optional<int> hard_max_width,
+                                             std::optional<int> max_height) {
+  CHECK_GT(max_width, 0);
+  int resolved_hard_max = hard_max_width.value_or(max_width);
+  CHECK_GE(resolved_hard_max, max_width);
+  if (max_height.has_value()) {
+    CHECK_GT(*max_height, 0);
+  }
+  return base::AutoReset<std::optional<ButtonDialogWidthOverrideForTesting>>(
+      &g_max_button_dialog_width_override_for_testing,
+      ButtonDialogWidthOverrideForTesting{
+          .max_width = max_width,
+          .hard_max_width = resolved_hard_max,
+          .max_height = max_height.value_or(0),
+      });
+}
+
+base::AutoReset<std::optional<std::wstring_view>>
+ScopedOverrideDisconnectButtonTextForTesting(std::wstring_view button_text) {
+  CHECK(!button_text.empty());
+  return base::AutoReset<std::optional<std::wstring_view>>(
+      &g_button_text_override_for_testing, button_text);
+}
 
 // static
 std::unique_ptr<HostWindow> HostWindow::CreatePrivacyOverlay(

@@ -403,6 +403,42 @@ bool GetControlTextWidth(HWND control,
   return true;
 }
 
+bool MeasureControlWrappedText(HWND control,
+                               std::wstring_view text,
+                               bool is_rtl,
+                               LONG max_width,
+                               SIZE* text_size) {
+  DCHECK(text_size);
+  if (!control || text.empty() || max_width <= 0) {
+    return false;
+  }
+
+  base::win::ScopedGetDC dc(control);
+  if (!dc) {
+    return false;
+  }
+
+  HFONT font = reinterpret_cast<HFONT>(SendMessage(control, WM_GETFONT, 0, 0));
+  std::optional<base::win::ScopedSelectObject> select_font;
+  if (font) {
+    select_font.emplace(dc, font);
+  }
+
+  RECT rect = {0, 0, max_width, 0};
+  UINT flags = DT_CALCRECT | DT_WORDBREAK | DT_EXTERNALLEADING | DT_NOPREFIX;
+  if (is_rtl) {
+    flags |= DT_RTLREADING;
+  }
+  if (!DrawTextW(dc, text.data(), static_cast<int>(text.size()), &rect,
+                 flags)) {
+    return false;
+  }
+
+  text_size->cx = rect.right - rect.left;
+  text_size->cy = rect.bottom - rect.top;
+  return true;
+}
+
 std::wstring LoadModuleString(UINT resource_id) {
   const wchar_t* string_ptr = nullptr;
   int length = LoadStringW(CURRENT_MODULE(), resource_id,

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/privacy_overlay_win.h"
+
 #include <windows.h>
 
 #include <algorithm>
@@ -1288,6 +1290,231 @@ TEST_F(PrivacyOverlayWinTest, ScalesBackdropRenderedTextWithSystemTextScale) {
   EXPECT_TRUE(snapshot_225x->HasGlyphPixels(
       layout_225x.text_left, non_overlapping_hint_top, layout_225x.text_right,
       hint_bottom_225x));
+}
+
+TEST_F(PrivacyOverlayWinTest,
+       WrapsDisconnectButtonHeightWhenClampedToNarrowMonitorAndRestores) {
+  // Override the button label with an explicit multi-word string so
+  // `DT_WORDBREAK` height growth is deterministic even on host locales whose
+  // `STOP_SHARING_BUTTON` translation is a single word.
+  constexpr std::wstring_view kMultiWordLabel = L"Stop Sharing";
+  auto label_override =
+      ScopedOverrideDisconnectButtonTextForTesting(kMultiWordLabel);
+
+  StartOverlay();
+
+  OverlayThreadWindows windows = FindOverlayThreadWindows();
+  ASSERT_NE(windows.button_hwnd, nullptr);
+
+  HWND disconnect_btn_hwnd = GetDlgItem(windows.button_hwnd, IDC_DISCONNECT);
+  ASSERT_NE(disconnect_btn_hwnd, nullptr);
+  EXPECT_NE(GetWindowLongPtr(disconnect_btn_hwnd, GWL_STYLE) & BS_MULTILINE, 0);
+  EXPECT_EQ(GetWindowTextOrEmpty(disconnect_btn_hwnd),
+            std::wstring(kMultiWordLabel));
+
+  RECT unclamped_rect = {};
+  ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &unclamped_rect));
+  const int unclamped_width = unclamped_rect.right - unclamped_rect.left;
+  const int unclamped_height = unclamped_rect.bottom - unclamped_rect.top;
+  ASSERT_GT(unclamped_width, 0);
+  ASSERT_GT(unclamped_height, 0);
+
+  RECT unclamped_btn_rect = {};
+  ASSERT_TRUE(GetWindowRect(disconnect_btn_hwnd, &unclamped_btn_rect));
+  const int unclamped_btn_width =
+      unclamped_btn_rect.right - unclamped_btn_rect.left;
+  const int unclamped_btn_height =
+      unclamped_btn_rect.bottom - unclamped_btn_rect.top;
+  ASSERT_GT(unclamped_btn_width, 0);
+  ASSERT_GT(unclamped_btn_height, 0);
+
+  // Constrain `max_dialog_width` below the single-line width so
+  // `IDC_DISCONNECT` wraps its label onto multiple lines while keeping its full
+  // window/accessible text intact.
+  const int narrow_max_width = std::max(40, (unclamped_width * 2) / 3);
+  ASSERT_LT(narrow_max_width, unclamped_width);
+  {
+    auto narrow_width_override =
+        ScopedOverrideMaxButtonDialogWidthForTesting(narrow_max_width);
+    EXPECT_EQ(SendMessage(windows.button_hwnd, WM_DISPLAYCHANGE, 32,
+                          MAKELPARAM(1920, 1080)),
+              0);
+
+    RECT clamped_rect = {};
+    ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &clamped_rect));
+    EXPECT_EQ(clamped_rect.right - clamped_rect.left, narrow_max_width);
+    EXPECT_GT(clamped_rect.bottom - clamped_rect.top, unclamped_height);
+    EXPECT_EQ(GetWindowTextOrEmpty(disconnect_btn_hwnd),
+              std::wstring(kMultiWordLabel));
+
+    RECT clamped_btn_rect = {};
+    ASSERT_TRUE(GetWindowRect(disconnect_btn_hwnd, &clamped_btn_rect));
+    EXPECT_LT(clamped_btn_rect.right - clamped_btn_rect.left,
+              unclamped_btn_width);
+    EXPECT_GT(clamped_btn_rect.bottom - clamped_btn_rect.top,
+              unclamped_btn_height);
+    EXPECT_GT(clamped_btn_rect.left, clamped_rect.left);
+    EXPECT_GT(clamped_btn_rect.top, clamped_rect.top);
+    EXPECT_LT(clamped_btn_rect.right, clamped_rect.right);
+    EXPECT_LT(clamped_btn_rect.bottom, clamped_rect.bottom);
+
+    HMONITOR monitor =
+        MonitorFromWindow(windows.button_hwnd, MONITOR_DEFAULTTONEAREST);
+    MONITORINFO monitor_info = {sizeof(monitor_info)};
+    ASSERT_TRUE(GetMonitorInfo(monitor, &monitor_info));
+    int monitor_width =
+        monitor_info.rcMonitor.right - monitor_info.rcMonitor.left;
+    EXPECT_EQ(clamped_rect.left, monitor_info.rcMonitor.left +
+                                     (monitor_width - narrow_max_width) / 2);
+  }
+
+  // Restoring the monitor width budget returns the dialog and child button to
+  // their single-line width and height.
+  EXPECT_EQ(SendMessage(windows.button_hwnd, WM_DISPLAYCHANGE, 32,
+                        MAKELPARAM(1920, 1080)),
+            0);
+  RECT restored_rect = {};
+  ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &restored_rect));
+  EXPECT_EQ(restored_rect.right - restored_rect.left, unclamped_width);
+  EXPECT_EQ(restored_rect.bottom - restored_rect.top, unclamped_height);
+  RECT restored_btn_rect = {};
+  ASSERT_TRUE(GetWindowRect(disconnect_btn_hwnd, &restored_btn_rect));
+  EXPECT_EQ(restored_btn_rect.right - restored_btn_rect.left,
+            unclamped_btn_width);
+  EXPECT_EQ(restored_btn_rect.bottom - restored_btn_rect.top,
+            unclamped_btn_height);
+  EXPECT_EQ(GetWindowTextOrEmpty(disconnect_btn_hwnd),
+            std::wstring(kMultiWordLabel));
+}
+
+TEST_F(PrivacyOverlayWinTest,
+       WidensDisconnectButtonDialogUpToHardMaxForSingleUnbrokenWord) {
+  constexpr std::wstring_view kSingleWordLabel =
+      L"UnbrokenSingleWordDisconnectButtonLabel";
+  auto label_override =
+      ScopedOverrideDisconnectButtonTextForTesting(kSingleWordLabel);
+
+  StartOverlay();
+
+  OverlayThreadWindows windows = FindOverlayThreadWindows();
+  ASSERT_NE(windows.button_hwnd, nullptr);
+  HWND disconnect_btn_hwnd = GetDlgItem(windows.button_hwnd, IDC_DISCONNECT);
+  ASSERT_NE(disconnect_btn_hwnd, nullptr);
+  EXPECT_EQ(GetWindowTextOrEmpty(disconnect_btn_hwnd),
+            std::wstring(kSingleWordLabel));
+
+  RECT unclamped_rect = {};
+  ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &unclamped_rect));
+  const int unclamped_width = unclamped_rect.right - unclamped_rect.left;
+  const int unclamped_height = unclamped_rect.bottom - unclamped_rect.top;
+  ASSERT_GT(unclamped_width, 60);
+  ASSERT_GT(unclamped_height, 0);
+
+  // When `max_width` is narrower than the single unbroken word but
+  // `hard_max_width` (representing the full monitor width) is large enough to
+  // fit it, `UpdateButtonLayoutForDpi()` reclaims outer margins rather than
+  // clipping horizontally, while keeping single-line height.
+  const int soft_max_width = unclamped_width / 2;
+  {
+    auto width_override = ScopedOverrideMaxButtonDialogWidthForTesting(
+        soft_max_width, /*hard_max_width=*/unclamped_width + 40);
+    EXPECT_EQ(SendMessage(windows.button_hwnd, WM_DISPLAYCHANGE, 32,
+                          MAKELPARAM(1920, 1080)),
+              0);
+
+    RECT widened_rect = {};
+    ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &widened_rect));
+    EXPECT_GT(widened_rect.right - widened_rect.left, soft_max_width);
+    EXPECT_EQ(widened_rect.right - widened_rect.left, unclamped_width);
+    EXPECT_EQ(widened_rect.bottom - widened_rect.top, unclamped_height);
+  }
+
+  // When `hard_max_width` itself is narrower than the single unbroken word,
+  // `dialog_width` widens past `soft_max_width` and clamps at `hard_max_width`.
+  const int capped_hard_max_width = (unclamped_width * 3) / 4;
+  ASSERT_GT(capped_hard_max_width, soft_max_width);
+  ASSERT_LT(capped_hard_max_width, unclamped_width);
+  {
+    auto width_override = ScopedOverrideMaxButtonDialogWidthForTesting(
+        soft_max_width, capped_hard_max_width);
+    EXPECT_EQ(SendMessage(windows.button_hwnd, WM_DISPLAYCHANGE, 32,
+                          MAKELPARAM(1920, 1080)),
+              0);
+
+    RECT capped_rect = {};
+    ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &capped_rect));
+    EXPECT_EQ(capped_rect.right - capped_rect.left, capped_hard_max_width);
+    EXPECT_EQ(capped_rect.bottom - capped_rect.top, unclamped_height);
+  }
+}
+
+TEST_F(PrivacyOverlayWinTest,
+       CapsWrappedDisconnectButtonDialogHeightToMaxHeightBudget) {
+  constexpr std::wstring_view kMultiWordLabel = L"Stop Sharing";
+  auto label_override =
+      ScopedOverrideDisconnectButtonTextForTesting(kMultiWordLabel);
+
+  StartOverlay();
+
+  OverlayThreadWindows windows = FindOverlayThreadWindows();
+  ASSERT_NE(windows.button_hwnd, nullptr);
+  HWND disconnect_btn_hwnd = GetDlgItem(windows.button_hwnd, IDC_DISCONNECT);
+  ASSERT_NE(disconnect_btn_hwnd, nullptr);
+
+  RECT unclamped_rect = {};
+  ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &unclamped_rect));
+  const int unclamped_width = unclamped_rect.right - unclamped_rect.left;
+  const int unclamped_height = unclamped_rect.bottom - unclamped_rect.top;
+  ASSERT_GT(unclamped_width, 0);
+  ASSERT_GT(unclamped_height, 0);
+
+  const int narrow_max_width = std::max(40, (unclamped_width * 2) / 3);
+  ASSERT_LT(narrow_max_width, unclamped_width);
+
+  int uncapped_wrapped_height = 0;
+  {
+    auto narrow_width_override =
+        ScopedOverrideMaxButtonDialogWidthForTesting(narrow_max_width);
+    EXPECT_EQ(SendMessage(windows.button_hwnd, WM_DISPLAYCHANGE, 32,
+                          MAKELPARAM(1920, 1080)),
+              0);
+    RECT wrapped_rect = {};
+    ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &wrapped_rect));
+    uncapped_wrapped_height = wrapped_rect.bottom - wrapped_rect.top;
+    ASSERT_GT(uncapped_wrapped_height, unclamped_height);
+  }
+
+  // Cap `max_height` below `uncapped_wrapped_height` and verify both the dialog
+  // height cap and child `IDC_DISCONNECT` containment.
+  const int capped_max_height = unclamped_height;
+  {
+    auto capped_override = ScopedOverrideMaxButtonDialogWidthForTesting(
+        narrow_max_width, /*hard_max_width=*/narrow_max_width,
+        capped_max_height);
+    EXPECT_EQ(SendMessage(windows.button_hwnd, WM_DISPLAYCHANGE, 32,
+                          MAKELPARAM(1920, 1080)),
+              0);
+
+    RECT capped_rect = {};
+    ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &capped_rect));
+    EXPECT_EQ(capped_rect.right - capped_rect.left, narrow_max_width);
+    EXPECT_EQ(capped_rect.bottom - capped_rect.top, capped_max_height);
+
+    RECT capped_btn_rect = {};
+    ASSERT_TRUE(GetWindowRect(disconnect_btn_hwnd, &capped_btn_rect));
+    EXPECT_GT(capped_btn_rect.left, capped_rect.left);
+    EXPECT_GT(capped_btn_rect.top, capped_rect.top);
+    EXPECT_LT(capped_btn_rect.right, capped_rect.right);
+    EXPECT_LT(capped_btn_rect.bottom, capped_rect.bottom);
+  }
+
+  EXPECT_EQ(SendMessage(windows.button_hwnd, WM_DISPLAYCHANGE, 32,
+                        MAKELPARAM(1920, 1080)),
+            0);
+  RECT restored_rect = {};
+  ASSERT_TRUE(GetWindowRect(windows.button_hwnd, &restored_rect));
+  EXPECT_EQ(restored_rect.right - restored_rect.left, unclamped_width);
+  EXPECT_EQ(restored_rect.bottom - restored_rect.top, unclamped_height);
 }
 
 }  // namespace remoting
