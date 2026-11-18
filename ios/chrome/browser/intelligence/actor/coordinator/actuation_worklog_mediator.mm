@@ -6,33 +6,9 @@
 
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_task_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
+#import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_entries_diff.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
-
-namespace {
-
-// Returns the number of leading entries `entries` and `previousEntries` share.
-NSUInteger SharedPrefixLength(
-    NSArray<ActuationWorklogEntry*>* entries,
-    NSArray<ActuationWorklogEntry*>* previousEntries) {
-  NSUInteger length = 0;
-  NSUInteger maxLength = MIN(entries.count, previousEntries.count);
-  while (length < maxLength && entries[length] == previousEntries[length]) {
-    ++length;
-  }
-  return length;
-}
-
-// Returns whether `entries` can update `previousEntries` in place by
-// optionally replacing the last entry and appending the rest.
-BOOL CanUpdateEntriesInPlace(NSArray<ActuationWorklogEntry*>* entries,
-                             NSArray<ActuationWorklogEntry*>* previousEntries) {
-  NSUInteger previousCount = previousEntries.count;
-  return entries.count >= previousCount &&
-         SharedPrefixLength(entries, previousEntries) + 1 >= previousCount;
-}
-
-}  // namespace
 
 @interface ActuationWorklogMediator () <ActorTaskDataSourceObserver>
 @end
@@ -91,46 +67,40 @@ BOOL CanUpdateEntriesInPlace(NSArray<ActuationWorklogEntry*>* entries,
 // since the worklog consumer only appends or replaces the last entry,
 // re-displaying from scratch when in-place updates aren't possible.
 - (void)applyState:(ActuationWorklogState*)state {
-  NSArray<ActuationWorklogEntry*>* displayedEntries = _state.entries;
+  ActuationWorklogEntriesDiff diff =
+      ComputeActuationWorklogEntriesDiff(_state.entries, state.entries);
   // Replayed entries are not animated, as the compact view would otherwise play
   // a transition for each past step.
-  BOOL animated = _state != nil;
-  if (!CanUpdateEntriesInPlace(state.entries, displayedEntries)) {
+  BOOL animated = _state != nil && !diff.reset;
+  if (diff.reset) {
     [self.consumer reset];
-    displayedEntries = nil;
-    animated = NO;
   }
   _state = state;
 
   [self.consumer setActuationActive:state.actuationActive];
   [self.consumer setHeaderPrimaryAction:state.headerPrimaryAction];
   [self.consumer setHeaderContentVariants:state.headerContent];
-  [self updateEntries:state.entries
-      previousEntries:displayedEntries
-             animated:animated];
+  [self updateEntriesWithDiff:diff
+                    lastEntry:state.entries.lastObject
+                     animated:animated];
   [self.consumer setIntervention:state.intervention];
   [self.suggestionsConsumer setSuggestions:state.suggestions
                       forActiveWorklogItem:state.suggestionsEntry.item];
 }
 
-// Sends the entries that differ from `previousEntries` to the consumer: the
-// replaced last displayed entry, if any, then the appended ones.
-- (void)updateEntries:(NSArray<ActuationWorklogEntry*>*)entries
-      previousEntries:(NSArray<ActuationWorklogEntry*>*)previousEntries
-             animated:(BOOL)animated {
-  NSUInteger previousCount = previousEntries.count;
-  for (NSUInteger i = SharedPrefixLength(entries, previousEntries);
-       i < entries.count; ++i) {
-    ActuationWorklogEntry* entry = entries[i];
-    // The consumer only displays the chip of the latest entry.
-    ActuationWorklogChip* chip = entry == entries.lastObject ? entry.chip : nil;
-    if (i < previousCount) {
-      [self.consumer setLastItem:entry.item chip:chip];
-    } else {
-      [self.consumer updateWorklogWithItem:entry.item
-                                      chip:chip
-                                  animated:animated];
-    }
+// Applies `diff` to the consumer: replaces the last item if it changed, then
+// appends the new ones. Only `lastEntry` gets its chip displayed.
+- (void)updateEntriesWithDiff:(const ActuationWorklogEntriesDiff&)diff
+                    lastEntry:(ActuationWorklogEntry*)lastEntry
+                     animated:(BOOL)animated {
+  if (ActuationWorklogEntry* entry = diff.replaced_last) {
+    [self.consumer setLastItem:entry.item
+                          chip:entry == lastEntry ? entry.chip : nil];
+  }
+  for (ActuationWorklogEntry* entry in diff.appended) {
+    [self.consumer updateWorklogWithItem:entry.item
+                                    chip:entry == lastEntry ? entry.chip : nil
+                                animated:animated];
   }
 }
 
