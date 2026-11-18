@@ -25,4 +25,10 @@ public abstract class ActionModeCallback extends ActionMode.Callback2 {
      *     continue.
      */
     public abstract boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu);
+
+    /**
+     * Similar to onPrepareActionMode, this method is called to notify the callback that a new
+     * dropdown menu is being prepared.
+     */
+    public void onPrepareDropdownMenu() {}
 }

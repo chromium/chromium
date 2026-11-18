@@ -514,6 +514,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public void setAllowedMenuItems(int allowedMenuItems) {
+        if (allowedMenuItems != mAllowedMenuItems) {
+            mSelectionMenuCachedResult = null;
+        }
         mAllowedMenuItems = allowedMenuItems;
     }
 
@@ -826,6 +829,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                         ((mYDip * deviceScaleFactor)
                                 + mWebContents.getRenderCoordinates().getContentOffsetTopPix()));
 
+        if (mCallback != null) {
+            mCallback.onPrepareDropdownMenu();
+        }
         MVCListAdapter.ModelList items = getDropdownItems();
         if (mMenuModelBridge != null) {
             intersperseMenuItems(items, mMenuModelBridge.getListItems());

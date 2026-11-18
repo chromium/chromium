@@ -40,11 +40,17 @@ public class AwActionModeCallback extends ActionModeCallback implements IntentCa
         mAwContents = awContents;
         mSelectionPopupController = SelectionPopupController.fromWebContents(webContents);
         mHelper = mSelectionPopupController.getActionModeCallbackHelper();
-        mHelper.setAllowedMenuItems(0); // No item is allowed by default for WebView.
+        computeAllowedItems();
     }
 
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        computeAllowedItems();
+        mHelper.onCreateActionMode(mode, menu);
+        return true;
+    }
+
+    private void computeAllowedItems() {
         int allowedItems =
                 (getAllowedMenu(ActionModeCallbackHelper.MENU_ITEM_SHARE)
                         | getAllowedMenu(ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH)
@@ -53,8 +59,6 @@ public class AwActionModeCallback extends ActionModeCallback implements IntentCa
             mHelper.setAllowedMenuItems(allowedItems);
             mAllowedMenuItems = allowedItems;
         }
-        mHelper.onCreateActionMode(mode, menu);
-        return true;
     }
 
     private int getAllowedMenu(int menuItem) {
@@ -100,6 +104,11 @@ public class AwActionModeCallback extends ActionModeCallback implements IntentCa
             return true;
         }
         return mHelper.onDropdownItemClicked(item, closeMenu);
+    }
+
+    @Override
+    public void onPrepareDropdownMenu() {
+        computeAllowedItems();
     }
 
     private boolean isProcessTextMenuItem(final int groupId) {
