@@ -1759,14 +1759,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Device type (e.g. automotive)"/>
 </enum>
 
-<enum name="InputDeviceSource">
-  <int value="0" label="Other"/>
-  <int value="1" label="Touchscreen"/>
-  <int value="2" label="Touchpad"/>
-  <int value="3" label="Mouse"/>
-  <int value="4" label="Stylus"/>
-</enum>
-
 <!-- LINT.IfChange(InputOnVizSequenceDroppedReason) -->
 
 <enum name="InputOnVizSequenceDroppedReason">
