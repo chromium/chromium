@@ -939,11 +939,10 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     UseCounter::Count(OwnerDocumentForCurrentNode(), WebFeature::kHTMLPatching);
     template_element->SetPatch(patch);
 
-    if (!patch_target.empty() && !patch->IsExternal()) {
+    if (!patch->IsExternal()) {
       return;
     }
 
-    // empty patch_target attaches the template while streaming content.
     CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
   }
 

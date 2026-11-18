@@ -66,7 +66,7 @@ Patch* Patch::Prepare(ContainerNode* scope,
                       HTMLTemplateElement* template_element,
                       StreamingSanitizer* parent_sanitizer,
                       ParserContentPolicy content_policy) {
-  if (marker_name.IsNull()) {
+  if (marker_name.empty()) {
     return nullptr;
   }
 
@@ -84,79 +84,70 @@ Patch* Patch::Prepare(ContainerNode* scope,
   Node* start_marker = nullptr;
   Node* end_marker = nullptr;
 
-  if (marker_name.empty()) {
-    if (RuntimeEnabledFeatures::DeclarativeFragmentEnabled()) {
-      parent = scope;
-      start_marker = template_element;
-      end_marker = template_element;
+  if (scope == scope->GetDocument().body()) {
+    scope = scope->GetDocument().documentElement();
+  }
+
+  static base::NoDestructor<AtomicString> kNamePseudoAttr(
+      AtomicString::FromLiteral<"name">());
+  static base::NoDestructor<AtomicString> kMarkerTarget(
+      AtomicString::FromLiteral<"marker">());
+  static base::NoDestructor<AtomicString> kStartTarget(
+      AtomicString::FromLiteral<"start">());
+  static base::NoDestructor<AtomicString> kEndTarget(
+      AtomicString::FromLiteral<"end">());
+
+  for (Node& descendant : NodeTraversal::DescendantsOf(*scope)) {
+    auto* processing_instruction = DynamicTo<ProcessingInstruction>(descendant);
+    if (!processing_instruction ||
+        (processing_instruction->GetAttributeValue(
+             *kNamePseudoAttr, g_empty_atom) != marker_name)) {
+      continue;
     }
-  } else {
-    if (scope == scope->GetDocument().body()) {
-      scope = scope->GetDocument().documentElement();
-    }
-
-    static base::NoDestructor<AtomicString> kNamePseudoAttr(
-        AtomicString::FromLiteral<"name">());
-    static base::NoDestructor<AtomicString> kMarkerTarget(
-        AtomicString::FromLiteral<"marker">());
-    static base::NoDestructor<AtomicString> kStartTarget(
-        AtomicString::FromLiteral<"start">());
-    static base::NoDestructor<AtomicString> kEndTarget(
-        AtomicString::FromLiteral<"end">());
-
-    for (Node& descendant : NodeTraversal::DescendantsOf(*scope)) {
-      auto* processing_instruction =
-          DynamicTo<ProcessingInstruction>(descendant);
-      if (!processing_instruction ||
-          (processing_instruction->GetAttributeValue(
-               *kNamePseudoAttr, g_empty_atom) != marker_name)) {
-        continue;
-      }
-      if (processing_instruction->target() == *kMarkerTarget) {
-        parent = processing_instruction->parentNode();
-        start_marker = processing_instruction;
-        end_marker = processing_instruction;
-        break;
-      }
-
-      if (processing_instruction->target() != *kStartTarget) {
-        continue;
-      }
-
-      ContainerNode* pi_parent = processing_instruction->parentNode();
-      int marker_depth = 0;
-      NodeRemovalScope remove_scope(scope->GetDocument());
-
-      for (Node* node = processing_instruction->nextSibling(); node;
-           node = node->nextSibling()) {
-        if (ProcessingInstruction* next_processing_instruction =
-                DynamicTo<ProcessingInstruction>(*node)) {
-          if (next_processing_instruction->target() == *kStartTarget) {
-            marker_depth++;
-          } else if (next_processing_instruction->target() == *kEndTarget) {
-            if (marker_depth == 0) {
-              parent = pi_parent;
-              start_marker = processing_instruction;
-              end_marker = next_processing_instruction;
-              break;
-            }
-            marker_depth--;
-          }
-        }
-
-        remove_scope.Remove(node);
-      }
-
-      if (parent) {
-        break;
-      }
-
-      // No end PI found.
-      parent = pi_parent;
+    if (processing_instruction->target() == *kMarkerTarget) {
+      parent = processing_instruction->parentNode();
       start_marker = processing_instruction;
-      end_marker = nullptr;
+      end_marker = processing_instruction;
       break;
     }
+
+    if (processing_instruction->target() != *kStartTarget) {
+      continue;
+    }
+
+    ContainerNode* pi_parent = processing_instruction->parentNode();
+    int marker_depth = 0;
+    NodeRemovalScope remove_scope(scope->GetDocument());
+
+    for (Node* node = processing_instruction->nextSibling(); node;
+         node = node->nextSibling()) {
+      if (ProcessingInstruction* next_processing_instruction =
+              DynamicTo<ProcessingInstruction>(*node)) {
+        if (next_processing_instruction->target() == *kStartTarget) {
+          marker_depth++;
+        } else if (next_processing_instruction->target() == *kEndTarget) {
+          if (marker_depth == 0) {
+            parent = pi_parent;
+            start_marker = processing_instruction;
+            end_marker = next_processing_instruction;
+            break;
+          }
+          marker_depth--;
+        }
+      }
+
+      remove_scope.Remove(node);
+    }
+
+    if (parent) {
+      break;
+    }
+
+    // No end PI found.
+    parent = pi_parent;
+    start_marker = processing_instruction;
+    end_marker = nullptr;
+    break;
   }
 
   if (!parent) {
