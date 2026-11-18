@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,34 +42,32 @@ import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
-import androidx.test.filters.MediumTest;
+import androidx.test.filters.LargeTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MethodRule;
+import org.junit.function.ThrowingRunnable;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.params.MethodParamAnnotationRule;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.TestThreadUtils;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -89,7 +88,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -113,9 +112,16 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.util.ArrayList;
 import java.util.List;
 
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@DoNotBatch(reason = "This test relies on native initialization")
+/**
+ * Tests for {@link SigninPromoCoordinator}.
+ *
+ * <p>All scenarios run sequentially inside a single test method against one shared {@link
+ * BlankUiTestActivity} and browser process, so they are deliberately not independent: {@link
+ * #runScenario} creates fresh mocks before each scenario and {@link #resetState()} tears down the
+ * promo, prefs, night mode and sign-in state after it.
+ */
+@RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class SigninPromoCoordinatorTest {
     private static final List<Integer> sAccessPoints =
             List.of(
@@ -123,40 +129,22 @@ public class SigninPromoCoordinatorTest {
                     SigninAccessPoint.HISTORY_PAGE,
                     SigninAccessPoint.NTP_FEED_TOP_PROMO,
                     SigninAccessPoint.RECENT_TABS);
+    private static final List<Boolean> sNightModeParams = List.of(false, true);
 
-    public static class AccessPointParams implements ParameterProvider {
-        @Override
-        public List<ParameterSet> getParameters() {
-            List<ParameterSet> params = new ArrayList<>();
-            for (var accessPoint : sAccessPoints) {
-                params.add(
-                        new ParameterSet()
-                                .value(accessPoint)
-                                .name(getAccessPointToRenderId(accessPoint)));
-            }
-            return params;
-        }
+    private interface AccessPointScenario {
+        void run(@SigninAccessPoint int accessPoint) throws Throwable;
     }
 
-    public static class RenderTestParams implements ParameterProvider {
-        @Override
-        public List<ParameterSet> getParameters() {
-            List<ParameterSet> params = new ArrayList<>();
-            var nightModeParams = List.of(true, false);
-            for (var accessPoint : sAccessPoints) {
-                for (var nightModeParam : nightModeParams) {
-                    params.add(
-                            new ParameterSet()
-                                    .value(accessPoint, nightModeParam)
-                                    .name(getParamToRenderId(accessPoint, nightModeParam)));
-                }
-            }
-            return params;
-        }
+    private interface NightModeScenario {
+        void run(boolean nightModeEnabled) throws Throwable;
+    }
+
+    private interface AccessPointNightModeScenario {
+        void run(@SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Throwable;
     }
 
     @Rule(order = 0)
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
 
     @Rule(order = 1)
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -172,8 +160,8 @@ public class SigninPromoCoordinatorTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule public final MethodRule mMethodParamAnnotationProcessor = new MethodParamAnnotationRule();
-
+    // Mocks are recreated by createMocks() before each scenario so that stubs and recorded
+    // invocations never carry over from one scenario to the next.
     private @Mock WindowAndroid mWindow;
     private @Mock Profile mProfile;
     private @Mock ActivityResultTracker mActivityResultTracker;
@@ -191,122 +179,138 @@ public class SigninPromoCoordinatorTest {
     private PersonalizedSigninPromoView mPromoView;
     private SigninPromoCoordinator mPromoCoordinator;
     private SigninPromoDelegate mDelegate;
-    private boolean mIsActivityStarted;
     private boolean mIsNativeInitialized;
 
     @Before
     public void setUp() {
-        lenient()
-                .when(
-                        mLauncher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
-                                any(), any(), any(), any(), any(), any(), any(), any(), any(),
-                                anyInt()))
-                .thenReturn(mCoordinator);
-        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
-        lenient().when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
-        lenient().when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(false);
-        IdentityServicesProvider.setAccountPreviewDataServiceForTesting(
-                mAccountPreviewDataServiceMock);
-    }
-
-    @ParameterAnnotations.UseMethodParameterBefore(RenderTestParams.class)
-    public void setUpRenderTest(@SigninAccessPoint int accessPoint, boolean nightModeEnabled) {
-        setUpNightMode(nightModeEnabled);
-    }
-
-    @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
-    public void setUpNightModeTest(boolean nightModeEnabled) {
-        setUpNightMode(nightModeEnabled);
-    }
-
-    private static void setUpNightMode(boolean nightModeEnabled) {
-        // Native initialization may create the global night mode state controller, which applies
-        // the default night mode from the theme setting. Keep both in sync.
-        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
-        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        mActivityTestRule.launchActivity(null);
+        ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().hasWindowFocus(),
+                "Activity did not gain window focus.");
     }
 
     @After
     public void tearDown() {
-        if (mPromoCoordinator != null) {
-            ThreadUtils.runOnUiThreadBlocking(() -> mPromoCoordinator.destroy());
-        }
-        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
-        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_DECLINED);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(
-                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS));
-        ChromeSharedPreferences.getInstance()
-                .removeKey(
-                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SigninPromoAccessPointId.HISTORY_PAGE));
-        ChromeSharedPreferences.getInstance()
-                .removeKey(
-                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                SigninPreferencesManager.SigninPromoAccessPointId.NTP));
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME);
+        resetState();
     }
 
     @Test
-    @MediumTest
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testPromoShownAfterAccountsBecomeAvailable(@SigninAccessPoint int accessPoint) {
+    @LargeTest
+    @Feature("RenderTest")
+    public void testSigninPromo() throws Throwable {
+        // This scenario has to run first: RefreshTokensLoadingState.IN_PROGRESS only occurs before
+        // the initial native startup, which the first setUpSignInPromo() call triggers.
+        runScenario(this::checkPromoShownAfterAccountsBecomeAvailable);
+
+        forEachAccessPoint(this::checkPrimaryButtonClick);
+        forEachAccessPoint(this::checkLoadingStateIsShownDuringSignIn);
+        forEachAccessPoint(this::checkSigninBottomSheetStrings);
+        runScenario(this::checkBookmarksAccountSettingsPromoPrimaryButtonClick);
+        runScenario(this::checkLoadingStateNotShownForBookmarksSettingsPromo);
+        forEachAccessPoint(this::checkAccountPickerClick);
+        runScenario(this::checkHistoryPagePromoAccountPickerHidden);
+        runScenario(this::checkBookmarksAccountSettingsPromoAccountPickerHidden);
+        forEachAccessPoint(ap -> checkPermanentDismissal(ap, /* dueToUndoneSignin= */ false));
+        forEachAccessPoint(ap -> checkPermanentDismissal(ap, /* dueToUndoneSignin= */ true));
+        forEachAccessPoint(this::checkPromoImpressionRecorded);
+        forEachAccessPoint(this::checkMaxImpressionReached);
+        runScenario(this::checkHistoryPageImpressionDelay_firstShown);
+        runScenario(this::checkHistoryPageImpressionDelay_delayNotReached);
+        runScenario(this::checkHistoryPageImpressionDelay_delayReached);
+        runScenario(this::checkHistorySyncOptIn_RecentTabs);
+
+        forEachNightMode(this::checkRendering_withAccount_bookmarksAccountSettingsPromo);
+        forEachAccessPointAndNightMode(this::checkRendering_noAccountThenWithAccount_compact);
+        forEachAccessPointAndNightMode(this::checkRendering_seamlessSigninPromo_compact_noAccount);
+        forEachAccessPointAndNightMode(
+                this::checkRendering_seamlessSigninPromo_compact_withAccount);
+        forEachNightMode(this::checkRendering_seamlessSigninPromo_compact_signedIn_bookmarks);
+        forEachNightMode(this::checkRendering_seamlessSigninPromo_signedInThenSignedOut_bookmarks);
+        forEachNightMode(this::checkRendering_seamlessSigninPromo_signedOutThenSignedIn_bookmarks);
+        forEachNightMode(this::checkRendering_loadingState_Compact);
+
+        // These scenarios override ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT. FeatureOverrides are
+        // only reset at the end of the test method, so keep them last.
+        forEachAccessPoint(this::checkVisibleAccountWithPreferredAccount_preferredAccountEnabled);
+        forEachAccessPoint(this::checkVisibleAccountWithPreferredAccount_preferredAccountDisabled);
+    }
+
+    private void checkPromoShownAfterAccountsBecomeAvailable() {
+        assertFalse(
+                "This scenario must run before native is initialized.",
+                ProfileManager.isInitialized());
+        record BlockedPromo(
+                @SigninAccessPoint int accessPoint,
+                View content,
+                SigninPromoCoordinator coordinator,
+                Runnable onPromoStateChange) {}
+        List<BlockedPromo> promos = new ArrayList<>();
         try (var _ = mSigninTestRule.blockGetAccountsUpdate()) {
-            var histogramWatcher =
-                    HistogramWatcher.newBuilder()
-                            .expectNoRecords(
-                                    "Signin.SigninFunnel." + getAccessPointToRenderId(accessPoint))
-                            .build();
-            setUpSignInPromo(accessPoint);
+            for (@SigninAccessPoint int accessPoint : sAccessPoints) {
+                var histogramWatcher =
+                        HistogramWatcher.newBuilder()
+                                .expectNoRecords(
+                                        "Signin.SigninFunnel."
+                                                + getAccessPointToRenderId(accessPoint))
+                                .build();
+                Runnable onPromoStateChange = mock(Runnable.class);
+                mOnPromoStateChange = onPromoStateChange;
+                setUpSignInPromo(accessPoint);
+                SigninPromoCoordinator coordinator = mPromoCoordinator;
+                mPromoCoordinator = null;
+                View content =
+                        ThreadUtils.runOnUiThreadBlocking(
+                                () -> {
+                                    assertFalse(
+                                            "Promo should not show for accessPoint=" + accessPoint,
+                                            coordinator.canShowPromo());
+                                    ViewGroup root =
+                                            mActivityTestRule
+                                                    .getActivity()
+                                                    .findViewById(android.R.id.content);
+                                    return root.getChildAt(0);
+                                });
+                histogramWatcher.assertExpected();
+                promos.add(new BlockedPromo(accessPoint, content, coordinator, onPromoStateChange));
+            }
+        }
+        try {
+            for (BlockedPromo promo : promos) {
+                if (promo.accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+                    // Promo is only shown for signed-in users on the history page.
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> assertFalse(promo.coordinator.canShowPromo()));
+                    continue;
+                }
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.getActivity().setContentView(promo.content));
+                CriteriaHelper.pollUiThread(() -> promo.coordinator.canShowPromo());
+                waitForView(
+                        withId(R.id.signin_promo_primary_button),
+                        withText(R.string.sync_promo_continue));
+                verify(promo.onPromoStateChange).run();
+                onView(withId(R.id.account_picker_selected_account))
+                        .check(matches(not(isDisplayed())));
+            }
+        } finally {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        assertFalse(mPromoCoordinator.canShowPromo());
+                        for (BlockedPromo promo : promos) {
+                            promo.coordinator.destroy();
+                        }
                     });
-            histogramWatcher.assertExpected();
         }
-        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
-            // Promo is only shown for signed-in users on the history page.
-            return;
-        }
-        CriteriaHelper.pollUiThread(() -> mPromoCoordinator.canShowPromo());
-        waitForView(
-                withId(R.id.signin_promo_primary_button), withText(R.string.sync_promo_continue));
-        verify(mOnPromoStateChange).run();
-        onView(withId(R.id.account_picker_selected_account)).check(matches(not(isDisplayed())));
     }
 
-    @Test
-    @MediumTest
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testPrimaryButtonClick(@SigninAccessPoint int accessPoint) {
-        testPrimaryButtonClickHelper(accessPoint);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testVisibleAccountWithPreferredAccount_preferredAccountEnabled(
+    private void checkVisibleAccountWithPreferredAccount_preferredAccountEnabled(
             @SigninAccessPoint int accessPoint) {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // Promo is only shown for signed-in users on the history page.
             return;
         }
 
+        FeatureOverrides.enable(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
         AccountPreviewPreference preference =
@@ -327,17 +331,14 @@ public class SigninPromoCoordinatorTest {
                                         TestAccounts.ACCOUNT2.getGivenName())));
     }
 
-    @Test
-    @MediumTest
-    @DisableFeatures(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT)
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testVisibleAccountWithPreferredAccount_preferredAccountDisabled(
+    private void checkVisibleAccountWithPreferredAccount_preferredAccountDisabled(
             @SigninAccessPoint int accessPoint) {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // Promo is only shown for signed-in users on the history page.
             return;
         }
 
+        FeatureOverrides.disable(SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
         setUpSignInPromo(accessPoint);
@@ -353,7 +354,7 @@ public class SigninPromoCoordinatorTest {
         verify(mAccountPreviewDataServiceMock, never()).getPreferredAccountForSignin();
     }
 
-    private void testPrimaryButtonClickHelper(@SigninAccessPoint int accessPoint) {
+    private void checkPrimaryButtonClick(@SigninAccessPoint int accessPoint) {
         var histogramWatcherBuilder =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -407,10 +408,7 @@ public class SigninPromoCoordinatorTest {
         impressionHistogramWatcher.assertExpected();
     }
 
-    @Test
-    @MediumTest
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testLoadingStateIsShownDuringSignIn(@SigninAccessPoint int accessPoint) {
+    private void checkLoadingStateIsShownDuringSignIn(@SigninAccessPoint int accessPoint) {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // Promo is only shown for signed-in users on the history page and does not support
             // seamless sign-in.
@@ -488,10 +486,7 @@ public class SigninPromoCoordinatorTest {
         }
     }
 
-    @Test
-    @MediumTest
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testSigninBottomSheetStrings(@SigninAccessPoint int accessPoint) {
+    private void checkSigninBottomSheetStrings(@SigninAccessPoint int accessPoint) {
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
         waitForView(withId(R.id.signin_promo_primary_button)).click();
@@ -519,9 +514,7 @@ public class SigninPromoCoordinatorTest {
         assertEquals(expectedStrings, config.bottomSheetStrings);
     }
 
-    @Test
-    @MediumTest
-    public void testBookmarksAccountSettingsPromoPrimaryButtonClick() {
+    private void checkBookmarksAccountSettingsPromoPrimaryButtonClick() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -551,9 +544,7 @@ public class SigninPromoCoordinatorTest {
         impressionHistogramWatcher.assertExpected();
     }
 
-    @Test
-    @MediumTest
-    public void testLoadingStateNotShownForBookmarksSettingsPromo() {
+    private void checkLoadingStateNotShownForBookmarksSettingsPromo() {
         initNativeIfNeeded();
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         disableBookmarksAndReadingListDataTypes();
@@ -579,10 +570,7 @@ public class SigninPromoCoordinatorTest {
         verify(mOnOpenSettings).run();
     }
 
-    @Test
-    @MediumTest
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testAccountPickerClick(@SigninAccessPoint int accessPoint) {
+    private void checkAccountPickerClick(@SigninAccessPoint int accessPoint) {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // The history page promo is hidden for non-signed in accounts.
             return;
@@ -625,18 +613,14 @@ public class SigninPromoCoordinatorTest {
         impressionHistogramWatcher.assertExpected();
     }
 
-    @Test
-    @MediumTest
-    public void testHistoryPagePromoAccountPickerHidden() {
+    private void checkHistoryPagePromoAccountPickerHidden() {
         signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.HISTORY_PAGE);
         setUpSignInPromo(SigninAccessPoint.HISTORY_PAGE);
         onView(withId(R.id.account_picker_selected_account))
                 .check(ViewAssertions.matches(not(isDisplayed())));
     }
 
-    @Test
-    @MediumTest
-    public void testBookmarksAccountSettingsPromoAccountPickerHidden() {
+    private void checkBookmarksAccountSettingsPromoAccountPickerHidden() {
         var histogramWatcher =
                 getPromoImpressionHistogramWatcher(
                         SigninAccessPoint.BOOKMARK_MANAGER, /* hasAccounts= */ true);
@@ -652,26 +636,9 @@ public class SigninPromoCoordinatorTest {
         histogramWatcher.assertExpected();
     }
 
-    @Test
-    @MediumTest
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testDismissButtonClick(@SigninAccessPoint int accessPoint) {
-        testPermanentDismissal(
-                accessPoint, R.id.signin_promo_dismiss_button, /* dueToUndoneSignin= */ false);
-    }
-
-    @Test
-    @MediumTest
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testUndoButtonClick(@SigninAccessPoint int accessPoint) {
-        testPermanentDismissal(
-                accessPoint, R.id.signin_promo_dismiss_button, /* dueToUndoneSignin= */ true);
-    }
-
-    private void testPermanentDismissal(
-            @SigninAccessPoint int accessPoint,
-            @IdRes int dismissButtonId,
-            boolean dueToUndoneSignin) {
+    private void checkPermanentDismissal(
+            @SigninAccessPoint int accessPoint, boolean dueToUndoneSignin) {
+        @IdRes int dismissButtonId = R.id.signin_promo_dismiss_button;
         String event =
                 dueToUndoneSignin
                         ? SigninPromoMediator.Event.SIGNIN_UNDONE
@@ -744,10 +711,7 @@ public class SigninPromoCoordinatorTest {
         impressionHistogramWatcher.assertExpected();
     }
 
-    @Test
-    @MediumTest
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testPromoImpressionRecorded(@SigninAccessPoint int accessPoint) {
+    private void checkPromoImpressionRecorded(@SigninAccessPoint int accessPoint) {
         if (accessPoint == SigninAccessPoint.RECENT_TABS) {
             // Recent tabs doesn't record impressions.
             return;
@@ -766,10 +730,7 @@ public class SigninPromoCoordinatorTest {
                 });
     }
 
-    @Test
-    @MediumTest
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testMaxImpressionReached(@SigninAccessPoint int accessPoint) {
+    private void checkMaxImpressionReached(@SigninAccessPoint int accessPoint) {
         initNativeIfNeeded();
         if (accessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
             String preferenceName =
@@ -804,9 +765,7 @@ public class SigninPromoCoordinatorTest {
                 });
     }
 
-    @Test
-    @MediumTest
-    public void testHistoryPageImpressionDelay_firstShown() {
+    private void checkHistoryPageImpressionDelay_firstShown() {
         signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.HISTORY_PAGE);
 
         setUpSignInPromo(SigninAccessPoint.HISTORY_PAGE);
@@ -817,9 +776,7 @@ public class SigninPromoCoordinatorTest {
                 });
     }
 
-    @Test
-    @MediumTest
-    public void testHistoryPageImpressionDelay_delayNotReached() {
+    private void checkHistoryPageImpressionDelay_delayNotReached() {
         initNativeIfNeeded();
         ChromeSharedPreferences.getInstance()
                 .writeLong(
@@ -835,9 +792,7 @@ public class SigninPromoCoordinatorTest {
                 });
     }
 
-    @Test
-    @MediumTest
-    public void testHistoryPageImpressionDelay_delayReached() {
+    private void checkHistoryPageImpressionDelay_delayReached() {
         initNativeIfNeeded();
         ChromeSharedPreferences.getInstance()
                 .writeLong(
@@ -854,9 +809,7 @@ public class SigninPromoCoordinatorTest {
                 });
     }
 
-    @Test
-    @MediumTest
-    public void testHistorySyncOptIn_RecentTabs() {
+    private void checkHistorySyncOptIn_RecentTabs() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Signin.SigninFunnel.RecentTabs")
@@ -880,11 +833,7 @@ public class SigninPromoCoordinatorTest {
         histogramWatcher.assertExpected();
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testRendering_withAccount_bookmarksAccountSettingsPromo(boolean nightModeEnabled)
+    private void checkRendering_withAccount_bookmarksAccountSettingsPromo(boolean nightModeEnabled)
             throws Exception {
         initNativeIfNeeded();
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -897,11 +846,7 @@ public class SigninPromoCoordinatorTest {
                         + getParamToRenderId(SigninAccessPoint.BOOKMARK_MANAGER, nightModeEnabled));
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
-    public void testRendering_noAccountThenWithAccount_compact(
+    private void checkRendering_noAccountThenWithAccount_compact(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // Promo hidden for the history page.
@@ -921,11 +866,7 @@ public class SigninPromoCoordinatorTest {
                         + getParamToRenderId(accessPoint, nightModeEnabled));
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
-    public void testRendering_seamlessSigninPromo_compact_noAccount(
+    private void checkRendering_seamlessSigninPromo_compact_noAccount(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // Promo hidden for the history page.
@@ -940,11 +881,7 @@ public class SigninPromoCoordinatorTest {
                         + getParamToRenderId(accessPoint, nightModeEnabled));
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
-    public void testRendering_seamlessSigninPromo_compact_withAccount(
+    private void checkRendering_seamlessSigninPromo_compact_withAccount(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // Promo hidden for the history page.
@@ -959,11 +896,7 @@ public class SigninPromoCoordinatorTest {
                         + getParamToRenderId(accessPoint, nightModeEnabled));
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testRendering_seamlessSigninPromo_compact_signedIn_bookmarks(
+    private void checkRendering_seamlessSigninPromo_compact_signedIn_bookmarks(
             boolean nightModeEnabled) throws Exception {
         initNativeIfNeeded();
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -976,11 +909,7 @@ public class SigninPromoCoordinatorTest {
                         + getParamToRenderId(SigninAccessPoint.BOOKMARK_MANAGER, nightModeEnabled));
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testRendering_seamlessSigninPromo_signedInThenSignedOut_bookmarks(
+    private void checkRendering_seamlessSigninPromo_signedInThenSignedOut_bookmarks(
             boolean nightModeEnabled) throws Exception {
         initNativeIfNeeded();
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -990,21 +919,17 @@ public class SigninPromoCoordinatorTest {
         mRenderTestRule.render(
                 mPromoView,
                 "SeamlessSigninPromo_SignedInThenSignedOut_SignedIn_"
-                        + (nightModeEnabled ? "NightModeEnabled" : "NightModeDisabled"));
+                        + getNightModeToRenderId(nightModeEnabled));
 
         mSigninTestRule.signOut();
 
         mRenderTestRule.render(
                 mPromoView,
                 "SeamlessSigninPromo_SignedInThenSignedOut_SignedOut_"
-                        + (nightModeEnabled ? "NightModeEnabled" : "NightModeDisabled"));
+                        + getNightModeToRenderId(nightModeEnabled));
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testRendering_seamlessSigninPromo_signedOutThenSignedIn_bookmarks(
+    private void checkRendering_seamlessSigninPromo_signedOutThenSignedIn_bookmarks(
             boolean nightModeEnabled) throws Exception {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
@@ -1012,21 +937,17 @@ public class SigninPromoCoordinatorTest {
         mRenderTestRule.render(
                 mPromoView,
                 "SeamlessSigninPromo_SignedOutThenSignedIn_SignedOut_"
-                        + (nightModeEnabled ? "NightModeEnabled" : "NightModeDisabled"));
+                        + getNightModeToRenderId(nightModeEnabled));
 
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         mRenderTestRule.render(
                 mPromoView,
                 "SeamlessSigninPromo_SignedOutThenSignedIn_SignedIn_"
-                        + (nightModeEnabled ? "NightModeEnabled" : "NightModeDisabled"));
+                        + getNightModeToRenderId(nightModeEnabled));
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testRendering_loadingState_Compact(boolean nightModeEnabled) throws Exception {
+    private void checkRendering_loadingState_Compact(boolean nightModeEnabled) throws Exception {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(SigninAccessPoint.NTP_FEED_TOP_PROMO);
 
@@ -1042,6 +963,106 @@ public class SigninPromoCoordinatorTest {
                                 SigninAccessPoint.NTP_FEED_TOP_PROMO, nightModeEnabled));
     }
 
+    /**
+     * Runs {@code scenario} with fresh mocks, then resets all state it may have touched. Since all
+     * scenarios share one test method, {@code params} is attached to any failure to tell apart the
+     * parameterized runs of the same scenario method.
+     */
+    private void runScenario(String params, ThrowingRunnable scenario) throws Throwable {
+        createMocks();
+        try {
+            scenario.run();
+        } catch (Throwable t) {
+            throw new AssertionError("Scenario failed for " + params, t);
+        }
+        resetState();
+    }
+
+    private void runScenario(ThrowingRunnable scenario) throws Throwable {
+        runScenario("no params", scenario);
+    }
+
+    private void forEachAccessPoint(AccessPointScenario scenario) throws Throwable {
+        for (@SigninAccessPoint int accessPoint : sAccessPoints) {
+            runScenario(getAccessPointToRenderId(accessPoint), () -> scenario.run(accessPoint));
+        }
+    }
+
+    private static void setUpNightMode(boolean nightModeEnabled) {
+        // Native initialization may create the global night mode state controller, which applies
+        // the default night mode from the theme setting. Keep both in sync.
+        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+    }
+
+    private void forEachNightMode(NightModeScenario scenario) throws Throwable {
+        for (boolean nightModeEnabled : sNightModeParams) {
+            runScenario(
+                    getNightModeToRenderId(nightModeEnabled),
+                    () -> {
+                        setUpNightMode(nightModeEnabled);
+                        scenario.run(nightModeEnabled);
+                    });
+        }
+    }
+
+    private void forEachAccessPointAndNightMode(AccessPointNightModeScenario scenario)
+            throws Throwable {
+        for (@SigninAccessPoint int accessPoint : sAccessPoints) {
+            for (boolean nightModeEnabled : sNightModeParams) {
+                runScenario(
+                        getParamToRenderId(accessPoint, nightModeEnabled),
+                        () -> {
+                            setUpNightMode(nightModeEnabled);
+                            scenario.run(accessPoint, nightModeEnabled);
+                        });
+            }
+        }
+    }
+
+    private void createMocks() {
+        MockitoAnnotations.openMocks(this);
+        lenient()
+                .when(
+                        mLauncher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                any(), any(), any(), any(), any(), any(), any(), any(), any(),
+                                anyInt()))
+                .thenReturn(mCoordinator);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
+        lenient().when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
+        lenient().when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(false);
+        IdentityServicesProvider.setAccountPreviewDataServiceForTesting(
+                mAccountPreviewDataServiceMock);
+    }
+
+    private void resetState() {
+        if (mPromoCoordinator != null) {
+            ThreadUtils.runOnUiThreadBlocking(() -> mPromoCoordinator.destroy());
+            mPromoCoordinator = null;
+        }
+        for (String key :
+                List.of(
+                        ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED,
+                        ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_DECLINED,
+                        ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED,
+                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT,
+                        ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,
+                        ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME,
+                        ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME)) {
+            ChromeSharedPreferences.getInstance().removeKey(key);
+        }
+        ChromeSharedPreferences.getInstance()
+                .removeKeysWithPrefix(ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT);
+        ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
+        // Signs out and removes all accounts. Removing the accounts also drops their account-keyed
+        // sync settings (e.g. the data types disabled by disableBookmarksAndReadingListDataTypes).
+        mSigninTestRule.cleanUpAccountsAndSignOut();
+        // Let any Java Handler callbacks queued by the sign-out or account removal finish before
+        // the next scenario inflates a new promo.
+        TestThreadUtils.flushNonDelayedLooperTasks();
+    }
+
     private void initNativeIfNeeded() {
         if (!mIsNativeInitialized) {
             NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
@@ -1051,10 +1072,6 @@ public class SigninPromoCoordinatorTest {
 
     private void setUpSignInPromo(@SigninAccessPoint int accessPoint) {
         initNativeIfNeeded();
-        if (!mIsActivityStarted) {
-            mActivityTestRule.launchActivity(null);
-            mIsActivityStarted = true;
-        }
 
         @LayoutRes int layoutResId = SigninPromoCoordinator.getLayoutResId(accessPoint);
         ThreadUtils.runOnUiThreadBlocking(
@@ -1091,6 +1108,7 @@ public class SigninPromoCoordinatorTest {
                                     mDelegate);
                     mPromoCoordinator.setView(mPromoView);
                 });
+        TestThreadUtils.flushNonDelayedLooperTasks();
     }
 
     private SigninPromoDelegate getSigninPromoDelegate(
@@ -1182,11 +1200,15 @@ public class SigninPromoCoordinatorTest {
         };
     }
 
+    private static String getNightModeToRenderId(boolean nightModeEnabled) {
+        return nightModeEnabled ? "NightModeEnabled" : "NightModeDisabled";
+    }
+
     private static String getParamToRenderId(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) {
-        String head = getAccessPointToRenderId(accessPoint);
-        String tail = nightModeEnabled ? "NightModeEnabled" : "NightModeDisabled";
-        return head + "_" + tail;
+        return getAccessPointToRenderId(accessPoint)
+                + "_"
+                + getNightModeToRenderId(nightModeEnabled);
     }
 
     private void disableBookmarksAndReadingListDataTypes() {

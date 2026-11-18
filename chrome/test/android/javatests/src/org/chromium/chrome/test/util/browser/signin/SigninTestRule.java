@@ -160,8 +160,14 @@ public class SigninTestRule implements TestRule {
         }
     }
 
-    /** Resets the fake account management and sign-in state to pristine condition. */
-    private void cleanUpAccountsAndSignOut() {
+    /**
+     * Resets the fake account management and sign-in state to pristine condition.
+     *
+     * <p>Called automatically after each test when the rule is created with {@link
+     * #createWithCleanups()}. Tests that run several scenarios within a single test method can also
+     * call this between scenarios.
+     */
+    public void cleanUpAccountsAndSignOut() {
         if (mIsSignedIn || (ProfileManager.isInitialized() && getPrimaryAccount() != null)) {
             forceSignOut();
         }
