@@ -369,8 +369,6 @@ RefreshResponseData TranslateWireResponse(
 
   MetricsReporter::ActivityLoggingEnabled(
       chrome_response_metadata.logging_enabled());
-  MetricsReporter::NoticeCardFulfilledObsolete(
-      chrome_response_metadata.privacy_notice_fulfilled());
 
   RefreshResponseData response_data;
   response_data.model_update_request = std::move(result);

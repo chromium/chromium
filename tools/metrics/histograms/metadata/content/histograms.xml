@@ -585,17 +585,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.NoticeCardFulfilled" enum="Boolean"
-    expires_after="2023-03-01">
-  <owner>vincb@google.com</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports whether the notice card for feed action reporting has been
-    fulfilled. Recorded when reading the response content of the feed query that
-    is successful (includes both load stream and load more queries).
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled2" enum="Boolean"
     expires_after="2025-02-10">
   <owner>vincb@google.com</owner>

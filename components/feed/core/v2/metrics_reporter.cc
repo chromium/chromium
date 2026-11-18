@@ -956,12 +956,6 @@ void MetricsReporter::NoticeCardFulfilled(bool response_has_notice_card) {
                             response_has_notice_card);
 }
 
-void MetricsReporter::NoticeCardFulfilledObsolete(
-    bool response_has_notice_card) {
-  base::UmaHistogramBoolean("ContentSuggestions.Feed.NoticeCardFulfilled",
-                            response_has_notice_card);
-}
-
 void MetricsReporter::SurfaceReceivedContent(SurfaceId surface_id) {
   ReportGetMoreIfNeeded(surface_id, true);
 }

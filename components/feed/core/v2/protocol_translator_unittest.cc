@@ -207,16 +207,11 @@ TEST_F(ProtocolTranslatorTest, PrivacyNoticeFulfilled) {
         ->mutable_feed_response_metadata()
         ->mutable_chrome_feed_response_metadata()
         ->set_privacy_notice_fulfilled(privacy_notice_fulfilled_state);
-    base::HistogramTester histograms;
     RefreshResponseData refresh = TranslateWireResponse(response);
     ASSERT_TRUE(refresh.model_update_request);
     EXPECT_EQ(
         refresh.model_update_request->stream_data.privacy_notice_fulfilled(),
         privacy_notice_fulfilled_state);
-
-    // The histogram was updated.
-    histograms.ExpectUniqueSample("ContentSuggestions.Feed.NoticeCardFulfilled",
-                                  privacy_notice_fulfilled_state, 1);
   }
 }
 
