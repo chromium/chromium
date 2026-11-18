@@ -36,12 +36,18 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /** Class that contains logic for showing signin survey. */
@@ -77,6 +83,7 @@ public class SigninSurveyController implements Destroyable {
     private static boolean sEnableForTesting;
 
     private final Profile mProfile;
+    private final IdentityManager mIdentityManager;
     private @Nullable Activity mActivity;
     private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private @Nullable TabModelSelector mTabModelSelector;
@@ -180,7 +187,11 @@ public class SigninSurveyController implements Destroyable {
     }
 
     private SigninSurveyController(Profile profile) {
+        assert !profile.isOffTheRecord()
+                : "SigninSurveyController does not support off-the-record profiles.";
         mProfile = profile;
+        mIdentityManager =
+                assertNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
         mLifecycleObserver = new SigninLifecycleObserver();
     }
 
@@ -281,15 +292,24 @@ public class SigninSurveyController implements Destroyable {
     private Map<String, String> getSurveyPsd() {
         Map<String, String> psd = new HashMap<>();
         // chrome_channel and chrome_version is already recorded by SurveyClient infra.
-        int numberOfAccounts =
-                AccountUtils.getAccountsIfFulfilledOrEmpty(
-                                AccountManagerFacadeProvider.getInstance().getAccounts())
-                        .size();
+        int numberOfAccounts = getAccounts().size();
         psd.put("Number of Google Accounts", String.valueOf(numberOfAccounts));
-        boolean isSignedIn =
-                assertNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile))
-                        .hasPrimaryAccount();
+        boolean isSignedIn = mIdentityManager.hasPrimaryAccount();
         psd.put("Sign-in Status", isSignedIn ? "Signed In" : "Signed Out");
         return psd;
+    }
+
+    private List<AccountInfo> getAccounts() {
+        if (SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            if (mIdentityManager.getRefreshTokensLoadingState()
+                    != RefreshTokensLoadingState.SUCCEEDED) {
+                return List.of();
+            }
+            return mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken();
+        } else {
+            return AccountUtils.getAccountsIfFulfilledOrEmpty(
+                    AccountManagerFacadeProvider.getInstance().getAccounts());
+        }
     }
 }
