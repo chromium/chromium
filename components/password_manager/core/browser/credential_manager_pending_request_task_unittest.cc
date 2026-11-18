@@ -26,6 +26,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -267,7 +269,56 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
   CredentialManagerPendingRequestTask task(
       &delegate_mock_, /*callback=*/base::DoNothing(),
       CredentialMediationRequirement::kOptional,
-      /*include_passwords=*/false, {federation_url}, GetFormDigest());
+      /*include_passwords=*/false, {url::Origin::Create(federation_url)},
+      GetFormDigest());
+  RunAllPendingTasks();
+}
+
+TEST_F(CredentialManagerPendingRequestTaskTest,
+       FilterFederatedCredentialsExcludesNonMatchingOrigins) {
+  GURL federation_url("https://google.com/");
+  form_.federation_origin = url::SchemeHostPort(federation_url);
+  form_.password_value = PasswordString(std::u16string());
+  form_.signon_realm = "federation://www.example.com/google.com";
+  form_.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form_));
+  RunAllPendingTasks();
+
+  EXPECT_CALL(*client(), PromptUserToChooseCredentials).Times(0);
+  EXPECT_CALL(
+      delegate_mock_,
+      SendCredential(_, testing::Field(&CredentialInfo::type,
+                                       CredentialType::CREDENTIAL_TYPE_EMPTY)));
+  CredentialManagerPendingRequestTask task(
+      &delegate_mock_, /*callback=*/base::DoNothing(),
+      CredentialMediationRequirement::kOptional,
+      /*include_passwords=*/false,
+      {url::Origin::Create(GURL("https://other.example/")),
+       url::Origin::Create(GURL("http://google.com/")),
+       url::Origin::Create(GURL("https://google.com:8443/")), url::Origin()},
+      GetFormDigest());
+  RunAllPendingTasks();
+}
+
+TEST_F(CredentialManagerPendingRequestTaskTest,
+       FilterFederatedCredentialsKeepsMatchingOrigin) {
+  form_.federation_origin = url::SchemeHostPort(GURL("https://google.com/"));
+  form_.password_value = PasswordString(std::u16string());
+  form_.signon_realm = "federation://www.example.com/google.com";
+  form_.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form_));
+  RunAllPendingTasks();
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
+  expected_forms.push_back(std::make_unique<PasswordForm>(form_));
+  EXPECT_CALL(*client(),
+              PromptUserToChooseCredentials(
+                  UnorderedPasswordFormElementsAre(&expected_forms), _, _));
+  CredentialManagerPendingRequestTask task(
+      &delegate_mock_, /*callback=*/base::DoNothing(),
+      CredentialMediationRequirement::kOptional,
+      /*include_passwords=*/false,
+      {url::Origin::Create(GURL("https://google.com/auth"))}, GetFormDigest());
   RunAllPendingTasks();
 }
 

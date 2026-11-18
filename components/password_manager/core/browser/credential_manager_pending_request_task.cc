@@ -32,7 +32,6 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "net/cert/cert_status_flags.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -97,7 +96,7 @@ void FilterDuplicatesInFederatedCredentials(
 
 void FilterIrrelevantForms(std::vector<std::unique_ptr<PasswordForm>>& forms,
                            bool include_passwords,
-                           const std::set<std::string>& federations) {
+                           const std::set<url::Origin>& federations) {
   // Get rid of the irrelevant credentials.
   std::erase_if(forms, [include_passwords, &federations](
                            const std::unique_ptr<PasswordForm>& form) {
@@ -113,7 +112,9 @@ void FilterIrrelevantForms(std::vector<std::unique_ptr<PasswordForm>>& forms,
 
     // Ensure that the form we're looking at matches federation filters
     // provided.
-    return !federations.contains(form->federation_origin.Serialize());
+    return !federations.contains(url::Origin::CreateFromNormalizedTuple(
+        form->federation_origin.scheme(), form->federation_origin.host(),
+        form->federation_origin.port()));
   });
 }
 
@@ -137,7 +138,7 @@ CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
     SendCredentialCallback callback,
     CredentialMediationRequirement mediation,
     bool include_passwords,
-    const std::vector<GURL>& request_federations,
+    const std::vector<url::Origin>& request_federations,
     PasswordFormDigest form_digest)
     : delegate_(delegate),
       send_callback_(std::move(callback)),
@@ -153,9 +154,10 @@ CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
   form_fetcher_->Fetch();
   form_fetcher_->AddConsumer(this);
 
-  for (const GURL& federation : request_federations) {
-    federations_.insert(
-        url::Origin::Create(federation.DeprecatedGetOriginAsURL()).Serialize());
+  for (const url::Origin& federation : request_federations) {
+    if (!federation.opaque()) {
+      federations_.insert(federation);
+    }
   }
 }
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -16,7 +15,6 @@
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -60,7 +58,7 @@ class CredentialManagerPendingRequestTask : public FormFetcher::Consumer {
       SendCredentialCallback callback,
       CredentialMediationRequirement mediation,
       bool include_passwords,
-      const std::vector<GURL>& request_federations,
+      const std::vector<url::Origin>& request_federations,
       PasswordFormDigest form_digest);
   CredentialManagerPendingRequestTask(
       const CredentialManagerPendingRequestTask&) = delete;
@@ -82,7 +80,7 @@ class CredentialManagerPendingRequestTask : public FormFetcher::Consumer {
   const CredentialMediationRequirement mediation_;
   const url::Origin origin_;
   const bool include_passwords_;
-  std::set<std::string> federations_;
+  std::set<url::Origin> federations_;
   std::unique_ptr<FormFetcher> form_fetcher_;
 
   base::WeakPtrFactory<CredentialManagerPendingRequestTask> weak_ptr_factory_{

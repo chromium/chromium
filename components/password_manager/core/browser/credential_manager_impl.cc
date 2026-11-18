@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -197,7 +198,8 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
   }
   pending_request_ = std::make_unique<CredentialManagerPendingRequestTask>(
       this, base::BindOnce(&RunGetCallback, std::move(callback)), mediation,
-      include_passwords, federations, GetSynthesizedFormForOrigin());
+      include_passwords, base::ToVector(federations, &url::Origin::Create),
+      GetSynthesizedFormForOrigin());
 }
 
 void CredentialManagerImpl::ResetAfterDisconnecting() {
