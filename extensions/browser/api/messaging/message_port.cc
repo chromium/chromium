@@ -44,8 +44,7 @@ void MessagePort::DispatchOnConnect(
 
 void MessagePort::DispatchOnDisconnect(const std::string& error_message) {}
 
-void MessagePort::OpenPort(content::ChildProcessId process_id,
-                           const PortContext& port_context) {}
+void MessagePort::OpenPort(const PortContext& port_context) {}
 
 void MessagePort::ClosePort(content::ChildProcessId process_id,
                             int routing_id,

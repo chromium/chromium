@@ -770,13 +770,12 @@ void ExtensionMessagePort::NotifyResponsePending() {
   asynchronous_reply_pending_ = true;
 }
 
-void ExtensionMessagePort::OpenPort(content::ChildProcessId process_id,
-                                    const PortContext& port_context) {
+void ExtensionMessagePort::OpenPort(const PortContext& port_context) {
+  DCHECK(!for_all_extension_contexts_);
   DCHECK((port_context.is_for_render_frame() &&
           port_context.frame->routing_id != IPC::mojom::kRoutingIdNone) ||
          (port_context.is_for_service_worker() &&
-          port_context.worker->thread_id != kMainThreadId) ||
-         for_all_extension_contexts_);
+          port_context.worker->thread_id != kMainThreadId));
 
   port_was_created_ = true;
 }

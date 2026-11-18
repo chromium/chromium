@@ -802,7 +802,7 @@ void MessageService::OpenChannelToNativeAppImpl(
 
   std::unique_ptr<MessageChannel> channel = std::make_unique<MessageChannel>();
   channel->opener = std::move(opener_port);
-  channel->opener->OpenPort(source.render_process_id(), source.port_context());
+  channel->opener->OpenPort(source.port_context());
 
   content::RenderFrameHost* source_render_frame_host =
       source.is_for_render_frame() ? source.GetRenderFrameHost() : nullptr;
@@ -1043,7 +1043,7 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   }
 
   const PortContext& port_context = source.port_context();
-  params->opener_port->OpenPort(source.render_process_id(), port_context);
+  params->opener_port->OpenPort(port_context);
   params->opener_port->RevalidatePort();
   // TODO(richardzh) Move this property setting to port creation, or params
   // creation, to have cleaner code here.
@@ -1144,19 +1144,6 @@ void MessageService::AddChannel(std::unique_ptr<MessageChannel> channel,
   pending_lazy_context_channels_.erase(channel_id);
 }
 
-void MessageService::OpenPortImpl(const PortId& port_id,
-                                  content::ChildProcessId process_id,
-                                  const PortContext& port_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!port_id.is_opener);
-
-  ChannelId channel_id = port_id.GetChannelId();
-  auto it = channels_.find(channel_id);
-  if (it == channels_.end())
-    return;
-
-  it->second->receiver->OpenPort(process_id, port_context);
-}
 void MessageService::CloseChannel(const PortId& port_id,
                                   const std::string& error_message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

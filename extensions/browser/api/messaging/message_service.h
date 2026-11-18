@@ -139,25 +139,6 @@ class MessageService : public BrowserContextKeyedAPI,
       mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
           port_host);
 
-  // Marks the given port as opened by `port_context` in the render process
-  // with id `process_id`.
-  void OpenPort(content::RenderProcessHost* process,
-                const PortId& port_id,
-                const PortContext& port_context);
-
-  // Closes the given port in the given `port_context`. If this was the last
-  // context or if `force_close` is true, then the other side is closed as well.
-  void ClosePort(content::RenderProcessHost* process,
-                 const PortId& port_id,
-                 const PortContext& port_context,
-                 bool force_close);
-
-  // Notifies the port that one of the receivers of a message indicated that
-  // they plan to respond to the message later.
-  void NotifyResponsePending(content::RenderProcessHost* process,
-                             const PortId& port_id,
-                             const PortContext& port_context);
-
   // Returns the number of open channels for test.
   size_t GetChannelCountForTest() { return channels_.size(); }
   bool HasStrongKeepaliveOnReceiverForTest(const ChannelId& channel_id) const;
@@ -208,9 +189,6 @@ class MessageService : public BrowserContextKeyedAPI,
       mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
       mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
           port_host);
-  void OpenPortImpl(const PortId& port_id,
-                    content::ChildProcessId process_id,
-                    const PortContext& port_context);
 
   // A map of channel ID to its channel object.
   using MessageChannelMap =

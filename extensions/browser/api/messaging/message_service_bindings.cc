@@ -27,7 +27,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/trace_util.h"
-#include "ipc/constants.mojom.h"
 #include "url/origin_debug.h"
 
 using content::BrowserThread;
@@ -246,7 +245,7 @@ bool IsValidMessagingTarget(RenderProcessHost& process,
 }
 
 // Returns true if `source_context` can be legitimately claimed/used by
-// `render_process_id`.  Otherwise reports a bad IPC message and returns false
+// `process`.  Otherwise reports a bad IPC message and returns false
 // (expecting the caller to not take any action based on the rejected,
 // untrustworthy `source_context`).
 bool IsValidSourceContext(RenderProcessHost& process,
@@ -653,52 +652,6 @@ void MessageService::OpenChannelToTab(
   OpenChannelToTabImpl(source, source_port_id, tab_id, frame_id, document_id,
                        *extension_id, channel_type, channel_name,
                        std::move(port), std::move(port_host));
-}
-
-void MessageService::OpenPort(RenderProcessHost* process,
-                              const PortId& port_id,
-                              const PortContext& source) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (!IsValidSourceContext(*process, source)) {
-    return;
-  }
-  OpenPortImpl(port_id, process->GetID(), source);
-}
-
-void MessageService::ClosePort(RenderProcessHost* process,
-                               const PortId& port_id,
-                               const PortContext& port_context,
-                               bool force_close) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!port_context.is_for_render_frame() &&
-      !port_context.is_for_service_worker()) {
-    bad_message::ReceivedBadMessage(process,
-                                    bad_message::EMF_INVALID_PORT_CONTEXT);
-    return;
-  }
-
-  if (!IsValidSourceContext(*process, port_context)) {
-    return;
-  }
-  int routing_id = port_context.frame ? port_context.frame->routing_id
-                                      : IPC::mojom::kRoutingIdNone;
-  int worker_thread_id =
-      port_context.worker ? port_context.worker->thread_id : kMainThreadId;
-  ClosePortImpl(port_id, process->GetID(), routing_id, worker_thread_id,
-                force_close, std::string());
-}
-
-void MessageService::NotifyResponsePending(RenderProcessHost* process,
-                                           const PortId& port_id,
-                                           const PortContext& port_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (!IsValidSourceContext(*process, port_context)) {
-    return;
-  }
-
-  NotifyResponsePending(port_id);
 }
 
 }  // namespace extensions

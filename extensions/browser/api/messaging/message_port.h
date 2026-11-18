@@ -105,9 +105,9 @@ class MessagePort
   // Dispatches a message to this end of the communication.
   virtual void DispatchOnMessage(Message message) = 0;
 
-  // Marks the port as opened by the specific frame or service worker.
-  virtual void OpenPort(content::ChildProcessId process_id,
-                        const PortContext& port_context);
+  // Marks the port as opened by the specific frame or service worker. This
+  // should only be called for opener ports.
+  virtual void OpenPort(const PortContext& port_context);
 
   // Closes the port for the given frame or service worker.
   virtual void ClosePort(content::ChildProcessId process_id,
