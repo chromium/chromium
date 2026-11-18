@@ -25,30 +25,30 @@ const char kMockFailingLibraryName[] = "mock_failing_translate_kit_lib";
 }  // namespace
 
 base::FilePath GetMockLibraryPath() {
-  base::FilePath exe_path;
-  CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
-  return exe_path.AppendASCII(base::GetNativeLibraryName(kMockLibraryName));
+  base::FilePath module_dir;
+  CHECK(base::PathService::Get(base::DIR_MODULE, &module_dir));
+  return module_dir.AppendASCII(base::GetLoadableModuleName(kMockLibraryName));
 }
 
 base::FilePath GetMockLibraryWithoutSplitSentencesPath() {
-  base::FilePath exe_path;
-  CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
-  return exe_path.AppendASCII(
-      base::GetNativeLibraryName(kMockLibraryWithoutSplitSentences));
+  base::FilePath module_dir;
+  CHECK(base::PathService::Get(base::DIR_MODULE, &module_dir));
+  return module_dir.AppendASCII(
+      base::GetLoadableModuleName(kMockLibraryWithoutSplitSentences));
 }
 
 base::FilePath GetMockInvalidFunctionPointerLibraryPath() {
-  base::FilePath exe_path;
-  CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
-  return exe_path.AppendASCII(
-      base::GetNativeLibraryName(kMockInvalidFunctionPointerLibraryName));
+  base::FilePath module_dir;
+  CHECK(base::PathService::Get(base::DIR_MODULE, &module_dir));
+  return module_dir.AppendASCII(
+      base::GetLoadableModuleName(kMockInvalidFunctionPointerLibraryName));
 }
 
 base::FilePath GetMockFailingLibraryPath() {
-  base::FilePath exe_path;
-  CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
-  return exe_path.AppendASCII(
-      base::GetNativeLibraryName(kMockFailingLibraryName));
+  base::FilePath module_dir;
+  CHECK(base::PathService::Get(base::DIR_MODULE, &module_dir));
+  return module_dir.AppendASCII(
+      base::GetLoadableModuleName(kMockFailingLibraryName));
 }
 
 // static
