@@ -771,6 +771,10 @@ std::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
   return account_selection_view_->GetDialogSubtitle();
 }
 
+bool FedCmAccountSelectionView::IsAmbientBubbleUsed() const {
+  return ambient_bubble_used_;
+}
+
 void FedCmAccountSelectionView::PrimaryPageChanged(content::Page& page) {
   // Close the dialog when the user navigates within the same tab.
   Close(/*notify_delegate=*/true, /*hide_widget=*/false);
@@ -1999,6 +2003,7 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
   dialog_type_ = DialogType::AMBIENT_BUBBLE;
   state_ = accounts.size() == 1u ? State::SINGLE_ACCOUNT_PICKER
                                  : State::MULTI_ACCOUNT_PICKER;
+  ambient_bubble_used_ = true;
 
   // TODO(crbug.com/567563304): Notify the delegate when the bubble is actually
   // shown, since PermissionRequestManager may defer showing it.
@@ -2070,7 +2075,9 @@ void FedCmAccountSelectionView::HandleAmbientBubbleDecision(
     // the tab navigated away. Closing the bubble keeps the chip, and the
     // request pending.
     // TODO(crbug.com/567563304): Tell apart requests whose bubble the user
-    // closed so that the appropriate DismissReason (and cooldown) can be used.
+    // closed so that the appropriate `DismissReason` can be recorded. The
+    // backend doesn't embargo after the ambient bubble either way, see
+    // `IsAmbientBubbleUsed()`.
     // `this` may be deleted after this call.
     std::ignore = RunAndCheckAlive(
         [&]() { delegate_->OnDismiss(DismissReason::kOther); });
@@ -2146,6 +2153,9 @@ void FedCmAccountSelectionView::CancelAmbientBubble() {
     return;
   }
   ambient_bubble_request_pending_ = false;
+  // The user didn't accept the bubble. The UI that replaces it, if any, works
+  // as without the bubble, e.g. closing it can embargo the RP.
+  ambient_bubble_used_ = false;
   base::WeakPtr<ambient_signin::AmbientLoginPermissionController> controller =
       ambient_login_permission_controller_;
   ambient_login_permission_controller_.reset();

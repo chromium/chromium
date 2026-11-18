@@ -446,7 +446,9 @@ class CONTENT_EXPORT RequestHandler
   // Whether this is an active mode request with multiple IdPs.
   bool IsMultiIdpActiveMode() const;
 
-  // Returns whether we'll be using an ambient UI for a passive call.
+  // Returns whether a passive request uses an ambient UI, so that closing its
+  // UI doesn't embargo the RP: the ambient bubble, which the UI reports, or the
+  // omnibox chip, which is predicted.
   bool IsUsingAmbient() const;
 
   blink::mojom::RpMode GetRpMode() const { return req_->rp_mode(); }

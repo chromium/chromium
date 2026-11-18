@@ -188,6 +188,10 @@ std::optional<std::string> IdentityRequestDialogController::GetSubtitle()
   return std::nullopt;
 }
 
+bool IdentityRequestDialogController::IsAmbientBubbleUsed() const {
+  return false;
+}
+
 void IdentityRequestDialogController::ShowUrl(LinkType type, const GURL& url) {}
 
 WebContents* IdentityRequestDialogController::ShowModalDialog(

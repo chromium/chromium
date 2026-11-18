@@ -5,3 +5,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 
 DEFINE_USER_DATA(AccountSelectionView);
+
+bool AccountSelectionView::IsAmbientBubbleUsed() const {
+  return false;
+}

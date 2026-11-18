@@ -149,6 +149,11 @@ class AccountSelectionView {
   virtual std::string GetTitle() const = 0;
   virtual std::optional<std::string> GetSubtitle() const = 0;
 
+  // See `content::IdentityRequestDialogController::IsAmbientBubbleUsed()`.
+  // Returns false by default, for UIs without the ambient bubble, e.g. on
+  // Android.
+  virtual bool IsAmbientBubbleUsed() const;
+
   virtual void ShowUrl(LinkType type, const GURL& url) = 0;
   virtual content::WebContents* ShowModalDialog(
       const GURL& url,

@@ -2729,7 +2729,21 @@ bool RequestHandler::IsMultiIdpActiveMode() const {
 }
 
 bool RequestHandler::IsUsingAmbient() const {
-  if (req_->rp_mode() != RpMode::kPassive || req_->idp_order().size() != 1u) {
+  if (req_->rp_mode() != RpMode::kPassive) {
+    return false;
+  }
+
+  // The UI reports whether it used the ambient bubble, which supports any
+  // number of identity providers and accounts.
+  if (IdentityRequestDialogController* dialog_controller =
+          request_service_->GetDialogController();
+      dialog_controller && dialog_controller->IsAmbientBubbleUsed()) {
+    return true;
+  }
+
+  // Otherwise, predict whether the UI uses the omnibox chip, which only
+  // supports a single account from a single identity provider.
+  if (req_->idp_order().size() != 1u) {
     return false;
   }
 
@@ -2741,14 +2755,7 @@ bool RequestHandler::IsUsingAmbient() const {
     return false;
   }
 
-  size_t accounts_count = accounts_.size();
-
-  // Currently, the Ambient UI only supports single accounts, for returning
-  // users and new users. As we develop it, we'll allow more cases to be
-  // handled by the Ambient UI, such as multiple accounts, multiple IdPs and
-  // mismatch cases.
-
-  return accounts_count == 1u;
+  return accounts_.size() == 1u;
 }
 
 RelyingPartyData RequestHandler::CreateRpData(

@@ -136,6 +136,7 @@ class IdentityDialogController
 
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;
+  bool IsAmbientBubbleUsed() const override;
 
   void ShowUrl(LinkType type, const GURL& url) override;
   // Show a modal dialog that loads content from the IdP in a WebView.

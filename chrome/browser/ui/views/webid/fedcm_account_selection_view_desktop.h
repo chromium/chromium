@@ -151,6 +151,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void ShowUrl(LinkType link_type, const GURL& url) override;
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;
+  bool IsAmbientBubbleUsed() const override;
   content::WebContents* GetRpWebContents() override;
 
   // FedCmModalDialogView::Observer
@@ -509,7 +510,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Cancels the outstanding ambient bubble request, if any, e.g. because the
   // FedCM UI is closed or replaced. A decision on the bubble that has not been
-  // handled yet is dropped as well. The delegate is not notified.
+  // handled yet is dropped as well. The delegate is not notified. If a request
+  // was outstanding, `IsAmbientBubbleUsed()` becomes false.
   void CancelAmbientBubble();
 
   // Shows the multi account picker and updates the internal state.
@@ -769,6 +771,14 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Whether an ambient bubble request added by this class is outstanding, i.e.
   // has not been decided or cancelled yet.
   bool ambient_bubble_request_pending_{false};
+
+  // Whether the accounts were shown in the ambient bubble. Set once the
+  // bubble's request is added, although `PermissionRequestManager` may show the
+  // bubble later. Stays true for the rest of the request, e.g. after the bubble
+  // shows the modal dialog, so that closing any UI of the request doesn't
+  // embargo the RP. Reset if the bubble is cancelled before the user accepts
+  // it, e.g. when the regular UI replaces it.
+  bool ambient_bubble_used_ = false;
 
   // The controller that the outstanding ambient bubble request was added to.
   base::WeakPtr<ambient_signin::AmbientLoginPermissionController>

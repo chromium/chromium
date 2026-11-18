@@ -685,6 +685,10 @@ std::optional<std::string> IdentityDialogController::GetSubtitle() const {
   return account_view_->GetSubtitle();
 }
 
+bool IdentityDialogController::IsAmbientBubbleUsed() const {
+  return account_view_ && account_view_->IsAmbientBubbleUsed();
+}
+
 gfx::NativeView IdentityDialogController::GetNativeView() {
   return rp_web_contents_->GetNativeView();
 }

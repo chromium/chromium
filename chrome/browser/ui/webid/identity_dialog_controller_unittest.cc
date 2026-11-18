@@ -141,6 +141,8 @@ class MockAccountSelectionView : public AccountSelectionView {
 
   MOCK_METHOD(std::optional<std::string>, GetSubtitle, (), (const, override));
 
+  MOCK_METHOD(bool, IsAmbientBubbleUsed, (), (const, override));
+
   MOCK_METHOD(void, ShowUrl, (LinkType type, const GURL& url), (override));
 
   MOCK_METHOD(content::WebContents*,
@@ -416,6 +418,17 @@ TEST_F(IdentityDialogControllerTest, ActorTaskSuppressesUi) {
       content::RelyingPartyData(kTopFrameEtldPlusOne, u""), kIdpEtldPlusOne,
       blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive,
       base::DoNothing()));
+}
+
+TEST_F(IdentityDialogControllerTest, IsAmbientBubbleUsedForwardsToView) {
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  // There is no view yet.
+  EXPECT_FALSE(controller->IsAmbientBubbleUsed());
+
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  EXPECT_CALL(*mock_view, IsAmbientBubbleUsed()).WillOnce(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  EXPECT_TRUE(controller->IsAmbientBubbleUsed());
 }
 
 TEST_F(IdentityDialogControllerTest, Deny) {

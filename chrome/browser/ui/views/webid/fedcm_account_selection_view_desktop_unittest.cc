@@ -3787,6 +3787,7 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
   new_account->display_name = "Jane Doe";
   Show(*controller, {new_account}, blink::mojom::RpMode::kPassive);
   EXPECT_FALSE(controller->GetDialogWidget());
+  EXPECT_TRUE(controller->IsAmbientBubbleUsed());
 
   // The bubble is shown again for the new account.
   ambient_signin::AmbientLoginPermissionRequest* request =
@@ -3909,6 +3910,32 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
   EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
             controller->GetTestView()->sheet_type_);
   EXPECT_FALSE(delegate_->GetDismissReason());
+  // The user accepted the bubble, so closing the failure dialog doesn't
+  // embargo the RP either.
+  EXPECT_TRUE(controller->IsAmbientBubbleUsed());
+}
+
+// Tests that the view reports that it used the ambient bubble for the rest of
+// the request, so that closing any of its UI doesn't embargo the RP.
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       AmbientBubbleStaysUsedAfterRequestPermissionModal) {
+  accounts_ = {CreateAccount(idp_data_)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(WaitForAmbientBubble());
+  EXPECT_TRUE(controller->IsAmbientBubbleUsed());
+
+  permission_request_manager()->Accept(std::monostate());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetDialogWidget() != nullptr; }));
+  EXPECT_TRUE(controller->IsAmbientBubbleUsed());
+
+  // Cancelling the modal dialog still reports the close button, e.g. for
+  // metrics.
+  controller->OnCloseButtonClicked(CreateMouseEvent());
+  RunPostedTasks();
+  EXPECT_EQ(delegate_->GetDismissReason(), DismissReason::kCloseButton);
+  EXPECT_TRUE(controller->IsAmbientBubbleUsed());
 }
 
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
@@ -4176,6 +4203,8 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
   EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
             controller->GetTestView()->sheet_type_);
   EXPECT_FALSE(HasAmbientRequest());
+  // So closing the regular UI may embargo the RP.
+  EXPECT_FALSE(controller->IsAmbientBubbleUsed());
 }
 
 // Tests that the regular UI is used if an identity provider has a login status
@@ -4242,6 +4271,7 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
       CreateAndShow(accounts_);
   ASSERT_TRUE(WaitForAmbientBubble());
   EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+  EXPECT_TRUE(controller->IsAmbientBubbleUsed());
 
   // FedCM UI can no longer be shown, e.g. because an actor task starts acting
   // on the tab. The bubble is replaced by the regular UI, which stays hidden
@@ -4251,6 +4281,9 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
   EXPECT_FALSE(HasAmbientRequest());
   ASSERT_TRUE(controller->GetDialogWidget());
   EXPECT_FALSE(controller->IsDialogWidgetVisible());
+  // The user didn't accept the bubble, so closing the regular UI may embargo
+  // the RP as usual.
+  EXPECT_FALSE(controller->IsAmbientBubbleUsed());
 
   // The decision on the cancelled request does not affect the regular UI.
   RunPostedTasks();
@@ -4302,6 +4335,8 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
 
   // FedCM falls back to the regular UI rather than being dismissed.
   EXPECT_TRUE(controller->GetDialogWidget());
+  // So closing the regular UI may embargo the RP.
+  EXPECT_FALSE(controller->IsAmbientBubbleUsed());
   // The decision posted for the rejected request is ignored.
   RunPostedTasks();
   EXPECT_TRUE(controller->GetDialogWidget());

@@ -383,6 +383,15 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual std::string GetTitle() const;
   virtual std::optional<std::string> GetSubtitle() const;
 
+  // Returns whether the accounts of the current request were shown in the
+  // ambient bubble, which only desktop has. This is true once the bubble is
+  // requested, even if it is shown later, and stays true for the rest of the
+  // request, e.g. in the modal dialog that follows the bubble. It becomes
+  // false if the bubble is cancelled before the user accepts it, e.g. when the
+  // regular UI replaces it. While it is true, closing any UI of the request
+  // doesn't embargo the relying party.
+  virtual bool IsAmbientBubbleUsed() const;
+
   // Open a popup or similar that shows the specified URL.
   virtual void ShowUrl(LinkType type, const GURL& url);
 

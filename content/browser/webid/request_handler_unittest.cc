@@ -300,6 +300,9 @@ struct MockConfiguration {
   blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
   bool suppressed_by_segmentation_platform{false};
   NativeAppUiAction native_app_ui_action{NativeAppUiAction::kNone};
+  // Whether the UI reports that it showed the accounts in the ambient bubble,
+  // once it has shown them.
+  bool ambient_bubble_used = false;
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -656,7 +659,8 @@ class TestDialogController
             config.suppressed_by_segmentation_platform
                 ? IdentityRequestDialogController::PassiveDialogVolume::kAmbient
                 : IdentityRequestDialogController::PassiveDialogVolume::
-                      kDefault) {}
+                      kDefault),
+        ambient_bubble_used_(config.ambient_bubble_used) {}
 
   void UpdateConfiguration(MockConfiguration config) {
     accounts_dialog_action_ = config.accounts_dialog_action;
@@ -670,6 +674,7 @@ class TestDialogController
         config.suppressed_by_segmentation_platform
             ? IdentityRequestDialogController::PassiveDialogVolume::kAmbient
             : IdentityRequestDialogController::PassiveDialogVolume::kDefault;
+    ambient_bubble_used_ = config.ambient_bubble_used;
   }
 
   ~TestDialogController() override = default;
@@ -685,6 +690,12 @@ class TestDialogController
 
   void GetPassiveDialogVolume(GetPassiveDialogVolumeCallback cb) override {
     std::move(cb).Run(passive_dialog_volume_);
+  }
+
+  // Like the real UI, which only uses the ambient bubble to show accounts.
+  bool IsAmbientBubbleUsed() const override {
+    return ambient_bubble_used_ && state_ &&
+           state_->num_show_accounts_dialog > 0u;
   }
 
   bool ShowAccountsDialog(
@@ -952,6 +963,7 @@ class TestDialogController
   ErrorDialogAction error_dialog_action_{ErrorDialogAction::kNone};
   LoadingDialogAction loading_dialog_action_{LoadingDialogAction::kNone};
   IdentityRequestDialogController::PassiveDialogVolume passive_dialog_volume_;
+  bool ambient_bubble_used_;
 
   // Pointer so that the state can be queried after RequestHandler
   // destroys TestDialogController.
@@ -9042,6 +9054,100 @@ TEST_F(RequestHandlerTest, NonAmbientPassiveFlowStillAffectsEmbargo) {
   RunTest(kDefaultRequestParameters, expectations, configuration);
 
   EXPECT_TRUE(test_api_permission_delegate_->embargoed_origins_.count(
+      main_test_rfh()->GetLastCommittedOrigin()));
+}
+
+// Tests that closing the UI doesn't embargo the RP if the UI showed the
+// accounts in the ambient bubble, even with multiple accounts.
+TEST_F(RequestHandlerTest,
+       AmbientBubbleWithMultipleAccountsDoesNotCauseAnEmbargo) {
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kUiDismissedNoEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kClose;
+  configuration.idp_info[kProviderUrlFull].accounts = kTwoAccounts;
+  configuration.ambient_bubble_used = true;
+
+  RunTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_FALSE(test_api_permission_delegate_->embargoed_origins_.count(
+      main_test_rfh()->GetLastCommittedOrigin()));
+}
+
+// Tests that closing the UI doesn't embargo the RP if the UI showed the
+// accounts in the ambient bubble, even if the request has multiple identity
+// providers. Here, only one of them is shown, since the other's config can't
+// be fetched.
+TEST_F(RequestHandlerTest,
+       AmbientBubbleForMultiIdpRequestDoesNotCauseAnEmbargo) {
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kUiDismissedNoEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  MockConfiguration configuration = kConfigurationMultiIdpValid;
+  configuration.idp_info[kProviderTwoUrlFull].config.fetch_status = {
+      ParseStatus::kHttpNotFoundError, net::HTTP_NOT_FOUND};
+  configuration.accounts_dialog_action = AccountsDialogAction::kClose;
+  configuration.ambient_bubble_used = true;
+
+  RunTest(kDefaultMultiIdpRequestParameters, expectations, configuration);
+
+  EXPECT_THAT(displayed_idps(), ElementsAre("idp.example"));
+  EXPECT_FALSE(test_api_permission_delegate_->embargoed_origins_.count(
+      main_test_rfh()->GetLastCommittedOrigin()));
+}
+
+// Tests that closing the failure dialog for an IdP sign-in status mismatch
+// doesn't embargo the RP if the UI showed the accounts in the ambient bubble
+// before. E.g. the user goes from the bubble to the modal dialog, back to the
+// account chooser and to "use other account", logs in to the IdP, and then the
+// accounts can't be fetched.
+TEST_F(RequestHandlerTest,
+       MismatchDialogAfterAmbientBubbleDoesNotCauseAnEmbargo) {
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kAddAccount;
+  configuration.idp_signin_status_mismatch_dialog_action =
+      IdpSigninStatusMismatchDialogAction::kClose;
+  configuration.ambient_bubble_used = true;
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(configuration);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<0>(
+          [&modal, &configuration, this](const GURL& url) {
+            // The user logs in to the IdP, but its accounts can't be fetched.
+            MockConfiguration failing_configuration = configuration;
+            failing_configuration.idp_info[kProviderUrlFull]
+                .accounts_response.parse_status =
+                ParseStatus::kInvalidResponseError;
+            test_network_request_manager_->SetTestConfig(failing_configuration);
+            RequestService::GetOrCreateForCurrentDocument(main_test_rfh())
+                ->GetActiveRequestHandlerForTesting()
+                ->OnIdpSigninStatusReceived(OriginFromString(kProviderUrlFull),
+                                            /*idp_signin_status=*/true);
+            return modal.get();
+          }));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kUiDismissedNoEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  RunTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_EQ(num_show_accounts_dialog(), 1u);
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_FALSE(test_api_permission_delegate_->embargoed_origins_.count(
       main_test_rfh()->GetLastCommittedOrigin()));
 }
 
