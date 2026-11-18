@@ -155,12 +155,67 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
       profile, ProfileKeepAliveOrigin::kProfilePickerView);
   CloseAllBrowsers();
 
-  EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey(trigger(), _, _, _));
+  const std::map<std::string, std::string> survey_data = {
+      {"Channel",
+       std::string(version_info::GetChannelString(chrome::GetChannel()))},
+      {"Chrome Version", version_info::GetVersion().GetString()},
+      {"Number of Chrome Profiles", "1"},
+      {"Number of Google Accounts", "0"},
+      {"Sign-in Status", "Signed Out"}};
+
+  EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey).Times(0);
+  signin::LaunchHatsSurveyForProfile(trigger(), profile,
+                                     /*defer_if_no_browser=*/true);
+  testing::Mock::VerifyAndClearExpectations(&mock_hats_service());
+
+  EXPECT_CALL(mock_hats_service(),
+              LaunchDelayedSurvey(trigger(), _, _, Eq(survey_data)));
   EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey(Not(trigger()), _, _, _))
       .Times(0);
 
+  BrowserWindowInterface* new_browser = CreateBrowser(profile);
+  EXPECT_NE(new_browser, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
+                       LaunchHatsSurveyDeferIfNoBrowserArbitrarySurveyData) {
+  Profile* profile = CHECK_DEREF(browser()).GetProfile();
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kProfilePickerView);
+  CloseAllBrowsers();
+
+  const std::map<std::string, std::string> survey_data = {
+      {"Lucky number", "997"}};
+
+  EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey).Times(0);
   signin::LaunchHatsSurveyForProfile(trigger(), profile,
-                                     /*defer_if_no_browser=*/true);
+                                     /*defer_if_no_browser=*/true, survey_data);
+  testing::Mock::VerifyAndClearExpectations(&mock_hats_service());
+
+  EXPECT_CALL(mock_hats_service(),
+              LaunchDelayedSurvey(trigger(), _, _, Eq(survey_data)));
+  EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey(Not(trigger()), _, _, _))
+      .Times(0);
+
+  BrowserWindowInterface* new_browser = CreateBrowser(profile);
+  EXPECT_NE(new_browser, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
+                       DoNotLaunchHatsSurveyIfNoBrowserAndNoDefer) {
+  Profile* profile = CHECK_DEREF(browser()).GetProfile();
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kProfilePickerView);
+  CloseAllBrowsers();
+
+  EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey).Times(0);
+
+  signin::LaunchHatsSurveyForProfile(trigger(), profile,
+                                     /*defer_if_no_browser=*/false);
 
   BrowserWindowInterface* new_browser = CreateBrowser(profile);
   EXPECT_NE(new_browser, nullptr);

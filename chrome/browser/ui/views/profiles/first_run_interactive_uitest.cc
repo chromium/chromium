@@ -2268,6 +2268,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTestWithSyncService,
                            syncer::SyncService::TransportState::ACTIVE);
   SimulateSignIn(kTestEmail, kTestGivenName);
 
+  // Close the initial test browser window so that finishing FRE opens a new
+  // browser window and exercises the deferred HaTS launch path.
+  CloseBrowserSynchronously(browser());
+
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
       If([this]() { return UseRevampedView(); },
