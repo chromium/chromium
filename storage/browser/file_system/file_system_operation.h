@@ -463,10 +463,10 @@ class FileSystemOperation {
                              CopyOrMoveOptionSet options,
                              StatusCallback callback) = 0;
 
-  // Synchronously gets the platform path for the given |url|.
-  // This may fail if the given |url|'s filesystem type is neither
-  // temporary nor persistent.
-  // In such a case, base::File::FILE_ERROR_INVALID_OPERATION will be
+  // Synchronously gets the platform path for the given `url`.
+  // This may fail if the given `url`'s filesystem type is neither
+  // temporary nor persistent, or if the context is in incognito mode.
+  // In such a case, `base::File::FILE_ERROR_INVALID_OPERATION` will be
   // returned.
   virtual base::File::Error SyncGetPlatformPath(
       const FileSystemURL& url,
