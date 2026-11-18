@@ -91,20 +91,20 @@ class OmniboxEverywhereUIManager
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOmniboxEverywhereElementId);
 
   // Fixed popup window width:
-  //   680px (Loomnibox searchbox content width; 480px when smallLoomnibox param
+  //   680px (Loomnibox searchbox content width; 408px when smallLoomnibox param
   //          is enabled)
   // +  48px (24px left + 24px right body padding in omnibox_everywhere.html to
   //          accommodate the drop shadow without clipping).
-  // = 728px total window width (528px when smallLoomnibox is enabled).
+  // = 728px total window width (456px when smallLoomnibox is enabled).
   static constexpr int kPopupFixedWidth = 728;
-  static constexpr int kPopupSmallFixedWidth = 528;
+  static constexpr int kPopupSmallFixedWidth = 456;
   // Dynamic sizing popup window widths (32px left + 32px right body padding):
   // - Expanded: 680px (Large) or 600px (Medium) content width + 64px = 744px /
   //             664px.
-  // - Resting (persistent mode): 480px (Small) content width + 64px = 544px.
+  // - Resting (persistent mode): 408px (Small) content width + 64px = 472px.
   static constexpr int kDynamicPopupLargeFixedWidth = 744;
   static constexpr int kDynamicPopupMediumFixedWidth = 664;
-  static constexpr int kDynamicPopupSmallFixedWidth = 544;
+  static constexpr int kDynamicPopupSmallFixedWidth = 472;
   static int GetPopupFixedWidth();
   static int GetPopupExpandedFixedWidth();
   static constexpr int kDefaultRestingHeight = 152;

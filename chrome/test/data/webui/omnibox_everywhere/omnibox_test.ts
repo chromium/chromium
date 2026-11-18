@@ -3356,7 +3356,7 @@ suite('OmniboxEverywhereAppTest', () => {
     assertTrue(smallApp.hasAttribute('small-loomnibox'));
     const mv = smallApp.shadowRoot.querySelector('cr-most-visited')!;
     assertTrue(!!mv);
-    assertEquals('4', mv.getAttribute('max-tiles'));
+    assertEquals('3', mv.getAttribute('max-tiles'));
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
@@ -3399,14 +3399,14 @@ suite('OmniboxEverywhereAppTest', () => {
         await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
-        assertEquals('4', mv.getAttribute('max-tiles'));
+        assertEquals('3', mv.getAttribute('max-tiles'));
 
         // Focus window (active state) keeps small-loomnibox until the text
         // input is focused, then expands searchbox and MVT to 5 tiles.
         window.dispatchEvent(new Event('focus'));
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
-        assertEquals('4', mv.getAttribute('max-tiles'));
+        assertEquals('3', mv.getAttribute('max-tiles'));
 
         searchbox.$.input.inputElement.dispatchEvent(
             new FocusEvent('focusin', {bubbles: true, composed: true}));
@@ -3423,7 +3423,7 @@ suite('OmniboxEverywhereAppTest', () => {
         await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
-        assertEquals('4', mv.getAttribute('max-tiles'));
+        assertEquals('3', mv.getAttribute('max-tiles'));
       });
 
   test('dynamicSizing in ephemeral mode uses 5 max-tiles', async () => {
@@ -3446,7 +3446,7 @@ suite('OmniboxEverywhereAppTest', () => {
   });
 
   test(
-      'dynamicSizing with 600px width updates max-tiles between 4 and 5',
+      'dynamicSizing with 600px width updates max-tiles between 3 and 5',
       async () => {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         loadTimeData.overrideValues({
@@ -3467,19 +3467,19 @@ suite('OmniboxEverywhereAppTest', () => {
             'omnibox-everywhere-omnibox')!;
         assertTrue(!!searchbox);
 
-        // Resting state uses 4 tiles.
+        // Resting state uses 3 tiles.
         testEverywherePage.onDemoted();
         await testEverywherePage.$.flushForTesting();
         await microtasksFinished();
         assertTrue(dynamicApp600.hasAttribute('small-loomnibox'));
-        assertEquals('4', mv.getAttribute('max-tiles'));
+        assertEquals('3', mv.getAttribute('max-tiles'));
 
         // Active state in 600px variant expands to 5 tiles once the text input
         // is focused.
         window.dispatchEvent(new Event('focus'));
         await microtasksFinished();
         assertTrue(dynamicApp600.hasAttribute('small-loomnibox'));
-        assertEquals('4', mv.getAttribute('max-tiles'));
+        assertEquals('3', mv.getAttribute('max-tiles'));
 
         searchbox.$.input.inputElement.dispatchEvent(
             new FocusEvent('focusin', {bubbles: true, composed: true}));

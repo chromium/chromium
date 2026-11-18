@@ -124,7 +124,7 @@ extern const base::FeatureParam<bool> kShowComposeboxZps;
 extern const base::FeatureParam<bool> kShowContextMenu;
 // Controls showing most visited tiles in OmniboxEverywhere.
 extern const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedParam;
-// Controls whether small Loomnibox (480px width) is enabled.
+// Controls whether small Loomnibox (408px width) is enabled.
 extern const base::FeatureParam<bool> kOmniboxEverywhereSmallLoomniboxParam;
 // Controls whether dynamic sizing is enabled for OmniboxEverywhere.
 extern const base::FeatureParam<bool> kOmniboxEverywhereDynamicSizingParam;

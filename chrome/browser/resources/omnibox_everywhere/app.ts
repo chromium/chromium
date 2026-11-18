@@ -234,7 +234,7 @@ export class OmniboxEverywhereAppElement extends
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (this.dynamicSizing_) {
-      // In persistent mode, rest in the small 480px state (4 MVT tiles) until
+      // In persistent mode, rest in the small 408px state (3 MVT tiles) until
       // the text input is focused; then stay expanded (5 tiles) until the
       // browser demotes the widget (`onDemoted_`). Transient window blurs
       // (e.g. native menus) intentionally do not shrink it.
@@ -524,7 +524,7 @@ export class OmniboxEverywhereAppElement extends
   }
 
   protected getMaxMostVisitedTiles_(): number {
-    return this.smallLoomnibox_ ? 4 : 5;
+    return this.smallLoomnibox_ ? 3 : 5;
   }
 
   protected onMostVisitedCloseClick_() {
