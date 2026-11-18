@@ -4896,11 +4896,6 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   commit_params->initial_permission_statuses =
       frame_tree_node->current_frame_host()->GetCachedPermissionStatuses();
 
-  if (common_params->url.IsAboutSrcdoc()) {
-    // TODO(wjmaclean): initialize this in NavigationRequest's constructor
-    // instead.
-    commit_params->srcdoc_value = frame_tree_node->srcdoc_value();
-  }
   const bool is_browser_initiated = !initiator_frame_token;
   std::unique_ptr<NavigationRequest> request = NavigationRequest::Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
