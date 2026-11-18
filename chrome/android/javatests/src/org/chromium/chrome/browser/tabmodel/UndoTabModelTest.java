@@ -42,6 +42,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -549,23 +551,27 @@ public class UndoTabModelTest {
     }
 
     private Tab createTab(boolean isIncognito) {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Tab tab =
-                            mActivityTestRule
-                                    .getActivity()
-                                    .getTabCreator(isIncognito)
-                                    .createNewTab(
-                                            new LoadUrlParams("about:blank"),
-                                            TabLaunchType.FROM_CHROME_UI,
-                                            null);
-                    TabModelSelector selector =
-                            mActivityTestRule.getActivity().getTabModelSelector();
-                    selector.selectModel(isIncognito);
-                    TabModel model = selector.getModel(isIncognito);
-                    model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER);
-                    return tab;
-                });
+        Tab tab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Tab createdTab =
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getTabCreator(isIncognito)
+                                            .createNewTab(
+                                                    new LoadUrlParams("about:blank"),
+                                                    TabLaunchType.FROM_CHROME_UI,
+                                                    null);
+                            TabModelSelector selector =
+                                    mActivityTestRule.getActivity().getTabModelSelector();
+                            selector.selectModel(isIncognito);
+                            TabModel model = selector.getModel(isIncognito);
+                            model.setIndex(model.indexOf(createdTab), TabSelectionType.FROM_USER);
+                            return createdTab;
+                        });
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+        return tab;
     }
 
     private void selectTab(final TabModel model, final Tab tab) {
