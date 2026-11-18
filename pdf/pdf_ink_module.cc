@@ -19,6 +19,7 @@
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -1861,11 +1862,8 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
 
   base::flat_set<int> page_indices_to_update;
   for (auto& [page_index, page_ink_strokes] : strokes_) {
-    std::vector<InkStrokeId> page_ids;
-    page_ids.reserve(page_ink_strokes.size());
-    for (const auto& stroke : page_ink_strokes) {
-      page_ids.push_back(stroke.id);
-    }
+    std::vector<InkStrokeId> page_ids =
+        base::ToVector(page_ink_strokes, &FinishedStrokeState::id);
 
     std::vector<InkStrokeId> ids_to_apply_command;
     std::ranges::set_intersection(stroke_ids, page_ids,
@@ -1902,11 +1900,8 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
   }
 
   for (auto& [page_index, page_ink_shapes] : loaded_v2_shapes_) {
-    std::vector<InkModeledShapeId> page_ids;
-    page_ids.reserve(page_ink_shapes.size());
-    for (const auto& shape : page_ink_shapes) {
-      page_ids.push_back(shape.id);
-    }
+    std::vector<InkModeledShapeId> page_ids =
+        base::ToVector(page_ink_shapes, &LoadedV2ShapeState::id);
 
     std::vector<InkModeledShapeId> ids_to_apply_command;
     std::ranges::set_intersection(shape_ids, page_ids,

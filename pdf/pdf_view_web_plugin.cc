@@ -20,6 +20,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -2039,13 +2040,10 @@ void PdfViewWebPlugin::HandleGetThumbnailMessage(
 
 void PdfViewWebPlugin::HandleHighlightSearchTermsMessage(
     const base::DictValue& message) {
-  const auto* search_terms_value_list = message.FindList("searchTerms");
-  CHECK(search_terms_value_list);
-  std::vector<std::string_view> search_terms;
-  search_terms.reserve(search_terms_value_list->size());
-  for (const base::Value& term : *search_terms_value_list) {
-    search_terms.push_back(term.GetString());
-  }
+  std::vector<std::string_view> search_terms = base::ToVector(
+      *message.FindList("searchTerms"), [](const base::Value& term) {
+        return std::string_view(term.GetString());
+      });
   if (engine_->FindAndHighlightSearchTerms(search_terms)) {
     engine_->ScrollToFirstSearchResult(base::checked_cast<uint32_t>(
         message.FindInt("startPageIndex").value()));
@@ -2054,12 +2052,10 @@ void PdfViewWebPlugin::HandleHighlightSearchTermsMessage(
 
 void PdfViewWebPlugin::HandleHighlightTextFragmentsMessage(
     const base::DictValue& message) {
-  const auto* text_fragment_value_list = message.FindList("textFragments");
-  std::vector<std::string_view> text_fragments;
-  text_fragments.reserve(text_fragment_value_list->size());
-  for (const base::Value& fragment : *text_fragment_value_list) {
-    text_fragments.push_back(fragment.GetString());
-  }
+  std::vector<std::string_view> text_fragments = base::ToVector(
+      *message.FindList("textFragments"), [](const base::Value& fragment) {
+        return std::string_view(fragment.GetString());
+      });
   if (engine_->FindAndHighlightTextFragments(text_fragments)) {
     engine_->ScrollToFirstTextFragment(/*force_smooth_scroll=*/false);
   }

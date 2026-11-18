@@ -2786,14 +2786,12 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         if (only_visible && !stroke.should_draw) {
           continue;
         }
-        const ink::StrokeInputBatch& input_batch = stroke.stroke.GetInputs();
-        StrokeInputPoints stroke_points;
-        stroke_points.reserve(input_batch.Size());
-        for (ink::StrokeInput stroke_input : input_batch) {
-          stroke_points.emplace_back(stroke_input.position.x,
-                                     stroke_input.position.y);
-        }
-        all_strokes_points[page_index].push_back(std::move(stroke_points));
+        all_strokes_points[page_index].push_back(
+            base::ToVector(stroke.stroke.GetInputs(),
+                           [](const ink::StrokeInput& stroke_input) {
+                             return gfx::PointF(stroke_input.position.x,
+                                                stroke_input.position.y);
+                           }));
       }
     }
     return all_strokes_points;
@@ -5208,12 +5206,10 @@ class PdfInkModuleTextHighlightTest : public PdfInkModuleUndoRedoTest {
       const gfx::Transform transform = GetEventToCanonicalTransform(
           client().GetOrientation(), client().GetPageContentsRect(page_index),
           client().GetZoom());
-      std::vector<PdfRect>& pdf_rects = pdf_selection_map[page_index];
-      pdf_rects.reserve(selection_rects.size());
-      for (const gfx::Rect& selection_rect : selection_rects) {
-        gfx::RectF mapped_rect = transform.MapRect(gfx::RectF(selection_rect));
-        pdf_rects.push_back(PdfRect(mapped_rect));
-      }
+      pdf_selection_map[page_index] = base::ToVector(
+          selection_rects, [&transform](const gfx::Rect& selection_rect) {
+            return PdfRect(transform.MapRect(gfx::RectF(selection_rect)));
+          });
     }
 
     ON_CALL(client(), GetSelectionRectMap())
