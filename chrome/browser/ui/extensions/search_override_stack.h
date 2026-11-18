@@ -61,8 +61,7 @@ std::optional<SearchOverrideStackInfo> GetSearchOverrideStackInfo(
     const ExtensionId& controlling_extension_id);
 
 // Records the stack histograms, once per `controlling_extension_id` per
-// session. The dialog re-shows on every search until the user decides, so
-// per-show samples would over-weight the users who keep deferring.
+// session.
 void RecordSearchOverrideStackMetricsOnce(
     Profile& profile,
     const ExtensionId& controlling_extension_id,

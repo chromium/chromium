@@ -702,12 +702,6 @@ GetSearchOverriddenParams(Profile* profile) {
             features::kHappinessTrackingSurveysForDesktopSEHijacking)) {
       params->hats_survey_trigger = kHatsSurveyTriggerSEHijacking;
     }
-    // The explicit choice dialog needs to be shown until a choice is made,
-    // so suppress the mechanism that limits the number of times the dialog is
-    // shown. This is Finch-controlled in case it's proven undesirable.
-    params->unlimited_shows =
-        extensions_features::kSearchEngineExplicitChoiceDialogUnlimitedShows
-            .Get();
 
     // Previous search engine before the extension overrode it.
     SettingsOverriddenDialogController::SettingOption& previous_setting =

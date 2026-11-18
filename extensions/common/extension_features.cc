@@ -283,12 +283,6 @@ BASE_FEATURE_PARAM(bool,
                    "escapable",
                    false);
 
-BASE_FEATURE_PARAM(bool,
-                   kSearchEngineExplicitChoiceDialogUnlimitedShows,
-                   &kSearchEngineExplicitChoiceDialog,
-                   "unlimited_shows",
-                   true);
-
 BASE_FEATURE(kSearchEngineUnconditionalDialog,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

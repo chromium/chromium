@@ -213,9 +213,7 @@ void ExtensionSettingsOverriddenDialog::OnDialogWillBeShown() {
   CHECK(ShouldShow(), base::NotFatalUntil::M162);
   show_time_ = base::TimeTicks::Now();
 
-  if (!params_.unlimited_shows) {
-    MarkShownFor(*profile_, params_.controlling_extension_id);
-  }
+  MarkShownFor(*profile_, params_.controlling_extension_id);
   // Extension state lives on the original profile; so does the dedupe.
   if (params_.search_override_stack) {
     extensions::RecordSearchOverrideStackMetricsOnce(
@@ -231,8 +229,7 @@ void ExtensionSettingsOverriddenDialog::HandleDialogResult(
       !HasAcknowledgedExtension(*profile_, params_.controlling_extension_id,
                                 params_.extension_acknowledged_preference_name),
       base::NotFatalUntil::M162);
-  CHECK(params_.unlimited_shows ||
-            HasShownFor(*profile_, params_.controlling_extension_id),
+  CHECK(HasShownFor(*profile_, params_.controlling_extension_id),
         base::NotFatalUntil::M162);
 
   // It's possible the extension was removed or disabled while the dialog was
