@@ -55,6 +55,7 @@ constexpr net::NetworkTrafficAnnotationTag
           data:
             "The extension id."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromewebstore.googleapis.com"
         }
         policy {
           cookies_allowed: NO

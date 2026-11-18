@@ -87,6 +87,7 @@ void BlocklistStateFetcher::SendRequest(const std::string& id) {
             "extensions are scanned."
           data: "The identifier of the installed extension."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://safebrowsing.google.com/safebrowsing/clientreport/crx-list-info"
           internal {
             contacts {
               owners: "//extensions/OWNERS"

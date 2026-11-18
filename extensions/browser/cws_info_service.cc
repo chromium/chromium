@@ -84,6 +84,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           "Ids of the currently installed extensions that update from the "
           "Chrome Web Store."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "chromewebstore.googleapis.com"
         last_reviewed: "2023-04-06"
         internal {
           contacts {

@@ -80,6 +80,7 @@ void ContentHashFetcher::Start(HashFetcherCallback hash_fetcher_callback) {
             "verification."
           data: "The extension id and extension version."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://clients2.google.com/service/update2/crx"
         }
         policy {
           cookies_allowed: NO

@@ -292,6 +292,7 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
             "RLZ library, which varies between different installs. This id is "
             "only used to verify the validity of the response."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "chromewebstore.googleapis.com"
           internal {
             contacts {
               owners: "//extensions/OWNERS"

@@ -562,6 +562,7 @@ void WebstoreInstaller::StartDownload(const ExtensionId& extension_id,
             "(Chrome vs Chromium), NaCl architecture, installation source (as "
             "an enum), and accepted crx formats."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://clients2.google.com/service/update2/crx"
           internal {
             contacts {
               owners: "//extensions/OWNERS"
