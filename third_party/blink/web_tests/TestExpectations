@@ -6430,8 +6430,6 @@ crbug.com/1455314 external/wpt/longtask-timing/longtask-in-childiframe-crossorig
 # Gardener 2023-06-16
 crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Failure Pass ]
 
-crbug.com/1455325 external/wpt/html/semantics/forms/form-submission-0/form-double-submit-requestsubmit.html [ Pass Timeout ]
-
 crbug.com/1455984 external/wpt/longtask-timing/longtask-attributes.html [ Failure Pass ]
 
 # Sheriff 2023-06-21
