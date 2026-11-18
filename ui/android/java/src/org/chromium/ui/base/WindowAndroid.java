@@ -171,8 +171,7 @@ public class WindowAndroid
     private final @Nullable LifetimeAssert mLifetimeAssert;
     private @Nullable IntentRequestTrackerImpl mIntentRequestTracker;
 
-    private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
-            KeyboardVisibilityDelegate.getInstance();
+    private @Nullable KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
     private @Nullable InsetObserver mInsetObserver;
 
@@ -1249,7 +1248,8 @@ public class WindowAndroid
         mUnownedUserDataHost.destroy();
         mApplicationBottomInsetSupplier.destroy();
 
-        if (KeyboardVisibilityDelegate.getInstance() == mKeyboardVisibilityDelegate) {
+        if (mKeyboardVisibilityDelegate != null
+                && KeyboardVisibilityDelegate.getInstance() == mKeyboardVisibilityDelegate) {
             KeyboardVisibilityDelegate.setInstance(new KeyboardVisibilityDelegate() {});
         }
 
@@ -1351,7 +1351,9 @@ public class WindowAndroid
      * @return a {@link KeyboardVisibilityDelegate} specific for this window.
      */
     public KeyboardVisibilityDelegate getKeyboardDelegate() {
-        return mKeyboardVisibilityDelegate;
+        return mKeyboardVisibilityDelegate != null
+                ? mKeyboardVisibilityDelegate
+                : KeyboardVisibilityDelegate.getInstance();
     }
 
     /**
