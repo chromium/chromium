@@ -24,6 +24,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
@@ -47,8 +48,14 @@ namespace mojo::core {
 
 namespace {
 
-// Kill switch.
+// IMPORTANT: Features used in this file must be registered with
+// base::FeatureList::SetEarlyAccessInstance in
+// chrome/app_shim/app_shim_controller.mm, because they can be checked early in
+// startup.
+
 BASE_FEATURE(kUseMachVouchers, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool, kSkipInvalidMachVouchers, &kUseMachVouchers, false);
 
 bool ShouldUseVouchers() {
   static bool enabled = base::FeatureList::IsEnabled(kUseMachVouchers);
@@ -759,10 +766,16 @@ class ChannelMac : public Channel,
 
     scoped_refptr<ipcz_driver::Envelope> envelope;
     if (ShouldUseVouchers()) {
-      envelope = base::MakeRefCounted<ipcz_driver::Envelope>(
-          base::apple::ScopedMachSendRight(header->msgh_voucher_port));
+      base::apple::ScopedMachSendRight voucher(header->msgh_voucher_port);
       header->msgh_voucher_port = MACH_PORT_NULL;
       header->msgh_bits &= ~MACH_MSGH_BITS_VOUCHER_MASK;
+
+      // If kSkipInvalidMachVouchers is enabled, only create an Envelope when a
+      // valid voucher is attached (not MACH_PORT_NULL or MACH_PORT_DEAD.)
+      if (!kSkipInvalidMachVouchers.Get() || MACH_PORT_VALID(voucher.get())) {
+        envelope =
+            base::MakeRefCounted<ipcz_driver::Envelope>(std::move(voucher));
+      }
     }
 
     base::ScopedMachMsgDestroy scoped_message(header);
