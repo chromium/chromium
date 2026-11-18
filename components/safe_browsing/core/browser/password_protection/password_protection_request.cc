@@ -466,6 +466,22 @@ void PasswordProtectionRequest::Finish(
                                    response->verdict_type());
     }
   }
+
+  // A CSD allowlist match means the site is trusted. Other outcomes without a
+  // response are not reported: a bool cannot tell a failed check from phishing.
+  if (otp_phishing_verdict_callback_ &&
+      (response || outcome == RequestOutcome::MATCHED_ALLOWLIST)) {
+    bool is_phishing =
+        response &&
+        (response->verdict_type() == LoginReputationClientResponse::PHISHING ||
+         response->verdict_type() ==
+             LoginReputationClientResponse::LOW_REPUTATION);
+    OtpPhishingVerdictCallback callback =
+        std::move(*otp_phishing_verdict_callback_);
+    otp_phishing_verdict_callback_.reset();
+    std::move(callback).Run(is_phishing);
+  }
+
   password_protection_service_->RequestFinished(this, outcome,
                                                 std::move(response));
 }

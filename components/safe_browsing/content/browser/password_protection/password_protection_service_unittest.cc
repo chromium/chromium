@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -208,14 +209,6 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
       PasswordProtectionRequest* request,
       RequestOutcome outcome,
       std::unique_ptr<LoginReputationClientResponse> response) override {
-    if (request->HasOtpPhishingVerdictCallback()) {
-      bool is_phishing =
-          response && (response->verdict_type() ==
-                           LoginReputationClientResponse::PHISHING ||
-                       response->verdict_type() ==
-                           LoginReputationClientResponse::LOW_REPUTATION);
-      request->TakeOtpPhishingVerdictCallback().Run(is_phishing);
-    }
     latest_request_ = request;
     latest_response_ = std::move(response);
     run_loop_.Quit();
@@ -1467,6 +1460,23 @@ TEST_P(PasswordProtectionServiceBaseTest, TestOtpRequestCallbackIsCalled) {
           [&](bool verdict) { callback_called = true; }));
   password_protection_service_->WaitForResponse();
   EXPECT_TRUE(callback_called);
+}
+
+TEST_P(PasswordProtectionServiceBaseTest, OtpRequestAllowlistMatchIsSafe) {
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  base::test::TestFuture<bool> verdict;
+  InitializeAndStartOtpRequest(
+      /*match_allowlist=*/true, /*timeout_in_ms=*/10000, web_contents.get(),
+      verdict.GetCallback());
+  EXPECT_FALSE(verdict.Get());
+}
+
+TEST_P(PasswordProtectionServiceBaseTest, OtpRequestCancelDoesNotRunCallback) {
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  InitializeAndStartOtpRequest(
+      /*match_allowlist=*/false, /*timeout_in_ms=*/10000, web_contents.get(),
+      base::BindOnce([](bool) { ADD_FAILURE(); }));
+  request_->Cancel(/*timed_out=*/false);
 }
 
 TEST_P(PasswordProtectionServiceBaseTest, TestTearDownWithPendingRequests) {
