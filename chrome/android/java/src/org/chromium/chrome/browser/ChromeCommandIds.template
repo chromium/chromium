@@ -62,6 +62,7 @@ public final class ChromeCommandIds {
     public static final int FOCUS_NEXT_PANE = IDC_FOCUS_NEXT_PANE;
     public static final int FOCUS_PREVIOUS_PANE = IDC_FOCUS_PREVIOUS_PANE;
     public static final int FOCUS_BOOKMARKS = IDC_FOCUS_BOOKMARKS;
+    public static final int FOCUS_WEB_CONTENTS_PANE = IDC_FOCUS_WEB_CONTENTS_PANE;
     public static final int OPEN_FILE = IDC_OPEN_FILE;
     public static final int DEV_TOOLS = IDC_DEV_TOOLS;
     public static final int DEV_TOOLS_CONSOLE = IDC_DEV_TOOLS_CONSOLE;

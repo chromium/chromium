@@ -256,6 +256,35 @@ public class KeyboardShortcutsUnitTest {
     }
 
     @Test
+    public void testFocusWebContentsPane_CtrlF6_DeferredInDispatchAndHandledInOnKeyDown() {
+        KeyEvent event = createKeyEvent(KeyEvent.KEYCODE_F6, KeyEvent.META_CTRL_ON);
+        doReturn(true)
+                .when(mController)
+                .onMenuOrKeyboardAction(eq(R.id.focus_web_contents_pane), eq(false));
+
+        assertNull(
+                KeyboardShortcuts.dispatchKeyEvent(
+                        event,
+                        /* uiInitialized= */ true,
+                        /* fullscreenManager= */ null,
+                        mController,
+                        ApplicationProvider.getApplicationContext()));
+        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+
+        assertFalse(
+                KeyboardShortcuts.onKeyDown(
+                        event,
+                        /* isCurrentTabVisible= */ false,
+                        /* tabSwitchingEnabled= */ true,
+                        mTabModelSelector,
+                        mController));
+        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+
+        assertTrue(onKeyDown(event));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.focus_web_contents_pane), eq(false));
+    }
+
+    @Test
     @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
     public void testGetShortcutText_RequiresAlphabeticKeyboard() {

@@ -171,6 +171,7 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.FOCUS_LOCATION:
             case ChromeCommandIds.FOCUS_SEARCH:
             case ChromeCommandIds.FOCUS_BOOKMARKS:
+            case ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE:
             case ChromeCommandIds.SHOW_BOOKMARK_MANAGER:
             case ChromeCommandIds.SHOW_DOWNLOADS:
             case ChromeCommandIds.CLEAR_BROWSING_DATA:
@@ -324,6 +325,8 @@ public class BrowserCommandDelegate {
                 return R.id.switch_keyboard_focus_row;
             case ChromeCommandIds.FOCUS_PREVIOUS_PANE:
                 return R.id.switch_keyboard_focus_row_reverse;
+            case ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE:
+                return R.id.focus_web_contents_pane;
             case ChromeCommandIds.FOCUS_BOOKMARKS:
                 return R.id.focus_bookmarks;
             case ChromeCommandIds.OPEN_FILE:

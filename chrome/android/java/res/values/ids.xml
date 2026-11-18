@@ -48,6 +48,7 @@ found in the LICENSE file.
     <item type="id" name="focus_bookmarks" />
     <item type="id" name="focus_toolbar" />
     <item type="id" name="focus_url_bar" />
+    <item type="id" name="focus_web_contents_pane" />
     <item type="id" name="open_home_page" />
     <item type="id" name="open_recently_closed_tab" />
     <item type="id" name="open_tab_strip_context_menu" />

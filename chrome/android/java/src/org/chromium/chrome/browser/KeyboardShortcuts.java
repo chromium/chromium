@@ -101,7 +101,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.QUIT_CHROME,
         KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX,
         KeyboardShortcutsSemanticMeaning.JUMP_TO_SEARCH,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE,
+        KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_WEB_CONTENTS_PANE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_DOWN,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_UP,
         KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_TOOLBAR,
@@ -185,7 +185,7 @@ public class KeyboardShortcuts {
         // Navigation controls.
         int JUMP_TO_OMNIBOX = 17;
         int JUMP_TO_SEARCH = 18;
-        int NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE = 19;
+        int KEYBOARD_FOCUS_WEB_CONTENTS_PANE = 19;
         int NOT_IMPLEMENTED_SCROLL_DOWN = 20;
         int NOT_IMPLEMENTED_SCROLL_UP = 21;
 
@@ -688,6 +688,9 @@ public class KeyboardShortcuts {
                 KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS_REVERSE,
                 new KeyCombo(KeyEvent.KEYCODE_F6, KeyEvent.META_SHIFT_ON));
         new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_WEB_CONTENTS_PANE,
+                new KeyCombo(KeyEvent.KEYCODE_F6, KeyEvent.META_CTRL_ON));
+        new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
                 new KeyCombo(KeyEvent.KEYCODE_F10, KeyEvent.META_SHIFT_ON));
         new KeyboardShortcutDefinition(
@@ -799,9 +802,6 @@ public class KeyboardShortcuts {
         // Unimplemented shortcuts.
         // TODO(crbug.com/402775002): Figure out what shortcut does TOGGLE_MULTITASK_MENU.
         new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE,
-                new KeyCombo(KeyEvent.KEYCODE_F6, KeyEvent.META_CTRL_ON));
-        new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_DOWN,
                 new KeyCombo(KeyEvent.KEYCODE_SPACE, NO_MODIFIER));
         new KeyboardShortcutDefinition(
@@ -912,6 +912,11 @@ public class KeyboardShortcuts {
                 break;
             case KeyEvent.KEYCODE_F6:
                 if (ChromeFeatureList.sAndroidUnifiedKeyboardShortcuts.isEnabled()) {
+                    break;
+                }
+                int metaState = KeyboardUtils.getMetaState(event);
+                // Ctrl+F6 is deferred to onKeyDown so the page can handle it first.
+                if (metaState != NO_MODIFIER && metaState != SHIFT) {
                     break;
                 }
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
@@ -1394,6 +1399,9 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS:
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.focus_bookmarks, /* fromMenu= */ false);
+                case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_WEB_CONTENTS_PANE:
+                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.focus_web_contents_pane, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.TOGGLE_MULTISELECT:
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.toggle_tab_strip_multiselect, /* fromMenu= */ false);

@@ -3331,6 +3331,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         } else if (id == R.id.switch_keyboard_focus_row_reverse) {
             mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ false);
             return true;
+        } else if (id == R.id.focus_web_contents_pane) {
+            mKeyboardFocusRowManager.focusWebContentsPane();
+            return true;
         } else if (id == R.id.open_tab_strip_context_menu) {
             return mVerticalTabsSideUiCoordinator != null
                     && mVerticalTabsSideUiCoordinator.openKeyboardFocusedContextMenu();

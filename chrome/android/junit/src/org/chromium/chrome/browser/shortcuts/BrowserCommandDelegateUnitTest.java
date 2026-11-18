@@ -238,4 +238,14 @@ public class BrowserCommandDelegateUnitTest {
         assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.SHOW_APP_MENU));
         assertTrue(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FIND));
     }
+
+    @Test
+    public void testFocusWebContentsPane() {
+        assertTrue(mTabbedDelegate.executeCommand(ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.focus_web_contents_pane), eq(false));
+
+        assertFalse(mCustomTabDelegate.isCommandEnabled(ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE));
+        mIsCurrentTabVisible = false;
+        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE));
+    }
 }

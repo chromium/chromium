@@ -144,6 +144,18 @@ import java.util.function.Supplier;
         @KeyboardFocusRow int oldKeyboardFocusRow = getKeyboardFocusRow();
         @KeyboardFocusRow
         int newKeyboardFocusRow = getNewKeyboardFocusRow(oldKeyboardFocusRow, forward);
+        setKeyboardFocusRow(oldKeyboardFocusRow, newKeyboardFocusRow);
+    }
+
+    /** Moves keyboard focus directly to the active tab's web contents pane. */
+    /* package */ void focusWebContentsPane() {
+        if (!canSwitchKeyboardFocusRow()) return;
+
+        setKeyboardFocusRow(getKeyboardFocusRow(), KeyboardFocusRow.NONE);
+    }
+
+    private void setKeyboardFocusRow(
+            @KeyboardFocusRow int oldKeyboardFocusRow, @KeyboardFocusRow int newKeyboardFocusRow) {
         if (oldKeyboardFocusRow == KeyboardFocusRow.OMNIBOX) {
             var toolbarManager = mToolbarManagerSupplier.get();
             if (toolbarManager != null) {

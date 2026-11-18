@@ -1757,7 +1757,7 @@ Unknown properties are collapsed to zero. -->
   <int value="16" label="Quit Chrome"/>
   <int value="17" label="Jump to omnibox"/>
   <int value="18" label="Jump to search"/>
-  <int value="19" label="Focus the next web contents pane (not implemented)"/>
+  <int value="19" label="Focus the next web contents pane"/>
   <int value="20" label="Scroll down (not implemented)"/>
   <int value="21" label="Scroll up (not implemented)"/>
   <int value="22" label="Place keyboard focus on the toolbar"/>

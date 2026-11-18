@@ -220,4 +220,35 @@ public class KeyboardFocusRowManagerUnitTest {
         mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ false);
         assertEquals(1, mCompositorViewHolder.mFocusOnFirstContentViewItemCount);
     }
+
+    @Test
+    public void testFocusWebContentsPane_fromOmnibox() {
+        when(mToolbarManager.isUrlBarFocused()).thenReturn(true);
+
+        mKeyboardFocusRowManager.focusWebContentsPane();
+
+        verify(mToolbarManager).endFuseboxInput();
+        assertEquals(1, mCompositorViewHolder.mFocusOnFirstContentViewItemCount);
+    }
+
+    @Test
+    public void testFocusWebContentsPane_fromAnotherRow() {
+        when(mStripLayoutHelperManager.containsKeyboardFocus()).thenReturn(true);
+
+        mKeyboardFocusRowManager.focusWebContentsPane();
+
+        verify(mToolbarManager, never()).endFuseboxInput();
+        assertEquals(1, mCompositorViewHolder.mFocusOnFirstContentViewItemCount);
+    }
+
+    @Test
+    public void testFocusWebContentsPane_noOpWhenCannotSwitch() {
+        when(mToolbarManager.isUrlBarFocused()).thenReturn(true);
+        when(mTabObscuringHandler.isToolbarObscured()).thenReturn(true);
+
+        mKeyboardFocusRowManager.focusWebContentsPane();
+
+        verify(mToolbarManager, never()).endFuseboxInput();
+        assertEquals(0, mCompositorViewHolder.mFocusOnFirstContentViewItemCount);
+    }
 }
