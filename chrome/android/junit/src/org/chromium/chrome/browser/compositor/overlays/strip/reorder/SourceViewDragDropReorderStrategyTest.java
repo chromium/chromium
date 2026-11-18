@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Collections;
 
@@ -529,7 +530,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         mInteractingGroupTitle.setIsDraggedOffStrip(true);
 
         // Call. Simulate failed drop.
-        when(mModel.containsTabGroup(GROUP_ID1)).thenReturn(true);
+        when(mModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(true);
         mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Verify restore.
@@ -599,7 +600,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         dragOutOfStrip();
         verifyDragOutOfStrip(mGroupStrategy, /* isDragCancelled= */ false);
 
-        when(mModel.containsTabGroup(GROUP_ID1)).thenReturn(true);
+        when(mModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(true);
 
         // Cancel drag and verify group is in strip
         mStrategy.stopReorderMode(mStripViews, mGroupTitles, /* isDragCancelled= */ true);

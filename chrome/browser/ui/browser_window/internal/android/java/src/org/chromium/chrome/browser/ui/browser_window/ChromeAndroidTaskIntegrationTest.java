@@ -1254,7 +1254,8 @@ public class ChromeAndroidTaskIntegrationTest {
         CriteriaHelper.pollUiThread(sourceActivity::isFinishing);
         TabModel destModel = destActivity.getTabModelSelector().getModel(/* incognito= */ true);
         CriteriaHelper.pollUiThread(() -> destModel.getTabById(tabId) != null);
-        CriteriaHelper.pollUiThread(() -> destModel.containsTabGroup(tabGroupId));
+        CriteriaHelper.pollUiThread(
+                () -> destModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId)));
         destActivity.finish();
     }
 

@@ -55,6 +55,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -1117,7 +1118,9 @@ public class TabCollectionTabModelImplTest {
                     assertNull(tab0.getTabGroupId());
                     assertNotNull(tab1.getTabGroupId());
                     assertEquals(groupId, tab1.getTabGroupId());
-                    assertTrue(mCollectionModel.containsTabGroup(groupId));
+                    assertTrue(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(groupId)));
                     assertEquals(1, mCollectionModel.getTabsInGroup(groupId).size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
@@ -1273,7 +1276,9 @@ public class TabCollectionTabModelImplTest {
                     assertNull(tab0.getTabGroupId());
                     assertNotNull(tab1.getTabGroupId());
                     assertEquals(groupId, tab1.getTabGroupId());
-                    assertTrue(mCollectionModel.containsTabGroup(groupId));
+                    assertTrue(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(groupId)));
                     assertEquals(1, mCollectionModel.getTabsInGroup(groupId).size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
@@ -1894,7 +1899,9 @@ public class TabCollectionTabModelImplTest {
                                     .allowUndo(false)
                                     .build());
 
-                    assertFalse(mCollectionModel.containsTabGroup(groupId));
+                    assertFalse(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(groupId)));
                     assertEquals(
                             UNSET_TAB_GROUP_TITLE,
                             TabGroupVisualDataStore.getTabGroupTitle(groupId));
@@ -2192,7 +2199,9 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId2, tab0.getTabGroupId());
                     assertEquals(groupId2, tab1.getTabGroupId());
                     assertEquals(4, mCollectionModel.getTabsInGroup(groupId2).size());
-                    assertFalse(mCollectionModel.containsTabGroup(groupId1));
+                    assertFalse(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(groupId1)));
                     assertTabsInOrderAre(List.of(tab2, tab3, tab0, tab1));
                 });
 
@@ -2608,7 +2617,9 @@ public class TabCollectionTabModelImplTest {
                     assertTrue(mCollectionModel.detachedTabGroupExists(groupId1));
                     // The group is detached, but not closed yet. The containsTabGroup check is
                     // based on number of tabs so it will be false.
-                    assertFalse(mCollectionModel.containsTabGroup(groupId1));
+                    assertFalse(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(groupId1)));
                     assertTabsInOrderAre(List.of(tab2, tab3, tab0, tab1));
                 });
 
@@ -3120,7 +3131,9 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId1, tab1.getTabGroupId());
                     assertNull(tab2.getTabGroupId());
                     assertEquals(2, mCollectionModel.getTabsInGroup(groupId1).size());
-                    assertFalse(mCollectionModel.containsTabGroup(groupId2));
+                    assertFalse(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(groupId2)));
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
     }
@@ -4010,7 +4023,9 @@ public class TabCollectionTabModelImplTest {
                     assertTrue(hidingInWillClose.get());
                     assertTrue(mCollectionModel.isTabGroupHiding(tabGroupId));
                     assertTrue(mCollectionModel.detachedTabGroupExists(tabGroupId));
-                    assertFalse(mCollectionModel.containsTabGroup(tabGroupId));
+                    assertFalse(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
                     assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
                 });
@@ -4024,7 +4039,9 @@ public class TabCollectionTabModelImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertTrue(mCollectionModel.containsTabGroup(tabGroupId));
+                    assertTrue(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     assertEquals(tab1.getId(), mCollectionModel.getGroupLastShownTabId(tabGroupId));
                     assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
                     assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
@@ -4192,7 +4209,9 @@ public class TabCollectionTabModelImplTest {
                     assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
                     assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
                     assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
-                    assertTrue(mCollectionModel.containsTabGroup(tabGroupId));
+                    assertTrue(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
 
                     mCollectionModel.removeTabGroupObserver(groupObserver);
@@ -4275,10 +4294,14 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     // Invalid group id returns false.
                     Token invalidToken = new Token(-1L, -1L);
-                    assertFalse(mCollectionModel.containsTabGroup(invalidToken));
+                    assertFalse(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(invalidToken)));
 
                     // Valid group id returns true.
-                    assertTrue(mCollectionModel.containsTabGroup(tabGroupId));
+                    assertTrue(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                 });
     }
 
@@ -4325,7 +4348,9 @@ public class TabCollectionTabModelImplTest {
                     Token groupId = mCollectionModel.createTabGroup(tabs);
                     assertNotNull(groupId);
 
-                    assertTrue(mCollectionModel.containsTabGroup(groupId));
+                    assertTrue(
+                            mCollectionModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(groupId)));
                     assertEquals(groupId, tab0.getTabGroupId());
                     assertEquals(groupId, tab1.getTabGroupId());
 

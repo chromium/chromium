@@ -822,7 +822,7 @@ public class TabGridDialogMediator
         if (mCurrentTabGroupId != null) {
             TabModel tabModel = mCurrentTabModelSupplier.get();
             assumeNonNull(tabModel);
-            if (tabModel.containsTabGroup(mCurrentTabGroupId)) {
+            if (tabModel.containsTabGroup(TabGroupId.fromOptionalToken(mCurrentTabGroupId))) {
                 tabModel.setTabGroupColor(mCurrentTabGroupId, selectedColor);
             }
         }
@@ -1307,7 +1307,7 @@ public class TabGridDialogMediator
 
         TabModel tabModel = mCurrentTabModelSupplier.get();
         assumeNonNull(tabModel);
-        if (!tabModel.containsTabGroup(mCurrentTabGroupId)) return;
+        if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(mCurrentTabGroupId))) return;
         assumeNonNull(mCurrentTabGroupId);
 
         int tabsCount = getTabCountForGroup(mCurrentTabGroupId);

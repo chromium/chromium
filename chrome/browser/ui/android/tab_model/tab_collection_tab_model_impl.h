@@ -82,7 +82,7 @@ class TabCollectionTabModelImpl {
   int GetTabCountForGroup(const tab_groups::TabGroupId& tab_group_id) const;
 
   // Returns whether a tab group with tabs exists.
-  bool TabGroupExists(const base::Token& tab_group_id) const;
+  bool TabGroupExists(const tab_groups::TabGroupId& tab_group_id) const;
 
   // Returns the number of individual tabs and tab groups.
   int GetIndividualTabAndGroupCount() const;

@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,8 @@ public class TabGroupTitleUtilsUnitTest {
     @Test
     public void testGetDisplayableTitle_Explicit() {
         String title = "t1";
-        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(title);
         assertEquals(
                 title, TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, TAB_GROUP_ID));
@@ -87,7 +89,8 @@ public class TabGroupTitleUtilsUnitTest {
     @Test
     public void testGetDisplayableTitle_Fallback() {
         int tabCount = 4567;
-        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
 
         List<Tab> tabs = new ArrayList<>();
@@ -104,7 +107,8 @@ public class TabGroupTitleUtilsUnitTest {
 
     @Test
     public void testGetDisplayableTitle_FallbackNoClosingTabs() {
-        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(UNSET_TAB_GROUP_TITLE);
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
@@ -120,7 +124,8 @@ public class TabGroupTitleUtilsUnitTest {
 
     @Test
     public void testGetDisplayableTitle_FallbackSomeClosingTabs() {
-        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(UNSET_TAB_GROUP_TITLE);
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
@@ -139,7 +144,8 @@ public class TabGroupTitleUtilsUnitTest {
 
     @Test
     public void testGetDisplayableTitle_FallbackAllClosingTabs() {
-        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(UNSET_TAB_GROUP_TITLE);
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
@@ -156,7 +162,8 @@ public class TabGroupTitleUtilsUnitTest {
 
     @Test
     public void testGetDisplayableTitle_FallbackNoTabs() {
-        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(UNSET_TAB_GROUP_TITLE);
         List<Tab> tabs = new ArrayList<>();
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
@@ -168,7 +175,8 @@ public class TabGroupTitleUtilsUnitTest {
 
     @Test
     public void testGetDisplayableTitle_InvalidGroupId() {
-        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(false);
 
         assertTrue(
                 TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, TAB_GROUP_ID)

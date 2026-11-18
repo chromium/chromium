@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -394,7 +395,7 @@ public class GroupWindowChecker {
         if (mModelByGroupId.containsKey(groupId)) {
             return mModelByGroupId.get(groupId) == mCurrentTabModel;
         }
-        return mCurrentTabModel.containsTabGroup(groupId);
+        return mCurrentTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId));
     }
 
     private boolean isGroupFullyClosing(Token groupId) {
@@ -457,6 +458,6 @@ public class GroupWindowChecker {
             return false;
         }
         TabModel fallbackOtherModel = selector.getModel(mCurrentTabModel.isIncognito());
-        return !fallbackOtherModel.containsTabGroup(groupId);
+        return !fallbackOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId));
     }
 }

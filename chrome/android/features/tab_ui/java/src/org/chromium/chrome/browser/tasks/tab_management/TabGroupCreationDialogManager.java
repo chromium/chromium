@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGr
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationFinalSelections;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -41,7 +42,7 @@ public class TabGroupCreationDialogManager {
 
         private TabGroupCreationDialogController(@Nullable Token tabGroupId, TabModel tabModel) {
             assert tabGroupId != null;
-            assert tabModel.containsTabGroup(tabGroupId);
+            assert tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId));
 
             mTabGroupId = tabGroupId;
             mTabModel = tabModel;
@@ -63,7 +64,8 @@ public class TabGroupCreationDialogManager {
 
         @Override
         public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-            boolean stillExists = mTabModel.containsTabGroup(mTabGroupId);
+            boolean stillExists =
+                    mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(mTabGroupId));
 
             final @TabGroupColorId int defaultColorId =
                     mTabGroupVisualDataDialogManager.getDefaultColorId();

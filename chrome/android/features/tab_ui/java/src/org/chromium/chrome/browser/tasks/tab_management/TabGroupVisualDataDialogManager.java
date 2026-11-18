@@ -48,6 +48,7 @@ import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -138,7 +139,7 @@ public class TabGroupVisualDataDialogManager {
         }
 
         assert tabGroupId != null;
-        assert tabModel.containsTabGroup(tabGroupId);
+        assert tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId));
 
         mCustomView =
                 LayoutInflater.from(mContext).inflate(R.layout.tab_group_visual_data_dialog, null);

@@ -22,6 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 /** Unit tests for {@link TabWindowManagerUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,7 +39,7 @@ public class TabWindowManagerUtilsUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(tabGroupId)).thenReturn(1);
         when(mTabWindowManager.getTabModelSelectorById(1)).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.containsTabGroup(tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
         when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn("Test Title");
 
         String title =

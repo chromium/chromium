@@ -394,7 +394,7 @@ public class TabGroupUiUtils {
                 : "isGroupActiveInAnotherWindow is only meant for non-incognito groups.";
 
         TabModel otherModel = selector.getModel(/* incognito= */ false);
-        return otherModel.containsTabGroup(groupId);
+        return otherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId));
     }
 
     static boolean isGroupClosingInAnotherWindow(Token groupId) {
@@ -528,12 +528,13 @@ public class TabGroupUiUtils {
             Token groupId = savedGroup.localId.tabGroupId;
             commitClosingTabsForGroup(tabModel, groupId);
             TabModel targetModel = getTabModelForGroup(tabModel, groupId);
-            if (targetModel != tabModel && targetModel.containsTabGroup(groupId)) {
+            if (targetModel != tabModel
+                    && targetModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))) {
                 return openTabGroupInOtherWindow(context, groupId, syncId)
                         ? OpenTabGroupResult.ANOTHER_WINDOW
                         : OpenTabGroupResult.NONE;
             }
-            if (!targetModel.containsTabGroup(groupId)) {
+            if (!targetModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))) {
                 savedGroup = syncService.getGroup(syncId);
                 if (savedGroup != null && savedGroup.localId != null) {
                     syncService.removeLocalTabGroupMapping(
@@ -644,7 +645,7 @@ public class TabGroupUiUtils {
             return;
         }
 
-        if (sourceTabModel.containsTabGroup(destinationGroupId)) {
+        if (sourceTabModel.containsTabGroup(TabGroupId.fromOptionalToken(destinationGroupId))) {
             mergeTabsToCurrentWindowGroup(
                     sourceTabModel, tabs, destinationGroupId, tabMovedCallback);
             return;

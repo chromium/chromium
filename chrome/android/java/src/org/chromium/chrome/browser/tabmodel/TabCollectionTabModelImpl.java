@@ -215,7 +215,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             }
 
             Token tabGroupId = tab.getTabGroupId();
-            boolean restoredTabGroup = tabGroupId != null && !containsTabGroup(tabGroupId);
+            boolean restoredTabGroup =
+                    tabGroupId != null
+                            && !containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId));
             int finalIndex =
                     TabCollectionTabModelImplJni.get()
                             .addTabRecursive(
@@ -1331,7 +1333,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public boolean containsTabGroup(@Nullable Token tabGroupId) {
+    public boolean containsTabGroup(@Nullable TabGroupId tabGroupId) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null || tabGroupId == null) return false;
         return TabCollectionTabModelImplJni.get()
@@ -1379,7 +1381,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null
                 || tabGroupId == null
-                || !containsTabGroup(tabGroupId)) {
+                || !containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
             return Tab.INVALID_TAB_ID;
         }
         Tab tab = getLastShownTabForGroup(tabGroupId);
@@ -1479,7 +1481,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             Token destinationGroupId,
             @Nullable Integer indexInGroup,
             @TabGroupMergeNotificationType int notify) {
-        if (tabs.isEmpty() || !containsTabGroup(destinationGroupId)) return;
+        if (tabs.isEmpty() || !containsTabGroup(TabGroupId.fromOptionalToken(destinationGroupId))) {
+            return;
+        }
 
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
             mergeListOfTabsToGroupInternal(
@@ -1587,7 +1591,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     public void deleteTabGroupTitle(Token tabGroupId) {
-        if (!containsTabGroup(tabGroupId)) return;
+        if (!containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return;
         setTabGroupTitle(tabGroupId, UNSET_TAB_GROUP_TITLE);
     }
 
@@ -1710,7 +1714,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         assert !(tabGroupId != null && tab.getIsPinned())
                 : "Pinned and grouped states are mutually exclusive.";
 
-        boolean createNewGroup = tabGroupId != null && !containsTabGroup(tabGroupId);
+        boolean createNewGroup =
+                tabGroupId != null && !containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (createNewGroup) {
             assumeNonNull(tabGroupId);
             TabGroupVisualDataStore.migrateToTokenKeyedStorage(tab.getRootId(), tabGroupId);
@@ -1781,7 +1786,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             UndoGroupTabData undoTabData = mergedTabs.get(i);
             Tab mergedTab = undoTabData.tab;
             Token originalTabGroupId = undoTabData.originalTabGroupId;
-            boolean wasSingleOrRestoredGroup = !containsTabGroup(originalTabGroupId);
+            boolean wasSingleOrRestoredGroup =
+                    !containsTabGroup(TabGroupId.fromOptionalToken(originalTabGroupId));
             moveTabInternal(
                     mergedTab,
                     indexOf(mergedTab),
@@ -2721,7 +2727,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
      * tab in the group.
      */
     private boolean wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(Tab tab, Token oldTabGroupId) {
-        boolean isLastTabInGroup = !containsTabGroup(oldTabGroupId);
+        boolean isLastTabInGroup = !containsTabGroup(TabGroupId.fromOptionalToken(oldTabGroupId));
         for (TabGroupObserver observer : mTabGroupObservers) {
             observer.didMoveTabOutOfGroup(tab, oldTabGroupId);
         }
@@ -2909,7 +2915,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         boolean tabGroupExists(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId);
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
         int getIndividualTabAndGroupCount(JniPtr<NativeTabCollectionTabModelImpl> self);
 

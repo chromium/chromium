@@ -25,6 +25,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -175,7 +176,7 @@ public class RemoteTabGroupMutationHelper {
         Token tabGroupId = groupId.tabGroupId;
         String title = new String();
         @TabGroupColorId int color = TabGroupColorId.GREY;
-        if (mTabModel.containsTabGroup(tabGroupId)) {
+        if (mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
             String tmpTitle = mTabModel.getTabGroupTitle(tabGroupId);
             if (tmpTitle != null) {
                 title = tmpTitle;
@@ -396,7 +397,8 @@ public class RemoteTabGroupMutationHelper {
                 PostTask.postTask(
                         TaskTraits.UI_DEFAULT,
                         () -> {
-                            if (!mTabModel.containsTabGroup(localTabGroupId.tabGroupId)) {
+                            if (!mTabModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(localTabGroupId.tabGroupId))) {
                                 return;
                             }
                             @Nullable SavedTabGroup savedGroup =

@@ -222,10 +222,10 @@ public class TabCollectionsTabModelObserversUnitTest {
         when(mTabCollectionTabModelImplJni.tabGroupExists(any(), any()))
                 .thenAnswer(
                         invocation -> {
-                            Token groupId = invocation.getArgument(1);
+                            TabGroupId groupId = invocation.getArgument(1);
                             if (groupId == null) return false;
                             for (Tab t : mTabs) {
-                                if (groupId.equals(t.getTabGroupId())) {
+                                if (groupId.getToken().equals(t.getTabGroupId())) {
                                     return true;
                                 }
                             }

@@ -797,7 +797,7 @@ void TabModelJniBridge::UnpinTab(tabs::TabHandle tab) {
 bool TabModelJniBridge::ContainsTabGroup(tab_groups::TabGroupId group_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  return Java_TabModelJniBridge_containsTabGroup(env, jobj, group_id.token());
+  return Java_TabModelJniBridge_containsTabGroup(env, jobj, group_id);
 }
 
 std::vector<tab_groups::TabGroupId> TabModelJniBridge::ListTabGroups() {

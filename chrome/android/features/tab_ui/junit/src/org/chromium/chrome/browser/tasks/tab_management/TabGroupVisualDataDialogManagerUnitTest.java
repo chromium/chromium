@@ -52,6 +52,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -104,7 +105,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
 
-        doReturn(true).when(mTabModel).containsTabGroup(TAB_GROUP_ID);
+        doReturn(true).when(mTabModel).containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID));
         doReturn(UNSET_TAB_GROUP_TITLE).when(mTabModel).getTabGroupTitle(TAB_GROUP_ID);
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);

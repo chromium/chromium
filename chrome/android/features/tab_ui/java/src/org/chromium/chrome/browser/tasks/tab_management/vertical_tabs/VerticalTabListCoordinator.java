@@ -2120,7 +2120,9 @@ public class VerticalTabListCoordinator {
         mRecyclerView.post(
                 () -> {
                     TabModel currentModel = mTabModelSelector.getCurrentModel();
-                    if (currentModel == null || !currentModel.containsTabGroup(tabGroupId)) {
+                    if (currentModel == null
+                            || !currentModel.containsTabGroup(
+                                    TabGroupId.fromOptionalToken(tabGroupId))) {
                         return;
                     }
 
@@ -2140,7 +2142,8 @@ public class VerticalTabListCoordinator {
         if (tabGroupId == null) return false;
 
         TabModel currentModel = mTabModelSelector.getCurrentModel();
-        if (currentModel == null || !currentModel.containsTabGroup(tabGroupId)) {
+        if (currentModel == null
+                || !currentModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
             return false;
         }
         List<Tab> tabsInGroup = currentModel.getTabsInGroup(tabGroupId);

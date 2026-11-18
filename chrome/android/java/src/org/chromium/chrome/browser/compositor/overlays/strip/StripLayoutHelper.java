@@ -287,7 +287,8 @@ public class StripLayoutHelper
                     boolean removedHiddenLastTabInGroup =
                             oldTabGroupId.equals(groupIdToHide)
                                     && mModel != null
-                                    && !mModel.containsTabGroup(oldTabGroupId);
+                                    && !mModel.containsTabGroup(
+                                            TabGroupId.fromOptionalToken(oldTabGroupId));
 
                     // Skip if the rebuild will be handled elsewhere after reaching a "proper" tab
                     // state, such as confirming the group deletion.
@@ -4302,7 +4303,8 @@ public class StripLayoutHelper
     private void updateGroupTextAndSharedState(@Nullable StripLayoutGroupTitle groupTitle) {
         if (groupTitle == null
                 || mModel == null
-                || !mModel.containsTabGroup(groupTitle.getTabGroupId())) {
+                || !mModel.containsTabGroup(
+                        TabGroupId.fromOptionalToken(groupTitle.getTabGroupId()))) {
             return;
         }
         updateGroupTextAndSharedStateUnchecked(groupTitle);
@@ -4496,7 +4498,8 @@ public class StripLayoutHelper
         // If we have tab group to hide due to running tab group delete dialog, then skip the tab
         // group when rebuilding StripViews.
         if (mGroupIdToHideSupplier.get() != null) {
-            if (mModel.containsTabGroup(mGroupIdToHideSupplier.get())) {
+            if (mModel.containsTabGroup(
+                    TabGroupId.fromOptionalToken(mGroupIdToHideSupplier.get()))) {
                 if (numGroups > 0) numGroups--;
             } else {
                 assert false : "Rebuilding tab strip with a nonexistent group ID to hide.";

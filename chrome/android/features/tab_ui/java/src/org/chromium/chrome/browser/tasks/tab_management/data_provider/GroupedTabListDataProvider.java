@@ -392,7 +392,7 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
     private @Nullable TabModel getTabModelIfGroupExists(Token tabGroupId) {
         TabModel model = getTabModelIfTabStateInitialized();
         if (model == null
-                || !model.containsTabGroup(tabGroupId)
+                || !model.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))
                 || mRemovingTabGroupIds.contains(tabGroupId)) {
             return null;
         }

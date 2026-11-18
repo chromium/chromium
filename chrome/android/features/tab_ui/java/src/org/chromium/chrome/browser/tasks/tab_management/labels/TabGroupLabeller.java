@@ -17,6 +17,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class TabGroupLabeller extends TabObjectLabeller<Token> {
                 && !tabModel.isOffTheRecord()
                 && message.type == PersistentNotificationType.DIRTY_TAB_GROUP
                 && tabGroupId != null
-                && tabModel.containsTabGroup(tabGroupId);
+                && tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId));
     }
 
     @Override

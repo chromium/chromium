@@ -29,6 +29,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
@@ -59,6 +60,7 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
@@ -120,8 +122,10 @@ public class TabModelRemoverUnitTest {
         mTabModel.setActive(true);
 
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
-        when(mTabModel.containsTabGroup(TAB_GROUP_1.tabGroupId)).thenReturn(true);
-        when(mTabModel.containsTabGroup(TAB_GROUP_2.tabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_1.tabGroupId)))
+                .thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_2.tabGroupId)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(TAB_GROUP_TITLE);
 
         doAnswer(

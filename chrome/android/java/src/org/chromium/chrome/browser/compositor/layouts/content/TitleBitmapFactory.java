@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTit
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.util.StyleUtils;
 
 /** A factory that creates text and favicon bitmaps. */
@@ -214,7 +215,7 @@ public class TitleBitmapFactory {
      */
     public @Nullable Bitmap getGroupTitleBitmap(
             TabModel tabModel, Context context, Token groupId, String title) {
-        if (!tabModel.containsTabGroup(groupId)) return null;
+        if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))) return null;
         @TabGroupColorId int colorId = tabModel.getTabGroupColor(groupId);
         @ColorInt
         int color =

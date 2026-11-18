@@ -22,6 +22,7 @@ import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
 
@@ -45,7 +46,7 @@ public final class TabGroupSyncUtils {
      * @param localId The ID of the tab group.
      */
     public static boolean isInCurrentWindow(TabModel tabModel, LocalTabGroupId localId) {
-        return tabModel.containsTabGroup(localId.tabGroupId);
+        return tabModel.containsTabGroup(TabGroupId.fromOptionalToken(localId.tabGroupId));
     }
 
     private static boolean isInAnyWindow(LocalTabGroupId localId, List<TabModel> tabModelList) {

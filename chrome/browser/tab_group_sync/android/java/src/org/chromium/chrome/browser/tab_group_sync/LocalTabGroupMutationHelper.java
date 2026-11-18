@@ -29,6 +29,7 @@ import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -277,7 +278,7 @@ public class LocalTabGroupMutationHelper {
     public void closeTabGroup(LocalTabGroupId localGroupId, @ClosingSource int closingSource) {
         LogUtils.log(TAG, "closeTabGroup " + localGroupId);
         Token tabGroupId = localGroupId.tabGroupId;
-        assert mTabModel.containsTabGroup(tabGroupId);
+        assert mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId));
 
         SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
         boolean isCollaboration = group != null && !TextUtils.isEmpty(group.collaborationId);

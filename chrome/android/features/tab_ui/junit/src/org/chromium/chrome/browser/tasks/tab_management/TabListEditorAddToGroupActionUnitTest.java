@@ -53,6 +53,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
@@ -111,7 +112,8 @@ public class TabListEditorAddToGroupActionUnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_group_id"});
         when(mTabGroupSyncService.getGroup("sync_group_id")).thenReturn(savedGroup);
         when(mTabModel.getTabGroupCount()).thenReturn(1);
-        when(mTabModel.containsTabGroup(mTabGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(mTabGroupId)))
+                .thenReturn(true);
 
         mAction =
                 new TabListEditorAddToGroupAction(

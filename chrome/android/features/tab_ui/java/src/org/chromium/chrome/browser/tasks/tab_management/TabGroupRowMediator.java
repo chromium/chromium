@@ -44,6 +44,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Contains the logic to set the state of the model and react to actions. */
@@ -274,7 +275,8 @@ class TabGroupRowMediator {
             RecordUserAction.record("SyncedTabGroup.OpenExistingLocal");
         }
 
-        if (localGroupId == null || !mTabModel.containsTabGroup(localGroupId)) {
+        if (localGroupId == null
+                || !mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(localGroupId))) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.TabGroupSync.WindowStateOnFailedOpen", state, GroupWindowState.COUNT);
             return;

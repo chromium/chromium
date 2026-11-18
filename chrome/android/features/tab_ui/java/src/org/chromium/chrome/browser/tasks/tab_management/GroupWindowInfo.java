@@ -143,7 +143,9 @@ public class GroupWindowInfo {
         boolean hasLocalTabs = !localTabs.isEmpty();
         boolean existsLocally =
                 localGroupId != null
-                        && (hasLocalTabs || localTabModel.containsTabGroup(localGroupId));
+                        && (hasLocalTabs
+                                || localTabModel.containsTabGroup(
+                                        TabGroupId.fromOptionalToken(localGroupId)));
 
         int tabCount = resolveTabCount(localTabModel, localGroupId, localTabs, savedGroup);
         String title =
@@ -186,7 +188,7 @@ public class GroupWindowInfo {
         }
         if (localTabModel != null
                 && localGroupId != null
-                && localTabModel.containsTabGroup(localGroupId)) {
+                && localTabModel.containsTabGroup(TabGroupId.fromRawToken(localGroupId))) {
             int count = localTabModel.getTabCountForGroup(TabGroupId.fromRawToken(localGroupId));
             if (count > 0) {
                 return count;

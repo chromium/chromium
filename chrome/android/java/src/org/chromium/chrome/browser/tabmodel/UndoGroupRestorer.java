@@ -19,6 +19,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -194,7 +195,7 @@ final class UndoGroupRestorer {
                                                     : t.mClosedTab.indexInGroup)
                             .thenComparingInt(t -> tabModel.indexOf(t.mTab)));
 
-            if (tabModel.containsTabGroup(groupId)) {
+            if (tabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))) {
                 mergeIntoLiveGroup(
                         tabModel, groupId, restoredTabs, tabModel.getTabGroupCollapsed(groupId));
                 continue;
@@ -215,7 +216,7 @@ final class UndoGroupRestorer {
             LocalTabGroupId localId = savedGroup.localId;
             if (localId != null) {
                 Token localGroupId = localId.tabGroupId;
-                if (tabModel.containsTabGroup(localGroupId)) {
+                if (tabModel.containsTabGroup(TabGroupId.fromOptionalToken(localGroupId))) {
                     mergeIntoLiveGroup(
                             tabModel,
                             localGroupId,
@@ -313,7 +314,9 @@ final class UndoGroupRestorer {
         if (localId == null) return null;
 
         Token localGroupId = localId.tabGroupId;
-        return tabModel.containsTabGroup(localGroupId) ? localGroupId : null;
+        return tabModel.containsTabGroup(TabGroupId.fromOptionalToken(localGroupId))
+                ? localGroupId
+                : null;
     }
 
     private static void mergeIntoLiveGroup(

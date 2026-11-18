@@ -273,7 +273,10 @@ public class TabStripGroupContextMenuTest {
         // Assert tab group is closed and undo option showed.
         assertFalse(
                 "Tab group should be closed",
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.containsTabGroup(mTabGroupId)));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.containsTabGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId))));
         assertEquals("Expected only one tab to be present", 1, getTabCountOnUiThread(tabModel));
         Tab firstTab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(0));
         assertEquals(
@@ -318,7 +321,10 @@ public class TabStripGroupContextMenuTest {
         // Assert tab group is closed and undo option not showed.
         assertFalse(
                 "Tab group should be closed",
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.containsTabGroup(mTabGroupId)));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.containsTabGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId))));
         assertEquals("Expected only one tab to be present", 1, getTabCountOnUiThread(tabModel));
         Tab firstTab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(0));
         assertEquals(
@@ -363,7 +369,10 @@ public class TabStripGroupContextMenuTest {
         onView(withText(R.string.delete_tab_group_action)).inRoot(isDialog()).perform(click());
         assertFalse(
                 "Tab group should be deleted",
-                ThreadUtils.runOnUiThreadBlocking(() -> tabModel.containsTabGroup(mTabGroupId)));
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                tabModel.containsTabGroup(
+                                        TabGroupId.fromOptionalToken(mTabGroupId))));
         assertEquals("Expected only one tab to be present", 1, getTabCountOnUiThread(tabModel));
         Tab firstTab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(0));
         assertEquals(

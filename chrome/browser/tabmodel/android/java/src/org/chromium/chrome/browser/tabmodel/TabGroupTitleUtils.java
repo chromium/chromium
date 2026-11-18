@@ -10,6 +10,7 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Objects;
 
@@ -64,7 +65,8 @@ public class TabGroupTitleUtils {
      */
     public static String getDisplayableTitle(
             Context context, TabModel tabModel, @Nullable Token tabGroupId) {
-        if (tabGroupId == null || !tabModel.containsTabGroup(tabGroupId)) {
+        if (tabGroupId == null
+                || !tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
             return getDefaultTitle(context, /* numRelatedTabs= */ 0);
         }
         String explicitTitle = tabModel.getTabGroupTitle(tabGroupId);

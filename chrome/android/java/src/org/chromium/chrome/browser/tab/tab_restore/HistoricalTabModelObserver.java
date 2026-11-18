@@ -32,6 +32,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -251,7 +252,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         @Nullable Token tabGroupId = entry.getTabGroupId();
         if (tabGroupId == null) return false;
 
-        boolean groupExists = mTabModel.containsTabGroup(tabGroupId);
+        boolean groupExists = mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (groupExists) {
             List<Tab> tabsInGroup = mTabModel.getTabsInGroup(tabGroupId);
             if (tabsInGroup.size() != entry.getTabs().size()
@@ -275,7 +276,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         @Nullable Token tabGroupId = tab.getTabGroupId();
         if (tabGroupId == null) return false;
 
-        if (mTabModel.containsTabGroup(tabGroupId)) {
+        if (mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
             // Case: Group information not lost yet (non-undoable closure). Rely on whether the tab
             // is the only tab in its tab group.
             List<Tab> tabs = mTabModel.getTabsInGroup(tabGroupId);

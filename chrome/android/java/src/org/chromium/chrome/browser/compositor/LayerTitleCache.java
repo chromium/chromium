@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.BitmapDynamicResource;
@@ -244,7 +245,7 @@ public class LayerTitleCache {
     @CalledByNative
     private void buildUpdatedGroupTitle(Token groupId, boolean incognito) {
         TabModel tabModel = mTabModelSelector.getModel(incognito);
-        if (!tabModel.containsTabGroup(groupId)) return;
+        if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))) return;
 
         String titleString = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, groupId);
         getUpdatedGroupTitle(groupId, titleString, incognito);

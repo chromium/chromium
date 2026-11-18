@@ -159,10 +159,9 @@ int TabCollectionTabModelImpl::GetTabCountForGroup(
 }
 
 bool TabCollectionTabModelImpl::TabGroupExists(
-    const base::Token& tab_group_id) const {
+    const TabGroupId& tab_group_id) const {
   TabGroupTabCollection* group_collection =
-      tab_strip_collection_->GetTabGroupCollection(
-          TabGroupId::FromRawToken(tab_group_id));
+      tab_strip_collection_->GetTabGroupCollection(tab_group_id);
   return group_collection;
 }
 

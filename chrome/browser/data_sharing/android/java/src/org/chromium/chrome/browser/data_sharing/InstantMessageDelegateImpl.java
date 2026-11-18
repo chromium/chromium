@@ -54,6 +54,7 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -274,7 +275,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
         for (AttachedWindowInfo info : mAttachList) {
             TabModel tabModel = info.tabModel;
-            if (!tabModel.containsTabGroup(tabGroupId)) continue;
+            if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) continue;
 
             return info;
         }

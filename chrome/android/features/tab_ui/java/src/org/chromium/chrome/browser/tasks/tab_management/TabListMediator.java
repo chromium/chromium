@@ -1317,7 +1317,7 @@ public class TabListMediator implements TabListNotificationHandler {
      */
     public void toggleTabGroupExpansion(Token tabGroupId) {
         TabModel tabModel = getCurrentTabModelChecked();
-        if (!tabModel.containsTabGroup(tabGroupId)) return;
+        if (!tabModel.containsTabGroup(TabGroupId.fromRawToken(tabGroupId))) return;
 
         boolean isCollapsed = tabModel.getTabGroupCollapsed(tabGroupId);
         boolean newCollapsedState = !isCollapsed;
@@ -3275,7 +3275,7 @@ public class TabListMediator implements TabListNotificationHandler {
             @Nullable String collaborationId,
             @Nullable ListViewTouchTracker listViewTouchTracker) {
         TabModel tabModel = getCurrentTabModelChecked();
-        if (!tabModel.containsTabGroup(tabGroupId)) return;
+        if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return;
 
         EitherGroupId eitherId = EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
 
@@ -3369,7 +3369,9 @@ public class TabListMediator implements TabListNotificationHandler {
                     @Override
                     public void onDismiss(PropertyModel model, int dismissalCause) {
                         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-                            boolean stillExists = tabModel.containsTabGroup(tabGroupId);
+                            boolean stillExists =
+                                    tabModel.containsTabGroup(
+                                            TabGroupId.fromOptionalToken(tabGroupId));
                             @TabGroupColorId
                             int oldColorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
                             @TabGroupColorId
@@ -3551,7 +3553,8 @@ public class TabListMediator implements TabListNotificationHandler {
 
             MultiThumbnailMetadata metadata;
             Token tabGroupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
-            if (tabGroupId != null && tabModel.containsTabGroup(tabGroupId)) {
+            if (tabGroupId != null
+                    && tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
                 @TabGroupColorId
                 int tabGroupColor = tabModel.getTabGroupColorWithFallback(tabGroupId);
                 List<Integer> actingTabIds = new ArrayList<>();

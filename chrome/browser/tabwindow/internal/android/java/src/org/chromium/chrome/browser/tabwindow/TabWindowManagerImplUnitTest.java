@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -1268,7 +1269,7 @@ public class TabWindowManagerImplUnitTest {
                 .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
-        when(mTabModel.containsTabGroup(GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID))).thenReturn(true);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         TabWindowManagerImpl tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
 
@@ -1319,7 +1320,7 @@ public class TabWindowManagerImplUnitTest {
                 .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
-        when(mTabModel.containsTabGroup(GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID))).thenReturn(true);
         TabWindowManagerImpl tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
         tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
         assertEquals(1, tabWindowManager.findWindowIdForTabGroup(GROUP_ID));
@@ -1333,8 +1334,9 @@ public class TabWindowManagerImplUnitTest {
                 .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel, mIncognitoTabModel));
-        when(mTabModel.containsTabGroup(GROUP_ID)).thenReturn(false);
-        when(mIncognitoTabModel.containsTabGroup(GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID))).thenReturn(false);
+        when(mIncognitoTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID)))
+                .thenReturn(true);
 
         TabWindowManagerImpl tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
         tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
@@ -1349,8 +1351,9 @@ public class TabWindowManagerImplUnitTest {
                 .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel, mIncognitoTabModel));
-        when(mTabModel.containsTabGroup(GROUP_ID)).thenReturn(false);
-        when(mIncognitoTabModel.containsTabGroup(GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID))).thenReturn(false);
+        when(mIncognitoTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID)))
+                .thenReturn(true);
 
         TabWindowManagerImpl tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
         tabWindowManager.requestSelectorWithoutActivity(1, mProfile);
@@ -1368,7 +1371,7 @@ public class TabWindowManagerImplUnitTest {
                 .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
-        when(mTabModel.containsTabGroup(GROUP_ID)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID))).thenReturn(false);
 
         when(mClosingTab.getTabGroupId()).thenReturn(GROUP_ID);
         when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mClosingTab).iterator());

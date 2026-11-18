@@ -34,6 +34,7 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
@@ -313,7 +314,7 @@ class TabModelRemover {
 
         TabModel tabModel = getTabModelInternal();
         Token tabGroupId = savedTabGroup.localId.tabGroupId;
-        if (!tabModel.containsTabGroup(tabGroupId)) {
+        if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
             return new CollaborationInfo();
         }
         String title = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, tabGroupId);

@@ -415,7 +415,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
     public boolean moveTabGroupToWindow(
             TabGroupId tabGroupId, Activity activity, int newIndex, boolean isIncognito) {
         TabModel tabModel = getModel(isIncognito);
-        if (!tabModel.containsTabGroup(tabGroupId.getToken())) return false;
+        if (!tabModel.containsTabGroup(tabGroupId)) return false;
 
         Tab currentTab = tabModel.getCurrentTabSupplier().get();
         assert currentTab != null;

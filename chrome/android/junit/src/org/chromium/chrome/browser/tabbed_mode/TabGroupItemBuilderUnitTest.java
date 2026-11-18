@@ -68,6 +68,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.url.GURL;
@@ -131,8 +132,9 @@ public class TabGroupItemBuilderUnitTest {
                 .thenAnswer(
                         inv -> {
                             TabModel model = (TabModel) inv.getMock();
+                            TabGroupId groupId = inv.getArgument(0);
                             Set<Token> ids = model.getAllTabGroupIds();
-                            return ids.contains(inv.getArgument(0));
+                            return groupId != null && ids.contains(groupId.getToken());
                         });
 
         mTabGroupItemBuilder =
@@ -431,7 +433,7 @@ public class TabGroupItemBuilderUnitTest {
 
         when(mTab.getTabGroupId()).thenReturn(token1);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
-        doReturn(true).when(mTabModel).containsTabGroup(token2);
+        doReturn(true).when(mTabModel).containsTabGroup(TabGroupId.fromOptionalToken(token2));
         when(mTabModel.getTabGroupTitle(token2)).thenReturn("Group 2");
         when(mTabModel.getTabGroupColorWithFallback(token2)).thenReturn(TabGroupColorId.BLUE);
 
@@ -711,7 +713,7 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.STANDARD);
-        when(mModelWindow2.containsTabGroup(token2)).thenReturn(true);
+        when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token2))).thenReturn(true);
         when(mModelWindow2.getTabsInGroup(token2)).thenReturn(List.of(tab2));
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
@@ -755,7 +757,8 @@ public class TabGroupItemBuilderUnitTest {
         Token token1 = new Token(1L, 1L);
         when(mIncognitoTabModel.getTabGroupCount()).thenReturn(1);
         when(mIncognitoTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
-        when(mIncognitoTabModel.containsTabGroup(token1)).thenReturn(true);
+        when(mIncognitoTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(true);
         when(mIncognitoTabModel.getTabGroupTitle(token1)).thenReturn("Incognito Group");
         when(mIncognitoTabModel.getTabGroupColorWithFallback(token1))
                 .thenReturn(TabGroupColorId.GREY);
@@ -1228,7 +1231,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
-        when(mModelWindow2.containsTabGroup(token1)).thenReturn(false);
+        when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(false);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -1272,7 +1276,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(eq(token1), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
-        when(mModelWindow2.containsTabGroup(token1)).thenReturn(false);
+        when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(false);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -1324,7 +1329,7 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
-        when(mModelWindow2.containsTabGroup(token1)).thenReturn(true);
+        when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -1369,7 +1374,7 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
-        when(mModelWindow2.containsTabGroup(token1)).thenReturn(true);
+        when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -1507,7 +1512,7 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
-        when(mModelWindow2.containsTabGroup(token1)).thenReturn(true);
+        when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
         when(mModelWindow2.getTabsInGroup(token1)).thenReturn(List.of());
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
@@ -1535,7 +1540,8 @@ public class TabGroupItemBuilderUnitTest {
         Token token1 = new Token(1L, 1L);
         when(mIncognitoTabModel.getTabGroupCount()).thenReturn(1);
         when(mIncognitoTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
-        when(mIncognitoTabModel.containsTabGroup(token1)).thenReturn(true);
+        when(mIncognitoTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(true);
         when(mIncognitoTabModel.getTabGroupTitle(token1)).thenReturn("Incognito Group");
         when(mIncognitoTabModel.getTabGroupColorWithFallback(token1))
                 .thenReturn(TabGroupColorId.GREY);
@@ -1888,7 +1894,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.isIncognito()).thenReturn(false);
-        when(mModelWindow2.containsTabGroup(tokenWindow2)).thenReturn(true);
+        when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(tokenWindow2)))
+                .thenReturn(true);
         when(mModelWindow2.getTabsInGroup(tokenWindow2)).thenReturn(List.of(tabWindow2));
 
         SavedTabGroup anotherGroup =
@@ -2006,7 +2013,7 @@ public class TabGroupItemBuilderUnitTest {
         Token token2 = new Token(2L, 2L);
         when(mTab.getTabGroupId()).thenReturn(token1);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
-        doReturn(true).when(mTabModel).containsTabGroup(token2);
+        doReturn(true).when(mTabModel).containsTabGroup(TabGroupId.fromOptionalToken(token2));
         when(mTabModel.getTabGroupTitle(token2)).thenReturn("Group 2");
         when(mTabModel.getTabGroupColorWithFallback(token2)).thenReturn(TabGroupColorId.BLUE);
 
@@ -2191,7 +2198,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.isIncognito()).thenReturn(false);
-        when(mModelWindow2.containsTabGroup(tokenAnother)).thenReturn(true);
+        when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(tokenAnother)))
+                .thenReturn(true);
         when(mModelWindow2.getTabsInGroup(tokenAnother)).thenReturn(List.of(tabWindow2));
 
         SavedTabGroup anotherGroup =

@@ -41,6 +41,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -147,7 +148,8 @@ public class GroupWindowCheckerUnitTest {
         Token localGroupId = Token.createRandom();
         when(mSyncService.getAllGroupIds()).thenReturn(new String[0]);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(localGroupId));
-        when(mTabModel.containsTabGroup(localGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(localGroupId)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(localGroupId)).thenReturn("Local Group");
         when(mTabModel.getTabsInGroup(localGroupId)).thenReturn(List.of());
 
@@ -177,7 +179,7 @@ public class GroupWindowCheckerUnitTest {
         when(mSyncService.getGroup("sync1")).thenReturn(group);
 
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(groupId));
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Title");
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of());
 
@@ -263,7 +265,7 @@ public class GroupWindowCheckerUnitTest {
         TabModelSelector selector = mock(TabModelSelector.class);
         TabModel headlessModel = mock(TabModel.class);
         when(headlessModel.getTabModelType()).thenReturn(TabModelType.HEADLESS);
-        when(headlessModel.containsTabGroup(token)).thenReturn(true);
+        when(headlessModel.containsTabGroup(TabGroupId.fromOptionalToken(token))).thenReturn(true);
         when(selector.getModel(false)).thenReturn(headlessModel);
         when(tabWindowManager.getTabModelSelectorById(1)).thenReturn(selector);
         mSyncUtils.invalidate();
@@ -333,7 +335,7 @@ public class GroupWindowCheckerUnitTest {
         TabModelSelector selector = mock(TabModelSelector.class);
         TabModel headlessModel = mock(TabModel.class);
         when(headlessModel.getTabModelType()).thenReturn(TabModelType.HEADLESS);
-        when(headlessModel.containsTabGroup(token)).thenReturn(true);
+        when(headlessModel.containsTabGroup(TabGroupId.fromOptionalToken(token))).thenReturn(true);
         when(selector.getModel(false)).thenReturn(headlessModel);
         when(tabWindowManager.getTabModelSelectorById(1)).thenReturn(selector);
         mSyncUtils.invalidate();
@@ -353,7 +355,7 @@ public class GroupWindowCheckerUnitTest {
         Token group2 = Token.createRandom();
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(group1));
         when(mTabModel.getTabGroupTitle(group1)).thenReturn("Incognito Group 1");
-        when(mTabModel.containsTabGroup(group1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(group1))).thenReturn(true);
         when(mTabModel.getTabsInGroup(group1)).thenReturn(List.of());
         when(mTab1.getTabGroupId()).thenReturn(group1);
         List<Tab> tabList1 = List.of(mTab1);
@@ -366,7 +368,8 @@ public class GroupWindowCheckerUnitTest {
         when(otherIncognitoModel.getAllTabGroupIds()).thenReturn(Set.of(group2));
         when(otherIncognitoModel.getTabGroupTitle(group2)).thenReturn("Incognito Group 2");
         when(otherIncognitoModel.getTabsInGroup(group2)).thenReturn(List.of());
-        when(otherIncognitoModel.containsTabGroup(group2)).thenReturn(true);
+        when(otherIncognitoModel.containsTabGroup(TabGroupId.fromOptionalToken(group2)))
+                .thenReturn(true);
 
         TabModelSelector selector1 = mock(TabModelSelector.class);
         when(selector1.getModel(true)).thenReturn(mTabModel);
@@ -395,7 +398,7 @@ public class GroupWindowCheckerUnitTest {
         Token group2 = Token.createRandom();
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(group1));
         when(mTabModel.getTabGroupTitle(group1)).thenReturn("Incognito Group 1");
-        when(mTabModel.containsTabGroup(group1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(group1))).thenReturn(true);
         when(mTabModel.getTabsInGroup(group1)).thenReturn(List.of());
         when(mTab1.getTabGroupId()).thenReturn(group1);
         List<Tab> tabList1 = List.of(mTab1);
@@ -408,7 +411,8 @@ public class GroupWindowCheckerUnitTest {
         when(otherIncognitoModel.getAllTabGroupIds()).thenReturn(Set.of(group2));
         when(otherIncognitoModel.getTabGroupTitle(group2)).thenReturn("Incognito Group 2");
         when(otherIncognitoModel.getTabsInGroup(group2)).thenReturn(List.of());
-        when(otherIncognitoModel.containsTabGroup(group2)).thenReturn(true);
+        when(otherIncognitoModel.containsTabGroup(TabGroupId.fromOptionalToken(group2)))
+                .thenReturn(true);
 
         TabModelSelector selector1 = mock(TabModelSelector.class);
         when(selector1.getModel(true)).thenReturn(mTabModel);
@@ -435,7 +439,7 @@ public class GroupWindowCheckerUnitTest {
         Token group1 = Token.createRandom();
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(group1));
         when(mTabModel.getTabGroupTitle(group1)).thenReturn("Incognito Group 1");
-        when(mTabModel.containsTabGroup(group1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(group1))).thenReturn(true);
         when(mTabModel.getTabsInGroup(group1)).thenReturn(List.of());
         when(mTab1.getTabGroupId()).thenReturn(group1);
         List<Tab> tabList1 = List.of(mTab1);
@@ -533,7 +537,7 @@ public class GroupWindowCheckerUnitTest {
         Token token1 = Token.createRandom();
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
         when(mTabModel.getTabGroupTitle(token1)).thenReturn("title1");
-        when(mTabModel.containsTabGroup(token1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
         Tab tab1 = mock(Tab.class);
         when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of(tab1));
         mSyncUtils.invalidate();
@@ -544,7 +548,7 @@ public class GroupWindowCheckerUnitTest {
         Token token2 = Token.createRandom();
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
         when(mTabModel.getTabGroupTitle(token2)).thenReturn("title2");
-        when(mTabModel.containsTabGroup(token2)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token2))).thenReturn(true);
         Tab tab2 = mock(Tab.class);
         when(mTabModel.getTabsInGroup(token2)).thenReturn(List.of(tab2));
         mSyncUtils.invalidate();
@@ -557,7 +561,7 @@ public class GroupWindowCheckerUnitTest {
         Token token1 = Token.createRandom();
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
         when(mTabModel.getTabGroupTitle(token1)).thenReturn("title1");
-        when(mTabModel.containsTabGroup(token1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
         Tab tab1 = mock(Tab.class);
         when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of(tab1));
         mSyncUtils.invalidate();
@@ -568,7 +572,7 @@ public class GroupWindowCheckerUnitTest {
         Token token2 = Token.createRandom();
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
         when(mTabModel.getTabGroupTitle(token2)).thenReturn("title2");
-        when(mTabModel.containsTabGroup(token2)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token2))).thenReturn(true);
         Tab tab2 = mock(Tab.class);
         when(mTabModel.getTabsInGroup(token2)).thenReturn(List.of(tab2));
         mSyncUtils.invalidate();
@@ -753,7 +757,7 @@ public class GroupWindowCheckerUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
-        when(mModelWindow2.containsTabGroup(token1)).thenReturn(true);
+        when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
 
         assertEquals(GroupWindowState.IN_ANOTHER, mSyncUtils.getState(headlessGroup));
         assertTrue(mSyncUtils.hasOtherGroups(null));
@@ -780,7 +784,7 @@ public class GroupWindowCheckerUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mSelectorWindow2);
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
-        when(mModelWindow2.containsTabGroup(token1)).thenReturn(true);
+        when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
 
         assertEquals(GroupWindowState.IN_ANOTHER, mSyncUtils.getState(headlessGroup));
         assertTrue(mSyncUtils.hasOtherGroups(null));
@@ -849,7 +853,8 @@ public class GroupWindowCheckerUnitTest {
 
         when(mSyncService.getAllGroupIds()).thenReturn(new String[0]);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(localGroupId));
-        when(mTabModel.containsTabGroup(localGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(localGroupId)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(localGroupId)).thenReturn("Local Group");
 
         List<Tab> comprehensiveTabs = List.of(activeTab, closingTab);

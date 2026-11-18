@@ -91,6 +91,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.SyncedGroupTestHelper;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -365,12 +366,12 @@ public class TabGroupRowMediatorUnitTest {
         TabModel otherModel = mock(TabModel.class);
         when(tabWindowManager.getTabModelSelectorById(2)).thenReturn(otherSelector);
         when(otherSelector.getModel(anyBoolean())).thenReturn(otherModel);
-        when(otherModel.containsTabGroup(GROUP_ID1)).thenReturn(true);
+        when(otherModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(true);
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
         when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
-        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(false);
 
         propertyModel.get(OPEN_RUNNABLE).run();
         verifyNoInteractions(mPaneManager);
@@ -395,7 +396,7 @@ public class TabGroupRowMediatorUnitTest {
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
         when(tabWindowManager.findWindowIdForTabGroup(eq(GROUP_ID1), anyBoolean()))
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
-        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(false);
 
         doAnswer(inv -> mSyncGroup.localId = null)
                 .when(mTabGroupSyncService)
@@ -410,7 +411,9 @@ public class TabGroupRowMediatorUnitTest {
         doAnswer(
                         inv -> {
                             mSyncGroup.localId = new LocalTabGroupId(GROUP_ID1);
-                            when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(true);
+                            when(mTabModel.containsTabGroup(
+                                            TabGroupId.fromOptionalToken(GROUP_ID1)))
+                                    .thenReturn(true);
                             return null;
                         })
                 .when(mTabGroupUiActionHandler)
@@ -461,7 +464,7 @@ public class TabGroupRowMediatorUnitTest {
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
         when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
-        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(false);
 
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -535,7 +538,7 @@ public class TabGroupRowMediatorUnitTest {
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.HIDDEN);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
-        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(false);
 
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -554,7 +557,7 @@ public class TabGroupRowMediatorUnitTest {
     @Test
     public void testOpen_Hidden_RemovesStaleLocalMapping() {
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.HIDDEN);
-        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(false);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
         LocalTabGroupId localId = new LocalTabGroupId(GROUP_ID1);
         mSyncGroup.localId = localId;

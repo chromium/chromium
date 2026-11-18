@@ -373,7 +373,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public boolean containsTabGroup(@Nullable Token tabGroupId) {
+    public boolean containsTabGroup(@Nullable TabGroupId tabGroupId) {
         return false;
     }
 

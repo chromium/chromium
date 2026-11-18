@@ -42,6 +42,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -303,7 +304,10 @@ public class ActorTabStateHelper {
             int destinationTabId) {
         if (syncService == null || !ActorUtils.isTabGroupSyncHandlingEnabled()) return;
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(sourceTab);
-        if (localTabGroupId == null || !model.containsTabGroup(localTabGroupId.tabGroupId)) return;
+        if (localTabGroupId == null
+                || !model.containsTabGroup(TabGroupId.fromRawToken(localTabGroupId.tabGroupId))) {
+            return;
+        }
 
         SavedTabGroup savedGroup = syncService.getGroup(localTabGroupId);
         if (savedGroup == null) return;

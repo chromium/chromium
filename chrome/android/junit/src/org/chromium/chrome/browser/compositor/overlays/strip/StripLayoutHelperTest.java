@@ -4948,7 +4948,7 @@ public class StripLayoutHelperTest {
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
             relatedTabs.add(tab);
         }
-        when(mModel.containsTabGroup(tabGroupId)).thenReturn(true);
+        when(mModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
         when(mModel.getTabCountForGroup(eq(TabGroupId.fromOptionalToken(tabGroupId))))
                 .thenReturn(numTabs);
         when(mModel.getTabsInGroup(eq(tabGroupId))).thenReturn(relatedTabs);
@@ -5348,7 +5348,8 @@ public class StripLayoutHelperTest {
         initializeTest(/* tabIndex= */ 0);
 
         // Fake that the tab group ID exists without a matching Tab.
-        when(mModel.containsTabGroup(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID_1)))
+                .thenReturn(true);
 
         // Set nonexistent group ID to hide.
         mStripLayoutHelper.getGroupIdToHideSupplierForTesting().set(TAB_GROUP_ID_1);
@@ -5366,7 +5367,8 @@ public class StripLayoutHelperTest {
         // Fake that there's a matching Tab for the group ID, but that the group ID doesn't exist in
         // the model.
         groupTabs(0, 1, TAB_GROUP_ID_1);
-        when(mModel.containsTabGroup(TAB_GROUP_ID_1)).thenReturn(false);
+        when(mModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID_1)))
+                .thenReturn(false);
 
         // Set nonexistent group ID to hide and verify an AssertionError is thrown.
         assertThrows(

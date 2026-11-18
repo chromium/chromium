@@ -42,6 +42,7 @@ import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class TabGroupLabellerUnitTest {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         mContext = ApplicationProvider.getApplicationContext();
         mTabModelSupplier.set(mTabModel);
-        when(mTabModel.containsTabGroup(GROUP_ID1)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(true);
         mTabGroupLabeller =
                 new TabGroupLabeller(mProfile, mTabListNotificationHandler, mTabModelSupplier);
     }

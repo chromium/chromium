@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 
 /** Utility methods for TabSwitcher related actions. */
 @NullMarked
@@ -123,7 +124,7 @@ public class TabSwitcherUtils {
         }
 
         Token tabGroupId = syncGroup.localId.tabGroupId;
-        if (!tabModel.containsTabGroup(tabGroupId)) return;
+        if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return;
         if (isGridTabSwitcherDisabled()) {
             Tab tab = TabGroupUtils.getSelectedOrFirstTabInGroup(tabModel, tabGroupId);
             if (tab != null) {

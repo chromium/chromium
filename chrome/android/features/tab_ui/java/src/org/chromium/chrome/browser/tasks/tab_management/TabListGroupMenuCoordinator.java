@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -76,7 +77,7 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
             @Override
             public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                 TabModel tabModel = getTabModel();
-                if (!tabModel.containsTabGroup(tabGroupId)) return;
+                if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return;
 
                 mIsMenuFocusableUponCreation = true;
                 createAndShowMenu(

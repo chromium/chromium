@@ -523,7 +523,9 @@ public class TabCollectionTabModelImplUnitTest {
         tab3.setTabGroupId(groupId);
         mTabs.addAll(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
 
-        when(mTabCollectionTabModelImplJni.tabGroupExists(any(), eq(groupId))).thenReturn(true);
+        when(mTabCollectionTabModelImplJni.tabGroupExists(
+                        any(), eq(TabGroupId.fromRawToken(groupId))))
+                .thenReturn(true);
 
         // Merging into a non-existent group should no-op.
         mTabModel.mergeListOfTabsToExistingGroup(
@@ -1553,7 +1555,7 @@ public class TabCollectionTabModelImplUnitTest {
         doAnswer(
                         inv -> {
                             when(mTabCollectionTabModelImplJni.tabGroupExists(
-                                            any(), eq(REOPENED_GROUP_ID)))
+                                            any(), eq(TabGroupId.fromRawToken(REOPENED_GROUP_ID))))
                                     .thenReturn(true);
                             for (MockTab reopenedTab : reopenedTabs) {
                                 reopenedTab.setTabGroupId(REOPENED_GROUP_ID);

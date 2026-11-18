@@ -126,10 +126,10 @@ abstract class TabListDataProviderTestBase {
         when(model.containsTabGroup(any()))
                 .thenAnswer(
                         invocation -> {
-                            Token tabGroupId = invocation.getArgument(0);
+                            TabGroupId tabGroupId = invocation.getArgument(0);
                             if (tabGroupId == null) return false;
                             for (Tab tab : tabs) {
-                                if (tabGroupId.equals(tab.getTabGroupId())) return true;
+                                if (tabGroupId.getToken().equals(tab.getTabGroupId())) return true;
                             }
                             return false;
                         });

@@ -45,6 +45,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Collections;
 import java.util.List;
@@ -94,7 +95,7 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testWholeGroupRecreated() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(false);
         when(mTabModel.indexOf(mTab1)).thenReturn(5);
         when(mTabModel.indexOf(mTab2)).thenReturn(3);
         when(mTabModel.indexOf(mTab3)).thenReturn(6);
@@ -130,7 +131,7 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testEmptyTitleAndInvalidColorNotSet() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(false);
         UndoClosureSnapshot snapshot =
                 createSnapshot(
                         List.of(createClosedTab(TAB_ID_1, GROUP_A, INVALID_TAB_INDEX)),
@@ -159,7 +160,7 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testPartialGroupMergedAtIndexInGroup() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(true);
         // The group is collapsed before the merge and expanded by it.
         when(mTabModel.getTabGroupCollapsed(GROUP_A)).thenReturn(true, false);
         UndoClosureSnapshot snapshot =
@@ -204,7 +205,7 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testPartialGroupInvalidIndexInGroupAppendsInModelOrder() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(true);
         when(mTabModel.getTabGroupCollapsed(GROUP_A)).thenReturn(false);
         when(mTabModel.indexOf(mTab1)).thenReturn(5);
         when(mTabModel.indexOf(mTab2)).thenReturn(3);
@@ -275,7 +276,7 @@ public class UndoGroupRestorerUnitTest {
     @Test
     public void testUnrestoredTabsSkipped() {
         when(mTabModel.getTabById(TAB_ID_2)).thenReturn(null);
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(false);
         UndoClosureSnapshot snapshot =
                 createSnapshot(
                         List.of(
@@ -323,8 +324,8 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testMultipleGroupsProcessedInFirstAppearanceOrder() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(false);
-        when(mTabModel.containsTabGroup(GROUP_B)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_B))).thenReturn(false);
         UndoClosureSnapshot snapshot =
                 createSnapshot(
                         List.of(
@@ -360,7 +361,7 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testMissingGroupDataRecreatedWithoutVisuals() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(false);
         UndoClosureSnapshot snapshot =
                 createSnapshot(
                         List.of(createClosedTab(TAB_ID_1, GROUP_A, INVALID_TAB_INDEX)),
@@ -381,7 +382,7 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testPinnedTabSkipped() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(false);
         ClosedTab pinnedTab =
                 new ClosedTab(
                         TAB_ID_1,
@@ -531,8 +532,9 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testPartialSyncedGroup_CaseB_MergedIntoReopenedLocalGroup() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(false);
-        when(mTabModel.containsTabGroup(GROUP_REOPENED)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_REOPENED)))
+                .thenReturn(true);
         // The reopened group is collapsed before the merge and expanded by it.
         when(mTabModel.getTabGroupCollapsed(GROUP_REOPENED)).thenReturn(true, false);
         stubSavedGroup(SYNC_ID_A, GROUP_REOPENED);
@@ -574,8 +576,9 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testPartialSyncedGroup_OpenInAnotherWindow_LeavesTabsUngrouped() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(false);
-        when(mTabModel.containsTabGroup(GROUP_REOPENED)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_REOPENED)))
+                .thenReturn(false);
         stubSavedGroup(SYNC_ID_A, GROUP_REOPENED);
 
         UndoClosureSnapshot snapshot =
@@ -592,7 +595,7 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testPartialSyncedGroup_CaseC_ReopensHiddenGroupAndMerges() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(false);
         stubOpenTabGroup(SYNC_ID_A, GROUP_REOPENED, Collections.emptyList());
 
         UndoClosureSnapshot snapshot =
@@ -631,7 +634,7 @@ public class UndoGroupRestorerUnitTest {
 
     @Test
     public void testPartialSyncedGroup_CaseC_FallbackToRecreateWhenReopenFails() {
-        when(mTabModel.containsTabGroup(GROUP_A)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(false);
         stubSavedGroup(SYNC_ID_A, /* localGroupId= */ null);
 
         UndoClosureSnapshot snapshot =
@@ -660,7 +663,9 @@ public class UndoGroupRestorerUnitTest {
         doAnswer(
                         inv -> {
                             savedGroup.localId = new LocalTabGroupId(reopenedGroupId);
-                            when(mTabModel.containsTabGroup(reopenedGroupId)).thenReturn(true);
+                            when(mTabModel.containsTabGroup(
+                                            TabGroupId.fromOptionalToken(reopenedGroupId)))
+                                    .thenReturn(true);
                             when(mTabModel.getTabsInGroup(reopenedGroupId))
                                     .thenReturn(reopenedTabs);
                             return null;

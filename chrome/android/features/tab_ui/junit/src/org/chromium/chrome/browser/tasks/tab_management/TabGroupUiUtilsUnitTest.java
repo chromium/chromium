@@ -244,7 +244,7 @@ public class TabGroupUiUtilsUnitTest {
         Tab tab = mock(Tab.class);
         when(tab.getTabGroupId()).thenReturn(null);
 
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
         TabGroupUiUtils.addTabsToGroup(
@@ -278,7 +278,7 @@ public class TabGroupUiUtilsUnitTest {
 
         TabUngrouper ungrouper = mock(TabUngrouper.class);
         when(mTabModel.getTabUngrouper()).thenReturn(ungrouper);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(2);
@@ -287,7 +287,7 @@ public class TabGroupUiUtilsUnitTest {
         TabModel destTabModel = mock(TabModel.class);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(destSelector);
         when(destSelector.getModel(false)).thenReturn(destTabModel);
-        when(destTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(destTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mDestTab.getId()).thenReturn(200);
         when(destTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mDestTab));
 
@@ -437,7 +437,7 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         assertTrue(
                 TabGroupUiUtils.isValidDestination(
                         groupWithLocalId, mTabGroupSyncService, mUiActionHandler));
@@ -452,7 +452,7 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
 
         assertTrue(
                 TabGroupUiUtils.isValidDestination(group, mTabGroupSyncService, mUiActionHandler));
@@ -510,7 +510,7 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
 
         assertTrue(
                 TabGroupUiUtils.isValidDestination(group, mTabGroupSyncService, mUiActionHandler));
@@ -525,7 +525,7 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
 
         assertFalse(
                 TabGroupUiUtils.isValidDestination(group, mTabGroupSyncService, mUiActionHandler));
@@ -657,7 +657,8 @@ public class TabGroupUiUtilsUnitTest {
         savedGroup.localId = new LocalTabGroupId(restoredGroupId);
 
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
-        when(mTabModel.containsTabGroup(restoredGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(restoredGroupId)))
+                .thenReturn(true);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
         TabGroupUiUtils.addTabsToGroup(
@@ -695,7 +696,8 @@ public class TabGroupUiUtilsUnitTest {
         savedGroup.localId = new LocalTabGroupId(restoredGroupId);
 
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
-        when(mTabModel.containsTabGroup(restoredGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(restoredGroupId)))
+                .thenReturn(true);
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
         TabGroupUiUtils.addTabsToGroup(
@@ -737,7 +739,7 @@ public class TabGroupUiUtilsUnitTest {
     @Test
     public void testGetGroupWindowInfo_localGroupId() {
         Token groupId = Token.createRandom();
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
 
         GroupWindowInfo info =
@@ -838,7 +840,7 @@ public class TabGroupUiUtilsUnitTest {
         String syncId = "sync-closing-123";
 
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Title");
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.CYAN);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
@@ -940,7 +942,7 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
 
-        when(mOtherModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mOtherModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(3);
         when(mOtherModel.getTabGroupTitle(groupId)).thenReturn("Window 2 Local Title");
         when(mOtherModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.PURPLE);
@@ -1059,7 +1061,8 @@ public class TabGroupUiUtilsUnitTest {
         reopenedSavedGroup.syncId = syncId;
         reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(reopenedSavedGroup);
-        when(mTabModel.containsTabGroup(reopenedGroupId)).thenReturn(false, true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(reopenedGroupId)))
+                .thenReturn(false, true);
 
         GroupWindowInfo destInfo =
                 createGroupWindowInfo(closingGroupId, syncId, GroupWindowState.IN_CURRENT_CLOSING);
@@ -1175,7 +1178,8 @@ public class TabGroupUiUtilsUnitTest {
         reopenedSavedGroup.syncId = syncId;
         reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(reopenedSavedGroup);
-        when(mTabModel.containsTabGroup(reopenedGroupId)).thenReturn(false, true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(reopenedGroupId)))
+                .thenReturn(false, true);
 
         GroupWindowInfo destInfo =
                 createGroupWindowInfo(closingGroupId, syncId, GroupWindowState.IN_CURRENT_CLOSING);
@@ -1264,7 +1268,8 @@ public class TabGroupUiUtilsUnitTest {
         reopenedSavedGroup.syncId = syncId;
         reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(reopenedSavedGroup);
-        when(mTabModel.containsTabGroup(reopenedGroupId)).thenReturn(false, true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(reopenedGroupId)))
+                .thenReturn(false, true);
 
         when(mTabToAdd.getTabGroupId()).thenReturn(null);
 
@@ -1314,13 +1319,15 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabWindowManager.findWindowIdForTabGroup(eq(oldGroupId), eq(true))).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.containsTabGroup(oldGroupId)).thenReturn(false);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(oldGroupId)))
+                .thenReturn(false);
 
         SavedTabGroup reopenedSavedGroup = new SavedTabGroup();
         reopenedSavedGroup.syncId = syncId;
         reopenedSavedGroup.localId = new LocalTabGroupId(reopenedGroupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(reopenedSavedGroup);
-        when(mTabModel.containsTabGroup(reopenedGroupId)).thenReturn(false, true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(reopenedGroupId)))
+                .thenReturn(false, true);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         TabList emptyTabList = mock(TabList.class);
@@ -1382,14 +1389,14 @@ public class TabGroupUiUtilsUnitTest {
         MultiInstanceOrchestratorFactory.setInstanceForTesting(orchestrator);
 
         Token groupId = Token.createRandom();
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId))).thenReturn(2);
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mOtherModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
 
         TabMovedCallback callback = mock(TabMovedCallback.class);
@@ -1414,7 +1421,7 @@ public class TabGroupUiUtilsUnitTest {
         MultiInstanceOrchestratorFactory.setInstanceForTesting(orchestrator);
 
         Token groupId = Token.createRandom();
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
 
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId)))
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
@@ -1448,14 +1455,14 @@ public class TabGroupUiUtilsUnitTest {
         savedGroup.localId = new LocalTabGroupId(groupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId))).thenReturn(2);
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
 
         assertEquals(
                 OpenTabGroupResult.ANOTHER_WINDOW,
@@ -1485,7 +1492,7 @@ public class TabGroupUiUtilsUnitTest {
         savedGroup.localId = new LocalTabGroupId(groupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId)))
                 .thenReturn(TabWindowManager.INVALID_WINDOW_ID);
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean()))
@@ -1513,14 +1520,14 @@ public class TabGroupUiUtilsUnitTest {
         savedGroup.localId = new LocalTabGroupId(groupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId))).thenReturn(2);
         when(mTabWindowManager.findWindowIdForTabGroup(eq(groupId), anyBoolean())).thenReturn(2);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
 
         assertEquals(
                 OpenTabGroupResult.NONE,
@@ -1549,7 +1556,7 @@ public class TabGroupUiUtilsUnitTest {
         savedGroup.localId = new LocalTabGroupId(groupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
 
         assertEquals(
                 OpenTabGroupResult.CURRENT_WINDOW,
@@ -1938,7 +1945,7 @@ public class TabGroupUiUtilsUnitTest {
     public void testOpenTabGroupInNewWindow_localGroup() {
         Token groupId = new Token(1L, 2L);
         GroupWindowInfo groupInfo = createGroupWindowInfo(groupId, GroupWindowState.IN_CURRENT);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
         when(mTab.getId()).thenReturn(1);
         when(mTab.getTabGroupId()).thenReturn(groupId);
@@ -1964,12 +1971,12 @@ public class TabGroupUiUtilsUnitTest {
         Token groupId = new Token(1L, 2L);
         GroupWindowInfo groupInfo =
                 createGroupWindowInfo(groupId, /* syncId= */ null, GroupWindowState.IN_ANOTHER);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(1);
         when(mTabWindowManager.findWindowIdForTabGroup(groupId, false)).thenReturn(1);
         when(mTabWindowManager.getTabModelSelectorById(1)).thenReturn(mOtherSelector);
         when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
-        when(mOtherModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mOtherModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
         when(mTab.getId()).thenReturn(1);
         when(mTab.getTabGroupId()).thenReturn(groupId);
@@ -2002,7 +2009,8 @@ public class TabGroupUiUtilsUnitTest {
         savedGroup.localId = new LocalTabGroupId(restoredGroupId);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedGroup);
 
-        when(mTabModel.containsTabGroup(restoredGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(restoredGroupId)))
+                .thenReturn(true);
         when(mTabModel.getTabsInGroup(restoredGroupId)).thenReturn(List.of(mTab));
         when(mTab.getId()).thenReturn(1);
         when(mTab.getTabGroupId()).thenReturn(restoredGroupId);
@@ -2041,7 +2049,8 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
         when(mComprehensiveModel.getCount()).thenReturn(0);
 
-        when(mTabModel.containsTabGroup(restoredGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(restoredGroupId)))
+                .thenReturn(true);
         when(mTabModel.getTabsInGroup(restoredGroupId)).thenReturn(List.of(mTab));
         when(mTab.getId()).thenReturn(1);
         when(mTab.getTabGroupId()).thenReturn(restoredGroupId);
@@ -2106,7 +2115,7 @@ public class TabGroupUiUtilsUnitTest {
     public void testOpenTabGroupInNewWindow_emptyTabGroup_returnsFalse() {
         Token groupId = new Token(1L, 2L);
         GroupWindowInfo groupInfo = createGroupWindowInfo(groupId, GroupWindowState.IN_CURRENT);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
         when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(0);
 
@@ -2125,7 +2134,7 @@ public class TabGroupUiUtilsUnitTest {
     public void testOpenTabGroupInNewWindow_nullMultiInstanceManager() {
         Token groupId = new Token(1L, 2L);
         GroupWindowInfo groupInfo = createGroupWindowInfo(groupId, GroupWindowState.IN_CURRENT);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
         when(mTab.getId()).thenReturn(1);
         when(mTab.getTabGroupId()).thenReturn(groupId);
@@ -2158,7 +2167,7 @@ public class TabGroupUiUtilsUnitTest {
         Tab tab = mock(Tab.class);
         when(tab.getTabGroupId()).thenReturn(null);
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(false);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(windowId);
@@ -2206,7 +2215,7 @@ public class TabGroupUiUtilsUnitTest {
         Tab tab = mock(Tab.class);
         when(tab.getTabGroupId()).thenReturn(null);
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(false);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(windowId);
@@ -2257,7 +2266,7 @@ public class TabGroupUiUtilsUnitTest {
         Tab tab = mock(Tab.class);
         when(tab.getTabGroupId()).thenReturn(null);
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(false);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(windowId);
@@ -2297,7 +2306,7 @@ public class TabGroupUiUtilsUnitTest {
         Tab tab = mock(Tab.class);
         when(tab.getTabGroupId()).thenReturn(null);
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(false);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(windowId);
@@ -2342,7 +2351,7 @@ public class TabGroupUiUtilsUnitTest {
         Tab tab = mock(Tab.class);
         when(tab.getTabGroupId()).thenReturn(null);
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(false);
-        when(mTabModel.containsTabGroup(groupId)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         when(mTabModel.isIncognito()).thenReturn(true);
 
         when(mTabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(windowId);
@@ -2391,8 +2400,10 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabGroupSyncService.getGroup(new LocalTabGroupId(oldGroupId))).thenReturn(savedGroup);
         when(mTabGroupSyncService.getGroup(syncId))
                 .thenReturn(savedGroup, savedGroup, reopenedSavedGroup);
-        when(mTabModel.containsTabGroup(oldGroupId)).thenReturn(false);
-        when(mTabModel.containsTabGroup(reopenedGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(oldGroupId)))
+                .thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(reopenedGroupId)))
+                .thenReturn(true);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         TabList emptyTabList = mock(TabList.class);
@@ -2462,8 +2473,10 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabGroupSyncService.getGroup(new LocalTabGroupId(oldGroupId))).thenReturn(savedGroup);
         when(mTabGroupSyncService.getGroup(syncId))
                 .thenReturn(savedGroup, savedGroup, reopenedSavedGroup);
-        when(mTabModel.containsTabGroup(oldGroupId)).thenReturn(false);
-        when(mTabModel.containsTabGroup(reopenedGroupId)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(oldGroupId)))
+                .thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(reopenedGroupId)))
+                .thenReturn(true);
 
         Tab tabInReopenedGroup = mock(Tab.class);
         when(tabInReopenedGroup.getId()).thenReturn(123);

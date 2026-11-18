@@ -420,7 +420,8 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.getTabGroupColor(TAB_GROUP_ID)).thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
         when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID))
                 .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
-        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TAB_GROUP_TITLE);
         mTotalTabCountSupplier = ObservableSuppliers.createNonNull(3);
         when(mTabModel.getTabCountSupplier()).thenReturn(mTotalTabCountSupplier);
@@ -1426,7 +1427,8 @@ public class TabContextMenuCoordinatorUnitTest {
 
         when(mTab1.isClosing()).thenReturn(true);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TAB_GROUP_ID));
-        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(false);
         List<Tab> tabList = List.of(mTab1, mTabOutsideOfGroup);
         when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
 
@@ -1629,7 +1631,8 @@ public class TabContextMenuCoordinatorUnitTest {
         when(tabModelWindow2.getTabGroupTitle(tabGroupId2)).thenReturn("Window 2 Group");
         when(tabModelWindow2.getTabGroupColorWithFallback(tabGroupId2))
                 .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
-        when(tabModelWindow2.containsTabGroup(tabGroupId2)).thenReturn(true);
+        when(tabModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId2)))
+                .thenReturn(true);
         when(tabModelWindow2.getTabsInGroup(tabGroupId2)).thenReturn(List.of(mTab2));
 
         mTabModel.addTab(
