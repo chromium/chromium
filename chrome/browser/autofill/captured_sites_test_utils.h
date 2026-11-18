@@ -316,10 +316,6 @@ class TestRecipeReplayer {
   WebPageReplayServerWrapper* web_page_replay_server_wrapper();
   content::WebContents* GetWebContents();
   void CleanupSiteData();
-  bool StartWebPageReplayServer(base::Process* web_page_replay_server,
-                                const base::FilePath& capture_file_path,
-                                const bool start_as_replay = true);
-  bool StopWebPageReplayServer(base::Process* web_page_replay_server);
   bool ReplayRecordedActions(
       const base::FilePath& recipe_file_path,
       const std::optional<base::FilePath>& command_file_path);
