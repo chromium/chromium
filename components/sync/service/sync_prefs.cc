@@ -104,6 +104,8 @@ SyncPrefObserver::~SyncPrefObserver() = default;
 SyncPrefs::SyncPrefs(PrefService* pref_service)
     : pref_service_(pref_service),
       local_sync_enabled_(
+          !pref_service_->IsUserModifiablePreference(
+              prefs::kEnableLocalSyncBackend) &&
           pref_service_->GetBoolean(prefs::kEnableLocalSyncBackend)) {
   DCHECK(pref_service);
   // Watch the preference that indicates sync is managed so we can take

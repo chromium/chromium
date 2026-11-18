@@ -230,7 +230,7 @@ class SyncServiceImplTest : public ::testing::Test {
     SyncServiceImpl::InitParams init_params =
         sync_service_impl_bundle_.CreateBasicInitParams(std::move(sync_client));
 
-    prefs()->SetBoolean(prefs::kEnableLocalSyncBackend, true);
+    prefs()->SetManagedPref(prefs::kEnableLocalSyncBackend, base::Value(true));
 
     service_ = std::make_unique<SyncServiceImpl>(std::move(init_params));
     service_->Initialize(CreateAndRegisterFakeControllers(

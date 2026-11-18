@@ -56,6 +56,7 @@
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_bookmarks/switches.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -653,8 +654,8 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
        DoNotShowPromoWithLocalSyncEnabled) {
   ASSERT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
 
-  profile()->GetPrefs()->SetBoolean(syncer::prefs::kEnableLocalSyncBackend,
-                                    true);
+  profile()->GetTestingPrefService()->SetManagedPref(
+      syncer::prefs::kEnableLocalSyncBackend, base::Value(true));
 
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
 }
