@@ -585,8 +585,6 @@ crbug.com/365680830 [ angle-metal arch-arm64 no-asan sequoia ] deqp/functional/g
 # Win failures     #
 ####################
 
-# Flaky across the board on Windows; implementation likely isn't sufficiently parallelized and async
-crbug.com/438691606 [ win ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
@@ -598,8 +596,6 @@ crbug.com/1073613 [ angle-d3d11 win nvidia ] conformance2/textures/misc/tex-3d-m
 crbug.com/1073613 [ angle-d3d11 win nvidia ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/1073613 [ angle-d3d11 win nvidia ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Failure ]
 
-# Win11/GTX 1660 experimental failures when going to 610.74
-crbug.com/543984226 [ win11 nvidia-0x2184 nvidia_ge_32.0.16.1074 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
 
 ## Win / AMD ##
 
@@ -703,7 +699,6 @@ crbug.com/1334684 [ angle-metal intel sequoia ] deqp/functional/gles3/shaderbuil
 
 
 # WebGL: INVALID_ENUM: getShaderParameter
-crbug.com/444250724 [ amd-0x7340 renderer-graphite-dawn-metal sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/444250724 [ intel-0x3e9b renderer-graphite-dawn-metal sequoia ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 
@@ -1013,12 +1008,10 @@ crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/we
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/ext-disjoint-timer-query-webgl2.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/webgl-stencil-texturing.html [ Failure ]
-crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/misc/uninitialized-test-2.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] deqp/functional/gles3/fbomultisample.8_samples.html [ Failure ]
-crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] deqp/functional/gles3/fborender/resize_01.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 passthrough ] WebglExtension_EXT_render_snorm [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Failure ]
