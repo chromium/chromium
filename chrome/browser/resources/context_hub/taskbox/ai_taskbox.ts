@@ -8,7 +8,6 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -16,7 +15,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {AutoTodoGroup, AutoTodoStatus, browserProxyFactory} from '../context_hub.mojom-webui.js';
+import {AutoTodoStatus, browserProxyFactory} from '../context_hub.mojom-webui.js';
 import type {AutoTodoItem} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './ai_taskbox.css.js';
@@ -29,52 +28,14 @@ function convertMojoTimeToDate(mojoTime: Time): Date {
   return new Date(Number(unixEpochUs / 1000n));
 }
 
-function getTabTodoPriority(item: AutoTodoItem): number {
-  const group = item.data.thirdParty?.groupType;
-
-  // Pending action todos are the highest priority and should be shown first.
-  if (group === AutoTodoGroup.kUnfinishedAction) {
-    return 0;
-  }
-  if (group === AutoTodoGroup.kShoppingCart) {
-    return 1;
-  }
-  if (group === AutoTodoGroup.kNudgeToClose) {
-    return 2;
-  }
-  return 3;
-}
-
-function isChromeHistoryTodo(item: AutoTodoItem): boolean {
-  return !!item.data.firstParty?.sourceReferences.some(
-      ref => !!ref.chromeHistoryEntry);
-}
-
-function compareFirstPartyTodos(a: AutoTodoItem, b: AutoTodoItem): number {
+function compareTodos(a: AutoTodoItem, b: AutoTodoItem): number {
   return b.score - a.score || a.title.localeCompare(b.title);
 }
 
-function filterWorkspaceTodos(
+function filterTodos(
     todos: AutoTodoItem[], status: AutoTodoStatus): AutoTodoItem[] {
-  return todos
-      .filter(
-          todo => !!todo.data.firstParty && !isChromeHistoryTodo(todo) &&
-              todo.status === status)
-      .sort(compareFirstPartyTodos);
-}
-
-function filterHistoryTodos(
-    todos: AutoTodoItem[], status: AutoTodoStatus): AutoTodoItem[] {
-  return todos
-      .filter(
-          todo => !!todo.data.firstParty && isChromeHistoryTodo(todo) &&
-              todo.status === status)
-      .sort(compareFirstPartyTodos);
-}
-
-function compareThirdPartyTodos(a: AutoTodoItem, b: AutoTodoItem): number {
-  return getTabTodoPriority(a) - getTabTodoPriority(b) ||
-      a.title.localeCompare(b.title);
+  return todos.filter(todo => !!todo.data.firstParty && todo.status === status)
+      .sort(compareTodos);
 }
 
 export class AiTaskboxElement extends CrLitElement {
@@ -93,9 +54,6 @@ export class AiTaskboxElement extends CrLitElement {
   static override get properties() {
     return {
       autoTodosEnabled_: {type: Boolean},
-      showingReadingList_: {type: Boolean},
-      selectedTab_: {type: Number},
-      // Gmail-based todo properties.
       todos: {type: Array},
       completedTodos: {type: Array},
       dismissedTodos: {type: Array},
@@ -105,24 +63,6 @@ export class AiTaskboxElement extends CrLitElement {
       isCompletedExpanded_: {type: Boolean},
       isDismissedExpanded_: {type: Boolean},
       lastGmailGenerationTime_: {type: Object},
-      // Chrome history-based todo properties.
-      historyTodos: {type: Array},
-      completedHistoryTodos: {type: Array},
-      dismissedHistoryTodos: {type: Array},
-      isCompletedHistoryExpanded_: {type: Boolean},
-      isDismissedHistoryExpanded_: {type: Boolean},
-      // Tab-based todo properties.
-      tabTodos: {type: Array},
-      completedTabTodos: {type: Array},
-      dismissedTabTodos: {type: Array},
-      isGeneratingTabTodos_: {type: Boolean},
-      hasTabGenerationError_: {type: Boolean},
-      hasGeneratedTab_: {type: Boolean},
-      isCompletedTabExpanded_: {type: Boolean},
-      isDismissedTabExpanded_: {type: Boolean},
-      lastTabGenerationTime_: {type: Object},
-      // Reading list properties.
-      readingListTodos: {type: Array},
       feedbacks_: {type: Object},
     };
   }
@@ -130,38 +70,16 @@ export class AiTaskboxElement extends CrLitElement {
   accessor todos: AutoTodoItem[]|null = null;
   accessor completedTodos: AutoTodoItem[]|null = null;
   accessor dismissedTodos: AutoTodoItem[]|null = null;
-  accessor historyTodos: AutoTodoItem[]|null = null;
-  accessor completedHistoryTodos: AutoTodoItem[]|null = null;
-  accessor dismissedHistoryTodos: AutoTodoItem[]|null = null;
-  accessor tabTodos: AutoTodoItem[]|null = null;
-  accessor completedTabTodos: AutoTodoItem[]|null = null;
-  accessor dismissedTabTodos: AutoTodoItem[]|null = null;
-  accessor readingListTodos: AutoTodoItem[]|null = null;
   protected accessor feedbacks_: Map<string, boolean> = new Map();
   protected accessor autoTodosEnabled_: boolean =
       loadTimeData.getBoolean('kAutoTodos');
-  protected accessor showingReadingList_: boolean = false;
-  protected accessor selectedTab_: number = 0;
 
-  // Gmail-based property accessors.
   protected accessor isGeneratingGmailTodos_: boolean = false;
   protected accessor hasGmailGenerationError_: boolean = false;
   protected accessor hasGeneratedGmail_: boolean = false;
   protected accessor isCompletedExpanded_: boolean = false;
   protected accessor isDismissedExpanded_: boolean = false;
   protected accessor lastGmailGenerationTime_: Date|null = null;
-
-  // Chrome history-based property accessors.
-  protected accessor isCompletedHistoryExpanded_: boolean = false;
-  protected accessor isDismissedHistoryExpanded_: boolean = false;
-
-  // Tab-based property accessors.
-  protected accessor isGeneratingTabTodos_: boolean = false;
-  protected accessor hasTabGenerationError_: boolean = false;
-  protected accessor hasGeneratedTab_: boolean = false;
-  protected accessor isCompletedTabExpanded_: boolean = false;
-  protected accessor isDismissedTabExpanded_: boolean = false;
-  protected accessor lastTabGenerationTime_: Date|null = null;
 
   private listenerIds_: number[] = [];
   private updateTimerId_: number|null = null;
@@ -176,50 +94,11 @@ export class AiTaskboxElement extends CrLitElement {
           browserProxyFactory.getInstance()
               .callbackRouter.onAutoTodosChanged.addListener(
                   (todos: AutoTodoItem[]) => {
-                    this.todos =
-                        filterWorkspaceTodos(todos, AutoTodoStatus.kActive);
+                    this.todos = filterTodos(todos, AutoTodoStatus.kActive);
                     this.completedTodos =
-                        filterWorkspaceTodos(todos, AutoTodoStatus.kCompleted);
+                        filterTodos(todos, AutoTodoStatus.kCompleted);
                     this.dismissedTodos =
-                        filterWorkspaceTodos(todos, AutoTodoStatus.kDismissed);
-                    this.historyTodos =
-                        filterHistoryTodos(todos, AutoTodoStatus.kActive);
-                    this.completedHistoryTodos =
-                        filterHistoryTodos(todos, AutoTodoStatus.kCompleted);
-                    this.dismissedHistoryTodos =
-                        filterHistoryTodos(todos, AutoTodoStatus.kDismissed);
-                    this.tabTodos =
-                        todos
-                            .filter(
-                                todo => !!todo.data.thirdParty &&
-                                    todo.data.thirdParty.groupType !==
-                                        AutoTodoGroup.kReadingList &&
-                                    todo.status === AutoTodoStatus.kActive)
-                            .sort(compareThirdPartyTodos);
-                    this.completedTabTodos =
-                        todos
-                            .filter(
-                                todo => !!todo.data.thirdParty &&
-                                    todo.data.thirdParty.groupType !==
-                                        AutoTodoGroup.kReadingList &&
-                                    todo.status === AutoTodoStatus.kCompleted)
-                            .sort(compareThirdPartyTodos);
-                    this.dismissedTabTodos =
-                        todos
-                            .filter(
-                                todo => !!todo.data.thirdParty &&
-                                    todo.data.thirdParty.groupType !==
-                                        AutoTodoGroup.kReadingList &&
-                                    todo.status === AutoTodoStatus.kDismissed)
-                            .sort(compareThirdPartyTodos);
-                    this.readingListTodos =
-                        todos
-                            .filter(
-                                todo => !!todo.data.thirdParty &&
-                                    todo.data.thirdParty.groupType ===
-                                        AutoTodoGroup.kReadingList &&
-                                    todo.status === AutoTodoStatus.kActive)
-                            .sort(compareThirdPartyTodos);
+                        filterTodos(todos, AutoTodoStatus.kDismissed);
                   }));
       this.listenerIds_.push(
           browserProxyFactory.getInstance()
@@ -233,18 +112,6 @@ export class AiTaskboxElement extends CrLitElement {
                   this.hasGeneratedGmail_ = true;
                 }
               }));
-      this.listenerIds_.push(
-          browserProxyFactory.getInstance()
-              .callbackRouter.onThirdPartyAutoTodosGenerationStateChanged
-              .addListener((isGenerating: boolean) => {
-                this.isGeneratingTabTodos_ = isGenerating;
-                if (isGenerating) {
-                  this.hasTabGenerationError_ = false;
-                } else if (!this.hasTabGenerationError_) {
-                  this.lastTabGenerationTime_ = new Date();
-                  this.hasGeneratedTab_ = true;
-                }
-              }));
       this.fetchAutoTodos_();
     }
   }
@@ -254,9 +121,7 @@ export class AiTaskboxElement extends CrLitElement {
       const [
         {
           firstPartyTodos,
-          thirdPartyTodos,
           firstPartyMetadata,
-          thirdPartyMetadata,
         },
         {feedbacks},
       ] =
@@ -265,68 +130,23 @@ export class AiTaskboxElement extends CrLitElement {
             browserProxyFactory.getInstance().handler.getTodoFeedbacks(),
           ]);
       this.hasGmailGenerationError_ = firstPartyMetadata.hasError;
-      this.hasTabGenerationError_ = thirdPartyMetadata.hasError;
       this.lastGmailGenerationTime_ =
           (firstPartyMetadata.lastGenerationTime &&
            firstPartyMetadata.lastGenerationTime.internalValue > 0n) ?
           convertMojoTimeToDate(firstPartyMetadata.lastGenerationTime) :
           null;
       this.hasGeneratedGmail_ = this.lastGmailGenerationTime_ !== null;
-      this.lastTabGenerationTime_ =
-          (thirdPartyMetadata.lastGenerationTime &&
-           thirdPartyMetadata.lastGenerationTime.internalValue > 0n) ?
-          convertMojoTimeToDate(thirdPartyMetadata.lastGenerationTime) :
-          null;
-      this.hasGeneratedTab_ = this.lastTabGenerationTime_ !== null;
       const feedbackMap = new Map<string, boolean>();
       for (const feedback of feedbacks) {
         feedbackMap.set(feedback.todoId, feedback.liked);
       }
       this.feedbacks_ = feedbackMap;
 
-      this.todos =
-          filterWorkspaceTodos(firstPartyTodos, AutoTodoStatus.kActive);
+      this.todos = filterTodos(firstPartyTodos, AutoTodoStatus.kActive);
       this.completedTodos =
-          filterWorkspaceTodos(firstPartyTodos, AutoTodoStatus.kCompleted);
+          filterTodos(firstPartyTodos, AutoTodoStatus.kCompleted);
       this.dismissedTodos =
-          filterWorkspaceTodos(firstPartyTodos, AutoTodoStatus.kDismissed);
-      this.historyTodos =
-          filterHistoryTodos(firstPartyTodos, AutoTodoStatus.kActive);
-      this.completedHistoryTodos =
-          filterHistoryTodos(firstPartyTodos, AutoTodoStatus.kCompleted);
-      this.dismissedHistoryTodos =
-          filterHistoryTodos(firstPartyTodos, AutoTodoStatus.kDismissed);
-      this.tabTodos = thirdPartyTodos
-                          .filter(
-                              todo => todo.data.thirdParty?.groupType !==
-                                      AutoTodoGroup.kReadingList &&
-                                  todo.status === AutoTodoStatus.kActive)
-                          .sort(compareThirdPartyTodos) ??
-          null;
-      this.completedTabTodos =
-          thirdPartyTodos
-              .filter(
-                  todo => todo.data.thirdParty?.groupType !==
-                          AutoTodoGroup.kReadingList &&
-                      todo.status === AutoTodoStatus.kCompleted)
-              .sort(compareThirdPartyTodos) ??
-          null;
-      this.dismissedTabTodos =
-          thirdPartyTodos
-              .filter(
-                  todo => todo.data.thirdParty?.groupType !==
-                          AutoTodoGroup.kReadingList &&
-                      todo.status === AutoTodoStatus.kDismissed)
-              .sort(compareThirdPartyTodos) ??
-          null;
-      this.readingListTodos =
-          thirdPartyTodos
-              .filter(
-                  todo => todo.data.thirdParty?.groupType ===
-                          AutoTodoGroup.kReadingList &&
-                      todo.status === AutoTodoStatus.kActive)
-              .sort(compareThirdPartyTodos) ??
-          null;
+          filterTodos(firstPartyTodos, AutoTodoStatus.kDismissed);
     } catch (e) {
       console.error('Failed to fetch auto todos:', e);
     }
@@ -360,72 +180,12 @@ export class AiTaskboxElement extends CrLitElement {
     window.open(GENERAL_FEEDBACK_FORM_URL, '_blank');
   }
 
-  protected onGoToReadingListClick_() {
-    this.showingReadingList_ = true;
-  }
-
-  protected onBackClick_() {
-    this.showingReadingList_ = false;
-  }
-
-  protected onTabsSelectedChanged_(e: CustomEvent<{value: number}>) {
-    this.selectedTab_ = e.detail.value;
-  }
-
-  protected getUnfinishedTabTodos_(): AutoTodoItem[] {
-    return this.tabTodos?.filter(
-               todo => todo.data.thirdParty?.groupType ===
-                   AutoTodoGroup.kUnfinishedAction) ??
-        [];
-  }
-
-  protected getShoppingCartTabTodos_(): AutoTodoItem[] {
-    return this.tabTodos?.filter(
-               todo => todo.data.thirdParty?.groupType ===
-                   AutoTodoGroup.kShoppingCart) ??
-        [];
-  }
-
-  protected getStaleTabTodos_(): AutoTodoItem[] {
-    return this.tabTodos?.filter(
-               todo => todo.data.thirdParty?.groupType ===
-                   AutoTodoGroup.kNudgeToClose) ??
-        [];
-  }
-
-  protected onCloseAllStaleTabsClick_() {
-    for (const todo of this.getStaleTabTodos_()) {
-      const tabId = todo.data.thirdParty?.tabId;
-      if (tabId !== null && tabId !== undefined) {
-        browserProxyFactory.getInstance().handler.closeTab(tabId);
-      }
-    }
-  }
-
   protected onCompletedExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.isCompletedExpanded_ = e.detail.value;
   }
 
-  protected onCompletedHistoryExpandedChanged_(
-      e: CustomEvent<{value: boolean}>) {
-    this.isCompletedHistoryExpanded_ = e.detail.value;
-  }
-
-  protected onCompletedTabExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    this.isCompletedTabExpanded_ = e.detail.value;
-  }
-
   protected onDismissedExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.isDismissedExpanded_ = e.detail.value;
-  }
-
-  protected onDismissedHistoryExpandedChanged_(
-      e: CustomEvent<{value: boolean}>) {
-    this.isDismissedHistoryExpanded_ = e.detail.value;
-  }
-
-  protected onDismissedTabExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    this.isDismissedTabExpanded_ = e.detail.value;
   }
 
   protected async onGenerateGmailTodosClick_() {
@@ -443,32 +203,10 @@ export class AiTaskboxElement extends CrLitElement {
         this.lastGmailGenerationTime_ = new Date();
       }
     } catch (e) {
-      console.error('Failed to generate Gmail auto todos:', e);
+      console.error('Failed to generate auto todos:', e);
       this.hasGmailGenerationError_ = true;
     } finally {
       this.isGeneratingGmailTodos_ = false;
-    }
-  }
-
-  protected async onGenerateTabTodosClick_() {
-    if (!this.autoTodosEnabled_ || this.isGeneratingTabTodos_) {
-      return;
-    }
-    this.isGeneratingTabTodos_ = true;
-    this.hasTabGenerationError_ = false;
-    try {
-      const {success} = await browserProxyFactory.getInstance()
-                            .handler.generateTabBasedTodos();
-      this.hasTabGenerationError_ = !success;
-      if (success) {
-        this.hasGeneratedTab_ = true;
-        this.lastTabGenerationTime_ = new Date();
-      }
-    } catch (e) {
-      console.error('Failed to generate tab-based todos:', e);
-      this.hasTabGenerationError_ = true;
-    } finally {
-      this.isGeneratingTabTodos_ = false;
     }
   }
 
@@ -504,12 +242,6 @@ export class AiTaskboxElement extends CrLitElement {
         ?.showAt(e.currentTarget as HTMLElement);
   }
 
-  protected onBrowserMenuClick_(e: Event) {
-    e.stopPropagation();
-    this.shadowRoot?.querySelector<CrActionMenuElement>('#browserMenu')
-        ?.showAt(e.currentTarget as HTMLElement);
-  }
-
   protected async onClearWorkspaceTodosClick_() {
     if (!this.autoTodosEnabled_ || this.isGeneratingGmailTodos_) {
       return;
@@ -523,37 +255,12 @@ export class AiTaskboxElement extends CrLitElement {
         this.todos = null;
         this.completedTodos = null;
         this.dismissedTodos = null;
-        this.historyTodos = null;
-        this.completedHistoryTodos = null;
-        this.dismissedHistoryTodos = null;
         this.hasGeneratedGmail_ = false;
         this.lastGmailGenerationTime_ = null;
         this.hasGmailGenerationError_ = false;
       }
     } catch (e) {
-      console.error('Failed to clear workspace todos:', e);
-    }
-  }
-
-  protected async onClearBrowserTodosClick_() {
-    if (!this.autoTodosEnabled_ || this.isGeneratingTabTodos_) {
-      return;
-    }
-    this.shadowRoot?.querySelector<CrActionMenuElement>('#browserMenu')
-        ?.close();
-    try {
-      const {success} = await browserProxyFactory.getInstance()
-                            .handler.clearThirdPartyAutoTodos();
-      if (success) {
-        this.tabTodos = null;
-        this.completedTabTodos = null;
-        this.dismissedTabTodos = null;
-        this.hasGeneratedTab_ = false;
-        this.lastTabGenerationTime_ = null;
-        this.hasTabGenerationError_ = false;
-      }
-    } catch (e) {
-      console.error('Failed to clear browser todos:', e);
+      console.error('Failed to clear todos:', e);
     }
   }
 }

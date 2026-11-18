@@ -13,18 +13,15 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {AutoTodoGroup, AutoTodoStatus, browserProxyFactory} from '../context_hub.mojom-webui.js';
-import type {AutoTodoData, AutoTodoItem, SourceReference} from '../context_hub.mojom-webui.js';
+import {AutoTodoStatus, browserProxyFactory} from '../context_hub.mojom-webui.js';
+import type {AutoTodoItem, SourceReference} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './todo_item.css.js';
 import {getHtml} from './todo_item.html.js';
 
 const FIRST_PARTY_FORM_URL =
     'https://docs.google.com/forms/d/e/1FAIpQLSdKC1R7AWz6L0rRlCsCkF9cT7Q4KqGCU8mfT2qNFyWscUVo8g/viewform';
-const THIRD_PARTY_FORM_URL =
-    'https://docs.google.com/forms/d/e/1FAIpQLSdtsEqA8FnELO5VMUgz2ZotDxeuT2A1ctqmYUj_XEPL5SgzZg/viewform';
 const ENTRY_LIKED = 'entry.1262687224';
 const ENTRY_DETAILS = 'entry.809272442';
 const MAX_URLS_TO_OPEN = 10;
@@ -41,12 +38,6 @@ function isWebUrl(url: string): boolean {
   } catch {
     return false;
   }
-}
-
-export enum TodoItemVariant {
-  DEFAULT = 'default',
-  TAB = 'tab',
-  HISTORY = 'history',
 }
 
 export class TodoItemElement extends CrLitElement {
@@ -71,11 +62,8 @@ export class TodoItemElement extends CrLitElement {
       actionableUrl: {type: String},
       sourceReferences: {type: Array},
       score: {type: Number},
-      lastActiveTimestamp: {type: Object},
-      groupType: {type: Number},
       expanded_: {type: Boolean},
       liked: {type: Boolean},
-      variant: {type: String},
       disable_state_mgmt: {type: Boolean},
       canActOnWeb_: {type: Boolean},
     };
@@ -88,12 +76,8 @@ export class TodoItemElement extends CrLitElement {
   accessor actionableUrl: string = '';
   accessor sourceReferences: SourceReference[] = [];
   accessor score: number|null = null;
-  tabId: bigint|null = null;
-  accessor lastActiveTimestamp: Time|null = null;
-  accessor groupType: AutoTodoGroup = AutoTodoGroup.kNoMatch;
   protected accessor expanded_: boolean = false;
   accessor liked: boolean|null = null;
-  accessor variant: TodoItemVariant = TodoItemVariant.DEFAULT;
   accessor disable_state_mgmt: boolean = false;
   protected accessor canActOnWeb_: boolean =
       loadTimeData.valueExists('can_act_on_web') &&
@@ -145,58 +129,28 @@ export class TodoItemElement extends CrLitElement {
     }
     this.fire('feedback-changed', {todoId: this.id, liked: like});
 
-    // Prefill the form with the todo item details.
-    const isTabTodo = this.variant === TodoItemVariant.TAB;
-    const formUrl = isTabTodo ? THIRD_PARTY_FORM_URL : FIRST_PARTY_FORM_URL;
-
-    let details = '';
-    if (isTabTodo) {
-      const groupTypeStr = AutoTodoGroup[this.groupType] ?? '';
-      details = [this.heading, this.description, groupTypeStr].join(' / ');
-    } else {
-      const scoreStr = this.score !== null && this.score !== undefined ?
-          this.score.toFixed(2) :
-          '';
-      details = [
-        this.heading,
-        this.description,
-        this.actionableUrl,
-        scoreStr,
-      ].join(' / ');
-    }
+    const scoreStr = this.score !== null && this.score !== undefined ?
+        this.score.toFixed(2) :
+        '';
+    const details = [
+      this.heading,
+      this.description,
+      this.actionableUrl,
+      scoreStr,
+    ].join(' / ');
 
     const params = new URLSearchParams({
       'usp': 'pp_url',
       [ENTRY_LIKED]: like ? 'Liked' : 'Disliked',
       [ENTRY_DETAILS]: details,
     });
-    window.open(`${formUrl}?${params.toString()}`, '_blank');
+    window.open(`${FIRST_PARTY_FORM_URL}?${params.toString()}`, '_blank');
   }
 
   private async updateStatus_(status: AutoTodoStatus) {
-    if (this.disable_state_mgmt || this.variant === TodoItemVariant.HISTORY) {
+    if (this.disable_state_mgmt) {
       return;
     }
-
-    if (this.variant === TodoItemVariant.TAB && this.tabId === null) {
-      return;
-    }
-
-    const data: AutoTodoData = this.variant === TodoItemVariant.TAB ?
-        {
-          thirdParty: {
-            tabId: this.tabId!,
-            lastActiveTimestamp:
-                this.lastActiveTimestamp ?? {internalValue: 0n},
-            groupType: this.groupType,
-          },
-        } :
-        {
-          firstParty: {
-            actionableUrl: this.actionableUrl || null,
-            sourceReferences: this.sourceReferences,
-          },
-        };
 
     const todo: AutoTodoItem = {
       id: this.id,
@@ -204,7 +158,12 @@ export class TodoItemElement extends CrLitElement {
       description: this.description,
       status,
       score: this.score ?? 0,
-      data,
+      data: {
+        firstParty: {
+          actionableUrl: this.actionableUrl || null,
+          sourceReferences: this.sourceReferences,
+        },
+      },
     };
     try {
       await browserProxyFactory.getInstance().handler.updateAutoTodo(todo);
@@ -223,20 +182,12 @@ export class TodoItemElement extends CrLitElement {
 
   protected async onDismissClick_(e: Event) {
     e.stopPropagation();
-    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.close();
     await this.updateStatus_(AutoTodoStatus.kDismissed);
   }
 
   protected async onMarkActiveClick_(e: Event) {
     e.stopPropagation();
-    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.close();
     await this.updateStatus_(AutoTodoStatus.kActive);
-  }
-
-  protected onMoreClick_(e: Event) {
-    e.stopPropagation();
-    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.showAt(
-        e.currentTarget as HTMLElement);
   }
 
   protected onTaskMenuClick_(e: Event) {
@@ -245,30 +196,27 @@ export class TodoItemElement extends CrLitElement {
         ?.showAt(e.currentTarget as HTMLElement);
   }
 
-  protected onOpenTabClick_(e: Event) {
+  protected async onOpenTabClick_(e: Event) {
     e.stopPropagation();
     this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
-    if (this.variant === TodoItemVariant.TAB) {
-      if (this.tabId !== null) {
-        browserProxyFactory.getInstance().handler.switchToTab(this.tabId);
-      }
-      return;
-    }
-
     if (this.actionableUrl) {
       window.open(this.actionableUrl, '_blank');
+      return;
     }
+    await this.openReferencesInTabGroup_();
   }
 
   protected async onRunTaskClick_(e: Event) {
     e.stopPropagation();
     this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
-    if (this.variant === TodoItemVariant.TAB) {
+    const targetUrl =
+        this.actionableUrl || this.getOpenableReferenceUrls_()[0] || '';
+    const taskSummary =
+        [this.heading.trim(), targetUrl].filter(Boolean).join(' ');
+    if (!taskSummary) {
       return;
     }
-
-    const prompt =
-        `${this.heading} ${this.actionableUrl} If you need more information ` +
+    const prompt = `${taskSummary} If you need more information ` +
         `to complete your task or if you have any questions, ask.`;
 
     try {
@@ -278,10 +226,7 @@ export class TodoItemElement extends CrLitElement {
     }
   }
 
-  protected async onContinueInTabsClick_(e: Event) {
-    e.stopPropagation();
-    this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
-
+  private async openReferencesInTabGroup_() {
     const urls = this.getOpenableReferenceUrls_();
     if (urls.length === 0) {
       return;
@@ -303,54 +248,6 @@ export class TodoItemElement extends CrLitElement {
     for (const url of urls.slice(0, MAX_URLS_TO_OPEN)) {
       OpenWindowProxyImpl.getInstance().openUrl(url);
     }
-  }
-
-  protected onContinueInGeminiClick_(e: Event) {
-    e.stopPropagation();
-    // TODO(igoralsky): Implement this.
-    this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
-  }
-
-  protected onCloseTabClick_(e: Event) {
-    e.stopPropagation();
-    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.close();
-    if (this.tabId !== null) {
-      browserProxyFactory.getInstance().handler.closeTab(this.tabId);
-    }
-  }
-
-  private async addToReadingList_() {
-    if (this.disable_state_mgmt || this.tabId === null) {
-      return;
-    }
-
-    const data: AutoTodoData = {
-      thirdParty: {
-        tabId: this.tabId,
-        lastActiveTimestamp: this.lastActiveTimestamp ?? {internalValue: 0n},
-        groupType: AutoTodoGroup.kReadingList,
-      },
-    };
-
-    const todo: AutoTodoItem = {
-      id: this.id,
-      title: this.heading,
-      description: this.description,
-      status: this.status,
-      score: 0,
-      data,
-    };
-    try {
-      await browserProxyFactory.getInstance().handler.updateAutoTodo(todo);
-    } catch (e) {
-      console.error('Failed to add auto todo to reading list:', e);
-    }
-  }
-
-  protected async onSaveClick_(e: Event) {
-    e.stopPropagation();
-    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.close();
-    await this.addToReadingList_();
   }
 
   protected getReferences() {
@@ -377,14 +274,18 @@ export class TodoItemElement extends CrLitElement {
         .filter((ref): ref is {label: string, url: string} => ref !== null);
   }
 
-  protected getOpenableReferenceUrls_(): string[] {
+  private getOpenableReferenceUrls_(): string[] {
     return this.getReferences()
         .map(ref => ref.url)
         .filter(url => isWebUrl(url));
   }
 
-  protected hasOpenableReferences_(): boolean {
+  private hasOpenableReferences_(): boolean {
     return this.getOpenableReferenceUrls_().length > 0;
+  }
+
+  protected canOpenTab_(): boolean {
+    return Boolean(this.actionableUrl) || this.hasOpenableReferences_();
   }
 
   protected onActionsClick_(e: Event) {
