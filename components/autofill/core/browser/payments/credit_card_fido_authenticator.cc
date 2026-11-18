@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/android_info.h"
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -51,6 +50,10 @@
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif
 
 namespace autofill {
 

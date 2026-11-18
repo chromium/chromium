@@ -7,12 +7,14 @@
 #include <memory>
 #include <utility>
 
-#include "base/android/android_info.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_types.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif
 
 namespace policy {
 

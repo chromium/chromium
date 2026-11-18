@@ -14,7 +14,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/android/android_info.h"
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/byte_size.h"

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/allocator/partition_alloc_support.h"
-#include "base/android/android_info.h"
 #include "base/command_line.h"
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/crash_logging.h"
@@ -87,6 +86,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
 #include "base/android/scudo_features.h"
 #include "base/android/scudo_purge_coordinator.h"
 #include "components/viz/service/gl/throw_uncaught_exception.h"

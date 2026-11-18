@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/android/android_info.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"

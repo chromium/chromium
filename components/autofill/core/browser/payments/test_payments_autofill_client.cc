@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/android/device_info.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -35,6 +34,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
 #include "base/test/gmock_callback_support.h"
 #include "components/autofill/core/browser/payments/android_bnpl_strategy.h"
 #endif  // BUILDFLAG(IS_ANDROID)

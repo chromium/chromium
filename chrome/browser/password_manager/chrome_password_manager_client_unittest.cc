@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/device_info.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
@@ -139,6 +138,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"

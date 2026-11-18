@@ -16,7 +16,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/android/device_info.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/extend.h"
@@ -80,6 +79,10 @@
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace autofill {
 

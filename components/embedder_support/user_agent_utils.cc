@@ -13,7 +13,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/android/device_info.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -48,6 +47,10 @@
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 #include <sys/utsname.h>
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
 #endif
 
 namespace embedder_support {
