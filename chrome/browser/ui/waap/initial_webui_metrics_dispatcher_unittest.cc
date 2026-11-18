@@ -68,7 +68,7 @@ TEST_F(InitialWebUIMetricsDispatcherTest, StartupFirstPaintLoggedDirectly) {
   // Does NOT record new window metric.
   histograms.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstPaint.FromConstructor2",
+      "ReloadButton.FirstPaint.FromConstructor3",
       0);
 }
 
@@ -93,7 +93,7 @@ TEST_F(InitialWebUIMetricsDispatcherTest,
   // Does NOT record new window metric.
   histograms.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      "ReloadButton.FirstContentfulPaint.FromConstructor3",
       0);
 }
 
@@ -211,11 +211,11 @@ TEST_F(InitialWebUIMetricsDispatcherTest, SkipsLatencyMetricsWhenMinimized) {
       "InitialWebUI.Startup.ReloadButton.FirstContentfulPaint", 0);
   histograms.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstPaint.FromConstructor2",
+      "ReloadButton.FirstPaint.FromConstructor3",
       0);
   histograms.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      "ReloadButton.FirstContentfulPaint.FromConstructor3",
       0);
 }
 
@@ -248,11 +248,11 @@ TEST_F(InitialWebUIMetricsDispatcherTest, SkipStartupForTestingIsPerWindow) {
       "InitialWebUI.Startup.ReloadButton.FirstContentfulPaint", 0);
   histograms.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstPaint.FromConstructor2",
+      "ReloadButton.FirstPaint.FromConstructor3",
       kTestLatency, 1);
   histograms.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      "ReloadButton.FirstContentfulPaint.FromConstructor3",
       kTestLatency, 1);
   EXPECT_FALSE(WaapUIMetricsService::IsStartupFirstPaintRecorded());
   EXPECT_FALSE(WaapUIMetricsService::IsStartupFirstContentfulPaintRecorded());
@@ -278,11 +278,11 @@ TEST_F(InitialWebUIMetricsDispatcherTest, NewWindowFirstPaintBoundAtStart) {
 
   histograms.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstPaint.FromConstructor2",
+      "ReloadButton.FirstPaint.FromConstructor3",
       kTestLatency, 1);
   histograms.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      "ReloadButton.FirstContentfulPaint.FromConstructor3",
       kTestLatency, 1);
 }
 
@@ -307,11 +307,11 @@ TEST_F(InitialWebUIMetricsDispatcherTest, PaintsIgnoredWithoutManager) {
       "InitialWebUI.Startup.ReloadButton.FirstContentfulPaint", 0);
   histograms.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstPaint.FromConstructor2",
+      "ReloadButton.FirstPaint.FromConstructor3",
       0);
   histograms.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      "ReloadButton.FirstContentfulPaint.FromConstructor3",
       0);
   EXPECT_FALSE(WaapUIMetricsService::IsStartupFirstPaintRecorded());
   EXPECT_FALSE(WaapUIMetricsService::IsStartupFirstContentfulPaintRecorded());
@@ -346,11 +346,11 @@ TEST_F(InitialWebUIMetricsDispatcherTest,
   // paint call.
   histograms.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstPaint.FromConstructor2",
+      "ReloadButton.FirstPaint.FromConstructor3",
       0);
   histograms.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      "ReloadButton.FirstContentfulPaint.FromConstructor3",
       0);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -391,11 +391,11 @@ TEST_F(InitialWebUIMetricsDispatcherTest,
 
   histograms.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstPaint.FromConstructor2",
+      "ReloadButton.FirstPaint.FromConstructor3",
       kTestLatency, 1);
   histograms.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      "ReloadButton.FirstContentfulPaint.FromConstructor3",
       kTestLatency, 1);
 }
 

@@ -552,10 +552,10 @@ TEST_F(ReloadButtonWindowMetricsTest, RecordsNewWindowPaintsThroughDispatcher) {
 
   histogram_tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstPaint.FromConstructor2",
+      "ReloadButton.FirstPaint.FromConstructor3",
       latency, 1);
   histogram_tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      "ReloadButton.FirstContentfulPaint.FromConstructor3",
       latency, 1);
 }

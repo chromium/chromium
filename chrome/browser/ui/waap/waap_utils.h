@@ -33,40 +33,48 @@ namespace waap {
 enum class NewWindowCreationSource {
   kUnknown = 0,
   // kBrowserInitiated = 1,  // Deprecated; split into specific sources below.
-  // Created by dragging a tab out of a tab strip into a new window via
-  // `TabDragController`.
+  // Created by dragging tab(s) out of a tab strip into a new window via
+  // `TabDragController` or `TabDragWindowAdapterImpl`.
   kDragToNewWindow = 2,
-  // Created by session restore (`SessionRestoreImpl`) for a window restored
-  // from a saved session.
+  // Created when restoring saved windows or tabs, e.g. `SessionRestoreImpl`
+  // (including `kLastAndUrlsStartupPref` and foreign tab restore),
+  // `BrowserLiveTabContext::Create()` (`TabRestoreService` window restore), or
+  // Ash `BrowserRestoreObserver` opening startup URLs in a new window after a
+  // restore.
   kSessionRestore = 3,
-  // Created via `chrome::OpenEmptyWindow()` or
-  // `chrome::ScopedTabbedBrowserDisplayer`, e.g. keyboard shortcut
-  // (Ctrl/Cmd+N), app menu "New window" / "New Incognito window", macOS Dock
-  // click when no window is visible, or features such as Glic, background mode,
-  // or singleton-tab helpers opening a window when the profile has none. The
-  // window usually starts with a single NTP tab (or initially empty before the
-  // caller adds a tab), though startup tabs may be added during browser
-  // creation when `should_trigger_session_restore` is true.
+  // Created via `chrome::OpenEmptyWindow()`,
+  // `chrome::ScopedTabbedBrowserDisplayer`, or UI/feature helpers opening an
+  // initial window when the profile has none (e.g. keyboard shortcut
+  // Ctrl/Cmd+N, app menu "New window" / "New Incognito window", macOS Dock or
+  // menu bar commands, AppleScript, Glic, Actor, background mode, or settings /
+  // singleton-tab helpers). The window usually starts with a single NTP tab (or
+  // initially empty before the caller adds a tab), though startup tabs may be
+  // added during browser creation when `should_trigger_session_restore` is
+  // true.
   kNewEmptyWindow = 4,
-  // Created by moving existing tab(s) or a tab group into a new window via
-  // `chrome::MoveTabsToNewWindow()` or `chrome::MoveGroupToNewWindow()`, e.g.
-  // from the tab or tab group context menu.
+  // Created by moving existing tab(s) or a tab group into a new window, e.g.
+  // via `chrome::MoveTabsToNewWindow()`, `chrome::MoveGroupToNewWindow()`,
+  // `BrowserTabStripModelDelegate::CreateNewStripWithTabs()`, or workspace /
+  // desk tab-grouping tools.
   kMoveTabsToNewWindow = 5,
-  // Created by a browser launch in
-  // `StartupBrowserCreatorImpl::OpenTabsInBrowser()` (i.e.
-  // `BrowserWindowCreateParams::CreationSource::kStartupCreator`) when no
-  // existing tabbed browser is reused, e.g. an OS/shell shortcut (taskbar,
-  // desktop, Start menu) or `--new-window` handled by an already running
-  // browser process, or opening a window for another profile or Guest mode.
+  // Created by a browser or app launch that opens a new normal browser window,
+  // e.g. `StartupBrowserCreatorImpl::OpenTabsInBrowser()` (OS/shell shortcut or
+  // `--new-window` handled by an already running browser, or opening a window
+  // for another profile or Guest mode), macOS AppleEvent URL launch, launching
+  // a web/extension app configured to open in a browser tab when no tabbed
+  // window exists, or launching a ChromeOS desk template or coral group
+  // (`DesksTemplatesAppLaunchHandler`).
   kLaunch = 6,
   // Created by `SessionRestoreImpl::FinishedTabCreation()` as a fallback when
   // the restored session has no tabbed browser windows. Unlike
   // `kSessionRestore`, this window restores no tabs; it only opens the startup
   // tabs or the NTP.
   kSessionRestoreFallback = 7,
-  // Created during navigation in `Navigate()` (`browser_navigator.cc`) or web
-  // app navigation capturing (`navigation_capturing_process.cc`), e.g. opening
-  // a link in a new window or incognito window
+  // Created during navigation in `Navigate()` (`browser_navigator.cc`), web app
+  // navigation capturing (`navigation_capturing_process.cc`), or navigation
+  // helpers (`ChromeWebContentsHandler`, `OmniboxEverywhereService`, macOS
+  // bookmark menu, Ash `NewTabWithPostData`), e.g. opening a link in a new
+  // window or incognito window
   // (`ui::mojom::WindowOpenDisposition::kNewWindow` / `kOffTheRecord`),
   // Shift+Enter in the omnibox, navigating when no tabbed browser window exists
   // for the profile, or capturing/reparenting a web app navigation into a new

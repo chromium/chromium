@@ -58,34 +58,43 @@ chromium-metrics-reviews@google.com.
 <variants name="CreationSource">
   <variant name=".AllSources" summary="Aggregated across all sources"/>
   <variant name=".DragToNewWindow"
-      summary="Triggered by dragging a tab to a new window"/>
+      summary="Triggered by dragging tab(s) to a new window"/>
   <variant name=".Extension"
       summary="Triggered by an extension API or extension host helper opening
                a new normal browser window (e.g. chrome.windows.create(),
                chrome.tabs.create(), chrome.runtime.openOptionsPage(),
                OpenTabHelper, or ChromeExtensionHostDelegate)"/>
   <variant name=".Launch"
-      summary="Triggered by a browser launch that opens a new window (e.g. an
-               OS/shell shortcut or --new-window handled by an already
-               running browser, or opening a window for another profile or
-               Guest mode). As with other sources, the first window of the
-               browser process is recorded under InitialWebUI.Startup instead"/>
+      summary="Triggered by a browser or app launch that opens a new normal
+               browser window (e.g. an OS/shell shortcut or --new-window
+               handled by an already running browser, opening a window for
+               another profile or Guest mode, macOS AppleEvent URL launch,
+               launching a web/extension app in a browser tab when no tabbed
+               window exists, or launching a ChromeOS desk template or coral
+               group). As with other sources, the first window of the browser
+               process is recorded under InitialWebUI.Startup instead"/>
   <variant name=".MoveTabsToNewWindow"
       summary="Triggered by moving tab(s) or a tab group to a new window
-               (e.g. via tab or tab group context menu)"/>
+               (e.g. via tab or tab group context menu,
+               CreateNewStripWithTabs, or workspace/desk tab-grouping tools)"/>
   <variant name=".Navigation"
-      summary="Triggered by a navigation in Navigate() or web app navigation
-               capturing that creates a new window (e.g. opening a link in a
-               new window or incognito window, Shift+Enter in the omnibox,
-               navigating when no tabbed browser window exists for the
-               profile, or capturing/reparenting a web app navigation into a
-               new tabbed browser window)"/>
+      summary="Triggered by a navigation in Navigate(), web app navigation
+               capturing, or navigation helpers that creates a new window
+               (e.g. opening a link in a new window or incognito window,
+               Shift+Enter in the omnibox, navigating when no tabbed browser
+               window exists for the profile, or capturing/reparenting a web
+               app navigation into a new tabbed browser window)"/>
   <variant name=".NewEmptyWindow"
       summary="Triggered by opening a new empty window (e.g. keyboard
-               shortcut, app menu, macOS Dock click, or a feature such as
-               Glic, background mode, or ScopedTabbedBrowserDisplayer opening
-               a window when the profile has none)"/>
-  <variant name=".SessionRestore" summary="Triggered by session restore"/>
+               shortcut, app menu, macOS Dock or menu bar command,
+               AppleScript, or a feature such as Glic, Actor, background
+               mode, settings, or ScopedTabbedBrowserDisplayer opening a
+               window when the profile has none)"/>
+  <variant name=".SessionRestore"
+      summary="Triggered by restoring saved windows or tabs (e.g. session
+               restore, kLastAndUrlsStartupPref, foreign tab restore,
+               TabRestoreService window restore, or ChromeOS opening startup
+               URLs in a new window after a restore)"/>
   <variant name=".SessionRestoreFallback"
       summary="Triggered by session restore opening a fallback window when
                the restored session has no tabbed browser windows; the window
@@ -149,7 +158,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="NewWindowMetricVersion">
-  <variant name="2" summary="(V2 with fixed metric start times)"/>
+  <variant name="2"
+      summary="(DEPRECATED in M160. Replaced by V3; V2 with fixed metric
+               start times)"/>
+  <variant name="3" summary="(V3 covering all normal window creation sources)"/>
 </variants>
 
 <variants name="PaintType">

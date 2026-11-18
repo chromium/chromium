@@ -785,10 +785,10 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   // Define expected metrics
   const std::string first_paint_metric =
       "InitialWebUI.NewWindow.AllSources.WithExistingWindow."
-      "ReloadButton.FirstPaint.FromConstructor2";
+      "ReloadButton.FirstPaint.FromConstructor3";
   const std::string fcp_metric =
       "InitialWebUI.NewWindow.AllSources.WithExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2";
+      "ReloadButton.FirstContentfulPaint.FromConstructor3";
 
   {
     base::StatisticsRecorder::HistogramWaiter first_paint_waiter(

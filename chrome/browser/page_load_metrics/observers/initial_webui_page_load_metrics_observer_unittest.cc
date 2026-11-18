@@ -404,7 +404,7 @@ TEST_F(InitialWebUIPageLoadMetricsObserverTest,
 
   histograms.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      "ReloadButton.FirstContentfulPaint.FromConstructor3",
       1);
 }
 
@@ -449,7 +449,7 @@ TEST_F(InitialWebUIPageLoadMetricsObserverTest,
 
   histograms.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "ReloadButton.FirstContentfulPaint.FromConstructor2",
+      "ReloadButton.FirstContentfulPaint.FromConstructor3",
       1);
 }
 

@@ -89,11 +89,11 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
   base::HistogramTester tester;
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
-      "FirstPaint.FromConstructor2",
+      "FirstPaint.FromConstructor3",
       kTestLatency, 0);
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
-      "BrowserWindow.FirstPaint.FromConstructor2",
+      "BrowserWindow.FirstPaint.FromConstructor3",
       kTestLatency, 0);
 
   manager.SkipStartupForTesting();
@@ -103,11 +103,11 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
 
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
-      "FirstPaint.FromConstructor2",
+      "FirstPaint.FromConstructor3",
       kTestLatency, 1);
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
-      "BrowserWindow.FirstPaint.FromConstructor2",
+      "BrowserWindow.FirstPaint.FromConstructor3",
       kTestLatency, 1);
 }
 
@@ -127,7 +127,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsFirstPaintGapDelta) {
   // Still no metric because WebUI hasn't painted.
   tester.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.BrowserWindowToReloadButton."
-      "FirstPaintGap2",
+      "FirstPaintGap3",
       0);
 
   // Simulate paint of WebUI reload button.
@@ -138,11 +138,11 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsFirstPaintGapDelta) {
   // Now the gap metric should be emitted with the correct delta
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "BrowserWindowToReloadButton.FirstPaintGap2",
+      "BrowserWindowToReloadButton.FirstPaintGap3",
       webui_delay, 1);
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
-      "BrowserWindowToReloadButton.FirstPaintGap2",
+      "BrowserWindowToReloadButton.FirstPaintGap3",
       webui_delay, 1);
 }
 
@@ -163,7 +163,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsShowRequestedToFirstPaint) {
   // Still no metric because first presentation hasn't happened.
   tester.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
-      "ShowRequestedToFirstPaint2",
+      "ShowRequestedToFirstPaint3",
       0);
 
   // Simulate presenting native window.
@@ -177,12 +177,12 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsShowRequestedToFirstPaint) {
 
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
-      "ShowRequestedToFirstPaint2",
+      "ShowRequestedToFirstPaint3",
       expected_delta, 1);
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
       "BrowserWindow."
-      "ShowRequestedToFirstPaint2",
+      "ShowRequestedToFirstPaint3",
       expected_delta, 1);
 }
 
@@ -216,7 +216,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
 
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
-      "ShowRequestedToFirstPaint2",
+      "ShowRequestedToFirstPaint3",
       expected_delta, 1);
 }
 
@@ -275,7 +275,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
       "InitialWebUI.Startup.BrowserWindowToReloadButton.FirstPaintGap", 0);
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "BrowserWindowToReloadButton.FirstPaintGap2",
+      "BrowserWindowToReloadButton.FirstPaintGap3",
       webui_delay, 1);
 }
 
@@ -312,7 +312,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
       "InitialWebUI.Startup.BrowserWindowToReloadButton.FirstPaintGap", 0);
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "BrowserWindowToReloadButton.FirstPaintGap2",
+      "BrowserWindowToReloadButton.FirstPaintGap3",
       webui_delay, 1);
 }
 
@@ -341,11 +341,11 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
   // Verify metric was recorded with the expected duration value.
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
-      "ClosedBeforeFirstPaint2",
+      "ClosedBeforeFirstPaint3",
       base::Milliseconds(50), 1);
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
-      "BrowserWindow.ClosedBeforeFirstPaint2",
+      "BrowserWindow.ClosedBeforeFirstPaint3",
       base::Milliseconds(50), 1);
 }
 

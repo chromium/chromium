@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
                    ->GetSize() > 0
            ? "WithExistingWindow"
            : "WithoutExistingWindow",
-       ".BrowserWindowToReloadButton.FirstPaintGap2"});
+       ".BrowserWindowToReloadButton.FirstPaintGap3"});
   base::StatisticsRecorder::HistogramWaiter waiter(expected_metric);
 
   // Create a new browser window without actively showing/painting it yet.
@@ -696,11 +696,11 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
 
   histogram_tester.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithExistingWindow."
-      "BrowserWindowToReloadButton.FirstPaintGap2",
+      "BrowserWindowToReloadButton.FirstPaintGap3",
       1);
   histogram_tester.ExpectTotalCount(
       "InitialWebUI.NewWindow.NewEmptyWindow.WithExistingWindow."
-      "BrowserWindowToReloadButton.FirstPaintGap2",
+      "BrowserWindowToReloadButton.FirstPaintGap3",
       1);
 }
 
@@ -715,7 +715,7 @@ class InitialWebUIDeferShowBrowserTest : public InitialWebUIBrowserTestBase {
 // Verifies that showing a new browser window via `ShowInactive()` (e.g.
 // background `Target.createTarget` or inactive window navigations) defers
 // showing the window until the WebUI toolbar loads and records
-// `ShowRequestedToFirstPaint2`.
+// `ShowRequestedToFirstPaint3`.
 IN_PROC_BROWSER_TEST_F(InitialWebUIDeferShowBrowserTest,
                        RecordsShowRequestedToFirstPaintForShowInactive) {
   base::HistogramTester histogram_tester;
@@ -748,11 +748,11 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIDeferShowBrowserTest,
 
   histogram_tester.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithExistingWindow.BrowserWindow."
-      "ShowRequestedToFirstPaint2",
+      "ShowRequestedToFirstPaint3",
       1);
   histogram_tester.ExpectTotalCount(
       "InitialWebUI.NewWindow.Navigation.WithExistingWindow.BrowserWindow."
-      "ShowRequestedToFirstPaint2",
+      "ShowRequestedToFirstPaint3",
       1);
 }
 
@@ -1146,7 +1146,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUISurfaceSyncBrowserTest,
   // We need to wait for the histogram.
   const std::string expected_metric =
       "InitialWebUI.NewWindow.AllSources.WithExistingWindow."
-      "BrowserWindowToReloadButton.FirstPaintGap2";
+      "BrowserWindowToReloadButton.FirstPaintGap3";
 
   base::StatisticsRecorder::HistogramWaiter waiter(expected_metric);
 
@@ -1221,13 +1221,13 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
   // Verify ShowRequestedToFirstPaint was not recorded.
   histogram_tester.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
-      "ShowRequestedToFirstPaint2",
+      "ShowRequestedToFirstPaint3",
       0);
 
   // Verify FirstPaintGap was not recorded.
   histogram_tester.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
-      "BrowserWindowToReloadButton.FirstPaintGap2",
+      "BrowserWindowToReloadButton.FirstPaintGap3",
       0);
 }
 
