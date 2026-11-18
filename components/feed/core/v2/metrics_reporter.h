@@ -117,8 +117,6 @@ class MetricsReporter {
   virtual void OnLoadMore(const StreamType& stream_type,
                           LoadStreamStatus final_status,
                           const ContentStats& content_stats);
-  // Called each time the surface receives new content.
-  void SurfaceReceivedContent(SurfaceId surface_id);
   // Called when Chrome is entering the background.
   void OnEnterBackground();
 
@@ -184,7 +182,6 @@ class MetricsReporter {
   void TrackTimeSpentInFeed(bool interacted_or_scrolled);
   void RecordInteraction(const StreamType& stream_type);
   void ReportOpenFeedIfNeeded(SurfaceId surface_id, bool success);
-  void ReportGetMoreIfNeeded(SurfaceId surface_id, bool success);
   void FinalizeMetrics();
   void FinalizeVisit();
 
@@ -206,9 +203,6 @@ class MetricsReporter {
 
   // The time a surface was opened, for surfaces still waiting for content.
   std::map<SurfaceId, SurfaceWaiting> surfaces_waiting_for_content_;
-  // The time a surface requested more content, for surfaces still waiting for
-  // more content.
-  std::map<SurfaceId, SurfaceWaiting> surfaces_waiting_for_more_content_;
 
   // Tracking ContentSuggestions.Feed.UserJourney.OpenCard.*:
   // We assume at most one card is opened at a time. The time the card was

@@ -24,7 +24,6 @@ class StreamUpdate;
 }  // namespace feedui
 namespace feed {
 class SurfaceRenderer;
-class MetricsReporter;
 
 // Keeps the UI up to date by calling |FeedStreamSurface::StreamUpdate()|.
 // Updates are triggered when |StreamModel| changes, or when loading state
@@ -33,8 +32,7 @@ class SurfaceUpdater : public StreamModel::Observer,
                        public StreamSurfaceSet::Observer,
                        public XsurfaceDatastoreDataReader::Observer {
  public:
-  explicit SurfaceUpdater(MetricsReporter* metrics_reporter,
-                          XsurfaceDatastoreDataReader* global_datastore_slice,
+  explicit SurfaceUpdater(XsurfaceDatastoreDataReader* global_datastore_slice,
                           StreamSurfaceSet* surfaces);
   ~SurfaceUpdater() override;
   SurfaceUpdater(const SurfaceUpdater&) = delete;
@@ -102,14 +100,10 @@ class SurfaceUpdater : public StreamModel::Observer,
   void SendStreamUpdateIfNeeded();
   void SendStreamUpdate(
       const std::vector<std::string>& updated_shared_state_ids);
-  void SendUpdateToSurface(SurfaceId surface_id,
-                           SurfaceRenderer* surface,
-                           const feedui::StreamUpdate& update);
   void InsertDatastoreEntry(const std::string& key, const std::string& value);
   void RemoveDatastoreEntry(const std::string& key);
 
   // Owned by |FeedStream|.
-  raw_ptr<MetricsReporter> metrics_reporter_;
   raw_ptr<StreamSurfaceSet> surfaces_;
   // Per-StreamType xsurface data.
   XsurfaceDatastoreSlice surface_data_slice_;

@@ -45,8 +45,7 @@ using feed::FeedEngagementType;
 using feed::FeedUserActionType;
 const int kMaxSuggestionsTotal = 50;
 // Maximum time to wait before declaring a load operation failed.
-// For both ContentSuggestions.Feed.UserJourney.OpenFeed
-// and ContentSuggestions.Feed.UserJourney.GetMore.
+// For ContentSuggestions.Feed.UserJourney.OpenFeed.
 constexpr base::TimeDelta kLoadTimeout = base::Seconds(15);
 // Maximum time to wait before declaring opening a card a failure.
 // For ContentSuggestions.Feed.UserJourney.OpenCard.
@@ -687,7 +686,6 @@ void MetricsReporter::SurfaceOpened(const StreamType& stream_type,
 void MetricsReporter::SurfaceClosed(SurfaceId surface_id) {
   VVLOG << "Feed SurfaceClosed " << surface_id;
   ReportOpenFeedIfNeeded(surface_id, false);
-  ReportGetMoreIfNeeded(surface_id, false);
 }
 
 void MetricsReporter::FinalizeMetrics() {
@@ -696,10 +694,6 @@ void MetricsReporter::FinalizeMetrics() {
   for (auto iter = surfaces_waiting_for_content_.begin();
        iter != surfaces_waiting_for_content_.end();) {
     ReportOpenFeedIfNeeded((iter++)->first, false);
-  }
-  for (auto iter = surfaces_waiting_for_more_content_.begin();
-       iter != surfaces_waiting_for_more_content_.end();) {
-    ReportGetMoreIfNeeded((iter++)->first, false);
   }
   prefs::SetPersistentMetricsData(persistent_data_, *profile_prefs_);
 }
@@ -715,21 +709,6 @@ void MetricsReporter::ReportOpenFeedIfNeeded(SurfaceId surface_id,
   base::UmaHistogramCustomTimes(
       base::StrCat({"ContentSuggestions.Feed.UserJourney.Open",
                     HistogramReplacement(surface_waiting.stream_type),
-                    success ? "SuccessDuration" : "FailureDuration"}),
-      base::TimeTicks::Now() - surface_waiting.wait_start,
-      base::Milliseconds(50), kLoadTimeout, 50);
-}
-
-void MetricsReporter::ReportGetMoreIfNeeded(SurfaceId surface_id,
-                                            bool success) {
-  auto iter = surfaces_waiting_for_more_content_.find(surface_id);
-  if (iter == surfaces_waiting_for_more_content_.end())
-    return;
-  SurfaceWaiting surface_waiting = std::move(iter->second);
-  surfaces_waiting_for_more_content_.erase(iter);
-
-  base::UmaHistogramCustomTimes(
-      base::StrCat({"ContentSuggestions.Feed.UserJourney.GetMore.",
                     success ? "SuccessDuration" : "FailureDuration"}),
       base::TimeTicks::Now() - surface_waiting.wait_start,
       base::Milliseconds(50), kLoadTimeout, 50);
@@ -907,17 +886,7 @@ void MetricsReporter::OnManualRefresh(const StreamType& stream_type,
 }
 
 void MetricsReporter::OnLoadMoreBegin(const StreamType& stream_type,
-                                      SurfaceId surface_id) {
-  ReportGetMoreIfNeeded(surface_id, false);
-  surfaces_waiting_for_more_content_.emplace(
-      surface_id, SurfaceWaiting{stream_type, base::TimeTicks::Now()});
-
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&MetricsReporter::ReportGetMoreIfNeeded, GetWeakPtr(),
-                     surface_id, false),
-      kLoadTimeout);
-}
+                                      SurfaceId surface_id) {}
 
 void MetricsReporter::OnLoadMore(const StreamType& stream_type,
                                  LoadStreamStatus status,
@@ -954,10 +923,6 @@ void MetricsReporter::ActivityLoggingEnabled(
 void MetricsReporter::NoticeCardFulfilled(bool response_has_notice_card) {
   base::UmaHistogramBoolean("ContentSuggestions.Feed.NoticeCardFulfilled2",
                             response_has_notice_card);
-}
-
-void MetricsReporter::SurfaceReceivedContent(SurfaceId surface_id) {
-  ReportGetMoreIfNeeded(surface_id, true);
 }
 
 void MetricsReporter::ReportPersistentDataIfDayIsDone() {

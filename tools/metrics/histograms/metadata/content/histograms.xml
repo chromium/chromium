@@ -744,29 +744,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.UserJourney.GetMore.FailureDuration"
-    units="ms" expires_after="2023-09-24">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Time between the UI requesting additional stream content and failure by
-    either a 15 second timeout or a surface closure.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.UserJourney.GetMore.SuccessDuration"
-    units="ms" expires_after="2024-02-04">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Time between the UI requesting additional stream content and the content
-    being provided within 15 seconds. Providing content entails showing either a
-    cached or newly fetched Feed card.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.UserJourney.{Surface}.Failure"
     enum="Boolean" expires_after="2024-01-23">
   <owner>harringtond@chromium.org</owner>

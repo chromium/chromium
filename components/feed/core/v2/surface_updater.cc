@@ -18,7 +18,6 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feed_stream_surface.h"
 #include "components/feed/core/v2/launch_reliability_logger.h"
-#include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/stream_surface_set.h"
 #include "components/feed/core/v2/types.h"
 
@@ -224,11 +223,9 @@ bool SurfaceUpdater::DrawState::operator==(const DrawState& rhs) const {
 }
 
 SurfaceUpdater::SurfaceUpdater(
-    MetricsReporter* metrics_reporter,
     XsurfaceDatastoreDataReader* global_datastore_slice,
     StreamSurfaceSet* surfaces)
-    : metrics_reporter_(metrics_reporter),
-      surfaces_(surfaces),
+    : surfaces_(surfaces),
       aggregate_data_({&surface_data_slice_, global_datastore_slice}),
       launch_reliability_logger_(surfaces) {
   aggregate_data_.AddObserver(this);
@@ -285,7 +282,7 @@ void SurfaceUpdater::SurfaceAdded(
 
   StreamUpdateAndType update = GetUpdateForNewSurface(GetState(), model_);
   launch_reliability_logger_.OnStreamUpdate(update.type, *renderer);
-  SendUpdateToSurface(surface_id, renderer, update.stream_update);
+  renderer->StreamUpdate(update.stream_update);
 
   for (std::pair<std::string, std::string> datastore_entry :
        aggregate_data_.GetAllEntries()) {
@@ -389,30 +386,11 @@ void SurfaceUpdater::SendStreamUpdate(
   }
 
   for (auto& entry : *surfaces_) {
-    SendUpdateToSurface(entry.surface_id, entry.renderer, update.stream_update);
+    entry.renderer->StreamUpdate(update.stream_update);
   }
 
   sent_content_ = GetContentSet(model_);
   last_draw_state_ = state;
-}
-
-void SurfaceUpdater::SendUpdateToSurface(SurfaceId surface_id,
-                                         SurfaceRenderer* renderer,
-                                         const feedui::StreamUpdate& update) {
-  renderer->StreamUpdate(update);
-
-  // Call |MetricsReporter::SurfaceReceivedContent()| if appropriate.
-
-  bool update_has_content = false;
-  for (const feedui::StreamUpdate_SliceUpdate& slice_update :
-       update.updated_slices()) {
-    if (slice_update.has_slice() && slice_update.slice().has_xsurface_slice()) {
-      update_has_content = true;
-    }
-  }
-  if (!update_has_content)
-    return;
-  metrics_reporter_->SurfaceReceivedContent(surface_id);
 }
 
 void SurfaceUpdater::SetOfflinePageAvailability(const std::string& badge_id,

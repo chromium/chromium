@@ -225,7 +225,7 @@ FeedStream::Stream& FeedStream::GetStream(const StreamType& stream_type) {
   FeedStream::Stream& new_stream =
       streams_.emplace(stream_type, stream_type).first->second;
   new_stream.surface_updater = std::make_unique<SurfaceUpdater>(
-      metrics_reporter_, &global_datastore_slice_, &new_stream.surfaces);
+      &global_datastore_slice_, &new_stream.surfaces);
   new_stream.surfaces.AddObserver(new_stream.surface_updater.get());
   return new_stream;
 }
