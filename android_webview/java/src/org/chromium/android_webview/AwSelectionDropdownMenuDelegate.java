@@ -70,7 +70,7 @@ public class AwSelectionDropdownMenuDelegate extends DefaultSelectionDropdownMen
         final BasicListMenu menu = getListMenu(context, items, clickListener);
         final int[] menuDimensions = menu.getMenuDimensions();
         final int menuWidth = getIdealMenuWidth(context, menuDimensions[0]);
-        final int menuHeight = menuDimensions[1];
+        int menuHeight = menuDimensions[1];
 
         // We will always try to show the menu to the right and below the anchor point unless
         // there isn't enough room. Padding is intentionally left out of the calculations below
@@ -88,16 +88,18 @@ public class AwSelectionDropdownMenuDelegate extends DefaultSelectionDropdownMen
             }
         }
 
-        final int spaceBelowMenu = rootView.getBottom() - y;
-        final boolean canShowBelowAnchorPoint = spaceBelowMenu >= menuHeight;
-        if (!canShowBelowAnchorPoint) {
-            // Check if there is enough room above instead.
-            final int spaceAboveMenu = y - rootView.getTop();
-            final boolean canShowAboveAnchorPoint = spaceAboveMenu >= menuHeight;
-            if (!canShowAboveAnchorPoint) {
-                // There is not enough vertical room for the drop-down menu.
-                cleanup();
-                return;
+        int spaceBelowMenu = rootView.getBottom() - y;
+        boolean canShowBelowAnchorPoint = spaceBelowMenu >= menuHeight;
+        int spaceAboveMenu = y - rootView.getTop();
+        boolean canShowAboveAnchorPoint = spaceAboveMenu >= menuHeight;
+        // Popup menus are scrollable so if there's not enough space for the whole menu to display,
+        // adjust the height to the available space and have the menu scroll through items.
+        if (!canShowBelowAnchorPoint && !canShowAboveAnchorPoint) {
+            if (spaceAboveMenu > spaceBelowMenu) {
+                menuHeight = spaceAboveMenu;
+            } else {
+                canShowBelowAnchorPoint = true;
+                menuHeight = spaceBelowMenu;
             }
         }
 
