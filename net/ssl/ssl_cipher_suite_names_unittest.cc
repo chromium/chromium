@@ -106,6 +106,11 @@ TEST(CipherSuiteNamesTest, Basic) {
   EXPECT_TRUE(is_tls13);
   EXPECT_EQ(nullptr, mac);
   EXPECT_EQ(nullptr, key_exchange);
+
+  EXPECT_STREQ("TLS_AES_128_GCM_SHA256", SSLCipherSuiteToStandardName(0x1301));
+  EXPECT_STREQ("TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+               SSLCipherSuiteToStandardName(0xc02f));
+  EXPECT_EQ(nullptr, SSLCipherSuiteToStandardName(0xff31));
 }
 
 TEST(CipherSuiteNamesTest, ParseSSLCipherString) {

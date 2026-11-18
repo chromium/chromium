@@ -1531,6 +1531,7 @@ void WebRequestEventRouter::OnCompleted(
       CreateEventDetails(*request, extra_info_spec));
   event_details->SetResponseHeaders(*request, request->response_headers.get());
   event_details->SetResponseSource(*request);
+  event_details->SetSecurityInfo(*request);
 
   DispatchEvent(browser_context, request, listeners, std::move(event_details));
 }

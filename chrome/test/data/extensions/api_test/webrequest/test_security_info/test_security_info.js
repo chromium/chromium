@@ -49,6 +49,7 @@ function isSha256Fingerprint(input) {
   }
 
   async function makeRequest() {
+    const requestDone = callbackPass(() => {});
     // The caller just added its 'securityInfo' listener, but that registration
     // is async: it's a message the browser may not have processed yet. If we
     // fetched now, the response could come back before securityInfo capture is
@@ -61,11 +62,22 @@ function isSha256Fingerprint(input) {
       if (useWebSocket) {
         await openWebSocket();
       } else {
-        await fetch(requestUrl);
+        const response = await fetch(requestUrl);
+        await response.text();
       }
+      requestDone();
     } catch (e) {
       chrome.test.fail(`Fetch failed: ${e.message}`);
     }
+  }
+
+  function verifyTlsMetadata(securityInfo) {
+    chrome.test.assertTrue(
+        securityInfo.protocolVersion === 'TLSv1.2' ||
+        securityInfo.protocolVersion === 'TLSv1.3');
+    chrome.test.assertTrue(
+        typeof securityInfo.cipherSuite === 'string' &&
+        securityInfo.cipherSuite.startsWith('TLS_'));
   }
 
   runTests([
@@ -81,12 +93,21 @@ function isSha256Fingerprint(input) {
     },
 
     function testSecurityInfoBasic() {
+      const onResponseStartedListener = callbackPass(function(details) {
+        chrome.webRequest.onResponseStarted.removeListener(
+            onResponseStartedListener);
+        chrome.test.assertEq('127.0.0.1', details.ip);
+      });
+      chrome.webRequest.onResponseStarted.addListener(
+          onResponseStartedListener, {urls: filter});
+
       const listener = callbackPass(function(details) {
         chrome.webRequest.onHeadersReceived.removeListener(listener);
 
         chrome.test.assertTrue('securityInfo' in details);
 
         chrome.test.assertEq(expectState, details.securityInfo.state);
+        verifyTlsMetadata(details.securityInfo);
         chrome.test.assertEq(1, details.securityInfo.certificates.length);
         chrome.test.assertFalse(
             'rawDER' in details.securityInfo.certificates[0]);
@@ -117,6 +138,7 @@ function isSha256Fingerprint(input) {
         chrome.test.assertTrue(isSha256Fingerprint(
             details.securityInfo.certificates[0].fingerprint.sha256));
         chrome.test.assertEq(expectState, details.securityInfo.state);
+        verifyTlsMetadata(details.securityInfo);
       });
       chrome.webRequest.onHeadersReceived.addListener(
           listener, {urls: filter}, ['securityInfoRawDer']);
@@ -140,10 +162,67 @@ function isSha256Fingerprint(input) {
         chrome.test.assertTrue(isSha256Fingerprint(
             details.securityInfo.certificates[0].fingerprint.sha256));
         chrome.test.assertEq(expectState, details.securityInfo.state);
+        verifyTlsMetadata(details.securityInfo);
       });
 
       chrome.webRequest.onHeadersReceived.addListener(
           listener, {urls: filter}, ['securityInfo', 'securityInfoRawDer']);
+
+      makeRequest();
+    },
+
+    function testSecurityInfoOnCompletedAbsentWithoutFlag() {
+      const listener = callbackPass(function(details) {
+        chrome.webRequest.onCompleted.removeListener(listener);
+        chrome.test.assertEq('127.0.0.1', details.ip);
+        chrome.test.assertFalse('securityInfo' in details);
+      });
+      chrome.webRequest.onCompleted.addListener(
+          listener, {urls: filter}, ['extraHeaders']);
+
+      makeRequest();
+    },
+
+    function testSecurityInfoOnCompletedBasic() {
+      const listener = callbackPass(function(details) {
+        chrome.webRequest.onCompleted.removeListener(listener);
+
+        chrome.test.assertEq('127.0.0.1', details.ip);
+        chrome.test.assertTrue('securityInfo' in details);
+        chrome.test.assertEq(expectState, details.securityInfo.state);
+        verifyTlsMetadata(details.securityInfo);
+        chrome.test.assertEq(1, details.securityInfo.certificates.length);
+        chrome.test.assertFalse(
+            'rawDER' in details.securityInfo.certificates[0]);
+        chrome.test.assertTrue(isSha256Fingerprint(
+            details.securityInfo.certificates[0].fingerprint.sha256));
+      });
+      chrome.webRequest.onCompleted.addListener(
+          listener, {urls: filter}, ['securityInfo']);
+
+      makeRequest();
+    },
+
+    function testSecurityInfoOnCompletedRawDer() {
+      const listener = callbackPass(function(details) {
+        chrome.webRequest.onCompleted.removeListener(listener);
+
+        chrome.test.assertEq('127.0.0.1', details.ip);
+        chrome.test.assertTrue('securityInfo' in details);
+        chrome.test.assertEq(1, details.securityInfo.certificates.length);
+
+        const serverCert = details.securityInfo.certificates[0];
+        chrome.test.assertTrue(serverCert.rawDER.byteLength > 0);
+        chrome.test.assertEq(
+            certificateBytes, getPemEncodedFromDer(serverCert.rawDER));
+
+        chrome.test.assertTrue(isSha256Fingerprint(
+            details.securityInfo.certificates[0].fingerprint.sha256));
+        chrome.test.assertEq(expectState, details.securityInfo.state);
+        verifyTlsMetadata(details.securityInfo);
+      });
+      chrome.webRequest.onCompleted.addListener(
+          listener, {urls: filter}, ['securityInfoRawDer']);
 
       makeRequest();
     },

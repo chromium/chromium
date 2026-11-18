@@ -10,16 +10,19 @@
 #include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "net/ssl/ssl_connection_status_flags.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -31,6 +34,10 @@ namespace extensions {
 
 namespace keys = extension_web_request_api_constants;
 using ExtraInfoSpec = extension_web_request_api_helpers::ExtraInfoSpec;
+
+namespace {
+constexpr char kTestExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+}  // namespace
 
 TEST(WebRequestEventDetailsTest, SetResponseHeaders) {
   const int kFilter =
@@ -151,6 +158,10 @@ std::unique_ptr<WebRequestInfo> CreateFakeRequestInfoWithSSL(
   net::SSLInfo ssl_info;
   ssl_info.cert = certificate;
   ssl_info.cert_status = status;
+  net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_3,
+                                     &ssl_info.connection_status);
+  net::SSLConnectionStatusSetCipherSuite(0x1301 /* TLS_AES_128_GCM_SHA256 */,
+                                         &ssl_info.connection_status);
   request_info->AddSslInfo(std::make_optional(std::move(ssl_info)));
 
   return request_info;
@@ -165,15 +176,17 @@ bool IsSha256Fingerprint(const std::string& input) {
   return re2::RE2::FullMatch(input, *pattern);
 }
 
-// Tests that if no SSLInfo is provided (e.g. HTTP request)
-// then WebRequestEventDetails will produce SecurityInfo object
-// with state insecure and other fields absent according to the explainer
+// Tests that if `ssl_info` is captured without a certificate (e.g. HTTP
+// request), then WebRequestEventDetails will produce SecurityInfo object with
+// state insecure and other fields absent according to the explainer
 // https://github.com/explainers-by-googlers/security-info-web-request
 TEST(WebRequestEventDetailsTest, SetSecurityInfo_Insecure) {
-  // No SSLInfo provided .
+  base::test::ScopedFeatureList feature_list{
+      extensions_features::kWebRequestSecurityInfo};
   WebRequestInfoInitParams params;
   params.url = GURL("http://insecure.example.com");
   WebRequestInfo request_info(std::move(params));
+  request_info.AddSslInfo(net::SSLInfo());
 
   const int kFilter = ExtraInfoSpec::SECURITY_INFO;
   WebRequestEventDetails details(request_info, kFilter);
@@ -181,12 +194,29 @@ TEST(WebRequestEventDetailsTest, SetSecurityInfo_Insecure) {
 
   // Check that filter will not remove the necessary keys.
   base::DictValue dict =
-      details.GetFilteredDict(kFilter, nullptr, std::string(), false);
+      details.GetFilteredDict(kFilter, nullptr, kTestExtensionId, false);
 
   const base::DictValue* security_info = dict.FindDict(keys::kSecurityInfoKey);
   ASSERT_TRUE(security_info);
   EXPECT_EQ("insecure", *security_info->FindString(keys::kStateKey));
   EXPECT_FALSE(security_info->FindList(keys::kCertificatesKey));
+  EXPECT_FALSE(security_info->FindString(keys::kProtocolVersionKey));
+  EXPECT_FALSE(security_info->FindString(keys::kCipherSuiteKey));
+}
+
+// Tests that `securityInfo` is omitted when `ssl_info` was never captured.
+TEST(WebRequestEventDetailsTest, SetSecurityInfo_UncapturedSslInfoOmitted) {
+  WebRequestInfoInitParams params;
+  params.url = GURL("http://uncaptured.example.com");
+  WebRequestInfo request_info(std::move(params));
+
+  const int kFilter = ExtraInfoSpec::SECURITY_INFO;
+  WebRequestEventDetails details(request_info, kFilter);
+  details.SetSecurityInfo(request_info);
+
+  base::DictValue dict =
+      details.GetFilteredDict(kFilter, nullptr, kTestExtensionId, false);
+  EXPECT_FALSE(dict.FindDict(keys::kSecurityInfoKey));
 }
 
 // Tests that when SSLInfo is provided with cert status error
@@ -194,6 +224,8 @@ TEST(WebRequestEventDetailsTest, SetSecurityInfo_Insecure) {
 // with state broken and other fields filled according to the explainer
 // https://github.com/explainers-by-googlers/security-info-web-request
 TEST(WebRequestEventDetailsTest, SetSecurityInfo_Broken) {
+  base::test::ScopedFeatureList feature_list{
+      extensions_features::kWebRequestSecurityInfo};
   auto request_info =
       CreateFakeRequestInfoWithSSL(net::CERT_STATUS_DATE_INVALID);
 
@@ -203,11 +235,14 @@ TEST(WebRequestEventDetailsTest, SetSecurityInfo_Broken) {
 
   // Check that filter will not remove the necessary keys.
   base::DictValue dict =
-      details.GetFilteredDict(kFilter, nullptr, std::string(), false);
+      details.GetFilteredDict(kFilter, nullptr, kTestExtensionId, false);
 
   const base::DictValue* security_info = dict.FindDict(keys::kSecurityInfoKey);
   ASSERT_TRUE(security_info);
   EXPECT_EQ("broken", *security_info->FindString(keys::kStateKey));
+  EXPECT_EQ("TLSv1.3", *security_info->FindString(keys::kProtocolVersionKey));
+  EXPECT_EQ("TLS_AES_128_GCM_SHA256",
+            *security_info->FindString(keys::kCipherSuiteKey));
   // Certificate list should still be present even if broken.
   const base::ListValue* certificates =
       security_info->FindList(keys::kCertificatesKey);
@@ -229,6 +264,8 @@ TEST(WebRequestEventDetailsTest, SetSecurityInfo_Broken) {
 // with state secure and other fields filled according to the explainer
 // https://github.com/explainers-by-googlers/security-info-web-request
 TEST(WebRequestEventDetailsTest, SetSecurityInfoRawDer_Secure) {
+  base::test::ScopedFeatureList feature_list{
+      extensions_features::kWebRequestSecurityInfo};
   auto request_info = CreateFakeRequestInfoWithSSL(net::OK);
 
   const int kFilter =
@@ -238,11 +275,14 @@ TEST(WebRequestEventDetailsTest, SetSecurityInfoRawDer_Secure) {
 
   // Check that filter will not remove the necessary keys.
   base::DictValue dict =
-      details.GetFilteredDict(kFilter, nullptr, std::string(), false);
+      details.GetFilteredDict(kFilter, nullptr, kTestExtensionId, false);
 
   const base::DictValue* security_info = dict.FindDict(keys::kSecurityInfoKey);
   ASSERT_TRUE(security_info);
   EXPECT_EQ("secure", *security_info->FindString(keys::kStateKey));
+  EXPECT_EQ("TLSv1.3", *security_info->FindString(keys::kProtocolVersionKey));
+  EXPECT_EQ("TLS_AES_128_GCM_SHA256",
+            *security_info->FindString(keys::kCipherSuiteKey));
 
   const base::ListValue* certificates =
       security_info->FindList(keys::kCertificatesKey);
@@ -311,6 +351,91 @@ TEST(WebRequestEventDetailsTest, SetSecurityInfoRawDer_FilteredOut) {
   ASSERT_TRUE(fingerprint);
   std::string sha256 = CHECK_DEREF(fingerprint->FindString(keys::kSha256Key));
   ASSERT_TRUE(IsSha256Fingerprint(sha256));
+}
+
+// Tests that `protocolVersion` and `cipherSuite` are omitted when
+// `kWebRequestSecurityInfo` is disabled and for non-extension embedders such as
+// Controlled Frame (`extension_id` is empty).
+TEST(WebRequestEventDetailsTest,
+     SetSecurityInfo_ControlledFrameAndDisabledFlagOmitTlsMetadata) {
+  auto request_info = CreateFakeRequestInfoWithSSL(net::OK);
+  const int kFilter = ExtraInfoSpec::SECURITY_INFO;
+
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(
+        extensions_features::kWebRequestSecurityInfo);
+    WebRequestEventDetails details(*request_info, kFilter);
+    details.SetSecurityInfo(*request_info);
+
+    base::DictValue dict =
+        details.GetFilteredDict(kFilter, nullptr, kTestExtensionId, false);
+    const base::DictValue* security_info =
+        dict.FindDict(keys::kSecurityInfoKey);
+    ASSERT_TRUE(security_info);
+    EXPECT_EQ("secure", *security_info->FindString(keys::kStateKey));
+    ASSERT_TRUE(security_info->FindList(keys::kCertificatesKey));
+    EXPECT_FALSE(security_info->FindString(keys::kProtocolVersionKey));
+    EXPECT_FALSE(security_info->FindString(keys::kCipherSuiteKey));
+  }
+
+  {
+    base::test::ScopedFeatureList enabled_feature_list{
+        extensions_features::kWebRequestSecurityInfo};
+    WebRequestEventDetails details(*request_info, kFilter);
+    details.SetSecurityInfo(*request_info);
+
+    base::DictValue dict = details.GetFilteredDict(
+        kFilter, nullptr, /*extension_id=*/std::string(), false);
+    const base::DictValue* security_info =
+        dict.FindDict(keys::kSecurityInfoKey);
+    ASSERT_TRUE(security_info);
+    EXPECT_EQ("secure", *security_info->FindString(keys::kStateKey));
+    ASSERT_TRUE(security_info->FindList(keys::kCertificatesKey));
+    EXPECT_FALSE(security_info->FindString(keys::kProtocolVersionKey));
+    EXPECT_FALSE(security_info->FindString(keys::kCipherSuiteKey));
+  }
+}
+
+// Tests that `protocolVersion` uses Firefox's format and maps QUIC to TLSv1.3.
+TEST(WebRequestEventDetailsTest,
+     SetSecurityInfo_ProtocolVersionFormatsAndQuic) {
+  base::test::ScopedFeatureList feature_list{
+      extensions_features::kWebRequestSecurityInfo};
+  scoped_refptr<net::X509Certificate> certificate =
+      net::CertBuilder::CreateSimpleChain(1)[0]->GetX509CertificateChain();
+  const int kFilter = ExtraInfoSpec::SECURITY_INFO;
+
+  struct TestCase {
+    net::SSLVersion version;
+    const char* expected;
+  } const kCases[] = {
+      {net::SSL_CONNECTION_VERSION_TLS1_2, "TLSv1.2"},
+      {net::SSL_CONNECTION_VERSION_QUIC, "TLSv1.3"},
+  };
+
+  for (const auto& test_case : kCases) {
+    WebRequestInfoInitParams params;
+    params.url = GURL("https://secure.example.com");
+    WebRequestInfo request_info(std::move(params));
+
+    net::SSLInfo ssl_info;
+    ssl_info.cert = certificate;
+    net::SSLConnectionStatusSetVersion(test_case.version,
+                                       &ssl_info.connection_status);
+    request_info.AddSslInfo(std::move(ssl_info));
+
+    WebRequestEventDetails details(request_info, kFilter);
+    details.SetSecurityInfo(request_info);
+
+    base::DictValue dict =
+        details.GetFilteredDict(kFilter, nullptr, kTestExtensionId, false);
+    const base::DictValue* security_info =
+        dict.FindDict(keys::kSecurityInfoKey);
+    ASSERT_TRUE(security_info);
+    EXPECT_EQ(test_case.expected,
+              *security_info->FindString(keys::kProtocolVersionKey));
+  }
 }
 
 }  // namespace extensions

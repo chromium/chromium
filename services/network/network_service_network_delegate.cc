@@ -151,7 +151,7 @@ int NetworkServiceNetworkDelegate::OnHeadersReceived(
   if (web_socket) {
     chain->AddResult(web_socket->OnHeadersReceived(
         chain->CreateCallback(), original_response_headers,
-        override_response_headers, preserve_fragment_on_redirect_url,
+        override_response_headers, endpoint, preserve_fragment_on_redirect_url,
         ssl_info));
   }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)

@@ -36,6 +36,10 @@ NET_EXPORT void SSLCipherSuiteToStrings(const char** key_exchange_str,
 // If the version is unknown, |name| is set to "???".
 NET_EXPORT void SSLVersionToString(const char** name, int ssl_version);
 
+// Returns the standard IANA name for a given `cipher_suite` (e.g.,
+// "TLS_AES_128_GCM_SHA256"), or `nullptr` if the cipher suite is unknown.
+NET_EXPORT const char* SSLCipherSuiteToStandardName(uint16_t cipher_suite);
+
 // Parses a string literal that represents a SSL/TLS cipher suite.
 //
 // Supported literal forms:

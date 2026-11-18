@@ -111,6 +111,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       net::CompletionOnceCallback callback,
       const net::HttpResponseHeaders* original_response_headers,
       scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
+      const net::IPEndPoint& endpoint,
       std::optional<GURL>* preserve_fragment_on_redirect_url,
       const std::optional<net::SSLInfo>& ssl_info);
 

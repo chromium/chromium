@@ -750,11 +750,12 @@ int WebSocket::OnHeadersReceived(
     net::CompletionOnceCallback callback,
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
+    const net::IPEndPoint& endpoint,
     std::optional<GURL>* preserve_fragment_on_redirect_url,
     const std::optional<net::SSLInfo>& ssl_info) {
   if (header_client_) {
     header_client_->OnHeadersReceived(
-        original_response_headers->raw_headers(), net::IPEndPoint(), ssl_info,
+        original_response_headers->raw_headers(), endpoint, ssl_info,
         base::BindOnce(&WebSocket::OnHeadersReceivedComplete,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        override_response_headers,

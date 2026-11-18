@@ -104,7 +104,9 @@
         "type": "string",
         "enum": [
           {"name": "responseHeaders", "description": "Specifies that the response headers should be included in the event."},
-          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."}
+          {"name": "extraHeaders", "description": "Specifies that headers can violate Cross-Origin Resource Sharing (CORS)."},
+          {"name": "securityInfo", "nodoc": true, "description": "Specifies that the SecurityInfo should be included in the event."},
+          {"name": "securityInfoRawDer", "nodoc": true, "description": "Specifies that the SecurityInfo with raw bytes of certificates should be included in the event."}
         ]
       },
       {
@@ -234,6 +236,18 @@
                 }
               }
             }
+          },
+          "cipherSuite": {
+            "type": "string",
+            "optional": true,
+            "nodoc": true,
+            "description": "The cipher suite used for the connection, formatted as a standard TLS cipher suite name (e.g., <code>TLS_AES_128_GCM_SHA256</code>)."
+          },
+          "protocolVersion": {
+            "type": "string",
+            "optional": true,
+            "nodoc": true,
+            "description": "The SSL/TLS protocol version used for the connection (e.g., <code>TLSv1.3</code>)."
           },
           "state": {
             "type": "string",
@@ -670,7 +684,8 @@
               "fromCache": {"type": "boolean", "description": "Indicates if this response was fetched from disk cache."},
               "statusCode": {"type": "integer", "description": "Standard HTTP status code returned by the server."},
               "responseHeaders": {"$ref": "HttpHeaders", "optional": true, "description": "The HTTP response headers that were received along with this response."},
-              "statusLine": {"type": "string", "description": "HTTP status line of the response or the 'HTTP/0.9 200 OK' string for HTTP/0.9 responses (i.e., responses that lack a status line) or an empty string if there are no headers."}
+              "statusLine": {"type": "string", "description": "HTTP status line of the response or the 'HTTP/0.9 200 OK' string for HTTP/0.9 responses (i.e., responses that lack a status line) or an empty string if there are no headers."},
+              "securityInfo": {"$ref": "SecurityInfo", "optional": true, "nodoc": true, "description": "Information about the TLS/QUIC connection used for the underlying connection. Only provided if <code>securityInfo</code> is specified in the <code>extraInfoSpec</code> parameter."}
             }
           }
         ],

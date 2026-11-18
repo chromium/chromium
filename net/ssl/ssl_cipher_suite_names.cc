@@ -159,6 +159,14 @@ void SSLVersionToString(const char** name, int ssl_version) {
   }
 }
 
+const char* SSLCipherSuiteToStandardName(uint16_t cipher_suite) {
+  const SSL_CIPHER* cipher = SSL_get_cipher_by_value(cipher_suite);
+  if (!cipher) {
+    return nullptr;
+  }
+  return SSL_CIPHER_standard_name(cipher);
+}
+
 bool ParseSSLCipherString(const std::string& cipher_string,
                           uint16_t* cipher_suite) {
   int value = 0;

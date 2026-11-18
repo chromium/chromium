@@ -315,6 +315,7 @@ void WebRequestProxyingWebSocket::OnHeadersReceived(
   on_headers_received_callback_ = std::move(callback);
 
   response_->headers = base::MakeRefCounted<net::HttpResponseHeaders>(headers);
+  response_->remote_endpoint = endpoint;
 
   ContinueToHeadersReceived();
 }
