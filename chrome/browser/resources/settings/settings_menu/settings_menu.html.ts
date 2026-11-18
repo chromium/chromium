@@ -9,13 +9,14 @@ import type {SettingsMenuElement} from './settings_menu.js';
 export function getHtml(this: SettingsMenuElement) {
   return html`<!--_html_template_start_-->
 <div role="navigation">
-  <cr-menu-selector id="menu" selectable="a:not(#extensionsLink)"
+  <cr-menu-selector id="menu"
+      selectable="a:not(#extensionsLink):not(#managementIcon)"
       attr-for-selected="href" @iron-activate="${this.onIronActivate_}"
       @click="${this.onLinkClick_}" selected-attribute="selected">
     ${this.settingsRefresh2026Enabled_ ? html`
       <a role="menuitem" id="home" href="/"
           ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.home)}"
-          class="cr-nav-menu-item">
+          class="cr-nav-menu-item menu-item">
         <cr-icon icon="settings20:home"></cr-icon>
         <!-- TODO(b/574662686): Update "Home" string -->
         <span class="menu-label">Home</span>
@@ -24,7 +25,7 @@ export function getHtml(this: SettingsMenuElement) {
     ` : html`
       <a role="menuitem" id="people" href="/people"
           ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.people)}"
-          class="cr-nav-menu-item">
+          class="cr-nav-menu-item menu-item">
 <if expr="not _google_chrome">
         <cr-icon icon="settings:person"></cr-icon>
 </if>
@@ -36,7 +37,8 @@ export function getHtml(this: SettingsMenuElement) {
       </a>
     `}
     <a role="menuitem" id="autofill" href="/autofill"
-        @click="${this.onAutofillClick_}" class="cr-nav-menu-item" ?hidden="${
+        @click="${this.onAutofillClick_}" class="cr-nav-menu-item menu-item"
+        ?hidden="${
             this.shouldHideMenuItem_(this.pageVisibility_?.yourSavedInfo)}">
       <cr-icon icon="settings:password-manager"></cr-icon>
       <span class="menu-label">$i18n{autofillPageTitle}</span>
@@ -44,39 +46,41 @@ export function getHtml(this: SettingsMenuElement) {
     </a>
     <a role="menuitem" id="privacy" href="/privacy"
         ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.privacy)}"
-        class="cr-nav-menu-item">
+        class="cr-nav-menu-item menu-item">
       <cr-icon icon="settings:security"></cr-icon>
       <span class="menu-label">$i18n{privacyPageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     <a role="menuitem" id="performance" href="/performance"
-        class="cr-nav-menu-item" ?hidden="${
+        class="cr-nav-menu-item menu-item" ?hidden="${
             this.shouldHideMenuItem_(this.pageVisibility_?.performance)}">
       <cr-icon icon="settings:speed"></cr-icon>
       <span class="menu-label">$i18n{performancePageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     <a role="menuitem" id="ai" href="/ai"
-        ?hidden="${!this.showAiPageMenuItem_()}" class="cr-nav-menu-item">
+        ?hidden="${!this.showAiPageMenuItem_()}"
+        class="cr-nav-menu-item menu-item">
       <cr-icon icon="settings20:button-magic"></cr-icon>
       <span class="menu-label">$i18n{aiPageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     <a role="menuitem" id="appearance" href="/appearance"
         ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.appearance)}"
-        class="cr-nav-menu-item">
+        class="cr-nav-menu-item menu-item">
       <cr-icon icon="settings:palette"></cr-icon>
       <span class="menu-label">$i18n{appearancePageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     ${!this.settingsRefresh2026Enabled_ ? html`
-      <a role="menuitem" id="search" href="/search" class="cr-nav-menu-item">
+      <a role="menuitem" id="search" href="/search"
+          class="cr-nav-menu-item menu-item">
         <cr-icon icon="settings:search"></cr-icon>
         <span class="menu-label">$i18n{searchPageTitle}</span>
         <cr-ripple></cr-ripple>
       </a>
 <if expr="not is_chromeos">
-      <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
+      <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item menu-item"
           href="/defaultBrowser" ?hidden="${
               this.shouldHideMenuItem_(this.pageVisibility_?.defaultBrowser)}">
         <cr-icon icon="settings:web-asset"></cr-icon>
@@ -85,7 +89,7 @@ export function getHtml(this: SettingsMenuElement) {
       </a>
 </if>
       <a role="menuitem" id="onStartup" href="/onStartup"
-          class="cr-nav-menu-item" ?hidden="${
+          class="cr-nav-menu-item menu-item" ?hidden="${
               this.shouldHideMenuItem_(this.pageVisibility_?.onStartup)}">
         <cr-icon icon="settings:power-settings-new"></cr-icon>
         <span class="menu-label">$i18n{onStartup}</span>
@@ -93,7 +97,8 @@ export function getHtml(this: SettingsMenuElement) {
       </a>
       <div class="menu-separator"></div>
     ` : ''}
-    <a role="menuitem" id="languages" href="/languages" class="cr-nav-menu-item"
+    <a role="menuitem" id="languages" href="/languages"
+        class="cr-nav-menu-item menu-item"
         ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.languages)}">
       <cr-icon icon="settings:translate"></cr-icon>
       <span class="menu-label">$i18n{languagesPageTitle}</span>
@@ -101,7 +106,7 @@ export function getHtml(this: SettingsMenuElement) {
     </a>
     ${!this.settingsRefresh2026Enabled_ ? html`
       <a role="menuitem" id="downloads" href="/downloads"
-          class="cr-nav-menu-item" ?hidden="${
+          class="cr-nav-menu-item menu-item" ?hidden="${
               this.shouldHideMenuItem_(this.pageVisibility_?.downloads)}">
         <cr-icon icon="settings:download"></cr-icon>
         <span class="menu-label">$i18n{downloadsPageTitle}</span>
@@ -109,19 +114,21 @@ export function getHtml(this: SettingsMenuElement) {
       </a>
     ` : ''}
     <a role="menuitem" id="accessibility" href="/accessibility"
-        class="cr-nav-menu-item"
+        class="cr-nav-menu-item menu-item"
         ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.a11y)}">
       <cr-icon icon="settings:accessibility"></cr-icon>
       <span class="menu-label">$i18n{a11yPageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
     ${this.settingsRefresh2026Enabled_ ? html`
-      <a role="menuitem" id="search" href="/search" class="cr-nav-menu-item">
+      <a role="menuitem" id="search" href="/search"
+          class="cr-nav-menu-item menu-item">
         <cr-icon icon="settings:search"></cr-icon>
         <span class="menu-label">$i18n{searchPageTitle}</span>
         <cr-ripple></cr-ripple>
       </a>
-      <a role="menuitem" id="general" href="/general" class="cr-nav-menu-item"
+      <a role="menuitem" id="general" href="/general"
+          class="cr-nav-menu-item menu-item"
           ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.general)}">
         <cr-icon icon="cr:settings-filled"></cr-icon>
         <span class="menu-label">$i18n{generalPageTitle}</span>
@@ -129,7 +136,8 @@ export function getHtml(this: SettingsMenuElement) {
       </a>
     ` : html`
 <if expr="not is_chromeos">
-      <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
+      <a role="menuitem" id="system" href="/system"
+          class="cr-nav-menu-item menu-item"
           ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.system)}">
         <cr-icon icon="settings:build"></cr-icon>
         <span class="menu-label">$i18n{systemPageTitle}</span>
@@ -138,7 +146,7 @@ export function getHtml(this: SettingsMenuElement) {
 </if>
       <a role="menuitem" id="reset" href="/reset"
           ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.reset)}"
-          class="cr-nav-menu-item">
+          class="cr-nav-menu-item menu-item">
         <cr-icon icon="settings:restart-alt"></cr-icon>
         <span class="menu-label">$i18n{resetPageTitle}</span>
         <cr-ripple></cr-ripple>
@@ -146,7 +154,7 @@ export function getHtml(this: SettingsMenuElement) {
     `}
     <div ?hidden="${this.hideBottomMenuSeparator_()}" class="menu-separator">
     </div>
-    <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item"
+    <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item menu-item"
         href="chrome://extensions" target="_blank"
         ?hidden="${this.shouldHideMenuItem_(this.pageVisibility_?.extensions)}"
         @click="${this.onExtensionsLinkClick_}"
@@ -156,12 +164,30 @@ export function getHtml(this: SettingsMenuElement) {
       <div class="cr-icon icon-external"></div>
       <cr-ripple></cr-ripple>
     </a>
-    <a role="menuitem" id="about-menu" href="/help" class="cr-nav-menu-item">
+    <a role="menuitem" id="about-menu" href="/help"
+        class="cr-nav-menu-item menu-item">
       <cr-icon icon="cr:chrome-product"></cr-icon>
       <span class="menu-label">$i18n{aboutPageTitle}</span>
       <cr-ripple></cr-ripple>
     </a>
+    ${this.settingsRefresh2026Enabled_ && this.isManaged_ && this.collapsed ?
+        html`
+      <a role="menuitem" id="managementIcon" href="${this.managementPageUrl_}"
+          target="_blank" class="cr-nav-menu-item menu-item"
+          aria-label="$i18n{managementPage}">
+        <cr-icon icon="${this.managedByIcon_}"></cr-icon>
+        <cr-ripple></cr-ripple>
+      </a>
+    ` : ''}
   </cr-menu-selector>
+  ${this.settingsRefresh2026Enabled_ && this.isManaged_ && !this.collapsed ?
+      html`
+    <div id="management" class="menu-item">
+      <cr-icon icon="${this.managedByIcon_}"></cr-icon>
+      <span class="menu-label" .innerHTML="${this.getManagementString_()}">
+      </span>
+    </div>
+  ` : ''}
 </div>
 
 <!--_html_template_end_-->`;

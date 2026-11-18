@@ -309,8 +309,9 @@ export class SettingsMainElement extends SettingsMainElementBase {
   }
 
   protected showManagedHeader_(): boolean {
-    return !this.inSearchMode_ && !!this.lastRoute_ &&
-        this.lastRoute_ !== routes.ABOUT && !this.lastRoute_.isSubpage();
+    return !this.settingsRefresh2026Enabled_ && !this.inSearchMode_ &&
+        !!this.lastRoute_ && this.lastRoute_ !== routes.ABOUT &&
+        !this.lastRoute_.isSubpage();
   }
 
   protected shouldShowAll_(): boolean {

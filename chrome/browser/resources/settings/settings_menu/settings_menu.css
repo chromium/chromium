@@ -19,13 +19,28 @@
   padding-top: 8px;
 }
 
-:host-context([settings-refresh-2026]) .cr-nav-menu-item {
-  --cr-nav-menu-item-content-height: 20px;
-  border-radius: 100px;
-  line-height: var(--cr-nav-menu-item-content-height);
+:host-context([settings-refresh-2026]) .menu-item {
+  --menu-item-icon-size: 20px;
+  align-items: center;
+  display: flex;
+  margin-inline-end: 2px;
+  margin-inline-start: 1px;
   padding-block: 14px;
   padding-inline-end: 24px;
   padding-inline-start: 16px;
+}
+
+:host-context([settings-refresh-2026]) .menu-item cr-icon {
+  color: var(--color-settings-nav-menu-item-icon);
+  flex-shrink: 0;
+  height: var(--menu-item-icon-size);
+  margin-inline-end: 16px;
+  width: var(--menu-item-icon-size);
+}
+
+:host-context([settings-refresh-2026]) .cr-nav-menu-item {
+  border-radius: 100px;
+  line-height: var(--menu-item-icon-size);
 
   /* Colors */
   --cr-nav-menu-item-background-color-selected: var(--color-settings-nav-menu-item-background);
@@ -41,12 +56,6 @@
 
 :host-context([settings-refresh-2026]) .cr-nav-menu-item:focus:not(:focus-visible) {
   outline: none;
-}
-
-:host-context([settings-refresh-2026]) .cr-nav-menu-item cr-icon {
-  height: var(--cr-nav-menu-item-content-height);
-  width: var(--cr-nav-menu-item-content-height);
-  margin-inline-end: 16px;
 }
 
 :host * {
@@ -103,3 +112,27 @@
   transition-delay: 0ms;
   opacity: 0;
 }
+
+:host-context([settings-refresh-2026]) #management cr-icon {
+  align-self: flex-start;
+}
+
+:host-context([settings-refresh-2026]) #management .menu-label {
+  color: var(--cr-secondary-text-color);
+  font-size: 12px;
+  line-height: 18px;
+  overflow-wrap: break-word;
+  pointer-events: auto;
+  white-space: normal;
+}
+
+:host-context([settings-refresh-2026]) #managementLink {
+  color: var(--cr-link-color);
+  text-decoration: underline;
+}
+
+:host-context([settings-refresh-2026]) #managementLink:focus-visible {
+  border-radius: 2px;
+  outline: solid 2px var(--cr-focus-outline-color);
+}
+

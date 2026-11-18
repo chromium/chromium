@@ -342,6 +342,7 @@ suite('AllBuilds', function() {
     assertTrue(initialSections[0]!.contains(productLogo));
     assertTrue(
         initialSections[0]!.contains(page.shadowRoot.querySelector('#help')));
+    assertTrue(!!page.shadowRoot.querySelector('#managementPage'));
 
     // When the flag is enabled, row 1 is removed and row 2 contains the logo
     // followed by the update text, without a separate icon container, in its
@@ -352,6 +353,7 @@ suite('AllBuilds', function() {
     await initNewPage();
 
     assertFalse(!!page.shadowRoot.querySelector('.product-title'));
+    assertFalse(!!page.shadowRoot.querySelector('#managementPage'));
     // <if expr="not is_chromeos">
     assertFalse(!!page.shadowRoot.querySelector('.icon-container'));
     // </if>

@@ -439,4 +439,116 @@ suite('SettingsMenuRefresh2026', () => {
         'SettingsMenu_HomeClicked',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
+
+  test('managementLink', async () => {
+    assertFalse(!!settingsMenu.shadowRoot.querySelector('#managementLink'));
+
+    loadTimeData.overrideValues({
+      isManaged: true,
+      managedByIcon: 'cr:domain',
+      managementPageUrl: 'chrome://management',
+      browserManagedByOrg:
+          'Your <a href="chrome://management">browser is managed</a> by ' +
+          'google.com',
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    settingsMenu = document.createElement('settings-menu');
+    document.body.appendChild(settingsMenu);
+    await microtasksFinished();
+
+    const management = settingsMenu.shadowRoot.querySelector('#management');
+    assertTrue(!!management);
+    assertFalse(management.classList.contains('cr-nav-menu-item'));
+    assertFalse(!!settingsMenu.shadowRoot.querySelector('#managementIcon'));
+
+    const managementLink =
+        settingsMenu.shadowRoot.querySelector<HTMLAnchorElement>(
+            '#managementLink');
+    assertTrue(!!managementLink);
+    assertEquals('chrome://management', managementLink.getAttribute('href'));
+    assertEquals('_blank', managementLink.target);
+    assertEquals(0, managementLink.tabIndex);
+    assertEquals('browser is managed', managementLink.textContent);
+    assertFalse(managementLink.classList.contains('cr-nav-menu-item'));
+
+    const label =
+        settingsMenu.shadowRoot.querySelector('#management .menu-label');
+    assertTrue(!!label);
+    assertEquals(
+        'Your browser is managed by google.com', label.textContent.trim());
+
+    const baseHrefs = [
+      '/',
+      '/autofill',
+      '/privacy',
+      '/performance',
+      '/ai',
+      '/appearance',
+      '/languages',
+      '/accessibility',
+      '/search',
+      '/general',
+      'chrome://extensions',
+      '/help',
+    ];
+    const getMenuHrefs = () =>
+        Array
+            .from(settingsMenu.shadowRoot.querySelectorAll<HTMLAnchorElement>(
+                'cr-menu-selector a[role=menuitem]'))
+            .map(link => link.getAttribute('href'));
+    assertDeepEquals(baseHrefs, getMenuHrefs());
+
+    const homeItem =
+        settingsMenu.shadowRoot.querySelector<HTMLElement>('#home');
+    const aboutItem =
+        settingsMenu.shadowRoot.querySelector<HTMLElement>('#about-menu');
+    assertTrue(!!homeItem);
+    assertTrue(!!aboutItem);
+    homeItem.focus();
+    assertEquals(homeItem, settingsMenu.shadowRoot.activeElement);
+    homeItem.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}));
+    assertEquals(aboutItem, settingsMenu.shadowRoot.activeElement);
+    aboutItem.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}));
+    assertEquals(homeItem, settingsMenu.shadowRoot.activeElement);
+
+    document.documentElement.toggleAttribute('settings-refresh-2026', true);
+    try {
+      settingsMenu.style.width = '55px';
+      settingsMenu.style.overflow = 'auto';
+      settingsMenu.collapsed = true;
+      await microtasksFinished();
+
+      assertFalse(!!settingsMenu.shadowRoot.querySelector('#management'));
+      const managementIcon =
+          settingsMenu.shadowRoot.querySelector<HTMLAnchorElement>(
+              '#managementIcon');
+      assertTrue(!!managementIcon);
+      assertEquals('menuitem', managementIcon.getAttribute('role'));
+      assertTrue(managementIcon.classList.contains('cr-nav-menu-item'));
+      assertEquals('chrome://management', managementIcon.getAttribute('href'));
+      assertEquals('_blank', managementIcon.target);
+
+      assertEquals(settingsMenu.clientWidth, settingsMenu.scrollWidth);
+      const iconRect = managementIcon.getBoundingClientRect();
+      const aboutRect = aboutItem.getBoundingClientRect();
+      assertEquals(aboutRect.width, iconRect.width);
+      assertEquals(aboutRect.height, iconRect.height);
+
+      assertDeepEquals([...baseHrefs, 'chrome://management'], getMenuHrefs());
+      assertFalse(
+          settingsMenu.$.menu.getItemsForTest().includes(managementIcon));
+
+      aboutItem.focus();
+      aboutItem.dispatchEvent(
+          new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}));
+      assertEquals(managementIcon, settingsMenu.shadowRoot.activeElement);
+      managementIcon.dispatchEvent(
+          new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}));
+      assertEquals(homeItem, settingsMenu.shadowRoot.activeElement);
+    } finally {
+      document.documentElement.removeAttribute('settings-refresh-2026');
+    }
+  });
 });

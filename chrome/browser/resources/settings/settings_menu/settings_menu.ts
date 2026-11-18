@@ -18,6 +18,7 @@ import '../internal/icons.html.js';
 
 import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -62,6 +63,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
       settingsRefresh2026Enabled_: {type: Boolean},
 
+      isManaged_: {type: Boolean},
+      managedByIcon_: {type: String},
+      managementPageUrl_: {type: String},
+
       /**
        * Dictionary defining page visibility.
        */
@@ -74,6 +79,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   accessor collapsed: boolean = false;
   protected accessor settingsRefresh2026Enabled_: boolean =
       loadTimeData.getString('settingsRefresh2026') !== '';
+  protected accessor isManaged_: boolean = loadTimeData.getBoolean('isManaged');
+  protected accessor managedByIcon_: string =
+      loadTimeData.getString('managedByIcon');
+  protected accessor managementPageUrl_: string =
+      loadTimeData.getString('managementPageUrl');
   protected accessor pageVisibility_: PageVisibility|undefined = pageVisibility;
   private accessor showAiPage_: boolean = loadTimeData.getBoolean('showAiPage');
   private pathToActionMap_: Map<string, string>;
@@ -145,7 +155,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
    * accessibility purposes, taps are handled separately.
    */
   protected onLinkClick_(event: Event) {
-    if ((event.target as HTMLElement).matches('a:not(#extensionsLink)')) {
+    if ((event.target as HTMLElement)
+            .matches('a:not(#extensionsLink):not(#managementIcon)')) {
       event.preventDefault();
     }
   }
@@ -201,6 +212,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       this.pageVisibility_.reset,
     ];
     return visibilities.every(visibility => visibility === false);
+  }
+
+  protected getManagementString_(): TrustedHTML {
+    const raw = loadTimeData.getString('browserManagedByOrg')
+                    .replace('<a ', '<a id="managementLink" target="_blank" ');
+    return sanitizeInnerHtml(raw, {attrs: ['id']});
   }
 }
 

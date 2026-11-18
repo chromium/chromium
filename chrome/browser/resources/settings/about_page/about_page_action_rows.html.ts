@@ -45,10 +45,13 @@ ${!this.settingsRefresh2026Enabled_ ? html`
   </cr-link-row>
 ` : ''}
 </if>
-<cr-link-row class="hr" @click="${this.onManagementPageClick_}"
-    start-icon="${this.managedByIcon_}" label="$i18n{managementPage}"
-    role-description="$i18n{subpageArrowRoleDescription}"
-    ?hidden="${!this.isManaged_}">
-</cr-link-row>
+${!this.settingsRefresh2026Enabled_ ? html`
+  <cr-link-row class="hr" id="managementPage"
+      @click="${this.onManagementPageClick_}"
+      start-icon="${this.managedByIcon_}" label="$i18n{managementPage}"
+      role-description="$i18n{subpageArrowRoleDescription}"
+      ?hidden="${!this.isManaged_}">
+  </cr-link-row>
+` : ''}
 <!--_html_template_end_-->`;
 }

@@ -297,6 +297,16 @@ suite('SettingsMain', function() {
         'settings-reset-profile-banner'));
   });
 
+  test('ManagedFootnoteVisibility', async function() {
+    createSettingsMain({settingsRefresh2026: ''});
+    await microtasksFinished();
+    assertTrue(!!settingsMain.shadowRoot.querySelector('managed-footnote'));
+
+    createSettingsMain({settingsRefresh2026: 'settings-refresh-2026'});
+    await microtasksFinished();
+    assertFalse(!!settingsMain.shadowRoot.querySelector('managed-footnote'));
+  });
+
   test('KeepsVisitedPluginsConnectedInDom', async function() {
     createSettingsMain({settingsRefresh2026: ''});
     await settingsMain.whenViewSwitchingDone();
