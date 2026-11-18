@@ -368,6 +368,9 @@
       <message name="IDS_IOS_ACTOR_INPUT_PLATE_SEND_ACCESSIBILITY_LABEL" desc="Accessibility label, read by VoiceOver, of the icon-only button that sends the text the user typed in reply to the actor. [iOS only]">
         Send
       </message>
+      <message name="IDS_IOS_ACTOR_OVERLAY_INTERACTION_LIMITED_SNACKBAR" desc="Snackbar message shown when the user taps on the page or disabled navigation buttons while Gemini is actively performing a task on the tab, explaining that they must stop the task or wait for Gemini to finish before interacting with the site. [iOS only]">
+        To interact with this site, stop the current task or wait for Gemini to finish working
+      </message>
       <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_CLICKING" desc="Worklog chip label indicating the actor is clicking an element on the page. [iOS only]">
         Clicking
       </message>

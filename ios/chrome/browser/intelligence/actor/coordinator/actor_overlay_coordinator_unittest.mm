@@ -8,15 +8,25 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actor_overlay_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -34,6 +44,10 @@ class ActorOverlayCoordinatorTest : public PlatformTest {
         [[LayoutGuideSceneAgent alloc] init];
     [scene_state_ addAgent:layout_guide_scene_agent];
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+    mock_snackbar_handler_ = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_snackbar_handler_
+                     forProtocol:@protocol(SnackbarCommands)];
     base_view_controller_ = [[UIViewController alloc] init];
   }
 
@@ -45,6 +59,8 @@ class ActorOverlayCoordinatorTest : public PlatformTest {
   SceneState* scene_state_ = nil;
   // Browser instance containing the active tab undergoing test.
   std::unique_ptr<TestBrowser> browser_;
+  // Strict mock handler for `SnackbarCommands`.
+  id mock_snackbar_handler_ = nil;
   // Base view controller used to present the coordinator's UI.
   UIViewController* base_view_controller_ = nil;
 };
@@ -115,6 +131,61 @@ TEST_F(ActorOverlayCoordinatorTest, StartReentrance) {
   EXPECT_EQ(base_view_controller_.childViewControllers.count, 0u);
   EXPECT_EQ(child.view.superview, nil);
   EXPECT_FALSE([base_view_controller_.view.subviews containsObject:child.view]);
+}
+
+// Tests that tapping the scrim presents the snackbar with the expected title
+// and standard duration, deduplicates repeated taps until dismissed, and
+// dismisses the snackbar on `stop`.
+TEST_F(ActorOverlayCoordinatorTest,
+       ScrimTapShowsSnackbarDeduplicatesAndDismissesOnStop) {
+  web::FakeWebState fake_web_state;
+  ActorOverlayCoordinator* coordinator = [[ActorOverlayCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                        webState:&fake_web_state];
+  [coordinator start];
+
+  ActorOverlayViewController* overlay_vc =
+      base::apple::ObjCCastStrict<ActorOverlayViewController>(
+          base_view_controller_.childViewControllers.firstObject);
+  ASSERT_NE(overlay_vc, nil);
+
+  NSString* expected_title = l10n_util::GetNSString(
+      IDS_IOS_ACTOR_OVERLAY_INTERACTION_LIMITED_SNACKBAR);
+  __block SnackbarMessage* captured_message = nil;
+
+  OCMExpect([mock_snackbar_handler_
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(SnackbarMessage* msg) {
+        captured_message = msg;
+        EXPECT_NSEQ(msg.title, expected_title);
+        EXPECT_EQ(msg.duration, kSnackbarMessageDuration.InSecondsF());
+        EXPECT_EQ(msg.action, nil);
+        return YES;
+      }]]);
+
+  // First scrim tap presents the snackbar.
+  [overlay_vc.delegate actorOverlayViewControllerDidTapScrim:overlay_vc];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+  ASSERT_NE(captured_message, nil);
+  ASSERT_NE(captured_message.completionHandler, nil);
+
+  // Repeated taps while visible are ignored.
+  [overlay_vc.delegate actorOverlayViewControllerDidTapScrim:overlay_vc];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+
+  // Once dismissed via `completionHandler`, a subsequent tap presents again.
+  captured_message.completionHandler(NO);
+  OCMExpect([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+  [overlay_vc.delegate actorOverlayViewControllerDidTapScrim:overlay_vc];
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
+
+  // Stopping the coordinator while visible dismisses the snackbar and clears
+  // `overlay_vc.delegate`.
+  OCMExpect([mock_snackbar_handler_ dismissSnackbarWithMessage:expected_title
+                                                      animated:YES]);
+  [coordinator stop];
+  EXPECT_EQ(overlay_vc.delegate, nil);
+  EXPECT_OCMOCK_VERIFY(mock_snackbar_handler_);
 }
 
 }  // namespace

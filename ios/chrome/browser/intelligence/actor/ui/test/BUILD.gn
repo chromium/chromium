@@ -7,15 +7,18 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "actor_overlay_egtest.mm" ]
   deps = [
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_bar/ui:constants",
     "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/tools/test:eg_test_support+eg2",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

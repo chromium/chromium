@@ -106,6 +106,11 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  UITapGestureRecognizer* tapRecognizer =
+      [[UITapGestureRecognizer alloc] initWithTarget:self
+                                              action:@selector(didTapScrim)];
+  [_scrimView addGestureRecognizer:tapRecognizer];
+
   [self setupScrimAndGlowConstraints];
 
   // Set initial constraints and corner radii based on current App Bar position.
@@ -161,6 +166,11 @@
 }
 
 #pragma mark - Private
+
+// Notifies `delegate` when the user taps on `_scrimView`.
+- (void)didTapScrim {
+  [self.delegate actorOverlayViewControllerDidTapScrim:self];
+}
 
 // Returns YES if the scrim and glow views should be pinned below the primary
 // toolbar.

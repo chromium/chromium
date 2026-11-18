@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_app_interface.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -17,6 +19,7 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -115,6 +118,22 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     [ChromeEarlGrey waitForUIElementToAppearWithMatcher:scrimMatcher];
   } else {
     [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:scrimMatcher];
+  }
+}
+
+// Asserts whether the actor interaction-limited snackbar is visible or not.
+- (void)assertInteractionLimitedSnackbarVisible:(BOOL)visible {
+  if (visible) {
+    id<GREYMatcher> titleMatcher =
+        grey_allOf(grey_accessibilityID(kSnackbarTitleAccessibilityId),
+                   grey_ancestor(chrome_test_util::SnackbarViewMatcher()),
+                   grey_text(l10n_util::GetNSString(
+                       IDS_IOS_ACTOR_OVERLAY_INTERACTION_LIMITED_SNACKBAR)),
+                   grey_sufficientlyVisible(), nil);
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:titleMatcher];
+  } else {
+    [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                        chrome_test_util::SnackbarViewMatcher()];
   }
 }
 
@@ -329,6 +348,28 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ActorAppInterface setControlState:actor::ActorControlState::kInactive
                   forWebStateAtIndex:0];
   [self assertOverlayVisible:NO];
+}
+
+// Tests that tapping the overlay scrim displays the interaction-limited
+// snackbar and ending actuation dismisses it.
+- (void)testScrimTapShowsInteractionLimitedSnackbar {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/button.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Button"];
+
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:0];
+  [self assertOverlayVisible:YES];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kActorOverlayScrimAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [self assertInteractionLimitedSnackbarVisible:YES];
+
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
+  [self assertOverlayVisible:NO];
+  [self assertInteractionLimitedSnackbarVisible:NO];
 }
 
 // Tests that on the five-button app bar layout on iPhone, back and forward
