@@ -101,7 +101,9 @@ media::mojom::AvailabilityStatus ModelUnavailableReasonToAvailabilityStatus(
     return media::mojom::AvailabilityStatus::kAvailable;
   }
   if (unavailable_reason ==
-      optimization_guide::mojom::ModelUnavailableReason::kNotSupported) {
+          optimization_guide::mojom::ModelUnavailableReason::kNotSupported ||
+      unavailable_reason ==
+          optimization_guide::mojom::ModelUnavailableReason::kTransientError) {
     return media::mojom::AvailabilityStatus::kUnavailable;
   }
   return media::mojom::AvailabilityStatus::kDownloadable;

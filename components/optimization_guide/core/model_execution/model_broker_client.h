@@ -111,8 +111,10 @@ class ModelSubscriberImpl : public mojom::ModelSubscriber {
                      base::WeakPtr<OptimizationGuideLogger> logger);
 
   // Wait for the client to be available and call the callback with a reference.
-  // Calls the callback with nullptr if the state become NotSupported.
-  void WaitForClient(ClientCallback callback);
+  // Calls the callback with nullptr if the state becomes `kNotSupported`, or
+  // `kTransientError` when `fail_on_transient_error` is true.
+  void WaitForClient(ClientCallback callback,
+                     bool fail_on_transient_error = true);
 
   // Check whether a session can be created with the given capabilities, and
   // return the reason if not.
@@ -140,7 +142,7 @@ class ModelSubscriberImpl : public mojom::ModelSubscriber {
   // Collect all ready callbacks from both queues.
   [[nodiscard]] std::vector<base::OnceClosure> FlushAllCallbacks();
 
-  std::vector<ClientCallback> callbacks_;
+  std::vector<std::pair<ClientCallback, bool>> callbacks_;
   std::optional<mojom::ModelUnavailableReason> unavailable_reason_;
   std::optional<mojom::ModelNotSupportedDetailedReason> detailed_reason_;
   std::vector<

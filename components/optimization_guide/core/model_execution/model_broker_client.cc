@@ -152,10 +152,11 @@ void ModelSubscriberImpl::CreateSession(
                     .Then(std::move(callback)));
 }
 
-void ModelSubscriberImpl::WaitForClient(ClientCallback callback) {
+void ModelSubscriberImpl::WaitForClient(ClientCallback callback,
+                                        bool fail_on_transient_error) {
   TRACE_EVENT("optimization_guide", "ModelSubscriberImpl::WaitForClient",
               perfetto::Flow::FromPointer(this));
-  callbacks_.emplace_back(std::move(callback));
+  callbacks_.emplace_back(std::move(callback), fail_on_transient_error);
   RunAll(FlushModelClientCallbacks());
 }
 
@@ -211,14 +212,24 @@ ModelSubscriberImpl::FlushModelClientCallbacks() {
   std::vector<base::OnceClosure> closures;
   if (client_) {
     base::WeakPtr<ModelClient> client = client_->GetWeakPtr();
-    for (auto& callback : std::exchange(callbacks_, {})) {
+    for (auto& [callback, _] : std::exchange(callbacks_, {})) {
       closures.push_back(base::BindOnce(std::move(callback), client));
     }
   } else if (unavailable_reason_ ==
              mojom::ModelUnavailableReason::kNotSupported) {
-    for (auto& callback : std::exchange(callbacks_, {})) {
+    for (auto& [callback, _] : std::exchange(callbacks_, {})) {
       closures.push_back(base::BindOnce(std::move(callback), nullptr));
     }
+  } else if (unavailable_reason_ ==
+             mojom::ModelUnavailableReason::kTransientError) {
+    std::erase_if(callbacks_, [&](auto& entry) {
+      auto& [callback, fail_on_transient_error] = entry;
+      if (!fail_on_transient_error) {
+        return false;
+      }
+      closures.push_back(base::BindOnce(std::move(callback), nullptr));
+      return true;
+    });
   }
   return closures;
 }
@@ -239,7 +250,8 @@ ModelSubscriberImpl::FlushCanCreateSessionCallbacks() {
     std::optional<mojom::ModelUnavailableReason> unavailable_reason =
         unavailable_reason_;
     std::optional<mojom::ModelNotSupportedDetailedReason> detailed_reason =
-        unavailable_reason_ == mojom::ModelUnavailableReason::kNotSupported
+        (unavailable_reason_ == mojom::ModelUnavailableReason::kNotSupported ||
+         unavailable_reason_ == mojom::ModelUnavailableReason::kTransientError)
             ? detailed_reason_
             : std::nullopt;
 

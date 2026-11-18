@@ -55,6 +55,9 @@ enum ModelUnavailableReason {
   kPendingAssets = 3,
   // Model solution might become available if requested.
   kPendingUsage = 4,
+  // Model solution is currently unavailable due to a transient error, but may
+  // become available on a future attempt.
+  kTransientError = 5,
 };
 
 enum ModelNotSupportedDetailedReason {
@@ -97,7 +100,7 @@ interface ModelSubscriber {
   // expected to become available. A disconnect may be sent shortly if the
   // model will not become available later.
   // The second argument provides more details when the reason is
-  // `kNotSupported`.
+  // `kNotSupported` or `kTransientError`.
   Unavailable(ModelUnavailableReason reason,
               ModelNotSupportedDetailedReason? detailed_reason);
 

@@ -117,6 +117,44 @@ TEST(ModelBrokerClientTest,
   EXPECT_TRUE(can_create_called);
 }
 
+TEST(ModelBrokerClientTest, WaitForClientOnTransientError) {
+  base::test::TaskEnvironment task_environment_;
+  mojo::Remote<mojom::ModelSubscriber> remote;
+  auto subscriber =
+      std::make_unique<ModelSubscriber>(remote.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<base::WeakPtr<ModelClient>> default_wait_future;
+  base::test::TestFuture<base::WeakPtr<ModelClient>> persistent_wait_future;
+  base::test::TestFuture<std::optional<mojom::ModelUnavailableReason>,
+                         std::optional<mojom::ModelNotSupportedDetailedReason>>
+      can_create_future;
+
+  subscriber->WaitForClient(default_wait_future.GetCallback());
+  subscriber->WaitForClient(persistent_wait_future.GetCallback(),
+                            /*fail_on_transient_error=*/false);
+  subscriber->CanCreateSession({}, can_create_future.GetCallback());
+
+  remote->CapabilitiesUpdated(on_device_model::Capabilities());
+  remote->Unavailable(
+      mojom::ModelUnavailableReason::kTransientError,
+      mojom::ModelNotSupportedDetailedReason::kInsufficientDiskSpace);
+  remote.FlushForTesting();
+
+  EXPECT_TRUE(default_wait_future.IsReady());
+  EXPECT_FALSE(default_wait_future.Get());
+  EXPECT_FALSE(persistent_wait_future.IsReady());
+  EXPECT_EQ(can_create_future.Get<0>(),
+            mojom::ModelUnavailableReason::kTransientError);
+  EXPECT_EQ(can_create_future.Get<1>(),
+            mojom::ModelNotSupportedDetailedReason::kInsufficientDiskSpace);
+
+  remote->Unavailable(mojom::ModelUnavailableReason::kNotSupported,
+                      std::nullopt);
+  remote.FlushForTesting();
+  EXPECT_TRUE(persistent_wait_future.IsReady());
+  EXPECT_FALSE(persistent_wait_future.Get());
+}
+
 // Verify that when requesting a session while assets are still pending, the
 // client will wait for the assets before resolving the callback.
 TEST(ModelBrokerClientTest, PendingClient) {

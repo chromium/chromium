@@ -41,12 +41,16 @@ void ManifestValidator::MaybeExecuteValidationTask(
   model_broker_->GetSolutionProvider(task_.use_case())
       .local_subscriber()
       .WaitForClient(base::BindOnce(&ManifestValidator::OnClientAvailable,
-                                    weak_ptr_factory_.GetWeakPtr()));
+                                    weak_ptr_factory_.GetWeakPtr()),
+                     /*fail_on_transient_error=*/false);
 }
 
 void ManifestValidator::OnClientAvailable(base::WeakPtr<ModelClient> client) {
   TRACE_EVENT("optimization_guide", "ManifestValidator::OnClientAvailable",
               "version", task_.version(), perfetto::Flow::FromPointer(this));
+  if (!client) {
+    return;
+  }
   // Don't start immediately when assets are first available, to let other tasks
   // that actually requested the assets to start first.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

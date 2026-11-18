@@ -169,6 +169,8 @@ export class OnDeviceInternalsBrokerStateElement extends CrLitElement {
         return 'Pending Assets';
       case ModelUnavailableReason.kPendingUsage:
         return 'Pending Usage';
+      case ModelUnavailableReason.kTransientError:
+        return 'Transient Error';
       default:
         return 'Unknown';
     }

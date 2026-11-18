@@ -205,6 +205,7 @@ ConvertModelEligibilityReasonToModelAvailabilityCheckResult(
     case optimization_guide::mojom::ModelUnavailableReason::kPendingUsage:
       return blink::mojom::ModelAvailabilityCheckResult::kDownloadable;
     case optimization_guide::mojom::ModelUnavailableReason::kNotSupported:
+    case optimization_guide::mojom::ModelUnavailableReason::kTransientError:
       return ConvertModelNotSupportedReasonToModelAvailabilityCheckResult(
           detailed_reason);
   }
