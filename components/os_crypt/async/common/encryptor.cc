@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -309,6 +310,12 @@ bool Encryptor::IsEncryptionAvailable() const {
 
 bool Encryptor::IsDecryptionAvailable() const {
   return !keys_.empty();
+}
+
+std::optional<std::string_view> Encryptor::provider_for_encryption() const {
+  return IsEncryptionAvailable()
+             ? std::optional<std::string_view>(provider_for_encryption_)
+             : std::nullopt;
 }
 
 bool Encryptor::DefaultEncryptionProviderAvailable() const {

@@ -34,11 +34,12 @@ if (is_win) {
     deps = [
       "//base",
       "//chrome/common:constants",
-      "//chrome/elevation_service:public_headers",
       "//chrome/install_static:install_static_util",
       "//components/prefs",
       "//components/sync/base",
     ]
+
+    public_deps = [ "//chrome/elevation_service:public_headers" ]
   }
 
   source_set("browser_tests") {

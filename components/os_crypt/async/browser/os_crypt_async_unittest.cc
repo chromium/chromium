@@ -281,11 +281,14 @@ TEST_F(OSCryptAsyncTest, TestEncryptorIsEncryptionAvailable) {
   EXPECT_TRUE(encryptor->IsDecryptionAvailable());
 
   EXPECT_TRUE(encryptor->IsEncryptionAvailable());
+  EXPECT_EQ(encryptor->provider_for_encryption(), kDefaultTestKeyPrefix);
   encryptor->set_encryption_available_for_testing(false);
   EXPECT_FALSE(encryptor->IsEncryptionAvailable());
+  EXPECT_EQ(encryptor->provider_for_encryption(), std::nullopt);
 
   encryptor->set_encryption_available_for_testing(std::nullopt);
   EXPECT_TRUE(encryptor->IsEncryptionAvailable());
+  EXPECT_EQ(encryptor->provider_for_encryption(), kDefaultTestKeyPrefix);
 }
 
 TEST_F(OSCryptAsyncTest, TestEncryptorWithoutKeysInterface) {

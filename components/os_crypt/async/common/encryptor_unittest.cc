@@ -438,6 +438,32 @@ TEST_F(EncryptorTest, KeyAvailability) {
   }
 }
 
+TEST_F(EncryptorTest, ProviderForEncryption) {
+  {
+    const scoped_refptr<Encryptor> empty_encryptor = GetEncryptor();
+    EXPECT_FALSE(empty_encryptor->IsEncryptionAvailable());
+    EXPECT_EQ(empty_encryptor->provider_for_encryption(), std::nullopt);
+  }
+
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("v20", std::nullopt);
+    const scoped_refptr<Encryptor> unavailable_encryptor =
+        GetEncryptor(std::move(key_ring), "v20");
+    EXPECT_FALSE(unavailable_encryptor->IsEncryptionAvailable());
+    EXPECT_EQ(unavailable_encryptor->provider_for_encryption(), std::nullopt);
+  }
+
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("v20", DeriveAES256TestKey("v20"));
+    const scoped_refptr<Encryptor> encryptor =
+        GetEncryptor(std::move(key_ring), "v20");
+    EXPECT_TRUE(encryptor->IsEncryptionAvailable());
+    EXPECT_EQ(encryptor->provider_for_encryption(), "v20");
+  }
+}
+
 class EncryptorTraitsTest : public EncryptorTest {};
 
 TEST_F(EncryptorTraitsTest, TraitsRoundTrip) {
