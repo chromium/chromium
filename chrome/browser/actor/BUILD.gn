@@ -67,6 +67,7 @@ source_set("actor") {
     "tools/password_manager/attempt_login/attempt_login_tool_request.h",
     "tools/password_manager/change_password/change_password_tool_request.h",
     "tools/perform_search_tool_request.h",
+    "tools/screenshot_tool_result.h",
     "tools/script_tool_request.h",
     "tools/scroll_to_tool_request.h",
     "tools/scroll_tool_request.h",
@@ -118,6 +119,7 @@ source_set("actor") {
     "//content/public/browser",
     "//third_party/blink/public/mojom:mojom_platform_headers",
     "//ui/base/unowned_user_data",
+    "//ui/gfx/geometry",
   ]
 
   if (!skip_android_unmigrated_actor_files) {
@@ -235,6 +237,7 @@ source_set("impl") {
     "tools/password_manager/change_password/change_password_tool.h",
     "tools/password_manager/change_password/change_password_tool_request.cc",
     "tools/perform_search_tool_request.cc",
+    "tools/screenshot_tool_result.cc",
     "tools/script_tool_host.cc",
     "tools/script_tool_host.h",
     "tools/script_tool_request.cc",
@@ -525,6 +528,7 @@ source_set("unit_tests") {
     "tools/password_manager/attempt_login/attempt_login_tool_request_unittest.cc",
     "tools/password_manager/change_password/change_password_tool_request_unittest.cc",
     "tools/password_manager/change_password/change_password_tool_unittest.cc",
+    "tools/screenshot_tool_result_unittest.cc",
     "tools/tool_request_unittest.cc",
     "tools/tool_result_unittest.cc",
     "tools/type_tool_request_unittest.cc",
