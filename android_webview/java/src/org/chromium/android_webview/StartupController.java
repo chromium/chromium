@@ -26,7 +26,25 @@ import java.util.ArrayDeque;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** Controller responsible for managing WebView startup lifecycle and tasks. */
+/**
+ * Root coordinator and public entry point for WebView browser process startup.
+ *
+ * <p>WebView startup is structured as a three-level hierarchy:
+ *
+ * <ol>
+ *   <li><b>Coordinator ({@link StartupController}):</b> Tracks global startup state, binds the
+ *       Chromium UI thread, and serves as the public entry point for synchronous and asynchronous
+ *       startup requests.
+ *   <li><b>Scheduling Tasks ({@link StartupTasks}):</b> Top-level methods queued into and executed
+ *       by {@link StartupTasksRunner}. Here, "task" strictly means a <i>unit of scheduling posted
+ *       to a task queue</i>. Tasks are arbitrary slices chosen for timing, ordering, and UI-thread
+ *       yielding—not functional groupings—and may be split, combined, or rebalanced freely.
+ *   <li><b>Initialization Steps:</b> Individual operations invoked within a task. Each step should
+ *       either be a self-contained call into the domain class that owns that state (e.g. {@code
+ *       AwDataDirLock.lock()}) or trivial glue inlined directly into the task, rather than helper
+ *       methods extracted into generic catch-all classes like {@link AwBrowserProcess}.
+ * </ol>
+ */
 @NullMarked
 public class StartupController {
     private static final String TAG = "StartupController";
@@ -52,7 +70,7 @@ public class StartupController {
         /** Returns the framework-level selection action menu client, if available. */
         @Nullable SelectionActionMenuClientWrapper getSelectionActionMenuClient();
 
-        /** Callback for the glue layer to complete post-startup tasks. */
+        /** Callback for the glue layer to complete post-startup initialization. */
         void onStartupComplete();
 
         /** Callback when startup diagnostics and timings are ready. */
@@ -277,7 +295,7 @@ public class StartupController {
 
     /**
      * Creates and configures the {@link StartupTasksRunner} with the ordered pre-browser process
-     * and post-browser process startup steps.
+     * and post-browser process startup tasks.
      */
     private StartupTasksRunner initializeStartupTasksRunner(
             @StartupTasksRunner.StartupRequestMode int chromiumFirstStartupRequestMode) {

@@ -23,8 +23,11 @@ import java.util.ArrayDeque;
 import java.util.Locale;
 
 /**
- * Runner responsible for executing Chromium startup tasks asynchronously or synchronously depending
- * on whether startup was triggered from the background or UI thread.
+ * Queue runner responsible for executing the scheduling-unit tasks defined in {@link StartupTasks}.
+ *
+ * <p>Executes tasks either synchronously in a single block or asynchronously across separate UI
+ * thread posts depending on whether startup was triggered from the UI thread or a background
+ * thread, and transitions to synchronous execution if preempted on the UI thread.
  */
 @NullMarked
 public final class StartupTasksRunner {

@@ -47,11 +47,12 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * Utility class containing stateless top-level scheduling-unit tasks executed during Chromium
- * initialization in WebView.
+ * Stateless scheduling-unit tasks executed during WebView Chromium initialization.
  *
- * <p>Each method corresponds to a distinct phase or scheduling unit coordinated by {@link
- * StartupController} and executed by {@link StartupTasksRunner}.
+ * <p>Each top-level method represents a single unit of scheduling posted to {@link
+ * StartupTasksRunner}'s queues. Methods are grouped by execution timing rather than functional area
+ * and should only contain direct calls to self-contained initialization steps on their owning
+ * classes or trivial inlined setup.
  */
 @NullMarked
 public final class StartupTasks {
@@ -136,8 +137,8 @@ public final class StartupTasks {
     }
 
     /**
-     * Runs immediate post-browser process startup tasks on the UI thread right after native browser
-     * process startup completes.
+     * Scheduling task that runs the first batch of post-browser-process initialization steps
+     * immediately after native browser startup completes.
      */
     public static void postBrowserProcessStartStepOne() {
         ThreadUtils.assertOnUiThread();
@@ -162,8 +163,8 @@ public final class StartupTasks {
     }
 
     /**
-     * Runs the final UI-thread initialization steps before transitioning WebView startup state to
-     * finished.
+     * Scheduling task that runs the final UI-thread initialization steps before WebView startup
+     * finishes.
      */
     public static void postBrowserProcessStartStepTwo(StartupController.Delegate delegate) {
         ThreadUtils.assertOnUiThread();
@@ -265,9 +266,10 @@ public final class StartupTasks {
         }
     }
 
-    /**
-     * Post tasks that need to run in the background thread after the browser process has started.
-     */
+    // TODO(crbug.com/544990736): StartupTasks should only contain top-level scheduling-unit methods
+    // queued to StartupTasksRunner. Move the StorageManager cache quota metrics to a dedicated
+    // metrics helper class and inline the remaining PostTask calls into
+    // postBrowserProcessStartStepTwo().
     private static void postBackgroundTasks() {
         if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_VERBOSE_LOGGING)) {
             // Log extra information, for debugging purposes.

@@ -17,7 +17,13 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.build.annotations.Nullable;
 
-/** Wrapper for the steps needed to initialize the java and native sides of webview chromium. */
+/**
+ * Holds process-wide state, native library loading, and JNI hooks for the WebView browser process.
+ *
+ * <p>NOTE: Do not add general startup initialization steps or helper methods here. Browser startup
+ * orchestration belongs in {@link StartupController} and {@link StartupTasks}, and individual
+ * initialization steps belong in the domain class that owns that feature.
+ */
 @JNINamespace("android_webview")
 @Lifetime.Singleton
 public final class AwBrowserProcess {
