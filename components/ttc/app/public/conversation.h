@@ -60,10 +60,10 @@ class Conversation {
   virtual void SetMicMuted(bool muted) = 0;
 
   // Routes captured microphone PCM frames to `sink` instead of the TTC model
-  // backend while a Human-on-the-Loop (HOTL) confirmation is active. While a
-  // non-null sink is active, incoming model audio is dropped so the sink only
-  // hears the user. Passing a null callback restores normal routing to the
-  // backend.
+  // backend while a Human-on-the-Loop (HOTL) confirmation is active.
+  // Activating a non-null sink clears queued model playback, completes playback
+  // reporting for any active turn, and drops incoming model audio so the sink
+  // hears only the user. Passing a null callback restores normal routing.
   using HotlAudioSinkCallback =
       base::RepeatingCallback<void(base::span<const int16_t> pcm_data,
                                    const media::AudioParameters& params)>;

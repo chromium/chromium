@@ -36,6 +36,10 @@ class PlaybackStatusReporter {
   void OnPlaybackError();
   void CompleteIfNeeded();
 
+  bool is_playback_completed() const {
+    return state_ == State::kPlaybackCompletedSent;
+  }
+
  private:
   enum class State {
     kPlaybackStarted,

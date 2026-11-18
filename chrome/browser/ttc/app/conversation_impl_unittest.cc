@@ -675,7 +675,6 @@ TEST_F(ConversationImplTest,
   EXPECT_NE(session_controller_.GetSessionLifecycle(), SessionLifecycle::kLive);
 }
 
-
 TEST_F(ConversationImplTest, BackendInitializedIgnoredWhenSessionFinished) {
   ConversationImpl& conversation = CreateConversation();
 
@@ -818,6 +817,87 @@ TEST_F(ConversationImplHotlTest, SinkSilencesModelAudio) {
   conversation.SetHotlAudioSink(base::NullCallback());
   conversation.OnAudioOutput(std::vector<int16_t>(100, 1000),
                              /*sequence_number=*/2);
+  EXPECT_TRUE(audio_controller().is_playing());
+}
+
+TEST_F(ConversationImplHotlTest,
+       DropsAudioAndCompletesPlaybackWhenHotlSinkActive) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+
+  // Activate the HOTL sink before the model turn begins so the active sink
+  // completes playback reporting immediately upon turn start.
+  conversation.SetHotlAudioSink(base::DoNothing());
+
+  EXPECT_CALL(backend(), ReportPlaybackStatus(base::TimeDelta(),
+                                              /*playback_complete=*/true,
+                                              /*generation_id=*/101))
+      .Times(1);
+
+  conversation.OnModelTurnStateUpdate(ModelTurnStateUpdate::kTurnStarted,
+                                      /*generation_id=*/101);
+
+  conversation.OnAudioOutput(samples_, /*sequence_number=*/1);
+  EXPECT_FALSE(audio_controller().is_playing());
+
+  // Subsequent dropped chunks and turn-end transitions do not emit duplicate
+  // completion reports.
+  conversation.OnAudioOutput(samples_, /*sequence_number=*/2);
+  conversation.OnModelTurnStateUpdate(
+      ModelTurnStateUpdate::kGenerationCompleted, /*generation_id=*/101);
+  conversation.OnModelTurnStateUpdate(ModelTurnStateUpdate::kTurnCompleted,
+                                      /*generation_id=*/101);
+}
+
+TEST_F(ConversationImplHotlTest,
+       ActivatingSinkClearsQueueAndCompletesPlayback) {
+  ConversationImpl& conversation = CreateConversation();
+  conversation.Start();
+  conversation.OnModelTurnStateUpdate(ModelTurnStateUpdate::kTurnStarted,
+                                      /*generation_id=*/102);
+
+  const std::vector<int16_t> chunk(100, 1000);
+  conversation.OnAudioOutput(chunk, /*sequence_number=*/1);
+  conversation.OnAudioOutput(chunk, /*sequence_number=*/2);
+  EXPECT_TRUE(audio_controller().is_playing());
+
+  // Clearing a null sink leaves active playback untouched.
+  conversation.SetHotlAudioSink(base::NullCallback());
+  EXPECT_TRUE(audio_controller().is_playing());
+
+  // Render only the first 100-frame chunk at 24kHz (ceil(100e6 / 24000) = 4167
+  // us) so the second chunk remains queued and unrendered when HOTL activates.
+  auto bus = media::AudioBus::Create(1, 100);
+  audio_controller().Render(base::TimeDelta(), base::TimeTicks::Now(), {},
+                            bus.get());
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_CALL(backend(), ReportPlaybackStatus(base::Microseconds(4167),
+                                              /*playback_complete=*/true,
+                                              /*generation_id=*/102))
+      .Times(1);
+
+  conversation.SetHotlAudioSink(base::DoNothing());
+  EXPECT_FALSE(audio_controller().is_playing());
+
+  // Clearing the sink before the silenced turn ends still drops trailing
+  // chunks from that generation so playback does not resume mid-sentence.
+  conversation.SetHotlAudioSink(base::NullCallback());
+  conversation.OnAudioOutput(chunk, /*sequence_number=*/3);
+  EXPECT_FALSE(audio_controller().is_playing());
+
+  conversation.OnModelTurnStateUpdate(
+      ModelTurnStateUpdate::kGenerationCompleted, /*generation_id=*/102);
+  conversation.OnModelTurnStateUpdate(ModelTurnStateUpdate::kTurnCompleted,
+                                      /*generation_id=*/102);
+
+  // Subsequent turns play normally again.
+  conversation.OnModelTurnStateUpdate(ModelTurnStateUpdate::kTurnStarted,
+                                      /*generation_id=*/103);
+  conversation.OnAudioOutput(chunk, /*sequence_number=*/1);
   EXPECT_TRUE(audio_controller().is_playing());
 }
 

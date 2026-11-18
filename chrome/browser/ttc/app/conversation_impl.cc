@@ -82,6 +82,15 @@ void ConversationImpl::SetMicMuted(bool muted) {
 
 void ConversationImpl::SetHotlAudioSink(HotlAudioSinkCallback sink) {
   hotl_audio_sink_ = std::move(sink);
+  if (hotl_audio_sink_) {
+    audio_controller_->ClearPlaybackQueue();
+    // Notify the backend that playback is complete for any active model turn so
+    // it does not hang waiting for drained audio while we drop output during
+    // local confirmation. See Conversation::SetHotlAudioSink().
+    if (playback_status_reporter_) {
+      playback_status_reporter_->CompleteIfNeeded();
+    }
+  }
 }
 
 SessionJournal& ConversationImpl::GetJournal() {
@@ -195,9 +204,11 @@ void ConversationImpl::OnTranscriptions(
 
 void ConversationImpl::OnAudioOutput(base::span<const int16_t> audio_data,
                                      int64_t sequence_number) {
-  // See SetHotlAudioSink(). The dropped audio is handled like an interrupted
-  // turn: it is never played, so its playback is never reported.
-  if (hotl_audio_sink_) {
+  // Drop model audio while a HOTL sink is active, and keep dropping trailing
+  // chunks for any turn whose playback completion was already reported.
+  if (hotl_audio_sink_ ||
+      (playback_status_reporter_ &&
+       playback_status_reporter_->is_playback_completed())) {
     return;
   }
   audio_controller_->PlayAudio(audio_data);
@@ -238,6 +249,9 @@ void ConversationImpl::OnModelTurnStateUpdate(ModelTurnStateUpdate update,
           generation_id,
           base::BindRepeating(&ConversationImpl::SendPlaybackStatusReport,
                               base::Unretained(this)));
+      if (hotl_audio_sink_) {
+        playback_status_reporter_->CompleteIfNeeded();
+      }
       break;
     case ModelTurnStateUpdate::kGenerationCompleted:
       if (playback_status_reporter_) {

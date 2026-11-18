@@ -141,6 +141,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "audio_controller_browsertest.cc",
+      "hotl_protocol_browsertest.cc",
       "page_context_protocol_browsertest.cc",
       "protocol_browsertest.cc",
       "speaker_state_browsertest.cc",
