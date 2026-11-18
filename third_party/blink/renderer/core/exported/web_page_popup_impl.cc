@@ -33,6 +33,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/base/features.h"
@@ -797,6 +798,10 @@ WebInputEventResult WebPagePopupImpl::HandleKeyEvent(
   LocalFrame::NotifyUserActivation(
       popup_client_->OwnerElement().GetDocument().GetFrame(),
       mojom::blink::UserActivationNotificationType::kInteraction);
+  // User-activation handlers may synchronously close the popup.
+  if (closing_) {
+    return WebInputEventResult::kNotHandled;
+  }
   return MainFrame().GetEventHandler().KeyEvent(event);
 }
 
@@ -856,6 +861,9 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
     LocalFrame::NotifyUserActivation(
         popup_client_->OwnerElement().GetDocument().GetFrame(),
         mojom::blink::UserActivationNotificationType::kInteraction);
+    if (closing_) {
+      return WebInputEventResult::kNotHandled;
+    }
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
         WebFeature::kPopupGestureTapExceedsOwnerWindowBounds);
@@ -913,11 +921,18 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
 
 void WebPagePopupImpl::HandleMouseDown(LocalFrame& main_frame,
                                        const WebMouseEvent& event) {
+  if (closing_) {
+    return;
+  }
   if (IsViewportPointInWindow(event.PositionInWidget().x(),
                               event.PositionInWidget().y())) {
     LocalFrame::NotifyUserActivation(
         popup_client_->OwnerElement().GetDocument().GetFrame(),
         mojom::blink::UserActivationNotificationType::kInteraction);
+    // User-activation handlers may synchronously close the popup.
+    if (closing_) {
+      return;
+    }
     CheckScreenPointInOwnerWindowAndCount(
         event.PositionInScreen(),
         WebFeature::kPopupMouseDownExceedsOwnerWindowBounds);
@@ -930,6 +945,9 @@ void WebPagePopupImpl::HandleMouseDown(LocalFrame& main_frame,
 WebInputEventResult WebPagePopupImpl::HandleMouseWheel(
     LocalFrame& main_frame,
     const WebMouseWheelEvent& event) {
+  if (closing_) {
+    return WebInputEventResult::kNotHandled;
+  }
   if (IsViewportPointInWindow(event.PositionInWidget().x(),
                               event.PositionInWidget().y())) {
     CheckScreenPointInOwnerWindowAndCount(
@@ -1011,6 +1029,7 @@ WebInputEventResult WebPagePopupImpl::DispatchBufferedTouchEvents() {
   if (closing_) {
     return WebInputEventResult::kNotHandled;
   }
+  scoped_refptr<WebPagePopupImpl> protector(this);
   return MainFrame().GetEventHandler().DispatchBufferedTouchEvents();
 }
 
@@ -1020,6 +1039,7 @@ WebInputEventResult WebPagePopupImpl::HandleInputEvent(
     return WebInputEventResult::kNotHandled;
   }
   DCHECK(!WebInputEvent::IsTouchEventType(event.Event().GetType()));
+  scoped_refptr<WebPagePopupImpl> protector(this);
   return WidgetEventHandler::HandleInputEvent(event, &MainFrame());
 }
 
