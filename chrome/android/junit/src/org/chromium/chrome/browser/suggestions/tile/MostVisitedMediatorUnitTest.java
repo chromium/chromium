@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.CONTAINER_WRAPS_TILES;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_VISIBLE;
@@ -45,8 +46,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils.LayoutType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -429,6 +433,45 @@ public class MostVisitedMediatorUnitTest {
         int lateralMargin = mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
         mMediator.updateMvtWidth(totalWidth, totalWidth - (lateralMargin * 2));
         verifyLayoutParams(marginLayoutParams, totalWidth - (lateralMargin * 2), lateralMargin);
+    }
+
+    @Test
+    public void testContainerWrapsTiles_DefaultLayout() {
+        createMediator(/* isLff= */ true);
+        Assert.assertFalse(mModel.get(CONTAINER_WRAPS_TILES));
+
+        createMediator(/* isLff= */ false);
+        Assert.assertFalse(mModel.get(CONTAINER_WRAPS_TILES));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.BESIDE_MVT})
+    public void testContainerWrapsTiles_BesideMvt() {
+        createMediator(/* isLff= */ true);
+        Assert.assertTrue(mModel.get(CONTAINER_WRAPS_TILES));
+
+        createMediator(/* isLff= */ false);
+        Assert.assertFalse(mModel.get(CONTAINER_WRAPS_TILES));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testContainerWrapsTiles_InsideMvt() {
+        createMediator(/* isLff= */ true);
+        Assert.assertTrue(mModel.get(CONTAINER_WRAPS_TILES));
+
+        createMediator(/* isLff= */ false);
+        Assert.assertFalse(mModel.get(CONTAINER_WRAPS_TILES));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.REMOVE})
+    public void testContainerWrapsTiles_RemoveComposeplate() {
+        createMediator(/* isLff= */ true);
+        Assert.assertFalse(mModel.get(CONTAINER_WRAPS_TILES));
+
+        createMediator(/* isLff= */ false);
+        Assert.assertFalse(mModel.get(CONTAINER_WRAPS_TILES));
     }
 
     private void createMediator() {

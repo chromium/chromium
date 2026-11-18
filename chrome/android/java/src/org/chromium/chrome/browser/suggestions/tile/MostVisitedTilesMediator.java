@@ -104,8 +104,12 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
 
         maybeSetPortraitIntervalPaddings();
 
-        // Only tablets in the beside-MVT layout wrap the container around its tiles.
-        mModel.set(CONTAINER_WRAPS_TILES, mIsLff && NewTabPageUtils.isBesideMvtModuleEnabled());
+        // Only tablets in the beside-MVT or inside-MVT layout wrap the container around its tiles.
+        mModel.set(
+                CONTAINER_WRAPS_TILES,
+                mIsLff
+                        && (NewTabPageUtils.isBesideMvtModuleEnabled()
+                                || NewTabPageUtils.isAiModeTileInsideMvt()));
 
         addMostVisitedTilesVisibilityListener();
     }

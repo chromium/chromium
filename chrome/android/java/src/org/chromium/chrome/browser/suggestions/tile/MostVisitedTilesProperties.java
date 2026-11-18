@@ -26,9 +26,8 @@ public final class MostVisitedTilesProperties {
             new WritableObjectPropertyKey<>(true);
 
     /**
-     * Whether the MVT container wraps its tiles instead of filling the width left over by the AI
-     * Mode card in the beside-MVT layout, so the AI Mode card and MVT container are centered
-     * together as one unit. Only set on large form factor (LFF) devices.
+     * Whether the MVT container wraps its tiles (so the entire container can be centered) instead
+     * of filling its offered width.
      */
     public static final PropertyModel.WritableBooleanPropertyKey CONTAINER_WRAPS_TILES =
             new PropertyModel.WritableBooleanPropertyKey();
