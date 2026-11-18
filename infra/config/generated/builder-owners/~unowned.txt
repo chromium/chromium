@@ -1,6 +1,5 @@
 ci/ios-simulator
 ci/ios-simulator-full-configs
-try/android-binary-size
 try/fuchsia-binary-size
 try/ios-simulator
 try/ios-simulator-full-configs

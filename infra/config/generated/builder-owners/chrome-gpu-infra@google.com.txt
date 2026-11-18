@@ -1,7 +1,3 @@
-ci/Android FYI Release (Pixel 10)
-ci/Android FYI Release (Pixel 4)
-ci/Android FYI Release (Pixel 6)
-ci/Android Release (Pixel 2)
 ci/Dawn Chromium Presubmit
 ci/Dawn Linux x64 DEPS Builder
 ci/Dawn Linux x64 DEPS Release (Intel UHD 630)
@@ -19,8 +15,6 @@ ci/Dawn Win10 x86 DEPS Release (Intel)
 ci/Dawn Win10 x86 DEPS Release (NVIDIA)
 ci/Dawn Win11 arm64 DEPS Builder
 ci/Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)
-ci/GPU FYI Android arm Builder
-ci/GPU FYI Android arm64 Builder
 ci/GPU FYI Linux Builder
 ci/GPU FYI Mac Builder
 ci/GPU FYI Mac arm64 Builder
@@ -44,7 +38,6 @@ ci/Win10 FYI x64 Release (Intel)
 ci/Win10 FYI x64 Release (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
 ci/Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)
-try/android_optional_gpu_tests_rel
 try/dawn-chromium-presubmit
 try/dawn-linux-x64-deps-rel
 try/dawn-mac-arm64-deps-rel
@@ -52,7 +45,6 @@ try/dawn-mac-x64-deps-rel
 try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
 try/dawn-win11-arm64-deps-rel
-try/gpu-fyi-cq-android-arm64
 try/gpu-fyi-cq-mac-arm64
 try/gpu-fyi-cq-win-arm64
 try/linux_optional_gpu_tests_rel

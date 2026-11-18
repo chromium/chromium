@@ -6,10 +6,6 @@
     "dawn_ref": "refs/heads/chromium/8078",
     "is_main": false,
     "platforms": {
-        "android": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
         "cros": {
             "description": "beta/stable",
             "gardener_rotation": "chrome_browser_release"
