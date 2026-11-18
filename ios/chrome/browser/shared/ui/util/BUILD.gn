@@ -155,6 +155,15 @@ source_set("url_with_title") {
   deps = [ "//url" ]
 }
 
+source_set("vertical_bar_util") {
+  sources = [
+    "vertical_bar_util.h",
+    "vertical_bar_util.mm",
+  ]
+  deps = [ "//ios/chrome/browser/shared/public/features" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -168,11 +177,13 @@ source_set("unit_tests") {
     "uikit_ui_util_unittest.mm",
     "uiview_window_coordinates_unittest.mm",
     "uiview_window_observing_unittest.mm",
+    "vertical_bar_util_unittest.mm",
   ]
   deps = [
     ":terms_util",
     ":util",
     ":util_swift",
+    ":vertical_bar_util",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/public/features",

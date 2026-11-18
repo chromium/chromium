@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/shared/ui/util/vertical_bar_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -227,6 +228,13 @@ inline LayoutStateScenePassKey PassKey() {
   [super viewSafeAreaInsetsDidChange];
   [self updateAssistantTopConstraints:self.layoutState.containedLayoutActive];
 }
+
+#if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
+// As the window root, owns the vertical bar decision for the whole scene.
+- (UIVerticalBarBehavior)preferredVerticalBarBehavior {
+  return PreferredVerticalBarBehavior(self.traitCollection);
+}
+#endif
 
 #pragma mark - UIResponder
 
@@ -518,6 +526,7 @@ inline LayoutStateScenePassKey PassKey() {
                           passKey:PassKey()];
   [self.layoutState setWindowedMode:IsWindowedMode(self.view.window)
                             passKey:PassKey()];
+  UpdateVerticalBarConfiguration(self);
 }
 
 // Helper to update app content constraints for panel layout.

@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/shared/ui/util/vertical_bar_util.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_handler.h"
@@ -384,6 +385,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return UIStatusBarStyleLightContent;
 }
 
+#if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
+// Only read by UIKit while this is the window root (Legacy IA without
+// `SceneViewController`); otherwise the root's preference applies.
+- (UIVerticalBarBehavior)preferredVerticalBarBehavior {
+  return PreferredVerticalBarBehavior(self.traitCollection);
+}
+#endif
+
 - (void)dismissViewControllerAnimated:(BOOL)flag
                            completion:(void (^)())completion {
   __weak TabGridViewController* weakSelf = self;
@@ -640,6 +649,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)handleTraitChanges {
   [self updateConstraintsOnTraitChange];
   [self updateToolbarEdgeEffects];
+  UpdateVerticalBarConfiguration(self);
 }
 
 // Updates the edge effects on the top and bottom toolbars based on the current
