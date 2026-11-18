@@ -75,7 +75,6 @@ class WebNoStatePrefetchClient;
 class WebPagePopup;
 class WebRemoteFrame;
 class WebSettings;
-class WebString;
 class WebViewClient;
 class WebWidget;
 struct DeviceEmulationParams;
@@ -185,10 +184,6 @@ class BLINK_EXPORT WebView {
 
   // The returned pointer is valid for the lifetime of the WebView.
   virtual WebSettings* GetSettings() = 0;
-
-  // Corresponds to the encoding of the main frame.  Setting the page
-  // encoding may cause the main frame to reload.
-  virtual WebString PageEncoding() const = 0;
 
   // Method that controls whether pressing Tab key cycles through page
   // elements or inserts a '\t' char in the focused text area.

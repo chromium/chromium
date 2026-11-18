@@ -9033,11 +9033,7 @@ RenderFrameHostImpl::CreateDownloadUrlParameters(
 }
 
 void RenderFrameHostImpl::UpdateEncoding(const std::string& encoding_name) {
-  if (!is_main_frame()) {
-    mojo::ReportBadMessage("Renderer sent updated encoding for a subframe.");
-    return;
-  }
-
+  // TODO(crbug.com/40188381): Consider moving this to PageImpl.
   GetPage().UpdateEncoding(encoding_name);
 }
 

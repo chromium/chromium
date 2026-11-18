@@ -3520,6 +3520,10 @@ void DocumentLoader::CommitNavigation() {
           previous_window != frame_->DomWindow(),
           security_init.PermissionsPolicyHeader(),
           document_policy_.feature_state);
+      if (frame_->IsMainFrame()) {
+        frame_->GetPage()->GetChromeClient().UpdateEncoding(
+            frame_->GetDocument()->EncodingName());
+      }
     }
     // TODO(dgozman): make DidCreateScriptContext notification call currently
     // triggered by installing new document happen here, after commit.

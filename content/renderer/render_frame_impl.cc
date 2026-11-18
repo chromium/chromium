@@ -4111,9 +4111,6 @@ void RenderFrameImpl::DidCommitNavigation(
           : nullptr,
       nullptr /* same_document_params */, GetWebFrame()->GetEmbeddingToken());
 
-  // Check whether we have new encoding name.
-  UpdateEncoding(frame_, frame_->View()->PageEncoding().Utf8());
-
   NotifyObserversOfNavigationCommit(transition);
 
   std::ignore = document_state->TakeNavigationState();
@@ -4215,9 +4212,6 @@ void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
           process_label_id_, frame_title);
     }
   }
-
-  // Also check whether we have new encoding name.
-  UpdateEncoding(frame_, frame_->View()->PageEncoding().Utf8());
 }
 
 void RenderFrameImpl::DidDispatchDOMContentLoadedEvent() {
@@ -4227,9 +4221,6 @@ void RenderFrameImpl::DidDispatchDOMContentLoadedEvent() {
   for (auto& observer : observers_) {
     observer.DidDispatchDOMContentLoadedEvent();
   }
-
-  // Check whether we have new encoding name.
-  UpdateEncoding(frame_, frame_->View()->PageEncoding().Utf8());
 }
 
 void RenderFrameImpl::RunScriptsAtDocumentReady() {
@@ -6068,20 +6059,6 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
   }
 
   return loader_factories;
-}
-
-void RenderFrameImpl::UpdateEncoding(WebFrame* frame,
-                                     const std::string& encoding_name) {
-  // Only update main frame's encoding_name.
-  if (!frame->Parent()) {
-    // TODO(crbug.com/40188381): Move `UpdateEncoding()` to the
-    // `LocalMainFrameHost` interface where it makes sense. That is not a simple
-    // as just migrating the method, since upon main frame creation we attempt
-    // to send the encoding information before
-    // `WebViewImpl::local_main_frame_host_remote_` is set-up, which breaks
-    // things.`
-    GetFrameHost()->UpdateEncoding(encoding_name);
-  }
 }
 
 void RenderFrameImpl::SyncSelectionIfRequired(blink::SyncCondition force_sync) {

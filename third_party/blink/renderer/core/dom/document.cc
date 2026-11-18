@@ -2234,6 +2234,7 @@ void Document::DispatchDidReceiveTitle() {
   if (IsInMainFrame()) {
     String shortened_title = title_.substr(0, mojom::blink::kMaxTitleChars);
     GetFrame()->GetLocalFrameHostRemote().UpdateTitle(shortened_title);
+    GetPage()->GetChromeClient().UpdateEncoding(EncodingName());
     GetFrame()->GetPage()->GetPageScheduler()->OnTitleOrFaviconUpdated();
   }
   GetFrame()->Client()->DispatchDidReceiveTitle(title_);

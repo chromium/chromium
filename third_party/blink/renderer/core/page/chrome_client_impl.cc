@@ -326,6 +326,11 @@ void ChromeClientImpl::DidChangeBackgroundColor(SkColor4f background_color,
   web_view_->DidChangeBackgroundColor(background_color, color_adjust);
 }
 
+void ChromeClientImpl::UpdateEncoding(const String& encoding_name) {
+  DCHECK(web_view_);
+  web_view_->UpdateEncoding(encoding_name);
+}
+
 void ChromeClientImpl::RequestFrameWithoutVSyncFromRoot(LocalFrame& frame) {
   if (auto* widget = frame.GetWidgetForLocalRoot()) {
     widget->SendEarlyFinalBeginMainFrame();

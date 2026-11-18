@@ -85,6 +85,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void DidChangeThemeColor(std::optional<SkColor> theme_color) override;
   void DidChangeBackgroundColor(SkColor4f background_color,
                                 bool color_adjust) override;
+  void UpdateEncoding(const String& encoding_name) override;
   void FocusPage() override;
   void DidFocusPage() override;
   bool CanTakeFocus(mojom::blink::FocusType) override;

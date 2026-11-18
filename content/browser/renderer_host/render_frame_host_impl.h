@@ -2572,6 +2572,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SuppressXSLTDeprecationBanner() override;
   void OnFirstContentfulPaint(base::TimeTicks presentation_time) override;
   void OnLargestContentfulPaint(base::TimeTicks presentation_time) override;
+  void UpdateEncoding(const std::string& encoding) override;
   void SetStorageAccessApiStatus(net::StorageAccessApiStatus status) override;
   std::unique_ptr<download::DownloadUrlParameters> CreateDownloadUrlParameters(
       const GURL& url,
@@ -3546,7 +3547,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                      const std::string& unique_name) override;
   void DidInferColorScheme(
       blink::mojom::PreferredColorScheme color_scheme) override;
-  void UpdateEncoding(const std::string& encoding) override;
   void UpdateState(const blink::PageState& state) override;
   void OpenURL(blink::mojom::OpenURLParamsPtr params) override;
   void DidStopLoading() override;

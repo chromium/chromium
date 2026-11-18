@@ -7742,6 +7742,7 @@ class FakeMainLocalFrameHost : public mojom::blink::LocalMainFrameHost {
       Vector<mojom::blink::DraggableRegionPtr> regions) override {}
   void OnFirstContentfulPaint(base::TimeTicks presentation_time) override {}
   void OnLargestContentfulPaint(base::TimeTicks presentation_time) override {}
+  void UpdateEncoding(const String& encoding_name) override {}
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle) {

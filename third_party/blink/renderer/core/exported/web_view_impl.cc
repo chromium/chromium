@@ -2129,24 +2129,6 @@ WebSettings* WebViewImpl::GetSettings() {
   return SettingsImpl();
 }
 
-WebString WebViewImpl::PageEncoding() const {
-  if (!page_) {
-    return WebString();
-  }
-
-  auto* main_frame = DynamicTo<LocalFrame>(page_->MainFrame());
-  if (!main_frame) {
-    return WebString();
-  }
-
-  // FIXME: Is this check needed?
-  if (!main_frame->GetDocument()->Loader()) {
-    return WebString();
-  }
-
-  return main_frame->GetDocument()->EncodingName();
-}
-
 WebFrame* WebViewImpl::MainFrame() {
   Page* page = page_.Get();
   return WebFrame::FromCoreFrame(page ? page->MainFrame() : nullptr);
@@ -2193,6 +2175,10 @@ void WebViewImpl::DidAttachLocalMainFrame() {
               ->GetPageScheduler()
               ->GetAgentGroupScheduler()
               .DefaultTaskRunner()));
+
+  if (local_frame->GetDocument()->IsActive()) {
+    UpdateEncoding(local_frame->GetDocument()->EncodingName());
+  }
 
   auto& viewport = GetPage()->GetVisualViewport();
   if (does_composite_) {
@@ -3372,6 +3358,12 @@ void WebViewImpl::DidChangeBackgroundColor(SkColor4f background_color,
   CHECK(local_main_frame_host_remote_);
   local_main_frame_host_remote_->DidChangeBackgroundColor(background_color,
                                                           color_adjust);
+}
+
+void WebViewImpl::UpdateEncoding(const String& encoding_name) {
+  if (local_main_frame_host_remote_) {
+    local_main_frame_host_remote_->UpdateEncoding(encoding_name);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

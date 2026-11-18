@@ -145,7 +145,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidDetachRemoteMainFrame() override;
   void SetNoStatePrefetchClient(WebNoStatePrefetchClient*) override;
   WebSettings* GetSettings() override;
-  WebString PageEncoding() const override;
   void SetTabKeyCyclesThroughElements(bool value) override;
   bool IsActive() const override;
   void SetIsActive(bool value) override;
@@ -597,6 +596,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidAccessInitialMainDocument();
   void DidChangeThemeColor(std::optional<SkColor> theme_color);
   void DidChangeBackgroundColor(SkColor4f background_color, bool color_adjust);
+  void UpdateEncoding(const String& encoding_name);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Additional Windowing Controls API.

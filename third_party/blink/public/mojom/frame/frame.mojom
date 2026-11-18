@@ -1489,4 +1489,8 @@ interface LocalMainFrameHost {
   // page's largest contentful paint. `presentation_time` is the renderer-side
   // presentation timestamp of the current candidate.
   OnLargestContentfulPaint(mojo_base.mojom.TimeTicks presentation_time);
+
+  // Change the encoding name of the page in UI when the page has detected
+  // proper encoding name.
+  UpdateEncoding(string encoding_name);
 };

@@ -472,6 +472,10 @@ void FrameLoader::FinishedParsing() {
   progress_tracker_->FinishedParsing();
 
   frame_->GetLocalFrameHostRemote().DidDispatchDOMContentLoadedEvent();
+  if (frame_->IsMainFrame()) {
+    frame_->GetPage()->GetChromeClient().UpdateEncoding(
+        frame_->GetDocument()->EncodingName());
+  }
 
   if (Client()) {
     ScriptForbiddenScope forbid_scripts;

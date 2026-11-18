@@ -907,21 +907,6 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
           fetch_later_loader_factory);
 
-  // Update current main frame's encoding and send it to browser window.
-  // Since we want to let users see the right encoding info from menu
-  // before finishing loading, we call the UpdateEncoding in
-  // a) function:DidCommitLoadForFrame. When this function is called,
-  // that means we have got first data. In here we try to get encoding
-  // of page if it has been specified in http header.
-  // b) function:DidReceiveTitle. When this function is called,
-  // that means we have got specified title. Because in most of webpages,
-  // title tags will follow meta tags. In here we try to get encoding of
-  // page if it has been specified in meta tag.
-  // c) function:DidDispatchDOMContentLoadedEvent. When this function is
-  // called, that means we have got whole html page. In here we should
-  // finally get right encoding of page.
-  void UpdateEncoding(blink::WebFrame* frame, const std::string& encoding_name);
-
   void InitializeMediaStreamDeviceObserver();
 
   // Sends a `BeginNavigation()` mojo IPC via the mojom::FrameHost interface to

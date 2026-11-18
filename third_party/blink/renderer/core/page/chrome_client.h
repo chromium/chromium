@@ -187,6 +187,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void DidChangeThemeColor(std::optional<SkColor> theme_color) = 0;
   virtual void DidChangeBackgroundColor(SkColor4f background_color,
                                         bool color_adjust) = 0;
+  virtual void UpdateEncoding(const String& encoding_name) = 0;
 
   // This gives the rect of the top level window that the given LocalFrame is a
   // part of.
