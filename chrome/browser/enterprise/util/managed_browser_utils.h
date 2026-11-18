@@ -22,6 +22,7 @@
 
 class AccountInfo;
 struct CoreAccountId;
+class GaiaId;
 class GURL;
 class PrefRegistrySimple;
 class Profile;
@@ -51,10 +52,7 @@ enum class BrowserManagementNoticeState {
 };
 
 // Represents the management scope for which the enterprise logo applies.
-enum class EnterpriseLogoUrlScope {
-  kBrowser,
-  kProfile
-};
+enum class EnterpriseLogoUrlScope { kBrowser, kProfile };
 
 // Determines whether the browser with `profile` as its primary profile is
 // managed. This is determined by looking it there are any policies applied or
@@ -101,12 +99,35 @@ bool IsMachinePolicyPref(const std::string& pref_name);
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+#if BUILDFLAG(IS_ANDROID)
+// On Android the management acceptance is stored per account (keyed by
+// `gaia_id`) in `SigninPrefs` under
+// `device_signals::prefs::kDeviceSignalsPermanentConsentReceived`, which also
+// records the user's consent to share device signals. Unlike the profile
+// attribute used on other platforms, the value survives sign-out and is only
+// pruned once the account is removed from the device.
+void SetUserAcceptedAccountManagementAndroid(Profile* profile,
+                                             const GaiaId& gaia_id,
+                                             bool accepted);
+
+// Returns true if the user has accepted account management for the account
+// identified by `gaia_id`.
+bool UserAcceptedAccountManagementAndroid(Profile* profile,
+                                          const GaiaId& gaia_id);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Sets attribute entry 'user_accepted_account_management' of `profile` to
 // `accepted`.
+//
+// TODO(crbug.com/578892816): Don't compile on Android once the migration is
+// complete.
 void SetUserAcceptedAccountManagement(Profile* profile, bool accepted);
 
 // Returns true is the user has accepted account management through the
 // enterprise account confirmation dialog.
+//
+// TODO(crbug.com/578892816): Don't compile on Android once
+// the migration is complete.
 bool UserAcceptedAccountManagement(Profile* profile);
 
 // Returns true if the user has consented to sync or has accepted account

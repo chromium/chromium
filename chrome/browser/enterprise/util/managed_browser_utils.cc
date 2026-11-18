@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,6 +66,8 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/signin/public/base/signin_prefs.h"
+#include "google_apis/gaia/gaia_id.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
@@ -90,8 +93,9 @@ base::ListValue GetCertAutoSelectionFilters(Profile* profile,
       requesting_url, requesting_url,
       ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
 
-  if (!setting.is_dict())
+  if (!setting.is_dict()) {
     return {};
+  }
 
   base::ListValue* filters = setting.GetDict().FindList("filters");
   if (!filters) {
@@ -168,8 +172,9 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationForPolicy(
     EnterpriseLogoUrlScope url_scope) {
   switch (url_scope) {
     case EnterpriseLogoUrlScope::kBrowser: {
-      return net::DefineNetworkTrafficAnnotation("enterprise_logo_fetcher_for_browser",
-                                                 R"(
+      return net::DefineNetworkTrafficAnnotation(
+          "enterprise_logo_fetcher_for_browser",
+          R"(
         semantics {
           sender: "Browser Management Service"
           description:
@@ -255,8 +260,9 @@ std::string GetDomainFromEmail(std::string_view email) {
   bool is_email = email_separator_pos != std::string_view::npos &&
                   email_separator_pos < email.length() - 1;
 
-  if (!is_email)
+  if (!is_email) {
     return std::string();
+  }
 
   return gaia::ExtractDomainName(email);
 }
@@ -306,10 +312,34 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kManagedAutoSelectCertificateForUrls);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void SetUserAcceptedAccountManagementAndroid(Profile* profile,
+                                             const GaiaId& gaia_id,
+                                             bool accepted) {
+  CHECK(profile);
+  CHECK(!gaia_id.empty());
+  CHECK(!profile->IsOffTheRecord());
+  // The management notice on Android also asks the user for consent to share
+  // device signals, so both are backed by the same per-account bit.
+  SigninPrefs(*profile->GetPrefs())
+      .SetDeviceSignalsPermanentConsentReceived(gaia_id, accepted);
+}
+
+bool UserAcceptedAccountManagementAndroid(Profile* profile,
+                                          const GaiaId& gaia_id) {
+  CHECK(profile);
+  CHECK(!gaia_id.empty());
+  CHECK(!profile->IsOffTheRecord());
+  return SigninPrefs(*profile->GetPrefs())
+      .GetDeviceSignalsPermanentConsentReceived(gaia_id);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void SetUserAcceptedAccountManagement(Profile* profile, bool accepted) {
   // Some tests do not have a profile manager.
-  if (!g_browser_process->profile_manager())
+  if (!g_browser_process->profile_manager()) {
     return;
+  }
   // The updated consent screen also ask the user for consent to share device
   // signals.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -331,8 +361,9 @@ void SetUserAcceptedAccountManagement(Profile* profile, bool accepted) {
 
 bool UserAcceptedAccountManagement(Profile* profile) {
   // Some tests do not have a profile manager.
-  if (!g_browser_process->profile_manager())
+  if (!g_browser_process->profile_manager()) {
     return false;
+  }
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()

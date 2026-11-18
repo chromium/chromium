@@ -37,6 +37,12 @@
 #include "components/policy/core/common/policy_types.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/gtest_util.h"
+#include "components/signin/public/base/signin_prefs.h"
+#include "google_apis/gaia/gaia_id.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 using testing::UnorderedElementsAre;
 
 namespace {
@@ -185,6 +191,67 @@ TEST_F(ManagedBrowserUtilsTest, CustomLabelTruncated) {
             u"Custom Label Can…");
 }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+class ManagedBrowserUtilsAndroidTest : public testing::Test {
+ protected:
+  TestingProfile* profile() { return &profile_; }
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+};
+
+TEST_F(ManagedBrowserUtilsAndroidTest,
+       UserAcceptedAccountManagementAndroid_DefaultsToFalse) {
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagementAndroid(
+      profile(), GaiaId("gaia_id")));
+}
+
+TEST_F(ManagedBrowserUtilsAndroidTest,
+       SetUserAcceptedAccountManagementAndroid) {
+  const GaiaId gaia_id("gaia_id");
+
+  enterprise_util::SetUserAcceptedAccountManagementAndroid(profile(), gaia_id,
+                                                           true);
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagementAndroid(profile(),
+                                                                    gaia_id));
+
+  enterprise_util::SetUserAcceptedAccountManagementAndroid(profile(), gaia_id,
+                                                           false);
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagementAndroid(profile(),
+                                                                     gaia_id));
+}
+
+TEST_F(ManagedBrowserUtilsAndroidTest,
+       SetUserAcceptedAccountManagementAndroid_IsPerAccount) {
+  const GaiaId accepted_gaia_id("accepted");
+  const GaiaId other_gaia_id("other");
+
+  enterprise_util::SetUserAcceptedAccountManagementAndroid(
+      profile(), accepted_gaia_id, true);
+
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagementAndroid(
+      profile(), accepted_gaia_id));
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagementAndroid(
+      profile(), other_gaia_id));
+}
+
+TEST_F(ManagedBrowserUtilsAndroidTest,
+       SetUserAcceptedAccountManagementAndroid_SharesDeviceSignalsConsentBit) {
+  const GaiaId gaia_id("gaia_id");
+  SigninPrefs signin_prefs(*profile()->GetPrefs());
+
+  // Accepting management records the device signals consent.
+  enterprise_util::SetUserAcceptedAccountManagementAndroid(profile(), gaia_id,
+                                                           true);
+  EXPECT_TRUE(signin_prefs.GetDeviceSignalsPermanentConsentReceived(gaia_id));
+
+  // And the device signals consent is reflected as management acceptance.
+  signin_prefs.SetDeviceSignalsPermanentConsentReceived(gaia_id, false);
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagementAndroid(profile(),
+                                                                     gaia_id));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class AutoSelectCertificateTest : public testing::Test {
  protected:
