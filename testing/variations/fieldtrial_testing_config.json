@@ -9564,8 +9564,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260430",
+                    "name": "Enabled_20261112",
                     "enable_features": [
+                        "GlicWarmOnGeminiWeb",
                         "GlicWebContinuity"
                     ]
                 }
