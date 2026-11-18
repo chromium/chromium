@@ -416,7 +416,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     if (PrefetchDocumentManager::GetForCurrentDocument(main_rfh())) {
       PrefetchDocumentManager::DeleteForCurrentDocument(main_rfh());
     }
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     mock_navigation_handle_.reset();
 
     SetTerminalPrefetchURLLoaderFactoryForTesting(nullptr);
@@ -466,7 +465,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     BrowserContextImpl::From(browser_context())
         ->SetPrefetchServiceForTesting(
             std::make_unique<PrefetchService>(browser_context()));
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(&prefetch_service());
   }
 
   PrefetchService& prefetch_service() {

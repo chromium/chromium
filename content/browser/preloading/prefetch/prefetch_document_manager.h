@@ -104,8 +104,6 @@ class CONTENT_EXPORT PrefetchDocumentManager
     return weak_method_factory_.GetWeakPtr();
   }
 
-  static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
-
   void ResetPrefetchAheadOfPrerenderIfExist(PreloadingType preloading_type,
                                             const GURL& url);
 

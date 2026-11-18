@@ -11,7 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
@@ -172,26 +172,18 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
+    // Set `TestPrefetchService` as the `PrefetchService` of
+    // `GetBrowserContext()` before anything (e.g. navigation) creates the
+    // default `PrefetchService`.
+    BrowserContextImpl::From(GetBrowserContext())
+        ->SetPrefetchServiceForTesting(
+            std::make_unique<TestPrefetchService>(GetBrowserContext()));
+
     web_contents_delegate_ =
         std::make_unique<test::ScopedPrerenderWebContentsDelegate>(
             *web_contents());
     NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                       GetSameOriginUrl("/"));
-    prefetch_service_ =
-        std::make_unique<TestPrefetchService>(GetBrowserContext());
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(
-        prefetch_service_.get());
-  }
-  void TearDown() override {
-    // The PrefetchService we created for the test contains a
-    // PrefetchOriginProber, which holds a raw pointer to the BrowserContext.
-    // When tearing down, it's important to free our PrefetchService
-    // before freeing the BrowserContext, to avoid any chance of a use after
-    // free.
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
-    prefetch_service_.reset();
-
-    RenderViewHostTestHarness::TearDown();
   }
 
   RenderFrameHostImpl& GetPrimaryMainFrame() {
@@ -206,7 +198,10 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
     return GURL("https://other.example.com" + path);
   }
 
-  TestPrefetchService* GetPrefetchService() { return prefetch_service_.get(); }
+  TestPrefetchService* GetPrefetchService() {
+    return static_cast<TestPrefetchService*>(
+        BrowserContextImpl::From(GetBrowserContext())->GetPrefetchService());
+  }
 
   blink::mojom::SpeculationCandidatePtr MakeCandidate(
       const GURL& url,
@@ -224,7 +219,6 @@ class PreloadingDeciderTest : public RenderViewHostTestHarness {
 
  private:
   test::ScopedPrerenderFeatureList prerender_feature_list_;
-  std::unique_ptr<TestPrefetchService> prefetch_service_;
   std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;
 };

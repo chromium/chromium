@@ -4,6 +4,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_isolated_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
@@ -40,12 +41,9 @@ class PrefetchNetworkContextTest : public RenderViewHostTestHarness {
 
     test_content_browser_client_ = std::make_unique<
         ::testing::StrictMock<ScopedMockContentBrowserClient>>();
-
-    prefetch_service_ = std::make_unique<PrefetchService>(browser_context());
   }
 
   void TearDown() override {
-    prefetch_service_.reset();
     test_content_browser_client_.reset();
     RenderViewHostTestHarness::TearDown();
   }
@@ -54,12 +52,13 @@ class PrefetchNetworkContextTest : public RenderViewHostTestHarness {
     return test_content_browser_client_.get();
   }
 
-  PrefetchService* prefetch_service() const { return prefetch_service_.get(); }
+  PrefetchService* prefetch_service() {
+    return BrowserContextImpl::From(browser_context())->GetPrefetchService();
+  }
 
  private:
   std::unique_ptr<ScopedMockContentBrowserClient> test_content_browser_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<PrefetchService> prefetch_service_;
 };
 
 TEST_F(PrefetchNetworkContextTest, CreateIsolatedURLLoaderFactory) {

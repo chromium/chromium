@@ -32,7 +32,6 @@
 namespace content {
 
 namespace {
-static PrefetchService* g_prefetch_service_for_testing = nullptr;
 
 // `SpeculationCandidate::tags` must never be empty: rules that specify no tags
 // carry a single null tag instead (see blink.mojom.SpeculationCandidate). Every
@@ -286,12 +285,6 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
       PrefetchKey(document_token_, url));
 }
 
-// static
-void PrefetchDocumentManager::SetPrefetchServiceForTesting(
-    PrefetchService* prefetch_service) {
-  g_prefetch_service_for_testing = prefetch_service;
-}
-
 void PrefetchDocumentManager::ResetPrefetchAheadOfPrerenderIfExist(
     PreloadingType preloading_type,
     const GURL& url) {
@@ -307,10 +300,6 @@ void PrefetchDocumentManager::ResetPrefetchAheadOfPrerenderIfExist(
 }
 
 PrefetchService* PrefetchDocumentManager::GetPrefetchService() const {
-  if (g_prefetch_service_for_testing) {
-    return g_prefetch_service_for_testing;
-  }
-
   CHECK(BrowserContextImpl::From(render_frame_host().GetBrowserContext())
             ->GetPrefetchService(),
         base::NotFatalUntil::M159);

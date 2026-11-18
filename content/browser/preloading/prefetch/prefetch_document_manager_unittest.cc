@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
@@ -35,23 +36,19 @@ class PrefetchDocumentManagerTest : public PrefetchingMetricsTestBase {
   void SetUp() override {
     PrefetchingMetricsTestBase::SetUp();
 
-    NavigateAndCommit(GetSameOriginUrl("/"));
+    // Set `TestPrefetchService` as the `PrefetchService` of
+    // `browser_context()` before anything (e.g. navigation) creates the
+    // default `PrefetchService`.
+    BrowserContextImpl::From(browser_context())
+        ->SetPrefetchServiceForTesting(
+            std::make_unique<TestPrefetchService>(browser_context()));
 
-    prefetch_service_ =
-        std::make_unique<TestPrefetchService>(browser_context());
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(
-        prefetch_service_.get());
+    NavigateAndCommit(GetSameOriginUrl("/"));
   }
 
-  void TearDown() override {
-    // The PrefetchService we created for the test contains a
-    // PrefetchOriginProber, which holds a raw pointer to the BrowserContext.
-    // When tearing down, it's important to free our PrefetchService
-    // before freeing the BrowserContext, to avoid any chance of a use after
-    // free.
-    PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
-    prefetch_service_.reset();
-    PrefetchingMetricsTestBase::TearDown();
+  TestPrefetchService* GetPrefetchService() {
+    return static_cast<TestPrefetchService*>(
+        BrowserContextImpl::From(browser_context())->GetPrefetchService());
   }
 
   GURL GetSameOriginUrl(const std::string& path) {
@@ -74,7 +71,7 @@ class PrefetchDocumentManagerTest : public PrefetchingMetricsTestBase {
   }
 
   const std::vector<base::WeakPtr<PrefetchContainer>>& GetPrefetches() {
-    return prefetch_service_->prefetches_;
+    return GetPrefetchService()->prefetches_;
   }
 
   // Used to make sure that No-Vary-Search parsing error/warning message is sent
@@ -116,9 +113,6 @@ class PrefetchDocumentManagerTest : public PrefetchingMetricsTestBase {
     auto& test_rfh = static_cast<TestRenderFrameHost&>(*main_rfh());
     return test_rfh.GetConsoleMessages()[0];
   }
-
- private:
-  std::unique_ptr<TestPrefetchService> prefetch_service_;
 };
 
 TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
