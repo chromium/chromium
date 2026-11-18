@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/database_utils/url_converter.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -245,6 +246,8 @@ std::optional<proto::PageContext> PageContentStore::GetPageContentForTab(
 
 std::optional<proto::PageContext> PageContentStore::GetPageContentFromStatement(
     sql::Statement* statement) {
+  // TODO(crbug.com/583953337): Record a histogram for read and validation
+  // failures.
   if (!statement->Step()) {
     return std::nullopt;
   }
@@ -261,6 +264,14 @@ std::optional<proto::PageContext> PageContentStore::GetPageContentFromStatement(
       decrypt_timer.Elapsed());
   proto::PageContext page_context;
   if (!page_context.ParseFromString(serialized_page_context)) {
+    return std::nullopt;
+  }
+  if (page_context.has_annotated_page_content() &&
+      page_context.annotated_page_content().version() !=
+          kAnnotatedPageContentVersion) {
+    // TODO(crbug.com/583953337): Consider deleting incompatible entries (on
+    // read or in the daily cleanup pass) to avoid repeatedly reading and
+    // decrypting them.
     return std::nullopt;
   }
   return page_context;

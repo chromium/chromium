@@ -20,6 +20,12 @@ struct AXTreeUpdate;
 
 namespace optimization_guide {
 
+// The current version of `proto::AnnotatedPageContent` produced by Chrome.
+// LINT.IfChange(AnnotatedPageContentVersion)
+inline constexpr proto::AnnotatedPageContentVersion
+    kAnnotatedPageContentVersion = proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0;
+// LINT.ThenChange(//ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.mm:AnnotatedPageContentVersion)
+
 // Constructs an Any proto containing the given message.
 proto::Any AnyWrapProto(const google::protobuf::MessageLite& m);
 

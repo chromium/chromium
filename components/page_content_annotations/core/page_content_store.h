@@ -51,10 +51,13 @@ class PageContentStore {
                       std::optional<int64_t> tab_id);
 
   // Retrieves the page content for a given URL. If multiple, the most recent
-  // based on visit timestamp.
+  // based on visit timestamp. Returns `std::nullopt` if not found or if its
+  // `AnnotatedPageContent` version is not `kAnnotatedPageContentVersion`.
   std::optional<proto::PageContext> GetPageContent(const GURL& url);
 
-  // Retrieves the page content for a given tab ID.
+  // Retrieves the page content for a given tab ID. Returns `std::nullopt` if
+  // not found or if its `AnnotatedPageContent` version is not
+  // `kAnnotatedPageContentVersion`.
   std::optional<proto::PageContext> GetPageContentForTab(int64_t tab_id);
 
   // Deletes page content, where visit timestamp older than a given `timestamp`.
@@ -73,7 +76,9 @@ class PageContentStore {
   // Deletes all entries.
   bool DeleteAllEntries();
 
-  // Retrieves all tab IDs from the database.
+  // Retrieves all tab IDs from the database. Queries metadata only without
+  // validating the stored `PageContext` (e.g. its `AnnotatedPageContent`
+  // version), so `GetPageContentForTab()` may still return `std::nullopt`.
   std::vector<int64_t> GetAllTabIds();
 
  private:

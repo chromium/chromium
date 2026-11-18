@@ -272,10 +272,17 @@ class PageContentExtractionService : public KeyedService,
 
   // Asynchronously retrieves the on-disk cached page context for a specific
   // tab. This should be used when a tab is not active and has no WebContents.
+  // While the cache checks the `AnnotatedPageContent` version, cached entries
+  // may still have been written by an older or newer version of Chrome (or
+  // modified on disk), so callers that rely on specific fields must validate
+  // them directly.
   void GetPageContentFromOnDiskCache(int64_t tab_id,
                                      GetPageContentCallback callback);
 
   // Asynchronously retrieves all tab IDs that have cached page content on-disk.
+  // Queries metadata only without validating the cached `PageContext` (e.g.
+  // its `AnnotatedPageContent` version), so `GetPageContentFromOnDiskCache()`
+  // may still return `std::nullopt`.
   void GetOnDiskCachedTabIds(GetAllTabIdsCallback callback);
 
  protected:

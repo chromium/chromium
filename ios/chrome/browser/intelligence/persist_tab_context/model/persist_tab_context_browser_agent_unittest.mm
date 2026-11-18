@@ -22,6 +22,7 @@
 #import "base/test/test_future.h"
 #import "base/time/time.h"
 #import "base/types/expected.h"
+#import "components/optimization_guide/core/optimization_guide_proto_util.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -148,6 +149,8 @@ class PersistTabContextBrowserAgentTest
 
     context.set_title(title);
     context.set_url(url_spec);
+    context.mutable_annotated_page_content()->set_version(
+        optimization_guide::kAnnotatedPageContentVersion);
 
     if (GetParam() == PersistTabStorageType::kSQLite) {
       PageContentCacheService* service =
@@ -690,6 +693,8 @@ TEST_P(PersistTabContextBrowserAgentTest,
       std::make_unique<optimization_guide::proto::PageContext>();
   extracted_context->set_url("http://attacker.example/page");
   extracted_context->set_title("Attacker Title");
+  extracted_context->mutable_annotated_page_content()->set_version(
+      optimization_guide::kAnnotatedPageContentVersion);
 
   CallOnPageContextExtracted(tab_ptr->GetWeakPtr(),
                              base::ok(std::move(extracted_context)),

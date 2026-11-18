@@ -29,7 +29,10 @@ required.
 1.  **Shared caching**: PCES maintains an in-memory and on-disk cache for HTML
     pages. Bypassing PCES risks triggering duplicate extractions, which could
     lead to unnecessary performance costs if multiple features query the same
-    page.
+    page. Note that while the on-disk cache checks the `AnnotatedPageContent`
+    version, cached entries may still have been written by an older or newer
+    version of Chrome (or modified on disk), so callers that rely on specific
+    fields must validate them directly.
 2.  **Page stability detection**: PCES automatically defers extractions until
     the page has finished loading and page stability is established (using
     `PageSettledMonitor`), ensuring you capture a complete, high-quality

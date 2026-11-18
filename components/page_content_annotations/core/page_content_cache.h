@@ -61,10 +61,16 @@ class PageContentCache {
       std::optional<optimization_guide::proto::PageContext>)>;
   using GetAllTabIdsCallback = base::OnceCallback<void(std::vector<int64_t>)>;
 
-  // Retrieves the page content for a given tab ID.
+  // Retrieves the page content for a given tab ID. While the cache checks the
+  // `AnnotatedPageContent` version, cached entries may still have been written
+  // by an older or newer version of Chrome (or modified on disk), so callers
+  // that rely on specific fields must validate them directly.
   void GetPageContentForTab(int64_t tab_id, GetPageContentCallback callback);
 
   // Retrieves all tab IDs from the cache that has page contents cached.
+  // Queries metadata only without validating the cached `PageContext` (e.g.
+  // its `AnnotatedPageContent` version), so `GetPageContentForTab()` may still
+  // return `std::nullopt`.
   void GetAllTabIds(GetAllTabIdsCallback callback);
 
   // Called when a tab is backgrounded. See PageContentStore::AddPageContent().

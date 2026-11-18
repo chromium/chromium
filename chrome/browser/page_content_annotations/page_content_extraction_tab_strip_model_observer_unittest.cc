@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -80,6 +81,7 @@ class TestPageContentExtractionService : public PageContentExtractionService {
     EXPECT_GT(tab_id, 0);
     contents->WasHidden();
     optimization_guide::proto::AnnotatedPageContent apc;
+    apc.set_version(optimization_guide::kAnnotatedPageContentVersion);
     apc.mutable_main_frame_data()->set_title(title);
     auto apc_ptr =
         base::MakeRefCounted<RefCountedAnnotatedPageContent>(std::move(apc));

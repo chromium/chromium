@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -28,6 +29,8 @@ namespace {
 
 optimization_guide::proto::PageContext TestContent(const std::string& title) {
   optimization_guide::proto::PageContext page_context;
+  page_context.mutable_annotated_page_content()->set_version(
+      optimization_guide::kAnnotatedPageContentVersion);
   page_context.mutable_annotated_page_content()
       ->mutable_main_frame_data()
       ->set_title(title);

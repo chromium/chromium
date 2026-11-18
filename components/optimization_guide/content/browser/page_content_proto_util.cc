@@ -1799,8 +1799,7 @@ base::expected<void, AIPageContentError> ConvertAIPageContentToProto(
     mode = optimization_guide::proto::
         ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS;
   }
-  page_content_result.proto.set_version(
-      optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  page_content_result.proto.set_version(kAnnotatedPageContentVersion);
   page_content_result.proto.set_mode(mode);
 
   return base::ok();

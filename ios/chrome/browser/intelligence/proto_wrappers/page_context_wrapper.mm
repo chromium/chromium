@@ -106,6 +106,13 @@ constexpr const char kLinkTextDictKey[] = "linkText";
 // The key for the remote frame token.
 constexpr const char kRemoteFrameTokenKey[] = "remoteToken";
 
+// The current version of `AnnotatedPageContent` produced by Chrome.
+// LINT.IfChange(AnnotatedPageContentVersion)
+constexpr optimization_guide::proto::AnnotatedPageContentVersion
+    kAnnotatedPageContentVersion = optimization_guide::proto::
+        AnnotatedPageContentVersion::ANNOTATED_PAGE_CONTENT_VERSION_1_0;
+// LINT.ThenChange(//components/optimization_guide/core/optimization_guide_proto_util.h:AnnotatedPageContentVersion)
+
 // The JavaScript to be executed on each WebState's WebFrames, which retrieves
 // the innerText of the document body, and recursively traverses through
 // same-origin nested iframes to retrieve their innerTexts as well,
@@ -732,9 +739,7 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   // Create the root node of the APC tree and its first root ContentNode.
   _rootAPCNode =
       std::make_unique<optimization_guide::proto::AnnotatedPageContent>();
-  _rootAPCNode->set_version(
-      optimization_guide::proto::AnnotatedPageContentVersion::
-          ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  _rootAPCNode->set_version(kAnnotatedPageContentVersion);
   if (_config->use_rich_extraction_with_actionable()) {
     _rootAPCNode->set_mode(optimization_guide::proto::AnnotatedPageContentMode::
                                ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS);

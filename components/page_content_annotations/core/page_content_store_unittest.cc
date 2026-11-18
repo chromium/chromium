@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -33,6 +34,8 @@ constexpr char kUrl[] = "https://example.com/";
 
 proto::PageContext TestContent(const std::string& title) {
   proto::PageContext page_context;
+  page_context.mutable_annotated_page_content()->set_version(
+      kAnnotatedPageContentVersion);
   page_context.mutable_annotated_page_content()
       ->mutable_main_frame_data()
       ->set_title(title);
@@ -309,6 +312,44 @@ TEST_F(PageContentStoreTest, GetPageContentForTab) {
   ASSERT_TRUE(got_apc.has_value());
   EXPECT_EQ(apc.annotated_page_content().main_frame_data().title(),
             got_apc->annotated_page_content().main_frame_data().title());
+}
+
+TEST_F(PageContentStoreTest, GetPageContent_IncompatibleVersion) {
+  const GURL url1("https://example.com/1");
+  proto::PageContext unknown_version_context;
+  unknown_version_context.mutable_annotated_page_content()
+      ->mutable_main_frame_data()
+      ->set_title("unknown version");
+  const base::Time visit_timestamp = base::Time::Now();
+  const base::Time extraction_timestamp = base::Time::Now();
+
+  EXPECT_TRUE(store_->AddPageContent(url1, unknown_version_context,
+                                     visit_timestamp, extraction_timestamp, 1));
+  EXPECT_FALSE(store_->GetPageContent(url1).has_value());
+  EXPECT_FALSE(store_->GetPageContentForTab(1).has_value());
+
+  const GURL url2("https://example.com/2");
+  proto::PageContext actionable_version_context =
+      TestContent("actionable version");
+  actionable_version_context.mutable_annotated_page_content()->set_version(
+      proto::ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+
+  EXPECT_TRUE(store_->AddPageContent(url2, actionable_version_context,
+                                     visit_timestamp, extraction_timestamp, 2));
+  EXPECT_FALSE(store_->GetPageContent(url2).has_value());
+  EXPECT_FALSE(store_->GetPageContentForTab(2).has_value());
+
+  const GURL url3("https://example.com/3");
+  proto::PageContext no_apc_context;
+  no_apc_context.set_title("no apc");
+  no_apc_context.set_inner_text("inner text");
+
+  EXPECT_TRUE(store_->AddPageContent(url3, no_apc_context, visit_timestamp,
+                                     extraction_timestamp, 3));
+  EXPECT_THAT(store_->GetPageContent(url3),
+              Optional(EqualsProto(no_apc_context)));
+  EXPECT_THAT(store_->GetPageContentForTab(3),
+              Optional(EqualsProto(no_apc_context)));
 }
 
 TEST_F(PageContentStoreTest, DeleteAllEntries) {
