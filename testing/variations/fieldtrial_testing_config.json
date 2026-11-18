@@ -20631,6 +20631,26 @@
             ]
         }
     ],
+    "V8ScavengerFastGrowth": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261118",
+                    "enable_features": [
+                        "V8Flag_scavenger_fast_growth"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8SideStepTransitions": [
         {
             "platforms": [
