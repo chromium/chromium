@@ -27148,7 +27148,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="XR.WebXR" singular="True">
-  <owner>billorr@chromium.org</owner>
+  <owner>alcooper@chromium.org</owner>
+  <owner>bajones@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
     Records information about WebXR methods that were used in a single
@@ -27339,8 +27340,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="XR.WebXR.SessionRequest">
+  <owner>alcooper@chromium.org</owner>
+  <owner>bajones@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
-  <owner>cassew@google.com</owner>
   <summary>
     Recorded when promise returned by `requestSession` gets resolved / rejected.
   </summary>
