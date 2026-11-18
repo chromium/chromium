@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -36,12 +38,16 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/view.h"
@@ -377,11 +383,47 @@ class VerticalTabStripExpandOnHoverInteractiveUiTest
         "WaitForOmniboxFocus");
   }
 
-  // Waits until the omnibox has focus and its input takes key presses. The
-  // Full WebUI omnibox's input is in the popup's WebUI, so this instruments it
-  // as `kOmniboxPopupWebView` and waits for it to load and focus the input.
+  // Waits until the omnibox has focus and its input takes key presses. When the
+  // location bar is hosted in the WebUI toolbar, the focus request and initial
+  // selection travel over the toolbar's Mojo pipes asynchronously after the
+  // C++ edit model marks the omnibox focused. The Full WebUI omnibox's input is
+  // in the popup's WebUI, so this instruments it as `kOmniboxPopupWebView` and
+  // waits for it to load and focus the input.
   auto WaitForOmniboxInputReady() {
     if (!IsFullWebUIOmnibox()) {
+      if (features::IsWebUILocationBarEnabled()) {
+        return Steps(
+            WaitForOmniboxFocus(true), Check([this]() {
+              WaitForInitialWebUIToolbar(browser());
+              WebUIToolbarWebView* const toolbar =
+                  GetWebUIToolbarWebView(browser());
+              if (!toolbar || !toolbar->web_contents()) {
+                return false;
+              }
+              content::WebContents* const toolbar_contents =
+                  toolbar->web_contents();
+              static constexpr char kIsOmniboxInputFocusedScript[] = R"((() => {
+                if (!document.hasFocus()) {
+                  return false;
+                }
+                let active = document.activeElement;
+                while (active?.shadowRoot?.activeElement) {
+                  active = active.shadowRoot.activeElement;
+                }
+                return !!active && active.id === 'input';
+              })())";
+              if (!base::test::RunUntil([&]() {
+                    return !toolbar->HasPendingFocusRequestForTesting() &&
+                           content::EvalJs(toolbar_contents,
+                                           kIsOmniboxInputFocusedScript)
+                               .ExtractBool();
+                  })) {
+                return false;
+              }
+              return bool{FlushWebUIToolbarPipes(browser())};
+            }),
+            WaitForShow(kOmniboxElementId));
+      }
       return Steps(WaitForOmniboxFocus(true));
     }
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWebUIInputFocused);

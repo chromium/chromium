@@ -585,6 +585,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         } else {
           this.selectAllBackwards();
         }
+        // Make sure we stop accepting incremental selection updates from
+        // browser at this point.
+        ++this.omniboxViewState.uiVersion;
       }
       // It's important this is done after updating the selection since that
       // prevents inline completion, which isn't desired for these shortcuts.
