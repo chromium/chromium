@@ -12,10 +12,13 @@
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/converter.h"
 #include "gin/per_context_data.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/web/web_blob.h"
 
 namespace extensions {
 namespace binding {
@@ -113,6 +116,45 @@ bool IsContextValidOrThrowError(v8::Local<v8::Context> context) {
   isolate->ThrowException(v8::Exception::Error(
       gin::StringToV8(isolate, "Extension context invalidated.")));
   return false;
+}
+
+std::optional<APIBindingHooks::RequestResult> ParseArgumentsForHook(
+    const APISignature& signature,
+    v8::Local<v8::Context> context,
+    v8::LocalVector<v8::Value>* arguments,
+    const APITypeReferenceMap& refs) {
+  using RequestResult = APIBindingHooks::RequestResult;
+  v8::TryCatch try_catch(v8::Isolate::GetCurrent());
+  APISignature::V8ParseResult parse_result =
+      signature.ParseArgumentsToV8(context, *arguments, refs);
+  if (!IsContextValid(context)) {
+    return RequestResult(RequestResult::CONTEXT_INVALIDATED);
+  }
+  if (try_catch.HasCaught()) {
+    try_catch.ReThrow();
+    return RequestResult(RequestResult::THROWN);
+  }
+  if (!parse_result.succeeded()) {
+    return RequestResult(std::move(*parse_result.error));
+  }
+
+  arguments->swap(*parse_result.arguments);
+  return std::nullopt;
+}
+
+base::expected<mojo::PendingRemote<blink::mojom::Blob>,
+               APIBindingHooks::RequestResult>
+TakeBlobArgument(v8::Local<v8::Value>& argument) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  blink::WebBlob blob = blink::WebBlob::FromV8Value(isolate, argument);
+  if (blob.IsNull()) {
+    return base::unexpected(
+        APIBindingHooks::RequestResult("Argument must be a Blob."));
+  }
+
+  mojo::PendingRemote<blink::mojom::Blob> remote = blob.CloneBlobRemote();
+  argument = v8::Object::New(isolate);
+  return remote;
 }
 
 void InitializeContext(v8::Local<v8::Context> context) {

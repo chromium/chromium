@@ -12,6 +12,8 @@
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "components/media_gallery_util/public/mojom/media_parser.mojom-forward.h"
 #include "components/media_gallery_util/safe_media_metadata_parser.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 
 namespace extensions {
 
@@ -31,13 +33,7 @@ class FileManagerPrivateInternalGetContentMimeTypeFunction
   ResponseAction Run() override;
 
  private:
-  void ReadBlobBytes(  // Reads some bytes from the front of the blob.
-      const std::string& blob_uuid);
-
-  void SniffMimeType(  // Sniffs the content mime type of those bytes.
-      const std::string& blob_uuid,
-      std::string sniff_bytes,
-      int64_t length);
+  void SniffMimeType(std::string sniff_bytes, int64_t length);
 };
 
 // Implements the chrome.fileManagerPrivate.getContentMetadata method. Returns
@@ -56,22 +52,11 @@ class FileManagerPrivateInternalGetContentMetadataFunction
   ResponseAction Run() override;
 
  private:
-  void ReadBlobSize(  // Reads the total blob size.
-      const std::string& blob_uuid,
-      const std::string& mime_type,
-      bool include_images);
-
   void CanParseBlob(  // Only audio and video mime types are supported.
-      const std::string& blob_uuid,
+      mojo::PendingRemote<blink::mojom::Blob> blob,
       const std::string& mime_type,
       bool include_images,
       std::string sniff_bytes,
-      int64_t length);
-
-  void ParseBlob(  // Sends the blob to the utility process safe parser.
-      const std::string& blob_uuid,
-      const std::string& mime_type,
-      bool include_images,
       int64_t length);
 
   void ParserDone(  // Returns the parsed metadata.

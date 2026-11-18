@@ -16,12 +16,12 @@
 #include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_manager_private_internal.h"
 #include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blob_reader.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/mime_util.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace extensions {
 
@@ -33,41 +33,25 @@ FileManagerPrivateInternalGetContentMimeTypeFunction::
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetContentMimeTypeFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
-  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
-  const std::string& blob_uuid = args()[0].GetString();
+  using api::file_manager_private_internal::GetContentMimeType::Params;
+  const std::optional<Params> params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  mojo::PendingRemote<blink::mojom::Blob> blob = TakeBlobArg(0);
+  EXTENSION_FUNCTION_VALIDATE(blob);
 
-  if (blob_uuid.empty()) {
-    return RespondNow(Error("Blob UUID must not be empty."));
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &FileManagerPrivateInternalGetContentMimeTypeFunction::ReadBlobBytes,
-          this, blob_uuid));
-
-  return RespondLater();
-}
-
-void FileManagerPrivateInternalGetContentMimeTypeFunction::ReadBlobBytes(
-    const std::string& blob_uuid) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-
-  BlobReader::Read(  // Read net::kMaxBytesToSniff bytes from the front.
-      browser_context()->GetBlobRemote(blob_uuid),
+  BlobReader::Read(
+      std::move(blob),
       base::BindOnce(
           &FileManagerPrivateInternalGetContentMimeTypeFunction::SniffMimeType,
-          this, blob_uuid),
+          this),
       0, net::kMaxBytesToSniff);
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 void FileManagerPrivateInternalGetContentMimeTypeFunction::SniffMimeType(
-    const std::string& blob_uuid,
     std::string sniff_bytes,
     int64_t /*length*/) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-
   std::string mime_type;
   if (!net::SniffMimeTypeFromLocalData(sniff_bytes, &mime_type)) {
     Respond(Error("Could not deduce the content mime type."));
@@ -89,35 +73,23 @@ FileManagerPrivateInternalGetContentMetadataFunction::Run() {
   const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (params->blob_uuid.empty()) {
-    return RespondNow(Error("Blob UUID must not be empty"));
-  }
+  mojo::PendingRemote<blink::mojom::Blob> blob_arg = TakeBlobArg(0);
+  EXTENSION_FUNCTION_VALIDATE(blob_arg);
+  mojo::Remote<blink::mojom::Blob> blob(std::move(blob_arg));
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &FileManagerPrivateInternalGetContentMetadataFunction::ReadBlobSize,
-          this, params->blob_uuid, params->mime_type, params->include_images));
-
-  return RespondLater();
-}
-
-void FileManagerPrivateInternalGetContentMetadataFunction::ReadBlobSize(
-    const std::string& blob_uuid,
-    const std::string& mime_type,
-    bool include_images) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-
+  mojo::PendingRemote<blink::mojom::Blob> blob_for_read;
+  blob->Clone(blob_for_read.InitWithNewPipeAndPassReceiver());
   BlobReader::Read(  // Read net::kMaxBytesToSniff bytes from the front.
-      browser_context()->GetBlobRemote(blob_uuid),
+      std::move(blob_for_read),
       base::BindOnce(
           &FileManagerPrivateInternalGetContentMetadataFunction::CanParseBlob,
-          this, blob_uuid, mime_type, include_images),
+          this, blob.Unbind(), params->mime_type, params->include_images),
       0, net::kMaxBytesToSniff);
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 void FileManagerPrivateInternalGetContentMetadataFunction::CanParseBlob(
-    const std::string& blob_uuid,
+    mojo::PendingRemote<blink::mojom::Blob> blob,
     const std::string& mime_type,
     bool include_images,
     std::string /*sniff_bytes*/,
@@ -130,27 +102,13 @@ void FileManagerPrivateInternalGetContentMetadataFunction::CanParseBlob(
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &FileManagerPrivateInternalGetContentMetadataFunction::ParseBlob,
-          this, blob_uuid, mime_type, include_images, length));
-}
-
-void FileManagerPrivateInternalGetContentMetadataFunction::ParseBlob(
-    const std::string& blob_uuid,
-    const std::string& mime_type,
-    bool include_images,
-    int64_t length) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-
   auto input_blob_data_source =
       std::make_unique<chrome_apps::api::BlobDataSourceFactory>(
-          browser_context(), blob_uuid);
+          std::move(blob));
   auto metadata_parser = std::make_unique<SafeMediaMetadataParser>(
       length, mime_type, include_images, std::move(input_blob_data_source));
 
-  auto* safe_media_metadata_parser = metadata_parser.get();
+  SafeMediaMetadataParser* safe_media_metadata_parser = metadata_parser.get();
   safe_media_metadata_parser->Start(base::BindOnce(
       &FileManagerPrivateInternalGetContentMetadataFunction::ParserDone, this,
       std::move(metadata_parser)));

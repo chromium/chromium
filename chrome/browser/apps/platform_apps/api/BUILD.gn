@@ -78,6 +78,8 @@ source_set("api") {
       "//chromeos/components/remote_apps/mojom",
       "//components/media_gallery_util",
       "//components/storage_monitor",
+      "//content/public/common",
+      "//mojo/public/cpp/bindings",
       "//ui/events:event_constants",
     ]
 

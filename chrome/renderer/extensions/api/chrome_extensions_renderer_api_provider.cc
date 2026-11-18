@@ -35,6 +35,7 @@
 #include "chrome/renderer/extensions/api/accessibility_private_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/file_browser_handler_custom_bindings.h"
 #include "chrome/renderer/extensions/api/file_manager_private_custom_bindings.h"
+#include "chrome/renderer/extensions/api/file_manager_private_internal_hooks_delegate.h"
 #include "chrome/renderer/extensions/api/media_galleries_custom_bindings.h"
 #include "chrome/renderer/extensions/api/platform_keys_natives.h"
 #if BUILDFLAG(USE_CUPS)
@@ -125,6 +126,9 @@ void ChromeExtensionsRendererAPIProvider::AddBindingsSystemHooks(
   bindings->RegisterHooksDelegate(
       "accessibilityPrivate",
       std::make_unique<extensions::AccessibilityPrivateHooksDelegate>());
+  bindings->RegisterHooksDelegate(
+      "fileManagerPrivateInternal",
+      std::make_unique<FileManagerPrivateInternalHooksDelegate>());
 #if BUILDFLAG(USE_CUPS)
   bindings->RegisterHooksDelegate(
       "printing", std::make_unique<extensions::PrintingHooksDelegate>());

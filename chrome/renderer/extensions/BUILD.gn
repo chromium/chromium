@@ -101,6 +101,8 @@ source_set("extensions") {
         "api/file_browser_handler_custom_bindings.h",
         "api/file_manager_private_custom_bindings.cc",
         "api/file_manager_private_custom_bindings.h",
+        "api/file_manager_private_internal_hooks_delegate.cc",
+        "api/file_manager_private_internal_hooks_delegate.h",
         "api/media_galleries_custom_bindings.cc",
         "api/media_galleries_custom_bindings.h",
         "api/platform_keys_natives.cc",

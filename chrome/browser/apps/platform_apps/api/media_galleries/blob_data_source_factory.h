@@ -6,16 +6,12 @@
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_API_MEDIA_GALLERIES_BLOB_DATA_SOURCE_FACTORY_H_
 
 #include <memory>
-#include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "components/media_gallery_util/safe_media_metadata_parser.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-
-namespace content {
-class BrowserContext;
-}  // namespace content
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace chrome_apps {
 namespace api {
@@ -25,8 +21,7 @@ namespace api {
 class BlobDataSourceFactory
     : public SafeMediaMetadataParser::MediaDataSourceFactory {
  public:
-  BlobDataSourceFactory(content::BrowserContext* browser_context,
-                        const std::string& blob_uuid);
+  explicit BlobDataSourceFactory(mojo::PendingRemote<blink::mojom::Blob> blob);
   BlobDataSourceFactory(const BlobDataSourceFactory&) = delete;
   BlobDataSourceFactory& operator=(const BlobDataSourceFactory&) = delete;
   ~BlobDataSourceFactory() override;
@@ -37,8 +32,7 @@ class BlobDataSourceFactory
       mojo::PendingReceiver<chrome::mojom::MediaDataSource> receiver,
       MediaDataCallback media_data_callback) override;
 
-  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
-  std::string blob_uuid_;
+  mojo::Remote<blink::mojom::Blob> blob_;
   MediaDataCallback callback_;
 };
 

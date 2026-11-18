@@ -4,13 +4,14 @@
 
 #include "chrome/browser/apps/platform_apps/api/media_galleries/blob_data_source_factory.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
-#include "content/public/browser/browser_context.h"
+#include "base/memory/weak_ptr.h"
 #include "extensions/browser/blob_reader.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace chrome_apps {
 namespace api {
@@ -21,12 +22,10 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
  public:
   BlobMediaDataSource(
       mojo::PendingReceiver<chrome::mojom::MediaDataSource> receiver,
-      content::BrowserContext* browser_context,
-      const std::string& blob_uuid,
+      mojo::PendingRemote<blink::mojom::Blob> blob,
       BlobDataSourceFactory::MediaDataCallback callback)
       : receiver_(this, std::move(receiver)),
-        browser_context_(browser_context),
-        blob_uuid_(blob_uuid),
+        blob_(std::move(blob)),
         callback_(callback) {}
 
   BlobMediaDataSource(const BlobMediaDataSource&) = delete;
@@ -44,8 +43,10 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
   void StartBlobRequest(chrome::mojom::MediaDataSource::ReadCallback callback,
                         int64_t position,
                         int64_t length) {
+    mojo::PendingRemote<blink::mojom::Blob> blob;
+    blob_->Clone(blob.InitWithNewPipeAndPassReceiver());
     BlobReader::Read(
-        browser_context_->GetBlobRemote(blob_uuid_),
+        std::move(blob),
         base::BindOnce(&BlobMediaDataSource::OnBlobReaderDone,
                        weak_factory_.GetWeakPtr(), std::move(callback)),
         position, length);
@@ -59,9 +60,7 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
 
   mojo::Receiver<chrome::mojom::MediaDataSource> receiver_;
 
-  const raw_ptr<content::BrowserContext, LeakedDanglingUntriaged>
-      browser_context_;
-  std::string blob_uuid_;
+  mojo::Remote<blink::mojom::Blob> blob_;
 
   BlobDataSourceFactory::MediaDataCallback callback_;
 
@@ -71,9 +70,8 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
 }  // namespace
 
 BlobDataSourceFactory::BlobDataSourceFactory(
-    content::BrowserContext* browser_context,
-    const std::string& blob_uuid)
-    : browser_context_(browser_context), blob_uuid_(blob_uuid) {}
+    mojo::PendingRemote<blink::mojom::Blob> blob)
+    : blob_(std::move(blob)) {}
 
 BlobDataSourceFactory::~BlobDataSourceFactory() = default;
 
@@ -81,8 +79,10 @@ std::unique_ptr<chrome::mojom::MediaDataSource>
 BlobDataSourceFactory::CreateMediaDataSource(
     mojo::PendingReceiver<chrome::mojom::MediaDataSource> receiver,
     MediaDataCallback media_data_callback) {
+  mojo::PendingRemote<blink::mojom::Blob> blob;
+  blob_->Clone(blob.InitWithNewPipeAndPassReceiver());
   return std::make_unique<BlobMediaDataSource>(
-      std::move(receiver), browser_context_, blob_uuid_, media_data_callback);
+      std::move(receiver), std::move(blob), media_data_callback);
 }
 
 }  // namespace api

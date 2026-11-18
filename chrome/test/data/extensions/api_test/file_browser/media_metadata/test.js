@@ -11,6 +11,28 @@ let emptyEntry = null;
 let imageEntry = null;
 let videoEntry = null;
 
+function testRejectsFakeBlobs() {
+  // This fake Blob constructor is necessary to get past schema validation
+  // and instead reach hook validation (rejection).
+  function Blob() {
+    // Nonzero size avoids the custom bindings' empty-file shortcut.
+    this.size = 1;
+  }
+  function FileEntry() {}
+
+  const entry = new FileEntry();
+  entry.file = callback => callback(new Blob());
+  chrome.test.assertThrows(
+      () =>
+          chrome.fileManagerPrivate.getContentMimeType(entry, chrome.test.fail),
+      /Argument must be a Blob\./);
+  chrome.test.assertThrows(
+      () => chrome.fileManagerPrivate.getContentMetadata(
+          entry, 'audio/mpeg', true, chrome.test.fail),
+      /Argument must be a Blob\./);
+  chrome.test.succeed();
+}
+
 /*
  * getContentMineType of an empty entry is undefined.
  */
@@ -323,6 +345,8 @@ resolveTestFileSystem().then(async (fileSystem) => {
   videoEntry = await resolveFileEntry(fileSystem, '90rotation.mp4');
 
   chrome.test.runTests([
+    testRejectsFakeBlobs,
+
     // fileManagerPrivate.getContentMimeType tests.
     testGetContentMimeTypeEmpty,
     testGetContentMimeTypeImage,

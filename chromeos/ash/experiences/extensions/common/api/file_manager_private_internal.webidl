@@ -106,11 +106,11 @@ interface FileManagerPrivateInternal {
       DOMString actionId);
 
   // |PromiseValue|: result
-  static Promise<DOMString> getContentMimeType(DOMString blobUUID);
+  static Promise<DOMString> getContentMimeType([instanceOf=Blob] object blob);
 
   // |PromiseValue|: result
   static Promise<FileManagerPrivateMediaMetadata> getContentMetadata(
-      DOMString blobUUID,
+      [instanceOf=Blob] object blob,
       DOMString mimeType,
       boolean includeImages);
 

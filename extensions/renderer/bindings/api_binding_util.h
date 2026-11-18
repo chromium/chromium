@@ -6,15 +6,23 @@
 #define EXTENSIONS_RENDERER_BINDINGS_API_BINDING_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/types/expected.h"
+#include "extensions/renderer/bindings/api_binding_hooks.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
+class APISignature;
+class APITypeReferenceMap;
+
 namespace binding {
 
 class ContextInvalidationData;
@@ -30,6 +38,22 @@ bool IsContextValid(v8::Local<v8::Context> context);
 
 // Same as above, but throws an exception in the `context` if it is invalid.
 bool IsContextValidOrThrowError(v8::Local<v8::Context> context);
+
+// Replaces `arguments` with their parsed values and returns nullopt on success.
+// On failure, returns the hook result, rethrowing any parsing exception unless
+// the context was invalidated.
+std::optional<APIBindingHooks::RequestResult> ParseArgumentsForHook(
+    const APISignature& signature,
+    v8::Local<v8::Context> context,
+    v8::LocalVector<v8::Value>* arguments,
+    const APITypeReferenceMap& refs);
+
+// Makes and returns a clone of the blob pointed to by `argument`, and sets
+// `argument` to an empty object. Returns an error if the argument is not a
+// blob.
+base::expected<mojo::PendingRemote<blink::mojom::Blob>,
+               APIBindingHooks::RequestResult>
+TakeBlobArgument(v8::Local<v8::Value>& argument);
 
 // Initializes the given `context`.
 void InitializeContext(v8::Local<v8::Context> context);

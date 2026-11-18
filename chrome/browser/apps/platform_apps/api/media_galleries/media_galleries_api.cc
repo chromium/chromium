@@ -681,8 +681,8 @@ void MediaGalleriesGetMetadataFunction::GetMetadata(
       metadata_type == MediaGalleries::GetMetadataType::kAll ||
       metadata_type == MediaGalleries::GetMetadataType::kNone;
 
-  auto media_data_source_factory =
-      std::make_unique<BlobDataSourceFactory>(browser_context(), blob_uuid);
+  auto media_data_source_factory = std::make_unique<BlobDataSourceFactory>(
+      browser_context()->GetBlobRemote(blob_uuid));
   auto parser = std::make_unique<SafeMediaMetadataParser>(
       total_blob_length, mime_type, get_attached_images,
       std::move(media_data_source_factory));

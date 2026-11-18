@@ -4,11 +4,13 @@
 
 #include "extensions/renderer/api/feedback_private_hooks_delegate.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
-#include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/web/web_blob.h"
@@ -93,24 +95,14 @@ RequestResult FeedbackPrivateHooksDelegate::HandleRequest(
     return RequestResult(RequestResult::NOT_HANDLED);
   }
 
-  // Parse args.
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  v8::TryCatch try_catch(isolate);
-  APISignature::V8ParseResult parse_result =
-      signature->ParseArgumentsToV8(context, *arguments, refs);
-  if (!binding::IsContextValid(context)) {
-    return RequestResult(RequestResult::CONTEXT_INVALIDATED);
-  }
-  if (try_catch.HasCaught()) {
-    try_catch.ReThrow();
-    return RequestResult(RequestResult::THROWN);
-  }
-  if (!parse_result.succeeded()) {
-    return RequestResult(std::move(*parse_result.error));
+  std::optional<RequestResult> parse_error =
+      binding::ParseArgumentsForHook(*signature, context, arguments, refs);
+  if (parse_error) {
+    return std::move(*parse_error);
   }
 
   // Convert blob objects to blob remotes and set reference indexes.
-  arguments->swap(*parse_result.arguments);
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   RequestResult result(RequestResult::ARGUMENTS_UPDATED,
                        v8::Local<v8::Function>() /*custom_callback*/,
                        base::BindOnce(MassageSendFeedbackResults));

@@ -5,7 +5,6 @@
 // Custom binding for the fileManagerPrivate API.
 
 // Natives
-const blobNatives = requireNative('blob_natives');
 const fileManagerPrivateNatives = requireNative('file_manager_private');
 const logging = requireNative('logging');
 
@@ -182,24 +181,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       function(fileEntry, successCallback, failureCallback) {
         fileEntry.file(
             blob => {
-              const blobUUID = blobNatives.GetBlobUuid(blob);
-
               if (!blob || !blob.size) {
                 successCallback(undefined);
                 return;
               }
 
-              const resultHandler =
-                  function(blob, mimeType) {
-                return mimeType;
-              }.bind(this,
-                     blob);  // Bind a blob reference:
-                             // crbug.com/40385307#comment13
-
               fileManagerPrivateInternal.getContentMimeType(
-                  blobUUID,
-                  callbackAdaptor(
-                      successCallback, failureCallback, resultHandler));
+                  blob, callbackAdaptor(successCallback, failureCallback));
             },
             (error) => {
               failureCallback(`fileEntry.file() blob error: ${error.message}`);
@@ -213,24 +201,14 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
           failureCallback) {
         fileEntry.file(
             blob => {
-              const blobUUID = blobNatives.GetBlobUuid(blob);
-
               if (!blob || !blob.size) {
                 successCallback(undefined);
                 return;
               }
 
-              const resultHandler =
-                  function(blob, metadata) {
-                return metadata;
-              }.bind(this,
-                     blob);  // Bind a blob reference:
-                             // crbug.com/40385307#comment13
-
               fileManagerPrivateInternal.getContentMetadata(
-                  blobUUID, mimeType, !!includeImages,
-                  callbackAdaptor(
-                      successCallback, failureCallback, resultHandler));
+                  blob, mimeType, !!includeImages,
+                  callbackAdaptor(successCallback, failureCallback));
             },
             (error) => {
               failureCallback(`fileEntry.file() blob error: ${error.message}`);
