@@ -167,6 +167,34 @@ UIColor* AssistantHighlightBackgroundColor() {
   return [color colorWithAlphaComponent:0.15];
 }
 
+// Returns `avatar` cropped into a circle of `kButtonImageSize` and centered on
+// a transparent canvas matching `reference_size` so its label aligns with SF
+// Symbol buttons.
+UIImage* CircularAvatarImageMatchingSize(UIImage* avatar,
+                                         CGSize reference_size) {
+  UIImage* circular_avatar = CircularImageFromImage(avatar, kButtonImageSize);
+  CGFloat circular_avatar_height = circular_avatar.size.height;
+  CGFloat circular_avatar_width = circular_avatar.size.width;
+
+  CGSize canvas_size =
+      CGSizeMake(std::max(reference_size.width, circular_avatar_height),
+                 std::max(reference_size.height, circular_avatar_height));
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.opaque = NO;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:canvas_size format:format];
+  UIImage* image =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        CGFloat origin_x = (canvas_size.width - circular_avatar_width) / 2.0;
+        CGFloat origin_y = (canvas_size.height - circular_avatar_height) / 2.0;
+        [circular_avatar
+            drawInRect:CGRectMake(origin_x, origin_y, circular_avatar_width,
+                                  circular_avatar_height)];
+      }];
+  return [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+}
+
 }  // namespace
 
 @interface AppBarViewController () <AppBarViewDelegate,
@@ -921,8 +949,9 @@ UIColor* AssistantHighlightBackgroundColor() {
                     truncatedTitle:l10n_util::GetNSString(
                                        IDS_IOS_LENS_PRODUCT_NAME_TRUNCATED)];
     case AppBarAssistantButtonState::kAccount:
-      return _signedIn ? l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT)
-                       : l10n_util::GetNSString(IDS_IOS_APP_BAR_SIGN_IN);
+      return (_signedIn || _incognito)
+                 ? l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT)
+                 : l10n_util::GetNSString(IDS_IOS_APP_BAR_SIGN_IN);
   }
 }
 
@@ -1003,8 +1032,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   // The avatar of the signed-in identity replaces the generic Account symbol.
   if (_assistantButtonState == AppBarAssistantButtonState::kAccount &&
       _assistantButtonAvatar) {
-    image = [CircularImageFromImage(_assistantButtonAvatar, kButtonImageSize)
-        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    image = CircularAvatarImageMatchingSize(_assistantButtonAvatar, image.size);
   }
 
   UIButtonConfiguration* configuration = _assistantButton.configuration;
@@ -1389,8 +1417,9 @@ UIColor* AssistantHighlightBackgroundColor() {
       label = l10n_util::GetNSString(IDS_IOS_LENS_PRODUCT_NAME);
       break;
     case AppBarAssistantButtonState::kAccount:
-      label = _signedIn ? l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT)
-                        : l10n_util::GetNSString(IDS_IOS_APP_BAR_SIGN_IN);
+      label = (_signedIn || _incognito)
+                  ? l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT)
+                  : l10n_util::GetNSString(IDS_IOS_APP_BAR_SIGN_IN);
       break;
   }
   _assistantButton.accessibilityLabel = label;

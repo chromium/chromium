@@ -303,8 +303,8 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
   EXPECT_FALSE(button.accessibilityTraits & UIAccessibilityTraitSelected);
 }
 
-// Tests that the assistant button in kAccount state sets the correct image and
-// no title.
+// Tests that the assistant button in `kAccount` state sets the correct image
+// and no title.
 TEST_F(AppBarViewControllerTest, TestAssistantButtonStateAccount) {
   UIButton* button = assistantButton();
   ASSERT_NE(button, nil);
@@ -322,11 +322,21 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonStateAccount) {
   EXPECT_NE(config.image, nil);
 }
 
-// Tests that the assistant button in kAccount state sets the avatar image if
-// available.
+// Tests that the assistant button in `kAccount` state sets the avatar image
+// sized to match the reference symbol so its label aligns vertically with the
+// other buttons.
 TEST_F(AppBarViewControllerTest, TestAssistantButtonStateAccountWithAvatar) {
   UIButton* button = assistantButton();
   ASSERT_NE(button, nil);
+
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+  CGSize symbol_size = button.configuration.image.size;
 
   UIGraphicsImageRenderer* renderer =
       [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(10, 10)];
@@ -346,8 +356,25 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonStateAccountWithAvatar) {
   UIButtonConfiguration* config = button.configuration;
   EXPECT_NSEQ(config.title, l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT));
   ASSERT_NE(config.image, nil);
-  EXPECT_EQ(config.image.size.width, 23);
-  EXPECT_EQ(config.image.size.height, 23);
+  EXPECT_EQ(config.image.size.width, symbol_size.width);
+  EXPECT_EQ(config.image.size.height, symbol_size.height);
+
+  view_controller_.view.frame = CGRectMake(0, 0, 390, 80);
+  [view_controller_.view setNeedsLayout];
+  [view_controller_.view layoutIfNeeded];
+  UIButton* new_tab_button = openNewTabButton();
+  [button layoutIfNeeded];
+  [new_tab_button layoutIfNeeded];
+  CGRect assistant_title_frame =
+      [button.titleLabel convertRect:button.titleLabel.bounds
+                              toView:view_controller_.view];
+  CGRect new_tab_title_frame =
+      [new_tab_button.titleLabel convertRect:new_tab_button.titleLabel.bounds
+                                      toView:view_controller_.view];
+  EXPECT_NEAR(CGRectGetMinY(assistant_title_frame),
+              CGRectGetMinY(new_tab_title_frame), 0.5);
+  EXPECT_NEAR(CGRectGetMaxY(assistant_title_frame),
+              CGRectGetMaxY(new_tab_title_frame), 0.5);
 }
 
 // Tests that the tab grid button has the correct accessibility label and
@@ -496,6 +523,49 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonAccessibilityLabel) {
   EXPECT_EQ(button.configuration.title, nil);
   EXPECT_NSEQ(button.accessibilityLabel,
               l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GEMINI));
+}
+
+// Tests that the assistant button in `kAccount` state uses the Account title
+// and accessibility label in incognito, regardless of sign-in status.
+TEST_F(AppBarViewControllerTest,
+       TestAssistantButtonAccountIncognitoAccessibilityLabel) {
+  UIButton* button = assistantButton();
+  ASSERT_NE(button, nil);
+
+  // Assert "Sign In" title and accessibility label are used in non-incognito
+  // when signed out.
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:NO];
+  [view_controller_ setIncognito:NO];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+  EXPECT_NSEQ(button.configuration.title,
+              l10n_util::GetNSString(IDS_IOS_APP_BAR_SIGN_IN));
+  EXPECT_NSEQ(button.accessibilityLabel,
+              l10n_util::GetNSString(IDS_IOS_APP_BAR_SIGN_IN));
+
+  // Assert "Account" title and accessibility label are used in incognito for
+  // any value of `signedIn`.
+  [view_controller_ setIncognito:YES];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+  EXPECT_NSEQ(button.configuration.title,
+              l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT));
+  EXPECT_NSEQ(button.accessibilityLabel,
+              l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT));
+
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                                highlighted:NO
+                                    enabled:YES
+                                     avatar:nil
+                                   signedIn:YES];
+  EXPECT_NSEQ(button.configuration.title,
+              l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT));
+  EXPECT_NSEQ(button.accessibilityLabel,
+              l10n_util::GetNSString(IDS_IOS_APP_BAR_ACCOUNT));
 }
 
 // Tests that when labels are hidden (e.g. assistant container invoked),

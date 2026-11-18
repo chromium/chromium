@@ -686,6 +686,22 @@ inline LayoutStateAssistantPassKey PassKey() {
 }
 
 - (void)willExitTabGrid {
+  // When opening the first incognito tab from the empty incognito grid,
+  // `tabGridVisible` transitions to NO before `incognitoContentVisible`
+  // becomes YES. Skip updating here so the App Bar does not briefly switch back
+  // to regular mode and exhibit a state flicker before
+  // `willEnterIncognitoForState:` fires immediately afterward.
+  BOOL exitingIncognitoGridWithNewTab =
+      self.currentWebStateList &&
+      self.currentWebStateList == _incognitoWebStateList &&
+      _tabGridState.currentPage == TabGridPageIncognitoTabs &&
+      !_incognitoState.incognitoContentVisible &&
+      !self.currentWebStateList->empty();
+
+  if (exitingIncognitoGridWithNewTab) {
+    return;
+  }
+
   self.currentTabGroup = GetGroupForActiveWebState(self.currentWebStateList);
   [self updateForIncognitoVisible:_incognitoState.incognitoContentVisible];
 }
@@ -1270,6 +1286,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   BOOL highlighted = NO;
   BOOL enabled = YES;
   UIImage* avatar = nil;
+  BOOL incognitoActive = [self isIncognitoActive];
   switch (state) {
     case AppBarAssistantButtonState::kAsk:
       highlighted =
@@ -1279,7 +1296,9 @@ inline LayoutStateAssistantPassKey PassKey() {
       if (_authenticationService && !_authenticationService->SigninEnabled()) {
         enabled = NO;
       }
-      avatar = [self avatarForPrimaryIdentity];
+      if (!incognitoActive) {
+        avatar = [self avatarForPrimaryIdentity];
+      }
       break;
     case AppBarAssistantButtonState::kAIM:
       if (_tabGridState.tabGridVisible) {
@@ -1302,7 +1321,7 @@ inline LayoutStateAssistantPassKey PassKey() {
     enabled = signedIn || _authenticationService->SigninEnabled();
   }
 
-  if ([self isIncognitoActive] && state != AppBarAssistantButtonState::kAsk) {
+  if (incognitoActive && state != AppBarAssistantButtonState::kAsk) {
     enabled = NO;
   }
   [self.consumer setAssistantButtonState:state

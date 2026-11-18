@@ -1475,7 +1475,7 @@ TEST_F(AppBarMediatorTest,
       setAssistantButtonState:AppBarAssistantButtonState::kAccount
                   highlighted:NO
                       enabled:NO
-                       avatar:[OCMArg any]
+                       avatar:nil
                      signedIn:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
@@ -1499,7 +1499,7 @@ TEST_F(AppBarMediatorTest,
       setAssistantButtonState:AppBarAssistantButtonState::kAccount
                   highlighted:NO
                       enabled:NO
-                       avatar:[OCMArg any]
+                       avatar:nil
                      signedIn:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
@@ -2866,6 +2866,77 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonCustomization_Incognito) {
                        avatar:nil
                      signedIn:NO]);
   EXPECT_FALSE(UpdateAssistantButtonAndGetMenu());
+}
+
+// Tests that when assistant customization selects Account and the user is
+// signed in, the account avatar is shown in regular mode and omitted in
+// incognito mode so the generic symbol is displayed.
+TEST_F(AppBarMediatorTest, TestAssistantButtonCustomization_IncognitoSignedIn) {
+  base::test::ScopedFeatureList feature_list(kAppBarAssistantCustomization);
+  SetLocationEligible(true);
+  SignInAndSetCapability(true);
+  SetPreferredAssistantButtonState(
+      AppBarAssistantButtonPreferredState::kAccount);
+
+  OCMExpect([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:YES
+                       avatar:[OCMArg isNotNil]
+                     signedIn:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  incognito_state_.incognitoContentVisible = YES;
+  OCMExpect([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:NO
+                       avatar:nil
+                     signedIn:YES]);
+  EXPECT_FALSE(UpdateAssistantButtonAndGetMenu());
+}
+
+// Tests that exiting an empty incognito grid after inserting a new incognito
+// tab does not briefly flash the signed-in avatar before
+// `incognitoContentVisible` becomes YES.
+TEST_F(AppBarMediatorTest,
+       TestAssistantButtonCustomization_OpenNewTabFromEmptyIncognitoGrid) {
+  base::test::ScopedFeatureList feature_list(kAppBarAssistantCustomization);
+  SetLocationEligible(true);
+  SignInAndSetCapability(true);
+  SetPreferredAssistantButtonState(
+      AppBarAssistantButtonPreferredState::kAccount);
+
+  tab_grid_state_.tabGridVisible = YES;
+  tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
+  ASSERT_TRUE(incognito_web_state_list_->empty());
+  ASSERT_FALSE(incognito_state_.incognitoContentVisible);
+
+  // Insert an incognito tab while `incognitoContentVisible` is still NO.
+  auto incognito_web_state = std::make_unique<web::FakeWebState>();
+  incognito_web_state_list_->InsertWebState(
+      std::move(incognito_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  OCMReject([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:YES
+                       avatar:[OCMArg isNotNil]
+                     signedIn:YES]);
+  OCMReject([consumer_ setIncognito:NO]);
+
+  tab_grid_state_.tabGridVisible = NO;
+
+  OCMExpect([consumer_
+      setAssistantButtonState:AppBarAssistantButtonState::kAccount
+                  highlighted:NO
+                      enabled:NO
+                       avatar:nil
+                     signedIn:YES]);
+  incognito_state_.incognitoContentVisible = YES;
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
 // Tests that the assistant button keeps showing Lens, disabled, when the user
