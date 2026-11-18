@@ -750,3 +750,7 @@ crbug.com/586829581 [ Device ] ContentSuggestionsTestCase/testMagicStackCompacte
 
 # CQ flakiness quarantine 2026-11-17
 crbug.com/586867871 [ iOS26 iOS27 Simulator ] BookmarksEntriesTestCase/testContextMenuForMultipleURLOpenAll [ Pass Failure ]
+
+# Gardening suppression 2026-11-18
+crbug.com/587350667 [ iOS27 Simulator ] InternalOneTapTestCase/testNoConsent [ Pass Failure ]
+crbug.com/587350667 [ ASan ] InternalOneTapTestCase/testNoConsent [ Crash ]
