@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/app_list/search/ranking/removed_results_ranker.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/check_deref.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -71,20 +70,16 @@ class RemovedResultsRankerTest : public testing::Test {
 
     AccountId account_id =
         AccountId::FromUserEmailGaiaId(kEmail, GaiaId("123456"));
-    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_ = user_session_test_environment_->AddRegularUser(account_id);
+    ASSERT_TRUE(user_);
     user_session_test_environment_->LogIn(account_id);
 
-    profile_ = Profile::FromBrowserContext(
-        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-            account_id));
-    ASSERT_TRUE(profile_);
-
-    ranker_ = std::make_unique<RemovedResultsRanker>(&user());
+    ranker_ = std::make_unique<RemovedResultsRanker>(user_);
   }
 
   void TearDown() override {
     ranker_.reset();
-    profile_ = nullptr;
+    user_ = nullptr;
     user_session_test_environment_.reset();
     testing::Test::TearDown();
   }
@@ -96,23 +91,21 @@ class RemovedResultsRankerTest : public testing::Test {
   void InitFileService() {
     WaitUntilFileSuggestServiceReady(
         ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
-            profile_));
+            browser_context()));
   }
 
-  user_manager::User& user() {
-    return CHECK_DEREF(
-        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  content::BrowserContext* browser_context() {
+    return ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user_);
   }
+
+  // Only for FileResult's constructor, which still requires one.
+  Profile* profile() { return Profile::FromBrowserContext(browser_context()); }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
-  // TODO(crbug.com/569954060): Replace with a stored user_manager::User*
-  // (returned by user_session_test_environment_->AddRegularUser()) now
-  // that this test's User is no longer derived from `profile_` via a
-  // reverse lookup.
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<user_manager::User> user_ = nullptr;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<RemovedResultsRanker> ranker_;
 };
@@ -181,12 +174,12 @@ TEST_F(RemovedResultsRankerTest, RemoveFileSuggestions) {
       drive_file_result_path, std::nullopt,
       ash::AppListSearchResultType::kZeroStateDrive,
       ash::SearchResultDisplayType::kList, /*relevance=*/0.5f,
-      /*query=*/std::u16string(), FileResult::Type::kFile, profile_,
+      /*query=*/std::u16string(), FileResult::Type::kFile, profile(),
       /*thumbnail_loader=*/nullptr);
   ash::MockFileSuggestKeyedService* mock_service =
       static_cast<ash::MockFileSuggestKeyedService*>(
           ash::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
-              profile_));
+              browser_context()));
   auto drive_file_metadata = drive_file_result.CloneMetadata();
   EXPECT_CALL(*mock_service, RemoveSuggestionBySearchResultAndNotify)
       .WillOnce([&](const ash::SearchResultMetadata& search_result) {
@@ -200,7 +193,7 @@ TEST_F(RemovedResultsRankerTest, RemoveFileSuggestions) {
       "zero_state_file://" + local_file_path.value(), local_file_path,
       std::nullopt, ash::AppListSearchResultType::kZeroStateDrive,
       ash::SearchResultDisplayType::kList, /*relevance=*/0.5f,
-      /*query=*/std::u16string(), FileResult::Type::kFile, profile_,
+      /*query=*/std::u16string(), FileResult::Type::kFile, profile(),
       /*thumbnail_loader=*/nullptr);
   auto local_file_metadata = local_file_result.CloneMetadata();
   EXPECT_CALL(*mock_service, RemoveSuggestionBySearchResultAndNotify)
