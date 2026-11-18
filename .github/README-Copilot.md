@@ -41,6 +41,23 @@ Repository-local **personal** skills should not be placed under
 `.github/skills/`. Instead, place them under `.agents/skills/`.
 These will not be tracked by git.
 
+## Worktree command approval
+
+The [shell command hook](./hooks/approve-worktree-creation.json) requests approval
+for `git worktree add` on all platforms, including Git options such as
+`git -C path worktree add`.
+Creating a Chromium worktree can take time and use substantial disk space.
+To disable the hook, open `/config`, go to **Capabilities > Hooks**, and disable
+this hook.
+
+For additional buildable working directories, use depot_tools'
+`gclient-new-workdir.py`, as described in Chromium's
+[Managing Multiple Working Directories][multiple-working-directories] guide.
+The helper handles the gclient workspace and its dependency repositories, and
+uses copy-on-write where supported.
+
+[multiple-working-directories]: https://www.chromium.org/developers/how-tos/get-the-code/multiple-working-directories/
+
 ## Documentation
 
 Official documentation:

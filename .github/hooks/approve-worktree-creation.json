@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "type": "command",
+        "matcher": "bash|powershell",
+        "bash": "python3 .github/hooks/approve-worktree-creation.py",
+        "powershell": "python3 .github/hooks/approve-worktree-creation.py",
+        "cwd": ".",
+        "timeoutSec": 5
+      }
+    ]
+  }
+}

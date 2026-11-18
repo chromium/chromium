@@ -5,3 +5,8 @@
 # Local Copilot instructions. Shared files must be explicitly allowed.
 /instructions/*
 !/instructions/chromium.instructions.md
+
+# Local Copilot hooks. Shared files must be explicitly allowed.
+/hooks/*
+!/hooks/approve-worktree-creation.json
+!/hooks/approve-worktree-creation.py
