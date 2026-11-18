@@ -11241,9 +11241,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Automatic updates are enabled. Manual updates are disabled by your administrator.
         </message>
       </if>
-      <message name="IDS_REPORT_AN_ISSUE" desc="Text of the button which allows the user to report an issue with Chrome.">
-        Report an issue
-      </message>
 
       <!-- Upgrade bubble messages -->
       <message name="IDS_REENABLE_UPDATES" desc="Text for the button the user clicks to re-enable automatic updates.">
@@ -12897,16 +12894,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <if expr="not is_chromeos and not use_titlecase">
           <message name="IDS_RELAUNCH_BUTTON" desc="The label for the relaunch button that relaunches the browser once update is complete">
             Relaunch
-          </message>
-        </if>
-        <if expr="is_chromeos and use_titlecase">
-          <message name="IDS_RELAUNCH_BUTTON" desc="Titlecase: The label for the relaunch button that relaunches the browser once update is complete">
-            Restart
-          </message>
-        </if>
-        <if expr="is_chromeos and not use_titlecase">
-          <message name="IDS_RELAUNCH_BUTTON" desc="The label for the relaunch button that relaunches the browser once update is complete">
-            Restart
           </message>
         </if>
       </if> <!-- not is_android -->

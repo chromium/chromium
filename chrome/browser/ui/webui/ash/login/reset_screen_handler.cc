@@ -6,11 +6,11 @@
 
 #include <string>
 
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/chromeos/devicetype_utils.h"

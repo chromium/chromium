@@ -2767,6 +2767,14 @@
       <message name="IDS_CERTIFICATE_MANAGER_TITLE" desc="String to be displayed in the title bar of the certificate manager dialog">
         Certificate manager
       </message>
+
+      <!-- Login WebUI screen actions -->
+      <message name="IDS_REPORT_AN_ISSUE" desc="Text of the button which allows the user to report an issue with Chrome.">
+        Report an issue
+      </message>
+      <message name="IDS_RELAUNCH_BUTTON" desc="The label for the relaunch button that relaunches the browser once update is complete">
+        Restart
+      </message>
     </messages>
   </release>
 </grit>

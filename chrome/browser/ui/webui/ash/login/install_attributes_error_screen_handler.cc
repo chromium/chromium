@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/login/resources/grit/ash_login_strings.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/user_manager/user_manager.h"
 
