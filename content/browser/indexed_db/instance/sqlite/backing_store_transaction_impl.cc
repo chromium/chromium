@@ -46,6 +46,7 @@ void BackingStoreTransactionImpl::Rollback() {
 }
 
 Status BackingStoreTransactionImpl::SetDatabaseVersion(int64_t version) {
+  CHECK_EQ(mode_, blink::mojom::IDBTransactionMode::VersionChange);
   return db_->SetDatabaseVersion(PassKey(), version);
 }
 
@@ -54,32 +55,38 @@ Status BackingStoreTransactionImpl::CreateObjectStore(
     const std::u16string& name,
     blink::IndexedDBKeyPath key_path,
     bool auto_increment) {
+  CHECK_EQ(mode_, blink::mojom::IDBTransactionMode::VersionChange);
   return db_->CreateObjectStore(PassKey(), object_store_id, name,
                                 std::move(key_path), auto_increment);
 }
 
 Status BackingStoreTransactionImpl::DeleteObjectStore(int64_t object_store_id) {
+  CHECK_EQ(mode_, blink::mojom::IDBTransactionMode::VersionChange);
   return db_->DeleteObjectStore(PassKey(), object_store_id);
 }
 
 Status BackingStoreTransactionImpl::RenameObjectStore(
     int64_t object_store_id,
     const std::u16string& new_name) {
+  CHECK_EQ(mode_, blink::mojom::IDBTransactionMode::VersionChange);
   return db_->RenameObjectStore(PassKey(), object_store_id, new_name);
 }
 
 Status BackingStoreTransactionImpl::ClearObjectStore(int64_t object_store_id) {
+  CHECK_NE(mode_, blink::mojom::IDBTransactionMode::ReadOnly);
   return db_->ClearObjectStore(PassKey(), object_store_id);
 }
 
 Status BackingStoreTransactionImpl::CreateIndex(
     int64_t object_store_id,
     blink::IndexedDBIndexMetadata index) {
+  CHECK_EQ(mode_, blink::mojom::IDBTransactionMode::VersionChange);
   return db_->CreateIndex(PassKey(), object_store_id, std::move(index));
 }
 
 Status BackingStoreTransactionImpl::DeleteIndex(int64_t object_store_id,
                                                 int64_t index_id) {
+  CHECK_EQ(mode_, blink::mojom::IDBTransactionMode::VersionChange);
   return db_->DeleteIndex(PassKey(), object_store_id, index_id);
 }
 
@@ -87,6 +94,7 @@ Status BackingStoreTransactionImpl::RenameIndex(
     int64_t object_store_id,
     int64_t index_id,
     const std::u16string& new_name) {
+  CHECK_EQ(mode_, blink::mojom::IDBTransactionMode::VersionChange);
   return db_->RenameIndex(PassKey(), object_store_id, index_id, new_name);
 }
 
@@ -100,12 +108,14 @@ StatusOr<BackingStore::RecordIdentifier> BackingStoreTransactionImpl::PutRecord(
     int64_t object_store_id,
     const blink::IndexedDBKey& key,
     IndexedDBValue value) {
+  CHECK_NE(mode_, blink::mojom::IDBTransactionMode::ReadOnly);
   return db_->PutRecord(PassKey(), object_store_id, key, std::move(value));
 }
 
 Status BackingStoreTransactionImpl::DeleteRange(
     int64_t object_store_id,
     const blink::IndexedDBKeyRange& range) {
+  CHECK_NE(mode_, blink::mojom::IDBTransactionMode::ReadOnly);
   return db_->DeleteRange(PassKey(), object_store_id, range);
 }
 
@@ -136,6 +146,7 @@ Status BackingStoreTransactionImpl::PutIndexDataForRecord(
     int64_t index_id,
     const blink::IndexedDBKey& key,
     const BackingStore::RecordIdentifier& record) {
+  CHECK_NE(mode_, blink::mojom::IDBTransactionMode::ReadOnly);
   return db_->PutIndexDataForRecord(PassKey(), object_store_id, index_id, key,
                                     record);
 }

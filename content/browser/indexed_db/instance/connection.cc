@@ -551,7 +551,9 @@ void Connection::DeleteRange(int64_t transaction_id,
       std::move(success_callback), /*success=*/false);
 
   base::expected<Transaction*, DatabaseError> transaction =
-      GetTransactionAndVerifyState(transaction_id);
+      GetTransactionAndVerifyState(transaction_id,
+                                   blink::mojom::IDBTransactionMode::ReadOnly,
+                                   /*invert_mode_match=*/true);
   if (!transaction.has_value()) {
     return;
   }
@@ -599,7 +601,9 @@ void Connection::Clear(int64_t transaction_id,
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), /*success=*/false);
   base::expected<Transaction*, DatabaseError> transaction =
-      GetTransactionAndVerifyState(transaction_id);
+      GetTransactionAndVerifyState(transaction_id,
+                                   blink::mojom::IDBTransactionMode::ReadOnly,
+                                   /*invert_mode_match=*/true);
   if (!transaction.has_value()) {
     return;
   }
@@ -767,7 +771,9 @@ Transaction* Connection::GetTransaction(int64_t id) const {
 base::expected<Transaction*, DatabaseError>
 Connection::GetTransactionAndVerifyState(
     int64_t transaction_id,
-    std::optional<blink::mojom::IDBTransactionMode> required_mode) {
+    std::optional<blink::mojom::IDBTransactionMode> required_mode,
+    bool invert_mode_match) {
+  CHECK(!invert_mode_match || required_mode.has_value());
   if (!IsConnected()) {
     TRACE_EVENT_INSTANT(
         "IndexedDB",
@@ -784,7 +790,8 @@ Connection::GetTransactionAndVerifyState(
         blink::mojom::IDBException::kUnknownError, "Unknown transaction."));
   }
 
-  if (required_mode.has_value() && (transaction->mode() != *required_mode)) {
+  if (required_mode.has_value() &&
+      ((transaction->mode() == *required_mode) == invert_mode_match)) {
     TRACE_EVENT_INSTANT(
         "IndexedDB", "Connection::GetTransactionAndVerifyState - Wrong mode");
     ReportBadMessage(BadMessageReason::kConnectionWrongTransactionMode,

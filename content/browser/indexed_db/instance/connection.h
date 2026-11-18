@@ -132,7 +132,10 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
       int64_t transaction_id,
       // When set, verifies that the transaction has this mode, killing the
       // renderer if not.
-      std::optional<blink::mojom::IDBTransactionMode> required_mode = {});
+      std::optional<blink::mojom::IDBTransactionMode> required_mode = {},
+      // When set to true, this inverts the match on `required_mode`, making it
+      // the only mode that is NOT considered valid.
+      bool invert_mode_match = false);
 
  private:
   friend class TransactionTestBase;
