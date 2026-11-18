@@ -2963,6 +2963,15 @@ bool GraphBuilderTflite::CanFuseDequantizeForLogicalElementWiseBinary(
     return false;
   }
 
+  // The TFLite kernel aborts if the scale is not positive and finite, or is
+  // exactly 1.0.
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/comparisons.cc;l=108;drc=4ba5176eb4c55092ad153a6e07a7dec6d73ebdf4
+  for (float scale : GetQuantizeScaleValue(lhs_dequantize.scale_operand_id)) {
+    if (!std::isfinite(scale) || scale <= 0.0f || scale == 1.0f) {
+      return false;
+    }
+  }
+
   // The inputs should have same scale/zero_point.
   if (!IsSameScaleAndZeroPoint(lhs_dequantize, rhs_dequantize)) {
     return false;
