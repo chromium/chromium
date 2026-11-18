@@ -1744,19 +1744,6 @@ void HTMLDocumentParser::ProcessPreloadData(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kLowPriorityAsyncScriptExecution) &&
-      features::kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam
-          .Get()) {
-    // Update main document whether LCP element was discovered in HTML.
-    Document* document = GetDocument();
-    LocalFrame* frame = document->GetFrame();
-    if (preload_data->has_located_potential_lcp_element && frame &&
-        frame->IsMainFrame()) {
-      document->SetLcpElementFoundInHtml(true);
-    }
-  }
-
   MaybeFetchQueuedPreloads();
 }
 

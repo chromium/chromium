@@ -72,8 +72,6 @@ class CORE_EXPORT LCPCriticalPathPredictor final
 
   void Reset();
 
-  bool IsLcpInfluencerScript(const KURL& url);
-
   // Member functions invoked in LCPP hint production path (write path):
 
   void OnLargestContentfulPaintUpdated(

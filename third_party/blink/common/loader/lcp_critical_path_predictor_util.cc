@@ -48,11 +48,7 @@ void ResetLcppEnabledForTesting() {
 
 bool LcppScriptObserverEnabled() {
   static const bool enabled =
-      base::FeatureList::IsEnabled(blink::features::kLCPScriptObserver) ||
-      (base::FeatureList::IsEnabled(
-           features::kLowPriorityAsyncScriptExecution) &&
-       features::kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam
-           .Get());
+      base::FeatureList::IsEnabled(blink::features::kLCPScriptObserver);
   return enabled;
 }
 

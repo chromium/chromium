@@ -994,7 +994,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_ENABLE_API_CALL_USER_ACTIONS,
                 "Enables recording user actions for API calls."),
         Flag.baseFeature("PrefetchUseContentRefactor"),
-        Flag.baseFeature("LowPriorityAsyncScriptExecution"),
         Flag.baseFeature("WebViewPrefetchHighestPrefetchPriority"),
         Flag.baseFeature(
                 BlinkFeatures.BLINK_LIFECYCLE_SCRIPT_FORBIDDEN,

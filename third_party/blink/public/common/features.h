@@ -1138,65 +1138,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLoadingTasksUnfreezable);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowLatencyUsageSupportedForCanvas);
 #endif
 
-// If enabled, async scripts will be run on a lower priority task queue.
-// See https://crbug.com/1348467.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityAsyncScriptExecution);
-// The minimum amount of the physical memory (GB) to use
-// kLowPriorityAsyncScriptExecution.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    double,
-    kMinimumPhysicalMemoryForLowPriorityAsyncScriptExecution);
-// The timeout value for kLowPriorityAsyncScriptExecution. Async scripts run on
-// lower priority queue until this timeout elapsed.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    base::TimeDelta,
-    kTimeoutForLowPriorityAsyncScriptExecution);
-// kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
-// than |low_pri_async_exec_feature_limit|. Zero value means no limit.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    base::TimeDelta,
-    kLowPriorityAsyncScriptExecutionFeatureLimitParam);
-// kLowPriorityAsyncScriptExecution will be applied only for cross site scripts.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam);
-// kLowPriorityAsyncScriptExecution will be applied only for main frame's
-// scripts.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kLowPriorityAsyncScriptExecutionMainFrameOnlyParam);
-// kLowPriorityAsyncScriptExecution will be excluded for async scripts that
-// influence LCP element. Requires the following features enabled as a
-// pre-requisite: kLCPCriticalPathPredictor, kLCPScriptObserver and
-// kLowPriorityAsyncScriptExecution.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam);
-// kLowPriorityAsyncScriptExecution will be disabled when LCP element is
-// not detected in Html. Requires kLCPCriticalPathPredictor experiment to be
-// enabled for this to work.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    AsyncScriptExperimentalSchedulingTarget,
-    kLowPriorityAsyncScriptExecutionTargetParam);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kLowPriorityAsyncScriptExecutionExcludeNonParserInsertedParam);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kLowPriorityAsyncScriptExecutionExcludeDocumentWriteParam);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kLowPriorityAsyncScriptExecutionOptOutAutoFetchPriorityHintParam);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam);
-
 // A feature to enable the new value-based, multi-tiered pruning strategy
 // for the MemoryCache's strong references.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryCacheIntelligentPruning);

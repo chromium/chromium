@@ -27,10 +27,10 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -45,6 +45,10 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace {
+
+// Async scripts eligible for low-priority execution run on the lower-priority
+// task queue unless this timeout elapses first.
+constexpr base::TimeDelta kLowPriorityAsyncScriptTimeout = base::Seconds(1);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -220,8 +224,7 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
       WrapPersistent(pending_script), base::TimeTicks::Now());
   if (pending_script->IsEligibleForLowPriorityAsyncScriptExecution()) {
     PostTaskWithLowPriorityUntilTimeout(
-        FROM_HERE, std::move(task),
-        features::kTimeoutForLowPriorityAsyncScriptExecution.Get(),
+        FROM_HERE, std::move(task), kLowPriorityAsyncScriptTimeout,
         low_priority_task_runner_, task_runner_);
   } else {
     task_runner_->PostTask(FROM_HERE, std::move(task));

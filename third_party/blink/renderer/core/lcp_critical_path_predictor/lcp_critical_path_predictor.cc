@@ -344,10 +344,6 @@ LCPCriticalPathPredictor::GetHost() {
   return *host_.get();
 }
 
-bool LCPCriticalPathPredictor::IsLcpInfluencerScript(const KURL& url) {
-  return lcp_influencer_scripts_.Contains(url);
-}
-
 void LCPCriticalPathPredictor::OnOutermostMainFrameDocumentLoad() {
   if (!IsTimingPredictorEnabled()) {
     return;
