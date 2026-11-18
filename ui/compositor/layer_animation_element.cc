@@ -674,7 +674,9 @@ LayerAnimationElement::~LayerAnimationElement() = default;
 
 void LayerAnimationElement::Start(LayerAnimationDelegate* delegate,
                                   int animation_group_id) {
-  CHECK(requested_start_time_ != base::TimeTicks(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/586144204): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(requested_start_time_ != base::TimeTicks());
   CHECK(first_frame_, base::NotFatalUntil::M163);
   animation_group_id_ = animation_group_id;
   last_progressed_fraction_ = 0.0;
