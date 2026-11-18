@@ -14,6 +14,7 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -283,7 +284,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
       return this.i18n('notValidWebsite');
     }
     if (this.isWebsiteMissingTld_()) {
-      return this.i18n('missingTLD', `${this.website_}.com`);
+      return this.i18n('missingTLD', `${htmlEscape(this.website_)}.com`);
     }
     return '';
   }
@@ -301,7 +302,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         this.usernamesBySignonRealm_.get(signonRealm)!.has(this.username_)) {
       recordAddCredentialInteraction(AddCredentialFromSettingsUserInteractions
                                          .DUPLICATED_CREDENTIAL_ENTERED);
-      return this.i18n('usernameAlreadyUsed', this.website_);
+      return this.i18n('usernameAlreadyUsed', htmlEscape(this.website_));
     }
     return null;
   }
@@ -376,7 +377,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   protected getViewExistingPasswordAriaDescription_(): string {
     return this.domainInfo_ ?
         this.i18n(
-            'viewExistingPasswordAriaDescription', this.username_,
+            'viewExistingPasswordAriaDescription', htmlEscape(this.username_),
             this.domainInfo_.humanReadableName) :
         '';
   }
