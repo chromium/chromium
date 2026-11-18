@@ -1485,6 +1485,13 @@ void ContextualTasksUI::AddInitialTaskStateToDataSource(
   source->AddBoolean("isZeroState",
                      ui_service_ && task_creation_url &&
                          IsZeroState(task_creation_url.value(), ui_service_));
+  // Without a creation URL, the zero state isn't known until the page resolves
+  // the task's URL after it loads. Tell the page so that it keeps the
+  // composebox hidden until then, rather than showing it in the wrong state. A
+  // task that is waiting for its URL is known to not be in the zero state.
+  source->AddBoolean("isZeroStateKnownOnInit",
+                     !ui_service_ || task_creation_url ||
+                         ui_service_->IsTaskWaitingForUrl(task_id));
   source->AddBoolean("isShownInTab", IsShownInTab());
   bool is_signed_in = ui_service_ &&
                       ui_service_->IsSignedInToBrowserWithValidCredentials() &&

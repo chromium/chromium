@@ -64,6 +64,7 @@ suite('ContextualTasksAppTest', function() {
       composeboxSmartTabSharingVisible: false,
       isAimEligible: true,
       isZeroState: false,
+      isZeroStateKnownOnInit: true,
       contextManagementInComposeboxEnabled: false,
       askGCoBrowseEnabled: true,
       isAskGTooltipDismissCountBelowCap: true,
@@ -1393,6 +1394,57 @@ suite('ContextualTasksAppTest', function() {
         assertFalse(wrapper.hasAttribute('hidden'));
         assertStyle(wrapper, 'visibility', 'visible');
       });
+
+  test('composebox stays hidden until zero state is known', async () => {
+    loadTimeData.overrideValues({isZeroStateKnownOnInit: false});
+    const {promise: isZeroStatePromise, resolve: resolveIsZeroState} =
+        Promise.withResolvers<{isZeroState: boolean}>();
+    const {appElement} = await createContextualTasksAppElement(
+        /*url=*/ fixtureUrl,
+        (h) => {
+          h.isShownInTab = () => Promise.resolve({isInTab: false});
+          h.isAiPage = () => Promise.resolve({isAiPage: true});
+          h.isZeroState = () => isZeroStatePromise;
+        },
+        /*waitForInitialLoadStart=*/ false);
+
+    await appElement.updateComplete;
+    await microtasksFinished();
+
+    // The browser hasn't said whether this is the zero state yet, so the
+    // composebox must not be shown in either state.
+    assertTrue(appElement.$.composebox.hidden);
+    assertTrue(appElement.$.composeboxHeaderWrapper.hasAttribute('hidden'));
+    assertFalse(appElement.hasAttribute('is-zero-state_'));
+
+    resolveIsZeroState({isZeroState: true});
+    await microtasksFinished();
+    await appElement.updateComplete;
+    await microtasksFinished();
+
+    assertTrue(appElement.hasAttribute('is-zero-state_'));
+    assertFalse(appElement.$.composebox.hidden);
+    assertFalse(appElement.$.composeboxHeaderWrapper.hasAttribute('hidden'));
+  });
+
+  test('composebox is shown on load when zero state is known', async () => {
+    loadTimeData.overrideValues(
+        {isZeroStateKnownOnInit: true, isZeroState: false});
+    const {appElement} = await createContextualTasksAppElement(
+        /*url=*/ fixtureUrl,
+        (h) => {
+          h.isShownInTab = () => Promise.resolve({isInTab: false});
+          // Never resolves, so only the load time value is used.
+          h.isZeroState = () => new Promise(() => {});
+        },
+        /*waitForInitialLoadStart=*/ false);
+
+    await appElement.updateComplete;
+    await microtasksFinished();
+
+    assertFalse(appElement.$.composebox.hidden);
+    assertFalse(appElement.hasAttribute('is-zero-state_'));
+  });
 
   test('side panel navigation to zero state plays animations', async () => {
     const {appElement, handler} = await createContextualTasksAppElement(

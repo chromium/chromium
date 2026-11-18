@@ -31,6 +31,12 @@
         align-items: stretch;
         display: flex;
         flex-direction: column;
+        /* Contain and clip absolutely positioned content, like the zero state
+         * container during its slide up animation. Otherwise its offset makes
+         * the document scrollable, and focusing the composebox scrolls the
+         * toolbar out of view until the animation ends. */
+        overflow: clip;
+        position: relative;
       }
 
       contextual-tasks-app {
