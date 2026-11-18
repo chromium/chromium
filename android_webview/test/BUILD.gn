@@ -673,6 +673,7 @@ android_library("base_webview_instrumentation_java") {
     "//android_webview/test/shell/src/org/chromium/android_webview/test/SecondBrowserProcess.java",
     "//android_webview/test/shell/src/org/chromium/android_webview/test/SkipMutations.java",
     "//android_webview/test/shell/src/org/chromium/android_webview/test/TestContentProvider.java",
+    "//android_webview/test/shell/src/org/chromium/android_webview/test/TestStartupUtils.java",
   ]
 
   deps = [
@@ -681,10 +682,12 @@ android_library("base_webview_instrumentation_java") {
     "//android_webview:android_webview_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:flagged_apis_java",
     "//components/embedder_support/android:util_java",
     "//components/policy/android:policy_java_test_support",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java",
     "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

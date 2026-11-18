@@ -38,6 +38,7 @@ import org.chromium.android_webview.JsResultReceiver;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.test.AwTestContainerView;
 import org.chromium.android_webview.test.NullContentsClient;
+import org.chromium.android_webview.test.TestStartupUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
@@ -139,9 +140,8 @@ public class AwShellActivity extends Activity {
             "Pixel 6", "Pixel 6 Pro",
         };
         boolean useVulkan = Arrays.asList(supportedModels).contains(Build.MODEL);
-        AwTestContainerView.installDrawFnFunctionTable(useVulkan);
         WebViewCachedFlags.init(new InMemorySharedPreferences());
-        AwBrowserProcess.startForTesting();
+        TestStartupUtils.startForTesting(useVulkan);
         AwTestContainerView testContainerView = new AwTestContainerView(this, true);
         AwContentsClient awContentsClient =
                 new NullContentsClient() {

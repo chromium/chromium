@@ -278,7 +278,13 @@ public class SafeModeTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
     public SafeModeTest(AwSettingsMutation param) {
-        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+        this.mActivityTestRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public boolean needsBrowserProcessStarted() {
+                        return false;
+                    }
+                };
     }
 
     @Before

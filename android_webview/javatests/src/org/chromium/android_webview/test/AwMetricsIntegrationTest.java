@@ -26,7 +26,6 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwMinidumpUploader;
 import org.chromium.android_webview.AwWindowCoverageTracker;
 import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
@@ -45,6 +44,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.MetricsSwitches;
@@ -71,6 +71,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @CommandLineFlags.Add({MetricsSwitches.FORCE_ENABLE_METRICS_REPORTING}) // Override sampling logic
+@DoNotBatch(reason = "needsBrowserProcessStarted false and @Batch are incompatible")
 public class AwMetricsIntegrationTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mRule;
 
@@ -83,18 +84,27 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
     private static final long UPLOAD_INTERVAL_MS = 10;
 
     public AwMetricsIntegrationTest(AwSettingsMutation param) {
-        this.mRule = new AwActivityTestRule(param.getMutation());
+        this.mRule =
+                new AwActivityTestRule(param.getMutation()) {
+                    @Override
+                    public boolean needsBrowserProcessStarted() {
+                        return false;
+                    }
+                };
     }
 
     @Before
     public void setUp() throws Exception {
-        // Kick off the metrics consent-fetching process.
-        // MetricsTestPlatformServiceBridge mocks out user consent for when we
-        // query it with
-        // AwMinidumpUploader.handleMinidumpsAndSetMetricsConsent(), so metrics
-        // consent is guaranteed to be granted.
+        // MetricsTestPlatformServiceBridge mocks out user consent for the single consent query that
+        // StartupTasks issues, so it has to be injected before the browser process starts. The
+        // answer is deferred because granting consent kicks off the metrics service, and the
+        // service has to be configured first (see below).
         mPlatformServiceBridge = new MetricsTestPlatformServiceBridge();
+        mPlatformServiceBridge.deferMetricsConsent();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
+
+        mRule.startBrowserProcess();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Explicitly send the data to PlatformServiceBridge and avoid sending the data
@@ -114,8 +124,8 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                                     : new MetricsFilteringDecorator(directUploader);
                     AndroidMetricsLogUploader.setConsumer(consumer);
 
-                    // Need to configure the metrics delay first, because
-                    // handleMinidumpsAndSetMetricsConsent() triggers MetricsService initialization.
+                    // Need to configure the metrics delay first, because granting consent triggers
+                    // MetricsService initialization.
                     // The first upload for each test case will be triggered with minimal latency,
                     // and subsequent uploads (for tests cases which need them) will be scheduled
                     // every UPLOAD_INTERVAL_MS. We use programmatic hooks (instead of commandline
@@ -135,8 +145,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                     AwMetricsServiceClient.setFastStartupForTesting(true);
                     AwMetricsServiceClient.setUploadIntervalForTesting(UPLOAD_INTERVAL_MS);
 
-                    AwMinidumpUploader.handleMinidumpsAndSetMetricsConsent(
-                            /* updateMetricsConsent= */ true);
+                    mPlatformServiceBridge.grantDeferredMetricsConsent();
                 });
 
         // Creat WebView after initializing metrics consent to ensure startup metrics are captured.

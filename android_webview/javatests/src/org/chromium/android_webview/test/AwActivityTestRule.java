@@ -23,7 +23,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.android_webview.AwBrowserContext;
-import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.DependencyFactory;
 import org.chromium.android_webview.AwContents.InternalAccessDelegate;
@@ -144,6 +143,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     @Override
     protected void before() throws Throwable {
         super.before();
+        WebViewCachedFlags.initForTesting(new InMemorySharedPreferences());
         if (needsNativeInitialized()) {
             // The Activity must be launched in order to load native code
             launchActivity();
@@ -265,10 +265,8 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         if (sBrowserContext == null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        AwTestContainerView.installDrawFnFunctionTable(useVulkan);
-                        AwBrowserProcess.configureChildProcessLauncherForTesting();
                         WebViewCachedFlags.initForTesting(new InMemorySharedPreferences());
-                        AwBrowserProcess.startForTesting();
+                        TestStartupUtils.startForTesting(useVulkan);
                         sBrowserContext = AwBrowserContext.getDefault();
                     });
         }

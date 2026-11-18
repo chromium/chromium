@@ -18,6 +18,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
+import org.chromium.android_webview.CompatQuirks;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.base.test.util.CallbackHelper;
@@ -38,7 +39,9 @@ public class AwContentsStaticsTest extends AwParameterizedTest {
     public AwContentsStaticsTest(AwSettingsMutation param) {
         mActivityTestRule =
                 new AwActivityTestRule(param.getMutation()) {
-                    /** This is necessary so we can set the cleartext setting before browser startup. */
+                    /**
+                     * This is necessary so we can set the cleartext setting before browser startup.
+                     */
                     @Override
                     public boolean needsBrowserProcessStarted() {
                         return false;
@@ -82,8 +85,9 @@ public class AwContentsStaticsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testSetCheckClearTextPermittedTrue() throws Throwable {
-        // Note: must setCheckClearTextPermitted() before starting browser process.
-        AwContentsStatics.setCheckClearTextPermitted(true);
+        // Note: the quirk must be set before starting the browser process, which is what derives
+        // the cleartext check from it.
+        CompatQuirks.overrideForTesting(CompatQuirks.Quirk.ALLOW_ALL_CLEARTEXT_TRAFFIC, false);
         mActivityTestRule.startBrowserProcess();
 
         // Set the policy to reject cleartext, otherwise there's nothing to validate.
@@ -114,8 +118,9 @@ public class AwContentsStaticsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testSetCheckClearTextPermittedFalse() throws Throwable {
-        // Note: must setCheckClearTextPermitted() before starting browser process.
-        AwContentsStatics.setCheckClearTextPermitted(false);
+        // Note: the quirk must be set before starting the browser process, which is what derives
+        // the cleartext check from it.
+        CompatQuirks.overrideForTesting(CompatQuirks.Quirk.ALLOW_ALL_CLEARTEXT_TRAFFIC, true);
         mActivityTestRule.startBrowserProcess();
 
         // Set the policy to reject cleartext, otherwise there's nothing to validate.

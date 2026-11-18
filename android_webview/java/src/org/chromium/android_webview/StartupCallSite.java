@@ -169,6 +169,7 @@ import java.lang.annotation.RetentionPolicy;
     StartupCallSite.WEBVIEW_INSTANCE_GET_PROFILE,
     StartupCallSite.PROFILE_CONFIGURE_ISOLATED_SITES,
     StartupCallSite.PROFILE_CAN_CONFIGURE_ISOLATED_SITES,
+    StartupCallSite.TEST_SHELL,
     StartupCallSite.COUNT,
 })
 public @interface StartupCallSite {
@@ -322,7 +323,8 @@ public @interface StartupCallSite {
     int WEBVIEW_INSTANCE_GET_PROFILE = 148;
     int PROFILE_CONFIGURE_ISOLATED_SITES = 149;
     int PROFILE_CAN_CONFIGURE_ISOLATED_SITES = 150;
+    int TEST_SHELL = 151;
     // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
-    int COUNT = 151;
+    int COUNT = 152;
 }
 // LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup,//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)

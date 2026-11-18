@@ -27,6 +27,7 @@ class SharedPreferencesTestUtil {
     private static final List<String> SHARED_PREFS_ALLOWLIST =
             List.of(
                     "AwComponentUpdateServicePreferences",
+                    "AwEntropyPrefs",
                     "AwOriginVisitLoggerPrefs",
                     "ComponentsProviderServicePreferences",
                     "WebViewChromiumPrefs",
