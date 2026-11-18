@@ -175,7 +175,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private @Nullable EdgeToEdgeController mEdgeToEdgeController;
     private @Nullable Callback<EdgeToEdgeController> mEdgeToEdgeControllerCallback;
     private int mTopInset;
-    private boolean mIsFirstPositionChange;
 
     private final SettableNonNullObservableSupplier<Integer> mCurrentPosition;
     private final NonNullObservableSupplier<Integer> mKeyboardHeightSupplier;
@@ -275,7 +274,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mActiveTabSupplier = activeTabSupplier;
         mTopAnchorViewIdSupplier = topAnchorViewIdSupplier;
 
-        mIsFirstPositionChange = true;
         mHairlineHeight =
                 context.getResources().getDimensionPixelSize(R.dimen.toolbar_hairline_height);
 
@@ -708,8 +706,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         if (newControlsPosition == ControlsPosition.BOTTOM && mProfileSupplier.get() != null) {
             UserPrefs.get(mProfileSupplier.get()).setBoolean(BOTTOM_OMNIBOX_EVER_USED_PREF, true);
         }
-
-        mIsFirstPositionChange = false;
     }
 
     @VisibleForTesting
@@ -935,19 +931,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     }
 
     /**
-     * Forces toolbar's layout update and capture a new toolbar bitmap when toolbar position changes
-     * to bottom. Skips the first time when the toolbar position is set, as well as if the active
-     * Tab is a NTP.
+     * Forces a toolbar layout update and bitmap capture when the toolbar moves to the bottom on a
+     * non-NTP tab.
      */
     @VisibleForTesting
     void maybeForceBottomToolbarLayoutUpdateAndCapture(boolean isNtpShowing) {
         if (!mIsNtpCustomizationV2Enabled) return;
-
-        if (mIsFirstPositionChange) {
-            // Skips forcing capture the first time when toolbar position is set.
-            // The value of mIsFirstPositionChange will be updated in the updateCurrentPosition().
-            return;
-        }
 
         if (mEnableLogs) {
             Log.i(TAG, "Current %s showing a NTP", isNtpShowing ? "is" : "isn't");
@@ -1072,10 +1061,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             mLayerVisibility = targetVisibility;
         }
         return changed;
-    }
-
-    public boolean getIsFirstPositionChangeForTesting() {
-        return mIsFirstPositionChange;
     }
 
     // Applies the progress bar's TOP-position anchor + gravity. Invoked reactively via

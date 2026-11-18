@@ -1294,39 +1294,20 @@ public class ToolbarPositionControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testMaybeForceBottomToolbarLayoutUpdateAndCapture() {
-        // 1. Test mIsFirstPositionChange is true.
-        assertTrue(mController.getIsFirstPositionChangeForTesting());
-        // After setUp, mIsFirstPositionChange is true because initial position (TOP) didn't change.
+        // Active tab is an NTP: skip layout update and capture.
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ true);
         verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
 
-        // Trigger a position change to set mIsFirstPositionChange to false.
-        setUserToolbarAnchorPreference(false); // Changes to BOTTOM
-        assertControlsAtBottom();
-        // During this first change, maybeForceToolbarLayoutUpdateAndCapture() was called inside
-        // updateCurrentPosition(), but mIsFirstPositionChange was still true, so it did nothing.
-        verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
-
-        // mIsFirstPositionChange is now false.
-        assertFalse(mController.getIsFirstPositionChangeForTesting());
-
-        // 2. Test active tab is NTP.
-        mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ true);
-        verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
-
-        // 3. Test active tab is not NTP, and layout changed.
-        // We need onToEdgeChange to return true.
-        // maybeForceBottomToolbarLayoutUpdateAndCapture calls onToEdgeChange(0, false,
-        // LayoutType.BROWSING).
-        // Set mTopInset to something non-zero first.
+        // First transition to BOTTOM after top edge-to-edge padding was applied at TOP: clear the
+        // top padding and recapture immediately without requiring a prior position change.
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
         mActivityTabSupplier.set(mTab);
         mController.onToEdgeChange(50, true, LayoutType.BROWSING);
-        mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        assertControlsAtBottom();
         verify(mControlContainer).doSynchronousLayout(true);
 
-        // 4. Test active tab is not NTP, but layout DID NOT change.
-        // mTopInset is now 0 (from previous call).
+        // Once the top inset has been cleared, subsequent calls do not recapture.
         clearInvocations(mControlContainer);
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
         verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
