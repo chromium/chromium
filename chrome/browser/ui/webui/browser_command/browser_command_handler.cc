@@ -18,7 +18,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_whats_new_invoke.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -371,9 +371,7 @@ void BrowserCommandHandler::OpenGlic() {
   }
 
   auto* browser_window = webui::GetBrowserWindowInterface(web_contents_);
-
-  glic_service->ToggleUI(browser_window, /*prevent_close=*/false,
-                         glic::mojom::InvocationSource::kWhatsNew);
+  glic::InvokeFromWhatsNew(*glic_service, browser_window);
 }
 
 void BrowserCommandHandler::OpenGlicSettings() {

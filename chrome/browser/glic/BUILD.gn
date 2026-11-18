@@ -175,6 +175,7 @@ source_set("glic") {
     sources += [
       "glic_selection_observer.h",
       "host/context/glic_focused_tab_manager.h",
+      "public/glic_whats_new_invoke.h",
       "public/widget/glic_side_panel_coordinator_impl.h",
       "selection/selection_overlay_invocation_helper.h",
       "widget/glic_loading_placeholder_controller.h",
@@ -771,6 +772,7 @@ source_set("impl") {
       "host/context/glic_focused_tab_manager.cc",
       "host/context/glic_focused_tab_manager.h",
       "host/glic_tools_desktop.cc",
+      "public/glic_whats_new_invoke.cc",
       "selection/selection_overlay_invocation_helper.cc",
       "widget/glic_floating_ui.cc",
       "widget/glic_floating_ui.h",
@@ -1086,6 +1088,7 @@ source_set("unit_tests") {
       "host/glic_cookie_synchronizer_unittest.cc",
       "public/glic_context_menu_invocation_helper_unittest.cc",
       "public/glic_enabling_metrics_unittest.cc",
+      "public/glic_whats_new_invoke_unittest.cc",
       "service/glic_activity_manager_unittest.cc",
       "service/glic_instance_helper_unittest.cc",
       "service/glic_instance_limit_calculator_unittest.cc",

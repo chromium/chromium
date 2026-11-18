@@ -383,7 +383,6 @@ BASE_FEATURE(kGlicRecordPeriodicInstanceCountMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWhatsNewLuminous, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicBrowserCommandFallback, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
                    kGlicBrowserCommandFallbackUrl,
@@ -391,6 +390,12 @@ BASE_FEATURE_PARAM(std::string,
                    "https://support.google.com/chrome/answer/17140089");
 
 BASE_FEATURE(kGlicWhatsNewQuizzes, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicBrowserCommandInvoke, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kGlicBrowserCommandInvokePrompt,
+                   &kGlicBrowserCommandInvoke,
+                   "");
 
 BASE_FEATURE(kGlicForceFcmExperimentalTriggerFailure,
              base::FEATURE_DISABLED_BY_DEFAULT);
