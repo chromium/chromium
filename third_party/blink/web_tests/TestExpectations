@@ -9181,3 +9181,8 @@ crbug.com/583971020 [ Mac ] fast/borders/borderRadiusDouble06.html [ Failure Pas
 crbug.com/583971020 [ Win ] fast/borders/borderRadiusDouble06.html [ Failure Pass ]
 crbug.com/583971020 [ Mac ] tables/table-transform-absolute-position-child.html [ Failure Pass ]
 crbug.com/583971020 [ Win ] tables/table-transform-absolute-position-child.html [ Failure Pass ]
+crbug.com/583971020 [ Linux ] fast/borders/border-radius-different-width-001-double.html [ Failure Pass ]
+crbug.com/583971020 [ Linux ] fast/borders/border-radius-different-width-001.html [ Failure Pass ]
+crbug.com/583971020 [ Linux ] fast/borders/borderRadiusDouble06.html [ Failure Pass ]
+crbug.com/583971020 [ Linux ] tables/table-transform-absolute-position-child.html [ Failure Pass ]
+crbug.com/583971020 [ Linux ] fast/forms/datalist/input-appearance-range-with-transform.html [ Failure Pass ]
