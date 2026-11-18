@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
@@ -76,13 +77,17 @@ void ThumbnailSchedulerImpl::SetTabCapturePriority(
 
 void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
                                       const TabSchedulingData& old_data) {
+  CHECK(!reentrancy_guard_, base::NotFatalUntil::M165);
+  std::optional<base::AutoReset<bool>> reentrancy_guard;
+  reentrancy_guard.emplace(&reentrancy_guard_, true);
+
   // Scheduling is run after each tab priority change. So, at most one
   // tab may be scheduled, at most one tab may be descheduled, or both.
   TabNode* scheduled_tab = nullptr;
   TabNode* descheduled_tab = nullptr;
 
-  // First, move the tab node to the correct list and update the
-  // capturing counts.
+  // First, move the tab node to the correct list and update the capturing
+  // counts.
 
   if (tab_node->next()) {
     tab_node->RemoveFromList();
@@ -127,13 +132,13 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
       break;
   }
 
-  // First schedule a high priority tab if any are waiting, subject to
-  // the maximum. Note that at most one may be schedulable. Prior to
-  // this scheduling update, all possible high priority tabs were
-  // scheduled. The only conditions leading to scheduling a new one are:
+  // Next, schedule a high priority tab if any are waiting, subject to the
+  // maximum. Note that at most one may be scheduled. Prior to this scheduling
+  // update, all possible high priority tabs were scheduled. The only conditions
+  // leading to scheduling a new one are:
   //
-  // 1. |tab| was newly prioritized and less than |max_total_captures_|
-  //    tabs are capturing, or
+  // 1. |tab| was newly prioritized and less than |max_total_captures_| tabs are
+  //    capturing, or
   //
   // 2. |tab| was deprioritized and other tabs are waiting in
   //    |high_priority_wait_queue_|.
@@ -183,14 +188,30 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
     lo_prio_capture_count_ += 1;
   }
 
+  // Note: in the following sections, it's critical that `is_capturing` needs
+  // to be set before changing the capturer state, because there are cases where
+  // this can trigger additional readiness changes causing this function to
+  // re-enter; setting capture needs to be the last thing done.
+
   if (descheduled_tab) {
-    descheduled_tab->capturer->SetCapturePermittedByScheduler(false);
     descheduled_tab->is_capturing = false;
   }
+  if (scheduled_tab) {
+    scheduled_tab->is_capturing = true;
+  }
+
+  // Stopping capture is much less likely to be re-entrant than starting it, so
+  // make that change first.
+
+  if (descheduled_tab) {
+    descheduled_tab->capturer->SetCapturePermittedByScheduler(false);
+  }
+
+  // At this point it's okay if we're re-entrant.
+  reentrancy_guard.reset();
 
   if (scheduled_tab) {
     scheduled_tab->capturer->SetCapturePermittedByScheduler(true);
-    scheduled_tab->is_capturing = true;
   }
 }
 
