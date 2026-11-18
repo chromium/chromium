@@ -337,6 +337,18 @@ export class OmniboxPopupSearchboxElement extends
   private popupCallbackRouter_: PopupPageCallbackRouter;
   private popupPageHandler_: PopupPageHandlerInterface;
   private listenerIds_: number[] = [];
+  // TODO(b/585608450): Drop this once the Unbounded Element API lets the page
+  // handle Escape before dismissing.
+  // Set when the platform requested an interactive dismissal of the unbounded
+  // window and it was canceled (see `onInputWrapperBeforetoggle_()`): for a
+  // pointer press outside of the unbounded window, which still reaches the
+  // page, or for an Escape key press, whose keydown the unbounded window
+  // consumes, so that it needs to be replayed on keyup.
+  private pendingInteractiveDismissal_: boolean = false;
+  // Whether the trusted keydown of the current Escape key press reached the
+  // searchbox. The keydown is only replayed if it didn't, so that Escape is
+  // never handled twice.
+  private escapeKeydownReceived_: boolean = false;
   private popupListenerIds_: number[] = [];
   // Sequence number of the current content state received from C++.
   private currentSequenceNum_: number = 0;
@@ -532,6 +544,12 @@ export class OmniboxPopupSearchboxElement extends
     this.inputResizeObserver_.observe(this.$.inputWrapper);
 
     this.eventTracker_.add(document, 'mousemove', this.onMouseMove_.bind(this));
+    // A pointer press outside of the unbounded window requests an interactive
+    // dismissal too. Clear the flag once the press reaches the page, so that a
+    // later Escape keyup isn't replayed as a keydown.
+    this.eventTracker_.add(document, 'pointerdown', () => {
+      this.pendingInteractiveDismissal_ = false;
+    }, /*capture=*/ true);
     this.eventTracker_.add(document, 'mouseup', this.onMouseUp_.bind(this));
     this.eventTracker_.add(document, 'dragstart', this.onDragStart_.bind(this));
     this.eventTracker_.add(document, 'dragend', this.onDragEnd_.bind(this));
@@ -1206,6 +1224,9 @@ export class OmniboxPopupSearchboxElement extends
     // affects first.
     this.updateStateForKeydown(e);
 
+    if (e.key === 'Escape' && e.isTrusted) {
+      this.escapeKeydownReceived_ = true;
+    }
     this.selectAllOnMouseRelease_ = false;
     this.unelideOnMouseRelease_ = false;
     this.queryZpsOnMouseRelease_ = false;
@@ -2115,12 +2136,60 @@ export class OmniboxPopupSearchboxElement extends
         });
   }
 
+  // Copied from `WebuiBrowserSearchboxElement` in
+  // chrome/browser/resources/webui_browser/webui_browser_searchbox.ts.
   protected onInputWrapperBeforetoggle_(e: ToggleEvent) {
-    // Light dismiss (Escape, outside click, deactivation) clears matches and
-    // closes the dropdown; programmatic hides already cleared them.
-    if (e.newState === 'closed' && this.dropdownIsVisible) {
-      this.clearAutocompleteMatches();
+    if (e.newState !== 'closed') {
+      return;
     }
+    if (!e.cancelable) {
+      this.pendingInteractiveDismissal_ = false;
+      // The window closes regardless: `hideUnboundedElement()`, called once
+      // the dropdown is already hidden, or the platform (e.g. on window
+      // deactivation). `#inputWrapper` goes back into the WebView, which would
+      // clip the dropdown, so clear matches and hide it if still open.
+      if (this.dropdownIsVisible) {
+        this.clearAutocompleteMatches();
+      }
+      return;
+    }
+    // An interactive dismissal (Escape, or a pointer press outside of the
+    // window). The searchbox owns the dropdown's visibility, so cancel it:
+    // an outside press still reaches the page and closes the dropdown through
+    // focusout if focus leaves the searchbox, and a consumed Escape keydown is
+    // replayed on keyup, so that Escape first reverts to the default match.
+    e.preventDefault();
+    this.pendingInteractiveDismissal_ = true;
+  }
+
+  protected onInputWrapperKeyup_(e: KeyboardEvent) {
+    if (e.key !== 'Escape') {
+      return;
+    }
+    const keydownReceived = this.escapeKeydownReceived_;
+    this.escapeKeydownReceived_ = false;
+    if (!this.pendingInteractiveDismissal_) {
+      return;
+    }
+    this.pendingInteractiveDismissal_ = false;
+    // Don't replay during IME composition: the replayed keydown would bypass
+    // the composition check in `handleKeyNavigation()`.
+    if (keydownReceived || this.isComposing_ || !this.unboundedSupported_ ||
+        !this.$.inputWrapper.matches(':unbounded')) {
+      return;
+    }
+    // Replay the Escape keydown that the unbounded window consumed.
+    this.$.input.inputElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Escape',
+      code: 'Escape',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      shiftKey: e.shiftKey,
+      ctrlKey: e.ctrlKey,
+      altKey: e.altKey,
+      metaKey: e.metaKey,
+    }));
   }
 
   /**
@@ -2274,6 +2343,8 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   override onInputWrapperFocusout(e: FocusEvent) {
+    this.pendingInteractiveDismissal_ = false;
+    this.escapeKeydownReceived_ = false;
     // When focus leaves the WebUI DOM (e.g. to native window or during ESC key
     // handling on Linux), `relatedTarget` is null. Focus loss to external
     // targets is managed by C++ (OmniboxPopupFullPresenter) via

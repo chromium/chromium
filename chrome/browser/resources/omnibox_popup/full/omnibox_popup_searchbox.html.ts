@@ -10,6 +10,7 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
   return html`
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
     @keydown="${this.onInputWrapperKeydown}"
+    @keyup="${this.onInputWrapperKeyup_}"
     ?unbounded="${this.unboundedSupported_}"
     @beforetoggle="${this.onInputWrapperBeforetoggle_}">
   <cr-searchbox-input id="input" exportparts="searchbox-input, mirror"

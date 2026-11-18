@@ -8699,6 +8699,90 @@ suite('OmniboxPopupSearchboxTest', function() {
       assertFalse(unbounded);
     });
 
+    test('InteractiveDismissalIsCanceled', async () => {
+      searchbox.dropdownIsVisible = true;
+      await microtasksFinished();
+
+      const event = new ToggleEvent(
+          'beforetoggle',
+          {oldState: 'open', newState: 'closed', cancelable: true});
+      wrapper.dispatchEvent(event);
+      await microtasksFinished();
+      assertTrue(event.defaultPrevented);
+      assertTrue(searchbox.dropdownIsVisible);
+      assertTrue(unbounded);
+    });
+
+    function dispatchEscapeKeyup() {
+      searchbox.$.input.inputElement.dispatchEvent(new KeyboardEvent(
+          'keyup', {key: 'Escape', bubbles: true, composed: true}));
+    }
+
+    test('ConsumedEscapeIsReplayedOnKeyup', async () => {
+      searchbox.dropdownIsVisible = true;
+      await microtasksFinished();
+      handler.reset();
+      const replayed: KeyboardEvent[] = [];
+      wrapper.addEventListener('keydown', e => replayed.push(e));
+
+      // The unbounded window consumed the keydown and requested a dismissal.
+      wrapper.dispatchEvent(new ToggleEvent(
+          'beforetoggle',
+          {oldState: 'open', newState: 'closed', cancelable: true}));
+      dispatchEscapeKeyup();
+      await microtasksFinished();
+
+      assertEquals(1, replayed.length);
+      assertEquals('Escape', replayed[0]!.key);
+      // The replayed keydown runs the staged Escape handling, which closes
+      // the dropdown when there's no temporary text to revert.
+      assertFalse(searchbox.dropdownIsVisible);
+      assertEquals(1, handler.getCallCount('logEscapeAction'));
+      assertEquals(
+          OmniboxEscapeAction.kClosePopup,
+          handler.getArgs('logEscapeAction')[0]);
+
+      // A later Escape keyup without a dismissal request isn't replayed.
+      dispatchEscapeKeyup();
+      await microtasksFinished();
+      assertEquals(1, replayed.length);
+    });
+
+    test('EscapeDuringCompositionIsNotReplayed', async () => {
+      searchbox.dropdownIsVisible = true;
+      await microtasksFinished();
+      const replayed: KeyboardEvent[] = [];
+      wrapper.addEventListener('keydown', e => replayed.push(e));
+
+      searchbox.$.input.dispatchEvent(new CompositionEvent('compositionstart'));
+      wrapper.dispatchEvent(new ToggleEvent(
+          'beforetoggle',
+          {oldState: 'open', newState: 'closed', cancelable: true}));
+      dispatchEscapeKeyup();
+      await microtasksFinished();
+
+      assertEquals(0, replayed.length);
+      assertTrue(searchbox.dropdownIsVisible);
+    });
+
+    test('EscapeAfterOutsidePressIsNotReplayed', async () => {
+      searchbox.dropdownIsVisible = true;
+      await microtasksFinished();
+      const replayed: KeyboardEvent[] = [];
+      wrapper.addEventListener('keydown', e => replayed.push(e));
+
+      // An outside press requests a dismissal and then reaches the page.
+      wrapper.dispatchEvent(new ToggleEvent(
+          'beforetoggle',
+          {oldState: 'open', newState: 'closed', cancelable: true}));
+      document.dispatchEvent(new PointerEvent('pointerdown'));
+      dispatchEscapeKeyup();
+      await microtasksFinished();
+
+      assertEquals(0, replayed.length);
+      assertTrue(searchbox.dropdownIsVisible);
+    });
+
     test('ClipsSelectionListboxWhenUnboundedSupported', () => {
       assertTrue(searchbox.$.input.hasAttribute('clip-selection-listbox'));
       assertNotEquals(
