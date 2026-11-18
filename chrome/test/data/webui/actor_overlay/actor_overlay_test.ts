@@ -190,12 +190,17 @@ function flushTasks(): Promise<void> {
   return new Promise(resolve => realSetTimeout(resolve, 0));
 }
 
+// Long enough to reach the 200px max width of #cursorChip.
+const LONG_CHIP_TEXT =
+    'Scrolling down to view more product details on the page';
+
 suite('MagicCursor', function() {
   let page: ActorOverlayAppElement;
   let testRemote: ActorOverlayPageRemote;
   // Store original window params to restore it after tests.
   const originalDpr = window.devicePixelRatio;
   const originalInnerWindowWidth = window.innerWidth;
+  const originalInnerWindowHeight = window.innerHeight;
   const originalMatchMedia = window.matchMedia;
 
   suiteSetup(function() {
@@ -237,6 +242,12 @@ suite('MagicCursor', function() {
       configurable: true,
       value: originalInnerWindowWidth,
     });
+    // Restore original inner window height
+    Object.defineProperty(window, 'innerHeight', {
+      writable: true,
+      configurable: true,
+      value: originalInnerWindowHeight,
+    });
     // Restore original window match media.
     window.matchMedia = originalMatchMedia;
   });
@@ -247,6 +258,48 @@ suite('MagicCursor', function() {
     const magicCursor = page.$.magicCursor;
     magicCursor.dispatchEvent(new Event('transitionend'));
     await movePromise;
+  }
+
+  function setInnerWidth(width: number) {
+    Object.defineProperty(
+        window, 'innerWidth',
+        {writable: true, configurable: true, value: width});
+  }
+
+  function setInnerHeight(height: number) {
+    Object.defineProperty(
+        window, 'innerHeight',
+        {writable: true, configurable: true, value: height});
+  }
+
+  // #cursorChip and #cursorImage are both children of #magicCursor, so a
+  // running cursor glide moves them together and keeps their relative position.
+  function assertCursorChipSide(side: 'left'|'right') {
+    const cursorChip =
+        page.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    assertTrue(!!cursorChip);
+    const chipRect = cursorChip.getBoundingClientRect();
+    const imageRect = page.$.cursorImage.getBoundingClientRect();
+    if (side === 'left') {
+      assertTrue(chipRect.right <= imageRect.left);
+    } else {
+      assertTrue(chipRect.left >= imageRect.right);
+    }
+  }
+
+  // Uses the #magicCursor box because the loading animation moves
+  // #cursorImage up and down.
+  function assertCursorChipVerticalSide(side: 'above'|'below') {
+    const cursorChip =
+        page.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    assertTrue(!!cursorChip);
+    const chipRect = cursorChip.getBoundingClientRect();
+    const cursorRect = page.$.magicCursor.getBoundingClientRect();
+    if (side === 'above') {
+      assertTrue(Math.round(chipRect.bottom) <= Math.round(cursorRect.top));
+    } else {
+      assertTrue(Math.round(chipRect.top) >= Math.round(cursorRect.top));
+    }
   }
 
   test('MoveCursorAndVerifyLocation_StandardDPI', async function() {
@@ -624,6 +677,190 @@ suite('MagicCursor', function() {
         (cursorChip.computedStyleMap().get('transition-duration') as
          CSSUnitValue)
             .value);
+  });
+
+  test('LongCursorChipTextWrapsAtMaxWidth', async function() {
+    testRemote.setCursorChip('Searching');
+    await microtasksFinished();
+    const shortChip = page.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    assertTrue(!!shortChip);
+    const shortChipRect = shortChip.getBoundingClientRect();
+    assertTrue(shortChipRect.width < 200);
+
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+    const longChip = page.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    assertTrue(!!longChip);
+    const longChipRect = longChip.getBoundingClientRect();
+    assertEquals(200, longChipRect.width);
+    assertTrue(longChipRect.height > shortChipRect.height);
+  });
+
+  test('LongCursorChipUrlWrapsAtMaxWidth', async function() {
+    // The part of the URL after '?' has no line break point and is wider than
+    // the 200px chip, so the URL fits only if overflow-wrap on #cursorChip
+    // breaks it inside a word.
+    testRemote.setCursorChip(
+        'amazon.com/s?k=mens+waterproof+hiking+shoes&crid=2M3XYZABCDEF');
+    await microtasksFinished();
+    const chip = page.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    assertTrue(!!chip);
+    assertEquals(200, chip.getBoundingClientRect().width);
+    assertTrue(chip.scrollWidth <= chip.clientWidth);
+  });
+
+  test('CursorChipMovesLeftOfCursorNearRightEdge', async function() {
+    setInnerWidth(1000);
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+
+    // 900px + 28px offset + 200px chip passes the 1000px right edge. Check the
+    // side before transitionend fires, because the chip moves left when the
+    // glide starts.
+    const movePromise = testRemote.moveCursorTo({x: 900, y: 100});
+    await microtasksFinished();
+    assertCursorChipSide('left');
+    page.$.magicCursor.dispatchEvent(new Event('transitionend'));
+    await movePromise;
+
+    await moveCursorAndWait(100, 100);
+    assertCursorChipSide('right');
+  });
+
+  test('CursorChipMovesLeftOfCursorWhenLongerTextOverflows', async function() {
+    setInnerWidth(1000);
+    await moveCursorAndWait(800, 100);
+    testRemote.setCursorChip('Searching');
+    await microtasksFinished();
+    assertCursorChipSide('right');
+
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+    assertCursorChipSide('left');
+  });
+
+  test('CursorChipStaysRightOfCursorWhenLeftHasLessRoom', async function() {
+    // The chip overflows the 300px overlay on both sides, and the right side of
+    // the cursor has more room: 172px versus 96px on the left.
+    setInnerWidth(300);
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+    await moveCursorAndWait(100, 100);
+    assertCursorChipSide('right');
+  });
+
+  test('CursorChipMovesLeftOfCursorWhenLeftHasMoreRoom', async function() {
+    // The cursor at 210px is left of the middle of the 430px overlay. The chip
+    // right of the cursor would span 238-438px and pass the right edge, but
+    // the chip left of the cursor spans 6-206px and fits.
+    setInnerWidth(430);
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+    await moveCursorAndWait(210, 100);
+    assertCursorChipSide('left');
+  });
+
+  test('CursorChipMovesLeftOfCursorAfterResize', async function() {
+    setInnerWidth(1000);
+    await moveCursorAndWait(700, 100);
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+    assertCursorChipSide('right');
+
+    // Opening the side panel narrows the overlay. The chip side updates when
+    // the 250ms resize timer ends.
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+    setInnerWidth(800);
+    window.dispatchEvent(new Event('resize'));
+    mockTimer.tick(250);
+    mockTimer.uninstall();
+    await microtasksFinished();
+    assertCursorChipSide('left');
+  });
+
+  test('CursorChipMovesAboveCursorNearBottomEdge', async function() {
+    setInnerHeight(600);
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+
+    // The chip below the cursor at 580px passes the 600px bottom edge.
+    await moveCursorAndWait(100, 580);
+    assertCursorChipVerticalSide('above');
+
+    await moveCursorAndWait(100, 100);
+    assertCursorChipVerticalSide('below');
+  });
+
+  test('CursorChipMovesAboveCursorWhenLongerTextOverflows', async function() {
+    setInnerHeight(600);
+    testRemote.setCursorChip('Searching');
+    await microtasksFinished();
+    const chip = page.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    assertTrue(!!chip);
+    // The one-line chip ends at the 600px bottom edge and still fits below the
+    // cursor tip.
+    await moveCursorAndWait(100, 600 - chip.offsetHeight);
+    assertCursorChipVerticalSide('below');
+
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+    assertCursorChipVerticalSide('above');
+  });
+
+  test('CursorChipStaysBelowCursorWhenAboveHasLessRoom', async function() {
+    // The chip passes the bottom of the 20px overlay. The cursor is in the top
+    // half, so there is more room below.
+    setInnerHeight(20);
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+    await moveCursorAndWait(100, 5);
+    assertCursorChipVerticalSide('below');
+  });
+
+  test('CursorChipMovesAboveCursorAfterResize', async function() {
+    setInnerHeight(600);
+    await moveCursorAndWait(100, 500);
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+    assertCursorChipVerticalSide('below');
+
+    // A shorter overlay moves the chip above the cursor when the 250ms resize
+    // timer ends.
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+    setInnerHeight(520);
+    window.dispatchEvent(new Event('resize'));
+    mockTimer.tick(250);
+    mockTimer.uninstall();
+    await microtasksFinished();
+    assertCursorChipVerticalSide('above');
+  });
+
+  test('CursorChipMovesAboveAndLeftNearBottomRightCorner', async function() {
+    setInnerWidth(1000);
+    setInnerHeight(600);
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+    await moveCursorAndWait(900, 580);
+    assertCursorChipSide('left');
+    assertCursorChipVerticalSide('above');
+
+    // The next move starts with the chip already flipped. The chip stays
+    // flipped only if the overlay measures it in its default place.
+    await moveCursorAndWait(890, 590);
+    assertCursorChipSide('left');
+    assertCursorChipVerticalSide('above');
+
+    // ActorUiStateManager clears the chip text when the task leaves kActing and
+    // sends the next step's text on the next act, so a new #cursorChip node is
+    // created next to the parked cursor.
+    testRemote.setCursorChip('');
+    await microtasksFinished();
+    testRemote.setCursorChip(LONG_CHIP_TEXT);
+    await microtasksFinished();
+    assertCursorChipSide('left');
+    assertCursorChipVerticalSide('above');
   });
 
   test('ResizeHidesCursorChip', async function() {

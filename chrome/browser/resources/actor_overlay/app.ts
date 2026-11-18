@@ -143,6 +143,7 @@ export class ActorOverlayAppElement extends CrLitElement {
     this.resizeTimerId_ = setTimeout(() => {
       this.classList.remove('is-resizing');
       this.resizeTimerId_ = null;
+      this.updateCursorChipPosition_(this.currentX_, this.currentY_);
     }, 250);
   }
 
@@ -155,8 +156,35 @@ export class ActorOverlayAppElement extends CrLitElement {
     this.borderGlowVisible_ = isVisible;
   }
 
-  private onSetCursorChip_(text: string) {
+  private async onSetCursorChip_(text: string) {
     this.cursorChipText_ = text;
+    await this.updateComplete;
+    this.updateCursorChipPosition_(this.currentX_, this.currentY_);
+  }
+
+  // Moves #cursorChip left of or above the cursor when the chip would go past
+  // the overlay's right or bottom edge and the other side of the cursor has
+  // more room.
+  private updateCursorChipPosition_(cursorX: number, cursorY: number) {
+    const chip = this.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    if (!chip) {
+      return;
+    }
+    // Measure how far the chip would go past each overlay edge on both sides of
+    // the cursor tip. Zero or less means that it fits. Offset values ignore the
+    // #magicCursor transform, so a glide in progress doesn't change them.
+    chip.classList.add('left-of-cursor', 'above-cursor');
+    const leftOverflow = -(cursorX + chip.offsetLeft);
+    const topOverflow = -(cursorY + chip.offsetTop);
+    chip.classList.remove('left-of-cursor', 'above-cursor');
+    const rightOverflow =
+        cursorX + chip.offsetLeft + chip.offsetWidth - window.innerWidth;
+    const bottomOverflow =
+        cursorY + chip.offsetTop + chip.offsetHeight - window.innerHeight;
+    chip.classList.toggle(
+        'left-of-cursor', rightOverflow > 0 && leftOverflow < rightOverflow);
+    chip.classList.toggle(
+        'above-cursor', bottomOverflow > 0 && topOverflow < bottomOverflow);
   }
 
   private onSetTheme_(theme: Theme) {
@@ -229,6 +257,9 @@ export class ActorOverlayAppElement extends CrLitElement {
     const scale = window.devicePixelRatio;
     const targetX = point.x / scale;
     const targetY = point.y / scale;
+    // Pick the chip side for the target before the glide, so the chip switches
+    // sides when the glide starts, not after the cursor arrives.
+    this.updateCursorChipPosition_(targetX, targetY);
 
     const prefersReducedMotion =
         window.matchMedia('(prefers-reduced-motion: reduce)').matches;

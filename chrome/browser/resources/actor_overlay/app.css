@@ -106,12 +106,25 @@
   top: 0;
   left: 28px;
   width: max-content;
+  box-sizing: border-box;
+  max-width: 200px;
+  overflow-wrap: anywhere;
   padding: 4px 8px;
   border-radius: 8px;
   background: white;
   color: var(--google-grey-900);
   font-size: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+#cursorChip.left-of-cursor {
+  left: auto;
+  right: 28px;
+}
+
+#cursorChip.above-cursor {
+  bottom: 100%;
+  top: auto;
 }
 
 :host(.is-resizing) #cursorChip {
