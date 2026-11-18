@@ -39,7 +39,9 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.TestLogger;
+import org.chromium.net.test.Protocol;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -865,12 +867,15 @@ public class ProxyTest {
     @SuppressWarnings(
             "unchecked") // ArgumentCaptor.forClass(List.class): no @Captor infra in this file.
     public void testCallback_bidiStream_isSuccessfullyProxied() throws Exception {
-        try (NativeTestServer proxyServer = mNativeTestServer) {
-            assertThat(
-                            Http2TestServer.startHttp2TestServer(
-                                    mTestRule.getTestFramework().getContext()))
-                    .isTrue();
-            proxyServer.enableConnectProxy(Arrays.asList(Http2TestServer.getEchoMethodUrl()));
+        try (NativeTestServer proxyServer = mNativeTestServer;
+                NativeTestServer originServer =
+                        new NativeTestServer(
+                                mTestRule.getTestFramework().getContext(),
+                                Type.HTTPS,
+                                Protocol.HTTP2)) {
+            originServer.setSSLConfig(ServerCertificate.CERT_OK);
+            originServer.start();
+            proxyServer.enableConnectProxy(Arrays.asList(originServer.getEchoMethodURL()));
             proxyServer.start();
             Proxy.HttpConnectCallback proxyCallback =
                     Mockito.mock(Proxy.HttpConnectCallback.class, Mockito.CALLS_REAL_METHODS);
@@ -907,7 +912,7 @@ public class ProxyTest {
             BidirectionalStream stream =
                     cronetEngine
                             .newBidirectionalStreamBuilder(
-                                    Http2TestServer.getEchoMethodUrl(),
+                                    originServer.getEchoMethodURL(),
                                     callback,
                                     callback.getExecutor())
                             .setHttpMethod("GET")
@@ -923,7 +928,10 @@ public class ProxyTest {
                     .hasHeadersListThat()
                     .containsExactlyElementsIn(
                             Arrays.asList(
-                                    new AbstractMap.SimpleImmutableEntry<>(":status", "200")));
+                                    new AbstractMap.SimpleImmutableEntry<>(":status", "200"),
+                                    new AbstractMap.SimpleImmutableEntry<>("content-length", "3"),
+                                    new AbstractMap.SimpleImmutableEntry<>(
+                                            "content-type", "text/plain")));
             // This cannot be tested when HttpEngine is used under the hood:
             // android.net.http.UrlResponseInfo does not expose the proxy used for a request.
             if (mTestRule.implementationUnderTest() != CronetImplementation.AOSP_PLATFORM) {
@@ -946,8 +954,6 @@ public class ProxyTest {
                                     new Pair<>("Connection", "close"),
                                     new Pair<>("Content-Length", "0"),
                                     new Pair<>("Content-Type", "")));
-        } finally {
-            Http2TestServer.shutdownHttp2TestServer();
         }
         // CronetTrafficInfo is logged starting from Oreo. AOSP_PLATFORM does not support test
         // logger injection.

@@ -39,6 +39,9 @@ import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.StringFlag;
 import org.chromium.net.impl.CronetUrlRequestContext;
+import org.chromium.net.test.Protocol;
+import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +49,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CountDownLatch;
 
 /** Tests for experimental options. */
 @DoNotBatch(reason = "crbug/1459563")
@@ -67,7 +69,7 @@ public class ExperimentalOptionsTest {
     @Rule public ExpectedException expectedException = ExpectedException.none();
 
     private static final String TAG = ExperimentalOptionsTest.class.getSimpleName();
-    private CountDownLatch mHangingUrlLatch;
+    private NativeTestServer mTestServer;
 
     private static final String OVERRIDE_CONNECTION_OPTIONS =
             "ChromiumBaseFeature_OverrideConnectionOptions";
@@ -85,17 +87,16 @@ public class ExperimentalOptionsTest {
 
     @Before
     public void setUp() throws Exception {
-        mHangingUrlLatch = new CountDownLatch(1);
-        assertThat(
-                        Http2TestServer.startHttp2TestServer(
-                                mTestRule.getTestFramework().getContext(), mHangingUrlLatch))
-                .isTrue();
+        mTestServer =
+                new NativeTestServer(
+                        mTestRule.getTestFramework().getContext(), Type.HTTPS, Protocol.HTTP2);
+        mTestServer.setSSLConfig(ServerCertificate.CERT_OK);
+        mTestServer.start();
     }
 
     @After
     public void tearDown() throws Exception {
-        mHangingUrlLatch.countDown();
-        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
+        mTestServer.close();
     }
 
     @Test
@@ -119,7 +120,7 @@ public class ExperimentalOptionsTest {
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 
         cronetEngine.startNetLogToFile(logfile.getPath(), false);
-        String url = Http2TestServer.getEchoMethodUrl();
+        String url = mTestServer.getEchoMethodURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
                 cronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
@@ -137,7 +138,7 @@ public class ExperimentalOptionsTest {
     @Test
     @MediumTest
     public void testSetSSLKeyLogFile() throws Exception {
-        String url = Http2TestServer.getEchoMethodUrl();
+        String url = mTestServer.getEchoMethodURL();
         File dir = new File(PathUtils.getDataDirectory());
         File file = File.createTempFile("ssl_key_log_file", "", dir);
 
@@ -561,7 +562,7 @@ public class ExperimentalOptionsTest {
     @Test
     @MediumTest
     public void testDetectBrokenConnection() throws Exception {
-        String url = Http2TestServer.getEchoMethodUrl();
+        String url = mTestServer.getEchoMethodURL();
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -592,9 +593,11 @@ public class ExperimentalOptionsTest {
     @Test
     @LargeTest
     public void testDetectBrokenConnectionOnNetworkFailure() throws Exception {
-        // HangingRequestUrl stops the server from replying until mHangingUrlLatch is opened,
-        // simulating a network failure between client and server.
-        String hangingUrl = Http2TestServer.getHangingRequestUrl();
+        // The server stops reading after the TLS handshake, simulating a network failure between
+        // client and server.
+        mTestServer.setConnectionCallback(
+                new DroppingConnectionCallback(DroppingConnectionCallback.Drop.FIRST_AFTER_TLS));
+        String url = mTestServer.getEchoMethodURL();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
 
@@ -615,7 +618,7 @@ public class ExperimentalOptionsTest {
         cronetEngine.addRequestFinishedListener(requestFinishedListener);
         ExperimentalBidirectionalStream.Builder builder =
                 cronetEngine
-                        .newBidirectionalStreamBuilder(hangingUrl, callback, callback.getExecutor())
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
                         .setHttpMethod("GET");
         BidirectionalStream stream = builder.build();
         stream.start();

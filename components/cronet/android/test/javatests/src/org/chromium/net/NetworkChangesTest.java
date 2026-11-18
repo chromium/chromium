@@ -36,11 +36,13 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetLibraryLoader;
+import org.chromium.net.test.Protocol;
+import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 
 import java.io.FileDescriptor;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.concurrent.CountDownLatch;
 
 /** Test Cronet under different network change scenarios. */
 @RunWith(AndroidJUnit4.class)
@@ -51,7 +53,6 @@ import java.util.concurrent.CountDownLatch;
 public class NetworkChangesTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
-    private CountDownLatch mHangingUrlLatch;
     private FileDescriptor mSocket;
 
     private static class Networks {
@@ -180,16 +181,12 @@ public class NetworkChangesTest {
                                     QuicTestServer.getServerHost(),
                                     QuicTestServer.getServerPort(),
                                     QuicTestServer.getServerPort());
-
-                            CronetTestUtil.setMockCertVerifierForTesting(
-                                    builder, QuicTestServer.createMockCertVerifier());
                         });
+    }
 
-        mHangingUrlLatch = new CountDownLatch(1);
-        assertThat(
-                        Http2TestServer.startHttp2TestServer(
-                                mTestRule.getTestFramework().getContext(), mHangingUrlLatch))
-                .isTrue();
+    private static void useQuicMockCertVerifier(ExperimentalCronetEngine.Builder engineBuilder) {
+        CronetTestUtil.setMockCertVerifierForTesting(
+                engineBuilder, QuicTestServer.createMockCertVerifier());
     }
 
     @OptIn(markerClass = org.chromium.net.QuicOptions.Experimental.class)
@@ -241,8 +238,6 @@ public class NetworkChangesTest {
     @After
     public void tearDown() throws Exception {
         QuicTestServer.shutdownQuicTestServer();
-        mHangingUrlLatch.countDown();
-        assertThat(Http2TestServer.shutdownHttp2TestServer()).isTrue();
     }
 
     @Test
@@ -303,39 +298,45 @@ public class NetworkChangesTest {
                                     new JSONObject().put("spdy_go_away_on_ip_change", false);
                             builder.setExperimentalOptions(experimentalOptions.toString());
                         });
-        mTestRule.getTestFramework().startEngine();
-        String url = Http2TestServer.getHangingRequestUrl();
+        try (NativeTestServer server =
+                new NativeTestServer(
+                        mTestRule.getTestFramework().getContext(), Type.HTTPS, Protocol.HTTP2)) {
+            server.setSSLConfig(ServerCertificate.CERT_OK);
+            server.start();
+            mTestRule.getTestFramework().startEngine();
+            String url = server.getFileURL("/hung");
 
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest request =
-                mTestRule
-                        .getTestFramework()
-                        .getEngine()
-                        .newUrlRequestBuilder(url, callback, callback.getExecutor())
-                        .build();
-        request.start();
+            TestUrlRequestCallback callback = new TestUrlRequestCallback();
+            UrlRequest request =
+                    mTestRule
+                            .getTestFramework()
+                            .getEngine()
+                            .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                            .build();
+            request.start();
 
-        // Without this synchronization it seems that the default network change can happen before
-        // the underlying SPDY session is created (read: the test would be flaky).
-        waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
-        postToInitThreadSync(
-                () -> {
-                    NetworkChangeNotifier.fakeDefaultNetwork(
-                            NetworkChangeNotifier.getInstance().getCurrentDefaultNetId(),
-                            ConnectionType.CONNECTION_4G);
-                });
+            // Without this synchronization it seems that the default network change can happen
+            // before the underlying SPDY session is created (read: the test would be flaky).
+            waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
+            postToInitThreadSync(
+                    () -> {
+                        NetworkChangeNotifier.fakeDefaultNetwork(
+                                NetworkChangeNotifier.getInstance().getCurrentDefaultNetId(),
+                                ConnectionType.CONNECTION_4G);
+                    });
 
-        // Similarly to tests below, 15s should be enough for the NCN notification to propagate.
-        // In case of a bug (i.e., sessions stop being closed on IP change), don't timeout the test,
-        // instead fail here.
-        callback.blockForDone(/* timeoutMs= */ 1500);
+            // Similarly to tests below, 15s should be enough for the NCN notification to propagate.
+            // In case of a bug (i.e., sessions stop being closed on IP change), don't timeout the
+            // test, instead fail here.
+            callback.blockForDone(/* timeoutMs= */ 1500);
 
-        assertThat(callback.mOnErrorCalled).isTrue();
-        assertThat(callback.mError)
-                .hasMessageThat()
-                .contains("Exception in CronetUrlRequest: net::ERR_NETWORK_CHANGED");
-        assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
-                .isEqualTo(NetError.ERR_NETWORK_CHANGED);
+            assertThat(callback.mOnErrorCalled).isTrue();
+            assertThat(callback.mError)
+                    .hasMessageThat()
+                    .contains("Exception in CronetUrlRequest: net::ERR_NETWORK_CHANGED");
+            assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
+                    .isEqualTo(NetError.ERR_NETWORK_CHANGED);
+        }
     }
 
     @Test
@@ -346,6 +347,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             closeSessionsOnIpChange(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -398,6 +400,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             goawayOnIpChange(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -444,6 +447,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             enableDefaultNetworkMigration(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -490,6 +494,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             enableDefaultNetworkMigration(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -539,6 +544,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             goawayOnIpChange(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -591,6 +597,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             enableDefaultNetworkMigration(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -639,6 +646,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             enableDefaultNetworkMigration(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -686,6 +694,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             goawayOnIpChange(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -734,6 +743,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             closeSessionsOnIpChange(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -785,6 +795,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             enableDefaultNetworkMigration(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -875,6 +886,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             goawayOnIpChange(builder);
                         });
         mTestRule.getTestFramework().startEngine();
@@ -943,6 +955,7 @@ public class NetworkChangesTest {
                 .getTestFramework()
                 .applyEngineBuilderPatch(
                         (builder) -> {
+                            useQuicMockCertVerifier(builder);
                             closeSessionsOnIpChange(builder);
                         });
         mTestRule.getTestFramework().startEngine();
