@@ -174,6 +174,57 @@ def _filter_defines(defines):
     )
 
 
+def _unwrap_python_action(desc, gn_desc):
+    """Unwraps a `python_action()` target back to its underlying `.py` action.
+
+    In Chromium GN, `python_action()` (`//build/config/python.gni`) sets an
+    action's `script` to a `.pyz` archive built by a `python_binary()`
+    dependency, which records its entry-point script and bundled `.py` inputs in
+    `python_binary_script` / `python_binary_inputs` GN metadata (when
+    `is_cronet_build=true`). Soong `genrule`s execute the checked-in `.py`
+    script directly without building `.pyz` archives, so restore `script`, merge
+    the script and `python_binary_inputs` into `inputs`, and replace the
+    `python_binary()` dependency with its own `deps` before translating the
+    target.
+    """
+    script = desc.get('script', '')
+    if not script.endswith('.pyz'):
+        return desc
+
+    deps = desc.get('deps', ())
+    dep = next(
+        (
+            d
+            for d in deps
+            if script in (gn_desc.get(d) or {}).get('outputs', ())
+        ),
+        None,
+    )
+    if dep is None:
+        raise ValueError(
+            f'Failed to find python_binary() dep producing {script!r} in {deps}'
+        )
+
+    dep_desc = gn_desc[dep]
+    dep_metadata = dep_desc.get('metadata', {})
+    py_script = dep_metadata.get('python_binary_script') or ()
+    py_inputs = dep_metadata.get('python_binary_inputs')
+    if len(py_script) != 1 or py_inputs is None:
+        raise ValueError(
+            f'Unexpected python_binary() metadata on {dep}: {dep_metadata}'
+        )
+
+    return {
+        **desc,
+        'script': py_script[0],
+        'inputs': [*desc.get('inputs', ()), *py_script, *py_inputs],
+        'deps': [
+            *(d for d in deps if d != dep),
+            *dep_desc.get('deps', ()),
+        ],
+    }
+
+
 def _determine_target_type(target_name, desc):
     type_ = desc['type']
     metadata = desc.get("metadata", {})
@@ -557,7 +608,7 @@ class GnParser:
         # Use name without toolchain for targets to support targets built for
         # multiple archs.
         target_name = gn2bp_common.label_without_toolchain(gn_target_name)
-        desc = gn_desc[gn_target_name]
+        desc = _unwrap_python_action(gn_desc[gn_target_name], gn_desc)
         arch, chromium_arch = self._get_arch(desc['toolchain'])
 
         if target_name in CRUBIT_CPP_SUPPORT_ENTRY_POINTS:

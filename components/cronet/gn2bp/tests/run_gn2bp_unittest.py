@@ -664,6 +664,87 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             "tot_cronet_test_prebuilt_jar_java__testing", bp.modules
         )
 
+    def test_parse_gn_desc_unwraps_python_action(self):
+        tc = "//build/toolchain/android:android_clang_arm64"
+        gn_desc = {
+            "//third_party/jni_zero:jni_zero_py": {
+                "inputs": ["//build/create_pyz.py"],
+                "outputs": [
+                    "//out/Release/obj/third_party/jni_zero/jni_zero_py.pyz"
+                ],
+                "metadata": {
+                    "python_binary_script": [
+                        "//third_party/jni_zero/jni_zero.py"
+                    ],
+                    "python_binary_inputs": [
+                        "//third_party/jni_zero/common.py",
+                    ],
+                },
+                "deps": ["//third_party/jni_zero:extra_dep"],
+            },
+            "//third_party/jni_zero:extra_dep": {
+                "type": "group",
+                "toolchain": tc,
+                "deps": [],
+            },
+            "//base:base_jni__action": {
+                "type": "action",
+                "script": (
+                    "//out/Release/obj/third_party/jni_zero/jni_zero_py.pyz"
+                ),
+                "toolchain": tc,
+                "inputs": ["//base/android/java/src/Foo.java"],
+                "outputs": [],
+                "args": [],
+                "deps": ["//third_party/jni_zero:jni_zero_py"],
+            },
+        }
+
+        gn = gn_utils.GnParser({}, {})
+        gn.parse_gn_desc(gn_desc, "//base:base_jni__action")
+        gn.propagate_properties()
+
+        target = gn.get_target("//base:base_jni__action")
+        self.assertEqual(target.script, "//third_party/jni_zero/jni_zero.py")
+        self.assertEqual(target.common.deps, set())
+        self.assertEqual(
+            target.common.inputs,
+            {
+                "//base/android/java/src/Foo.java",
+                "//third_party/jni_zero/jni_zero.py",
+                "//third_party/jni_zero/common.py",
+            },
+        )
+        self.assertNotIn("//third_party/jni_zero:jni_zero_py", gn.all_targets)
+        self.assertIn("//third_party/jni_zero:extra_dep", gn.all_targets)
+
+        bad_metadata_desc = {
+            **gn_desc,
+            "//third_party/jni_zero:jni_zero_py": {
+                **gn_desc["//third_party/jni_zero:jni_zero_py"],
+                "metadata": {},
+            },
+        }
+        with self.assertRaisesRegex(
+            ValueError, r"Unexpected python_binary\(\) metadata"
+        ):
+            gn_utils.GnParser({}, {}).parse_gn_desc(
+                bad_metadata_desc, "//base:base_jni__action"
+            )
+
+        missing_dep_desc = {
+            "//base:base_jni__action": {
+                **gn_desc["//base:base_jni__action"],
+                "deps": [],
+            },
+        }
+        with self.assertRaisesRegex(
+            ValueError, r"Failed to find python_binary\(\) dep"
+        ):
+            gn_utils.GnParser({}, {}).parse_gn_desc(
+                missing_dep_desc, "//base:base_jni__action"
+            )
+
     def test_create_extras_modules_derives_from_gn(self):
         gn = gn_utils.GnParser({}, {})
 

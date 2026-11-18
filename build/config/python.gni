@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cronet/config.gni")
+
 # Creates a group() that lists Python sources as |data|.
 # Having such targets serves two purposes:
 # 1) Causes files to be included in runtime_deps, so that they are uploaded to
@@ -207,6 +209,7 @@ template("python_binary") {
         rebase_path(depfile, root_build_dir),
       ]
 
+      _py_inputs = []
       if (defined(invoker.pydeps_file) || !defined(invoker.inputs)) {
         if (defined(invoker.pydeps_file)) {
           _pydeps_file = invoker.pydeps_file
@@ -216,8 +219,8 @@ template("python_binary") {
         _pydeps_lines = read_file(_pydeps_file, "list lines")
         _pydeps_entries = filter_exclude(_pydeps_lines, [ "#*" ])
         _pydeps_dir = get_path_info(_pydeps_file, "dir")
-        inputs +=
-            rebase_path(_pydeps_entries, ".", _pydeps_dir) + [ _pydeps_file ]
+        _py_inputs += rebase_path(_pydeps_entries, ".", _pydeps_dir)
+        inputs += [ _pydeps_file ]
         args += [
           "--pydeps",
           rebase_path(_pydeps_file, root_build_dir),
@@ -225,9 +228,20 @@ template("python_binary") {
       }
 
       if (defined(invoker.inputs)) {
-        inputs += invoker.inputs
+        _py_inputs += invoker.inputs
         _rebased_inputs = rebase_path(invoker.inputs, root_build_dir)
         args += [ "--inputs=$_rebased_inputs" ]
+      }
+
+      inputs += _py_inputs
+
+      if (is_cronet_build) {
+        metadata = {
+          # Used by Cronet's gn2bp to invoke the underlying .py script directly
+          # instead of building a .pyz archive.
+          python_binary_script = [ get_path_info(invoker.script, "abspath") ]
+          python_binary_inputs = get_path_info(_py_inputs, "abspath")
+        }
       }
     }
   } else {

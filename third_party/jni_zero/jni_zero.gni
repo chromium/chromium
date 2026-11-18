@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/jdk.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/python.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -50,8 +51,6 @@ _cronet_renaming_extra_args = [
   "org.jni_zero",
 ]
 
-_jni_zero_dir = "//third_party/jni_zero"
-
 template("jni_sources_list") {
   generated_file(target_name) {
     forward_variables_from(invoker,
@@ -71,39 +70,10 @@ template("jni_sources_list") {
 }
 
 template("_invoke_jni_zero") {
-  action(target_name) {
+  python_action(target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-
-    script = "//third_party/jni_zero/jni_zero.py"
-    if (!defined(inputs)) {
-      inputs = []
-    }
-    inputs += rebase_path([
-                            "codegen/called_by_native_header.py",
-                            "codegen/convert_type.py",
-                            "codegen/gen_jni_java.py",
-                            "codegen/header_common.py",
-                            "codegen/natives_header.py",
-                            "codegen/placeholder_gen_jni_java.py",
-                            "codegen/placeholder_java_type.py",
-                            "codegen/proxy_impl_java.py",
-                            "codegen/proxy_impl_kotlin.py",
-                            "codegen/register_natives.py",
-                            "common.py",
-                            "gen_register_natives.py",
-                            "java_lang_classes.py",
-                            "java_parse.py",
-                            "java_types.py",
-                            "jni_generator.py",
-                            "jni_registration_generator.py",
-                            "jni_zero.py",
-                            "kotlin_parse.py",
-                            "parse_common.py",
-                            "proxy.py",
-                          ],
-                          ".",
-                          _jni_zero_dir)
+    python_binary = "//third_party/jni_zero:jni_zero_py"
   }
 }
 
