@@ -194,7 +194,7 @@ class _Session:
       )
     )
 
-  def _SaveSizeInfo(self, size_info=None, to_file=None, use_v2=False):
+  def _SaveSizeInfo(self, size_info=None, to_file=None):
     """Writes a .size file.
 
     Args:
@@ -205,10 +205,10 @@ class _Session:
     to_file = to_file or 'default.size'
     assert to_file.endswith('.size'), 'to_file should end with .size'
 
-    file_format.SaveSizeInfo(size_info, to_file, use_v2=use_v2)
+    file_format.SaveSizeInfo(size_info, to_file)
     self._PrintUploadCommand(to_file, size_info)
 
-  def _SaveDeltaSizeInfo(self, size_info, to_file=None, use_v2=False):
+  def _SaveDeltaSizeInfo(self, size_info, to_file=None):
     """Writes a .sizediff file.
 
     Args:
@@ -218,7 +218,7 @@ class _Session:
     to_file = to_file or 'default.sizediff'
     assert to_file.endswith('.sizediff'), 'to_file should end with .sizediff'
 
-    file_format.SaveDeltaSizeInfo(size_info, to_file, use_v2=use_v2)
+    file_format.SaveDeltaSizeInfo(size_info, to_file)
     self._PrintUploadCommand(to_file, size_info)
 
   def _SizeStats(self, size_info=None):

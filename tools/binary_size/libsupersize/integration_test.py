@@ -113,7 +113,6 @@ def _RunApp(name, args, debug_measures=False):
     if debug_measures:
       env = os.environ.copy()
       env['SUPERSIZE_DISABLE_ASYNC'] = '1'
-      env['SUPERSIZE_MEASURE_GZIP'] = '1'
 
     return subprocess.check_output(argv, env=env).decode('utf-8').splitlines()
 

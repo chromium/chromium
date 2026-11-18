@@ -19,7 +19,7 @@ There are three formats that SuperSize uses:
    * Contains two nested sparse `.size` files, where unchanged symbols are
      removed from each.
 
-## Format Details: .size v2 (Experimental, `--format-v2`)
+## Format Details: .size v2
 
 `.size` v2 is a binary container format with independently Zstandard-compressed
 blobs that can be compressed and decompressed concurrently across threads:
@@ -45,9 +45,12 @@ blobs that can be compressed and decompressed concurrently across threads:
     * `names_0`..`names_{K-1}` (`K = min(8, (total_symbols + 262143) // 262144)`): `uint32_le start_sym_idx` + `uint32_le sym_count` + `BYTE_STREAM_SPLIT(4)` of ZigZag-encoded `int32` shard-local permutation deltas `perm_k` (`0..sym_count-1`) + `sym_count` `uint8` LCP prefix lengths + `sym_count` `\0`-terminated UTF-8 `full_name` suffixes in shard name-sorted order.
   * `relocations` (optional): `uint32_le num_containers` + per container `(uint32_le container_idx, uint32_le num_words)` + `BYTE_STREAM_SPLIT(4)` of `uint32` words in a modified RELR format. Unlike standard ELF RELR (which reserves a flag bit in every word to distinguish addresses from bitmaps), all 32 bits of each non-zero `uint32` word are used for the bitmask (at stride 4 covering `[cur, cur + 128)` and advancing `cur += 128`), and a `0` word flags that the next `uint32` word is a modular byte offset to the next relocation address (emitting `cur += offset` and setting `cur = addr + 4`), making it a bit smaller and simpler than standard RELR.
   * `disassembly` (optional): `uint32_le count` + `(uint32_le sym_idx, uint32_le byte_len, <UTF-8 bytes>)` records.
-* `.sizediff` files saved with `--format-v2` use the existing `.sizediff` container format wrapping two sparse `.size` v2 streams (`before` and `after`).
+* `.sizediff` files use the existing `.sizediff` container format wrapping two sparse `.size` v2 streams (`before` and `after`).
 
-## Format Details: .size (Default v1 / v1.1)
+## Format Details: .size (Legacy v1 / v1.1, Read-Only)
+
+SuperSize writes `.size` v2 exclusively, but retains read support for loading
+legacy v1 / v1.1 `.size` and `.sizediff` files.
 
 The file format is a `gzipped` encoding of symbols, where some symbol fields are
 delta-encoded to improve compressibility. Text was chosen over binary because it
@@ -66,7 +69,7 @@ The following specifies the `.size` file format.
 ### Header
 
 * Line 0: Vanity line - says what tool created the file. Ignored when loading.
-* Line 1: format version string. The current version is "Size File Format v1.1".
+* Line 1: format version string. The latest v1 version is "Size File Format v1.1".
 * Line 2: number of bytes for the header fields.
 * Line 3+: the header fields, a stringified JSON object.
 
@@ -171,8 +174,10 @@ The JSON for the header fields looks like:
 
 ### Before
 
-A sparse `.size` file (gzipped).
+A sparse `.size` v2 file (legacy gzipped v1 / v1.1 streams are also supported
+when reading).
 
 ### After
 
-A sparse `.size` file (gzipped).
+A sparse `.size` v2 file (legacy gzipped v1 / v1.1 streams are also supported
+when reading).

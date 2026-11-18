@@ -98,11 +98,6 @@ class _SaveDiffAction:
       '--after-directory',
       help='Defaults to directory containing after-patch .size file.',
     )
-    parser.add_argument(
-      '--format-v2',
-      action='store_true',
-      help='Save in experimental .size v2 (zstd binary) format.',
-    )
 
   @staticmethod
   def Run(args, on_config_error):
@@ -144,9 +139,7 @@ class _SaveDiffAction:
         output_directory=after_output_dir,
       )
 
-    file_format.SaveDeltaSizeInfo(
-      delta_size_info, args.output_file, use_v2=args.format_v2
-    )
+    file_format.SaveDeltaSizeInfo(delta_size_info, args.output_file)
 
 
 def main():

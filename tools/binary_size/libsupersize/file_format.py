@@ -7,16 +7,12 @@
 See docs/file_format.md for a specification of the file formats.
 """
 
-import contextlib
 import gzip
 import io
 import itertools
 import json
 import logging
 import os
-import queue
-import sys
-import threading
 
 import file_format_v2
 import models
@@ -64,33 +60,6 @@ _LEGACY_METADATA_BUILD_CONFIG_KEYS = (
 
 # Ensure each |models.SECTION_*| (except |SECTION_MULTIPLE|) has an entry.
 assert len(_SECTION_SORT_ORDER) + 1 == len(models.SECTION_NAME_TO_SECTION)
-
-
-class _Writer:
-  """Helper to format and write data to a file object."""
-
-  def __init__(self, file_obj):
-    self.file_obj_ = file_obj
-
-  def WriteBytes(self, b):
-    # Direct write of raw bytes.
-    self.file_obj_.write(b)
-
-  def WriteString(self, s):
-    self.file_obj_.write(s.encode('ascii'))
-
-  def WriteLine(self, s):
-    self.file_obj_.write(s.encode('ascii'))
-    self.file_obj_.write(b'\n')
-
-  def WriteNumberList(self, gen):
-    """Writes numbers from |gen| separated by space, in one line."""
-    self.WriteLine(' '.join(map(str, gen)))
-
-  def LogSize(self, desc):
-    self.file_obj_.flush()
-    size = self.file_obj_.tell()
-    logging.debug('File size with %s: %d' % (desc, size))
 
 
 def _SortKey(s):
@@ -212,159 +181,6 @@ All: {}
     )
 
 
-def _SaveSizeInfoToFile(size_info, file_obj):
-  """Saves size info to a .size file.
-
-  Args:
-    size_info: Data to write to the file
-    file_obj: File opened for writing.
-  """
-  raw_symbols = size_info.raw_symbols
-
-  num_containers = len(size_info.containers)
-  assert num_containers > 0, 'All containers were filtered out.'
-  has_multi_containers = num_containers > 1
-
-  file_obj.write(_COMMON_HEADER)
-  if has_multi_containers:
-    file_obj.write(_SIZE_HEADER_MULTI_CONTAINER)
-  else:
-    file_obj.write(_SIZE_HEADER_SINGLE_CONTAINER)
-
-  # JSON header fields
-  fields = {
-    'has_components': True,
-    'has_padding': size_info.is_sparse,
-    'has_disassembly': True,
-  }
-
-  if has_multi_containers:
-    # Write using new format.
-    assert len(set(c.name for c in size_info.containers)) == num_containers, (
-      'Container names must be distinct.'
-    )
-    fields['build_config'] = size_info.build_config
-    fields['containers'] = [
-      {
-        'name': c.name,
-        'metadata': c.metadata,
-        'section_sizes': c.section_sizes,
-        'metrics_by_file': c.metrics_by_file,
-      }
-      for c in size_info.containers
-    ]
-  else:
-    # Write using old format.
-    fields['metadata'] = size_info.metadata_legacy
-    fields['section_sizes'] = size_info.containers[0].section_sizes
-    fields['metrics_by_file'] = size_info.containers[0].metrics_by_file
-
-  fields_str = json.dumps(fields, indent=2, sort_keys=True)
-
-  w = _Writer(file_obj)
-  w.WriteLine(str(len(fields_str)))
-  w.WriteLine(fields_str)
-  w.LogSize('header')  # For libchrome: 570 bytes.
-
-  # Store a single copy of all paths and reference them by index.
-  unique_path_tuples = sorted(
-    set((s.object_path, s.source_path) for s in raw_symbols)
-  )
-  path_tuples = {tup: i for i, tup in enumerate(unique_path_tuples)}
-  w.WriteLine(str(len(unique_path_tuples)))
-  if unique_path_tuples:
-    w.WriteLine('\n'.join('%s\t%s' % pair for pair in unique_path_tuples))
-  w.LogSize('paths')  # For libchrome, adds 200kb.
-
-  # Store a single copy of all components and have them referenced by index.
-  unique_components = sorted(set(s.component for s in raw_symbols))
-  components = {comp: i for i, comp in enumerate(unique_components)}
-  w.WriteLine(str(len(unique_components)))
-  if unique_components:
-    w.WriteLine('\n'.join(unique_components))
-  w.LogSize('components')
-
-  # Symbol counts by "segments", defined as (container, section) tuples.
-  symbol_group_by_segment = raw_symbols.GroupedByContainerAndSectionName()
-  if has_multi_containers:
-    container_name_to_index = {
-      c.name: i for i, c in enumerate(size_info.containers)
-    }
-    w.WriteLine(
-      '\t'.join(
-        '<%d>%s' % (container_name_to_index[g.name[0]], g.name[1])
-        for g in symbol_group_by_segment
-      )
-    )
-  else:
-    w.WriteLine('\t'.join(g.name[1] for g in symbol_group_by_segment))
-  w.WriteLine('\t'.join(str(len(g)) for g in symbol_group_by_segment))
-
-  def gen_delta(gen, prev_value=0):
-    """Adapts a generator of numbers to deltas."""
-    for value in gen:
-      yield value - prev_value
-      prev_value = value
-
-  def write_groups(func, delta=False):
-    """Write func(symbol) for each symbol in each symbol group.
-
-    Each line written represents one symbol group in |symbol_group_by_segment|.
-    The values in each line are space separated and are the result of calling
-    |func| with the Nth symbol in the group.
-
-    If |delta| is True, the differences in values are written instead."""
-    for group in symbol_group_by_segment:
-      gen = map(func, group)
-      w.WriteNumberList(gen_delta(gen) if delta else gen)
-
-  write_groups(lambda s: s.address, delta=True)
-  w.LogSize('addresses')  # For libchrome, adds 300kb.
-
-  write_groups(lambda s: s.size if s.IsOverhead() else s.size_without_padding)
-  w.LogSize('sizes')  # For libchrome, adds 300kb
-
-  # Padding for non-padding-only symbols is recalculated from addresses on
-  # load, so we only need to write it if we're writing a subset of symbols.
-  if size_info.is_sparse:
-    write_groups(lambda s: s.padding)
-    w.LogSize('paddings')  # For libchrome, adds 300kb
-
-  write_groups(
-    lambda s: path_tuples[(s.object_path, s.source_path)], delta=True
-  )
-  w.LogSize('path indices')  # For libchrome: adds 125kb.
-
-  write_groups(lambda s: components[s.component], delta=True)
-  w.LogSize('component indices')
-
-  prev_aliases = None
-  symbols_with_disassembly = []
-  disassembly_idx = 0
-  for group in symbol_group_by_segment:
-    lines = []
-    for symbol in group:
-      if symbol.disassembly:
-        symbols_with_disassembly.append((disassembly_idx, symbol.disassembly))
-      line = symbol.full_name
-      if symbol.aliases and symbol.aliases is not prev_aliases:
-        line += '\t0%x' % symbol.num_aliases
-      prev_aliases = symbol.aliases
-      if symbol.flags:
-        line += '\t%x' % symbol.flags
-      lines.append(line)
-      disassembly_idx += 1
-    if lines:
-      w.WriteLine('\n'.join(lines))
-  w.LogSize('names (final)')  # For libchrome: adds 3.5mb.
-
-  w.WriteNumberList(x[0] for x in symbols_with_disassembly)
-  for _, disassembly in symbols_with_disassembly:
-    disassembly_bytes = disassembly.encode('utf-8', errors='surrogatepass')
-    w.WriteBytes(b'%d\n' % len(disassembly_bytes))
-    w.WriteBytes(disassembly_bytes)
-
-
 def _ReadLine(file_iter):
   """Read a line from a file object iterator and remove the newline character.
 
@@ -394,7 +210,7 @@ def _ReadValuesFromLine(file_iter, split):
 def _LoadSizeInfoFromFile(file_obj, size_path, is_sparse):
   """Loads a size_info from the given file.
 
-  See _SaveSizeInfoToFile() for details on the .size file format.
+  See docs/file_format.md for details on the legacy v1/v1.1 .size file format.
 
   Args:
     file_obj: File to read, should be a GzipFile.
@@ -634,80 +450,11 @@ def _LoadSizeInfoFromFile(file_obj, size_path, is_sparse):
   )
 
 
-@contextlib.contextmanager
-def _OpenGzipForWrite(path, file_obj=None):
-  # Open in a way that doesn't set any gzip header fields.
-  # Use compresslevel=6 (standard gzip/zlib default) rather than Python's
-  # GzipFile default of 9, which is ~2.3x slower for <3% size difference.
-  if file_obj:
-    with gzip.GzipFile(
-      filename='', mode='wb', fileobj=file_obj, compresslevel=6, mtime=0
-    ) as fz:
-      yield fz
-  else:
-    with open(path, 'wb') as f:
-      with gzip.GzipFile(
-        filename='', mode='wb', fileobj=f, compresslevel=6, mtime=0
-      ) as fz:
-        yield fz
-
-
-class _BackgroundWriter:
-  """Buffers writes and forwards them in large chunks to a background thread.
-
-  Allows serialization to happen in parallel with compression (zlib releases
-  the GIL).
-  """
-
-  _CHUNK_SIZE = 1 << 20
-
-  def __init__(self, file_obj):
-    self._file_obj = file_obj
-    self._buf = io.BytesIO()
-    self._pos = 0
-    self._exception = None
-    self._queue = queue.Queue(maxsize=16)
-    self._thread = threading.Thread(target=self._ThreadMain, daemon=True)
-    self._thread.start()
-
-  def _ThreadMain(self):
-    while (chunk := self._queue.get()) is not None:
-      if self._exception is None:
-        try:
-          self._file_obj.write(chunk)
-        except Exception as e:  # pylint: disable=broad-except
-          self._exception = e
-
-  def _SendBuffer(self):
-    self._queue.put(self._buf.getvalue())
-    self._buf = io.BytesIO()
-
-  def write(self, b):
-    self._buf.write(b)
-    self._pos += len(b)
-    if self._buf.tell() >= self._CHUNK_SIZE:
-      self._SendBuffer()
-
-  def flush(self):
-    pass
-
-  def tell(self):
-    return self._pos
-
-  def close(self):
-    self._SendBuffer()
-    self._queue.put(None)
-    self._thread.join()
-    if self._exception is not None:
-      raise self._exception
-
-
-def _SaveCompressedStringList(string_list, file_obj):
-  with _OpenGzipForWrite('', file_obj=file_obj) as f:
-    w = _Writer(f)
-    w.WriteLine(str(len(string_list)))
-    for s in string_list:
-      w.WriteLine(s)
+def _CompressStringList(string_list):
+  if not string_list:
+    return b''
+  data = '\n'.join((str(len(string_list)), *string_list, '')).encode('ascii')
+  return gzip.compress(data, compresslevel=6, mtime=0)
 
 
 def _LoadCompressedStringList(file_obj, size):
@@ -720,27 +467,12 @@ def _LoadCompressedStringList(file_obj, size):
     return toks[1:]
 
 
-def SaveSizeInfo(size_info, path, file_obj=None, use_v2=False):
+def SaveSizeInfo(size_info, path, file_obj=None):
   """Saves |size_info| to |path|."""
-  if use_v2:
-    if file_obj is None:
-      with open(path, 'wb') as f:
-        return file_format_v2.SaveSizeInfo(size_info, f)
-    return file_format_v2.SaveSizeInfo(size_info, file_obj)
-
-  if os.environ.get('SUPERSIZE_MEASURE_GZIP') == '1':
-    # Doing serialization and Gzip together.
-    with _OpenGzipForWrite(path, file_obj=file_obj) as f:
-      _SaveSizeInfoToFile(size_info, f)
-  else:
-    # Serialize on this thread while gzipping (in large chunks) on a background
-    # thread. Gzipping in large chunks is faster. On Python 3: 40s -> 14s.
-    with _OpenGzipForWrite(path, file_obj=file_obj) as f:
-      writer = _BackgroundWriter(f)
-      try:
-        _SaveSizeInfoToFile(size_info, writer)
-      finally:
-        writer.close()
+  if file_obj is None:
+    with open(path, 'wb') as f:
+      return file_format_v2.SaveSizeInfo(size_info, f)
+  return file_format_v2.SaveSizeInfo(size_info, file_obj)
 
 
 def LoadSizeInfo(filename, file_obj=None, is_sparse=False):
@@ -758,9 +490,7 @@ def LoadSizeInfo(filename, file_obj=None, is_sparse=False):
     return _LoadSizeInfoFromFile(f, filename, is_sparse)
 
 
-def SaveDeltaSizeInfo(
-  delta_size_info, path, file_obj=None, make_sparse=True, use_v2=False
-):
+def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None, make_sparse=True):
   """Saves |delta_size_info| to |path|."""
   if make_sparse and not delta_size_info.is_sparse:
     delta_size_info.MakeSparse()
@@ -768,7 +498,7 @@ def SaveDeltaSizeInfo(
   if not file_obj:
     with open(path, 'wb') as f:
       return SaveDeltaSizeInfo(
-        delta_size_info, path, f, make_sparse=make_sparse, use_v2=use_v2
+        delta_size_info, path, f, make_sparse=make_sparse
       )
 
   before_size_file = io.BytesIO()
@@ -779,49 +509,31 @@ def SaveDeltaSizeInfo(
     delta_size_info.after,
     '',
     file_obj=after_size_file,
-    use_v2=use_v2,
   )
-  SaveSizeInfo(
-    delta_size_info.before, '', file_obj=before_size_file, use_v2=use_v2
-  )
+  SaveSizeInfo(delta_size_info.before, '', file_obj=before_size_file)
 
-  removed_sources_file = None
-  if delta_size_info.removed_sources:
-    removed_sources_file = io.BytesIO()
-    _SaveCompressedStringList(
-      delta_size_info.removed_sources, removed_sources_file
-    )
+  removed_sources = _CompressStringList(delta_size_info.removed_sources)
+  added_sources = _CompressStringList(delta_size_info.added_sources)
 
-  added_sources_file = None
-  if delta_size_info.added_sources:
-    added_sources_file = io.BytesIO()
-    _SaveCompressedStringList(delta_size_info.added_sources, added_sources_file)
-
-  w = _Writer(file_obj)
-  w.WriteBytes(_COMMON_HEADER + _SIZEDIFF_HEADER)
   # JSON header fields
   fields = {
     'version': _SIZEDIFF_VERSION,
     'before_length': before_size_file.tell(),
   }
-  if removed_sources_file:
-    fields['removed_sources_length'] = removed_sources_file.tell()
-  if added_sources_file:
-    fields['added_sources_length'] = added_sources_file.tell()
+  if removed_sources:
+    fields['removed_sources_length'] = len(removed_sources)
+  if added_sources:
+    fields['added_sources_length'] = len(added_sources)
 
   fields_str = json.dumps(fields, indent=2, sort_keys=True)
 
-  w.WriteLine(str(len(fields_str)))
-  w.WriteLine(fields_str)
-
-  if removed_sources_file:
-    w.WriteBytes(removed_sources_file.getvalue())
-  if added_sources_file:
-    w.WriteBytes(added_sources_file.getvalue())
-
-  w.WriteBytes(before_size_file.getvalue())
+  file_obj.write(_COMMON_HEADER + _SIZEDIFF_HEADER)
+  file_obj.write(f'{len(fields_str)}\n{fields_str}\n'.encode('ascii'))
+  file_obj.write(removed_sources)
+  file_obj.write(added_sources)
+  file_obj.write(before_size_file.getvalue())
   after_promise.get()
-  w.WriteBytes(after_size_file.getvalue())
+  file_obj.write(after_size_file.getvalue())
 
   return None
 

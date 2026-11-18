@@ -6,6 +6,7 @@
 import contextlib
 import gzip
 import io
+import json
 import os
 import pathlib
 import tempfile
@@ -53,140 +54,307 @@ def _MakeSymbol(
 
 
 class FileFormatTest(unittest.TestCase):
-  def testRoundTripSizeAndSizeDiffV1AndV2(self):
-    for use_v2 in (False, True):
-      c1 = models.Container(
-        name='Base.apk',
-        metadata={'apk_file_name': 'Base.apk'},
-        section_sizes={'.text': 1000, '.rodata': 200},
-        metrics_by_file={'libfoo.so': {'size/.text': 1000}},
-      )
-      c2 = models.Container(
-        name='Other.apk',
-        metadata={},
-        section_sizes={'.text': 500},
-        metrics_by_file={},
-      )
-      models.BaseContainer.AssignShortNames([c1, c2])
+  def testRoundTripSizeAndSizeDiff(self):
+    c1 = models.Container(
+      name='Base.apk',
+      metadata={'apk_file_name': 'Base.apk'},
+      section_sizes={'.text': 1000, '.rodata': 200},
+      metrics_by_file={'libfoo.so': {'size/.text': 1000}},
+    )
+    c2 = models.Container(
+      name='Other.apk',
+      metadata={},
+      section_sizes={'.text': 500},
+      metrics_by_file={},
+    )
+    models.BaseContainer.AssignShortNames([c1, c2])
 
-      s1 = _MakeSymbol(
-        c1,
-        '.text',
-        0x1000,
-        0x40,
-        'foo::Bar()',
-        flags=models.FLAG_STARTUP,
-        disassembly='push %rbp\nret\n',
-      )
-      s2 = _MakeSymbol(
-        c1,
-        '.text',
-        0x1000,
-        0x40,
-        'foo::BarAlias()',
-        object_path='obj/bar.o',
-        source_path='src/bar.cc',
-        flags=models.FLAG_STARTUP,
-      )
-      s1.aliases = s2.aliases = [s1, s2]
-      s3 = _MakeSymbol(
-        c1,
-        '.rodata',
-        0x2000,
-        0x20,
-        models.STRING_LITERAL_NAME,
-        flags=models.FLAG_ANONYMOUS,
-      )
-      s4 = _MakeSymbol(
-        c2, '.text', 0x3000, 0x50, 'chrome::Main()', component='UI'
+    s1 = _MakeSymbol(
+      c1,
+      '.text',
+      0x1000,
+      0x40,
+      'foo::Bar()',
+      flags=models.FLAG_STARTUP,
+      disassembly='push %rbp\nret\n',
+    )
+    s2 = _MakeSymbol(
+      c1,
+      '.text',
+      0x1000,
+      0x40,
+      'foo::BarAlias()',
+      object_path='obj/bar.o',
+      source_path='src/bar.cc',
+      flags=models.FLAG_STARTUP,
+    )
+    s1.aliases = s2.aliases = [s1, s2]
+    s3 = _MakeSymbol(
+      c1,
+      '.rodata',
+      0x2000,
+      0x20,
+      models.STRING_LITERAL_NAME,
+      flags=models.FLAG_ANONYMOUS,
+    )
+    s4 = _MakeSymbol(
+      c2, '.text', 0x3000, 0x50, 'chrome::Main()', component='UI'
+    )
+
+    raw_symbols = [s1, s2, s3, s4]
+    file_format.SortSymbols(raw_symbols)
+    file_format.CalculatePadding(raw_symbols)
+    size_info = models.SizeInfo(
+      {'git_revision': 'abc123'}, [c1, c2], raw_symbols
+    )
+
+    buf = io.BytesIO()
+    file_format.SaveSizeInfo(size_info, 't.size', file_obj=buf)
+    self.assertTrue(buf.getvalue().startswith(file_format_v2.V2_HEADER_PREFIX))
+
+    buf.seek(0)
+    loaded = file_format.LoadSizeInfo('t.size', file_obj=buf)
+    self.assertEqual(size_info.build_config, loaded.build_config)
+    self.assertEqual(2, len(loaded.containers))
+    ls1, ls2, ls3, ls4 = loaded.raw_symbols
+    self.assertEqual('foo::Bar()', ls1.full_name)
+    self.assertEqual('foo::BarAlias()', ls2.full_name)
+    self.assertIs(ls1.aliases, ls2.aliases)
+    self.assertEqual('push %rbp\nret\n', ls1.disassembly)
+    self.assertEqual('', ls2.disassembly)
+    self.assertIs(models.STRING_LITERAL_NAME, ls3.full_name)
+    self.assertEqual('UI', ls4.component)
+
+    c_before = models.Container(
+      name='',
+      metadata={},
+      section_sizes={'.text': 64, '.rodata': 32},
+      metrics_by_file={},
+    )
+    c_after = models.Container(
+      name='',
+      metadata={},
+      section_sizes={'.text': 112, '.rodata': 48},
+      metrics_by_file={},
+    )
+    delta = diff.Diff(
+      models.SizeInfo(
+        {},
+        [c_before],
+        [
+          _MakeSymbol(c_before, '.text', 0x1000, 0x20, 'f()'),
+          _MakeSymbol(c_before, '.rodata', 0x2000, 0x10, 'kData'),
+        ],
+      ),
+      models.SizeInfo(
+        {},
+        [c_after],
+        [
+          _MakeSymbol(c_after, '.text', 0x1000, 0x30, 'f()'),
+          _MakeSymbol(c_after, '.text', 0x1030, 0x10, 'f2()'),
+          _MakeSymbol(c_after, '.rodata', 0x2000, 0x18, 'kData'),
+        ],
+      ),
+    )
+    delta.removed_sources = ['old.cc']
+    delta.added_sources = ['new.cc']
+
+    diff_buf = io.BytesIO()
+    file_format.SaveDeltaSizeInfo(delta, 't.sizediff', file_obj=diff_buf)
+    self.assertEqual(
+      2, diff_buf.getvalue().count(file_format_v2.V2_HEADER_PREFIX)
+    )
+    diff_buf.seek(0)
+    lb, la, rem, add = file_format.LoadDeltaSizeInfo(
+      't.sizediff', file_obj=diff_buf
+    )
+    self.assertEqual(['old.cc'], rem)
+    self.assertEqual(['new.cc'], add)
+    self.assertEqual(
+      {('f()', '.text', 0x20), ('kData', '.rodata', 0x10)},
+      {(s.full_name, s.section_name, s.size) for s in lb.raw_symbols},
+    )
+    self.assertEqual(
+      {
+        ('f()', '.text', 0x30),
+        ('f2()', '.text', 0x10),
+        ('kData', '.rodata', 0x18),
+      },
+      {(s.full_name, s.section_name, s.size) for s in la.raw_symbols},
+    )
+
+  def testLoadLegacyV1SizeAndSizeDiff(self):
+    def frame(header_line, fields, body):
+      fields_str = json.dumps(fields, sort_keys=True)
+      return (
+        f'# Created by //tools/binary_size\n{header_line}\n'
+        f'{len(fields_str)}\n{fields_str}\n'.encode('ascii')
+        + body
       )
 
-      raw_symbols = [s1, s2, s3, s4]
-      file_format.SortSymbols(raw_symbols)
-      file_format.CalculatePadding(raw_symbols)
-      size_info = models.SizeInfo(
-        {'git_revision': 'abc123'}, [c1, c2], raw_symbols
-      )
+    # Legacy v1 single-container .size (padding recomputed from addresses).
+    v1_fields = {
+      'has_components': True,
+      'has_disassembly': True,
+      'has_padding': False,
+      'metadata': {
+        'git_revision': 'deadbeef',
+        'apk_file_name': 'Legacy.apk',
+      },
+      'section_sizes': {'.text': 256, '.rodata': 64},
+      'metrics_by_file': {'lib.so': {'size/.text': 256}},
+    }
+    disasm_v1 = 'push %rbp\n// a · b\nret\n'
+    disasm_v1_bytes = disasm_v1.encode('utf-8')
+    v1_body = (
+      '\n'.join(
+        [
+          '2',
+          'obj/a.o\tsrc/a.cc',
+          'obj/b.o\tsrc/b.cc',
+          '2',
+          'Blink',
+          'UI',
+          '.text\t.rodata',
+          '3\t1',
+          '4096 0 80',
+          '8192',
+          '64 64 32',
+          '16',
+          '0 1 -1',
+          '1',
+          '0 0 1',
+          '0',
+          f'foo::Bar()\t02\t{models.FLAG_STARTUP:x}',
+          f'foo::BarAlias()\t{models.FLAG_STARTUP:x}',
+          'foo::Padded()',
+          f'{models.STRING_LITERAL_NAME}\t{models.FLAG_ANONYMOUS:x}',
+          '0',
+          f'{len(disasm_v1_bytes)}',
+          '',
+        ]
+      ).encode('ascii')
+      + disasm_v1_bytes
+    )
 
-      buf = io.BytesIO()
-      file_format.SaveSizeInfo(size_info, 't.size', file_obj=buf, use_v2=use_v2)
-      data = buf.getvalue()
-      if use_v2:
-        self.assertTrue(data.startswith(file_format_v2.V2_HEADER_PREFIX))
-      else:
-        self.assertTrue(data.startswith(b'\x1f\x8b'))
-        with gzip.GzipFile(fileobj=io.BytesIO(data)) as gz:
-          self.assertIn(b'Size File Format v1.1\n', gz.read(64))
+    v1_gz = gzip.compress(frame('Size File Format v1', v1_fields, v1_body))
+    v1_loaded = file_format.LoadSizeInfo(
+      'legacy_v1.size', file_obj=io.BytesIO(v1_gz)
+    )
+    self.assertEqual({'git_revision': 'deadbeef'}, v1_loaded.build_config)
+    self.assertEqual(1, len(v1_loaded.containers))
+    self.assertEqual(
+      {'apk_file_name': 'Legacy.apk'}, v1_loaded.containers[0].metadata
+    )
+    self.assertEqual(
+      {'.text': 256, '.rodata': 64}, v1_loaded.containers[0].section_sizes
+    )
+    self.assertEqual(
+      {'lib.so': {'size/.text': 256}}, v1_loaded.containers[0].metrics_by_file
+    )
+    s0, s1, s2, s3 = v1_loaded.raw_symbols
+    self.assertEqual(
+      ('foo::Bar()', 'obj/a.o', 'src/a.cc', 'Blink'),
+      (s0.full_name, s0.object_path, s0.source_path, s0.component),
+    )
+    self.assertIs(s0.aliases, s1.aliases)
+    self.assertEqual(2, len(s0.aliases))
+    self.assertEqual(models.FLAG_STARTUP, s0.flags)
+    self.assertEqual(disasm_v1, s0.disassembly)
+    self.assertEqual('', s1.disassembly)
+    self.assertEqual(
+      ('foo::Padded()', 16, 48, 'UI'),
+      (s2.full_name, s2.padding, s2.size, s2.component),
+    )
+    self.assertIs(models.STRING_LITERAL_NAME, s3.full_name)
+    self.assertEqual(models.FLAG_ANONYMOUS, s3.flags)
 
-      buf.seek(0)
-      loaded = file_format.LoadSizeInfo('t.size', file_obj=buf)
-      self.assertEqual(size_info.build_config, loaded.build_config)
-      self.assertEqual(2, len(loaded.containers))
-      ls1, ls2, ls3, ls4 = loaded.raw_symbols
-      self.assertEqual('foo::Bar()', ls1.full_name)
-      self.assertEqual('foo::BarAlias()', ls2.full_name)
-      self.assertIs(ls1.aliases, ls2.aliases)
-      self.assertEqual('push %rbp\nret\n', ls1.disassembly)
-      self.assertEqual('', ls2.disassembly)
-      self.assertIs(models.STRING_LITERAL_NAME, ls3.full_name)
-      self.assertEqual('UI', ls4.component)
-
-      c_before = models.Container(
-        name='',
-        metadata={},
-        section_sizes={'.text': 64, '.rodata': 32},
-        metrics_by_file={},
-      )
-      c_after = models.Container(
-        name='',
-        metadata={},
-        section_sizes={'.text': 112, '.rodata': 48},
-        metrics_by_file={},
-      )
-      delta = diff.Diff(
-        models.SizeInfo(
-          {},
-          [c_before],
-          [
-            _MakeSymbol(c_before, '.text', 0x1000, 0x20, 'f()'),
-            _MakeSymbol(c_before, '.rodata', 0x2000, 0x10, 'kData'),
-          ],
-        ),
-        models.SizeInfo(
-          {},
-          [c_after],
-          [
-            _MakeSymbol(c_after, '.text', 0x1000, 0x30, 'f()'),
-            _MakeSymbol(c_after, '.text', 0x1030, 0x10, 'f2()'),
-            _MakeSymbol(c_after, '.rodata', 0x2000, 0x18, 'kData'),
-          ],
-        ),
-      )
-      delta.removed_sources = ['old.cc']
-      delta.added_sources = ['new.cc']
-
-      diff_buf = io.BytesIO()
-      file_format.SaveDeltaSizeInfo(
-        delta, 't.sizediff', file_obj=diff_buf, use_v2=use_v2
-      )
-      diff_buf.seek(0)
-      lb, la, rem, add = file_format.LoadDeltaSizeInfo(
-        't.sizediff', file_obj=diff_buf
-      )
-      self.assertEqual(['old.cc'], rem)
-      self.assertEqual(['new.cc'], add)
-      self.assertEqual(
-        {('f()', '.text', 0x20), ('kData', '.rodata', 0x10)},
-        {(s.full_name, s.section_name, s.size) for s in lb.raw_symbols},
-      )
-      self.assertEqual(
+    # Legacy v1.1 multi-container sparse .size files wrapped in a v1 .sizediff.
+    v11_fields = {
+      'build_config': {'git_revision': 'abc123'},
+      'containers': [
         {
-          ('f()', '.text', 0x30),
-          ('f2()', '.text', 0x10),
-          ('kData', '.rodata', 0x18),
+          'name': 'Base.apk',
+          'metadata': {'apk_file_name': 'Base.apk'},
+          'section_sizes': {'.text': 1000},
+          'metrics_by_file': {},
         },
-        {(s.full_name, s.section_name, s.size) for s in la.raw_symbols},
+        {
+          'name': 'Other.apk',
+          'metadata': {},
+          'section_sizes': {'.text': 500},
+          'metrics_by_file': {},
+        },
+      ],
+      'has_components': True,
+      'has_disassembly': True,
+      'has_padding': True,
+    }
+
+    def make_v11_sparse(text_size, disasm=''):
+      disasm_bytes = disasm.encode('utf-8')
+      tail = (
+        f'0\n{len(disasm_bytes)}\n'.encode('ascii') + disasm_bytes
+        if disasm_bytes
+        else b'\n'
       )
+      body = (
+        '\n'.join(
+          [
+            '1',
+            'obj/c.o\tsrc/c.cc',
+            '1',
+            'Core',
+            '<0>.text\t<1>.text',
+            '2\t1',
+            '4096 0',
+            '0',
+            f'{text_size} {text_size}',
+            '20',
+            '12 12',
+            '20',
+            '0 0',
+            '0',
+            '0 0',
+            '0',
+            'foo::AliasA()\t02',
+            'foo::AliasB()',
+            'Overhead: gap',
+          ]
+        )
+        + '\n'
+      ).encode('ascii') + tail
+      return gzip.compress(frame('Size File Format v1.1', v11_fields, body))
+
+    before_gz = make_v11_sparse(0x20)
+    after_gz = make_v11_sparse(0x30, disasm='nop\nret\n')
+    removed_gz = gzip.compress(b'1\nold.cc\n')
+    added_gz = gzip.compress(b'2\nnew1.cc\nnew2.cc\n')
+    diff_fields = {
+      'version': 1,
+      'before_length': len(before_gz),
+      'removed_sources_length': len(removed_gz),
+      'added_sources_length': len(added_gz),
+    }
+    sizediff_bytes = frame(
+      'DIFF', diff_fields, removed_gz + added_gz + before_gz + after_gz
+    )
+    lb, la, rem, add = file_format.LoadDeltaSizeInfo(
+      'legacy.sizediff', file_obj=io.BytesIO(sizediff_bytes)
+    )
+    self.assertEqual(['old.cc'], rem)
+    self.assertEqual(['new1.cc', 'new2.cc'], add)
+    self.assertEqual(0x20 + 12, lb.raw_symbols[0].size)
+    self.assertEqual(['Base.apk', 'Other.apk'], [c.name for c in la.containers])
+    a0, a1, a2 = la.raw_symbols
+    self.assertIs(a0.aliases, a1.aliases)
+    self.assertEqual(
+      (12, 0x30 + 12, 'nop\nret\n'), (a0.padding, a0.size, a0.disassembly)
+    )
+    self.assertEqual(
+      ('Overhead: gap', 20, 20, 'Other.apk'),
+      (a2.full_name, a2.padding, a2.size, a2.container.name),
+    )
 
   def testV2EmptyAndSparsePadding(self):
     c1 = models.Container(
@@ -197,7 +365,6 @@ class FileFormatTest(unittest.TestCase):
       models.SizeInfo({'git_revision': '0'}, [c1], []),
       'empty.size',
       file_obj=empty_buf,
-      use_v2=True,
     )
     empty_buf.seek(0)
     self.assertEqual(
@@ -214,7 +381,6 @@ class FileFormatTest(unittest.TestCase):
       models.SizeInfo({}, [c1], [s1, s2], is_sparse=True),
       'sparse.size',
       file_obj=sparse_buf,
-      use_v2=True,
     )
     sparse_buf.seek(0)
     loaded = file_format.LoadSizeInfo(
@@ -255,9 +421,7 @@ class FileFormatTest(unittest.TestCase):
     size_info = models.SizeInfo({}, [c1], raw_symbols)
     buf = io.BytesIO()
     with mock.patch.object(file_format_v2, '_NAME_SHARD_SIZE', 2):
-      file_format.SaveSizeInfo(
-        size_info, 'sharded.size', file_obj=buf, use_v2=True
-      )
+      file_format.SaveSizeInfo(size_info, 'sharded.size', file_obj=buf)
     self.assertIn(b'names_0\x00', buf.getvalue())
     self.assertIn(b'names_4\x00', buf.getvalue())
 
@@ -452,9 +616,7 @@ class FileFormatTest(unittest.TestCase):
 
     size_info = models.SizeInfo({}, [container1, container2], raw_symbols)
     buf = io.BytesIO()
-    file_format.SaveSizeInfo(
-      size_info, 'relocs.size', file_obj=buf, use_v2=True
-    )
+    file_format.SaveSizeInfo(size_info, 'relocs.size', file_obj=buf)
     buf.seek(0)
     loaded = file_format.LoadSizeInfo('relocs.size', file_obj=buf)
     self.assertEqual(
@@ -487,9 +649,7 @@ class FileFormatTest(unittest.TestCase):
     self.assertEqual([], loaded.containers[1].relocation_addresses)
 
     sparse_buf = io.BytesIO()
-    file_format.SaveSizeInfo(
-      loaded, 'sparse.size', file_obj=sparse_buf, use_v2=True
-    )
+    file_format.SaveSizeInfo(loaded, 'sparse.size', file_obj=sparse_buf)
     sparse_buf.seek(0)
     reloaded_sparse = file_format.LoadSizeInfo(
       'sparse.size', file_obj=sparse_buf
