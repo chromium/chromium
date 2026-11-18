@@ -55,6 +55,10 @@ class GlicActivityListBubbleController {
   void CloseBubble();
   void OnActivityAlert(ActivityInterruptionLevel level);
   void OnStateUpdate(bool is_start_notification);
+  // Called once the bubble is showing, which may be after
+  // `GlicActivityListBubbleControllerDelegate::ShowActivityListBubble()`
+  // returns.
+  void OnBubbleShown();
   void OnBubbleDestroyed();
   bool IsBubbleShowing() const;
 

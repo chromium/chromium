@@ -140,6 +140,10 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
     }
     Java_GlicSplitButtonDelegateBridge_showActorTaskListBubble(env, j_delegate_,
                                                                j_rows);
+    // All rows may be skipped, in which case the bubble is not shown.
+    if (IsActivityListBubbleShowing()) {
+      bubble_controller_->OnBubbleShown();
+    }
   }
 
   void CloseActivityListBubble() override {

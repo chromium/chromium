@@ -101,6 +101,9 @@ class TestGlicSplitButtonDelegate : public glic::GlicSplitButtonDelegate {
               &GlicActivityListBubbleController::OnBubbleDestroyed,
               controller_->GetWeakPtr()));
       bubble_->Show(views::BubbleAnchor(anchor_view_));
+      if (bubble_->IsShowing()) {
+        controller_->OnBubbleShown();
+      }
     }
   }
 

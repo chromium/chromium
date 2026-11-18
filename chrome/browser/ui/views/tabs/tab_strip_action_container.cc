@@ -487,6 +487,10 @@ void TabStripActionContainer::ShowActivityListBubble() {
             &glic::GlicActivityListBubbleController::OnBubbleDestroyed,
             controller->GetWeakPtr()));
     activity_list_bubble_->Show(views::BubbleAnchor(glic_secondary_button_));
+    // All rows may be skipped, in which case the bubble is not shown.
+    if (activity_list_bubble_->IsShowing()) {
+      controller->OnBubbleShown();
+    }
   }
 }
 

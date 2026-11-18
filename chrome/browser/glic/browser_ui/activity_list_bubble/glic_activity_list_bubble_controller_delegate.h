@@ -13,7 +13,9 @@ class GlicActivityListBubbleControllerDelegate {
  public:
   virtual ~GlicActivityListBubbleControllerDelegate() = default;
 
-  // Show the activity list bubble anchored to the button.
+  // Show the activity list bubble anchored to the button. Implementations run
+  // `GlicActivityListBubbleController::OnBubbleShown()` once the bubble is
+  // showing, which may be after this method returns.
   virtual void ShowActivityListBubble() = 0;
 
   // Hide the activity list bubble.

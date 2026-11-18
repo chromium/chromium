@@ -37,6 +37,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
@@ -200,6 +201,39 @@ IN_PROC_BROWSER_TEST_F(GlicActivityListBubbleInteractiveUiTest,
       PressButton(kFirstTaskItem),
       InAnyContext(WaitForHide(kActorTaskListBubbleView)));
 }
+
+// Runs with the actor task icon in the tab strip (false) and in the toolbar
+// (true).
+class GlicActivityListBubbleActorTaskIconInteractiveUiTest
+    : public GlicActivityListBubbleInteractiveUiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  GlicActivityListBubbleActorTaskIconInteractiveUiTest() {
+    toolbar_button_feature_list_.InitWithFeatureState(
+        features::kGlicHorizontalTabToolbarButton, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList toolbar_button_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicActivityListBubbleActorTaskIconInteractiveUiTest,
+                       ActorTaskIconPressedWhileBubbleShowing) {
+  gfx::ScopedAnimationDurationScaleMode disable_animations(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  StartActingOnTab();
+  RunTestSequence(Do([&]() { PauseTask(); }),
+                  InAnyContext(WaitForShow(kGlicActorTaskIconElementId)),
+                  InAnyContext(WaitForShow(kActorTaskListBubbleView)),
+                  InAnyContext(CheckViewProperty(
+                      kGlicActorTaskIconElementId, &views::Button::GetState,
+                      views::Button::STATE_PRESSED)));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicActivityListBubbleActorTaskIconInteractiveUiTest,
+                         testing::Bool());
 
 // Unlike the other tests in this file, this test suite uses the Glic actor test
 // fixture in order to test interactions with Glic instances / web clients.

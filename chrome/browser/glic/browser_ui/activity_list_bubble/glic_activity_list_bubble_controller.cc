@@ -510,12 +510,6 @@ void GlicActivityListBubbleController::ShowBubbleImpl(
         delegate.CloseActivityListBubble();
       }));
   delegate->ShowActivityListBubble();
-
-  // All rows may be skipped, in which case the bubble will not be shown.
-  if (delegate->IsActivityListBubbleShowing()) {
-    on_bubble_shown_callback_list.Notify();
-    actor::ui::RecordTaskListBubbleRows(last_row_count_);
-  }
 }
 
 void GlicActivityListBubbleController::OnActivityAlert(
@@ -548,6 +542,11 @@ void GlicActivityListBubbleController::OnStateUpdate(
   if (delegate->IsActivityListBubbleShowing() || is_start_notification) {
     ShowBubble(is_start_notification);
   }
+}
+
+void GlicActivityListBubbleController::OnBubbleShown() {
+  on_bubble_shown_callback_list.Notify();
+  actor::ui::RecordTaskListBubbleRows(last_row_count_);
 }
 
 void GlicActivityListBubbleController::OnBubbleDestroyed() {

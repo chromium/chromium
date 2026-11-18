@@ -1028,6 +1028,10 @@ void ToolbarView::ShowActivityListBubbleAt(views::BubbleAnchor anchor) {
             &glic::GlicActivityListBubbleController::OnBubbleDestroyed,
             controller->GetWeakPtr()));
     activity_list_bubble_->Show(anchor);
+    // All rows may be skipped, in which case the bubble is not shown.
+    if (activity_list_bubble_->IsShowing()) {
+      controller->OnBubbleShown();
+    }
   }
 }
 
