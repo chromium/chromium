@@ -39,6 +39,7 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![deny(missing_docs)]
+#![deny(unsafe_code)]
 use core::fmt;
 use core::hash;
 
@@ -50,6 +51,7 @@ mod table;
 /// Computes the CRC32 hash of a byte slice.
 ///
 /// Check out [`Hasher`] for more advanced use-cases.
+#[inline]
 pub fn hash(buf: &[u8]) -> u32 {
     let mut h = Hasher::new();
     h.update(buf);
@@ -71,6 +73,7 @@ impl Hasher {
     ///
     /// This will perform a CPU feature detection at runtime to select the most
     /// optimal implementation for the current processor architecture.
+    #[inline]
     pub fn new() -> Self {
         Self::new_with_initial(DEFAULT_INIT_STATE)
     }
@@ -79,6 +82,7 @@ impl Hasher {
     ///
     /// This works just like `Hasher::new`, except that it allows for an initial
     /// CRC32 state to be passed in.
+    #[inline]
     pub fn new_with_initial(init: u32) -> Self {
         Self::new_with_initial_len(init, 0)
     }
@@ -88,6 +92,7 @@ impl Hasher {
     /// As `new_with_initial`, but also accepts a length (in bytes). The
     /// resulting object can then be used with `combine` to compute `crc(a ||
     /// b)` from `crc(a)`, `crc(b)`, and `len(b)`.
+    #[inline]
     pub fn new_with_initial_len(init: u32, amount: u64) -> Self {
         Self::internal_new_specialized(init, amount)
             .unwrap_or_else(|| Self::internal_new_baseline(init, amount))
@@ -95,6 +100,7 @@ impl Hasher {
 
     #[doc(hidden)]
     // Internal-only API. Don't use.
+    #[inline]
     pub fn internal_new_baseline(init: u32, amount: u64) -> Self {
         Hasher {
             amount,
@@ -105,6 +111,7 @@ impl Hasher {
 
     #[doc(hidden)]
     // Internal-only API. Don't use.
+    #[inline]
     pub fn internal_new_specialized(init: u32, amount: u64) -> Option<Self> {
         Some(Hasher {
             amount,
@@ -114,6 +121,7 @@ impl Hasher {
     }
 
     /// Process the given byte slice and update the hash state.
+    #[inline]
     pub fn update(&mut self, buf: &[u8]) {
         self.amount += buf.len() as u64;
         self.state = match &self.spec {

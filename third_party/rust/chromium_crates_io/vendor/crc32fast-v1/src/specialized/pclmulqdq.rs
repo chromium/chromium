@@ -13,6 +13,10 @@
 //! rely on `VPCLMULQDQ` intrinsics stabilized in Rust 1.89 and are only compiled when the
 //! `stable_vpclmulqdq` cfg is set by `build.rs`, leaving the crate MSRV unchanged otherwise. The
 //! best variant supported by the running CPU is chosen at runtime.
+//!
+//! Each `unsafe fn` here is unsafe only because it needs the CPU features in its
+//! `#[target_feature]` list (PCLMULQDQ for `reduce128`). None of them has a memory-safety
+//! precondition: every load is bounds-checked.
 
 #[cfg(target_arch = "x86")]
 use core::arch::x86 as arch;
@@ -39,6 +43,7 @@ pub struct State {
 
 impl State {
     #[cfg(not(feature = "std"))]
+    #[inline]
     fn detect() -> Option<Kind> {
         if cfg!(target_feature = "pclmulqdq")
             && cfg!(target_feature = "sse2")
@@ -62,6 +67,7 @@ impl State {
     }
 
     #[cfg(feature = "std")]
+    #[inline]
     fn detect() -> Option<Kind> {
         if is_x86_feature_detected!("pclmulqdq")
             && is_x86_feature_detected!("sse2")
@@ -84,6 +90,7 @@ impl State {
         None
     }
 
+    #[inline]
     pub fn new() -> Option<Self> {
         // SAFETY: `detect` only returns a `Kind` whose instructions the CPU supports.
         Self::detect().map(|kind| Self { kind })
@@ -91,7 +98,9 @@ impl State {
 
     #[inline]
     pub fn update(&self, state: u32, buf: &[u8]) -> u32 {
-        // SAFETY: `State::new` ensured the CPU supports the instructions for `self.kind`.
+        // SAFETY: The kernels are only unsafe because the CPU might lack their target features.
+        // `detect` checked every feature listed on the kernel for `self.kind`, and `kind` can't be
+        // changed after `new`.
         unsafe {
             match self.kind {
                 Kind::Sse => calculate(state, buf),
@@ -140,7 +149,7 @@ const K_2048_HIGH: i64 = 0x1322d1430;
 unsafe fn calculate(crc: u32, mut data: &[u8]) -> u32 {
     // Below 16 bytes there isn't even a single full block to load, so use the scalar fallback.
     if data.len() < 16 {
-        return crate::baseline::update_slow(crc, data);
+        return crate::baseline::update_short(crc, data);
     }
 
     // For 16..127 bytes a single-accumulator fold-by-1 is enough; the fold-by-4 setup below only
@@ -337,9 +346,8 @@ unsafe fn reduce_128_to_crc(mut x: arch::__m128i, mut data: &[u8]) -> u32 {
         let overflow = arch::_mm_shuffle_epi8(x, shl);
         x = arch::_mm_shuffle_epi8(x, shr);
 
-        let mut part = [0u8; 16];
-        part[..n].copy_from_slice(data);
-        let part = arch::_mm_loadu_si128(part.as_ptr() as *const arch::__m128i);
+        let (lo, hi) = partial_words(data);
+        let part = arch::_mm_set_epi64x(hi as i64, lo as i64);
         x = arch::_mm_xor_si128(x, arch::_mm_shuffle_epi8(part, shl));
 
         x = reduce128(overflow, x, k3k4);
@@ -427,9 +435,16 @@ unsafe fn reduce512(a: arch::__m512i, b: arch::__m512i, keys: arch::__m512i) -> 
     arch::_mm512_xor_si512(arch::_mm512_xor_si512(b, t1), t2)
 }
 
-unsafe fn get(a: &mut &[u8]) -> arch::__m128i {
-    debug_assert!(a.len() >= 16);
-    let r = arch::_mm_loadu_si128(a.as_ptr() as *const arch::__m128i);
+// The loads below index `a[..N]` before reading through its pointer, so a miscounted length panics
+// instead of reading out of bounds. The callers' loop conditions already imply the check, so it
+// compiles away: the kernels' machine code is unchanged.
+
+/// Loads the next 16 bytes of `a` as a vector and advances `a` past them.
+#[inline]
+fn get(a: &mut &[u8]) -> arch::__m128i {
+    // SAFETY: `a[..16]` is 16 readable bytes, `_mm_loadu_si128` doesn't need them aligned, and SSE2
+    // is enabled for the whole build (`specialized/mod.rs` only compiles this module when it is).
+    let r = unsafe { arch::_mm_loadu_si128(a[..16].as_ptr() as *const arch::__m128i) };
     *a = &a[16..];
     r
 }
@@ -438,8 +453,7 @@ unsafe fn get(a: &mut &[u8]) -> arch::__m128i {
 #[target_feature(enable = "avx")]
 #[inline]
 unsafe fn get256(a: &mut &[u8]) -> arch::__m256i {
-    debug_assert!(a.len() >= 32);
-    let r = arch::_mm256_loadu_si256(a.as_ptr() as *const arch::__m256i);
+    let r = arch::_mm256_loadu_si256(a[..32].as_ptr() as *const arch::__m256i);
     *a = &a[32..];
     r
 }
@@ -449,10 +463,32 @@ unsafe fn get256(a: &mut &[u8]) -> arch::__m256i {
 #[target_feature(enable = "avx512f")]
 #[inline]
 unsafe fn get512(a: &mut &[u8]) -> arch::__m512i {
-    debug_assert!(a.len() >= 64);
-    let r = arch::_mm512_loadu_si512(a.as_ptr() as *const _);
+    let r = arch::_mm512_loadu_si512(a[..64].as_ptr() as *const _);
     *a = &a[64..];
     r
+}
+
+/// Packs a final partial block of 1..=15 bytes into two zero-padded little-endian words, using
+/// overlapping loads. Building it in registers avoids copying through a stack buffer, whose narrow
+/// stores the following 16-byte load cannot forward from.
+#[inline]
+fn partial_words(data: &[u8]) -> (u64, u64) {
+    let n = data.len();
+    debug_assert!(n > 0 && n < 16);
+    let v: u128 = if n >= 8 {
+        let lo = u64::from_le_bytes(data[..8].try_into().unwrap());
+        let hi = u64::from_le_bytes(data[n - 8..].try_into().unwrap());
+        lo as u128 | (hi as u128) << (8 * (n - 8))
+    } else if n >= 4 {
+        let lo = u32::from_le_bytes(data[..4].try_into().unwrap());
+        let hi = u32::from_le_bytes(data[n - 4..].try_into().unwrap());
+        lo as u128 | (hi as u128) << (8 * (n - 4))
+    } else {
+        data[0] as u128
+            | (data[n / 2] as u128) << (8 * (n / 2))
+            | (data[n - 1] as u128) << (8 * (n - 1))
+    };
+    (v as u64, (v >> 64) as u64)
 }
 
 #[cfg(test)]

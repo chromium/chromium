@@ -104,5 +104,26 @@ fn combine(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, baseline, specialized, combine);
+/// Benchmark the one-shot `crc32fast::hash` entry point, including `Hasher` construction.
+///
+/// Callers usually hash small buffers (PNG chunks, zip entries, network frames) this way, so
+/// per-call overhead outside the CRC kernel shows up here.
+fn hash(c: &mut Criterion) {
+    let mut group = c.benchmark_group("hash");
+    let mut rng = StdRng::seed_from_u64(SEED);
+
+    for &size in &[16usize, 64, 256, 1024] {
+        let mut bytes = vec![0u8; size];
+        rng.fill(&mut bytes[..]);
+
+        group.throughput(Throughput::Bytes(size as u64));
+        group.bench_with_input(BenchmarkId::from_parameter(size), &bytes, |b, bytes| {
+            b.iter(|| crc32fast::hash(black_box(bytes)))
+        });
+    }
+
+    group.finish();
+}
+
+criterion_group!(benches, baseline, specialized, combine, hash);
 criterion_main!(benches);
