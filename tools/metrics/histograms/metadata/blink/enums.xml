@@ -26,16 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanContentChangeMode">
-  <int value="0" label="Discard Content"/>
-  <int value="1" label="Retain Content"/>
-</enum>
-
-<enum name="BooleanHardwareAccelerated">
-  <int value="0" label="Not hardware accelerated"/>
-  <int value="1" label="Hardware accelerated"/>
-</enum>
-
 <enum name="BooleanWillReadFrequently">
   <int value="0" label="Not initialized to be read frequently"/>
   <int value="1" label="Initialized to be read frequently"/>
@@ -53,18 +43,6 @@ chromium-metrics-reviews@google.com.
              a LCP, and the image was not small."/>
   <int value="3"
       label="kBoth: Because the image was boosted by kFirstN and kLcpp."/>
-</enum>
-
-<enum name="CanvasCreateImageBitmapSource">
-  <int value="0" label="Blob"/>
-  <int value="1" label="ImageBitmap"/>
-  <int value="2" label="ImageData"/>
-  <int value="3" label="HTML Canvas Element"/>
-  <int value="4" label="HTML Image Element"/>
-  <int value="5" label="HTML Video Element"/>
-  <int value="6" label="OffscreenCanvas"/>
-  <int value="7" label="SVG Image Element"/>
-  <int value="8" label="VideoFrame"/>
 </enum>
 
 <enum name="CanvasGPUFallbackToCPUScenario">
@@ -108,16 +86,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Swap Chain"/>
   <int value="9" label="Deprecated"/>
   <int value="10" label="External Bitmap"/>
-</enum>
-
-<enum name="CanvasResourceProviderUsage">
-  <int value="0" label="Software"/>
-  <int value="1" label="Software Composited"/>
-  <int value="2" label="Accelerated"/>
-  <int value="3" label="Accelerated Composited"/>
-  <int value="4" label="Accelerated Direct 2D"/>
-  <int value="5" label="Accelerated Direct 3D"/>
-  <int value="6" label="Software Composited Direct 2D (deprecated)"/>
 </enum>
 
 <!-- LINT.IfChange(CapabilityElementGeolocationAccuracyMode) -->

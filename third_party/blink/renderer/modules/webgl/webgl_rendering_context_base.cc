@@ -2350,8 +2350,6 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
     return nullptr;
   }
 
-  base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                            !resource_provider_->IsSoftware());
   base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                 CanvasResourceProviderType::kSharedImage);
 

@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -70,19 +69,6 @@
 namespace blink {
 
 namespace {
-// This enum is used in a UMA histogram.
-enum CreateImageBitmapSource {
-  kCreateImageBitmapSourceBlob = 0,
-  kCreateImageBitmapSourceImageBitmap = 1,
-  kCreateImageBitmapSourceImageData = 2,
-  kCreateImageBitmapSourceHTMLCanvasElement = 3,
-  kCreateImageBitmapSourceHTMLImageElement = 4,
-  kCreateImageBitmapSourceHTMLVideoElement = 5,
-  kCreateImageBitmapSourceOffscreenCanvas = 6,
-  kCreateImageBitmapSourceSVGImageElement = 7,
-  kCreateImageBitmapSourceVideoFrame = 8,
-  kMaxValue = kCreateImageBitmapSourceVideoFrame,
-};
 
 gfx::Rect NormalizedCropRect(int x, int y, int width, int height) {
   if (width < 0) {
@@ -125,55 +111,35 @@ void ThrowExceptionForStatus(ImageBitmapSourceError error,
   }
 }
 
-}  // namespace
-
 inline ImageBitmapSource* ToImageBitmapSourceInternal(
-    const V8ImageBitmapSource* value,
-    const ImageBitmapOptions* options,
-    bool has_crop_rect) {
+    const V8ImageBitmapSource* value) {
   DCHECK(value);
 
   switch (value->GetContentType()) {
     case V8ImageBitmapSource::ContentType::kBlob:
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
-                                kCreateImageBitmapSourceBlob);
       return value->GetAsBlob();
     case V8ImageBitmapSource::ContentType::kHTMLCanvasElement:
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
-                                kCreateImageBitmapSourceHTMLCanvasElement);
       return value->GetAsHTMLCanvasElement();
     case V8ImageBitmapSource::ContentType::kHTMLImageElement:
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
-                                kCreateImageBitmapSourceHTMLImageElement);
       return value->GetAsHTMLImageElement();
     case V8ImageBitmapSource::ContentType::kHTMLVideoElement:
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
-                                kCreateImageBitmapSourceHTMLVideoElement);
       return value->GetAsHTMLVideoElement();
     case V8ImageBitmapSource::ContentType::kImageBitmap:
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
-                                kCreateImageBitmapSourceImageBitmap);
       return value->GetAsImageBitmap();
     case V8ImageBitmapSource::ContentType::kImageData:
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
-                                kCreateImageBitmapSourceImageData);
       return value->GetAsImageData();
     case V8ImageBitmapSource::ContentType::kOffscreenCanvas:
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
-                                kCreateImageBitmapSourceOffscreenCanvas);
       return value->GetAsOffscreenCanvas();
     case V8ImageBitmapSource::ContentType::kSVGImageElement:
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
-                                kCreateImageBitmapSourceSVGImageElement);
       return value->GetAsSVGImageElement();
     case V8ImageBitmapSource::ContentType::kVideoFrame:
-      UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.CreateImageBitmapSource",
-                                kCreateImageBitmapSourceVideoFrame);
       return value->GetAsVideoFrame();
   }
 
   NOTREACHED();
 }
+
+}  // namespace
 
 // static
 ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmapFromBlob(
@@ -212,7 +178,7 @@ ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
   WebFeature feature = WebFeature::kCreateImageBitmap;
   UseCounter::Count(ExecutionContext::From(script_state), feature);
   ImageBitmapSource* bitmap_source_internal =
-      ToImageBitmapSourceInternal(bitmap_source, options, false);
+      ToImageBitmapSourceInternal(bitmap_source);
   if (!bitmap_source_internal)
     return EmptyPromise();
   return CreateImageBitmap(script_state, bitmap_source_internal, std::nullopt,
@@ -249,7 +215,7 @@ ScriptPromise<ImageBitmap> ImageBitmapFactories::CreateImageBitmap(
   WebFeature feature = WebFeature::kCreateImageBitmap;
   UseCounter::Count(ExecutionContext::From(script_state), feature);
   ImageBitmapSource* bitmap_source_internal =
-      ToImageBitmapSourceInternal(bitmap_source, options, true);
+      ToImageBitmapSourceInternal(bitmap_source);
   if (!bitmap_source_internal)
     return EmptyPromise();
   gfx::Rect crop_rect = NormalizedCropRect(sx, sy, sw, sh);

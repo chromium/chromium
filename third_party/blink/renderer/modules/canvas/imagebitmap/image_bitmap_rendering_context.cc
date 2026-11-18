@@ -477,8 +477,6 @@ ImageBitmapRenderingContext::GetResourceForPushFrame(
     Host()->UpdateMemoryUsage();
 
     if (resource_provider_for_offscreen_canvas_.get()) {
-      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                                is_gpu_compositing_enabled);
       base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                     CanvasResourceProviderType::kSharedImage);
       Host()->DidDraw();

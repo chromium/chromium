@@ -344,27 +344,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.ContentChangeMode"
-    enum="BooleanContentChangeMode" expires_after="2025-04-01">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Records whether the contents in the canvas buffer needed to be preserved via
-    a copy when replacing the target buffer for drawing a new frame. This metric
-    is recorded each time the target buffer needs to be replaced. It's recorded
-    once per frame.
-  </summary>
-</histogram>
-
-<histogram name="Blink.Canvas.CreateImageBitmapSource"
-    enum="CanvasCreateImageBitmapSource" expires_after="2025-04-01">
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    The source from which an ImageBitmap is created by a createImageBitmap call.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.GetImageData.WillReadFrequently"
     enum="BooleanWillReadFrequently" expires_after="2026-02-22">
   <owner>aaronhk@chromium.org</owner>
@@ -439,27 +418,11 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.Canvas.ResourceProviderIsAccelerated"
-    enum="BooleanHardwareAccelerated" expires_after="2025-04-01">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>Logs if the canvas resource provider is accelerated or not.</summary>
-</histogram>
-
 <histogram name="Blink.Canvas.ResourceProviderType"
     enum="CanvasResourceProviderType" expires_after="2026-08-30">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>Records the type of resource provider used for a canvas.</summary>
-</histogram>
-
-<histogram name="Blink.Canvas.ResourceProviderUsage"
-    enum="CanvasResourceProviderUsage" expires_after="2025-04-01">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Records the requested resource usage for a canvas resource provider.
-  </summary>
 </histogram>
 
 <histogram name="Blink.Canvas.SqrtNumberOfPixels" units="sqrt(pixels)"

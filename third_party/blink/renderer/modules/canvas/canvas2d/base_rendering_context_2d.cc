@@ -23,7 +23,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -277,8 +276,8 @@ void BaseRenderingContext2D::ResetSharedImagePool() {
   if (!image_pool_) {
     return;
   }
-  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
-                             max_inflight_resources_, 20);
+  base::UmaHistogramExactLinear("Blink.Canvas.MaximumInflightResources",
+                                max_inflight_resources_, 20);
   resource_client_weak_ptr_factory_.InvalidateWeakPtrs();
   image_pool_.reset();
   resource_.reset();
@@ -667,19 +666,12 @@ void BaseRenderingContext2D::CreateSoftwareSurface() {
 
 void BaseRenderingContext2D::RecordBackingHistograms() {
   CHECK(HasBacking());
-  // Note: The histogram names date back to historical usage of
+  // Note: The histogram name dates back to historical usage of
   // CanvasResourceProvider for both SharedImage and bitmap backings.
-  if (image_pool_) {
-    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                              is_accelerated_);
-    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                  CanvasResourceProviderType::kSharedImage);
-  } else {
-    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                              false);
-    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                  CanvasResourceProviderType::kBitmap);
-  }
+  base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                image_pool_
+                                    ? CanvasResourceProviderType::kSharedImage
+                                    : CanvasResourceProviderType::kBitmap);
 }
 
 void BaseRenderingContext2D::OnMemoryDump(
@@ -891,8 +883,6 @@ void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
       is_cleared_ = false;
     }
 
-    UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
-                          must_preserve_content_on_copy_on_write_);
     // By default, the contents of the new resource must be preserved on a
     // subsequent CopyOnWrite.
     must_preserve_content_on_copy_on_write_ = true;
