@@ -756,6 +756,13 @@ void DeepScanningRequest::OnConsumerScanComplete(
     metadata_->PromptForPassword();
     download_result = DownloadCheckResult::PROMPT_FOR_SCANNING;
     LogDeepScanEvent(*metadata_, DeepScanEvent::kIncorrectPassword);
+  } else if (result ==
+             enterprise_connectors::ScanRequestUploadResult::kUserCancelled) {
+    // Do not record a scan failure or terminal scan event when an in-flight
+    // upload is cancelled on download destruction; explicit UI actions
+    // (such as discard or cancel deep scan) record their own events in
+    // `DownloadItemModel::ExecuteCommand()`.
+    download_result = DownloadCheckResult::UNKNOWN;
   } else {
     download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
     LogDeepScanEvent(*metadata_, DeepScanEvent::kScanFailed);

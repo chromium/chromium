@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -1247,6 +1248,48 @@ TEST_F(DeepScanningAPPRequestTest, CancelsUploadOnDownloadDestroyed) {
   EXPECT_EQ(user_action_id,
             download_protection_service_.GetFakeBinaryUploadService()
                 ->last_cancel_user_action_id());
+}
+
+TEST_F(DeepScanningAPPRequestTest, DoesNotLogScanFailedOnDownloadDestroyed) {
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(&item_, true);
+
+  base::HistogramTester histogram_tester;
+  TestCancellationFakeBinaryUploadService cancel_upload_service;
+  cancel_upload_service.set_synchronous_cancel(true);
+  download_protection_service_.set_binary_upload_service(
+      &cancel_upload_service);
+
+  enterprise_connectors::AnalysisSettings settings;
+  settings.tags = {{"malware", enterprise_connectors::TagSettings()}};
+
+  DeepScanningRequest request(CreateMetadata(),
+                              DownloadItemWarningData::DeepScanTrigger::
+                                  TRIGGER_ENCRYPTED_CONSUMER_PROMPT,
+                              DownloadCheckResult::SAFE, base::DoNothing(),
+                              &download_protection_service_,
+                              std::move(settings),
+                              /*password=*/std::nullopt);
+
+  base::RunLoop upload_run_loop;
+  cancel_upload_service.SetQuitOnUploadCallback(upload_run_loop.QuitClosure());
+
+  request.Start();
+  upload_run_loop.Run();
+  request.OnDownloadDestroyed(&item_);
+
+  EXPECT_TRUE(cancel_upload_service.was_cancelled());
+  histogram_tester.ExpectTotalCount("SBClientDownload.DeepScanEvent3", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientDownload.PasswordProtectedDeepScanEvent3", 0);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientDownload.MalwareDeepScanResult2.EncryptedConsumerPrompt",
+      DownloadCheckResult::UNKNOWN, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientDownload.PasswordProtectedMalwareDeepScanResult2."
+      "EncryptedConsumerPrompt",
+      DownloadCheckResult::UNKNOWN, 1);
+
+  download_protection_service_.set_binary_upload_service(nullptr);
 }
 
 TEST_F(DeepScanningAPPRequestTest, GeneratesCorrectRequestForConsumer) {
