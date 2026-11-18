@@ -759,6 +759,12 @@ if (is_linux || is_chromeos || is_android) {
       include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include" ]
       sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include/rustc_demangle.h" ]
 
+      # Support zstd-compressed debug sections. Non-official Android builds
+      # link with -gz=zstd (see //build/config:compress_debug_sections).
+      defines += [ "HAVE_LIBZSTD" ]
+      include_dirs += [ "//third_party/zstd/src/lib" ]
+      deps += [ "//third_party/zstd:decompress" ]
+
       libs = [ "z" ]
     }
   } else if (current_toolchain == default_toolchain) {
