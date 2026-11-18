@@ -56,7 +56,6 @@ const size_t kMinBackOffResetDurationInSeconds = 5 * 60;   //  5 minutes.
 const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 
 const size_t kURLLookupTimeoutDurationInSeconds = 3;
-const size_t kDnsLookupTimeoutDurationInMilliseconds = 500;
 
 // Represents the value stored in the |version| field of |RTLookupRequest|.
 const int kRTLookupRequestVersion = 4;
@@ -849,7 +848,7 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
                        GetWeakPtr(), url, barrier_closure));
 
     pending_state->dns_timer.Start(
-        FROM_HERE, base::Milliseconds(kDnsLookupTimeoutDurationInMilliseconds),
+        FROM_HERE, kSafeBrowsingWaitForDnsTimeout.Get(),
         base::BindOnce(&RealTimeUrlLookupServiceBase::OnDnsTimeout,
                        GetWeakPtr(), url, barrier_closure));
   }

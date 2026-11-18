@@ -551,6 +551,9 @@ BASE_DECLARE_FEATURE(kSafeBrowsingRustDmgParser);
 // Allows Safe Browsing Real-Time URL lookups to wait for DNS resolution of the
 // main frame URL.
 BASE_DECLARE_FEATURE(kSafeBrowsingWaitForDnsForRealTimeLookup);
+// Specifies the timeout duration when waiting for DNS resolution for
+// Real-Time URL lookups.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSafeBrowsingWaitForDnsTimeout);
 
 // Enables saving gaia password hash from the Profile Picker sign-in flow.
 BASE_DECLARE_FEATURE(kSavePasswordHashFromProfilePicker);
