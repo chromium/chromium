@@ -534,6 +534,7 @@ source_set("unit_tests") {
     "source_location_unittest.cc",
     "ssl_private_key_wrapper_unittest.cc",
     "typed_buffer_unittest.cc",
+    "url_loader_network_service_observer_unittest.cc",
     "util_unittest.cc",
     "weighted_samples_unittest.cc",
   ]

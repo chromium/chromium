@@ -7,20 +7,18 @@
 
 #include <list>
 #include <memory>
-#include <optional>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/url_loader_network_service_observer.h"
-
-namespace net {
-class ClientCertStore;
-}  // namespace net
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -36,25 +34,24 @@ struct ProtobufHttpRequestConfig;
 class ProtobufHttpClient final {
  public:
   using CreateClientCertStoreCallback =
-      base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>;
+      UrlLoaderNetworkServiceObserver::CreateClientCertStoreCallback;
 
-  // Sets the process-wide callback for creating a ClientCertStore.
-  // If not set, ProtobufHttpClient will fall back to calling
-  // `remoting::CreateClientCertStoreInstance()`.
-  // This method is thread-safe.
+  // Sets the process-wide callback for creating ClientCertStores, and the
+  // sequence on which stores are created and used (null means the client's
+  // sequence). Passing a null `callback` resets to the default platform
+  // store for new clients; existing clients may continue calling a
+  // previously set `callback` until they are destroyed. Thread-safe.
   static void SetCreateClientCertStoreCallback(
-      CreateClientCertStoreCallback callback);
+      CreateClientCertStoreCallback callback,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
 
   // |server_endpoint|: the hostname of the server.
   // |token_getter|: nullable if none of the requests are authenticated. Must
   //     outlive |this|.
-  // |client_cert_store|: nullable if none of the requests have
-  //     provide_certificate set to true.
   ProtobufHttpClient(
       const std::string& server_endpoint,
       OAuthTokenGetter* token_getter,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<net::ClientCertStore> client_cert_store = nullptr);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~ProtobufHttpClient();
   ProtobufHttpClient(const ProtobufHttpClient&) = delete;
   ProtobufHttpClient& operator=(const ProtobufHttpClient&) = delete;
@@ -90,9 +87,13 @@ class ProtobufHttpClient final {
 
   std::string server_endpoint_;
   raw_ptr<OAuthTokenGetter> token_getter_;
-  std::optional<UrlLoaderNetworkServiceObserver> service_observer_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<net::ClientCertStore> client_cert_store_;
+
+  std::variant<std::monostate,
+               UrlLoaderNetworkServiceObserver,
+               base::SequenceBound<UrlLoaderNetworkServiceObserver>>
+      service_observer_;
+
   PendingRequestList pending_requests_;
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -7,11 +7,11 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "net/ssl/ssl_cert_request_info.h"
 #include "remoting/base/fake_oauth_token_getter.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/rsa_key_pair.h"
@@ -38,23 +38,12 @@ const char kTestAuthorizedHelper[] = "helpful_dude@chromoting.com";
 class TestRegisterSupportHostRequest : public RegisterSupportHostRequestBase {
  public:
   MOCK_METHOD(void,
-              Initialize,
-              (std::unique_ptr<net::ClientCertStore> client_cert_store),
-              (override));
-  MOCK_METHOD(void,
               RegisterHost,
               (const internal::RemoteSupportHostStruct& host,
                const std::optional<ChromeOsEnterpriseParams>& enterprise_params,
                RegisterHostCallback callback),
               (override));
   MOCK_METHOD(void, CancelPendingRequests, (), (override));
-};
-
-class FakeClientCertStore : public net::ClientCertStore {
- public:
-  void GetClientCerts(
-      scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
-      ClientCertListCallback callback) override {}
 };
 
 }  // namespace
@@ -144,21 +133,7 @@ class RegisterSupportHostRequestBaseTest : public testing::Test {
   std::string authorized_helper_;
 };
 
-TEST_F(RegisterSupportHostRequestBaseTest, CallInitializeWithClientCertStore) {
-  auto client_cert_store = std::make_unique<FakeClientCertStore>();
-  FakeClientCertStore* raw_client_cert_store = client_cert_store.get();
-  EXPECT_CALL(*register_host_request_, Initialize(_))
-      .WillOnce([=](std::unique_ptr<net::ClientCertStore> cert_store) {
-        ASSERT_EQ(cert_store.get(), raw_client_cert_store);
-      });
-
-  register_host_request_->StartRequest(
-      signal_strategy_.get(), std::move(client_cert_store), key_pair_,
-      authorized_helper_, std::nullopt, base::DoNothing());
-}
-
 TEST_F(RegisterSupportHostRequestBaseTest, RegisterFtl) {
-  EXPECT_CALL(*register_host_request_, Initialize(_));
   EXPECT_CALL(*register_host_request_, RegisterHost(_, _, _))
       .WillOnce(DoValidateRegisterHostAndRespondOk());
   EXPECT_CALL(*register_host_request_, CancelPendingRequests()).Times(1);
@@ -169,9 +144,9 @@ TEST_F(RegisterSupportHostRequestBaseTest, RegisterFtl) {
               Run(kSupportId, kSupportIdLifetime, protocol::ErrorCode::OK))
       .Times(1);
 
-  register_host_request_->StartRequest(
-      signal_strategy_.get(), std::make_unique<FakeClientCertStore>(),
-      key_pair_, authorized_helper_, std::nullopt, register_callback.Get());
+  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
+                                       authorized_helper_, std::nullopt,
+                                       register_callback.Get());
   signal_strategy_->Connect();
 }
 
@@ -187,7 +162,6 @@ TEST_F(RegisterSupportHostRequestBaseTest,
   params.allow_clipboard_sync = false;
   params.connection_auto_accept_timeout = base::Seconds(0);
 
-  EXPECT_CALL(*register_host_request_, Initialize(_));
   EXPECT_CALL(*register_host_request_, RegisterHost(_, _, _))
       .WillOnce(DoValidateEnterpriseOptionsAndRespondOk(params));
   EXPECT_CALL(*register_host_request_, CancelPendingRequests()).Times(1);
@@ -198,10 +172,9 @@ TEST_F(RegisterSupportHostRequestBaseTest,
               Run(kSupportId, kSupportIdLifetime, protocol::ErrorCode::OK))
       .Times(1);
 
-  register_host_request_->StartRequest(
-      signal_strategy_.get(), std::make_unique<FakeClientCertStore>(),
-      key_pair_, authorized_helper_, std::move(params),
-      register_callback.Get());
+  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
+                                       authorized_helper_, std::move(params),
+                                       register_callback.Get());
   signal_strategy_->Connect();
 }
 
@@ -217,7 +190,6 @@ TEST_F(RegisterSupportHostRequestBaseTest,
   params.allow_clipboard_sync = true;
   params.connection_auto_accept_timeout = base::Seconds(30);
 
-  EXPECT_CALL(*register_host_request_, Initialize(_));
   EXPECT_CALL(*register_host_request_, RegisterHost(_, _, _))
       .WillOnce(DoValidateEnterpriseOptionsAndRespondOk(params));
   EXPECT_CALL(*register_host_request_, CancelPendingRequests()).Times(1);
@@ -228,15 +200,13 @@ TEST_F(RegisterSupportHostRequestBaseTest,
               Run(kSupportId, kSupportIdLifetime, protocol::ErrorCode::OK))
       .Times(1);
 
-  register_host_request_->StartRequest(
-      signal_strategy_.get(), std::make_unique<FakeClientCertStore>(),
-      key_pair_, authorized_helper_, std::move(params),
-      register_callback.Get());
+  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
+                                       authorized_helper_, std::move(params),
+                                       register_callback.Get());
   signal_strategy_->Connect();
 }
 
 TEST_F(RegisterSupportHostRequestBaseTest, RegisterWithAuthorizedHelper) {
-  EXPECT_CALL(*register_host_request_, Initialize(_));
   EXPECT_CALL(*register_host_request_, RegisterHost(_, _, _))
       .WillOnce(DoValidateAuthorizedHelperAndRespondOk());
   EXPECT_CALL(*register_host_request_, CancelPendingRequests()).Times(1);
@@ -249,14 +219,13 @@ TEST_F(RegisterSupportHostRequestBaseTest, RegisterWithAuthorizedHelper) {
 
   authorized_helper_ = kTestAuthorizedHelper;
 
-  register_host_request_->StartRequest(
-      signal_strategy_.get(), std::make_unique<FakeClientCertStore>(),
-      key_pair_, authorized_helper_, std::nullopt, register_callback.Get());
+  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
+                                       authorized_helper_, std::nullopt,
+                                       register_callback.Get());
   signal_strategy_->Connect();
 }
 
 TEST_F(RegisterSupportHostRequestBaseTest, FailedWithDeadlineExceeded) {
-  EXPECT_CALL(*register_host_request_, Initialize(_));
   EXPECT_CALL(*register_host_request_, RegisterHost(_, _, _))
       .WillOnce(
           [](const internal::RemoteSupportHostStruct& host,
@@ -276,15 +245,14 @@ TEST_F(RegisterSupportHostRequestBaseTest, FailedWithDeadlineExceeded) {
               Run(_, _, protocol::ErrorCode::OPERATION_TIMEOUT))
       .Times(1);
 
-  register_host_request_->StartRequest(
-      signal_strategy_.get(), std::make_unique<FakeClientCertStore>(),
-      key_pair_, authorized_helper_, std::nullopt, register_callback.Get());
+  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
+                                       authorized_helper_, std::nullopt,
+                                       register_callback.Get());
   signal_strategy_->Connect();
 }
 
 TEST_F(RegisterSupportHostRequestBaseTest,
        SignalingDisconnectedBeforeRegistrationSucceeds) {
-  EXPECT_CALL(*register_host_request_, Initialize(_));
   RegisterHostCallback register_support_host_callback;
   EXPECT_CALL(*register_host_request_, RegisterHost(_, _, _))
       .WillOnce(
@@ -302,9 +270,9 @@ TEST_F(RegisterSupportHostRequestBaseTest,
               Run(_, _, protocol::ErrorCode::SIGNALING_ERROR))
       .Times(1);
 
-  register_host_request_->StartRequest(
-      signal_strategy_.get(), std::make_unique<FakeClientCertStore>(),
-      key_pair_, authorized_helper_, std::nullopt, register_callback.Get());
+  register_host_request_->StartRequest(signal_strategy_.get(), key_pair_,
+                                       authorized_helper_, std::nullopt,
+                                       register_callback.Get());
   signal_strategy_->Connect();
   signal_strategy_->Disconnect();
   RespondOk(std::move(register_support_host_callback));

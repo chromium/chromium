@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -321,8 +322,7 @@ class DaemonProcess : public ConfigWatcher::Delegate,
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<CertificateBrokerImpl> certificate_broker_impl_;
-  std::unique_ptr<mojo::AssociatedReceiver<mojom::CertificateBroker>>
-      certificate_broker_;
+  mojo::AssociatedReceiverSet<mojom::CertificateBroker> certificate_brokers_;
 #endif
 
   scoped_refptr<HostStatusMonitor> status_monitor_;

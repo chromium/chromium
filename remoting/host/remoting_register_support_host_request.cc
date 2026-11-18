@@ -142,9 +142,6 @@ RemotingRegisterSupportHostRequest::RemotingRegisterSupportHostRequest(
 RemotingRegisterSupportHostRequest::~RemotingRegisterSupportHostRequest() =
     default;
 
-void RemotingRegisterSupportHostRequest::Initialize(
-    std::unique_ptr<net::ClientCertStore> client_cert_store) {}
-
 void RemotingRegisterSupportHostRequest::RegisterHost(
     const internal::RemoteSupportHostStruct& host,
     const std::optional<ChromeOsEnterpriseParams>& enterprise_params,

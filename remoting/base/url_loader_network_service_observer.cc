@@ -4,10 +4,15 @@
 
 #include "remoting/base/url_loader_network_service_observer.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
 #include "net/ssl/client_cert_store.h"
@@ -38,19 +43,18 @@ void PrintCertificateDetails(const net::X509Certificate& cert) {
 }  // namespace
 
 UrlLoaderNetworkServiceObserver::UrlLoaderNetworkServiceObserver(
-    std::unique_ptr<net::ClientCertStore> client_cert_store)
-    : client_cert_store_(std::move(client_cert_store)) {
-  CHECK(client_cert_store_);
+    CreateClientCertStoreCallback create_client_cert_store)
+    : create_client_cert_store_(std::move(create_client_cert_store)) {
+  CHECK(create_client_cert_store_);
 }
 
 UrlLoaderNetworkServiceObserver::~UrlLoaderNetworkServiceObserver() = default;
 
-mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-UrlLoaderNetworkServiceObserver::Bind() {
-  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-      pending_remote;
-  receivers_.Add(this, pending_remote.InitWithNewPipeAndPassReceiver());
-  return pending_remote;
+void UrlLoaderNetworkServiceObserver::BindReceiver(
+    mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
+        receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  receivers_.Add(this, std::move(receiver));
 }
 
 void UrlLoaderNetworkServiceObserver::OnSSLCertificateError(
@@ -67,14 +71,39 @@ void UrlLoaderNetworkServiceObserver::OnCertificateRequested(
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         client_cert_responder) {
-  // Note: |cert_info| is bound to the callback as it is the caller's
-  // responsibility to keep them alive until the callback has been run by
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojo::Remote<network::mojom::ClientCertificateResponder> responder(
+      std::move(client_cert_responder));
+  // `net::ClientCertStore` is a per-request handle, so create a new instance
+  // for each certificate request.
+  std::unique_ptr<net::ClientCertStore> client_cert_store =
+      create_client_cert_store_.Run();
+  if (!client_cert_store) {
+    LOG(WARNING)
+        << "ClientCertStore is null; request cannot provide client cert";
+    ContinueWithCertificate(std::move(responder), nullptr, nullptr);
+    return;
+  }
+
+  net::ClientCertStore* store_ptr = client_cert_store.get();
+  // Unretained is safe as a lookup key: OnCertificatesSelected clears the
+  // disconnect handler before DeleteSoon, and OnResponderDisconnected erases
+  // `store_ptr`, cancelling GetClientCerts().
+  responder.set_disconnect_handler(
+      base::BindOnce(&UrlLoaderNetworkServiceObserver::OnResponderDisconnected,
+                     weak_factory_.GetWeakPtr(), base::Unretained(store_ptr)));
+  // Insert before calling GetClientCerts(), since it may invoke the callback
+  // synchronously.
+  pending_cert_stores_.insert(std::move(client_cert_store));
+
+  // Note: `cert_info` is bound to the callback as it is the caller's
+  // responsibility to keep it alive until the callback has been run by
   // ClientCertStore.
-  client_cert_store_->GetClientCerts(
+  store_ptr->GetClientCerts(
       cert_info,
       base::BindOnce(&UrlLoaderNetworkServiceObserver::OnCertificatesSelected,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(client_cert_responder), cert_info));
+                     weak_factory_.GetWeakPtr(), base::Unretained(store_ptr),
+                     std::move(responder), cert_info));
 }
 
 void UrlLoaderNetworkServiceObserver::OnAuthRequired(
@@ -125,7 +154,7 @@ void UrlLoaderNetworkServiceObserver::OnDataUseUpdate(
 void UrlLoaderNetworkServiceObserver::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {
-  receivers_.Add(this, std::move(observer));
+  BindReceiver(std::move(observer));
 }
 
 void UrlLoaderNetworkServiceObserver::OnWebSocketConnectedToLocalNetwork(
@@ -139,15 +168,23 @@ void UrlLoaderNetworkServiceObserver::OnUrlLoaderConnectedToLocalNetwork(
     network::mojom::IPAddressSpace target_address_space) {}
 
 void UrlLoaderNetworkServiceObserver::OnCertificatesSelected(
-    mojo::PendingRemote<network::mojom::ClientCertificateResponder>
-        client_cert_responder,
+    net::ClientCertStore* store,
+    mojo::Remote<network::mojom::ClientCertificateResponder> responder,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     net::ClientCertIdentityList selected_certs) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  responder.set_disconnect_handler(base::NullCallback());
+  auto it = pending_cert_stores_.find(store);
+  CHECK(it != pending_cert_stores_.end());
+  // Delete asynchronously since `store` is currently invoking this callback.
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(pending_cert_stores_.extract(it).value()));
+
   base::Time now = base::Time::Now();
   auto best_match =
       GetBestMatchFromCertificateList(kCertIssuerWildCard, now, selected_certs);
   if (!best_match) {
-    ContinueWithCertificate(std::move(client_cert_responder), nullptr, nullptr);
+    ContinueWithCertificate(std::move(responder), nullptr, nullptr);
     return;
   }
 
@@ -155,28 +192,25 @@ void UrlLoaderNetworkServiceObserver::OnCertificatesSelected(
   if (!IsCertificateValid(kCertIssuerWildCard, now, *cert.get())) {
     LOG(ERROR) << "Best client certificate match was not valid.";
     PrintCertificateDetails(*cert.get());
-    ContinueWithCertificate(std::move(client_cert_responder), nullptr, nullptr);
+    ContinueWithCertificate(std::move(responder), nullptr, nullptr);
     return;
   }
 
   net::ClientCertIdentity::SelfOwningAcquirePrivateKey(
       std::move(best_match),
       base::BindOnce(&UrlLoaderNetworkServiceObserver::ContinueWithCertificate,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(client_cert_responder), std::move(cert)));
+                     weak_factory_.GetWeakPtr(), std::move(responder),
+                     std::move(cert)));
 }
 
 void UrlLoaderNetworkServiceObserver::ContinueWithCertificate(
-    mojo::PendingRemote<network::mojom::ClientCertificateResponder>
-        client_cert_responder,
+    mojo::Remote<network::mojom::ClientCertificateResponder> responder,
     scoped_refptr<net::X509Certificate> client_cert,
     scoped_refptr<net::SSLPrivateKey> private_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (client_cert) {
     PrintCertificateDetails(*client_cert);
   }
-
-  mojo::Remote<network::mojom::ClientCertificateResponder> responder(
-      std::move(client_cert_responder));
 
   if (!client_cert || !private_key) {
     responder->ContinueWithoutCertificate();
@@ -191,6 +225,14 @@ void UrlLoaderNetworkServiceObserver::ContinueWithCertificate(
   responder->ContinueWithCertificate(
       client_cert, private_key->GetProviderName(),
       private_key->GetAlgorithmPreferences(), std::move(ssl_private_key));
+}
+
+void UrlLoaderNetworkServiceObserver::OnResponderDisconnected(
+    net::ClientCertStore* store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = pending_cert_stores_.find(store);
+  CHECK(it != pending_cert_stores_.end());
+  pending_cert_stores_.erase(it);
 }
 
 }  // namespace remoting

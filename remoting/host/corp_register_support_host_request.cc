@@ -76,16 +76,11 @@ CorpRegisterSupportHostRequest::CorpRegisterSupportHostRequest(
     std::unique_ptr<OAuthTokenGetter> token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : token_getter_(std::move(token_getter)),
-      url_loader_factory_(url_loader_factory) {}
+      http_client_(ServiceUrls::GetInstance()->remoting_corp_endpoint(),
+                   token_getter_.get(),
+                   std::move(url_loader_factory)) {}
 
 CorpRegisterSupportHostRequest::~CorpRegisterSupportHostRequest() = default;
-
-void CorpRegisterSupportHostRequest::Initialize(
-    std::unique_ptr<net::ClientCertStore> client_cert_store) {
-  http_client_ = std::make_unique<ProtobufHttpClient>(
-      ServiceUrls::GetInstance()->remoting_corp_endpoint(), token_getter_.get(),
-      url_loader_factory_, std::move(client_cert_store));
-}
 
 void CorpRegisterSupportHostRequest::RegisterHost(
     const internal::RemoteSupportHostStruct& host,
@@ -110,11 +105,11 @@ void CorpRegisterSupportHostRequest::RegisterHost(
         }
       },
       std::move(callback)));
-  http_client_->ExecuteRequest(std::move(http_request));
+  http_client_.ExecuteRequest(std::move(http_request));
 }
 
 void CorpRegisterSupportHostRequest::CancelPendingRequests() {
-  http_client_->CancelPendingRequests();
+  http_client_.CancelPendingRequests();
 }
 
 }  // namespace remoting

@@ -5,6 +5,10 @@
 #ifndef REMOTING_HOST_CORP_REGISTER_SUPPORT_HOST_REQUEST_H_
 #define REMOTING_HOST_CORP_REGISTER_SUPPORT_HOST_REQUEST_H_
 
+#include <memory>
+
+#include "base/memory/scoped_refptr.h"
+#include "remoting/base/protobuf_http_client.h"
 #include "remoting/host/register_support_host_request_base.h"
 
 namespace network {
@@ -14,7 +18,6 @@ class SharedURLLoaderFactory;
 namespace remoting {
 
 class OAuthTokenGetter;
-class ProtobufHttpClient;
 
 // Corp implementation of RegisterSupportHostRequest that registers a remote
 // support host by calling the corp internal CreateRemoteSupportHost API.
@@ -33,8 +36,6 @@ class CorpRegisterSupportHostRequest final
   ~CorpRegisterSupportHostRequest() override;
 
  private:
-  void Initialize(
-      std::unique_ptr<net::ClientCertStore> client_cert_store) override;
   void RegisterHost(
       const internal::RemoteSupportHostStruct& host,
       const std::optional<ChromeOsEnterpriseParams>& enterprise_params,
@@ -42,10 +43,7 @@ class CorpRegisterSupportHostRequest final
   void CancelPendingRequests() override;
 
   std::unique_ptr<OAuthTokenGetter> token_getter_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // This is constructed when Initialize() is called.
-  std::unique_ptr<ProtobufHttpClient> http_client_;
+  ProtobufHttpClient http_client_;
 };
 
 }  // namespace remoting

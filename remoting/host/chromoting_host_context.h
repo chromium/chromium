@@ -7,12 +7,13 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/management/platform_management_service.h"
 
 namespace base {
+class SequencedTaskRunner;
 class SingleThreadTaskRunner;
 }  // namespace base
 
@@ -65,17 +66,23 @@ class ChromotingHostContext {
 
   // Per-platform classes must implement these methods.
   virtual std::unique_ptr<ChromotingHostContext> Copy() = 0;
-  virtual std::unique_ptr<net::ClientCertStore> CreateClientCertStore()
-      const = 0;
   virtual scoped_refptr<net::URLRequestContextGetter>
   url_request_context_getter() const = 0;
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   url_loader_factory() = 0;
-  // Returns a callback that can be called to create a ClientCertStore.
+
+  // Returns a callback that creates ClientCertStores for host network requests.
   virtual CreateClientCertStoreCallback create_client_cert_store_callback()
       const = 0;
+
+  // Replaces the callback returned by create_client_cert_store_callback().
   virtual void set_create_client_cert_store_callback(
       CreateClientCertStoreCallback create_client_cert_store_callback) = 0;
+
+  // Returns the task runner on which ClientCertStores must run, or nullptr to
+  // use the caller's sequence.
+  virtual scoped_refptr<base::SequencedTaskRunner>
+  client_cert_store_task_runner() const;
 
   // Task runner for the thread that is used for the UI.
   scoped_refptr<AutoThreadTaskRunner> ui_task_runner() const;

@@ -64,8 +64,6 @@ class RemotingRegisterSupportHostRequest final
 
   class RegisterSupportHostClientImpl;
 
-  void Initialize(
-      std::unique_ptr<net::ClientCertStore> client_cert_store) override;
   void RegisterHost(
       const internal::RemoteSupportHostStruct& host,
       const std::optional<ChromeOsEnterpriseParams>& enterprise_params,

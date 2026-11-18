@@ -39,7 +39,6 @@ class RegisterSupportHostRequestBase : public RegisterSupportHostRequest,
 
   // RegisterSupportHostRequest implementation.
   void StartRequest(SignalStrategy* signal_strategy,
-                    std::unique_ptr<net::ClientCertStore> client_cert_store,
                     scoped_refptr<RsaKeyPair> key_pair,
                     const std::string& authorized_helper,
                     std::optional<ChromeOsEnterpriseParams> params,
@@ -54,8 +53,6 @@ class RegisterSupportHostRequestBase : public RegisterSupportHostRequest,
                                std::string_view support_id,
                                base::TimeDelta support_id_lifetime))>;
 
-  virtual void Initialize(
-      std::unique_ptr<net::ClientCertStore> client_cert_store) = 0;
   virtual void RegisterHost(
       const internal::RemoteSupportHostStruct& host,
       const std::optional<ChromeOsEnterpriseParams>& enterprise_params,

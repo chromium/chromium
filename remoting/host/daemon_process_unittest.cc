@@ -514,4 +514,26 @@ TEST_F(DaemonProcessTest, CallsOnPeerSessionManagerBoundWhenRequested) {
           .PassHandle());
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(DaemonProcessTest, MultipleCertificateBrokersCanBindConcurrently) {
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
+  StartDaemonProcess();
+
+  mojo::AssociatedRemote<mojom::CertificateBroker> first_broker;
+  daemon_process_->OnAssociatedInterfaceRequest(
+      mojom::CertificateBroker::Name_,
+      first_broker.BindNewEndpointAndPassDedicatedReceiver().PassHandle());
+
+  mojo::AssociatedRemote<mojom::CertificateBroker> second_broker;
+  daemon_process_->OnAssociatedInterfaceRequest(
+      mojom::CertificateBroker::Name_,
+      second_broker.BindNewEndpointAndPassDedicatedReceiver().PassHandle());
+
+  first_broker.FlushForTesting();
+  second_broker.FlushForTesting();
+  EXPECT_TRUE(first_broker.is_connected());
+  EXPECT_TRUE(second_broker.is_connected());
+}
+#endif
+
 }  // namespace remoting

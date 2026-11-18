@@ -5,12 +5,15 @@
 #include "remoting/host/chromoting_host_context.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -48,7 +51,6 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
 
   // remoting::ChromotingHostContext implementation.
   std::unique_ptr<ChromotingHostContext> Copy() override;
-  std::unique_ptr<net::ClientCertStore> CreateClientCertStore() const override;
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter()
       const override;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() override;
@@ -57,6 +59,7 @@ class ChromotingHostContextChromeOs : public ChromotingHostContext {
   void set_create_client_cert_store_callback(
       CreateClientCertStoreCallback create_client_cert_store_callback)
       override {
+    CHECK(create_client_cert_store_callback);
     create_client_cert_store_ = std::move(create_client_cert_store_callback);
   }
 
@@ -94,7 +97,9 @@ ChromotingHostContextChromeOs::ChromotingHostContextChromeOs(
                             video_capture_task_runner),
       ui_shared_url_loader_factory_(shared_url_loader_factory),
       pending_factory_(ui_shared_url_loader_factory_->Clone()),
-      create_client_cert_store_(create_client_cert_store) {}
+      create_client_cert_store_(std::move(create_client_cert_store)) {
+  CHECK(create_client_cert_store_);
+}
 
 ChromotingHostContextChromeOs::~ChromotingHostContextChromeOs() {
   // |ui_shared_url_loader_factory_| should always be valid however
@@ -113,12 +118,6 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContextChromeOs::Copy() {
       ui_task_runner(), file_task_runner(), input_task_runner(),
       network_task_runner(), video_capture_task_runner(),
       ui_shared_url_loader_factory_, create_client_cert_store_);
-}
-
-std::unique_ptr<net::ClientCertStore>
-ChromotingHostContextChromeOs::CreateClientCertStore() const {
-  DCHECK(network_task_runner()->BelongsToCurrentThread());
-  return create_client_cert_store_.Run();
 }
 
 scoped_refptr<net::URLRequestContextGetter>
@@ -166,7 +165,6 @@ class ChromotingHostContextDesktop : public ChromotingHostContext {
 
   // remoting::ChromotingHostContext implementation.
   std::unique_ptr<ChromotingHostContext> Copy() override;
-  std::unique_ptr<net::ClientCertStore> CreateClientCertStore() const override;
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter()
       const override;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() override;
@@ -198,7 +196,9 @@ ChromotingHostContextDesktop::ChromotingHostContextDesktop(
                             input_task_runner,
                             network_task_runner,
                             video_capture_task_runner),
-      url_request_context_getter_(url_request_context_getter) {}
+      url_request_context_getter_(url_request_context_getter),
+      create_client_cert_store_(
+          base::BindRepeating(&CreateClientCertStoreInstance)) {}
 
 ChromotingHostContextDesktop::~ChromotingHostContextDesktop() {
   if (url_loader_factory_owner_) {
@@ -214,15 +214,6 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContextDesktop::Copy() {
       url_request_context_getter_);
   copy->set_create_client_cert_store_callback(create_client_cert_store_);
   return copy;
-}
-
-std::unique_ptr<net::ClientCertStore>
-ChromotingHostContextDesktop::CreateClientCertStore() const {
-  DCHECK(network_task_runner()->BelongsToCurrentThread());
-  if (create_client_cert_store_) {
-    return create_client_cert_store_.Run();
-  }
-  return CreateClientCertStoreInstance();
 }
 
 scoped_refptr<net::URLRequestContextGetter>
@@ -243,14 +234,12 @@ ChromotingHostContextDesktop::url_loader_factory() {
 
 ChromotingHostContext::CreateClientCertStoreCallback
 ChromotingHostContextDesktop::create_client_cert_store_callback() const {
-  if (create_client_cert_store_) {
-    return create_client_cert_store_;
-  }
-  return base::BindRepeating(&CreateClientCertStoreInstance);
+  return create_client_cert_store_;
 }
 
 void ChromotingHostContextDesktop::set_create_client_cert_store_callback(
     CreateClientCertStoreCallback create_client_cert_store_callback) {
+  CHECK(create_client_cert_store_callback);
   create_client_cert_store_ = std::move(create_client_cert_store_callback);
 }
 
@@ -300,6 +289,11 @@ ChromotingHostContext::video_capture_task_runner() const {
 
 policy::ManagementService* ChromotingHostContext::management_service() {
   return policy::PlatformManagementService::GetInstance();
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+ChromotingHostContext::client_cert_store_task_runner() const {
+  return nullptr;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -365,12 +359,11 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContext::CreateForChromeOS(
   // Use browser's file thread as the joiner as it is the only browser-thread
   // that allows blocking I/O, which is required by thread joining.
   return std::make_unique<ChromotingHostContextChromeOs>(
-      ui_auto_task_runner,
-      file_auto_task_runner,
+      ui_auto_task_runner, file_auto_task_runner,
       ui_auto_task_runner,  // input_task_runner
       io_auto_task_runner,  // network_task_runner
       ui_auto_task_runner,  // video_capture_task_runner
-      shared_url_loader_factory, create_client_cert_store);
+      shared_url_loader_factory, std::move(create_client_cert_store));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

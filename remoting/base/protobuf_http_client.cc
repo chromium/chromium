@@ -4,14 +4,22 @@
 
 #include "remoting/base/protobuf_http_client.h"
 
+#include <utility>
+#include <variant>
+
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "google_apis/common/api_key_request_util.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
+#include "net/ssl/client_cert_store.h"
 #include "remoting/base/certificate_helpers.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/oauth_token_getter.h"
@@ -27,46 +35,44 @@
 namespace remoting {
 
 namespace {
-base::Lock& GetGlobalCreateClientCertStoreLock() {
-  static base::NoDestructor<base::Lock> lock;
-  return *lock;
+
+struct GlobalClientCertStoreConfig {
+  base::Lock lock;
+  // Default config calls `CreateClientCertStoreInstance()` and uses the store
+  // on the client's sequence (`task_runner` is null).
+  ProtobufHttpClient::CreateClientCertStoreCallback callback GUARDED_BY(lock) =
+      base::BindRepeating(&CreateClientCertStoreInstance);
+  scoped_refptr<base::SequencedTaskRunner> task_runner GUARDED_BY(lock);
+};
+
+GlobalClientCertStoreConfig& GetGlobalClientCertStoreConfig() {
+  static base::NoDestructor<GlobalClientCertStoreConfig> config;
+  return *config;
 }
 
-ProtobufHttpClient::CreateClientCertStoreCallback&
-GetGlobalCreateClientCertStoreCallbackInternal() {
-  static base::NoDestructor<ProtobufHttpClient::CreateClientCertStoreCallback>
-      callback(base::BindRepeating(&CreateClientCertStoreInstance));
-  return *callback;
-}
-
-ProtobufHttpClient::CreateClientCertStoreCallback
-GetGlobalCreateClientCertStoreCallback() {
-  base::AutoLock lock(GetGlobalCreateClientCertStoreLock());
-  return GetGlobalCreateClientCertStoreCallbackInternal();
-}
 }  // namespace
 
 // static
 void ProtobufHttpClient::SetCreateClientCertStoreCallback(
-    CreateClientCertStoreCallback callback) {
-  base::AutoLock lock(GetGlobalCreateClientCertStoreLock());
-  if (callback) {
-    GetGlobalCreateClientCertStoreCallbackInternal() = std::move(callback);
-  } else {
-    GetGlobalCreateClientCertStoreCallbackInternal() =
-        base::BindRepeating(&CreateClientCertStoreInstance);
+    CreateClientCertStoreCallback callback,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  if (!callback) {
+    CHECK(!task_runner);
+    callback = base::BindRepeating(&CreateClientCertStoreInstance);
   }
+  auto& config = GetGlobalClientCertStoreConfig();
+  base::AutoLock auto_lock(config.lock);
+  config.callback = std::move(callback);
+  config.task_runner = std::move(task_runner);
 }
 
 ProtobufHttpClient::ProtobufHttpClient(
     const std::string& server_endpoint,
     OAuthTokenGetter* token_getter,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<net::ClientCertStore> client_cert_store)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : server_endpoint_(server_endpoint),
       token_getter_(token_getter),
-      url_loader_factory_(url_loader_factory),
-      client_cert_store_(std::move(client_cert_store)) {}
+      url_loader_factory_(url_loader_factory) {}
 
 ProtobufHttpClient::~ProtobufHttpClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -149,6 +155,8 @@ ProtobufHttpClient::CreateSimpleUrlLoader(
     const std::string& access_token,
     base::TimeDelta timeout_duration,
     const ProtobufHttpRequestConfig& config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL("https://" + server_endpoint_ + config.path);
   resource_request->load_flags =
@@ -172,22 +180,40 @@ ProtobufHttpClient::CreateSimpleUrlLoader(
       resource_request->trusted_params.emplace();
     }
 
-    if (!service_observer_.has_value()) {
-      if (!client_cert_store_) {
-        auto callback = GetGlobalCreateClientCertStoreCallback();
-        client_cert_store_ = callback.Run();
+    if (std::holds_alternative<std::monostate>(service_observer_)) {
+      CreateClientCertStoreCallback create_store_callback;
+      scoped_refptr<base::SequencedTaskRunner> task_runner;
+      {
+        auto& cert_store_config = GetGlobalClientCertStoreConfig();
+        base::AutoLock auto_lock(cert_store_config.lock);
+        create_store_callback = cert_store_config.callback;
+        task_runner = cert_store_config.task_runner;
       }
-      if (client_cert_store_) {
-        service_observer_.emplace(std::move(client_cert_store_));
+      if (task_runner && !task_runner->RunsTasksInCurrentSequence()) {
+        service_observer_
+            .emplace<base::SequenceBound<UrlLoaderNetworkServiceObserver>>(
+                std::move(task_runner), std::move(create_store_callback));
       } else {
-        LOG(WARNING)
-            << "ClientCertStore is null; request cannot provide client cert";
+        service_observer_.emplace<UrlLoaderNetworkServiceObserver>(
+            std::move(create_store_callback));
       }
     }
-    if (service_observer_.has_value()) {
-      resource_request->trusted_params->url_loader_network_observer =
-          service_observer_->Bind();
+    // Calls made before BindReceiver runs on the observer's sequence wait in
+    // the Mojo pipe.
+    mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+        observer;
+    auto receiver = observer.InitWithNewPipeAndPassReceiver();
+    if (auto* direct_observer =
+            std::get_if<UrlLoaderNetworkServiceObserver>(&service_observer_)) {
+      direct_observer->BindReceiver(std::move(receiver));
+    } else {
+      std::get<base::SequenceBound<UrlLoaderNetworkServiceObserver>>(
+          service_observer_)
+          .AsyncCall(&UrlLoaderNetworkServiceObserver::BindReceiver)
+          .WithArgs(std::move(receiver));
     }
+    resource_request->trusted_params->url_loader_network_observer =
+        std::move(observer);
   }
 
   std::unique_ptr<network::SimpleURLLoader> send_url_loader =

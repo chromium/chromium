@@ -48,7 +48,6 @@ RegisterSupportHostRequestBase::~RegisterSupportHostRequestBase() {
 
 void RegisterSupportHostRequestBase::StartRequest(
     SignalStrategy* signal_strategy,
-    std::unique_ptr<net::ClientCertStore> client_cert_store,
     scoped_refptr<RsaKeyPair> key_pair,
     const std::string& authorized_helper,
     std::optional<ChromeOsEnterpriseParams> params,
@@ -64,7 +63,6 @@ void RegisterSupportHostRequestBase::StartRequest(
   authorized_helper_ = authorized_helper;
 
   signal_strategy_->AddListener(this);
-  Initialize(std::move(client_cert_store));
 }
 
 void RegisterSupportHostRequestBase::OnSignalingStateChanged(

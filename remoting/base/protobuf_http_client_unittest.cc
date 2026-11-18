@@ -4,17 +4,34 @@
 
 #include "remoting/base/protobuf_http_client.h"
 
+#include <stdint.h>
+
+#include <atomic>
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "net/ssl/client_cert_store.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/mock_oauth_token_getter.h"
@@ -25,6 +42,7 @@
 #include "remoting/base/protobuf_http_stream_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -150,7 +168,7 @@ class ProtobufHttpClientTest : public testing::Test {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
   ProtobufHttpClient client_{kTestServerEndpoint, &mock_token_getter_,
-                             test_shared_loader_factory_, nullptr};
+                             test_shared_loader_factory_};
 
   void TearDown() override {
     ProtobufHttpClient::SetCreateClientCertStoreCallback({});
@@ -823,67 +841,269 @@ TEST_F(ProtobufHttpClientTest, StreamReadyTimeout) {
   ASSERT_FALSE(client_.HasPendingRequests());
 }
 
+namespace {
+
+// A store that has no certs, and that verifies that it is only used on
+// `task_runner`.
 class FakeClientCertStore : public net::ClientCertStore {
  public:
-  FakeClientCertStore() = default;
-  ~FakeClientCertStore() override = default;
+  explicit FakeClientCertStore(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      base::OnceClosure on_destroyed = base::DoNothing(),
+      std::vector<ClientCertListCallback>* held_callbacks = nullptr)
+      : task_runner_(std::move(task_runner)),
+        on_destroyed_(std::move(on_destroyed)),
+        held_callbacks_(held_callbacks) {
+    EXPECT_TRUE(task_runner_->RunsTasksInCurrentSequence());
+  }
+
+  ~FakeClientCertStore() override {
+    EXPECT_TRUE(task_runner_->RunsTasksInCurrentSequence());
+    std::move(on_destroyed_).Run();
+  }
 
   void GetClientCerts(
       scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
       ClientCertListCallback callback) override {
+    EXPECT_TRUE(task_runner_->RunsTasksInCurrentSequence());
+    if (held_callbacks_) {
+      held_callbacks_->push_back(std::move(callback));
+      return;
+    }
     std::move(callback).Run({});
   }
+
+ private:
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::OnceClosure on_destroyed_;
+  raw_ptr<std::vector<ClientCertListCallback>> held_callbacks_;
 };
 
-TEST_F(ProtobufHttpClientTest, ProvideCertificateWithCustomStore) {
-  ProtobufHttpClient client{kTestServerEndpoint, &mock_token_getter_,
-                            test_shared_loader_factory_,
-                            std::make_unique<FakeClientCertStore>()};
+// Receives the response to a certificate request.
+class FakeClientCertificateResponder
+    : public network::mojom::ClientCertificateResponder {
+ public:
+  mojo::PendingRemote<network::mojom::ClientCertificateResponder>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
 
-  ExpectCallWithTokenSuccess();
+  bool WaitForContinueWithoutCertificate() {
+    return continued_without_certificate_.Wait();
+  }
 
-  auto config = CreateDefaultRequestConfig();
-  config->provide_certificate = true;
-  auto request = CreateDefaultTestRequest(std::move(config));
-  client.ExecuteRequest(std::move(request));
+  // network::mojom::ClientCertificateResponder implementation:
+  void ContinueWithCertificate(
+      const scoped_refptr<net::X509Certificate>& x509_certificate,
+      const std::string& provider_name,
+      const std::vector<uint16_t>& algorithm_preferences,
+      mojo::PendingRemote<network::mojom::SSLPrivateKey> ssl_private_key)
+      override {
+    ADD_FAILURE() << "Unexpected certificate";
+  }
+  void ContinueWithoutCertificate() override {
+    continued_without_certificate_.SetValue();
+  }
+  void CancelRequest() override { ADD_FAILURE() << "Unexpected cancellation"; }
 
-  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+ private:
+  mojo::Receiver<network::mojom::ClientCertificateResponder> receiver_{this};
+  base::test::TestFuture<void> continued_without_certificate_;
+};
+
+// Returns the observer of the first pending request of `url_loader_factory`,
+// which the network service calls when the server asks for a client
+// certificate.
+mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> TakeObserver(
+    network::TestURLLoaderFactory& url_loader_factory) {
+  mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer;
   network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_.GetPendingRequest(0);
-  ASSERT_TRUE(pending_request->request.trusted_params.has_value());
-  ASSERT_TRUE(
-      pending_request->request.trusted_params->url_loader_network_observer);
+      url_loader_factory.GetPendingRequest(0);
+  if (!pending_request || !pending_request->request.trusted_params ||
+      !pending_request->request.trusted_params->url_loader_network_observer) {
+    ADD_FAILURE() << "The pending request has no observer";
+    return observer;
+  }
+  observer.Bind(std::move(
+      pending_request->request.trusted_params->url_loader_network_observer));
+  return observer;
 }
 
-TEST_F(ProtobufHttpClientTest, ProvideCertificateWithStaticCallback) {
-  bool callback_called = false;
+// Sends a certificate request to `observer`, like the network service does, and
+// returns whether the request was continued without a certificate.
+bool RequestCertificate(
+    mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver>& observer) {
+  if (!observer) {
+    return false;
+  }
+  FakeClientCertificateResponder responder;
+  observer->OnCertificateRequested(
+      std::nullopt, base::MakeRefCounted<net::SSLCertRequestInfo>(),
+      responder.BindNewPipeAndPassRemote());
+  return responder.WaitForContinueWithoutCertificate();
+}
+
+}  // namespace
+
+TEST_F(ProtobufHttpClientTest, ProvideCertificateWithGlobalCallback) {
+  int stores_created = 0;
   ProtobufHttpClient::SetCreateClientCertStoreCallback(
       base::BindLambdaForTesting(
           [&]() -> std::unique_ptr<net::ClientCertStore> {
-            callback_called = true;
-            return std::make_unique<FakeClientCertStore>();
+            ++stores_created;
+            return std::make_unique<FakeClientCertStore>(
+                base::SequencedTaskRunner::GetCurrentDefault());
           }));
 
-  ProtobufHttpClient client{kTestServerEndpoint, &mock_token_getter_,
-                            test_shared_loader_factory_, nullptr};
+  auto client = std::make_unique<ProtobufHttpClient>(
+      kTestServerEndpoint, &mock_token_getter_, test_shared_loader_factory_);
 
   ExpectCallWithTokenSuccess();
 
   auto config = CreateDefaultRequestConfig();
   config->provide_certificate = true;
-  auto request = CreateDefaultTestRequest(std::move(config));
-  client.ExecuteRequest(std::move(request));
+  client->ExecuteRequest(CreateDefaultTestRequest(std::move(config)));
 
-  EXPECT_TRUE(callback_called);
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
-  network::TestURLLoaderFactory::PendingRequest* pending_request =
-      test_url_loader_factory_.GetPendingRequest(0);
-  ASSERT_TRUE(pending_request->request.trusted_params.has_value());
-  ASSERT_TRUE(
-      pending_request->request.trusted_params->url_loader_network_observer);
+  EXPECT_EQ(stores_created, 0);
 
-  // Clean up global callback.
+  auto observer = TakeObserver(test_url_loader_factory_);
+  EXPECT_TRUE(RequestCertificate(observer));
+  EXPECT_EQ(stores_created, 1);
+  EXPECT_TRUE(RequestCertificate(observer));
+  EXPECT_EQ(stores_created, 2);
+}
+
+// Regression test for LeakSanitizer failures when tests destroy the client
+// without spinning the task environment afterward: when no cross-sequence task
+// runner is configured, the observer and any pending stores are destroyed
+// synchronously with the client.
+TEST_F(ProtobufHttpClientTest,
+       ProvideCertificateWithoutTaskRunner_DestroysStoreSynchronously) {
+  int stores_created = 0;
+  int stores_destroyed = 0;
+  std::vector<net::ClientCertStore::ClientCertListCallback> held_callbacks;
+  ProtobufHttpClient::SetCreateClientCertStoreCallback(
+      base::BindLambdaForTesting(
+          [&]() -> std::unique_ptr<net::ClientCertStore> {
+            ++stores_created;
+            return std::make_unique<FakeClientCertStore>(
+                base::SequencedTaskRunner::GetCurrentDefault(),
+                base::BindLambdaForTesting([&]() { ++stores_destroyed; }),
+                &held_callbacks);
+          }));
+
+  auto client = std::make_unique<ProtobufHttpClient>(
+      kTestServerEndpoint, &mock_token_getter_, test_shared_loader_factory_);
+
+  ExpectCallWithTokenSuccess();
+
+  auto config = CreateDefaultRequestConfig();
+  config->provide_certificate = true;
+  client->ExecuteRequest(CreateDefaultTestRequest(std::move(config)));
+
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+  auto observer = TakeObserver(test_url_loader_factory_);
+  FakeClientCertificateResponder responder;
+  observer->OnCertificateRequested(
+      std::nullopt, base::MakeRefCounted<net::SSLCertRequestInfo>(),
+      responder.BindNewPipeAndPassRemote());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return stores_created == 1; }));
+  EXPECT_EQ(stores_destroyed, 0);
+
+  client.reset();
+  EXPECT_EQ(stores_destroyed, 1);
+}
+
+// When the configured task runner is the client's current sequence, the client
+// also owns the observer directly and destroys it and its pending stores
+// synchronously.
+TEST_F(
+    ProtobufHttpClientTest,
+    ProvideCertificateWithSameSequenceTaskRunner_DestroysStoreSynchronously) {
+  int stores_created = 0;
+  int stores_destroyed = 0;
+  std::vector<net::ClientCertStore::ClientCertListCallback> held_callbacks;
+  ProtobufHttpClient::SetCreateClientCertStoreCallback(
+      base::BindLambdaForTesting(
+          [&]() -> std::unique_ptr<net::ClientCertStore> {
+            ++stores_created;
+            return std::make_unique<FakeClientCertStore>(
+                base::SequencedTaskRunner::GetCurrentDefault(),
+                base::BindLambdaForTesting([&]() { ++stores_destroyed; }),
+                &held_callbacks);
+          }),
+      base::SequencedTaskRunner::GetCurrentDefault());
+
+  auto client = std::make_unique<ProtobufHttpClient>(
+      kTestServerEndpoint, &mock_token_getter_, test_shared_loader_factory_);
+
+  ExpectCallWithTokenSuccess();
+
+  auto config = CreateDefaultRequestConfig();
+  config->provide_certificate = true;
+  client->ExecuteRequest(CreateDefaultTestRequest(std::move(config)));
+
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kTestFullUrl));
+  auto observer = TakeObserver(test_url_loader_factory_);
+  FakeClientCertificateResponder responder;
+  observer->OnCertificateRequested(
+      std::nullopt, base::MakeRefCounted<net::SSLCertRequestInfo>(),
+      responder.BindNewPipeAndPassRemote());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return stores_created == 1; }));
+  EXPECT_EQ(stores_destroyed, 0);
+
+  client.reset();
+  EXPECT_EQ(stores_destroyed, 1);
+}
+
+TEST(ProtobufHttpClientClientCertStoreTest,
+     ProvideCertificateWithDedicatedTaskRunner) {
+  base::test::TaskEnvironment task_environment;
+  network::TestURLLoaderFactory test_url_loader_factory;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory);
+
+  scoped_refptr<base::SequencedTaskRunner> store_task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({});
+  std::atomic<int> stores_created = 0;
+  std::atomic<int> stores_destroyed = 0;
+  ProtobufHttpClient::SetCreateClientCertStoreCallback(
+      base::BindLambdaForTesting(
+          [&]() -> std::unique_ptr<net::ClientCertStore> {
+            ++stores_created;
+            return std::make_unique<FakeClientCertStore>(
+                store_task_runner,
+                base::BindLambdaForTesting([&]() { ++stores_destroyed; }));
+          }),
+      store_task_runner);
+
+  auto client = std::make_unique<ProtobufHttpClient>(
+      kTestServerEndpoint, /*token_getter=*/nullptr,
+      test_shared_loader_factory);
+
+  auto config = CreateDefaultRequestConfig();
+  config->authenticated = false;
+  config->provide_certificate = true;
+  client->ExecuteRequest(CreateDefaultTestRequest(std::move(config)));
+
+  EXPECT_TRUE(test_url_loader_factory.IsPending(kTestFullUrl));
+  if (test_url_loader_factory.IsPending(kTestFullUrl)) {
+    auto observer = TakeObserver(test_url_loader_factory);
+    EXPECT_TRUE(RequestCertificate(observer));
+    EXPECT_TRUE(RequestCertificate(observer));
+    EXPECT_EQ(stores_created.load(), 2);
+  }
+
+  client.reset();
   ProtobufHttpClient::SetCreateClientCertStoreCallback({});
+
+  base::test::TestFuture<void> flushed;
+  store_task_runner->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                      flushed.GetCallback());
+  EXPECT_TRUE(flushed.Wait());
+  EXPECT_EQ(stores_destroyed.load(), 2);
 }
 
 }  // namespace remoting

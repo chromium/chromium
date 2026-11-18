@@ -6,27 +6,36 @@
 #define REMOTING_BASE_URL_LOADER_NETWORK_SERVICE_OBSERVER_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/ssl/client_cert_store.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/gurl.h"
 
 namespace remoting {
 
-// Helper class for providing a certificate for HTTPS requests.
+// Helper class for providing client certificates for HTTPS requests.
 class UrlLoaderNetworkServiceObserver
     : public network::mojom::URLLoaderNetworkServiceObserver {
  public:
+  using CreateClientCertStoreCallback =
+      base::RepeatingCallback<std::unique_ptr<net::ClientCertStore>()>;
+
+  // `create_client_cert_store` must be non-null; if it returns nullptr,
+  // certificate requests continue without a certificate.
   explicit UrlLoaderNetworkServiceObserver(
-      std::unique_ptr<net::ClientCertStore> client_cert_store);
+      CreateClientCertStoreCallback create_client_cert_store);
   ~UrlLoaderNetworkServiceObserver() override;
 
   UrlLoaderNetworkServiceObserver(const UrlLoaderNetworkServiceObserver&) =
@@ -34,7 +43,9 @@ class UrlLoaderNetworkServiceObserver
   UrlLoaderNetworkServiceObserver& operator=(
       const UrlLoaderNetworkServiceObserver&) = delete;
 
-  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> Bind();
+  void BindReceiver(
+      mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
+          receiver);
 
  private:
   // network::mojom::URLLoaderNetworkServiceObserver overrides.
@@ -91,21 +102,25 @@ class UrlLoaderNetworkServiceObserver
       network::mojom::IPAddressSpace target_address_space) override;
 
   void OnCertificatesSelected(
-      mojo::PendingRemote<network::mojom::ClientCertificateResponder>
-          client_cert_responder,
+      net::ClientCertStore* store,
+      mojo::Remote<network::mojom::ClientCertificateResponder> responder,
       const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
       net::ClientCertIdentityList selected_certs);
 
   void ContinueWithCertificate(
-      mojo::PendingRemote<network::mojom::ClientCertificateResponder>
-          client_cert_responder,
+      mojo::Remote<network::mojom::ClientCertificateResponder> responder,
       scoped_refptr<net::X509Certificate> client_cert,
       scoped_refptr<net::SSLPrivateKey> client_private_key);
+
+  void OnResponderDisconnected(net::ClientCertStore* store);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver> receivers_;
-  std::unique_ptr<net::ClientCertStore> client_cert_store_;
+  CreateClientCertStoreCallback create_client_cert_store_;
+  std::set<std::unique_ptr<net::ClientCertStore>, base::UniquePtrComparator>
+      pending_cert_stores_;
+
   base::WeakPtrFactory<UrlLoaderNetworkServiceObserver> weak_factory_{this};
 };
 
