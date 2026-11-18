@@ -1605,9 +1605,6 @@ public class NotificationPlatformBridge {
                     suspender.cancelNotificationsWithIds(otherNotificationsBackups.keySet());
 
                     NotificationUmaTracker.getInstance()
-                            .recordPreUnsubscribeRealDuration(
-                                    SystemClock.elapsedRealtime() - taskStartRealtimeMillis);
-                    NotificationUmaTracker.getInstance()
                             .recordPreUnsubscribeDuration(
                                     SystemClock.uptimeMillis() - taskStartUptimeMillis);
                 });

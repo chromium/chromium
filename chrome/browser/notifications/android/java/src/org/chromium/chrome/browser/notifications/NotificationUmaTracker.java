@@ -732,17 +732,6 @@ public class NotificationUmaTracker {
 
     /**
      * Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action button took in
-     * real time, which includes time spent in power-saving modes and/or display being dark.
-     */
-    public void recordPreUnsubscribeRealDuration(long durationMillis) {
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
-                        + "PreUnsubscribePreNativeRealDuration",
-                durationMillis);
-    }
-
-    /**
-     * Records how long the pre-native processing for the `PRE_UNSUBSCRIBE` action button took in
      * `uptimeMillis`, which stops the clock when in power-saving modes and/or display being dark.
      */
     public void recordPreUnsubscribeDuration(long durationMillis) {
