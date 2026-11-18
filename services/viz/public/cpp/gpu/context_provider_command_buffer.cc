@@ -284,8 +284,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
       // The WebGPUImplementation exposes the WebGPUInterface, as well as the
       // gpu::ContextSupport interface.
       auto webgpu_impl = std::make_unique<gpu::webgpu::WebGPUImplementation>(
-          webgpu_helper.get(), transfer_buffer.get(), command_buffer_.get(),
-          default_task_runner_ != reply_task_runner_);
+          webgpu_helper.get(), transfer_buffer.get(), command_buffer_.get());
       bind_result_ = webgpu_impl->Initialize(memory_limits_);
       if (bind_result_ != gpu::ContextResult::kSuccess) {
         DLOG(ERROR) << "Failed to initialize WebGPUImplementation.";
