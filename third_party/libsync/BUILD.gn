@@ -25,8 +25,17 @@ if (!use_system_libsync) {
   }
 
   config("libsync_private_config") {
-    # To suppress the warning caused by strlcpy.
-    cflags = [ "-Wno-implicit-function-declaration" ]
+    if (is_linux || is_chromeos) {
+      # src/sync.c calls strlcpy(), which glibc only declares since 2.38.
+      # Chromium's Linux sysroot has an older glibc, and C23 has no implicit
+      # function declarations, so force-include a declaration for strlcpy.c.
+      # Remove this once the sysroot has glibc 2.38 or newer. Android's bionic
+      # already declares strlcpy().
+      cflags = [
+        "-include",
+        rebase_path("strlcpy.h", root_build_dir),
+      ]
+    }
   }
 
   source_set("libsync") {
@@ -36,6 +45,7 @@ if (!use_system_libsync) {
       "src/sw_sync.h",
       "src/sync.c",
       "strlcpy.c",
+      "strlcpy.h",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]

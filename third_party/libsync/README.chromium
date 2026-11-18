@@ -10,7 +10,10 @@ License: Apache-2.0
 License File: LICENSE
 
 Modifications:
-- Added strlcpy.c
+- Added strlcpy.c and strlcpy.h.
+- On Linux and ChromeOS, BUILD.gn force-includes strlcpy.h when compiling
+  src/sync.c, since the sysroot's glibc (before 2.38) doesn't declare strlcpy()
+  and C23 has no implicit function declarations.
 - src/ has only the upstream files Chromium builds, plus NOTICE; Android.bp,
   libsync.map.txt, OWNERS and tests/ are not imported.
 - src/include/sync/sync.h is a copy of src/include/android/sync.h; upstream
