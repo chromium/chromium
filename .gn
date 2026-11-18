@@ -316,6 +316,7 @@ no_check_generated_targets = [
   "//sandbox/policy/mac:packaged_sb_files",
   "//services/data_decoder/xml:xml_parser_rs_cxx_generated",
   "//services/device/public/mojom:mojom_blink",
+  "//services/network/public/cpp:orb_sniffers_rust_bindings",
   "//services/network/public/mojom:cookies_mojom",
   "//services/network/public/mojom:mojom_integrity_policy",
   "//services/network/public/mojom:mojom_ip_address_blink",
