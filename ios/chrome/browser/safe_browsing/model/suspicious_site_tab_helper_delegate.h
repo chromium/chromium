@@ -12,8 +12,10 @@
 @protocol SuspiciousSiteTabHelperDelegate <NSObject>
 
 // Instructs the delegate to present the suspicious site warning alert for the
-// active WebState.
-- (void)showSuspiciousSiteWarning;
+// active WebState. Returns YES if the warning was presented, or NO if
+// presentation was not possible (for example, another modal is already
+// presented).
+- (BOOL)showSuspiciousSiteWarning;
 
 // Instructs the delegate to dismiss any currently presented suspicious site
 // warning alert.

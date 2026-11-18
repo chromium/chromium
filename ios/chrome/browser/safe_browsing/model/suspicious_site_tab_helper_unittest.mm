@@ -69,13 +69,26 @@ class TestNavigationManager : public web::FakeNavigationManager {
 @property(nonatomic, assign) NSUInteger showCount;
 @property(nonatomic, assign) NSUInteger dismissCount;
 @property(nonatomic, assign) BOOL warningVisible;
+@property(nonatomic, assign) BOOL canShowWarning;
 @end
 
 @implementation FakeSuspiciousSiteTabHelperDelegate
 
-- (void)showSuspiciousSiteWarning {
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _canShowWarning = YES;
+  }
+  return self;
+}
+
+- (BOOL)showSuspiciousSiteWarning {
+  if (!self.canShowWarning) {
+    return NO;
+  }
   self.showCount++;
   self.warningVisible = YES;
+  return YES;
 }
 
 - (void)dismissSuspiciousSiteWarning {
@@ -249,6 +262,49 @@ TEST_F(SuspiciousSiteTabHelperTest, DefersWarningUntilAsyncCheckCompletes) {
 
   client_.run_async_callbacks();
   EXPECT_EQ(delegate_.showCount, 1u);
+  EXPECT_TRUE(delegate_.warningVisible);
+}
+
+// Tests that reloading an already-committed suspicious URL when
+// `ShouldAllowRequest` and cached Safe Browsing checks complete before
+// `DidStartNavigation` (as happens in `WKWebView`) defers the warning until the
+// reload commits in `DidFinishNavigation`.
+TEST_F(SuspiciousSiteTabHelperTest,
+       DefersWarningOnReloadWhenChecksCompleteBeforeDidStartNavigation) {
+  const GURL url(kSuspiciousUrl);
+  CompleteSafeNavigation(url);
+
+  // Simulate `WKWebView` reload ordering: `ShouldAllowRequest` and cached
+  // sync/async Safe Browsing checks run before `DidStartNavigation`.
+  const web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_RELOAD,
+      /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/true, /*user_tapped_recently=*/true);
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      decision_future;
+  web_state_->ShouldAllowRequest(
+      [NSURLRequest requestWithURL:net::NSURLWithGURL(url)], request_info,
+      decision_future.GetCallback());
+  EXPECT_TRUE(decision_future.Wait());
+
+  client_.run_sync_callbacks();
+  tab_helper()->OnSuspiciousSiteWarningTriggered(MakeSuspiciousResource(url));
+  client_.run_async_callbacks();
+
+  // The reload has not started or committed yet, so the warning must not be
+  // shown prematurely against the previous navigation's committed state.
+  EXPECT_EQ(delegate_.showCount, 0u);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(url);
+  context.SetIsSameDocument(false);
+  web_state_->OnNavigationStarted(&context);
+
+  CommitMainFrameNavigation(url);
+  EXPECT_EQ(delegate_.showCount, 1u);
+  EXPECT_EQ(delegate_.dismissCount, 0u);
   EXPECT_TRUE(delegate_.warningVisible);
 }
 
@@ -525,4 +581,35 @@ TEST_F(SuspiciousSiteTabHelperTest,
   histogram_tester.ExpectUniqueSample(
       kWarningOutcomeHistogram,
       safe_browsing::SuspiciousSiteWarningOutcome::kAdhered, 1);
+}
+
+// Tests that if the delegate refuses presentation (returns NO), `kShown` is not
+// recorded and the warning can still be shown once presentation becomes
+// possible.
+TEST_F(SuspiciousSiteTabHelperTest,
+       DoesNotRecordShownWhenDelegateCannotPresent) {
+  base::HistogramTester histogram_tester;
+  const GURL url(kSuspiciousUrl);
+  delegate_.canShowWarning = NO;
+
+  StartMainFrameNavigation(url);
+  tab_helper()->OnSuspiciousSiteWarningTriggered(MakeSuspiciousResource(url));
+  client_.run_sync_callbacks();
+  client_.run_async_callbacks();
+  CommitMainFrameNavigation(url);
+
+  EXPECT_EQ(delegate_.showCount, 0u);
+  EXPECT_FALSE(delegate_.warningVisible);
+  histogram_tester.ExpectTotalCount(kUserInteractionHistogram, 0);
+
+  // Once the delegate can present, re-showing the tab presents the warning and
+  // records `kShown`.
+  delegate_.canShowWarning = YES;
+  web_state_->WasHidden();
+  web_state_->WasShown();
+  EXPECT_EQ(delegate_.showCount, 1u);
+  EXPECT_TRUE(delegate_.warningVisible);
+  histogram_tester.ExpectUniqueSample(
+      kUserInteractionHistogram,
+      safe_browsing::SuspiciousSiteWarningUserInteraction::kShown, 1);
 }

@@ -38,8 +38,9 @@
 @end
 
 @implementation TestClientSuspiciousSiteDelegate
-- (void)showSuspiciousSiteWarning {
+- (BOOL)showSuspiciousSiteWarning {
   self.warningShown = YES;
+  return YES;
 }
 - (void)dismissSuspiciousSiteWarning {
   self.warningShown = NO;

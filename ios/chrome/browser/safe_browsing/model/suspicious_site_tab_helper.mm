@@ -60,6 +60,10 @@ SuspiciousSiteTabHelper::~SuspiciousSiteTabHelper() = default;
 
 void SuspiciousSiteTabHelper::SetDelegate(
     id<SuspiciousSiteTabHelperDelegate> delegate) {
+  if (!delegate && is_warning_visible_) {
+    is_warning_visible_ = false;
+    [delegate_ dismissSuspiciousSiteWarning];
+  }
   delegate_ = delegate;
   if (delegate_) {
     MaybeShowWarning();
@@ -215,6 +219,9 @@ void SuspiciousSiteTabHelper::WebStateDestroyed(web::WebState* web_state) {
     RecordUserInteraction(
         safe_browsing::SuspiciousSiteWarningUserInteraction::kCloseTab);
     RecordWarningOutcome(safe_browsing::SuspiciousSiteWarningOutcome::kAdhered);
+    if (is_warning_visible_) {
+      [delegate_ dismissSuspiciousSiteWarning];
+    }
     ResetWarningState();
   }
   web_state_observation_.Reset();
@@ -226,6 +233,16 @@ void SuspiciousSiteTabHelper::WebStateDestroyed(web::WebState* web_state) {
 
 void SuspiciousSiteTabHelper::SafeBrowsingSyncQueryFinished(
     const SafeBrowsingQueryManager::QueryData& query_data) {
+  // `SafeBrowsingQueryManager` only runs main-frame queries on iOS. In
+  // `WKWebView`, `ShouldAllowRequest` runs before `DidStartNavigation`. Since
+  // `ShouldAllowResponse` waits for sync checks before allowing a navigation to
+  // commit, a proceeding navigation for a completed sync check has not
+  // committed yet. Resetting `has_committed_navigation_` here prevents a reload
+  // of an already-committed suspicious URL from mistaking the previous commit
+  // for the new navigation's commit before `DidStartNavigation` arrives.
+  if (query_data.result->proceed) {
+    has_committed_navigation_ = false;
+  }
   MaybeShowWarning();
 }
 
@@ -291,13 +308,16 @@ void SuspiciousSiteTabHelper::MaybeShowWarning() {
     return;
   }
 
+  if (![delegate_ showSuspiciousSiteWarning]) {
+    return;
+  }
+
   is_warning_visible_ = true;
   if (!has_shown_warning_) {
     has_shown_warning_ = true;
     RecordUserInteraction(
         safe_browsing::SuspiciousSiteWarningUserInteraction::kShown);
   }
-  [delegate_ showSuspiciousSiteWarning];
 }
 
 void SuspiciousSiteTabHelper::ResetWarningState() {
