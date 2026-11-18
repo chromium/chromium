@@ -115,7 +115,9 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
     std::unique_ptr<content::WebContents> contents,
     StepSwitchFinishedCallback step_switch_finished_callback) {
   CHECK(signed_in_profile, base::NotFatalUntil::M162);
-  CHECK_EQ(Step::kAccountSelection, current_step(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/584444895): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(Step::kAccountSelection, current_step());
 
   Step step;
   // SAML with ForceSignin flow is migrated to the regular Profile Picker flow.
