@@ -110,7 +110,6 @@ class RenderThreadManager : public CompositorFrameConsumer {
 
   // Accessed by UI thread.
   scoped_refptr<base::SingleThreadTaskRunner> ui_loop_;
-  base::WeakPtr<CompositorFrameProducer> producer_weak_ptr_;
   base::WeakPtr<RenderThreadManager> ui_thread_weak_ptr_;
 #if DCHECK_IS_ON()
   // Becomes false after lifetime of this object transitions from being
@@ -126,6 +125,9 @@ class RenderThreadManager : public CompositorFrameConsumer {
 
   // Accessed by both UI and RT thread.
   mutable base::Lock lock_;
+  // Dereferenced on UI only. Copied on RT which requires lock. Access on UI
+  // thread does not require lock.
+  base::WeakPtr<CompositorFrameProducer> producer_weak_ptr_;
   RootFrameSinkGetter root_frame_sink_getter_;
   gfx::Point scroll_offset_;
   ChildFrameQueue child_frames_;

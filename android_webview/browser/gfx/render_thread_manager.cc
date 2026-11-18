@@ -158,10 +158,15 @@ void RenderThreadManager::InsertReturnedResourcesOnRT(
     uint32_t layer_tree_frame_sink_id) {
   if (resources.empty())
     return;
+  base::WeakPtr<CompositorFrameProducer> producer;
+  {
+    base::AutoLock lock(lock_);
+    producer = producer_weak_ptr_;
+  }
   ui_loop_->PostTask(
       FROM_HERE, base::BindOnce(&CompositorFrameProducer::ReturnUsedResources,
-                                producer_weak_ptr_, std::move(resources),
-                                frame_sink_id, layer_tree_frame_sink_id));
+                                producer, std::move(resources), frame_sink_id,
+                                layer_tree_frame_sink_id));
 }
 
 void RenderThreadManager::CommitFrameOnRT() {
@@ -263,9 +268,9 @@ void RenderThreadManager::SetCompositorFrameProducer(
     RootFrameSinkGetter root_frame_sink_getter) {
   DCHECK(ui_loop_->BelongsToCurrentThread());
   CheckUiCallsAllowed();
-  producer_weak_ptr_ = compositor_frame_producer->GetWeakPtr();
 
   base::AutoLock lock(lock_);
+  producer_weak_ptr_ = compositor_frame_producer->GetWeakPtr();
   root_frame_sink_getter_ = std::move(root_frame_sink_getter);
 }
 
