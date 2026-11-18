@@ -9,10 +9,14 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -65,6 +69,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -1264,6 +1269,43 @@ bool IsPlainRelativePath(const base::FilePath& path) {
   return true;
 }
 
+bool HasSafeRelativePathComponents(FileSystemAccessManagerImpl& manager,
+                                   storage::FileSystemType type,
+                                   const base::FilePath& root_path,
+                                   const base::FilePath& relative_path) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android SAF `relative_path` stores opaque `DocumentsProvider` URI segments
+  // (e.g. `document/doc%3Abar`) rather than OS filenames.
+  if (root_path.IsContentUri()) {
+    return true;
+  }
+#endif
+  for (const auto& component : relative_path.GetComponents()) {
+    if (!manager.IsSafePathComponent(
+            type, storage::FilePathToString(base::FilePath(component)))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+PathInfo GetPathInfoForSensitiveEntryCheck(const storage::FileSystemURL& url) {
+  return url.type() == storage::kFileSystemTypeLocal
+             ? PathInfo(url.path())
+             : PathInfo(PathType::kExternal, url.virtual_path());
+}
+
+void OnSensitiveEntryAccessConfirmed(
+    base::OnceClosure on_allowed,
+    const std::vector<SensitiveEntryResult>& results) {
+  for (SensitiveEntryResult result : results) {
+    if (result != SensitiveEntryResult::kAllowed) {
+      return;
+    }
+  }
+  std::move(on_allowed).Run();
+}
+
 std::string SerializeURLImpl(const storage::FileSystemURL& url,
                              const url::Origin& origin,
                              FileSystemAccessPermissionContext::HandleType type,
@@ -1504,28 +1546,76 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
         return;
       }
 
+      if (!HasSafeRelativePathComponents(*this, child.type(), root.path(),
+                                         relative_path)) {
+        // Drop `token`, and directly return.
+        return;
+      }
+
       const bool is_directory =
           data.handle_type() == FileSystemAccessHandleData::kDirectory;
-
+      const HandleType target_handle_type =
+          is_directory ? HandleType::kDirectory : HandleType::kFile;
       // Permissions are scoped to `root_path`, rather than the individual
       // handle. So if `relative_path` is not empty, this creates a
       // SharedHandleState for a directory even if the handle represents a
       // file.
-      SharedHandleState handle_state = GetSharedHandleStateForNonSandboxedPath(
-          path_info, storage_key,
+      const HandleType permission_handle_type =
           (is_directory || !relative_path.empty()) ? HandleType::kDirectory
-                                                   : HandleType::kFile,
-          FileSystemAccessPermissionContext::AccessTrigger::kLoadFromStorage);
-      CreateTransferTokenImpl(
-          child, storage_key, path_info.display_name, handle_state,
-          is_directory ? HandleType::kDirectory : HandleType::kFile,
-          std::move(token));
+                                                   : HandleType::kFile;
+
+      base::OnceClosure finish_deserialize = base::BindOnce(
+          &FileSystemAccessManagerImpl::FinishDeserializeNonSandboxedHandle,
+          weak_factory_.GetWeakPtr(), storage_key, std::move(path_info), child,
+          permission_handle_type, target_handle_type, std::move(token));
+
+      if (!permission_context_ ||
+          !base::FeatureList::IsEnabled(
+              features::kFileSystemAccessDeserializeBlocklistCheck)) {
+        std::move(finish_deserialize).Run();
+        break;
+      }
+
+      // Always check `root`; also check `child` when `relative_path` is
+      // non-empty.
+      const bool has_child = !relative_path.empty();
+      auto barrier = base::BarrierCallback<SensitiveEntryResult>(
+          has_child ? 2 : 1, base::BindOnce(&OnSensitiveEntryAccessConfirmed,
+                                            std::move(finish_deserialize)));
+      permission_context_->ConfirmSensitiveEntryAccess(
+          storage_key.origin(), GetPathInfoForSensitiveEntryCheck(root),
+          permission_handle_type,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+          GlobalRenderFrameHostId(), barrier);
+      if (has_child) {
+        permission_context_->ConfirmSensitiveEntryAccess(
+            storage_key.origin(), GetPathInfoForSensitiveEntryCheck(child),
+            target_handle_type,
+            FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+            GlobalRenderFrameHostId(), std::move(barrier));
+      }
       break;
     }
     case FileSystemAccessHandleData::DATA_NOT_SET:
       // Drop `token`, and directly return.
       return;
   }
+}
+
+void FileSystemAccessManagerImpl::FinishDeserializeNonSandboxedHandle(
+    const blink::StorageKey& storage_key,
+    const PathInfo& permission_path_info,
+    const storage::FileSystemURL& target_url,
+    HandleType permission_handle_type,
+    HandleType target_handle_type,
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SharedHandleState handle_state = GetSharedHandleStateForNonSandboxedPath(
+      permission_path_info, storage_key, permission_handle_type,
+      FileSystemAccessPermissionContext::AccessTrigger::kLoadFromStorage);
+  CreateTransferTokenImpl(target_url, storage_key,
+                          permission_path_info.display_name, handle_state,
+                          target_handle_type, std::move(token));
 }
 
 void FileSystemAccessManagerImpl::Clone(

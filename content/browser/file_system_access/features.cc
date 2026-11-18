@@ -18,6 +18,12 @@ namespace content::features {
 BASE_FEATURE(kFileSystemAccessAsBlobBlocklistCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, `DeserializeHandle()` runs the sensitive-entry blocklist check
+// on the stored permission root and target path before minting a transfer
+// token. Kill switch for crbug.com/584014474.
+BASE_FEATURE(kFileSystemAccessDeserializeBlocklistCheck,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // TODO(crbug.com/40896420): Remove this flag eventually.
 // TODO(b/354661640): Temporarily disable this flag while investigating CrOS
 // file saving issue.

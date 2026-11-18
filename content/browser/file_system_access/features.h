@@ -17,6 +17,7 @@ namespace content::features {
 
 // Alphabetical:
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessAsBlobBlocklistCheck);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDeserializeBlocklistCheck);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFileSystemAccessDirectoryIterationBlocklistCheck);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessObserverQuotaLimit);

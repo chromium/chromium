@@ -616,6 +616,13 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token,
       const std::string& display_name,
       const storage::FileSystemURL& url);
+  void FinishDeserializeNonSandboxedHandle(
+      const blink::StorageKey& storage_key,
+      const PathInfo& permission_path_info,
+      const storage::FileSystemURL& target_url,
+      FileSystemAccessPermissionContext::HandleType permission_handle_type,
+      FileSystemAccessPermissionContext::HandleType target_handle_type,
+      mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token);
 
   // FileSystemAccessFileModificationHosts may reserve too much capacity
   // from the quota system. This function determines the file's actual size

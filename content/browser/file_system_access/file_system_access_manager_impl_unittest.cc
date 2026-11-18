@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
@@ -211,6 +212,7 @@ class TestWebViewWebContentsDelegate : public WebContentsDelegate {
 }  // namespace
 
 using base::test::RunOnceCallback;
+using base::test::RunOnceCallbackRepeatedly;
 using blink::mojom::PermissionStatus;
 using HandleType = content::FileSystemAccessPermissionContext::HandleType;
 
@@ -251,6 +253,20 @@ class FileSystemAccessManagerImplTest : public testing::Test {
     manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
         file_system_context_, chrome_blob_context_, &permission_context_,
         /*off_the_record=*/false);
+
+    // `DeserializeHandle()` re-checks the sensitive-entry blocklist without a
+    // frame. Allow that by default so tests that are not about the blocklist
+    // stay focused; `DeserializeHandle_*` blocklist tests set stricter
+    // expectations, which take precedence.
+    EXPECT_CALL(
+        permission_context_,
+        ConfirmSensitiveEntryAccess_(
+            testing::_, testing::_, testing::_,
+            FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+            GlobalRenderFrameHostId(), testing::_))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(RunOnceCallbackRepeatedly<5>(
+            FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
 
     web_contents_ = web_contents_factory_.CreateWebContents(&browser_context_);
     static_cast<TestWebContents*>(web_contents_)->NavigateAndCommit(kTestURL);
@@ -418,6 +434,35 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   std::string SerializePathForTesting(const base::FilePath& path) {
     auto path_bytes = base::as_byte_span(path.value());
     return std::string(path_bytes.begin(), path_bytes.end());
+  }
+
+  void ExpectDeserializeSensitiveEntryCheck(
+      const PathInfo& path_info,
+      HandleType handle_type,
+      FileSystemAccessPermissionContext::SensitiveEntryResult result) {
+    EXPECT_CALL(
+        permission_context_,
+        ConfirmSensitiveEntryAccess_(
+            kTestStorageKey.origin(), path_info, handle_type,
+            FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
+            GlobalRenderFrameHostId(), testing::_))
+        .WillOnce(RunOnceCallback<5>(result));
+  }
+
+  FileSystemAccessHandleData MakeHandleData(
+      FileSystemAccessHandleData::HandleType handle_type,
+      const base::FilePath& root_path,
+      const base::FilePath& relative_path = base::FilePath(),
+      PathType path_type = PathType::kLocal) {
+    FileSystemAccessHandleData data;
+    data.set_handle_type(handle_type);
+    LocalFileData* file_data = path_type == PathType::kLocal
+                                   ? data.mutable_local()
+                                   : data.mutable_external();
+    file_data->set_root_path(SerializePathForTesting(root_path));
+    file_data->set_relative_path(SerializePathForTesting(relative_path));
+    file_data->set_origin(kTestStorageKey.origin().Serialize());
+    return data;
   }
 
   FileSystemAccessTransferTokenImpl* DeserializeAndResolveToken(
@@ -2150,6 +2195,8 @@ TEST_F(FileSystemAccessManagerImplTest,
       base::FilePath(FILE_PATH_LITERAL("sub/../../bar")),
       base::FilePath(FILE_PATH_LITERAL(".")),
       base::FilePath(FILE_PATH_LITERAL("./bar")),
+      base::FilePath(FILE_PATH_LITERAL("evil.lnk")),
+      base::FilePath(FILE_PATH_LITERAL("evil.lnk/child.txt")),
       dir_.GetPath().AppendASCII("bar"),
 #if BUILDFLAG(IS_WIN)
       base::FilePath(FILE_PATH_LITERAL("C:bar")),
@@ -2157,21 +2204,117 @@ TEST_F(FileSystemAccessManagerImplTest,
 #endif
   };
 
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
   EXPECT_CALL(permission_context_, GetReadPermissionGrant).Times(0);
   EXPECT_CALL(permission_context_, GetWritePermissionGrant).Times(0);
 
   for (auto handle_type : {FileSystemAccessHandleData::kFile,
                            FileSystemAccessHandleData::kDirectory}) {
     for (const auto& relative_path : invalid_relative_paths) {
-      FileSystemAccessHandleData data;
-      data.set_handle_type(handle_type);
-      data.mutable_local()->set_root_path(SerializePathForTesting(root_path));
-      data.mutable_local()->set_relative_path(
-          SerializePathForTesting(relative_path));
-      data.mutable_local()->set_origin(kTestStorageKey.origin().Serialize());
-      EXPECT_FALSE(DeserializeAndResolveToken(data)) << relative_path;
+      EXPECT_FALSE(DeserializeAndResolveToken(
+          MakeHandleData(handle_type, root_path, relative_path)))
+          << relative_path;
     }
   }
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       DeserializeHandle_Native_SensitiveEntryBlocked) {
+  using SensitiveEntryResult =
+      FileSystemAccessPermissionContext::SensitiveEntryResult;
+  const PathInfo kSensitiveRoot(dir_.GetPath().AppendASCII("sensitive"));
+  EXPECT_CALL(permission_context_, GetReadPermissionGrant).Times(0);
+  EXPECT_CALL(permission_context_, GetWritePermissionGrant).Times(0);
+
+  for (const base::FilePath& rel_path :
+       {base::FilePath(), base::FilePath(FILE_PATH_LITERAL("child.txt"))}) {
+    ExpectDeserializeSensitiveEntryCheck(kSensitiveRoot, HandleType::kDirectory,
+                                         SensitiveEntryResult::kAbort);
+    EXPECT_FALSE(DeserializeAndResolveToken(
+        MakeHandleData(rel_path.empty() ? FileSystemAccessHandleData::kDirectory
+                                        : FileSystemAccessHandleData::kFile,
+                       kSensitiveRoot.path, rel_path)));
+  }
+
+  const PathInfo kAllowedRoot(dir_.GetPath().AppendASCII("allowed"));
+  const PathInfo kBlockedChild(kAllowedRoot.path.AppendASCII("secret"));
+  for (auto [proto_type, expected_type] :
+       {std::pair{FileSystemAccessHandleData::kFile, HandleType::kFile},
+        std::pair{FileSystemAccessHandleData::kDirectory,
+                  HandleType::kDirectory}}) {
+    ExpectDeserializeSensitiveEntryCheck(kAllowedRoot, HandleType::kDirectory,
+                                         SensitiveEntryResult::kAllowed);
+    ExpectDeserializeSensitiveEntryCheck(kBlockedChild, expected_type,
+                                         SensitiveEntryResult::kAbort);
+    EXPECT_FALSE(DeserializeAndResolveToken(
+        MakeHandleData(proto_type, kAllowedRoot.path,
+                       base::FilePath(FILE_PATH_LITERAL("secret")))));
+  }
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       DeserializeHandle_External_SensitiveEntryCheck) {
+  using SensitiveEntryResult =
+      FileSystemAccessPermissionContext::SensitiveEntryResult;
+  const base::FilePath kExtRoot =
+      base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("allowed");
+  const PathInfo kExtPermissionRoot(PathType::kExternal, kExtRoot);
+  const PathInfo kLocalRoot(dir_.GetPath().AppendASCII("allowed"));
+  const PathInfo kLocalChild(kLocalRoot.path.AppendASCII("child.txt"));
+
+  ExpectDeserializeSensitiveEntryCheck(kLocalRoot, HandleType::kDirectory,
+                                       SensitiveEntryResult::kAbort);
+  EXPECT_CALL(permission_context_, GetReadPermissionGrant).Times(0);
+  EXPECT_CALL(permission_context_, GetWritePermissionGrant).Times(0);
+  EXPECT_FALSE(DeserializeAndResolveToken(
+      MakeHandleData(FileSystemAccessHandleData::kDirectory, kExtRoot,
+                     base::FilePath(), PathType::kExternal)));
+
+  ExpectDeserializeSensitiveEntryCheck(kLocalRoot, HandleType::kDirectory,
+                                       SensitiveEntryResult::kAllowed);
+  ExpectDeserializeSensitiveEntryCheck(kLocalChild, HandleType::kFile,
+                                       SensitiveEntryResult::kAllowed);
+  ExpectGetReadPermissionGrant(
+      kExtPermissionRoot,
+      FileSystemAccessPermissionContext::AccessTrigger::kLoadFromStorage,
+      HandleType::kDirectory);
+  ExpectGetWritePermissionGrant(
+      kExtPermissionRoot,
+      FileSystemAccessPermissionContext::AccessTrigger::kLoadFromStorage,
+      HandleType::kDirectory);
+
+  FileSystemAccessTransferTokenImpl* token =
+      DeserializeAndResolveToken(MakeHandleData(
+          FileSystemAccessHandleData::kFile, kExtRoot,
+          base::FilePath(FILE_PATH_LITERAL("child.txt")), PathType::kExternal));
+  ASSERT_TRUE(token);
+  EXPECT_EQ(storage::kFileSystemTypeExternal, token->url().mount_type());
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       DeserializeHandle_Native_BlocklistCheckDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kFileSystemAccessDeserializeBlocklistCheck);
+
+  const PathInfo kTestPathInfo(dir_.GetPath().AppendASCII("foobar"));
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
+  ExpectGetReadPermissionGrant(
+      kTestPathInfo,
+      FileSystemAccessPermissionContext::AccessTrigger::kLoadFromStorage,
+      HandleType::kDirectory);
+  ExpectGetWritePermissionGrant(
+      kTestPathInfo,
+      FileSystemAccessPermissionContext::AccessTrigger::kLoadFromStorage,
+      HandleType::kDirectory);
+
+  ASSERT_TRUE(DeserializeAndResolveToken(MakeHandleData(
+      FileSystemAccessHandleData::kDirectory, kTestPathInfo.path)));
+
+  // Unsafe `relative_path` components are still rejected unconditionally.
+  EXPECT_FALSE(DeserializeAndResolveToken(
+      MakeHandleData(FileSystemAccessHandleData::kFile, kTestPathInfo.path,
+                     base::FilePath(FILE_PATH_LITERAL("evil.lnk")))));
 }
 
 TEST_F(FileSystemAccessManagerImplTest,
