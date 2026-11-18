@@ -1023,5 +1023,6 @@
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
     ]
-  }
+  },
+  "Dawn Linux x64 DEPS Release (Software)": {}
 }

@@ -661,6 +661,44 @@ ci.thin_tester(
     cq_mirrors_console_view = "mirrors",
 )
 
+ci.thin_tester(
+    name = "Dawn Linux x64 DEPS Release (Software)",
+    branch_selector = branches.selector.LINUX_BRANCHES,
+    description_html = "Runs DEPS-ed in Dawn tests on Linux with software renderers",
+    parent = "ci/Dawn Linux x64 DEPS Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [],
+        mixins = [
+            "gpu_linux_gce_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Linux",
+        short_name = "sw",
+    ),
+    cq_mirrors_console_view = "mirrors",
+)
+
 shared_gpu.ci.linux_builder(
     name = "Dawn Android arm Builder",
     description_html = "Builds Android arm binaries using ToT Dawn",
@@ -1428,6 +1466,42 @@ ci.thin_tester(
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|Nvidia",
         short_name = "x64",
+    ),
+)
+
+ci.thin_tester(
+    name = "Dawn Linux x64 Release (Software)",
+    description_html = "Runs ToT Dawn tests on Linux with software renderers",
+    parent = "Dawn Linux x64 Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [],
+        mixins = [
+            "gpu_linux_gce_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Linux",
+        short_name = "sw",
     ),
 )
 

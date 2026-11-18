@@ -122,6 +122,7 @@ shared_gpu.try_.linux_optional_builder(
         "ci/Dawn Linux x64 DEPS Builder",
         "ci/Dawn Linux x64 DEPS Release (Intel UHD 630)",
         "ci/Dawn Linux x64 DEPS Release (NVIDIA)",
+        "ci/Dawn Linux x64 DEPS Release (Software)",
     ],
     gn_args = "ci/Dawn Linux x64 DEPS Builder",
     cq_settings = try_.cq_settings(
@@ -328,6 +329,7 @@ shared_gpu.try_.linux_rate_limited_builder(
         "ci/Dawn Linux x64 Builder",
         "ci/Dawn Linux x64 Release (Intel UHD 630)",
         "ci/Dawn Linux x64 Release (NVIDIA)",
+        "ci/Dawn Linux x64 Release (Software)",
     ],
     gn_args = "ci/Dawn Linux x64 Builder",
     # Occasionally receives bursty CQ traffic from the Dawn repo, so increase
