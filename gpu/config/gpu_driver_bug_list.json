@@ -3419,6 +3419,34 @@
       "features": [
         "d3d12_persistent_upload_buffer_map"
       ]
+    },
+    {
+      "id": 511,
+      "cr_bugs": [479892740],
+      "description": "Disable zero-copy video capture on Android 16 and older",
+      "os": {
+        "type": "android",
+        "version": {
+          "op": "<=",
+          "value": "16"
+        }
+      },
+      "features": [
+        "disable_android_zero_copy_video_capture"
+      ]
+    },
+    {
+      "id": 512,
+      "cr_bugs": [586579418],
+      "description": "Disable zero-copy video capture on Samsung Exynos Mali-G68 devices",
+      "os": {
+        "type": "android"
+      },
+      "machine_model_name": ["SM-.*", "SC-.*", "SCG.*"],
+      "gl_renderer": "(Mali-G68|.*\\(Mali-G68 \\(0x.*)",
+      "features": [
+        "disable_android_zero_copy_video_capture"
+      ]
     }
   ]
 }
