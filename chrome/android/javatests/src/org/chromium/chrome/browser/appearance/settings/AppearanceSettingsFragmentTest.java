@@ -679,7 +679,6 @@ public class AppearanceSettingsFragmentTest {
     public void testGlicBottomBarButtonPreferenceShowsWhenBottomBarTurnsOn_CandidateUnresolved() {
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(null);
         when(mGlicEnablingJni.isEnabledForProfile(mProfile)).thenReturn(true);
-        when(mGlicEnablingJni.shouldShowSettingsPage(mProfile)).thenReturn(true);
         BottomBarConfigUtils.setBottomBarUserEnabled(false);
         launchSettings();
 
@@ -693,8 +692,10 @@ public class AppearanceSettingsFragmentTest {
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testGlicBottomBarButtonPreferenceDisabledByPolicy() {
-        offerGlicBottomBarButton();
+        BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(
+                BottomBarActionEligibility.ACTION_NONE);
         when(mGlicEnablingJni.isDisabledByPolicy(mProfile)).thenReturn(true);
+        when(mGlicEnablingJni.shouldShowSettingsPage(mProfile)).thenReturn(true);
         launchSettings();
         final var glicSwitch = assertSwitchExists(PREF_GLIC_BOTTOM_BAR_BUTTON_SWITCH);
         Assert.assertFalse(glicSwitch.isEnabled());
@@ -1054,7 +1055,7 @@ public class AppearanceSettingsFragmentTest {
 
     private void offerGlicBottomBarButton() {
         BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(ActionId.GLIC);
-        when(mGlicEnablingJni.shouldShowSettingsPage(mProfile)).thenReturn(true);
+        when(mGlicEnablingJni.isEnabledForProfile(mProfile)).thenReturn(true);
     }
 
     private void launchSettings() {

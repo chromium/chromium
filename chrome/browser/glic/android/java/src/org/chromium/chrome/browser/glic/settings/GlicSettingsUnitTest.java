@@ -872,6 +872,7 @@ public class GlicSettingsUnitTest {
     @EnableFeatures(BOTTOM_BAR_WITH_GLIC_TOGGLE)
     @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testSearchIndex_GeminiShortcut() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         GlicSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
                 RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfileMock);
         String prefFrag = GlicSettings.class.getName();
@@ -1176,6 +1177,7 @@ public class GlicSettingsUnitTest {
                     + "/move_toolbar_settings_to_appearance/false")
     @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testBottomBarGlicButtonToggle_ManagedProfileAllowed_RemainsEditable() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         when(mGlicEnablingJniMock.isProfileManaged(any())).thenReturn(true);
         when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(false);
 
