@@ -8,7 +8,7 @@ import './organizer_list_section_item.js';
 
 import {assert} from '//resources/js/assert.js';
 import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
@@ -295,7 +295,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   }
 
   private hasNoSearchResults_(): boolean {
-    return this.isSearching_() && this.getFilteredItems_().length === 0;
+    return this.isSearching_() && this.filteredItems_.length === 0;
   }
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
@@ -331,15 +331,13 @@ export class OrganizerListSectionElement extends CrLitElement implements
         e.detail.option, OrganizerSectionMenuOption.COUNT);
   }
 
-  protected hasZeroState_(): boolean {
-    return !this.isSearching_() &&
-        (this.getFilteredItems_().length === 0 ||
-         !!this.delegate?.shouldAlwaysShowZeroState?.()) &&
-        !!this.getZeroState_();
-  }
-
-  protected getZeroState_(): TemplateResult|undefined {
-    return this.delegate?.getZeroState?.();
+  protected getZeroState_(): TemplateResult|typeof nothing {
+    if (this.isSearching_() ||
+        (this.filteredItems_.length > 0 &&
+         !this.delegate?.shouldAlwaysShowZeroState?.())) {
+      return nothing;
+    }
+    return this.delegate?.getZeroState?.() ?? nothing;
   }
 
   protected onShowAllChanged_(e: CustomEvent<{value: boolean}>) {
@@ -401,27 +399,43 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   protected getFilteredItems_():
       Array<HighlightableOrganizerListSectionItem<unknown>> {
-    if (this.showAll_ || this.isSearching_()) {
+    if (this.showAll_ || this.isSearching_() ||
+        this.filteredItems_.length <= INITIAL_ITEM_COUNT) {
       return this.filteredItems_;
     }
-    const alwaysShowIndices: number[] = [];
-    const regularIndices: number[] = [];
-    for (let i = 0; i < this.filteredItems_.length; i++) {
-      if (this.filteredItems_[i]!.alwaysShow) {
-        alwaysShowIndices.push(i);
-      } else {
-        regularIndices.push(i);
+
+    let alwaysShowCount = 0;
+    for (const item of this.filteredItems_) {
+      if (item.alwaysShow && ++alwaysShowCount > INITIAL_ITEM_COUNT) {
+        break;
       }
     }
 
-    const maxItems = alwaysShowIndices.length > 0 ? INITIAL_ITEM_COUNT + 1 :
-                                                    INITIAL_ITEM_COUNT;
-    const selectedAlwaysShow = alwaysShowIndices.slice(0, maxItems);
-    const selectedRegular =
-        regularIndices.slice(0, maxItems - selectedAlwaysShow.length);
-    const selectedIndices =
-        new Set([...selectedAlwaysShow, ...selectedRegular]);
-    return this.filteredItems_.filter((_, index) => selectedIndices.has(index));
+    if (alwaysShowCount === 0) {
+      return this.filteredItems_.slice(0, INITIAL_ITEM_COUNT);
+    }
+
+    const maxItems = INITIAL_ITEM_COUNT + 1;
+    if (this.filteredItems_.length <= maxItems) {
+      return this.filteredItems_;
+    }
+
+    let alwaysShowBudget = alwaysShowCount;
+    let regularBudget = maxItems - alwaysShowCount;
+    const result: Array<HighlightableOrganizerListSectionItem<unknown>> = [];
+    for (const item of this.filteredItems_) {
+      if (item.alwaysShow && alwaysShowBudget > 0) {
+        result.push(item);
+        alwaysShowBudget--;
+      } else if (!item.alwaysShow && regularBudget > 0) {
+        result.push(item);
+        regularBudget--;
+      }
+      if (result.length === maxItems) {
+        break;
+      }
+    }
+    return result;
   }
 
   override focus() {

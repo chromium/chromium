@@ -348,6 +348,47 @@ suite('OrganizerListSectionTest', () => {
         assertDeepEquals(['Audio Tab 2'], renderedItems[1]!.item.title);
         assertDeepEquals(['Audio Tab 3'], renderedItems[2]!.item.title);
         assertDeepEquals(['Audio Tab 4'], renderedItems[3]!.item.title);
+
+        // 3 regular tabs followed by 1 audio tab -> keeps all 4 in order.
+        const trailingAudioItems: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Tab 1']},
+          {title: ['Tab 2']},
+          {title: ['Tab 3']},
+          {title: ['Audio Tab 1'], alwaysShow: true},
+        ];
+        listSection.delegate = new TestSectionDelegate(
+            'Open Tabs', trailingAudioItems, undefined, 'open-tabs');
+        await microtasksFinished();
+
+        renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(4, renderedItems.length);
+        assertDeepEquals(['Tab 1'], renderedItems[0]!.item.title);
+        assertDeepEquals(['Tab 2'], renderedItems[1]!.item.title);
+        assertDeepEquals(['Tab 3'], renderedItems[2]!.item.title);
+        assertDeepEquals(['Audio Tab 1'], renderedItems[3]!.item.title);
+
+        // Interleaved audio tabs past INITIAL_ITEM_COUNT -> prioritizes audio
+        // tabs while preserving original relative order.
+        const interleavedItems: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Tab 1']},
+          {title: ['Audio Tab 1'], alwaysShow: true},
+          {title: ['Tab 2']},
+          {title: ['Tab 3']},
+          {title: ['Audio Tab 2'], alwaysShow: true},
+          {title: ['Tab 4']},
+        ];
+        listSection.delegate = new TestSectionDelegate(
+            'Open Tabs', interleavedItems, undefined, 'open-tabs');
+        await microtasksFinished();
+
+        renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(4, renderedItems.length);
+        assertDeepEquals(['Tab 1'], renderedItems[0]!.item.title);
+        assertDeepEquals(['Audio Tab 1'], renderedItems[1]!.item.title);
+        assertDeepEquals(['Tab 2'], renderedItems[2]!.item.title);
+        assertDeepEquals(['Audio Tab 2'], renderedItems[3]!.item.title);
       });
 
   test(
@@ -966,6 +1007,24 @@ suite('OrganizerListSectionTest', () => {
                 .querySelectorAll('organizer-list-section-item')
                 .length);
       });
+
+  test('evaluates delegate getZeroState once per render', async () => {
+    const zeroState = html`<div id="zeroState">Create tab group</div>`;
+    let zeroStateCallCount = 0;
+    const delegate = new TestSectionDelegate('Tab groups', [], zeroState);
+    delegate.getZeroState = () => {
+      zeroStateCallCount++;
+      return zeroState;
+    };
+    listSection.delegate = delegate;
+    await microtasksFinished();
+
+    zeroStateCallCount = 0;
+    listSection.$.header.$.expandButton.click();
+    await microtasksFinished();
+
+    assertEquals(1, zeroStateCallCount);
+  });
 
   test('records ToggleAction and MenuAction histograms', async () => {
     listSection.delegate =
