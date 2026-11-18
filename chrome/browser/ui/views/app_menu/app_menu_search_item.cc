@@ -90,3 +90,7 @@ base::span<const std::u16string> AppMenuSearchItem::GetSynonyms() const {
   return action_item_ ? action_item_->GetSynonyms()
                       : base::span<const std::u16string>();
 }
+
+double AppMenuSearchItem::GetBonusWeight() const {
+  return 0.0;
+}

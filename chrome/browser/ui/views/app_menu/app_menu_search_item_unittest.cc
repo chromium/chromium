@@ -60,6 +60,7 @@ TEST(AppMenuSearchItemTest, DefaultSecondaryTextAndSynonyms) {
   EXPECT_EQ(search_item->GetTitle(), u"Downloads");
   EXPECT_TRUE(search_item->GetSecondaryText().empty());
   EXPECT_TRUE(search_item->GetSynonyms().empty());
+  EXPECT_DOUBLE_EQ(search_item->GetBonusWeight(), 0.0);
   EXPECT_EQ(search_item->GetActionItem(), action_item.get());
   EXPECT_FALSE(search_item->GetIconOverride().has_value());
   EXPECT_FALSE(search_item->IsCheckable());

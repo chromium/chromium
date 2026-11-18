@@ -39,6 +39,7 @@ class SettingsSearchItem : public FuzzySearchItem {
   // Returns the innermost breadcrumb.
   const std::u16string& GetSecondaryText() const override;
   base::span<const std::u16string> GetSynonyms() const override;
+  double GetBonusWeight() const override;
 
  private:
   mojom::SettingId id_;

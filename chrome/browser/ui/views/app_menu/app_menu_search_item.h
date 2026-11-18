@@ -67,6 +67,7 @@ class AppMenuSearchItem : public FuzzySearchItem {
   const std::u16string& GetTitle() const override;
   const std::u16string& GetSecondaryText() const override;
   base::span<const std::u16string> GetSynonyms() const override;
+  double GetBonusWeight() const override;
 
   actions::ActionItem* GetActionItem() const { return action_item_.get(); }
   Type GetType() const { return type_; }

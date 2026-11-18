@@ -37,4 +37,8 @@ base::span<const std::u16string> SettingsSearchItem::GetSynonyms() const {
   return synonyms_;
 }
 
+double SettingsSearchItem::GetBonusWeight() const {
+  return 0.0;
+}
+
 }  // namespace settings_search

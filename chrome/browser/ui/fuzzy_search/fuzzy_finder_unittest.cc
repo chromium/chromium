@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/fuzzy_search/fuzzy_finder.h"
 
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
@@ -25,6 +26,7 @@ struct ItemData {
   std::u16string title;
   std::u16string secondary_text = u"";
   std::vector<std::u16string> synonyms;
+  double bonus_weight = 0.0;
 };
 
 // In-memory fake implementation of FuzzySearchItem for unit testing.
@@ -32,10 +34,12 @@ class FakeFuzzySearchItem : public FuzzySearchItem {
  public:
   explicit FakeFuzzySearchItem(std::u16string title,
                                std::u16string secondary_text = u"",
-                               std::vector<std::u16string> synonyms = {})
+                               std::vector<std::u16string> synonyms = {},
+                               double bonus_weight = 0.0)
       : title_(std::move(title)),
         secondary_text_(std::move(secondary_text)),
-        synonyms_(std::move(synonyms)) {}
+        synonyms_(std::move(synonyms)),
+        bonus_weight_(bonus_weight) {}
 
   ~FakeFuzzySearchItem() override = default;
 
@@ -46,11 +50,13 @@ class FakeFuzzySearchItem : public FuzzySearchItem {
   base::span<const std::u16string> GetSynonyms() const override {
     return synonyms_;
   }
+  double GetBonusWeight() const override { return bonus_weight_; }
 
  private:
   std::u16string title_;
   std::u16string secondary_text_;
   std::vector<std::u16string> synonyms_;
+  double bonus_weight_;
 };
 
 class FuzzyFinderTest : public testing::Test {
@@ -62,7 +68,7 @@ class FuzzyFinderTest : public testing::Test {
     raw_items.reserve(items_data.size());
     for (const auto& data : items_data) {
       storage_.push_back(std::make_unique<FakeFuzzySearchItem>(
-          data.title, data.secondary_text, data.synonyms));
+          data.title, data.secondary_text, data.synonyms, data.bonus_weight));
       raw_items.push_back(storage_.back().get());
     }
     return raw_items;
@@ -846,6 +852,99 @@ TEST_F(FuzzyFinderTest, CoverageBonusRanksExactMatchFirst) {
               ElementsAre(u"Settings", u"Import bookmarks and settings"));
   ASSERT_EQ(results.size(), 2u);
   EXPECT_GT(results[0].score, results[1].score);
+}
+
+TEST_F(FuzzyFinderTest, BonusWeightBreaksTie) {
+  // Both titles match "passkey" as a prefix and have the same length, so they
+  // score the same and rank in insertion order.
+  FuzzyFinder default_finder(
+      CreateItems({{u"Passkey Manager"}, {u"Passkey Options"}}));
+  auto default_results = default_finder.FuzzyFind(u"passkey", 2);
+  EXPECT_THAT(ExtractResultTitles(default_results),
+              ElementsAre(u"Passkey Manager", u"Passkey Options"));
+  ASSERT_EQ(default_results.size(), 2u);
+  EXPECT_DOUBLE_EQ(default_results[0].score, default_results[1].score);
+
+  // A bonus reorders the tie while leaving reported match scores unchanged.
+  FuzzyFinder bonus_finder(
+      CreateItems({{u"Passkey Manager"},
+                   {.title = u"Passkey Options", .bonus_weight = 0.01}}));
+  auto bonus_results = bonus_finder.FuzzyFind(u"passkey", 2);
+  EXPECT_THAT(ExtractResultTitles(bonus_results),
+              ElementsAre(u"Passkey Options", u"Passkey Manager"));
+  ASSERT_EQ(bonus_results.size(), 2u);
+  EXPECT_DOUBLE_EQ(bonus_results[0].score, default_results[0].score);
+  EXPECT_DOUBLE_EQ(bonus_results[1].score, default_results[1].score);
+}
+
+TEST_F(FuzzyFinderTest, BonusWeightRanksWeakerMatchFirst) {
+  // "passkey" matches the title of one item and a synonym of the other
+  // equally well, so the synonym match scores lower by the synonym weight
+  // (0.85). The bonus lifts it above the title match, while each result still
+  // reports its unboosted match score.
+  auto items = CreateItems({
+      {u"Passkey Settings"},
+      {.title = u"Google Password Manager",
+       .synonyms = {u"passkey"},
+       .bonus_weight = 0.20},
+  });
+  FuzzyFinder finder(items);
+
+  auto results = finder.FuzzyFind(u"passkey", 2);
+  EXPECT_THAT(ExtractResultTitles(results),
+              ElementsAre(u"Google Password Manager", u"Passkey Settings"));
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_LT(results[0].score, results[1].score);
+}
+
+TEST_F(FuzzyFinderTest, BonusWeightSurvivesMaxResultsTruncation) {
+  auto items = CreateItems({
+      {u"Passkey Control"},
+      {u"Passkey Manager"},
+      {.title = u"Passkey Options", .bonus_weight = 0.01},
+  });
+  FuzzyFinder finder(items);
+
+  EXPECT_THAT(ExtractResultTitles(finder.FuzzyFind(u"passkey", 1)),
+              ElementsAre(u"Passkey Options"));
+}
+
+TEST_F(FuzzyFinderTest, BonusWeightDoesNotMatchUnmatchedItems) {
+  // For query "perf":
+  // - "Performance Monitor" scores ~0.96.
+  // - "Page Event Resource Filter" scores ~0.67 (well below a 0.80 cutoff).
+  // - "History" does not match at all (score 0).
+  // Neither of the last two is returned under a 0.80 cutoff, even with the
+  // maximum 1.00 bonus.
+  auto items = CreateItems({
+      {u"Performance Monitor"},
+      {.title = u"Page Event Resource Filter", .bonus_weight = 1.00},
+      {.title = u"History", .bonus_weight = 1.00},
+  });
+
+  FuzzyFinder strict_finder(items, {.min_score = 0.80});
+  EXPECT_THAT(ExtractResultTitles(strict_finder.FuzzyFind(u"perf", 5)),
+              ElementsAre(u"Performance Monitor"));
+
+  // Lowering the cutoff to 0 admits the scattered match (which then ranks
+  // first via its bonus), while the non-match is still dropped.
+  FuzzyFinder lenient_finder(items, {.min_score = 0.0});
+  EXPECT_THAT(
+      ExtractResultTitles(lenient_finder.FuzzyFind(u"perf", 5)),
+      ElementsAre(u"Page Event Resource Filter", u"Performance Monitor"));
+}
+
+TEST_F(FuzzyFinderTest, OutOfRangeBonusWeightCheckFails) {
+  auto check_fails_for_bonus = [this](double bonus) {
+    FuzzyFinder finder(CreateItems({
+        {.title = u"Passkey Manager", .bonus_weight = bonus},
+        {u"Passkey Options"},
+    }));
+    EXPECT_CHECK_DEATH(finder.FuzzyFind(u"passkey", 2));
+  };
+  check_fails_for_bonus(-0.1);
+  check_fails_for_bonus(1.1);
+  check_fails_for_bonus(std::numeric_limits<double>::quiet_NaN());
 }
 
 }  // namespace

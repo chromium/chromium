@@ -18,6 +18,8 @@ class FuzzySearchItem;
 // item and associated metadata for UI rendering.
 struct FuzzySearchResult {
   raw_ptr<FuzzySearchItem> item = nullptr;
+  // For FuzzyFind(), the item's match score in [0.0, 1.0] (before
+  // FuzzySearchItem::GetBonusWeight()).
   double score = 0.0;
   std::vector<gfx::Range> match_ranges;
   // First contiguous case- and accent-insensitive match of the query in
@@ -78,7 +80,8 @@ class FuzzyFinder {
   // secondary text). Any match with score below a minimum confidence threshold
   // is dropped.
   //
-  // Returns up to max_results matching items ordered by descending score.
+  // Returns up to max_results matching items ordered by descending
+  // `score + item->GetBonusWeight()`.
   std::vector<FuzzySearchResult> FuzzyFind(std::u16string_view query,
                                            size_t max_results);
 

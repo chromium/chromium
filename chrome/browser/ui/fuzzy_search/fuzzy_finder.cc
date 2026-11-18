@@ -169,10 +169,16 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(std::u16string_view query,
     }
   }
 
-  // Stable sort in descending order by score (preserving insertion order on
-  // ties).
+  // Stable sort in descending order by score plus the item's bonus weight
+  // (preserving insertion order on ties). Only items that passed the cutoff
+  // above reach the sort, so a bonus reorders matches and never turns a
+  // non-match into a match.
   std::ranges::stable_sort(results, std::ranges::greater(),
-                           &FuzzySearchResult::score);
+                           [](const FuzzySearchResult& result) {
+                             const double bonus = result.item->GetBonusWeight();
+                             CHECK(bonus >= 0.0 && bonus <= 1.0);
+                             return result.score + bonus;
+                           });
 
   if (results.size() > max_results) {
     results.resize(max_results);
