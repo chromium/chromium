@@ -760,8 +760,6 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
   // not already attached.
   shared_tabs_manager_->UpdateSharedTabsForActiveWebState(web_state);
 
-  // TODO(crbug.com/571506045): Migrate the delayed presentation for
-  // autosubmit prompts.
   if (startup_state.shouldAutoSubmit) {
     // The SDK sends an auto-submitted prompt as soon as the floaty appears,
     // with the page context the floaty was configured with. Defer the

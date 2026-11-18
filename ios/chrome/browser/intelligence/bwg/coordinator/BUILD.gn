@@ -256,6 +256,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",

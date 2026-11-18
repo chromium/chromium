@@ -16,13 +16,18 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
@@ -31,8 +36,11 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/signin_test_util.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -46,17 +54,23 @@ const char kTestURL[] = "https://gemini.google.com/quiz/123";
 }  // namespace
 
 @interface GeminiContainerCoordinator (Testing)
-- (void)dismissGeminiFromOtherWindowsWithCompletion:(ProceduralBlock)completion;
+- (void)dismissGeminiFromOtherWindowsWithCompletion:
+    (base::OnceClosure)completion;
 @end
 
 class GeminiContainerCoordinatorTest : public PlatformTest {
  public:
   GeminiContainerCoordinatorTest() {
     feature_list_.InitWithFeatures(
-        {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+        {kPageActionMenu, kAssistantContainer, kIOSGeminiBottomSheetMigration},
+        {});
 
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
     personal_profile_ =
-        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     browser_ = std::make_unique<TestBrowser>(personal_profile_);
     BrowserList* browser_list =
@@ -132,8 +146,7 @@ TEST_F(GeminiContainerCoordinatorTest,
        TestDismissGeminiFromOtherWindowsWhenNoOtherBrowsers) {
   base::test::TestFuture<void> future;
   [coordinator_
-      dismissGeminiFromOtherWindowsWithCompletion:base::CallbackToBlock(
-                                                      future.GetCallback())];
+      dismissGeminiFromOtherWindowsWithCompletion:future.GetCallback()];
   EXPECT_TRUE(future.Wait());
 }
 
@@ -165,8 +178,7 @@ TEST_F(GeminiContainerCoordinatorTest, TestDismissGeminiFromOtherWindows) {
 
   base::test::TestFuture<void> future;
   [coordinator_
-      dismissGeminiFromOtherWindowsWithCompletion:base::CallbackToBlock(
-                                                      future.GetCallback())];
+      dismissGeminiFromOtherWindowsWithCompletion:future.GetCallback()];
   EXPECT_TRUE(future.Wait());
   EXPECT_OCMOCK_VERIFY(mock_second_handler);
 
@@ -234,6 +246,93 @@ TEST_F(GeminiContainerCoordinatorTest,
   [coordinator_ stop];
   EXPECT_FALSE(agent->is_floaty_invoked());
 
+  [second_browser->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(GeminiCommands)];
+  [browser_->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
+  second_browser_list->RemoveBrowser(second_browser.get());
+}
+
+// Tests that `start` with an auto-submit prompt waits for page context
+// generation before dismissing Gemini from other windows and presenting the
+// assistant container.
+TEST_F(GeminiContainerCoordinatorTest,
+       TestStartWithAutoSubmitDefersDismissalFromOtherWindowsAndPresentation) {
+  FakePageContextWrapperFactory page_context_wrapper_factory;
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(personal_profile_);
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  web_state->SetContentsMimeType("text/html");
+  web_state->WasShown();
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  GeminiTabHelper::CreateForWebState(web_state.get(),
+                                     &page_context_wrapper_factory);
+  WebViewProxyTabHelper::CreateForWebState(web_state.get());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  id mock_container_handler =
+      OCMProtocolMock(@protocol(AssistantContainerCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_container_handler
+                   forProtocol:@protocol(AssistantContainerCommands)];
+
+  TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
+      profile_manager_, [FakeSystemIdentity fakeManagedIdentity]);
+  std::unique_ptr<TestBrowser> second_browser =
+      std::make_unique<TestBrowser>(managed_profile);
+  BrowserList* second_browser_list =
+      BrowserListFactory::GetForProfile(managed_profile);
+  second_browser_list->AddBrowser(second_browser.get());
+
+  id mock_second_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
+  [second_browser->GetCommandDispatcher()
+      startDispatchingToTarget:mock_second_gemini_handler
+                   forProtocol:@protocol(GeminiCommands)];
+
+  __block BOOL other_window_dismissed = NO;
+  OCMStub([mock_second_gemini_handler
+      dismissGeminiFlowWithCompletion:[OCMArg checkWithBlock:^BOOL(
+                                                  ProceduralBlock completion) {
+        other_window_dismissed = YES;
+        CHECK(completion);
+        completion();
+        return YES;
+      }]]);
+
+  __block BOOL container_presented = NO;
+  OCMStub([mock_container_handler
+              showAssistantContainerWithContent:[OCMArg any]
+                                       delegate:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        container_presented = YES;
+      });
+
+  startup_state_.prepopulatedPrompt = @"Explain this page";
+  startup_state_.shouldAutoSubmit = YES;
+
+  GeminiBrowserAgent* agent = GeminiBrowserAgent::FromBrowser(browser_.get());
+  ASSERT_TRUE(agent);
+
+  [coordinator_ start];
+
+  // Neither multi-window dismissal nor container presentation occurs while
+  // waiting for page context generation.
+  EXPECT_FALSE(other_window_dismissed);
+  EXPECT_FALSE(container_presented);
+  EXPECT_FALSE(agent->is_floaty_invoked());
+
+  FakePageContextWrapper* wrapper = page_context_wrapper_factory.last_wrapper();
+  ASSERT_TRUE(wrapper);
+  [wrapper completeWithEmptyPageContext];
+
+  EXPECT_TRUE(other_window_dismissed);
+  EXPECT_TRUE(container_presented);
+  EXPECT_TRUE(agent->is_floaty_invoked());
+
+  [coordinator_ stop];
   [second_browser->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(GeminiCommands)];
   [browser_->GetCommandDispatcher()

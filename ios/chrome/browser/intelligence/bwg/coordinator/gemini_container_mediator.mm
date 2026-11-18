@@ -6,9 +6,16 @@
 
 #import <memory>
 #import <optional>
+#import <utility>
 
+#import "base/cancelable_callback.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -104,6 +111,10 @@ using ios::provider::GeminiViewState;
 @end
 
 namespace {
+
+// Maximum time to wait for full page context generation before presenting the
+// container when the invocation auto-submits its prompt.
+constexpr base::TimeDelta kAutoSubmitPageContextTimeout = base::Seconds(2);
 
 // Returns whether a page context in computation `state` can be shared with
 // Gemini.
@@ -218,6 +229,15 @@ class GeminiContainerMediatorTabHelperObserver
   // shared with Gemini (e.g. protected page). Updated on every page context
   // propagation, including partial ones on navigation and tab switches.
   BOOL _activePageContextIneligible;
+  // Pending container presentation waiting for full page context generation
+  // before auto-submitting its prompt.
+  base::CancelableRepeatingCallback<void(GeminiPageContext*)>
+      _pendingPresentation;
+  // Timer bounding how long `_pendingPresentation` waits for full page context.
+  base::OneShotTimer _pendingPresentationTimer;
+  // Full page context generated during `prepareForPresentation` to seed the
+  // initial UI state when `didPresentContainer` is called.
+  GeminiPageContext* _initialPageContext;
 }
 
 - (instancetype)
@@ -345,12 +365,45 @@ class GeminiContainerMediatorTabHelperObserver
          IsAppSwitcherAISummarizationEnabled();
 }
 
-- (void)connect {
+- (void)prepareForPresentation {
+  [self cancelPendingPresentation];
+
+  if (!_startupState.shouldAutoSubmit) {
+    [self notifyReadyForPresentationWithPageContext:nil];
+    return;
+  }
+
+  GeminiTabHelper* tabHelper = [self activeTabHelper];
+  if (!tabHelper) {
+    // Cannot present if there is no active WebState or tab helper.
+    return;
+  }
+  [self attachWebStateListObserver];
+  __weak __typeof(self) weakSelf = self;
+  _pendingPresentation.Reset(base::BindRepeating(
+      [](__typeof(self) strongSelf, GeminiPageContext* pageContext) {
+        [strongSelf notifyReadyForPresentationWithPageContext:pageContext];
+      },
+      weakSelf));
+  _pendingPresentationTimer.Start(
+      FROM_HERE, kAutoSubmitPageContextTimeout,
+      base::BindOnce(_pendingPresentation.callback(), nil));
+  tabHelper->GeneratePageContext(_pendingPresentation.callback());
+}
+
+- (void)didPresentContainer {
   [_tabGridState addObserver:self];
   [_lensOverlayStateNotifier addObserver:self];
   [self updateSharedTabsForActiveWebState];
   [self setupInitialUIState];
-  [self requestActivePageContextGeneration];
+  // Request full page context generation, which will update the container once
+  // it's available. Skipped when the container is invoked with an already
+  // generated `_initialPageContext`, since a regeneration right after the
+  // invocation would race the auto-submitted prompt.
+  if (!_initialPageContext) {
+    [self requestActivePageContextGeneration];
+  }
+  _initialPageContext = nil;
   [self onFloatyInvoked];
 }
 
@@ -390,6 +443,8 @@ class GeminiContainerMediatorTabHelperObserver
 }
 
 - (void)disconnect {
+  [self cancelPendingPresentation];
+  _initialPageContext = nil;
   [self onFloatyDismiss];
 
   [_taskStoreManager removeObserver:self];
@@ -525,8 +580,8 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)assistantContainer:(AssistantContainerViewController*)container
            didChangeDetent:(AssistantContainerDetent)newDetent {
-  // Ignore layout-driven detent callbacks before `connect` initializes the view
-  // mode.
+  // Ignore layout-driven detent callbacks before `didPresentContainer`
+  // initializes the view mode.
   if (_stateManager.viewMode == GeminiViewMode::kUnknown) {
     return;
   }
@@ -798,14 +853,6 @@ class GeminiContainerMediatorTabHelperObserver
   }
 }
 
-// Creates and returns the GeminiConfiguration for the active web state, using
-// its partial page context.
-- (GeminiConfiguration*)createGeminiConfigurationForActiveWebState:
-    (GeminiStartupState*)startupState {
-  return [self createGeminiConfigurationForActiveWebState:startupState
-                                              pageContext:nil];
-}
-
 - (GeminiConfiguration*)
     createGeminiConfigurationWithTabHelper:(GeminiTabHelper*)geminiTabHelper
                                pageContext:(GeminiPageContext*)pageContext
@@ -1055,10 +1102,30 @@ class GeminiContainerMediatorTabHelperObserver
   }
 }
 
+// Stores `pageContext` for initial UI setup and notifies the delegate that the
+// mediator is ready for the container to be presented.
+- (void)notifyReadyForPresentationWithPageContext:
+    (GeminiPageContext*)pageContext {
+  // Stop the fallback timer if `GeneratePageContext` finished first, and
+  // invalidate `_pendingPresentation` so neither a late completion after
+  // timeout nor subsequent invocations of the repeating callback can trigger a
+  // duplicate presentation.
+  [self cancelPendingPresentation];
+  _initialPageContext = pageContext;
+  [self.delegate geminiContainerMediatorReadyForPresentation:self];
+}
+
+// Cancels any pending auto-submit presentation.
+- (void)cancelPendingPresentation {
+  _pendingPresentationTimer.Stop();
+  _pendingPresentation.Cancel();
+}
+
 // Sets up the initial UI state for the container.
 - (void)setupInitialUIState {
   GeminiConfiguration* config =
-      [self createGeminiConfigurationForActiveWebState:_startupState];
+      [self createGeminiConfigurationForActiveWebState:_startupState
+                                           pageContext:_initialPageContext];
   if (!config) {
     return;
   }
@@ -1187,6 +1254,13 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)onActiveWebStateChanged:(web::WebState*)oldActive
                       newActive:(web::WebState*)newActive {
+  if (!_pendingPresentation.IsCancelled()) {
+    // Drop any pending presentation tied to `oldActive` so an auto-submitted
+    // prompt isn't sent against a newly activated tab.
+    [self cancelPendingPresentation];
+    [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
+    return;
+  }
   if (oldActive && newActive && oldActive != newActive) {
     [_sessionMetricsManager activeTabSwitched];
   }
@@ -1256,17 +1330,22 @@ class GeminiContainerMediatorTabHelperObserver
   _webStateList = nullptr;
 }
 
-- (void)attachObservers {
+- (void)attachWebStateListObserver {
   if (!_webStateList || _webStateListObserver) {
     return;
-  }
-  if (!_tabHelperObserver) {
-    _tabHelperObserver =
-        std::make_unique<GeminiContainerMediatorTabHelperObserver>(self);
   }
   _webStateListObserver =
       std::make_unique<GeminiContainerMediatorWebStateListObserver>(self);
   _webStateList->AddObserver(_webStateListObserver.get());
+}
+
+- (void)attachObservers {
+  if (!_webStateList || _tabHelperObserver) {
+    return;
+  }
+  [self attachWebStateListObserver];
+  _tabHelperObserver =
+      std::make_unique<GeminiContainerMediatorTabHelperObserver>(self);
   if (GeminiTabHelper* activeTabHelper = [self activeTabHelper]) {
     activeTabHelper->AddObserver(_tabHelperObserver.get());
   }

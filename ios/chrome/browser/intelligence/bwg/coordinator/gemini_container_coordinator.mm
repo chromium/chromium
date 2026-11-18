@@ -5,13 +5,15 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_coordinator.h"
 
 #import <set>
+#import <utility>
 #import <vector>
 
 #import "base/barrier_closure.h"
+#import "base/cancelable_callback.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
-#import "base/ios/block_types.h"
 #import "base/memory/weak_ptr.h"
 #import "base/not_fatal_until.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
@@ -65,8 +67,17 @@
   ActuationWorklogCoordinator* _actuationWorklogCoordinator;
   // Child coordinator presenting a URL in a web modal over the container.
   GeminiWebModalCoordinator* _webModalCoordinator;
+  // Cancelable callback for starting the container once other windows dismiss
+  // their Gemini sessions.
+  base::CancelableOnceClosure _pendingStartContainer;
 }
 
+// Starts the Gemini session. When presenting a new container, the async
+// presentation flow is:
+// `start` -> `[_mediator prepareForPresentation]` (waits for page context when
+// auto-submitting) -> `geminiContainerMediatorReadyForPresentation:` ->
+// `dismissGeminiFromOtherWindowsWithCompletion:` -> `startContainer` ->
+// `[_mediator didPresentContainer]`.
 - (void)start {
   CHECK(_startupState, base::NotFatalUntil::M160);
   if (!_sessionMetricsManager) {
@@ -85,13 +96,22 @@
     return;
   }
 
-  __weak __typeof(self) weakSelf = self;
-  [self dismissGeminiFromOtherWindowsWithCompletion:^{
-    [weakSelf startContainer];
-  }];
+  // `start` may be called again while a previous presentation is still pending
+  // (in `prepareForPresentation` or waiting for other windows to dismiss). In
+  // that case, cancel any pending container presentation, reuse `_mediator`,
+  // update its `startupState`, and let `prepareForPresentation` cancel any
+  // ongoing preparation.
+  _pendingStartContainer.Cancel();
+  if (!_mediator) {
+    [self createMediator];
+  }
+
+  _mediator.startupState = _startupState;
+  [_mediator prepareForPresentation];
 }
 
 - (void)dismissWithCompletion:(void (^)(void))completion {
+  _pendingStartContainer.Cancel();
   [_containerHandler dismissAssistantContainerAnimated:YES
                                             completion:completion];
 }
@@ -103,6 +123,7 @@
 }
 
 - (void)stop {
+  _pendingStartContainer.Cancel();
   if (self.browser) {
     if (GeminiBrowserAgent* geminiBrowserAgent =
             GeminiBrowserAgent::FromBrowser(self.browser)) {
@@ -147,6 +168,16 @@
 
 #pragma mark - GeminiContainerMediatorDelegate
 
+- (void)geminiContainerMediatorReadyForPresentation:
+    (GeminiContainerMediator*)mediator {
+  __weak __typeof(self) weakSelf = self;
+  _pendingStartContainer.Reset(base::BindOnce(
+      [](__typeof(self) strongSelf) { [strongSelf startContainer]; },
+      weakSelf));
+  [self dismissGeminiFromOtherWindowsWithCompletion:_pendingStartContainer
+                                                        .callback()];
+}
+
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
     didStartActuationTaskWithDataSource:(id<ActorTaskDataSource>)dataSource
                           actionHandler:
@@ -162,8 +193,8 @@
 
 #pragma mark - Private
 
-// Starts and presents the Gemini container.
-- (void)startContainer {
+// Creates and configures `_mediator`.
+- (void)createMediator {
   actor::ActorService* actorService = nullptr;
   if (IsGeminiActorEnabled()) {
     actorService =
@@ -172,7 +203,6 @@
 
   GeminiBrowserAgent* geminiBrowserAgent =
       GeminiBrowserAgent::FromBrowser(self.browser);
-  CHECK(!_mediator, base::NotFatalUntil::M160);
   // TODO(crbug.com/535579970): After bottom sheet migration, the startup state
   // can be added to the init params.
   // TODO(crbug.com/571295640): Don't pass the browser instance to mediator.
@@ -187,7 +217,6 @@
                                 : nullptr
       sessionMetricsManager:_sessionMetricsManager];
   _mediator.delegate = self;
-  _mediator.startupState = _startupState;
   // TODO(crbug.com/537730178): Delegate the permission prompt request up to
   // a delegate protocol implemented by GeminiContainerCoordinator, which will
   // present the UIAlertController using its own baseViewController.
@@ -195,7 +224,10 @@
       setBaseViewController:self.baseViewController];
 
   [self setSessionCommandHandlers];
+}
 
+// Starts and presents the Gemini container.
+- (void)startContainer {
   ActuationWorklogViewController* worklogViewController = nil;
   if (IsGeminiActorEnabled()) {
     _actuationWorklogCoordinator = [[ActuationWorklogCoordinator alloc]
@@ -218,13 +250,14 @@
 
   [_containerHandler showAssistantContainerWithContent:_viewController
                                               delegate:_mediator];
-  if (geminiBrowserAgent) {
+  if (GeminiBrowserAgent* geminiBrowserAgent =
+          GeminiBrowserAgent::FromBrowser(self.browser)) {
     geminiBrowserAgent->SetContainerInvoked(true);
   }
 
-  // Calling connect will result in setting the initial detent
-  // which only works after assistant container is presenting.
-  [_mediator connect];
+  // After container is presenting mediator will proceed to set properties such
+  // as detent which only work after the assistant container is presenting.
+  [_mediator didPresentContainer];
   [_sessionMetricsManager geminiStarted:_startupState.isFirstSession];
 }
 
@@ -254,7 +287,7 @@
 
 // Dismisses Gemini from all other windows and executes `completion`.
 - (void)dismissGeminiFromOtherWindowsWithCompletion:
-    (ProceduralBlock)completion {
+    (base::OnceClosure)completion {
   // Collect all browsers (excluding the current one) for all profiles.
   std::vector<base::WeakPtr<Browser>> otherBrowsers;
   for (ProfileIOS* profile :
@@ -271,16 +304,14 @@
   }
 
   if (otherBrowsers.empty()) {
-    if (completion) {
-      completion();
-    }
+    std::move(completion).Run();
     return;
   }
 
   // Gate the completion behind this barrier closure which executes it when all
   // other browsers have dismissed their Gemini sessions.
   base::RepeatingClosure barrier =
-      base::BarrierClosure(otherBrowsers.size(), base::BindOnce(completion));
+      base::BarrierClosure(otherBrowsers.size(), std::move(completion));
 
   // Dismiss Gemini in all the other browsers for all profiles.
   for (base::WeakPtr<Browser> browser : otherBrowsers) {
