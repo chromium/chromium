@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <atomic>
+
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/ref_counted.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -13,6 +16,7 @@
 #import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/test_tag_registry.h"
+#import "net/http/http_status_code.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -82,6 +86,14 @@ const char kDestinationURL[] = "/destination.html";
 // Default URL for a sample html page. It is registered in the default handlers.
 const char kDefaultPageURL[] = "/defaultresponse";
 
+// URLs and constants for HTTP 204/205 response tests.
+const char kTestPagePath[] = "/test_page";
+const char kTestPageText[] = "Test Page";
+const char kNoContentPath[] = "/nocontent";
+const char kResetContentPath[] = "/resetcontent";
+NSString* const kNoContentLinkID = @"no_content_link";
+NSString* const kResetContentLinkID = @"reset_content_link";
+
 // Provides responses for redirect and changed window location URLs.
 std::unique_ptr<net::test_server::HttpResponse> RedirectHandlers(
     const net::test_server::HttpRequest& request) {
@@ -123,6 +135,82 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   return std::move(http_response);
 }
 
+// Serves the test page and HTTP 205 responses for uncommitted navigation tests.
+// HTTP 204 (/nocontent) is served by EmbeddedTestServer's default handler.
+std::unique_ptr<net::test_server::HttpResponse>
+HandleUncommittedNavigationRequests(
+    const net::test_server::HttpRequest& request) {
+  const std::string path = request.GetURL().GetPath();
+  if (path == kTestPagePath) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content_type("text/html");
+    response->set_content(
+        "<p>Test Page</p>"
+        "<a href='/nocontent' id='no_content_link'>204</a> "
+        "<a href='/resetcontent' id='reset_content_link'>205</a>");
+    return response;
+  }
+  if (path == kResetContentPath) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_RESET_CONTENT);
+    return response;
+  }
+  return nullptr;
+}
+
+// Increments `request_count` whenever the server receives a request for
+// `expected_path`.
+void MonitorUncommittedNavigationRequests(
+    const std::string& expected_path,
+    scoped_refptr<base::RefCountedData<std::atomic<int>>> request_count,
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().GetPath() == expected_path) {
+    request_count->data.fetch_add(1, std::memory_order_relaxed);
+  }
+}
+
+// Asserts that the toolbar Forward button is disabled (or hidden under Chrome
+// Next IA).
+void AssertForwardButtonDisabled() {
+  BOOL forwardButtonHiddenWhenDisabled =
+      [ChromeEarlGrey isChromeNextEnabled] &&
+      (![ChromeEarlGrey isNextOldDesignEnabled] ||
+       ![ChromeEarlGrey isIPadIdiom]);
+  if (forwardButtonHiddenWhenDisabled) {
+    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+        assertWithMatcher:grey_notVisible()];
+  } else {
+    id<GREYMatcher> disabledForwardButton = grey_allOf(
+        ForwardButton(),
+        grey_accessibilityTrait(UIAccessibilityTraitNotEnabled), nil);
+    [[EarlGrey selectElementWithMatcher:disabledForwardButton]
+        assertWithMatcher:grey_notNil()];
+  }
+}
+
+// Asserts that the toolbar Forward button is visible and enabled.
+void AssertForwardButtonEnabled() {
+  id<GREYMatcher> enabledForwardButton = grey_allOf(
+      ForwardButton(),
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)),
+      grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:enabledForwardButton]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Reveals the NTP toolbar on compact iPhones under Chrome Next, where toolbars
+// are hidden on the NTP by default.
+void RevealNTPToolbarIfNeeded() {
+  if ([ChromeEarlGrey isChromeNextEnabled] && ![ChromeEarlGrey isIPadIdiom]) {
+    // On compact iPhones under Chrome Next, toolbars are hidden on the NTP by
+    // default. We must scroll down the page to reveal the toolbar before we
+    // can interact with the Forward button.
+    [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
+        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  }
+}
+
 }  // namespace
 
 // Integration tests for navigating history via JavaScript and the forward and
@@ -137,6 +225,12 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // and then perform series of back-forward navigations asserting the proper
 // behavior.
 - (void)verifyBackAndForwardAfterRedirect:(std::string)redirectLabel;
+
+// Verifies that an uncommitted navigation to `responsePath` (triggered via link
+// tap when `linkID` is non-nil, or browser `loadURL:` otherwise) leaves the
+// current page, URL, and back/forward history intact.
+- (void)verifyUncommittedNavigationWithPath:(const std::string&)responsePath
+                                     linkID:(NSString*)linkID;
 
 @end
 
@@ -300,21 +394,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 
   // Verify that the forward button is visible but not enabled (or hidden under
   // Chrome Next IA).
-  BOOL forwardButtonHiddenWhenDisabled =
-      [ChromeEarlGrey isChromeNextEnabled] &&
-      (![ChromeEarlGrey isNextOldDesignEnabled] ||
-       ![ChromeEarlGrey isIPadIdiom]);
-
-  if (forwardButtonHiddenWhenDisabled) {
-    [[EarlGrey selectElementWithMatcher:ForwardButton()]
-        assertWithMatcher:grey_notVisible()];
-  } else {
-    id<GREYMatcher> disabledForwardButton = grey_allOf(
-        ForwardButton(),
-        grey_accessibilityTrait(UIAccessibilityTraitNotEnabled), nil);
-    [[EarlGrey selectElementWithMatcher:disabledForwardButton]
-        assertWithMatcher:grey_notNil()];
-  }
+  AssertForwardButtonDisabled();
 }
 
 // Test back-and-forward navigation from and to NTP.
@@ -332,13 +412,7 @@ TAG_SMOKE_TEST(NavigationTestCase, testHistoryBackAndForwardAroundNTP);
       assertWithMatcher:grey_notNil()];
 
   // Tap the forward button and verify test page is loaded.
-  if ([ChromeEarlGrey isChromeNextEnabled] && ![ChromeEarlGrey isIPadIdiom]) {
-    // On compact iPhones under Chrome Next, toolbars are hidden on the NTP by
-    // default. We must scroll down the page to reveal the toolbar before we
-    // can tap the Forward button.
-    [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
-        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
-  }
+  RevealNTPToolbarIfNeeded();
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
@@ -661,6 +735,138 @@ TAG_SMOKE_TEST(NavigationTestCase, testHistoryBackAndForwardAroundNTP);
   }
   GREYWaitForAppToIdle(@"App failed to idle");
   [ChromeEarlGrey waitForWebStateContainingText:"onload"];
+}
+
+#pragma mark - HTTP 204/205 back/forward navigation operations
+
+- (void)verifyUncommittedNavigationWithPath:(const std::string&)responsePath
+                                     linkID:(NSString*)linkID {
+  scoped_refptr<base::RefCountedData<std::atomic<int>>> requestCount;
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&HandleUncommittedNavigationRequests));
+  if (linkID) {
+    requestCount =
+        base::MakeRefCounted<base::RefCountedData<std::atomic<int>>>();
+    self.testServer->RegisterRequestMonitor(base::BindRepeating(
+        &MonitorUncommittedNavigationRequests, responsePath, requestCount));
+  }
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  const GURL testPageURL = self.testServer->GetURL(kTestPagePath);
+  const GURL responseURL = self.testServer->GetURL(responsePath);
+
+  [ChromeEarlGrey loadURL:testPageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
+  const NSInteger backCount = [ChromeEarlGrey navigationBackListItemsCount];
+
+  if (linkID) {
+    [ChromeEarlGrey tapWebStateElementWithID:linkID];
+    GREYAssertTrue(
+        base::test::ios::WaitUntilConditionOrTimeout(
+            base::test::ios::kWaitForPageLoadTimeout,
+            ^{
+              return requestCount->data.load(std::memory_order_relaxed) == 1;
+            }),
+        @"Timed out waiting for renderer-initiated 204/205 request.");
+    [ChromeEarlGrey waitForPageToFinishLoading];
+  } else {
+    [ChromeEarlGrey loadURL:responseURL];
+  }
+
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
+  [ChromeEarlGrey waitForWebStateVisibleURL:testPageURL];
+  GREYAssertEqual(testPageURL, [ChromeEarlGrey webStateLastCommittedURL],
+                  @"204/205 navigation should keep last committed URL.");
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:chrome_test_util::LocationViewContainingText(
+                            testPageURL.GetHost())];
+  GREYAssertEqual(backCount, [ChromeEarlGrey navigationBackListItemsCount],
+                  @"204/205 navigation should not modify back history.");
+  AssertForwardButtonDisabled();
+
+  // Navigate back to NTP using the toolbar Back button.
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Navigate forward to Test Page using the toolbar Forward button.
+  RevealNTPToolbarIfNeeded();
+  [[EarlGrey selectElementWithMatcher:ForwardButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
+  [ChromeEarlGrey waitForWebStateVisibleURL:testPageURL];
+  GREYAssertEqual(testPageURL, [ChromeEarlGrey webStateLastCommittedURL],
+                  @"Forward button should navigate back to test page.");
+  AssertForwardButtonDisabled();
+}
+
+// Tests that a browser-initiated HTTP 204 No Content response keeps the active
+// page, URL, and back/forward navigation state intact.
+- (void)testBrowserInitiatedNoContentNavigation {
+  [self verifyUncommittedNavigationWithPath:kNoContentPath linkID:nil];
+}
+
+// Tests that a browser-initiated HTTP 205 Reset Content response keeps the
+// active page, URL, and back/forward navigation state intact.
+- (void)testBrowserInitiatedResetContentNavigation {
+  [self verifyUncommittedNavigationWithPath:kResetContentPath linkID:nil];
+}
+
+// Tests that a renderer-initiated HTTP 204 No Content link navigation keeps the
+// active page, URL, and back/forward navigation state intact.
+- (void)testRendererInitiatedNoContentNavigation {
+  [self verifyUncommittedNavigationWithPath:kNoContentPath
+                                     linkID:kNoContentLinkID];
+}
+
+// Tests that a renderer-initiated HTTP 205 Reset Content link navigation keeps
+// the active page, URL, and back/forward navigation state intact.
+- (void)testRendererInitiatedResetContentNavigation {
+  [self verifyUncommittedNavigationWithPath:kResetContentPath
+                                     linkID:kResetContentLinkID];
+}
+
+// Tests that an HTTP 204 No Content navigation preserves existing forward
+// history.
+- (void)testNoContentNavigationPreservesForwardHistory {
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&HandleUncommittedNavigationRequests));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  const GURL ponyURL = self.testServer->GetURL(kSimpleFileBasedTestURL);
+  const GURL testPageURL = self.testServer->GetURL(kTestPagePath);
+  const GURL noContentURL = self.testServer->GetURL(kNoContentPath);
+
+  [ChromeEarlGrey loadURL:ponyURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"pony"];
+  [ChromeEarlGrey loadURL:testPageURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
+
+  // Navigate back to ponyURL so Test Page is in forward history.
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:"pony"];
+  [ChromeEarlGrey waitForWebStateVisibleURL:ponyURL];
+  AssertForwardButtonEnabled();
+
+  // Trigger HTTP 204 while Test Page is in forward history.
+  [ChromeEarlGrey loadURL:noContentURL];
+
+  // Verify ponyURL remains active and forward history is preserved.
+  [ChromeEarlGrey waitForWebStateContainingText:"pony"];
+  [ChromeEarlGrey waitForWebStateVisibleURL:ponyURL];
+  GREYAssertEqual(ponyURL, [ChromeEarlGrey webStateLastCommittedURL],
+                  @"204 navigation should keep last committed URL.");
+  AssertForwardButtonEnabled();
+
+  // Navigate forward to Test Page using the toolbar Forward button.
+  [[EarlGrey selectElementWithMatcher:ForwardButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPageText];
+  [ChromeEarlGrey waitForWebStateVisibleURL:testPageURL];
+  GREYAssertEqual(testPageURL, [ChromeEarlGrey webStateLastCommittedURL],
+                  @"Forward button should navigate back to test page.");
+  AssertForwardButtonDisabled();
 }
 
 @end
