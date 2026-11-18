@@ -641,14 +641,17 @@ net::Error SimpleEntryImpl::ReadyForSparseIO(CompletionOnceCallback callback) {
 }
 
 void SimpleEntryImpl::SetEntryInMemoryData(uint8_t data) {
-  if (backend_) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (doom_state_ == DOOM_NONE && backend_) {
     backend_->index()->SetEntryInMemoryData(entry_hash_, data);
   }
 }
 
 void SimpleEntryImpl::SetLastUsedTimeForTest(base::Time time) {
   last_used_ = time;
-  backend_->index()->SetLastUsedTimeForTest(entry_hash_, time);
+  if (doom_state_ == DOOM_NONE && backend_) {
+    backend_->index()->SetLastUsedTimeForTest(entry_hash_, time);
+  }
 }
 
 void SimpleEntryImpl::SetPriority(uint32_t entry_priority) {
@@ -743,10 +746,13 @@ void SimpleEntryImpl::FinishReturnEntryToCallerAsync(
 
 void SimpleEntryImpl::MarkAsDoomed(DoomState new_state) {
   DCHECK_NE(DOOM_NONE, new_state);
-  doom_state_ = new_state;
-  if (!backend_.get())
+  if (std::exchange(doom_state_, new_state) != DOOM_NONE) {
+    CHECK(!active_entry_proxy_);
     return;
-  backend_->index()->Remove(entry_hash_);
+  }
+  if (backend_.get()) {
+    backend_->index()->Remove(entry_hash_);
+  }
   active_entry_proxy_.reset();
 }
 
@@ -1452,8 +1458,9 @@ void SimpleEntryImpl::CreationOperationComplete(
       // the active entry.  We can only do this because OpenEntryInternal
       // and CreateEntryInternal have to start from STATE_UNINITIALIZED, so
       // nothing else is going on which may be confused.
-      if (backend_)
+      if (doom_state_ == DOOM_NONE && backend_) {
         backend_->index()->Remove(entry_hash_);
+      }
     }
 
     net_log_.AddEventWithNetErrorCode(end_event_type, net::ERR_FAILED);
@@ -1510,7 +1517,8 @@ void SimpleEntryImpl::CreationOperationComplete(
     in_results->entry_stat.set_last_used(index_last_used_time);
 
   UpdateDataFromEntryStat(in_results->entry_stat);
-  if (cache_type_ == net::APP_CACHE && backend_.get() && backend_->index()) {
+  if (doom_state_ == DOOM_NONE && cache_type_ == net::APP_CACHE &&
+      backend_.get() && backend_->index()) {
     backend_->index()->SetTrailerPrefetchSize(
         entry_hash_, in_results->computed_trailer_prefetch_size);
   }
@@ -1691,7 +1699,7 @@ void SimpleEntryImpl::CloseOperationComplete(
   DCHECK(STATE_IO_PENDING == state_ || STATE_FAILURE == state_ ||
          STATE_UNINITIALIZED == state_);
   net_log_.AddEvent(net::NetLogEventType::SIMPLE_CACHE_ENTRY_CLOSE_END);
-  if (cache_type_ == net::APP_CACHE &&
+  if (doom_state_ == DOOM_NONE && cache_type_ == net::APP_CACHE &&
       in_results->estimated_trailer_prefetch_size > 0 && backend_.get() &&
       backend_->index()) {
     backend_->index()->SetTrailerPrefetchSize(

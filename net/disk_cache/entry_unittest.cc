@@ -37,6 +37,7 @@
 #include "net/disk_cache/simple/simple_entry_format.h"
 #include "net/disk_cache/simple/simple_entry_impl.h"
 #include "net/disk_cache/simple/simple_histogram_enums.h"
+#include "net/disk_cache/simple/simple_index.h"
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 #include "net/disk_cache/simple/simple_test_util.h"
 #include "net/disk_cache/simple/simple_util.h"
@@ -3137,6 +3138,101 @@ TEST_F(DiskCacheEntryTest, SimpleCacheDoomErrorRace) {
   cache_->DoomEntry(kKey, net::HIGHEST, cb.callback());
   entry->Close();
   EXPECT_EQ(0, cb.WaitForResult());
+}
+
+TEST_F(DiskCacheEntryTest,
+       SimpleCacheDoomedEntryErrorPreservesReplacementInIndex) {
+  SetBackendToTest(BackendToTest::kSimple);
+  SetCacheType(net::APP_CACHE);
+  InitCache();
+
+  const char kKey[] = "shared_replacement_key";
+  const uint64_t entry_hash = disk_cache::simple_util::GetEntryHashKey(kKey);
+  const int kCorruptSize = 50000;
+  ASSERT_TRUE(SimpleCacheMakeBadChecksumEntry(kKey, kCorruptSize));
+
+  // Keep the initial corrupt entry open across dooming it.
+  disk_cache::Entry* entry1 = nullptr;
+  ASSERT_THAT(OpenEntry(kKey, &entry1), IsOk());
+  ScopedEntryPtr entry1_closer(entry1);
+
+  ASSERT_THAT(DoomEntry(kKey), IsOk());
+  EXPECT_FALSE(simple_cache_impl_->index()->Has(entry_hash));
+
+  // Create and close a replacement entry for the same key so its metadata,
+  // in-memory hint, and trailer prefetch size are committed to `SimpleIndex`.
+  const std::string updated_body = "updated_replacement_payload";
+  constexpr uint8_t kReplacementHint = 1u;
+  auto updated_buf = base::MakeRefCounted<net::StringIOBuffer>(updated_body);
+
+  disk_cache::Entry* entry2 = nullptr;
+  ASSERT_THAT(CreateEntry(kKey, &entry2), IsOk());
+  ScopedEntryPtr entry2_closer(entry2);
+  ASSERT_EQ(static_cast<int>(updated_body.size()),
+            WriteData(entry2, 0, 0, updated_buf.get(), updated_body.size(),
+                      /*truncate=*/true));
+  ASSERT_EQ(static_cast<int>(updated_body.size()),
+            WriteData(entry2, 1, 0, updated_buf.get(), updated_body.size(),
+                      /*truncate=*/true));
+  entry2->SetEntryInMemoryData(kReplacementHint);
+  entry2_closer.reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return simple_cache_impl_->GetNumActiveEntriesForTesting() == 0;
+  }));
+
+  ASSERT_TRUE(simple_cache_impl_->index()->Has(entry_hash));
+  EXPECT_EQ(kReplacementHint,
+            simple_cache_impl_->index()->GetEntryInMemoryData(entry_hash));
+  const int32_t entry2_trailer_size =
+      simple_cache_impl_->index()->GetTrailerPrefetchSize(entry_hash);
+  EXPECT_GT(entry2_trailer_size, 0);
+
+  // In-memory metadata updates, read failures, and closing the already-doomed
+  // entry must not evict or overwrite the replacement entry in `SimpleIndex`.
+  entry1->SetEntryInMemoryData(2u);
+  auto corrupt_read_buf =
+      base::MakeRefCounted<net::IOBufferWithSize>(kCorruptSize);
+  EXPECT_EQ(net::ERR_CACHE_CHECKSUM_MISMATCH,
+            ReadData(entry1, 1, 0, corrupt_read_buf.get(), kCorruptSize));
+  entry1->SetEntryInMemoryData(3u);
+  scoped_refptr<disk_cache::SimpleEntryImpl> entry1_ref(
+      static_cast<disk_cache::SimpleEntryImpl*>(entry1));
+  entry1_closer.reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return entry1_ref->HasOneRef(); }));
+  entry1_ref.reset();
+
+  EXPECT_TRUE(simple_cache_impl_->index()->Has(entry_hash));
+  EXPECT_EQ(kReplacementHint,
+            simple_cache_impl_->index()->GetEntryInMemoryData(entry_hash));
+  EXPECT_EQ(entry2_trailer_size,
+            simple_cache_impl_->index()->GetTrailerPrefetchSize(entry_hash));
+
+  disk_cache::Entry* reopened = nullptr;
+  ASSERT_THAT(OpenEntry(kKey, &reopened), IsOk());
+  ScopedEntryPtr reopened_closer(reopened);
+  ASSERT_EQ(static_cast<int64_t>(updated_body.size()),
+            reopened->GetDataSize(1));
+  auto read_buf =
+      base::MakeRefCounted<net::IOBufferWithSize>(updated_body.size());
+  ASSERT_EQ(static_cast<int>(updated_body.size()),
+            ReadData(reopened, 1, 0, read_buf.get(), updated_body.size()));
+  EXPECT_EQ(base::as_byte_span(updated_body), read_buf->span());
+  reopened_closer.reset();
+
+  // An error on an active (non-doomed) entry must still remove its hash from
+  // `SimpleIndex`.
+  const char kActiveKey[] = "active_corrupt_key";
+  const uint64_t active_hash =
+      disk_cache::simple_util::GetEntryHashKey(kActiveKey);
+  ASSERT_TRUE(SimpleCacheMakeBadChecksumEntry(kActiveKey, kCorruptSize));
+  ASSERT_TRUE(simple_cache_impl_->index()->Has(active_hash));
+
+  disk_cache::Entry* active_entry = nullptr;
+  ASSERT_THAT(OpenEntry(kActiveKey, &active_entry), IsOk());
+  ScopedEntryPtr active_entry_closer(active_entry);
+  EXPECT_EQ(net::ERR_CACHE_CHECKSUM_MISMATCH,
+            ReadData(active_entry, 1, 0, corrupt_read_buf.get(), kCorruptSize));
+  EXPECT_FALSE(simple_cache_impl_->index()->Has(active_hash));
 }
 
 bool TruncatePath(const base::FilePath& file_path, int64_t length) {
