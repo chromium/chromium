@@ -602,6 +602,84 @@ class UnitTest(unittest.TestCase):
     self.assertEqual(['all', 'foo_unittests'], out['compile_targets'])
     self.assertEqual(['all'], out['gn_labels'])
 
+  def test_check(self):
+    files = {
+      '/tmp/isolate_map.pyl': '''{
+        "foo_unittests": {
+          "label": "//foo:foo_unittests",
+          "type": "console_test_launcher",
+        },
+        "chromedriver": {
+          "label": "//chrome/test/chromedriver:chromedriver_server",
+          "type": "unknown",
+        },
+      }''',
+    }
+    mbw = self.fake_mbw(files)
+    # The builder arguments that chromium.run_mb_cmd() in the recipes adds to
+    # every mb command are accepted and ignored.
+    self.check(
+      [
+        'check',
+        '-m',
+        'fake_builder_group',
+        '-b',
+        'fake_builder',
+        '--config-file',
+        mbw.default_config,
+        '-i',
+        '/tmp/isolate_map.pyl',
+        '--check-generated',
+        '--error-limit=-1',
+        '//out/Default',
+        'foo_unittests',
+        'chromedriver',
+        'base:base',
+        '//bar:bar',
+        'foo_unittests',
+      ],
+      mbw=mbw,
+      ret=0,
+    )
+    self.assertEqual(
+      mbw.calls,
+      [
+        [
+          '/fake_src/buildtools/linux64/gn',
+          'check',
+          '//out/Default',
+          '//bar:bar',
+          '//base:base',
+          '//chrome/test/chromedriver:chromedriver_server',
+          '//foo:foo_unittests',
+          '--with-transitive-deps',
+          '--check-generated',
+          '--error-limit=-1',
+        ]
+      ],
+    )
+
+  def test_check_all(self):
+    mbw = self.check(['check', '//out/Default', 'foo_unittests', 'all'], ret=0)
+    self.assertEqual(
+      mbw.calls,
+      [['/fake_src/buildtools/linux64/gn', 'check', '//out/Default']],
+    )
+
+  def test_check_unknown_target(self):
+    mbw = self.check(
+      ['check', '//out/Default', 'foo_unittests', 'obj/foo/foo.o'], ret=1
+    )
+    self.assertEqual(mbw.calls, [])
+    self.assertIn(
+      'target "obj/foo/foo.o" not found in gn_isolate_map.pyl', mbw.err
+    )
+
+  def test_check_fails(self):
+    mbw = self.fake_mbw()
+    mbw.Call = lambda cmd, env=None, capture_output=True, input='': (1, '', '')
+    self.check(['check', '//out/Default', 'foo_unittests'], mbw=mbw, ret=1)
+
   def test_gen(self):
     mbw = self.fake_mbw()
     self.check(

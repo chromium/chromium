@@ -98,6 +98,29 @@ differences can be subtle.  We won't even go into how the `targets` and
 The `-b/--builder`, `-c/--config`, `-f/--config-file`, `--builder-group`,
 `-q/--quiet`, and `-v/--verbose` flags work as documented for `mb gen`.
 
+### mb check
+
+`mb check` runs `gn check` on the given ninja targets and their transitive
+dependencies, for example the targets that a bot just compiled:
+
+```
+% mb check --check-generated //out/Release base_unittests url:url
+```
+
+`gn check` takes GN labels, so `mb check` maps each target to a label:
+`all` checks all targets, a label stays as is, `<dir>:<name>` becomes
+`//<dir>:<name>`, and any other name is looked up in the isolate map files
+(`-i/--isolate-map-file`). `mb check` fails if a target cannot be mapped.
+
+`--check-generated` also checks the generated files found in the build
+dir, and `--error-limit` sets the maximum number of errors to print (-1 for
+no limit).
+
+`mb check` does not look up a build config. It accepts `-m/--builder-group`,
+`-b/--builder`, `-c/--config`, `--phase` and `-f/--config-file` so that
+callers can pass the same arguments as to other subcommands, but ignores
+them.
+
 ### mb gen
 
 `mb gen` is responsible for generating the Ninja files by invoking GN with

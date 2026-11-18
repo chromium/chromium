@@ -253,6 +253,31 @@ class MetaBuildWrapper:
     subp.set_defaults(func=self.CmdAnalyze)
 
     subp = subps.add_parser(
+      'check',
+      description='Run "gn check" on the given ninja targets and their '
+      'transitive dependencies.',
+    )
+    AddCommonOptions(subp)
+    subp.add_argument(
+      '--check-generated',
+      action='store_true',
+      help='Also check the generated files found in the build dir.',
+    )
+    subp.add_argument(
+      '--error-limit',
+      type=int,
+      help='Maximum number of errors to print (-1 for no limit).',
+    )
+    subp.add_argument('path', help='path build was generated into.')
+    subp.add_argument(
+      'targets',
+      nargs='+',
+      help='ninja targets or GN labels to check, e.g. the targets that were '
+      'compiled.',
+    )
+    subp.set_defaults(func=self.CmdCheck)
+
+    subp = subps.add_parser(
       'export',
       description='Print out the expanded configuration '
       'for each builder as a JSON object.',
@@ -605,6 +630,23 @@ class MetaBuildWrapper:
   def CmdAnalyze(self):
     vals = self.Lookup()
     return self.RunGNAnalyze(vals)
+
+  def CmdCheck(self):
+    err, labels = self.MapTargetsToLabels(
+      self.ReadIsolateMap(), self.args.targets, compile_only=True
+    )
+    if err:
+      raise MBErr(err)
+
+    cmd = self.GNCmd('check', self.args.path)
+    if 'all' not in labels:
+      cmd += sorted(set(labels)) + ['--with-transitive-deps']
+    if self.args.check_generated:
+      cmd.append('--check-generated')
+    if self.args.error_limit is not None:
+      cmd.append('--error-limit=%d' % self.args.error_limit)
+    ret, _, _ = self.Run(cmd, capture_output=False)
+    return ret
 
   def CmdExport(self):
     obj = self._ToJsonish()
@@ -1788,7 +1830,21 @@ class MetaBuildWrapper:
 
     return 0
 
-  def MapTargetsToLabels(self, isolate_map, targets):
+  def MapTargetsToLabels(self, isolate_map, targets, compile_only=False):
+    """Maps ninja targets to GN labels.
+
+    Args:
+      isolate_map: The isolate map, see ReadIsolateMap().
+      targets: The ninja targets. "all" and labels are kept as is.
+      compile_only: If False, other targets must be isolate map entries of a
+        known type, since the callers isolate them. If True, the targets are
+        only compiled, so "<dir>:<name>" (the phony rule for a full label, see
+        "gn help ninja_rules") and entries of type "unknown" are mapped too.
+
+    Returns:
+      (err, labels): the errors for targets that could not be mapped, and the
+      labels.
+    """
     labels = []
     err = ''
 
@@ -1797,9 +1853,11 @@ class MetaBuildWrapper:
         labels.append(target)
       elif target.startswith('//'):
         labels.append(target)
+      elif compile_only and ':' in target:
+        labels.append('//' + target)
       else:
         if target in isolate_map:
-          if isolate_map[target]['type'] == 'unknown':
+          if isolate_map[target]['type'] == 'unknown' and not compile_only:
             err += 'test target "%s" type is unknown\n' % target
           else:
             labels.append(isolate_map[target]['label'])
