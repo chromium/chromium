@@ -9,14 +9,22 @@ for more details about the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
+# Expectations file names. The internal file lives in the internal repository,
+# whose presubmit reuses `CheckTestExpectations`.
+TEST_EXPECTATIONS_FILE_NAMES = (
+    'test_expectations.txt',
+    'test_expectations_internal.txt',
+)
+
 
 def CheckTestExpectations(input_api, output_api):
-    """Checks syntax and bug format for lines in test_expectations.txt."""
+    """Checks syntax and bug format for lines in test expectations files."""
     results = []
     affected_files = [
         f
         for f in input_api.AffectedFiles(include_deletes=False)
-        if input_api.os_path.basename(f.LocalPath()) == 'test_expectations.txt'
+        if input_api.os_path.basename(f.LocalPath())
+        in TEST_EXPECTATIONS_FILE_NAMES
     ]
     if not affected_files:
         return results

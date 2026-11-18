@@ -7,6 +7,9 @@
 #import <TargetConditionals.h>
 #import <UIKit/UIKit.h>
 
+#import <vector>
+
+#import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/system/sys_info.h"
 #import "build/build_config.h"
@@ -22,6 +25,33 @@ NSString* const kEarlGreyHaltExecutionMessage =
 // Exception name used by EarlGrey when a host application crash occurs.
 NSString* const kEarlGreyInterruptExceptionName =
     @"EarlGreyInternalTestInterruptException";
+
+// Bundle resource name of the public expectations file.
+NSString* const kTestExpectationsResourceName = @"test_expectations";
+// Bundle resource name of the internal expectations file. Only test bundles
+// built from the internal repository contain this file, so that expectations
+// for internal-only tests stay out of the public tree.
+NSString* const kInternalTestExpectationsResourceName =
+    @"test_expectations_internal";
+// Bundle resource type of the expectations files.
+NSString* const kTestExpectationsResourceType = @"txt";
+
+// Returns the content of the expectations file at `path`.
+NSString* ReadExpectationsFile(NSString* path) {
+  NSError* error = nil;
+  NSString* content = [NSString stringWithContentsOfFile:path
+                                                encoding:NSUTF8StringEncoding
+                                                   error:&error];
+  CHECK(content && !error) << "Error reading expectations file at " << path
+                           << ": " << error;
+  return content;
+}
+
+// Content and path of a loaded expectations file.
+struct ExpectationsSource {
+  NSString* content;
+  NSString* file_path;
+};
 
 }  // namespace
 
@@ -115,7 +145,11 @@ NSString* const kEarlGreyInterruptExceptionName =
 @end
 
 @interface TestExpectations ()
-- (instancetype)initWithFilePath:(NSString*)path;
+- (instancetype)initWithContent:(NSString*)content filePath:(NSString*)filePath;
+// Parses `content` on top of the already loaded expectations.
+- (void)appendContent:(NSString*)content filePath:(NSString*)filePath;
+// Parses `content` into `_expectations`, attributing entries to `filePath`.
+- (void)parseExpectations:(NSString*)content filePath:(NSString*)filePath;
 // Evaluates whether the expectation's tag string matches active tags.
 - (BOOL)doTagsMatch:(NSString*)tagsStr activeTags:(NSSet<NSString*>*)activeTags;
 @end
@@ -146,30 +180,31 @@ TagCategory GetTagCategory(NSString* tag) {
   // Override for active tags (used in tests).
   NSSet<NSString*>* _activeTagsOverride;
 
-  // Store original content for reparsing if tags are overridden.
-  NSString* _content;
-
-  // Path to the expectations file.
-  NSString* _filePath;
-}
-
-- (instancetype)initWithFilePath:(NSString*)path {
-  NSError* error = nil;
-  NSString* content = [NSString stringWithContentsOfFile:path
-                                                encoding:NSUTF8StringEncoding
-                                                   error:&error];
-  CHECK(content && !error) << "Error reading expectations file at " << path
-                           << ": " << error;
-  return [self initWithContent:content filePath:path];
+  // Loaded expectations files in load order, kept for reparsing if tags are
+  // overridden. Later sources override entries of earlier ones.
+  std::vector<ExpectationsSource> _sources;
 }
 
 + (instancetype)sharedInstance {
   if (!g_shared_instance) {
     NSBundle* bundle = [NSBundle bundleForClass:[TestExpectations class]];
-    NSString* path = [bundle pathForResource:@"test_expectations"
-                                      ofType:@"txt"];
+    NSString* path = [bundle pathForResource:kTestExpectationsResourceName
+                                      ofType:kTestExpectationsResourceType];
     CHECK(path) << "Failed to find test_expectations.txt in bundle " << bundle;
-    g_shared_instance = [[TestExpectations alloc] initWithFilePath:path];
+    // The instance is fully built before being published, so that readers
+    // never observe it without the internal expectations.
+    TestExpectations* instance =
+        [[TestExpectations alloc] initWithContent:ReadExpectationsFile(path)
+                                         filePath:path];
+
+    NSString* internalPath =
+        [bundle pathForResource:kInternalTestExpectationsResourceName
+                         ofType:kTestExpectationsResourceType];
+    if (internalPath) {
+      [instance appendContent:ReadExpectationsFile(internalPath)
+                     filePath:internalPath];
+    }
+    g_shared_instance = instance;
   }
   return g_shared_instance;
 }
@@ -182,12 +217,16 @@ TagCategory GetTagCategory(NSString* tag) {
                        filePath:(NSString*)filePath {
   self = [super init];
   if (self) {
-    _content = [content copy];
-    _filePath = [filePath copy];
     _expectations = [NSMutableDictionary dictionary];
-    [self parseExpectations:_content];
+    [self appendContent:content filePath:filePath];
   }
   return self;
+}
+
+- (void)appendContent:(NSString*)content filePath:(NSString*)filePath {
+  _sources.push_back({[content copy], [filePath copy]});
+  const ExpectationsSource& source = _sources.back();
+  [self parseExpectations:source.content filePath:source.file_path];
 }
 
 - (NSSet<NSString*>*)activeTags {
@@ -254,7 +293,7 @@ TagCategory GetTagCategory(NSString* tag) {
   return [tags copy];
 }
 
-- (void)parseExpectations:(NSString*)content {
+- (void)parseExpectations:(NSString*)content filePath:(NSString*)filePath {
   NSSet<NSString*>* activeTags = [self activeTags];
 
   NSError* error = nil;
@@ -342,7 +381,7 @@ TagCategory GetTagCategory(NSString* tag) {
     entry.bug = bug ? bug : @"Expected failure";
     entry.type = type;
     entry.lineNumber = lineNumber;
-    entry.filePath = _filePath;
+    entry.filePath = filePath;
     _expectations[normalizedTestId] = entry;
   }
 }
@@ -446,8 +485,8 @@ TagCategory GetTagCategory(NSString* tag) {
 
   // Reparse expectations with the new tags.
   [_expectations removeAllObjects];
-  if (_content) {
-    [self parseExpectations:_content];
+  for (const ExpectationsSource& source : _sources) {
+    [self parseExpectations:source.content filePath:source.file_path];
   }
 }
 
@@ -455,6 +494,11 @@ TagCategory GetTagCategory(NSString* tag) {
   CHECK(g_shared_instance == nil);
   g_shared_instance = [[TestExpectations alloc] initWithContent:content];
   return g_shared_instance;
+}
+
+- (void)appendContentForTesting:(NSString*)content
+                       filePath:(NSString*)filePath {
+  [self appendContent:content filePath:filePath];
 }
 
 + (void)resetForTesting {

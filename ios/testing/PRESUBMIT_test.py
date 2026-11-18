@@ -158,6 +158,31 @@ class CheckTestExpectationsTest(unittest.TestCase):
             "Mutually exclusive tags 'debug' and 'release'", results[2].message
         )
 
+    def testInternalExpectationsFileIsChecked(self):
+        """Tests that the internal expectations file is checked too."""
+        lines = [
+            'MyTestCase/testFoo [ Failure ]',
+        ]
+        self.mock_input.files = [
+            MockFile('chrome/test/test_expectations_internal.txt', lines)
+        ]
+        results = PRESUBMIT.CheckTestExpectations(
+            self.mock_input, self.mock_output
+        )
+        self.assertEqual(len(results), 1)
+        self.assertIn('Missing or invalid bug field', results[0].message)
+
+    def testUnrelatedFileIsIgnored(self):
+        """Tests that files with other names are not checked."""
+        lines = [
+            'MyTestCase/testFoo [ Failure ]',
+        ]
+        self.mock_input.files = [MockFile('ios/testing/other.txt', lines)]
+        results = PRESUBMIT.CheckTestExpectations(
+            self.mock_input, self.mock_output
+        )
+        self.assertEqual(len(results), 0)
+
 
 if __name__ == '__main__':
     unittest.main()

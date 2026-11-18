@@ -1,5 +1,11 @@
 # Test Expectations File.
 #
+# This file is only for tests whose code lives in the Chromium repository.
+# Expectations for internal-only tests belong in the internal
+# `test_expectations_internal.txt` file, which is bundled only into internal
+# test modules and overrides entries in this file. Do not add internal test
+# names here.
+#
 # Format:
 # crbug.com/<###> [ [Tags] ] TestName [Expectations]
 #

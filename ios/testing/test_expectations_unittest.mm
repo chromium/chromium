@@ -511,6 +511,99 @@ TEST_F(TestExpectationsTest, ThrownErrorMatchesCrashExpectation) {
   EXPECT_EQ(TestExpectationMatchResult::kMatched, result);
 }
 
+// Tests that appended expectations are merged with the existing ones, override
+// entries for the same test, and keep track of the file they come from.
+TEST_F(TestExpectationsTest, AppendedContentMergesAndOverrides) {
+  NSString* public_content =
+      @"crbug.com/1 PublicTestCase/testPublic [ Failure ]\n"
+      @"crbug.com/2 SharedTestCase/testShared [ Failure ]\n";
+  NSString* internal_content =
+      @"crbug.com/3 InternalTestCase/testInternal [ Skip ]\n"
+      @"crbug.com/4 SharedTestCase/testShared [ Pass Failure ]\n";
+  TestExpectations* expectations =
+      [TestExpectations sharedInstanceForTesting:public_content];
+  [expectations appendContentForTesting:internal_content
+                               filePath:@"/path/to/internal.txt"];
+
+  TestExpectationEntry* public_entry =
+      [expectations expectationEntryForTestCase:@"PublicTestCase"
+                                     methodName:@"testPublic"];
+  ASSERT_TRUE(public_entry != nil);
+  EXPECT_NSEQ(@"crbug.com/1", public_entry.bug);
+  EXPECT_TRUE(public_entry.filePath == nil);
+  EXPECT_EQ(1u, public_entry.lineNumber);
+
+  TestExpectationEntry* internal_entry =
+      [expectations expectationEntryForTestCase:@"InternalTestCase"
+                                     methodName:@"testInternal"];
+  ASSERT_TRUE(internal_entry != nil);
+  EXPECT_EQ(TestExpectationTypeSkip, internal_entry.type);
+  EXPECT_NSEQ(@"/path/to/internal.txt", internal_entry.filePath);
+  EXPECT_EQ(1u, internal_entry.lineNumber);
+
+  TestExpectationEntry* shared_entry =
+      [expectations expectationEntryForTestCase:@"SharedTestCase"
+                                     methodName:@"testShared"];
+  ASSERT_TRUE(shared_entry != nil);
+  EXPECT_NSEQ(@"crbug.com/4", shared_entry.bug);
+  EXPECT_EQ(TestExpectationTypePass | TestExpectationTypeFailure,
+            shared_entry.type);
+  EXPECT_NSEQ(@"/path/to/internal.txt", shared_entry.filePath);
+  EXPECT_EQ(2u, shared_entry.lineNumber);
+}
+
+// Tests that overriding the active tags reparses all loaded expectations
+// files, preserving the override order.
+TEST_F(TestExpectationsTest, TagOverrideReparsesAppendedContent) {
+  NSString* public_content =
+      @"crbug.com/1 [ simulator ] SharedTestCase/testShared [ Failure ]\n";
+  NSString* internal_content =
+      @"crbug.com/2 [ device ] SharedTestCase/testShared [ Skip ]\n"
+      @"crbug.com/3 [ device ] InternalTestCase/testInternal [ Skip ]\n";
+  TestExpectations* expectations =
+      [TestExpectations sharedInstanceForTesting:public_content];
+  [expectations appendContentForTesting:internal_content
+                               filePath:@"/path/to/internal.txt"];
+
+  [expectations
+      setOverrideActiveTagsForTesting:[NSSet setWithObject:@"simulator"]];
+  TestExpectationEntry* entry =
+      [expectations expectationEntryForTestCase:@"SharedTestCase"
+                                     methodName:@"testShared"];
+  ASSERT_TRUE(entry != nil);
+  EXPECT_NSEQ(@"crbug.com/1", entry.bug);
+  EXPECT_TRUE([expectations
+                  expectationEntryForTestCase:@"InternalTestCase"
+                                   methodName:@"testInternal"] == nil);
+
+  [expectations
+      setOverrideActiveTagsForTesting:[NSSet setWithObject:@"device"]];
+  entry = [expectations expectationEntryForTestCase:@"SharedTestCase"
+                                         methodName:@"testShared"];
+  ASSERT_TRUE(entry != nil);
+  EXPECT_NSEQ(@"crbug.com/2", entry.bug);
+  EXPECT_TRUE([expectations
+                  expectationEntryForTestCase:@"InternalTestCase"
+                                   methodName:@"testInternal"] != nil);
+}
+
+// Tests that appending empty or comment-only content keeps existing entries.
+TEST_F(TestExpectationsTest, AppendingEmptyContentKeepsEntries) {
+  TestExpectations* expectations =
+      [TestExpectations sharedInstanceForTesting:
+                            @"crbug.com/1 MyTestCase/testMethod [ Failure ]\n"];
+  [expectations appendContentForTesting:@"" filePath:@"/path/to/empty.txt"];
+  [expectations appendContentForTesting:@"# Only a comment.\n"
+                               filePath:@"/path/to/comment.txt"];
+
+  TestExpectationEntry* entry =
+      [expectations expectationEntryForTestCase:@"MyTestCase"
+                                     methodName:@"testMethod"];
+  ASSERT_TRUE(entry != nil);
+  EXPECT_NSEQ(@"crbug.com/1", entry.bug);
+  EXPECT_TRUE(entry.filePath == nil);
+}
+
 struct TagMatchingTestCase {
   const char* test_name;
   const char* content;

@@ -33,7 +33,8 @@ enum class TestExpectationMatchResult {
 @interface TestExpectationEntry : NSObject
 @property(nonatomic, copy) NSString* bug;
 @property(nonatomic, assign) TestExpectationType type;
-// 1-indexed line number of this expectation entry in test_expectations.txt.
+// 1-indexed line number of this expectation entry in the expectations file it
+// was defined in.
 @property(nonatomic, assign) NSUInteger lineNumber;
 // File path where this expectation entry was defined.
 @property(nonatomic, copy) NSString* filePath;
@@ -62,7 +63,10 @@ enum class TestExpectationMatchResult {
 - (instancetype)init NS_UNAVAILABLE;
 
 // Returns the shared expectations instance. Lazily initializes from the bundle
-// resource if not yet initialized.
+// resources if not yet initialized: `test_expectations.txt` is required, and
+// `test_expectations_internal.txt` is loaded on top of it when the test bundle
+// contains it. Entries from the internal file override entries with the same
+// test identifier (class or class/method) from the public file.
 + (instancetype)sharedInstance;
 
 // Initializes an instance from string content.
@@ -84,6 +88,13 @@ enum class TestExpectationMatchResult {
 // Initializes and sets the shared instance from string content for testing
 // this test expectations infrastructure.
 + (instancetype)sharedInstanceForTesting:(NSString*)content;
+
+// Parses additional expectations `content` on top of the already loaded ones,
+// as if it were read from `filePath`. Entries override existing entries with
+// the same test identifier. Uses the same code path as `+sharedInstance` when
+// it loads `test_expectations_internal.txt`, so tests can cover merging without
+// bundling expectations files.
+- (void)appendContentForTesting:(NSString*)content filePath:(NSString*)filePath;
 
 // Sets the active tags to override the default system tags for testing this
 // test expectations infrastructure.
