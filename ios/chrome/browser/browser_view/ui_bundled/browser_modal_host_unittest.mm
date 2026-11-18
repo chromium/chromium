@@ -716,10 +716,7 @@ TestProfileIOS::Builder ProfileBuilderWithMockSyncService() {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       SyncServiceFactory::GetInstance(),
-      base::BindRepeating(
-          [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-            return std::make_unique<syncer::MockSyncService>();
-          }));
+      base::BindOnce(&std::make_unique<syncer::MockSyncService>));
   return builder;
 }
 
