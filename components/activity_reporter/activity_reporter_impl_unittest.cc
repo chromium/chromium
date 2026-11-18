@@ -17,8 +17,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "components/activity_reporter/activity_reporter.h"
@@ -119,6 +121,18 @@ class ActivityReporterImplTest : public testing::Test {
     pref_service_.registry()->RegisterIntegerPref(kTestPref, 0);
   }
 
+  // Creates a reporter that uses the prefs and update client of this fixture,
+  // and reads the time from `clock`.
+  std::unique_ptr<ActivityReporter> CreateReporter(const base::Clock* clock) {
+    return CreateActivityReporterForTesting(
+        base::BindLambdaForTesting(
+            [this]() -> PrefService* { return provided_pref_service_; }),
+        mock_update_client_,
+        base::BindRepeating([] { return version_info::Channel::UNKNOWN; }),
+        base::BindRepeating([] { return std::string("TEST"); }),
+        base::DoNothing(), clock);
+  }
+
   // Dirties `kTestPref` (with a new value each call, so the pref store has a
   // pending write again even after a previous commit), calls `ReportActive`,
   // and returns the completion callback that the reporter passed to
@@ -150,13 +164,7 @@ class ActivityReporterImplTest : public testing::Test {
   scoped_refptr<MockUpdateClient> mock_update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
   std::unique_ptr<ActivityReporter> activity_reporter_ =
-      CreateActivityReporterForTesting(
-          base::BindLambdaForTesting(
-              [this]() -> PrefService* { return provided_pref_service_; }),
-          mock_update_client_,
-          base::BindRepeating([] { return version_info::Channel::UNKNOWN; }),
-          base::BindRepeating([] { return std::string("TEST"); }),
-          base::DoNothing());
+      CreateReporter(task_environment_.GetMockClock());
 };
 
 TEST_F(ActivityReporterImplTest, ReportActiveThrottles) {
@@ -382,6 +390,63 @@ TEST_F(ActivityReporterImplTest, InitialDateLastActiveStateInvalid) {
   histogram_tester.ExpectUniqueSample(
       "ActivityReporter.InitialDateLastActiveState",
       InitialDateLastActiveState::kInvalid, 1);
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveIgnoresLastReportInFuture) {
+  // The task environment's mock clock can't move back, so this test uses its
+  // own clock and reporter.
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  std::unique_ptr<ActivityReporter> reporter = CreateReporter(&clock);
+  int call_count = 0;
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _))
+      .WillRepeatedly([&] { ++call_count; });
+
+  reporter->ReportActive();
+  EXPECT_EQ(call_count, 1);
+
+  // Move the clock back a day, which puts the last report in the future.
+  clock.Advance(-base::Days(1));
+  reporter->ReportActive();
+  EXPECT_EQ(call_count, 2);
+
+  // The throttle restarts from the new time: it drops reports for 5 hours,
+  // then lets the next one through.
+  reporter->ReportActive();
+  EXPECT_EQ(call_count, 2);
+  clock.Advance(base::Hours(5) - base::Seconds(1));
+  reporter->ReportActive();
+  EXPECT_EQ(call_count, 2);
+  clock.Advance(base::Seconds(1));
+  reporter->ReportActive();
+  EXPECT_EQ(call_count, 3);
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveThrottlesAfterSmallStepBack) {
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  std::unique_ptr<ActivityReporter> reporter = CreateReporter(&clock);
+  int call_count = 0;
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _))
+      .WillRepeatedly([&] { ++call_count; });
+
+  reporter->ReportActive();
+  EXPECT_EQ(call_count, 1);
+  clock.Advance(base::Hours(1));
+  reporter->ReportActive();
+  EXPECT_EQ(call_count, 1);
+
+  // Move the clock back 30 minutes. The last report is still in the past, so
+  // the throttle holds until the clock reads 5 hours after it.
+  clock.Advance(-base::Minutes(30));
+  reporter->ReportActive();
+  EXPECT_EQ(call_count, 1);
+  clock.Advance(base::Hours(4) + base::Minutes(29));
+  reporter->ReportActive();
+  EXPECT_EQ(call_count, 1);
+  clock.Advance(base::Minutes(1));
+  reporter->ReportActive();
+  EXPECT_EQ(call_count, 2);
 }
 
 TEST(ActivityReporterFactoryTest, CreatesRealReporterOnlyWithReportActivity) {

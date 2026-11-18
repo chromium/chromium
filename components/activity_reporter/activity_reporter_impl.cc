@@ -10,17 +10,21 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "base/version_info/channel.h"
@@ -50,6 +54,9 @@ namespace {
 // buckets 0 through 10, with an overflow bucket for larger counts.
 constexpr int kIncompleteReportsExclusiveMax = 11;
 
+// The minimum time between two reports.
+constexpr base::TimeDelta kMinReportInterval = base::Hours(5);
+
 InitialDateLastActiveState ToState(int dla) {
   if (dla == update_client::kDateUnknown) {
     return InitialDateLastActiveState::kUnknown;
@@ -76,7 +83,8 @@ class ActivityReporterImpl final : public ActivityReporter {
       : pref_service_provider_(pref_service_provider),
         updater_active_callback_(std::move(updater_active_callback)),
         channel_provider_(channel_provider),
-        brand_provider_(std::move(brand_provider)) {
+        brand_provider_(std::move(brand_provider)),
+        clock_(base::DefaultClock::GetInstance()) {
     scoped_refptr<ActivityReporterConfigurator> configurator =
         base::MakeRefCounted<ActivityReporterConfigurator>(
             std::move(pref_service_provider),
@@ -102,12 +110,16 @@ class ActivityReporterImpl final : public ActivityReporter {
       scoped_refptr<update_client::UpdateClient> update_client,
       base::RepeatingCallback<version_info::Channel()> channel_provider,
       base::RepeatingCallback<std::string()> brand_provider,
-      base::RepeatingClosure updater_active_callback)
+      base::RepeatingClosure updater_active_callback,
+      const base::Clock* clock)
       : pref_service_provider_(std::move(pref_service_provider)),
         update_client_(std::move(update_client)),
         updater_active_callback_(std::move(updater_active_callback)),
         channel_provider_(std::move(channel_provider)),
-        brand_provider_(std::move(brand_provider)) {}
+        brand_provider_(std::move(brand_provider)),
+        clock_(clock) {
+    CHECK(clock_);
+  }
 
   ~ActivityReporterImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -127,8 +139,11 @@ class ActivityReporterImpl final : public ActivityReporter {
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         updater_active_callback_);
 #endif
-    const base::Time now = base::Time::Now();
-    if (last_reported_ && now - *last_reported_ < base::Hours(5)) {
+    const base::Time now = clock_->Now();
+    // A last report time in the future means the clock moved back, so it can't
+    // throttle this report.
+    if (last_reported_ && *last_reported_ <= now &&
+        now - *last_reported_ < kMinReportInterval) {
       // The last report was too recent; don't send another.
       return;
     }
@@ -190,6 +205,7 @@ class ActivityReporterImpl final : public ActivityReporter {
   base::RepeatingClosure updater_active_callback_;
   base::RepeatingCallback<version_info::Channel()> channel_provider_;
   base::RepeatingCallback<std::string()> brand_provider_;
+  const raw_ptr<const base::Clock> clock_;
   base::WeakPtrFactory<ActivityReporterImpl> weak_factory_{this};
 };
 
@@ -213,11 +229,12 @@ std::unique_ptr<ActivityReporter> CreateActivityReporterForTesting(
     scoped_refptr<update_client::UpdateClient> update_client,
     base::RepeatingCallback<version_info::Channel()> channel_provider,
     base::RepeatingCallback<std::string()> brand_provider,
-    base::RepeatingClosure updater_active_callback) {
+    base::RepeatingClosure updater_active_callback,
+    const base::Clock* clock) {
   return std::make_unique<ActivityReporterImpl>(
       std::move(pref_service_provider), std::move(update_client),
       std::move(channel_provider), std::move(brand_provider),
-      std::move(updater_active_callback));
+      std::move(updater_active_callback), clock);
 }
 
 }  // namespace activity_reporter

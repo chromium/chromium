@@ -14,6 +14,10 @@
 
 class PrefService;
 
+namespace base {
+class Clock;
+}  // namespace base
+
 namespace update_client {
 class UpdateClient;
 }  // namespace update_client
@@ -22,12 +26,16 @@ namespace activity_reporter {
 
 class ActivityReporter;
 
+// Creates an ActivityReporter that sends its update checks to `update_client`
+// and reads the time from `clock`. `clock` must be non-null and outlive the
+// reporter. See `CreateActivityReporter()`.
 std::unique_ptr<ActivityReporter> CreateActivityReporterForTesting(
     base::RepeatingCallback<PrefService*()> pref_service_provider,
     scoped_refptr<update_client::UpdateClient> update_client,
     base::RepeatingCallback<version_info::Channel()> channel_provider,
     base::RepeatingCallback<std::string()> brand_provider,
-    base::RepeatingClosure updater_active_callback);
+    base::RepeatingClosure updater_active_callback,
+    const base::Clock* clock);
 
 }  // namespace activity_reporter
 
