@@ -89,9 +89,4 @@ public class TrustedWebActivityUmaRecorder {
                 settingValue,
                 ContentSetting.NUM_SETTINGS);
     }
-
-    public static void recordExtraCommandSuccess(String command, boolean success) {
-        RecordHistogram.recordBooleanHistogram(
-                "TrustedWebActivity.ExtraCommandSuccess." + command, success);
-    }
 }

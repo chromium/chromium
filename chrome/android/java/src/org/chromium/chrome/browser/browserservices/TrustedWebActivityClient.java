@@ -41,7 +41,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.Connection;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.ConnectionPool;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionStatus;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
@@ -172,8 +171,6 @@ public class TrustedWebActivityClient {
                                 commandResult == null
                                         ? false
                                         : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
-                        TrustedWebActivityUmaRecorder.recordExtraCommandSuccess(
-                                COMMAND_CHECK_NOTIFICATION_PERMISSION, commandSuccess);
                         // The command might fail if the app is too old to support it. To handle
                         // that case, fall back to the old flow.
                         if (!commandSuccess) {
@@ -241,9 +238,6 @@ public class TrustedWebActivityClient {
                                                 assumeNonNull(commandResult),
                                                 KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
                                         : null;
-                        TrustedWebActivityUmaRecorder.recordExtraCommandSuccess(
-                                COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT,
-                                commandSuccess && pendingIntent != null);
                         if (!commandSuccess || pendingIntent == null) {
                             permissionCallback.onPermission(
                                     service.getComponentName(), ContentSetting.BLOCK);

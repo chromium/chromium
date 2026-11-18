@@ -843,22 +843,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TrustedWebActivity.ExtraCommandSuccess.{command}"
-    enum="BooleanSuccess" expires_after="2025-10-01">
-  <owner>peconn@chromium.org</owner>
-  <owner>
-    src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
-  </owner>
-  <summary>
-    Records whether the extra command {command} called from
-    TrustedWebActivityClient resulted in success or failure.
-  </summary>
-  <token key="command">
-    <variant name="checkNotificationPermission"/>
-    <variant name="getNotificationPermissionRequestPendingIntent"/>
-  </token>
-</histogram>
-
 <histogram name="TrustedWebActivity.LaunchHandler.ClientMode"
     enum="TwaLaunchHandlerClientMode" expires_after="2027-06-13">
   <owner>tkachenkoo@google.com</owner>
