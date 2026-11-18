@@ -77,8 +77,9 @@ export function getHtml(this: HistoryFilterChipsElement) {
         </select>
       </div>
     ` : ''}
-    ${this.showDomainFilter ? html`
-      <cr-chip id="domainFilterChip" selected>
+    ${this.hasActiveDomainFilter_() ? html`
+      <cr-chip id="domainFilterChip" selected
+          @click="${this.onDomainChipClick_}">
         <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
         ${this.domain}
       </cr-chip>

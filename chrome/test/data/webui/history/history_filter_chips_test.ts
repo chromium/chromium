@@ -701,6 +701,60 @@ suite('HistoryFilterChipsTest', function() {
       element.showDomainFilter = false;
       await microtasksFinished();
       assertFalse(!!element.shadowRoot.querySelector('#domainFilterChip'));
+      // A hidden domain filter does not count as an active filter.
+      assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
+    });
+
+    test('ClickingChipClearsDomain', async () => {
+      element.domain = 'example.com';
+      element.showDomainFilter = true;
+      await microtasksFinished();
+
+      const domainChip =
+          element.shadowRoot.querySelector<HTMLElement>('#domainFilterChip');
+      assertTrue(!!domainChip);
+
+      let eventDetail: {domain: string}|undefined;
+      element.addEventListener('filter-changed', ((e: CustomEvent) => {
+                                                   eventDetail = e.detail;
+                                                 }) as EventListener);
+
+      domainChip.click();
+      await microtasksFinished();
+
+      assertTrue(!!eventDetail);
+      assertEquals('', eventDetail.domain);
+      assertEquals('', element.domain);
+      assertFalse(!!element.shadowRoot.querySelector('#domainFilterChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
+    });
+
+    test('ClearAllResetsDomain', async () => {
+      assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
+
+      element.domain = 'example.com';
+      element.showDomainFilter = true;
+      await microtasksFinished();
+
+      const clearAllButton =
+          element.shadowRoot.querySelector<HTMLElement>('#clearAllButton');
+      assertTrue(!!clearAllButton);
+
+      let eventDetail: {domain: string}|undefined;
+      element.addEventListener('filter-changed', ((e: CustomEvent) => {
+                                                   eventDetail = e.detail;
+                                                 }) as EventListener);
+
+      clearAllButton.click();
+      const action = await browserService.whenCalled('recordAction');
+      assertEquals('HistoryPage_ClearAllFilters', action);
+      await microtasksFinished();
+
+      assertTrue(!!eventDetail);
+      assertEquals('', eventDetail.domain);
+      assertEquals('', element.domain);
+      assertFalse(!!element.shadowRoot.querySelector('#domainFilterChip'));
+      assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
     });
   });
 
@@ -768,6 +822,7 @@ suite('HistoryFilterChipsTest', function() {
       actorVisits: boolean,
       clientIds: string[],
       timePeriodOptionId: TimePeriodOptionId,
+      domain: string,
     }|undefined;
     element.addEventListener('filter-changed', ((e: CustomEvent) => {
                                                  eventDetail = e.detail;
@@ -791,6 +846,7 @@ suite('HistoryFilterChipsTest', function() {
     assertTrue(eventDetail.actorVisits);
     assertDeepEquals([], eventDetail.clientIds);
     assertEquals(TimePeriodOptionId.kAllTime, eventDetail.timePeriodOptionId);
+    assertEquals('', eventDetail.domain);
   });
 
   test('ClearAllButtonFocusesFirstAvailableFilter', async () => {

@@ -88,12 +88,16 @@ export class HistoryFilterChipsElement extends CrLitElement {
     return this.selectedTimePeriodOptionId !== TimePeriodOptionId.kAllTime;
   }
 
+  protected hasActiveDomainFilter_(): boolean {
+    return this.showDomainFilter && this.domain !== '';
+  }
+
   protected hasActiveFilter_(): boolean {
     const hasActiveActorDropdownFilter =
         this.showActorFilterDropDownVersion_() &&
         (this.isUserSelected() || this.isActorSelected());
     return hasActiveActorDropdownFilter || this.clientIds.length > 0 ||
-        this.hasActiveTimePeriodFilter_();
+        this.hasActiveTimePeriodFilter_() || this.hasActiveDomainFilter_();
   }
 
   protected onActorSelectMousedown_() {
@@ -150,11 +154,17 @@ export class HistoryFilterChipsElement extends CrLitElement {
     this.fireChange_(this.userVisits, this.actorVisits);
   }
 
+  protected onDomainChipClick_() {
+    this.domain = '';
+    this.fireChange_(this.userVisits, this.actorVisits);
+  }
+
   protected async onClearAllClick_() {
     this.userVisits = true;
     this.actorVisits = true;
     this.clientIds = [];
     this.selectedTimePeriodOptionId = TimePeriodOptionId.kAllTime;
+    this.domain = '';
 
     BrowserProxyImpl.getInstance().recordAction('HistoryPage_ClearAllFilters');
     this.fireChange_(this.userVisits, this.actorVisits);
@@ -234,6 +244,7 @@ export class HistoryFilterChipsElement extends CrLitElement {
       actorVisits,
       clientIds: this.clientIds,
       timePeriodOptionId: this.selectedTimePeriodOptionId,
+      domain: this.domain,
     });
   }
 }

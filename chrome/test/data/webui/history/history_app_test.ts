@@ -424,7 +424,7 @@ suite('HistoryFilterChipsVisibility', function() {
     assertFalse(isChildVisible(element, '#historyFilterChips'));
   });
 
-  test('FilterChipsVisible_DomainFilterOnly', async () => {
+  test('FilterChipsVisibility_DomainFilterOnly', async () => {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
@@ -446,6 +446,52 @@ suite('HistoryFilterChipsVisibility', function() {
     assertTrue(!!filterChips);
     assertTrue(filterChips.showDomainFilter);
     assertEquals('example.com', filterChips.domain);
+
+    // Clearing the domain hides the container when no other filters are shown.
+    filterChips.fire('filter-changed', {
+      userVisits: true,
+      actorVisits: true,
+      clientIds: [],
+      timePeriodOptionId: TimePeriodOptionId.kAllTime,
+      domain: '',
+    });
+    await microtasksFinished();
+    assertFalse(isChildVisible(element, '#historyFilterChips'));
+  });
+
+  test('DomainFilterVisibilityWithOtherFilters', async () => {
+    loadTimeData.overrideValues({
+      isGlicWebActuationAvailable: true,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: true,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
+    });
+    await createPage();
+
+    const filterChips =
+        element.shadowRoot.querySelector<HistoryFilterChipsElement>(
+            '#historyFilterChips');
+    assertTrue(!!filterChips);
+    assertFalse(filterChips.showDomainFilter);
+
+    element.$.history.fire('domain-filter-selected', {domain: 'example.com'});
+    await microtasksFinished();
+    assertTrue(filterChips.showDomainFilter);
+    assertEquals('example.com', filterChips.domain);
+
+    // Clearing the domain hides only the domain filter while keeping the
+    // container visible for other filters.
+    filterChips.fire('filter-changed', {
+      userVisits: true,
+      actorVisits: true,
+      clientIds: [],
+      timePeriodOptionId: TimePeriodOptionId.kAllTime,
+      domain: '',
+    });
+    await microtasksFinished();
+    assertTrue(isChildVisible(element, '#historyFilterChips'));
+    assertFalse(filterChips.showDomainFilter);
+    assertEquals('', filterChips.domain);
   });
 
   test('FilterChipsNotVisible_DomainFilterDisabled', async () => {
@@ -482,6 +528,7 @@ suite('HistoryFilterChipsVisibility', function() {
       includeActorVisits: boolean,
       clientIds: string[],
       timePeriodOptionId: TimePeriodOptionId,
+      domain: string,
     }>>('change-query', element);
 
     filterChips.dispatchEvent(new CustomEvent('filter-changed', {
@@ -490,6 +537,7 @@ suite('HistoryFilterChipsVisibility', function() {
         actorVisits: true,
         clientIds: ['device_1', 'device_2'],
         timePeriodOptionId: TimePeriodOptionId.kYesterday,
+        domain: 'example.com',
       },
       bubbles: true,
       composed: true,
@@ -503,6 +551,7 @@ suite('HistoryFilterChipsVisibility', function() {
     assertDeepEquals(['device_1', 'device_2'], event.detail.clientIds);
     assertEquals(
         TimePeriodOptionId.kYesterday, event.detail.timePeriodOptionId);
+    assertEquals('example.com', event.detail.domain);
     assertEquals('', event.detail.search);
   });
 
@@ -560,6 +609,42 @@ suite('HistoryFilterChipsVisibility', function() {
     });
     await createPage();
 
+    // Selecting a domain passes it to queryHistory.
+    resetQueryHistory();
+    element.$.history.fire('domain-filter-selected', {domain: 'example.com'});
+    let args = await browserProxy.handler.whenCalled('queryHistory');
+    assertEquals('example.com', args[7]);  // domain
+    await microtasksFinished();
+
+    // Clearing the domain passes an empty domain to queryHistory.
+    const filterChips =
+        element.shadowRoot.querySelector<HistoryFilterChipsElement>(
+            '#historyFilterChips');
+    assertTrue(!!filterChips);
+    resetQueryHistory();
+    filterChips.fire('filter-changed', {
+      userVisits: true,
+      actorVisits: true,
+      clientIds: [],
+      timePeriodOptionId: TimePeriodOptionId.kAllTime,
+      domain: '',
+    });
+    args = await browserProxy.handler.whenCalled('queryHistory');
+    assertEquals('', args[7]);
+  });
+
+  // TODO(crbug.com/584210521): Revisit whether this test is needed. It is
+  // mostly defensive: the domain used to be passed via the search query
+  // ("host:"), so it checks that the domain filter and search stay independent.
+  test('DomainFilterPreservesSearchTerm', async () => {
+    loadTimeData.overrideValues({
+      isGlicWebActuationAvailable: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: true,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
+    });
+    await createPage();
+
     // Selecting a domain passes it to queryHistory with an empty search query.
     resetQueryHistory();
     element.$.history.fire('domain-filter-selected', {domain: 'example.com'});
@@ -587,6 +672,7 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: true,
       isBrowsingHistoryFilterByDeviceEnabled: true,
+      isBrowsingHistoryFilterByDomainEnabled: true,
       isBrowsingHistoryFilterByTimePeriodEnabled: true,
     });
     browserProxy.handler.setResultFor(
@@ -615,6 +701,8 @@ suite('HistoryFilterChipsVisibility', function() {
     loadTimeData.overrideValues({
       isGlicWebActuationAvailable: true,
       isBrowsingHistoryFilterByDeviceEnabled: true,
+      isBrowsingHistoryFilterByDomainEnabled: true,
+      isBrowsingHistoryFilterByTimePeriodEnabled: true,
     });
     browserProxy.handler.setResultFor(
         'getSyncedDevicesForFiltering', Promise.resolve({
@@ -625,6 +713,7 @@ suite('HistoryFilterChipsVisibility', function() {
         }));
     await createPage();
 
+    // Selected filters are preserved when switching views.
     let filterChips =
         element.shadowRoot.querySelector<HistoryFilterChipsElement>(
             '#historyFilterChips');
@@ -634,6 +723,7 @@ suite('HistoryFilterChipsVisibility', function() {
       actorVisits: true,
       clientIds: ['id2', 'id3'],
       timePeriodOptionId: TimePeriodOptionId.kLastWeek,
+      domain: 'example.com',
     });
     await microtasksFinished();
 
@@ -651,6 +741,32 @@ suite('HistoryFilterChipsVisibility', function() {
     assertDeepEquals(['id2', 'id3'], filterChips.clientIds);
     assertEquals(
         TimePeriodOptionId.kLastWeek, filterChips.selectedTimePeriodOptionId);
+    assertEquals('example.com', filterChips.domain);
+    assertTrue(filterChips.showDomainFilter);
+
+    // Cleared filters are preserved when switching views.
+    const clearAllButton =
+        filterChips.shadowRoot.querySelector<HTMLElement>('#clearAllButton');
+    assertTrue(!!clearAllButton);
+    clearAllButton.click();
+    await microtasksFinished();
+
+    element.$.router.selectedPage = 'grouped';
+    await microtasksFinished();
+
+    element.$.router.selectedPage = 'history';
+    await microtasksFinished();
+
+    filterChips = element.shadowRoot.querySelector<HistoryFilterChipsElement>(
+        '#historyFilterChips');
+    assertTrue(!!filterChips);
+    assertTrue(filterChips.userVisits);
+    assertTrue(filterChips.actorVisits);
+    assertDeepEquals([], filterChips.clientIds);
+    assertEquals(
+        TimePeriodOptionId.kAllTime, filterChips.selectedTimePeriodOptionId);
+    assertEquals('', filterChips.domain);
+    assertFalse(filterChips.showDomainFilter);
   });
 });
 

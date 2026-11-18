@@ -836,11 +836,13 @@ export class HistoryAppElement extends HistoryAppElementBase {
     actorVisits: boolean,
     clientIds: string[],
     timePeriodOptionId: TimePeriodOptionId,
+    domain: string,
   }>) {
     this.includeUserVisits_ = e.detail.userVisits;
     this.includeActorVisits_ = e.detail.actorVisits;
     this.clientIds_ = e.detail.clientIds;
     this.selectedTimePeriodOptionId_ = e.detail.timePeriodOptionId;
+    this.domain_ = e.detail.domain;
 
     this.fireChangeQuery_();
   }
