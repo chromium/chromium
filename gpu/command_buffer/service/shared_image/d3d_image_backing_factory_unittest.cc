@@ -300,6 +300,46 @@ class D3DImageBackingFactoryTest
     CheckSkiaPixels(scoped_read_access.get(), size, expected_color);
   }
 
+  std::unique_ptr<SharedImageRepresentationFactoryRef> CreateSharedImage(
+      gpu::SharedImageUsageSet usage,
+      const gfx::Size& size = gfx::Size(1, 1),
+      viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888,
+      const gfx::ColorSpace& color_space = gfx::ColorSpace::CreateSRGB()) {
+    auto backing = shared_image_factory_->CreateSharedImage(
+        Mailbox::Generate(),
+        {format, size, color_space, kTopLeft_GrSurfaceOrigin,
+         kPremul_SkAlphaType, usage, "TestLabel"},
+        gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
+    if (!backing) {
+      return nullptr;
+    }
+    return shared_image_manager_.Register(std::move(backing),
+                                          memory_type_tracker_.get());
+  }
+
+  wgpu::Device CreateDawnD3D12Device() {
+    static constexpr auto kTimedWaitAny =
+        wgpu::InstanceFeatureName::TimedWaitAny;
+    wgpu::InstanceDescriptor instance_desc = {
+        .requiredFeatureCount = 1,
+        .requiredFeatures = &kTimedWaitAny,
+    };
+    dawn::native::Instance instance(&instance_desc);
+
+    wgpu::RequestAdapterOptions adapter_options;
+    adapter_options.backendType = wgpu::BackendType::D3D12;
+    std::vector<dawn::native::Adapter> adapters =
+        instance.EnumerateAdapters(&adapter_options);
+    if (adapters.empty()) {
+      return nullptr;
+    }
+
+    wgpu::DeviceDescriptor device_descriptor;
+    device_descriptor.requiredFeatureCount = std::size(kRequiredFeatures);
+    device_descriptor.requiredFeatures = kRequiredFeatures;
+    return wgpu::Device::Acquire(adapters[0].CreateDevice(&device_descriptor));
+  }
+
   void CheckDawnPixels(
       DawnImageRepresentation::ScopedAccess* scoped_read_access,
       const wgpu::Instance& instance,
@@ -896,6 +936,61 @@ TEST_P(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   ASSERT_NE(skia_representation, nullptr);
 
   // Expect BeginScopedReadAccess to fail because sharedImage is uninitialized
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
+      scoped_read_access =
+          skia_representation->BeginScopedReadAccess(nullptr, nullptr);
+  EXPECT_EQ(scoped_read_access, nullptr);
+}
+
+// Regression test for crbug.com/577360270: queue.WriteTexture() sets Dawn's
+// subresource initialized bit eagerly, while device.Destroy() drops the write.
+// EndAccessDawn() must use SharedTextureMemoryEndAccessState::initialized so
+// the backing stays uncleared and Skia refuses read access.
+TEST_P(D3DImageBackingFactoryTest,
+       DawnWriteTextureDestroyBeforeEndAccess_SkiaFails) {
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      CreateSharedImage(SHARED_IMAGE_USAGE_DISPLAY_READ |
+                        SHARED_IMAGE_USAGE_WEBGPU_WRITE);
+  ASSERT_NE(factory_ref, nullptr);
+
+  wgpu::Device device = CreateDawnD3D12Device();
+  ASSERT_NE(device, nullptr);
+  {
+    auto dawn_representation =
+        shared_image_representation_factory_->ProduceDawn(
+            factory_ref->mailbox(), device, wgpu::BackendType::D3D12, {},
+            context_state_);
+    ASSERT_TRUE(dawn_representation);
+
+    auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
+        wgpu::TextureUsage::CopyDst,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(dawn_scoped_access);
+
+    wgpu::Texture texture(dawn_scoped_access->texture());
+    const std::array<uint8_t, 4> write_data = {0, 255, 0, 255};
+    wgpu::TexelCopyTextureInfo dst = {
+        .texture = texture,
+    };
+    wgpu::TexelCopyBufferLayout data_layout = {
+        .bytesPerRow = 4,
+        .rowsPerImage = 1,
+    };
+    wgpu::Extent3D write_size = {1, 1, 1};
+    device.GetQueue().WriteTexture(&dst, write_data.data(), write_data.size(),
+                                   &data_layout, &write_size);
+
+    // Destroy the device before ending access so the passive WriteTexture copy
+    // is discarded without executing.
+    device.Destroy();
+  }
+
+  EXPECT_FALSE(factory_ref->IsCleared());
+
+  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+      factory_ref->mailbox(), context_state_);
+  ASSERT_NE(skia_representation, nullptr);
+
   std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
       scoped_read_access =
           skia_representation->BeginScopedReadAccess(nullptr, nullptr);

@@ -1545,10 +1545,6 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
 void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
                                     wgpu::Texture texture) {
   DCHECK(texture);
-  if (dawn::native::IsTextureSubresourceInitialized(texture.Get(), 0, 1, 0,
-                                                    1)) {
-    SetCleared();
-  }
   AutoLock auto_lock(this);
 
   // If this is graphite access, and the access is already open, skip EndAccess
@@ -1556,6 +1552,10 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
   if (persistent_graphite_dawn_access_ &&
       persistent_graphite_dawn_access_->IsGraphiteDevice(device)) {
     DCHECK_EQ(persistent_graphite_dawn_access_->texture().Get(), texture.Get());
+    if (dawn::native::IsTextureSubresourceInitialized(texture.Get(), 0, 1, 0,
+                                                      1)) {
+      SetClearedInternal();
+    }
     persistent_graphite_dawn_access_->SetNeedFlushCommands(true);
 
     CheckForDawnDeviceLoss(
@@ -1586,8 +1586,15 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
   // EndAccess returns a null fence handle if the device was lost, but that's
   // OK since we check for it explicitly below.
   wgpu::SharedTextureMemoryEndAccessState end_state = {};
-  shared_texture_memory.EndAccess(texture.Get(), &end_state);
+  if (shared_texture_memory.EndAccess(texture.Get(), &end_state) !=
+      wgpu::Status::Success) {
+    LOG(ERROR) << "SharedTextureMemory::EndAccess() failed.";
+  }
   CHECK(end_state.fenceCount == end_state.signaledValueCount);
+
+  if (end_state.initialized) {
+    SetClearedInternal();
+  }
 
   D3DSharedFenceSet signaled_fences;
   if (use_cross_device_fence_synchronization()) {
