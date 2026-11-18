@@ -549,18 +549,26 @@ void LoadArmGpuLibraries() {
 
 bool LoadAmdGpuLibraries() {
   // Preload the amdgpu-dependent libraries.
-  if (nullptr == dlopen("libglapi.so", dlopen_flag)) {
-    LOG(ERROR) << "dlopen(libglapi.so) failed with error: " << dlerror();
-    return false;
-  }
+  // Mesa 25.0+ folded libglapi.so into libgallium_dri.so.
+  const bool has_glapi = (nullptr != dlopen("libglapi.so", dlopen_flag));
 
-  const char* radeonsi_lib = "/usr/lib64/dri/radeonsi_dri.so";
+  // Mesa 24.2+ consolidated radeonsi_dri.so into libgallium_dri.so.
+  if (nullptr == dlopen("/usr/lib64/libgallium_dri.so", dlopen_flag) &&
+      nullptr == dlopen("libgallium_dri.so", dlopen_flag)) {
+    if (!has_glapi) {
+      LOG(ERROR) << "dlopen(libgallium_dri.so) and dlopen(libglapi.so) failed: "
+                 << dlerror();
+      return false;
+    }
+
+    const char* radeonsi_lib = "/usr/lib64/dri/radeonsi_dri.so";
 #if defined(DRI_DRIVER_DIR)
-  radeonsi_lib = DRI_DRIVER_DIR "/radeonsi_dri.so";
+    radeonsi_lib = DRI_DRIVER_DIR "/radeonsi_dri.so";
 #endif
-  if (nullptr == dlopen(radeonsi_lib, dlopen_flag)) {
-    LOG(ERROR) << "dlopen(radeonsi_dri.so) failed with error: " << dlerror();
-    return false;
+    if (nullptr == dlopen(radeonsi_lib, dlopen_flag)) {
+      LOG(ERROR) << "dlopen(radeonsi_dri.so) failed with error: " << dlerror();
+      return false;
+    }
   }
   return true;
 }

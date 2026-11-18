@@ -125,13 +125,19 @@ bool HardwareVideoEncodingPreSandboxHook(
 
   if (options.use_amd_specific_policies) {
     constexpr int kDlopenFlags = RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE;
-    const char* radeonsi_lib = "/usr/lib64/dri/radeonsi_dri.so";
+    // Mesa 24.2+ consolidated radeonsi_dri.so into libgallium_dri.so.
+    if (nullptr == dlopen("/usr/lib64/libgallium_dri.so", kDlopenFlags) &&
+        nullptr == dlopen("libgallium_dri.so", kDlopenFlags)) {
+      const char* radeonsi_lib = "/usr/lib64/dri/radeonsi_dri.so";
 #if defined(DRI_DRIVER_DIR)
-    radeonsi_lib = DRI_DRIVER_DIR "/radeonsi_dri.so";
+      radeonsi_lib = DRI_DRIVER_DIR "/radeonsi_dri.so";
 #endif
-    if (nullptr == dlopen(radeonsi_lib, kDlopenFlags)) {
-      LOG(ERROR) << "dlopen(radeonsi_dri.so) failed with error: " << dlerror();
-      return false;
+      if (nullptr == dlopen(radeonsi_lib, kDlopenFlags)) {
+        LOG(ERROR) << "dlopen(libgallium_dri.so) and dlopen(radeonsi_dri.so) "
+                      "failed with error: "
+                   << dlerror();
+        return false;
+      }
     }
 
     // minigbm may use the DRI driver (requires Mesa 24.0 or older) or the
