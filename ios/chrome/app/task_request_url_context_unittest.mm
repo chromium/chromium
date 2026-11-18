@@ -14,6 +14,7 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
+#import "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/default_search_manager.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -77,6 +79,8 @@
 @property(nonatomic, assign) TabOpeningPostOpeningAction completionAction;
 // Whether the post-opening completion was executed.
 @property(nonatomic, assign) BOOL completionActionExecuted;
+// Whether a tab was requested to be opened.
+@property(nonatomic, assign) BOOL tabOpeningRequested;
 
 @end
 
@@ -95,6 +99,7 @@
                                  withUrlLoadParams:(UrlLoadParams)urlLoadParams
                                     dismissOmnibox:(BOOL)dismissOmnibox
                                         completion:(ProceduralBlock)completion {
+  self.tabOpeningRequested = YES;
   self.targetMode = targetMode;
   self.urlLoadParams = urlLoadParams;
   self.dismissOmnibox = dismissOmnibox;
@@ -1666,4 +1671,99 @@ TEST_F(TaskRequestAppSwitcherParamsTest, TestProfileUnloadedDuringFetch) {
 
   EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
   histogram_tester.ExpectTotalCount("IOS.AppModeFetching.Outcome", 0);
+}
+
+// Test fixture for Remote Actor credential sharing requests in the new startup
+// flow.
+class TaskRequestRemoteActorTest : public TaskRequestForURLContextTest {
+ protected:
+  // Returns a Remote Actor URL carrying `query`.
+  NSURL* RemoteActorURL(NSString* query) {
+    return [NSURL
+        URLWithString:[NSString
+                          stringWithFormat:@"%s://%@?%@",
+                                           BUILDFLAG(SECURE_CUSTOM_SCHEME),
+                                           kRemoteActorURLHost, query]];
+  }
+
+  // Returns a Remote Actor URL with both the payload and the nonce.
+  NSURL* ValidRemoteActorURL() {
+    return RemoteActorURL(
+        [NSString stringWithFormat:@"%@=payload_value&%@=nonce_value",
+                                   kRemoteActorPayloadQueryParam,
+                                   kRemoteActorNonceQueryParam]);
+  }
+
+  // Executes a task request for `url` and returns the tab opener it used.
+  TaskRequestURLContextTestTabOpener* ExecuteURL(NSURL* url) {
+    TaskRequestForURLContext* request = [TaskRequestForURLContext
+        taskRequestWithURLContext:CreateMockURLContext(url)
+                       sceneState:scene_state_
+                      isColdStart:YES];
+    tab_opener_ = [[TaskRequestURLContextTestTabOpener alloc]
+        initWithSceneState:scene_state_];
+    scene_state_.controller = tab_opener_;
+    [request execute];
+    return tab_opener_;
+  }
+
+  TaskRequestURLContextTestTabOpener* tab_opener_;
+};
+
+// Tests that a valid Remote Actor request opens a tab in the current mode,
+// without any default post-opening action.
+TEST_F(TaskRequestRemoteActorTest, TestRemoteActorRequestOpensTab) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kRemoteActorCredentialSharing);
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteURL(ValidRemoteActorURL());
+
+  EXPECT_TRUE(tab_opener.tabOpeningRequested);
+  EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED);
+  EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
+  EXPECT_FALSE(tab_opener.completionActionExecuted);
+}
+
+// Tests that Remote Actor requests are discarded when the feature is disabled.
+TEST_F(TaskRequestRemoteActorTest, TestRemoteActorRequestFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kRemoteActorCredentialSharing);
+
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      ExecuteURL(ValidRemoteActorURL());
+
+  EXPECT_FALSE(tab_opener.tabOpeningRequested);
+}
+
+// Tests that Remote Actor requests without a payload or a nonce are discarded.
+TEST_F(TaskRequestRemoteActorTest, TestRemoteActorRequestIncomplete) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kRemoteActorCredentialSharing);
+
+  for (NSString* query : @[
+         [NSString
+             stringWithFormat:@"%@=nonce_value", kRemoteActorNonceQueryParam],
+         [NSString stringWithFormat:@"%@=payload_value",
+                                    kRemoteActorPayloadQueryParam],
+       ]) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(query));
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        ExecuteURL(RemoteActorURL(query));
+
+    EXPECT_FALSE(tab_opener.tabOpeningRequested);
+  }
+}
+
+// Tests that Remote Actor requests don't record a session start action, as in
+// the legacy startup flow.
+TEST_F(TaskRequestRemoteActorTest, TestRemoteActorRequestRecordsNoStartAction) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kRemoteActorCredentialSharing);
+  base::HistogramTester histogram_tester;
+
+  ExecuteURL(ValidRemoteActorURL());
+
+  histogram_tester.ExpectTotalCount(kUMAMobileSessionStartActionHistogram, 0);
 }

@@ -15,6 +15,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
+#import "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #import "components/prefs/pref_service.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/app_switcher_params.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
+#import "ios/chrome/app/startup/remote_actor_url_parser.h"
 #import "ios/chrome/app/task_request_private.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
@@ -30,6 +32,7 @@
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_request_handler.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -172,6 +175,9 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
   NSString* host = url.host;
   NSString* scheme = url.scheme.lowercaseString;
 
+  if ([host isEqualToString:kRemoteActorURLHost]) {
+    return;
+  }
   if ([host isEqualToString:kExternalActionURLHost]) {
     RecordExternalActionMetrics(url);
   } else if ([scheme isEqualToString:@"file"]) {
@@ -212,6 +218,11 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
   if (!url) {
     return;
   }
+  NSString* host = url.host;
+  if ([host isEqualToString:kRemoteActorURLHost]) {
+    [self handleRemoteActorCommandWithSceneState:sceneState];
+    return;
+  }
 
   GURL externalGURL = net::GURLWithNSURL(url);
   GURL virtualGURL;
@@ -220,14 +231,6 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
   ProceduralBlock postOpeningCompletion = nil;
   ApplicationModeForTabOpening targetMode =
       ApplicationModeForTabOpening::UNDETERMINED;
-
-  NSString* host = url.host;
-
-  if ([host isEqualToString:kRemoteActorURLHost]) {
-    // TODO(crbug.com/462018636): Support Remote Actor credential sharing in the
-    // new startup flow.
-    return;
-  }
 
   if ([host isEqualToString:kExternalActionURLHost]) {
     NSString* path = ExtractSinglePathComponent(url);
@@ -359,6 +362,33 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
 }
 
 #pragma mark - Private
+
+// Handles a Remote Actor credential sharing request. Requests are discarded if
+// the feature is disabled or if the URL lacks the payload or nonce.
+- (void)handleRemoteActorCommandWithSceneState:(SceneState*)sceneState {
+  if (!password_manager::features::
+          RemoteActorCredentialSharingGeminiEnabled()) {
+    return;
+  }
+  std::optional<RemoteActorRequest> request =
+      ExtractRemoteActorRequestFromURL(net::GURLWithNSURL(self.URLContext.URL));
+  if (!request) {
+    return;
+  }
+  // `sceneState` is captured weakly to avoid retaining a scene that
+  // disconnects before the tab is opened.
+  __weak SceneState* weakSceneState = sceneState;
+  RemoteActorRequest pendingRequest = std::move(*request);
+  ProceduralBlock completion = ^{
+    HandleRemoteActorCredentialSharingRequest(
+        weakSceneState.browserProviderInterface.currentBrowser, pendingRequest);
+  };
+  [self openTabWithSceneState:sceneState
+                urlLoadParams:UrlLoadParams::InNewTab(GURL())
+                   targetMode:ApplicationModeForTabOpening::UNDETERMINED
+            postOpeningAction:TabOpeningPostOpeningAction::NO_ACTION
+        postOpeningCompletion:completion];
+}
 
 // Notifies the Default Browser promo that Chrome is opened from this URL in
 // `sceneState`. `openedWithURL` is whether an http(s) URL is opened, and
