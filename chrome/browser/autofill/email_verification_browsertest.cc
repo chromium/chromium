@@ -6,8 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -208,6 +208,13 @@ class EmailVerificationBrowserTest : public InProcessBrowserTest {
 
  protected:
   std::optional<AutofillProfile> autofill_profile_;
+};
+
+class EmailVerificationOnTypingBrowserTest
+    : public EmailVerificationBrowserTest {
+ private:
+  base::test::ScopedFeatureList typing_feature_list_{
+      features::kAutofillEmailVerificationOnTyping};
 };
 
 // Tests the full flow of the email verification protocol. It simulates a user
@@ -778,10 +785,112 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   error_toast_run_loop.Run();
 }
 
+// Tests that genuine user typing followed by blur does not trigger email
+// verification when `kAutofillEmailVerificationOnTyping` is disabled (default).
+IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
+                       TypingDoesNotTriggerVerificationWhenFlagDisabled) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      features::kAutofillEmailVerificationOnTyping));
+
+  GURL url =
+      embedded_test_server()->GetURL("/autofill/email_verification.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+  EnableEmailVerificationFeatureForFrame(main_frame);
+
+  // Mark email as already allowed in prefs so any trigger would immediately
+  // proceed to verification.
+  PrefService* prefs = client()->GetPrefs();
+  base::DictValue state;
+  base::DictValue email_dict;
+  email_dict.Set("allowed", true);
+  email_dict.Set("issuer_site", "https://example.com");
+  email_dict.Set("timestamp", true);
+  state.Set("test@example.com", std::move(email_dict));
+  prefs->SetDict(prefs::kAutofillEmailVerificationState, std::move(state));
+
+  MockEmailVerifier* verifier_ptr = SetupMockEmailVerifier(main_frame);
+  TestEmailVerificationAutofillClient* mock_client = client();
+
+  BrowserAutofillManager* manager = GetBrowserAutofillManager(main_frame);
+  const FormStructure* initial_form = WaitForMatchingForm(
+      manager, base::BindRepeating([](const FormStructure& form) {
+        return std::ranges::any_of(
+            form.fields(), [](const std::unique_ptr<AutofillField>& field) {
+              return field->Type().GetAddressType() == EMAIL_ADDRESS;
+            });
+      }));
+  ASSERT_TRUE(initial_form);
+  const FormGlobalId form_id = initial_form->global_id();
+  const FieldGlobalId email_field_id = initial_form->field(0)->global_id();
+
+  {
+    TestAutofillManagerWaiter forms_waiter(*manager,
+                                           {AutofillManagerEvent::kFormsSeen});
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(),
+        "const other = document.createElement('input');"
+        "other.type = 'text';"
+        "other.id = 'other_field';"
+        "document.getElementById('testform').appendChild(other);"));
+    ASSERT_TRUE(forms_waiter.Wait(1));
+  }
+
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable).Times(0);
+  EXPECT_CALL(*verifier_ptr, Verify).Times(0);
+  EXPECT_CALL(*mock_client, ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(*mock_client, ShowEmailVerificationLoadingToast).Times(0);
+
+  {
+    TestAutofillManagerWaiter focus_waiter(
+        *manager, {AutofillManagerEvent::kFocusOnFormField});
+    ASSERT_TRUE(content::ExecJs(web_contents(),
+                                "document.getElementById('email').focus();"));
+    ASSERT_TRUE(focus_waiter.Wait(1));
+  }
+
+  {
+    TestAutofillManagerWaiter text_field_change_waiter(
+        *manager, {AutofillManagerEvent::kTextFieldValueChanged});
+    for (char16_t ch : std::u16string_view(u"test@example.com")) {
+      content::SimulateCharTyped(web_contents(), ch);
+      ASSERT_TRUE(text_field_change_waiter.Wait(1));
+    }
+  }
+  const FormStructure* updated_form =
+      test_api(*manager).FindCachedFormById(form_id);
+  ASSERT_TRUE(updated_form);
+  ASSERT_EQ(updated_form->field(0)->last_modifier(), FieldModifier::kUser);
+  ASSERT_EQ(updated_form->field(0)->value(), u"test@example.com");
+
+  {
+    TestAutofillManagerWaiter blur_waiter(
+        *manager, {AutofillManagerEvent::kFocusOnFormField});
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(), "document.getElementById('other_field').focus();"));
+    ASSERT_TRUE(blur_waiter.Wait(1));
+  }
+
+  // Drain the AutofillAgent Mojo pipe so any queued
+  // GetNonceForEmailVerification call triggered on blur would finish before
+  // submitting the form.
+  base::test::TestFuture<const std::optional<std::string>&> nonce_future;
+  manager->driver().GetNonceForEmailVerification(email_field_id,
+                                                 nonce_future.GetCallback());
+  ASSERT_EQ(nonce_future.Get(), "test_nonce");
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('testform').requestSubmit();"));
+  EXPECT_EQ(
+      "",
+      content::EvalJs(web_contents(), "window.tokenPromise").ExtractString());
+}
+
 // Tests that programmatic text insertion via document.execCommand('insertText')
 // does not mark the email field as user-edited or trigger email verification on
 // focus loss, whereas genuine user typing does.
-IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
+IN_PROC_BROWSER_TEST_F(EmailVerificationOnTypingBrowserTest,
                        ExecCommandDoesNotTriggerVerification) {
   GURL url =
       embedded_test_server()->GetURL("/autofill/email_verification.html");
@@ -804,23 +913,29 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   TestEmailVerificationAutofillClient* mock_client = client();
 
   BrowserAutofillManager* manager = GetBrowserAutofillManager(main_frame);
-  const FormStructure* form_structure = WaitForMatchingForm(
+  const FormStructure* initial_form = WaitForMatchingForm(
       manager, base::BindRepeating([](const FormStructure& form) {
         return std::ranges::any_of(
             form.fields(), [](const std::unique_ptr<AutofillField>& field) {
               return field->Type().GetAddressType() == EMAIL_ADDRESS;
             });
       }));
-  ASSERT_TRUE(form_structure);
+  ASSERT_TRUE(initial_form);
+  const FormGlobalId form_id = initial_form->global_id();
 
   // Add a second text control to the form so shifting focus to it triggers
   // OnAfterFocusOnFormField -> OnFieldLostFocus for the email field.
-  ASSERT_TRUE(content::ExecJs(
-      web_contents(),
-      "const other = document.createElement('input');"
-      "other.type = 'text';"
-      "other.id = 'other_field';"
-      "document.getElementById('testform').appendChild(other);"));
+  {
+    TestAutofillManagerWaiter forms_waiter(*manager,
+                                           {AutofillManagerEvent::kFormsSeen});
+    ASSERT_TRUE(content::ExecJs(
+        web_contents(),
+        "const other = document.createElement('input');"
+        "other.type = 'text';"
+        "other.id = 'other_field';"
+        "document.getElementById('testform').appendChild(other);"));
+    ASSERT_TRUE(forms_waiter.Wait(1));
+  }
 
   // 1. Negative path: Programmatic execCommand('insertText') followed by blur
   // should not be treated as a user edit and should not trigger verification.
@@ -848,7 +963,10 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
     ASSERT_TRUE(blur_waiter.Wait(1));
   }
 
-  EXPECT_EQ(form_structure->field(0)->last_modifier(), std::nullopt);
+  const FormStructure* cached_form =
+      test_api(*manager).FindCachedFormById(form_id);
+  ASSERT_TRUE(cached_form);
+  EXPECT_EQ(cached_form->field(0)->last_modifier(), std::nullopt);
   testing::Mock::VerifyAndClearExpectations(verifier_ptr);
   testing::Mock::VerifyAndClearExpectations(mock_client);
 
@@ -888,13 +1006,18 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
     ASSERT_TRUE(focus_waiter.Wait(1));
   }
 
-  for (char16_t ch : std::u16string_view(u"test@example.com")) {
-    content::SimulateCharTyped(web_contents(), ch);
+  {
+    TestAutofillManagerWaiter text_field_change_waiter(
+        *manager, {AutofillManagerEvent::kTextFieldValueChanged});
+    for (char16_t ch : std::u16string_view(u"test@example.com")) {
+      content::SimulateCharTyped(web_contents(), ch);
+      ASSERT_TRUE(text_field_change_waiter.Wait(1));
+    }
   }
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return form_structure->field(0)->last_modifier() == FieldModifier::kUser &&
-           form_structure->field(0)->value() == u"test@example.com";
-  }));
+  cached_form = test_api(*manager).FindCachedFormById(form_id);
+  ASSERT_TRUE(cached_form);
+  ASSERT_EQ(cached_form->field(0)->last_modifier(), FieldModifier::kUser);
+  ASSERT_EQ(cached_form->field(0)->value(), u"test@example.com");
 
   ASSERT_TRUE(content::ExecJs(
       web_contents(), "document.getElementById('other_field').focus();"));

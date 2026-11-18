@@ -646,6 +646,13 @@ BASE_FEATURE(kAutofillDisallowMoreHyphenLikeLabels,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_disallow_more_hyphen_like_labels)
 
+// When enabled, Email Verification Protocol (EVP) verification is triggered
+// when the user manually types an email address and the field loses focus.
+// TODO(crbug.com/585632611): Clean up or enable once triggering EVP via typing
+// is ready to launch.
+BASE_FEATURE(kAutofillEmailVerificationOnTyping,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 BASE_FEATURE(kAutofillEnableAblationStudy, base::FEATURE_DISABLED_BY_DEFAULT);

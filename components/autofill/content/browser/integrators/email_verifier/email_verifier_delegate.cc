@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/strike_databases/evp/email_verification_not_signed_in_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/evp/email_verification_strike_database.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -736,6 +737,16 @@ void EmailVerifierDelegate::OnFieldLostFocus(AutofillManager& manager,
   // Check 3: Value validation
   const std::u16string& value = email_field->value();
   if (!IsValidEmailAddress(value)) {
+    return;
+  }
+
+  // Only the typing/blur trigger is gated behind
+  // kAutofillEmailVerificationOnTyping; OnFillOrPreviewForm and
+  // OnFillOrPreviewField stay active for Autofill/Autocomplete. Checked after
+  // validation so Finch trial activation only happens on user-typed valid
+  // email blurs.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEmailVerificationOnTyping)) {
     return;
   }
 

@@ -1,6 +1,6 @@
 # FedCmDelegation
 This suite runs the tests in external/wpt/fedcm/fedcm-delegation/
-with `--enable-features=EmailVerificationProtocol`.
+with `--enable-features=EmailVerificationProtocol,AutofillEmailVerificationOnTyping`.
 
 The Email Verification Protocol identifies an issuer by a bare host name, so
 the tests reach it on the default HTTPS port. Every test in that directory

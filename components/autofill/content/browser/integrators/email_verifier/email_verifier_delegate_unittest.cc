@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/strike_databases/evp/email_verification_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/test_metrics_web_contents_observer_embedder.h"
@@ -331,11 +332,14 @@ class EmailVerifierDelegateTestBase
       const FormStructure& form,
       const std::string& email = "johndoe@hades.com",
       AutofillClient::EmailVerificationPermissionUiStatus ui_status =
-          AutofillClient::EmailVerificationPermissionUiStatus::kAllowed) {
+          AutofillClient::EmailVerificationPermissionUiStatus::kAllowed,
+      const testing::ExpectationSet& after = {}) {
     EXPECT_CALL(driver(),
                 GetNonceForEmailVerification(form.field(0)->global_id(), _))
+        .After(after)
         .WillOnce(RunOnceCallback<1>("test_nonce"));
     EXPECT_CALL(email_verifier(), CheckIfVerifiable(email, _, _))
+        .After(after)
         .WillOnce([this](const std::string& email_arg,
                          base::OnceClosure on_dns_resolved,
                          EmailVerifier::IsVerifiableCallback callback) {
@@ -351,17 +355,19 @@ class EmailVerifierDelegateTestBase
 
     if (is_accepted) {
       EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
+          .After(after)
           .WillOnce(RunOnceCallback<2>(
               std::optional<std::string>("test_token"),
               blink::mojom::EmailVerificationRequestResult::kSuccess,
               base::Milliseconds(200)));
 
-      EXPECT_CALL(client(), HideEmailVerificationPopup);
-      EXPECT_CALL(client(),
-                  ShowEmailVerifiedToast(GURL("https://example.com")));
+      EXPECT_CALL(client(), HideEmailVerificationPopup).After(after);
+      EXPECT_CALL(client(), ShowEmailVerifiedToast(GURL("https://example.com")))
+          .After(after);
       EXPECT_CALL(driver(),
                   SendEmailVerificationToken(form.field(0)->global_id(), email,
-                                             "test_token"));
+                                             "test_token"))
+          .After(after);
 
     } else {
       EXPECT_CALL(email_verifier(), Verify).Times(0);
@@ -370,6 +376,7 @@ class EmailVerifierDelegateTestBase
     }
 
     EXPECT_CALL(client(), ShowEmailVerificationPopup)
+        .After(after)
         .WillOnce(
             DoAll(base::test::RunClosure(popup_shown_run_loop_.QuitClosure()),
                   RunOnceCallback<4>(ui_status)));
@@ -1785,9 +1792,85 @@ TEST_F(EmailVerifierDelegateTest, NoTokenField_NoMetricsOnNavigation) {
   EXPECT_TRUE(entries.empty());
 }
 
+// Verifies that focus loss on an email field does not trigger verification when
+// `kAutofillEmailVerificationOnTyping` is disabled (default).
+TEST_F(EmailVerifierDelegateTest,
+       OnFieldLostFocus_DoesNotTriggerWhenFlagDisabled) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      features::kAutofillEmailVerificationOnTyping));
+
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+
+  EXPECT_CALL(driver(), GetNonceForEmailVerification).Times(0);
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable).Times(0);
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+
+  form->field(0)->set_value(u"user@example.com");
+  form->field(0)->AddFieldModifier(FieldModifier::kUser);
+
+  // Blur the email field both by shifting focus to another form field and by
+  // focusing away from the form. Neither transition should trigger
+  // verification.
+  delegate().OnAfterFocusOnFormField(manager(), form->global_id(),
+                                     form->field(0)->global_id());
+  delegate().OnAfterFocusOnFormField(manager(), form->global_id(),
+                                     form->field(1)->global_id());
+  delegate().OnAfterFocusOnFormField(manager(), form->global_id(),
+                                     form->field(0)->global_id());
+  delegate().OnAfterFocusOnNonFormField(manager());
+
+  histogram_tester.ExpectTotalCount("Blink.Evp.Autofill.FlowResult", 0);
+  ExpectNoFlowResultLogged();
+}
+
+// Verifies that when `kAutofillEmailVerificationOnTyping` is disabled, a manual
+// user edit and blur on an email field is ignored, while subsequent Autofill
+// filling on the same field still triggers verification normally.
+TEST_F(EmailVerifierDelegateTest,
+       AutofillStillTriggersAfterTypedBlurWhenFlagDisabled) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      features::kAutofillEmailVerificationOnTyping));
+
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+
+  testing::MockFunction<void()> checkpoint;
+  EXPECT_CALL(driver(), GetNonceForEmailVerification).Times(0);
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable).Times(0);
+  testing::Expectation after_blur = EXPECT_CALL(checkpoint, Call());
+  SetUpVerificationExpectations(
+      *form, "johndoe@hades.com",
+      AutofillClient::EmailVerificationPermissionUiStatus::kAllowed,
+      after_blur);
+
+  // 1. Typing an email and blurring does not trigger verification.
+  form->field(0)->set_value(u"johndoe@hades.com");
+  form->field(0)->AddFieldModifier(FieldModifier::kUser);
+  delegate().OnAfterFocusOnFormField(manager(), form->global_id(),
+                                     form->field(0)->global_id());
+  delegate().OnAfterFocusOnNonFormField(manager());
+
+  histogram_tester.ExpectTotalCount("Blink.Evp.Autofill.FlowResult", 0);
+  ExpectNoFlowResultLogged();
+  checkpoint.Call();
+
+  // 2. Subsequent Autofill filling on the same field triggers verification.
+  TriggerDefaultFormFill(*form);
+  popup_shown_run_loop_.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kTokenSentToRenderer, 1);
+}
+
 // Verifies that focus loss on an email field only triggers verification if the
 // last change to the field was a manual user edit (not autofill or JS).
 TEST_F(EmailVerifierDelegateTest, OnFieldLostFocus_OnlyTriggersOnUserEdit) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEmailVerificationOnTyping);
+
   FormStructure* form = SetUpValidForm();
 
   // Expect NO verification.
@@ -1811,6 +1894,9 @@ TEST_F(EmailVerifierDelegateTest, OnFieldLostFocus_OnlyTriggersOnUserEdit) {
 // prompts on alternating focus, and correctly evicting the oldest entry.
 TEST_F(EmailVerifierDelegateTest,
        OnFieldLostFocus_DeduplicatesAlternatingFields) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEmailVerificationOnTyping);
+
   FormData form_data = test::GetFormData(
       {.description_for_logging = "FormWith6Emails",
        .fields =
@@ -2215,6 +2301,9 @@ TEST_F(EmailVerifierDelegateTest,
 // Verifies that OnFieldLostFocus deduplicates email values case-insensitively.
 TEST_F(EmailVerifierDelegateTest,
        OnFieldLostFocus_DeduplicatesCaseInsensitive) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEmailVerificationOnTyping);
+
   FormStructure* form = SetUpValidForm();
   std::string normalized_email = "mixedcase@example.com";
   std::string raw_email = "MixedCase@Example.COM";
@@ -2561,6 +2650,9 @@ TEST_F(EmailVerifierDelegateTest, HideEmailVerificationPopupOnTokenFailure) {
 // in-flight (before TriggerVerification runs), the pending callback is
 // invalidated and CheckIfVerifiable is never triggered.
 TEST_F(EmailVerifierDelegateTest, FormSubmittedDuringNonceQuery) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEmailVerificationOnTyping);
+
   FormStructure* form = SetUpValidForm();
 
   base::OnceCallback<void(const std::optional<std::string>&)>
@@ -2594,6 +2686,9 @@ TEST_F(EmailVerifierDelegateTest, FormSubmittedDuringNonceQuery) {
 // after manually entering an email address) while CheckIfVerifiable is
 // in-flight, the request is terminated and the permission UI is not shown.
 TEST_F(EmailVerifierDelegateTest, FormSubmittedDuringCheckIfVerifiable) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEmailVerificationOnTyping);
+
   base::HistogramTester histogram_tester;
   FormStructure* form = SetUpValidForm();
 
@@ -2627,6 +2722,79 @@ TEST_F(EmailVerifierDelegateTest, FormSubmittedDuringCheckIfVerifiable) {
 
   std::move(saved_is_verifiable_callback)
       .Run(CreateVerifiableResult("user@example.com"),
+           blink::mojom::EmailVerificationRequestResult::kSuccess,
+           base::Milliseconds(100));
+
+  histogram_tester.ExpectTotalCount("Blink.Evp.Autofill.FlowResult", 1);
+}
+
+// Verifies that when the form is submitted while an Autofill-triggered nonce
+// query is still in-flight (with the typing trigger disabled by default), the
+// pending callback is invalidated and CheckIfVerifiable is never triggered.
+TEST_F(EmailVerifierDelegateTest, FormSubmittedDuringNonceQuery_Autofill) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      features::kAutofillEmailVerificationOnTyping));
+
+  FormStructure* form = SetUpValidForm();
+
+  base::OnceCallback<void(const std::optional<std::string>&)>
+      saved_nonce_callback;
+  EXPECT_CALL(driver(),
+              GetNonceForEmailVerification(form->field(0)->global_id(), _))
+      .WillOnce(
+          [&](FieldGlobalId,
+              base::OnceCallback<void(const std::optional<std::string>&)> cb) {
+            saved_nonce_callback = std::move(cb);
+          });
+
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+
+  TriggerDefaultFormFill(*form);
+  ASSERT_TRUE(saved_nonce_callback);
+
+  delegate().OnBeforeFormSubmitted(manager(), form->ToFormData());
+
+  // When the renderer replies with the nonce after form submission, it should
+  // be a no-op because weak pointers were invalidated.
+  std::move(saved_nonce_callback).Run("test_nonce");
+}
+
+// Verifies that when the form is submitted while an Autofill-triggered
+// CheckIfVerifiable call is in-flight (with the typing trigger disabled by
+// default), the request is terminated and the permission UI is not shown.
+TEST_F(EmailVerifierDelegateTest,
+       FormSubmittedDuringCheckIfVerifiable_Autofill) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      features::kAutofillEmailVerificationOnTyping));
+
+  base::HistogramTester histogram_tester;
+  FormStructure* form = SetUpValidForm();
+
+  EmailVerifier::IsVerifiableCallback saved_is_verifiable_callback;
+  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _, _))
+      .WillOnce([&](const std::string&, base::OnceClosure,
+                    EmailVerifier::IsVerifiableCallback callback) {
+        saved_is_verifiable_callback = std::move(callback);
+      });
+
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+
+  TriggerDefaultFormFill(*form);
+  ASSERT_TRUE(saved_is_verifiable_callback);
+
+  delegate().OnBeforeFormSubmitted(manager(), form->ToFormData());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Autofill.FlowResult",
+      EvpAutofillFlowResult::kPageNavigatedDuringCheckIfVerifiable, 1);
+  ExpectFlowResultLogged(
+      "The page navigated or the form was submitted while checking whether the "
+      "email address is verifiable.");
+
+  std::move(saved_is_verifiable_callback)
+      .Run(CreateVerifiableResult("johndoe@hades.com"),
            blink::mojom::EmailVerificationRequestResult::kSuccess,
            base::Milliseconds(100));
 
