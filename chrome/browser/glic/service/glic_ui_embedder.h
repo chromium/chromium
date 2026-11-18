@@ -15,6 +15,8 @@
 #include "chrome/browser/glic/service/glic_ui_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+class BrowserWindowInterface;
+
 namespace views {
 class View;
 }
@@ -40,6 +42,11 @@ class GlicUiEmbedder {
     // GlicInstanceImpl on behalf of embedders closed by being destroyed when
     // the become inactive.
     virtual void DidCloseFor(EmbedderKey key, EmbedderCloseReason reason) = 0;
+    // Called before DidCloseFor() when the user closed the panel (close
+    // button, Esc) or switched to another tab in `window`. Closes the user
+    // didn't cause, e.g. a conversation switch or another side panel replacing
+    // Glic, are not reported.
+    virtual void OnUserLeftPanel(BrowserWindowInterface& window) {}
     virtual Host& host() = 0;
     virtual void Show(ShowOptions options) = 0;
     // Closes the side panel UI and opens the floating UI for this instance.

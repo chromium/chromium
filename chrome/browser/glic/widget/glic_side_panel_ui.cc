@@ -185,6 +185,17 @@ void GlicSidePanelUi::SidePanelStateChanged(
     instance_metrics_->OnSidePanelClosed(tab_.get(), reason);
     panel_state_.kind = mojom::PanelStateKind::kHidden;
     delegate_->UpdatePanelState();
+    // A user close (close button, Esc) arrives as kClosed with
+    // `pending_user_close_` set. Other kClosed events are closes Chrome makes,
+    // e.g. on a conversation switch, when another side panel replaces Glic, or
+    // when the Ask Gemini button toggles Glic off, and aren't reported.
+    if (state == GlicSidePanelCoordinator::State::kBackgrounded ||
+        pending_user_close_) {
+      if (BrowserWindowInterface* window = tab_->GetBrowserWindowInterface()) {
+        delegate_->OnUserLeftPanel(*window);
+      }
+    }
+    pending_user_close_ = false;
     EmbedderCloseReason close_reason =
         state == GlicSidePanelCoordinator::State::kBackgrounded
             ? EmbedderCloseReason::kBackgrounded
@@ -203,6 +214,8 @@ void GlicSidePanelUi::SwitchConversation(
 }
 
 void GlicSidePanelUi::Show(const ShowOptions& options) {
+  // A show cancels any close still in flight.
+  pending_user_close_ = false;
   instance_metrics_->OnShowInSidePanel(tab_.get());
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (!glic_side_panel_coordinator) {
@@ -226,12 +239,14 @@ void GlicSidePanelUi::Close(const CloseOptions& options) {
   if (!glic_side_panel_coordinator) {
     return;
   }
+  pending_user_close_ = options.user_initiated;
   // NOTE: `this` will be destroyed after this call.
   glic_side_panel_coordinator->Close(options);
 }
 
 void GlicSidePanelUi::ClosePanel() {
-  Close(CloseOptions());
+  // Only reached from the user closing the panel, e.g. its close button.
+  Close({.user_initiated = true});
 }
 
 bool GlicSidePanelUi::ShouldRestoreFocusAfterReload() {

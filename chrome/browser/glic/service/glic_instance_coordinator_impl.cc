@@ -291,6 +291,30 @@ void GlicInstanceCoordinatorImpl::OnFreOptInShown(ukm::SourceId source_id) {
   }
 }
 
+void GlicInstanceCoordinatorImpl::OnUserLeftPanel(
+    BrowserWindowInterface& window) {
+  // Glic may be reshown on the newly active tab, e.g. one it was already open
+  // in or one opened from a link in the panel, so check after that happens.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GlicInstanceCoordinatorImpl::MaybeReportUserLeftPanel,
+                     weak_ptr_factory_.GetWeakPtr(), window.GetWeakPtr()));
+}
+
+void GlicInstanceCoordinatorImpl::MaybeReportUserLeftPanel(
+    base::WeakPtr<BrowserWindowInterface> window) {
+  if (!window || !wayfinding_controller_) {
+    return;
+  }
+  TabListInterface* tab_list = TabListInterface::From(window.get());
+  tabs::TabInterface* tab = tab_list ? tab_list->GetActiveTab() : nullptr;
+  if (!tab || GlicSidePanelCoordinator::IsShowing(tab)) {
+    return;
+  }
+  // Resolved now, not at construction, so the provider is known.
+  wayfinding_controller_->OnUserLeftPanel(GlicMetricReporter(profile_));
+}
+
 void GlicInstanceCoordinatorImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==

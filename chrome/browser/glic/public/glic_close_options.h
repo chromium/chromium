@@ -9,6 +9,9 @@ namespace glic {
 
 struct CloseOptions {
   bool suppress_animations = false;
+  // True when the user closed the panel directly (close button, Esc), as
+  // opposed to Chrome closing it, e.g. on a conversation switch.
+  bool user_initiated = false;
 };
 
 }  // namespace glic

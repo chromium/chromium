@@ -1732,6 +1732,12 @@ void GlicInstanceImpl::MaybeInitializeHiddenClient(
   NotifyPanelWillOpen(invocation_source, std::nullopt, fre_override);
 }
 
+void GlicInstanceImpl::OnUserLeftPanel(BrowserWindowInterface& window) {
+  if (coordinator_delegate_) {
+    coordinator_delegate_->OnUserLeftPanel(window);
+  }
+}
+
 void GlicInstanceImpl::DidCloseFor(EmbedderKey key,
                                    EmbedderCloseReason reason) {
   TRACE_EVENT("glic", "GlicInstanceImpl::DidCloseFor", "reason", reason);

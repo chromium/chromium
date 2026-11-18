@@ -48,6 +48,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #endif
 
+class BrowserWindowInterface;
 class GlobalBrowserCollection;
 class Profile;
 
@@ -138,6 +139,9 @@ class GlicInstanceImpl : public GlicInstance,
                            ukm::SourceId source_id) = 0;
     virtual void OnUserInputSubmitted(ukm::SourceId source_id) = 0;
     virtual void OnFreOptInShown(ukm::SourceId source_id) = 0;
+    // Called when the user left one of this instance's panels. See
+    // `GlicUiEmbedder::Delegate::OnUserLeftPanel()`.
+    virtual void OnUserLeftPanel(BrowserWindowInterface& window) = 0;
 
     // Called to create a new web contents for the glic instance.
     virtual std::unique_ptr<GlicWebContentsManager>
@@ -322,6 +326,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Notifies that the embedder has closed. Guaranteed to be called for all
   // close sources.
   void DidCloseFor(EmbedderKey key, EmbedderCloseReason reason) override;
+  void OnUserLeftPanel(BrowserWindowInterface& window) override;
   void UpdatePanelState() override;
   // Opens the floating UI for this instance
   void Detach(tabs::TabInterface& tab) override;

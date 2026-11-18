@@ -13,6 +13,7 @@
 #include "base/memory_coordinator/utils.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 #include "chrome/browser/glic/service/glic_invoke_task.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "chrome/browser/glic/service/glic_wayfinding_controller.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -2482,5 +2484,177 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());
   EXPECT_FALSE(instance1->IsShowing());
 }
+
+// Wayfinding only tracks the desktop side panel.
+#if !BUILDFLAG(IS_ANDROID)
+class GlicInstanceCoordinatorWayfindingBrowserTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kGlicAskGeminiWayfinding};
+};
+
+// Only closes the user caused reach the Wayfinding controller.
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
+                       UserCloseIsReported) {
+  base::HistogramTester histograms;
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  coordinator().Show(tab->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen(tab));
+  PreventDeletionOnClose(instance);
+
+  instance->host().ClosePanel();
+  ASSERT_OK(WaitForGlicClose(instance));
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectUniqueSample("Glic.Wayfinding.CueResult",
+                                WayfindingCueResult::kWouldCue, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
+                       ButtonToggleCloseIsNotReported) {
+  base::HistogramTester histograms;
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  coordinator().Show(tab->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen(tab));
+  PreventDeletionOnClose(instance);
+
+  // Closing via the Ask Gemini button isn't tagged as a user close.
+  ToggleGlicForActiveTab();
+  ASSERT_OK(WaitForGlicClose(instance));
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectTotalCount("Glic.Wayfinding.CueResult", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
+                       ConversationSwitchIsNotReported) {
+  base::HistogramTester histograms;
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  coordinator().Show(tab->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen(tab));
+  auto info_a = mojom::ConversationInfo::New();
+  info_a->conversation_id = "conv-a";
+  instance->RegisterConversation(std::move(info_a), base::DoNothing());
+
+  auto info_b = mojom::ConversationInfo::New();
+  info_b->conversation_id = "conv-b";
+  coordinator().SwitchConversation(*instance, ShowOptions::ForSidePanel(*tab),
+                                   std::move(info_b), base::DoNothing());
+  ASSERT_OK(WaitForGlicOpen(tab));
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectTotalCount("Glic.Wayfinding.CueResult", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
+                       TabSwitchIsReported) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* other_tab = CreateAndActivateTab(GURL("about:blank"));
+  GetTabListInterface()->ActivateTab(tab->GetHandle());
+  coordinator().Show(tab->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK(WaitForGlicOpen(tab));
+  base::HistogramTester histograms;
+
+  GetTabListInterface()->ActivateTab(other_tab->GetHandle());
+  ASSERT_OK(WaitForSidePanelState(
+      tab, GlicSidePanelCoordinator::State::kBackgrounded));
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectUniqueSample("Glic.Wayfinding.CueResult",
+                                WayfindingCueResult::kWouldCue, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
+                       TabSwitchToTabShowingGlicIsNotReported) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  coordinator().Show(tab0->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK(WaitForGlicOpen(tab0));
+  tabs::TabInterface* tab1 = CreateAndActivateTab(GURL("about:blank"));
+  coordinator().Show(tab1->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK(WaitForGlicOpen(tab1));
+  base::RunLoop().RunUntilIdle();
+  base::HistogramTester histograms;
+
+  GetTabListInterface()->ActivateTab(tab0->GetHandle());
+  ASSERT_OK(WaitForGlicOpen(tab0));
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectTotalCount("Glic.Wayfinding.CueResult", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
+                       LinkOpenedFromPanelIsNotReported) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  coordinator().Show(tab->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen(tab));
+  base::HistogramTester histograms;
+
+  // Glic follows the link to the new foreground tab.
+  GlicTestTabAddedWaiter waiter(GetProfile());
+  instance->CreateTab(GetSimpleTestUrl(), /*open_in_background=*/false,
+                      std::nullopt, base::DoNothing(),
+                      /*show_side_panel=*/true);
+  tabs::TabInterface* new_tab = waiter.Wait();
+  ASSERT_TRUE(new_tab);
+  ASSERT_OK(WaitForGlicOpen(new_tab));
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectTotalCount("Glic.Wayfinding.CueResult", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingBrowserTest,
+                       WindowCloseIsNotReported) {
+  BrowserWindowInterface* window = CreateAdditionalBrowserWindow();
+  tabs::TabInterface* tab = TabListInterface::From(window)->GetActiveTab();
+  coordinator().Show(window,
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK(WaitForGlicOpen(tab));
+  base::HistogramTester histograms;
+
+  window->GetTabStripModel()->CloseAllTabs();
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectTotalCount("Glic.Wayfinding.CueResult", 0);
+}
+
+class GlicInstanceCoordinatorWayfindingDisabledBrowserTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorWayfindingDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(features::kGlicAskGeminiWayfinding);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWayfindingDisabledBrowserTest,
+                       NothingIsRecorded) {
+  base::HistogramTester histograms;
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  coordinator().Show(tab->GetBrowserWindowInterface(),
+                     mojom::InvocationSource::kWebContentsContextMenuPage);
+  ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen(tab));
+  PreventDeletionOnClose(instance);
+
+  instance->host().ClosePanel();
+  ASSERT_OK(WaitForGlicClose(instance));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(
+      static_cast<mojom::InvocationSource>(GetProfile()->GetPrefs()->GetInteger(
+          prefs::kGlicWayfindingFirstInvocationSource)),
+      mojom::InvocationSource::kUnsupported);
+  histograms.ExpectTotalCount("Glic.Wayfinding.CueResult", 0);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace glic

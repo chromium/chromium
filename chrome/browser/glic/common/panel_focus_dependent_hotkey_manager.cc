@@ -71,7 +71,7 @@ bool PanelFocusDependentHotkeyManager::AcceleratorPressed(
         return true;
       }
 #endif
-      panel_->Close(CloseOptions());
+      panel_->Close({.user_initiated = true});
       return true;
     }
     case glic::LocalHotkeyManager::Command::kFocusToggle:

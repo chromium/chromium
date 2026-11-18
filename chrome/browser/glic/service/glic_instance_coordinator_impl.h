@@ -121,6 +121,7 @@ class GlicInstanceCoordinatorImpl
                  ukm::SourceId source_id) override;
   void OnUserInputSubmitted(ukm::SourceId source_id) override;
   void OnFreOptInShown(ukm::SourceId source_id) override;
+  void OnUserLeftPanel(BrowserWindowInterface& window) override;
   std::unique_ptr<GlicWebContentsManager> CreateWebContentsManager() override;
 
   // signin::IdentityManager::Observer implementation
@@ -233,6 +234,9 @@ class GlicInstanceCoordinatorImpl
   void RemoveInstance(InstanceId id, InstanceRemovalReason reason) override;
 
  private:
+  // Tells the Wayfinding controller the user left Glic, unless Glic is showing
+  // on `window`'s active tab or the window has closed.
+  void MaybeReportUserLeftPanel(base::WeakPtr<BrowserWindowInterface> window);
   void RemoveAllInstances(InstanceRemovalReason reason);
   void TransferTabGroupBinding(GlicInstanceImpl& source_instance,
                                GlicInstanceImpl& target_instance);

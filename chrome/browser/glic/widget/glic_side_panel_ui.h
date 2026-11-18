@@ -107,6 +107,9 @@ class GlicSidePanelUi
 
   base::CallbackListSubscription panel_visibility_subscription_;
   mojom::PanelState panel_state_;
+  // Set by Close() when the user closed the panel, and read when the side
+  // panel reports that it hid.
+  bool pending_user_close_ = false;
   raw_ptr<Profile> profile_;
   base::WeakPtr<tabs::TabInterface> tab_;
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
