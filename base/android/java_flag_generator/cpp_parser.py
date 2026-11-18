@@ -5,13 +5,22 @@
 
 import bisect
 import re
-from typing import Callable, Iterator, List, NamedTuple, Optional, Tuple
+from typing import (
+    Callable,
+    Iterator,
+    List,
+    NamedTuple,
+    Optional,
+    Tuple,
+    TypeVar,
+)
 
 import cpp_lexer
 import models
 
 _FEATURE_ARRAY_NAME = 'kFeaturesExposedToJava'
 _PARAM_MACRO = 'BASE_FEATURE_PARAM'
+_COUNTRY_RESTRICTED_FEATURE_MACRO = 'BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS'
 _ENTRY_RE = re.compile(r'^&((?:::)?(?:\w+::)*)(k[A-Z]\w*)$')
 _DIRECTIVE_RE = re.compile(
     r'^[ \t]*//[ \t]*FEATURE_DEFINITION_FILE:(.*)$', re.MULTILINE
@@ -25,6 +34,26 @@ _JNI_GET_NATIVE_MAP_RE = re.compile(r'\bJNI_(\w+)_GetNativeMap\s*\(')
 _MACRO_CALL_RE = re.compile(r'\b([A-Z][A-Z0-9_]*)\s*\(')
 _K_IDENTIFIER_RE = re.compile(r'^k[A-Z]\w*$')
 _STRING_LITERAL_RE = re.compile(r'^"((?:[^"\\\n]|\\.)*)"$')
+
+# Whether a feature is enabled by default, for each base::FeatureState. A
+# country-restricted feature is enabled for some countries only, so it gets its
+# state for an unknown country.
+_FEATURE_STATES = {
+    'FEATURE_DISABLED_BY_DEFAULT': False,
+    'FEATURE_ENABLED_BY_DEFAULT': True,
+    'FEATURE_DISABLED_FOR_COUNTRIES': True,
+    'FEATURE_ENABLED_FOR_COUNTRIES': False,
+}
+# Whether the features defined by these macros, which don't take a default state
+# argument, are enabled by default.
+_FEATURE_MACRO_DEFAULT_VALUES = {
+    'DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION': True,
+}
+# A conditional expression `condition ? a : b`. Its ":" is the first one after
+# the "?" that is not part of a "::".
+_CONDITIONAL_RE = re.compile(r'^([^?]*)\?(.*?)(?<!:):(?!:)(.*)$', re.DOTALL)
+
+_T = TypeVar('_T')
 
 
 class _NamespaceTracker:
@@ -271,6 +300,61 @@ def parse_source(
     )
 
 
+def _feature_state(text: str) -> Optional[bool]:
+    """Returns whether a feature with the default state `text`, a
+    base::FeatureState value, is enabled by default, or None if unknown.
+    """
+    name = (
+        re.sub(r'\s+', '', text)
+        .removeprefix('::')
+        .removeprefix('base::')
+        .removeprefix('FeatureState::')
+    )
+    return _FEATURE_STATES.get(name)
+
+
+def _param_value(cpp_type: str, text: str) -> Optional[models.ParamValue]:
+    """Converts `text`, the default value of a param of type `cpp_type`, or
+    returns None if it can't be converted.
+    """
+    try:
+        if cpp_type == 'bool':
+            return {'true': True, 'false': False}.get(text)
+        if cpp_type == 'int':
+            return int(text)
+        if cpp_type == 'double':
+            return float(text)
+    except ValueError:
+        return None
+    if cpp_type == 'std::string':
+        # Like names, the value is kept as written, e.g. escape sequences are
+        # not decoded.
+        m = _STRING_LITERAL_RE.match(text)
+        return m.group(1) if m else None
+    return None
+
+
+def _default_value(
+    text: str,
+    convert: Callable[[str], Optional[_T]],
+    is_desktop_android: bool,
+) -> Optional[_T]:
+    """Returns the default value written as `text`, converted with `convert`,
+    or None if it can't be determined. `text` can also be a conditional
+    expression `condition ? a : b` whose condition is made of BUILDFLAG()s.
+    """
+    value = convert(text)
+    if value is not None:
+        return value
+    m = _CONDITIONAL_RE.match(text)
+    if not m:
+        return None
+    condition = cpp_lexer.evaluate_condition(m.group(1), is_desktop_android)
+    if condition is None:
+        return None
+    return convert((m.group(2) if condition else m.group(3)).strip())
+
+
 def _feature_definition_from_macro(
     path: str,
     line: int,
@@ -278,59 +362,69 @@ def _feature_definition_from_macro(
     macro: str,
     identifier: str,
     args: List[str],
+    is_desktop_android: bool,
 ) -> models.FeatureDefinition:
-    derived = identifier[1:]
     where = f'{path}:{line}'
+
+    def invalid(reason: str) -> models.FeatureDefinition:
+        return models.FeatureDefinition(
+            path, line, namespace, identifier, macro, None, f'{where}: {reason}'
+        )
+
+    def valid(name: str, state: Optional[str]) -> models.FeatureDefinition:
+        """`state` is the argument with the default state, or None if the
+        macro is not known to have one.
+        """
+        if state is None:
+            default_value = _FEATURE_MACRO_DEFAULT_VALUES.get(macro)
+        else:
+            default_value = _default_value(
+                state, _feature_state, is_desktop_android
+            )
+        return models.FeatureDefinition(
+            path,
+            line,
+            namespace,
+            identifier,
+            macro,
+            name,
+            default_value=default_value,
+        )
+
+    derived = identifier[1:]
     if macro == 'BASE_FEATURE' or macro == 'BASE_RUNTIME_MUTABLE_FEATURE':
         if len(args) == 2:
-            return models.FeatureDefinition(
-                path, line, namespace, identifier, macro, derived
-            )
+            return valid(derived, args[1])
         if len(args) == 3:
             m = _STRING_LITERAL_RE.match(args[1])
             if m:
-                return models.FeatureDefinition(
-                    path, line, namespace, identifier, macro, m.group(1)
-                )
-            return models.FeatureDefinition(
-                path,
-                line,
-                namespace,
-                identifier,
-                macro,
-                None,
-                f'{where}: The feature name of {identifier} must be a plain '
-                f'string literal, found "{args[1]}".',
+                return valid(m.group(1), args[2])
+            return invalid(
+                f'The feature name of {identifier} must be a plain string '
+                f'literal, found "{args[1]}".'
             )
-        return models.FeatureDefinition(
-            path,
-            line,
-            namespace,
-            identifier,
-            macro,
-            None,
-            f'{where}: {macro}({identifier}, ...) has {len(args)} '
-            f'arguments; expected 2 or 3.',
+        return invalid(
+            f'{macro}({identifier}, ...) has {len(args)} arguments; '
+            f'expected 2 or 3.'
         )
+    if macro == _COUNTRY_RESTRICTED_FEATURE_MACRO and len(args) >= 3:
+        # BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kFoo, state, countries...).
+        return valid(derived, args[1])
 
     if len(args) >= 2 and _STRING_LITERAL_RE.match(args[1]):
-        return models.FeatureDefinition(
-            path,
-            line,
-            namespace,
-            identifier,
-            macro,
-            None,
-            f'{where}: Cannot determine the feature name of {identifier} from '
-            f'macro {macro}, because it is passed a string literal.',
+        return invalid(
+            f'Cannot determine the feature name of {identifier} from macro '
+            f'{macro}, because it is passed a string literal.'
         )
-    return models.FeatureDefinition(
-        path, line, namespace, identifier, macro, derived
-    )
+    return valid(derived, None)
 
 
 def _param_definition_from_macro(
-    path: str, line: int, namespace: Tuple[str, ...], args: List[str]
+    path: str,
+    line: int,
+    namespace: Tuple[str, ...],
+    args: List[str],
+    is_desktop_android: bool,
 ) -> models.ParamDefinition:
     """Reads BASE_FEATURE_PARAM(T, kFoo, &kFeature, [name,] default_value)."""
     identifier = args[1]
@@ -339,6 +433,22 @@ def _param_definition_from_macro(
     def invalid(reason: str) -> models.ParamDefinition:
         return models.ParamDefinition(
             path, line, namespace, identifier, None, None, f'{where}: {reason}'
+        )
+
+    def valid(name: str, feature: models.ArrayEntry) -> models.ParamDefinition:
+        default_value = _default_value(
+            args[-1],
+            lambda text: _param_value(args[0], text),
+            is_desktop_android,
+        )
+        return models.ParamDefinition(
+            path,
+            line,
+            namespace,
+            identifier,
+            name,
+            feature,
+            default_value=default_value,
         )
 
     if len(args) not in (4, 5):
@@ -354,18 +464,14 @@ def _param_definition_from_macro(
         )
     feature = models.ArrayEntry(path, line, m.group(1), m.group(2))
     if len(args) == 4:
-        return models.ParamDefinition(
-            path, line, namespace, identifier, identifier[1:], feature
-        )
+        return valid(identifier[1:], feature)
     m = _STRING_LITERAL_RE.match(args[3])
     if not m:
         return invalid(
             f'The param name of {identifier} must be a plain string '
             f'literal, found "{args[3]}".'
         )
-    return models.ParamDefinition(
-        path, line, namespace, identifier, m.group(1), feature
-    )
+    return valid(m.group(1), feature)
 
 
 class _MacroCall(NamedTuple):
@@ -404,14 +510,15 @@ def _macro_calls(
 
 
 def parse_feature_definitions(
-    path: str, code: str, structure: str
+    path: str, code: str, structure: str, is_desktop_android: bool
 ) -> List[models.FeatureDefinition]:
     """Finds feature definitions such as BASE_FEATURE(kFoo, ...) in a file.
     A definition is any ALL_CAPS macro call whose name contains FEATURE (but not
     DECLARE or PARAM) and whose first argument is a kCamelCase identifier.
     `code` and `structure` are the views of the file (see cpp_lexer.lex())
     without the code that is not compiled (see
-    cpp_lexer.blank_inactive_branches()).
+    cpp_lexer.blank_inactive_branches()). `is_desktop_android` is the value of
+    BUILDFLAG(IS_DESKTOP_ANDROID) in the conditions of default states.
     """
 
     def is_feature_definition_macro(macro: str) -> bool:
@@ -433,19 +540,21 @@ def parse_feature_definitions(
                 call.macro,
                 call.args[0],
                 call.args,
+                is_desktop_android,
             )
         )
     return definitions
 
 
 def parse_param_definitions(
-    path: str, code: str, structure: str
+    path: str, code: str, structure: str, is_desktop_android: bool
 ) -> List[models.ParamDefinition]:
     """Finds param definitions such as BASE_FEATURE_PARAM(int, kFoo, ...) in a
     file. A definition is any BASE_FEATURE_PARAM call whose second argument is
     a kCamelCase identifier. `code` and `structure` are the views of the file
     (see cpp_lexer.lex()) without the code that is not compiled (see
-    cpp_lexer.blank_inactive_branches()).
+    cpp_lexer.blank_inactive_branches()). `is_desktop_android` is the value of
+    BUILDFLAG(IS_DESKTOP_ANDROID) in the conditions of default values.
     """
     # Avoids scanning the many files that don't define any param.
     if _PARAM_MACRO not in structure:
@@ -458,7 +567,7 @@ def parse_param_definitions(
             continue
         definitions.append(
             _param_definition_from_macro(
-                path, call.line, call.namespace, call.args
+                path, call.line, call.namespace, call.args, is_desktop_android
             )
         )
     return definitions

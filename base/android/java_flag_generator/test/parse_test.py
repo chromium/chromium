@@ -35,20 +35,24 @@ def _parse_source(text, is_desktop_android=False):
     return cpp_parser.parse_source(_PATH, *_views(text, is_desktop_android))
 
 
-def _parse_feature_definitions(text):
+def _parse_feature_definitions(text, is_desktop_android=False):
     """Calls cpp_parser.parse_feature_definitions() with the views that it
     expects.
     """
-    _, code, structure = _views(text)
-    return cpp_parser.parse_feature_definitions(_PATH, code, structure)
+    _, code, structure = _views(text, is_desktop_android)
+    return cpp_parser.parse_feature_definitions(
+        _PATH, code, structure, is_desktop_android
+    )
 
 
-def _parse_param_definitions(text):
+def _parse_param_definitions(text, is_desktop_android=False):
     """Calls cpp_parser.parse_param_definitions() with the views that it
     expects.
     """
-    _, code, structure = _views(text)
-    return cpp_parser.parse_param_definitions(_PATH, code, structure)
+    _, code, structure = _views(text, is_desktop_android)
+    return cpp_parser.parse_param_definitions(
+        _PATH, code, structure, is_desktop_android
+    )
 
 
 class CppLexerTest(unittest.TestCase):
@@ -438,6 +442,32 @@ class BlankInactiveBranchesTest(unittest.TestCase):
 -unterminated
 """
         self._assert_blanked(text)
+
+
+class EvaluateConditionTest(unittest.TestCase):
+    def testEvaluateCondition(self):
+        for condition, is_desktop_android, expected in (
+            ('BUILDFLAG(IS_ANDROID)', False, True),
+            ('BUILDFLAG(IS_WIN)', False, False),
+            ('BUILDFLAG(IS_DESKTOP_ANDROID)', False, False),
+            ('BUILDFLAG(IS_DESKTOP_ANDROID)', True, True),
+            ('!BUILDFLAG(IS_DESKTOP_ANDROID)', True, False),
+            ('BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_FOO)', False, False),
+            ('BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_FOO)', False, True),
+            # Unlike the conditions of #if, unknown conditions are not assumed
+            # to be true.
+            ('BUILDFLAG(ENABLE_FOO)', False, None),
+            ('!BUILDFLAG(ENABLE_FOO)', False, None),
+            ('is_android', False, None),
+            ('BUILDFLAG(IS_WIN) == 0', False, None),
+        ):
+            with self.subTest(
+                condition=condition, is_desktop_android=is_desktop_android
+            ):
+                self.assertEqual(
+                    expected,
+                    cpp_lexer.evaluate_condition(condition, is_desktop_android),
+                )
 
 
 class ParseSourceTest(unittest.TestCase):
@@ -917,9 +947,17 @@ const base::FeatureParam<std::string>* const kStringParamsExposedToJava[] = {};
 
 
 class ParseFeatureDefinitionsTest(unittest.TestCase):
-    def _definition(self, line, namespace, identifier, macro, name):
+    def _definition(
+        self, line, namespace, identifier, macro, name, default_value=None
+    ):
         return models.FeatureDefinition(
-            _PATH, line, namespace, identifier, macro, name
+            _PATH,
+            line,
+            namespace,
+            identifier,
+            macro,
+            name,
+            default_value=default_value,
         )
 
     def testParseDefinitions(self):
@@ -946,7 +984,12 @@ BASE_FEATURE(kGlobal, base::FEATURE_DISABLED_BY_DEFAULT);
         self.assertEqual(
             [
                 self._definition(
-                    3, ('foo',), 'kDerivedName', 'BASE_FEATURE', 'DerivedName'
+                    3,
+                    ('foo',),
+                    'kDerivedName',
+                    'BASE_FEATURE',
+                    'DerivedName',
+                    default_value=False,
                 ),
                 self._definition(
                     4,
@@ -954,6 +997,7 @@ BASE_FEATURE(kGlobal, base::FEATURE_DISABLED_BY_DEFAULT);
                     'kCustomName',
                     'BASE_FEATURE',
                     'CustomFeatureName',
+                    default_value=True,
                 ),
                 self._definition(
                     6,
@@ -961,6 +1005,7 @@ BASE_FEATURE(kGlobal, base::FEATURE_DISABLED_BY_DEFAULT);
                     'kRuntimeMutable',
                     'BASE_RUNTIME_MUTABLE_FEATURE',
                     'RuntimeMutable',
+                    default_value=False,
                 ),
                 self._definition(
                     8,
@@ -968,11 +1013,24 @@ BASE_FEATURE(kGlobal, base::FEATURE_DISABLED_BY_DEFAULT);
                     'kRuntimeMutableCustomName',
                     'BASE_RUNTIME_MUTABLE_FEATURE',
                     'RuntimeMutableName',
+                    default_value=False,
                 ),
                 self._definition(
-                    13, ('foo', 'bar'), 'kNested', 'BASE_FEATURE', 'Nested'
+                    13,
+                    ('foo', 'bar'),
+                    'kNested',
+                    'BASE_FEATURE',
+                    'Nested',
+                    default_value=False,
                 ),
-                self._definition(18, (), 'kGlobal', 'BASE_FEATURE', 'Global'),
+                self._definition(
+                    18,
+                    (),
+                    'kGlobal',
+                    'BASE_FEATURE',
+                    'Global',
+                    default_value=False,
+                ),
             ],
             _parse_feature_definitions(text),
         )
@@ -995,6 +1053,7 @@ DEFINE_SYNC_AUTOFILL_AI_FEATURE(kSyncAutofillAi);
                     'kCountryRestricted',
                     'BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS',
                     'CountryRestricted',
+                    default_value=True,
                 ),
                 self._definition(
                     7,
@@ -1002,6 +1061,7 @@ DEFINE_SYNC_AUTOFILL_AI_FEATURE(kSyncAutofillAi);
                     'kSyncAutofillAi',
                     'DEFINE_SYNC_AUTOFILL_AI_FEATURE',
                     'SyncAutofillAi',
+                    default_value=None,
                 ),
             ],
             _parse_feature_definitions(text),
@@ -1039,6 +1099,7 @@ BASE_FEATURE(kPlatformDependent,
                     'kPlatformDependent',
                     'BASE_FEATURE',
                     'PlatformDependent',
+                    default_value=True,
                 ),
             ],
             _parse_feature_definitions(text),
@@ -1067,6 +1128,9 @@ DEFINE_CUSTOM_FEATURE(kCustomMacro, "CustomName");
             [None, None, None, None], [d.name for d in definitions]
         )
         self.assertEqual(
+            [None, None, None, None], [d.default_value for d in definitions]
+        )
+        self.assertEqual(
             [
                 f'{_PATH}:2: The feature name of kNotALiteral must be a plain '
                 'string literal, found "kName".',
@@ -1089,10 +1153,120 @@ BASE_FEATURE(kValid, base::FEATURE_DISABLED_BY_DEFAULT);
 """
         self.assertEqual(
             [
-                self._definition(3, (), 'kValid', 'BASE_FEATURE', 'Valid'),
+                self._definition(
+                    3,
+                    (),
+                    'kValid',
+                    'BASE_FEATURE',
+                    'Valid',
+                    default_value=False,
+                ),
             ],
             _parse_feature_definitions(text),
         )
+
+    def testDefaultStates(self):
+        text = """\
+BASE_FEATURE(kEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDisabled, "DisabledName", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_RUNTIME_MUTABLE_FEATURE(kGlobalBase, ::base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFormatted, /* state= */ base :: FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnumQualified, base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+// Country-restricted features have their state for an unknown country.
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kEnabledForCountries,
+                                       base::FEATURE_ENABLED_FOR_COUNTRIES,
+                                       "us");
+BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kDisabledForCountries,
+                                       base::FEATURE_DISABLED_FOR_COUNTRIES,
+                                       "us", "ca");
+namespace base {
+BASE_FEATURE(kUnqualified, FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace base
+// Expands to a country-restricted feature with
+// base::FEATURE_DISABLED_FOR_COUNTRIES on Android.
+DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kMobileCountryRestricted);
+"""
+        self.assertEqual(
+            [
+                ('kEnabled', True),
+                ('kDisabled', False),
+                ('kGlobalBase', True),
+                ('kFormatted', True),
+                ('kEnumQualified', False),
+                ('kEnabledForCountries', False),
+                ('kDisabledForCountries', True),
+                ('kUnqualified', True),
+                ('kMobileCountryRestricted', True),
+            ],
+            [
+                (d.identifier, d.default_value)
+                for d in _parse_feature_definitions(text)
+            ],
+        )
+
+    def testConditionalDefaultStates(self):
+        text = """\
+BASE_FEATURE(kDesktop,
+             BUILDFLAG(IS_DESKTOP_ANDROID) ? base::FEATURE_ENABLED_BY_DEFAULT
+                                           : base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNotDesktop,
+             !BUILDFLAG(IS_DESKTOP_ANDROID)
+                 ? base::FEATURE_ENABLED_BY_DEFAULT
+                 : base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOs,
+             BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+                 ? base::FEATURE_ENABLED_BY_DEFAULT
+                 : base::FEATURE_DISABLED_BY_DEFAULT);
+// Known values decide a condition if unknown ones can't change it.
+BASE_FEATURE(kThreeValuedLogic,
+             (BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_FOO))
+                 ? base::FEATURE_ENABLED_BY_DEFAULT
+                 : base::FEATURE_DISABLED_BY_DEFAULT);
+"""
+        for is_desktop_android in (False, True):
+            with self.subTest(is_desktop_android=is_desktop_android):
+                definitions = _parse_feature_definitions(
+                    text, is_desktop_android
+                )
+                self.assertEqual(
+                    [
+                        ('kDesktop', is_desktop_android),
+                        ('kNotDesktop', not is_desktop_android),
+                        ('kOs', True),
+                        ('kThreeValuedLogic', False),
+                    ],
+                    [(d.identifier, d.default_value) for d in definitions],
+                )
+
+    def testUnknownDefaultStates(self):
+        text = """\
+BASE_FEATURE(kNamedConstant, kDefaultState);
+BASE_FEATURE(kFunctionCall, enable_if(IS_ANDROID));
+BASE_FEATURE(kNotAState, base::FEATURE_STATE_THAT_DOES_NOT_EXIST);
+BASE_FEATURE(kParenthesized, (base::FEATURE_ENABLED_BY_DEFAULT));
+BASE_FEATURE(kUnknownCondition,
+             BUILDFLAG(ENABLE_FOO) ? base::FEATURE_ENABLED_BY_DEFAULT
+                                   : base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kConstantCondition,
+             is_android ? base::FEATURE_ENABLED_BY_DEFAULT
+                        : base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNoColon,
+             BUILDFLAG(IS_ANDROID) ? base::FEATURE_ENABLED_BY_DEFAULT);
+// Conditional expressions can't be nested, and their branches can't be in
+// parentheses.
+BASE_FEATURE(kNested,
+             BUILDFLAG(IS_IOS) ? base::FEATURE_DISABLED_BY_DEFAULT
+             : BUILDFLAG(IS_ANDROID) ? base::FEATURE_ENABLED_BY_DEFAULT
+                                     : base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kParenthesizedBranches,
+             BUILDFLAG(IS_ANDROID) ? (base::FEATURE_ENABLED_BY_DEFAULT)
+                                   : (base::FEATURE_DISABLED_BY_DEFAULT));
+DEFINE_CUSTOM_FEATURE(kCustomMacro);
+"""
+        definitions = _parse_feature_definitions(text)
+        self.assertEqual(10, len(definitions))
+        for definition in definitions:
+            self.assertIsNone(definition.default_value, definition.identifier)
 
 
 class ParseParamDefinitionsTest(unittest.TestCase):
@@ -1104,6 +1278,7 @@ class ParseParamDefinitionsTest(unittest.TestCase):
         name,
         feature_qualifier,
         feature_identifier,
+        default_value=None,
     ):
         return models.ParamDefinition(
             _PATH,
@@ -1114,7 +1289,31 @@ class ParseParamDefinitionsTest(unittest.TestCase):
             models.ArrayEntry(
                 _PATH, line, feature_qualifier, feature_identifier
             ),
+            default_value=default_value,
         )
+
+    def _default_value(self, cpp_type, written, is_desktop_android=False):
+        """Returns the default value of the param definition
+        `BASE_FEATURE_PARAM(cpp_type, kParam, &kFeature, "param", written)`.
+        """
+        [definition] = _parse_param_definitions(
+            f'BASE_FEATURE_PARAM({cpp_type}, kParam, &kFeature, "param",\n'
+            f'                   {written});\n',
+            is_desktop_android,
+        )
+        return definition.default_value
+
+    def _assert_default_values(self, cpp_type, cases):
+        """Checks the default value of a param of `cpp_type` for each
+        (written, expected) in `cases`. `expected` is None when the default
+        value can't be determined.
+        """
+        for written, expected in cases:
+            with self.subTest(written=written):
+                value = self._default_value(cpp_type, written)
+                self.assertEqual(expected, value)
+                # E.g. 1 == 1.0 and 1 == True, but they are different values.
+                self.assertIs(type(expected), type(value))
 
     def testParseParamDefinitions(self):
         text = """\
@@ -1138,10 +1337,22 @@ BASE_FEATURE_PARAM(base::TimeDelta, kNested, &kFeature, base::Seconds(1));
         self.assertEqual(
             [
                 self._definition(
-                    3, ('foo',), 'kDerivedName', 'DerivedName', '', 'kFeature'
+                    3,
+                    ('foo',),
+                    'kDerivedName',
+                    'DerivedName',
+                    '',
+                    'kFeature',
+                    default_value=False,
                 ),
                 self._definition(
-                    4, ('foo',), 'kCustomName', 'custom_name', '', 'kFeature'
+                    4,
+                    ('foo',),
+                    'kCustomName',
+                    'custom_name',
+                    '',
+                    'kFeature',
+                    default_value=0,
                 ),
                 self._definition(
                     9,
@@ -1150,12 +1361,25 @@ BASE_FEATURE_PARAM(base::TimeDelta, kNested, &kFeature, base::Seconds(1));
                     'QualifiedFeature',
                     'features::',
                     'kFeature',
+                    default_value=0.5,
                 ),
                 self._definition(
-                    10, ('foo',), 'kGlobalFeature', 'global', '::', 'kGlobal'
+                    10,
+                    ('foo',),
+                    'kGlobalFeature',
+                    'global',
+                    '::',
+                    'kGlobal',
+                    default_value='',
                 ),
                 self._definition(
-                    13, ('foo', 'bar'), 'kNested', 'Nested', '', 'kFeature'
+                    13,
+                    ('foo', 'bar'),
+                    'kNested',
+                    'Nested',
+                    '',
+                    'kFeature',
+                    default_value=None,
                 ),
             ],
             _parse_param_definitions(text),
@@ -1187,7 +1411,13 @@ BASE_FEATURE_PARAM(int, kPlatformDependent, &kFeature, "size",
         self.assertEqual(
             [
                 self._definition(
-                    1, (), 'kPlatformDependent', 'size', '', 'kFeature'
+                    1,
+                    (),
+                    'kPlatformDependent',
+                    'size',
+                    '',
+                    'kFeature',
+                    default_value=1,
                 ),
             ],
             _parse_param_definitions(text),
@@ -1216,6 +1446,7 @@ BASE_FEATURE_PARAM(int, kFunctionCall, &GetFeature(), 0);
         self.assertEqual(
             [(None, None)] * 6, [(d.name, d.feature) for d in definitions]
         )
+        self.assertEqual([None] * 6, [d.default_value for d in definitions])
         self.assertEqual(
             [
                 f'{_PATH}:1: The param name of kNotALiteral must be a plain '
@@ -1244,9 +1475,126 @@ BASE_FEATURE_PARAM(int, kValid, &kFeature, 0);
 """
         self.assertEqual(
             [
-                self._definition(5, (), 'kValid', 'Valid', '', 'kFeature'),
+                self._definition(
+                    5, (), 'kValid', 'Valid', '', 'kFeature', default_value=0
+                ),
             ],
             _parse_param_definitions(text),
+        )
+
+    def testBoolDefaultValues(self):
+        self._assert_default_values(
+            'bool',
+            (
+                ('true', True),
+                ('false', False),
+                ('kDefault', None),
+                ('!false', None),
+                ('1', None),
+            ),
+        )
+
+    def testIntDefaultValues(self):
+        self._assert_default_values(
+            'int',
+            (
+                ('0', 0),
+                ('42', 42),
+                ('-1', -1),
+                ('+1', 1),
+                ('kDefault', None),
+                ('static_cast<int>(Mode::kA)', None),
+                ('0x1F', None),
+                ("1'000", None),
+                ('10u', None),
+                ('1.5', None),
+                ('32 * 1024', None),
+            ),
+        )
+
+    def testDoubleDefaultValues(self):
+        self._assert_default_values(
+            'double',
+            (
+                ('0.5', 0.5),
+                ('-0.25', -0.25),
+                ('.5', 0.5),
+                ('1e-3', 0.001),
+                ('1', 1.0),
+                ('kRatio', None),
+                ('0.5f', None),
+                ('1.0 / 3', None),
+            ),
+        )
+
+    def testStringDefaultValues(self):
+        self._assert_default_values(
+            'std::string',
+            (
+                ('""', ''),
+                ('"foo"', 'foo'),
+                # "?" and ":" in strings are not conditional expressions.
+                ('"https://example.com/?a=b:c"', 'https://example.com/?a=b:c'),
+                # Like names, values are kept as written.
+                ('"a\\"b"', 'a\\"b'),
+                ('kDefault', None),
+                ('"a" "b"', None),
+                ('std::string("foo")', None),
+                ('R"(foo)"', None),
+            ),
+        )
+
+    def testConditionalDefaultValues(self):
+        for cpp_type, written, if_desktop, if_not_desktop in (
+            (
+                'bool',
+                'BUILDFLAG(IS_DESKTOP_ANDROID) ? true : false',
+                True,
+                False,
+            ),
+            ('int', 'BUILDFLAG(IS_DESKTOP_ANDROID)\n    ? 2\n    : 1', 2, 1),
+            ('double', '!BUILDFLAG(IS_DESKTOP_ANDROID) ? 0.5 : 1.5', 1.5, 0.5),
+            (
+                'std::string',
+                'BUILDFLAG(IS_DESKTOP_ANDROID) ? "a" : "b:c"',
+                'a',
+                'b:c',
+            ),
+            ('int', 'BUILDFLAG(ENABLE_FOO) ? 1 : 2', None, None),
+            ('int', 'BUILDFLAG(IS_ANDROID) ? kDefault : 2', None, None),
+            ('int', 'BUILDFLAG(IS_ANDROID) ? 1', None, None),
+            # Conditional expressions can't be nested, and their branches can't
+            # be in parentheses.
+            (
+                'int',
+                'BUILDFLAG(IS_IOS) ? 1 : BUILDFLAG(IS_ANDROID) ? 2 : 3',
+                None,
+                None,
+            ),
+            ('int', 'BUILDFLAG(IS_ANDROID) ? (1) : (2)', None, None),
+        ):
+            with self.subTest(written=written):
+                self.assertEqual(
+                    if_desktop,
+                    self._default_value(
+                        cpp_type, written, is_desktop_android=True
+                    ),
+                )
+                self.assertEqual(
+                    if_not_desktop,
+                    self._default_value(
+                        cpp_type, written, is_desktop_android=False
+                    ),
+                )
+
+    def testUnsupportedParamTypes(self):
+        text = """\
+BASE_FEATURE_PARAM(base::TimeDelta, kDelay, &kFeature, base::Seconds(1));
+BASE_FEATURE_PARAM(size_t, kSize, &kFeature, "size", 10);
+"""
+        self.assertEqual(
+            [None, None],
+            [d.default_value for d in _parse_param_definitions(text)],
         )
 
 

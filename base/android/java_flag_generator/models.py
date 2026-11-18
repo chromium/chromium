@@ -4,7 +4,11 @@
 """Data and error types shared by the java_flag_generator stages."""
 
 import dataclasses
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Optional, Tuple, Union
+
+# The default value of a param: a bool, int, float or str, depending on the
+# type of the param.
+ParamValue = Union[bool, int, float, str]
 
 
 class GeneratorError(Exception):
@@ -119,6 +123,10 @@ class FeatureDefinition:
     # `error` explains why. The error is only reported if an entry needs it.
     name: Optional[str]
     error: Optional[str] = None
+    # Whether the feature is enabled by default. None when it can't be
+    # determined, or when `error` is set. Unlike `error`, this is not reported:
+    # code that uses the default value decides whether it's an error.
+    default_value: Optional[bool] = None
 
     @property
     def qualified_name(self) -> str:
@@ -139,6 +147,9 @@ class ParamDefinition:
     name: Optional[str]
     feature: Optional[ArrayEntry]
     error: Optional[str] = None
+    # The param's default value. None when it can't be determined, or when
+    # `error` is set. Similar to FeatureDefinition.default_value.
+    default_value: Optional[ParamValue] = None
 
     @property
     def qualified_name(self) -> str:
@@ -150,6 +161,7 @@ class ResolvedFeature:
     entry: ArrayEntry
     definition: FeatureDefinition
     feature_name: str
+    default_value: Optional[bool]
     java_class_name: str
     feature_map: JavaClass
 
@@ -162,6 +174,7 @@ class ResolvedParam:
     # The name of the param's feature.
     feature_name: str
     param_name: str
+    default_value: Optional[ParamValue]
     java_class_name: str
     feature_map: JavaClass
 

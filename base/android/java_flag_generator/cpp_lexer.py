@@ -224,14 +224,14 @@ class _UnsupportedCondition(Exception):
 
 
 class _ConditionEvaluator:
-    """Evaluates the condition of an #if or #elif.
+    """Evaluates a condition made of BUILDFLAG()s, such as the condition of an
+    #if or #elif.
 
     Only the BUILDFLAG()s in `buildflags` are known. Other operands, such as
     other BUILDFLAG()s or defined(FOO), are unknown, and follow three-valued
     logic: false && x is false and true || x is true, but any other
     combination with an unknown operand is unknown, e.g.
-    BUILDFLAG(IS_WIN) || BUILDFLAG(FOO). Conditions that are unknown as a whole
-    are assumed to be true, even when negated.
+    BUILDFLAG(IS_WIN) || BUILDFLAG(FOO).
     """
 
     def __init__(self, condition: str, buildflags: Dict[str, bool]):
@@ -239,7 +239,8 @@ class _ConditionEvaluator:
         self._pos = 0
         self._buildflags = buildflags
 
-    def evaluate(self) -> bool:
+    def evaluate(self) -> _Value:
+        """Returns the value of the condition, or None if it is unknown."""
         try:
             value = self._parse_or()
             # E.g. the "== 0" of "BUILDFLAG(IS_WIN) == 0" is not supported.
@@ -247,7 +248,7 @@ class _ConditionEvaluator:
                 value = None
         except _UnsupportedCondition:
             value = None
-        return True if value is None else value
+        return value
 
     def _peek(self) -> Optional[str]:
         if self._pos < len(self._tokens):
@@ -346,6 +347,23 @@ class _Block:
         self._taken = self._taken or self.active
 
 
+def _buildflags(is_desktop_android: bool) -> Dict[str, bool]:
+    """The values of the BUILDFLAG()s that are known in this build."""
+    return dict(_ANDROID_OS_BUILDFLAGS, IS_DESKTOP_ANDROID=is_desktop_android)
+
+
+def evaluate_condition(
+    condition: str, is_desktop_android: bool
+) -> Optional[bool]:
+    """Evaluates a condition made of BUILDFLAG()s, such as
+    `BUILDFLAG(IS_DESKTOP_ANDROID) && !BUILDFLAG(FOO)`. Returns None if the
+    value of the condition is unknown.
+    """
+    return _ConditionEvaluator(
+        condition, _buildflags(is_desktop_android)
+    ).evaluate()
+
+
 def blank_inactive_branches(
     text: str, code: str, structure: str, is_desktop_android: bool
 ) -> Tuple[str, str, str]:
@@ -375,9 +393,7 @@ def blank_inactive_branches(
     `structure` decides which lines are directives, so that a `#` inside a
     string literal or comment is never mistaken for one.
     """
-    buildflags = dict(
-        _ANDROID_OS_BUILDFLAGS, IS_DESKTOP_ANDROID=is_desktop_android
-    )
+    buildflags = _buildflags(is_desktop_android)
     text_lines = text.split('\n')
     code_lines = code.split('\n')
     structure_lines = structure.split('\n')
@@ -414,6 +430,8 @@ def blank_inactive_branches(
                     + structure_lines[idx + 1 : end + 1]
                 )
                 value = _ConditionEvaluator(condition, buildflags).evaluate()
+                # Conditions that are unknown as a whole are assumed to be true.
+                value = value in (True, None)
             blocks[-1].start_branch(value)
             keep_directive = False
         elif name == 'endif' and blocks:

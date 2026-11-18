@@ -4,6 +4,7 @@
 """Matches k*ExposedToJava entries to their feature and param definitions."""
 
 import collections
+import dataclasses
 from typing import Dict, List, NamedTuple, Optional, Set, Tuple, Union
 
 from definition_files import PathContext
@@ -125,6 +126,9 @@ class _Matcher:
         if definition.error:
             self.errors.append(f'{where}: error: {definition.error}')
             return None
+        if len({d.default_value for d in matches}) > 1:
+            # Not an error, like when default value can't be determined.
+            definition = dataclasses.replace(definition, default_value=None)
         self.used_files.update(d.path for d in matches)
         return definition
 

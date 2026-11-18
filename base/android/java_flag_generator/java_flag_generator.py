@@ -70,7 +70,9 @@ class _FileCache:
         if path not in self._feature_definitions:
             _, code, structure = self.read(path)
             self._feature_definitions[path] = (
-                cpp_parser.parse_feature_definitions(path, code, structure)
+                cpp_parser.parse_feature_definitions(
+                    path, code, structure, self._is_desktop_android
+                )
             )
         return self._feature_definitions[path]
 
@@ -78,7 +80,7 @@ class _FileCache:
         if path not in self._param_definitions:
             _, code, structure = self.read(path)
             self._param_definitions[path] = cpp_parser.parse_param_definitions(
-                path, code, structure
+                path, code, structure, self._is_desktop_android
             )
         return self._param_definitions[path]
 
@@ -123,6 +125,7 @@ def _resolve_source(
             entry=m.entry,
             definition=m.definition,
             feature_name=m.definition.name,
+            default_value=m.definition.default_value,
             java_class_name=naming.nested_class_name(m.entry),
             feature_map=feature_map,
         )
@@ -135,6 +138,7 @@ def _resolve_source(
             definition=m.definition,
             feature_name=m.feature.name,
             param_name=m.definition.name,
+            default_value=m.definition.default_value,
             java_class_name=naming.nested_class_name(m.entry),
             feature_map=feature_map,
         )
