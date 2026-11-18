@@ -12,6 +12,12 @@ found in the LICENSE file.
     <item name="android:windowBackground">@color/dark_background_color_non_empty</item>
     <!-- This disables the Android S default splash screen. -->
     <item name="android:windowIsTranslucent">true</item>
+    <!-- Keeps the pre-Android 15 window insets. Chrome pads the splash
+         screenshot by the system bar insets, so an edge-to-edge splash
+         would move at the handoff. Android ignores this attribute for
+         apps that target 36+. -->
+    <item name="android:windowOptOutEdgeToEdgeEnforcement"
+        tools:targetApi="35">true</item>
   </style>
   <style name="PermissionRequestTheme" parent="@android:style/Theme.Translucent.NoTitleBar">
     <item name="android:windowIsFloating">true</item>
