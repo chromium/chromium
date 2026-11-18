@@ -134,11 +134,18 @@ class NewTabPageMediatorTest : public PlatformTest {
         base::BindRepeating(&std::make_unique<MockImageFetcherService>));
     test_profile_builder.AddTestingFactory(
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &NewTabPageMediatorTest::CreateMockAimEligibilityService,
-            base::Unretained(this)));
+        base::BindRepeating([](ProfileIOS& profile) {
+          return std::make_unique<
+              testing::StrictMock<MockAimEligibilityService>>(
+              *profile.GetPrefs(),
+              ios::TemplateURLServiceFactory::GetForProfile(profile), nullptr,
+              IdentityManagerFactory::GetForProfile(profile));
+        }));
     profile_ = std::move(test_profile_builder).Build();
-    IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+    aim_eligibility_service_ =
+        static_cast<testing::StrictMock<MockAimEligibilityService>*>(
+            IOSChromeAimEligibilityServiceFactory::GetForProfile(
+                profile_.get()));
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     initial_web_state_ = CreateWebStateWithURL(GURL("chrome://newtab"), 0.0);
@@ -168,17 +175,6 @@ class NewTabPageMediatorTest : public PlatformTest {
         DiscoverFeedServiceFactory::GetForProfile(profile_.get()));
     prefs_ = profile_->GetPrefs();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-  }
-
-  std::unique_ptr<KeyedService> CreateMockAimEligibilityService(
-      ProfileIOS* profile) {
-    auto service =
-        std::make_unique<testing::StrictMock<MockAimEligibilityService>>(
-            *profile->GetPrefs(),
-            ios::TemplateURLServiceFactory::GetForProfile(profile), nullptr,
-            IdentityManagerFactory::GetForProfile(profile));
-    aim_eligibility_service_ = service.get();
-    return service;
   }
 
   /// Creates mediator with optional `aim_eligibility_service` and
