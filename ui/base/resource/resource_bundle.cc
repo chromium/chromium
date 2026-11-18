@@ -906,22 +906,6 @@ std::string ResourceBundle::LoadLocalizedResourceString(int resource_id) const {
   return output;
 }
 
-bool ResourceBundle::IsGzipped(int resource_id) const {
-  std::string_view raw_data = GetRawDataResource(resource_id);
-  if (!raw_data.data())
-    return false;
-
-  return net::GZipHeader::HasGZipHeader(base::as_byte_span(raw_data));
-}
-
-bool ResourceBundle::IsBrotli(int resource_id) const {
-  std::string_view raw_data = GetRawDataResource(resource_id);
-  if (!raw_data.data())
-    return false;
-
-  return HasBrotliHeader(raw_data);
-}
-
 bool ResourceBundle::IsCompressed(int resource_id) const {
   return IsCompressedData(GetRawDataResource(resource_id));
 }

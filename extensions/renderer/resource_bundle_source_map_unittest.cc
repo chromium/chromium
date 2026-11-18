@@ -96,13 +96,13 @@ TEST(ResourceBundleSourceMapTest, IgnoresEmptyTables) {
   EXPECT_EQ(1u, source_map.source_tables_.size());
 }
 
-TEST_F(ResourceBundleSourceMapV8Test, LoadsAndCachesGzippedSource) {
+TEST_F(ResourceBundleSourceMapV8Test, LoadsAndCachesCompressedSource) {
   constexpr int kResourceId = IDR_EXTENSIONS_RENDERER_GENERATED_UTILS_JS;
   static constexpr auto kSources =
       base::MakeFixedFlatMap<std::string_view, int>({{"utils", kResourceId}});
   const ui::ResourceBundle& resource_bundle =
       ui::ResourceBundle::GetSharedInstance();
-  ASSERT_TRUE(resource_bundle.IsGzipped(kResourceId));
+  ASSERT_TRUE(resource_bundle.IsCompressed(kResourceId));
   ResourceBundleSourceMap& source_map = this->source_map();
   source_map.RegisterSources(kSources);
 

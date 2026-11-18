@@ -61,7 +61,7 @@ class ResourceBundleSourceMap : public SourceMap {
                            FirstRegisteredTableWinsForDuplicateNames);
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleSourceMapTest, IgnoresEmptyTables);
   FRIEND_TEST_ALL_PREFIXES(ResourceBundleSourceMapV8Test,
-                           LoadsAndCachesGzippedSource);
+                           LoadsAndCachesCompressedSource);
 
   using SourceEntry = std::pair<const std::string_view, int>;
   using SourceTable = base::raw_span<const SourceEntry>;

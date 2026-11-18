@@ -336,16 +336,8 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   scoped_refptr<base::RefCountedMemory> LoadDataResourceBytes(
       int resource_id) const;
 
-  // Whether the |resource_id| is gzipped in this bundle. False is also returned
-  // if the resource is not found.
-  bool IsGzipped(int resource_id) const;
-
-  // Whether the |resource_id| is brotli compressed in this bundle. False is
-  // also returned if the resource is not found.
-  bool IsBrotli(int resource_id) const;
-
-  // Whether the |resource_id| is compressed (gzip, brotli, or zstd) in this
-  // bundle. False is also returned if the resource is not found.
+  // Returns whether `resource_id` is compressed (gzip, brotli, or zstd) in
+  // this bundle. Returns false if the resource is not found.
   bool IsCompressed(int resource_id) const;
 
   // Loads the raw bytes of a data resource nearest the scale factor

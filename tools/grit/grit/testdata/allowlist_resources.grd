@@ -16,29 +16,29 @@
     <release seq="1">
     <structures>
       <structure name="IDR_STRUCTURE_ALLOWLISTED" file="browser.html"
-                 type="chrome_html" >
+                 type="chrome_html" compress="false" >
       </structure>
       <structure name="IDR_STRUCTURE_NOT_ALLOWLISTED" file="deleted.html"
-                 type="chrome_html" >
+                 type="chrome_html" compress="false" >
       </structure>
       <if expr="True">
         <structure name="IDR_STRUCTURE_IN_TRUE_IF_ALLOWLISTED"
                    file="details.html"
-                   type="chrome_html" >
+                   type="chrome_html" compress="false" >
         </structure>
         <structure name="IDR_STRUCTURE_IN_TRUE_IF_NOT_ALLOWLISTED"
                    file="error.html"
-                   type="chrome_html" >
+                   type="chrome_html" compress="false" >
         </structure>
       </if>
       <if expr="False">
         <structure name="IDR_STRUCTURE_IN_FALSE_IF_ALLOWLISTED"
                    file="status.html"
-                   type="chrome_html" >
+                   type="chrome_html" compress="false" >
         </structure>
         <structure name="IDR_STRUCTURE_IN_FALSE_IF_NOT_ALLOWLISTED"
                    file="simple.html"
-                   type="chrome_html" >
+                   type="chrome_html" compress="false" >
         </structure>
       </if>
     </structures>

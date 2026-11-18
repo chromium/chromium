@@ -39,8 +39,7 @@ def ZstdCompress(data, level):
   """Compresses |data| into a single zstd frame that contains its size."""
   if not __zstd_executable:
     raise Exception(
-      'Add "use_zstd = true" to your GN grit(...) target '
-      + 'if you want to use zstd.'
+      'Pass --zstd to grit (or set "use_zstd = true" in GN) to use zstd.'
     )
   # --stream-size causes the decompressed size to be stored in the frame
   # header. The checksum is omitted (saving 4 bytes per resource) since .pak

@@ -235,7 +235,8 @@ class FormatDataPackUnittest(unittest.TestCase):
         </outputs>
         <release seq="3">
           <includes>
-            <include name="ID_HTML" file="test_html.html" type="BINDATA" />
+            <include name="ID_HTML" file="test_html.html" type="BINDATA"
+                     compress="gzip" />
             <include name="ID_TEXT" file="test_text.txt" type="BINDATA"
                      compress="brotli" />
           </includes>

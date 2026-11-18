@@ -150,6 +150,9 @@ grit_strings("components_locale_settings") {
                      "ms",
                    ]
   if (!is_android && !is_ios) {
+    # grit_strings() does not enable zstd by default, but the terms_*.html
+    # files are compressed by default (with zstd).
+    use_zstd = true
     if (is_chrome_branded) {
       inputs += process_file_template(
               _terms_locales,

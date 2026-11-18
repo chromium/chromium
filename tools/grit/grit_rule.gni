@@ -274,20 +274,29 @@ template("grit") {
       ]
     }
 
-    # Add zstd executable if using zstd.
-    if (defined(invoker.use_zstd) && invoker.use_zstd) {
+    _use_zstd = _pak_info_outputs != []
+    if (defined(invoker.use_zstd)) {
+      _use_zstd = invoker.use_zstd
+    }
+    if (_use_zstd) {
+      # Add the zstd executable by default for .pak targets, since grit
+      # compresses some file types with zstd by default.
       _zstd_target = "//third_party/zstd:zstd($host_toolchain)"
       _zstd_executable = get_label_info(_zstd_target, "root_out_dir") + "/" +
                          get_label_info(_zstd_target, "name")
       if (host_os == "win") {
         _zstd_executable += ".exe"
       }
-
       inputs += [ _zstd_executable ]
       args += [
         "--zstd",
         rebase_path(_zstd_executable, root_build_dir),
       ]
+      if (is_mac && is_asan) {
+        deps += [ "//tools/grit:zstd_mac_asan_workaround" ]
+      } else {
+        deps += [ _zstd_target ]
+      }
     }
 
     _resource_ids = grit_resource_id_file
@@ -369,13 +378,6 @@ template("grit") {
         deps += [ "//tools/grit:brotli_mac_asan_workaround" ]
       } else {
         deps += [ "//third_party/brotli:brotli($host_toolchain)" ]
-      }
-    }
-    if (defined(invoker.use_zstd) && invoker.use_zstd) {
-      if (is_mac && is_asan) {
-        deps += [ "//tools/grit:zstd_mac_asan_workaround" ]
-      } else {
-        deps += [ "//third_party/zstd:zstd($host_toolchain)" ]
       }
     }
     if (defined(invoker.deps)) {
@@ -534,11 +536,16 @@ template("grit_strings") {
                                  "locales",
                                  "output_prefix",
                                  "outputs",
+                                 "use_zstd",
                                ])
 
     outputs = _outputs
     grit_flags = _grit_flags
     grit_action_name_override = "${target_name}__strings_grit"
+
+    # String .pak files generally contain only <message> entries, which are not
+    # compressed.
+    use_zstd = defined(invoker.use_zstd) && invoker.use_zstd
   }
 }
 

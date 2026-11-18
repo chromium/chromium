@@ -46,12 +46,12 @@ class Node:
   _CONTENT_TYPE_MIXED = 2  # CDATA and children, possibly intermingled
 
   _DEFAULT_COMPRESSION_BY_EXTENSION = {
-    '.code_cache': 'brotli',
-    '.css': 'gzip',
-    '.html': 'gzip',
-    '.js': 'gzip',
-    '.json': 'gzip',
-    '.svg': 'gzip',
+    '.code_cache': 'zstd',
+    '.css': 'zstd',
+    '.html': 'zstd',
+    '.js': 'zstd',
+    '.json': 'zstd',
+    '.svg': 'zstd',
   }
 
   # Types of files to disallow compressing, as it provides no benefit, and can

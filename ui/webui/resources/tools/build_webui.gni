@@ -796,7 +796,6 @@ template("build_webui") {
     if (!generate_grdp) {
       grit("code_cache_resources") {
         enable_input_discovery_for_gn_analyze = false
-        use_brotli = true
         source = "$target_gen_dir/code_cache_resources.grd"
 
         outputs = [

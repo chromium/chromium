@@ -11,7 +11,6 @@
 
 #include "base/notreached.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
-#include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "v8/include/v8-primitive.h"
 
@@ -60,15 +59,9 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
     return v8::Local<v8::String>();
   }
 
-  bool is_gzipped = resource_bundle_->IsGzipped(*resource_id);
-  if (is_gzipped) {
+  if (resource_bundle_->IsCompressed(*resource_id)) {
     std::string& cached_source = cached_sources_[*resource_id];
-    if (!compression::GzipUncompress(resource, &cached_source)) {
-      // Leave an empty string in the cache so later requests return directly
-      // instead of trying to uncompress again.
-      cached_source.clear();
-      return v8::Local<v8::String>();
-    }
+    cached_source = resource_bundle_->LoadDataResourceString(*resource_id);
     resource = cached_source;
   }
 

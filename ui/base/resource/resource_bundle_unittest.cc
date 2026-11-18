@@ -306,7 +306,7 @@ TEST_F(ResourceBundleTest, DelegateGetRawDataResource) {
   EXPECT_EQ(string_piece.data(), result.data());
 }
 
-TEST_F(ResourceBundleTest, IsGzipped) {
+TEST_F(ResourceBundleTest, IsCompressed) {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   base::FilePath data_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("sample.pak"));
@@ -315,40 +315,13 @@ TEST_F(ResourceBundleTest, IsGzipped) {
       data_path, {kSampleCompressPakContentsV5, kSampleCompressPakSizeV5})));
   ResourceBundle* resource_bundle = CreateResourceBundle(nullptr);
   resource_bundle->AddDataPackFromPath(data_path, k100Percent);
-
-  ASSERT_FALSE(resource_bundle->IsGzipped(1));
-  ASSERT_FALSE(resource_bundle->IsGzipped(4));
-  ASSERT_FALSE(resource_bundle->IsGzipped(6));
-  ASSERT_TRUE(resource_bundle->IsGzipped(8));
-  // Ask for a non-existent resource ID.
-  ASSERT_FALSE(resource_bundle->IsGzipped(200));
-}
-
-TEST_F(ResourceBundleTest, IsBrotliAndIsCompressed) {
-  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  base::FilePath data_path =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("sample.pak"));
-  // Dump contents into a pak file and load it.
-  UNSAFE_TODO(ASSERT_TRUE(base::WriteFile(
-      data_path, {kSampleCompressPakContentsV5, kSampleCompressPakSizeV5})));
-  ResourceBundle* resource_bundle = CreateResourceBundle(nullptr);
-  resource_bundle->AddDataPackFromPath(data_path, k100Percent);
-
-  ASSERT_FALSE(resource_bundle->IsBrotli(1));
-  ASSERT_FALSE(resource_bundle->IsBrotli(4));
-  ASSERT_TRUE(resource_bundle->IsBrotli(6));
-  ASSERT_FALSE(resource_bundle->IsGzipped(6));
-  ASSERT_FALSE(resource_bundle->IsBrotli(8));
-  ASSERT_FALSE(resource_bundle->IsBrotli(9));
-  ASSERT_FALSE(resource_bundle->IsGzipped(9));
-  // Ask for non-existent resource ID.
-  ASSERT_FALSE(resource_bundle->IsBrotli(200));
 
   ASSERT_FALSE(resource_bundle->IsCompressed(1));
   ASSERT_FALSE(resource_bundle->IsCompressed(4));
   ASSERT_TRUE(resource_bundle->IsCompressed(6));
   ASSERT_TRUE(resource_bundle->IsCompressed(8));
   ASSERT_TRUE(resource_bundle->IsCompressed(9));
+  // Ask for a non-existent resource ID.
   ASSERT_FALSE(resource_bundle->IsCompressed(200));
 }
 

@@ -228,7 +228,6 @@ if (enable_webui_generate_code_cache) {
 
   grit("code_cache_resources") {
     enable_input_discovery_for_gn_analyze = false
-    use_brotli = true
     source = "$target_gen_dir/webui_code_cache_resources.grd"
     deps = [ ":build_code_cache_grd" ]
 

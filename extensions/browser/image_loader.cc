@@ -120,7 +120,8 @@ std::vector<SkBitmap> LoadResourceBitmaps(
       if (manager &&
           manager->IsComponentExtensionResource(
               extension->path(), it->resource.relative_path(), &resource_id)) {
-        DCHECK(!ui::ResourceBundle::GetSharedInstance().IsGzipped(resource_id));
+        DCHECK(
+            !ui::ResourceBundle::GetSharedInstance().IsCompressed(resource_id));
         LoadResourceOnUIThread(resource_id, &bitmaps[i]);
       }
     }

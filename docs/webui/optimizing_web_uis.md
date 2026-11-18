@@ -53,19 +53,11 @@ If you'd like to more easily debug minified code, click the "{}" prettify button
 in Chrome's developer tools, which will beautify the code and allow setting
 breakpoints on the un-minified version.
 
-### Gzip compression of web resources
+### Compression of web resources
 
-As of [r761031](https://chromium.googlesource.com/chromium/src/+/6b83ee683f6c545be29ee807c6d0b6ac1508a549)
-all HTML, JS, CSS and SVG resources are compressed by default with gzip
-Previously this was only happening if the `compress="gzip"` attribute was
-specified as follows in the corresponding .grd file:
-
-```xml
-<include name="IDR_MY_PAGE" file="my/page.html" type="BINDATA" compress="gzip" />
-```
-
-This is no longer necessary, and should be omitted. Only specify the `compress`
-attribute if the value is `false` or `brotli`.
+All HTML, JS, CSS, SVG, and JSON resources are compressed by default with zstd.
+Only specify the `compress` attribute to override the default (for example
+`false`, `brotli`, or a custom zstd level such as `zstd19`).
 
 Compressed resources are uncompressed at a fairly low layer within
 ResourceBundle, and WebUI authors typically do not need to do anything special

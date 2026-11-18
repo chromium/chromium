@@ -148,18 +148,20 @@ class StructureUnittest(unittest.TestCase):
   def testCompressGzip(self):
     self.assertTrue(checkIsGzipped('test_text.txt', 'compress="gzip"'))
 
-  def testCompressGzipByDefault(self):
-    self.assertTrue(checkIsGzipped('test_html.html', ''))
-    self.assertTrue(checkIsGzipped('test_js.js', ''))
-    self.assertTrue(checkIsGzipped('test_css.css', ''))
-    self.assertTrue(checkIsGzipped('test_svg.svg', ''))
-    self.assertTrue(checkIsGzipped('test_json.json', ''))
-
-    self.assertTrue(checkIsGzipped('test_html.html', 'compress="default"'))
-    self.assertTrue(checkIsGzipped('test_js.js', 'compress="default"'))
-    self.assertTrue(checkIsGzipped('test_css.css', 'compress="default"'))
-    self.assertTrue(checkIsGzipped('test_svg.svg', 'compress="default"'))
-    self.assertTrue(checkIsGzipped('test_json.json', 'compress="default"'))
+  def testCompressZstdByDefault(self):
+    for compress in (None, 'default'):
+      for filename in (
+        'test_html.html',
+        'test_js.js',
+        'test_css.css',
+        'test_svg.svg',
+        'test_json.json',
+      ):
+        self.assertEqual(
+          mock_zstd.ExpectedOutputForFile(filename),
+          self._CompressZstdWithMock(compress, filename),
+          msg=f'{filename} ({compress})',
+        )
 
   def testCompressBrotli(self):
     test_data_root = util.PathFromRoot('grit/testdata')
