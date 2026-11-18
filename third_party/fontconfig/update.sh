@@ -18,6 +18,7 @@ meson setup build -Ddoc=disabled --prefix=/usr
 ninja -C build
 find build -name '*.h' -printf '%P\n' |
   rsync -R --files-from=- build/ ../include/
+rm -rf build
 # config.h has "#define _GNU_SOURCE" which would conflict with
 # our "#define _GNU_SOURCE 1".
 sed -i 's/_GNU_SOURCE$/_GNU_SOURCE 1/' ../include/meson-config.h
@@ -31,7 +32,9 @@ sed -i '/#define FREETYPE_PCF_LONG_FAMILY_NAMES/{N;d}' ../include/meson-config.h
 # https://crbug.com/565132857.
 sed -i '/#define HAVE_SYMLINK 1/{N;d}' ../include/meson-config.h
 # Use libxml2 instead of libexpat.  Currently, there's no way
-# to configure this with meson options.
+# to configure this with meson options.  Remove expat-specific function defines
+# probed on the host, since fcxml.c's libxml2 shim does not map them.
+sed -i '/#define HAVE_XML_GETCURRENTLINENUMBER64 1/{N;d}' ../include/meson-config.h
 echo '#define ENABLE_LIBXML2 1' >>../include/config.h
 
 # In component builds, libthird_party_fontconfig.so must not export the
