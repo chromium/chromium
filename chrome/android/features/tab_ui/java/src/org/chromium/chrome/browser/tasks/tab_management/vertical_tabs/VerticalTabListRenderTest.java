@@ -97,6 +97,7 @@ import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabAlert;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -169,6 +170,9 @@ public class VerticalTabListRenderTest {
         // mock Profiles without a native counterpart do not call into JNI, which would crash the
         // test process.
         GlicEnabling.setEnabledForTesting(false);
+        // BlankUiTestActivity does not initialize native ui::ResourceBundle, which
+        // KeyboardShortcuts queries when physical keyboard shortcut hints are enabled.
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
         mActivity.setTheme(

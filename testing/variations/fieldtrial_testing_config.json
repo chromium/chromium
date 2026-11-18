@@ -801,6 +801,22 @@
             ]
         }
     ],
+    "AndroidKeyboardShortcutHints": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidKeyboardShortcutHints"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidMediaInsertion": [
         {
             "platforms": [
