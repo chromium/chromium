@@ -7022,10 +7022,15 @@ TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
   EXPECT_TRUE(sent_request->has_image_feature_embedding());
   EXPECT_EQ(sent_request->visual_features().image().SerializeAsString(),
             MakeNonUniformBlurredImage().SerializeAsString());
+  EXPECT_THAT(sent_request->population().finch_active_groups(),
+              testing::Contains(
+                  "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500"
+                  ".InitialUniform.0.Retries.0.FinalUniform.0"));
+  // The outcome tag replaces the bare arm tag.
   EXPECT_THAT(
       sent_request->population().finch_active_groups(),
-      testing::Contains(
-          "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500"));
+      testing::Not(testing::Contains(
+          "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500")));
 }
 
 TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
@@ -7097,6 +7102,14 @@ TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
       "SBClientPhishing.KeyboardLock.IsFinalImageUniform", false, 1);
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.KeyboardLock.UniformImageRetryCount", 2, 1);
+  EXPECT_THAT(sent_request->population().finch_active_groups(),
+              testing::Contains(
+                  "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500"
+                  ".InitialUniform.1.Retries.2.FinalUniform.0"));
+  EXPECT_THAT(
+      sent_request->population().finch_active_groups(),
+      testing::Not(testing::Contains(
+          "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500")));
 }
 
 TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
@@ -7159,6 +7172,14 @@ TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
       "SBClientPhishing.KeyboardLock.IsFinalImageUniform", true, 1);
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.KeyboardLock.UniformImageRetryCount", 3, 1);
+  EXPECT_THAT(sent_request->population().finch_active_groups(),
+              testing::Contains(
+                  "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500"
+                  ".InitialUniform.1.Retries.3.FinalUniform.1"));
+  EXPECT_THAT(
+      sent_request->population().finch_active_groups(),
+      testing::Not(testing::Contains(
+          "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500")));
 }
 
 TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
@@ -7185,6 +7206,120 @@ TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
   EXPECT_FALSE(IsCheckingUniformImage());
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.KeyboardLock.IsFinalImageUniform", 0);
+
+  // A keyboard-lock request on the new page whose capture is never checked
+  // (no image embedding model) must not inherit the cancelled request's
+  // uniform-image outcome: it carries only the bare arm tag.
+  task_environment()->RunUntilIdle();
+  fake_phishing_detector_.Reset();
+  fake_phishing_image_embedder_.Reset();
+  EXPECT_CALL(*csd_service_, HasImageEmbeddingModel())
+      .WillRepeatedly(Return(false));
+
+  std::unique_ptr<ClientPhishingRequest> sent_request;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(
+          [&](std::unique_ptr<ClientPhishingRequest> request,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback,
+              const std::string&) { sent_request = std::move(request); });
+
+  csd_host_->KeyboardLockRequested();
+  task_environment()->RunUntilIdle();
+
+  ASSERT_NE(sent_request, nullptr);
+  EXPECT_THAT(
+      sent_request->population().finch_active_groups(),
+      testing::Contains(
+          "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500"));
+  EXPECT_THAT(
+      sent_request->population().finch_active_groups(),
+      testing::Not(testing::Contains(testing::HasSubstr("InitialUniform"))));
+}
+
+TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
+       SubsequentKeyboardLockWithoutEmbeddingDoesNotReusePreviousOutcome) {
+  NavigateAndCommit(url_);
+  task_environment()->RunUntilIdle();
+  fake_phishing_detector_.Reset();
+  fake_phishing_image_embedder_.Reset();
+  fake_phishing_image_embedder_.EnqueueBlurredImage(
+      MakeNonUniformBlurredImage());
+
+  std::vector<std::unique_ptr<ClientPhishingRequest>> sent_requests;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillRepeatedly(
+          [&](std::unique_ptr<ClientPhishingRequest> request,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback,
+              const std::string&) {
+            sent_requests.push_back(std::move(request));
+          });
+
+  csd_host_->KeyboardLockRequested();
+  task_environment()->RunUntilIdle();
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+  ASSERT_EQ(sent_requests.size(), 1u);
+  EXPECT_THAT(sent_requests[0]->population().finch_active_groups(),
+              testing::Contains(
+                  "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500"
+                  ".InitialUniform.0.Retries.0.FinalUniform.0"));
+
+  // Second page: image embedding is unavailable, so nothing is checked and the
+  // ping must fall back to the bare arm tag rather than reusing ping 1's.
+  GURL next_url("https://other.example.com");
+  database_manager_->SetAllowlistLookupDetailsForUrl(next_url, false);
+  NavigateAndCommit(next_url);
+  task_environment()->RunUntilIdle();
+  fake_phishing_detector_.Reset();
+  EXPECT_CALL(*csd_service_, HasImageEmbeddingModel())
+      .WillRepeatedly(Return(false));
+
+  csd_host_->KeyboardLockRequested();
+  task_environment()->RunUntilIdle();
+  ASSERT_EQ(sent_requests.size(), 2u);
+  EXPECT_THAT(
+      sent_requests[1]->population().finch_active_groups(),
+      testing::Contains(
+          "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.500"));
+  EXPECT_THAT(
+      sent_requests[1]->population().finch_active_groups(),
+      testing::Not(testing::Contains(testing::HasSubstr("InitialUniform"))));
+}
+
+TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,
+       ControlArmEmitsControlTagWithoutOutcome) {
+  base::test::ScopedFeatureList disabled_feature;
+  disabled_feature.InitAndDisableFeature(
+      kClientSideDetectionKeyboardLockUniformPageDelay);
+
+  NavigateAndCommit(url_);
+  task_environment()->RunUntilIdle();
+  fake_phishing_detector_.Reset();
+  fake_phishing_image_embedder_.Reset();
+
+  std::unique_ptr<ClientPhishingRequest> sent_request;
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce(
+          [&](std::unique_ptr<ClientPhishingRequest> request,
+              ClientSideDetectionService::ClientReportPhishingRequestCallback,
+              const std::string&) { sent_request = std::move(request); });
+
+  // Default image is uniform white; Control never retries.
+  csd_host_->KeyboardLockRequested();
+  task_environment()->RunUntilIdle();
+  FlushPhishingImageEmbedderForTesting();
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(IsUniformImageRetryTimerRunning());
+  ASSERT_NE(sent_request, nullptr);
+  EXPECT_THAT(sent_request->population().finch_active_groups(),
+              testing::Contains(
+                  "ClientSideDetectionKeyboardLockUniformPageDelay.Control"));
+  EXPECT_THAT(
+      sent_request->population().finch_active_groups(),
+      testing::Not(testing::Contains(testing::HasSubstr("InitialUniform"))));
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.KeyboardLock.IsInitialImageUniform", 0);
 }
 
 TEST_F(ClientSideDetectionHostKeyboardLockUniformImageDelayTest,

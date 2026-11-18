@@ -810,6 +810,20 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   bool is_classifying_ = false;
   bool is_checking_uniform_image_ = false;
   int keyboard_lock_uniform_image_retry_count_ = 0;
+
+  // Uniform-image check outcome for the pending KEYBOARD_LOCK_REQUESTED ping,
+  // encoded into its experiment arm tag. Set only when
+  // `kClientSideDetectionKeyboardLockUniformPageDelay` is enabled. Must
+  // outlive `ResetUniformImageRetryState()`, which runs before the ping is
+  // sent.
+  struct KeyboardLockUniformImageOutcome {
+    bool initial_image_uniform = false;
+    int retry_count = 0;
+    bool final_image_uniform = false;
+  };
+  std::optional<KeyboardLockUniformImageOutcome>
+      keyboard_lock_uniform_image_outcome_;
+
   PhishingDetectorResult last_phishing_detector_result_ =
       PhishingDetectorResult::CLASSIFICATION_SUCCESS;
   base::OneShotTimer keyboard_lock_uniform_image_retry_timer_;

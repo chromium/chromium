@@ -600,6 +600,7 @@ void ClientSideDetectionHostBase::CancelPendingRequests() {
   has_triggered_second_force_request_ = false;
   second_force_request_url_ = GURL();
   ResetUniformImageRetryState();
+  keyboard_lock_uniform_image_outcome_.reset();
   base_weak_factory_.InvalidateWeakPtrs();
   if (intelligent_scan_id_.has_value()) {
     intelligent_scan_delegate_->CancelIntelligentScan(*intelligent_scan_id_);
@@ -806,6 +807,12 @@ void ClientSideDetectionHostBase::MaybeSendClientPhishingRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string_view request_type_name =
       GetRequestTypeName(verdict->client_side_detection_type());
+  if (verdict->client_side_detection_type() ==
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED) {
+    // A new keyboard-lock request must never inherit the outcome of an
+    // earlier one that was never sent.
+    keyboard_lock_uniform_image_outcome_.reset();
+  }
   if (result != PhishingDetectorResult::CLASSIFICATION_SKIPPED) {
     ClassifyPhishingThroughThresholds(verdict.get());
     base::UmaHistogramBoolean("SBClientPhishing.LocalModelDetectsPhishing",
@@ -1393,10 +1400,27 @@ void ClientSideDetectionHostBase::
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED) {
     if (base::FeatureList::IsEnabled(
             kClientSideDetectionKeyboardLockUniformPageDelay)) {
-      verdict->mutable_population()->add_finch_active_groups(
-          "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled." +
-          base::NumberToString(
-              kCsdKeyboardLockUniformPageDelayDurationMs.Get()));
+      constexpr std::string_view kEnabledPrefix =
+          "ClientSideDetectionKeyboardLockUniformPageDelay.Enabled.";
+      const std::string delay_ms = base::NumberToString(
+          kCsdKeyboardLockUniformPageDelayDurationMs.Get());
+      // When the uniform-image outcome is known, encode it in the arm tag so
+      // pings can be grouped by whether the initial capture was uniform, how
+      // many retries were taken, and whether the final capture was still
+      // uniform. Otherwise (e.g. the capture sent was never checked) fall back
+      // to the bare arm tag.
+      if (std::optional<KeyboardLockUniformImageOutcome> outcome =
+              std::exchange(keyboard_lock_uniform_image_outcome_,
+                            std::nullopt)) {
+        verdict->mutable_population()->add_finch_active_groups(base::StrCat(
+            {kEnabledPrefix, delay_ms, ".InitialUniform.",
+             outcome->initial_image_uniform ? "1" : "0", ".Retries.",
+             base::NumberToString(outcome->retry_count), ".FinalUniform.",
+             outcome->final_image_uniform ? "1" : "0"}));
+      } else {
+        verdict->mutable_population()->add_finch_active_groups(
+            base::StrCat({kEnabledPrefix, delay_ms}));
+      }
     } else {
       verdict->mutable_population()->add_finch_active_groups(
           "ClientSideDetectionKeyboardLockUniformPageDelay.Control");
@@ -1676,6 +1700,18 @@ void ClientSideDetectionHostBase::PhishingImageEmbeddingDone(
       base::UmaHistogramCounts100(
           "SBClientPhishing.KeyboardLock.UniformImageRetryCount",
           keyboard_lock_uniform_image_retry_count_);
+      // This capture is the one that will be sent. Retries are only scheduled
+      // for uniform captures, so `retry_count > 0` implies the initial one was
+      // uniform. Skip when no image was extracted so the ping falls back to
+      // the bare arm tag.
+      if (verdict->visual_features().has_image()) {
+        keyboard_lock_uniform_image_outcome_ = KeyboardLockUniformImageOutcome{
+            .initial_image_uniform =
+                keyboard_lock_uniform_image_retry_count_ > 0 || is_uniform,
+            .retry_count = keyboard_lock_uniform_image_retry_count_,
+            .final_image_uniform = is_uniform,
+        };
+      }
     }
 
     if (image_feature_embedding.has_value()) {
