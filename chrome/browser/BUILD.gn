@@ -1035,7 +1035,10 @@ source_set("core") {
     "universal_web_contents_observers.cc",
   ]
 
-  configs += [ "//build/config:precompiled_headers" ]
+  configs += [
+    "//build/config:precompiled_headers",
+    "//build/config/compiler:wglobal_constructors",
+  ]
   defines = [ "ZLIB_CONST" ]
 
   if (is_chrome_branded || use_official_enterprise_connectors_api_keys) {
