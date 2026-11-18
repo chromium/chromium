@@ -334,6 +334,46 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest, TokenRefresh) {
   EXPECT_EQ(cr.data, "endpoint_token2_E46h");
 }
 
+TEST_F(PrintingOAuth2AuthorizationZoneTest, TokenRefreshWithoutRefreshToken) {
+  CallbackResult cr_0;
+  CallbackResult cr_1;
+  chromeos::Uri ipp_endpoint("ipp://my.printer:1234/path");
+  CreateAuthorizationZone("clientID_!@#$");
+  authorization_zone_->InitAuthorization("scope0", BindResult(cr_0));
+  authorization_zone_->InitAuthorization("scope1", BindResult(cr_1));
+  ProcessMetadataRequest();
+  ASSERT_EQ(cr_0.status, printing::oauth2::StatusCode::kOK);
+  ASSERT_EQ(cr_1.status, printing::oauth2::StatusCode::kOK);
+  auto auth_url_0 = SimulateAuthorization(cr_0.data, "auth_code_0", "scope0");
+  auto auth_url_1 = SimulateAuthorization(cr_1.data, "auth_code_1", "scope1");
+  authorization_zone_->FinishAuthorization(GURL(auth_url_0), BindResult(cr_0));
+  authorization_zone_->FinishAuthorization(GURL(auth_url_1), BindResult(cr_1));
+  ProcessFirstTokenRequest("auth_code_0", "access_TOKEN_0", "");
+  ProcessFirstTokenRequest("auth_code_1", "access_TOKEN_1", "refresh_TOKEN_1");
+  ASSERT_EQ(cr_0.status, printing::oauth2::StatusCode::kOK);
+  ASSERT_EQ(cr_1.status, printing::oauth2::StatusCode::kOK);
+
+  authorization_zone_->GetEndpointAccessToken(ipp_endpoint, "scope0",
+                                              BindResult(cr_0));
+  ProcessTokenExchangeRequest(ipp_endpoint, "access_TOKEN_0",
+                              "endpoint_token_24$#D");
+  ASSERT_EQ(cr_0.status, printing::oauth2::StatusCode::kOK);
+  authorization_zone_->MarkEndpointAccessTokenAsExpired(ipp_endpoint,
+                                                        "endpoint_token_24$#D");
+  authorization_zone_->GetEndpointAccessToken(ipp_endpoint, "scope0",
+                                              BindResult(cr_0));
+  ProcessTokenExchangeRequestError(ipp_endpoint, "access_TOKEN_0",
+                                   "invalid_grant");
+  EXPECT_EQ(cr_0.status, printing::oauth2::StatusCode::kAuthorizationNeeded);
+
+  authorization_zone_->GetEndpointAccessToken(ipp_endpoint, "scope1",
+                                              BindResult(cr_1));
+  ProcessTokenExchangeRequest(ipp_endpoint, "access_TOKEN_1",
+                              "endpoint_token2_E46h");
+  EXPECT_EQ(cr_1.status, printing::oauth2::StatusCode::kOK);
+  EXPECT_EQ(cr_1.data, "endpoint_token2_E46h");
+}
+
 TEST_F(PrintingOAuth2AuthorizationZoneTest, ParallelRequestsWithScopes) {
   CallbackResult cr_ia1;
   CallbackResult cr_ia2;

@@ -396,16 +396,18 @@ void AuthorizationZoneImpl::OnTokenExchangeRequestCallback(
   if (status == StatusCode::kInvalidAccessToken) {
     // The access token used by IppEndpointFetcher is invalid. Find the session
     // the token came from and ask it to refresh the token.
-    for (std::unique_ptr<AuthorizationServerSession>& session : sessions_) {
+    for (auto it = sessions_.begin(); it != sessions_.end();) {
+      AuthorizationServerSession* session = it->get();
+      ++it;
       if (session->access_token() == data) {  // data == invalid access token
         // We can use base::Unretained() here because:
         // * AuthorizationServerSession (and HttpExchange) guarantees that no
         //   calls will be returned after deletion of the object `session`.
         // * `this` owns `session`; it is guaranteed that deletion of `session`
         //   is performed before deletion of `this`.
-        session->SendNextTokenRequest(base::BindOnce(
-            &AuthorizationZoneImpl::OnSendTokenRequestCallback,
-            base::Unretained(this), base::Unretained(session.get())));
+        session->SendNextTokenRequest(
+            base::BindOnce(&AuthorizationZoneImpl::OnSendTokenRequestCallback,
+                           base::Unretained(this), base::Unretained(session)));
       }
     }
 
