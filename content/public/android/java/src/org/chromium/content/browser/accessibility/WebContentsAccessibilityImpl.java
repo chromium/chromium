@@ -753,6 +753,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         WebContentsAccessibilityImplJni.get().signalEndOfTestForTesting(mNativeObj);
     }
 
+    public void resetEventStateForTesting() {
+        mEventDispatcher.resetForTesting();
+        mHistogramRecorder.resetForTesting();
+    }
+
     public void forceRecordUMAHistogramsForTesting() {
         mHistogramRecorder.recordEventsHistograms();
     }

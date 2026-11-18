@@ -230,4 +230,31 @@ public class AccessibilityEventDispatcherTest {
         Assert.assertTrue(mRunnablePosted);
         Assert.assertTrue(mRunnableRemoved);
     }
+
+    /** Test that resetForTesting cancels pending runnables and clears throttle timestamps. */
+    @Test
+    @SmallTest
+    public void testResetForTesting() {
+        // Send an event with a long delay (5000ms) to throttle subsequent events.
+        mDispatcher.enqueueEvent(1, 3, false);
+        Assert.assertTrue(mEventDispatched);
+
+        // Enqueue another event immediately so a runnable is posted.
+        mDispatcher.enqueueEvent(1, 3, false);
+        Assert.assertTrue(mRunnablePosted);
+
+        // Reset trackers.
+        mRunnablePosted = false;
+        mRunnableRemoved = false;
+        mEventDispatched = false;
+
+        // Reset dispatcher for testing.
+        mDispatcher.resetForTesting();
+        Assert.assertTrue(mRunnableRemoved);
+
+        // A subsequent event should now dispatch immediately instead of being throttled.
+        mDispatcher.enqueueEvent(1, 3, false);
+        Assert.assertTrue(mEventDispatched);
+        Assert.assertFalse(mRunnablePosted);
+    }
 }

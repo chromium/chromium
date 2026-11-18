@@ -166,9 +166,16 @@ public class AccessibilityEventDispatcher {
         mPendingEvents.clear();
     }
 
+    /** Reset the event queue and last fired times for testing. */
+    public void resetForTesting() {
+        clearQueue();
+        mEventLastFiredTimes.clear();
+    }
+
     /**
      * Helper method to update the list of relevant event types to be dispatched.
-     * @param relevantEventTypes        Set<Integer> relevant event types
+     *
+     * @param relevantEventTypes Set<Integer> relevant event types
      */
     public void updateRelevantEventTypes(Set<Integer> relevantEventTypes) {
         this.mRelevantEventTypes = relevantEventTypes;

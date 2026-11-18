@@ -426,6 +426,12 @@ public class AccessibilityHistogramRecorder {
         mTotalDispatchedEvents = 0;
     }
 
+    /** Reset the enqueued and dispatched event counters for testing. */
+    public void resetForTesting() {
+        mTotalEnqueuedEvents = 0;
+        mTotalDispatchedEvents = 0;
+    }
+
     /** Record UMA histograms for the AccessibilityNodeInfo cache usage statistics. */
     public void recordCacheHistograms() {
         RecordHistogram.recordCustomCountHistogram(

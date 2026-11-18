@@ -604,7 +604,13 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     public void sendReadyForTestSignal() {
         ThreadUtils.runOnUiThreadBlocking(() -> mWcax.signalEndOfTestForTesting());
         CriteriaHelper.pollUiThread(() -> mTracker.testComplete(), READY_FOR_TEST_ERROR);
-        ThreadUtils.runOnUiThreadBlocking(() -> mTracker.signalReadyForTest());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTracker.signalReadyForTest();
+                    // Reset event dispatcher state and event counts accumulated before this signal
+                    // so that they are not attributed to the test or affect event dispatching.
+                    mWcax.resetEventStateForTesting();
+                });
     }
 
     /**
