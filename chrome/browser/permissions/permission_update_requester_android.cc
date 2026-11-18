@@ -7,6 +7,7 @@
 #include "base/android/jni_array.h"
 #include "components/permissions/android/android_permission_util.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/PermissionUpdateRequester_jni.h"
@@ -19,7 +20,7 @@ PermissionUpdateRequester::PermissionUpdateRequester(
   callback_ = std::move(callback);
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_PermissionUpdateRequester_create(
-      env, reinterpret_cast<intptr_t>(this), web_contents->GetJavaWebContents(),
+      env, jni_zero::MakeRaw(this), web_contents->GetJavaWebContents(),
       base::android::ToJavaArrayOfStrings(env, required_android_permissions),
       base::android::ToJavaArrayOfStrings(env, optional_android_permissions)));
 }

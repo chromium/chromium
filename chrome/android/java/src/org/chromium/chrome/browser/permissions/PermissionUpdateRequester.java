@@ -10,6 +10,10 @@ import android.net.Uri;
 import android.provider.Settings;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ActivityState;
@@ -36,15 +40,18 @@ import java.util.Set;
  */
 @NullMarked
 class PermissionUpdateRequester implements PermissionCallback {
+    @JniType("::PermissionUpdateRequester")
+    interface NativePermissionUpdateRequester extends JniTypeToken {}
+
     private final WebContents mWebContents;
     private final Set<String> mRequiredAndroidPermissions;
     private final String[] mAndroidPermisisons;
-    private long mNativePtr;
+    private @Nullable JniRawPtr<NativePermissionUpdateRequester> mNativePtr;
     private @Nullable ActivityStateListener mActivityStateListener;
 
     @CalledByNative
-    private static PermissionUpdateRequester create(
-            long nativePtr,
+    static PermissionUpdateRequester create(
+            JniRawPtr<NativePermissionUpdateRequester> nativePtr,
             WebContents webContents,
             String[] requiredPermissions,
             String[] optionalPermissions) {
@@ -53,7 +60,7 @@ class PermissionUpdateRequester implements PermissionCallback {
     }
 
     private PermissionUpdateRequester(
-            long nativePtr,
+            JniRawPtr<NativePermissionUpdateRequester> nativePtr,
             WebContents webContents,
             String[] requiredPermissions,
             String[] optionalPermissions) {
@@ -71,7 +78,10 @@ class PermissionUpdateRequester implements PermissionCallback {
 
     @CalledByNative
     private void onNativeDestroyed() {
-        mNativePtr = 0;
+        if (mNativePtr != null) {
+            mNativePtr.release();
+            mNativePtr = null;
+        }
         if (mActivityStateListener != null) {
             ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
             mActivityStateListener = null;
@@ -80,15 +90,16 @@ class PermissionUpdateRequester implements PermissionCallback {
 
     @CalledByNative
     private void requestPermissions() {
+        assert mNativePtr != null;
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
         if (windowAndroid == null) {
-            PermissionUpdateRequesterJni.get().onPermissionResult(mNativePtr, false);
+            sendPermissionResult(false);
             return;
         }
 
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
-            PermissionUpdateRequesterJni.get().onPermissionResult(mNativePtr, false);
+            sendPermissionResult(false);
             return;
         }
 
@@ -108,11 +119,7 @@ class PermissionUpdateRequester implements PermissionCallback {
                                 ApplicationStatus.unregisterActivityStateListener(this);
                                 mActivityStateListener = null;
                             }
-                            if (mNativePtr != 0) {
-                                long ptr = mNativePtr;
-                                mNativePtr = 0;
-                                PermissionUpdateRequesterJni.get().onPermissionResult(ptr, false);
-                            }
+                            sendPermissionResult(false);
                         } else if (newState == ActivityState.RESUMED) {
                             if (mActivityStateListener != null) {
                                 ApplicationStatus.unregisterActivityStateListener(this);
@@ -166,16 +173,22 @@ class PermissionUpdateRequester implements PermissionCallback {
                 hasAllPermissions &= windowAndroid.hasPermission(permission);
             }
         }
-        if (mNativePtr != 0) {
-            long ptr = mNativePtr;
-            mNativePtr = 0;
-            PermissionUpdateRequesterJni.get().onPermissionResult(ptr, hasAllPermissions);
+        sendPermissionResult(hasAllPermissions);
+    }
+
+    private void sendPermissionResult(boolean allPermissionsGranted) {
+        if (mNativePtr == null) return;
+        PermissionUpdateRequesterJni.get().onPermissionResult(mNativePtr, allPermissionsGranted);
+        // Release here if onPermissionResult did not synchronously trigger onNativeDestroyed().
+        if (mNativePtr != null) {
+            mNativePtr.release();
+            mNativePtr = null;
         }
     }
 
     @NativeMethods
     interface Natives {
         void onPermissionResult(
-                long nativePermissionUpdateRequester, boolean allPermissionsGranted);
+                JniPtr<NativePermissionUpdateRequester> self, boolean allPermissionsGranted);
     }
 }
