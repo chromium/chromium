@@ -12,6 +12,10 @@
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "media/gpu/windows/d3d_video_decoder_wrapper.h"
 
+namespace gpu {
+class GpuDriverBugWorkarounds;
+}  // namespace gpu
+
 namespace media {
 
 // A wrapper class for API calls around ID3D12VideoDecoder.
@@ -23,7 +27,8 @@ class D3D12VideoDecoderWrapper : public D3DVideoDecoderWrapper {
       VideoDecoderConfig config,
       uint8_t bit_depth,
       VideoChromaSampling chroma_sampling,
-      int max_decode_requests);
+      int max_decode_requests,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
  protected:
   explicit D3D12VideoDecoderWrapper(MediaLog* media_log);

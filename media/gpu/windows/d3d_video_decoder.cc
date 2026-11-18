@@ -261,7 +261,8 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
 
   auto video_decoder_wrapper_result = backend_->CreateVideoDecoderWrapper(
       get_d3d_device_cb_, decoder_configurator.get(), config_, bit_depth,
-      chroma_sampling_, GetMaxDecodeRequests(), media_log_.get());
+      chroma_sampling_, GetMaxDecodeRequests(), gpu_workarounds_,
+      media_log_.get());
   if (!video_decoder_wrapper_result.has_value()) {
     NotifyError(std::move(video_decoder_wrapper_result).error().AddHere());
     return false;

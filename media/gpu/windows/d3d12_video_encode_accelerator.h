@@ -12,6 +12,7 @@
 #include <wrl.h>
 
 #include <atomic>
+#include <memory>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -36,6 +37,7 @@
 namespace media {
 
 class CommandBufferHelper;
+class ScopedD3D12PersistentResourceMap;
 class VEAEncodingLatencyMetricsHelper;
 
 // The upload buffer layout for the bi-planar path, computed in bytes: the
@@ -273,6 +275,12 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   // shared memory.
   Microsoft::WRL::ComPtr<ID3D12Resource> upload_buffer_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
+  // Keeps |upload_buffer_| mapped until it is replaced or destroyed, when the
+  // d3d12_persistent_upload_buffer_map workaround is enabled. Otherwise the
+  // upload functions map it per frame.
+  std::unique_ptr<ScopedD3D12PersistentResourceMap> upload_buffer_map_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
+  const bool use_persistent_upload_buffer_map_;
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture_
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 

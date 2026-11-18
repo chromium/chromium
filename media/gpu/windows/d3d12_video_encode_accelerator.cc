@@ -12,6 +12,7 @@
 
 #include "base/bits.h"
 #include "base/check_is_test.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -38,6 +39,7 @@
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/windows/d3d12_helpers.h"
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
@@ -466,6 +468,8 @@ D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       encoder_factory_(
           std::make_unique<VideoEncodeDelegateFactory>(gpu_workarounds)),
+      use_persistent_upload_buffer_map_(
+          gpu_workarounds.d3d12_persistent_upload_buffer_map),
       // VCM on Windows allocates 10 slots for MappableSI frames. Typically 3 of
       // them are being actively used. Set cache size to 5 to leave some room
       // for frames in the rendering and encoding pipelines.
@@ -883,6 +887,12 @@ bool D3D12VideoEncodeAccelerator::EnsureUploadBuffer(uint64_t size) {
       upload_buffer_->GetDesc().Width >= upload_buffer_desc.Width) {
     return true;
   }
+  // Wait for the GPU to finish copying from the buffer being replaced before
+  // unmapping it.
+  if (upload_buffer_map_) {
+    copy_command_queue_->WaitSync();
+    upload_buffer_map_.reset();
+  }
   HRESULT hr = device_->CreateCommittedResource(
       &D3D12HeapProperties::kUpload, D3D12_HEAP_FLAG_NONE, &upload_buffer_desc,
       D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
@@ -895,6 +905,17 @@ bool D3D12VideoEncodeAccelerator::EnsureUploadBuffer(uint64_t size) {
       "D3D12VEA upload_buffer_ %dx%d", config_.input_visible_size.width(),
       config_.input_visible_size.height()));
   CHECK_EQ(upload_buffer_->SetName(debug_name.c_str()), S_OK);
+  // Map once and keep the buffer mapped for its lifetime if the persistent
+  // mapping is required.
+  if (use_persistent_upload_buffer_map_) {
+    auto map = std::make_unique<ScopedD3D12PersistentResourceMap>();
+    if (!map->Map(upload_buffer_.Get())) {
+      LOG(ERROR) << "Failed to map upload_buffer";
+      upload_buffer_.Reset();
+      return false;
+    }
+    upload_buffer_map_ = std::move(map);
+  }
   return true;
 }
 
@@ -914,25 +935,29 @@ bool D3D12VideoEncodeAccelerator::UploadBiPlanarVideoFrame(
     return false;
   }
 
-  {
-    ScopedD3D12ResourceMap map;
-    if (!map.Map(upload_buffer_.Get())) {
+  base::span<uint8_t> upload_data;
+  ScopedD3D12ResourceMap per_frame_map;
+  if (use_persistent_upload_buffer_map_) {
+    CHECK(upload_buffer_map_);
+    upload_data = upload_buffer_map_->data();
+  } else {
+    if (!per_frame_map.Map(upload_buffer_.Get())) {
       LOG(ERROR) << "Failed to map upload_buffer";
       return false;
     }
-    scoped_refptr<VideoFrame> upload_frame = VideoFrame::WrapExternalYuvData(
-        pixel_format, config_.input_visible_size,
-        gfx::Rect(config_.input_visible_size), config_.input_visible_size,
-        base::checked_cast<int>(layout.y_pitch),
-        base::checked_cast<int>(layout.uv_pitch),
-        map.data().first(layout.uv_offset),
-        map.data().subspan(layout.uv_offset), frame.timestamp());
-    EncoderStatus result =
-        frame_converter_.ConvertAndScale(frame, *upload_frame);
-    if (!result.is_ok()) {
-      LOG(ERROR) << "Failed to ConvertAndScale frame: " << result.message();
-      return false;
-    }
+    upload_data = per_frame_map.data();
+  }
+  scoped_refptr<VideoFrame> upload_frame = VideoFrame::WrapExternalYuvData(
+      pixel_format, config_.input_visible_size,
+      gfx::Rect(config_.input_visible_size), config_.input_visible_size,
+      base::checked_cast<int>(layout.y_pitch),
+      base::checked_cast<int>(layout.uv_pitch),
+      upload_data.first(layout.uv_offset),
+      upload_data.subspan(layout.uv_offset), frame.timestamp());
+  EncoderStatus result = frame_converter_.ConvertAndScale(frame, *upload_frame);
+  if (!result.is_ok()) {
+    LOG(ERROR) << "Failed to ConvertAndScale frame: " << result.message();
+    return false;
   }
 
   if (!copy_command_queue_->CopyBufferToBiPlanarTexture(
@@ -1011,17 +1036,22 @@ bool D3D12VideoEncodeAccelerator::UploadPackedVideoFrame(
     pack_source_frame = packing_source_frame_.get();
   }
 
-  {
-    ScopedD3D12ResourceMap map;
-    if (!map.Map(upload_buffer_.Get())) {
+  base::span<uint8_t> upload_data;
+  ScopedD3D12ResourceMap per_frame_map;
+  if (use_persistent_upload_buffer_map_) {
+    CHECK(upload_buffer_map_);
+    upload_data = upload_buffer_map_->data();
+  } else {
+    if (!per_frame_map.Map(upload_buffer_.Get())) {
       LOG(ERROR) << "Failed to map upload_buffer";
       return false;
     }
-    if (!packed_dxgi_packer_.Pack(*pack_source_frame, dxgi_format, map.data(),
-                                  row_pitch)) {
-      LOG(ERROR) << "Failed to pack frame into the encoder input format";
-      return false;
-    }
+    upload_data = per_frame_map.data();
+  }
+  if (!packed_dxgi_packer_.Pack(*pack_source_frame, dxgi_format, upload_data,
+                                row_pitch)) {
+    LOG(ERROR) << "Failed to pack frame into the encoder input format";
+    return false;
   }
 
   if (!copy_command_queue_->CopyTextureRegion(

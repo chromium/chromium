@@ -233,6 +233,7 @@ D3D11VideoDecoderBackend::CreateVideoDecoderWrapper(
     uint8_t bit_depth,
     VideoChromaSampling chroma_sampling,
     int max_decode_requests,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     MediaLog* media_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(decoder_configurator);
@@ -271,7 +272,7 @@ D3D11VideoDecoderBackend::CreateVideoDecoderWrapper(
     std::unique_ptr<D3DVideoDecoderWrapper> video_decoder_wrapper =
         D3D12VideoDecoderWrapper::Create(media_log, d3d12_video_device, config,
                                          bit_depth, chroma_sampling,
-                                         max_decode_requests);
+                                         max_decode_requests, gpu_workarounds);
     return video_decoder_wrapper;
   }
 

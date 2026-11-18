@@ -53,6 +53,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderBackend
                             uint8_t bit_depth,
                             VideoChromaSampling chroma_sampling,
                             int max_decode_requests,
+                            const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
                             MediaLog* media_log) override;
   std::unique_ptr<D3DTextureWrapper> CreateOutputTextureWrapper(
       TextureSelector* texture_selector,

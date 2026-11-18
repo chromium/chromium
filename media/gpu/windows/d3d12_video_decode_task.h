@@ -10,6 +10,7 @@
 
 #include <wrl.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -18,12 +19,17 @@
 
 namespace media {
 
+class ScopedD3D12PersistentResourceMap;
+
 // Stores the referenced memory and fence event of a submitted D3D12 video
 // decode task.
 class D3D12VideoDecoderTask {
  public:
   D3D12VideoDecoderTask();
   ~D3D12VideoDecoderTask();
+
+  D3D12VideoDecoderTask(const D3D12VideoDecoderTask&) = delete;
+  D3D12VideoDecoderTask& operator=(const D3D12VideoDecoderTask&) = delete;
 
   void SetFenceAndValue(scoped_refptr<D3D12Fence> fence, uint64_t value);
 
@@ -48,12 +54,19 @@ class D3D12VideoDecoderTask {
       ID3D12Device* device,
       size_t size);
 
+  // Returns the mapped span of the bitstream buffer, mapping it on first use.
+  // The mapping is kept until |GetBitstreamBuffer()| reallocates the buffer or
+  // the task is destroyed. Only valid after a successful
+  // |GetBitstreamBuffer()| call.
+  base::span<uint8_t> GetBitstreamBufferMappedData();
+
  private:
   Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator_;
   std::vector<uint8_t> picture_parameters_buffer_;
   std::vector<uint8_t> inverse_quantization_matrix_buffer_;
   std::vector<uint8_t> slice_control_buffer_;
   Microsoft::WRL::ComPtr<ID3D12Resource> compressed_bitstream_;
+  std::unique_ptr<ScopedD3D12PersistentResourceMap> bitstream_buffer_map_;
   std::pair<scoped_refptr<D3D12Fence>, uint64_t> fence_and_value_;
 };
 

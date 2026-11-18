@@ -4,8 +4,13 @@
 
 #include "media/gpu/windows/d3d12_video_decode_task.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <memory>
+
 #include "base/task/thread_pool.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/gpu/windows/d3d12_helpers.h"
 #include "media/gpu/windows/d3d_picture_buffer.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 
@@ -91,6 +96,7 @@ D3D12VideoDecoderTask::GetBitstreamBuffer(ID3D12Device* device, size_t size) {
   CHECK(!fence_and_value_.first);
   // The compressed_bitstream_ is reused if it's large enough.
   if (!compressed_bitstream_ || compressed_bitstream_->GetDesc().Width < size) {
+    bitstream_buffer_map_.reset();
     // Double the size of the buffer if it's too small, to avoid frequent
     // reallocations.
     size_t new_size = std::max(
@@ -109,6 +115,19 @@ D3D12VideoDecoderTask::GetBitstreamBuffer(ID3D12Device* device, size_t size) {
     }
   }
   return compressed_bitstream_;
+}
+
+base::span<uint8_t> D3D12VideoDecoderTask::GetBitstreamBufferMappedData() {
+  CHECK(!fence_and_value_.first);
+  if (!bitstream_buffer_map_) {
+    CHECK(compressed_bitstream_);
+    auto map = std::make_unique<ScopedD3D12PersistentResourceMap>();
+    if (!map->Map(compressed_bitstream_.Get())) {
+      return {};
+    }
+    bitstream_buffer_map_ = std::move(map);
+  }
+  return bitstream_buffer_map_->data();
 }
 
 }  // namespace media

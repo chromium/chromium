@@ -3572,6 +3572,19 @@
       "features": [
         "max_num_hw_video_decoders_15"
       ]
+    },
+    {
+      "id": 510,
+      "cr_bugs": [583539379, 585798267],
+      "description": "Work around an Intel D3D12 driver issue by keeping the video upload buffers mapped and clearing them before release.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "active",
+      "features": [
+        "d3d12_persistent_upload_buffer_map"
+      ]
     }
   ]
 }

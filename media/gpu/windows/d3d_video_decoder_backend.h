@@ -85,6 +85,7 @@ class D3DVideoDecoderBackend {
                             uint8_t bit_depth,
                             VideoChromaSampling chroma_sampling,
                             int max_decode_requests,
+                            const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
                             MediaLog* media_log) = 0;
 
   virtual std::unique_ptr<D3DTextureWrapper> CreateOutputTextureWrapper(

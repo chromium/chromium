@@ -4,6 +4,8 @@
 
 #include "media/gpu/windows/d3d12_helpers.h"
 
+#include <algorithm>
+
 #include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -134,6 +136,17 @@ void ScopedD3D12ResourceMap::Commit(const D3D12_RANGE* written_range) {
     resource_->Unmap(subresource_, written_range);
     resource_ = nullptr;
   }
+}
+
+ScopedD3D12PersistentResourceMap::ScopedD3D12PersistentResourceMap() = default;
+
+ScopedD3D12PersistentResourceMap::~ScopedD3D12PersistentResourceMap() {
+  constexpr size_t kD3D12PersistentMapClearBytes = 16;
+  base::span<uint8_t> data = map_.data();
+  std::ranges::fill(
+      data.first(std::min(kD3D12PersistentMapClearBytes, data.size())),
+      uint8_t{0});
+  // |map_| is destroyed next, which unmaps the buffer.
 }
 
 ComD3D12Device CreateD3D12Device(IDXGIAdapter* adapter) {
