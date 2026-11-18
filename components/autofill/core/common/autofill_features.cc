@@ -1215,6 +1215,11 @@ BASE_FEATURE_PARAM(std::string,
                    "autofill_experimental_regex_bucket4",
                    "");
 
+// Controls whether structural form signatures are uploaded for subforms and
+// whether uploads are marked with `is_subform`.
+BASE_FEATURE(kAutofillUploadPerIframeStructuralSignatures,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using a custom address model for India, overriding the legacy one.
 BASE_FEATURE(kAutofillUseINAddressModel, base::FEATURE_DISABLED_BY_DEFAULT);
 

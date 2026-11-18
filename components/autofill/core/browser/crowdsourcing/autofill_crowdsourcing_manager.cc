@@ -381,6 +381,9 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
     out << Tr{} << "passwords_revealed:" << upload.passwords_revealed();
   if (upload.has_has_form_tag())
     out << Tr{} << "has_form_tag:" << upload.has_form_tag();
+  if (upload.has_is_subform()) {
+    out << Tr{} << "is_subform:" << upload.is_subform();
+  }
 
   out << Tr{} << "form_signature:" << upload.form_signature();
   if (upload.has_second_last_address_form_submitted()) {

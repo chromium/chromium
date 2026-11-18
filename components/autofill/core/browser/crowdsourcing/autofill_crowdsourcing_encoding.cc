@@ -1094,7 +1094,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   // Build AutofillUploadContents for the renderer forms that have been
   // flattened into `this` (see the function's documentation for details).
   std::erase_if(upload_fields, [&form](const AutofillField* field) {
-    // Autofill on iOS and the Password Manager in general have a null
+    // Only Password Manager forms can have a null
     // FormFieldData::host_form_signature.
     return !field->host_form_signature() ||
            field->host_form_signature() == form.form_signature();
@@ -1102,6 +1102,12 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   // Partition `upload_fields` with respect to the forms' renderer id.
   std::ranges::stable_sort(upload_fields, /*comp=*/{},
                            &FormFieldData::renderer_form_id);
+
+  const bool upload_per_iframe_signatures = base::FeatureList::IsEnabled(
+      features::kAutofillUploadPerIframeStructuralSignatures);
+  if (upload_per_iframe_signatures) {
+    uploads[0].set_is_subform(false);
+  }
 
   for (auto subform_begin = upload_fields.begin();
        subform_begin != upload_fields.end();) {
@@ -1112,6 +1118,9 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
         (*subform_begin)->host_form_signature().value());
     upload_content.set_autofill_used(false);
     upload_content.set_data_present(data_present);
+    if (upload_per_iframe_signatures) {
+      upload_content.set_is_subform(true);
+    }
 
     auto subform_end =
         std::find_if(subform_begin, upload_fields.end(),

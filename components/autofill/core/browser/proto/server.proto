@@ -265,7 +265,7 @@ message ThreeBitHashedFormMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 51
+// Next available id: 54
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -511,6 +511,10 @@ message AutofillUploadContents {
   optional fixed64 last_address_form_submitted = 43;
   optional fixed64 second_last_address_form_submitted = 44;
   optional fixed64 last_credit_card_form_submitted = 45;
+
+  // True for a subform upload, sent in addition to the main form's upload;
+  // false for the main form's upload. Unset for clients that don't populate it.
+  optional bool is_subform = 53;
 
   reserved 5, 13, 16, 36, 42;
   reserved "Field", "action_signature", "form_name", "button_title";

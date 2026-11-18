@@ -210,7 +210,8 @@ Matcher<AutofillUploadContents> EqualsIgnoringMetadataValues(
       PROPERTY_EQ(password_special_symbol), PROPERTY_EQ(submission_event),
       PROPERTY_EQ(has_form_tag), PROPERTY_EQ(last_address_form_submitted),
       PROPERTY_EQ(second_last_address_form_submitted),
-      PROPERTY_EQ(last_credit_card_form_submitted),
+      PROPERTY_EQ(last_credit_card_form_submitted), PROPERTY_EQ(has_is_subform),
+      PROPERTY_EQ(is_subform),
       Property("field_data", &AutofillUploadContents::field_data,
                ElementsAreArray(
                    base::ToVector(expected.field_data(), field_matcher))),
@@ -1119,6 +1120,65 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_WithSubForms) {
                            EqualsIgnoringMetadataValues(upload_number),
                            EqualsIgnoringMetadataValues(upload_cvc)));
 }
+
+class AutofillCrowdsourcingEncodingIsSubformTest
+    : public AutofillCrowdsourcingEncoding,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillUploadPerIframeStructuralSignatures, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that `is_subform` is populated on single-frame uploads iff
+// `kAutofillUploadPerIframeStructuralSignatures` is enabled.
+TEST_P(AutofillCrowdsourcingEncodingIsSubformTest,
+       EncodeUploadRequest_SetsIsSubformForSingleForm) {
+  const bool kEnabled = GetParam();
+  FormStructure single_form(
+      test::GetFormData({.fields = {{.label = u"Name", .name = u"name"}}}));
+  std::vector<AutofillUploadContents> uploads =
+      EncodeUploadRequest(single_form, {});
+  ASSERT_EQ(uploads.size(), 1u);
+  EXPECT_EQ(uploads[0].has_is_subform(), kEnabled);
+  if (kEnabled) {
+    EXPECT_FALSE(uploads[0].is_subform());
+  }
+}
+
+// Tests that `is_subform` distinguishes the main upload from subform uploads
+// iff `kAutofillUploadPerIframeStructuralSignatures` is enabled.
+TEST_P(AutofillCrowdsourcingEncodingIsSubformTest,
+       EncodeUploadRequest_SetsIsSubformForSubforms) {
+  const bool kEnabled = GetParam();
+  FormStructure multi_form(
+      test::GetFormData({.fields = {{.host_form_signature = FormSignature(123),
+                                     .label = u"Cardholder name",
+                                     .name = u"cc-name"},
+                                    {.host_frame = test::MakeLocalFrameToken(),
+                                     .host_form_signature = FormSignature(456),
+                                     .label = u"Credit card number",
+                                     .name = u"cc-number"}}}));
+  std::vector<AutofillUploadContents> uploads =
+      EncodeUploadRequest(multi_form, {});
+  ASSERT_EQ(uploads.size(), 3u);
+  EXPECT_EQ(uploads[0].has_is_subform(), kEnabled);
+  EXPECT_EQ(uploads[1].has_is_subform(), kEnabled);
+  EXPECT_EQ(uploads[2].has_is_subform(), kEnabled);
+  if (kEnabled) {
+    EXPECT_FALSE(uploads[0].is_subform());
+    EXPECT_TRUE(uploads[1].is_subform());
+    EXPECT_TRUE(uploads[2].is_subform());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutofillCrowdsourcingEncodingIsSubformTest,
+                         testing::Bool());
 
 class AutofillCrowdsourcingEncodingUploadProto
     : public AutofillCrowdsourcingEncoding,
