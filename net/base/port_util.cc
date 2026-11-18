@@ -7,6 +7,7 @@
 #include <limits>
 #include <set>
 
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -18,6 +19,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -118,9 +121,26 @@ const int kRestrictedPorts[] = {
     10080,  // Amanda
 };
 
-std::multiset<int>& GetExplicitlyAllowedPorts() {
+base::Lock& GetExplicitlyAllowedPortsLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
+
+std::multiset<int>& GetExplicitlyAllowedPorts()
+    EXCLUSIVE_LOCKS_REQUIRED(GetExplicitlyAllowedPortsLock()) {
   static base::NoDestructor<std::multiset<int>> explicitly_allowed_ports;
   return *explicitly_allowed_ports;
+}
+
+uint64_t& GetExplicitlyAllowedPortsGeneration()
+    EXCLUSIVE_LOCKS_REQUIRED(GetExplicitlyAllowedPortsLock()) {
+  static uint64_t generation = 0;
+  return generation;
+}
+
+bool IsExplicitlyAllowedPort(int port) {
+  base::AutoLock lock(GetExplicitlyAllowedPortsLock());
+  return GetExplicitlyAllowedPorts().contains(port);
 }
 
 // List of ports which are permitted to be reenabled despite being in
@@ -184,7 +204,7 @@ bool IsPortAllowedForScheme(int port, std::string_view url_scheme) {
     return false;
 
   // Allow explicitly allowed ports for any scheme.
-  if (GetExplicitlyAllowedPorts().count(port) > 0) {
+  if (IsExplicitlyAllowedPort(port)) {
     return true;
   }
 
@@ -243,7 +263,7 @@ bool IsPortAllowedForIpEndpoint(const IPEndPoint& endpoint) {
   int port = endpoint.port();
 
   // Allow explicitly allowed ports.
-  if (GetExplicitlyAllowedPorts().count(port) > 0) {
+  if (IsExplicitlyAllowedPort(port)) {
     return true;
   }
 
@@ -266,6 +286,7 @@ bool IsPortAllowedForIpEndpoint(const IPEndPoint& endpoint) {
 }
 
 size_t GetCountOfExplicitlyAllowedPorts() {
+  base::AutoLock lock(GetExplicitlyAllowedPortsLock());
   return GetExplicitlyAllowedPorts().size();
 }
 
@@ -273,20 +294,25 @@ size_t GetCountOfExplicitlyAllowedPorts() {
 // despite bans. If the string is invalid no allowed ports are stored.
 void SetExplicitlyAllowedPorts(base::span<const uint16_t> allowed_ports) {
   std::multiset<int> ports(allowed_ports.begin(), allowed_ports.end());
-  GetExplicitlyAllowedPorts() = std::move(ports);
+  base::AutoLock lock(GetExplicitlyAllowedPortsLock());
+  GetExplicitlyAllowedPorts().swap(ports);
+  ++GetExplicitlyAllowedPortsGeneration();
 }
 
 ScopedPortException::ScopedPortException(int port) : port_(port) {
+  base::AutoLock lock(GetExplicitlyAllowedPortsLock());
   GetExplicitlyAllowedPorts().insert(port);
+  generation_ = GetExplicitlyAllowedPortsGeneration();
 }
 
 ScopedPortException::~ScopedPortException() {
-  auto it = GetExplicitlyAllowedPorts().find(port_);
-  if (it != GetExplicitlyAllowedPorts().end()) {
-    GetExplicitlyAllowedPorts().erase(it);
-  } else {
-    NOTREACHED();
+  base::AutoLock lock(GetExplicitlyAllowedPortsLock());
+  if (generation_ != GetExplicitlyAllowedPortsGeneration()) {
+    return;
   }
+  auto it = GetExplicitlyAllowedPorts().find(port_);
+  CHECK(it != GetExplicitlyAllowedPorts().end());
+  GetExplicitlyAllowedPorts().erase(it);
 }
 
 NET_EXPORT bool IsAllowablePort(int port) {

@@ -87,4 +87,16 @@ TEST(KnownPortsTest, IsPortAllowedForScheme) {
     EXPECT_EQ(test.is_allowed, IsPortAllowedForScheme(KURL(test.url)));
 }
 
+TEST(KnownPortsTest, SetExplicitlyAllowedPorts) {
+  const KURL blocked_url("ftp://example.com:87");
+  EXPECT_FALSE(IsPortAllowedForScheme(blocked_url));
+
+  const uint16_t allowed_ports[] = {87};
+  SetExplicitlyAllowedPorts(allowed_ports);
+  EXPECT_TRUE(IsPortAllowedForScheme(blocked_url));
+
+  SetExplicitlyAllowedPorts({});
+  EXPECT_FALSE(IsPortAllowedForScheme(blocked_url));
+}
+
 }  // namespace blink

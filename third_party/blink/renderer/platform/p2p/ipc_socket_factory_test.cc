@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/p2p/socket_dispatcher.h"
 #include "third_party/blink/renderer/platform/testing/fake_mojo_binding_context.h"
+#include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/transport/ecn_marking.h"
 #include "third_party/webrtc_overrides/environment.h"
@@ -159,6 +160,27 @@ TEST_F(IpcPacketSocketFactoryTest, DestroyPendingAsyncDnsResolver) {
   // Disconnect the mock endpoint before dropping the response callback.
   fake_socket_manager.Reset();
   callback.Reset();
+}
+
+TEST_F(IpcPacketSocketFactoryTest, CreateClientTcpSocketBlockedAndAllowedPort) {
+  webrtc::PacketSocketTcpOptions opts;
+  // Port 25 is restricted by default.
+  auto blocked_socket = socket_factory_->CreateClientTcpSocket(
+      WebRtcEnvironment(), webrtc::SocketAddress("127.0.0.1", 0),
+      webrtc::SocketAddress("127.0.0.1", 25), opts);
+  EXPECT_EQ(nullptr, blocked_socket);
+
+  // Explicitly allow port 25.
+  const uint16_t allowed_ports[] = {25};
+  SetExplicitlyAllowedPorts(allowed_ports);
+
+  auto allowed_socket = socket_factory_->CreateClientTcpSocket(
+      WebRtcEnvironment(), webrtc::SocketAddress("127.0.0.1", 0),
+      webrtc::SocketAddress("127.0.0.1", 25), opts);
+  EXPECT_NE(nullptr, allowed_socket);
+
+  // Reset explicitly allowed ports.
+  SetExplicitlyAllowedPorts({});
 }
 
 }  // namespace blink

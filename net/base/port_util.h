@@ -29,6 +29,8 @@ NET_EXPORT bool IsWellKnownPort(int port);
 // Checks if the port is allowed for the specified scheme.  Ports set as allowed
 // with SetExplicitlyAllowedPorts() or by using ScopedPortException() will be
 // considered allowed for any scheme.
+//
+// This function is safe to be called from any thread.
 NET_EXPORT bool IsPortAllowedForScheme(int port, std::string_view url_scheme);
 
 // Checks if `port` is an allowed port for a proxy server when
@@ -39,6 +41,7 @@ NET_EXPORT bool IsProxyPortAllowed(int port);
 // `features::kRestrictProxyPorts` is enabled.
 NET_EXPORT bool IsProxyChainPortAllowed(const ProxyChain& proxy_chain);
 
+// This function is safe to be called from any thread.
 NET_EXPORT bool IsPortAllowedForIpEndpoint(const IPEndPoint& endpoint);
 
 // Returns the number of explicitly allowed ports; for testing.
@@ -49,6 +52,8 @@ NET_EXPORT_PRIVATE size_t GetCountOfExplicitlyAllowedPorts();
 // empty list will remove all ports. This will reset any ScopedPortExceptions
 // currently active, so it's best to avoid calling this when any of those are
 // active.
+//
+// This function is safe to be called from any thread.
 NET_EXPORT void SetExplicitlyAllowedPorts(
     base::span<const uint16_t> allowed_ports);
 
@@ -59,7 +64,8 @@ NET_EXPORT void SetExplicitlyAllowedPorts(
 NET_EXPORT bool IsAllowablePort(int port);
 
 // For testing: reloads the restricted ports set by the feature flag
-// `kRestrictAbusePortsOnLocalhost`.
+// `kRestrictAbusePortsOnLocalhost`. Not thread-safe; must not be called
+// concurrently with IsPortAllowedForIpEndpoint().
 NET_EXPORT_PRIVATE void ReloadLocalhostRestrictedPortsForTesting();
 
 class NET_EXPORT ScopedPortException {
@@ -71,6 +77,7 @@ class NET_EXPORT ScopedPortException {
 
  private:
   int port_;
+  uint64_t generation_ = 0;
 };
 
 // Adds a port to the set permitted by GetAllowablePorts(). Cannot be nested.
