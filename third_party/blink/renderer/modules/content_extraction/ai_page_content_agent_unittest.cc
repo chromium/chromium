@@ -12823,5 +12823,213 @@ TEST_F(AIPageContentAgentTest, ScriptToolsWithDebuggingAnnotationFiltered) {
   EXPECT_THAT(names, testing::ElementsAre("regular_tool"));
 }
 
+TEST_F(AIPageContentAgentTest, ActionableModeEmitsElementsWithInterestingAria) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <body>
+        <span id="ext-label" hidden>Specifications</span>
+        <span id="ext-label-2" hidden>Details</span>
+        <span id="blank-label" hidden>   </span>
+        <div style="height: 5000px"></div>
+        <div id="heading" role="heading" aria-level="3">Heading</div>
+        <div id="list" role="list">
+          <div id="listitem" role="listitem">Item</div>
+        </div>
+        <div id="table" role="table">
+          <div id="rowgroup" role="rowgroup">
+            <div id="row" role="row">
+              <div id="cell" role="cell">Value</div>
+              <div id="gridcell" role="gridcell">Grid Value</div>
+            </div>
+          </div>
+        </div>
+        <div id="tablist" role="tablist"><p>Tabs</p></div>
+        <div id="listbox" role="listbox"><p>Options</p></div>
+        <div id="inert-listbox" role="listbox" inert><p>Inert Options</p></div>
+        <div id="grid" role="grid"><p>Grid</p></div>
+        <div id="toolbar" role="toolbar"><p>Toolbar</p></div>
+        <div id="combobox" role="combobox"><p>Combo</p></div>
+        <div id="group" role="group"><p>Group</p></div>
+        <div id="aria-img" role="img"><p>Graphic</p></div>
+        <div id="aria-label-div" aria-label="Filters"><p>Price range</p></div>
+        <div id="aria-labelledby-div" aria-labelledby="ext-label">
+          <p>Details</p>
+        </div>
+        <div id="aria-labeledby-div" aria-labeledby="ext-label">
+          <p>Legacy spelling</p>
+        </div>
+        <div id="idl-labelledby-div"><p>IDL</p></div>
+        <custom-internals-label id="internals-label-el" style="display: block">
+          <p>Internals label</p>
+        </custom-internals-label>
+        <custom-internals-labelledby id="internals-labelledby-el"
+                                     style="display: block">
+          <p>Internals labelledby</p>
+        </custom-internals-labelledby>
+        <div id="combined-aria-label" aria-label="Primary"
+             aria-labelledby="blank-label ext-label ext-label-2">
+          <p>Combined</p>
+        </div>
+        <div id="whitespace-label-with-labelledby" aria-label="   "
+             aria-labelledby="blank-label ext-label">
+          <p>Fallthrough</p>
+        </div>
+        <div id="labeled-presentation" role="presentation"
+             aria-label="Labeled Wrapper"><p>Wrapped</p></div>
+        <p id="kept-labeled-p" aria-labelledby="ext-label">Kept</p>
+        <p id="kept-idl-p">Kept IDL</p>
+        <div id="plain-div"><p>Plain</p></div>
+        <div id="role-none" role="none"><p>None</p></div>
+        <div id="role-presentation" role="presentation"><p>Presentation</p></div>
+        <div id="role-generic" role="generic"><p>Generic</p></div>
+        <div id="role-invalid" role="not-a-role"><p>Invalid</p></div>
+        <div id="whitespace-label" aria-label="   "><p>Blank</p></div>
+        <div id="empty-labelledby" aria-labelledby="blank-label"><p>Empty</p></div>
+        <div id="missing-labelledby" aria-labelledby="does-not-exist">
+          <p>Missing</p>
+        </div>
+        <div id="title-only" title="Tooltip"><p>Title</p></div>
+      </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(R"JS(
+    const extLabel = document.getElementById('ext-label');
+    document.getElementById('idl-labelledby-div').ariaLabelledByElements =
+        [extLabel];
+    document.getElementById('kept-idl-p').ariaLabelledByElements =
+        [extLabel];
+
+    customElements.define('custom-internals-label', class extends HTMLElement {
+      constructor() {
+        super();
+        const internals = this.attachInternals();
+        internals.ariaLabel = 'Custom Label';
+      }
+    });
+    customElements.define('custom-internals-labelledby',
+                          class extends HTMLElement {
+      constructor() {
+        super();
+        const internals = this.attachInternals();
+        internals.ariaLabelledByElements = [extLabel];
+      }
+    });
+  )JS"));
+
+  using Role = ax::mojom::blink::Role;
+  static constexpr struct {
+    const char* selector;
+    Role expected_role;
+    bool kept_by_clickability = false;
+  } kRoleContainers[] = {
+      {"#heading", Role::kHeading},
+      {"#list", Role::kList},
+      {"#listitem", Role::kListItem},
+      {"#table", Role::kTable},
+      {"#rowgroup", Role::kRowGroup},
+      {"#row", Role::kRow},
+      {"#cell", Role::kCell},
+      {"#gridcell", Role::kGridCell},
+      {"#tablist", Role::kTabList},
+      {"#listbox", Role::kListBox, /*kept_by_clickability=*/true},
+      {"#inert-listbox", Role::kListBox},
+      {"#grid", Role::kGrid},
+      {"#toolbar", Role::kToolbar},
+      {"#combobox", Role::kComboBoxGrouping},
+      {"#group", Role::kGroup},
+      {"#aria-img", Role::kImage},
+  };
+
+  static constexpr struct {
+    const char* selector;
+    const char* expected_label;
+  } kLabeledContainers[] = {
+      {"#aria-label-div", "Filters"},
+      {"#aria-labelledby-div", "Specifications"},
+      {"#aria-labeledby-div", "Specifications"},
+      {"#idl-labelledby-div", "Specifications"},
+      {"#internals-label-el", "Custom Label"},
+      {"#internals-labelledby-el", "Specifications"},
+      {"#combined-aria-label", "Primary Specifications Details"},
+      {"#whitespace-label-with-labelledby", "Specifications"},
+      {"#labeled-presentation", "Labeled Wrapper"},
+  };
+
+  // Actionable mode emits off-viewport elements with semantic ARIA roles or
+  // explicit ARIA labels while skipping presentational/generic wrappers.
+  GetAIPageContentWithActionableElements();
+
+  for (const auto& test_case : kRoleContainers) {
+    SCOPED_TRACE(test_case.selector);
+    const auto* node = FindNodeBySelector(test_case.selector);
+    ASSERT_TRUE(node);
+    CheckContainerNode(*node);
+    EXPECT_EQ(node->content_attributes->aria_role, test_case.expected_role);
+    ASSERT_TRUE(node->content_attributes->geometry);
+    EXPECT_TRUE(
+        node->content_attributes->geometry->visible_bounding_box.IsEmpty());
+  }
+
+  for (const auto& test_case : kLabeledContainers) {
+    SCOPED_TRACE(test_case.selector);
+    const auto* node = FindNodeBySelector(test_case.selector);
+    ASSERT_TRUE(node);
+    CheckContainerNode(*node);
+    EXPECT_EQ(node->content_attributes->label, test_case.expected_label);
+    ASSERT_TRUE(node->content_attributes->geometry);
+    EXPECT_TRUE(
+        node->content_attributes->geometry->visible_bounding_box.IsEmpty());
+  }
+
+  for (const char* skipped_selector :
+       {"#plain-div", "#role-none", "#role-presentation", "#role-generic",
+        "#role-invalid", "#whitespace-label", "#empty-labelledby",
+        "#missing-labelledby", "#title-only"}) {
+    SCOPED_TRACE(skipped_selector);
+    ExpectSelectorNotInApcOutput(skipped_selector);
+  }
+
+  // Default mode does not emit aria_role or label, so it should not add extra
+  // kContainer nodes for these off-viewport wrappers.
+  GetAIPageContent();
+  for (const auto& test_case : kRoleContainers) {
+    SCOPED_TRACE(test_case.selector);
+    ExpectSelectorNotInApcOutput(test_case.selector);
+  }
+  for (const auto& test_case : kLabeledContainers) {
+    SCOPED_TRACE(test_case.selector);
+    ExpectSelectorNotInApcOutput(test_case.selector);
+  }
+
+  // With the killswitch disabled, off-viewport ARIA-only containers are skipped
+  // again (except clickable non-inert roles like #listbox, which still have
+  // node_interaction_info), while already-kept elements still compute explicit
+  // ARIA labels.
+  {
+    ScopedAIPageContentEmitInterestingAriaForTest disable_feature(false);
+    GetAIPageContentWithActionableElements();
+    for (const auto& test_case : kRoleContainers) {
+      SCOPED_TRACE(test_case.selector);
+      if (test_case.kept_by_clickability) {
+        EXPECT_NE(FindNodeBySelector(test_case.selector), nullptr);
+      } else {
+        ExpectSelectorNotInApcOutput(test_case.selector);
+      }
+    }
+    for (const auto& test_case : kLabeledContainers) {
+      SCOPED_TRACE(test_case.selector);
+      ExpectSelectorNotInApcOutput(test_case.selector);
+    }
+    const auto* kept_labeled_p = FindNodeBySelector("#kept-labeled-p");
+    ASSERT_TRUE(kept_labeled_p);
+    EXPECT_EQ(kept_labeled_p->content_attributes->label, "Specifications");
+    const auto* kept_idl_p = FindNodeBySelector("#kept-idl-p");
+    ASSERT_TRUE(kept_idl_p);
+    EXPECT_EQ(kept_idl_p->content_attributes->label, "Specifications");
+  }
+}
+
 }  // namespace
 }  // namespace blink

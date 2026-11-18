@@ -395,6 +395,12 @@
       name: "AIPageContentElementCSSRedaction",
       status: "stable",
     },
+    // Emit generic elements in actionable mode when they carry an explicit
+    // semantic ARIA role or explicit ARIA label.
+    {
+      name: "AIPageContentEmitInterestingAria",
+      status: "stable",
+    },
     {
       name: "AIPageContentIncludeMathML",
       status: "stable",

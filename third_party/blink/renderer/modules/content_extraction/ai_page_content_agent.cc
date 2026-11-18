@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/custom_password_heuristics.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -1239,6 +1240,60 @@ String NormalizeLabelCandidate(const StringView& text) {
     return String();
   }
   return ReplaceUnpairedSurrogates(text);
+}
+
+// Computes the combined normalized text from explicit aria-label and
+// aria-labelledby / aria-labeledby attributes (including ElementInternals and
+// IDL-reflected ariaLabelledByElements), or returns an empty String if none
+// produce non-whitespace text.
+String GetExplicitAriaLabel(const Element& element) {
+  const ElementInternals* internals = element.GetElementInternals();
+  const AtomicString& raw_aria_label =
+      internals ? AXObject::AriaAttribute(element, html_names::kAriaLabelAttr)
+                : element.FastGetAttribute(html_names::kAriaLabelAttr);
+  const String aria_label = NormalizeLabelCandidate(raw_aria_label);
+
+  // Guard before ElementsFromAttributeOrInternals() because
+  // Element::GetAttrAssociatedElements() allocates a GCedHeapVector before
+  // checking attribute presence. FastHasAttribute() checks Element's inline
+  // Bloom filter before touching ElementData.
+  const bool has_internals_labelledby =
+      internals &&
+      internals->GetElementArrayAttribute(html_names::kAriaLabelledbyAttr);
+  const bool has_labelledby_source =
+      element.FastHasAttribute(html_names::kAriaLabelledbyAttr) ||
+      element.FastHasAttribute(html_names::kAriaLabeledbyAttr) ||
+      has_internals_labelledby ||
+      element.HasExplicitlySetAttrAssociatedElements(
+          html_names::kAriaLabelledbyAttr);
+  if (!has_labelledby_source) {
+    return aria_label;
+  }
+
+  // This lookup accepts both aria-labelledby and the older aria-labeledby.
+  const GCedHeapVector<Member<Element>>* aria_labelledby_elements =
+      element.ElementsFromAttributeOrInternals(html_names::kAriaLabelledbyAttr);
+  if (!aria_labelledby_elements) {
+    return aria_label;
+  }
+
+  StringBuilder accumulated_text;
+  if (!aria_label.empty()) {
+    accumulated_text.Append(aria_label);
+  }
+  for (const auto& label_element : *aria_labelledby_elements) {
+    // Use textContent because aria-labelledby can refer to hidden elements.
+    const String text_content =
+        NormalizeLabelCandidate(label_element->textContent(true));
+    if (text_content.empty()) {
+      continue;
+    }
+    if (!accumulated_text.empty()) {
+      accumulated_text.Append(' ');
+    }
+    accumulated_text.Append(text_content);
+  }
+  return accumulated_text.ReleaseString();
 }
 
 // Reads the first <title> or <desc> child of this element. Does not use titles
@@ -2862,6 +2917,23 @@ bool AIPageContentAgent::ContentBuilder::ShouldSkipSingleNode(
     return false;
   }
 
+  if (RuntimeEnabledFeatures::AIPageContentEmitInterestingAriaEnabled()) {
+    // Preserve elements with an explicit ARIA label (fallback label sources are
+    // populated later only for kept nodes).
+    if (!attributes.label.empty()) {
+      return false;
+    }
+
+    // Preserve elements with an explicit ARIA role, except presentational
+    // (role="none" / role="presentation") and generic wrappers.
+    // `attributes.aria_role` is only populated in actionable mode.
+    if (attributes.aria_role &&
+        *attributes.aria_role != ax::mojom::blink::Role::kNone &&
+        *attributes.aria_role != ax::mojom::blink::Role::kGenericContainer) {
+      return false;
+    }
+  }
+
   // Do not skip nodes that are needed for their dom_node_id.
   if (interactive_dom_node_ids_.Contains(
           DOMNodeIds::ExistingIdForNode(object.GetNode()))) {
@@ -3126,7 +3198,7 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
   attributes.redaction_decision = GetRedactionDecision(object);
   // Compute state that is used to decide whether this node generates a
   // ContentNode before making the decision below.
-  const auto* element = DynamicTo<Element>(object.GetNode());
+  auto* element = DynamicTo<Element>(object.GetNode());
   // Resolve the explicit role once for all node metadata, in both modes.
   // Native or implicit roles must not supply ARIA-only semantics.
   const ax::mojom::blink::Role aria_role =
@@ -3135,9 +3207,14 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
   AddAnnotatedRoles(object, aria_role, attributes.annotated_roles);
   PopulateLabelForDomNodeId(object, attributes);
 
-  if (actionable_mode() && aria_role != ax::mojom::blink::Role::kUnknown) {
-    // Missing, empty, and invalid roles have no role metadata to serialize.
-    attributes.aria_role = aria_role;
+  if (actionable_mode() && element) {
+    if (aria_role != ax::mojom::blink::Role::kUnknown) {
+      // Missing, empty, and invalid roles have no role metadata to serialize.
+      attributes.aria_role = aria_role;
+    }
+    if (RuntimeEnabledFeatures::AIPageContentEmitInterestingAriaEnabled()) {
+      attributes.label = GetExplicitAriaLabel(*element);
+    }
   }
   AddNodeInteractionInfo(object, aria_role, attributes);
 
@@ -3240,9 +3317,9 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
         mojom::blink::AIPageContentAttributeType::kListItem;
   } else if (!ShouldSkipSingleNode(object, attributes)) {
     // We must keep the node and there is no more specific type -> kContainer.
-    // Be sure to set annotated roles before calling ShouldSkipSingleNode(), as
-    // it uses the populated annotation and interaction state to decide whether
-    // this otherwise-unspecialized node should stay in APC.
+    // Be sure to set annotated roles, explicit `aria_role` and `label`, and
+    // interaction state before calling ShouldSkipSingleNode(), as it uses them
+    // to decide whether this otherwise-unspecialized node should stay in APC.
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kContainer;
   } else {
@@ -3261,7 +3338,24 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
                   recursion_data.accessibility_focused_node_id);
   AddInteractionDisabledReasons(object, aria_role, recursion_data, attributes);
 
-  AddLabel(object, attributes);
+  // Explicit ARIA labels are populated up front when
+  // AIPageContentEmitInterestingAria is enabled so ShouldSkipSingleNode() can
+  // inspect them; otherwise compute them here for kept nodes only. Try fallback
+  // label sources only when no explicit ARIA label is present, and keep empty
+  // labels as non-null "".
+  if (actionable_mode() && element) {
+    if (!RuntimeEnabledFeatures::AIPageContentEmitInterestingAriaEnabled()) {
+      attributes.label = GetExplicitAriaLabel(*element);
+    }
+    if (attributes.label.empty() &&
+        RuntimeEnabledFeatures::
+            AIPageContentLabelExpandFallbackSourcesEnabled()) {
+      attributes.label = GetFallbackLabel(*element);
+    }
+    if (attributes.label.empty()) {
+      attributes.label = g_empty_string;
+    }
+  }
   attributes.is_ad_related = element && element->IsAdRelated();
 
   return content_node;
@@ -3302,55 +3396,6 @@ bool AIPageContentAgent::ContentBuilder::IsNodeIdAttributeTypeAllowlisted(
     return false;
   }
   return allowlisted_attribute_types_.Has(attribute_type);
-}
-
-void AIPageContentAgent::ContentBuilder::AddLabel(
-    const LayoutObject& object,
-    mojom::blink::AIPageContentAttributes& attributes) const {
-  if (!actionable_mode()) {
-    return;
-  }
-
-  auto* element = DynamicTo<Element>(object.GetNode());
-  if (!element) {
-    return;
-  }
-
-  StringBuilder accumulated_text;
-  const String aria_label = NormalizeLabelCandidate(
-      element->FastGetAttribute(html_names::kAriaLabelAttr));
-  if (!aria_label.empty()) {
-    accumulated_text.Append(aria_label);
-  }
-
-  // This lookup accepts both aria-labelledby and the older aria-labeledby.
-  const GCedHeapVector<Member<Element>>* aria_labelledby_elements =
-      element->ElementsFromAttributeOrInternals(
-          html_names::kAriaLabelledbyAttr);
-  if (aria_labelledby_elements) {
-    for (const auto& label_element : *aria_labelledby_elements) {
-      // Use textContent because aria-labelledby can refer to hidden elements.
-      const String text_content =
-          NormalizeLabelCandidate(label_element->textContent(true));
-      if (text_content.empty()) {
-        continue;
-      }
-
-      if (!accumulated_text.empty()) {
-        accumulated_text.Append(" ");
-      }
-
-      accumulated_text.Append(text_content);
-    }
-  }
-
-  // Try other label sources only when ARIA provides no text.
-  if (accumulated_text.empty() &&
-      RuntimeEnabledFeatures::
-          AIPageContentLabelExpandFallbackSourcesEnabled()) {
-    accumulated_text.Append(GetFallbackLabel(*element));
-  }
-  attributes.label = accumulated_text.ReleaseString();
 }
 
 void AIPageContentAgent::ContentBuilder::PopulateLabelForDomNodeId(

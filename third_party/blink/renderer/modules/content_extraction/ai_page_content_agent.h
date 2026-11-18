@@ -185,8 +185,6 @@ class MODULES_EXPORT AIPageContentAgent final
                            ax::mojom::blink::Role aria_role,
                            Vector<mojom::blink::AIPageContentAnnotatedRole>&
                                annotated_roles) const;
-    void AddLabel(const LayoutObject& object,
-                  mojom::blink::AIPageContentAttributes& attributes) const;
     // Adds the control node id if this is a label associated with a form
     // control. This includes both explicit association using for, or
     // implicit association when the input node is a descendant of the label
