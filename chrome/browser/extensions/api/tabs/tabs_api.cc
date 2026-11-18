@@ -3149,8 +3149,13 @@ ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
       return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
     }
 
+    if (PictureInPictureWindowManager::IsChildWebContents(contents)) {
+      return RespondNow(
+          Error(tabs_constants::kNotAllowedForPictureInPictureError));
+    }
+
     BrowserWindowInterface* browser_window =
-        window->GetBrowserWindowInterface();
+        window ? window->GetBrowserWindowInterface() : nullptr;
     if (!browser_window ||
         !ExtensionTabUtil::BrowserSupportsTabs(browser_window)) {
       return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));

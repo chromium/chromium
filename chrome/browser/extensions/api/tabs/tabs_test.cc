@@ -6147,4 +6147,39 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(standalone_window_id.id(), removed_it->second->args()[0].GetInt());
 }
 
+// Verifies that TabsDiscardFunction returns
+// kNotAllowedForPictureInPictureError when targeting a Picture-in-Picture
+// child WebContents hosted in a standalone WindowController.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsDiscard_PictureInPictureWindowRejected) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(standalone_window_id);
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(tab_id, api::tabs::TAB_ID_NONE);
+
+  PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
+      GetActiveWebContents(), web_contents.get());
+  ASSERT_TRUE(
+      PictureInPictureWindowManager::IsChildWebContents(web_contents.get()));
+
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsDiscardPiPTest").Build();
+  auto function = base::MakeRefCounted<TabsDiscardFunction>();
+  function->set_extension(extension.get());
+  std::string args = base::StringPrintf("[%d]", tab_id);
+  std::string error =
+      utils::RunFunctionAndReturnError(function.get(), args, profile());
+  EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError, error);
+}
+
 }  // namespace extensions
