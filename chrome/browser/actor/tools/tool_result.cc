@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -77,12 +78,17 @@ bool ToolResult::Ok() const {
   return !error_.has_value();
 }
 
-ToolResultWithLatencyInfo::ToolResultWithLatencyInfo(base::TimeTicks start_time,
-                                                     base::TimeTicks end_time,
-                                                     ToolResult tool_result)
+ToolResultWithLatencyInfo::ToolResultWithLatencyInfo(
+    base::TimeTicks start_time,
+    base::TimeTicks end_time,
+    ToolResult tool_result,
+    std::string_view tool_name,
+    std::vector<InterceptedJavaScriptDialog> javascript_dialogs)
     : start_time(start_time),
       end_time(end_time),
-      tool_result(std::move(tool_result)) {
+      tool_result(std::move(tool_result)),
+      tool_name(tool_name),
+      javascript_dialogs(std::move(javascript_dialogs)) {
   CHECK(!start_time.is_null());
   CHECK(!end_time.is_null());
   CHECK_LE(start_time, end_time);
@@ -91,17 +97,23 @@ ToolResultWithLatencyInfo::ToolResultWithLatencyInfo(base::TimeTicks start_time,
 ToolResultWithLatencyInfo::ToolResultWithLatencyInfo(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
-    mojom::ActionResultPtr result)
+    mojom::ActionResultPtr result,
+    std::string_view tool_name,
+    std::vector<InterceptedJavaScriptDialog> javascript_dialogs)
     : ToolResultWithLatencyInfo(
           start_time,
           end_time,
-          ToolResult::FromDeprecatedActionResult(std::move(result))) {}
+          ToolResult::FromDeprecatedActionResult(std::move(result)),
+          tool_name,
+          std::move(javascript_dialogs)) {}
 
 ToolResultWithLatencyInfo::ToolResultWithLatencyInfo(
     const ToolResultWithLatencyInfo& other)
     : start_time(other.start_time),
       end_time(other.end_time),
-      tool_result(other.tool_result.Clone()) {}
+      tool_result(other.tool_result.Clone()),
+      tool_name(other.tool_name),
+      javascript_dialogs(other.javascript_dialogs) {}
 ToolResultWithLatencyInfo::~ToolResultWithLatencyInfo() = default;
 ToolResultWithLatencyInfo::ToolResultWithLatencyInfo(
     ToolResultWithLatencyInfo&&) noexcept = default;

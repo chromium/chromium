@@ -41,6 +41,7 @@ source_set("actor") {
     "enterprise_policy_checker.h",
     "execution_engine.h",
     "headless_web_contents_manager.h",
+    "javascript_dialog_interceptor.h",
     "site_policy.h",
     "tab_annotation_manager.h",
     "tab_observation_controller.h",
@@ -114,6 +115,7 @@ source_set("actor") {
     "//components/policy/core/browser",
     "//components/stream_transport/public",
     "//components/tabs:public",
+    "//content/public/browser",
     "//third_party/blink/public/mojom:mojom_platform_headers",
     "//ui/base/unowned_user_data",
   ]
@@ -127,7 +129,6 @@ source_set("actor") {
     public_deps += [
       "//chrome/browser/actor/resources:browser_resources",
       "//chrome/browser/actor/ui:states",
-      "//content/public/browser",
       "//content/public/common:buildflags",
     ]
   }
@@ -166,6 +167,7 @@ source_set("impl") {
     "headless_page_host.cc",
     "headless_page_host.h",
     "headless_web_contents_manager.cc",
+    "javascript_dialog_interceptor.cc",
     "site_policy.cc",
     "tab_annotation_manager.cc",
     "tab_observation_controller.cc",
@@ -321,6 +323,7 @@ source_set("impl") {
     "//components/favicon/core",
     "//components/feature_engagement/public",
     "//components/history/core/browser",
+    "//components/javascript_dialogs",
     "//components/lookalikes/core",
     "//components/one_time_tokens/core/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -504,6 +507,7 @@ source_set("unit_tests") {
     "actor_test_util_unittest.cc",
     "execution_engine_unittest.cc",
     "headless_web_contents_manager_unittest.cc",
+    "javascript_dialog_interceptor_unittest.cc",
     "tab_annotation_manager_unittest.cc",
     "tab_observation_strategy_unittest.cc",
     "tools/autofill/attempt_form_filling/attempt_form_filling_tool_request_unittest.cc",
@@ -560,6 +564,7 @@ source_set("unit_tests") {
     "//components/critical_actions/core/browser",
     "//components/history/core/browser",
     "//components/history/core/test",
+    "//components/javascript_dialogs",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/proto:optimization_guide_proto_fuzzable",
     "//components/password_manager/content/browser",
@@ -569,6 +574,7 @@ source_set("unit_tests") {
     "//components/stream_transport/public:service",
     "//components/tabs:test_support",
     "//components/ukm:test_support",
+    "//content/public/browser",
     "//testing/gtest",
     "//third_party/fuzztest",
     "//url",
@@ -581,7 +587,6 @@ source_set("unit_tests") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:test_support",
       "//components/tabs:public",
-      "//content/public/browser",
     ]
   }
   data = [ "//tools/metrics/histograms/metadata/actor/histograms.xml" ]
@@ -630,6 +635,7 @@ source_set("browser_tests") {
     "actor_keyed_service_browsertest.cc",
     "actor_keyed_service_browsertest.h",
     "actor_util_browsertest.cc",
+    "javascript_dialog_interceptor_browsertest.cc",
     "tools/execute_js_tool_browsertest.cc",
     "tools/open_known_page_tool_browsertest.cc",
     "tools/open_url_tool_browsertest.cc",

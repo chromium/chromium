@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_ACTOR_PROTO_CONVERSION_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -195,9 +196,18 @@ void CopyScriptToolResults(
   }
 }
 
+// Converts a `JavaScriptDialogType` to the corresponding
+// `ExecuteJsResult::JavaScriptDialog::Type` proto enum.
+optimization_guide::proto::ExecuteJsResult::JavaScriptDialog::Type
+ToProtoJavaScriptDialogType(JavaScriptDialogType type);
+
+// Returns true if `tool_name` identifies an `ExecuteJsToolRequest`.
+bool IsExecuteJsToolName(std::string_view tool_name);
+
 // Copies ExecuteJS action results in `action_results` to the input proto. For a
 // failed action, copies the JavaScript error and/or console output the renderer
-// reported, if any. Only ExecuteJsToolHost retains `execute_js_response` (after
+// reported, if any, along with any intercepted JavaScript dialogs. Only
+// ExecuteJsToolHost retains `execute_js_response` (after
 // `ExecuteJsToolHost::SanitizeResponse()`); non-ExecuteJS renderer tool hosts
 // strip it at the IPC boundary.
 template <typename T>
@@ -208,24 +218,41 @@ void CopyExecuteJsResults(
     const mojom::ActionResult& result =
         *action_results[i].tool_result.deprecated_action_result();
     const auto& response = result.execute_js_response;
+    const bool is_execute_js_action =
+        action_results[i].tool_name.empty()
+            ? static_cast<bool>(response)
+            : IsExecuteJsToolName(action_results[i].tool_name);
+    if (!is_execute_js_action) {
+      // TODO(b/586645337): Surface dialogs intercepted during non-ExecuteJs
+      // actions (e.g. Click) in ActionsResult.
+      continue;
+    }
+
+    const auto& javascript_dialogs = action_results[i].javascript_dialogs;
+    const bool has_ok_response = IsOk(result) && response;
+    const bool has_js_error = response && response->js_error_message;
     const bool has_console_logs = response && !response->console_logs.empty();
-    if (IsOk(result) && response) {
-      auto* execute_js_result = proto.add_execute_js_results();
-      execute_js_result->set_index_of_execute_js_action(i);
+    const bool has_dialogs = !javascript_dialogs.empty();
+    if (!has_ok_response && !has_js_error && !has_console_logs &&
+        !has_dialogs) {
+      continue;
+    }
+
+    auto* execute_js_result = proto.add_execute_js_results();
+    execute_js_result->set_index_of_execute_js_action(i);
+    if (has_ok_response) {
       execute_js_result->set_result(response->result);
       execute_js_result->set_truncated(response->truncated);
-      if (has_console_logs) {
-        execute_js_result->set_console_logs(response->console_logs);
-      }
-    } else if (response && (response->js_error_message || has_console_logs)) {
-      auto* execute_js_result = proto.add_execute_js_results();
-      execute_js_result->set_index_of_execute_js_action(i);
-      if (response->js_error_message) {
-        execute_js_result->set_js_error_message(*response->js_error_message);
-      }
-      if (has_console_logs) {
-        execute_js_result->set_console_logs(response->console_logs);
-      }
+    } else if (has_js_error) {
+      execute_js_result->set_js_error_message(*response->js_error_message);
+    }
+    if (has_console_logs) {
+      execute_js_result->set_console_logs(response->console_logs);
+    }
+    for (const InterceptedJavaScriptDialog& dialog : javascript_dialogs) {
+      auto* proto_dialog = execute_js_result->add_javascript_dialogs();
+      proto_dialog->set_type(ToProtoJavaScriptDialogType(dialog.type));
+      proto_dialog->set_dialog_message(dialog.dialog_message);
     }
   }
 }

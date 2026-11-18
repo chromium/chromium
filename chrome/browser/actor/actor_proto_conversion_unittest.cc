@@ -21,6 +21,7 @@
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "chrome/common/actor/action_result.h"
@@ -1291,6 +1292,240 @@ TEST_F(ActorProtoConversionTest, CopyExecuteJsResults_IndexesByAction) {
   ASSERT_TRUE(actions_result.execute_js_results(2).has_console_logs());
   EXPECT_EQ(actions_result.execute_js_results(2).console_logs(),
             "[log] timeout_log");
+}
+
+TEST_F(ActorProtoConversionTest,
+       CopyExecuteJsResults_PopulatesJavaScriptDialogs) {
+  using ProtoDialog =
+      optimization_guide::proto::ExecuteJsResult::JavaScriptDialog;
+  std::vector<ToolResultWithLatencyInfo> action_results;
+  base::TimeTicks now = base::TimeTicks::Now();
+  mojom::ActionResultPtr result = MakeOkResult();
+  result->execute_js_response =
+      mojom::ExecuteJsResponse::New("true", /*truncated=*/false,
+                                    /*js_error_message=*/std::nullopt,
+                                    /*console_logs=*/"");
+  action_results.emplace_back(
+      now, now, std::move(result), /*tool_name=*/"",
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kAlert, "Successfully added to waitlist"},
+          {JavaScriptDialogType::kConfirm, "Confirm delete?"},
+          {JavaScriptDialogType::kPrompt, "Enter name:"},
+      });
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+
+  ASSERT_EQ(actions_result.execute_js_results_size(), 1);
+  const auto& execute_js_result = actions_result.execute_js_results(0);
+  EXPECT_EQ(execute_js_result.index_of_execute_js_action(), 0);
+  EXPECT_EQ(execute_js_result.result(), "true");
+  ASSERT_EQ(execute_js_result.javascript_dialogs_size(), 3);
+  EXPECT_EQ(execute_js_result.javascript_dialogs(0).type(),
+            ProtoDialog::TYPE_ALERT);
+  EXPECT_EQ(execute_js_result.javascript_dialogs(0).dialog_message(),
+            "Successfully added to waitlist");
+  EXPECT_EQ(execute_js_result.javascript_dialogs(1).type(),
+            ProtoDialog::TYPE_CONFIRM);
+  EXPECT_EQ(execute_js_result.javascript_dialogs(1).dialog_message(),
+            "Confirm delete?");
+  EXPECT_EQ(execute_js_result.javascript_dialogs(2).type(),
+            ProtoDialog::TYPE_PROMPT);
+  EXPECT_EQ(execute_js_result.javascript_dialogs(2).dialog_message(),
+            "Enter name:");
+}
+
+TEST_F(ActorProtoConversionTest,
+       CopyExecuteJsResults_PopulatesJavaScriptDialogsOnJsError) {
+  using ProtoDialog =
+      optimization_guide::proto::ExecuteJsResult::JavaScriptDialog;
+  std::vector<ToolResultWithLatencyInfo> action_results;
+  base::TimeTicks now = base::TimeTicks::Now();
+  mojom::ActionResultPtr result =
+      MakeResult(mojom::ActionResultCode::kExecuteJsScriptFailed,
+                 /*requires_page_stabilization=*/false, "Script failed");
+  result->execute_js_response = mojom::ExecuteJsResponse::New(
+      /*result=*/"", /*truncated=*/false, "Error: boom",
+      /*console_logs=*/"");
+  action_results.emplace_back(
+      now, now, std::move(result), ExecuteJsToolRequest::kName,
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kAlert, "Before error"},
+      });
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+
+  ASSERT_EQ(actions_result.execute_js_results_size(), 1);
+  const auto& execute_js_result = actions_result.execute_js_results(0);
+  EXPECT_EQ(execute_js_result.js_error_message(), "Error: boom");
+  ASSERT_EQ(execute_js_result.javascript_dialogs_size(), 1);
+  EXPECT_EQ(execute_js_result.javascript_dialogs(0).type(),
+            ProtoDialog::TYPE_ALERT);
+  EXPECT_EQ(execute_js_result.javascript_dialogs(0).dialog_message(),
+            "Before error");
+}
+
+TEST_F(ActorProtoConversionTest,
+       CopyExecuteJsResults_PopulatesJavaScriptDialogsOnExecuteJsNavigated) {
+  using ProtoDialog =
+      optimization_guide::proto::ExecuteJsResult::JavaScriptDialog;
+  std::vector<ToolResultWithLatencyInfo> action_results;
+  base::TimeTicks now = base::TimeTicks::Now();
+  mojom::ActionResultPtr result =
+      MakeResult(mojom::ActionResultCode::kExecuteJsNavigated,
+                 /*requires_page_stabilization=*/false, "Navigated");
+  action_results.emplace_back(now, now, std::move(result),
+                              ExecuteJsToolRequest::kName,
+                              std::vector<InterceptedJavaScriptDialog>{
+                                  {JavaScriptDialogType::kAlert, "Redirecting"},
+                              });
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+
+  ASSERT_EQ(actions_result.execute_js_results_size(), 1);
+  const auto& execute_js_result = actions_result.execute_js_results(0);
+  EXPECT_EQ(execute_js_result.index_of_execute_js_action(), 0);
+  EXPECT_FALSE(execute_js_result.has_result());
+  EXPECT_FALSE(execute_js_result.has_js_error_message());
+  ASSERT_EQ(execute_js_result.javascript_dialogs_size(), 1);
+  EXPECT_EQ(execute_js_result.javascript_dialogs(0).type(),
+            ProtoDialog::TYPE_ALERT);
+  EXPECT_EQ(execute_js_result.javascript_dialogs(0).dialog_message(),
+            "Redirecting");
+}
+
+TEST_F(ActorProtoConversionTest,
+       CopyExecuteJsResults_PopulatesJavaScriptDialogsOnExecuteJsTimeout) {
+  using ProtoDialog =
+      optimization_guide::proto::ExecuteJsResult::JavaScriptDialog;
+  std::vector<ToolResultWithLatencyInfo> action_results;
+  base::TimeTicks now = base::TimeTicks::Now();
+  mojom::ActionResultPtr result =
+      MakeResult(mojom::ActionResultCode::kExecuteJsTimeout,
+                 /*requires_page_stabilization=*/false, "Timed out");
+  action_results.emplace_back(
+      now, now, std::move(result), ExecuteJsToolRequest::kName,
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kConfirm, "Still waiting?"},
+      });
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+
+  ASSERT_EQ(actions_result.execute_js_results_size(), 1);
+  const auto& execute_js_result = actions_result.execute_js_results(0);
+  EXPECT_EQ(execute_js_result.index_of_execute_js_action(), 0);
+  EXPECT_FALSE(execute_js_result.has_result());
+  EXPECT_FALSE(execute_js_result.has_js_error_message());
+  ASSERT_EQ(execute_js_result.javascript_dialogs_size(), 1);
+  EXPECT_EQ(execute_js_result.javascript_dialogs(0).type(),
+            ProtoDialog::TYPE_CONFIRM);
+  EXPECT_EQ(execute_js_result.javascript_dialogs(0).dialog_message(),
+            "Still waiting?");
+}
+
+TEST_F(ActorProtoConversionTest,
+       CopyExecuteJsResults_PopulatesJavaScriptDialogsOnOtherExecuteJsErrors) {
+  using ProtoDialog =
+      optimization_guide::proto::ExecuteJsResult::JavaScriptDialog;
+  std::vector<ToolResultWithLatencyInfo> action_results;
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  mojom::ActionResultPtr external_failure =
+      MakeResult(mojom::ActionResultCode::kUrlBlocked,
+                 /*requires_page_stabilization=*/false, "Blocked");
+  action_results.emplace_back(
+      now, now, std::move(external_failure), ExecuteJsToolRequest::kName,
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kAlert, "Before external block"},
+      });
+
+  mojom::ActionResultPtr frame_gone =
+      MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                 /*requires_page_stabilization=*/false, "Frame gone");
+  action_results.emplace_back(
+      now, now, std::move(frame_gone), ExecuteJsToolRequest::kName,
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kConfirm, "Closing window"},
+      });
+
+  mojom::ActionResultPtr tab_gone =
+      MakeResult(mojom::ActionResultCode::kTabWentAway,
+                 /*requires_page_stabilization=*/false, "Tab gone");
+  action_results.emplace_back(
+      now, now, std::move(tab_gone), ExecuteJsToolRequest::kName,
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kPrompt, "Tab closing"},
+      });
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+
+  ASSERT_EQ(actions_result.execute_js_results_size(), 3);
+  EXPECT_EQ(actions_result.execute_js_results(0).index_of_execute_js_action(),
+            0);
+  ASSERT_EQ(actions_result.execute_js_results(0).javascript_dialogs_size(), 1);
+  EXPECT_EQ(actions_result.execute_js_results(0).javascript_dialogs(0).type(),
+            ProtoDialog::TYPE_ALERT);
+  EXPECT_EQ(actions_result.execute_js_results(0)
+                .javascript_dialogs(0)
+                .dialog_message(),
+            "Before external block");
+
+  EXPECT_EQ(actions_result.execute_js_results(1).index_of_execute_js_action(),
+            1);
+  ASSERT_EQ(actions_result.execute_js_results(1).javascript_dialogs_size(), 1);
+  EXPECT_EQ(actions_result.execute_js_results(1).javascript_dialogs(0).type(),
+            ProtoDialog::TYPE_CONFIRM);
+  EXPECT_EQ(actions_result.execute_js_results(1)
+                .javascript_dialogs(0)
+                .dialog_message(),
+            "Closing window");
+
+  EXPECT_EQ(actions_result.execute_js_results(2).index_of_execute_js_action(),
+            2);
+  ASSERT_EQ(actions_result.execute_js_results(2).javascript_dialogs_size(), 1);
+  EXPECT_EQ(actions_result.execute_js_results(2).javascript_dialogs(0).type(),
+            ProtoDialog::TYPE_PROMPT);
+  EXPECT_EQ(actions_result.execute_js_results(2)
+                .javascript_dialogs(0)
+                .dialog_message(),
+            "Tab closing");
+}
+
+TEST_F(ActorProtoConversionTest,
+       CopyExecuteJsResults_IgnoresNonExecuteJsDialogs) {
+  std::vector<ToolResultWithLatencyInfo> action_results;
+  base::TimeTicks now = base::TimeTicks::Now();
+  mojom::ActionResultPtr click_result = MakeOkResult();
+  action_results.emplace_back(now, now, std::move(click_result),
+                              ClickToolRequest::kName,
+                              std::vector<InterceptedJavaScriptDialog>{
+                                  {JavaScriptDialogType::kAlert, "From click"},
+                              });
+
+  mojom::ActionResultPtr click_failure =
+      MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                 /*requires_page_stabilization=*/false, "Frame gone");
+  action_results.emplace_back(
+      now, now, std::move(click_failure), ClickToolRequest::kName,
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kAlert, "From failed click"},
+      });
+
+  mojom::ActionResultPtr untyped_result = MakeOkResult();
+  action_results.emplace_back(
+      now, now, std::move(untyped_result), /*tool_name=*/"",
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kAlert, "From untyped action"},
+      });
+
+  optimization_guide::proto::ActionsResult actions_result;
+  CopyExecuteJsResults(actions_result, action_results);
+
+  EXPECT_EQ(actions_result.execute_js_results_size(), 0);
 }
 
 void CanConvertAnyProto(

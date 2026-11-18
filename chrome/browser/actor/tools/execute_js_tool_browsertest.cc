@@ -28,7 +28,9 @@
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -140,6 +142,15 @@ class ActorToolsExecuteJsTest : public ActorToolsTest {
 
   // Runs `request` and returns its result, or null if there isn't exactly one.
   mojom::ActionResultPtr Run(std::unique_ptr<ToolRequest> request) {
+    auto action_result = RunWithLatencyInfo(std::move(request));
+    return action_result
+               ? std::move(
+                     action_result->tool_result.deprecated_action_result())
+               : nullptr;
+  }
+
+  std::optional<ToolResultWithLatencyInfo> RunWithLatencyInfo(
+      std::unique_ptr<ToolRequest> request) {
     ActResultFuture result;
     actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
     const auto& action_results = result.Get();
@@ -147,14 +158,20 @@ class ActorToolsExecuteJsTest : public ActorToolsTest {
         !action_results[0].tool_result.deprecated_action_result()) {
       ADD_FAILURE() << "Expected exactly one action result, got "
                     << action_results.size();
-      return nullptr;
+      return std::nullopt;
     }
-    return action_results[0].tool_result.deprecated_action_result()->Clone();
+    return action_results[0];
   }
 
   mojom::ActionResultPtr RunExecuteJsTool(const std::string& script_code,
                                           uint32_t timeout_ms = 5000) {
     return Run(MakeRequest(script_code, timeout_ms));
+  }
+
+  std::optional<ToolResultWithLatencyInfo> RunExecuteJsToolWithLatencyInfo(
+      const std::string& script_code,
+      uint32_t timeout_ms = 5000) {
+    return RunWithLatencyInfo(MakeRequest(script_code, timeout_ms));
   }
 
  private:
@@ -2018,6 +2035,101 @@ IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
     EXPECT_EQ(follow_up->code, mojom::ActionResultCode::kOk);
     EXPECT_EQ(GetResponse(*follow_up), "4");
   }
+}
+
+class ActorToolsExecuteJsDialogInterceptionTest
+    : public ActorToolsExecuteJsTest {
+ public:
+  ActorToolsExecuteJsDialogInterceptionTest() {
+    dialog_features_.InitAndEnableFeature(kActorInterceptJavaScriptDialogs);
+  }
+
+ private:
+  base::test::ScopedFeatureList dialog_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsDialogInterceptionTest,
+                       InterceptsJavaScriptDialogs) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  auto action_result = RunExecuteJsToolWithLatencyInfo(
+      "(() => {"
+      "  window.alert('Saved');"
+      "  const confirmed = window.confirm('Continue?');"
+      "  const prompted = window.prompt('Name?', 'Alice');"
+      "  return {confirmed, prompted};"
+      "})()");
+  ASSERT_TRUE(action_result);
+  EXPECT_EQ(action_result->tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kOk);
+  EXPECT_EQ(GetResponse(*action_result->tool_result.deprecated_action_result()),
+            R"({"confirmed":false,"prompted":null})");
+
+  auto* tab_modal_manager =
+      javascript_dialogs::TabModalDialogManager::FromWebContents(
+          web_contents());
+  ASSERT_TRUE(tab_modal_manager);
+  EXPECT_FALSE(tab_modal_manager->IsShowingDialogForTesting());
+
+  ASSERT_EQ(action_result->javascript_dialogs.size(), 3u);
+  EXPECT_EQ(action_result->javascript_dialogs[0].type,
+            JavaScriptDialogType::kAlert);
+  EXPECT_EQ(action_result->javascript_dialogs[0].dialog_message, "Saved");
+  EXPECT_EQ(action_result->javascript_dialogs[1].type,
+            JavaScriptDialogType::kConfirm);
+  EXPECT_EQ(action_result->javascript_dialogs[1].dialog_message, "Continue?");
+  EXPECT_EQ(action_result->javascript_dialogs[2].type,
+            JavaScriptDialogType::kPrompt);
+  EXPECT_EQ(action_result->javascript_dialogs[2].dialog_message, "Name?");
+
+  // Dialog buffer was drained by the previous action.
+  auto follow_up = RunExecuteJsToolWithLatencyInfo("2 + 2");
+  ASSERT_TRUE(follow_up);
+  EXPECT_EQ(follow_up->tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kOk);
+  EXPECT_TRUE(follow_up->javascript_dialogs.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsDialogInterceptionTest,
+                       InterceptsAsyncAlertInPromise) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  auto action_result = RunExecuteJsToolWithLatencyInfo(
+      "new Promise(resolve => {"
+      "  setTimeout(() => {"
+      "    window.alert('Async confirmation');"
+      "    resolve('ok');"
+      "  }, 30);"
+      "})");
+  ASSERT_TRUE(action_result);
+  EXPECT_EQ(action_result->tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kOk);
+  EXPECT_EQ(GetResponse(*action_result->tool_result.deprecated_action_result()),
+            "\"ok\"");
+  ASSERT_EQ(action_result->javascript_dialogs.size(), 1u);
+  EXPECT_EQ(action_result->javascript_dialogs[0].type,
+            JavaScriptDialogType::kAlert);
+  EXPECT_EQ(action_result->javascript_dialogs[0].dialog_message,
+            "Async confirmation");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsDialogInterceptionTest,
+                       PreservesInterceptedDialogsOnScriptFailure) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  auto action_result = RunExecuteJsToolWithLatencyInfo(
+      "(async () => {"
+      "  window.alert('Before crash');"
+      "  throw new Error('boom');"
+      "})()");
+  ASSERT_TRUE(action_result);
+  EXPECT_EQ(action_result->tool_result.deprecated_action_result()->code,
+            mojom::ActionResultCode::kExecuteJsScriptFailed);
+  ASSERT_EQ(action_result->javascript_dialogs.size(), 1u);
+  EXPECT_EQ(action_result->javascript_dialogs[0].type,
+            JavaScriptDialogType::kAlert);
+  EXPECT_EQ(action_result->javascript_dialogs[0].dialog_message,
+            "Before crash");
 }
 
 }  // namespace actor

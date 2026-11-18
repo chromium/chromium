@@ -29,6 +29,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/actor/actor_util.h"
+#include "chrome/browser/actor/javascript_dialog_interceptor.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/devtools_manager_delegate_android.h"
 #include "chrome/browser/android/framebust_intervention/framebust_blocked_delegate_android.h"
@@ -557,6 +558,10 @@ content::WebContents* TabWebContentsDelegateAndroid::CreateCustomWebContents(
 
 content::JavaScriptDialogManager*
 TabWebContentsDelegateAndroid::GetJavaScriptDialogManager(WebContents* source) {
+  if (content::JavaScriptDialogManager* interceptor =
+          actor::JavaScriptDialogInterceptor::MaybeGetForWebContents(source)) {
+    return interceptor;
+  }
   if (TabAndroid* tab = TabAndroid::FromWebContents(source);
       tab && tab->IsOffscreenRendering()) {
     return nullptr;

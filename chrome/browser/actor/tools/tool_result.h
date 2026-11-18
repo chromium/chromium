@@ -9,6 +9,8 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -96,6 +98,24 @@ class ToolResult {
   std::optional<ToolError> error_;
 };
 
+// The type of a JavaScript dialog intercepted during actor execution.
+enum class JavaScriptDialogType {
+  kAlert = 0,
+  kConfirm = 1,
+  kPrompt = 2,
+};
+
+// Details of a JavaScript dialog (`window.alert`, `window.confirm`, or
+// `window.prompt`) intercepted and auto-dismissed at the browser layer while
+// an actor task is controlling a WebContents. Mirrors
+// ExecuteJsResult.JavaScriptDialog in actions_data.proto.
+struct InterceptedJavaScriptDialog {
+  JavaScriptDialogType type = JavaScriptDialogType::kAlert;
+  std::string dialog_message;
+
+  bool operator==(const InterceptedJavaScriptDialog&) const = default;
+};
+
 // The result of each action with latency information.
 // TODO(crbug.com/584876714): Replace `ToolResultWithLatencyInfo` and
 // `std::vector<ToolResultWithLatencyInfo>` with the new browser-side
@@ -104,15 +124,35 @@ struct ToolResultWithLatencyInfo {
   base::TimeTicks start_time;
   base::TimeTicks end_time;
   ToolResult tool_result;
+  // The `ToolRequest::Name()` of the action that produced `tool_result` (e.g.
+  // `ExecuteJsToolRequest::kName`), populated by `ExecutionEngine`. May be
+  // empty for general/sequence-level errors or synthetic results not tied to a
+  // specific tool, in which case `CopyExecuteJsResults()` falls back to
+  // checking whether
+  // `tool_result.deprecated_action_result()->execute_js_response` is present.
+  std::string tool_name;
+  // JavaScript dialogs intercepted on the target WebContents during this
+  // action's execution (in chronological order, capped at
+  // `JavaScriptDialogInterceptor::kMaxInterceptedDialogs`). Populated for all
+  // actions, though `CopyExecuteJsResults()` currently only serializes dialogs
+  // for `ExecuteJsTool` actions into `ActionsResult.execute_js_results`.
+  // TODO(b/586645337): Export dialogs for non-ExecuteJs actions as well.
+  std::vector<InterceptedJavaScriptDialog> javascript_dialogs;
 
-  ToolResultWithLatencyInfo(base::TimeTicks start_time,
-                            base::TimeTicks end_time,
-                            ToolResult tool_result);
+  ToolResultWithLatencyInfo(
+      base::TimeTicks start_time,
+      base::TimeTicks end_time,
+      ToolResult tool_result,
+      std::string_view tool_name = {},
+      std::vector<InterceptedJavaScriptDialog> javascript_dialogs = {});
   // TODO(crbug.com/574534362): Remove once all tools migrate off
   // mojom::ActionResult.
-  ToolResultWithLatencyInfo(base::TimeTicks start_time,
-                            base::TimeTicks end_time,
-                            mojom::ActionResultPtr result);
+  ToolResultWithLatencyInfo(
+      base::TimeTicks start_time,
+      base::TimeTicks end_time,
+      mojom::ActionResultPtr result,
+      std::string_view tool_name = {},
+      std::vector<InterceptedJavaScriptDialog> javascript_dialogs = {});
   ToolResultWithLatencyInfo(ToolResultWithLatencyInfo&&) noexcept;
   ToolResultWithLatencyInfo& operator=(ToolResultWithLatencyInfo&&) noexcept;
   ToolResultWithLatencyInfo(const ToolResultWithLatencyInfo&);
