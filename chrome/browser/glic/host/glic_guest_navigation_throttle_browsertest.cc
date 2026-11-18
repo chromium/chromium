@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
@@ -203,6 +202,8 @@ class GlicGeicGuestNavigationThrottleBrowserTest : public GlicBrowserTest {
          "127.0.0.1"});
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &GlicGeicGuestNavigationThrottleBrowserTest::HandleRequest,
+        // Safe because BrowserTestBase::TearDown() shuts down
+        // embedded_https_test_server() before this fixture is destroyed.
         base::Unretained(this)));
   }
 
@@ -218,6 +219,11 @@ class GlicGeicGuestNavigationThrottleBrowserTest : public GlicBrowserTest {
                            "MAP idp.example.com 127.0.0.1:%d, "
                            "MAP evil.example.com 127.0.0.1:%d",
                            port, port, port, port, port));
+  }
+
+  void TearDownOnMainThread() override {
+    SetRequestHandler(RequestHandler());
+    GlicBrowserTest::TearDownOnMainThread();
   }
 
   void SetRequestHandler(RequestHandler handler) {
@@ -300,45 +306,40 @@ IN_PROC_BROWSER_TEST_F(GlicGeicGuestNavigationThrottleBrowserTest,
 // `/submit` on the paired Workforce Auth Portal origin proceed cleanly.
 IN_PROC_BROWSER_TEST_F(GlicGeicGuestNavigationThrottleBrowserTest,
                        AllowsSilentRefreshCookiesAndSubmit302Chains) {
-  base::Lock path_lock;
-  std::string auth_hop_path = "/refreshcookies";
-  SetRequestHandler(base::BindLambdaForTesting(
-      [&](const GURL& url) -> std::unique_ptr<net::test_server::HttpResponse> {
-        std::string hop_path;
-        {
-          base::AutoLock lock(path_lock);
-          hop_path = auth_hop_path;
-        }
-        if (url.host() == "vertexaisearch.cloud.google" &&
-            url.path() == "/side-panel" &&
-            url.query().find("csesidx=") == std::string::npos) {
-          return MakeRedirectResponse(
-              GURL("https://auth.cloud.google" + hop_path +
-                   "?continueUrl=https%3A%2F%2Fvertexaisearch.cloud."
-                   "google%2Fside-panel"));
-        }
-        if (url.host() == "auth.cloud.google" &&
-            (url.path() == "/refreshcookies" || url.path() == "/submit")) {
-          return MakeRedirectResponse(
-              GURL("https://vertexaisearch.cloud.google/side-panel?"
-                   "configId=test&csesidx=1&hl=en"));
-        }
-        if (url.host() == "vertexaisearch.cloud.google" &&
-            url.path() == "/side-panel" &&
-            url.query().find("csesidx=1") != std::string::npos) {
-          return MakeMinimalGlicClientResponse();
-        }
-        return nullptr;
-      }));
+  auto make_handler = [](std::string auth_hop_path) {
+    return base::BindRepeating(
+        [](const std::string& hop_path,
+           const GURL& url) -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (url.host() == "vertexaisearch.cloud.google" &&
+              url.path() == "/side-panel" &&
+              url.query().find("csesidx=") == std::string::npos) {
+            return MakeRedirectResponse(
+                GURL("https://auth.cloud.google" + hop_path +
+                     "?continueUrl=https%3A%2F%2Fvertexaisearch.cloud."
+                     "google%2Fside-panel"));
+          }
+          if (url.host() == "auth.cloud.google" &&
+              (url.path() == "/refreshcookies" || url.path() == "/submit")) {
+            return MakeRedirectResponse(
+                GURL("https://vertexaisearch.cloud.google/side-panel?"
+                     "configId=test&csesidx=1&hl=en"));
+          }
+          if (url.host() == "vertexaisearch.cloud.google" &&
+              url.path() == "/side-panel" &&
+              url.query().find("csesidx=1") != std::string::npos) {
+            return MakeMinimalGlicClientResponse();
+          }
+          return nullptr;
+        },
+        std::move(auth_hop_path));
+  };
+  SetRequestHandler(make_handler("/refreshcookies"));
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForGlicClient(instance));
 
   // Now test a `/submit` bounce on reload.
-  {
-    base::AutoLock lock(path_lock);
-    auth_hop_path = "/submit";
-  }
+  SetRequestHandler(make_handler("/submit"));
   content::WebContents* guest_contents = instance->host().web_client_contents();
   ASSERT_TRUE(guest_contents);
   ASSERT_TRUE(content::NavigateToURL(
@@ -412,42 +413,32 @@ IN_PROC_BROWSER_TEST_F(GlicGeicGuestNavigationThrottleBrowserTest,
 // (`https://evil.example.com`) without visiting the Workforce Auth Portal is
 // classified as `kOriginBlocked`
 // (`ErrorPanelType::kError`).
-// TODO(crbug.com/587110784): Re-enable this test
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired \
-  DISABLED_CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired
-#else
-#define MAYBE_CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired \
-  CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired
-#endif
 IN_PROC_BROWSER_TEST_F(
     GlicGeicGuestNavigationThrottleBrowserTest,
-    MAYBE_CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired) {
-  base::Lock mode_lock;
-  bool redirect_via_auth_portal = true;
-  SetRequestHandler(base::BindLambdaForTesting(
-      [&](const GURL& url) -> std::unique_ptr<net::test_server::HttpResponse> {
-        bool via_auth_portal = true;
-        {
-          base::AutoLock lock(mode_lock);
-          via_auth_portal = redirect_via_auth_portal;
-        }
-        if (url.host() == "vertexaisearch.cloud.google" &&
-            url.path() == "/side-panel") {
-          if (via_auth_portal) {
-            return MakeRedirectResponse(
-                GURL("https://auth.cloud.google/select-session?continueUrl="
-                     "https%3A%2F%2Fvertexaisearch.cloud.google%2Fside-panel"));
+    CancelsExternal3pIdpRedirectAfterWorkforceAuthPortalAsSignInRequired) {
+  auto make_handler = [](bool redirect_via_auth_portal) {
+    return base::BindRepeating(
+        [](bool via_auth_portal,
+           const GURL& url) -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (url.host() == "vertexaisearch.cloud.google" &&
+              url.path() == "/side-panel") {
+            if (via_auth_portal) {
+              return MakeRedirectResponse(GURL(
+                  "https://auth.cloud.google/select-session?continueUrl="
+                  "https%3A%2F%2Fvertexaisearch.cloud.google%2Fside-panel"));
+            }
+            return MakeRedirectResponse(GURL("https://evil.example.com/"));
           }
-          return MakeRedirectResponse(GURL("https://evil.example.com/"));
-        }
-        if (url.host() == "auth.cloud.google" &&
-            url.path() == "/select-session") {
-          return MakeRedirectResponse(
-              GURL("https://idp.example.com/oauth2/authorize"));
-        }
-        return nullptr;
-      }));
+          if (url.host() == "auth.cloud.google" &&
+              url.path() == "/select-session") {
+            return MakeRedirectResponse(
+                GURL("https://idp.example.com/oauth2/authorize"));
+          }
+          return nullptr;
+        },
+        redirect_via_auth_portal);
+  };
+  SetRequestHandler(make_handler(/*redirect_via_auth_portal=*/true));
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kSignIn, instance));
@@ -455,10 +446,7 @@ IN_PROC_BROWSER_TEST_F(
   // Now test a direct redirect from `/side-panel` to `https://evil.example.com`
   // without visiting `auth.cloud.google`: must transition to `kError`
   // (`kOriginBlocked`).
-  {
-    base::AutoLock lock(mode_lock);
-    redirect_via_auth_portal = false;
-  }
+  SetRequestHandler(make_handler(/*redirect_via_auth_portal=*/false));
   auto* manager = static_cast<GlicNoWebviewContentsManager*>(
       instance->host().contents_manager());
   ASSERT_TRUE(manager);
