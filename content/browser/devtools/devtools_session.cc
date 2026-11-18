@@ -4,12 +4,14 @@
 
 #include "content/browser/devtools/devtools_session.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/bad_message.h"
@@ -93,6 +95,23 @@ bool MayCauseJavascriptExecution(crdtp::span<uint8_t> method) {
 
 const char kResumeMethod[] = "Runtime.runIfWaitingForDebugger";
 const char kSessionId[] = "sessionId";
+const char kMethod[] = "method";
+
+// Domains that are implemented only in the browser process. An agent in
+// another process does not send messages of these domains.
+constexpr std::string_view kBrowserOnlyDomainPrefixes[] = {
+    "Target.",
+};
+
+bool IsBrowserOnlyMethod(crdtp::span<uint8_t> method) {
+  const std::string_view method_view = base::as_string_view(method);
+  for (std::string_view prefix : kBrowserOnlyDomainPrefixes) {
+    if (method_view.starts_with(prefix)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // Clients match against this error message verbatim (http://crbug.com/1001678).
 const char kTargetClosedMessage[] = "Inspected target navigated or closed";
@@ -831,6 +850,23 @@ bool DevToolsSession::ValidateMessage(const std::string& expected_session_id,
       crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom("id"))) {
     DLOG(ERROR) << "Expected no id in the message but received one";
     return false;
+  }
+
+  // The method, if present, must be a unique 7-bit string, and it must not
+  // belong to a domain that is implemented only in the browser process.
+  if (crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom(kMethod))) {
+    crdtp::span<uint8_t> method = crdtp::cbor::GetString8ValueFromMap(
+        span_message, crdtp::SpanFrom(kMethod));
+    // GetString8ValueFromMap accepts well-formed multi-byte UTF-8 in a CBOR
+    // STRING8 value, so check for 7-bit ASCII explicitly.
+    if (method.empty() || !base::IsStringASCII(base::as_string_view(method))) {
+      DLOG(ERROR) << "Expected a unique 7-bit string method";
+      return false;
+    }
+    if (IsBrowserOnlyMethod(method)) {
+      DLOG(ERROR) << "Unexpected method: " << base::as_string_view(method);
+      return false;
+    }
   }
 
   // Do NOT use crdtp::Dispatchable here. It enforces the presence of both

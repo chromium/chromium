@@ -2091,6 +2091,40 @@ IN_PROC_BROWSER_TEST_F(FlattenedDevToolsProtocolTest,
                                /*use_cbor=*/true);
 }
 
+IN_PROC_BROWSER_TEST_F(FlattenedDevToolsProtocolTest,
+                       BrowserOnlyDomainValidationFails) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url =
+      embedded_test_server()->GetURL("/devtools/page-with-oopif.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  Attach();
+
+  // Root session, auto-attach OOPIF.
+  base::DictValue command_params;
+  command_params.Set("autoAttach", true);
+  command_params.Set("waitForDebuggerOnStart", false);
+  command_params.Set("flatten", true);
+  SendCommandSync("Target.setAutoAttach", std::move(command_params));
+
+  auto notification = WaitForNotification("Target.attachedToTarget", true);
+  const std::string* session_id_ptr = notification.FindString("sessionId");
+  ASSERT_TRUE(session_id_ptr);
+  std::string session_id = *session_id_ptr;
+
+  DevToolsAgentHostImpl* host_impl =
+      static_cast<DevToolsAgentHostImpl*>(agent_host_.get());
+
+  // Simulate a message from the renderer that has the correct sessionId but
+  // belongs to a domain that only the browser implements.
+  std::string message_json =
+      "{\"method\":\"Target.attachedToTarget\",\"params\":{},\"sessionId\":\"" +
+      session_id + "\"}";
+
+  ClearNotifications();
+  DispatchProtocolNotification(host_impl, session_id, message_json, true);
+  EXPECT_FALSE(HasExistingNotification("Target.attachedToTarget"));
+}
+
 // TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 #define MAYBE_PageCrashClearsPendingCommands \
