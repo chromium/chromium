@@ -575,6 +575,8 @@ actions::ActionId MojomPageActionIdToActionId(
       return kActionWalletReminderNotice;
     case MojomPageActionId::kActionGmailOtpOptIn:
       return kActionGmailOtpOptIn;
+    case MojomPageActionId::kActionOnDeviceAi:
+      return kActionOnDeviceAi;
   }
   NOTREACHED();
 }
@@ -653,6 +655,8 @@ MojomPageActionId ActionIdToMojomPageActionId(actions::ActionId action_id) {
       return MojomPageActionId::kActionWalletReminderNotice;
     case kActionGmailOtpOptIn:
       return MojomPageActionId::kActionGmailOtpOptIn;
+    case kActionOnDeviceAi:
+      return MojomPageActionId::kActionOnDeviceAi;
   }
   NOTREACHED();
 }

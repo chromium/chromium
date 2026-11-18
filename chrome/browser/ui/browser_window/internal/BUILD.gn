@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//chrome/common/features.gni")
+import("//services/on_device_model/on_device_model.gni")
 
 source_set("internal") {
   sources = [
@@ -226,6 +227,10 @@ source_set("internal") {
 
     if (enable_extensions_core) {
       deps += [ "//chrome/browser/extensions" ]
+    }
+
+    if (is_chrome_branded && use_on_device_model_service) {
+      deps += [ "//chrome/browser/ai" ]
     }
   }
 

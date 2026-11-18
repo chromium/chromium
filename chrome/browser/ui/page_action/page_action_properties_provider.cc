@@ -343,6 +343,14 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .element_identifier = kPageActionGmailOtpOptInElementId,
         },
     },
+    {
+        kActionOnDeviceAi,
+        {
+            .histogram_name = "OnDeviceAi",
+            .type = PageActionIconType::kOnDeviceAi,
+            .element_identifier = kPageActionOnDeviceAiElementId,
+        },
+    },
 });
 // LINT.ThenChange(//components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom:PageActionId,//chrome/browser/ui/page_action/action_ids.h:kActionIds,//tools/metrics/histograms/metadata/page/histograms.xml:PageActionType)
 

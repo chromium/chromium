@@ -458,6 +458,7 @@ chromium-metrics-reviews@google.com.
       summary="Autofill mandatory re-authentication"/>
   <variant name="MemorySaver" summary="Memory Saver chip"/>
   <variant name="MultistepFilter" summary="Multistep filter"/>
+  <variant name="OnDeviceAi" summary="On-device AI"/>
   <variant name="PaymentsChurnedUsers" summary="Payments churned users"/>
   <variant name="PaymentsOfferNotification"
       summary="Payments offers and rewards"/>

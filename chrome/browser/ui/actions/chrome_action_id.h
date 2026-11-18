@@ -400,6 +400,7 @@
   E(kActionWalletReminderNotice) \
   E(kActionGmailOtpOptIn) \
   E(kActionTtcToolbar) \
+  E(kActionOnDeviceAi) \
 
 #define SUBMENU_ACTION_IDS                                                     \
   E(kActionAppMenuRoot)                                                        \

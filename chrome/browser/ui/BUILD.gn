@@ -311,6 +311,7 @@ if (!is_android) {
       "//build:branding_buildflags",
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
+      "//chrome/browser/ai",
       "//chrome/browser/browsing_data",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_tasks:ui",
@@ -399,6 +400,7 @@ if (!is_android) {
       "//components/spellcheck/browser",
       "//components/undo",
       "//extensions/buildflags",
+      "//services/on_device_model/public/cpp:buildflags",
     ]
     if (enable_extensions) {
       deps += [ "//chrome/browser/ui/extensions" ]

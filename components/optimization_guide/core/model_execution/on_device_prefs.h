@@ -34,6 +34,7 @@ extern const char kOnDeviceAiUserSettingsEnabled[];
 extern const char kOnDeviceAiAutoRemoveUnusedModelsEnabled[];
 extern const char kEmbeddingApiModelDownloadEligible[];
 extern const char kManifestAssetLedger[];
+extern const char kOnDeviceAiPageActionState[];
 
 }  // namespace localstate
 

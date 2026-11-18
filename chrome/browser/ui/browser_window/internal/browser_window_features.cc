@@ -249,6 +249,10 @@
 #include "chrome/browser/ui/overscroll_pref_manager.h"
 #endif  // defined(USE_AURA)
 
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/ai/ai_page_action_controller.h"
+#endif
+
 BrowserWindowFeatures::BrowserWindowFeatures() = default;
 BrowserWindowFeatures::~BrowserWindowFeatures() = default;
 
@@ -1024,6 +1028,15 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
       }
     }
 
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (browser_view && profile->IsRegularProfile() &&
+        base::FeatureList::IsEnabled(kOnDeviceAiPageAction)) {
+      ai_page_action_controller_ =
+          GetUserDataFactory().CreateInstance<AIPageActionController>(*browser,
+                                                                      *browser);
+    }
+#endif
+
     if (browser_view) {
       if (media_router::MediaRouterEnabled(
               browser_view->browser()->GetProfile())) {
@@ -1191,6 +1204,9 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
     chrome_labs_coordinator_->TearDown();
   }
   cast_browser_controller_.reset();
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  ai_page_action_controller_.reset();
+#endif
   ai_mode_page_action_controller_.reset();
   if (actor_ui_window_controller_) {
     actor_ui_window_controller_->TearDown();

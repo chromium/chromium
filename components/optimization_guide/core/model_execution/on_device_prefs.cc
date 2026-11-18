@@ -72,6 +72,10 @@ const char kEmbeddingApiModelDownloadEligible[] =
 const char kManifestAssetLedger[] =
     "optimization_guide.model_execution.manifest_asset_ledger";
 
+// A dictionary pref that tracks page action state per base model.
+const char kOnDeviceAiPageActionState[] =
+    "optimization_guide.on_device_ai_page_action_state";
+
 }  // namespace localstate
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -97,6 +101,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(localstate::kEmbeddingApiModelDownloadEligible,
                                 false);
   registry->RegisterDictionaryPref(localstate::kManifestAssetLedger);
+  registry->RegisterDictionaryPref(localstate::kOnDeviceAiPageActionState);
 }
 
 GenAILocalFoundationalModelEnterprisePolicySettings

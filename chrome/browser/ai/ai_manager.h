@@ -22,6 +22,7 @@
 #include "chrome/browser/ai/ai_proofreader.h"
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "components/on_device_ai/ai_utils.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host.h"
@@ -325,6 +326,9 @@ class AIManager : public base::SupportsUserData::Data,
       mojo::Remote<ClientRemoteInterface> client_remote,
       std::unique_ptr<optimization_guide::OnDeviceSession> session,
       base::expected<size_t, optimization_guide::OnDeviceError> result);
+
+  // May show user education UI when an on-device model session is created.
+  void OnModelSessionCreated(optimization_guide::OnDeviceBaseModel base_model);
 
   void MaybeLogMissingOutputLanguageWarning(
       const std::string_view api_name,

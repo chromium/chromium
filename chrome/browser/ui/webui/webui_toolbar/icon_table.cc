@@ -139,6 +139,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
           {{&kQrCodeIcon}, {"webui-toolbar:qr_code", IconType::kIconSet}},
           {{&kReadingListOldIcon},
            {"webui-toolbar:list_alt", IconType::kIconSet}},
+          {{&kScreensaverAutoIcon},
+           {"webui-toolbar:screensaver_auto", IconType::kIconSet}},
           {{&kSpeedIcon}, {"webui-toolbar:speed", IconType::kIconSet}},
           {{&kTabSearchTabStripOldIcon},
            {"webui-toolbar:manage_search", IconType::kIconSet}},

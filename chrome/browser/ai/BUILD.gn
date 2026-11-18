@@ -5,6 +5,7 @@
 import("//chrome/common/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//pdf/features.gni")
+import("//services/on_device_model/on_device_model.gni")
 
 assert(build_with_model_execution)
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
@@ -52,6 +53,13 @@ source_set("ai") {
     "//content/public/browser",
     "//services/passage_embeddings/public/mojom",
   ]
+  if (is_chrome_branded && use_on_device_model_service) {
+    sources += [ "ai_page_action_controller.h" ]
+    public_deps += [
+      "//ui/base/interaction",
+      "//ui/base/unowned_user_data",
+    ]
+  }
 }
 
 source_set("impl") {
@@ -87,6 +95,7 @@ source_set("impl") {
   deps = [
     ":ai",
     "//base:i18n",
+    "//build:branding_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/component_updater",
     "//chrome/browser/passage_embeddings",
@@ -99,6 +108,7 @@ source_set("impl") {
     "//components/passage_embeddings/core",
     "//components/site_engagement/content",
     "//pdf:buildflags",
+    "//services/on_device_model/public/cpp:buildflags",
     "//skia",
     "//third_party/protobuf:protobuf_lite",
   ]
@@ -107,6 +117,30 @@ source_set("impl") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_group",
       "//chrome/browser/ui/tabs:tab_strip",
+    ]
+  }
+  if (is_chrome_branded && use_on_device_model_service) {
+    sources += [ "ai_page_action_controller.cc" ]
+    deps += [
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser:global_features",
+      "//chrome/browser/optimization_guide",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/dialogs:browser_dialogs",
+      "//chrome/browser/ui/interaction",
+      "//chrome/browser/ui/page_action",
+      "//chrome/browser/ui/webui/settings",
+      "//chrome/common",
+      "//components/prefs",
+      "//components/tabs:public",
+      "//components/vector_icons",
+      "//ui/actions",
+      "//ui/base",
+      "//ui/color:color_headers",
+      "//ui/views",
     ]
   }
   if (enable_pdf) {
@@ -199,6 +233,23 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gmock",
     ]
+
+    if (is_chrome_branded && use_on_device_model_service) {
+      sources += [ "ai_page_action_controller_browsertest.cc" ]
+      deps += [
+        "//chrome/app:branded_strings",
+        "//chrome/browser:browser_process",
+        "//chrome/browser/ui:browser_element_identifiers",
+        "//chrome/browser/ui/tabs:tab_strip",
+        "//chrome/browser/ui/views/interaction",
+        "//chrome/browser/ui/views/page_action",
+        "//chrome/browser/ui/webui/settings",
+        "//ui/events:test_support",
+        "//ui/views",
+        "//ui/views:test_support",
+        "//url",
+      ]
+    }
   }
 }
 

@@ -26,6 +26,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
@@ -64,6 +65,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/on_device_model/public/cpp/buildflags.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/download_observer.mojom.h"
@@ -84,6 +86,12 @@
 #include "chrome/browser/ai/ai_embedding_gemma_v1_decision_model.h"
 #include "chrome/browser/ai/ai_language_model_decision_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/ai/ai_page_action_controller.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#endif
 
 using blink::mojom::AILanguageCodePtr;
 
@@ -1133,6 +1141,7 @@ void AIManager::CreateLanguageModelInternal(
   model_client->solution().CreateSession(
       session.InitWithNewPipeAndPassReceiver(), params.Clone());
 
+  const auto base_model = model_client->base_model();
   auto model = std::make_unique<AILanguageModel>(
       context_bound_object_set_, std::move(params), std::move(model_client),
       std::move(session),
@@ -1150,6 +1159,7 @@ void AIManager::CreateLanguageModelInternal(
                     std::move(client));
 
   context_bound_object_set_.AddContextBoundObject(std::move(model));
+  OnModelSessionCreated(base_model);
 }
 
 void AIManager::CanCreateSummarizer(
@@ -1770,6 +1780,8 @@ void AIManager::OnSessionCreated(
     return;
   }
 
+  OnModelSessionCreated(session->GetBaseModel());
+
   if (initial_request.has_value()) {
     auto initial_request_copy = initial_request.value().Clone();
     session->GetInputSizeInTokens(
@@ -1859,6 +1871,21 @@ void AIManager::OnInitialInputSet(
           context_bound_object_set_, std::move(session), std::move(options),
           pending_remote.InitWithNewPipeAndPassReceiver()));
   client_remote->OnResult(std::move(pending_remote), context_window);
+}
+
+void AIManager::OnModelSessionCreated(
+    optimization_guide::OnDeviceBaseModel base_model) {
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (auto* web_contents = content::WebContents::FromRenderFrameHost(
+          rfh_.AsRenderFrameHostIfValid())) {
+    if (auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+      if (auto* controller =
+              AIPageActionController::From(tab->GetBrowserWindowInterface())) {
+        controller->OnModelSessionCreated(base_model, tab);
+      }
+    }
+  }
+#endif
 }
 
 template <typename OptionsPtrType>
@@ -2292,10 +2319,12 @@ void AIManager::OnDecisionModelLanguageModelReady(
         client_remote->OnSessionCreated(std::move(pending_remote));
       },
       std::move(client_remote), std::move(pending_remote));
+  const auto base_model = model_client->base_model();
   context_bound_object_set_.AddContextBoundObject(
       std::make_unique<AILanguageModelDecisionModel>(
-          context_bound_object_set_, std::move(schema), model_client,
+          context_bound_object_set_, std::move(schema), std::move(model_client),
           std::move(receiver), std::move(on_ready)));
+  OnModelSessionCreated(base_model);
 }
 
 void AIManager::CreateEmbeddingGemmaV1DecisionModel(

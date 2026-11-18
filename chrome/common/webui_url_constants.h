@@ -619,6 +619,7 @@ inline constexpr char kTriggeredResetProfileSettingsSubPage[] =
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 inline constexpr char kChromeUICastFeedbackHost[] = "cast-feedback";
 inline constexpr char kChromeUICastFeedbackURL[] = "chrome://cast-feedback";
+inline constexpr char kOnDeviceAiSubpage[] = "ai/onDeviceAi";
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

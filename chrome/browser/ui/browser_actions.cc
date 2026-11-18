@@ -254,6 +254,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/on_device_model/public/cpp/buildflags.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
@@ -284,6 +285,10 @@
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/ai/ai_page_action_controller.h"
+#endif
 
 namespace {
 
@@ -5419,6 +5424,27 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             /*is_pinnable=*/true)
             .Build());
   }
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (base::FeatureList::IsEnabled(kOnDeviceAiPageAction)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext) {
+                  if (auto* controller = AIPageActionController::From(bwi)) {
+                    controller->ShowBubble(item);
+                  }
+                },
+                bwi))
+            .SetActionId(kActionOnDeviceAi)
+            .SetText(l10n_util::GetStringUTF16(IDS_ON_DEVICE_AI_READY_TITLE))
+            .SetTooltipText(
+                l10n_util::GetStringUTF16(IDS_ON_DEVICE_AI_READY_TITLE))
+            .SetImage(ui::ImageModel::FromVectorIcon(kScreensaverAutoIcon))
+            .Build());
+  }
+#endif
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

@@ -27,8 +27,10 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
+#include "services/on_device_model/public/cpp/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 class ActorBorderViewController;
@@ -143,6 +145,10 @@ class OverscrollPrefManager;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
 class DefaultSearchExtensionControlledController;
+#endif
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+class AIPageActionController;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -557,6 +563,10 @@ class BrowserWindowFeatures {
       default_search_extension_controlled_controller_;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::unique_ptr<AIPageActionController> ai_page_action_controller_;
+#endif
 
   // Non-owning references.
   // TODO(crbug.com/423956131): Remove this.

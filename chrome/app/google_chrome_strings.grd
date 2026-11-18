@@ -3465,6 +3465,26 @@ If this page isn’t working as expected, try allowing optimization.
       <message name="IDS_ENTERPRISE_DEVICE_SIGNALS_DISCLAIMER_SUBTITLE" desc="Subtitle of an enterprise device signals collection disclaimer modal dialog. The dialog is shown on Chrome startup to managed Chrome users who have not previously acknowledged device signals collection.">
         To secure your work on Chrome, your organization will be able to view or manage certain information when you’re signed-in to Chrome.
       </message>
+
+      <!-- On-Device AI Page Action -->
+      <message name="IDS_ON_DEVICE_AI_READY_TITLE" desc="Omnibox chip label and bubble title shown when Chrome finishes downloading an on-device AI model for the first time.">
+        On-device AI is ready
+      </message>
+      <message name="IDS_ON_DEVICE_AI_ADDED_BUBBLE_BODY" desc="Body text of the bubble shown when Chrome finishes downloading an on-device AI model for the first time.">
+        Chrome added AI that runs on your device. Sites and Chrome can use it for features like:
+      </message>
+      <message name="IDS_ON_DEVICE_AI_FEATURE_GENERAL_PURPOSE_WRITING" desc="Label for the general-purpose writing feature enabled by the foundational on-device AI model.">
+        General-purpose writing
+      </message>
+      <message name="IDS_ON_DEVICE_AI_UPDATED_CHIP_LABEL" desc="Omnibox chip label shown when Chrome updates an on-device AI model.">
+        On-device AI updated
+      </message>
+      <message name="IDS_ON_DEVICE_AI_UPDATED_BUBBLE_TITLE" desc="Title of the bubble shown when Chrome updates an on-device AI model.">
+        On-device AI is up to date
+      </message>
+      <message name="IDS_ON_DEVICE_AI_UPDATED_BUBBLE_BODY" desc="Body text of the bubble shown when Chrome updates an on-device AI model.">
+        A new, more compact version of on-device AI is ready to use for tasks like summaries, proofreading, and more
+      </message>
     </messages>
   </release>
 </grit>

@@ -34,8 +34,10 @@ source_set("browser_window") {
     ]
     public_deps += [
       "//base",
+      "//build:branding_buildflags",
       "//chrome/common:buildflags",
       "//extensions/buildflags",
+      "//services/on_device_model/public/cpp:buildflags",
       "//ui/base:types",
     ]
   }
