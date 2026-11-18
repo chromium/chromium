@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_change.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -175,6 +176,8 @@ class GlicProviderSpec {
   // none. Gemini Enterprise: the latched guest URL without `hl` or `idp`.
   // Persisted; must not change.
   virtual std::string GetGuestUrlKey() const = 0;
+  // Identifies this provider for detecting provider changes.
+  virtual GlicProviderKey GetProviderKey() const = 0;
   // Whether the web client's data in the webview partition's localStorage is
   // copied into `GlicClientDataStorage` (see `MaybeMigrateGlicLocalStorage()`).
   // Only true for providers whose web client was ever loaded in the webview.

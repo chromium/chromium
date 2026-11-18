@@ -5,8 +5,6 @@
 #include "chrome/browser/glic/public/glic_provider_latch_factory.h"
 
 #include <memory>
-#include <optional>
-#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -24,25 +22,6 @@
 #include "url/gurl.h"
 
 namespace glic {
-
-namespace {
-
-// Classifies the change from the latched to the currently resolved GEiC guest
-// URL key. std::nullopt means Gemini.
-GlicProviderChange ClassifyProviderChange(
-    const std::optional<std::string>& latched_key,
-    const std::optional<std::string>& resolved_key) {
-  if (latched_key == resolved_key) {
-    return GlicProviderChange::kNone;
-  }
-  if (!latched_key) {
-    return GlicProviderChange::kGeminiToGeic;
-  }
-  return resolved_key ? GlicProviderChange::kGeicToOtherGeic
-                      : GlicProviderChange::kGeicToGemini;
-}
-
-}  // namespace
 
 // static
 GlicProviderLatchFactory* GlicProviderLatchFactory::GetInstance() {
@@ -81,12 +60,8 @@ GlicProviderChange GlicProviderLatchFactory::GetPendingProviderChange(
   if (!latch) {
     return GlicProviderChange::kNone;
   }
-  // GEiC guest URL keys (ignoring `hl`), or std::nullopt for Gemini.
-  std::optional<std::string> latched_key;
-  if (latch->provider() == GlicProvider::kGeminiEnterprise) {
-    latched_key = latch->GetSpec().GetGuestUrlKey();
-  }
-  std::optional<std::string> resolved_key;
+  GlicProviderKey latched_key = latch->GetSpec().GetProviderKey();
+  GlicProviderKey resolved_key = GlicProviderKey::Gemini();
   GURL resolved_url = geic::ResolveGeicGuestUrl(context);
   // Make the same decision as `BuildServiceInstanceForBrowserContext()`, so
   // e.g. a profile that selected consumer Gemini doesn't report a
@@ -96,7 +71,7 @@ GlicProviderChange GlicProviderLatchFactory::GetPendingProviderChange(
     resolved_key =
         CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise,
                                {.guest_url = std::move(resolved_url)})
-            ->GetGuestUrlKey();
+            ->GetProviderKey();
   }
   return ClassifyProviderChange(latched_key, resolved_key);
 }

@@ -187,6 +187,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
     }
     return std::string(guest_url.host());
   }
+  GlicProviderKey GetProviderKey() const override {
+    return GlicProviderKey::Gemini();
+  }
   bool MigratesWebviewLocalStorage() const override { return true; }
   bool RequiresGeminiAccountEligibility() const override { return true; }
   bool UsesGeicSignIn() const override { return false; }
@@ -361,6 +364,9 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
     // `GlicProviderLatchFactory`).
     CHECK(guest_url_.is_valid());
     return GuestUrlToKey(guest_url_);
+  }
+  GlicProviderKey GetProviderKey() const override {
+    return GlicProviderKey::GeminiEnterprise(GetGuestUrlKey());
   }
   // GEiC only loads in NoWebview mode, so it never used the webview partition.
   bool MigratesWebviewLocalStorage() const override { return false; }
