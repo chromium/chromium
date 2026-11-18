@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -6360,10 +6361,57 @@ class IntegrationInstallerResultsTest
           std::tuple<TestUpdaterVersion, IntegrationInstallerResultsTestCase>>,
       public IntegrationTestMsi {
  public:
-  TestUpdaterVersion GetSetup() { return std::get<0>(GetParam()); }
-  IntegrationInstallerResultsTestCase GetTestCase() {
+  const TestUpdaterVersion& GetSetup() const { return std::get<0>(GetParam()); }
+  const IntegrationInstallerResultsTestCase& GetTestCase() const {
     return std::get<1>(GetParam());
   }
+
+ protected:
+  bool IsCurrentVersion() const {
+    return GetSetup().version == base::Version(kUpdaterVersion);
+  }
+
+  void SetUp() override {
+    // Evaluate per-`TEST_P` parameter skips before
+    // `IntegrationTestMsi::SetUp()` so inapplicable cases do not run
+    // `IntegrationTest::SetUp()`, start `ScopedServer`, or enter test mode.
+    std::string_view test_name =
+        ::testing::UnitTest::GetInstance()->current_test_info()->name();
+    test_name = base::RemovePrefix(test_name, "DISABLED_").value_or(test_name);
+    if (test_name.starts_with("TestCases/")) {
+      if (!IsCurrentVersion()) {
+        GTEST_SKIP();
+      }
+    } else if (test_name.starts_with("OnDemandTestCases/")) {
+      if (GetTestCase().interactive_install) {
+        GTEST_SKIP();
+      }
+      // TODO(crbug.com/382059245): remove this `if` once the older versions are
+      // updated to a version that supports a success `kExitCode`.
+      if (GetTestCase().command_line_args.starts_with("INSTALLER_RESULT=4") &&
+          !IsCurrentVersion()) {
+        GTEST_SKIP();
+      }
+    } else if (test_name.starts_with("RunMockOfflineMetaInstall/")) {
+      if (!IsCurrentVersion() || !GetTestCase().custom_app_response.empty() ||
+          !GetTestCase().interactive_install) {
+        GTEST_SKIP();
+      }
+    } else {
+      FAIL() << "Unhandled test name: " << test_name;
+    }
+    set_up_called_ = true;
+    IntegrationTestMsi::SetUp();
+  }
+
+  void TearDown() override {
+    if (set_up_called_) {
+      IntegrationTestMsi::TearDown();
+    }
+  }
+
+ private:
+  bool set_up_called_ = false;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -6636,10 +6684,8 @@ INSTANTIATE_TEST_SUITE_P(
         })));
 
 TEST_P(IntegrationInstallerResultsTest, TestCases) {
-  if (GetSetup().version != base::Version(kUpdaterVersion)) {
-    GTEST_SKIP();
-  }
-
+  // Inapplicable parameterized cases are skipped in
+  // `IntegrationInstallerResultsTest::SetUp()`.
   const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
   const bool should_install_successfully =
       !GetTestCase().error_code ||
@@ -6739,17 +6785,8 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
 }
 
 TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
-  if (GetTestCase().interactive_install) {
-    GTEST_SKIP();
-  }
-
-  // TODO(crbug.com/382059245): remove this `if` once the older versions are
-  // updated to a version that supports a success `kExitCode`.
-  if (GetTestCase().command_line_args.starts_with("INSTALLER_RESULT=4") &&
-      (GetSetup().version != base::Version(kUpdaterVersion))) {
-    GTEST_SKIP();
-  }
-
+  // Inapplicable parameterized cases are skipped in
+  // `IntegrationInstallerResultsTest::SetUp()`.
   const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
   const bool should_install_successfully =
       !GetTestCase().error_code ||
@@ -6792,12 +6829,8 @@ TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
 }
 
 TEST_P(IntegrationInstallerResultsTest, RunMockOfflineMetaInstall) {
-  if (GetSetup().version != base::Version(kUpdaterVersion) ||
-      !GetTestCase().custom_app_response.empty() ||
-      !GetTestCase().interactive_install) {
-    GTEST_SKIP();
-  }
-
+  // Inapplicable parameterized cases are skipped in
+  // `IntegrationInstallerResultsTest::SetUp()`.
   base::FilePath msi_path;
   ASSERT_NO_FATAL_FAILURE(GetMsiPathForVersion(kMsiInitialVersion, msi_path));
 
