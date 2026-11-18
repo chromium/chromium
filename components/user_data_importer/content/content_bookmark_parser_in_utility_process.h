@@ -5,16 +5,20 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_CONTENT_CONTENT_BOOKMARK_PARSER_IN_UTILITY_PROCESS_H_
 #define COMPONENTS_USER_DATA_IMPORTER_CONTENT_CONTENT_BOOKMARK_PARSER_IN_UTILITY_PROCESS_H_
 
-#include <string>
+#include <stdint.h>
 
+#include <string>
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace user_data_importer {
 
-// This class should be run in a sandboxed process and parse the contents of a
-// bookmark HTML file. It implements the mojom::BookmarkHtmlParser interface to
-// that effect.
+// This class should be run in a sandboxed process to parse bookmark HTML files
+// and decode untrusted imported favicons. It implements the
+// mojom::BookmarkHtmlParser interface to that effect.
 class ContentBookmarkParserInUtilityProcess : public mojom::BookmarkHtmlParser {
  public:
   explicit ContentBookmarkParserInUtilityProcess(
@@ -28,6 +32,9 @@ class ContentBookmarkParserInUtilityProcess : public mojom::BookmarkHtmlParser {
 
   // mojom::BookmarkHtmlParser:
   void Parse(const std::string& raw_html, ParseCallback callback) override;
+  void ReencodeFavicons(
+      const base::flat_map<uint32_t, std::vector<uint8_t>>& raw_favicons,
+      ReencodeFaviconsCallback callback) override;
 
  private:
   mojo::Receiver<mojom::BookmarkHtmlParser> receiver_;

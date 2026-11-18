@@ -42,11 +42,19 @@ struct ParsedBookmarks {
   array<FaviconUsageData> favicons;
 };
 
-// Interface for parsing the contents of a HTML bookmark file in a sandboxed
-// process. Tries to recover as much data from `raw_html` as possible, even if
-// the entire html is not valid or in the expected format. If the entire input
-// is not valid, it returns an empty `result`.
-[ServiceSandbox=sandbox.mojom.Sandbox.kService] interface BookmarkHtmlParser {
-  // Parses the `raw_html` and returns the parsed bookmarks.
+// Interface for parsing bookmark HTML files and decoding untrusted imported
+// favicons in a sandboxed process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface BookmarkHtmlParser {
+  // Parses the `raw_html` and returns the parsed bookmarks. Tries to recover as
+  // much data from `raw_html` as possible, even if the entire html is not valid
+  // or in the expected format. If the entire input is not valid, it returns an
+  // empty `result`.
   Parse(string raw_html) => (ParsedBookmarks result);
+
+  // Decodes each untrusted image entry in `raw_favicons` (keyed by caller-
+  // assigned ID), resizes to 16x16 if needed, and re-encodes as PNG. Entries
+  // that fail to decode are omitted from `png_favicons`.
+  ReencodeFavicons(map<uint32, array<uint8>> raw_favicons)
+      => (map<uint32, array<uint8>> png_favicons);
 };

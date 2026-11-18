@@ -4,6 +4,8 @@
 
 #include "components/user_data_importer/content/favicon_reencode.h"
 
+#include <utility>
+
 #include "content/public/child/image_decoder_utils.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -35,6 +37,20 @@ std::optional<std::vector<uint8_t>> ReencodeFavicon(
   // Encode our bitmap as a PNG.
   return gfx::PNGCodec::EncodeBGRASkBitmap(decoded,
                                            /*discard_transparency=*/false);
+}
+
+base::flat_map<uint32_t, std::vector<uint8_t>> ReencodeFavicons(
+    const base::flat_map<uint32_t, std::vector<uint8_t>>& raw_favicons) {
+  std::vector<std::pair<uint32_t, std::vector<uint8_t>>> results;
+  results.reserve(raw_favicons.size());
+  for (const auto& [id, raw_data] : raw_favicons) {
+    if (std::optional<std::vector<uint8_t>> png_data =
+            ReencodeFavicon(raw_data)) {
+      results.emplace_back(id, std::move(*png_data));
+    }
+  }
+  return base::flat_map<uint32_t, std::vector<uint8_t>>(base::sorted_unique,
+                                                        std::move(results));
 }
 
 }  // namespace importer

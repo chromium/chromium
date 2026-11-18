@@ -4,15 +4,28 @@
 
 #include "components/user_data_importer/content/content_bookmark_parser.h"
 
+#include <stdint.h>
+
+#include <array>
+#include <optional>
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
 #include "components/user_data_importer/content/fake_bookmark_html_parser.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/favicon_size.h"
 
 namespace user_data_importer {
 
@@ -102,6 +115,62 @@ TEST_F(ContentBookmarkParserTest, ParseInvalidBaseFile) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(BookmarkParser::BookmarkParsingError::kFailedToReadFile,
             result.error());
+}
+
+TEST_F(ContentBookmarkParserTest, ReencodeFaviconsInUtilityProcess) {
+  mojo::Remote<mojom::BookmarkHtmlParser> remote;
+  ContentBookmarkParserInUtilityProcess parser_in_utility(
+      remote.BindNewPipeAndPassReceiver());
+
+  // 32x32 PNG that should be resized down to `gfx::kFaviconSize` (16x16).
+  SkBitmap oversized_bitmap;
+  oversized_bitmap.allocN32Pixels(32, 32);
+  oversized_bitmap.eraseColor(SK_ColorGREEN);
+  std::optional<std::vector<uint8_t>> oversized_png =
+      gfx::PNGCodec::EncodeBGRASkBitmap(oversized_bitmap,
+                                        /*discard_transparency=*/false);
+  ASSERT_TRUE(oversized_png.has_value());
+
+  // Minimal 1x1 24-bit BMP image to exercise non-PNG Blink decoding.
+  constexpr auto kBmpImage = std::to_array<uint8_t>({
+      0x42, 0x4D,              // Signature 'BM'
+      0x1E, 0x00, 0x00, 0x00,  // File size (30 bytes)
+      0x00, 0x00, 0x00, 0x00,  // Reserved
+      0x1A, 0x00, 0x00, 0x00,  // Pixel data offset (26)
+      0x0C, 0x00, 0x00, 0x00,  // BITMAPCOREHEADER size (12)
+      0x01, 0x00, 0x01, 0x00,  // Width 1, Height 1
+      0x01, 0x00,              // Planes (1)
+      0x18, 0x00,              // Bits per pixel (24)
+      0x00, 0xFF, 0x00, 0x00,  // Pixel + row padding
+  });
+
+  base::flat_map<uint32_t, std::vector<uint8_t>> raw_favicons;
+  raw_favicons[0] = std::move(*oversized_png);
+  raw_favicons[1] = {0xDE, 0xAD, 0xBE, 0xEF};
+  raw_favicons[2] = {};
+  raw_favicons[7] = std::vector<uint8_t>(kBmpImage.begin(), kBmpImage.end());
+
+  base::test::TestFuture<const base::flat_map<uint32_t, std::vector<uint8_t>>&>
+      future;
+  remote->ReencodeFavicons(raw_favicons, future.GetCallback());
+
+  const base::flat_map<uint32_t, std::vector<uint8_t>>& png_favicons =
+      future.Get();
+  ASSERT_EQ(2u, png_favicons.size());
+  ASSERT_TRUE(png_favicons.contains(0));
+  EXPECT_FALSE(png_favicons.contains(1));
+  EXPECT_FALSE(png_favicons.contains(2));
+  ASSERT_TRUE(png_favicons.contains(7));
+
+  SkBitmap decoded_resized = gfx::PNGCodec::Decode(png_favicons.at(0));
+  ASSERT_FALSE(decoded_resized.isNull());
+  EXPECT_EQ(gfx::kFaviconSize, decoded_resized.width());
+  EXPECT_EQ(gfx::kFaviconSize, decoded_resized.height());
+
+  SkBitmap decoded_bmp = gfx::PNGCodec::Decode(png_favicons.at(7));
+  ASSERT_FALSE(decoded_bmp.isNull());
+  EXPECT_EQ(1, decoded_bmp.width());
+  EXPECT_EQ(1, decoded_bmp.height());
 }
 
 }  // namespace user_data_importer

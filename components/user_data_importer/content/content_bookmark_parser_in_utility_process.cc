@@ -4,7 +4,10 @@
 
 #include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
 
+#include <utility>
+
 #include "components/user_data_importer/content/content_bookmark_parser_utils.h"
+#include "components/user_data_importer/content/favicon_reencode.h"
 
 namespace user_data_importer {
 
@@ -17,7 +20,13 @@ ContentBookmarkParserInUtilityProcess::
 
 void ContentBookmarkParserInUtilityProcess::Parse(const std::string& raw_html,
                                                   ParseCallback callback) {
-  std::move(callback).Run(ParseBookmarksUnsafe(std::move(raw_html)));
+  std::move(callback).Run(ParseBookmarksUnsafe(raw_html));
+}
+
+void ContentBookmarkParserInUtilityProcess::ReencodeFavicons(
+    const base::flat_map<uint32_t, std::vector<uint8_t>>& raw_favicons,
+    ReencodeFaviconsCallback callback) {
+  std::move(callback).Run(importer::ReencodeFavicons(raw_favicons));
 }
 
 }  // namespace user_data_importer
