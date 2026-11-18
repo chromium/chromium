@@ -63,8 +63,8 @@ if (is_chrome_branded) {
 
   source_set("vector_icons") {
     sources = get_target_outputs(":indigo_vector_icons")
+    public_deps = [ ":indigo_vector_icons" ]
     deps = [
-      ":indigo_vector_icons",
       "//base",
       "//skia",
       "//ui/gfx",

@@ -39,8 +39,8 @@ if (current_toolchain == host_toolchain) {
       "src",
       target_gen_dir,
     ]
+    public_deps = [ ":generate_version_header" ]
     deps = [
-      ":generate_version_header",
       "//third_party/protobuf:protoc_lib",
 
       # Default manifest on Windows (a no-op elsewhere).

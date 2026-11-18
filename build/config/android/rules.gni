@@ -3981,7 +3981,8 @@ if (!is_robolectric && enable_java_templates) {
 
       source_set("${_aidl_target}_native") {
         sources = _cpp_outputs + _header_outputs
-        deps = [ ":$_aidl_target" ]
+        public_deps = [ ":$_aidl_target" ]
+        deps = []
         if (defined(invoker.deps)) {
           foreach(_dep, invoker.deps) {
             deps += [ "${_dep}_native" ]

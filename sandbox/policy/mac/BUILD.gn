@@ -52,7 +52,7 @@ source_set("packaged_sb_files") {
   sources = get_target_outputs(":package_sb_files") +
             get_target_outputs(":generate_params")
   defines = [ "SANDBOX_POLICY_IMPL" ]
-  deps = [
+  public_deps = [
     ":generate_params",
     ":package_sb_files",
   ]

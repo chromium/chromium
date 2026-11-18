@@ -284,7 +284,7 @@ template("generate_final_jni") {
       if (defined(_header_output)) {
         sources += [ _header_output ]
       }
-      deps = [ ":$_target_name($default_toolchain)" ]
+      public_deps = [ ":$_target_name($default_toolchain)" ]
       public_configs =
           [ "//third_party/jni_zero:jni_include_dir($default_toolchain)" ]
       if (is_robolectric) {

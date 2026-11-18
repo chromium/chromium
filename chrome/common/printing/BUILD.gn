@@ -47,7 +47,7 @@ source_set("printing") {
   ]
 
   if (is_chromeos) {
-    deps += [ ":ipp_l10n_generate" ]
+    public_deps += [ ":ipp_l10n_generate" ]
 
     sources += [ localization_map_path ]
   }

@@ -159,7 +159,7 @@ if (crashpad_is_apple && !crashpad_is_tvos) {
   }
 
   static_library("mig_output") {
-    deps = [ ":mig" ]
+    public_deps = [ ":mig" ]
     sources = get_target_outputs(":mig")
     if (crashpad_is_in_chromium) {
       # mig output contains unreachable code, which irks -Wunreachable-code.

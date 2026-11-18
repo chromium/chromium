@@ -612,9 +612,8 @@ component("vector_icons") {
   sources = get_target_outputs(":ash_vector_icons")
 
   defines = [ "ASH_IMPLEMENTATION" ]
-
+  public_deps = [ ":ash_vector_icons" ]
   deps = [
-    ":ash_vector_icons",
     "//base",
     "//skia",
     "//ui/gfx",
