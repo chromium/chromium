@@ -137,7 +137,7 @@ BASE_FEATURE(kOmniboxEverywhere, DISABLED);
 // If enabled, defers creating the Omnibox Everywhere status tray icon and
 // context menu during `Profile` initialization until browser startup is
 // complete.
-BASE_FEATURE(kOmniboxEverywhereDeferStatusIcon, ENABLED);
+BASE_FEATURE(kOmniboxEverywhereDeferStatusIcon, DISABLED);
 // If enabled, Omnibox Everywhere drags its window from
 // WebContentsDelegate::PreHandleMouseEvent() on all platforms. If disabled,
 // it falls back to the legacy Aura pre-target handler and macOS HTCAPTION.
