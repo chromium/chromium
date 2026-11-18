@@ -422,6 +422,7 @@ data/mse_different_containers.html
 data/mse_player.html
 data/multi_frame_mse_player.html
 data/multiple_cdm_types.html
+data/multitrack-2audio.webm
 data/multitrack-3video-2audio.webm
 data/multitrack-disabled.mp4
 data/negative_ts.flac

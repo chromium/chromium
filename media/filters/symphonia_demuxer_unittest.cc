@@ -4,6 +4,7 @@
 
 #include "media/filters/symphonia_demuxer.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -162,11 +163,32 @@ class BlockingFileDataSource : public FileDataSource {
   bool stopped_ GUARDED_BY(lock_) = false;
 };
 
+// The per-container `kSymphonia*Demuxing` features.
+std::vector<base::test::FeatureRef> SymphoniaContainerFeatures() {
+  return {kSymphoniaAacDemuxing, kSymphoniaFlacDemuxing, kSymphoniaIsomDemuxing,
+          kSymphoniaMkvDemuxing, kSymphoniaMp3Demuxing,  kSymphoniaOggDemuxing,
+          kSymphoniaRiffDemuxing};
+}
+
+// Sets feature state. Used as a base class so the state is set before a
+// fixture's `TaskEnvironment` starts threads that may read features.
+class ScopedFeatureState {
+ protected:
+  ScopedFeatureState(const std::vector<base::test::FeatureRef>& enabled,
+                     const std::vector<base::test::FeatureRef>& disabled) {
+    feature_list_.InitWithFeatures(enabled, disabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 }  // namespace
 
-class SymphoniaDemuxerTest : public testing::Test {
+class SymphoniaDemuxerTest : public testing::Test, public ScopedFeatureState {
  public:
-  SymphoniaDemuxerTest() = default;
+  SymphoniaDemuxerTest()
+      : SymphoniaDemuxerTest(SymphoniaContainerFeatures(), {}) {}
   ~SymphoniaDemuxerTest() override {
     if (demuxer_) {
       demuxer_->Stop();
@@ -186,8 +208,9 @@ class SymphoniaDemuxerTest : public testing::Test {
   }
 
   void CreateDemuxerForFile(const base::FilePath& path) {
-    auto data_source = std::make_unique<FileDataSource>();
+    auto data_source = std::make_unique<BlockingFileDataSource>();
     CHECK(data_source->Initialize(path));
+    file_data_source_ = data_source.get();
     CreateDemuxerForDataSource(std::move(data_source));
   }
 
@@ -198,14 +221,14 @@ class SymphoniaDemuxerTest : public testing::Test {
         base::DoNothing(),
         base::BindRepeating(&SymphoniaDemuxerTest::OnMediaTracksUpdated,
                             base::Unretained(this)),
-        media_log_.Clone());
+        media_log_.Clone(), allow_fallback_);
   }
 
   void InitializeDemuxer(PipelineStatus expected_status = PIPELINE_OK) {
     EXPECT_CALL(host_, SetDuration(_)).Times(AnyNumber());
     base::test::TestFuture<PipelineStatus> status;
     demuxer_->Initialize(&host_, status.GetCallback());
-    EXPECT_EQ(status.Get(), expected_status);
+    EXPECT_EQ(status.Get(), expected_status) << status.Get().message();
   }
 
   SymphoniaDemuxerStream* GetStream(DemuxerStream::Type type) {
@@ -265,17 +288,36 @@ class SymphoniaDemuxerTest : public testing::Test {
     }
   }
 
+  // Expects that the demuxer did not stop `data_source_`, so that another
+  // demuxer can still read it. Only for data sources made by
+  // `CreateDemuxerForFile()`.
+  void ExpectDataSourceNotStopped() {
+    EXPECT_FALSE(file_data_source_->stopped());
+    std::array<uint8_t, 4> buffer;
+    base::test::TestFuture<int> bytes_read;
+    data_source_->Read(0, buffer, bytes_read.GetCallback());
+    EXPECT_EQ(bytes_read.Get(), static_cast<int>(buffer.size()));
+  }
+
  protected:
   using ReadFuture = base::test::TestFuture<DemuxerStream::Status,
                                             DemuxerStream::DecoderBufferVector>;
+
+  SymphoniaDemuxerTest(const std::vector<base::test::FeatureRef>& enabled,
+                       const std::vector<base::test::FeatureRef>& disabled)
+      : ScopedFeatureState(enabled, disabled) {}
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   StrictMock<MockDemuxerHost> host_;
   NiceMock<MockMediaLog> media_log_;
   std::unique_ptr<FileDataSource> data_source_;
+  // `data_source_`, if made by `CreateDemuxerForFile()`.
+  raw_ptr<BlockingFileDataSource> file_data_source_ = nullptr;
   std::unique_ptr<SymphoniaDemuxer> demuxer_;
   std::unique_ptr<MediaTracks> media_tracks_;
+  // Passed to the demuxer created by `CreateDemuxer*()`.
+  bool allow_fallback_ = true;
   // Run when the demuxer publishes its tracks, which happens on the media
   // sequence after probing and before the first packet read is posted.
   base::OnceClosure on_media_tracks_updated_;
@@ -377,13 +419,132 @@ TEST_F(SymphoniaDemuxerTest, InitializeMp3) {
 }
 
 TEST_F(SymphoniaDemuxerTest, InitializeFailsWithTruncatedHeader) {
-  CreateDemuxerWithContents("RIFF");
+  // A WAVE file header with no chunks after it. Symphonia recognizes the
+  // container but can't read it, which is an error rather than a fallback.
+  CreateDemuxerWithContents(std::string_view("RIFF\x04\0\0\0WAVE", 12));
   InitializeDemuxer(DEMUXER_ERROR_COULD_NOT_OPEN);
 }
 
-TEST_F(SymphoniaDemuxerTest, InitializeFailsWithInvalidData) {
+TEST_F(SymphoniaDemuxerTest, UnrecognizedContainerFallsBack) {
+  CreateDemuxerWithContents("GARBAGE NOT MEDIA DATA");
+  InitializeDemuxer(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
+  EXPECT_EQ(media_tracks_, nullptr);
+
+  demuxer_->Stop();
+  ExpectDataSourceNotStopped();
+}
+
+TEST_F(SymphoniaDemuxerTest, VideoTrackFallsBack) {
+  CreateDemuxer("bear-320x240.webm");
+  InitializeDemuxer(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
+  EXPECT_EQ(media_tracks_, nullptr);
+
+  demuxer_->Stop();
+  ExpectDataSourceNotStopped();
+}
+
+class SymphoniaDemuxerRiffDisabledTest : public SymphoniaDemuxerTest {
+ public:
+  SymphoniaDemuxerRiffDisabledTest()
+      : SymphoniaDemuxerTest(/*enabled=*/{kSymphoniaFlacDemuxing},
+                             /*disabled=*/{kSymphoniaRiffDemuxing}) {}
+};
+
+TEST_F(SymphoniaDemuxerRiffDisabledTest, DisabledContainerFallsBack) {
+  CreateDemuxer("sfx_s16le.wav");
+  InitializeDemuxer(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
+  EXPECT_EQ(media_tracks_, nullptr);
+
+  demuxer_->Stop();
+  ExpectDataSourceNotStopped();
+}
+
+TEST_F(SymphoniaDemuxerRiffDisabledTest, EnabledContainerStillPlays) {
+  CreateDemuxer("sfx.flac");
+  InitializeDemuxer();
+  ExpectReadsAllPackets();
+}
+
+class SymphoniaDemuxerMp3OnlyTest : public SymphoniaDemuxerTest {
+ public:
+  SymphoniaDemuxerMp3OnlyTest()
+      : SymphoniaDemuxerTest(/*enabled=*/{kSymphoniaMp3Demuxing},
+                             /*disabled=*/{kSymphoniaFlacDemuxing}) {}
+};
+
+namespace {
+
+// Returns an empty ID3v2.4 tag.
+std::string EmptyId3v2Tag() {
+  return std::string("ID3\x04\0\0\0\0\0\0", 10);
+}
+
+std::string ReadTestFile(std::string_view name) {
+  std::string contents;
+  CHECK(base::ReadFileToString(GetTestDataFilePath(name), &contents));
+  return contents;
+}
+
+}  // namespace
+
+TEST_F(SymphoniaDemuxerMp3OnlyTest, FallsBackForId3TaggedAdts) {
+  // `DetermineContainer()` alone reports MP3 for anything after an ID3 tag.
+  // The ADTS data after the tag decides the container.
+  CreateDemuxerWithContents(EmptyId3v2Tag() + ReadTestFile("sfx.adts"));
+  InitializeDemuxer(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
+}
+
+TEST_F(SymphoniaDemuxerMp3OnlyTest, FallsBackWhenProbedContainerIsDisabled) {
+  // Two ID3 tags before FLAC data. The sniff skips only the first tag, so the
+  // stream looks like MP3, which is enabled, but Symphonia finds FLAC, which
+  // is not.
+  const std::string flac = ReadTestFile("sfx.flac");
+  ASSERT_EQ(container_names::DetermineContainer(
+                base::as_byte_span(EmptyId3v2Tag() + flac)),
+            container_names::MediaContainerName::kContainerMP3);
+
+  CreateDemuxerWithContents(EmptyId3v2Tag() + EmptyId3v2Tag() + flac);
+  InitializeDemuxer(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
+  EXPECT_EQ(media_tracks_, nullptr);
+}
+
+class SymphoniaDemuxerFlacOnlyTest : public SymphoniaDemuxerTest {
+ public:
+  SymphoniaDemuxerFlacOnlyTest()
+      : SymphoniaDemuxerTest(/*enabled=*/{kSymphoniaFlacDemuxing},
+                             /*disabled=*/{kSymphoniaMp3Demuxing}) {}
+};
+
+TEST_F(SymphoniaDemuxerFlacOnlyTest, PlaysId3TaggedFlac) {
+  CreateDemuxerWithContents(EmptyId3v2Tag() + ReadTestFile("sfx.flac"));
+  InitializeDemuxer();
+}
+
+TEST_F(SymphoniaDemuxerRiffDisabledTest,
+       PlaysDisabledContainerWithoutFallback) {
+  allow_fallback_ = false;
+  CreateDemuxer("sfx_s16le.wav");
+  InitializeDemuxer();
+  ExpectReadsAllPackets();
+}
+
+TEST_F(SymphoniaDemuxerTest, PlaysAudioOfVideoFileWithoutFallback) {
+  allow_fallback_ = false;
+  CreateDemuxer("bear-320x240.webm");
+  InitializeDemuxer();
+  ASSERT_NE(media_tracks_, nullptr);
+  ASSERT_EQ(media_tracks_->tracks().size(), 1u);
+  EXPECT_EQ(media_tracks_->tracks()[0]->type(), MediaTrack::Type::kAudio);
+}
+
+TEST_F(SymphoniaDemuxerTest, UnrecognizedContainerFailsWithoutFallback) {
+  allow_fallback_ = false;
   CreateDemuxerWithContents("GARBAGE NOT MEDIA DATA");
   InitializeDemuxer(DEMUXER_ERROR_COULD_NOT_OPEN);
+
+  // Without a fallback, stopping the demuxer stops the data source as usual.
+  demuxer_->Stop();
+  EXPECT_TRUE(file_data_source_->stopped());
 }
 
 TEST_F(SymphoniaDemuxerTest, StopAbortsPendingRead) {
@@ -606,7 +767,7 @@ TEST_F(SymphoniaDemuxerTest, SeekPastEndEndsStream) {
 }
 
 TEST_F(SymphoniaDemuxerTest, OnlyFirstAudioTrackStartsEnabled) {
-  CreateDemuxer("multitrack-3video-2audio.webm");
+  CreateDemuxer("multitrack-2audio.webm");
   InitializeDemuxer();
 
   std::vector<raw_ptr<DemuxerStream>> streams = demuxer_->GetAllStreams();
@@ -661,7 +822,7 @@ TEST_F(SymphoniaDemuxerTest, ConstructedOnMainThreadAndUsedOnMediaSequence) {
       base::ThreadPool::CreateSequencedTaskRunner({});
   demuxer_ = std::make_unique<SymphoniaDemuxer>(
       media_task_runner, data_source_.get(), base::DoNothing(),
-      base::DoNothing(), media_log_.Clone());
+      base::DoNothing(), media_log_.Clone(), /*allow_fallback=*/true);
 
   EXPECT_CALL(host_, SetDuration(_));
   base::test::TestFuture<PipelineStatus> init_status;
@@ -682,12 +843,20 @@ TEST_F(SymphoniaDemuxerTest, ConstructedOnMainThreadAndUsedOnMediaSequence) {
 
 namespace {
 
-// Sets the state of `kSymphoniaDemuxing`. Used as a base class so the state is
-// set before `TaskEnvironment` starts threads that may read features.
+// Sets the state of `kSymphoniaDemuxing`, along with the WebM and WAV
+// demuxing features when enabled. Other containers, like FLAC, fall back to
+// FFmpegDemuxer. Used as a base class so the state is set before
+// `TaskEnvironment` starts threads that may read features.
 class ScopedSymphoniaDemuxingState {
  protected:
   explicit ScopedSymphoniaDemuxingState(bool enabled) {
-    feature_list_.InitWithFeatureState(kSymphoniaDemuxing, enabled);
+    if (enabled) {
+      feature_list_.InitWithFeatures(
+          {kSymphoniaDemuxing, kSymphoniaMkvDemuxing, kSymphoniaRiffDemuxing},
+          {});
+    } else {
+      feature_list_.InitAndDisableFeature(kSymphoniaDemuxing);
+    }
   }
 
  private:
@@ -805,22 +974,14 @@ TEST_P(SymphoniaDemuxerManagerTest, CreatesAndInitializesDemuxer) {
 }
 
 TEST_P(SymphoniaDemuxerManagerTest, AddsEveryTrackOfMultiTrackFile) {
-  // The file has three video tracks and two audio tracks. SymphoniaDemuxer
-  // does not support video tracks yet (crbug.com/583934381), so only
-  // FFmpegDemuxer reports them.
   constexpr int kAudioTracks = 2;
-  const int video_tracks = GetParam() ? 0 : 3;
-  base::RepeatingClosure track_added = base::BarrierClosure(
-      kAudioTracks + video_tracks, tracks_added_.QuitClosure());
+  base::RepeatingClosure track_added =
+      base::BarrierClosure(kAudioTracks, tracks_added_.QuitClosure());
   EXPECT_CALL(client_,
               AddTrack(Property(&MediaTrack::type, MediaTrack::Type::kAudio)))
       .Times(kAudioTracks)
       .WillRepeatedly(RunClosure(track_added));
-  EXPECT_CALL(client_,
-              AddTrack(Property(&MediaTrack::type, MediaTrack::Type::kVideo)))
-      .Times(video_tracks)
-      .WillRepeatedly(RunClosure(track_added));
-  CreateInitializeAndStopDemuxer("multitrack-3video-2audio.webm");
+  CreateInitializeAndStopDemuxer("multitrack-2audio.webm");
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -832,8 +993,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 #if BUILDFLAG(ENABLE_FFMPEG)
-// Tests how `DemuxerManager` handles `DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED`
-// from SymphoniaDemuxer.
+// Tests the fallback to FFmpegDemuxer for a container that Symphonia demuxing
+// is not enabled for.
 class SymphoniaDemuxerManagerFallbackTest
     : public testing::Test,
       public SymphoniaDemuxerManagerTestBase {
@@ -843,10 +1004,12 @@ class SymphoniaDemuxerManagerFallbackTest
 };
 
 TEST_F(SymphoniaDemuxerManagerFallbackTest, FallsBackToFFmpegDemuxer) {
-  DemuxerManager& manager = CreateManager();
+  DemuxerManager& manager = CreateManager("sfx.flac");
   Demuxer* demuxer = CreateDemuxer(manager);
   ASSERT_EQ(manager.GetDemuxerType(), DemuxerType::kSymphoniaDemuxer);
-  ASSERT_EQ(InitializeOnMediaSequence(demuxer), PIPELINE_OK);
+
+  PipelineStatus status = InitializeOnMediaSequence(demuxer);
+  EXPECT_EQ(status, DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
   testing::Mock::VerifyAndClearExpectations(&client_);
 
   // Like the pipeline, stop the demuxer on the media sequence when the client
@@ -858,19 +1021,21 @@ TEST_F(SymphoniaDemuxerManagerFallbackTest, FallsBackToFFmpegDemuxer) {
   base::test::TestFuture<void> restarted;
   EXPECT_CALL(client_, RestartForDemuxerChange(/*is_hls=*/false))
       .WillOnce(RunClosure(restarted.GetRepeatingCallback()));
-  manager.OnPipelineError(PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED));
+  manager.OnPipelineError(std::move(status));
   ASSERT_TRUE(restarted.Wait());
   EXPECT_FALSE(manager.GetDemuxerType().has_value());
   testing::Mock::VerifyAndClearExpectations(&client_);
 
   // Like `WebMediaPlayerImpl::RestartForDemuxerChange()`, create the demuxer
-  // again. FFmpegDemuxer reads the same data source.
+  // again. FFmpegDemuxer reads the data source that SymphoniaDemuxer released
+  // without stopping.
   base::test::TestFuture<void> track_added;
   EXPECT_CALL(client_,
               AddTrack(Property(&MediaTrack::type, MediaTrack::Type::kAudio)))
       .WillOnce(RunClosure(track_added.GetRepeatingCallback()));
   demuxer = CreateDemuxer(manager);
   EXPECT_EQ(manager.GetDemuxerType(), DemuxerType::kFFmpegDemuxer);
+  EXPECT_FALSE(data_source_->stopped());
   EXPECT_EQ(InitializeOnMediaSequence(demuxer), PIPELINE_OK);
   ASSERT_TRUE(track_added.Wait());
 
@@ -879,21 +1044,22 @@ TEST_F(SymphoniaDemuxerManagerFallbackTest, FallsBackToFFmpegDemuxer) {
 
 TEST_F(SymphoniaDemuxerManagerFallbackTest,
        StopsDataSourceWhenFallbackIsDisallowed) {
-  DemuxerManager& manager = CreateManager();
+  DemuxerManager& manager = CreateManager("sfx.flac");
   Demuxer* demuxer = CreateDemuxer(manager);
-  ASSERT_EQ(InitializeOnMediaSequence(demuxer), PIPELINE_OK);
+  PipelineStatus status = InitializeOnMediaSequence(demuxer);
+  ASSERT_EQ(status, DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
+  StopOnMediaSequence(demuxer);
+  EXPECT_FALSE(data_source_->stopped());
   testing::Mock::VerifyAndClearExpectations(&client_);
 
-  // With no fallback, DemuxerManager reports the error and stops the data
-  // source, since no other demuxer will take it over.
+  // SymphoniaDemuxer released the data source without stopping it. With no
+  // fallback, DemuxerManager reports the error and stops the data source.
   EXPECT_CALL(client_,
               OnError(PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED)));
   EXPECT_CALL(client_, RestartForDemuxerChange(_)).Times(0);
   manager.DisallowFallback();
-  manager.OnPipelineError(PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED));
+  manager.OnPipelineError(std::move(status));
   EXPECT_TRUE(data_source_->stopped());
-
-  StopOnMediaSequence(demuxer);
 }
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
@@ -904,6 +1070,8 @@ TEST_F(SymphoniaDemuxerManagerFallbackTest, FallsBackTwiceForHlsManifest) {
   DemuxerManager& manager = CreateManager("hls/mp_ts_avc1.hls");
   Demuxer* demuxer = CreateDemuxer(manager);
   ASSERT_EQ(manager.GetDemuxerType(), DemuxerType::kSymphoniaDemuxer);
+  PipelineStatus status = InitializeOnMediaSequence(demuxer);
+  ASSERT_EQ(status, DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED);
   testing::Mock::VerifyAndClearExpectations(&client_);
 
   // Fall back from SymphoniaDemuxer to FFmpegDemuxer, keeping the data source.
@@ -914,14 +1082,15 @@ TEST_F(SymphoniaDemuxerManagerFallbackTest, FallsBackTwiceForHlsManifest) {
   base::test::TestFuture<void> restarted_for_ffmpeg;
   EXPECT_CALL(client_, RestartForDemuxerChange(/*is_hls=*/false))
       .WillOnce(RunClosure(restarted_for_ffmpeg.GetRepeatingCallback()));
-  manager.OnPipelineError(PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED));
+  manager.OnPipelineError(std::move(status));
   ASSERT_TRUE(restarted_for_ffmpeg.Wait());
   testing::Mock::VerifyAndClearExpectations(&client_);
 
   demuxer = CreateDemuxer(manager);
   ASSERT_EQ(manager.GetDemuxerType(), DemuxerType::kFFmpegDemuxer);
-  PipelineStatus status = InitializeOnMediaSequence(demuxer);
+  status = InitializeOnMediaSequence(demuxer);
   ASSERT_EQ(status, DEMUXER_ERROR_DETECTED_HLS);
+  EXPECT_FALSE(data_source_->stopped());
 
   // Fall back from FFmpegDemuxer to the HLS demuxer, which frees the data
   // source.

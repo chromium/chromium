@@ -36,6 +36,12 @@ MEDIA_EXPORT SampleFormat SymphoniaCodecToSampleFormat(SymphoniaCodec codec);
 MEDIA_EXPORT container_names::MediaContainerName
 SymphoniaFormatNameToContainerName(std::string_view name);
 
+// Returns true if the `kSymphonia*Demuxing` feature for `container` is
+// enabled. Returns false for containers that this build of Symphonia can't
+// demux.
+MEDIA_EXPORT bool IsSymphoniaDemuxingEnabledForContainer(
+    container_names::MediaContainerName container);
+
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_SYMPHONIA_DEMUXER_UTIL_H_

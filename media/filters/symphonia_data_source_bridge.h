@@ -59,6 +59,11 @@ class MEDIA_EXPORT SymphoniaDataSourceBridge final
   SymphoniaDataSourceBridge& operator=(const SymphoniaDataSourceBridge&) =
       delete;
 
+  // Stops using `data_source` without stopping it, so another demuxer can read
+  // it after this bridge is destroyed. Later reads and seeks fail. Must only be
+  // called while no `Read()` or `Seek()` is running on `blocking_task_runner`.
+  void ReleaseDataSource();
+
   // SymphoniaSourceBridge implementation. Must be called on
   // `blocking_task_runner`.
   int64_t Read(rust::Slice<uint8_t> buf) override;

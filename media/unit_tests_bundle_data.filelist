@@ -434,6 +434,7 @@
 //media/test/data/mse_player.html
 //media/test/data/multi_frame_mse_player.html
 //media/test/data/multiple_cdm_types.html
+//media/test/data/multitrack-2audio.webm
 //media/test/data/multitrack-3video-2audio.webm
 //media/test/data/multitrack-disabled.mp4
 //media/test/data/negative_ts.flac

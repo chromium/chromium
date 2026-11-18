@@ -93,6 +93,14 @@ SymphoniaDataSourceBridge::~SymphoniaDataSourceBridge() {
   CHECK(aborted_.IsSignaled());
 }
 
+void SymphoniaDataSourceBridge::ReleaseDataSource() {
+  {
+    base::AutoLock lock(lock_);
+    data_source_ = nullptr;
+  }
+  aborted_.Signal();
+}
+
 void SymphoniaDataSourceBridge::Shutdown() {
   DataSource* data_source = nullptr;
   {

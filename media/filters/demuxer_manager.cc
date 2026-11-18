@@ -487,7 +487,9 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateSymphoniaDemuxer() {
                               weak_factory_.GetWeakPtr())),
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &DemuxerManager::OnMediaTracksUpdated, weak_factory_.GetWeakPtr())),
-      media_log_->Clone());
+      media_log_->Clone(),
+      // Without FFmpegDemuxer there is nothing to fall back to.
+      /*allow_fallback=*/BUILDFLAG(ENABLE_FFMPEG));
 }
 #endif  // BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
 

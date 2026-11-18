@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -64,7 +65,8 @@ struct SymphoniaTrackInfo;
 // - Seeking, aborting reads, and enabling/disabling tracks.
 //
 // What does not work yet:
-// - Video tracks - ignored; TODO(crbug.com/583934381).
+// - Video tracks - files with video fall back (see below), or are played audio
+//   only if no fallback is available; TODO(crbug.com/583934381).
 // - Encrypted media - `encrypted_media_init_data_cb` is never invoked;
 //   TODO(crbug.com/583935700).
 // - Mid-stream config changes (TODO(crbug.com/583935452),
@@ -77,11 +79,18 @@ struct SymphoniaTrackInfo;
 //   current demuxing position; TODO(crbug.com/583935964).
 class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
  public:
+  // If `allow_fallback` is true, initialization reports
+  // `DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED` for media that Symphonia demuxing is
+  // not enabled for (see `IsSymphoniaDemuxingEnabledForContainer()`) or that
+  // has a video track, after releasing `data_source` without stopping it, so
+  // the owner can play it with another demuxer. If false, Symphonia demuxes
+  // whatever it can, and other media fails with a regular error.
   SymphoniaDemuxer(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                    DataSource* data_source,
                    const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
                    MediaTracksUpdatedCB media_tracks_updated_cb,
-                   std::unique_ptr<MediaLog> media_log);
+                   std::unique_ptr<MediaLog> media_log,
+                   bool allow_fallback);
 
   SymphoniaDemuxer(const SymphoniaDemuxer&) = delete;
   SymphoniaDemuxer& operator=(const SymphoniaDemuxer&) = delete;
@@ -124,14 +133,19 @@ class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
     rust::Box<SymphoniaDemuxerBridge> demuxer_bridge;
   };
 
-  // The probe result, or Symphonia's error message if probing failed.
-  using InitResultOrError = base::expected<InitResult, std::string>;
+  // The probe result, or why initialization failed.
+  // `DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED` means Symphonia demuxing is not
+  // enabled for the container at the start of the stream.
+  using InitResultOrError = base::expected<InitResult, PipelineStatus>;
 
   // Runs on `blocking_task_runner`. Asks Symphonia to probe the container
-  // read through `source_bridge`.
+  // read through `source_bridge`. If `allow_fallback` is true, first checks
+  // that Symphonia demuxing is enabled for the container at the start of the
+  // stream.
   static InitResultOrError InitializeOnBlockingSequence(
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
-      SymphoniaDataSourceBridge* source_bridge);
+      SymphoniaDataSourceBridge* source_bridge,
+      bool allow_fallback);
 
   // Creates a stream for an audio `track`, adding it to `media_tracks`. Tracks
   // with an unsupported codec or an invalid config are skipped.
@@ -157,10 +171,16 @@ class MEDIA_EXPORT SymphoniaDemuxer : public Demuxer {
   // Reports a fatal error to the `DemuxerHost`.
   void OnDemuxerError(PipelineStatus status);
 
+  // Completes initialization with `DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED` so that
+  // `DemuxerManager` falls back to FFmpegDemuxer. Releases `data_source_`
+  // without stopping it, so the fallback demuxer can read it.
+  void FailInitializationForFallback(std::string_view reason);
+
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   const MediaTracksUpdatedCB media_tracks_updated_cb_;
   const std::unique_ptr<MediaLog> media_log_;
+  const bool allow_fallback_;
 
   raw_ptr<DataSource> data_source_ = nullptr;
   raw_ptr<DemuxerHost> host_ = nullptr;

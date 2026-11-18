@@ -4,6 +4,9 @@
 
 #include "media/filters/symphonia_demuxer_util.h"
 
+#include "base/feature_list.h"
+#include "media/base/media_switches.h"
+
 namespace media {
 
 AudioCodec SymphoniaCodecToAudioCodec(SymphoniaCodec codec) {
@@ -104,6 +107,37 @@ container_names::MediaContainerName SymphoniaFormatNameToContainerName(
     return container_names::MediaContainerName::kContainerWEBM;
   }
   return container_names::MediaContainerName::kContainerUnknown;
+}
+
+bool IsSymphoniaDemuxingEnabledForContainer(
+    container_names::MediaContainerName container) {
+  using container_names::MediaContainerName;
+  // Only containers that this build of Symphonia can read. It has no ADTS
+  // (`kSymphoniaAacDemuxing`) or AIFF reader.
+  const base::Feature* feature = nullptr;
+  switch (container) {
+    case MediaContainerName::kContainerFLAC:
+      feature = &kSymphoniaFlacDemuxing;
+      break;
+    case MediaContainerName::kContainerMOV:
+      feature = &kSymphoniaIsomDemuxing;
+      break;
+    case MediaContainerName::kContainerWEBM:
+      feature = &kSymphoniaMkvDemuxing;
+      break;
+    case MediaContainerName::kContainerMP3:
+      feature = &kSymphoniaMp3Demuxing;
+      break;
+    case MediaContainerName::kContainerOgg:
+      feature = &kSymphoniaOggDemuxing;
+      break;
+    case MediaContainerName::kContainerWAV:
+      feature = &kSymphoniaRiffDemuxing;
+      break;
+    default:
+      return false;
+  }
+  return base::FeatureList::IsEnabled(*feature);
 }
 
 }  // namespace media

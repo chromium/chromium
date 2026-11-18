@@ -703,7 +703,9 @@ void PipelineIntegrationTestBase::CreateDemuxer(
         base::BindRepeating(
             &PipelineIntegrationTestBase::DemuxerMediaTracksUpdatedCB,
             base::Unretained(this)),
-        media_log_.Clone());
+        media_log_.Clone(),
+        // Exercise SymphoniaDemuxer itself rather than falling back.
+        /*allow_fallback=*/false);
     return;
   }
 #endif

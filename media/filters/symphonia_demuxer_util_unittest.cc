@@ -4,6 +4,8 @@
 
 #include "media/filters/symphonia_demuxer_util.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -100,6 +102,50 @@ TEST(SymphoniaDemuxerUtilTest, UnknownContainerNames) {
             MediaContainerName::kContainerUnknown);
   EXPECT_EQ(SymphoniaFormatNameToContainerName("webm"),
             MediaContainerName::kContainerUnknown);
+}
+
+TEST(SymphoniaDemuxerUtilTest, DemuxingEnabledForContainerFollowsFeature) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kSymphoniaRiffDemuxing, kSymphoniaMp3Demuxing,
+                            kSymphoniaOggDemuxing},
+      /*disabled_features=*/{kSymphoniaFlacDemuxing, kSymphoniaIsomDemuxing,
+                             kSymphoniaMkvDemuxing});
+
+  EXPECT_TRUE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerWAV));
+  EXPECT_TRUE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerMP3));
+  EXPECT_TRUE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerOgg));
+  EXPECT_FALSE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerFLAC));
+  EXPECT_FALSE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerMOV));
+  EXPECT_FALSE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerWEBM));
+}
+
+TEST(SymphoniaDemuxerUtilTest, DemuxingNeverEnabledForOtherContainers) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kSymphoniaAacDemuxing, kSymphoniaFlacDemuxing,
+                            kSymphoniaIsomDemuxing, kSymphoniaMkvDemuxing,
+                            kSymphoniaMp3Demuxing, kSymphoniaOggDemuxing,
+                            kSymphoniaRiffDemuxing},
+      /*disabled_features=*/{});
+
+  EXPECT_FALSE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerUnknown));
+  EXPECT_FALSE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerHLS));
+  EXPECT_FALSE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerMPEG2TS));
+  // This build of Symphonia has no ADTS or AIFF reader.
+  EXPECT_FALSE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerAAC));
+  EXPECT_FALSE(IsSymphoniaDemuxingEnabledForContainer(
+      MediaContainerName::kContainerAIFF));
 }
 
 }  // namespace media

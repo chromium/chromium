@@ -5,6 +5,7 @@
 #include "media/filters/symphonia_demuxer.h"
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <utility>
 
@@ -30,6 +31,92 @@
 namespace media {
 
 namespace {
+
+// Number of bytes read from the start of the stream to determine the
+// container, like `FFmpegGlue`.
+constexpr size_t kContainerSniffSize = 8192;
+
+// Reads from the current position of `source` until `buffer` is full or the
+// stream ends. Returns the number of bytes read, or nullopt on a read error.
+std::optional<size_t> ReadStreamStart(SymphoniaDataSourceBridge& source,
+                                      base::span<uint8_t> buffer) {
+  size_t total = 0;
+  while (total < buffer.size()) {
+    base::span<uint8_t> remaining = buffer.subspan(total);
+    const int64_t bytes_read =
+        source.Read(rust::Slice<uint8_t>(remaining.data(), remaining.size()));
+    if (bytes_read < 0) {
+      return std::nullopt;
+    }
+    if (bytes_read == 0) {
+      break;
+    }
+    total += static_cast<size_t>(bytes_read);
+  }
+  return total;
+}
+
+// Returns the size of the ID3v2 tag at the start of `data`, including its
+// header and footer, or 0 if `data` does not start with one.
+size_t GetId3v2TagSize(base::span<const uint8_t> data) {
+  // The header is "ID3", two version bytes, a flags byte, and the size of the
+  // rest of the tag (excluding the header and footer) as four "syncsafe"
+  // bytes with seven bits each.
+  constexpr size_t kHeaderSize = 10;
+  constexpr uint8_t kFooterPresentFlag = 0x10;
+  if (data.size() < kHeaderSize || data[0] != 'I' || data[1] != 'D' ||
+      data[2] != '3') {
+    return 0;
+  }
+  size_t size = 0;
+  for (const uint8_t byte : data.subspan(6u, 4u)) {
+    if (byte & 0x80) {
+      return 0;  // Not syncsafe, so not an ID3v2 tag.
+    }
+    size = (size << 7) | byte;
+  }
+  const bool has_footer = (data[5] & kFooterPresentFlag) != 0;
+  return kHeaderSize + size + (has_footer ? kHeaderSize : 0);
+}
+
+// Returns the container of the stream read through `source`, whose position
+// must be 0, and leaves the position at 0. Returns nullopt on a read or seek
+// error.
+std::optional<container_names::MediaContainerName> SniffContainer(
+    SymphoniaDataSourceBridge& source) {
+  std::array<uint8_t, kContainerSniffSize> buffer;
+  std::optional<size_t> size = ReadStreamStart(source, buffer);
+  if (!size) {
+    return std::nullopt;
+  }
+  base::span<const uint8_t> data = base::span(buffer).first(*size);
+
+  // `DetermineContainer()` reports any stream that starts with an ID3v2 tag as
+  // MP3. Like FFmpeg's probe, look at what follows the tag instead.
+  const size_t tag_size = GetId3v2TagSize(data);
+  if (tag_size > 0) {
+    if (tag_size < data.size()) {
+      data = data.subspan(tag_size);
+    } else if (source.Seek(tag_size)) {
+      size = ReadStreamStart(source, buffer);
+      if (!size) {
+        return std::nullopt;
+      }
+      data = base::span(buffer).first(*size);
+    } else {
+      // The tag runs past the end of the stream.
+      data = {};
+    }
+  }
+
+  if (!source.Seek(0)) {
+    return std::nullopt;
+  }
+  if (data.size() < container_names::kMinimumContainerSize) {
+    return container_names::MediaContainerName::kContainerUnknown;
+  }
+  return container_names::DetermineContainer(data);
+}
 
 SymphoniaReadPacketResult ReadPacketOnBlockingSequence(
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
@@ -72,13 +159,15 @@ SymphoniaDemuxer::SymphoniaDemuxer(
     DataSource* data_source,
     const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
     MediaTracksUpdatedCB media_tracks_updated_cb,
-    std::unique_ptr<MediaLog> media_log)
+    std::unique_ptr<MediaLog> media_log,
+    bool allow_fallback)
     : media_task_runner_(task_runner),
       blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::WithBaseSyncPrimitives(),
            base::TaskPriority::USER_BLOCKING})),
       media_tracks_updated_cb_(std::move(media_tracks_updated_cb)),
       media_log_(std::move(media_log)),
+      allow_fallback_(allow_fallback),
       data_source_(data_source) {
   CHECK(data_source_);
   CHECK(media_log_);
@@ -106,15 +195,39 @@ DemuxerType SymphoniaDemuxer::GetDemuxerType() const {
 SymphoniaDemuxer::InitResultOrError
 SymphoniaDemuxer::InitializeOnBlockingSequence(
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
-    SymphoniaDataSourceBridge* source_bridge) {
+    SymphoniaDataSourceBridge* source_bridge,
+    bool allow_fallback) {
   CHECK(blocking_task_runner->RunsTasksInCurrentSequence());
 
+  if (allow_fallback) {
+    // Determine the container from the start of the stream first, and only
+    // probe with Symphonia if Symphonia demuxing is enabled for it.
+    // Otherwise, report it so that the owner can fall back to another
+    // demuxer.
+    const std::optional<container_names::MediaContainerName> sniffed =
+        SniffContainer(*source_bridge);
+    if (!sniffed) {
+      return base::unexpected(
+          PipelineStatus(DEMUXER_ERROR_COULD_NOT_OPEN,
+                         "Failed to read the start of the stream"));
+    }
+    if (!IsSymphoniaDemuxingEnabledForContainer(*sniffed)) {
+      return base::unexpected(
+          PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED,
+                         "Unsupported container for Symphonia", "container",
+                         std::to_underlying(*sniffed)));
+    }
+  }
+
   // Probe without extension or MIME type hints; Symphonia sniffs the format
-  // from the stream contents.
+  // from the stream contents. Any failure from here on is an error, since
+  // Symphonia is enabled for the container or there is no fallback.
   auto init_result = init_symphonia_demuxer(
       *source_bridge, /*hint_extension=*/"", /*hint_mime=*/"");
   if (init_result.status != SymphoniaDemuxerInitStatus::Ok) {
-    return base::unexpected(std::string(init_result.error_str));
+    return base::unexpected(PipelineStatus(
+        DEMUXER_ERROR_COULD_NOT_OPEN, "Symphonia initialization failed: " +
+                                          std::string(init_result.error_str)));
   }
 
   return InitResult{
@@ -154,7 +267,7 @@ void SymphoniaDemuxer::Initialize(DemuxerHost* host,
       FROM_HERE,
       base::BindOnce(&SymphoniaDemuxer::InitializeOnBlockingSequence,
                      blocking_task_runner_,
-                     base::Unretained(source_bridge_.get())),
+                     base::Unretained(source_bridge_.get()), allow_fallback_),
       base::BindOnce(&SymphoniaDemuxer::OnInitializeDone,
                      weak_factory_.GetWeakPtr()));
 }
@@ -164,13 +277,38 @@ void SymphoniaDemuxer::OnInitializeDone(InitResultOrError result) {
   // `Stop()` invalidates `weak_factory_`, so this never runs after it.
   CHECK(!is_stopped_);
 
-  // Probing failed: Symphonia did not recognize the container or could not
-  // read its headers.
+  // Initialization failed: Symphonia demuxing is not enabled for the
+  // container, or Symphonia could not read the container's headers.
   if (!result.has_value()) {
-    std::move(pending_init_cb_)
-        .Run(PipelineStatus(
-            DEMUXER_ERROR_COULD_NOT_OPEN,
-            "Symphonia initialization failed: " + std::move(result).error()));
+    PipelineStatus status = std::move(result).error();
+    if (status == DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED) {
+      FailInitializationForFallback(status.message());
+      return;
+    }
+    std::move(pending_init_cb_).Run(std::move(status));
+    return;
+  }
+
+  // The start of the stream can look like a different container than the one
+  // Symphonia found, for example with two ID3 tags before FLAC data. Check the
+  // container that Symphonia found too. The unused demuxer bridge is freed
+  // with `result`.
+  const container_names::MediaContainerName probed_container =
+      SymphoniaFormatNameToContainerName(result->container_name);
+  if (allow_fallback_ &&
+      !IsSymphoniaDemuxingEnabledForContainer(probed_container)) {
+    FailInitializationForFallback("Symphonia demuxing is not enabled for " +
+                                  result->container_name);
+    return;
+  }
+
+  // TODO(crbug.com/583934381): Remove once video tracks are supported. Until
+  // then, fall back so that files with video keep playing it.
+  if (allow_fallback_ &&
+      std::ranges::any_of(result->tracks, [](const SymphoniaTrackInfo& track) {
+        return track.track_type == SymphoniaTrackType::Video;
+      })) {
+    FailInitializationForFallback("Video tracks are not supported");
     return;
   }
 
@@ -182,9 +320,7 @@ void SymphoniaDemuxer::OnInitializeDone(InitResultOrError result) {
   // `FFmpegDemuxer`, report an unknown duration until end of stream.
   duration_ = result->duration_us > 0 ? base::Microseconds(result->duration_us)
                                       : kInfiniteDuration;
-  container_name_.store(
-      SymphoniaFormatNameToContainerName(result->container_name),
-      std::memory_order_relaxed);
+  container_name_.store(probed_container, std::memory_order_relaxed);
   host_->SetDuration(duration_);
 
   // Create a stream for each supported track.
@@ -195,8 +331,8 @@ void SymphoniaDemuxer::OnInitializeDone(InitResultOrError result) {
         AddAudioStream(track, *media_tracks);
         break;
       default:
-        // TODO(crbug.com/583934381): Video tracks are not yet supported; the
-        // bridge reports them but no `DemuxerStream` is created.
+        // Subtitle and unknown tracks are not supported; the bridge reports
+        // them but no `DemuxerStream` is created.
         MEDIA_LOG(WARNING, media_log_)
             << GetDisplayName() << ": ignoring unsupported non-audio track "
             << track.track_id;
@@ -611,6 +747,26 @@ void SymphoniaDemuxer::OnDemuxerError(PipelineStatus status) {
   if (!is_stopped_) {
     host_->OnDemuxerError(status);
   }
+}
+
+void SymphoniaDemuxer::FailInitializationForFallback(std::string_view reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(allow_fallback_);
+  CHECK(pending_init_cb_);
+  CHECK(source_bridge_);
+
+  // Probing has finished, so no read is in flight on `blocking_task_runner_`.
+  // Release `data_source_` without stopping it, so `Stop()` leaves it usable
+  // for the demuxer that `DemuxerManager` falls back to.
+  source_bridge_->ReleaseDataSource();
+  source_bridge_.reset();
+  data_source_ = nullptr;
+
+  MEDIA_LOG(INFO, media_log_)
+      << GetDisplayName() << ": falling back to another demuxer: " << reason;
+  std::move(pending_init_cb_)
+      .Run(PipelineStatus(DEMUXER_ERROR_SYMPHONIA_UNSUPPORTED,
+                          std::string(reason)));
 }
 
 }  // namespace media
