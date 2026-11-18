@@ -224,7 +224,7 @@ void AddChromeToInstallerState(const InstallationState& machine_state,
       machine_state.GetProductState(installer_state->system_install());
   if (chrome) {
     installer_state->set_target_path_for_testing(
-        chrome->GetSetupPath().DirName().DirName().DirName());
+        chrome->uninstall_command().GetProgram().DirName().DirName().DirName());
   } else {
     installer_state->set_target_path_for_testing(
         installer::GetDefaultChromeInstallPath(

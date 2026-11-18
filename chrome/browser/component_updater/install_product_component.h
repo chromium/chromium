@@ -40,9 +40,9 @@ struct ProductComponentInstallOutcome {
     // The inner CRX does not exist or the User Data directory could not be
     // canonicalized. `extra_code` is 0.
     kInvalidInput = 1,
-    // The running browser is not properly installed on the device: its
-    // installation state could not be read or does not name setup.exe
-    // (per-user installs only). `extra_code` is 0.
+    // The running browser is not properly installed on the device (see
+    // `installer::IsCurrentProcessInstalled()`; per-user installs only).
+    // `extra_code` is 0.
     kNotInstalled = 2,
     // Google Update's App Command could not be retrieved, e.g., because the
     // updater's COM registration is broken or missing or its service is

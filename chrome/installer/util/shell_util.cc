@@ -650,26 +650,17 @@ bool ElevateAndRegisterChrome(
   // when running out of a build output directory.
   base::FilePath exe_path = chrome_exe.DirName().Append(installer::kSetupExe);
 
-  // Failing that, read the path to setup.exe from Chrome's ClientState key,
-  // which is the canonical location of the installer for all types of installs
-  // (see AddUninstallShortcutWorkItems).
-  const bool is_per_user = InstallUtil::IsPerUserInstall();
+  // Failing that, locate setup.exe for the currently-running installation.
   if (!base::PathExists(exe_path)) {
-    RegKey key(is_per_user ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE,
-               install_static::GetClientStateKeyPath().c_str(),
-               KEY_QUERY_VALUE | KEY_WOW64_32KEY);
-    std::wstring uninstall_string;
-    if (key.ReadValue(installer::kUninstallStringField, &uninstall_string) ==
-        ERROR_SUCCESS) {
-      exe_path = base::FilePath(uninstall_string);
-    }
+    exe_path = installer::GetCurrentSetupPath();
   }
 
-  if (base::PathExists(exe_path)) {
+  if (!exe_path.empty() && base::PathExists(exe_path)) {
     base::CommandLine cmd(exe_path);
     InstallUtil::AppendModeAndChannelSwitches(&cmd);
-    if (!is_per_user)
+    if (!InstallUtil::IsPerUserInstall()) {
       cmd.AppendSwitch(installer::switches::kSystemLevel);
+    }
     cmd.AppendSwitchPath(installer::switches::kRegisterChromeBrowser,
                          chrome_exe);
     if (!suffix.empty()) {

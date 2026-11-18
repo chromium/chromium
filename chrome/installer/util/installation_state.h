@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/files/file_path.h"
 #include "chrome/installer/util/app_commands.h"
 
 namespace base {
@@ -38,9 +37,6 @@ class ProductState {
   // Returns true if the product is installed (i.e., the product's Clients key
   // exists and has a "pv" value); false otherwise.
   bool Initialize(bool system_install);
-
-  // Returns the path to the product's "setup.exe"; may be empty.
-  base::FilePath GetSetupPath() const;
 
   // Returns the product's version.  This method may only be called on an
   // instance that has been initialized for an installed product.

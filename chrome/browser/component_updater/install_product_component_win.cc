@@ -34,7 +34,6 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/helper.h"
 #include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/installation_state.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 
@@ -200,11 +199,7 @@ ProductComponentInstallOutcome InstallUserLevel(
     const base::FilePath& canonical_udd,
     ProductComponentInstallerDelegate* delegate) {
   TRACE_EVENT("update_client", "InstallProductComponent::InstallUserLevel");
-  installer::ProductState product_state;
-  if (!product_state.Initialize(/*system_install=*/false)) {
-    return {.step = Step::kNotInstalled};
-  }
-  base::FilePath setup_path = product_state.GetSetupPath();
+  const base::FilePath setup_path = installer::GetCurrentSetupPath();
   if (setup_path.empty()) {
     return {.step = Step::kNotInstalled};
   }

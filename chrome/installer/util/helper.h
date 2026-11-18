@@ -52,6 +52,14 @@ base::FilePath FindInstallPath(bool system_install,
 // process appears to reside in that Chrome's installation directory.
 bool IsCurrentProcessInstalled();
 
+// Returns the path to the "setup.exe" corresponding to the currently-running
+// browser's version if the current process is properly installed (see
+// `IsCurrentProcessInstalled()`); or an empty path otherwise. Unlike
+// `ProductState::uninstall_command().GetProgram()`, this does not point to the
+// next version's "setup.exe" during an in-use update. The returned file is not
+// guaranteed to exist.
+base::FilePath GetCurrentSetupPath();
+
 }  // namespace installer
 
 #endif  // CHROME_INSTALLER_UTIL_HELPER_H_

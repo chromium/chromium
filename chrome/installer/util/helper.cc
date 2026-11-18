@@ -16,6 +16,7 @@
 #include "base/version.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
@@ -163,6 +164,24 @@ base::span<const int> GetInstallationPathKeys(bool system_install) {
   return base::span(kx64PerMachineKeys);
 }
 
+// Returns the directory in which the current process is installed if it is
+// properly registered with the updater at the current install level and mode,
+// or an empty path otherwise.
+base::FilePath GetCurrentProcessInstalledDirectory() {
+  // Get the directory in which the product is installed as per its registration
+  // with the updater.
+  const base::FilePath install_dir = GetCurrentInstallPathFromRegistry(
+      /*system_install=*/!InstallUtil::IsPerUserInstall());
+
+  if (install_dir.empty()) {
+    return {};  // No product installed at this level and mode.
+  }
+
+  // Return the directory if the current process resides within it.
+  const base::FilePath this_exe = base::PathService::CheckedGet(base::FILE_EXE);
+  return install_dir.IsParent(this_exe) ? install_dir : base::FilePath();
+}
+
 }  // namespace
 
 namespace installer {
@@ -208,18 +227,17 @@ base::FilePath FindInstallPath(bool system_install,
 }
 
 bool IsCurrentProcessInstalled() {
-  // Get the directory in which the product is installed as per its registration
-  // with the updater.
-  const base::FilePath install_dir = GetInstalledDirectory(
-      /*system_install=*/!InstallUtil::IsPerUserInstall());
+  return !GetCurrentProcessInstalledDirectory().empty();
+}
 
+base::FilePath GetCurrentSetupPath() {
+  const base::FilePath install_dir = GetCurrentProcessInstalledDirectory();
   if (install_dir.empty()) {
-    return false;  // No product installed at this level and mode.
+    return {};
   }
-
-  // Return true if the current process resides within that directory.
-  const base::FilePath this_exe = base::PathService::CheckedGet(base::FILE_EXE);
-  return install_dir.IsParent(this_exe);
+  return install_dir.AppendASCII(chrome::kChromeVersion)
+      .Append(kInstallerDir)
+      .Append(kSetupExe);
 }
 
 }  // namespace installer.

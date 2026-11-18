@@ -14,8 +14,8 @@
 #include "base/time/time.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "chrome/installer/util/helper.h"
 #include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/installation_state.h"
 
 namespace google_update {
 
@@ -66,11 +66,7 @@ bool UninstallGoogleUpdate(bool system_install) {
 }
 
 void ElevateIfNeededToReenableUpdates() {
-  installer::ProductState product_state;
-  const bool system_install = !InstallUtil::IsPerUserInstall();
-  if (!product_state.Initialize(system_install))
-    return;
-  base::FilePath exe_path(product_state.GetSetupPath());
+  const base::FilePath exe_path = installer::GetCurrentSetupPath();
   if (exe_path.empty() || !base::PathExists(exe_path)) {
     LOG(ERROR) << "Could not find setup.exe to reenable updates.";
     return;
@@ -79,12 +75,10 @@ void ElevateIfNeededToReenableUpdates() {
   base::CommandLine cmd(exe_path);
   cmd.AppendSwitch(installer::switches::kReenableAutoupdates);
   InstallUtil::AppendModeAndChannelSwitches(&cmd);
-  if (system_install)
+  if (!InstallUtil::IsPerUserInstall()) {
     cmd.AppendSwitch(installer::switches::kSystemLevel);
-  if (product_state.uninstall_command().HasSwitch(
-          installer::switches::kVerboseLogging)) {
-    cmd.AppendSwitch(installer::switches::kVerboseLogging);
   }
+  cmd.AppendSwitch(installer::switches::kVerboseLogging);
 
   base::LaunchOptions launch_options;
   launch_options.force_breakaway_from_job_ = true;

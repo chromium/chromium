@@ -28,6 +28,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "chrome/installer/util/helper.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/install_util.h"
@@ -46,11 +47,10 @@ namespace {
 // to bounce the user back to the desktop, then returns immediately.
 bool LaunchSetupForEula(const base::FilePath::StringType& value,
                         int* ret_code) {
-  base::FilePath exe_dir;
-  if (!base::PathService::Get(base::DIR_MODULE, &exe_dir))
+  const base::FilePath exe_path = installer::GetCurrentSetupPath();
+  if (exe_path.empty()) {
     return false;
-  exe_dir = exe_dir.Append(installer::kInstallerDir);
-  base::FilePath exe_path = exe_dir.Append(installer::kSetupExe);
+  }
 
   base::CommandLine cl(base::CommandLine::NO_PROGRAM);
   cl.AppendSwitchNative(installer::switches::kShowEula, value);

@@ -15,12 +15,14 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/google_update_constants.h"
@@ -662,5 +664,110 @@ INSTANTIATE_TEST_SUITE_P(UserLevelTest,
 INSTANTIATE_TEST_SUITE_P(SystemLevelTest,
                          IsCurrentProcessInstalledTest,
                          testing::Values(true));
+
+class GetCurrentSetupPathTest : public testing::TestWithParam<bool> {
+ protected:
+  void SetUp() override {
+    ASSERT_NO_FATAL_FAILURE(registry_override_manager_.OverrideRegistry(
+        GetParam() ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER));
+  }
+
+  void SetInstalledDirectory(const base::FilePath& installed_dir,
+                             std::string_view registered_version = "1.0.0.0",
+                             std::string_view old_version = {}) {
+    const HKEY kRoot = GetParam() ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+    base::win::RegKey clients_key(kRoot,
+                                  install_static::GetClientsKeyPath().c_str(),
+                                  KEY_SET_VALUE | KEY_WOW64_32KEY);
+    ASSERT_EQ(
+        clients_key.WriteValue(google_update::kRegVersionField,
+                               base::ASCIIToWide(registered_version).c_str()),
+        ERROR_SUCCESS);
+    if (!old_version.empty()) {
+      ASSERT_EQ(clients_key.WriteValue(google_update::kRegOldVersionField,
+                                       base::ASCIIToWide(old_version).c_str()),
+                ERROR_SUCCESS);
+    }
+
+    base::win::RegKey client_state_key(
+        kRoot, install_static::GetClientStateKeyPath().c_str(),
+        KEY_SET_VALUE | KEY_WOW64_32KEY);
+    ASSERT_EQ(
+        client_state_key.WriteValue(
+            kUninstallStringField, installed_dir.AppendASCII(registered_version)
+                                       .Append(kInstallerDir)
+                                       .Append(kSetupExe)
+                                       .value()
+                                       .c_str()),
+        ERROR_SUCCESS);
+  }
+
+ private:
+  install_static::ScopedInstallDetails install_details_{
+      /*system_level=*/GetParam()};
+  registry_util::RegistryOverrideManager registry_override_manager_;
+};
+
+// Tests that GetCurrentSetupPath returns an empty path when the product is not
+// registered with the updater.
+TEST_P(GetCurrentSetupPathTest, NotInstalled) {
+  EXPECT_EQ(GetCurrentSetupPath(), base::FilePath());
+}
+
+// Tests that GetCurrentSetupPath returns an empty path when the product is
+// registered with the updater but the current exe resides elsewhere.
+TEST_P(GetCurrentSetupPathTest, InstalledNotInDir) {
+  ASSERT_NO_FATAL_FAILURE(
+      SetInstalledDirectory(base::PathService::CheckedGet(base::DIR_TEMP)));
+
+  EXPECT_EQ(GetCurrentSetupPath(), base::FilePath());
+}
+
+// Tests that GetCurrentSetupPath returns the setup.exe path for the running
+// version when the current exe resides in the registered install directory.
+TEST_P(GetCurrentSetupPathTest, InstalledInDir) {
+  const base::FilePath exe_dir = base::PathService::CheckedGet(base::DIR_EXE);
+  ASSERT_NO_FATAL_FAILURE(
+      SetInstalledDirectory(exe_dir, chrome::kChromeVersion));
+
+  EXPECT_EQ(GetCurrentSetupPath(), exe_dir.AppendASCII(chrome::kChromeVersion)
+                                       .Append(kInstallerDir)
+                                       .Append(kSetupExe));
+}
+
+// Tests that GetCurrentSetupPath returns the setup.exe path for the running
+// version when the current exe resides in a subdirectory of the registered
+// install directory.
+TEST_P(GetCurrentSetupPathTest, InstalledInSubDir) {
+  const base::FilePath install_dir =
+      base::PathService::CheckedGet(base::DIR_EXE).DirName();
+  ASSERT_NO_FATAL_FAILURE(
+      SetInstalledDirectory(install_dir, chrome::kChromeVersion));
+
+  EXPECT_EQ(GetCurrentSetupPath(),
+            install_dir.AppendASCII(chrome::kChromeVersion)
+                .Append(kInstallerDir)
+                .Append(kSetupExe));
+}
+
+// Tests that GetCurrentSetupPath returns the setup.exe path for the running
+// version rather than the next version during an in-use update.
+TEST_P(GetCurrentSetupPathTest, InUseUpdate) {
+  const base::FilePath exe_dir = base::PathService::CheckedGet(base::DIR_EXE);
+  ASSERT_NO_FATAL_FAILURE(
+      SetInstalledDirectory(exe_dir, /*registered_version=*/"999.0.0.0",
+                            /*old_version=*/chrome::kChromeVersion));
+
+  EXPECT_EQ(GetCurrentSetupPath(), exe_dir.AppendASCII(chrome::kChromeVersion)
+                                       .Append(kInstallerDir)
+                                       .Append(kSetupExe));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         GetCurrentSetupPathTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SystemLevel" : "UserLevel";
+                         });
 
 }  // namespace installer

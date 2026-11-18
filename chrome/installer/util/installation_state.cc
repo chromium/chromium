@@ -213,10 +213,6 @@ bool ProductState::Initialize(bool system_install) {
   return version_.get() != nullptr;
 }
 
-base::FilePath ProductState::GetSetupPath() const {
-  return uninstall_command_.GetProgram();
-}
-
 const base::Version& ProductState::version() const {
   DCHECK(version_);
   return *version_;

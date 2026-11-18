@@ -34,6 +34,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/browser/child_module/child_module_paths.h"  // nogncheck
+#include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/google_update_constants.h"
@@ -790,6 +791,10 @@ TEST_F(InstallProductComponentWindowsPerUserTest, CommandLineParameters) {
   EXPECT_CALL(mock_delegate, LaunchProcess(_, _))
       .WillOnce([&](const base::CommandLine& cmd,
                     const base::LaunchOptions& options) {
+        EXPECT_EQ(cmd.GetProgram(), base::PathService::CheckedGet(base::DIR_EXE)
+                                        .AppendASCII(chrome::kChromeVersion)
+                                        .Append(installer::kInstallerDir)
+                                        .Append(installer::kSetupExe));
         EXPECT_TRUE(cmd.HasSwitch(installer::switches::kInstallComponent));
         EXPECT_EQ(
             cmd.GetSwitchValuePath(installer::switches::kInstallComponent),

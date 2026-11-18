@@ -4,7 +4,8 @@
 
 #include "chrome/installer/util/system_tracing_util.h"
 
-#include "base/path_service.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/helper.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -15,8 +16,7 @@ namespace installer {
 namespace {
 
 base::CommandLine MakeCommand(bool register_service) {
-  base::FilePath setup_exe =
-      InstallUtil::GetChromeUninstallCmd(/*system_level=*/true).GetProgram();
+  base::FilePath setup_exe = GetCurrentSetupPath();
   if (setup_exe.empty()) {
     return base::CommandLine(base::CommandLine::NO_PROGRAM);
   }
@@ -30,13 +30,16 @@ base::CommandLine MakeCommand(bool register_service) {
 }
 
 bool DoServiceRegistration(bool register_service) {
-  if (!IsSystemTracingServiceSupported()) {
+  if (InstallUtil::IsPerUserInstall()) {
     return false;
   }
 
+  const base::CommandLine command = MakeCommand(register_service);
+  if (command.GetProgram().empty()) {
+    return false;
+  }
   DWORD exit_code = 0;
-  return InstallUtil::ExecuteExeAsAdmin(MakeCommand(register_service),
-                                        &exit_code) &&
+  return InstallUtil::ExecuteExeAsAdmin(command, &exit_code) &&
          exit_code == INSTALL_REPAIRED;
 }
 

@@ -164,7 +164,7 @@ TEST_P(ProductStateTest, InitializeUninstallCommand) {
     ProductState state;
     ApplyUninstallCommand(nullptr, nullptr);
     EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.GetSetupPath().empty());
+    EXPECT_TRUE(state.uninstall_command().GetProgram().empty());
     EXPECT_TRUE(state.uninstall_command().GetCommandLineString().empty());
     EXPECT_TRUE(state.uninstall_command().GetSwitches().empty());
   }
@@ -174,7 +174,7 @@ TEST_P(ProductStateTest, InitializeUninstallCommand) {
     ProductState state;
     ApplyUninstallCommand(L"", L"");
     EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.GetSetupPath().empty());
+    EXPECT_TRUE(state.uninstall_command().GetProgram().empty());
     EXPECT_TRUE(state.uninstall_command().GetCommandLineString().empty());
     EXPECT_TRUE(state.uninstall_command().GetSwitches().empty());
   }
@@ -184,7 +184,7 @@ TEST_P(ProductStateTest, InitializeUninstallCommand) {
     ProductState state;
     ApplyUninstallCommand(nullptr, L"--uninstall");
     EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.GetSetupPath().empty());
+    EXPECT_TRUE(state.uninstall_command().GetProgram().empty());
     EXPECT_EQ(L" --uninstall",
               state.uninstall_command().GetCommandLineString());
     EXPECT_EQ(1U, state.uninstall_command().GetSwitches().size());
@@ -195,7 +195,7 @@ TEST_P(ProductStateTest, InitializeUninstallCommand) {
     ProductState state;
     ApplyUninstallCommand(L"setup.exe", nullptr);
     EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_EQ(L"setup.exe", state.GetSetupPath().value());
+    EXPECT_EQ(L"setup.exe", state.uninstall_command().GetProgram().value());
     EXPECT_EQ(L"setup.exe", state.uninstall_command().GetCommandLineString());
     EXPECT_TRUE(state.uninstall_command().GetSwitches().empty());
   }
@@ -205,7 +205,7 @@ TEST_P(ProductStateTest, InitializeUninstallCommand) {
     ProductState state;
     ApplyUninstallCommand(L"set up.exe", nullptr);
     EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_EQ(L"set up.exe", state.GetSetupPath().value());
+    EXPECT_EQ(L"set up.exe", state.uninstall_command().GetProgram().value());
     EXPECT_EQ(L"\"set up.exe\"",
               state.uninstall_command().GetCommandLineString());
     EXPECT_TRUE(state.uninstall_command().GetSwitches().empty());
@@ -216,7 +216,7 @@ TEST_P(ProductStateTest, InitializeUninstallCommand) {
     ProductState state;
     ApplyUninstallCommand(L"setup.exe", L"--uninstall");
     EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_EQ(L"setup.exe", state.GetSetupPath().value());
+    EXPECT_EQ(L"setup.exe", state.uninstall_command().GetProgram().value());
     EXPECT_EQ(L"setup.exe --uninstall",
               state.uninstall_command().GetCommandLineString());
     EXPECT_EQ(1U, state.uninstall_command().GetSwitches().size());
