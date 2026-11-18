@@ -1,0 +1,47 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("feature_list_creator") {
+  sources = [
+    "feature_list_creator.cc",
+    "feature_list_creator.h",
+    "feature_list_creator_client.cc",
+    "feature_list_creator_client.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/crash/core/common",
+  ]
+  deps = [
+    "//components/metrics_services_manager",
+    "//components/variations",
+    "//components/variations/service",
+    "//components/webui/flags",
+    "//components/webui/flags:switches",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "feature_list_creator_unittest.cc" ]
+  deps = [
+    ":feature_list_creator",
+    "//base",
+    "//base/test:test_support",
+    "//components/crash/core/common",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/metrics_services_manager",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/variations",
+    "//components/variations:test_support",
+    "//components/variations/service",
+    "//components/webui/flags",
+    "//components/webui/flags:switches",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

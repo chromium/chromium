@@ -124,6 +124,10 @@ class NetworkTimeTracker {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // Creates an uninitialized `NetworkTimeTracker` with default clocks.
+  // Call `Initialize()` later to start network time queries.
+  static std::unique_ptr<NetworkTimeTracker> CreateUninitialized();
+
   // Constructor. Arguments may be stubbed out for tests.
   //
   // * The |pref_service| may be passed as nullptr to the constructor, deferring

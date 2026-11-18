@@ -1049,4 +1049,11 @@ TEST_F(NetworkTimeTrackerTest, OnNetworkTimeTrackerDestroyed) {
   ASSERT_EQ(observer.times_tracker_destroyed_, 1);
 }
 
+TEST_F(NetworkTimeTrackerTest, CreateUninitialized) {
+  std::unique_ptr<NetworkTimeTracker> tracker =
+      NetworkTimeTracker::CreateUninitialized();
+  ASSERT_NE(tracker, nullptr);
+  EXPECT_FALSE(tracker->is_initialized());
+}
+
 }  // namespace network_time

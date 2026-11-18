@@ -320,6 +320,7 @@ test("variations_unittests") {
   deps = [
     ":unit_tests",
     "//components/test:test_support",
+    "//components/variations/feature_list_creator:unit_tests",
     "//components/variations/field_trial_config:unit_tests",
     "//components/variations/service:unit_tests",
   ]

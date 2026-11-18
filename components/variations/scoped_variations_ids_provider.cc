@@ -37,6 +37,12 @@ class TestClock : public base::Clock {
 
 }  // namespace
 
+// static
+ScopedVariationsIdsProvider
+ScopedVariationsIdsProvider::AdoptCurrentInstanceForTesting() {
+  return ScopedVariationsIdsProvider();
+}
+
 //
 ScopedVariationsIdsProvider::ScopedVariationsIdsProvider(
     VariationsIdsProvider::Mode mode)
@@ -62,6 +68,11 @@ VariationsIdsProvider* ScopedVariationsIdsProvider::operator->() {
 VariationsIdsProvider& ScopedVariationsIdsProvider::operator*() {
   CHECK_EQ(current_instance_, VariationsIdsProvider::GetInstance());
   return *current_instance_;
+}
+
+ScopedVariationsIdsProvider::ScopedVariationsIdsProvider()
+    : current_instance_(VariationsIdsProvider::GetInstance()) {
+  CHECK(current_instance_);
 }
 
 }  // namespace variations::test

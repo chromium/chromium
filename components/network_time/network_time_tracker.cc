@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -33,6 +34,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -310,6 +313,18 @@ NetworkTimeTracker::NetworkTimeObserver::~NetworkTimeObserver() {
 void NetworkTimeTracker::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kNetworkTimeMapping);
   registry->RegisterBooleanPref(prefs::kNetworkTimeQueriesEnabled, true);
+}
+
+// static
+std::unique_ptr<NetworkTimeTracker> NetworkTimeTracker::CreateUninitialized() {
+  auto tracker = std::make_unique<NetworkTimeTracker>(
+      std::make_unique<base::DefaultClock>(),
+      std::make_unique<base::DefaultTickClock>(),
+      /*pref_service=*/nullptr,
+      /*url_loader_factory=*/nullptr,
+      /*fetch_behavior=*/std::nullopt);
+  CHECK(!tracker->is_initialized());
+  return tracker;
 }
 
 NetworkTimeTracker::NetworkTimeTracker(

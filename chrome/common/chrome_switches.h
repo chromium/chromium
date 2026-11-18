@@ -509,12 +509,6 @@ inline constexpr char kNativeMessagingConnectId[] =
 // want to avoid having the default browser info-bar displayed.
 inline constexpr char kNoDefaultBrowserCheck[] = "no-default-browser-check";
 
-// Disables all experiments set on about:flags. Does not disable about:flags
-// itself. Useful if an experiment makes chrome crash at startup: One can start
-// chrome with --no-experiments, disable the problematic lab at about:flags and
-// then restart chrome without this switch again.
-inline constexpr char kNoExperiments[] = "no-experiments";
-
 // Skip First Run tasks as well as not showing additional dialogs, prompts or
 // bubbles. Suppressing dialogs, prompts, and bubbles is important as this
 // switch is used by automation (including performance benchmarks) where it's

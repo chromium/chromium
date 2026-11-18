@@ -14,6 +14,13 @@ namespace variations::test {
 // instance for the duration of the test.
 class ScopedVariationsIdsProvider {
  public:
+  // Adopts the existing global `VariationsIdsProvider` and destroys it on
+  // scope exit (resetting the global instance pointer to nullptr). Requires a
+  // global instance to exist and no previous instance to have been displaced.
+  // Note that `time_for_testing` has no effect when adopting an existing
+  // instance (since it uses whatever clock it was created with).
+  static ScopedVariationsIdsProvider AdoptCurrentInstanceForTesting();
+
   explicit ScopedVariationsIdsProvider(VariationsIdsProvider::Mode mode);
   ~ScopedVariationsIdsProvider();
 
@@ -30,6 +37,9 @@ class ScopedVariationsIdsProvider {
   std::optional<base::Time> time_for_testing = std::nullopt;
 
  private:
+  // Adopts `VariationsIdsProvider::GetInstance()`.
+  ScopedVariationsIdsProvider();
+
   // A pointer to the previous instance of `VariationsIdsProvider` that is
   // in place when this class is instantiated. This is used to restore the
   // global instance pointer to the previous instance upon destruction.

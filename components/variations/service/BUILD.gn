@@ -55,6 +55,7 @@ static_library("service") {
   public_deps = [
     "//base",
     "//components/metrics",
+    "//components/variations",
   ]
   deps = [
     ":buildflags",
@@ -71,7 +72,6 @@ static_library("service") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/sync/service",
-    "//components/variations",
     "//components/variations/field_trial_config",
     "//components/variations/proto",
     "//components/version_info",

@@ -4,11 +4,13 @@
 
 #include "components/variations/service/variations_service_utils.h"
 
+#include <memory>
 #include <string>
 
 #include "base/build_time.h"
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
+#include "components/variations/service/variations_network_clock.h"
 #include "components/variations/service/variations_service.h"
 
 namespace variations {
@@ -54,6 +56,13 @@ std::string GetCurrentCountryCode(const VariationsService* variations) {
   return country.empty()
              ? std::string(country_codes::GetCurrentCountryID().CountryCode())
              : country;
+}
+
+VariationsIdsProvider* CreateVariationsIdsProvider(
+    VariationsIdsProvider::Mode mode,
+    network_time::NetworkTimeTracker* network_time_tracker) {
+  return VariationsIdsProvider::CreateInstance(
+      mode, std::make_unique<VariationsNetworkClock>(network_time_tracker));
 }
 
 }  // namespace variations

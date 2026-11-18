@@ -10,6 +10,12 @@ namespace switches {
 extern const char kFlagSwitchesBegin[];
 extern const char kFlagSwitchesEnd[];
 
+// Disables all experiments set on about:flags. Does not disable about:flags
+// itself. Useful if an experiment makes chrome crash at startup: One can start
+// chrome with --no-experiments, disable the problematic lab at about:flags and
+// then restart chrome without this switch again.
+inline constexpr char kNoExperiments[] = "no-experiments";
+
 }  // namespace switches
 
 #endif  // COMPONENTS_WEBUI_FLAGS_FLAGS_UI_SWITCHES_H_
