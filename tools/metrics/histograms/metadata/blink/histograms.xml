@@ -1797,7 +1797,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type of FedCM Android UI sheet that is being displayed when the
     user manually closes it. Records when the user closes this dialog, so at
-    most once per API call that results in UI being shown.
+    most once per API call that results in UI being shown. Only recorded for
+    sheets with a close button, so not recorded while the active mode sheet,
+    which has none, is shown instead of the passive mode sheet to request
+    permission.
   </summary>
 </histogram>
 

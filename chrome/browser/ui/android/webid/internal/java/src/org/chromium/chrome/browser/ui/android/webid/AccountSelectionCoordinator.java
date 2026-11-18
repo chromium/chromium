@@ -116,10 +116,13 @@ public class AccountSelectionCoordinator
     private final Tab mTab;
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
-    private final AccountSelectionBottomSheetContent mBottomSheetContent;
     private final AccountSelectionComponent.Delegate mDelegate;
-    private final AccountSelectionMediator mMediator;
-    private final RecyclerView mSheetItemListView;
+    // The sheet and the mediator that shows the FedCM UI in it. The active mode sheet replaces the
+    // passive mode one when a passive mode request asks for permission through it, see
+    // `switchToActiveSheetForPermission()`. A new passive mode sheet then replaces the active mode
+    // one if the failure dialog is shown, see `showFailureDialog()`.
+    private AccountSelectionBottomSheetContent mBottomSheetContent;
+    private AccountSelectionMediator mMediator;
     private @Nullable WeakReference<AccountSelectionComponent> mPopupComponent;
     private @Nullable WeakReference<AccountSelectionComponent.Delegate> mOpenerDelegate;
 
@@ -134,6 +137,24 @@ public class AccountSelectionCoordinator
         mBottomSheetController = sheetController;
         mWindowAndroid = windowAndroid;
         mDelegate = delegate;
+        createSheet(rpMode, canShowUi);
+
+        // If this object is corresponding to the custom tab opened by showModalDialog, this
+        // is the first chance to associate it with the opener, so do so now.
+        int fedcmId = getFedCmId();
+        if (fedcmId == -1) return;
+        mOpenerDelegate = sFedCMDelegateMap.remove(fedcmId);
+        if (mOpenerDelegate == null || mOpenerDelegate.get() == null) {
+            return;
+        }
+        mOpenerDelegate.get().setPopupComponent(this);
+    }
+
+    /**
+     * Creates the sheet for {@code rpMode} and the mediator that shows the FedCM UI in it, and sets
+     * {@link #mBottomSheetContent} and {@link #mMediator} to them.
+     */
+    private void createSheet(@RpMode.EnumType int rpMode, boolean canShowUi) {
         Context context = assertNonNull(mWindowAndroid.getContext().get());
 
         PropertyModel model =
@@ -142,14 +163,14 @@ public class AccountSelectionCoordinator
         // Construct view and its related adaptor to be displayed in the bottom sheet.
         ModelList sheetItems = new ModelList();
         View contentView = setupContentView(context, model, sheetItems, rpMode);
-        mSheetItemListView = contentView.findViewById(R.id.sheet_item_list);
+        RecyclerView sheetItemListView = contentView.findViewById(R.id.sheet_item_list);
 
         // Setup the bottom sheet content view.
         mBottomSheetContent =
                 new AccountSelectionBottomSheetContent(
                         contentView,
                         mBottomSheetController,
-                        mSheetItemListView::computeVerticalScrollOffset,
+                        sheetItemListView::computeVerticalScrollOffset,
                         rpMode);
 
         @Px
@@ -161,8 +182,8 @@ public class AccountSelectionCoordinator
                                         : R.dimen.account_selection_account_avatar_size);
         mMediator =
                 new AccountSelectionMediator(
-                        tab,
-                        delegate,
+                        mTab,
+                        mDelegate,
                         model,
                         sheetItems,
                         mBottomSheetController,
@@ -170,18 +191,35 @@ public class AccountSelectionCoordinator
                         avatarSize,
                         rpMode,
                         context,
-                        assertNonNull(windowAndroid.getModalDialogManager()),
-                        canShowUi);
+                        assertNonNull(mWindowAndroid.getModalDialogManager()),
+                        canShowUi,
+                        // Only the passive mode sheet can switch to the active mode one.
+                        rpMode == RpMode.PASSIVE ? this::switchToActiveSheetForPermission : null);
+    }
 
-        // If this object is corresponding to the custom tab opened by showModalDialog, this
-        // is the first chance to associate it with the opener, so do so now.
-        int fedcmId = getFedCmId();
-        if (fedcmId == -1) return;
-        mOpenerDelegate = sFedCMDelegateMap.remove(fedcmId);
-        if (mOpenerDelegate == null || mOpenerDelegate.get() == null) {
-            return;
-        }
-        mOpenerDelegate.get().setPopupComponent(this);
+    /**
+     * Replaces the current sheet with a new one for {@code rpMode}, without notifying the delegate.
+     */
+    private void replaceSheet(@RpMode.EnumType int rpMode) {
+        boolean canShowUi = mMediator.canShowUi();
+        // Hide the current sheet first, so that the bottom sheet can show the new one right away.
+        mMediator.closeWithoutAnimation();
+        createSheet(rpMode, canShowUi);
+    }
+
+    /**
+     * Replaces the passive mode sheet with the active mode sheet's request permission dialog for
+     * {@code account}, which also shows the identity provider's links, like desktop replaces the
+     * bubble with the modal dialog. The rest of the flow continues in the active mode sheet, except
+     * for the failure dialog, see {@link #showFailureDialog}.
+     */
+    private void switchToActiveSheetForPermission(
+            RelyingPartyData rpData,
+            List<Account> accounts,
+            List<IdentityProviderData> idpDataList,
+            Account account) {
+        replaceSheet(RpMode.ACTIVE);
+        mMediator.showRequestPermissionFromPassiveSheet(rpData, accounts, idpDataList, account);
     }
 
     static View setupContentView(
@@ -266,6 +304,12 @@ public class AccountSelectionCoordinator
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext) {
+        // Only passive mode shows the failure dialog, so if the active mode sheet replaced the
+        // passive mode one, show it in a new passive mode sheet, like desktop shows it in a new
+        // bubble.
+        if (mMediator.wasSwitchedFromPassiveSheet()) {
+            replaceSheet(RpMode.PASSIVE);
+        }
         return mMediator.showFailureDialog(rpData, idpForDisplay, idpMetadata, rpContext);
     }
 

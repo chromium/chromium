@@ -2793,15 +2793,10 @@ inline constexpr char kFedCmActiveModeMultipleIdentityProvidersDescription[] =
 
 inline constexpr char kFedCmIdpLinksName[] = "FedCM IdP links";
 inline constexpr char kFedCmIdpLinksDescription[] =
-    "When FedCM asks for permission to share data with a site, shows links to "
-    "the identity provider's account management page, privacy policy and "
-    "terms of service, from the account_management_url, privacy_policy_url and "
-    "terms_of_service_url keys of its well-known file. On desktop, in passive "
-    "mode, FedCM then asks for this permission in a modal dialog instead of "
-    "the bubble, so that the links are shown. With multiple identity "
-    "providers, this also requires "
-    "#fedcm-active-mode-multiple-identity-providers. On Android, the links "
-    "are shown in the active mode sheet, and passive mode is unchanged.";
+    "Shows links to the IdP's account page, privacy policy and terms of "
+    "service when FedCM asks for permission to share data. In passive mode, "
+    "FedCM then asks for it in the modal dialog on desktop or the active mode "
+    "sheet on Android.";
 
 inline constexpr char kFedCmIdPRegistrationName[] =
     "FedCM with IdP Registration support";

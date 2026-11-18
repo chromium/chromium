@@ -8,8 +8,12 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -25,14 +29,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 
@@ -125,5 +134,123 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
         verify(mMockBridge, never()).onAccountSelected(any());
+    }
+
+    /**
+     * Tests that with `FedCmIdpLinks`, continuing with a new account on the passive mode sheet
+     * replaces it with the active mode sheet on the request permission dialog, which shows the
+     * identity provider's links.
+     */
+    @Test
+    @MediumTest
+    public void testContinueWithNewAccountSwitchesToActiveSheet() {
+        BottomSheetContent activeSheet = switchToActiveSheet();
+
+        runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(activeSheet.getSheetType().isModal());
+                    assertEquals(
+                            HeaderType.REQUEST_PERMISSION_MODAL,
+                            mAccountSelection.getMediator().getHeaderType());
+                    assertTrue(
+                            activeSheet
+                                    .getContentView()
+                                    .findViewById(R.id.idp_links_row)
+                                    .isShown());
+                });
+        verify(mMockBridge, never()).onAccountSelected(any());
+        verify(mMockBridge, never()).onDismissed(anyInt());
+    }
+
+    /**
+     * Tests that showing the failure dialog after switching to the active mode sheet replaces it
+     * with a new passive mode sheet.
+     */
+    @Test
+    @MediumTest
+    public void testFailureDialogAfterSwitchShowsPassiveSheet() {
+        BottomSheetContent activeSheet = switchToActiveSheet();
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showFailureDialog(
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
+                            TEST_ETLD_PLUS_ONE_2,
+                            IDP_METADATA,
+                            RpContext.SIGN_IN);
+                });
+        pollUiThread(
+                () -> {
+                    BottomSheetContent sheet = mBottomSheetController.getCurrentSheetContent();
+                    return sheet != null
+                            && sheet != activeSheet
+                            && !sheet.getSheetType().isModal()
+                            && getBottomSheetState() == SheetState.FULL;
+                });
+        runOnUiThreadBlocking(
+                () -> {
+                    BottomSheetContent passiveSheet =
+                            mBottomSheetController.getCurrentSheetContent();
+                    assertEquals(
+                            HeaderType.SIGN_IN_TO_IDP_STATIC,
+                            mAccountSelection.getMediator().getHeaderType());
+                    assertTrue(
+                            passiveSheet.getContentView().findViewById(R.id.idp_signin).isShown());
+                });
+        verify(mMockBridge, never()).onDismissed(anyInt());
+    }
+
+    /**
+     * Shows the passive mode sheet for a new account, continues with it so that the active mode
+     * sheet replaces it, and returns the settled active mode sheet.
+     */
+    private BottomSheetContent switchToActiveSheet() {
+        // The flag is first read when the accounts are shown.
+        FeatureOverrides.overrideFlag(ChromeFeatureList.FED_CM_IDP_LINKS, true);
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
+                            Arrays.asList(mNewBob),
+                            Arrays.asList(mIdpData),
+                            /* newAccounts= */ Collections.emptyList());
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        BottomSheetContent passiveSheet =
+                runOnUiThreadBlocking(
+                        () -> {
+                            BottomSheetContent sheet =
+                                    mBottomSheetController.getCurrentSheetContent();
+                            // The active mode sheet shows the disclosure text instead.
+                            assertFalse(
+                                    sheet.getContentView()
+                                            .findViewById(R.id.user_data_sharing_consent)
+                                            .isShown());
+                            sheet.getContentView()
+                                    .findViewById(R.id.account_selection_continue_btn)
+                                    .performClick();
+                            return sheet;
+                        });
+
+        // The active mode sheet opens at half height, or at full height if the request permission
+        // dialog with IdP links leaves less than the minimum distance to full height on a shorter
+        // screen. Wait for either settled state rather than `isSheetOpen()`, which turns true while
+        // the sheet is still `SheetState.SCROLLING`.
+        pollUiThread(
+                () -> {
+                    BottomSheetContent sheet = mBottomSheetController.getCurrentSheetContent();
+                    @SheetState int state = getBottomSheetState();
+                    return sheet != null
+                            && sheet != passiveSheet
+                            && (state == SheetState.HALF || state == SheetState.FULL);
+                });
+        return runOnUiThreadBlocking(() -> mBottomSheetController.getCurrentSheetContent());
     }
 }

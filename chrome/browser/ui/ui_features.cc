@@ -59,10 +59,11 @@ BASE_FEATURE(kFastFaviconDisplay, base::FEATURE_ENABLED_BY_DEFAULT);
 // desktop and the active mode bottom sheet on Android. On desktop, an account
 // that needs permission in passive mode then requests it through the modal
 // dialog instead of the bubble (with multiple identity providers, this also
-// requires `kFedCmActiveModeMultipleIdentityProviders`). Passive mode on
-// Android is unchanged. The links are shown in the disclosure container, so
-// this also enables the container UI, as if `kFedCmPermissionUiWithContainer`
-// were enabled.
+// requires `kFedCmActiveModeMultipleIdentityProviders`). On Android, with a
+// single identity provider, such an account requests permission through the
+// active mode bottom sheet instead of the passive mode one. The links are shown
+// in the disclosure container, so this also enables the container UI, as if
+// `kFedCmPermissionUiWithContainer` were enabled.
 BASE_FEATURE(kFedCmIdpLinks, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Populates an opaque `initiator_origin` when Desktop FedCM opens modal dialog

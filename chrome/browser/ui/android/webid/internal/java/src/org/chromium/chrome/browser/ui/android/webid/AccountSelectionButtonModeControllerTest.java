@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +22,7 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_MULTI_IDP_REQUEST;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IS_SHOWING_MULTIPLE_IDPS;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_BRAND_ICON;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_CONTEXT;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
 import android.content.Intent;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -46,7 +49,10 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.H
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
+import org.chromium.components.ukm.UkmRecorder;
+import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -54,13 +60,19 @@ import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /** Controller tests verify that the Account Selection Active Mode delegate modifies the model. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountSelectionButtonModeControllerTest extends AccountSelectionJUnitTestBase {
+    @Mock private WebContents mMockWebContents;
+    @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
+
     @Before
     @Override
     public void setUp() {
+        UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
+        when(mTab.getWebContents()).thenReturn(mMockWebContents);
         mRpMode = RpMode.ACTIVE;
         super.setUp();
     }
@@ -637,13 +649,183 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 .get(DataSharingConsentProperties.PROPERTIES);
     }
 
-    /** Clicks the continue button the same way the view does. */
-    private void clickContinueButton() {
-        // Do not let test inputs be ignored.
-        mMediator.setComponentShowTime(-1000);
+    /**
+     * Tests that when the active mode sheet replaces the passive mode one, it shows the request
+     * permission dialog with the identity provider's links, titled with the account's identity
+     * provider, without notifying the delegate again that the accounts were displayed.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testShowRequestPermissionFromPassiveSheet() {
+        mIdpData.setRpContext(RpContext.SIGN_UP);
+        showRequestPermissionFromPassiveSheet(Arrays.asList(mNewUserAccount));
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.REQUEST_PERMISSION_MODAL, headerModel.get(TYPE));
+        assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
+        assertEquals(RpContext.SIGN_UP, (int) headerModel.get(RP_CONTEXT));
+        assertEquals(
+                mNewUserAccount,
+                mModel.get(ItemProperties.ACCOUNT_CHIP).get(AccountProperties.ACCOUNT));
+        assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+        DataSharingConsentProperties.Properties properties =
+                mModel.get(ItemProperties.DATA_SHARING_CONSENT)
+                        .get(DataSharingConsentProperties.PROPERTIES);
+        assertEquals(mTestIdpAccountManagementUrl, properties.mIdpAccountManagementUrl);
+        assertEquals(mTestIdpPrivacyPolicyUrl, properties.mIdpPrivacyPolicyUrl);
+        assertEquals(mTestIdpTermsOfServiceUrl, properties.mIdpTermsOfServiceUrl);
+        verify(mMockDelegate, never()).onAccountsDisplayed();
+    }
+
+    /**
+     * Tests that the request permission dialog shown for a passive mode request ignores a click
+     * right after it is shown, e.g. the second tap of a double tap on the passive mode sheet.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testRequestPermissionFromPassiveSheetIgnoresEarlyClick() {
+        showRequestPermissionFromPassiveSheet(Arrays.asList(mNewUserAccount));
+
         ContinueButtonProperties.Properties continueButton =
                 mModel.get(ItemProperties.CONTINUE_BUTTON).get(ContinueButtonProperties.PROPERTIES);
         continueButton.mOnClickListener.onResult(
                 new ButtonData(continueButton.mAccount, continueButton.mIdpMetadata));
+
+        verify(mMockDelegate, never()).onAccountSelected(any());
+        assertEquals(
+                HeaderType.REQUEST_PERMISSION_MODAL, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    /**
+     * Tests that continuing on the request permission dialog shown for a passive mode request
+     * selects the account and shows the verifying sheet.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testContinueOnRequestPermissionFromPassiveSheetShowsVerifySheet() {
+        showRequestPermissionFromPassiveSheet(Arrays.asList(mNewUserAccount));
+
+        clickContinueButton();
+
+        verify(mMockDelegate).onAccountSelected(mNewUserAccount);
+        assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    /**
+     * Tests that back on the request permission dialog shown for a passive mode request shows the
+     * active mode account chooser with all the accounts.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testBackOnRequestPermissionFromPassiveSheetShowsAccountChooser() {
+        showRequestPermissionFromPassiveSheet(Arrays.asList(mAnaAccount, mNewUserAccount));
+
+        assertTrue(mBottomSheetContent.handleBackPress());
+
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertEquals(2, mSheetAccountItems.size());
+        assertEquals(mAnaAccount, mSheetAccountItems.get(0).model.get(AccountProperties.ACCOUNT));
+        assertEquals(
+                mNewUserAccount, mSheetAccountItems.get(1).model.get(AccountProperties.ACCOUNT));
+        assertFalse(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+        verify(mMockDelegate, never()).onAccountsDisplayed();
+    }
+
+    /**
+     * Tests that continuing or dismissing on the request permission dialog shown for a passive mode
+     * request doesn't record `Button.*` UMA or UKM metrics.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testContinueAndDismissAfterSwitchFromPassiveSheetRecordsNoButtonMetrics() {
+        HistogramWatcher histogramWatcher = watchNoButtonMetrics();
+        showRequestPermissionFromPassiveSheet(Arrays.asList(mNewUserAccount));
+
+        clickContinueButton();
+        mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+
+        histogramWatcher.assertExpected();
+        assertNoButtonUkmRecorded();
+    }
+
+    /**
+     * Tests that pressing back on the request permission dialog shown for a passive mode request
+     * and then selecting an account or dismissing the account chooser doesn't record `Button.*` UMA
+     * or UKM metrics.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testBackAndAccountChooserAfterSwitchFromPassiveSheetRecordsNoButtonMetrics() {
+        HistogramWatcher histogramWatcher = watchNoButtonMetrics();
+        showRequestPermissionFromPassiveSheet(Arrays.asList(mAnaAccount, mNewUserAccount));
+
+        assertTrue(mBottomSheetContent.handleBackPress());
+        mMediator.setComponentShowTime(-1000);
+        mSheetAccountItems
+                .get(0)
+                .model
+                .get(AccountProperties.ON_CLICK_LISTENER)
+                .onResult(new ButtonData(mAnaAccount, /* idpMetadata= */ null));
+        mMediator.onDismissed(IdentityRequestDialogDismissReason.TAP_SCRIM);
+
+        histogramWatcher.assertExpected();
+        assertNoButtonUkmRecorded();
+    }
+
+    /**
+     * Tests that showing accounts in the active mode sheet that replaced the passive mode one, e.g.
+     * after logging in to the identity provider, doesn't record `Button.*` UMA or UKM metrics.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testShowAccountsAfterSwitchFromPassiveSheetRecordsNoButtonMetrics() {
+        showRequestPermissionFromPassiveSheet(Arrays.asList(mNewUserAccount));
+        HistogramWatcher histogramWatcher = watchNoButtonMetrics();
+
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mNewUserAccount),
+                Arrays.asList(mIdpData),
+                mNewAccountsSingleNewAccount);
+        assertEquals(
+                HeaderType.REQUEST_PERMISSION_MODAL, mModel.get(ItemProperties.HEADER).get(TYPE));
+        mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
+
+        histogramWatcher.assertExpected();
+        assertNoButtonUkmRecorded();
+    }
+
+    private HistogramWatcher watchNoButtonMetrics() {
+        return HistogramWatcher.newBuilder()
+                .expectNoRecords("Blink.FedCm.Button.AccountChooserResult")
+                .expectNoRecords("Blink.FedCm.Button.DisclosureDialogResult")
+                .expectNoRecords("Blink.FedCm.Button.LoadingDialogResult")
+                .build();
+    }
+
+    private void assertNoButtonUkmRecorded() {
+        verify(mUkmRecorderJniMock, never())
+                .recordEventWithMultipleMetrics(
+                        any(),
+                        any(),
+                        argThat(
+                                metrics ->
+                                        Arrays.stream(metrics)
+                                                .anyMatch(m -> m.mName.startsWith("Button."))));
+    }
+
+    /**
+     * Shows the request permission dialog for `mNewUserAccount`, as when the active mode sheet
+     * replaces the passive mode one for a passive mode request with {@code accounts}.
+     */
+    private void showRequestPermissionFromPassiveSheet(List<Account> accounts) {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showRequestPermissionFromPassiveSheet(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                accounts,
+                Arrays.asList(mIdpData),
+                mNewUserAccount);
     }
 }

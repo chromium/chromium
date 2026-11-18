@@ -77,6 +77,19 @@ import java.util.Set;
  */
 @NullMarked
 class AccountSelectionMediator {
+    /** Replaces the passive mode sheet with the active mode one. */
+    interface ActiveSheetSwitcher {
+        /**
+         * Replaces the passive mode sheet with the active mode sheet's request permission dialog
+         * for {@code account}, which the user selected in the passive mode sheet.
+         */
+        void switchToActiveSheetForPermission(
+                RelyingPartyData rpData,
+                List<Account> accounts,
+                List<IdentityProviderData> idpDataList,
+                Account account);
+    }
+
     private boolean mRegisteredObservers;
     private boolean mWasDismissed;
     private boolean mCanShowUi = true;
@@ -97,6 +110,8 @@ class AccountSelectionMediator {
     private final TabObserver mTabObserver;
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
+    // Replaces the passive mode sheet with the active mode one. Non-null exactly in passive mode.
+    private final @Nullable ActiveSheetSwitcher mActiveSheetSwitcher;
 
     // Amount of time during which we ignore inputs. Note that this is timed from when we invoke the
     // methods to show the accounts, so it does include any time spent animating the sheet into
@@ -116,11 +131,13 @@ class AccountSelectionMediator {
     private @MonotonicNonNull IdentityCredentialTokenError mError;
     private @Nullable UkmRecorder mUkmRecorder;
 
-    // All of the user's accounts. Populated only when showAccounts() is invoked.
+    // All of the user's accounts. Populated only when `showAccounts()` or
+    // `showRequestPermissionFromPassiveSheet()` is invoked.
     private @MonotonicNonNull List<Account> mAccounts;
 
-    // All of the IDPs involved in the dialog. Populated only when showAccounts() is invoked, as
-    // otherwise `mIdpMetadataForLoginOrError` is used.
+    // All of the IDPs involved in the dialog. Populated only when `showAccounts()` or
+    // `showRequestPermissionFromPassiveSheet()` is invoked, as otherwise
+    // `mIdpMetadataForLoginOrError` is used.
     private @Nullable List<IdentityProviderData> mIdpDataListForShowAccounts;
 
     // The metadata of the IDP involved in the dialog when we show something different from
@@ -176,6 +193,10 @@ class AccountSelectionMediator {
     // could mean that the user successfully completed the login to IDP flow.
     private boolean mIsLoadingDialogLoginToIdpClosed;
 
+    // Whether this active mode sheet replaced the passive mode sheet of a passive mode request,
+    // through `showRequestPermissionFromPassiveSheet()`.
+    private boolean mSwitchedFromPassiveSheet;
+
     private final KeyboardVisibilityListener mKeyboardVisibilityListener =
             new KeyboardVisibilityListener() {
                 @Override
@@ -199,8 +220,10 @@ class AccountSelectionMediator {
             @RpMode.EnumType int rpMode,
             Context context,
             ModalDialogManager modalDialogManager,
-            boolean canShowUi) {
+            boolean canShowUi,
+            @Nullable ActiveSheetSwitcher activeSheetSwitcher) {
         assert tab != null;
+        assert (rpMode == RpMode.PASSIVE) == (activeSheetSwitcher != null);
         mTab = tab;
         assert delegate != null;
         mDelegate = delegate;
@@ -214,6 +237,7 @@ class AccountSelectionMediator {
         mModalDialogManager = modalDialogManager;
         mLastSheetSeen = mBottomSheetContent;
         mCanShowUi = canShowUi;
+        mActiveSheetSwitcher = activeSheetSwitcher;
         if (mTab != null && mTab.getWebContents() != null) {
             mUkmRecorder = new UkmRecorder(mTab.getWebContents(), "Blink.FedCm");
         }
@@ -530,7 +554,9 @@ class AccountSelectionMediator {
     }
 
     private void maybeRecordAccountChooserResult(int result) {
-        if (mAccountChooserState == null) return;
+        if (mRpMode != RpMode.ACTIVE || mSwitchedFromPassiveSheet || mAccountChooserState == null) {
+            return;
+        }
 
         RecordHistogram.recordEnumeratedHistogram(
                 "Blink.FedCm.Button.AccountChooserResult",
@@ -543,7 +569,9 @@ class AccountSelectionMediator {
     }
 
     private void maybeRecordLoadingDialogResult() {
-        if (mRpMode != RpMode.ACTIVE) return;
+        // Passive mode has no loading dialog, also when the active mode sheet replaced the passive
+        // mode one.
+        if (mRpMode != RpMode.ACTIVE || mSwitchedFromPassiveSheet) return;
 
         // mLoadingDialogState is set on dismissal e.g. tap scrim, back press or if the loading
         // dialog gets updated into an account chooser. If it hasn't been set but onDismissed is
@@ -569,7 +597,11 @@ class AccountSelectionMediator {
     }
 
     private void maybeRecordDisclosureDialogResult() {
-        if (mRpMode != RpMode.ACTIVE) return;
+        // Passive mode flows that switch to the active mode sheet are kept out of the `Button.*`
+        // active mode metrics.
+        // TODO(crbug.com/581372729): Record separate metrics for passive mode flows that switch to
+        // the active mode sheet.
+        if (mRpMode != RpMode.ACTIVE || mSwitchedFromPassiveSheet) return;
 
         // mDisclosureDialogState is set on dismissal e.g. tap scrim, back press or if the user
         // presses continue. If it hasn't been set but onDismissed is called while the disclosure
@@ -663,9 +695,62 @@ class AccountSelectionMediator {
         return true;
     }
 
+    /**
+     * Shows the request permission dialog for {@code account}, which the user selected in the
+     * passive mode sheet that this active mode sheet replaces. See {@link
+     * #shouldSwitchToActiveSheetForPermission(Account)}. The rest of the flow is handled like in
+     * active mode, e.g. back shows the account chooser for {@code accounts}. Only called right
+     * after this mediator is created.
+     */
+    void showRequestPermissionFromPassiveSheet(
+            RelyingPartyData rpData,
+            List<Account> accounts,
+            List<IdentityProviderData> idpDataList,
+            Account account) {
+        assert mRpMode == RpMode.ACTIVE;
+        assert mHeaderType == HeaderType.NONE;
+        assert !mWasDismissed;
+        // Only requests with a single identity provider switch to this sheet, see
+        // `shouldSwitchToActiveSheetForPermission()`.
+        assert idpDataList.size() == 1;
+        mSwitchedFromPassiveSheet = true;
+        mRpData = rpData;
+        mAccounts = accounts;
+        mIdpDataListForShowAccounts = idpDataList;
+        // Title the sheet with the identity provider of `account`.
+        IdentityProviderData idpData = account.getIdentityProviderData();
+        mIdpForDisplay = idpData.getIdpForDisplay();
+        mRpContext = idpData.getRpContext();
+        mSelectedAccount = account;
+        // This sheet is first shown on the request permission dialog, so `showContent()` doesn't
+        // notify the delegate that the accounts were displayed. The passive mode sheet already did.
+        // `mSwitchedFromPassiveSheet` also keeps this sheet out of the `Button.*` active mode
+        // metrics.
+        // TODO(crbug.com/581372729): Record separate metrics for passive mode flows that switch to
+        // the active mode sheet.
+        if (!showRequestPermissionModalSheet(account)) {
+            return;
+        }
+        setComponentShowTime(SystemClock.elapsedRealtime());
+    }
+
+    /** Whether this active mode sheet replaced the passive mode sheet of a passive mode request. */
+    boolean wasSwitchedFromPassiveSheet() {
+        return mSwitchedFromPassiveSheet;
+    }
+
     // Dismisses content without notifying the delegate. Should only be invoked during destruction.
     void close() {
-        if (!mWasDismissed) dismissContent();
+        if (!mWasDismissed) dismissContent(/* animate= */ true);
+    }
+
+    /**
+     * Like {@link #close()}, but hides this sheet without animation. The coordinator uses it when
+     * it replaces this sheet with a sheet for the other mode, so that the bottom sheet can show the
+     * new sheet right away instead of queueing it behind this one.
+     */
+    void closeWithoutAnimation() {
+        if (!mWasDismissed) dismissContent(/* animate= */ false);
     }
 
     boolean showAccounts(
@@ -958,8 +1043,10 @@ class AccountSelectionMediator {
             mIdpForDisplay = null;
         }
 
-        // We want the accounts to be clickable if there is no preselected account or if we're not
-        // going to show the disclosure text, which happens when fields is empty.
+        // We want the accounts to be clickable if there is no preselected account or if it doesn't
+        // need permission, which happens when `getFields()` is empty. Otherwise, the continue
+        // button selects the preselected account, also when the sheet shows no disclosure text
+        // because `shouldSwitchToActiveSheetForPermission()` is true.
         if (!updateSheet(
                 mSelectedAccount != null
                         ? Arrays.asList(mSelectedAccount)
@@ -978,7 +1065,7 @@ class AccountSelectionMediator {
         // other account button or swiped down. If we do not receive any of these actions by time
         // onDismissed() is called, it means our placeholder assumption is true i.e. the user has
         // closed the tab.
-        if (mRpMode == RpMode.ACTIVE) {
+        if (mRpMode == RpMode.ACTIVE && !mSwitchedFromPassiveSheet) {
             // If there was already an account chooser state from a previously shown account
             // chooser, record the outcome and reset the state.
             if (mAccountChooserState != null) {
@@ -1063,7 +1150,11 @@ class AccountSelectionMediator {
         // The account that the continue button passes to `continueButtonCallback`, if any.
         Account continueButtonAccount = mSelectedAccount;
         if (mHeaderType == HeaderType.SIGN_IN && mSelectedAccount != null) {
-            isDataSharingConsentVisible = mSelectedAccount.getFields().length > 0;
+            // An account that switches to the active mode sheet for permission gets its disclosure
+            // text there instead.
+            isDataSharingConsentVisible =
+                    mSelectedAccount.getFields().length > 0
+                            && !shouldSwitchToActiveSheetForPermission(mSelectedAccount);
             continueButtonCallback = this::onClickAccountSelected;
         }
 
@@ -1231,12 +1322,12 @@ class AccountSelectionMediator {
     }
 
     /** Requests to dismiss bottomsheet. */
-    void dismissContent() {
+    private void dismissContent(boolean animate) {
         mWasDismissed = true;
         KeyboardVisibilityDelegate.getInstance()
                 .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
         mTab.removeObserver(mTabObserver);
-        mBottomSheetController.hideContent(mBottomSheetContent, true);
+        mBottomSheetController.hideContent(mBottomSheetContent, animate);
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         updateBackPressBehavior();
     }
@@ -1324,14 +1415,16 @@ class AccountSelectionMediator {
         // There is an old selected account if an account was already selected from an account
         // chooser and it implies that this `onAccountSelected` call comes from a dialog containing
         // disclosure text or that the user has just signed into a new account on an IDP through
-        // FedCM.
+        // FedCM. It can also come from the passive mode single-account chooser, which shows no
+        // disclosure text when `shouldSwitchToActiveSheetForPermission()` is true.
         Account oldSelectedAccount = mSelectedAccount;
         mSelectedAccount = buttonData.mAccount;
+        boolean switchToActiveSheet = shouldSwitchToActiveSheetForPermission(mSelectedAccount);
 
         // If the account is selected from UI which shows the disclosure text or
         // if the browser doesn't need to request permission, skip the
         // disclosure UI and proceed to the verifying sheet.
-        if ((mRpMode == RpMode.PASSIVE && oldSelectedAccount != null)
+        if ((mRpMode == RpMode.PASSIVE && oldSelectedAccount != null && !switchToActiveSheet)
                 || mHeaderType == HeaderType.REQUEST_PERMISSION_MODAL
                 || mSelectedAccount.getFields().length == 0) {
             mDelegate.onAccountSelected(mSelectedAccount);
@@ -1339,8 +1432,21 @@ class AccountSelectionMediator {
             return;
         }
 
-        // At this point, the account is a non-returning user. If RP mode is button,
-        // we'd request permission through the request permission modal dialog.
+        // At this point, the account is a non-returning user. If
+        // `shouldSwitchToActiveSheetForPermission()` is true, replace the passive mode sheet with
+        // the active mode sheet's request permission dialog.
+        if (switchToActiveSheet) {
+            // The flow continues in the active mode sheet, so don't notify the delegate.
+            assumeNonNull(mActiveSheetSwitcher)
+                    .switchToActiveSheetForPermission(
+                            assumeNonNull(mRpData),
+                            assumeNonNull(mAccounts),
+                            assumeNonNull(mIdpDataListForShowAccounts),
+                            mSelectedAccount);
+            return;
+        }
+
+        // In active mode, show the request permission dialog.
         if (mRpMode == RpMode.ACTIVE) {
             showRequestPermissionModalSheet(mSelectedAccount);
             return;
@@ -1348,6 +1454,25 @@ class AccountSelectionMediator {
 
         // At this point, the account is a non-returning user and RP mode is widget.
         showAccountsInternal(/* newAccounts= */ null);
+    }
+
+    /**
+     * Returns whether selecting {@code account} in the passive mode sheet replaces it with the
+     * active mode sheet's request permission dialog, which also shows the identity provider's
+     * links, instead of asking for permission in the passive mode sheet. If so, the passive mode
+     * sheet doesn't show disclosure text for {@code account}. True only with `FedCmIdpLinks`, a
+     * single identity provider and an account that needs permission to share its fields.
+     */
+    private boolean shouldSwitchToActiveSheetForPermission(Account account) {
+        // Like on desktop, switching with multiple identity providers would also need
+        // `FedCmActiveModeMultipleIdentityProviders`, which Java can't read yet. So with several,
+        // the passive mode sheet asks for permission itself.
+        // TODO(crbug.com/584300659): Also switch with multiple identity providers, like desktop
+        // does since crrev.com/c/8778095.
+        return ChromeFeatureList.sFedCmIdpLinks.isEnabled()
+                && mRpMode == RpMode.PASSIVE
+                && account.getFields().length > 0
+                && assertNonNull(mIdpDataListForShowAccounts).size() == 1;
     }
 
     private void recordCloseSheetMetrics() {
@@ -1382,7 +1507,7 @@ class AccountSelectionMediator {
         maybeRecordLoadingDialogResult();
         maybeRecordDisclosureDialogResult();
         maybeRecordMismatchDialogResult();
-        dismissContent();
+        dismissContent(/* animate= */ true);
         mDelegate.onDismissed(dismissReason);
     }
 

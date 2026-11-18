@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,26 +25,37 @@ import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionPrope
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.RP_MODE;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.TYPE;
 
+import android.graphics.Color;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /** Controller tests verify that the Account Selection Passive Mode delegate modifies the model. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -235,23 +247,185 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
 
     /**
      * Tests that passive mode never populates the identity provider's links on the disclosure text,
-     * even with `FedCmIdpLinks` enabled.
+     * even with `FedCmIdpLinks` enabled. With a single identity provider, the active mode sheet
+     * asks for permission instead, so this uses multiple identity providers, where the passive mode
+     * sheet still asks for permission itself.
      */
+    // TODO(crbug.com/584300659): Update or remove this test once passive mode also switches to
+    // the active mode sheet with multiple identity providers.
     @Test
     @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
     public void testDataSharingConsentHasNoIdpLinks() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        // Build a genuinely distinct second IdP (`mIdpDataWithUseDifferentAccount` and
+        // `mIdpDataWithoutIcons` share `mIdpData`'s domain and config URL).
+        IdentityProviderData otherIdpData =
+                new IdentityProviderData(
+                        "other-idp.example",
+                        new IdentityProviderMetadata(
+                                Color.BLUE,
+                                Color.GREEN,
+                                /* brandIconBitmap= */ null,
+                                new GURL("https://other-idp.example/fedcm.json"),
+                                new GURL("https://other-idp.example/login"),
+                                /* accountManagementUrl= */ GURL.emptyGURL(),
+                                /* privacyPolicyUrl= */ GURL.emptyGURL(),
+                                /* termsOfServiceUrl= */ GURL.emptyGURL(),
+                                /* showUseDifferentAccountButton= */ false),
+                        new ClientIdMetadata(
+                                mTestUrlTermsOfService,
+                                mTestUrlPrivacyPolicy,
+                                /* brandIconBitmap= */ null),
+                        RpContext.SIGN_IN,
+                        DEFAULT_DISCLOSURE_FIELDS,
+                        /* hasLoginStatusMismatch= */ false);
+        Account otherIdpAccount =
+                new Account(
+                        "other",
+                        "other@other-idp.example",
+                        "Other Account",
+                        "Other",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
+                        /* isIdpClaimedSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        /* fields= */ new int[0],
+                        otherIdpData);
         mMediator.showAccounts(
-                new RelyingPartyData(
-                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
-                Arrays.asList(mNewUserAccount),
-                Arrays.asList(mIdpData),
+                createRpData(),
+                Arrays.asList(mNewUserAccount, otherIdpAccount),
+                Arrays.asList(mIdpData, otherIdpData),
                 /* newAccounts= */ Collections.emptyList());
+        clickAccount(mNewUserAccount);
+
+        verify(mMockActiveSheetSwitcher, never())
+                .switchToActiveSheetForPermission(any(), any(), any(), any());
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
         DataSharingConsentProperties.Properties properties =
                 mModel.get(ItemProperties.DATA_SHARING_CONSENT)
                         .get(DataSharingConsentProperties.PROPERTIES);
         assertTrue(properties.mIdpAccountManagementUrl.isEmpty());
         assertTrue(properties.mIdpPrivacyPolicyUrl.isEmpty());
         assertTrue(properties.mIdpTermsOfServiceUrl.isEmpty());
+    }
+
+    /**
+     * Tests that with `FedCmIdpLinks`, the single-account chooser for a new account shows no
+     * disclosure text, and that continuing there switches to the active mode sheet for permission
+     * without notifying the delegate that the account was selected.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testContinueOnSingleNewAccountSwitchesToActiveSheet() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        RelyingPartyData rpData = createRpData();
+        List<Account> accounts = Arrays.asList(mNewUserAccount);
+        List<IdentityProviderData> idpDataList = Arrays.asList(mIdpData);
+        mMediator.showAccounts(
+                rpData, accounts, idpDataList, /* newAccounts= */ Collections.emptyList());
+
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+        assertFalse(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+        assertEquals(
+                mNewUserAccount,
+                mModel.get(ItemProperties.CONTINUE_BUTTON)
+                        .get(ContinueButtonProperties.PROPERTIES)
+                        .mAccount);
+
+        clickContinueButton();
+
+        verify(mMockActiveSheetSwitcher)
+                .switchToActiveSheetForPermission(rpData, accounts, idpDataList, mNewUserAccount);
+        verify(mMockDelegate, never()).onAccountSelected(any());
+        verify(mMockDelegate, never()).onDismissed(anyInt());
+    }
+
+    /**
+     * Tests that with `FedCmIdpLinks`, selecting a new account in the account chooser switches to
+     * the active mode sheet for permission without notifying the delegate that the account was
+     * selected.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testSelectingNewAccountSwitchesToActiveSheet() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        RelyingPartyData rpData = createRpData();
+        List<Account> accounts = Arrays.asList(mAnaAccount, mNewUserAccount);
+        List<IdentityProviderData> idpDataList = Arrays.asList(mIdpData);
+        mMediator.showAccounts(
+                rpData, accounts, idpDataList, /* newAccounts= */ Collections.emptyList());
+
+        clickAccount(mNewUserAccount);
+
+        verify(mMockActiveSheetSwitcher)
+                .switchToActiveSheetForPermission(rpData, accounts, idpDataList, mNewUserAccount);
+        verify(mMockDelegate, never()).onAccountSelected(any());
+    }
+
+    /**
+     * Tests that with `FedCmIdpLinks`, selecting a returning account still shows the verifying
+     * sheet in the passive mode sheet.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.FED_CM_IDP_LINKS)
+    public void testSelectingReturningAccountShowsVerifySheet() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                createRpData(),
+                Arrays.asList(mAnaAccount, mNewUserAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        clickAccount(mAnaAccount);
+
+        verify(mMockDelegate).onAccountSelected(mAnaAccount);
+        assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
+        verify(mMockActiveSheetSwitcher, never())
+                .switchToActiveSheetForPermission(any(), any(), any(), any());
+    }
+
+    /**
+     * Tests that without `FedCmIdpLinks`, the single-account chooser for a new account shows the
+     * disclosure text, and continuing there selects the account in the passive mode sheet.
+     */
+    @Test
+    public void testContinueOnSingleNewAccountWithoutIdpLinksSelectsAccount() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                createRpData(),
+                Arrays.asList(mNewUserAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+        assertTrue(containsItemOfType(mModel, ItemProperties.DATA_SHARING_CONSENT));
+
+        clickContinueButton();
+
+        verify(mMockDelegate).onAccountSelected(mNewUserAccount);
+        assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
+        verify(mMockActiveSheetSwitcher, never())
+                .switchToActiveSheetForPermission(any(), any(), any(), any());
+    }
+
+    private RelyingPartyData createRpData() {
+        return new RelyingPartyData(
+                mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null);
+    }
+
+    /** Clicks the row of {@code account} in the account chooser the same way the view does. */
+    private void clickAccount(Account account) {
+        // Do not let test inputs be ignored.
+        mMediator.setComponentShowTime(-1000);
+        for (MVCListAdapter.ListItem item : mSheetAccountItems) {
+            if (item.type == AccountSelectionProperties.ITEM_TYPE_ACCOUNT
+                    && item.model.get(AccountProperties.ACCOUNT) == account) {
+                item.model
+                        .get(AccountProperties.ON_CLICK_LISTENER)
+                        .onResult(new ButtonData(account, /* idpMetadata= */ null));
+                return;
+            }
+        }
+        throw new AssertionError("No row for " + account.getId());
     }
 }

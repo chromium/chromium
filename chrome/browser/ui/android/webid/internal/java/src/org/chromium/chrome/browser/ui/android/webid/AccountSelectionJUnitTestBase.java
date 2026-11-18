@@ -31,6 +31,7 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.LoginButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -132,6 +133,7 @@ public class AccountSelectionJUnitTestBase {
     @Mock Callback<ButtonData> mAccountCallback;
     @Mock Callback<ButtonData> mIdpLoginCallback;
     @Mock AccountSelectionComponent.Delegate mMockDelegate;
+    @Mock AccountSelectionMediator.ActiveSheetSwitcher mMockActiveSheetSwitcher;
     @Mock BottomSheetController mMockBottomSheetController;
     @Mock Tab mTab;
     Context mContext;
@@ -628,6 +630,17 @@ public class AccountSelectionJUnitTestBase {
                         mRpMode,
                         mContext,
                         mMockModalDialogManager,
-                        /* canShowUi= */ true);
+                        /* canShowUi= */ true,
+                        mRpMode == RpMode.PASSIVE ? mMockActiveSheetSwitcher : null);
+    }
+
+    /** Clicks the continue button the same way the view does. */
+    void clickContinueButton() {
+        // Do not let test inputs be ignored.
+        mMediator.setComponentShowTime(-1000);
+        ContinueButtonProperties.Properties continueButton =
+                mModel.get(ItemProperties.CONTINUE_BUTTON).get(ContinueButtonProperties.PROPERTIES);
+        continueButton.mOnClickListener.onResult(
+                new ButtonData(continueButton.mAccount, continueButton.mIdpMetadata));
     }
 }

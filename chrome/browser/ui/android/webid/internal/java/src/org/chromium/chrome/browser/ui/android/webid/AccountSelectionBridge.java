@@ -20,6 +20,7 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -76,11 +77,25 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         // Density < 1.0f on ldpi devices. Adjust density to ensure that
         // {@link getBrandIconMinimumSize()} <= {@link getBrandIconIdealSize()}.
         float density = Math.max(resources.getDisplayMetrics().density, 1.0f);
-        return Math.round(getBrandIconIdealSize(rpMode) / density);
+        return Math.round(getSheetBrandIconSize(rpMode) / density);
     }
 
     @CalledByNative
     static int getBrandIconIdealSize(@RpMode.EnumType int rpMode) {
+        // With `FedCmIdpLinks`, a passive mode request can ask for permission in the active mode
+        // sheet, which shows bigger brand icons. Fetch the icons at that size, and let the passive
+        // mode sheet scale them down. The minimum size stays the passive mode sheet's.
+        if (rpMode == RpMode.PASSIVE && ChromeFeatureList.sFedCmIdpLinks.isEnabled()) {
+            return getSheetBrandIconSize(RpMode.ACTIVE);
+        }
+        return getSheetBrandIconSize(rpMode);
+    }
+
+    /**
+     * Returns the size in px of a brand icon shown in the sheet for {@code rpMode}, including the
+     * area outside the maskable icon's safe zone.
+     */
+    private static int getSheetBrandIconSize(@RpMode.EnumType int rpMode) {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         return Math.round(
                 resources.getDimension(
