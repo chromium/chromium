@@ -123,6 +123,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperWebViewBrowserTest,
 
   content::WebContents* app_web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(app_web_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(app_web_contents));
 
   const std::string script = content::JsReplace(
       R"(
@@ -140,7 +141,11 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperWebViewBrowserTest,
                 resolve('ERROR: Unknown error');
               }
             });
-          });
+          }, {once: true});
+          wv.addEventListener('loadabort', e => resolve('LOADABORT: ' + e.reason),
+                              {once: true});
+          wv.addEventListener('exit', e => resolve('EXIT: ' + e.reason),
+                              {once: true});
           wv.src = $1;
           document.body.appendChild(wv);
         });
@@ -164,9 +169,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperWebViewBrowserTest,
 
   content::WebContents* app_web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(app_web_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(app_web_contents));
 
   content::CreateAndLoadWebContentsObserver opener_loaded_observer;
-  EXPECT_EQ("LOADED", content::EvalJs(app_web_contents, content::JsReplace(
+  ASSERT_EQ("LOADED", content::EvalJs(app_web_contents, content::JsReplace(
                                                             R"(
             new Promise(resolve => {
               const openerWv = document.createElement('webview');
@@ -185,6 +191,11 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperWebViewBrowserTest,
               });
               openerWv.addEventListener('loadstop', () => resolve('LOADED'),
                                         {once: true});
+              openerWv.addEventListener(
+                  'loadabort', e => resolve('LOADABORT: ' + e.reason),
+                  {once: true});
+              openerWv.addEventListener(
+                  'exit', e => resolve('EXIT: ' + e.reason), {once: true});
               openerWv.src = $1;
               document.body.appendChild(openerWv);
             })
@@ -209,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperWebViewBrowserTest,
       unattached_guest_loaded_observer.Wait();
   ASSERT_TRUE(guest_web_contents);
   ASSERT_NE(opener_guest_web_contents, guest_web_contents);
-  EXPECT_EQ(
+  ASSERT_EQ(
       "NEWWINDOW_READY",
       content::EvalJs(app_web_contents, "window.newWindowCreatedPromise"));
 
@@ -241,6 +252,11 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperWebViewBrowserTest,
                     }
                   });
                 }, {once: true});
+                wv.addEventListener(
+                    'loadabort', e => resolve('LOADABORT: ' + e.reason),
+                    {once: true});
+                wv.addEventListener(
+                    'exit', e => resolve('EXIT: ' + e.reason), {once: true});
                 document.body.appendChild(wv);
               })
             )"));
