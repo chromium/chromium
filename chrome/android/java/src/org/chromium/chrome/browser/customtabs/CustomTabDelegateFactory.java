@@ -162,6 +162,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             if (mIntentDataProvider != null && mIntentDataProvider.getIntent() != null) {
                 Intent intent = new Intent(mIntentDataProvider.getIntent());
                 intent.removeExtra(TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS);
+                CustomTabResumeManager.clearResumptionExtras(intent);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 intent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
                 ReparentingTask.from(getTab()).begin(getAvailableContext(), intent, null, null);

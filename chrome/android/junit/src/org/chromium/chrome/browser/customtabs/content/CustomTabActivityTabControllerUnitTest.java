@@ -49,15 +49,19 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
+import org.chromium.chrome.browser.customtabs.CustomTabResumeManager;
+import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
@@ -585,6 +589,56 @@ public class CustomTabActivityTabControllerUnitTest {
         inOrder.verify(finalizeCallback).run();
         inOrder.verify(sourceSelector).detachTabForReparenting(tab);
         inOrder.verify(env.tabModel).addTab(eq(tab), anyInt(), anyInt(), anyInt());
+    }
+
+    @Test
+    public void usesTabFromIntent_TakesPrecedenceOverRestoredTab() {
+        Tab transferredTab = env.prepareTransferredTab();
+        when(transferredTab.getLaunchType()).thenReturn(TabLaunchType.FROM_RESTORE);
+        env.mIntent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
+        env.mIntent.putExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID, "session-1");
+        env.mIntent.putExtra(CustomTabResumeManager.EXTRA_RESTORE_TAB, true);
+        when(env.connection.getClientPackageNameForSession(env.session))
+                .thenReturn("com.example.app");
+
+        Tab hiddenTab = env.prepareTab();
+        doReturn(
+                        new HiddenTab(
+                                hiddenTab,
+                                env.tabObserverRegistrar,
+                                env.customTabObserver,
+                                env.navigationEventObserver,
+                                CustomTabActivityContentTestEnvironment.INITIAL_URL))
+                .when(env.connection)
+                .takeHiddenTab(any(), any(), any());
+
+        Tab restoredTab = env.prepareTab();
+        env.resumeManager =
+                spy(new CustomTabResumeManager(env.intentDataProvider, env.cipherFactory));
+        doReturn(restoredTab)
+                .when(env.resumeManager)
+                .maybeRestoreTab(
+                        any(), any(), any(), anyBoolean(), any(), any(), eq("com.example.app"));
+        mTabController = env.createTabController();
+
+        HiddenTab takenHiddenTab =
+                CustomTabActivityTabController.takeHiddenTab(env.intentDataProvider);
+        mTabController.setUpInitialTab(takenHiddenTab != null ? takenHiddenTab.tab : null);
+        mTabController.finishNativeInitialization();
+
+        assertNull(takenHiddenTab);
+        verify(env.connection, never()).takeHiddenTab(any(), any(), any());
+        assertEquals(transferredTab, env.tabProvider.getTab());
+        assertEquals(TabCreationMode.EARLY, env.tabProvider.getInitialTabCreationMode());
+        assertFalse(
+                AsyncTabParamsManagerSingleton.getInstance()
+                        .hasParamsForTabId(transferredTab.getId()));
+        assertTrue(
+                env.mIntent.getBooleanExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, false));
+        assertFalse(CustomTabResumeManager.shouldCreateTabResumeManager(env.intentDataProvider));
+        assertFalse(CustomTabResumeManager.isTabResumptionRequested(env.mIntent));
+        verify(env.resumeManager, never())
+                .maybeRestoreTab(any(), any(), any(), anyBoolean(), any(), any(), any());
     }
 
     @Test

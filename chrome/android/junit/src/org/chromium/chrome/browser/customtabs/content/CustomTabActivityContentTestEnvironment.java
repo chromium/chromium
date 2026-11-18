@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
+import org.chromium.chrome.browser.customtabs.CustomTabResumeManager;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
@@ -142,6 +143,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public CompositorViewHolder compositorViewHolder;
     public Tab tabFromFactory;
     public boolean isOffTheRecord;
+    public @Nullable CustomTabResumeManager resumeManager;
     private @Nullable Bundle mSavedInstanceState;
 
     @Override
@@ -179,6 +181,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(tabModelSelector.getModel(anyBoolean())).thenReturn(tabModel);
         when(tabModelSelector.getCurrentModel()).thenReturn(tabModel);
         when(tabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
+        when(tabModel.indexOf(any())).thenReturn(TabModel.INVALID_TAB_INDEX);
         when(browserInitializer.isFullBrowserInitialized()).thenReturn(true);
         // Default setup is toolbarManager doesn't consume back press event.
         when(toolbarManager.back()).thenReturn(false);
@@ -224,7 +227,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 tabModelInitializer,
                 cipherFactory,
                 lifecycleDispatcher,
-                /* resumeManager= */ null);
+                resumeManager);
     }
 
     public CustomTabActivityNavigationController createNavigationController(

@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
-import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
@@ -462,6 +461,11 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     /** Encapsulates CustomTabsConnection#takeHiddenTab() with additional initialization logic. */
     public static @Nullable HiddenTab takeHiddenTab(
             BrowserServicesIntentDataProvider intentDataProvider) {
+        if (AsyncTabParamsManagerSingleton.getInstance()
+                .hasParamsWithTabToReparent(
+                        IntentHandler.getTabId(intentDataProvider.getIntent()))) {
+            return null;
+        }
         String url = intentDataProvider.getUrlToLoad();
         assumeNonNull(url);
         SessionHolder token = intentDataProvider.getSession();
@@ -483,37 +487,36 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                 ProfileProvider.getOrCreateProfile(
                         profileProvider, mIntentDataProvider.isOffTheRecord());
         boolean needsShow = false;
-        // mSession (and thus appId) can be null when CustomTabActivity is launched
-        // programmatically for popup windows (e.g. extension WebAuthFlow).
-        @Nullable String appId =
-                CustomTabsConnection.getInstance().getClientPackageNameForSession(mSession);
-        Tab tab = appId != null ? maybeRestoreTab(profile, appId) : null;
-
-        boolean isReparenting = tab == null && checkIfTabReparentingParamsExistForIntent(mIntent);
-        if (!isReparenting) {
+        Tab tab;
+        if (checkIfTabReparentingParamsExistForIntent(mIntent)) {
+            CustomTabResumeManager.clearResumptionExtras(mIntent);
+            int reparentingTabIdFromIntent = IntentHandler.getTabId(mIntent);
+            AsyncTabParams params =
+                    AsyncTabParamsManagerSingleton.getInstance().remove(reparentingTabIdFromIntent);
+            tab = params.getTabToReparent();
+            assert tab != null;
+            ReparentingTask.from(tab)
+                    .finish(
+                            ReparentingDelegateFactory.createReparentingTaskDelegate(
+                                    /* compositorViewHolder= */ null,
+                                    mWindowAndroid,
+                                    mCustomTabDelegateFactory),
+                            params instanceof TabReparentingParams reparentingParams
+                                    ? reparentingParams.getFinalizeCallback()
+                                    : null);
+        } else {
             // Clear any stale EXTRA_SKIP_LOAD_ON_REPARENTING (e.g. when a task is cold-relaunched
             // from Android Recents after the process was killed) so a newly created tab still
             // loads its initial URL.
             IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING);
-        }
 
-        if (tab == null) {
-            if (isReparenting) {
-                int reparentingTabIdFromIntent = IntentHandler.getTabId(mIntent);
-                AsyncTabParams params =
-                        AsyncTabParamsManagerSingleton.getInstance()
-                                .remove(reparentingTabIdFromIntent);
-                tab = params.getTabToReparent();
-                assert tab != null;
-                ReparentingTask.from(tab)
-                        .finish(
-                                ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                        assumeNonNull(null),
-                                        mWindowAndroid,
-                                        mCustomTabDelegateFactory),
-                                params instanceof TabReparentingParams reparentingParams
-                                        ? reparentingParams.getFinalizeCallback()
-                                        : null);
+            // mSession (and thus appId) can be null when CustomTabActivity is launched
+            // programmatically for popup windows (e.g. extension WebAuthFlow).
+            String appId =
+                    CustomTabsConnection.getInstance().getClientPackageNameForSession(mSession);
+            Tab restoredTab = maybeRestoreTab(profile, appId);
+            if (restoredTab != null) {
+                tab = restoredTab;
             } else if (warmupManager.hasSpareTab(profile, mIntentDataProvider.hasTargetNetwork())) {
                 // Start hidden as Tab needs to be shown after observers are attached.
                 boolean startHidden = true;
@@ -543,7 +546,6 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             }
         }
 
-        assert tab != null;
         initializeTab(tab, /* isHiddenTab= */ false, /* isBackgroundTab= */ false);
 
         if (needsShow) {
@@ -749,17 +751,8 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             return false;
         }
 
-        int tabId = IntentHandler.getTabId(intent);
-        AsyncTabParamsManager paramsManager = AsyncTabParamsManagerSingleton.getInstance();
-
-        if (!paramsManager.hasParamsForTabId(tabId)) {
-            return false;
-        }
-
-        AsyncTabParams params = paramsManager.remove(tabId);
-        paramsManager.add(tabId, params);
-
-        return params.getTabToReparent() != null;
+        return AsyncTabParamsManagerSingleton.getInstance()
+                .hasParamsWithTabToReparent(IntentHandler.getTabId(intent));
     }
 
     @VisibleForTesting

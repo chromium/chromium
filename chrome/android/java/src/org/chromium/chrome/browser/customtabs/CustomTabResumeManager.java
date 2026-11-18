@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.customtabs;
 import android.content.Intent;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -70,11 +72,13 @@ public class CustomTabResumeManager {
             };
 
     /** Extra indicating if the tab should be restored from a previously saved state. */
-    static final String EXTRA_RESTORE_TAB =
+    @VisibleForTesting
+    public static final String EXTRA_RESTORE_TAB =
             "org.chromium.chrome.browser.customtabs.EXTRA_RESTORE_TAB";
 
     /** Extra supplying the embedder's unique session/tab identifier for state mapping. */
-    static final String EXTRA_EMBEDDER_TAB_ID =
+    @VisibleForTesting
+    public static final String EXTRA_EMBEDDER_TAB_ID =
             "org.chromium.chrome.browser.customtabs.EXTRA_TAB_DATA_ID";
 
     /** Extra defining the maximum number of tabs to persist on disk for resumption. */
@@ -115,6 +119,18 @@ public class CustomTabResumeManager {
 
         return IntentUtils.safeGetBooleanExtra(intent, EXTRA_RESTORE_TAB, false)
                 && getEmbedderTabId(intent) != null;
+    }
+
+    /**
+     * Removes resumption extras from the given {@link Intent} so a reparented tab neither restores
+     * nor overwrites the parent session's saved state.
+     *
+     * @param intent The intent to strip resumption extras from.
+     */
+    public static void clearResumptionExtras(@Nullable Intent intent) {
+        if (intent == null) return;
+        IntentUtils.safeRemoveExtra(intent, EXTRA_EMBEDDER_TAB_ID);
+        IntentUtils.safeRemoveExtra(intent, EXTRA_RESTORE_TAB);
     }
 
     /**
@@ -167,6 +183,14 @@ public class CustomTabResumeManager {
                     }
 
                     @Override
+                    public void onActivityAttachmentChanged(
+                            Tab tab, @Nullable WindowAndroid window) {
+                        if (window == null) {
+                            unregisterTab(tab);
+                        }
+                    }
+
+                    @Override
                     public void onDestroyed(Tab tab) {
                         Log.i(
                                 TAG,
@@ -176,9 +200,7 @@ public class CustomTabResumeManager {
                         if (!tab.isHidden()) {
                             saveTabStateDeferred(tab);
                         }
-                        tab.removeObserver(this);
-                        mTabIdToEmbedderTabIdMap.remove(tab.getId());
-                        mObservedTabs.remove(tab);
+                        unregisterTab(tab);
                     }
                 };
     }
@@ -250,7 +272,7 @@ public class CustomTabResumeManager {
      * @return The {@link TabCreationMode} indicating how the tab was created.
      */
     public @TabCreationMode int getTabCreationMode(Tab tab, @TabCreationMode int fallbackMode) {
-        if (tab.getLaunchType() == TabLaunchType.FROM_RESTORE) {
+        if (getEmbedderTabId() != null && tab.getLaunchType() == TabLaunchType.FROM_RESTORE) {
             return TabCreationMode.RESTORED;
         }
         return fallbackMode;
@@ -328,6 +350,12 @@ public class CustomTabResumeManager {
         mTabIdToEmbedderTabIdMap.put(tab.getId(), embedderTabId);
         mObservedTabs.add(tab);
         tab.addObserver(mTabObserver);
+    }
+
+    private void unregisterTab(Tab tab) {
+        tab.removeObserver(mTabObserver);
+        mTabIdToEmbedderTabIdMap.remove(tab.getId());
+        mObservedTabs.remove(tab);
     }
 
     private void closeExistingTabsForEmbedderTabId(

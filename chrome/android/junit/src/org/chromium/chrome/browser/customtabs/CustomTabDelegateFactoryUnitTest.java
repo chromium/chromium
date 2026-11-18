@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -15,20 +17,29 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
+import android.os.Bundle;
+
+import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.UnownedUserDataHost;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
@@ -53,6 +64,7 @@ import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -72,6 +84,7 @@ public class CustomTabDelegateFactoryUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private WindowAndroid mWindowAndroid;
+    @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
     private Activity mActivity;
     private CustomTabDelegateFactory mFactory;
@@ -312,5 +325,35 @@ public class CustomTabDelegateFactoryUnitTest {
         Assert.assertFalse("TABBED should return isTabInPwa() = false", mFactory.isTabInPwa());
         Assert.assertFalse(
                 "TABBED should return isTabInBrowser() = false", mFactory.isTabInBrowser());
+    }
+
+    @Test
+    public void testReparentTabToSamePwa_StripsParentSessionExtras() {
+        Intent parentIntent = new Intent();
+        parentIntent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS, new Bundle());
+        parentIntent.putExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID, "session-1");
+        parentIntent.putExtra(CustomTabResumeManager.EXTRA_RESTORE_TAB, true);
+        when(mIntentDataProvider.getIntent()).thenReturn(parentIntent);
+
+        ReparentingTask reparentingTask = mock(ReparentingTask.class);
+        UserDataHost userDataHost = new UserDataHost();
+        userDataHost.setUserData(ReparentingTask.class, reparentingTask);
+        when(mTab.getUserDataHost()).thenReturn(userDataHost);
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
+
+        createFactory(ActivityType.TRUSTED_WEB_ACTIVITY);
+        mFactory.createExternalNavigationHandler(mTab).reparentTabToSamePwa();
+
+        verify(reparentingTask).begin(any(), mIntentCaptor.capture(), any(), any());
+        Intent childIntent = mIntentCaptor.getValue();
+        Assert.assertFalse(
+                childIntent.hasExtra(TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS));
+        Assert.assertFalse(childIntent.hasExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID));
+        Assert.assertFalse(childIntent.hasExtra(CustomTabResumeManager.EXTRA_RESTORE_TAB));
+        Assert.assertTrue(
+                childIntent.getBooleanExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, false));
+        Assert.assertTrue(parentIntent.hasExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID));
     }
 }

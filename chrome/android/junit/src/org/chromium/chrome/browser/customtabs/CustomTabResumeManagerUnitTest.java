@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -38,7 +40,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -64,6 +69,7 @@ public class CustomTabResumeManagerUnitTest {
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private Tab mTab;
     @Mock private Tab mRestoredTab;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private Intent mIntent;
     private CustomTabResumeManager mResumeManager;
@@ -84,6 +90,7 @@ public class CustomTabResumeManagerUnitTest {
     public void tearDown() {
         // Clear static cache between tests to avoid pollution.
         CustomTabResumeManager.getInMemoryStateCacheForTesting().clear();
+        TabStateExtractor.resetTabStatesForTesting();
     }
 
     // =========================================================================
@@ -298,6 +305,24 @@ public class CustomTabResumeManagerUnitTest {
         mResumeManager.destroy();
 
         verify(mTab).removeObserver(any());
+    }
+
+    @Test
+    public void testOnActivityAttachmentChanged_nullWindowUnregistersObserver() {
+        mIntent.putExtra(EXTRA_EMBEDDER_TAB_ID, "session-123");
+        TabStateExtractor.setTabStateForTesting(/* tabId= */ 42, new TabState());
+
+        mResumeManager.registerTabIfResumptionEnabled(mTab);
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
+
+        observer.onActivityAttachmentChanged(mTab, /* window= */ null);
+        verify(mTab).removeObserver(observer);
+
+        observer.onHidden(mTab, TabHidingType.ACTIVITY_HIDDEN);
+        assertFalse(
+                CustomTabResumeManager.getInMemoryStateCacheForTesting()
+                        .containsKey("session-123"));
     }
 
     // =========================================================================
