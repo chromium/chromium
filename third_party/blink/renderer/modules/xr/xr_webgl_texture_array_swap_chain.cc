@@ -100,6 +100,7 @@ void XRWebGLTextureArraySwapChain::OnFrameEnd() {
 
   gpu::gles2::GLES2Interface* gl = context()->ContextGL();
   if (!gl) {
+    wrapped_swap_chain_->OnFrameEnd();
     return;
   }
 

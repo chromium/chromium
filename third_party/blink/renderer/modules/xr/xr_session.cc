@@ -2457,8 +2457,14 @@ void XRSession::OnFrame(double timestamp,
     for (auto& binding : graphics_bindings_) {
       gpu::SyncToken camera_sync_token = binding->OnFrameEnd();
       if (camera_sync_token.HasData()) {
-        transport_delegate->VerifySyncToken(camera_sync_token);
-        camera_sync_tokens.push_back(camera_sync_token);
+        if (!camera_sync_token.verified_flush()) {
+          if (auto* binding_delegate = binding->GetTransportDelegate()) {
+            binding_delegate->VerifySyncToken(camera_sync_token);
+          }
+        }
+        if (camera_sync_token.verified_flush()) {
+          camera_sync_tokens.push_back(camera_sync_token);
+        }
       }
     }
 
@@ -2473,6 +2479,8 @@ void XRSession::OnFrame(double timestamp,
     } else {
       xr_->frameProvider()->SubmitFrame(transport_delegate);
     }
+
+    layer_shared_image_manager_.Reset();
 
     // Ensure the XRFrame cannot be used outside the callbacks.
     animation_frame_->Deactivate();

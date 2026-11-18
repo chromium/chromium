@@ -47,7 +47,8 @@ uint16_t XRWebGLDrawingContext::TextureArrayLength() const {
 }
 
 bool XRWebGLDrawingContext::TextureWasQueried() const {
-  return color_swap_chain_->texture_was_queried();
+  return color_swap_chain_->texture_was_queried() && webgl_context_ &&
+         !webgl_context_->isContextLost();
 }
 
 void XRWebGLDrawingContext::OnFrameStart() {
