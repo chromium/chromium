@@ -506,7 +506,6 @@ crbug.com/456803766 [ iPad Device iOS18 ] SafeModeTestCase/testPostCrashNTP [ Pa
 crbug.com/333519732 SearchEngineTestCase/testUserActionWhenExpandingSnippetChevron [ Pass Failure ]
 crbug.com/484191734 ActivityServiceControllerTestCase/testOpenActivityServiceControllerAndOpenExtension [ Pass Failure ]
 crbug.com/455768805 TipsNotificationsTestCase/testTriggerNotifications [ Pass Failure ]
-crbug.com/455768805 [ iPad iOS27 ] TipsNotificationsTestCase/testTriggerNotifications [ Failure ]
 crbug.com/379849501 VariationsSafeModeEndToEndTestCase/testVariationsSafeModeEndToEnd [ Pass Failure ]
 
 # Gardening surpression 2026-07-09

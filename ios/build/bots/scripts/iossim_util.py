@@ -48,7 +48,7 @@ SIMULATOR_DISABLED_STORE_ROOT = '/private/var/tmp'
 SIMULATOR_PLIST_STATE_BOOTED = (
   3  # CoreSimulator SimDeviceState.Booted in device.plist.
 )
-DEFAULT_DISABLE_SIMULATOR_DAEMONS = False
+DEFAULT_DISABLE_SIMULATOR_DAEMONS = True
 IOS_DISABLE_SIMULATOR_DAEMONS_ENV = 'IOS_DISABLE_SIMULATOR_DAEMONS'
 _DISABLE_SIMULATOR_DAEMONS_OVERRIDE: bool | None = None
 
@@ -1618,12 +1618,12 @@ def disable_simulator_daemons(
 
   Writes `DISABLED_SIMULATOR_LAUNCHD_JOBS` into CoreSimulator's per-device
   host `disabled.plist` store before `launchd_sim` reads it on boot when
-  daemon disabling is enabled (via `--disable-simulator-daemons` or
-  `IOS_DISABLE_SIMULATOR_DAEMONS=1`). Existing entries (including explicit
-  `False` entries written by the runtime) are preserved. When daemon disabling
-  is not enabled, strips any pre-existing managed `True` entries instead and
-  returns `False`. Exceptions are caught and logged so infra or filesystem
-  failures never abort test execution.
+  daemon disabling is enabled (default; opt out via
+  `--no-disable-simulator-daemons` or `IOS_DISABLE_SIMULATOR_DAEMONS=0`).
+  Existing entries (including explicit `False` entries written by the runtime)
+  are preserved. When daemon disabling is disabled, strips any pre-existing
+  managed `True` entries instead and returns `False`. Exceptions are caught
+  and logged so infra or filesystem failures never abort test execution.
 
   Args:
     udid: Simulator UDID string.

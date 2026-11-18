@@ -1274,13 +1274,10 @@ class DisableSimulatorDaemonsTest(test_runner_test.TestCase):
     super(DisableSimulatorDaemonsTest, self).setUp()
     iossim_util.set_simulator_daemon_disabling_override(None)
     self.addCleanup(iossim_util.set_simulator_daemon_disabling_override, None)
-    env_patcher = mock.patch.dict(
-      os.environ,
-      {iossim_util.IOS_DISABLE_SIMULATOR_DAEMONS_ENV: '1'},
-      clear=False,
-    )
+    env_patcher = mock.patch.dict(os.environ, {}, clear=False)
     env_patcher.start()
     self.addCleanup(env_patcher.stop)
+    os.environ.pop(iossim_util.IOS_DISABLE_SIMULATOR_DAEMONS_ENV, None)
     self.mock(
       iossim_util, '_is_simulator_booted', lambda *args, **kwargs: False
     )
@@ -1838,32 +1835,43 @@ class DisableSimulatorDaemonsTest(test_runner_test.TestCase):
       mock_makedirs.assert_not_called()
       mock_thread.assert_not_called()
 
-  def test_daemon_disabling_default_off_and_strips_stale_entries(self):
-    """Defaults to disabled, no-ops clean sims, and strips stale entries."""
-    self.assertIs(iossim_util.DEFAULT_DISABLE_SIMULATOR_DAEMONS, False)
+  def test_daemon_disabling_default_on_and_opt_out_strips_stale_entries(self):
+    """Enables disabling by default and strips stale entries on opt-out."""
+    self.assertIs(iossim_util.DEFAULT_DISABLE_SIMULATOR_DAEMONS, True)
     udid = '11111111-2222-3333-4444-555555555555'
     clone_shutdown = '22222222-2222-3333-4444-555555555555'
     clone_booted = '33333333-2222-3333-4444-555555555555'
+    override_udid = '99999999-2222-3333-4444-555555555555'
     with (
       tempfile.TemporaryDirectory() as device_set_dir,
       tempfile.TemporaryDirectory() as store_root,
     ):
-      # Pre-populate Shutdown simulator and clones while opted in via setUp.
-      self.assertTrue(
-        iossim_util.disable_simulator_daemons(udid, store_root=store_root)
-      )
+      # Watch clones is active by default when neither env nor override is set.
+      default_clone = 'AAAAAAAA-2222-3333-4444-555555555555'
+      fake_select = types.SimpleNamespace()
+      with (
+        mock.patch.object(iossim_util, 'select', fake_select),
+        iossim_util.watch_simulator_clones_for_daemon_disabling(
+          device_set_dir, store_root=store_root, poll_interval=0.01
+        ),
+      ):
+        os.makedirs(os.path.join(device_set_dir, default_clone))
+        default_plist = os.path.join(
+          store_root,
+          f'com.apple.CoreSimulator.SimDevice.{default_clone}',
+          'disabled.plist',
+        )
+        self.assertTrue(self._wait_for_path(default_plist))
+      self.assertFalse(os.path.exists(default_plist))
+
+      # Pre-populate Shutdown simulator, override target, and clones with no
+      # env var or override set (enabled by default).
+      for target in (udid, override_udid, clone_shutdown, clone_booted):
+        self.assertTrue(
+          iossim_util.disable_simulator_daemons(target, store_root=store_root)
+        )
       os.makedirs(os.path.join(device_set_dir, clone_shutdown))
       os.makedirs(os.path.join(device_set_dir, clone_booted))
-      self.assertTrue(
-        iossim_util.disable_simulator_daemons(
-          clone_shutdown, store_root=store_root
-        )
-      )
-      self.assertTrue(
-        iossim_util.disable_simulator_daemons(
-          clone_booted, store_root=store_root
-        )
-      )
 
       # Reused simulator with unmanaged <false/> watch keys keeps only those.
       reused_udid = '44444444-2222-3333-4444-555555555555'
@@ -1895,11 +1903,11 @@ class DisableSimulatorDaemonsTest(test_runner_test.TestCase):
         f.write('')
 
       with (
-        mock.patch.dict(os.environ, {}, clear=False),
+        mock.patch.dict(
+          os.environ, {iossim_util.IOS_DISABLE_SIMULATOR_DAEMONS_ENV: '0'}
+        ),
         mock.patch.object(threading, 'Thread') as mock_thread,
       ):
-        os.environ.pop(iossim_util.IOS_DISABLE_SIMULATOR_DAEMONS_ENV, None)
-
         # Clean simulator returns False with zero booted checks.
         missing_udid = '66666666-2222-3333-4444-555555555555'
         with mock.patch.object(
@@ -1987,11 +1995,39 @@ class DisableSimulatorDaemonsTest(test_runner_test.TestCase):
           )
         )
 
+      # Opt-out via set_simulator_daemon_disabling_override(False) also strips
+      # pre-existing managed keys and skips clean stores.
+      iossim_util.set_simulator_daemon_disabling_override(False)
+      self.assertFalse(
+        iossim_util.disable_simulator_daemons(
+          override_udid, store_root=store_root
+        )
+      )
+      self.assertFalse(
+        os.path.exists(
+          os.path.join(
+            store_root, f'com.apple.CoreSimulator.SimDevice.{override_udid}'
+          )
+        )
+      )
+      clean_udid = 'BBBBBBBB-2222-3333-4444-555555555555'
+      self.assertFalse(
+        iossim_util.disable_simulator_daemons(clean_udid, store_root=store_root)
+      )
+      self.assertFalse(
+        os.path.exists(
+          os.path.join(
+            store_root, f'com.apple.CoreSimulator.SimDevice.{clean_udid}'
+          )
+        )
+      )
+
   def test_daemon_disabling_env_and_override_precedence(self):
     """Applies env var opt-in/out and gives Python override precedence."""
     env_name = iossim_util.IOS_DISABLE_SIMULATOR_DAEMONS_ENV
     udid_a = '77777777-2222-3333-4444-555555555555'
     udid_b = '88888888-2222-3333-4444-555555555555'
+    udid_c = 'CCCCCCCC-2222-3333-4444-555555555555'
     with (
       tempfile.TemporaryDirectory() as store_root,
       mock.patch.dict(os.environ, {}, clear=False),
@@ -2015,6 +2051,11 @@ class DisableSimulatorDaemonsTest(test_runner_test.TestCase):
       iossim_util.set_simulator_daemon_disabling_override(None)
       self.assertTrue(
         iossim_util.disable_simulator_daemons(udid_b, store_root=store_root)
+      )
+
+      os.environ.pop(env_name, None)
+      self.assertTrue(
+        iossim_util.disable_simulator_daemons(udid_c, store_root=store_root)
       )
 
   def test_cleanup_simulator_disabled_store_and_booted_guard(self):
