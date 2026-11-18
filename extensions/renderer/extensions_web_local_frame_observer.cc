@@ -2,25 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/extensions_render_frame_observer.h"
+#include "extensions/renderer/extensions_web_local_frame_observer.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
-#include "base/strings/utf_string_conversions.h"
 #include "content/public/renderer/render_frame.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/logging_constants.h"
 #include "extensions/common/stack_frame.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "third_party/blink/public/common/logging/logging_utils.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_view.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace extensions {
 
@@ -42,7 +47,7 @@ const char16_t kStackFrameDelimiter[] = u"\n    at ";
 StackTrace GetStackTraceFromMessage(std::u16string* message,
                                     const std::u16string& source,
                                     const std::u16string& stack_trace,
-                                    int32_t line_number) {
+                                    uint32_t line_number) {
   StackTrace result;
   std::vector<std::u16string> pieces;
   size_t index = 0;
@@ -64,8 +69,9 @@ StackTrace GetStackTraceFromMessage(std::u16string* message,
     for (; index < pieces.size(); ++index) {
       std::unique_ptr<StackFrame> frame =
           StackFrame::CreateFromText(pieces[index]);
-      if (frame.get())
+      if (frame.get()) {
         result.push_back(*frame);
+      }
     }
   }
 
@@ -81,63 +87,66 @@ StackTrace GetStackTraceFromMessage(std::u16string* message,
 
 }  // namespace
 
-ExtensionsRenderFrameObserver::ExtensionsRenderFrameObserver(
-    content::RenderFrame* render_frame,
+ExtensionsWebLocalFrameObserver::ExtensionsWebLocalFrameObserver(
+    blink::WebLocalFrame* web_local_frame,
     service_manager::BinderRegistry* registry)
-    : content::RenderFrameObserver(render_frame) {
-  registry->AddInterface(
-      base::BindRepeating(&ExtensionsRenderFrameObserver::BindAppWindowReceiver,
-                          base::Unretained(this)));
+    : blink::WebLocalFrameObserver(web_local_frame) {
+  registry->AddInterface(base::BindRepeating(
+      &ExtensionsWebLocalFrameObserver::BindAppWindowReceiver,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
-ExtensionsRenderFrameObserver::~ExtensionsRenderFrameObserver() {
-}
+ExtensionsWebLocalFrameObserver::~ExtensionsWebLocalFrameObserver() = default;
 
-void ExtensionsRenderFrameObserver::BindAppWindowReceiver(
+void ExtensionsWebLocalFrameObserver::BindAppWindowReceiver(
     mojo::PendingReceiver<mojom::AppWindow> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
-void ExtensionsRenderFrameObserver::SetVisuallyDeemphasized(bool deemphasized) {
+void ExtensionsWebLocalFrameObserver::SetVisuallyDeemphasized(
+    bool deemphasized) {
   // TODO(danakj): This mojo API should be a MainFrame-only interface and object
   // rather than an every-frame interface and object.
-  DCHECK(render_frame()->IsMainFrame());
+  DCHECK(!GetWebLocalFrame()->Parent());
 
-  if (webview_visually_deemphasized_ == deemphasized)
+  if (webview_visually_deemphasized_ == deemphasized) {
     return;
+  }
 
   webview_visually_deemphasized_ = deemphasized;
 
   SkColor color =
       deemphasized ? SkColorSetARGB(178, 0, 0, 0) : SK_ColorTRANSPARENT;
-  render_frame()->GetWebFrame()->FrameWidget()->SetMainFrameOverlayColor(color);
+  GetWebLocalFrame()->FrameWidget()->SetMainFrameOverlayColor(color);
 }
 
-void ExtensionsRenderFrameObserver::DetailedConsoleMessageAdded(
-    const std::u16string& message,
-    const std::u16string& source,
-    const std::u16string& stack_trace_string,
-    uint32_t line_number,
-    blink::mojom::ConsoleMessageLevel level) {
-  if (blink::ConsoleMessageLevelToLogSeverity(level) <
+void ExtensionsWebLocalFrameObserver::DidAddMessageToConsole(
+    const blink::WebConsoleMessage& message,
+    const blink::WebString& source_name,
+    unsigned source_line,
+    const blink::WebString& stack_trace_string) {
+  if (blink::ConsoleMessageLevelToLogSeverity(message.level) <
       static_cast<int32_t>(extension_misc::kMinimumSeverityToReportError)) {
     // We don't report certain low-severity errors.
     return;
   }
 
-  std::u16string trimmed_message = message;
+  std::u16string source = source_name.Utf16();
+  if (!IsSourceFromAnExtension(source)) {
+    return;
+  }
+
+  std::u16string trimmed_message = message.text.Utf16();
   StackTrace stack_trace = GetStackTraceFromMessage(
-      &trimmed_message,
-      source,
-      stack_trace_string,
-      line_number);
-  ExtensionFrameHelper::Get(render_frame())
+      &trimmed_message, source, stack_trace_string.Utf16(), source_line);
+  ExtensionFrameHelper::Get(
+      content::RenderFrame::FromWebFrame(GetWebLocalFrame()))
       ->GetLocalFrameHost()
       ->DetailedConsoleMessageAdded(trimmed_message, source, stack_trace,
-                                    level);
+                                    message.level);
 }
 
-void ExtensionsRenderFrameObserver::OnDestruct() {
+void ExtensionsWebLocalFrameObserver::OnFrameDetached() {
   delete this;
 }
 

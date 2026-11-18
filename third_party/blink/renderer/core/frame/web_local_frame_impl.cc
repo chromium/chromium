@@ -3693,6 +3693,16 @@ void WebLocalFrameImpl::DidObserveLayoutShift(
   }
 }
 
+void WebLocalFrameImpl::DidAddMessageToConsole(const WebConsoleMessage& message,
+                                               const WebString& source_name,
+                                               unsigned source_line,
+                                               const WebString& stack_trace) {
+  for (auto& observer : observers_) {
+    observer.DidAddMessageToConsole(message, source_name, source_line,
+                                    stack_trace);
+  }
+}
+
 bool WebLocalFrameImpl::AllowStorageAccessSyncAndNotify(
     WebContentSettingsClient::StorageType storage_type) {
   return GetFrame()->AllowStorageAccessSyncAndNotify(storage_type);

@@ -3933,26 +3933,6 @@ void RenderFrameImpl::DidMatchCSS(
   }
 }
 
-bool RenderFrameImpl::ShouldReportDetailedMessageForSource(
-    const blink::WebString& source) {
-  return GetContentClient()->renderer()->ShouldReportDetailedMessageForSource(
-      source.Utf16());
-}
-
-void RenderFrameImpl::DidAddMessageToConsole(
-    const blink::WebConsoleMessage& message,
-    const blink::WebString& source_name,
-    unsigned source_line,
-    const blink::WebString& stack_trace) {
-  if (ShouldReportDetailedMessageForSource(source_name)) {
-    for (auto& observer : observers_) {
-      observer.DetailedConsoleMessageAdded(
-          message.text.Utf16(), source_name.Utf16(), stack_trace.Utf16(),
-          source_line, message.level);
-    }
-  }
-}
-
 void RenderFrameImpl::DidCreateDocumentLoader(
     blink::WebDocumentLoader* document_loader) {
   DocumentState* document_state =

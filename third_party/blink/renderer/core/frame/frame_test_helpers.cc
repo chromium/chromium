@@ -70,6 +70,7 @@
 #include "third_party/blink/public/test/test_web_frame_helper.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_settings.h"
@@ -354,6 +355,9 @@ WebLocalFrameImpl* CreateLocalChild(
                   mojo::NullRemote(),
                   std::make_unique<base::UnguessableToken>(
                       base::UnguessableToken::Create()));
+  if (frame->GetFrame()) {
+    client->ObserveConsoleMessages();
+  }
   return frame;
 }
 
@@ -375,6 +379,9 @@ WebLocalFrameImpl* CreateLocalChild(
                   mojo::NullRemote(),
                   std::make_unique<base::UnguessableToken>(
                       base::UnguessableToken::Create()));
+  if (frame->GetFrame()) {
+    client->ObserveConsoleMessages();
+  }
   return frame;
 }
 
@@ -852,6 +859,27 @@ WebViewImpl* WebViewHelper::CreateWebView(WebViewClient* web_view_client,
       /*history_length=*/0));
 }
 
+class TestWebFrameClient::ConsoleMessageObserver
+    : public WebLocalFrameObserver {
+ public:
+  ConsoleMessageObserver(WebLocalFrame* frame, TestWebFrameClient* client)
+      : WebLocalFrameObserver(frame), client_(client) {}
+  ~ConsoleMessageObserver() override = default;
+
+  void DidAddMessageToConsole(const WebConsoleMessage& message,
+                              const WebString& source_name,
+                              unsigned source_line,
+                              const WebString& stack_trace) override {
+    client_->DidAddMessageToConsole(message, source_name, source_line,
+                                    stack_trace);
+  }
+
+  void OnFrameDetached() override {}
+
+ private:
+  const raw_ptr<TestWebFrameClient> client_;
+};
+
 int TestWebFrameClient::loads_in_progress_ = 0;
 
 TestWebFrameClient::TestWebFrameClient()
@@ -867,6 +895,18 @@ void TestWebFrameClient::Bind(WebLocalFrame* frame,
   DCHECK(!self_owned || self_owned.get() == this);
   frame_ = To<WebLocalFrameImpl>(frame);
   self_owned_ = std::move(self_owned);
+  if (frame_->GetFrame()) {
+    ObserveConsoleMessages();
+  }
+}
+
+void TestWebFrameClient::ObserveConsoleMessages() {
+  DCHECK(frame_);
+  DCHECK(frame_->GetFrame());
+  if (!console_message_observer_) {
+    console_message_observer_ =
+        std::make_unique<ConsoleMessageObserver>(frame_, this);
+  }
 }
 
 void TestWebFrameClient::FrameDetached(DetachReason detach_reason) {
@@ -898,6 +938,9 @@ WebLocalFrame* TestWebFrameClient::CreateChildFrame(
                   mojo::NullRemote(),
                   std::make_unique<base::UnguessableToken>(
                       base::UnguessableToken::Create()));
+  if (frame->GetFrame()) {
+    client_ptr->ObserveConsoleMessages();
+  }
   return frame;
 }
 

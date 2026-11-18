@@ -469,15 +469,6 @@ void ChromeClientImpl::SetOverscrollBehavior(
       overscroll_behavior);
 }
 
-bool ChromeClientImpl::ShouldReportDetailedMessageForSource(
-    LocalFrame& local_frame,
-    const String& url) {
-  WebLocalFrameImpl* webframe =
-      WebLocalFrameImpl::FromFrame(local_frame.LocalFrameRoot());
-  return webframe && webframe->Client() &&
-         webframe->Client()->ShouldReportDetailedMessageForSource(url);
-}
-
 void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
                                            mojom::ConsoleMessageSource source,
                                            mojom::ConsoleMessageLevel level,
@@ -491,12 +482,9 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
         stack_trace);
   }
 
-  WebLocalFrameImpl* frame = WebLocalFrameImpl::FromFrame(local_frame);
-  if (frame && frame->Client()) {
-    frame->Client()->DidAddMessageToConsole(
-        WebConsoleMessage(static_cast<mojom::ConsoleMessageLevel>(level),
-                          message),
-        source_id, line_number, stack_trace);
+  if (WebLocalFrameImpl* frame = WebLocalFrameImpl::FromFrame(local_frame)) {
+    frame->DidAddMessageToConsole(WebConsoleMessage(level, message), source_id,
+                                  line_number, stack_trace);
   }
 }
 

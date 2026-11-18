@@ -84,6 +84,7 @@ class AgentGroupScheduler;
 class ScriptState;
 class WebFrame;
 class WebLocalFrameImpl;
+struct WebConsoleMessage;
 struct WebNavigationParams;
 class WebRemoteFrameImpl;
 class WebSettings;
@@ -552,6 +553,9 @@ class TestWebFrameClient : public WebLocalFrameClient {
   // TestWebFrameClient should delete itself on frame detach.
   void Bind(WebLocalFrame*,
             std::unique_ptr<TestWebFrameClient> self_owned = nullptr);
+  // Starts observing console messages once the bound frame's core LocalFrame
+  // has been initialized.
+  void ObserveConsoleMessages();
 
   // WebLocalFrameClient:
   void FrameDetached(DetachReason detach_reason) override;
@@ -573,10 +577,6 @@ class TestWebFrameClient : public WebLocalFrameClient {
   WebEffectiveConnectionType GetEffectiveConnectionType() override;
   void SetEffectiveConnectionTypeForTesting(
       WebEffectiveConnectionType) override;
-  void DidAddMessageToConsole(const WebConsoleMessage&,
-                              const WebString& source_name,
-                              unsigned source_line,
-                              const WebString& stack_trace) override;
   WebPlugin* CreatePlugin(const WebPluginParams& params) override;
   AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces()
       override;
@@ -618,7 +618,15 @@ class TestWebFrameClient : public WebLocalFrameClient {
 
   void SetFrameDetachedCallback(base::OnceClosure callback);
 
+  // Called when a message is added to the console of the bound frame.
+  virtual void DidAddMessageToConsole(const WebConsoleMessage&,
+                                      const WebString& source_name,
+                                      unsigned source_line,
+                                      const WebString& stack_trace);
+
  private:
+  class ConsoleMessageObserver;
+
   void CommitNavigation(std::unique_ptr<WebNavigationInfo>);
 
   static int loads_in_progress_;
@@ -646,6 +654,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
   base::OnceClosure frame_detached_callback_ = base::DoNothing();
 
   Vector<std::unique_ptr<WebViewHelper>> child_web_views_;
+  std::unique_ptr<ConsoleMessageObserver> console_message_observer_;
   base::WeakPtrFactory<TestWebFrameClient> weak_factory_{this};
 };
 

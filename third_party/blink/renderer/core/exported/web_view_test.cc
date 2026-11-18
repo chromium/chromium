@@ -8050,6 +8050,7 @@ TEST_F(WebViewTest, DetachPluginInLayout) {
       return new ScriptInDestroyPlugin(Frame(), params, &plugin_destroyed_);
     }
 
+    // frame_test_helpers::TestWebFrameClient overrides:
     void DidAddMessageToConsole(const WebConsoleMessage& message,
                                 const WebString& source_name,
                                 unsigned source_line,
@@ -8278,7 +8279,7 @@ class MockClockAdvancingWebFrameClient
       base::TimeDelta event_handling_delay)
       : task_environment_(task_environment),
         event_handling_delay_(event_handling_delay) {}
-  // WebLocalFrameClient overrides:
+  // frame_test_helpers::TestWebFrameClient overrides:
   void DidAddMessageToConsole(const WebConsoleMessage& message,
                               const WebString& source_name,
                               unsigned source_line,

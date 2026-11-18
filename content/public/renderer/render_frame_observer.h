@@ -24,7 +24,6 @@
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-shared.h"
@@ -157,19 +156,6 @@ class CONTENT_EXPORT RenderFrameObserver {
   // RenderFrame is being detached). See comments for blink::DetachReason for
   // more details.
   virtual void WillDetach(blink::DetachReason detach_reason) {}
-
-  // Called when we receive a console message from Blink for which we requested
-  // extra details (like the stack trace). |message| is the error message,
-  // |source| is the Blink-reported source of the error (either external or
-  // internal), and |stack_trace| is the stack trace of the error in a
-  // human-readable format (each frame is formatted as
-  // "\n    at function_name (source:line_number:column_number)").
-  virtual void DetailedConsoleMessageAdded(
-      const std::u16string& message,
-      const std::u16string& source,
-      const std::u16string& stack_trace,
-      uint32_t line_number,
-      blink::mojom::ConsoleMessageLevel level) {}
 
   // Called when an interesting (from document lifecycle perspective),
   // compositor-driven layout had happened. This is a reasonable hook to use

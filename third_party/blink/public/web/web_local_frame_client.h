@@ -147,7 +147,6 @@ class WebURLRequest;
 class WebURLResponse;
 class WebView;
 struct FramePolicy;
-struct WebConsoleMessage;
 struct ContextMenuData;
 struct WebPictureInPictureWindowOptions;
 struct WebPluginParams;
@@ -309,19 +308,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void DidMatchCSS(
       const std::vector<WebString>& newly_matching_selectors,
       const std::vector<WebString>& stopped_matching_selectors) {}
-
-  // Console messages ----------------------------------------------------
-
-  // Whether or not we should report a detailed message for the given source.
-  virtual bool ShouldReportDetailedMessageForSource(const WebString& source) {
-    return false;
-  }
-
-  // A new message was added to the console.
-  virtual void DidAddMessageToConsole(const WebConsoleMessage&,
-                                      const WebString& source_name,
-                                      unsigned source_line,
-                                      const WebString& stack_trace) {}
 
   // Navigational queries ------------------------------------------------
 

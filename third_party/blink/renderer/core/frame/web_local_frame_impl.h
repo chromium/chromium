@@ -621,6 +621,10 @@ class CORE_EXPORT WebLocalFrameImpl final
   void DidObserveLayoutShift(double score,
                              bool after_input_or_scroll,
                              uint64_t performance_timeline_navigation_id);
+  void DidAddMessageToConsole(const WebConsoleMessage& message,
+                              const WebString& source_name,
+                              unsigned source_line,
+                              const WebString& stack_trace);
 
  protected:
   // WebLocalFrame protected overrides:

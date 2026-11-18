@@ -897,6 +897,13 @@ class BLINK_PLATFORM_EXPORT Platform {
   // calling an OOM.
   virtual void OnV8HeapLastResortGC() {}
 
+  // Console messages ----------------------------------------------------
+
+  // Whether or not we should report a detailed message for the given source.
+  virtual bool ShouldReportDetailedMessageForSource(const WebString& source) {
+    return false;
+  }
+
  private:
   static void InitializeMainThreadCommon(
       std::unique_ptr<MainThread> main_thread);

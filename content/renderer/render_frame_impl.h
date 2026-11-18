@@ -523,12 +523,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidMatchCSS(
       const std::vector<blink::WebString>& newly_matching_selectors,
       const std::vector<blink::WebString>& stopped_matching_selectors) override;
-  bool ShouldReportDetailedMessageForSource(
-      const blink::WebString& source) override;
-  void DidAddMessageToConsole(const blink::WebConsoleMessage& message,
-                              const blink::WebString& source_name,
-                              unsigned source_line,
-                              const blink::WebString& stack_trace) override;
   void BeginNavigation(std::unique_ptr<blink::WebNavigationInfo> info) override;
   void DidCreateDocumentLoader(
       blink::WebDocumentLoader* document_loader) override;

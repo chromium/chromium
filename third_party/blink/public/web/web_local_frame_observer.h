@@ -22,7 +22,9 @@ namespace blink {
 class WebFormElement;
 class WebLocalFrame;
 class WebLocalFrameImpl;
+class WebString;
 struct JavaScriptFrameworkDetectionResult;
+struct WebConsoleMessage;
 
 enum class BFCacheStateChange {
   kStoredToBFCache,
@@ -108,6 +110,14 @@ class BLINK_EXPORT WebLocalFrameObserver : public base::CheckedObserver {
       double score,
       bool after_input_or_scroll,
       uint64_t performance_timeline_navigation_id) {}
+
+  // A new message was added to the console. `stack_trace` is only populated
+  // when detailed messages are requested for `source_name` (e.g. via
+  // Platform::ShouldReportDetailedMessageForSource()).
+  virtual void DidAddMessageToConsole(const WebConsoleMessage& message,
+                                      const WebString& source_name,
+                                      unsigned source_line,
+                                      const WebString& stack_trace) {}
 
   // Retrieves the WebLocalFrame that is being observed. Can be null.
   WebLocalFrame* GetWebLocalFrame() const;

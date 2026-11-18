@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -103,8 +104,7 @@ bool FrameConsole::ShouldReportDetailedMessage(
       level == mojom::blink::ConsoleMessageLevel::kError) {
     return true;
   }
-  return frame_->GetChromeClient().ShouldReportDetailedMessageForSource(*frame_,
-                                                                        url);
+  return Platform::Current()->ShouldReportDetailedMessageForSource(url);
 }
 
 void FrameConsole::ReportResourceResponseReceived(

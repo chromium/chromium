@@ -107,6 +107,7 @@
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_navigation_timings.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
@@ -16044,6 +16045,88 @@ TEST_F(WebFrameTest, SetWantErrorMessageStackTrace) {
   EXPECT_THAT(frame_host.messages()[2].untrusted_stack_trace.Utf8(),
               testing::AllOf(testing::HasSubstr("throwOuter2"),
                              testing::HasSubstr("throwInner2")));
+
+  web_view_helper.Reset();
+}
+
+namespace {
+
+class DetailedConsoleMessageTestPlatform : public TestingPlatformSupport {
+ public:
+  bool ShouldReportDetailedMessageForSource(const WebString& source) override {
+    return source == "http://example.com/detailed.js";
+  }
+};
+
+class ConsoleMessageObserver : public WebLocalFrameObserver {
+ public:
+  struct Message {
+    WebConsoleMessage message;
+    WebString source_name;
+    unsigned source_line;
+    WebString stack_trace;
+  };
+
+  explicit ConsoleMessageObserver(WebLocalFrame* frame)
+      : WebLocalFrameObserver(frame) {}
+
+  void DidAddMessageToConsole(const WebConsoleMessage& message,
+                              const WebString& source_name,
+                              unsigned source_line,
+                              const WebString& stack_trace) override {
+    messages_.push_back({message, source_name, source_line, stack_trace});
+  }
+
+  void OnFrameDetached() override {}
+
+  const std::vector<Message>& messages() const { return messages_; }
+
+ private:
+  std::vector<Message> messages_;
+};
+
+}  // namespace
+
+TEST_F(WebFrameTest, DidAddMessageToConsole) {
+  ScopedTestingPlatformSupport<DetailedConsoleMessageTestPlatform> platform;
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebLocalFrameImpl* main_frame = web_view_helper.LocalMainFrame();
+  ConsoleMessageObserver observer(main_frame);
+  frame_test_helpers::LoadHTMLString(
+      main_frame, "<html><body></body></html>",
+      url_test_helpers::ToKURL("http://example.com/"));
+  RunPendingTasks();
+
+  main_frame->ExecuteScript(WebScriptSource(
+      "console.error('regular error');",
+      url_test_helpers::ToKURL("http://example.com/regular.js")));
+  main_frame->ExecuteScript(WebScriptSource(
+      "function outer() { inner(); }\n"
+      "function inner() { console.error('detailed error'); }\n"
+      "outer();",
+      url_test_helpers::ToKURL("http://example.com/detailed.js")));
+  RunPendingTasks();
+
+  ASSERT_EQ(2u, observer.messages().size());
+  EXPECT_EQ("regular error", observer.messages()[0].message.text.Utf8());
+  EXPECT_EQ(mojom::ConsoleMessageLevel::kError,
+            observer.messages()[0].message.level);
+  EXPECT_EQ("http://example.com/regular.js",
+            observer.messages()[0].source_name.Utf8());
+  EXPECT_EQ(1u, observer.messages()[0].source_line);
+  EXPECT_TRUE(observer.messages()[0].stack_trace.IsEmpty());
+
+  EXPECT_EQ("detailed error", observer.messages()[1].message.text.Utf8());
+  EXPECT_EQ(mojom::ConsoleMessageLevel::kError,
+            observer.messages()[1].message.level);
+  EXPECT_EQ("http://example.com/detailed.js",
+            observer.messages()[1].source_name.Utf8());
+  EXPECT_EQ(2u, observer.messages()[1].source_line);
+  EXPECT_THAT(
+      observer.messages()[1].stack_trace.Utf8(),
+      testing::AllOf(testing::HasSubstr("outer"), testing::HasSubstr("inner")));
 
   web_view_helper.Reset();
 }

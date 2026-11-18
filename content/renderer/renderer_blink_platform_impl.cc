@@ -1205,4 +1205,11 @@ void RendererBlinkPlatformImpl::OnV8HeapLastResortGC() {
   }
 }
 
+bool RendererBlinkPlatformImpl::ShouldReportDetailedMessageForSource(
+    const blink::WebString& source) {
+  auto* renderer_client = GetContentClient()->renderer();
+  return renderer_client &&
+         renderer_client->ShouldReportDetailedMessageForSource(source.Utf16());
+}
+
 }  // namespace content

@@ -22,6 +22,7 @@
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_params.h"
@@ -237,6 +238,78 @@ class TestRenderFrameObserver : public RenderFrameObserver {
   const raw_ptr<TestRunner> test_runner_;
 };
 
+class TestWebLocalFrameObserver : public blink::WebLocalFrameObserver {
+ public:
+  TestWebLocalFrameObserver(WebFrameTestProxy* frame_proxy,
+                            TestRunner* test_runner)
+      : blink::WebLocalFrameObserver(frame_proxy->GetWebFrame()),
+        frame_proxy_(frame_proxy),
+        test_runner_(test_runner) {}
+
+  TestWebLocalFrameObserver(const TestWebLocalFrameObserver&) = delete;
+  TestWebLocalFrameObserver& operator=(const TestWebLocalFrameObserver&) =
+      delete;
+
+  ~TestWebLocalFrameObserver() override = default;
+
+ private:
+  // blink::WebLocalFrameObserver overrides:
+  void OnFrameDetached() override { delete this; }
+
+  void DidAddMessageToConsole(const blink::WebConsoleMessage& message,
+                              const blink::WebString& source_name,
+                              unsigned source_line,
+                              const blink::WebString& stack_trace) override {
+    if (!test_runner_->ShouldDumpConsoleMessages()) {
+      return;
+    }
+
+    std::string level;
+    switch (message.level) {
+      case blink::mojom::ConsoleMessageLevel::kVerbose:
+        level = "DEBUG";
+        break;
+      case blink::mojom::ConsoleMessageLevel::kInfo:
+        level = "MESSAGE";
+        break;
+      case blink::mojom::ConsoleMessageLevel::kWarning:
+        level = "WARNING";
+        break;
+      case blink::mojom::ConsoleMessageLevel::kError:
+        level = "ERROR";
+        break;
+      default:
+        level = "MESSAGE";
+    }
+    std::string console_message(std::string("CONSOLE ") + level + ": ");
+    if (!message.text.IsEmpty()) {
+      std::string new_message = message.text.Utf8();
+      size_t file_protocol = new_message.find("file://");
+      if (file_protocol != std::string::npos) {
+        new_message =
+            new_message.substr(0, file_protocol) +
+            URLSuitableForTestResult(new_message.substr(file_protocol));
+      }
+      console_message += new_message;
+    }
+    console_message += "\n";
+
+    // Console messages shouldn't be included in the expected output for
+    // web-platform-tests because they may create non-determinism not
+    // intended by the test author. They are still included in the stderr
+    // output for debugging purposes.
+    frame_proxy_->GetWebTestControlHostRemote()->PrintMessageToStderr(
+        console_message);
+    if (!test_runner_->IsWebPlatformTestsMode()) {
+      frame_proxy_->GetWebTestControlHostRemote()->PrintMessage(
+          console_message);
+    }
+  }
+
+  const raw_ptr<WebFrameTestProxy> frame_proxy_;
+  const raw_ptr<TestRunner> test_runner_;
+};
+
 }  // namespace
 
 WebFrameTestProxy::WebFrameTestProxy(RenderFrameImpl::CreateParams params,
@@ -269,7 +342,8 @@ void WebFrameTestProxy::Initialize(blink::WebFrame* parent) {
                           // is destroyed.
                           base::Unretained(this)));
 
-  new TestRenderFrameObserver(this, test_runner_);  // deletes itself.
+  new TestRenderFrameObserver(this, test_runner_);    // deletes itself.
+  new TestWebLocalFrameObserver(this, test_runner_);  // deletes itself.
 
   // Bind the channel to the host right away.
   GetWebTestControlHostRemote();
@@ -353,56 +427,6 @@ blink::WebPlugin* WebFrameTestProxy::CreatePlugin(
   }
 
   return RenderFrameImpl::CreatePlugin(params);
-}
-
-void WebFrameTestProxy::DidAddMessageToConsole(
-    const blink::WebConsoleMessage& message,
-    const blink::WebString& source_name,
-    unsigned source_line,
-    const blink::WebString& stack_trace) {
-  RenderFrameImpl::DidAddMessageToConsole(message, source_name, source_line,
-                                          stack_trace);
-
-  if (!test_runner()->ShouldDumpConsoleMessages())
-    return;
-
-  std::string level;
-  switch (message.level) {
-    case blink::mojom::ConsoleMessageLevel::kVerbose:
-      level = "DEBUG";
-      break;
-    case blink::mojom::ConsoleMessageLevel::kInfo:
-      level = "MESSAGE";
-      break;
-    case blink::mojom::ConsoleMessageLevel::kWarning:
-      level = "WARNING";
-      break;
-    case blink::mojom::ConsoleMessageLevel::kError:
-      level = "ERROR";
-      break;
-    default:
-      level = "MESSAGE";
-  }
-  std::string console_message(std::string("CONSOLE ") + level + ": ");
-  if (!message.text.IsEmpty()) {
-    std::string new_message;
-    new_message = message.text.Utf8();
-    size_t file_protocol = new_message.find("file://");
-    if (file_protocol != std::string::npos) {
-      new_message = new_message.substr(0, file_protocol) +
-                    URLSuitableForTestResult(new_message.substr(file_protocol));
-    }
-    console_message += new_message;
-  }
-  console_message += "\n";
-
-  // Console messages shouldn't be included in the expected output for
-  // web-platform-tests because they may create non-determinism not
-  // intended by the test author. They are still included in the stderr
-  // output for debugging purposes.
-  GetWebTestControlHostRemote()->PrintMessageToStderr(console_message);
-  if (!test_runner()->IsWebPlatformTestsMode())
-    GetWebTestControlHostRemote()->PrintMessage(console_message);
 }
 
 void WebFrameTestProxy::DidStartLoading() {

@@ -145,10 +145,6 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
                      const gfx::Vector2d& cursor_offset,
                      const gfx::Rect& drag_obj_rect) override {}
   bool AcceptsLoadDrops() const override { return true; }
-  bool ShouldReportDetailedMessageForSource(LocalFrame&,
-                                            const String&) override {
-    return false;
-  }
   void AddMessageToConsole(LocalFrame*,
                            mojom::ConsoleMessageSource,
                            mojom::ConsoleMessageLevel,

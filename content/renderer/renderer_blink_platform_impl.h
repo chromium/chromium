@@ -273,6 +273,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool IsUserLevelMemoryPressureSignalEnabled() override;
 #endif  // BUILDFLAG(IS_ANDROID)
   void OnV8HeapLastResortGC() override;
+  bool ShouldReportDetailedMessageForSource(
+      const blink::WebString& source) override;
 
   // Tells this platform that the renderer is locked to a site (i.e., a scheme
   // plus eTLD+1, such as https://google.com), or to a more specific origin.

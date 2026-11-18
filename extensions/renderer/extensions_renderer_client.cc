@@ -22,7 +22,7 @@
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extension_web_view_helper.h"
-#include "extensions/renderer/extensions_render_frame_observer.h"
+#include "extensions/renderer/extensions_web_local_frame_observer.h"
 #include "extensions/renderer/resource_request_policy.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
@@ -119,7 +119,7 @@ void ExtensionsRendererClient::WebViewCreated(
 void ExtensionsRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame,
     service_manager::BinderRegistry* registry) {
-  new ExtensionsRenderFrameObserver(render_frame, registry);
+  new ExtensionsWebLocalFrameObserver(render_frame->GetWebFrame(), registry);
   new ExtensionFrameHelper(render_frame, dispatcher());
   dispatcher_->OnRenderFrameCreated(render_frame);
 }
