@@ -343,6 +343,7 @@ public class SigninButtonCoordinatorTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
+    @RequiresRestart("Earlier tests in the batch inflate the signin button")
     public void testSigninButton_InflatesAndShowsWhenNavigatingToNtp() {
         // Start on a non-NTP page so button should not be inflated.
         WebPageStation blankPage = mActivityTestRule.startOnBlankPage();
