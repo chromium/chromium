@@ -289,6 +289,10 @@ void ImageTransportSurfaceOverlayMacEGL::SetMaxPendingSwaps(
 #if BUILDFLAG(IS_MAC)
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id,
                                                            bool force_update) {
+  if (base::FeatureList::IsEnabled(features::kForceMacVSyncTimerForDebugging)) {
+    return;
+  }
+
   if (display_id_ == display_id && !force_update) {
     return;
   }

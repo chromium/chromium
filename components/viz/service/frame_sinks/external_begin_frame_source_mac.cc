@@ -34,9 +34,6 @@ bool AlmostEqual(base::TimeDelta a, base::TimeDelta b) {
   return (a - b).magnitude() < kDeltaAlmostEqual;
 }
 
-BASE_FEATURE(kForceMacVSyncTimerForDebugging,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "DisplayLinkResult" in src/tools/metrics/histograms/enums.xml.
@@ -165,7 +162,7 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
   display_link_mac_ = GetForDisplay(display_id);
 
   // For debugging only. Use the timer for BeginFrameSource.
-  if (base::FeatureList::IsEnabled(kForceMacVSyncTimerForDebugging)) {
+  if (base::FeatureList::IsEnabled(features::kForceMacVSyncTimerForDebugging)) {
     display_link_mac_.reset();
   }
 

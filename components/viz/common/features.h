@@ -103,6 +103,7 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncAlignedPresentationForScrolling);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncAlignedPresentation);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseDisplayRefreshRateForTimer);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceMacVSyncTimerForDebugging);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string> kTargetForVSync;
 VIZ_COMMON_EXPORT extern const char kTargetForVSyncAllFrames[];
 VIZ_COMMON_EXPORT extern const char kTargetForVSyncAnimation[];

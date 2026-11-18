@@ -221,6 +221,8 @@ BASE_FEATURE(kVSyncAlignedPresentationForScrolling,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kVSyncAlignedPresentation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseDisplayRefreshRateForTimer, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kForceMacVSyncTimerForDebugging,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
