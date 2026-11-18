@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ui/webui/webui_features.gni")
 import("../build_webui_tests.gni")
 
-assert(enable_webui_tabstrip_ntb)
+assert(is_android)
 
 build_webui_tests("build") {
   cc_test_files = [ "tabstrip_ntb_browsertest.cc" ]

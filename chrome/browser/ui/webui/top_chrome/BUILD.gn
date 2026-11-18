@@ -2,13 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ui/webui/webui_features.gni")
-
-# On Android this is pulled in by the WebUI NTP, by ai_overlay_dialog (desktop
-# Android) and by the WebUI tab strip new tab button.
-assert(!is_android || enable_webui_ntp || is_desktop_android ||
-       enable_webui_tabstrip_ntb)
-
 source_set("top_chrome") {
   sources = [
     "top_chrome_web_ui_controller.h",

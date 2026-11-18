@@ -222,13 +222,13 @@ template("chrome_extra_paks") {
       ]
     }
 
-    if (enable_webui_tabstrip_ntb) {
+    if (is_android) {
       sources += [ "$root_gen_dir/chrome/tabstrip_ntb_resources.pak" ]
     }
 
     # tabstrip_ntb bundles these when optimize_webui=true, so Android only
     # needs them in unbundled builds.
-    if (!is_android || (enable_webui_tabstrip_ntb && !optimize_webui)) {
+    if (!is_android || !optimize_webui) {
       sources += [ "$root_gen_dir/chrome/tab_strip_api_resources.pak" ]
     }
 

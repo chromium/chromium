@@ -4,12 +4,16 @@
 
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
 
+#include "base/feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_internals.mojom.h"
 #include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_internals_ui.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #include "chrome/browser/ui/webui/notifications_internals/notifications_internals.mojom.h"
 #include "chrome/browser/ui/webui/notifications_internals/notifications_internals_ui.h"
+#include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"
+#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/notebooks/internals/webui/notebooks_internals.mojom.h"
 #include "components/notebooks/internals/webui/notebooks_internals_ui.h"
@@ -29,13 +33,6 @@
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"  // nogncheck
 #include "ui/webui/resources/cr_components/history/history.mojom.h"  // nogncheck
 #include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
-#include "base/feature_list.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"   // nogncheck
-#include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"  // nogncheck
 #endif
 
 namespace chrome::internal {
@@ -75,14 +72,12 @@ void PopulateChromeWebUIFrameBindersPartsAndroid(
 
 void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsAndroid(
     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
-#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
   if (base::FeatureList::IsEnabled(
           chrome::android::kAndroidNewTabButtonTabstripWebUI)) {
     registry.ForWebUI<tabstrip_ntb::TabStripNtbUI>()
         .Add<tabs_api::mojom::TabStripService>()
         .Add<tabstrip_ntb::mojom::PageHandlerFactory>();
   }
-#endif  // BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
 }
 
 }  // namespace chrome::internal

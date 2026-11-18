@@ -170,12 +170,9 @@ source_set("configs") {
       "//chrome/browser/ui/webui/chrome_finds_internals",
       "//chrome/browser/ui/webui/feed_internals",
       "//chrome/browser/ui/webui/notifications_internals",
+      "//chrome/browser/ui/webui/tabstrip_ntb",
       "//chrome/browser/ui/webui/webapks",
     ]
-  }
-
-  if (enable_webui_tabstrip_ntb) {
-    deps += [ "//chrome/browser/ui/webui/tabstrip_ntb" ]
   }
 
   if (safe_browsing_mode == 1) {

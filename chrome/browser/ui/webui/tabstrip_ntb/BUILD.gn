@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//ui/webui/webui_features.gni")
 
-assert(enable_webui_tabstrip_ntb)
+assert(is_android)
 
 mojom("mojo_bindings") {
   sources = [ "tabstrip_ntb.mojom" ]

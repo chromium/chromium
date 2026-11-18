@@ -88,7 +88,7 @@ source_set("browser_tests") {
     ]
   }
 
-  if (enable_webui_tabstrip_ntb) {
+  if (is_android) {
     sources += [ "tabstrip_ntb/tabstrip_ntb_browsertest.cc" ]
     deps += [
       "//chrome/browser/flags:flags_android",
@@ -1108,7 +1108,7 @@ generate_grd("build_grd") {
     grdp_files += [ "$target_gen_dir/guest_view_shared/resources.grdp" ]
   }
 
-  if (enable_webui_tabstrip_ntb) {
+  if (is_android) {
     deps += [ "tabstrip_ntb:build_grdp" ]
     grdp_files += [ "$target_gen_dir/tabstrip_ntb/resources.grdp" ]
   }

@@ -22,6 +22,7 @@
 #include "chrome/browser/android/compositor/layer/group_indicator_layer.h"
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
+#include "chrome/browser/android/compositor/tab_strip_ntb_webui_host.h"
 #include "chrome/browser/android/compositor/tab_strip_window_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -32,11 +33,6 @@
 #include "ui/base/l10n/l10n_util_android.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/webui/buildflags.h"
-
-#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
-#include "chrome/browser/android/compositor/tab_strip_ntb_webui_host.h"  // nogncheck
-#endif
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabStripSceneLayer_jni.h"
@@ -457,7 +453,6 @@ void TabStripSceneLayer::UpdateNtbWebUi(TabStripNtbWebUiHost* host,
                                         float y,
                                         float width,
                                         float height) {
-#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
   new_tab_button_->SetHideLayerAndSubtree(true);
   new_tab_button_background_->SetHideLayerAndSubtree(true);
   new_tab_button_keyboard_focus_ring_->SetIsDrawable(false);
@@ -483,7 +478,6 @@ void TabStripSceneLayer::UpdateNtbWebUi(TabStripNtbWebUiHost* host,
   ntb_webui_container_->SetBounds(
       gfx::Size(std::round(width), std::round(height)));
   ntb_webui_container_->SetHideLayerAndSubtree(false);
-#endif
 }
 
 // The Glic button layer can be constructed with the following dynamic layout:

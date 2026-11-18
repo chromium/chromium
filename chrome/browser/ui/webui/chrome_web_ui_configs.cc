@@ -149,12 +149,9 @@
 #include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_internals_ui.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #include "chrome/browser/ui/webui/notifications_internals/notifications_internals_ui.h"
+#include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"
 #include "chrome/browser/ui/webui/webapks/webapks_ui.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
-#include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
@@ -355,6 +352,7 @@ void RegisterChromeWebUIConfigs() {
       std::make_unique<chrome_finds_internals::ChromeFindsInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<FeedInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<NotificationsInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<tabstrip_ntb::TabStripNtbUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebApksUIConfig>());
 #else  // BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -425,10 +423,6 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<WebUIJsErrorUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebUIToolbarConfig>());
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
-  map.AddWebUIConfig(std::make_unique<tabstrip_ntb::TabStripNtbUIConfig>());
-#endif  // BUILDFLAG(ENABLE_WEBUI_TABSTRIP_NTB)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
   map.AddWebUIConfig(std::make_unique<LinuxProxyConfigUI>());

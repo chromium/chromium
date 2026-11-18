@@ -25,6 +25,7 @@ group("resources") {
     "glic/experimental_opt_in:resources",
     "saved_tab_groups_unsupported:resources",
     "segmentation_internals:resources",
+    "//components/browser_apis/tab_strip/resources",
     "//components/enterprise/connectors/resources",
   ]
 
@@ -119,6 +120,8 @@ group("resources") {
         "media_router/cast_feedback:resources",
       ]
     }
+  } else {
+    public_deps += [ "tabstrip_ntb:resources" ]
   }
 
   if (is_chromeos) {
@@ -221,14 +224,6 @@ group("resources") {
 
   if (enable_webui_history) {
     public_deps += [ "history:resources" ]
-  }
-
-  if (enable_webui_tabstrip_ntb) {
-    public_deps += [ "tabstrip_ntb:resources" ]
-  }
-
-  if (!is_android || enable_webui_tabstrip_ntb) {
-    public_deps += [ "//components/browser_apis/tab_strip/resources" ]
   }
 
   if (enable_compose) {

@@ -478,6 +478,8 @@ if (is_android) {
       "compositor/scene_layer/top_toolbar_scene_layer.h",
       "compositor/tab_content_manager.cc",
       "compositor/tab_content_manager.h",
+      "compositor/tab_strip_ntb_webui_host.cc",
+      "compositor/tab_strip_ntb_webui_host.h",
       "compositor/tab_strip_window_tracker.cc",
       "compositor/tab_strip_window_tracker.h",
       "compositor/tab_underline_manager.cc",
@@ -703,6 +705,7 @@ if (is_android) {
       "//cc/slim",
       "//chrome/android:jni_headers",
       "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
       "//chrome/browser:global_features",
       "//chrome/browser/accessibility/settings",
       "//chrome/browser/actor",
@@ -836,8 +839,11 @@ if (is_android) {
       "//chrome/browser/ui/tabs:page_context_eligibility_helper",
       "//chrome/browser/ui/tabs/alert:impl",
       "//chrome/browser/ui/tabs/alert:tab_alert",
+      "//chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl",
+      "//chrome/browser/ui/waap:waap_utils",
       "//chrome/browser/ui/webui/notifications_internals",
       "//chrome/browser/ui/webui/notifications_internals:impl",
+      "//chrome/browser/ui/webui/tabstrip_ntb",
       "//chrome/browser/universal_optout",
       "//chrome/browser/wallet/android:wallet_android",
       "//chrome/browser/webapps:android",
@@ -854,6 +860,7 @@ if (is_android) {
       "//components/autofill/android:keyboard_suppressor",
       "//components/background_sync",
       "//components/bookmarks/common/android",
+      "//components/browser_apis/tab_strip:service",
       "//components/browser_ui/accessibility/android",
       "//components/browser_ui/contacts_picker/android",
       "//components/browser_ui/device_lock/android",
@@ -1208,22 +1215,6 @@ if (is_android) {
         ]
       }
     }
-
-    if (enable_webui_tabstrip_ntb) {
-      sources += [
-        "compositor/tab_strip_ntb_webui_host.cc",
-        "compositor/tab_strip_ntb_webui_host.h",
-      ]
-      deps += [
-        "//chrome/app:generated_resources",
-        "//chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl",
-        "//chrome/browser/ui/waap:waap_utils",
-        "//chrome/browser/ui/webui/tabstrip_ntb",
-        "//components/browser_apis/tab_strip:service",
-      ]
-    } else {
-      sources += [ "compositor/tab_strip_ntb_webui_host_stub.cc" ]
-    }
   }
 }
 
@@ -1242,6 +1233,7 @@ source_set("unit_tests") {
     "compositor/compositor_view_unittest.cc",
     "compositor/retry_strategy_unittest.cc",
     "compositor/tab_content_manager_unittest.cc",
+    "compositor/tab_strip_ntb_webui_host_unittest.cc",
     "compositor/tab_strip_window_tracker_unittest.cc",
     "customtabs/detached_resource_request_unittest.cc",
     "customtabs/tab_interaction_recorder_android_unittest.cc",
@@ -1300,10 +1292,12 @@ source_set("unit_tests") {
     "//chrome/browser/search_engines",
     "//chrome/browser/sessions",
     "//chrome/browser/ui/android/tab_model",
+    "//chrome/browser/ui/android/tab_model:test_support",
     "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/javascript_dialogs",
     "//chrome/browser/ui/tabs:page_context_eligibility_helper_unit_tests",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/tabstrip_ntb",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
@@ -1352,15 +1346,6 @@ source_set("unit_tests") {
     "//ui/menus",
     "//url",
   ]
-
-  if (enable_webui_tabstrip_ntb) {
-    sources += [ "compositor/tab_strip_ntb_webui_host_unittest.cc" ]
-    deps += [
-      "//chrome/browser/flags:flags_android",
-      "//chrome/browser/ui/android/tab_model:test_support",
-      "//chrome/browser/ui/webui/tabstrip_ntb",
-    ]
-  }
 }
 
 source_set("android_browsertests") {

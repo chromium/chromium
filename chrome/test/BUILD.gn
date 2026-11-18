@@ -2929,6 +2929,7 @@ test("unit_tests") {
       "//chrome/browser/ui/android/webid:unit_tests",
       "//chrome/browser/ui/bookmarks/controllers/android:unit_tests",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
+      "//chrome/browser/ui/color:unit_tests",
       "//chrome/browser/ui/side_panel/internal/android:unit_tests",
       "//chrome/browser/ui/side_panel/test/android:native_unit_test_support_java",
       "//chrome/browser/ui/tab_contents:unit_tests",
@@ -2970,10 +2971,6 @@ test("unit_tests") {
         "//chrome/browser/ui/search:android_unit_tests",
         "//chrome/browser/ui/webui:favicon_source_unit_tests",
       ]
-    }
-
-    if (enable_webui_ntp || enable_webui_tabstrip_ntb) {
-      deps += [ "//chrome/browser/ui/color:unit_tests" ]
     }
 
     if (enable_chrome_android_internal) {

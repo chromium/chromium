@@ -2210,7 +2210,7 @@ source_set("core") {
     ]
   }
 
-  if (enable_webui_tabstrip_ntb) {
+  if (is_android) {
     deps += [ "//chrome/browser/ui/webui/tabstrip_ntb" ]
   }
 }
@@ -2871,7 +2871,7 @@ source_set("browser") {
       "//chrome/browser/ui/webui/side_panel/customize_chrome:impl",
     ]
   }
-  if (enable_webui_ntp || enable_webui_tabstrip_ntb) {
+  if (enable_webui_ntp || is_android) {
     deps += [
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
