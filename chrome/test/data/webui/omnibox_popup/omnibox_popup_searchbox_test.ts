@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isMac} from '//resources/js/platform.js';
-import {MatchesUpdate, MetricsReporterImpl, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, PlaceholderType, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
+import {MatchesUpdate, MetricsReporterImpl, OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, PlaceholderType, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas, UrlDeemphasisMode, ZPS_PENDING_MAX_FOCUS_RING_DELAY_MS} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement, UrlEmphasis} from 'chrome://omnibox-popup.top-chrome/omnibox_popup_full.js';
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -12,6 +12,7 @@ import {KeywordType, RenderType, SelectionDirection, SelectionLineState, Selecti
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createAutocompleteResult, createMatchKeywordModel, createSearchMatch, createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -1124,6 +1125,210 @@ suite('OmniboxPopupSearchboxTest', function() {
 
     // Verify input element is blurred.
     assertFalse(searchbox.$.input === searchbox.shadowRoot.activeElement);
+  });
+
+  // Returns whether #inputWrapper paints the collapsed focus ring, whose outer
+  // half is a 1px box-shadow outside of it.
+  function hasCollapsedFocusRing(): boolean {
+    return /0px 0px 0px 1px(,|$)/.test(
+        getComputedStyle(searchbox.$.inputWrapper).boxShadow);
+  }
+
+  // Focusing the omnibox with a zero-prefix query, e.g. clicking the location
+  // bar, doesn't flash the collapsed focus ring before the dropdown opens.
+  test('NoCollapsedFocusRingWhileZeroSuggestIsPending', async () => {
+    // Nor does it show the unfocused location bar's border meanwhile.
+    searchbox.style.setProperty(
+        '--color-location-bar-border-on-mismatch', 'rgb(255, 0, 0)');
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'https://example.com',
+      fullUrl: 'https://example.com',
+      isFocused: true,
+      matchesUpdate: MatchesUpdate.kQueryZps,
+    }));
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertFalse(searchbox.dropdownIsVisible);
+    assertEquals('none', getComputedStyle(searchbox.$.inputWrapper).boxShadow);
+
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: searchbox.activeQueryId,
+      input: 'https://example.com',
+      matches: [createSearchMatch()],
+    }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+    assertFalse(hasCollapsedFocusRing());
+  });
+
+  // Without zero-prefix suggestions, the dropdown stays closed, so the
+  // collapsed focus ring shows once the results arrive.
+  test('CollapsedFocusRingShowsWithoutZeroSuggestMatches', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'https://example.com',
+      fullUrl: 'https://example.com',
+      isFocused: true,
+      matchesUpdate: MatchesUpdate.kQueryZps,
+    }));
+    await microtasksFinished();
+    assertFalse(hasCollapsedFocusRing());
+
+    testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+      queryId: searchbox.activeQueryId,
+      input: 'https://example.com',
+      matches: [],
+    }));
+    await microtasksFinished();
+    assertFalse(searchbox.dropdownIsVisible);
+    assertTrue(hasCollapsedFocusRing());
+  });
+
+  // A modifier key press while the zero-prefix suggestions are pending doesn't
+  // freeze the results by resetting `activeQueryId` to -1 (see
+  // `SearchboxMixin.updateStateForKeydown()`), so the collapsed focus ring
+  // stays hidden until the dropdown opens.
+  test(
+      'NoCollapsedFocusRingAfterModifierKeyWhileZeroSuggestIsPending',
+      async () => {
+        callbackRouter.setInputState(createDefaultOmniboxInputState({
+          text: 'https://example.com',
+          fullUrl: 'https://example.com',
+          isFocused: true,
+          matchesUpdate: MatchesUpdate.kQueryZps,
+        }));
+        await microtasksFinished();
+        assertFalse(hasCollapsedFocusRing());
+
+        searchbox.$.input.inputElement.dispatchEvent(new KeyboardEvent(
+            'keydown', {bubbles: true, composed: true, key: 'Shift'}));
+        await microtasksFinished();
+        assertFalse(searchbox.dropdownIsVisible);
+        assertFalse(hasCollapsedFocusRing());
+
+        testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+          queryId: searchbox.activeQueryId,
+          input: 'https://example.com',
+          matches: [createSearchMatch()],
+        }));
+        await microtasksFinished();
+        assertTrue(searchbox.dropdownIsVisible);
+        assertFalse(hasCollapsedFocusRing());
+      });
+
+  // Querying zero-prefix suggestions while already focused with the dropdown
+  // closed (e.g. after Escape) keeps the collapsed focus ring rather than
+  // hiding it until the results arrive.
+  test('KeepsCollapsedFocusRingForZeroSuggestWhileFocused', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'https://example.com',
+      fullUrl: 'https://example.com',
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    assertTrue(hasCollapsedFocusRing());
+
+    callbackRouter.setFocus(
+        /*isFocused=*/ true, /*queryZps=*/ true, /*selectAll=*/ false,
+        /*showFullUrl=*/ false);
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertTrue(hasCollapsedFocusRing());
+  });
+
+  // Focusing the omnibox again (e.g. after the popup was blurred while kept
+  // open) with a zero-prefix query doesn't flash the collapsed focus ring.
+  test('NoCollapsedFocusRingWhileRefocusZeroSuggestIsPending', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'https://example.com',
+      fullUrl: 'https://example.com',
+    }));
+    await microtasksFinished();
+    assertFalse(hasCollapsedFocusRing());
+
+    callbackRouter.setFocus(
+        /*isFocused=*/ true, /*queryZps=*/ true, /*selectAll=*/ true,
+        /*showFullUrl=*/ false);
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertFalse(hasCollapsedFocusRing());
+
+    // Blurring stops waiting for the results.
+    callbackRouter.setFocus(
+        /*isFocused=*/ false, /*queryZps=*/ false, /*selectAll=*/ false,
+        /*showFullUrl=*/ false);
+    await microtasksFinished();
+    assertFalse(searchbox.hasAttribute('zps-pending_'));
+  });
+
+  // A popup hidden while the omnibox was still focused (e.g. after opening a
+  // match) neither shows the collapsed focus ring when shown again, nor while
+  // the zero-prefix suggestions that focusing it queried are pending.
+  test('NoCollapsedFocusRingOnReopenAfterHidingWhileFocused', async () => {
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      text: 'https://example.com',
+      fullUrl: 'https://example.com',
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    assertTrue(hasCollapsedFocusRing());
+
+    callbackRouter.clearPopup();
+    await microtasksFinished();
+    assertFalse(hasCollapsedFocusRing());
+
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      sequenceNumber: 2,
+      text: 'https://example.com',
+      fullUrl: 'https://example.com',
+      isFocused: true,
+      matchesUpdate: MatchesUpdate.kQueryZps,
+    }));
+    await microtasksFinished();
+    assertFalse(searchbox.dropdownIsVisible);
+    assertFalse(hasCollapsedFocusRing());
+  });
+
+  // If the zero-prefix suggestions are slow to arrive, the collapsed focus ring
+  // shows after `ZPS_PENDING_MAX_FOCUS_RING_DELAY_MS` instead of waiting for
+  // them.
+  test('CollapsedFocusRingShowsWhenZeroSuggestIsSlow', async () => {
+    // `MockTimer` replaces `setTimeout()`, which `microtasksFinished()` uses.
+    const realSetTimeout = window.setTimeout.bind(window);
+    const flushTasks = () =>
+        new Promise<void>(resolve => realSetTimeout(resolve, 0));
+    const mockTimer = new MockTimer();
+    mockTimer.install();
+    try {
+      callbackRouter.setInputState(createDefaultOmniboxInputState({
+        text: 'https://example.com',
+        fullUrl: 'https://example.com',
+        isFocused: true,
+        matchesUpdate: MatchesUpdate.kQueryZps,
+      }));
+      await flushTasks();
+      assertFalse(hasCollapsedFocusRing());
+
+      mockTimer.tick(ZPS_PENDING_MAX_FOCUS_RING_DELAY_MS - 1);
+      await flushTasks();
+      assertFalse(hasCollapsedFocusRing());
+
+      mockTimer.tick(1);
+      await flushTasks();
+      assertFalse(searchbox.dropdownIsVisible);
+      assertTrue(hasCollapsedFocusRing());
+
+      // The suggestions still open the dropdown once they arrive.
+      testProxy.page.autocompleteResultChanged(createAutocompleteResult({
+        queryId: searchbox.activeQueryId,
+        input: 'https://example.com',
+        matches: [createSearchMatch()],
+      }));
+      await flushTasks();
+      assertTrue(searchbox.dropdownIsVisible);
+      assertFalse(hasCollapsedFocusRing());
+    } finally {
+      mockTimer.uninstall();
+    }
   });
 
 
@@ -9366,6 +9571,22 @@ suite('OmniboxPopupSearchboxTest', function() {
       assertTrue(
           boundedShadows.some(s => s.includes('inset')),
           `Expected inset shadow in: ${boundedShadow}`);
+    });
+
+    // The inset focus ring is hidden too while the zero-prefix suggestions
+    // that focusing queried are pending.
+    test('NoInsetFocusRingWhileZeroSuggestIsPending', async () => {
+      searchbox.dropdownIsVisible = false;
+      searchbox.isLogicallyFocused_ = true;
+      searchbox.zpsPending_ = true;
+      await microtasksFinished();
+      const pendingShadow = getComputedStyle(wrapper).boxShadow;
+      assertFalse(pendingShadow.includes('inset'), pendingShadow);
+
+      searchbox.zpsPending_ = false;
+      await microtasksFinished();
+      const shadow = getComputedStyle(wrapper).boxShadow;
+      assertTrue(shadow.includes('inset'), shadow);
     });
   });
 

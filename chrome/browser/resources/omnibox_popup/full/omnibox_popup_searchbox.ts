@@ -121,6 +121,16 @@ function getTextToDrop(dataTransfer: DataTransfer|null): string|null {
   return text ? stripJavascriptSchemas(collapseWhitespace(text)) : null;
 }
 
+/**
+ * The longest time (in milliseconds) that the collapsed focus ring is hidden
+ * while waiting for the zero-prefix suggestions that focusing queried (see
+ * `zpsPending_`). Covers the round trip to the browser when the suggestions
+ * are ready right away, so that the ring doesn't flash before the dropdown
+ * opens, but still shows the ring soon if they're slow, like the Views
+ * omnibox does while it waits for suggestions.
+ */
+export const ZPS_PENDING_MAX_FOCUS_RING_DELAY_MS = 150;
+
 export interface AimButtonConfig {
   text: string;
   title: string;
@@ -276,6 +286,16 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
+      /**
+       * Whether focusing the omnibox started a zero-prefix suggestion query
+       * whose first results haven't arrived yet. Hides the collapsed focus
+       * ring meanwhile, for at most `ZPS_PENDING_MAX_FOCUS_RING_DELAY_MS`, so
+       * that it doesn't flash before the dropdown opens.
+       */
+      zpsPending_: {
+        type: Boolean,
+        reflect: true,
+      },
       userInputInProgress_: {
         type: Boolean,
       },
@@ -315,6 +335,10 @@ export class OmniboxPopupSearchboxElement extends
       canShowSecondarySideMediaQueryList.matches;
   accessor hasSecondarySide: boolean = false;
   accessor isLogicallyFocused_: boolean = false;
+  // TODO(b/580945750): Consider sending the first, synchronous zero-prefix
+  // suggestions with `SetInputState`/`SetFocus` from C++, so that the timer
+  // and the extra Mojo round trip can be dropped.
+  accessor zpsPending_: boolean = false;
   accessor isLensSearchEligible_: boolean = false;
   accessor hasInputSelection_: boolean = false;
   accessor searchboxChromeRefreshTheming: boolean =
@@ -472,6 +496,8 @@ export class OmniboxPopupSearchboxElement extends
   // selected text, until the drag ends. A drop of that drag back into the input
   // is handled by `onInputDrop_()`.
   private textDrag_: {text: string, selection: SelectionRange}|null = null;
+  // Ends `zpsPending_` after `ZPS_PENDING_MAX_FOCUS_RING_DELAY_MS`.
+  private zpsPendingTimeoutId_: number|null = null;
   private textfieldModel_: TextfieldModel = new TextfieldModel();
   // Stores the input text prior to the latest edit or selection change event.
   // Paired with `lastInputSelection_` to compute character diffs and offsets
@@ -626,6 +652,7 @@ export class OmniboxPopupSearchboxElement extends
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.setZpsPending_(false);
     this.inputResizeObserver_?.disconnect();
     this.listenerIds_.forEach(
         id => this.searchboxCallbackRouter_.removeListener(id));
@@ -899,6 +926,38 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   /**
+   * Overridden to stop waiting for zero-prefix suggestions, whose results are
+   * now ignored.
+   */
+  override clearAutocompleteMatches(): void {
+    super.clearAutocompleteMatches();
+    this.setZpsPending_(false);
+  }
+
+  /**
+   * Sets `zpsPending_`. The wait it starts ends after at most
+   * `ZPS_PENDING_MAX_FOCUS_RING_DELAY_MS`, so that slow suggestions don't leave
+   * the focused omnibox without a focus ring. Setting it again while it's set
+   * doesn't extend the wait.
+   */
+  private setZpsPending_(pending: boolean) {
+    this.zpsPending_ = pending;
+    if (!pending) {
+      if (this.zpsPendingTimeoutId_ !== null) {
+        clearTimeout(this.zpsPendingTimeoutId_);
+        this.zpsPendingTimeoutId_ = null;
+      }
+      return;
+    }
+    if (this.zpsPendingTimeoutId_ === null) {
+      this.zpsPendingTimeoutId_ = setTimeout(() => {
+        this.zpsPendingTimeoutId_ = null;
+        this.zpsPending_ = false;
+      }, ZPS_PENDING_MAX_FOCUS_RING_DELAY_MS);
+    }
+  }
+
+  /**
    * Handles autocomplete results received from the browser process via Mojo.
    *
    * Overridden to record performance marks when match results are received
@@ -911,6 +970,10 @@ export class OmniboxPopupSearchboxElement extends
     if (this.isAutocompleteResultStale(result)) {
       return;
     }
+    // Any fresh result, even one without matches, ends the wait for the
+    // zero-prefix suggestions. If the dropdown stays closed (e.g. without
+    // matches), the collapsed focus ring then shows.
+    this.setZpsPending_(false);
     // Snapshot visibility BEFORE applying results. `super` will mutate
     // `this.dropdownIsVisible` to true if matches are present, so capturing
     // this upfront is the only way to detect a closed -> open transition.
@@ -1887,6 +1950,7 @@ export class OmniboxPopupSearchboxElement extends
       this.pageHandler().stopAutocomplete(/*clearResult=*/ false);
     }
 
+    const wasLogicallyFocused = this.isLogicallyFocused_;
     this.isLogicallyFocused_ = state.isFocused;
 
     if (state.isFocused) {
@@ -1951,6 +2015,14 @@ export class OmniboxPopupSearchboxElement extends
       this.lastQueriedInput = text;
     }
 
+    // Focusing the omnibox with a zero-prefix query keeps the dropdown closed
+    // until the results arrive. Unless the collapsed focus ring was already
+    // showing, hide it meanwhile, so that it doesn't flash before the dropdown
+    // opens.
+    this.setZpsPending_(
+        state.matchesUpdate === MatchesUpdate.kQueryZps && state.isFocused &&
+        !this.dropdownIsVisible && (this.zpsPending_ || !wasLogicallyFocused));
+
     // Record the latency journey that ends when the frame showing the new
     // text, selection and focus is presented (or, if focusing is deferred, the
     // first frame after the document becomes visible). Done last, still in this
@@ -1994,6 +2066,7 @@ export class OmniboxPopupSearchboxElement extends
   private onSetFocus_(
       isFocused: boolean, queryZps: boolean = false, selectAll: boolean = false,
       showFullUrl: boolean = false) {
+    const wasLogicallyFocused = this.isLogicallyFocused_;
     this.isLogicallyFocused_ = isFocused;
     if (isFocused) {
       if (showFullUrl) {
@@ -2024,6 +2097,13 @@ export class OmniboxPopupSearchboxElement extends
             this.getInputElement().inputElement.value,
             /*preventInlineAutocomplete=*/ false,
             /*isOnFocus=*/ true);
+        // The dropdown stays closed until the results of this zero-prefix
+        // query arrive. Unless the collapsed focus ring was already showing,
+        // hide it meanwhile, so that it doesn't flash before the dropdown
+        // opens.
+        if (!wasLogicallyFocused) {
+          this.setZpsPending_(true);
+        }
       }
     } else {
       this.deferredFocusAction_ = null;
@@ -2085,6 +2165,11 @@ export class OmniboxPopupSearchboxElement extends
     // `focusout`, so reset its focus state, or a reshown popup would show the
     // placeholder.
     this.aimButtonFocused_ = false;
+    // The popup may be hidden while the omnibox is still logically focused
+    // (e.g. after opening a match), without a `SetFocus(false)`. Reset that
+    // too, so that the next show doesn't paint the collapsed focus ring before
+    // its `SetInputState`, nor treat its focus as already shown.
+    this.isLogicallyFocused_ = false;
     this.clearAutocompleteMatches();
     await this.updateComplete;
   }

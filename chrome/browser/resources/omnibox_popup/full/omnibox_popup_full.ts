@@ -13,5 +13,5 @@ export {UrlDeemphasisMode, type UrlEmphasis} from '//resources/mojo/components/o
 export {browserProxyFactory as omniboxPopupBrowserProxyFactory, MatchesUpdate, OmniboxEscapeAction, type OmniboxInputState, PageHandlerRemote as OmniboxPopupPageHandlerRemote, PageRemote as OmniboxPopupPageRemote, PlaceholderType} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup.mojom-webui.js';
 export type {OmniboxPopupContextualEntrypointButtonElement} from 'chrome://omnibox-popup.top-chrome/shared/omnibox_popup_contextual_entrypoint_button.js';
 export {OmniboxFullAppElement} from './full_app.js';
-export {OmniboxPopupSearchboxElement} from './omnibox_popup_searchbox.js';
+export {OmniboxPopupSearchboxElement, ZPS_PENDING_MAX_FOCUS_RING_DELAY_MS} from './omnibox_popup_searchbox.js';
 export {TextfieldModel} from './textfield_model.js';
