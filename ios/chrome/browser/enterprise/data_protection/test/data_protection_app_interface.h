@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/enterprise/connectors/core/reporting_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
+
 // Test app interface for enterprise data protection.
 @interface DataProtectionAppInterface : NSObject
 
@@ -17,6 +20,22 @@
 // active scene's `UIScreenshotServiceDelegate` and returns `YES` if non-empty
 // PDF data is generated before timing out.
 + (BOOL)canGenerateFullPageScreenshotPDF;
+
+// Sets the `EnterpriseRealTimeUrlCheckMode` pref on the active profile to
+// `mode`.
++ (void)setRealTimeUrlCheckMode:
+    (enterprise_connectors::EnterpriseRealTimeUrlCheckMode)mode;
+
+// Clears the `kEnterpriseRealTimeUrlCheckMode` user pref on the original
+// profile.
++ (void)clearRealTimeUrlCheckMode;
+
+// Exits the tab grid.
++ (void)exitTabGrid;
+
+// Switches the Tab Grid to the specified `page` without animation. The Tab Grid
+// must already be visible.
++ (void)showTabGridPage:(TabGridPage)page;
 
 @end
 

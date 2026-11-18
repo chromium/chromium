@@ -11,13 +11,17 @@ source_set("eg_app_support+eg2") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/enterprise/connectors/core",
     "//components/prefs",
     "//ios/chrome/browser/enterprise/data_protection/model",
     "//ios/chrome/browser/enterprise/data_protection/public:pref_names",
     "//ios/chrome/browser/enterprise/data_protection/ui",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ios/chrome/test/app:test_support",
     "//ios/web/public",
   ]
@@ -29,7 +33,11 @@ source_set("eg_test_support+eg2") {
     "data_protection_app_interface.h",
     "data_protection_app_interface_stub.mm",
   ]
-  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+  deps = [
+    "//components/enterprise/connectors/core:constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
 }
 
 source_set("eg2_tests") {
@@ -39,7 +47,9 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//base/test:test_support",
+    "//components/enterprise/connectors/core:constants",
     "//ios/chrome/browser/enterprise/data_protection/public:features",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
