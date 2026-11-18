@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TIPS_NOTIFICATIONS_PROMO;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -138,6 +139,8 @@ public class HomeModulesMetricsUtils {
                 return "QuickDeletePromo";
             case NTP_THEME_PROMO:
                 return "NtpThemePromo";
+            case TIPS_NOTIFICATIONS_PROMO:
+                return "TipsNotificationsPromo";
             case HISTORY_SYNC_PROMO:
                 return "HistorySyncPromo";
             case ENHANCED_SAFE_BROWSING_PROMO:
@@ -184,6 +187,8 @@ public class HomeModulesMetricsUtils {
                 return SETUP_LIST_CELEBRATORY_PROMO;
             case "NtpThemePromo":
                 return NTP_THEME_PROMO;
+            case "TipsNotificationsPromo":
+                return TIPS_NOTIFICATIONS_PROMO;
             default:
                 Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;

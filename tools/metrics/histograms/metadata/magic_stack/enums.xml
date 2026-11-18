@@ -57,6 +57,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Deprecated Password Checkup Promo Card"/>
   <int value="18" label="Setup List Celebratory Promo Card"/>
   <int value="19" label="Ntp Theme Promo Card"/>
+  <int value="20" label="Tips Notifications Promo Card"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/magic_stack/android/java/src/org/chromium/chrome/browser/magic_stack/ModuleDelegate.java:HomeModuleTypes) -->

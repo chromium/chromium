@@ -48,6 +48,9 @@ public interface EducationTipModuleActionDelegate {
     /** Opens the NTP theme customization bottom sheet. */
     void openNtpThemeCustomizationBottomSheet();
 
+    /** Opts the user in to Tips notifications and confirms it with a snackbar. */
+    void optInToTipsNotifications();
+
     /**
      * Opens the the history sync opt in page.
      *

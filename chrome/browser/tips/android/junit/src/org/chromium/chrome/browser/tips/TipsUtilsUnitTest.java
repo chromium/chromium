@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tips;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
@@ -14,16 +16,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -38,13 +44,19 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProviderSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Map;
@@ -64,12 +76,16 @@ public class TipsUtilsUnitTest {
     @Mock private Profile mProfile;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private TipsPromoHandler mTipsPromoHandler;
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Callback<Boolean> mOnOptInComplete;
+    @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
 
     @Before
     public void setUp() {
+        ChannelsInitializer.resetForTesting();
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mWindowAndroid = new WindowAndroid(mActivity, /* occlusionTrackingAllowed= */ false);
         TipsSchedulerBridgeJni.setInstanceForTesting(mTipsSchedulerBridgeJni);
@@ -530,6 +546,77 @@ public class TipsUtilsUnitTest {
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO - 1)));
+    }
+
+    @Test
+    @EnableFeatures(NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED)
+    public void testAcceptOptIn_CreatesChannelAndReportsEnabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+
+        TipsUtils.acceptOptIn(mActivity, mSharedPreferences, mOnOptInComplete);
+        ShadowLooper.idleMainLooper();
+
+        verify(mSharedPreferences)
+                .writeBoolean(ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, true);
+        verify(mOnOptInComplete).onResult(true);
+        BaseNotificationManagerProxyFactory.create()
+                .getNotificationChannel(
+                        ChannelId.TIPS_V2,
+                        (channel) -> {
+                            assertNotNull(channel);
+                            assertEquals(
+                                    NotificationManager.IMPORTANCE_DEFAULT,
+                                    channel.getImportance());
+                        });
+        ShadowLooper.idleMainLooper();
+    }
+
+    @Test
+    public void testAcceptOptIn_AppNotificationsDisabled_ReportsNotEnabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+
+        TipsUtils.acceptOptIn(mActivity, mSharedPreferences, mOnOptInComplete);
+        ShadowLooper.idleMainLooper();
+
+        verify(mOnOptInComplete).onResult(false);
+        // Sending the user to settings is left to the caller.
+        assertNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
+    }
+
+    @Test
+    @EnableFeatures(NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED)
+    public void testAcceptOptIn_ChannelDisabled_KeepsChannelAndReportsNotEnabled() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        new ChannelsInitializer(
+                        BaseNotificationManagerProxyFactory.create(),
+                        ChromeChannelDefinitions.getInstance(),
+                        mActivity.getResources())
+                .ensureInitializedAndDisabled(ChannelId.TIPS_V2);
+        ShadowLooper.idleMainLooper();
+
+        TipsUtils.acceptOptIn(mActivity, mSharedPreferences, mOnOptInComplete);
+        ShadowLooper.idleMainLooper();
+
+        verify(mOnOptInComplete).onResult(false);
+        // The existing channel is left as is; only the OS settings can turn it back on.
+        BaseNotificationManagerProxyFactory.create()
+                .getNotificationChannel(
+                        ChannelId.TIPS_V2,
+                        (channel) -> {
+                            assertNotNull(channel);
+                            assertEquals(
+                                    NotificationManager.IMPORTANCE_NONE, channel.getImportance());
+                        });
+        ShadowLooper.idleMainLooper();
+    }
+
+    @Test
+    public void testShowOptInSnackbar() {
+        TipsUtils.showOptInSnackbar(mActivity, mSnackbarManager);
+
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        assertEquals(
+                Snackbar.UMA_TIPS_OPT_IN, mSnackbarCaptor.getValue().getIdentifierForTesting());
     }
 
     @Test

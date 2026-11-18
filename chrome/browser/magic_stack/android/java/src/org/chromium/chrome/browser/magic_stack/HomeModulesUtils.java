@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TIPS_NOTIFICATIONS_PROMO;
 
 import android.content.Context;
 import android.os.SystemClock;
@@ -78,7 +79,8 @@ public class HomeModulesUtils {
                             ADDRESS_BAR_PLACEMENT_PROMO,
                             SETUP_LIST_TWO_CELL_CONTAINER,
                             SETUP_LIST_CELEBRATORY_PROMO,
-                            NTP_THEME_PROMO));
+                            NTP_THEME_PROMO,
+                            TIPS_NOTIFICATIONS_PROMO));
 
     static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
         return sEducationalTipCardList.contains(moduleType);
@@ -132,6 +134,7 @@ public class HomeModulesUtils {
             case ADDRESS_BAR_PLACEMENT_PROMO:
             case SETUP_LIST_TWO_CELL_CONTAINER:
             case SETUP_LIST_CELEBRATORY_PROMO:
+            case TIPS_NOTIFICATIONS_PROMO:
                 // All tips use the same name.
                 return context.getString(R.string.educational_tip_module_name);
             case AUXILIARY_SEARCH:

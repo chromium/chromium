@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.educational_tip.cards.QuickDeletePromoCoordin
 import org.chromium.chrome.browser.educational_tip.cards.SetupListCelebratoryPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupPromoCoordinator;
 import org.chromium.chrome.browser.educational_tip.cards.TabGroupSyncPromoCoordinator;
+import org.chromium.chrome.browser.educational_tip.cards.TipsNotificationsPromoCoordinator;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 
 /** A factory interface for building a EducationalTipCardProvider instance. */
@@ -58,6 +59,12 @@ public class EducationalTipCardProviderFactory {
             case ModuleType.NTP_THEME_PROMO:
                 return new NtpThemePromoCoordinator(
                         onModuleClickedCallback, callbackController, actionDelegate);
+            case ModuleType.TIPS_NOTIFICATIONS_PROMO:
+                return new TipsNotificationsPromoCoordinator(
+                        onModuleClickedCallback,
+                        callbackController,
+                        actionDelegate,
+                        removeModuleCallback);
             default:
                 assert false : "Educational tip module's card type not supported!";
                 return null;

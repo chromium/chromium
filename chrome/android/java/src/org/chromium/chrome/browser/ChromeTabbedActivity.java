@@ -3842,6 +3842,24 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             @Override
+            public void optInToTipsNotifications() {
+                TipsUtils.acceptOptIn(
+                        ChromeTabbedActivity.this,
+                        ChromeSharedPreferences.getInstance(),
+                        enabled -> {
+                            if (isActivityFinishingOrDestroyed()) return;
+
+                            if (enabled) {
+                                TipsUtils.showOptInSnackbar(
+                                        ChromeTabbedActivity.this, getSnackbarManager());
+                            } else {
+                                TipsUtils.launchTipsNotificationsSettings(
+                                        ChromeTabbedActivity.this);
+                            }
+                        });
+            }
+
+            @Override
             public void showHistorySyncOptInLegacy(Runnable dismissHistorySyncModuleCallback) {
                 BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
                         createHistorySyncBottomSheetConfig();

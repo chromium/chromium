@@ -89,6 +89,9 @@ public class EducationalTipCardProviderSignalHandler {
                         "is_eligible_to_history_opt_in",
                         ProcessedValue.fromFloat(isEligibleToHistoryOptIn(profile)));
                 return inputContext;
+            case ModuleType.TIPS_NOTIFICATIONS_PROMO:
+                // The eligibility input is added with the card's backend.
+                return inputContext;
             default:
                 assert false : "Card type not supported: " + moduleType;
                 return inputContext;

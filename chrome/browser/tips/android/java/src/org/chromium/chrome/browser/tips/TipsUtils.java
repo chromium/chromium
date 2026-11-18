@@ -39,7 +39,9 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
@@ -425,6 +427,57 @@ public class TipsUtils {
                 .getNotificationChannel(
                         ChromeChannelDefinitions.ChannelId.TIPS_V2,
                         (NotificationChannel channel) -> callback.onResult(channel != null));
+    }
+
+    /**
+     * Opts the user in to Tips notifications. Records the acceptance and creates the notification
+     * channel if it doesn't exist. Notifications may still not be fully on afterwards, e.g. because
+     * app-level notifications are off; callers should then send the user to the notification
+     * settings with {@link #launchTipsNotificationsSettings(Context)} if their UI is still around.
+     *
+     * @param context The current context.
+     * @param sharedPreferences The {@link SharedPreferencesManager} to record the acceptance in.
+     * @param onComplete Called with whether Tips notifications are enabled once the opt-in is done.
+     */
+    public static void acceptOptIn(
+            Context context,
+            SharedPreferencesManager sharedPreferences,
+            Callback<Boolean> onComplete) {
+        sharedPreferences.writeBoolean(
+                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, true);
+        isTipsChannelCreated(
+                channelExists -> {
+                    if (!channelExists) {
+                        // For first time opt-in, initialize the notification channel as enabled.
+                        createNotificationChannel(context);
+                    }
+
+                    // Verify if notifications are fully enabled (both app-level and channel).
+                    areTipsNotificationsEnabled(onComplete);
+                });
+    }
+
+    /**
+     * Shows the snackbar confirming that Tips notifications are on, with an action to manage them.
+     *
+     * @param context The current context.
+     * @param snackbarManager The {@link SnackbarManager} to show the snackbar with.
+     */
+    public static void showOptInSnackbar(Context context, SnackbarManager snackbarManager) {
+        snackbarManager.showSnackbar(
+                Snackbar.make(
+                                context.getString(R.string.tips_opt_in_snackbar_message),
+                                new SnackbarController() {
+                                    @Override
+                                    public void onAction(@Nullable Object actionData) {
+                                        launchTipsNotificationsSettings(context);
+                                    }
+                                },
+                                Snackbar.TYPE_NOTIFICATION,
+                                Snackbar.UMA_TIPS_OPT_IN)
+                        .setAction(
+                                context.getString(R.string.tips_opt_in_snackbar_action_text),
+                                /* actionData= */ null));
     }
 
     /**

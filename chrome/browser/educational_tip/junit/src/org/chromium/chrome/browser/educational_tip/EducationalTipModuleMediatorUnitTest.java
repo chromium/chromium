@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.educational_tip;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -158,6 +160,13 @@ public class EducationalTipModuleMediatorUnitTest {
                 R.string.educational_tip_ntp_theme_title,
                 R.string.educational_tip_ntp_theme_description,
                 R.drawable.ntp_theme_promo_logo);
+
+        // Test showing tips notifications promo card.
+        testShowModuleImpl(
+                ModuleType.TIPS_NOTIFICATIONS_PROMO,
+                R.string.educational_tip_tips_notifications_title,
+                R.string.educational_tip_tips_notifications_description,
+                R.drawable.tips_notifications_promo_logo);
     }
 
     @Test
@@ -351,6 +360,19 @@ public class EducationalTipModuleMediatorUnitTest {
         mEducationalTipModuleMediator.onViewCreated();
         verify(mMockDefaultBrowserPromoUtils, never()).removeListener(any());
         verify(mMockDefaultBrowserPromoUtils, never()).notifyDefaultBrowserPromoVisible();
+    }
+
+    @Test
+    public void testClickTipsNotificationsPromo_RemovesModule() {
+        mEducationalTipModuleMediator.setModuleTypeForTesting(ModuleType.TIPS_NOTIFICATIONS_PROMO);
+        mEducationalTipModuleMediator.showModule();
+
+        mEducationalTipModuleMediator.getCardProviderForTesting().onCardClicked();
+
+        InOrder inOrder = inOrder(mActionDelegate, mModuleDelegate);
+        inOrder.verify(mActionDelegate).optInToTipsNotifications();
+        inOrder.verify(mModuleDelegate).onModuleClicked(ModuleType.TIPS_NOTIFICATIONS_PROMO);
+        inOrder.verify(mModuleDelegate).removeModule(ModuleType.TIPS_NOTIFICATIONS_PROMO);
     }
 
     @Test

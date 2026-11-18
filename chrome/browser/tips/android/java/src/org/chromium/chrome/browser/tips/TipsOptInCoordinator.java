@@ -25,9 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -100,6 +98,7 @@ public class TipsOptInCoordinator {
     private final View mContentView;
     private @Nullable Tracker mTracker;
     private @TipsOptInUserInteraction int mUserInteractionType;
+    private boolean mIsDestroyed;
 
     /**
      * Constructor.
@@ -141,6 +140,9 @@ public class TipsOptInCoordinator {
 
     /** Cleans up resources. */
     public void destroy() {
+        if (mIsDestroyed) return;
+
+        mIsDestroyed = true;
         notifyTrackerDismissed();
         mContext.unregisterComponentCallbacks(mComponentCallbacks);
     }
@@ -179,51 +181,25 @@ public class TipsOptInCoordinator {
                 "Notifications.Tips.OptInPromo.EventType2", type, OptInPromoEventType.NUM_ENTRIES);
     }
 
-    private void showOptInSnackbar() {
-        mSnackbarManager.showSnackbar(
-                Snackbar.make(
-                                mContext.getString(R.string.tips_opt_in_snackbar_message),
-                                new SnackbarController() {
-                                    @Override
-                                    public void onAction(@Nullable Object actionData) {
-                                        TipsUtils.launchTipsNotificationsSettings(mContext);
-                                    }
-                                },
-                                Snackbar.TYPE_NOTIFICATION,
-                                Snackbar.UMA_TIPS_OPT_IN)
-                        .setAction(
-                                mContext.getString(R.string.tips_opt_in_snackbar_action_text),
-                                /* actionData= */ null));
-    }
-
     @VisibleForTesting
     void onOptInAccepted() {
         mUserInteractionType = TipsOptInUserInteraction.ACCEPTED;
-        mSharedPreferences.writeBoolean(
-                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, true);
-        TipsUtils.isTipsChannelCreated(
-                channelExists -> {
-                    if (!channelExists) {
-                        // For first time opt-in, initialize the notification channel as enabled.
-                        new ChannelsInitializer(
-                                        BaseNotificationManagerProxyFactory.create(),
-                                        ChromeChannelDefinitions.getInstance(),
-                                        mContext.getResources())
-                                .ensureInitialized(ChannelId.TIPS_V2);
-                    }
+        // The snackbar is shown once the sheet has closed, see onSheetClosed().
+        TipsUtils.acceptOptIn(
+                mContext,
+                mSharedPreferences,
+                enabled -> {
+                    recordOptInPromoEventType(OptInPromoEventType.ACCEPTED);
+                    // The opt-in is persisted either way; don't open settings on top of whatever
+                    // replaced the activity if it went away while the opt-in was in flight.
+                    if (mIsDestroyed) return;
 
-                    // Verify if notifications are fully enabled (both app-level and channel).
-                    // If not, redirect to settings so the user can finalize their opt-in.
-                    // This handles first-time users with app-level disabled and testing
-                    // configuration flow where app-level/channel notifications aren't enabled.
-                    TipsUtils.areTipsNotificationsEnabled(
-                            enabled -> {
-                                if (!enabled) {
-                                    TipsUtils.launchTipsNotificationsSettings(mContext);
-                                }
-                                recordOptInPromoEventType(OptInPromoEventType.ACCEPTED);
-                                dismiss();
-                            });
+                    if (!enabled) {
+                        // Send the user to the notification settings to finish opting in, e.g.
+                        // when app-level notifications are off.
+                        TipsUtils.launchTipsNotificationsSettings(mContext);
+                    }
+                    dismiss();
                 });
     }
 
@@ -281,7 +257,10 @@ public class TipsOptInCoordinator {
                             if (mUserInteractionType == TipsOptInUserInteraction.ACCEPTED) {
                                 TipsUtils.areTipsNotificationsEnabled(
                                         isEnabled -> {
-                                            if (isEnabled) showOptInSnackbar();
+                                            if (isEnabled) {
+                                                TipsUtils.showOptInSnackbar(
+                                                        mContext, mSnackbarManager);
+                                            }
                                         });
                             }
 

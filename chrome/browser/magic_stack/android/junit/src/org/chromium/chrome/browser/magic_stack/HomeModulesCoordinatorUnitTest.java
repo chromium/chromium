@@ -282,7 +282,8 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
                         ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
                         ModuleType.SETUP_LIST_CELEBRATORY_PROMO,
-                        ModuleType.NTP_THEME_PROMO);
+                        ModuleType.NTP_THEME_PROMO,
+                        ModuleType.TIPS_NOTIFICATIONS_PROMO);
         when(mModuleRegistry.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(expectedModuleListBeforeHidingModule));
 

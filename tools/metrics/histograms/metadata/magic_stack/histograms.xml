@@ -45,6 +45,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SingleTab"/>
   <variant name="TabGroupPromo"/>
   <variant name="TabGroupSyncPromo"/>
+  <variant name="TipsNotificationsPromo"/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/magic_stack/android/java/src/org/chromium/chrome/browser/magic_stack/ModuleDelegate.java:HomeModuleTypes) -->

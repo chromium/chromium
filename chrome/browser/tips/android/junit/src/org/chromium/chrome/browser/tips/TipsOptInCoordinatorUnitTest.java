@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tips;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -24,6 +25,7 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.res.Configuration;
 import android.os.Looper;
+import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,6 +46,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tips.TipsOptInCoordinator.TipsOptInSheetContent;
@@ -53,6 +56,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -220,6 +224,50 @@ public class TipsOptInCoordinatorUnitTest {
                                     channel.getImportance());
                         });
         Shadows.shadowOf(Looper.getMainLooper()).idle();
+    }
+
+    @Test
+    public void testOnOptInAccepted_AppNotificationsDisabled_LaunchesSettings() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+
+        mTipsOptInCoordinator.onOptInAccepted();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertEquals(
+                Settings.ACTION_APP_NOTIFICATION_SETTINGS,
+                Shadows.shadowOf(mActivity).getNextStartedActivity().getAction());
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+    }
+
+    @Test
+    public void testOnOptInAccepted_ChannelDisabled_LaunchesChannelSettings() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        new ChannelsInitializer(
+                        BaseNotificationManagerProxyFactory.create(),
+                        ChromeChannelDefinitions.getInstance(),
+                        mActivity.getResources())
+                .ensureInitializedAndDisabled(ChannelId.TIPS_V2);
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        mTipsOptInCoordinator.onOptInAccepted();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertEquals(
+                Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS,
+                Shadows.shadowOf(mActivity).getNextStartedActivity().getAction());
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+    }
+
+    @Test
+    public void testOnOptInAccepted_DestroyedBeforeComplete_DoesNotLaunchSettings() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+
+        mTipsOptInCoordinator.onOptInAccepted();
+        mTipsOptInCoordinator.destroy();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
+        verify(mBottomSheetController, never()).hideContent(any(), anyBoolean());
     }
 
     @Test
