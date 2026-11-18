@@ -219,11 +219,78 @@ class MojoBindingsCheckTest(MojomParserTestCase):
       'a.mojom',
       """
       module a;
+      interface Helper {};
+      struct S {
+        handle<platform> h;
+        pending_remote<Helper> r;
+      };
+      union U {
+        handle<shared_buffer> buf;
+        pending_receiver<Helper> rcv;
+      };
       interface Foo {
-        Bar([Unverified] int32 a) => (int32 b);
+        Bar([Unverified] int32 a,
+            [Unverified] S s,
+            [Unverified] U u,
+            [Unverified] array<handle<platform>> arr,
+            [Unverified] map<int32, pending_remote<Helper>> m) => (int32 b);
       };
     """,
     )
+
+  def testUnverifiedDisallowedOnHandles(self):
+    for handle_type in ('handle<platform>', 'handle<platform>?'):
+      with self.subTest(handle_type=handle_type):
+        contents = f"""
+          module a;
+          interface Foo {{
+            Bar([Unverified] {handle_type} h);
+          }};
+        """
+        self._testThrows(
+          'a.mojom',
+          contents,
+          r'attribute Unverified not allowed on handle parameter Foo\.Bar\.h',
+        )
+
+    for handle_type in ('handle', 'handle?'):
+      with self.subTest(handle_type=handle_type):
+        contents = f"""
+          module test.mojom;
+          interface UntypedHandleInterfaceForUnitTests {{
+            Bar([Unverified] {handle_type} h);
+          }};
+        """
+        self._testThrows(
+          'untyped.mojom',
+          contents,
+          r'attribute Unverified not allowed on handle parameter '
+          r'UntypedHandleInterfaceForUnitTests\.Bar\.h',
+        )
+
+  def testUnverifiedDisallowedOnInterfaceEndpoints(self):
+    for endpoint_kind in (
+      'pending_remote',
+      'pending_receiver',
+      'pending_associated_remote',
+      'pending_associated_receiver',
+    ):
+      for suffix in ('', '?'):
+        param_type = f'{endpoint_kind}<Helper>{suffix}'
+        with self.subTest(param_type=param_type):
+          contents = f"""
+            module a;
+            interface Helper {{}};
+            interface Foo {{
+              Bar([Unverified] {param_type} p);
+            }};
+          """
+          self._testThrows(
+            'a.mojom',
+            contents,
+            rf'attribute Unverified not allowed on {endpoint_kind} parameter '
+            rf'Foo\.Bar\.p',
+          )
 
   def testUnverifiedDisallowedOnResponseParameter(self):
     contents = """

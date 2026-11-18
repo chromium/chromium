@@ -4,6 +4,7 @@
 """Validate mojo attributes are allowed in Chrome before generation."""
 
 import mojom.generate.check as check
+import mojom.generate.module as module
 
 _COMMON_ATTRIBUTES = {
   'EnableIf',
@@ -70,7 +71,7 @@ _MODULE_ATTRIBUTES = _COMMON_ATTRIBUTES | {
 }
 
 _PARAMETER_ATTRIBUTES = _COMMON_FIELD_ATTRIBUTES | {
-  'Unverified',
+  module.ATTRIBUTE_UNVERIFIED,
 }
 
 _RESPONSE_PARAMETER_ATTRIBUTES = _COMMON_FIELD_ATTRIBUTES
@@ -217,6 +218,38 @@ class Check(check.Check):
         "enum value", _ENUMVAL_ATTRIBUTES, enumval.attributes
       )
 
+  def _CheckUnverifiedParameter(self, interface, method, param):
+    val = param.attributes[module.ATTRIBUTE_UNVERIFIED]
+    if val is not True:
+      raise check.CheckException(
+        self.module,
+        f"attribute Unverified on parameter "
+        f"{interface.mojom_name}.{method.mojom_name}.{param.mojom_name} "
+        f"must not specify a value",
+      )
+    # TODO(crbug.com/570738039): Consider adding support for these, the reason
+    # for dropping support was (1) a lack of a clear need and (2) the work
+    # required to manage their memory. There isn't a reason why these can't be
+    # supported when passed outside a Union/Struct/container.
+    if module.IsAnyHandleKind(param.kind):
+      disallowed_kind = "handle"
+    elif module.IsPendingRemoteKind(param.kind):
+      disallowed_kind = "pending_remote"
+    elif module.IsPendingReceiverKind(param.kind):
+      disallowed_kind = "pending_receiver"
+    elif module.IsPendingAssociatedRemoteKind(param.kind):
+      disallowed_kind = "pending_associated_remote"
+    elif module.IsPendingAssociatedReceiverKind(param.kind):
+      disallowed_kind = "pending_associated_receiver"
+    else:
+      assert not module.IsAnyHandleOrInterfaceKind(param.kind)
+      return
+    raise check.CheckException(
+      self.module,
+      f"attribute Unverified not allowed on {disallowed_kind} parameter "
+      f"{interface.mojom_name}.{method.mojom_name}.{param.mojom_name}",
+    )
+
   def _CheckInterfaceAttributes(self, interface):
     self._CheckAttributes(
       "interface", _INTERFACE_ATTRIBUTES, interface.attributes
@@ -227,15 +260,8 @@ class Check(check.Check):
         self._CheckAttributes(
           "parameter", _PARAMETER_ATTRIBUTES, param.attributes
         )
-        if param.attributes and 'Unverified' in param.attributes:
-          val = param.attributes['Unverified']
-          if val is not True:
-            raise check.CheckException(
-              self.module,
-              f"attribute Unverified on parameter "
-              f"{interface.mojom_name}.{method.mojom_name}.{param.mojom_name} "
-              f"must not specify a value",
-            )
+        if param.attributes and module.ATTRIBUTE_UNVERIFIED in param.attributes:
+          self._CheckUnverifiedParameter(interface, method, param)
       if method.response_parameters:
         for param in method.response_parameters:
           self._CheckAttributes(
@@ -282,9 +308,7 @@ class Check(check.Check):
 
   def CheckModule(self):
     """Note that duplicate attributes are forbidden at the parse phase.
-    We also do not need to look at the types of any parameters, as they will be
-    checked where they are defined. Consts do not have attributes so can be
-    skipped."""
+    Consts do not have attributes so can be skipped."""
     self._CheckModuleAttributes()
     for interface in self.module.interfaces:
       self._CheckInterfaceAttributes(interface)
