@@ -44,6 +44,9 @@ inline constexpr std::string_view kStreamListeningActionName =
     "VoiceTyping.Stream.Listening";
 inline constexpr std::string_view kStreamCancelledActionName =
     "VoiceTyping.Stream.Cancelled";
+inline constexpr std::string_view kTextCommittedActionName =
+    "VoiceTyping.TextCommitted";
+inline constexpr std::string_view kTextNoneActionName = "VoiceTyping.TextNone";
 
 // Exit status of the Dictation First Run Experience (FRE) dialog.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -181,6 +184,16 @@ void RecordDictationStreamStartLatency(base::TimeDelta latency);
 // Records the time from the user triggering a Dictation stream until the
 // stream ended without ever starting to transcribe.
 void RecordDictationStreamAbandonedBeforeListening(base::TimeDelta elapsed);
+
+// Records that a Voice Typing stream which started transcribing committed
+// non-empty text into its target.
+void RecordDictationTextCommitted();
+
+// Records that a Voice Typing stream which started transcribing ended without
+// committing any text. Not necessarily a failure: this includes the user not
+// saying anything, as well as speech errors or the stream being torn down
+// before the commit completed.
+void RecordDictationTextNone();
 
 }  // namespace dictation
 

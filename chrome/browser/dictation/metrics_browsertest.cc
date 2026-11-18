@@ -434,4 +434,100 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
                                       1);
 }
 
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       RecordTextCommittedOnSpeechComplete) {
+  base::UserActionTester user_action_tester;
+
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+  const DictationMultiplexer::StreamId stream_id =
+      attached_stream()->stream_id_for_testing();
+  ExtensionWaitForStreamStart(profile(), stream_id);
+  ExtensionSendStreamStateUpdate(
+      profile(), stream_id,
+      extensions::api::dictation_private::StreamState::kTranscribing);
+  WaitForSessionState(SessionState::kTranscribing);
+
+  ExtensionSendTranscriptUpdate(
+      profile(), stream_id,
+      extensions::api::dictation_private::TranscriptionType::kFinal, "Hello");
+  ExtensionSendStreamStateUpdate(
+      profile(), stream_id,
+      extensions::api::dictation_private::StreamState::kComplete);
+  WaitForSessionState(SessionState::kInactive);
+
+  EXPECT_EQ(user_action_tester.GetActionCount(kTextCommittedActionName), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kTextNoneActionName), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       RecordTextNoneOnSpeechErrorAfterListening) {
+  base::UserActionTester user_action_tester;
+
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+  const DictationMultiplexer::StreamId stream_id =
+      attached_stream()->stream_id_for_testing();
+  ExtensionWaitForStreamStart(profile(), stream_id);
+  ExtensionSendStreamStateUpdate(
+      profile(), stream_id,
+      extensions::api::dictation_private::StreamState::kTranscribing);
+  WaitForSessionState(SessionState::kTranscribing);
+
+  ExtensionSendStreamStateUpdate(
+      profile(), stream_id,
+      extensions::api::dictation_private::StreamState::kFailed);
+  WaitForSessionState(SessionState::kInactive);
+
+  EXPECT_EQ(user_action_tester.GetActionCount(kTextNoneActionName), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kTextCommittedActionName), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       RecordTextNoneOnCompleteWithEmptyTranscript) {
+  base::UserActionTester user_action_tester;
+
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+  const DictationMultiplexer::StreamId stream_id =
+      attached_stream()->stream_id_for_testing();
+  ExtensionWaitForStreamStart(profile(), stream_id);
+  ExtensionSendStreamStateUpdate(
+      profile(), stream_id,
+      extensions::api::dictation_private::StreamState::kTranscribing);
+  WaitForSessionState(SessionState::kTranscribing);
+
+  // No transcript is sent before the stream completes, e.g. because the user
+  // didn't say anything.
+  ExtensionSendStreamStateUpdate(
+      profile(), stream_id,
+      extensions::api::dictation_private::StreamState::kComplete);
+  WaitForSessionState(SessionState::kInactive);
+
+  EXPECT_EQ(user_action_tester.GetActionCount(kTextNoneActionName), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kTextCommittedActionName), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       NoTextOutcomeWhenStreamNeverListened) {
+  base::UserActionTester user_action_tester;
+
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+  const DictationMultiplexer::StreamId stream_id =
+      attached_stream()->stream_id_for_testing();
+  ExtensionWaitForStreamStart(profile(), stream_id);
+
+  // The stream fails before ever entering the transcribing state, which is
+  // covered by VoiceTyping.Stream.Cancelled rather than a text outcome.
+  ExtensionSendStreamStateUpdate(
+      profile(), stream_id,
+      extensions::api::dictation_private::StreamState::kFailed);
+  WaitForSessionState(SessionState::kInactive);
+
+  EXPECT_EQ(user_action_tester.GetActionCount(kStreamCancelledActionName), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(kTextNoneActionName), 0);
+  EXPECT_EQ(user_action_tester.GetActionCount(kTextCommittedActionName), 0);
+}
+
 }  // namespace dictation

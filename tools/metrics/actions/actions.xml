@@ -43064,6 +43064,29 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="VoiceTyping.TextCommitted">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <description>
+    Recorded when a Voice Typing stream that started transcribing finishes
+    inserting non-empty transcribed text into the target text field. Recorded at
+    most once per stream; mutually exclusive with VoiceTyping.TextNone.
+  </description>
+</action>
+
+<action name="VoiceTyping.TextNone">
+  <owner>amyasinghal@google.com</owner>
+  <owner>src/chrome/browser/dictation/OWNERS</owner>
+  <description>
+    Recorded when a Voice Typing stream that started transcribing ends without
+    committing any text into the target text field. This does not necessarily
+    indicate a failure: it includes streams that worked as intended but had no
+    text to insert, as well as speech recognition errors and streams torn down
+    (tab closed, session cancelled) before the commit completed. Recorded at
+    most once per stream; mutually exclusive with VoiceTyping.TextCommitted.
+  </description>
+</action>
+
 <action name="VR.DOFF">
   <owner>billorr@chromium.org</owner>
   <description>

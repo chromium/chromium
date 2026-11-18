@@ -105,6 +105,8 @@ ListenerStreamProvider::ListenerStreamProvider(
 
 ListenerStreamProvider::~ListenerStreamProvider() {
   RecordExitMetric(DictationStreamEndTrigger::kDestructor);
+  // No-op if an outcome was already recorded or the stream never transcribed.
+  RecordTextOutcome(/*committed=*/false);
   VT_LOG(browser_context_) << "Stream(" << stream_id_ << ") destroyed";
   if (stream_id_) {
     GetMultiplexer().UnregisterStreamProvider(stream_id_);
@@ -259,6 +261,11 @@ void ListenerStreamProvider::OnStreamStateChanged(StreamState state,
 
   if (state == StreamState::kFailed) {
     RecordExitMetric(DictationStreamEndTrigger::kSpeechError);
+    RecordTextOutcome(/*committed=*/false);
+  }
+
+  if (state == StreamState::kTranscribing) {
+    has_started_transcribing_ = true;
   }
 
   VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__
@@ -275,6 +282,8 @@ void ListenerStreamProvider::OnPendingInsertionsComplete() {
   VT_LOG(browser_context_) << "Stream(" << stream_id_ << ")::" << __func__
                            << " " << state_ << " --> "
                            << StreamState::kComplete;
+
+  RecordTextOutcome(/*committed=*/!latest_transcription_.empty());
 
   DCheckStreamStateTransition(state_, StreamState::kComplete);
   StreamState old_state = state_;
@@ -325,6 +334,19 @@ void ListenerStreamProvider::RecordExitMetric(
   }
 
   RecordDictationStreamExitStatus(status);
+}
+
+void ListenerStreamProvider::RecordTextOutcome(bool committed) {
+  if (!has_started_transcribing_ || has_recorded_text_outcome_) {
+    return;
+  }
+  has_recorded_text_outcome_ = true;
+
+  if (committed) {
+    RecordDictationTextCommitted();
+  } else {
+    RecordDictationTextNone();
+  }
 }
 
 const std::string&

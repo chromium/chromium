@@ -62,6 +62,9 @@ class ListenerStreamProvider : public StreamProvider {
   void ForwardSelectedTextToTarget(const DictationContext& context);
   void OnPendingInsertionsComplete();
   void RecordExitMetric(DictationStreamEndTrigger trigger);
+  // Records whether a stream that started transcribing committed text. Only
+  // the first call per stream records; no-op if the stream never transcribed.
+  void RecordTextOutcome(bool committed);
 
   // Owns this
   const base::raw_ref<StreamProviderDelegate> delegate_;
@@ -70,6 +73,8 @@ class ListenerStreamProvider : public StreamProvider {
 
   bool needs_end_stream_ = false;
   bool has_recorded_exit_status_ = false;
+  bool has_started_transcribing_ = false;
+  bool has_recorded_text_outcome_ = false;
   DictationMultiplexer::StreamId stream_id_;
   std::string latest_transcription_;
   StreamState state_ = StreamState::kInitializing;

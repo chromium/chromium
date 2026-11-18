@@ -72,4 +72,12 @@ void RecordDictationStreamAbandonedBeforeListening(base::TimeDelta elapsed) {
   base::RecordAction(base::UserMetricsAction("VoiceTyping.Stream.Cancelled"));
 }
 
+void RecordDictationTextCommitted() {
+  base::RecordAction(base::UserMetricsAction("VoiceTyping.TextCommitted"));
+}
+
+void RecordDictationTextNone() {
+  base::RecordAction(base::UserMetricsAction("VoiceTyping.TextNone"));
+}
+
 }  // namespace dictation
