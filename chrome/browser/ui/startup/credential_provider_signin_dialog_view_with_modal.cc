@@ -27,21 +27,11 @@ CredentialProviderWebDialogViewWithModal::
   observers_.Notify(&web_modal::ModalDialogHostObserver::OnHostDestroying);
 }
 
-void CredentialProviderWebDialogViewWithModal::ViewHierarchyChanged(
-    const views::ViewHierarchyChangedDetails& details) {
-  views::WebDialogView::ViewHierarchyChanged(details);
-  if (details.is_add && GetWidget()) {
-    // Get the existing manager if it exists. If it doesn't, create it.
-    auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
-        web_contents());
-    if (!manager) {
-      web_modal::WebContentsModalDialogManager::CreateForWebContents(
-          web_contents());
-      manager = web_modal::WebContentsModalDialogManager::FromWebContents(
-          web_contents());
-    }
-    manager->SetDelegate(this);
-  }
+void CredentialProviderWebDialogViewWithModal::AddedToWidget() {
+  views::WebDialogView::AddedToWidget();
+  web_modal::WebContentsModalDialogManager::GetOrCreateForWebContents(
+      web_contents())
+      ->SetDelegate(this);
 }
 
 void CredentialProviderWebDialogViewWithModal::NotifyPositionRequiresUpdate() {

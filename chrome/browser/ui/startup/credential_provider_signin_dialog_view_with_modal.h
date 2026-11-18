@@ -49,8 +49,7 @@ class CredentialProviderWebDialogViewWithModal
   bool IsVisible();
 
   // views::WebDialogView:
-  void ViewHierarchyChanged(
-      const views::ViewHierarchyChangedDetails& details) override;
+  void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool IsWebContentsCreationOverridden(
       content::RenderFrameHost* opener,
