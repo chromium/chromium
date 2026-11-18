@@ -198,52 +198,6 @@ base::OnceCallback<void(Args...)> CallbackUmaHistogramTimer(
 
 }  // namespace
 
-class VariationsSeedStore::TwoSeedReader
-    : public base::RefCountedThreadSafe<TwoSeedReader> {
- public:
-  explicit TwoSeedReader(
-      base::OnceCallback<void(SeedReaderWriter::ReadSeedDataResult,
-                              SeedReaderWriter::ReadSeedDataResult)>
-          done_callback)
-      : done_callback_(std::move(done_callback)) {}
-
-  // Called when a single seed has been read. If both seeds have been read,
-  // `done_callback_` will be called.
-  void OnSingleSeedRead(SeedType seed_type,
-                        SeedReaderWriter::ReadSeedDataResult read_result) {
-    switch (seed_type) {
-      case SeedType::SAFE:
-        safe_seed_read_result_ = std::move(read_result);
-        break;
-      case SeedType::LATEST:
-        latest_seed_read_result_ = std::move(read_result);
-        break;
-    }
-    if (IsDone()) {
-      std::move(done_callback_)
-          .Run(std::move(safe_seed_read_result_).value(),
-               std::move(latest_seed_read_result_).value());
-    }
-  }
-
- private:
-  friend class base::RefCountedThreadSafe<TwoSeedReader>;
-
-  ~TwoSeedReader() = default;
-
-  // Returns true if both seeds have been read. This is used to determine when
-  // to call `done_callback_`.
-  bool IsDone() const {
-    return safe_seed_read_result_.has_value() &&
-           latest_seed_read_result_.has_value();
-  }
-
-  ReadBothSeedsCallback done_callback_;
-
-  std::optional<SeedReaderWriter::ReadSeedDataResult> safe_seed_read_result_;
-  std::optional<SeedReaderWriter::ReadSeedDataResult> latest_seed_read_result_;
-};
-
 ValidatedSeed::ValidatedSeed() = default;
 ValidatedSeed::~ValidatedSeed() = default;
 ValidatedSeed::ValidatedSeed(ValidatedSeed&& other) = default;
@@ -448,18 +402,22 @@ void VariationsSeedStore::StoreSafeSeed(
 
 void VariationsSeedStore::ReadBothSeedsData(
     ReadBothSeedsCallback done_callback) {
-  auto two_seed_reader =
-      base::MakeRefCounted<TwoSeedReader>(std::move(done_callback));
+  // Finish reading safe before starting latest: initialization callbacks may
+  // update latest while the safe read is pending.
   ReadSeedData(
-      /*done_callback=*/base::BindOnce(&TwoSeedReader::OnSingleSeedRead,
-                                       two_seed_reader, SeedType::SAFE),
+      base::BindOnce(&VariationsSeedStore::OnSafeSeedRead,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(done_callback)),
       SeedType::SAFE,
       /*require_synchronous=*/false);
-  ReadSeedData(
-      /*done_callback=*/base::BindOnce(&TwoSeedReader::OnSingleSeedRead,
-                                       two_seed_reader, SeedType::LATEST),
-      SeedType::LATEST,
-      /*require_synchronous=*/false);
+}
+
+void VariationsSeedStore::OnSafeSeedRead(
+    ReadBothSeedsCallback done_callback,
+    SeedReaderWriter::ReadSeedDataResult safe_seed_read_result) {
+  ReadSeedData(base::BindOnce(std::move(done_callback),
+                              std::move(safe_seed_read_result)),
+               SeedType::LATEST,
+               /*require_synchronous=*/false);
 }
 
 void VariationsSeedStore::OnValidatedSafeSeedStored(
@@ -854,10 +812,12 @@ void VariationsSeedStore::ReadSeedData(
     SeedReaderWriter::ReadSeedDataCallback done_callback,
     SeedType seed_type,
     bool require_synchronous) {
+  const SeedType source_seed_type =
+      ResolveSourceSeedType(seed_type, require_synchronous);
   auto cb = base::BindOnce(
       &VariationsSeedStore::CheckReadSeedDataResultAndRunCallback,
       weak_ptr_factory_.GetWeakPtr(), std::move(done_callback), seed_type,
-      require_synchronous);
+      source_seed_type, require_synchronous);
   if (require_synchronous) {
     std::string seed_data;
     std::string base64_seed_signature;
@@ -866,19 +826,36 @@ void VariationsSeedStore::ReadSeedData(
         result, std::move(seed_data), std::move(base64_seed_signature)});
     return;
   }
-  if (seed_type == SeedType::LATEST &&
-      !seed_reader_writer_->IsIdenticalToSafeSeedSentinel()) {
+  if (source_seed_type == SeedType::LATEST) {
     seed_reader_writer_->ReadSeedData(std::move(cb));
   } else {
     safe_seed_store_->ReadSeedData(std::move(cb));
   }
 }
 
+VariationsSeedStore::SeedType VariationsSeedStore::ResolveSourceSeedType(
+    SeedType seed_type,
+    bool require_synchronous) const {
+  return !require_synchronous && seed_type == SeedType::LATEST &&
+                 seed_reader_writer_->IsIdenticalToSafeSeedSentinel()
+             ? SeedType::SAFE
+             : seed_type;
+}
+
 void VariationsSeedStore::CheckReadSeedDataResultAndRunCallback(
     SeedReaderWriter::ReadSeedDataCallback done_callback,
     SeedType seed_type,
+    SeedType source_seed_type,
     bool require_synchronous,
     SeedReaderWriter::ReadSeedDataResult load_seed_result) {
+  if (source_seed_type !=
+      ResolveSourceSeedType(seed_type, require_synchronous)) {
+    // Latest changed between its own payload and a safe alias while its source
+    // was being read. Resolve the current source before using the result or
+    // clearing prefs for an error from the old source.
+    ReadSeedData(std::move(done_callback), seed_type, require_synchronous);
+    return;
+  }
   if (load_seed_result.result != LoadSeedResult::kSuccess) {
     ClearPrefs(seed_type);
   }
@@ -904,14 +881,29 @@ void VariationsSeedStore::OnSeedDataProcessed(
     return;
   }
 
-  SeedReaderWriter::ReadSeedDataCallback store_validated_seed_cb =
-      base::BindOnce(&VariationsSeedStore::StoreValidatedSeed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(done_callback),
-                     std::move(result.validated), result.seed_data.country_code,
-                     result.seed_data.geo_level1, result.seed_data.seed_date,
-                     require_synchronous);
-  ReadSeedData(/*done_callback=*/std::move(store_validated_seed_cb),
-               SeedType::SAFE, require_synchronous);
+  auto store_validated_seed_cb = base::BindOnce(
+      &VariationsSeedStore::StoreValidatedSeed, weak_ptr_factory_.GetWeakPtr(),
+      std::move(done_callback), std::move(result.validated),
+      result.seed_data.country_code, result.seed_data.geo_level1,
+      result.seed_data.seed_date, require_synchronous);
+  if (require_synchronous && !safe_seed_store_->IsInitialized()) {
+    // Safe is only needed for the alias optimization. Keep the startup store
+    // synchronous without initializing Safe solely to compare the payloads.
+    std::move(store_validated_seed_cb).Run(std::nullopt);
+    return;
+  }
+  ReadSeedData(
+      base::BindOnce(
+          [](base::OnceCallback<void(std::optional<std::string>)> callback,
+             SeedReaderWriter::ReadSeedDataResult result) {
+            std::optional<std::string> safe_seed_data;
+            if (result.result == LoadSeedResult::kSuccess) {
+              safe_seed_data = std::move(result.seed_data);
+            }
+            std::move(callback).Run(std::move(safe_seed_data));
+          },
+          std::move(store_validated_seed_cb)),
+      SeedType::SAFE, require_synchronous);
 }
 
 void VariationsSeedStore::ProcessAndStoreSeedData(
@@ -949,7 +941,7 @@ void VariationsSeedStore::StoreValidatedSeed(
     std::string geo_level1,
     base::Time seed_date,
     bool require_synchronous,
-    SeedReaderWriter::ReadSeedDataResult safe_seed_read_result) {
+    std::optional<std::string> safe_seed_data) {
 #if BUILDFLAG(IS_ANDROID)
   // If currently we do not have any stored seed, then we mark seed storing as
   // successful on the Java side to avoid repeated seed fetches.
@@ -965,8 +957,7 @@ void VariationsSeedStore::StoreValidatedSeed(
   // As a space optimization, store an alias to the safe seed if the contents
   // are identical.
   std::string_view seed_data;
-  if (safe_seed_read_result.result == LoadSeedResult::kSuccess &&
-      safe_seed_read_result.seed_data == seed.seed_data) {
+  if (safe_seed_data && *safe_seed_data == seed.seed_data) {
     seed_data = kIdenticalToSafeSeedSentinel;
   } else {
     seed_data = seed.seed_data;

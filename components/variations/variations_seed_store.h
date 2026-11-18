@@ -375,9 +375,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       SeedReaderWriter::ReadSeedDataResult /*safe_seed_result*/,
       SeedReaderWriter::ReadSeedDataResult /*latest_seed_result*/)>;
 
-  // Class for reading both latest and safe seeds in parallel.
-  class TwoSeedReader;
-
   // Clears all prefs related to variations seed storage for the specified seed
   // type.
   void ClearPrefs(SeedType seed_type);
@@ -412,13 +409,21 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
                     SeedType seed_type,
                     bool require_synchronous);
 
+  // Returns the source seed type, resolving asynchronous Latest aliases.
+  SeedType ResolveSourceSeedType(SeedType seed_type,
+                                 bool require_synchronous) const;
+
   // Callback for VariationsSeedStore::ReadSeedData(). If the read was
   // successful, it will call the |done_callback| with the result of the read
   // and the seed data. If the read was unsuccessful, it will clear the prefs
   // associated with the seed and call the |done_callback| with empty seed data.
+  // `source_seed_type` identifies the reader used for an asynchronous read. If
+  // a latest alias changed, resolves its current source before using the
+  // result.
   void CheckReadSeedDataResultAndRunCallback(
       SeedReaderWriter::ReadSeedDataCallback done_callback,
       SeedType seed_type,
+      SeedType source_seed_type,
       bool require_synchronous,
       SeedReaderWriter::ReadSeedDataResult read_result);
 
@@ -437,7 +442,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       SeedProcessingResult result);
 
   // Stores the validated seed and calls `done_callback` with the result of the
-  // store and the validated seed.
+  // store and the validated seed. A missing `safe_seed_data` disables the
+  // optional alias optimization; no Safe read is required to store the seed.
   void StoreValidatedSeed(
       base::OnceCallback<void(bool, VariationsSeed)> done_callback,
       ValidatedSeed seed,
@@ -445,16 +451,21 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       std::string geo_level1,
       base::Time seed_date,
       bool require_synchronous,
-      SeedReaderWriter::ReadSeedDataResult read_result);
+      std::optional<std::string> safe_seed_data);
 
   // Called after the safe seed has been stored. It records the result of the
   // store and calls `done_callback`.
   void OnValidatedSafeSeedStored(base::OnceCallback<void(bool)> done_callback,
                                  StoreSeedResult store_result);
 
-  // Reads both the safe and latest seeds. The callback is called with the
-  // results of each read in that order.
+  // Reads the safe seed, then the latest seed. The callback receives the
+  // results in that order.
   void ReadBothSeedsData(ReadBothSeedsCallback done_callback);
+
+  // Binds the safe read result into the callback and starts reading latest.
+  void OnSafeSeedRead(
+      ReadBothSeedsCallback done_callback,
+      SeedReaderWriter::ReadSeedDataResult safe_seed_read_result);
 
   // Updates the safe seed with validated data.
   void StoreValidatedSafeSeed(

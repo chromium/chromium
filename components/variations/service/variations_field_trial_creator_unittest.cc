@@ -24,6 +24,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -988,6 +989,52 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_NullSeed) {
   // Verify metrics.
   histogram_tester.ExpectUniqueSample("Variations.SeedUsage",
                                       SeedUsage::kNullSeedUsed, 1);
+}
+
+TEST_F(FieldTrialCreatorTest,
+       SetUpFieldTrials_NullSeedDoesNotReadSafeSeedFile) {
+  metrics::TestEnabledStateProvider enabled_state_provider(
+      /*consent=*/true, /*enabled=*/true);
+  auto metrics_state_manager = metrics::MetricsStateManager::Create(
+      local_state(), &enabled_state_provider, std::wstring(),
+      user_data_dir_path());
+  metrics_state_manager->InstantiateFieldTrialList();
+  SetUpSeedFileTrial(kSeedFilesGroup);
+  ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
+      kSafeSeedStartupReadTrial, kSafeSeedStartupReadTreatmentGroup));
+
+  const base::FilePath safe_seed_file =
+      user_data_dir_path().AppendASCII("VariationsSafeSeedV2");
+  ASSERT_TRUE(base::WriteFile(safe_seed_file, "must remain unread"));
+
+  MockEntropyProviders entropy_providers(
+      MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+  base::HistogramTester histogram_tester;
+  auto seed_store = std::make_unique<VariationsSeedStore>(
+      local_state(), /*initial_seed=*/nullptr,
+      /*signature_verification_enabled_on_load=*/false,
+      /*signature_verification_enabled_on_receive=*/false,
+      std::make_unique<VariationsSafeSeedStore>(
+          local_state(), user_data_dir_path(), version_info::Channel::DEV,
+          &entropy_providers),
+      version_info::Channel::DEV, user_data_dir_path(), &entropy_providers);
+  TestVariationsServiceClient variations_service_client;
+  VariationsFieldTrialCreator field_trial_creator(&variations_service_client,
+                                                  std::move(seed_store));
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  ON_CALL(safe_seed_manager, GetSeedType())
+      .WillByDefault(Return(SeedType::kNullSeed));
+  PlatformFieldTrials platform_field_trials;
+
+  EXPECT_FALSE(field_trial_creator.SetUpFieldTrials(
+      /*variation_ids=*/{},
+      std::vector<base::FeatureList::FeatureOverrideInfo>(),
+      std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
+      &platform_field_trials, &safe_seed_manager,
+      /*add_entropy_source_to_variations_ids=*/true, entropy_providers));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kSafeSeedStartupReadTrial));
+  histogram_tester.ExpectTotalCount("Variations.SeedFileReadResult.Safe", 0);
+  EXPECT_TRUE(base::PathExists(safe_seed_file));
 }
 
 TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {

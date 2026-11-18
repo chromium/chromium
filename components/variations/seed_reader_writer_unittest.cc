@@ -4,6 +4,8 @@
 
 #include "components/variations/seed_reader_writer.h"
 
+#include <vector>
+
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -15,9 +17,13 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/timer/mock_timer.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
@@ -276,6 +282,19 @@ class SeedReaderWriterGroupTest
 
   std::string_view GetHistogramSuffix() const { return histogram_suffix_; }
 
+  std::unique_ptr<SeedReaderWriter> CreateDeferredReader(
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner = nullptr) {
+    if (!file_task_runner) {
+      file_task_runner = file_writer_thread_.task_runner();
+    }
+    return std::make_unique<SeedReaderWriter>(
+        &local_state_, temp_dir_.GetPath(), kSeedFilename,
+        GetParam().seed_fields_prefs, GetParam().channel,
+        entropy_providers_.get(), GetHistogramSuffix(),
+        std::move(file_task_runner),
+        SeedReaderWriter::StartupReadMode::kDeferred);
+  }
+
   StoredSeedInfo ReadStoredSeedInfo() {
     std::string seed_file_data;
     CHECK(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
@@ -291,7 +310,16 @@ class SeedReaderWriterGroupTest
   std::string histogram_suffix_;
 };
 
-class SeedReaderWriterSeedFilesGroupTest : public SeedReaderWriterGroupTest {};
+class SeedReaderWriterSeedFilesGroupTest : public SeedReaderWriterGroupTest {
+ public:
+  StoredSeedInfo WriteSeedWithCountries() {
+    StoredSeedInfo seed_info = CreateStoredSeedInfo();
+    seed_info.set_permanent_country_code("ca");
+    seed_info.set_permanent_version("123.0");
+    CHECK(base::WriteFile(temp_seed_file_path_, Compress(seed_info)));
+    return seed_info;
+  }
+};
 class SeedReaderWriterLocalStateGroupsTest : public SeedReaderWriterGroupTest {
 };
 
@@ -812,6 +840,424 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest,
             seed_file_fetch_time);
 }
 
+TEST_P(SeedReaderWriterSeedFilesGroupTest, DeferredReadRunsOnceOnFirstAccess) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  const StoredSeedInfo stored_seed_info = CreateStoredSeedInfo();
+  ASSERT_TRUE(
+      base::WriteFile(temp_seed_file_path_, Compress(stored_seed_info)));
+
+  base::HistogramTester histogram_tester;
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      /*file_task_runner=*/nullptr,
+      SeedReaderWriter::StartupReadMode::kDeferred);
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Variations.SeedFileReadResult.", GetHistogramSuffix()}),
+      0);
+
+  std::string seed_data;
+  EXPECT_EQ(seed_reader_writer.ReadSeedDataOnStartup(&seed_data),
+            LoadSeedResult::kSuccess);
+  EXPECT_EQ(seed_data, stored_seed_info.data());
+  EXPECT_EQ(seed_reader_writer.ReadSeedDataOnStartup(&seed_data),
+            LoadSeedResult::kSuccess);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Variations.SeedFileReadResult.", GetHistogramSuffix()}),
+      1);
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest, DeferredCallbacksCanDestroyReader) {
+  for (bool clear_before_reply : {false, true}) {
+    SCOPED_TRACE(clear_before_reply);
+    WriteSeedWithCountries();
+    auto reader = CreateDeferredReader();
+    reader->AllowToPurgeSeedDataFromMemory();
+    base::test::TestFuture<void> destroyed;
+    bool later_callback_called = false;
+    reader->ReadSeedData(
+        base::BindLambdaForTesting([&](SeedReaderWriter::ReadSeedDataResult) {
+          reader.reset();
+          destroyed.SetValue();
+        }));
+    reader->ReadSeedData(
+        base::BindLambdaForTesting([&](SeedReaderWriter::ReadSeedDataResult) {
+          later_callback_called = true;
+        }));
+    if (clear_before_reply) {
+      reader->ClearAllSeedInfo();
+      EXPECT_TRUE(destroyed.IsReady());
+    }
+    ASSERT_TRUE(destroyed.Wait());
+    EXPECT_FALSE(later_callback_called);
+    file_writer_thread_.FlushForTesting();
+  }
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       DeferredRawStorePreservesFileParseError) {
+  auto reader = CreateDeferredReader();
+  reader->StoreRawSeedForTesting(
+      SeedReaderWriter::CompressForSeedFileForTesting("invalid proto"));
+  file_writer_thread_.FlushForTesting();
+  base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> read;
+  reader->ReadSeedData(read.GetCallback());
+  EXPECT_EQ(read.Get().result, LoadSeedResult::kSeedInfoParseToProtoError);
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       DeferredReadCallbacksObserveEarlierMutations) {
+  for (bool clear_seed : {false, true}) {
+    SCOPED_TRACE(clear_seed);
+    const StoredSeedInfo old_seed_info = WriteSeedWithCountries();
+    auto reader = CreateDeferredReader();
+    reader->AllowToPurgeSeedDataFromMemory();
+    base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> read_future;
+    base::test::TestFuture<StoredSeedInfo> debug_future;
+    reader->ReadSeedData(base::BindLambdaForTesting(
+        [&](SeedReaderWriter::ReadSeedDataResult result) {
+          EXPECT_EQ(result.seed_data, old_seed_info.data());
+          if (clear_seed) {
+            reader->ClearSeedInfo();
+          } else {
+            reader->StoreValidatedSeedInfo(ValidatedSeedInfo{
+                .seed_data = "replacement", .signature = "new signature"});
+          }
+        }));
+    reader->ReadSeedData(read_future.GetCallback());
+    reader->GetStoredSeedInfoForDebugging(debug_future.GetCallback());
+    EXPECT_EQ(read_future.Get().seed_data, clear_seed ? "" : "replacement");
+    EXPECT_EQ(read_future.Get().signature, clear_seed ? "" : "new signature");
+    EXPECT_EQ(debug_future.Get().data(), clear_seed ? "" : "replacement");
+    EXPECT_EQ(reader->stored_seed_data_for_testing(),
+              clear_seed ? "" : "replacement");
+    reader.reset();
+    file_writer_thread_.FlushForTesting();
+  }
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       PendingFileReadObservesStoreOrClear) {
+  for (bool read_fails : {false, true}) {
+    SCOPED_TRACE(read_fails);
+    for (bool clear_seed : {false, true}) {
+      SCOPED_TRACE(clear_seed);
+      WriteSeedWithCountries();
+      auto file_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+      auto reader = CreateDeferredReader(file_runner);
+      reader->SetTimerForTesting(&timer_);
+      reader->EnsureSeedFileReadSync();
+      reader->AllowToPurgeSeedDataFromMemory();
+      ASSERT_FALSE(reader->stored_seed_data_for_testing().has_value());
+      if (read_fails) {
+        ASSERT_TRUE(base::DeleteFile(temp_seed_file_path_));
+      }
+
+      base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> read;
+      reader->ReadSeedData(read.GetCallback());
+      base::test::TestFuture<StoredSeedInfo> debug;
+      reader->GetStoredSeedInfoForDebugging(debug.GetCallback());
+      // Finish the disk read, leaving its reply pending on the owning sequence.
+      file_runner->RunPendingTasks();
+      ASSERT_FALSE(read.IsReady());
+      ASSERT_FALSE(debug.IsReady());
+      if (clear_seed) {
+        reader->ClearAllSeedInfo();
+      } else {
+        ASSERT_EQ(reader->StoreValidatedSeedInfo(
+                      ValidatedSeedInfo{.seed_data = "replacement",
+                                        .signature = "new signature",
+                                        .milestone = 100,
+                                        .session_country_code = "fr",
+                                        .permanent_country_code = "gb"}),
+                  StoreSeedResult::kSuccess);
+      }
+
+      const auto& result = read.Get();
+      EXPECT_EQ(result.result,
+                clear_seed ? LoadSeedResult::kEmpty : LoadSeedResult::kSuccess);
+      EXPECT_EQ(result.seed_data, clear_seed ? "" : "replacement");
+      EXPECT_EQ(result.signature, clear_seed ? "" : "new signature");
+      EXPECT_EQ(debug.Get().data(), result.seed_data);
+      EXPECT_EQ(debug.Get().signature(), result.signature);
+      EXPECT_EQ(debug.Get().milestone(), clear_seed ? 0u : 100u);
+      EXPECT_EQ(debug.Get().session_country_code(), clear_seed ? "" : "fr");
+      EXPECT_EQ(debug.Get().permanent_country_code(), clear_seed ? "" : "gb");
+      reader.reset();
+      file_runner->RunPendingTasks();
+    }
+  }
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       DeferredReadsShareNonBlockingInitialization) {
+  const StoredSeedInfo stored = WriteSeedWithCountries();
+  auto file_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  auto reader = CreateDeferredReader(file_runner);
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<StoredSeedInfo> debug;
+  base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> read;
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    base::ScopedDisallowBaseSyncPrimitives disallow_waiting;
+    reader->GetStoredSeedInfoForDebugging(
+        base::BindLambdaForTesting([&](StoredSeedInfo result) {
+          // Enabling purge in the first callback must not discard the payload
+          // before the remaining initialization callbacks have read it.
+          reader->AllowToPurgeSeedDataFromMemory();
+          EXPECT_EQ(reader->stored_seed_data_for_testing(), stored.data());
+          debug.SetValue(std::move(result));
+        }));
+    reader->ReadSeedData(base::BindLambdaForTesting(
+        [&](SeedReaderWriter::ReadSeedDataResult result) {
+          EXPECT_EQ(reader->stored_seed_data_for_testing(), stored.data());
+          read.SetValue(std::move(result));
+        }));
+  }
+  // Both APIs must return before the shared file task is allowed to run.
+  ASSERT_FALSE(debug.IsReady());
+  ASSERT_FALSE(read.IsReady());
+  ASSERT_EQ(file_runner->NumPendingTasks(), 1u);
+  file_runner->RunPendingTasks();
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(debug.IsReady());
+  ASSERT_TRUE(read.IsReady());
+  EXPECT_EQ(file_runner->NumPendingTasks(), 0u);
+  EXPECT_EQ(read.Get().result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(read.Get().seed_data, stored.data());
+  EXPECT_EQ(read.Get().signature, stored.signature());
+  EXPECT_EQ(debug.Get().data(), stored.data());
+  EXPECT_EQ(debug.Get().signature(), stored.signature());
+  EXPECT_EQ(debug.Get().milestone(), stored.milestone());
+  EXPECT_EQ(debug.Get().session_country_code(), stored.session_country_code());
+  EXPECT_EQ(debug.Get().permanent_country_code(),
+            stored.permanent_country_code());
+  EXPECT_EQ(debug.Get().permanent_version(), stored.permanent_version());
+  EXPECT_EQ(debug.Get().seed_date(), stored.seed_date());
+  EXPECT_FALSE(reader->stored_seed_data_for_testing().has_value());
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Variations.SeedFileReadResult.", GetHistogramSuffix()}),
+      1);
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       DeferredReadCallbackMigratesSeedFileTimestamps) {
+  const base::Time seed_date = base::Time::Now();
+  const base::Time fetch_time = seed_date + base::Days(1);
+  StoredSeedInfo stored = CreateStoredSeedInfo();
+  stored.set_seed_date(TimeToProtoTime(seed_date));
+  stored.set_client_fetch_time(TimeToProtoTime(fetch_time));
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, Compress(stored)));
+  local_state_.SetTime(GetParam().seed_fields_prefs.seed_date,
+                       seed_date - base::Days(1));
+  local_state_.SetTime(GetParam().seed_fields_prefs.client_fetch_time,
+                       fetch_time + base::Days(1));
+  auto reader = CreateDeferredReader();
+  base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> read;
+  reader->ReadSeedData(read.GetCallback());
+  EXPECT_EQ(read.Get().result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(reader->GetSeedInfo().seed_date, seed_date);
+  EXPECT_EQ(reader->GetSeedInfo().client_fetch_time,
+            fetch_time + base::Days(1));
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       DeferredReadFallbackUsesCurrentLocalStateMetadata) {
+  const std::string seed_data = CreateVariationsSeed();
+  const std::string fallback = base::Base64Encode(Gzip(seed_data));
+  local_state_.SetString(GetParam().seed_fields_prefs.seed, fallback);
+  local_state_.SetString(GetParam().seed_fields_prefs.signature,
+                         "old signature");
+  local_state_.SetInteger(GetParam().seed_fields_prefs.milestone, 1);
+  auto file_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  auto reader = CreateDeferredReader(file_runner);
+  base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> read;
+  reader->ReadSeedData(read.GetCallback());
+  ASSERT_FALSE(read.IsReady());
+  local_state_.SetString(GetParam().seed_fields_prefs.signature,
+                         "new signature");
+  local_state_.SetInteger(GetParam().seed_fields_prefs.milestone, 2);
+  file_runner->RunPendingTasks();
+  EXPECT_EQ(read.Get().result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(read.Get().seed_data, seed_data);
+  EXPECT_EQ(read.Get().signature, "new signature");
+  EXPECT_EQ(reader->GetSeedInfo().milestone, 2);
+  EXPECT_EQ(local_state_.GetString(GetParam().seed_fields_prefs.seed),
+            fallback);
+  reader->CommitPendingWrite();
+  file_runner->RunPendingTasks();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return local_state_.GetString(GetParam().seed_fields_prefs.seed).empty();
+  }));
+  const StoredSeedInfo written = ReadStoredSeedInfo();
+  EXPECT_EQ(written.data(), seed_data);
+  EXPECT_EQ(written.signature(), "new signature");
+  EXPECT_EQ(written.milestone(), 2u);
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       DeferredStorePreservesOmittedCountries) {
+  for (bool replace_country : {false, true}) {
+    SCOPED_TRACE(replace_country);
+    const StoredSeedInfo old_seed = WriteSeedWithCountries();
+    auto reader = CreateDeferredReader();
+    reader->SetTimerForTesting(&timer_);
+    reader->AllowToPurgeSeedDataFromMemory();
+    reader->EnsureSeedFileReadSync();
+    EXPECT_EQ(reader->StoreValidatedSeedInfo(ValidatedSeedInfo{
+                  .seed_data = "replacement",
+                  .signature = "new signature",
+                  .milestone = 100,
+                  .session_country_code = replace_country ? "fr" : "",
+                  .permanent_country_code = replace_country ? "gb" : ""}),
+              StoreSeedResult::kSuccess);
+    EXPECT_EQ(reader->stored_seed_data_for_testing(), "replacement");
+    EXPECT_EQ(reader->GetSeedInfo().signature, "new signature");
+    timer_.Fire();
+    file_writer_thread_.FlushForTesting();
+    const StoredSeedInfo written = ReadStoredSeedInfo();
+    EXPECT_EQ(written.data(), "replacement");
+    EXPECT_EQ(written.milestone(), 100u);
+    EXPECT_EQ(written.session_country_code(), replace_country ? "fr" : "us");
+    EXPECT_EQ(written.session_geo_level1(), replace_country ? "" : "us-ny");
+    EXPECT_EQ(written.permanent_country_code(), replace_country ? "gb" : "ca");
+    EXPECT_EQ(written.permanent_version(), "123.0");
+    EXPECT_EQ(written.seed_date(), old_seed.seed_date());
+  }
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       DeferredClearPreservesCountriesAfterInitialization) {
+  WriteSeedWithCountries();
+  auto reader = CreateDeferredReader();
+  reader->SetTimerForTesting(&timer_);
+  base::HistogramTester histogram_tester;
+  reader->AllowToPurgeSeedDataFromMemory();
+  reader->EnsureSeedFileReadSync();
+  reader->ClearSeedInfo();
+  EXPECT_TRUE(reader->GetSeedInfo().seed_date.is_null());
+  EXPECT_TRUE(reader->GetSeedInfo().client_fetch_time.is_null());
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+  const StoredSeedInfo written = ReadStoredSeedInfo();
+  EXPECT_TRUE(written.data().empty());
+  EXPECT_TRUE(written.signature().empty());
+  EXPECT_EQ(written.milestone(), 0u);
+  EXPECT_EQ(written.session_country_code(), "us");
+  EXPECT_EQ(written.session_geo_level1(), "us-ny");
+  EXPECT_EQ(written.permanent_country_code(), "ca");
+  EXPECT_EQ(written.permanent_version(), "123.0");
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Variations.SeedFileReadResult.", GetHistogramSuffix()}),
+      1);
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       DeferredClearAllSkipsReadAndPersistsEmptyState) {
+  WriteSeedWithCountries();
+  local_state_.SetString(GetParam().seed_fields_prefs.seed, "old fallback");
+  local_state_.SetString(GetParam().seed_fields_prefs.signature,
+                         "old signature");
+  local_state_.SetInteger(GetParam().seed_fields_prefs.milestone, 123);
+  local_state_.SetTime(GetParam().seed_fields_prefs.seed_date,
+                       base::Time::Now());
+  local_state_.SetTime(GetParam().seed_fields_prefs.client_fetch_time,
+                       base::Time::Now());
+  auto reader = CreateDeferredReader();
+  reader->SetTimerForTesting(&timer_);
+  base::HistogramTester histogram_tester;
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    base::ScopedDisallowBaseSyncPrimitives disallow_waiting;
+    reader->ClearAllSeedInfo();
+    EXPECT_EQ(reader->stored_seed_data_for_testing(), "");
+    EXPECT_TRUE(reader->GetSeedInfo().session_country_code.empty());
+    EXPECT_TRUE(reader->GetSeedInfo().permanent_country_code.empty());
+    EXPECT_TRUE(reader->GetSeedInfo().seed_date.is_null());
+    EXPECT_TRUE(reader->GetSeedInfo().client_fetch_time.is_null());
+    EXPECT_TRUE(
+        local_state_.GetString(GetParam().seed_fields_prefs.seed).empty());
+  }
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+  const StoredSeedInfo written = ReadStoredSeedInfo();
+  EXPECT_TRUE(written.has_data());
+  EXPECT_TRUE(written.data().empty());
+  EXPECT_FALSE(written.has_signature());
+  EXPECT_FALSE(written.has_milestone());
+  EXPECT_FALSE(written.has_session_country_code());
+  EXPECT_FALSE(written.has_session_geo_level1());
+  EXPECT_FALSE(written.has_permanent_country_code());
+  EXPECT_FALSE(written.has_permanent_version());
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Variations.SeedFileReadResult.", GetHistogramSuffix()}),
+      0);
+  reader.reset();
+  auto reloaded = CreateDeferredReader();
+  std::string data;
+  EXPECT_EQ(reloaded->ReadSeedDataOnStartup(&data), LoadSeedResult::kEmpty);
+  EXPECT_TRUE(reloaded->GetSeedInfo().permanent_country_code.empty());
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       ClearAllSkipsPendingReadWithoutRestoringOldSeed) {
+  for (bool read_completed : {false, true}) {
+    SCOPED_TRACE(read_completed);
+    WriteSeedWithCountries();
+    auto file_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    auto reader = CreateDeferredReader(file_runner);
+    reader->SetTimerForTesting(&timer_);
+    reader->AllowToPurgeSeedDataFromMemory();
+    base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> read_future;
+    std::vector<int> callback_order;
+    reader->ReadSeedData(base::BindLambdaForTesting(
+        [&](SeedReaderWriter::ReadSeedDataResult result) {
+          callback_order.push_back(1);
+          read_future.SetValue(std::move(result));
+        }));
+    reader->ReadSeedData(base::BindLambdaForTesting(
+        [&](SeedReaderWriter::ReadSeedDataResult result) {
+          EXPECT_EQ(result.result, LoadSeedResult::kEmpty);
+          callback_order.push_back(2);
+        }));
+    if (read_completed) {
+      file_runner->RunPendingTasks();
+    }
+    ASSERT_FALSE(read_future.IsReady());
+    {
+      base::ScopedDisallowBlocking disallow_blocking;
+      base::ScopedDisallowBaseSyncPrimitives disallow_waiting;
+      reader->ClearAllSeedInfo();
+    }
+    ASSERT_TRUE(read_future.IsReady());
+    EXPECT_THAT(callback_order, ::testing::ElementsAre(1, 2));
+    reader->ReadSeedData(base::BindLambdaForTesting(
+        [&](SeedReaderWriter::ReadSeedDataResult result) {
+          EXPECT_EQ(result.result, LoadSeedResult::kEmpty);
+          callback_order.push_back(3);
+        }));
+    EXPECT_THAT(callback_order, ::testing::ElementsAre(1, 2, 3));
+    file_runner->RunPendingTasks();
+    base::test::TestFuture<void> reply_processed;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, reply_processed.GetCallback());
+    ASSERT_TRUE(reply_processed.Wait());
+    EXPECT_THAT(callback_order, ::testing::ElementsAre(1, 2, 3));
+    EXPECT_TRUE(read_future.Get().seed_data.empty());
+    EXPECT_TRUE(read_future.Get().signature.empty());
+    EXPECT_TRUE(reader->GetSeedInfo().session_country_code.empty());
+    timer_.Fire();
+    file_runner->RunPendingTasks();
+    EXPECT_TRUE(ReadStoredSeedInfo().data().empty());
+    EXPECT_TRUE(ReadStoredSeedInfo().permanent_country_code().empty());
+    reader.reset();
+    file_runner->RunPendingTasks();
+  }
+}
+
 // Verifies clients in SeedFiles group do not crash if reading empty seed file.
 TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadEmptySeedFile) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
@@ -842,9 +1288,6 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadEmptySeedFile) {
       seed_reader_writer.ReadSeedDataOnStartup(&stored_seed_data, nullptr);
   ASSERT_EQ(read_seed_result, LoadSeedResult::kEmpty);
 }
-
-// Verifies clients in SeedFiles group read seeds from the old seed file if the
-// seed file is not found.
 
 // Verifies clients in SeedFiles group read seeds from local state prefs if no
 // seed file found.
@@ -913,6 +1356,33 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, FallbackToLocalStateWithSentinel) {
       seed_reader_writer.ReadSeedDataOnStartup(&stored_seed_data, nullptr);
   ASSERT_EQ(read_result, LoadSeedResult::kSuccess);
   EXPECT_EQ(stored_seed_data, kIdenticalToSafeSeedSentinel);
+}
+
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       DeferredMissingSeedFileSkipsEmptyMigrationWrite) {
+  std::string corrupt_gzip = CreateCompressedVariationsSeed();
+  corrupt_gzip[5] ^= 0xFF;
+  corrupt_gzip[10] ^= 0xFF;
+  for (const std::string& encoded_seed :
+       {std::string(), std::string("invalid base64"),
+        base::Base64Encode(corrupt_gzip)}) {
+    SCOPED_TRACE(encoded_seed);
+    local_state_.SetString(GetParam().seed_fields_prefs.seed, encoded_seed);
+    auto reader = CreateDeferredReader();
+    reader->SetTimerForTesting(&timer_);
+    base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> read;
+    {
+      base::ScopedDisallowBlocking disallow_blocking;
+      reader->ReadSeedData(read.GetCallback());
+      EXPECT_EQ(read.Get().result, LoadSeedResult::kEmpty);
+    }
+    EXPECT_FALSE(timer_.IsRunning());
+    file_writer_thread_.FlushForTesting();
+    EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
+    EXPECT_TRUE(reader->IsEmpty());
+    EXPECT_THAT(local_state_.GetString(GetParam().seed_fields_prefs.seed),
+                IsEmpty());
+  }
 }
 
 TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadMissingSeedFileEmptyLocalState) {
@@ -1326,6 +1796,41 @@ INSTANTIATE_TEST_SUITE_P(
                                              version_info::Channel::DEV,
                                              version_info::Channel::BETA,
                                              version_info::Channel::STABLE))));
+
+TEST_P(SeedReaderWriterLocalStateGroupsTest,
+       DeferredMetadataStoreAndClearUseLocalState) {
+  local_state_.SetString(GetParam().seed_fields_prefs.seed,
+                         base::Base64Encode(CreateCompressedVariationsSeed()));
+  local_state_.SetString(GetParam().seed_fields_prefs.signature, "signature");
+  local_state_.SetInteger(GetParam().seed_fields_prefs.milestone, 123);
+  local_state_.SetString(GetParam().seed_fields_prefs.session_country_code,
+                         "us");
+  const base::Time fetch_time = base::Time::Now();
+  local_state_.SetTime(GetParam().seed_fields_prefs.client_fetch_time,
+                       fetch_time);
+  // A nonempty file directory must not make a Local State reader deferred.
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, "unused seed file"));
+  base::HistogramTester histogram_tester;
+  auto reader = CreateDeferredReader();
+  base::ScopedDisallowBlocking disallow_blocking;
+  EXPECT_EQ(reader->GetSeedInfo().milestone, 123);
+  EXPECT_EQ(reader->GetSeedInfo().client_fetch_time, fetch_time);
+  std::string seed_data;
+  EXPECT_EQ(reader->ReadSeedDataOnStartup(&seed_data),
+            LoadSeedResult::kSuccess);
+  EXPECT_EQ(seed_data, CreateVariationsSeed());
+  EXPECT_EQ(reader->StoreValidatedSeedInfo(ValidatedSeedInfo{
+                .seed_data = "replacement", .signature = "signature"}),
+            StoreSeedResult::kSuccess);
+  EXPECT_EQ(reader->GetSeedInfo().session_country_code, "us");
+  reader->ClearSeedInfo();
+  EXPECT_EQ(reader->GetSeedInfo().session_country_code, "us");
+  reader->ClearAllSeedInfo();
+  EXPECT_TRUE(reader->GetSeedInfo().session_country_code.empty());
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Variations.SeedFileReadResult.", GetHistogramSuffix()}),
+      0);
+}
 
 // Verifies clients using local state to store seeds write seeds to Local State.
 TEST_P(SeedReaderWriterLocalStateGroupsTest, WriteSeed) {
@@ -1837,8 +2342,6 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest,
   // considered valid.
   EXPECT_EQ(load_result, LoadSeedResult::kSuccess);
 }
-
-
 
 // If no seed file exists, the seed in local state should not be overwritten.
 TEST_P(SeedReaderWriterLocalStateGroupsTest, NoSeedFile) {

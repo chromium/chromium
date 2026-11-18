@@ -4,9 +4,11 @@
 
 #include "components/variations/variations_safe_seed_store.h"
 
+#include "base/metrics/field_trial.h"
 #include "base/version_info/channel.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/seed_reader_writer.h"
 
@@ -18,6 +20,38 @@ namespace {
 const base::FilePath::CharType kSafeSeedFilename[] =
     FILE_PATH_LITERAL("VariationsSafeSeedV2");
 
+// Compare startup and stability metrics among pre-stable Seed File clients,
+// independently of the experiment that selects their storage backend. The
+// SeedReaderWriter member constructed before the constructor body runs sets up
+// kSeedFileTrial without reading the safe file.
+bool ShouldDeferSafeSeedRead(const base::FilePath& seed_file_dir,
+                             version_info::Channel channel,
+                             const EntropyProviders* entropy_providers) {
+  if (seed_file_dir.empty() || entropy_providers == nullptr ||
+      (channel != version_info::Channel::CANARY &&
+       channel != version_info::Channel::DEV &&
+       channel != version_info::Channel::BETA) ||
+      base::FieldTrialList::FindFullName(kSeedFileTrial) != kSeedFilesGroup) {
+    return false;
+  }
+
+  base::FieldTrial* trial =
+      base::FieldTrialList::Find(kSafeSeedStartupReadTrial);
+  if (!trial) {
+    // A zero randomization seed uses this trial's name, keeping its assignment
+    // independent of the Seed File storage trial's fixed randomization seed.
+    trial = base::FieldTrialList::FactoryGetFieldTrial(
+        kSafeSeedStartupReadTrial, /*total_probability=*/100, kDefaultGroup,
+        entropy_providers->default_entropy(),
+        /*randomization_seed=*/0);
+    trial->AppendGroup(kSafeSeedStartupReadControlGroup, 50);
+    trial->AppendGroup(kSafeSeedStartupReadTreatmentGroup, 50);
+  }
+  // Activate both groups before their initialization behavior differs, even
+  // when the treatment never needs to read the safe file in this session.
+  return trial->group_name() == kSafeSeedStartupReadTreatmentGroup;
+}
+
 }  // namespace
 
 VariationsSafeSeedStore::VariationsSafeSeedStore(
@@ -26,16 +60,27 @@ VariationsSafeSeedStore::VariationsSafeSeedStore(
     version_info::Channel channel,
     const EntropyProviders* entropy_providers)
     : local_state_(local_state),
-      seed_reader_writer_(
-          std::make_unique<SeedReaderWriter>(local_state,
-                                             seed_file_dir,
-                                             kSafeSeedFilename,
-                                             kSafeSeedFieldsPrefs,
-                                             channel,
-                                             entropy_providers,
-                                             /*histogram_suffix=*/"Safe")) {}
+      seed_reader_writer_(std::make_unique<SeedReaderWriter>(
+          local_state,
+          seed_file_dir,
+          kSafeSeedFilename,
+          kSafeSeedFieldsPrefs,
+          channel,
+          entropy_providers,
+          /*histogram_suffix=*/"Safe",
+          /*file_task_runner=*/nullptr,
+          SeedReaderWriter::StartupReadMode::kDeferred)) {
+  // Delay the control group's synchronous read until its trial is active.
+  if (!ShouldDeferSafeSeedRead(seed_file_dir, channel, entropy_providers)) {
+    seed_reader_writer_->EnsureSeedFileReadSync();
+  }
+}
 
 VariationsSafeSeedStore::~VariationsSafeSeedStore() = default;
+
+bool VariationsSafeSeedStore::IsInitialized() const {
+  return seed_reader_writer_->IsInitialized();
+}
 
 base::Time VariationsSafeSeedStore::GetFetchTime() const {
   return seed_reader_writer_->GetSeedInfo().client_fetch_time;
@@ -84,11 +129,10 @@ void VariationsSafeSeedStore::SetSeedReaderWriterForTesting(
 }
 
 void VariationsSafeSeedStore::ClearState() {
-  // Seed and other related information is cleared by the SeedReaderWriter.
-  seed_reader_writer_->ClearSeedInfo();
-  seed_reader_writer_->ClearSessionCountry();
-  seed_reader_writer_->ClearPermanentConsistencyCountryAndVersion();
+  // Clear the locale before readers can run and update it or destroy the store.
   local_state_->ClearPref(prefs::kVariationsSafeSeedLocale);
+  // Seed and other related information is cleared by the SeedReaderWriter.
+  seed_reader_writer_->ClearAllSeedInfo();
 }
 
 LoadSeedResult VariationsSafeSeedStore::ReadSeedData(

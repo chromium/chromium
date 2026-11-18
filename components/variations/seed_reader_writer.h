@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VARIATIONS_SEED_READER_WRITER_H_
 #define COMPONENTS_VARIATIONS_SEED_READER_WRITER_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -17,8 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "components/variations/metrics.h"
@@ -46,8 +46,7 @@ const char kSeedFilesGroup[] = "SeedFilesLaunched";
 // duplicating storage space.
 inline constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
 
-// Represents seed-related info that, contrary to the seed data, is stored in
-// memory, so it can be read synchronously.
+// Represents seed-related info kept in memory after initialization.
 struct COMPONENT_EXPORT(VARIATIONS) SeedInfo {
   SeedInfo(std::string_view signature,
            int milestone,
@@ -120,6 +119,14 @@ COMPONENT_EXPORT(VARIATIONS) extern const SeedFieldsPrefs kSafeSeedFieldsPrefs;
 class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     : public base::ImportantFileWriter::BackgroundDataSerializer {
  public:
+  enum class StartupReadMode {
+    // Initialize Seed File readers synchronously during construction.
+    kEager,
+    // Initialize Seed File readers on first access. Local State is always
+    // ready.
+    kDeferred,
+  };
+
   // Result of a seed read, the seed data, and the signature. The
   // seed data and signature should only be used if the result is
   // `LoadSeedResult::kSuccess`.
@@ -153,29 +160,43 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // `entropy_providers` is used to provide entropy when setting up the seed
   // file field trial. If null, the client will not participate in the
   // experiment.
-  // `file_task_runner` handles IO-related tasks. Must not be null.
-  SeedReaderWriter(PrefService* local_state,
-                   const base::FilePath& seed_file_dir,
-                   base::FilePath::StringViewType seed_filename,
-                   const SeedFieldsPrefs& fields_prefs,
-                   version_info::Channel channel,
-                   const EntropyProviders* entropy_providers,
-                   std::string_view histogram_suffix,
-                   scoped_refptr<base::SequencedTaskRunner> file_task_runner =
-                       base::ThreadPool::CreateSequencedTaskRunner(
-                           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-                            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+  // `histogram_suffix` is appended to SeedReaderWriter histogram names.
+  // `file_task_runner` handles IO-related tasks. If null, creates a default
+  // sequenced task runner that permits blocking file operations.
+  // `startup_read_mode` controls whether a Seed File reader initializes during
+  // construction or defers initialization until first access. It has no effect
+  // for Local State readers.
+  SeedReaderWriter(
+      PrefService* local_state,
+      const base::FilePath& seed_file_dir,
+      base::FilePath::StringViewType seed_filename,
+      const SeedFieldsPrefs& fields_prefs,
+      version_info::Channel channel,
+      const EntropyProviders* entropy_providers,
+      std::string_view histogram_suffix,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner = nullptr,
+      StartupReadMode startup_read_mode = StartupReadMode::kEager);
 
   SeedReaderWriter(const SeedReaderWriter&) = delete;
   SeedReaderWriter& operator=(const SeedReaderWriter&) = delete;
 
   ~SeedReaderWriter() override;
 
+  // Initializes a deferred Seed File reader synchronously. Asynchronous
+  // initialization must not be in flight, and blocking must be allowed.
+  // Metadata access and partial mutations require prior initialization;
+  // startup reads call this directly.
+  void EnsureSeedFileReadSync();
+
+  // Returns whether initialization is complete, without reading the seed file.
+  bool IsInitialized() const;
+
   // Schedules a write of the compressed seed data to a seed file for some
   // clients (see ShouldUseSeedFile()) and schedules a write of the compressed
   // and base64-encoded seed data to local state for all other clients. Also
   // stores other seed-related info in local state.  `permanent_country_version`
-  // should be empty for the safe seed.
+  // should be empty for the safe seed. Requires prior initialization to retain
+  // omitted fields.
   StoreSeedResult StoreValidatedSeedInfo(ValidatedSeedInfo seed_info);
 
   // Clears seed data and other seed-related info. The following fields are
@@ -183,19 +204,26 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // To clear the session_country_code, use ClearSessionCountry() instead.
   // To clear permanent_country_code and version, use
   // ClearPermanentConsistencyCountryAndVersion() instead.
+  // Requires prior initialization to retain existing country fields.
   void ClearSeedInfo();
 
-  // Clears the session country code.
+  // Clears all seed fields, including country fields, and schedules
+  // persistence without reading the previous file or waiting for an in-flight
+  // read. Runs queued initialization readers against the current state after
+  // clearing all fields. A callback may modify the state or destroy the reader.
+  void ClearAllSeedInfo();
+
+  // Clears the session country code. Requires prior initialization.
   void ClearSessionCountry();
 
   // Updates the session country code and administrative area (geo_level1)
   // if `country_code` is non-empty. Returns true if either stored value
-  // changed.
+  // changed. Requires prior initialization.
   bool SetSessionCountryAndGeoLevel1(std::string_view country_code,
                                      std::string_view geo_level1);
 
-  // Returns stored seed-related info. Contrary to the seed data, the data is
-  // stored in memory, so it can be read synchronously.
+  // Returns metadata kept in memory after initialization, even if the seed data
+  // has been purged. Requires prior initialization.
   SeedInfo GetSeedInfo() const;
 
   // Overrides the timer used for scheduling writes with `timer_override`.
@@ -208,10 +236,12 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Updates the time of the last fetch of the seed.
   void SetFetchTime(base::Time client_fetch_time);
 
-  // Clears the permanent consistency country and version.
+  // Clears the permanent consistency country and version. Requires prior
+  // initialization.
   void ClearPermanentConsistencyCountryAndVersion();
 
-  // Sets the permanent consistency country and version.
+  // Sets the permanent consistency country and version. Requires prior
+  // initialization.
   void SetPermanentConsistencyCountryAndVersion(std::string_view country,
                                                 std::string_view version);
 
@@ -222,6 +252,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // is synchronous and may not be called after
   // AllowToPurgeSeedDataFromMemory(), since it may block the UI thread. Use the
   // callback version ReadSeedData() below instead.
+  // Asynchronous initialization must not be in flight.
   LoadSeedResult ReadSeedDataOnStartup(
       std::string* seed_data,
       std::string* base64_seed_signature = nullptr);
@@ -229,6 +260,8 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Reads and processes seed data and calls `done_callback` with the result of
   // the load, the seed data, and the signature. The seed data and signature
   // should only be used if the result is `LoadSeedResult::kSuccess`.
+  // Callbacks waiting for initialization read the current state when they run,
+  // including any changes made by an earlier callback.
   void ReadSeedData(ReadSeedDataCallback done_callback);
 
   // Commits any pending write to disk immediately.
@@ -241,7 +274,8 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   void RunOrScheduleOnSuccessfulWrite(base::OnceClosure callback);
 
   // Stores the seed without applying any extra processing or validation. This
-  // is used to store invalid data for testing.
+  // is used to store invalid data for testing. Asynchronous initialization must
+  // not be in flight.
   void StoreRawSeedForTesting(std::string seed_data);
 
   // Stores a base64-encoded gzipped seed and base64-encoded signature. This is
@@ -250,10 +284,12 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
       std::string base64_compressed_data,
       std::string base64_signature);
 
-  // Returns true if no seed data is currently stored.
+  // Returns true if no seed data is currently stored. Requires prior
+  // initialization.
   bool IsEmpty() const;
 
   // Returns true if the seed data is the same as the safe seed sentinel.
+  // Requires prior initialization.
   bool IsIdenticalToSafeSeedSentinel();
 
   // After this is called, the seed data will not be kept in memory after
@@ -289,6 +325,20 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   static base::Time ProtoTimeToTime(int64_t proto_time);
 
  private:
+  // File contents and optional decoded Local State data for initialization.
+  struct StartupReadResult {
+    // Parsed file contents, or the error encountered while loading them.
+    base::expected<StoredSeedInfo, LoadSeedResult> seed_file_result;
+
+    // Decoded Local State payload when fallback is allowed. nullopt means
+    // fallback was not attempted; an empty string means no usable payload.
+    std::optional<std::string> fallback_seed_data;
+
+    // Whether the failed read found no seed file. Checked alongside the read
+    // so asynchronous initialization does not need file I/O on its reply.
+    bool seed_file_missing = false;
+  };
+
   // The storage format of the seed data.
   // - kCompressed: the seed is compressed. This is used for backward
   // compatibility with the old seed files.
@@ -314,15 +364,43 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   base::ImportantFileWriter::BackgroundDataProducerCallback
   GetSerializedDataProducerForBackgroundSequence() override;
 
+  // Starts or joins asynchronous file initialization. Requires initialization
+  // to be incomplete. Callbacks read the current state when initialization
+  // completes or a full clear supersedes it.
+  void EnsureSeedFileReadAsync(base::OnceClosure done_callback);
+
+  // Reads the seed file, decoding the Local State fallback only if the file is
+  // missing or unreadable. Shared by synchronous and asynchronous
+  // initialization.
+  static StartupReadResult ReadSeedFileForInitialization(
+      const base::FilePath& seed_file_path,
+      bool check_missing_seed_file,
+      std::string_view histogram_suffix,
+      std::string_view local_state_seed_data);
+
+  // Completes initialization unless a full clear already superseded it, then
+  // runs queued readers against the current state.
+  void FinishAsyncSeedFileRead(StartupReadResult result);
+
+  // Runs queued initialization readers. Returns false if a callback destroys
+  // this reader; callers must not access members in that case.
+  bool RunPendingReadCallbacks();
+
+  // Installs the file result or migrates the fallback and its metadata.
+  void ProcessSeedFileReadResult(
+      base::expected<StoredSeedInfo, LoadSeedResult> seed_file_result,
+      std::optional<std::string> fallback_seed_data,
+      bool seed_file_missing);
+
   // Returns true if the seed data should be cleared from memory.
   // This is true if:
-  // - `seed_purgeable_from_memory_` is false.
-  // - No write is pending.
+  // - Seed data is allowed to be purged.
+  // - No initialization reply or write is pending.
   // - The stored seed data is not empty and not the sentinel value.
   bool ShouldClearSeedDataFromMemory();
 
-  // Called when a seed write is complete. If `seed_purgeable_from_memory_` is
-  // false, the stored seed data will be cleared from memory.
+  // Called when a seed write is complete. Purges the stored payload when
+  // ShouldClearSeedDataFromMemory() permits it.
   void OnSeedWriteComplete(bool write_success);
 
   // Schedules `seed_info` to be written using `seed_writer_`. If a field is
@@ -344,10 +422,12 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // in `local state_`, additionally clears it.
   void ReadSeedFile();
 
-  // Migrates the seed data and metadata from local state to a seed file.
-  // `read_error` is the error encountered when attempting to read the seed
-  // file. Returns true if non-empty seed data was migrated.
-  bool MigrateFromLocalStateToSeedFile(LoadSeedResult read_error);
+  // Migrates `seed_data` and the current seed metadata from local state to a
+  // seed file. Skips an empty write when `seed_file_missing` and there is no
+  // data or country metadata to migrate. Returns true if seed data is not
+  // empty.
+  bool MigrateFromLocalStateToSeedFile(std::string seed_data,
+                                       bool seed_file_missing);
 
   // Reads the seed data and signature from the seed file and calls
   // `done_callback` with the result.
@@ -422,12 +502,32 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // has been cleared or not yet fetched).
   StoredSeedInfo stored_seed_info_;
 
-  // Whether to keep the seed data in memory. This is used to avoid storing the
-  // seed data in memory when it is not needed. It will be set to true when
+  // Whether the seed payload may be removed from memory after initialization
+  // and persistence. It will be set to true when
   // AllowToPurgeSeedDataFromMemory() is called.
   // Note: if the seed data is empty or kIdenticalToSafeSeedSentinel, it
   // will be kept in memory even if this is true.
   bool seed_purgeable_from_memory_ = false;
+
+  enum class StartupReadState {
+    // Deferred initialization has not started.
+    kNotStarted,
+    // A background initialization read is pending.
+    kReading,
+    // Metadata is available; the payload may have been purged.
+    kComplete,
+  };
+
+  // Eager and Local State readers are initialized during construction. A
+  // deferred Seed File reader changes this to kNotStarted in the constructor.
+  StartupReadState startup_read_state_ = StartupReadState::kComplete;
+
+  // True until the asynchronous initialization reply and all queued readers
+  // finish, keeping their seed data from being purged while they are running.
+  bool startup_read_pending_ = false;
+
+  // Readers waiting for initialization; each reads the state when it runs.
+  std::vector<base::OnceClosure> pending_read_callbacks_;
 
   // Suffix to be used for histograms, either "Latest" or "Safe".
   const std::string histogram_suffix_;
@@ -440,10 +540,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // reason for the error is that the seed file is missing.
   bool check_missing_seed_file_ = false;
 
-  // Whether the client is migrating from local state or the old SeedFile to the
-  // new one. This is used to determine whether the old sources should be
-  // cleared.
-  bool migrating_from_old_source_ = false;
+  // Whether the seed payload in Local State should be cleared after a
+  // successful file write following migration.
+  bool clear_local_state_seed_after_write_ = false;
 
   // Number of background file writes that have been scheduled on
   // `file_task_runner_` and have not yet finished writing to disk.

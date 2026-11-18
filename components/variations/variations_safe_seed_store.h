@@ -22,6 +22,12 @@ namespace variations {
 
 class EntropyProviders;
 
+// Client-side trial comparing eager and deferred Safe Seed File initialization.
+inline constexpr char kSafeSeedStartupReadTrial[] = "SafeSeedStartupReadTrial";
+inline constexpr char kSafeSeedStartupReadControlGroup[] = "Control_Eager";
+inline constexpr char kSafeSeedStartupReadTreatmentGroup[] =
+    "Treatment_Deferred";
+
 // Encapsulates details of reading and modifying safe seed state.
 class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStore {
  public:
@@ -33,6 +39,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStore {
   // |entropy_providers| is used to provide entropy when setting up the seed
   // file field trial. If null, the client will not participate in the
   // experiment.
+  // Eligible pre-stable Seed File clients defer initialization in the
+  // treatment group of kSafeSeedStartupReadTrial. All others initialize during
+  // construction.
   explicit VariationsSafeSeedStore(PrefService* local_state,
                                    const base::FilePath& seed_file_dir,
                                    version_info::Channel channel,
@@ -42,6 +51,13 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStore {
   VariationsSafeSeedStore& operator=(const VariationsSafeSeedStore&) = delete;
 
   ~VariationsSafeSeedStore();
+
+  // Returns whether initialization is complete, without reading the seed file.
+  // GetFetchTime(), GetMilestone(), GetTimeForStudyDateChecks(),
+  // SetCompressedSeed(), GetPermanentConsistencyCountry(), and
+  // GetSessionConsistencyCountry() require prior initialization.
+  // SetFetchTime(), GetLocale(), SetLocale(), and ClearState() do not.
+  bool IsInitialized() const;
 
   // Getter and setter for the time at which the safe seed was persisted to the
   // underlying storage.

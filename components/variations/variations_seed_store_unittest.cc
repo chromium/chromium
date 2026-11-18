@@ -6,7 +6,9 @@
 
 #include <memory>
 #include <string_view>
+#include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/build_time.h"
@@ -15,19 +17,27 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/variations/active_field_trials.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
@@ -271,6 +281,7 @@ void SetAllSeedsAndSeedPrefsToNonDefaultValues(
   //  Update the safe seed in memory. This is done for the Local-State-based
   //  seed OR the seed-file-based seed depending on the seed file trial group to
   //  which the client belongs.
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = "ketchup",
@@ -463,7 +474,6 @@ class LoadSeedDataGroupTest
       : SeedStoreGroupTestBase(kRegularSeedFieldsPrefs, GetParam()) {}
   ~LoadSeedDataGroupTest() override = default;
 };
-
 
 class LoadSeedDataControlAndDefaultGroupsTest : public LoadSeedDataGroupTest {};
 INSTANTIATE_TEST_SUITE_P(All,
@@ -704,6 +714,7 @@ TEST_P(LoadSeedDataControlAndDefaultGroupsTest, LoadSeed_IdenticalToSafeSeed) {
           .client_fetch_time = base::Time::Now(),
           .session_country_code = "us",
       });
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = seed_data,
@@ -991,6 +1002,85 @@ class LoadSeedDataSeedFilesGroupTest : public LoadSeedDataSeedFilesGroupBase {
       : LoadSeedDataSeedFilesGroupBase(kRegularSeedFieldsPrefs) {}
 };
 
+TEST_F(LoadSeedDataSeedFilesGroupTest, PendingLatestReadFollowsAliasChanges) {
+  for (bool initially_aliased : {false, true}) {
+    SCOPED_TRACE(initially_aliased);
+    VariationsSeed seed = CreateTestSeed();
+    seed.set_serial_number("A");
+    const std::string data_a = SerializeSeed(seed);
+    seed.set_serial_number("B");
+    const std::string data_b = SerializeSeed(seed);
+    StoredSeedInfo info;
+    info.set_data(initially_aliased ? kIdenticalToSafeSeedSentinel : data_a);
+    WriteRegularSeedToFile(SeedReaderWriter::CompressForSeedFileForTesting(
+        info.SerializeAsString()));
+    info.set_data(data_b);
+    info.set_signature("signature B");
+    WriteSafeSeedToFile(SeedReaderWriter::CompressForSeedFileForTesting(
+        info.SerializeAsString()));
+
+    auto file_tasks = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    base::MockOneShotTimer latest_timer;
+    base::MockOneShotTimer safe_timer;
+    MockEntropyProviders entropy(
+        MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+    auto seed_store = std::make_unique<TestVariationsSeedStore>(
+        &prefs_, temp_dir_.GetPath(), /*signature_verification_needed=*/false,
+        /*initial_seed=*/nullptr, /*use_first_run_prefs=*/false,
+        version_info::Channel::DEV);
+    auto latest = std::make_unique<SeedReaderWriter>(
+        &prefs_, temp_dir_.GetPath(), kSeedFilename, kRegularSeedFieldsPrefs,
+        version_info::Channel::DEV, &entropy, "Latest", file_tasks);
+    latest->SetTimerForTesting(&latest_timer);
+    latest->AllowToPurgeSeedDataFromMemory();
+    seed_store->SetSeedReaderWriterForTesting(std::move(latest));
+    auto safe = std::make_unique<SeedReaderWriter>(
+        &prefs_, temp_dir_.GetPath(), kSafeSeedFilename, kSafeSeedFieldsPrefs,
+        version_info::Channel::DEV, &entropy, "Safe", file_tasks);
+    safe->SetTimerForTesting(&safe_timer);
+    safe->AllowToPurgeSeedDataFromMemory();
+    seed_store->SetSafeSeedReaderWriterForTesting(std::move(safe));
+    absl::Cleanup cleanup = [&] {
+      seed_store.reset();
+      file_tasks->RunPendingTasks();
+      task_environment_.RunUntilIdle();
+    };
+
+    base::test::TestFuture<std::string, std::string, bool, VariationsSeed>
+        loaded;
+    seed_store->LoadSeed(loaded.GetCallback());
+    file_tasks->RunPendingTasks();
+    ASSERT_FALSE(loaded.IsReady());
+    ASSERT_EQ(
+        seed_store->GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
+            ValidatedSeedInfo{.seed_data = initially_aliased
+                                               ? data_b
+                                               : kIdenticalToSafeSeedSentinel,
+                              .signature = "signature B"}),
+        StoreSeedResult::kSuccess);
+    if (initially_aliased) {
+      // Promotion preserves latest B before replacing safe with A. The pending
+      // safe read must not change the logical latest result to A.
+      ASSERT_EQ(seed_store->GetSafeSeedReaderWriterForTesting()
+                    ->StoreValidatedSeedInfo(ValidatedSeedInfo{
+                        .seed_data = data_a, .signature = "signature A"}),
+                StoreSeedResult::kSuccess);
+    }
+    task_environment_.RunUntilIdle();
+    file_tasks->RunPendingTasks();
+    task_environment_.RunUntilIdle();
+
+    ASSERT_TRUE(loaded.IsReady());
+    ASSERT_TRUE(loaded.Get<2>());
+    EXPECT_EQ(loaded.Get<0>(), data_b);
+    EXPECT_EQ(loaded.Get<1>(), "signature B");
+    EXPECT_EQ(loaded.Get<3>().serial_number(), "B");
+    EXPECT_EQ(seed_store->GetSeedReaderWriterForTesting()
+                  ->IsIdenticalToSafeSeedSentinel(),
+              !initially_aliased);
+  }
+}
+
 TEST_F(LoadSeedDataSeedFilesGroupTest, LoadSeed_ValidSeed) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             kSeedFilesGroup);
@@ -1029,6 +1119,32 @@ TEST_F(LoadSeedDataSeedFilesGroupTest, LoadSeed_ValidSeed) {
   EXPECT_EQ(loaded_seed.SerializeAsString(), serialized_seed);
   EXPECT_EQ(loaded_seed_data, serialized_seed);
   EXPECT_EQ(loaded_seed_signature, stored_seed_info.signature());
+}
+
+TEST_F(LoadSeedDataSeedFilesGroupTest, RegularSeedDoesNotReadSafeSeedFile) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            kSeedFilesGroup);
+  ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
+      kSafeSeedStartupReadTrial, kSafeSeedStartupReadTreatmentGroup));
+  const std::string serialized_seed = SerializeSeed(CreateTestSeed());
+  StoredSeedInfo regular_seed_info;
+  regular_seed_info.set_data(serialized_seed);
+  WriteRegularSeedToFile(SeedReaderWriter::CompressForSeedFileForTesting(
+      regular_seed_info.SerializeAsString()));
+  WriteTestSafeSeedToFile();
+
+  base::HistogramTester histogram_tester;
+  TestVariationsSeedStore seed_store(
+      &prefs_, temp_dir_.GetPath(),
+      /*signature_verification_needed=*/false, /*initial_seed=*/nullptr,
+      /*use_first_run_prefs=*/true, version_info::Channel::DEV);
+
+  VariationsSeed loaded_seed;
+  std::string loaded_seed_data;
+  std::string loaded_seed_signature;
+  EXPECT_TRUE(seed_store.LoadSeedSync(&loaded_seed, &loaded_seed_data,
+                                      &loaded_seed_signature));
+  histogram_tester.ExpectTotalCount("Variations.SeedFileReadResult.Safe", 0);
 }
 
 TEST_F(LoadSeedDataSeedFilesGroupTest, LoadSeed_InvalidSignature) {
@@ -1282,6 +1398,8 @@ TEST_F(LoadSeedDataSeedFilesGroupTest, LoadSeed_IdenticalToSafeSeed) {
   EXPECT_EQ(loaded_seed.SerializeAsString(), serialized_seed);
 
   histogram_tester.ExpectUniqueSample("Variations.SeedLoadResult",
+                                      LoadSeedResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
                                       LoadSeedResult::kSuccess, 1);
   CheckRegularSeedAndSeedPrefsAreSet(prefs_, seed_store);
   CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
@@ -2006,6 +2124,7 @@ TEST_P(StoreSeedDataAllGroupsTest, IdenticalToSafeSeed) {
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             GetParam().field_trial_group);
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = serialized_seed,
@@ -2113,6 +2232,7 @@ TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest, LoadSafeSeed_ValidSeed) {
   // Attempt to load a valid safe seed.
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = serialized_seed,
@@ -2177,6 +2297,7 @@ TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest,
                                      /*signature_verification_needed=*/true);
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = seed_data,
@@ -2243,6 +2364,7 @@ TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest, LoadSafeSeed_CorruptGzip) {
   // Flip some bits to corrupt the data
   compressed_seed[5] ^= 0xFF;
   compressed_seed[10] ^= 0xFF;
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = "this will be overwritten",
@@ -2288,6 +2410,7 @@ TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest,
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = CreateTooLargeData(),
@@ -2332,6 +2455,7 @@ TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest,
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = "this will be overwritten",
@@ -2376,6 +2500,275 @@ class LoadSafeSeedDataSeedFilesGroupTest
       : LoadSeedDataSeedFilesGroupBase(kSafeSeedFieldsPrefs) {}
 };
 
+TEST_F(LoadSafeSeedDataSeedFilesGroupTest, SafeSeedStartupReadTrialGroups) {
+  WriteTestSafeSeedToFile();
+  for (auto channel :
+       {version_info::Channel::CANARY, version_info::Channel::DEV,
+        version_info::Channel::BETA}) {
+    for (bool deferred : {false, true}) {
+      SCOPED_TRACE(static_cast<int>(channel));
+      SCOPED_TRACE(deferred);
+      base::test::ScopedFeatureList scoped_trials;
+      scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
+      SetUpSeedFileTrial(kSeedFilesGroup);
+      MockEntropyProviders entropy(
+          MockEntropyProviders::Results{.low_entropy = deferred ? 0.51 : 0.49});
+      base::HistogramTester histograms;
+
+      VariationsSafeSeedStore safe_store(&prefs_, temp_dir_.GetPath(), channel,
+                                         &entropy);
+      const char* expected_group = deferred ? kSafeSeedStartupReadTreatmentGroup
+                                            : kSafeSeedStartupReadControlGroup;
+      // Both groups must be reported, even before a deferred reader is used.
+      std::vector<ActiveGroupId> active_groups;
+      GetFieldTrialActiveGroupIds(/*suffix=*/"", &active_groups);
+      EXPECT_TRUE(ContainsTrialAndGroupName(
+          active_groups, kSafeSeedStartupReadTrial, expected_group));
+      EXPECT_EQ(safe_store.GetSeedReaderWriterForTesting()
+                    ->stored_seed_data_for_testing()
+                    .has_value(),
+                !deferred);
+      histograms.ExpectTotalCount("Variations.SeedFileReadResult.Safe",
+                                  deferred ? 0 : 1);
+
+      std::string seed_data;
+      std::string signature;
+      EXPECT_EQ(safe_store.ReadSeedData(&seed_data, &signature),
+                LoadSeedResult::kSuccess);
+      EXPECT_EQ(seed_data, "seed data");
+      histograms.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
+                                    LoadSeedResult::kSuccess, 1);
+
+      // Creating another store reuses the assignment rather than rerandomizing.
+      MockEntropyProviders other_entropy(MockEntropyProviders::Results{
+          .low_entropy =
+              deferred ? kAlwaysUseFirstGroup : kAlwaysUseLastGroup});
+      VariationsSafeSeedStore other_store(&prefs_, temp_dir_.GetPath(), channel,
+                                          &other_entropy);
+      EXPECT_EQ(other_store.GetSeedReaderWriterForTesting()
+                    ->stored_seed_data_for_testing()
+                    .has_value(),
+                !deferred);
+    }
+  }
+
+  // Safe can be constructed before Latest has set up the storage trial.
+  base::test::ScopedFeatureList scoped_trials;
+  scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
+  MockEntropyProviders entropy(
+      MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+  VariationsSafeSeedStore safe_store(&prefs_, temp_dir_.GetPath(),
+                                     version_info::Channel::DEV, &entropy);
+  EXPECT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            kSeedFilesGroup);
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kSafeSeedStartupReadTrial));
+}
+
+TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
+       SafeSeedStartupReadTrialHonorsForcedGroups) {
+  WriteTestSafeSeedToFile();
+  for (const char* group :
+       {kSafeSeedStartupReadControlGroup, kSafeSeedStartupReadTreatmentGroup}) {
+    SCOPED_TRACE(group);
+    base::test::ScopedFeatureList scoped_trials;
+    scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
+    SetUpSeedFileTrial(kSeedFilesGroup);
+    ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
+        kSafeSeedStartupReadTrial, group));
+    MockEntropyProviders entropy(
+        MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+    VariationsSafeSeedStore safe_store(&prefs_, temp_dir_.GetPath(),
+                                       version_info::Channel::DEV, &entropy);
+    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kSafeSeedStartupReadTrial));
+    EXPECT_EQ(safe_store.GetSeedReaderWriterForTesting()
+                  ->stored_seed_data_for_testing()
+                  .has_value(),
+              std::string_view(group) == kSafeSeedStartupReadControlGroup);
+  }
+}
+
+TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
+       SafeSeedStartupReadTrialExcludesIneligibleClients) {
+  WriteTestSafeSeedToFile();
+  struct TestCase {
+    version_info::Channel channel;
+    std::string_view storage_group;
+    bool has_directory = true;
+    bool has_entropy = true;
+  };
+  const TestCase cases[] = {
+      {version_info::Channel::DEV, kSeedFilesGroup, false},
+      {version_info::Channel::DEV, kSeedFilesGroup, true, false},
+      {version_info::Channel::STABLE, kSeedFilesGroup},
+      {version_info::Channel::UNKNOWN, kSeedFilesGroup},
+      {version_info::Channel::BETA, kDefaultGroup},
+      {version_info::Channel::DEV, kControlGroup},
+  };
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(static_cast<int>(test_case.channel));
+    SCOPED_TRACE(test_case.storage_group);
+    SCOPED_TRACE(test_case.has_directory);
+    SCOPED_TRACE(test_case.has_entropy);
+    base::test::ScopedFeatureList scoped_trials;
+    scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
+    SetUpSeedFileTrial(test_case.storage_group);
+    MockEntropyProviders entropy(
+        MockEntropyProviders::Results{.low_entropy = kAlwaysUseFirstGroup});
+    VariationsSafeSeedStore safe_store(
+        &prefs_,
+        test_case.has_directory ? temp_dir_.GetPath() : base::FilePath(),
+        test_case.channel, test_case.has_entropy ? &entropy : nullptr);
+    EXPECT_FALSE(base::FieldTrialList::TrialExists(kSafeSeedStartupReadTrial));
+    // Nonparticipants must be ready for synchronous metadata access.
+    safe_store.GetMilestone();
+  }
+}
+
+TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
+       ClearSafeStateRunsQueuedReadersAgainstCurrentState) {
+  WriteTestSafeSeedToFile();
+  ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
+      kSafeSeedStartupReadTrial, kSafeSeedStartupReadTreatmentGroup));
+  MockEntropyProviders entropy(
+      MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+  auto file_tasks = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  VariationsSafeSeedStore safe_store(&prefs_, temp_dir_.GetPath(),
+                                     version_info::Channel::DEV, &entropy);
+  safe_store.SetSeedReaderWriterForTesting(std::make_unique<SeedReaderWriter>(
+      &prefs_, temp_dir_.GetPath(), kSafeSeedFilename, kSafeSeedFieldsPrefs,
+      version_info::Channel::DEV, &entropy, "Safe", file_tasks,
+      SeedReaderWriter::StartupReadMode::kDeferred));
+  safe_store.SetLocale("old locale");
+
+  base::test::TestFuture<void> first_read;
+  base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> second_read;
+  safe_store.ReadSeedData(base::BindLambdaForTesting(
+      [&](SeedReaderWriter::ReadSeedDataResult result) {
+        EXPECT_EQ(result.result, LoadSeedResult::kEmpty);
+        EXPECT_TRUE(safe_store.GetLocale().empty());
+        EXPECT_EQ(
+            safe_store.SetCompressedSeed(ValidatedSeedInfo{
+                .seed_data = "replacement", .signature = "new signature"}),
+            StoreSeedResult::kSuccess);
+        safe_store.SetLocale("new locale");
+        first_read.SetValue();
+      }));
+  safe_store.ReadSeedData(second_read.GetCallback());
+
+  safe_store.ClearState();
+  ASSERT_TRUE(first_read.IsReady());
+  ASSERT_TRUE(second_read.IsReady());
+  EXPECT_EQ(second_read.Get().result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(second_read.Get().seed_data, "replacement");
+  EXPECT_EQ(second_read.Get().signature, "new signature");
+  EXPECT_EQ(safe_store.GetLocale(), "new locale");
+
+  safe_store.CommitPendingWrite();
+  file_tasks->RunPendingTasks();
+  base::test::TestFuture<void> reply_processed;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, reply_processed.GetCallback());
+  ASSERT_TRUE(reply_processed.Wait());
+  EXPECT_EQ(safe_store.GetSeedReaderWriterForTesting()
+                ->stored_seed_data_for_testing(),
+            "replacement");
+  EXPECT_EQ(safe_store.GetLocale(), "new locale");
+}
+
+TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
+       InitialSeedImportSkipsUninitializedSafeComparison) {
+  struct TestCase {
+    const char* group;
+    bool initialize_safe;
+  };
+  const TestCase cases[] = {
+      {kSafeSeedStartupReadControlGroup, false},
+      {kSafeSeedStartupReadTreatmentGroup, false},
+      {kSafeSeedStartupReadTreatmentGroup, true},
+  };
+  const std::string seed_data = SerializeSeed(CreateTestSeed());
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.group);
+    SCOPED_TRACE(test_case.initialize_safe);
+    base::test::ScopedFeatureList scoped_trials;
+    scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
+    SetUpSeedFileTrial(kSeedFilesGroup);
+    ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
+        kSafeSeedStartupReadTrial, test_case.group));
+    StoredSeedInfo safe_info = CreateTestStoredSeedInfo();
+    safe_info.set_data(seed_data);
+    const std::string original_safe_file =
+        SeedReaderWriter::CompressForSeedFileForTesting(
+            safe_info.SerializeAsString());
+    WriteSafeSeedToFile(original_safe_file);
+    prefs_.SetString(prefs::kVariationsSafeSeedLocale, "original locale");
+    MockEntropyProviders entropy(
+        MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+    base::HistogramTester histograms;
+    const bool expect_alias =
+        test_case.initialize_safe ||
+        std::string_view(test_case.group) == kSafeSeedStartupReadControlGroup;
+    {
+      auto safe_store = std::make_unique<VariationsSafeSeedStore>(
+          &prefs_, temp_dir_.GetPath(), version_info::Channel::DEV, &entropy);
+      if (test_case.initialize_safe) {
+        std::string data;
+        std::string signature;
+        ASSERT_EQ(safe_store->ReadSeedData(&data, &signature),
+                  LoadSeedResult::kSuccess);
+      }
+      auto initial_seed = std::make_unique<SeedResponse>();
+      initial_seed->data = seed_data;
+      initial_seed->signature = "initial signature";
+      initial_seed->country = "fr";
+      initial_seed->date = base::Time::Now();
+      initial_seed->is_gzip_compressed = false;
+      VariationsSeedStore seed_store(
+          &prefs_, std::move(initial_seed),
+          /*signature_verification_enabled_on_load=*/false,
+          /*signature_verification_enabled_on_receive=*/false,
+          std::move(safe_store), version_info::Channel::DEV,
+          temp_dir_.GetPath(), &entropy, /*use_first_run_prefs=*/false);
+
+      EXPECT_EQ(seed_store.GetSafeSeedReaderWriterForTesting()->IsInitialized(),
+                expect_alias);
+      EXPECT_EQ(
+          seed_store.GetSeedReaderWriterForTesting()
+              ->stored_seed_data_for_testing(),
+          expect_alias ? std::string(kIdenticalToSafeSeedSentinel) : seed_data);
+      VariationsSeed loaded;
+      std::string loaded_data;
+      std::string signature;
+      EXPECT_TRUE(seed_store.LoadSeedSync(&loaded, &loaded_data, &signature));
+      EXPECT_EQ(loaded_data, seed_data);
+      histograms.ExpectTotalCount("Variations.SeedFileReadResult.Safe",
+                                  expect_alias ? 1 : 0);
+      EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeSeedLocale),
+                "original locale");
+      if (!expect_alias) {
+        std::string safe_file;
+        ASSERT_TRUE(base::ReadFileToString(
+            temp_dir_.GetPath().Append(kSafeSeedFilename), &safe_file));
+        EXPECT_EQ(safe_file, original_safe_file);
+      }
+
+      auto client_state = CreateTestClientFilterableState();
+      VariationsSeed loaded_safe;
+      EXPECT_TRUE(
+          seed_store.LoadSafeSeedSync(&loaded_safe, client_state.get()));
+      EXPECT_EQ(SerializeSeed(loaded_safe), seed_data);
+      EXPECT_EQ(client_state->locale, "original locale");
+      EXPECT_EQ(client_state->session_consistency_country, "us");
+      histograms.ExpectTotalCount("Variations.SeedFileReadResult.Safe", 1);
+    }
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    base::test::TestFuture<void> replies_processed;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, replies_processed.GetCallback());
+    ASSERT_TRUE(replies_processed.Wait());
+  }
+}
+
 TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_ValidSeed) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             kSeedFilesGroup);
@@ -2407,14 +2800,12 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_ValidSeed) {
       /*use_first_run_prefs=*/true,
       /*channel=*/version_info::Channel::DEV);
 
-  // Verify metrics.
-  histogram_tester.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
-                                      LoadSeedResult::kSuccess, 1);
-
   VariationsSeed loaded_seed;
   std::unique_ptr<ClientFilterableState> client_state =
       CreateTestClientFilterableState();
   ASSERT_TRUE(seed_store.LoadSafeSeedSync(&loaded_seed, client_state.get()));
+  histogram_tester.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
+                                      LoadSeedResult::kSuccess, 1);
 
   // Check that the loaded data is the same as the original.
   EXPECT_EQ(serialized_seed, SerializeSeed(loaded_seed));
@@ -2426,6 +2817,9 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_ValidSeed) {
             client_state->permanent_consistency_country);
   EXPECT_EQ(session_consistency_country,
             client_state->session_consistency_country);
+  EXPECT_EQ(reference_date - base::Days(3), seed_store.GetSafeSeedFetchTime());
+  EXPECT_EQ(1, seed_store.GetSafeSeedMilestone());
+  EXPECT_EQ(reference_date, seed_store.GetSafeSeedTimeForStudyDateChecks());
 
   // Make sure that other data in the |client_state| hasn't been changed.
   std::unique_ptr<ClientFilterableState> original_state =
@@ -2444,6 +2838,205 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_ValidSeed) {
           &stored_seed_data, /*base64_seed_signature=*/nullptr);
   EXPECT_EQ(LoadSeedResult::kSuccess, read_result);
   EXPECT_EQ(serialized_seed, stored_seed_data);
+}
+
+TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
+       DownloadBeforePromotionDuringSafeInitialization) {
+  for (bool download_matches_safe : {false, true}) {
+    SCOPED_TRACE(download_matches_safe);
+    VariationsSeed seed = CreateTestSeed();
+    seed.set_serial_number("A");
+    const std::string data_a = SerializeSeed(seed);
+    seed.set_serial_number("B");
+    const std::string data_b = SerializeSeed(seed);
+    StoredSeedInfo info;
+    info.set_data(data_a);
+    WriteRegularSeedToFile(SeedReaderWriter::CompressForSeedFileForTesting(
+        info.SerializeAsString()));
+    info.set_data(download_matches_safe ? data_b : data_a);
+    WriteSafeSeedToFile(SeedReaderWriter::CompressForSeedFileForTesting(
+        info.SerializeAsString()));
+
+    auto latest_tasks = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    auto safe_tasks = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    base::MockOneShotTimer latest_timer;
+    base::MockOneShotTimer safe_timer;
+    MockEntropyProviders entropy(
+        MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+    auto seed_store = std::make_unique<TestVariationsSeedStore>(
+        &prefs_, temp_dir_.GetPath(), /*signature_verification_needed=*/false,
+        /*initial_seed=*/nullptr, /*use_first_run_prefs=*/false,
+        version_info::Channel::DEV);
+    auto latest = std::make_unique<SeedReaderWriter>(
+        &prefs_, temp_dir_.GetPath(), kSeedFilename, kRegularSeedFieldsPrefs,
+        version_info::Channel::DEV, &entropy, "Latest", latest_tasks);
+    latest->SetTimerForTesting(&latest_timer);
+    seed_store->SetSeedReaderWriterForTesting(std::move(latest));
+    auto safe = std::make_unique<SeedReaderWriter>(
+        &prefs_, temp_dir_.GetPath(), kSafeSeedFilename, kSafeSeedFieldsPrefs,
+        version_info::Channel::DEV, &entropy, "Safe", safe_tasks,
+        SeedReaderWriter::StartupReadMode::kDeferred);
+    safe->SetTimerForTesting(&safe_timer);
+    seed_store->SetSafeSeedReaderWriterForTesting(std::move(safe));
+    seed_store->SetSerialNumberForTesting("A");
+    absl::Cleanup cleanup = [&] {
+      seed_store.reset();
+      latest_tasks->RunPendingTasks();
+      safe_tasks->RunPendingTasks();
+      task_environment_.RunUntilIdle();
+    };
+
+    base::test::TestFuture<bool, VariationsSeed> download;
+    seed_store->StoreSeedData(
+        download.GetCallback(), data_b, "signature B", "us", "us-ca",
+        base::Time::Now(), /*is_delta_compressed=*/false,
+        /*is_gzip_compressed=*/false, /*require_synchronous=*/false);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return safe_tasks->NumPendingTasks() == 1u; }));
+    ASSERT_FALSE(download.IsReady());
+    auto client_state = CreateTestClientFilterableState();
+    base::test::TestFuture<bool> promotion;
+    seed_store->StoreSafeSeed(promotion.GetCallback(), data_a, "", 1,
+                              *client_state, base::Time::Now());
+    ASSERT_FALSE(promotion.IsReady());
+    safe_tasks->RunPendingTasks();
+    ASSERT_TRUE(download.Get<0>());
+    ASSERT_TRUE(promotion.Get());
+
+    // If downloading B made latest an alias to safe B, promotion must preserve
+    // B before replacing safe with the active A.
+    base::test::TestFuture<std::string, std::string, bool, VariationsSeed>
+        loaded;
+    seed_store->LoadSeed(loaded.GetCallback());
+    ASSERT_TRUE(loaded.Get<2>());
+    EXPECT_EQ(loaded.Get<0>(), data_b);
+    EXPECT_EQ(loaded.Get<1>(), "signature B");
+    EXPECT_EQ(loaded.Get<3>().serial_number(), "B");
+    EXPECT_EQ(seed_store->GetLatestSerialNumber(), "B");
+    base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> safe_result;
+    seed_store->GetSafeSeedReaderWriterForTesting()->ReadSeedData(
+        safe_result.GetCallback());
+    EXPECT_EQ(safe_result.Get().seed_data, data_a);
+  }
+}
+
+TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
+       DownloadDuringPromotionLatestReadPreservesNewSeed) {
+  for (bool latest_read_fails : {false, true}) {
+    SCOPED_TRACE(latest_read_fails);
+    VariationsSeed seed = CreateTestSeed();
+    seed.set_serial_number("A");
+    const std::string data_a = SerializeSeed(seed);
+    seed.set_serial_number("B");
+    const std::string data_b = SerializeSeed(seed);
+    StoredSeedInfo info;
+    info.set_data(data_a);
+    const std::string file_data =
+        SeedReaderWriter::CompressForSeedFileForTesting(
+            info.SerializeAsString());
+    WriteRegularSeedToFile(file_data);
+    WriteSafeSeedToFile(file_data);
+
+    auto latest_tasks = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    auto safe_tasks = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    base::MockOneShotTimer latest_timer;
+    base::MockOneShotTimer safe_timer;
+    MockEntropyProviders entropy(
+        MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+    auto seed_store = std::make_unique<TestVariationsSeedStore>(
+        &prefs_, temp_dir_.GetPath(), /*signature_verification_needed=*/false,
+        /*initial_seed=*/nullptr, /*use_first_run_prefs=*/false,
+        version_info::Channel::DEV);
+    auto latest = std::make_unique<SeedReaderWriter>(
+        &prefs_, temp_dir_.GetPath(), kSeedFilename, kRegularSeedFieldsPrefs,
+        version_info::Channel::DEV, &entropy, "Latest", latest_tasks);
+    latest->SetTimerForTesting(&latest_timer);
+    seed_store->SetSeedReaderWriterForTesting(std::move(latest));
+    auto safe = std::make_unique<SeedReaderWriter>(
+        &prefs_, temp_dir_.GetPath(), kSafeSeedFilename, kSafeSeedFieldsPrefs,
+        version_info::Channel::DEV, &entropy, "Safe", safe_tasks,
+        SeedReaderWriter::StartupReadMode::kDeferred);
+    safe->SetTimerForTesting(&safe_timer);
+    seed_store->SetSafeSeedReaderWriterForTesting(std::move(safe));
+    seed_store->SetSerialNumberForTesting("A");
+    seed_store->AllowToPurgeSeedsDataFromMemory();
+    absl::Cleanup cleanup = [&] {
+      seed_store.reset();
+      latest_tasks->RunPendingTasks();
+      safe_tasks->RunPendingTasks();
+      task_environment_.RunUntilIdle();
+    };
+
+    auto client_state = CreateTestClientFilterableState();
+    base::test::TestFuture<bool> promotion;
+    seed_store->StoreSafeSeed(promotion.GetCallback(), data_a, "", 1,
+                              *client_state, base::Time::Now());
+    safe_tasks->RunPendingTasks();
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return latest_tasks->NumPendingTasks() == 1u; }));
+    ASSERT_FALSE(promotion.IsReady());
+    if (latest_read_fails) {
+      ASSERT_TRUE(base::DeleteFile(temp_dir_.GetPath().Append(kSeedFilename)));
+    }
+
+    base::test::TestFuture<bool, VariationsSeed> download;
+    seed_store->StoreSeedData(
+        download.GetCallback(), data_b, "signature B", "us", "us-ca",
+        base::Time::Now(), /*is_delta_compressed=*/false,
+        /*is_gzip_compressed=*/false, /*require_synchronous=*/false);
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return download.IsReady() || safe_tasks->NumPendingTasks() > 0;
+    }));
+    safe_tasks->RunPendingTasks();
+    ASSERT_TRUE(download.Get<0>());
+    EXPECT_EQ(seed_store->GetLatestSerialNumber(), "B");
+    EXPECT_FALSE(promotion.IsReady());
+
+    // B is in memory, but its delayed file write has not run. Returning the
+    // old A (or a read error) must not let promotion overwrite or clear B.
+    latest_tasks->RunPendingTasks();
+    ASSERT_TRUE(promotion.Get());
+    base::test::TestFuture<std::string, std::string, bool, VariationsSeed>
+        loaded;
+    seed_store->LoadSeed(loaded.GetCallback());
+    ASSERT_TRUE(loaded.Get<2>());
+    EXPECT_EQ(loaded.Get<0>(), data_b);
+    EXPECT_EQ(loaded.Get<1>(), "signature B");
+    EXPECT_EQ(loaded.Get<3>().serial_number(), "B");
+    EXPECT_EQ(seed_store->GetLatestSerialNumber(), "B");
+    base::test::TestFuture<SeedReaderWriter::ReadSeedDataResult> safe_result;
+    seed_store->GetSafeSeedReaderWriterForTesting()->ReadSeedData(
+        safe_result.GetCallback());
+    EXPECT_EQ(safe_result.Get().seed_data, data_a);
+  }
+}
+
+TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
+       FirstSuccessfulFetchInitializesBeforeStoringSafeSeed) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            kSeedFilesGroup);
+  ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
+      kSafeSeedStartupReadTrial, kSafeSeedStartupReadTreatmentGroup));
+  TestVariationsSeedStore seed_store(
+      &prefs_, temp_dir_.GetPath(),
+      /*signature_verification_needed=*/false, /*initial_seed=*/nullptr,
+      /*use_first_run_prefs=*/true, version_info::Channel::DEV);
+  base::HistogramTester histogram_tester;
+
+  base::test::TestFuture<bool> store_result;
+  std::unique_ptr<ClientFilterableState> client_state =
+      CreateTestClientFilterableState();
+  const std::string seed_data = SerializeSeed(CreateTestSeed());
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    seed_store.StoreSafeSeed(store_result.GetCallback(), seed_data,
+                             /*base64_seed_signature=*/"", /*seed_milestone=*/1,
+                             *client_state, base::Time::Now());
+    EXPECT_FALSE(store_result.IsReady());
+    EXPECT_TRUE(store_result.Get());
+  }
+
+  histogram_tester.ExpectTotalCount("Variations.SeedFileReadResult.Safe", 1);
 }
 
 TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_InvalidSignature) {
@@ -2506,14 +3099,13 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_EmptySeedFile) {
                                      /*initial_seed=*/nullptr,
                                      /*use_first_run_prefs=*/true,
                                      /*channel=*/version_info::Channel::DEV);
-  // Verify metrics.
-  histogram_tester.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
-                                      LoadSeedResult::kEmpty, 1);
   std::string stored_seed_data;
   auto read_result =
       seed_store.GetSafeSeedReaderWriterForTesting()->ReadSeedDataOnStartup(
           &stored_seed_data, /*base64_seed_signature=*/nullptr);
   EXPECT_EQ(read_result, LoadSeedResult::kEmpty);
+  histogram_tester.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
+                                      LoadSeedResult::kEmpty, 1);
 
   VariationsSeed loaded_seed;
   std::unique_ptr<ClientFilterableState> client_state =
@@ -2533,14 +3125,13 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_NoSeedFile) {
                                      /*initial_seed=*/nullptr,
                                      /*use_first_run_prefs=*/true,
                                      /*channel=*/version_info::Channel::DEV);
-  // Verify metrics.
-  histogram_tester.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
-                                      LoadSeedResult::kFileNotFound, 1);
   std::string stored_seed_data;
   auto read_result =
       seed_store.GetSafeSeedReaderWriterForTesting()->ReadSeedDataOnStartup(
           &stored_seed_data, /*base64_seed_signature=*/nullptr);
   EXPECT_EQ(read_result, LoadSeedResult::kEmpty);
+  histogram_tester.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
+                                      LoadSeedResult::kFileNotFound, 1);
 
   VariationsSeed loaded_seed;
   std::unique_ptr<ClientFilterableState> client_state =
@@ -2568,7 +3159,12 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_CorruptGzip) {
                                      /*use_first_run_prefs=*/true,
                                      /*channel=*/version_info::Channel::DEV);
 
-  // Verify metrics.
+  // Verify that the seed is not loaded.
+  VariationsSeed loaded_seed;
+  std::unique_ptr<ClientFilterableState> client_state =
+      CreateTestClientFilterableState();
+  ASSERT_FALSE(seed_store.LoadSafeSeedSync(&loaded_seed, client_state.get()));
+
   {
 #if BUILDFLAG(IS_ANDROID)
     LoadSeedResult expected_result = LoadSeedResult::kCorruptGzip;
@@ -2578,12 +3174,6 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest, LoadSafeSeed_CorruptGzip) {
     histogram_tester.ExpectUniqueSample("Variations.SeedFileReadResult.Safe",
                                         expected_result, 1);
   }
-
-  // Verify that the seed is not loaded.
-  VariationsSeed loaded_seed;
-  std::unique_ptr<ClientFilterableState> client_state =
-      CreateTestClientFilterableState();
-  ASSERT_FALSE(seed_store.LoadSafeSeedSync(&loaded_seed, client_state.get()));
 
   // Verify prefs.
   CheckSafeSeedAndSeedPrefsAreCleared(prefs_, seed_store);
@@ -2626,15 +3216,13 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
                                      /*use_first_run_prefs=*/true,
                                      /*channel=*/version_info::Channel::DEV);
 
-  // Verify metrics.
-  histogram_tester.ExpectUniqueSample(
-      "Variations.SeedFileReadResult.Safe",
-      LoadSeedResult::kExceedsUncompressedSizeLimit, 1);
-
   VariationsSeed loaded_seed;
   std::unique_ptr<ClientFilterableState> client_state =
       CreateTestClientFilterableState();
   ASSERT_FALSE(seed_store.LoadSafeSeedSync(&loaded_seed, client_state.get()));
+  histogram_tester.ExpectUniqueSample(
+      "Variations.SeedFileReadResult.Safe",
+      LoadSeedResult::kExceedsUncompressedSizeLimit, 1);
 
   // Verify prefs.
   CheckSafeSeedAndSeedPrefsAreCleared(prefs_, seed_store);
@@ -2933,6 +3521,7 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             GetParam().field_trial_group);
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = old_seed_data,
@@ -3106,6 +3695,7 @@ TEST_P(StoreSafeSeedDataControlAndLocalStateOnlyGroupTest,
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             GetParam().field_trial_group);
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = old_seed_data,
@@ -3511,6 +4101,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_DistinctSeeds) {
           .client_fetch_time = WrapTime(2),
           .session_country_code = "us",
       });
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = "not one",
@@ -3546,6 +4137,7 @@ TEST_P(VariationsSeedStoreTestAllGroups, LastFetchTime_IdenticalSeeds) {
           .client_fetch_time = WrapTime(1),
           .session_country_code = "us",
       });
+  seed_store.GetSafeSeedReaderWriterForTesting()->EnsureSeedFileReadSync();
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = "some seed",
