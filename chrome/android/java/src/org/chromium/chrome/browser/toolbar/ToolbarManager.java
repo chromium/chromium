@@ -2600,7 +2600,7 @@ public class ToolbarManager
         assert mBottomUiThemeColorProvider != null : "BottomUiThemeColorProvider should be set";
         mTabGroupUiOneshotSupplier =
                 new TabGroupUiOneshotSupplier(
-                        mActivityTabProvider,
+                        mActivityTabProvider.asObservable(),
                         mTabModelSelector,
                         mActivity,
                         mWindowAndroid,

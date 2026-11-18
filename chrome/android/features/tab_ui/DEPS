@@ -108,9 +108,6 @@ specific_include_rules = {
   "TabGroupList(BottomSheet)?Coordinator\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
   ],
-  "TabGroupUiOneshotSupplier.*\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ActivityTabProvider.java",
-  ],
   "TabGroupUiUtils.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",

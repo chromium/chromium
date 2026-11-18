@@ -33,9 +33,9 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -81,7 +81,8 @@ public class TabGroupUiOneshotSupplierUnitTest {
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
-    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
+    private final SettableNullableObservableSupplier<Tab> mActivityTabSupplier =
+            ObservableSuppliers.createNullable();
     private final MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier =
             ObservableSuppliers.alwaysNull();
     private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
@@ -101,7 +102,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
         when(mTab.isIncognito()).thenReturn(false);
         mTabGroupUiOneshotSupplier =
                 new TabGroupUiOneshotSupplier(
-                        mActivityTabProvider,
+                        mActivityTabSupplier,
                         mTabModelSelector,
                         mActivity,
                         mWindowAndroid,
@@ -136,7 +137,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
     public void testNotInGroupWhenFocusedThenInGroup() {
         when(mTabModel.isTabInTabGroup(mTab)).thenReturn(false);
 
-        mActivityTabProvider.setForTesting(mTab);
+        mActivityTabSupplier.set(mTab);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verifyNoInteractions(mTabGroupUiFactory);
         assertNull(mTabGroupUiOneshotSupplier.get());
@@ -172,7 +173,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
     public void testInGroupWhenFocused() {
         when(mTabModel.isTabInTabGroup(mTab)).thenReturn(true);
 
-        mActivityTabProvider.setForTesting(mTab);
+        mActivityTabSupplier.set(mTab);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verifyNoInteractions(mTabGroupUiFactory);
         assertNull(mTabGroupUiOneshotSupplier.get());

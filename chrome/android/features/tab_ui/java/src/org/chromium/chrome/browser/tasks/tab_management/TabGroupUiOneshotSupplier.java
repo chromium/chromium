@@ -13,13 +13,13 @@ import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -58,21 +58,19 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                 };
         private final Callback<@Nullable Tab> mActivityTabObserver =
                 new ValueChangedCallback<>(this::onActivityTabChanged);
-        private final ActivityTabProvider mActivityTabProvider;
+        private final NullableObservableSupplier<Tab> mActivityTabSupplier;
         private final TabModelSelector mTabModelSelector;
         private @Nullable Runnable mSetter;
         private @Nullable CallbackController mCallbackController = new CallbackController();
 
         TabGroupUiCreationController(
-                ActivityTabProvider activityTabProvider,
+                NullableObservableSupplier<Tab> activityTabSupplier,
                 TabModelSelector tabModelSelector,
                 Runnable setter) {
             mSetter = setter;
-            mActivityTabProvider = activityTabProvider;
+            mActivityTabSupplier = activityTabSupplier;
             mTabModelSelector = tabModelSelector;
-            activityTabProvider
-                    .asObservable()
-                    .addSyncObserverAndPostIfNonNull(mActivityTabObserver);
+            mActivityTabSupplier.addSyncObserverAndPostIfNonNull(mActivityTabObserver);
         }
 
         void destroy() {
@@ -80,7 +78,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                 mCallbackController.destroy();
                 mCallbackController = null;
             }
-            mActivityTabProvider.asObservable().removeObserver(mActivityTabObserver);
+            mActivityTabSupplier.removeObserver(mActivityTabObserver);
             // Trigger a null new tab selection to effectively unregister the observer from the old
             // tab.
             mActivityTabObserver.onResult(null);
@@ -124,7 +122,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
     /**
      * Constructs a specialized {@link OneshotSupplier} for {@link TabGroupUi}.
      *
-     * @param activityTabProvider Gives access to the current tab.
+     * @param activityTabSupplier Supplies the current activity tab.
      * @param tabModelSelector Gives access to the current set of {@link TabModel}.
      * @param activity The {@link Activity} that creates this surface.
      * @param windowAndroid The {@link WindowAndroid} for the activity.
@@ -147,7 +145,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
      *     the tab's URL when the user selects the "Share" option.
      */
     public TabGroupUiOneshotSupplier(
-            ActivityTabProvider activityTabProvider,
+            NullableObservableSupplier<Tab> activityTabSupplier,
             TabModelSelector tabModelSelector,
             Activity activity,
             WindowAndroid windowAndroid,
@@ -190,7 +188,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                     maybeDestroyTabGroupUiCreationController();
                 };
         mTabGroupUiCreationController =
-                new TabGroupUiCreationController(activityTabProvider, tabModelSelector, setter);
+                new TabGroupUiCreationController(activityTabSupplier, tabModelSelector, setter);
     }
 
     /** Removes all callbacks and observers. */
