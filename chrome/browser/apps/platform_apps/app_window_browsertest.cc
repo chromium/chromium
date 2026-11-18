@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -34,6 +35,9 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/display/display_switches.h"
+#include "ui/views/border.h"
+#include "ui/views/test/views_test_utils.h"
+#include "ui/views/window/client_view.h"
 #include "url/gurl.h"
 
 using extensions::AppWindowGeometryCache;
@@ -569,4 +573,32 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
 
   // Verify we didn't actually navigate.
   EXPECT_NE(target_url, web_contents->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
+                       GetDialogPositionUsesWidgetCoordinates) {
+  extensions::AppWindow* app_window = CreateTestAppWindow("{}");
+  ASSERT_TRUE(app_window);
+
+  auto* app_window_views =
+      static_cast<native_app_window::NativeAppWindowViews*>(
+          app_window->GetBaseWindow());
+  app_window_views->widget()->client_view()->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(30, 8, 8, 8)));
+  views::test::RunScheduledLayout(app_window_views->widget());
+
+  constexpr gfx::Size kDialogSize{200, 100};
+  gfx::Rect expected_bounds =
+      app_window_views->ConvertRectToWidget(app_window_views->GetLocalBounds());
+  EXPECT_EQ(
+      expected_bounds.size(),
+      static_cast<web_modal::WebContentsModalDialogHost*>(app_window_views)
+          ->GetMaximumDialogSize());
+  expected_bounds.ClampToCenteredSize(kDialogSize);
+  EXPECT_EQ(
+      expected_bounds.origin(),
+      static_cast<web_modal::WebContentsModalDialogHost*>(app_window_views)
+          ->GetDialogPosition(kDialogSize));
+
+  CloseAppWindow(app_window);
 }

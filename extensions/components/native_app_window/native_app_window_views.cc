@@ -4,6 +4,8 @@
 
 #include "extensions/components/native_app_window/native_app_window_views.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/observer_list_types.h"
 #include "content/public/browser/render_frame_host.h"
@@ -410,13 +412,14 @@ gfx::NativeView NativeAppWindowViews::GetHostView() const {
 }
 
 gfx::Point NativeAppWindowViews::GetDialogPosition(const gfx::Size& size) {
-  gfx::Size app_window_size = widget_->GetWindowBoundsInScreen().size();
-  return gfx::Point((app_window_size.width() - size.width()) / 2,
-                    (app_window_size.height() - size.height()) / 2);
+  gfx::Point position(std::max(0, (width() - size.width()) / 2),
+                      std::max(0, (height() - size.height()) / 2));
+  views::View::ConvertPointToWidget(this, &position);
+  return position;
 }
 
 gfx::Size NativeAppWindowViews::GetMaximumDialogSize() {
-  return widget_->GetWindowBoundsInScreen().size();
+  return size();
 }
 
 void NativeAppWindowViews::AddObserver(
