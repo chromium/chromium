@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/mojom/origin.mojom.h"
 #include "url/mojom/url_test.mojom.h"
+#include "url/url_util.h"
 
 namespace url {
 
@@ -198,6 +204,33 @@ TEST_F(MojoGURLStructTraitsTest, OriginSerialization) {
   EXPECT_EQ(normalized, output);
   EXPECT_EQ(non_unique, output);
   EXPECT_FALSE(output.opaque());
+}
+
+// Test that deserialization fails for an origin whose tuple (or precursor tuple
+// if opaque) can't come from a valid GURL. For example, "chrome://" is not a
+// valid GURL, so ("chrome", "", 0) is not a valid tuple. This is a regression
+// test for https://crbug.com/586171393.
+TEST_F(MojoGURLStructTraitsTest, OriginDeserializationWithEmptyHost) {
+  ScopedSchemeRegistryForTests scoped_registry;
+  AddStandardScheme("chrome", SCHEME_WITH_HOST);
+
+  auto can_deserialize = [](std::string scheme, std::string host,
+                            std::optional<base::UnguessableToken> nonce) {
+    mojom::OriginPtr input =
+        mojom::Origin::New(std::move(scheme), std::move(host), 0, nonce);
+    Origin output;
+    return mojo::test::SerializeAndDeserialize<mojom::Origin>(input, output);
+  };
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+
+  EXPECT_FALSE(can_deserialize("chrome", "", std::nullopt));
+  EXPECT_FALSE(can_deserialize("chrome", "", nonce));
+  EXPECT_TRUE(can_deserialize("chrome", "host", std::nullopt));
+  EXPECT_TRUE(can_deserialize("chrome", "host", nonce));
+
+  // Among `SCHEME_WITH_HOST` schemes, only file: may have an empty host.
+  EXPECT_TRUE(can_deserialize("file", "", std::nullopt));
+  EXPECT_TRUE(can_deserialize("file", "", nonce));
 }
 
 // Test that the "kMaxURLChars" values are the same in url.mojom and

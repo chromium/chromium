@@ -282,21 +282,30 @@ TEST_F(SchemeHostPortTest, Comparison) {
   }
 }
 
-// Some schemes have optional authority. Make sure that GURL conversion from
-// SchemeHostPort is not opinionated in that regard. For more info, See
-// crbug.com/820194, where we considered all SchemeHostPorts with
-// SCHEME_WITH_HOST (i.e., without ports) as valid with empty hosts, even though
-// most are not (e.g. chrome URLs).
+// Among schemes with a host but no port (SCHEME_WITH_HOST), only file: allows
+// an empty host. Make sure that SchemeHostPort agrees with GURL: an empty host
+// is invalid for other such schemes (e.g. chrome:). For the tuples that may
+// have an empty host, GetURL() must match the GURL that the tuple serializes
+// to. See crbug.com/820194 and https://crbug.com/586171393.
 TEST_F(SchemeHostPortTest, EmptyHostGurlConversion) {
   url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+  url::AddLocalScheme("local-nonstandard");
 
-  GURL chrome_url("chrome:");
-  EXPECT_FALSE(chrome_url.is_valid());
-
+  EXPECT_FALSE(GURL("chrome:").is_valid());
+  EXPECT_FALSE(GURL("chrome://").is_valid());
   url::SchemeHostPort chrome_tuple("chrome", "", 0);
+  EXPECT_FALSE(chrome_tuple.IsValid());
   EXPECT_FALSE(chrome_tuple.GetURL().is_valid());
   ExpectParsedUrlsEqual(GURL(chrome_tuple.Serialize()), chrome_tuple.GetURL());
-  ExpectParsedUrlsEqual(chrome_url, chrome_tuple.GetURL());
+
+  url::SchemeHostPort file_tuple("file", "", 0);
+  EXPECT_TRUE(file_tuple.IsValid());
+  ExpectParsedUrlsEqual(GURL("file:///"), file_tuple.GetURL());
+  ExpectParsedUrlsEqual(GURL(file_tuple.Serialize()), file_tuple.GetURL());
+
+  url::SchemeHostPort local_tuple("local-nonstandard", "", 0);
+  EXPECT_TRUE(local_tuple.IsValid());
+  ExpectParsedUrlsEqual(GURL(local_tuple.Serialize()), local_tuple.GetURL());
 }
 
 }  // namespace url
