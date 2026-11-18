@@ -1358,24 +1358,17 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
 // `guideName`. The point is in the window coordinates.
 - (CGPoint)anchorPointToGuide:(GuideName*)guideName
                     direction:(BubbleArrowDirection)arrowDirection {
-  UILayoutGuide* guide = [_layoutGuideCenter makeLayoutGuideNamed:guideName];
-  DCHECK(guide);
-  [self.rootViewController.view addLayoutGuide:guide];
-  [self.rootViewController.view layoutIfNeeded];
-
-  CGPoint anchorPoint =
-      bubble_util::AnchorPoint(guide.layoutFrame, arrowDirection);
-
   UIView* rootView = self.rootViewController.view;
-  CGPoint anchorPointInRootView = [guide.owningView convertPoint:anchorPoint
-                                                          toView:rootView];
+  CGRect frameInRootView = [self anchorViewFrameInRootViewForGuide:guideName];
+  CGPoint anchorPointInRootView =
+      bubble_util::AnchorPoint(frameInRootView, arrowDirection);
 
   const CGFloat kEdgeThreshold =
       bubble_util::BubbleDefaultAlignmentOffset() + kAdditionalBorderMargin;
 
   if (arrowDirection == BubbleArrowDirectionUp ||
       arrowDirection == BubbleArrowDirectionDown) {
-    CGFloat leeway = MIN(kMaxLeeway, guide.layoutFrame.size.width / 2.0f);
+    CGFloat leeway = MIN(kMaxLeeway, frameInRootView.size.width / 2.0f);
 
     if (anchorPointInRootView.x < kEdgeThreshold) {
       // Close to left edge.
@@ -1389,7 +1382,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
       anchorPointInRootView.x -= MIN(leeway, shift);
     }
   } else {
-    CGFloat leeway = MIN(kMaxLeeway, guide.layoutFrame.size.height / 2.0f);
+    CGFloat leeway = MIN(kMaxLeeway, frameInRootView.size.height / 2.0f);
 
     if (anchorPointInRootView.y < kEdgeThreshold) {
       // Close to top edge.
@@ -1404,25 +1397,26 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
     }
   }
 
-  CGPoint anchorPointInWindow = [rootView convertPoint:anchorPointInRootView
-                                                toView:rootView.window];
-
-  [self.rootViewController.view removeLayoutGuide:guide];
-  return anchorPointInWindow;
+  return [rootView convertPoint:anchorPointInRootView toView:rootView.window];
 }
 
-// Returns the frame of a layout guide used as anchor view for a bubble. The
-// frame is in the window coordinates.
+// Returns the frame of the view referenced under `guideName`, used as anchor
+// view for a bubble, in window coordinates.
 - (CGRect)anchorViewFrameForGuide:(GuideName*)guideName {
-  UILayoutGuide* guide = [_layoutGuideCenter makeLayoutGuideNamed:guideName];
-  CHECK(guide);
-  [self.rootViewController.view addLayoutGuide:guide];
-  [self.rootViewController.view layoutIfNeeded];
-  CGRect frame = guide.layoutFrame;
-  CGRect frameInWindow = [guide.owningView convertRect:frame
-                                                toView:guide.owningView.window];
-  [self.rootViewController.view removeLayoutGuide:guide];
-  return frameInWindow;
+  UIView* rootView = self.rootViewController.view;
+  return
+      [rootView convertRect:[self anchorViewFrameInRootViewForGuide:guideName]
+                     toView:rootView.window];
+}
+
+// Returns the frame of the view referenced under `guideName`, in the root
+// view's coordinates. Lays out the root view first so that pending layout of
+// the referenced view is reflected.
+- (CGRect)anchorViewFrameInRootViewForGuide:(GuideName*)guideName {
+  UIView* rootView = self.rootViewController.view;
+  [rootView layoutIfNeeded];
+  return [_layoutGuideCenter frameOfReferencedViewUnderName:guideName
+                                            convertedToView:rootView];
 }
 
 // Returns whether the tab can present a bubble tip.
