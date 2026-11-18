@@ -34,7 +34,7 @@ namespace enterprise_reporting {
 class MockIOSRealtimeReportingClient
     : public enterprise_connectors::IOSRealtimeReportingClient {
  public:
-  explicit MockIOSRealtimeReportingClient(ProfileIOS* profile);
+  explicit MockIOSRealtimeReportingClient(ProfileIOS& profile);
   ~MockIOSRealtimeReportingClient() override;
 
   MOCK_METHOD(void,

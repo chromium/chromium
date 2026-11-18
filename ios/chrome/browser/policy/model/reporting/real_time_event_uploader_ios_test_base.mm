@@ -10,6 +10,7 @@
 
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
 #import "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -39,27 +40,29 @@ constexpr char kTestAffiliationId[] = "test_affiliation_id";
 constexpr char kTestClientId[] = "browser_client_id";
 constexpr char kTestDomain[] = "example.com";
 
+base::OnceCallback<std::unique_ptr<MockIOSRealtimeReportingClient>(ProfileIOS&)>
+CreateMockIOSRealtimeReportingClientCallback(bool create_reporting_client) {
+  if (!create_reporting_client) {
+    return {};
+  }
+
+  return base::BindOnce(
+      &std::make_unique<MockIOSRealtimeReportingClient, ProfileIOS&>);
+}
+
 TestProfileIOS::Builder CreateProfileBuilder(bool create_reporting_client) {
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       enterprise_connectors::IOSRealtimeReportingClientFactory::GetInstance(),
-      base::BindOnce(
-          [](bool create_client,
-             ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-            return create_client
-                       ? std::make_unique<MockIOSRealtimeReportingClient>(
-                             profile)
-                       : nullptr;
-          },
-          create_reporting_client));
+      CreateMockIOSRealtimeReportingClientCallback(create_reporting_client));
   return builder;
 }
 
 }  // namespace
 
 MockIOSRealtimeReportingClient::MockIOSRealtimeReportingClient(
-    ProfileIOS* profile)
-    : IOSRealtimeReportingClient(profile) {}
+    ProfileIOS& profile)
+    : IOSRealtimeReportingClient(&profile) {}
 
 MockIOSRealtimeReportingClient::~MockIOSRealtimeReportingClient() = default;
 
