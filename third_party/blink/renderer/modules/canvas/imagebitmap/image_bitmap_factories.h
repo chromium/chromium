@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/hdr_metadata.h"
 
 class SkImage;
 
@@ -190,7 +191,8 @@ class MODULES_EXPORT ImageBitmapFactories final
 
     void ScheduleAsyncImageBitmapDecoding(ArrayBufferContents);
     void ResolvePromiseOnOriginalThread(sk_sp<SkImage>,
-                                        const ImageOrientationEnum);
+                                        const ImageOrientationEnum,
+                                        const gfx::HDRMetadata&);
 
     // ExecutionContextLifecycleObserver
     void ContextDestroyed() override;

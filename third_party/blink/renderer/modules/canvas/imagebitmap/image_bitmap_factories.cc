@@ -420,24 +420,28 @@ void DecodeImageOnDecoderThread(
     ArrayBufferContents contents,
     ImageDecoder::AlphaOption alpha_option,
     ColorBehavior color_behavior,
-    CrossThreadOnceFunction<void(sk_sp<SkImage>, const ImageOrientationEnum)>
-        result_callback) {
+    CrossThreadOnceFunction<void(sk_sp<SkImage>,
+                                 const ImageOrientationEnum,
+                                 const gfx::HDRMetadata&)> result_callback) {
   const bool data_complete = true;
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       SegmentReader::CreateFromSkData(
           SkData::MakeWithoutCopy(contents.Data(), contents.DataLength())),
-      data_complete, alpha_option, ImageDecoder::kDefaultBitDepth,
+      data_complete, alpha_option, ImageDecoder::kHighBitDepthToHalfFloat,
       color_behavior, cc::AuxImage::kDefault,
       Platform::GetMaxDecodedImageBytes());
   sk_sp<SkImage> frame;
   ImageOrientationEnum orientation = ImageOrientationEnum::kDefault;
+  gfx::HDRMetadata hdr_metadata;
   if (decoder) {
     orientation = decoder->Orientation();
+    hdr_metadata = decoder->GetHDRMetadata();
     frame = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));
   }
-  PostCrossThreadTask(*task_runner, FROM_HERE,
-                      CrossThreadBindOnce(std::move(result_callback),
-                                          std::move(frame), orientation));
+  PostCrossThreadTask(
+      *task_runner, FROM_HERE,
+      CrossThreadBindOnce(std::move(result_callback), std::move(frame),
+                          orientation, hdr_metadata));
 }
 }  // namespace
 
@@ -466,7 +470,8 @@ void ImageBitmapFactories::ImageBitmapLoader::ScheduleAsyncImageBitmapDecoding(
 
 void ImageBitmapFactories::ImageBitmapLoader::ResolvePromiseOnOriginalThread(
     sk_sp<SkImage> frame,
-    const ImageOrientationEnum orientation) {
+    const ImageOrientationEnum orientation,
+    const gfx::HDRMetadata& hdr_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!frame) {
     RejectPromise(kUndecodableImageBitmapRejectionReason);
@@ -475,7 +480,8 @@ void ImageBitmapFactories::ImageBitmapLoader::ResolvePromiseOnOriginalThread(
   DCHECK(frame->width());
   DCHECK(frame->height());
   scoped_refptr<StaticBitmapImage> image =
-      UnacceleratedStaticBitmapImage::Create(std::move(frame), orientation);
+      UnacceleratedStaticBitmapImage::Create(std::move(frame), orientation,
+                                             hdr_metadata);
 
   image->SetOriginClean(true);
   auto* image_bitmap =

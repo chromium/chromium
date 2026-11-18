@@ -52,6 +52,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
@@ -300,6 +301,8 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
         parsed_options.has_color_space_conversion ? ColorBehavior::kTag
                                                   : ColorBehavior::kIgnore,
         cc::AuxImage::kDefault, Platform::GetMaxDecodedImageBytes()));
+    const gfx::HDRMetadata hdr_metadata =
+        decoder ? decoder->GetHDRMetadata() : gfx::HDRMetadata();
     auto skia_image = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));
     if (!skia_image)
       return;
@@ -308,6 +311,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
                       .set_id(paint_image.stable_id())
                       .set_image(std::move(skia_image),
                                  paint_image.GetContentIdForFrame(0u))
+                      .set_hdr_metadata(hdr_metadata)
                       .TakePaintImage();
   } else if (paint_image.IsLazyGenerated()) {
     // Other Image types can still produce lazy generated images (for example
