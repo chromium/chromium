@@ -69,7 +69,6 @@ public final class TabHelpers {
         TabDistillabilityProvider.from(tab);
         TabFavicon.from(tab);
         TrustedCdn.from(tab);
-        TabAssociatedApp.from(tab);
         TabGestureStateListener.from(tab);
 
         // Initialize the display cutout helper if the tab is eligible for drawing edge to edge.

@@ -1733,16 +1733,17 @@ class TabImpl implements Tab {
             if (mTimestampMillis == INVALID_TIMESTAMP) {
                 setTimestampMillis(System.currentTimeMillis());
             }
-            String appId = null;
             if (tabState != null) {
-                appId = tabState.openerAppId;
                 updateThemeColor(
                         tabState.hasThemeColor()
                                 ? tabState.themeColor
                                 : TabState.UNSPECIFIED_THEME_COLOR);
+                if (!TextUtils.isEmpty(tabState.openerAppId)) {
+                    TabAssociatedApp.from(this).setAppId(tabState.openerAppId);
+                }
             }
 
-            for (TabObserver observer : mObservers) observer.onInitialized(this, appId);
+            for (TabObserver observer : mObservers) observer.onInitialized(this);
         }
     }
 

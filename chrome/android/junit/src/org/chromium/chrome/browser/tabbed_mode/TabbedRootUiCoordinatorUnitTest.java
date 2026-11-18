@@ -391,7 +391,6 @@ public class TabbedRootUiCoordinatorUnitTest {
         // EXIT_APP_AND_CLOSE_TAB.
         Tab shortcutTab = mock(Tab.class);
         when(shortcutTab.isClosing()).thenReturn(true);
-        when(shortcutTab.getUserDataHost()).thenReturn(new UserDataHost());
         when(shortcutTab.getLaunchType()).thenReturn(TabLaunchType.FROM_LAUNCHER_SHORTCUT);
         assertEquals(
                 ActionType.EXIT_APP_AND_CLOSE_TAB,
@@ -412,7 +411,6 @@ public class TabbedRootUiCoordinatorUnitTest {
         // 4. Regular closeable tab (e.g. FROM_LINK) -> CLOSE_TAB.
         Tab linkTab = mock(Tab.class);
         when(linkTab.isClosing()).thenReturn(true);
-        when(linkTab.getUserDataHost()).thenReturn(new UserDataHost());
         when(linkTab.getLaunchType()).thenReturn(TabLaunchType.FROM_LINK);
         assertEquals(
                 ActionType.CLOSE_TAB, mCoordinator.getBackActionTypeForNonNavigableTab(linkTab));

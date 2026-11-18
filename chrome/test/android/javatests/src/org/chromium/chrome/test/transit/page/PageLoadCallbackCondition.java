@@ -53,7 +53,7 @@ public class PageLoadCallbackCondition extends UiThreadCondition {
 
     private class TabLoadEventLogger implements TabObserver {
         @Override
-        public void onInitialized(Tab tab, String appId) {
+        public void onInitialized(Tab tab) {
             mCallbacks.add("onInitialized");
         }
 

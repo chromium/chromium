@@ -109,7 +109,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 @Nullable BrowserServicesIntentDataProvider intentDataProvider,
                 @Nullable AuthTabVerifier authTabVerifier) {
             super(tab);
-            mClientPackageName = TabAssociatedApp.from(tab).getAppId();
+            mClientPackageName = TabAssociatedApp.getAppId(tab);
             mVerifier = verifier;
             mActivityType = activityType;
             mIntentDataProvider = intentDataProvider;

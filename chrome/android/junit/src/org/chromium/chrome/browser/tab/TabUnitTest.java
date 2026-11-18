@@ -78,7 +78,9 @@ import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.pdf.PdfUtils;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -2155,5 +2157,58 @@ public class TabUnitTest {
         assertTrue(params.getIsRendererInitiated());
         assertNotNull(params.getInitiatorOrigin());
         assertTrue(params.getInitiatorOrigin().isOpaque());
+    }
+
+    @Test
+    public void testInitialize_RestoredOpenerAppId() {
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
+        RevenueStats.setInstanceForTesting(mock(RevenueStats.class));
+
+        TabObserver observer = mock(TabObserver.class);
+        TabState tabStateEmpty = new TabState();
+        tabStateEmpty.contentsState = mock(WebContentsState.class);
+        tabStateEmpty.openerAppId = "";
+
+        TabImpl tabWithEmptyAppId = new TabImpl(TAB1_ID, mProfile, TabLaunchType.FROM_RESTORE);
+        tabWithEmptyAppId.updateWindowAndroid(null);
+        tabWithEmptyAppId.setNativePtrForTesting(1);
+        tabWithEmptyAppId.addObserver(observer);
+        tabWithEmptyAppId.initialize(
+                /* parent= */ null,
+                /* creationState= */ TabCreationState.FROZEN_ON_RESTORE,
+                /* loadUrlParams= */ null,
+                /* pendingTitle= */ null,
+                /* webContents= */ null,
+                mDelegateFactory,
+                /* initiallyHidden= */ true,
+                tabStateEmpty,
+                /* initializeRenderer= */ false,
+                /* isPinned= */ false);
+
+        assertNull(tabWithEmptyAppId.getUserDataHost().getUserData(TabAssociatedApp.class));
+        assertNull(TabAssociatedApp.getAppId(tabWithEmptyAppId));
+        verify(observer).onInitialized(tabWithEmptyAppId);
+
+        TabState tabStateWithAppId = new TabState();
+        tabStateWithAppId.contentsState = mock(WebContentsState.class);
+        tabStateWithAppId.openerAppId = "com.example.app";
+
+        TabImpl tabWithAppId = new TabImpl(TAB2_ID, mProfile, TabLaunchType.FROM_RESTORE);
+        tabWithAppId.updateWindowAndroid(null);
+        tabWithAppId.setNativePtrForTesting(2);
+        tabWithAppId.initialize(
+                /* parent= */ null,
+                /* creationState= */ TabCreationState.FROZEN_ON_RESTORE,
+                /* loadUrlParams= */ null,
+                /* pendingTitle= */ null,
+                /* webContents= */ null,
+                mDelegateFactory,
+                /* initiallyHidden= */ true,
+                tabStateWithAppId,
+                /* initializeRenderer= */ false,
+                /* isPinned= */ false);
+
+        assertNotNull(tabWithAppId.getUserDataHost().getUserData(TabAssociatedApp.class));
+        assertEquals("com.example.app", TabAssociatedApp.getAppId(tabWithAppId));
     }
 }

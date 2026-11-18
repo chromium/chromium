@@ -127,7 +127,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         mTab.addObserver(
                 new TabObserver() {
                     @Override
-                    public void onInitialized(Tab tab, @Nullable String appId) {
+                    public void onInitialized(Tab tab) {
                         updateVisibilityDelegate();
                     }
 

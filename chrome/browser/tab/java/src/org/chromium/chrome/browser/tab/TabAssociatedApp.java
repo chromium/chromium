@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
@@ -17,7 +15,6 @@ import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.base.WindowAndroid;
 
 /** User data for a {@link Tab} managing an ID of an external application that opened it. */
 @NullMarked
@@ -30,6 +27,8 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
      */
     private @Nullable String mId;
 
+    private @Nullable ImeAdapter mImeAdapter;
+
     public static TabAssociatedApp from(Tab tab) {
         TabAssociatedApp app = get(tab);
         if (app == null) {
@@ -40,36 +39,6 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
 
     private TabAssociatedApp(Tab tab) {
         super(tab);
-        tab.addObserver(
-                new TabObserver() {
-                    @Override
-                    public void onInitialized(Tab tab, @Nullable String appId) {
-                        if (appId != null) setAppId(appId);
-                    }
-
-                    @Override
-                    public void onLoadUrl(
-                            Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
-                        // Clear the app association if the user navigated to a different page from
-                        // the omnibox.
-                        if ((params.getTransitionType() & PageTransition.FROM_ADDRESS_BAR)
-                                == PageTransition.FROM_ADDRESS_BAR) {
-                            mId = null;
-                        }
-                    }
-
-                    @Override
-                    public void onDestroyed(Tab tab) {
-                        tab.removeObserver(this);
-                    }
-
-                    @Override
-                    public void onActivityAttachmentChanged(
-                            Tab tab, @Nullable WindowAndroid window) {
-                        // Intentionally do nothing to prevent automatic observer removal on
-                        // detachment.
-                    }
-                });
     }
 
     private static @Nullable TabAssociatedApp get(Tab tab) {
@@ -88,34 +57,58 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
      * @return Whether or not the tab was opened by an app other than Chrome.
      */
     public static boolean isOpenedFromExternalApp(Tab tab) {
-        TabAssociatedApp app = get(tab);
-        if (app == null) return false;
-
         String packageName = ContextUtils.getApplicationContext().getPackageName();
         return tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP
-                && !TextUtils.equals(app.getAppId(), packageName);
+                && !TextUtils.equals(getAppId(tab), packageName);
     }
 
     @Override
     public void initWebContents(WebContents webContents) {
-        ImeAdapter adapter = assertNonNull(ImeAdapter.fromWebContents(webContents));
-
-        // Gracefully handle a null adapter in non-debug builds.
-        if (adapter != null) adapter.addEventObserver(this);
+        assert mImeAdapter == null;
+        maybeAttachImeObserver();
     }
 
     @Override
-    public void cleanupWebContents(@Nullable WebContents webContents) {}
+    public void cleanupWebContents(WebContents webContents) {
+        detachImeObserver();
+    }
+
+    @Override
+    public void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
+        // Clear the app association if the user navigated to a different page from
+        // the omnibox.
+        if ((params.getTransitionType() & PageTransition.FROM_ADDRESS_BAR)
+                == PageTransition.FROM_ADDRESS_BAR) {
+            mId = null;
+            detachImeObserver();
+        }
+    }
 
     /**
      * Associates this tab with the external app with the specified id. Once a Tab is associated
      * with an app, it is reused when a new page is opened from that app (unless the user typed in
      * the location bar or in the page, in which case the tab is dissociated from any app)
      *
-     * @param appId The ID of application associated with the tab.
+     * @param name The ID of application associated with the tab.
      */
     public void setAppId(String name) {
         mId = name;
+        maybeAttachImeObserver();
+    }
+
+    private void maybeAttachImeObserver() {
+        WebContents webContents = getWebContents();
+        if (mId == null || webContents == null || mImeAdapter != null) return;
+        mImeAdapter = ImeAdapter.fromWebContents(webContents);
+        if (mImeAdapter != null) {
+            mImeAdapter.addEventObserver(this);
+        }
+    }
+
+    private void detachImeObserver() {
+        if (mImeAdapter == null) return;
+        mImeAdapter.removeEventObserver(this);
+        mImeAdapter = null;
     }
 
     /**
@@ -134,6 +127,9 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
     public void onImeEvent() {
         // Some text was set in the page. Don't reuse it if a tab is open from the same
         // external application, we might lose some user data.
+        // Do not call removeEventObserver(this) synchronously here: ImeAdapterImpl iterates
+        // an ArrayList<ImeEventObserver> in onImeEvent(), which would throw
+        // ConcurrentModificationException if another observer is registered.
         mId = null;
     }
 }

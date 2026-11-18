@@ -30,9 +30,8 @@ public interface TabObserver {
      * {@code null}, various states that a Tab should restore itself from.
      *
      * @param tab The notifying {@link Tab}.
-     * @param appId ID of the external app that opened this tab.
      */
-    default void onInitialized(Tab tab, @Nullable String appId) {}
+    default void onInitialized(Tab tab) {}
 
     /**
      * Called when a {@link Tab} is shown.
