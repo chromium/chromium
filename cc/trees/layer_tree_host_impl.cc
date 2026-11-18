@@ -3432,7 +3432,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   // Build and submit the dedicated CompositorFrame for the unbounded passes.
   if (!frame->unbounded_render_passes.empty() && delegate_ &&
       unbounded_frame_sink_handler_) {
-    // Unbounded element is not implemented for TreesInViz yet.
+    // Unbounded CompositorFrames are submitted either directly by the renderer
+    // (when TreesInViz is disabled) or by the Viz display tree (when TreesInViz
+    // is enabled), but never by the TreesInViz client process.
     CHECK(!settings_.TreesInVizInClientProcess());
     CHECK(settings_.enable_unbounded_element);
 
