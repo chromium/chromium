@@ -29,7 +29,8 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line);
 
 // Reads the state from `flags_storage` and adds the command line flags
 // belonging to the active feature entries to `command_line` in addition
-// to the flags from experimental settings.
+// to the flags from experimental settings. Does nothing if `command_line` has
+// `--no-experiments`.
 void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
                             base::CommandLine* command_line);
 
@@ -38,7 +39,8 @@ void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
 // variation parameters are connected to their corresponding features in
 // `feature_list`. Returns the (possibly empty) list of additional variation ids
 // to register in the MetricsService that come from variations selected using
-// chrome://flags.
+// chrome://flags. Does nothing and returns an empty list if the process
+// command line has `--no-experiments`.
 std::vector<std::string> RegisterAllFeatureVariationParameters(
     flags_ui::FlagsStorage* flags_storage,
     base::FeatureList* feature_list);

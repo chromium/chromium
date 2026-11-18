@@ -3485,6 +3485,10 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
 
 void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
                             base::CommandLine* command_line) {
+  if (command_line->HasSwitch(switches::kNoExperiments)) {
+    return;
+  }
+
   GetGlobalFlagsState().ConvertFlagsToSwitches(
       flags_storage, command_line, flags_ui::kAddSentinels,
       switches::kEnableFeatures, switches::kDisableFeatures);
@@ -3493,6 +3497,11 @@ void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
 std::vector<std::string> RegisterAllFeatureVariationParameters(
     flags_ui::FlagsStorage* flags_storage,
     base::FeatureList* feature_list) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kNoExperiments)) {
+    return {};
+  }
+
   return GetGlobalFlagsState().RegisterAllFeatureVariationParameters(
       flags_storage, feature_list);
 }
