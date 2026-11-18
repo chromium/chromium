@@ -89,6 +89,8 @@ class LobsterService : public KeyedService, public LobsterEventSink {
       std::unique_ptr<LobsterSystemStateProvider> provider);
 
  private:
+  void OnBubbleClosed();
+
   // Not owned by this class
   raw_ptr<Profile> profile_;
   AccountId account_id_;

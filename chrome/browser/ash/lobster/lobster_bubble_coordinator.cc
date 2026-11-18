@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,7 +19,9 @@
 
 namespace ash {
 
-LobsterBubbleCoordinator::LobsterBubbleCoordinator() = default;
+LobsterBubbleCoordinator::LobsterBubbleCoordinator(
+    base::RepeatingClosure on_widget_closed_callback)
+    : on_widget_closed_callback_(std::move(on_widget_closed_callback)) {}
 
 LobsterBubbleCoordinator::~LobsterBubbleCoordinator() {
   CloseUI();
@@ -29,9 +32,7 @@ void LobsterBubbleCoordinator::LoadUI(Profile* profile,
                                       LobsterMode mode,
                                       const gfx::Rect& caret_bounds,
                                       bool should_show_feedback_ui) {
-  if (IsShowingUI()) {
-    contents_wrapper_->CloseUI();
-  }
+  CloseUI();
 
   GURL url = GURL(kChromeUILobsterURL);
 
@@ -70,22 +71,18 @@ void LobsterBubbleCoordinator::ShowUI() {
 }
 
 void LobsterBubbleCoordinator::CloseUI() {
+  widget_observation_.Reset();
   if (contents_wrapper_) {
     contents_wrapper_->CloseUI();
     contents_wrapper_ = nullptr;
   }
-  widget_observation_.Reset();
-}
-
-bool LobsterBubbleCoordinator::IsShowingUI() const {
-  // TODO(b/301518440): To accurately check if the bubble is open, detect when
-  // the JS has finished loading instead of checking this pointer.
-  return contents_wrapper_ != nullptr &&
-         contents_wrapper_->GetHost() != nullptr;
 }
 
 void LobsterBubbleCoordinator::OnWidgetDestroying(views::Widget* widget) {
   CloseUI();
+  if (on_widget_closed_callback_) {
+    on_widget_closed_callback_.Run();
+  }
 }
 
 }  // namespace ash

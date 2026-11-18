@@ -59,6 +59,8 @@ LobsterService::LobsterService(
           profile->GetPrefs(),
           identity_manager,
           /*is_in_demo_mode=*/ash::demo_mode::IsDeviceInDemoMode())),
+      bubble_coordinator_(base::BindRepeating(&LobsterService::OnBubbleClosed,
+                                              base::Unretained(this))),
       announcer_(
           std::make_unique<LobsterLiveRegionAnnouncer>(kAnnouncementViewName)) {
   if (profile != nullptr) {
@@ -143,6 +145,12 @@ void LobsterService::ShowUI() {
 
 void LobsterService::CloseUI() {
   bubble_coordinator_.CloseUI();
+}
+
+void LobsterService::OnBubbleClosed() {
+  if (active_session_) {
+    active_session_->CloseUI();
+  }
 }
 
 void LobsterService::OnFocus(int context_id) {

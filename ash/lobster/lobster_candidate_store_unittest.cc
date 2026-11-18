@@ -105,6 +105,28 @@ TEST_F(LobsterCandidateStoreTest, CacheOverridesPreviouslyCachedCandidate) {
                                   "rewritten: a starry night"));
 }
 
+TEST_F(LobsterCandidateStoreTest, ClearRemovesAllCandidates) {
+  LobsterCandidateStore store;
+
+  store.Cache(
+      LobsterImageCandidate(/*id=*/123,
+                            /*image_bytes=*/"a1b2c3",
+                            /*seed=*/10001,
+                            /*query=*/"a sunny day",
+                            /*rewritten_query=*/"rewritten: a sunny day"));
+  store.Cache(
+      LobsterImageCandidate(/*id=*/456,
+                            /*image_bytes=*/"a4b5c6",
+                            /*seed=*/10004,
+                            /*query=*/"a windy weekday",
+                            /*rewritten_query=*/"rewritten: a windy weekday"));
+
+  store.Clear();
+
+  EXPECT_FALSE(store.FindCandidateById(123).has_value());
+  EXPECT_FALSE(store.FindCandidateById(456).has_value());
+}
+
 }  // namespace
 
 }  // namespace ash

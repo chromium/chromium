@@ -30,4 +30,8 @@ std::optional<LobsterImageCandidate> LobsterCandidateStore::FindCandidateById(
   }
 }
 
+void LobsterCandidateStore::Clear() {
+  cache_.clear();
+}
+
 }  // namespace ash

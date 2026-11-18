@@ -6,6 +6,7 @@
 #define ASH_LOBSTER_LOBSTER_SESSION_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -68,12 +69,17 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
   void RecordWebUIMetricEvent(ash::LobsterMetricState metric_event) override;
 
  private:
-  void OnRequestCandidates(RequestCandidatesCallback callback,
+  void OnRequestCandidates(const std::string& query,
+                           RequestCandidatesCallback callback,
                            const LobsterResult& image_candidates);
 
   std::unique_ptr<LobsterClient> client_;
 
   LobsterCandidateStore candidate_store_;
+
+  // The query of the most recent active `RequestCandidates()` call, or
+  // `std::nullopt` after `CloseUI()`.
+  std::optional<std::string> last_requested_query_;
 
   LobsterEntryPoint entry_point_;
 

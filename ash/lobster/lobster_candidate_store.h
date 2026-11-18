@@ -24,6 +24,9 @@ class ASH_EXPORT LobsterCandidateStore {
 
   std::optional<LobsterImageCandidate> FindCandidateById(uint32_t id);
 
+  // Removes all cached candidates.
+  void Clear();
+
  private:
   std::map<uint32_t, LobsterImageCandidate> cache_;
 };

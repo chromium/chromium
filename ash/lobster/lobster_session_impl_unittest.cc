@@ -655,6 +655,254 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsDownload) {
       "Ash.Lobster.State", LobsterMetricState::kCommitAsDownloadError, 1);
 }
 
+TEST_F(LobsterSessionImplTest, ClearsCandidateStoreWhenClosingUI) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  EXPECT_CALL(*lobster_client, CloseUI()).Times(1);
+
+  LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kQuickInsert,
+                             LobsterMode::kInsert);
+
+  base::test::TestFuture<const LobsterFeedbackPreviewResponse&> before_close;
+  session.PreviewFeedback(/*id=*/0, before_close.GetCallback());
+  ASSERT_TRUE(before_close.Get().has_value());
+
+  session.CloseUI();
+
+  base::test::TestFuture<const LobsterFeedbackPreviewResponse&> after_close;
+  session.PreviewFeedback(/*id=*/0, after_close.GetCallback());
+  EXPECT_FALSE(after_close.Get().has_value());
+}
+
+TEST_F(LobsterSessionImplTest, ClearsCandidateStoreWhenQueryChanges) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  uint32_t next_id = 0;
+  EXPECT_CALL(*lobster_client,
+              RequestCandidates(testing::_, testing::_, testing::_))
+      .WillRepeatedly([&next_id](const std::string& query, int num_candidates,
+                                 RequestCandidatesCallback done_callback) {
+        std::vector<LobsterImageCandidate> image_candidates;
+        for (int i = 0; i < num_candidates; ++i) {
+          const uint32_t id = next_id++;
+          image_candidates.emplace_back(
+              id, /*image_bytes=*/"a1b2c3", /*seed=*/100 + id,
+              /*user_query=*/query, /*rewritten_query=*/query);
+        }
+        std::move(done_callback).Run(std::move(image_candidates));
+      });
+
+  LobsterSessionImpl session(std::move(lobster_client),
+                             LobsterEntryPoint::kQuickInsert,
+                             LobsterMode::kInsert);
+
+  auto has_candidate = [&session](int id) {
+    base::test::TestFuture<const LobsterFeedbackPreviewResponse&> future;
+    session.PreviewFeedback(id, future.GetCallback());
+    return future.Get().has_value();
+  };
+
+  // Initial request for a query, followed by a request for more candidates
+  // with the same query. The UI keeps showing all of them.
+  base::test::TestFuture<const LobsterResult&> first_future;
+  session.RequestCandidates("a nice strawberry", /*num_candidates=*/4,
+                            first_future.GetCallback());
+  ASSERT_TRUE(first_future.Get().has_value());
+  base::test::TestFuture<const LobsterResult&> more_future;
+  session.RequestCandidates("a nice strawberry", /*num_candidates=*/2,
+                            more_future.GetCallback());
+  ASSERT_TRUE(more_future.Get().has_value());
+  for (int id = 0; id < 6; ++id) {
+    EXPECT_TRUE(has_candidate(id)) << id;
+  }
+
+  // A new query replaces the displayed candidates, so the previous ones are
+  // dropped.
+  base::test::TestFuture<const LobsterResult&> new_query_future;
+  session.RequestCandidates("a nice raspberry", /*num_candidates=*/4,
+                            new_query_future.GetCallback());
+  ASSERT_TRUE(new_query_future.Get().has_value());
+  for (int id = 0; id < 6; ++id) {
+    EXPECT_FALSE(has_candidate(id)) << id;
+  }
+  for (int id = 6; id < 10; ++id) {
+    EXPECT_TRUE(has_candidate(id)) << id;
+  }
+}
+
+TEST_F(LobsterSessionImplTest, ClearsCandidateStoreAfterCommitAsInsert) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  EXPECT_CALL(*lobster_client, CloseUI()).Times(1);
+  ON_CALL(*lobster_client,
+          InflateCandidate(/*seed=*/21, testing::_, testing::_))
+      .WillByDefault([](uint32_t seed, std::string_view query,
+                        InflateCandidateCallback done_callback) {
+        std::vector<LobsterImageCandidate> inflated_candidates = {
+            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
+                                  /*seed=*/21,
+                                  /*user_query=*/"a nice raspberry",
+                                  /*rewritten_query=*/"a nice raspberry")};
+        std::move(done_callback).Run(std::move(inflated_candidates));
+      });
+  ON_CALL(*lobster_client, QueueInsertion(/*image_bytes=*/"a1b2c3", testing::_))
+      .WillByDefault([](const std::string& image_bytes,
+                        LobsterClient::StatusCallback callback) {
+        std::move(callback).Run(true);
+      });
+
+  LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kQuickInsert,
+                             LobsterMode::kInsert);
+
+  base::test::TestFuture<bool> commit_future;
+  session.CommitAsInsert(/*id=*/1, commit_future.GetCallback());
+  ASSERT_TRUE(commit_future.Get());
+
+  // Other cached session candidates should be purged once commit closes the UI.
+  base::test::TestFuture<const LobsterFeedbackPreviewResponse&> preview_future;
+  session.PreviewFeedback(/*id=*/0, preview_future.GetCallback());
+  EXPECT_FALSE(preview_future.Get().has_value());
+}
+
+TEST_F(LobsterSessionImplTest, ClearsCandidateStoreAfterCommitAsDownload) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  EXPECT_CALL(*lobster_client, CloseUI()).Times(1);
+  ON_CALL(*lobster_client,
+          InflateCandidate(/*seed=*/21, testing::_, testing::_))
+      .WillByDefault([](uint32_t seed, std::string_view query,
+                        InflateCandidateCallback done_callback) {
+        std::vector<LobsterImageCandidate> inflated_candidates = {
+            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
+                                  /*seed=*/21,
+                                  /*user_query=*/"a nice raspberry",
+                                  /*rewritten_query=*/"a nice raspberry")};
+        std::move(done_callback).Run(std::move(inflated_candidates));
+      });
+
+  LobsterCandidateStore store = GetDummyLobsterCandidateStore();
+  LobsterSessionImpl session(std::move(lobster_client), store,
+                             LobsterEntryPoint::kQuickInsert,
+                             LobsterMode::kDownload);
+
+  base::test::TestFuture<bool> commit_future;
+  session.CommitAsDownload(/*id=*/1, GetDownloadPath(),
+                           commit_future.GetCallback());
+  ASSERT_TRUE(commit_future.Get());
+
+  // Other cached session candidates should be purged once commit closes the UI.
+  base::test::TestFuture<const LobsterFeedbackPreviewResponse&> preview_future;
+  session.PreviewFeedback(/*id=*/0, preview_future.GetCallback());
+  EXPECT_FALSE(preview_future.Get().has_value());
+}
+
+TEST_F(LobsterSessionImplTest, DoesNotCacheInFlightCandidatesAfterCloseUI) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  RequestCandidatesCallback pending_callback;
+  EXPECT_CALL(*lobster_client,
+              RequestCandidates("a nice strawberry", 2, testing::_))
+      .WillOnce([&pending_callback](const std::string& query,
+                                    int num_candidates,
+                                    RequestCandidatesCallback done_callback) {
+        pending_callback = std::move(done_callback);
+      });
+  EXPECT_CALL(*lobster_client, CloseUI()).Times(1);
+
+  LobsterSessionImpl session(std::move(lobster_client),
+                             LobsterEntryPoint::kQuickInsert,
+                             LobsterMode::kInsert);
+
+  base::test::TestFuture<const LobsterResult&> request_future;
+  session.RequestCandidates("a nice strawberry", /*num_candidates=*/2,
+                            request_future.GetCallback());
+  ASSERT_TRUE(pending_callback);
+
+  session.CloseUI();
+
+  std::move(pending_callback)
+      .Run(std::vector<LobsterImageCandidate>{
+          LobsterImageCandidate(/*id=*/0, /*image_bytes=*/"a1b2c3",
+                                /*seed=*/100,
+                                /*user_query=*/"a nice strawberry",
+                                /*rewritten_query=*/"a nice strawberry"),
+          LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"d4e5f6",
+                                /*seed=*/101,
+                                /*user_query=*/"a nice strawberry",
+                                /*rewritten_query=*/"a nice strawberry")});
+  ASSERT_TRUE(request_future.Get().has_value());
+
+  base::test::TestFuture<const LobsterFeedbackPreviewResponse&> preview_future;
+  session.PreviewFeedback(/*id=*/0, preview_future.GetCallback());
+  EXPECT_FALSE(preview_future.Get().has_value());
+}
+
+TEST_F(LobsterSessionImplTest,
+       DoesNotCacheStaleInFlightCandidatesAfterQueryChange) {
+  auto lobster_client = std::make_unique<MockLobsterClient>();
+  RequestCandidatesCallback first_pending_callback;
+  EXPECT_CALL(*lobster_client,
+              RequestCandidates("a nice strawberry", 2, testing::_))
+      .WillOnce([&first_pending_callback](
+                    const std::string& query, int num_candidates,
+                    RequestCandidatesCallback done_callback) {
+        first_pending_callback = std::move(done_callback);
+      });
+  EXPECT_CALL(*lobster_client,
+              RequestCandidates("a nice raspberry", 2, testing::_))
+      .WillOnce([](const std::string& query, int num_candidates,
+                   RequestCandidatesCallback done_callback) {
+        std::move(done_callback)
+            .Run(std::vector<LobsterImageCandidate>{
+                LobsterImageCandidate(/*id=*/2, /*image_bytes=*/"a1b2c3",
+                                      /*seed=*/102,
+                                      /*user_query=*/"a nice raspberry",
+                                      /*rewritten_query=*/"a nice raspberry"),
+                LobsterImageCandidate(/*id=*/3, /*image_bytes=*/"d4e5f6",
+                                      /*seed=*/103,
+                                      /*user_query=*/"a nice raspberry",
+                                      /*rewritten_query=*/"a nice raspberry")});
+      });
+
+  LobsterSessionImpl session(std::move(lobster_client),
+                             LobsterEntryPoint::kQuickInsert,
+                             LobsterMode::kInsert);
+
+  auto has_candidate = [&session](int id) {
+    base::test::TestFuture<const LobsterFeedbackPreviewResponse&> future;
+    session.PreviewFeedback(id, future.GetCallback());
+    return future.Get().has_value();
+  };
+
+  base::test::TestFuture<const LobsterResult&> first_future;
+  session.RequestCandidates("a nice strawberry", /*num_candidates=*/2,
+                            first_future.GetCallback());
+  ASSERT_TRUE(first_pending_callback);
+
+  base::test::TestFuture<const LobsterResult&> second_future;
+  session.RequestCandidates("a nice raspberry", /*num_candidates=*/2,
+                            second_future.GetCallback());
+  ASSERT_TRUE(second_future.Get().has_value());
+
+  // Completing the earlier in-flight request after the query changed must not
+  // cache stale candidates.
+  std::move(first_pending_callback)
+      .Run(std::vector<LobsterImageCandidate>{
+          LobsterImageCandidate(/*id=*/0, /*image_bytes=*/"a1b2c3",
+                                /*seed=*/100,
+                                /*user_query=*/"a nice strawberry",
+                                /*rewritten_query=*/"a nice strawberry"),
+          LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"d4e5f6",
+                                /*seed=*/101,
+                                /*user_query=*/"a nice strawberry",
+                                /*rewritten_query=*/"a nice strawberry")});
+  ASSERT_TRUE(first_future.Get().has_value());
+
+  EXPECT_FALSE(has_candidate(0));
+  EXPECT_FALSE(has_candidate(1));
+  EXPECT_TRUE(has_candidate(2));
+  EXPECT_TRUE(has_candidate(3));
+}
+
 class LobsterSessionImplMetricsTest : public testing::Test {
  public:
   LobsterSessionImplMetricsTest() = default;
