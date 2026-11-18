@@ -24,6 +24,21 @@ export class HelloWorldChildElement extends MyTestMixin
       fooBoolean: {type: Boolean},
       fooArray: {type: Array},
       fooObject: {type: Object},
+      protectedProp: {
+        type: String,
+        reflect: true,
+      },
+      protectedAttr: {
+        type: String,
+        reflect: true,
+      },
+      protectedBool: {
+        type: Boolean,
+        reflect: true,
+      },
+      privateProp_: {type: String},
+      privateAttr_: {type: String},
+      privateBool_: {type: Boolean},
     };
   }
 
@@ -32,6 +47,16 @@ export class HelloWorldChildElement extends MyTestMixin
   accessor fooBoolean: boolean = false;
   accessor fooArray: number[] = [];
   accessor fooObject: {bar: string} = {bar: ''};
+  protected accessor protectedProp: string = '';
+  protected accessor protectedAttr: string = '';
+  protected accessor protectedBool: boolean = false;
+  private accessor privateProp_: string = '';
+  private accessor privateAttr_: string = '';
+  private accessor privateBool_: boolean = false;
+
+  getPrivateValues(): string {
+    return `${this.privateProp_}${this.privateAttr_}${this.privateBool_}`;
+  }
 }
 
 declare global {

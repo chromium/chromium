@@ -14,8 +14,9 @@ type Options = [];
 type MessageIds = 'bindingTypeMismatch'|'booleanPropertyAttributeBinding'|
     'camelCaseAttribute'|'incorrectAttributeBinding'|'incorrectBooleanBinding'|
     'invalidBooleanAttributeExpression'|'invalidPropertyExpression'|
-    'listenerNotCallable'|'noFalseBinding'|'noStaticTrueBooleanAttribute'|
-    'noTrueBinding'|'propertyNotFound'|'propertyTypeMismatch';
+    'listenerNotCallable'|'noFalseBinding'|'nonPublicPropertyBinding'|
+    'noStaticTrueBooleanAttribute'|'noTrueBinding'|'propertyNotFound'|
+    'propertyTypeMismatch';
 
 // HTML enumerated attributes whose corresponding DOM IDL properties are typed
 // as boolean in TypeScript's lib.dom.d.ts, but which require explicit "true" or
@@ -29,14 +30,30 @@ const ENUMERATED_BOOLEAN_IDL_ATTRIBUTES = new Set([
 
 const OPEN_TAG_START_REGEX = /^<([a-zA-Z][a-zA-Z0-9-]*)/;
 const ID_ATTRIBUTE_REGEX = /\bid="([^\s"]+)"/;
-const STATIC_QUESTION_MARK_REGEX = /\s\?(?<boolName>[a-zA-Z0-9-]+)/g;
+const STATIC_QUESTION_MARK_REGEX = /\s\?(?<boolName>[a-zA-Z0-9_-]+)/g;
 const STATIC_TRUE_REGEX = /\s(?<attrName>[a-zA-Z0-9-]+)="true"/g;
 const CAMEL_CASE_ATTR_REGEX =
     /\s(?<prefix>\??)(?<attrName>[a-z][a-zA-Z0-9-]*[A-Z][a-zA-Z0-9-]*)="/g;
 const STATIC_PROPERTY_REGEX = /\s\.(?<propName>[a-zA-Z0-9_-]+)="/g;
 const HTML_COMMENT_REGEX = /<!--[\s\S]*?-->/g;
 const BINDING_REGEX =
-    /(\?(?<boolName>[a-zA-Z0-9-]+)|@(?<eventName>[a-zA-Z0-9-]+))="$|(\s+(?<attrName>[a-zA-Z0-9\-]+)|\.(?<propName>[a-zA-Z0-9_-]+))="(?<prefix>[^"]*)$/;
+    /(\?(?<boolName>[a-zA-Z0-9_-]+)|@(?<eventName>[a-zA-Z0-9-]+))="$|(\s+(?<attrName>[a-zA-Z0-9_-]+)|\.(?<propName>[a-zA-Z0-9_-]+))="(?<prefix>[^"]*)$/;
+
+function getPropertyVisibility(propSymbol: ts.Symbol): 'private'|'protected'|
+    'public' {
+  const decl = propSymbol.valueDeclaration || propSymbol.declarations?.[0];
+  if (!decl || !ts.canHaveModifiers(decl)) {
+    return 'public';
+  }
+  const flags = ts.getCombinedModifierFlags(decl);
+  if ((flags & ts.ModifierFlags.Private) !== 0) {
+    return 'private';
+  }
+  if ((flags & ts.ModifierFlags.Protected) !== 0) {
+    return 'protected';
+  }
+  return 'public';
+}
 
 interface OpenTagInfo {
   tagName: string;
@@ -218,6 +235,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           'Event listener for \'@{{eventName}}\' must be callable.',
       noFalseBinding:
           'Incorrect assignment to boolean attribute expression \'?{{attributeName}}=\' using \'${false}\'. Use property binding \'.{{propertyName}}="${false}"\' instead.',
+      nonPublicPropertyBinding:
+          'Cannot bind to \'{{visibility}}\' property \'{{propertyName}}\' on element \'{{tagName}}\'. Make it public instead.',
       noStaticTrueBooleanAttribute:
           'Boolean attribute \'{{attributeName}}\' does not need to be set to \'="true"\'. Use either \'{{dashCaseName}}\' or \'.{{propertyName}}="${true}"\' instead.',
       noTrueBinding:
@@ -243,19 +262,16 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
       assert.ok(apparentType);
 
       const propSymbol = apparentType.getProperty(propBinding);
-      const expectedType = propSymbol ?
-          checker.getTypeOfSymbolAtLocation(propSymbol, tsNode) :
-          null;
 
       // Non-existent property exception for cr-auto-img, TS compiler does not
       // know HTMLImageElement has an autoSrc property.
-      if (!expectedType && propBinding === 'autoSrc' &&
+      if (!propSymbol && propBinding === 'autoSrc' &&
           currentTagName === 'img') {
         return;
       }
 
       // Binding to non-existent property.
-      if (!expectedType) {
+      if (!propSymbol) {
         context.report({
           node: expression,
           messageId: 'propertyNotFound',
@@ -266,6 +282,23 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
         });
         return;
       }
+
+      const visibility = getPropertyVisibility(propSymbol);
+      if (visibility !== 'public') {
+        context.report({
+          node: expression,
+          messageId: 'nonPublicPropertyBinding',
+          data: {
+            propertyName: propBinding,
+            tagName: currentTagName,
+            visibility,
+          },
+        });
+        return;
+      }
+
+      const expectedType =
+          checker.getTypeOfSymbolAtLocation(propSymbol, tsNode);
 
       if (checker.isTypeAssignableTo(expressionType, expectedType)) {
         return;
@@ -308,9 +341,49 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
       });
     }
 
+    function checkAttributePropertyVisibility(
+        currentTagName: string, currentTagId: string, attrName: string,
+        expression: TSESTree.Expression, tsNode: ts.Node,
+        checker: ts.TypeChecker): boolean {
+      if (attrName.startsWith('aria-') || attrName.startsWith('data-')) {
+        return false;
+      }
+      const apparentType =
+          getElementApparentType(currentTagName, currentTagId, tsNode, checker);
+      if (!apparentType) {
+        return false;
+      }
+      const propName = dashCaseToCamelCase(attrName);
+      const propSymbol = apparentType.getProperty(propName);
+      if (!propSymbol) {
+        return false;
+      }
+      const visibility = getPropertyVisibility(propSymbol);
+      if (visibility !== 'public') {
+        context.report({
+          node: expression,
+          messageId: 'nonPublicPropertyBinding',
+          data: {
+            propertyName: propName,
+            tagName: currentTagName,
+            visibility,
+          },
+        });
+        return true;
+      }
+      return false;
+    }
+
     function checkBooleanAttributeBinding(
-        boolName: string, expression: TSESTree.Expression,
-        expressionTypeStr: string, propName: string) {
+        currentTagName: string, currentTagId: string, boolName: string,
+        expression: TSESTree.Expression, tsNode: ts.Node,
+        expressionTypeStr: string, propName: string, checker: ts.TypeChecker) {
+      if (checkAttributePropertyVisibility(
+              currentTagName, currentTagId, boolName, expression, tsNode,
+              checker)) {
+        return;
+      }
+
       // Check 1: Should not bind to "true" or "false" literal values.
       if (isLiteral(expression) &&
           (expression.value === true || expression.value === false)) {
@@ -450,6 +523,12 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
         expression: TSESTree.Expression, tsNode: ts.Node,
         expressionType: ts.Type, expressionTypeStr: string,
         isTsObjectOrArray: boolean, propName: string, checker: ts.TypeChecker) {
+      if (checkAttributePropertyVisibility(
+              currentTagName, currentTagId, attrName, expression, tsNode,
+              checker)) {
+        return;
+      }
+
       // Check 1: Should not bind to object or array TS expressions.
       if (isTsObjectOrArray) {
         context.report({
@@ -695,7 +774,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs<
           const boolName = match.groups['boolName'];
           if (boolName) {
             checkBooleanAttributeBinding(
-                boolName, expression, expressionTypeStr, propName);
+                currentOpenTag.tagName, currentOpenTag.tagId, boolName,
+                expression, tsNode, expressionTypeStr, propName, checker);
             continue;
           }
 

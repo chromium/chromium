@@ -60,6 +60,13 @@ export function getHtml(this: BindingsViolationsElement) {
 <div title="a > ${this.label}">Example: foo="${this.limits}"</div>
 <div title="a <b">Example: bar="${this.limits}"</div>
 <svg viewBox="0 0 24 24"></svg>
+<hello-world-child .protectedProp="${this.label}"
+    protected-attr="a > ${this.label}"
+    ?protected-bool="${this.disabled}"
+    .privateProp_="${this.label}"
+    private-attr_="${this.getLabels()}"
+    ?private-bool_="${false}">
+</hello-world-child>
 `;
   // clang-format on
 }

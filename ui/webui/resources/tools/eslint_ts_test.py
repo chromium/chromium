@@ -1016,6 +1016,8 @@ class EslintTsTest(unittest.TestCase):
       "Event listener for '@%(eventName)s' must be callable"
     )
 
+    _NON_PUBLIC_PROPERTY_BINDING_ERROR = "Cannot bind to '%(visibility)s' property '%(propertyName)s' on element '%(tagName)s'. Make it public instead"
+
     # The following strings *should* appear in the error output.
     errors = [
       _LISTENER_NOT_CALLABLE_ERROR
@@ -1217,6 +1219,42 @@ class EslintTsTest(unittest.TestCase):
         'propertyName': 'afterDynamicGt',
         'tagName': 'hello-world-child',
       },
+      _NON_PUBLIC_PROPERTY_BINDING_ERROR
+      % {
+        'visibility': 'protected',
+        'propertyName': 'protectedProp',
+        'tagName': 'hello-world-child',
+      },
+      _NON_PUBLIC_PROPERTY_BINDING_ERROR
+      % {
+        'visibility': 'protected',
+        'propertyName': 'protectedAttr',
+        'tagName': 'hello-world-child',
+      },
+      _NON_PUBLIC_PROPERTY_BINDING_ERROR
+      % {
+        'visibility': 'protected',
+        'propertyName': 'protectedBool',
+        'tagName': 'hello-world-child',
+      },
+      _NON_PUBLIC_PROPERTY_BINDING_ERROR
+      % {
+        'visibility': 'private',
+        'propertyName': 'privateProp_',
+        'tagName': 'hello-world-child',
+      },
+      _NON_PUBLIC_PROPERTY_BINDING_ERROR
+      % {
+        'visibility': 'private',
+        'propertyName': 'privateAttr_',
+        'tagName': 'hello-world-child',
+      },
+      _NON_PUBLIC_PROPERTY_BINDING_ERROR
+      % {
+        'visibility': 'private',
+        'propertyName': 'privateBool_',
+        'tagName': 'hello-world-child',
+      },
     ]
     for e in errors:
       self.assertTrue(
@@ -1326,6 +1364,16 @@ class EslintTsTest(unittest.TestCase):
         'expectedType': 'number',
         'providedType': 'string',
       },
+      _INVALID_BOOLEAN_ATTRIBUTE_EXPRESSION_ERROR
+      % {
+        'attributeName': 'private-bool',
+        'dashCaseName': 'private-bool',
+      },
+      _INVALID_BOOLEAN_ATTRIBUTE_EXPRESSION_ERROR
+      % {
+        'attributeName': 'private-bool_',
+        'dashCaseName': 'private-bool_',
+      },
       _INCORRECT_ATTRIBUTE_ERROR
       % {
         'attributeName': 'part',
@@ -1349,6 +1397,17 @@ class EslintTsTest(unittest.TestCase):
         'attributeName': 'bar',
         'propertyName': 'limits',
         'propertyExpression': '.bar=',
+      },
+      _INCORRECT_ATTRIBUTE_ERROR
+      % {
+        'attributeName': 'private-attr_',
+        'propertyName': 'this.getLabels()',
+        'propertyExpression': '.privateAttr_=',
+      },
+      _NO_FALSE_BINDING_ERROR
+      % {
+        'attributeName': 'private-bool_',
+        'propertyName': 'privateBool_',
       },
     ]
     for e in non_errors:
