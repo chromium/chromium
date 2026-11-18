@@ -12998,21 +12998,6 @@
             ]
         }
     ],
-    "MacPumpTasksBeforeFinishLaunching": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MacPumpTasksBeforeFinishLaunching"
-                    ]
-                }
-            ]
-        }
-    ],
     "MagiChromePasskeySignIn": [
         {
             "platforms": [
