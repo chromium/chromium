@@ -100,6 +100,8 @@ source_set("tasks_handling") {
   sources = [
     "task_orchestrator.mm",
     "task_request.mm",
+    "task_request_for_external_action_url_context.h",
+    "task_request_for_external_action_url_context.mm",
     "task_request_for_standard_url_context.h",
     "task_request_for_standard_url_context.mm",
     "task_request_for_widget_url_context.h",

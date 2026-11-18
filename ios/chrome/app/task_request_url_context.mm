@@ -20,6 +20,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
+#import "ios/chrome/app/task_request_for_external_action_url_context.h"
 #import "ios/chrome/app/task_request_for_standard_url_context.h"
 #import "ios/chrome/app/task_request_for_widget_url_context.h"
 #import "ios/chrome/app/task_request_for_xcallback_url_context.h"
@@ -119,6 +120,12 @@ void TriggerPostOpeningAction(id<TabOpening> tab_opener,
   }
   if ([url.host isEqualToString:@"x-callback-url"]) {
     return [[TaskRequestForXCallbackURLContext alloc]
+        initWithURLContext:URLContext
+                sceneState:sceneState
+               isColdStart:isColdStart];
+  }
+  if ([url.host isEqualToString:kExternalActionURLHost]) {
+    return [[TaskRequestForExternalActionURLContext alloc]
         initWithURLContext:URLContext
                 sceneState:sceneState
                isColdStart:isColdStart];

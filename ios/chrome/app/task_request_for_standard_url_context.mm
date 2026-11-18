@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
-#import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -30,7 +29,6 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_request_handler.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -39,7 +37,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -47,7 +44,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "net/base/apple/url_conversions.h"
-#import "net/base/url_util.h"
 #import "url/gurl.h"
 #import "url/url_constants.h"
 
@@ -57,13 +53,6 @@ constexpr std::string_view kSecureCustomScheme =
     BUILDFLAG(SECURE_CUSTOM_SCHEME);
 constexpr std::string_view kInsecureCustomScheme =
     BUILDFLAG(INSECURE_CUSTOM_SCHEME);
-
-NSString* const kExternalActionURLHost = @"ChromeExternalAction";
-NSString* const kExternalActionDefaultBrowserSettings =
-    @"DefaultBrowserSettings";
-NSString* const kExternalActionOpenNTP = @"OpenNTP";
-NSString* const kExternalActionAppStoreGeminiPromo = @"appstoregeminipromo";
-NSString* const kExternalActionAppSwitcherTesting = @"appswitchertesting";
 
 // If `url` is a handled Google One deep link URL and the feature is enabled,
 // populates `out_url` (if non-null) with the normalized HTTPS GURL and returns
@@ -87,52 +76,6 @@ bool GetGoogleOneDeepLinkURL(NSURL* url, GURL* out_url) {
     *out_url = std::move(candidate_url);
   }
   return true;
-}
-
-// Returns the single path component of `url` if it has the format
-// "/<component>", or nil if the path is invalid or has multiple segments.
-NSString* ExtractSinglePathComponent(NSURL* url) {
-  NSArray<NSString*>* path_components = url.pathComponents;
-  if ([path_components count] != 2 ||
-      ![path_components[0] isEqualToString:@"/"]) {
-    return nil;
-  }
-  return path_components[1];
-}
-
-// Records metrics and user actions for external action URLs.
-void RecordExternalActionMetrics(NSURL* url) {
-  base::RecordAction(base::UserMetricsAction("MobileExternalActionURLOpened"));
-  UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
-                            START_EXTERNAL_ACTION,
-                            MOBILE_SESSION_START_ACTION_COUNT);
-  base::UmaHistogramEnumeration(kAppLaunchSource,
-                                AppLaunchSource::EXTERNAL_ACTION);
-
-  NSString* path = ExtractSinglePathComponent(url);
-  IOSExternalAction action = IOSExternalAction::ACTION_INVALID;
-  if ([path isEqualToString:kExternalActionOpenNTP]) {
-    base::RecordAction(
-        base::UserMetricsAction("MobileExternalActionURLOpenedWithOpenNTP"));
-    action = IOSExternalAction::ACTION_OPEN_NTP;
-  } else if ([path isEqualToString:kExternalActionDefaultBrowserSettings]) {
-    base::RecordAction(base::UserMetricsAction(
-        "MobileExternalActionURLOpenedWithDefaultBrowserSettings"));
-    if (IsChromeLikelyDefaultBrowser()) {
-      action =
-          IOSExternalAction::ACTION_SKIPPED_DEFAULT_BROWSER_SETTINGS_FOR_NTP;
-    } else {
-      action = IOSExternalAction::ACTION_DEFAULT_BROWSER_SETTINGS;
-    }
-  } else if ([path isEqualToString:kExternalActionAppStoreGeminiPromo]) {
-    base::RecordAction(base::UserMetricsAction(
-        "MobileExternalActionURLOpenedWithAppStoreGeminiPromo"));
-    action = IOSExternalAction::ACTION_APP_STORE_GEMINI_PROMO;
-  } else if (IsAppSwitcherAISummarizationTestingExternalURLEnabled() &&
-             [path isEqualToString:kExternalActionAppSwitcherTesting]) {
-    action = IOSExternalAction::ACTION_START_GEMINI_AI_SUMMARIZATION;
-  }
-  base::UmaHistogramEnumeration(kExternalActionHistogram, action);
 }
 
 // Presents the Google One screen for `url` on the current browser of
@@ -178,9 +121,7 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
   if ([host isEqualToString:kRemoteActorURLHost]) {
     return;
   }
-  if ([host isEqualToString:kExternalActionURLHost]) {
-    RecordExternalActionMetrics(url);
-  } else if ([scheme isEqualToString:@"file"]) {
+  if ([scheme isEqualToString:@"file"]) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_OPEN_FILE,
                               MOBILE_SESSION_START_ACTION_COUNT);
@@ -226,54 +167,11 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
 
   GURL externalGURL = net::GURLWithNSURL(url);
   GURL virtualGURL;
-  TabOpeningPostOpeningAction postOpeningAction =
-      TabOpeningPostOpeningAction::NO_ACTION;
   ProceduralBlock postOpeningCompletion = nil;
   ApplicationModeForTabOpening targetMode =
       ApplicationModeForTabOpening::UNDETERMINED;
 
-  if ([host isEqualToString:kExternalActionURLHost]) {
-    NSString* path = ExtractSinglePathComponent(url);
-
-    if ([path isEqualToString:kExternalActionOpenNTP]) {
-      externalGURL = GURL(kChromeUINewTabURL);
-    } else if ([path isEqualToString:kExternalActionDefaultBrowserSettings]) {
-      // If Chrome is already set as default browser, just open the NTP.
-      if (IsChromeLikelyDefaultBrowser()) {
-        externalGURL = GURL(kChromeUINewTabURL);
-      } else {
-        externalGURL = GURL();
-        postOpeningAction =
-            TabOpeningPostOpeningAction::EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS;
-      }
-    } else if ([path isEqualToString:kExternalActionAppStoreGeminiPromo]) {
-      externalGURL = GURL(kGeminiAppStorePromoURL);
-      postOpeningAction = TabOpeningPostOpeningAction::TRIGGER_GEMINI_PROMO;
-      ProfileIOS* profile = sceneState.profileState.profile;
-      CHECK_DEREF(profile).GetPrefs()->SetBoolean(
-          prefs::kAppStoreGeminiPromoTriggered, true);
-    } else if (IsAppSwitcherAISummarizationTestingExternalURLEnabled() &&
-               [path isEqualToString:kExternalActionAppSwitcherTesting]) {
-      // TODO(crbug.com/527016607): Remove this entire testing path when the
-      // feature is enabled by default.
-      std::string queryUrlString;
-      net::GetValueForKeyInQuery(externalGURL, "url", &queryUrlString);
-      GURL queryUrl(queryUrlString);
-
-      externalGURL = queryUrl.SchemeIsHTTPOrHTTPS()
-                         ? queryUrl
-                         : GURL(kGeminiAppStorePromoURL);
-      postOpeningAction =
-          TabOpeningPostOpeningAction::START_GEMINI_AI_SUMMARIZATION;
-    } else {
-      // An unrecognized or invalid external action is discarded without opening
-      // a tab.
-      return;
-    }
-    [self notifyExternalURLOpenedWithSceneState:sceneState
-                                  openedWithURL:NO
-                          openedViaChromeScheme:YES];
-  } else if (externalGURL.SchemeIsFile()) {
+  if (externalGURL.SchemeIsFile()) {
     GURL::Replacements replacements;
     std::string filename = externalGURL.ExtractFileName();
     replacements.SetPathStr(filename);
@@ -304,9 +202,8 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
     if (!externalGURL.is_valid()) {
       return;
     }
-    [self notifyExternalURLOpenedWithSceneState:sceneState
-                                  openedWithURL:YES
-                          openedViaChromeScheme:openedViaCustomScheme];
+    [self notifyURLOpenedWithSceneState:sceneState
+                  openedViaChromeScheme:openedViaCustomScheme];
     GURL googleOneURL;
     if (IsGoogleOneDeepLinkEnabled() &&
         IsGoogleOneDeepLinkURL(externalGURL, &googleOneURL)) {
@@ -340,7 +237,7 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
   [self openTabWithSceneState:sceneState
                 urlLoadParams:UrlLoadParams::InNewTab(externalGURL, virtualGURL)
                    targetMode:targetMode
-            postOpeningAction:postOpeningAction
+            postOpeningAction:TabOpeningPostOpeningAction::NO_ACTION
         postOpeningCompletion:postOpeningCompletion];
 }
 
@@ -390,22 +287,19 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
         postOpeningCompletion:completion];
 }
 
-// Notifies the Default Browser promo that Chrome is opened from this URL in
-// `sceneState`. `openedWithURL` is whether an http(s) URL is opened, and
-// `openedViaChromeScheme` whether one of Chrome's own schemes was used, which
-// counts as a first-party signal only for first-party caller apps.
-- (void)notifyExternalURLOpenedWithSceneState:(SceneState*)sceneState
-                                openedWithURL:(BOOL)openedWithURL
-                        openedViaChromeScheme:(BOOL)openedViaChromeScheme {
+// Notifies the Default Browser promo that Chrome is opened with an http(s) URL
+// in `sceneState`. `openedViaChromeScheme` is whether one of Chrome's own
+// schemes was used, which counts as a first-party signal only for first-party
+// caller apps.
+- (void)notifyURLOpenedWithSceneState:(SceneState*)sceneState
+                openedViaChromeScheme:(BOOL)openedViaChromeScheme {
   if (openedViaChromeScheme && IsCallerAppFirstParty(self.callerApp)) {
     [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
         logUserEnteredAppViaFirstPartyScheme];
   }
-  if (openedWithURL) {
-    default_browser::NotifyStartWithURL(
-        feature_engagement::TrackerFactory::GetForProfile(
-            sceneState.profileState.profile));
-  }
+  default_browser::NotifyStartWithURL(
+      feature_engagement::TrackerFactory::GetForProfile(
+          sceneState.profileState.profile));
 }
 
 // Opens `URL` in `sceneState`, in the application mode requested by the App
