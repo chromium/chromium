@@ -685,32 +685,6 @@ bool IsNaN(PixelsAndPercent value, bool allows_negative_percentage_reference) {
   return false;
 }
 
-std::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
-    const blink::CalculationExpressionNode* value,
-    bool allows_negative_percentage_reference) {
-  if (!RuntimeEnabledFeatures::CSSCalcEarlyNaNAndInfFoldingEnabled()) {
-    return std::nullopt;
-  }
-  if (value->HasColorChannelKeyword()) {
-    // We cannot correctly evaluate for NaN or infinity until we know the
-    // color channel values to substitute in.
-    return std::nullopt;
-  }
-  // |input| is not needed because this function is just for handling
-  // inf and NaN.
-  float evaluated_value = value->Evaluate(1, {});
-  if (!std::isfinite(evaluated_value)) {
-    return CreateClampedSamePixelsAndPercent(evaluated_value);
-  }
-  if (allows_negative_percentage_reference) {
-    evaluated_value = value->Evaluate(-1, {});
-    if (!std::isfinite(evaluated_value)) {
-      return CreateClampedSamePixelsAndPercent(evaluated_value);
-    }
-  }
-  return std::nullopt;
-}
-
 bool IsAllowedMediaFeature(const CSSValueID& id) {
   return id == CSSValueID::kWidth || id == CSSValueID::kHeight;
 }
@@ -5287,12 +5261,6 @@ const CalculationValue* CSSMathExpressionNode::ToCalcValue(
   }
 
   const auto* value = ToCalculationExpression(length_resolver);
-  std::optional<PixelsAndPercent> evaluated_value =
-      EvaluateValueIfNaNorInfinity(value, allows_negative_percentage_reference);
-  if (evaluated_value.has_value()) {
-    return MakeGarbageCollected<CalculationValue>(evaluated_value.value(),
-                                                  range);
-  }
   return CalculationValue::CreateSimplified(value, range);
 }
 

@@ -102,15 +102,12 @@ float CalculationExpressionSizingKeywordNode::Evaluate(
     // TODO(https://crbug.com/313072): I'd like to be able to CHECK() this
     // instead.  However, we hit this code in three cases:
     //  * the code in ContentMinimumInlineSize, which passes max_value of 0
-    //  * the (questionable) code in EvaluateValueIfNaNorInfinity(), which
-    //    passes max_value of 1 or -1
     //  * the DCHECK()s in
     //    CSSLengthInterpolationType::ApplyStandardPropertyValue pass a max
     //    value of 100
     // So we have to return something.  Return 0 for now, though this may
     // not be ideal.
-    CHECK(max_value == 1.0f || max_value == -1.0f || max_value == 0.0f ||
-          max_value == 100.0f);
+    CHECK(max_value == 0.0f || max_value == 100.0f);
     return 0.0f;
   }
   CHECK(input.intrinsic_evaluator);
