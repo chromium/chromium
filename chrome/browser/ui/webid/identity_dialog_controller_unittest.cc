@@ -539,6 +539,37 @@ TEST_F(IdentityDialogControllerTest, NoTabDoesNotCrash) {
   ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kActive);
 }
 
+// Tests that the controller does not access its members when it gets destroyed
+// while showing the accounts dialog, even if `Show()` returns true.
+TEST_F(IdentityDialogControllerTest,
+       ControllerDestroyedDuringShowAccountsDialog) {
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  IdentityDialogController* controller_ptr = controller.get();
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+  accounts_ = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
+
+  // The view reports that the dialog was shown even though the controller was
+  // destroyed. The controller should report that the dialog was not shown.
+  EXPECT_CALL(*mock_view_ptr, Show).WillOnce([&controller]() {
+    controller.reset();
+    return true;
+  });
+  EXPECT_FALSE(controller_ptr->ShowAccountsDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                /*iframe_for_display=*/u""),
+      {idp_data}, accounts_, /*filtered_accounts=*/{},
+      blink::mojom::RpMode::kPassive,
+      /*on_selected=*/base::DoNothing(),
+      /*on_add_account=*/base::DoNothing(),
+      /*dismiss_callback=*/base::DoNothing(),
+      /*accounts_displayed_callback=*/base::DoNothing()));
+  EXPECT_FALSE(controller);
+}
+
 TEST_F(IdentityDialogControllerTest, SegmentationPlatformLoudUi) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(

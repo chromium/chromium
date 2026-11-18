@@ -354,10 +354,14 @@ bool IdentityDialogController::ShowAccountsDialog(
       new_accounts.push_back(account);
     }
   }
-  // Do not modify any member variables if the accounts dialog is not shown
-  // because the caller may have destroyed this object.
+  // Do not access any member variables if the accounts dialog is not shown or
+  // if showing it destroyed this object, e.g. because the dialog was dismissed
+  // right away.
+  base::WeakPtr<IdentityDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   if (account_view_->Show(rp_data, identity_provider_data, accounts, rp_mode,
-                          new_accounts)) {
+                          new_accounts) &&
+      weak_this) {
     if (on_account_selection_) {
       // `OnAccountSelected()` may be called synchronously from `Show()`, e.g.
       // after the IdP login pop-up. Only set this estimate if
