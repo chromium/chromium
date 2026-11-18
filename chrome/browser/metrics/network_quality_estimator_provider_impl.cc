@@ -5,7 +5,6 @@
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
 
 #include "base/functional/bind.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -48,11 +47,12 @@ void NetworkQualityEstimatorProviderImpl::PostReplyOnNetworkQualityChanged(
   // may take up to ~20 seconds to execute. Figure out a way to call
   // g_browser_process->network_quality_tracker earlier rather than waiting for
   // BEST_EFFORT to run (which happens sometime after startup is completed)
-  content::BrowserThread::PostBestEffortTask(
-      FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&NetworkQualityEstimatorProviderImpl::
-                         AddEffectiveConnectionTypeObserverNow,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&NetworkQualityEstimatorProviderImpl::
+                             AddEffectiveConnectionTypeObserverNow,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   return;
 #else
   bool task_posted =

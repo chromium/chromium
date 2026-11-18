@@ -56,6 +56,7 @@
 #include "components/push_messaging/push_messaging_features.h"
 #include "components/push_messaging/push_messaging_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/devtools_background_services_context.h"
 #include "content/public/browser/permission_controller.h"
@@ -265,13 +266,14 @@ void PushMessagingServiceImpl::RemoveExpiredSubscriptions() {
           FROM_HERE, barrier_closure);
       continue;
     }
-    content::BrowserThread::PostBestEffortTask(
-        FROM_HERE, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::BindOnce(
-            &PushMessagingServiceImpl::UnexpectedChange,
-            weak_factory_.GetWeakPtr(), identifier,
-            blink::mojom::PushUnregistrationReason::SUBSCRIPTION_EXPIRED,
-            barrier_closure));
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &PushMessagingServiceImpl::UnexpectedChange,
+                weak_factory_.GetWeakPtr(), identifier,
+                blink::mojom::PushUnregistrationReason::SUBSCRIPTION_EXPIRED,
+                barrier_closure));
   }
 }
 

@@ -770,9 +770,9 @@ void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kAppId) &&
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kPwaLauncherVersion) != chrome::kChromeVersion) {
-    content::BrowserThread::PostBestEffortTask(
-        FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
-        base::BindOnce(&UpdatePwaLaunchersForProfile, profile->GetPath()));
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(FROM_HERE, base::BindOnce(&UpdatePwaLaunchersForProfile,
+                                             profile->GetPath()));
   }
 }
 

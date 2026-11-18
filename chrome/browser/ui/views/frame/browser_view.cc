@@ -416,6 +416,7 @@
 #include "chrome/browser/taskbar/taskbar_decorator_win.h"
 #include "chrome/browser/win/jumplist.h"
 #include "chrome/browser/win/jumplist_factory.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/win/hwnd_util.h"
 #include "ui/native_theme/native_theme_win.h"
@@ -1058,10 +1059,9 @@ BrowserView::BrowserView(BrowserWindowInterface* browser)
   // JumpList is created asynchronously with a low priority to not delay the
   // startup.
   if (JumpList::Enabled()) {
-    content::BrowserThread::PostBestEffortTask(
-        FROM_HERE, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::BindOnce(&BrowserView::CreateJumpList,
-                       weak_ptr_factory_.GetWeakPtr()));
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(FROM_HERE, base::BindOnce(&BrowserView::CreateJumpList,
+                                             weak_ptr_factory_.GetWeakPtr()));
   }
 #endif
 
