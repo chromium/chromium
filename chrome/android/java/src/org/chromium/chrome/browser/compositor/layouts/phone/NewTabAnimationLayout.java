@@ -730,8 +730,14 @@ public class NewTabAnimationLayout extends Layout {
                         mSkipForceAnimationToFinish = true;
                         startHiding();
                         assumeNonNull(mTabModelSelector);
-                        mTabModelSelector.selectModel(newIsIncognito);
-                        mNextTabId = id;
+                        @Nullable Tab tab =
+                                mTabModelSelector.getModel(newIsIncognito).getTabById(id);
+                        if (tab != null && !tab.isClosing() && !tab.isDestroyed()) {
+                            mTabModelSelector.selectModel(newIsIncognito);
+                            mNextTabId = id;
+                        } else {
+                            mNextTabId = Tab.INVALID_TAB_ID;
+                        }
                     }
 
                     @Override

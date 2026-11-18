@@ -422,6 +422,36 @@ public class NewTabAnimationLayoutUnitTest {
     }
 
     @Test
+    public void testOnTabCreated_tabCreatedInForeground_tabRemovedBeforeAnimationFinished() {
+        mNewTabAnimationLayout.setNextTabIdForTesting(CURRENT_TAB_ID);
+        mNewTabAnimationLayout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ true,
+                /* background= */ false,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+
+        assertTrue(mNewTabAnimationLayout.isRunningAnimations());
+        assertNotNull(findChildView(NewForegroundTabAnimationHostView.class));
+
+        // Simulate the new tab being closed/removed while the expand animation is in flight.
+        when(mTabModel.getTabById(NEW_TAB_ID)).thenReturn(null);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertFalse(mNewTabAnimationLayout.isRunningAnimations());
+        assertNull(findChildView(NewForegroundTabAnimationHostView.class));
+        verify(mTabModelSelector, never()).selectModel(anyBoolean());
+        assertTrue(mNewTabAnimationLayout.isStartingToHide());
+
+        mNewTabAnimationLayout.doneHiding();
+        verify(mTabModel, never()).setIndex(anyInt(), anyInt());
+    }
+
+    @Test
     public void testOnTabCreated_tabCreatedInForeground_topPadding() {
         when(mNewTab.isNativePage()).thenReturn(true);
         when(mNewTab.getNativePage()).thenReturn(mNtp);
