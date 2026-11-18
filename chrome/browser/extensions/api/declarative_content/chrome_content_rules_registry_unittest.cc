@@ -9,6 +9,7 @@
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
+#include "chrome/browser/extensions/api/declarative_content/default_content_predicate_evaluators.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -251,6 +252,59 @@ TEST_F(DeclarativeChromeContentRulesRegistryTest, RemoveDuplicateRules) {
   // iterator being erased more than once.
   std::vector<std::string> remove_rules_dup = {"rule1", "rule1"};
   registry->RemoveRulesImpl(extension->id(), remove_rules_dup);
+}
+
+// Regression test for crbug.com/574640360: adding duplicate or non-UTF-8 rule
+// IDs directly through `AddRulesImpl` must be rejected before handing bare
+// predicate pointers to `DeclarativeContentPageUrlConditionTracker`.
+TEST_F(DeclarativeChromeContentRulesRegistryTest, AddDuplicateRuleIdsRejected) {
+  scoped_refptr<ChromeContentRulesRegistry> registry(
+      new ChromeContentRulesRegistry(
+          env()->profile(), nullptr,
+          base::BindOnce(&CreateDefaultContentPredicateEvaluators,
+                         env()->profile())));
+
+  const Extension* extension =
+      env()->MakeExtension(base::test::ParseJsonDict(R"({"page_action": {}})"));
+
+  constexpr char kCollapsedRuleJson[] = R"({
+    "id": "\uFFFD\uFFFD\uFFFD",
+    "priority": 100,
+    "conditions": [{
+      "instanceType": "declarativeContent.PageStateMatcher",
+      "pageUrl": {}
+    }],
+    "actions": [
+      {"instanceType": "declarativeContent.ShowAction"}
+    ]
+  })";
+  auto rule1 = api::events::Rule::FromValue(
+      base::test::ParseJsonDict(kCollapsedRuleJson));
+  auto rule2 = api::events::Rule::FromValue(
+      base::test::ParseJsonDict(kCollapsedRuleJson));
+  ASSERT_TRUE(rule1.has_value());
+  ASSERT_TRUE(rule2.has_value());
+
+  // Intra-batch duplicate IDs must fail without tracking dangling predicates.
+  std::vector<const api::events::Rule*> dup_batch = {&rule1.value(),
+                                                     &rule2.value()};
+  EXPECT_FALSE(registry->AddRulesImpl(extension->id(), dup_batch).empty());
+
+  // Non-UTF-8 rule IDs (lone surrogate in WTF-8) must also be rejected.
+  auto invalid_utf8_rule = api::events::Rule::FromValue(
+      base::test::ParseJsonDict(kCollapsedRuleJson));
+  ASSERT_TRUE(invalid_utf8_rule.has_value());
+  invalid_utf8_rule->id = "\xED\xA0\x80";
+  EXPECT_FALSE(
+      registry->AddRulesImpl(extension->id(), {&invalid_utf8_rule.value()})
+          .empty());
+
+  // Adding a single rule with the valid UTF-8 replacement-char ID succeeds, and
+  // a second `AddRulesImpl` with the same ID is rejected.
+  EXPECT_TRUE(
+      registry->AddRulesImpl(extension->id(), {&rule1.value()}).empty());
+  EXPECT_FALSE(
+      registry->AddRulesImpl(extension->id(), {&rule2.value()}).empty());
 }
 
 }  // namespace extensions
