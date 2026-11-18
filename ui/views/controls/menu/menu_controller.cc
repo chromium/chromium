@@ -1944,6 +1944,12 @@ std::optional<ui::PostDispatchAction> MenuController::RouteKeyEventToTextfield(
 }
 
 void MenuController::UpdateSubmenuSelection(SubmenuView* submenu) {
+  // The pointer has not moved, so it does not take the selection, and with it
+  // the focus, from a focused Textfield. See the matching guard for
+  // synthesized moves in OnMouseMoved().
+  if (HasFocusedTextfield()) {
+    return;
+  }
   if (submenu->IsShowing()) {
     HandleMouseLocation(
         submenu,
@@ -3185,10 +3191,27 @@ void MenuController::MenuChildrenChanged(MenuItemView* item) {
       return;
     }
   }
+  // A focused Textfield in a row of `item` that survived the change keeps the
+  // selection. Moving the selection to `item` would blur the Textfield, which
+  // detaches it from the InputMethod and ends an in-progress IME composition.
+  MenuItemView* new_selection = item;
+  int selection_types = SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY;
+  if (Textfield* text_input = GetFocusedTextfield()) {
+    MenuItemView* text_input_item = nullptr;
+    for (View* v = text_input->parent(); v && !text_input_item;
+         v = v->parent()) {
+      text_input_item = AsViewClass<MenuItemView>(v);
+    }
+    if (text_input_item && text_input_item->GetParentMenuItem() == item &&
+        text_input_item->GetWidget()) {
+      new_selection = text_input_item;
+      selection_types = SELECTION_DEFAULT | SELECTION_UPDATE_IMMEDIATELY;
+    }
+  }
   // Setting the selection can indirectly destroy this object via accessibility
   // system callbacks and activation changes. This should be rare but must be
   // protected against.
-  SetSelection(item, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
+  SetSelection(new_selection, selection_types);
   if (!destroy_pending_ && item->HasSubmenu()) {
     OpenMenuImpl(item, false);
   }

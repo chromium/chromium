@@ -15,6 +15,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -108,6 +109,8 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/ime/composition_text.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -140,6 +143,7 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -3417,6 +3421,75 @@ TEST_F(ActionAppMenuWithSearchTest, EscapeAndDeletingQueryRestoreNormalMenu) {
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+// Counts how often the search field loses focus. The menu puts focus back on
+// the field after a rebuild, so checking HasFocus() afterwards cannot tell
+// whether it was blurred in between.
+class SearchFieldBlurCounter : public views::FocusChangeListener {
+ public:
+  explicit SearchFieldBlurCounter(views::Textfield* search_field)
+      : search_field_(search_field) {
+    focus_observation_.Observe(search_field->GetFocusManager());
+  }
+  ~SearchFieldBlurCounter() override = default;
+
+  int blur_count() const { return blur_count_; }
+
+  // views::FocusChangeListener:
+  void OnDidChangeFocus(views::View* focused_before,
+                        views::View* focused_now) override {
+    if (focused_before == search_field_ && focused_now != search_field_) {
+      ++blur_count_;
+    }
+  }
+
+ private:
+  const raw_ptr<views::Textfield> search_field_;
+  int blur_count_ = 0;
+  base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
+      focus_observation_{this};
+};
+
+// Regression test for crbug.com/582788496: an IME composition (e.g. pinyin) in
+// the search field must survive the menu rebuild that each query change
+// triggers.
+TEST_F(ActionAppMenuWithSearchTest, ImeCompositionSurvivesSearchResultRebuild) {
+  ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::Textfield* search_field =
+      GetSearchField(menu.search_bar_for_testing());
+  ASSERT_NE(search_field, nullptr);
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+
+  search_field->RequestFocus();
+  ASSERT_TRUE(search_field->HasFocus());
+  ui::InputMethod* input_method = search_field->GetInputMethod();
+  ASSERT_NE(input_method, nullptr);
+  ASSERT_EQ(input_method->GetTextInputClient(), search_field);
+
+  SearchFieldBlurCounter counter(search_field);
+
+  // The first pinyin letter is below the minimum query length, so the menu is
+  // not rebuilt.
+  ui::CompositionText composition;
+  composition.text = u"n";
+  search_field->SetCompositionText(composition);
+  EXPECT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
+  EXPECT_EQ(counter.blur_count(), 0);
+
+  // The second letter makes the query long enough to search, which rebuilds
+  // the rows below the search bar. The IME must not be interrupted.
+  composition.text = u"ni";
+  search_field->SetCompositionText(composition);
+  ASSERT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+  EXPECT_EQ(counter.blur_count(), 0);
+  EXPECT_EQ(input_method->GetTextInputClient(), search_field);
+  EXPECT_TRUE(search_field->HasCompositionText());
+
   menu.CloseMenu();
 }
 

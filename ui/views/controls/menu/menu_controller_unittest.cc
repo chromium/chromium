@@ -32,6 +32,7 @@
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -5601,6 +5602,78 @@ TEST_F(MenuControllerTest, MenuHostedTextfieldYieldsToOwnerFocusChange) {
   owner->GetFocusManager()->ClearFocus();
   EXPECT_FALSE(textfield->HasFocus());
   EXPECT_FALSE(input_method->GetTextInputClient());
+}
+
+namespace {
+
+// Reports `point` as the cursor location while in scope, so a test that
+// rebuilds menu rows does not depend on where the real pointer is.
+class ScopedCursorScreenPoint : public display::ScreenBase {
+ public:
+  explicit ScopedCursorScreenPoint(const gfx::Point& point)
+      : point_(point),
+        previous_screen_(display::Screen::SetScreenInstance(nullptr)) {
+    ProcessDisplayChanged(previous_screen_->GetPrimaryDisplay(),
+                          /*is_primary=*/true);
+    display::Screen::SetScreenInstance(this);
+  }
+
+  ScopedCursorScreenPoint(const ScopedCursorScreenPoint&) = delete;
+  ScopedCursorScreenPoint& operator=(const ScopedCursorScreenPoint&) = delete;
+
+  ~ScopedCursorScreenPoint() override {
+    display::Screen::SetScreenInstance(nullptr);
+    display::Screen::SetScreenInstance(previous_screen_);
+  }
+
+  // display::ScreenBase:
+  gfx::Point GetCursorScreenPoint() override { return point_; }
+
+ private:
+  const gfx::Point point_;
+  const raw_ptr<display::Screen> previous_screen_;
+};
+
+}  // namespace
+
+// Replacing the rows around a focused menu-hosted Textfield, as a search field
+// does on every query change, keeps the Textfield focused and attached to the
+// InputMethod, so an IME composition survives. This holds even when the pointer
+// rests over another row. Regression test for crbug.com/582788496.
+TEST_F(MenuControllerTest, MenuHostedTextfieldKeepsFocusWhenSiblingRowsChange) {
+  CreateMenu({.show = false});
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  MenuItemView* const first_item = submenu->GetMenuItemAt(0);
+  MenuItemView* const third_item = submenu->GetMenuItemAt(2);
+  Textfield* const textfield = AddTextfieldToMenuItem(first_item);
+  menu_controller()->Run(owner(), /*button_controller=*/nullptr, menu_item(),
+                         gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kNone);
+  DispatchKey(ui::VKEY_DOWN);
+  ASSERT_TRUE(textfield->HasFocus());
+  ui::InputMethod* const input_method = textfield->GetInputMethod();
+  ASSERT_EQ(textfield, input_method->GetTextInputClient());
+  ui::CompositionText composition;
+  composition.text = u"ni";
+  textfield->SetCompositionText(composition);
+  ASSERT_TRUE(textfield->HasCompositionText());
+
+  menu_item()->RemoveMenuItem(submenu->GetMenuItemAt(1));
+  menu_item()->AppendMenuItem(100, u"Result");
+  {
+    const ScopedCursorScreenPoint cursor(
+        third_item->GetBoundsInScreen().CenterPoint());
+    menu_item()->ChildrenChanged();
+  }
+
+  EXPECT_TRUE(textfield->HasFocus());
+  EXPECT_TRUE(menu_controller()->HasFocusedTextfield());
+  EXPECT_EQ(textfield, input_method->GetTextInputClient());
+  EXPECT_TRUE(textfield->HasCompositionText());
+  EXPECT_EQ(u"ni", textfield->GetText());
+  EXPECT_EQ(first_item, pending_state_item());
+
+  menu_controller()->Cancel(MenuController::ExitType::kAll);
 }
 
 namespace {
