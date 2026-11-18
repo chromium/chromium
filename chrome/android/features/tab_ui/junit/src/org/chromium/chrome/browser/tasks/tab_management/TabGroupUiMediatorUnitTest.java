@@ -447,6 +447,77 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
+    public void onClickToolbarButtons_NullCurrentTab() {
+        initAndAssertProperties(mTab2);
+        View.OnClickListener showGroupDialogListener =
+                mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER);
+        View.OnClickListener newTabListener =
+                mModel.get(TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(null);
+
+        showGroupDialogListener.onClick(mView);
+        newTabListener.onClick(mView);
+
+        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        verify(mResetHandler, never()).resetGridWithListOfTabs(any());
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
+    }
+
+    @Test
+    public void onClickToolbarButtons_EmptyGroup() {
+        initAndAssertProperties(mTab2);
+        View.OnClickListener showGroupDialogListener =
+                mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER);
+        View.OnClickListener newTabListener =
+                mModel.get(TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER);
+        // Tab 1 is ungrouped, so its group is empty while the strip is still showing.
+        when(mTabModelSelector.getCurrentTab()).thenReturn(mTab1);
+
+        showGroupDialogListener.onClick(mView);
+        newTabListener.onClick(mView);
+
+        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        verify(mResetHandler, never()).resetGridWithListOfTabs(any());
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
+    }
+
+    @Test
+    public void onClickToolbarButtons_AfterDestroy() {
+        initAndAssertProperties(mTab2);
+        View.OnClickListener showGroupDialogListener =
+                mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER);
+        View.OnClickListener newTabListener =
+                mModel.get(TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER);
+
+        mTabGroupUiMediator.destroy();
+        showGroupDialogListener.onClick(mView);
+        newTabListener.onClick(mView);
+
+        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        verify(mResetHandler, never()).resetGridWithListOfTabs(any());
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
+    }
+
+    @Test
+    public void onClickToolbarButtons_AfterStripHidden() {
+        initAndAssertProperties(mTab2);
+        View.OnClickListener showGroupDialogListener =
+                mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_ON_CLICK_LISTENER);
+        View.OnClickListener newTabListener =
+                mModel.get(TabGroupUiProperties.NEW_TAB_BUTTON_ON_CLICK_LISTENER);
+
+        // Clicks queued on the strip run after it hides, while the current tab is still grouped.
+        mOmniboxFocusStateSupplier.set(true);
+        verifyResetStrip(/* isVisible= */ false, /* tabs= */ null);
+        showGroupDialogListener.onClick(mView);
+        newTabListener.onClick(mView);
+
+        verify(mTabContentManager, never()).cacheTabThumbnail(any());
+        verify(mResetHandler, never()).resetGridWithListOfTabs(any());
+        verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
+    }
+
+    @Test
     public void tabSelection_NotSameGroup_GroupToSingleTab() {
         initAndAssertProperties(mTab2);
 

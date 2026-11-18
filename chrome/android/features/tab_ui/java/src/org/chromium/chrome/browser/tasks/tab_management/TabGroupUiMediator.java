@@ -422,6 +422,9 @@ public class TabGroupUiMediator implements BackPressHandler {
     private void setupToolbarButtons() {
         View.OnClickListener showGroupDialogOnClickListener =
                 _ -> {
+                    // Ignore clicks queued before the strip was hidden or destroyed.
+                    if (mCurrentTabGroupId == null) return;
+
                     // Don't handle taps until fully visible and done animating.
                     @Nullable DialogController controller = getTabGridDialogControllerIfExists();
                     if (controller != null && controller.getShowingOrAnimationSupplier().get()) {
@@ -430,22 +433,26 @@ public class TabGroupUiMediator implements BackPressHandler {
 
                     Tab currentTab = mTabModelSelector.getCurrentTab();
                     if (currentTab == null) return;
+                    List<Tab> tabsInGroup = getTabsInGroup(currentTab);
+                    if (tabsInGroup.isEmpty()) return;
 
                     // Ensure the current tab has a thumbnail.
                     mTabContentManager.cacheTabThumbnail(currentTab);
 
-                    mResetHandler.resetGridWithListOfTabs(getTabsInGroup(currentTab));
+                    mResetHandler.resetGridWithListOfTabs(tabsInGroup);
                     RecordUserAction.record("TabGroup.ExpandedFromStrip.TabGridDialog");
                 };
         mModel.set(SHOW_GROUP_DIALOG_ON_CLICK_LISTENER, showGroupDialogOnClickListener);
 
         View.OnClickListener newTabButtonOnClickListener =
                 _ -> {
-                    Tab currentTab = mTabModelSelector.getCurrentTab();
-                    assumeNonNull(currentTab);
-                    List<Tab> tabsInGroup = getTabsInGroup(currentTab);
+                    // Ignore clicks queued before the strip was hidden or destroyed.
+                    if (mCurrentTabGroupId == null) return;
 
-                    assert !tabsInGroup.isEmpty();
+                    Tab currentTab = mTabModelSelector.getCurrentTab();
+                    if (currentTab == null) return;
+                    List<Tab> tabsInGroup = getTabsInGroup(currentTab);
+                    if (tabsInGroup.isEmpty()) return;
 
                     Profile currentTabProfile = currentTab.getProfile();
                     UrlConstantResolver urlConstantResolver =
@@ -627,6 +634,8 @@ public class TabGroupUiMediator implements BackPressHandler {
         mWidthPxSupplier.removeObserver(mOnWidthChange);
         mThemeColorProvider.removeThemeColorObserver(mThemeColorObserver);
         mThemeColorProvider.removeTintObserver(mTintObserver);
+        // Ensure queued toolbar button clicks that run after destroy() are ignored.
+        mCurrentTabGroupId = null;
     }
 
     private @Nullable DialogController getTabGridDialogControllerIfExists() {
