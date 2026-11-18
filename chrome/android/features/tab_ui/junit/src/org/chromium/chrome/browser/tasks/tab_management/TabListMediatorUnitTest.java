@@ -5682,7 +5682,9 @@ public class TabListMediatorUnitTest {
         verify(mIncognitoTabRemover)
                 .closeTabs(
                         eq(
-                                TabClosureParams.forCloseTabGroup(mIncognitoTabModel, TAB_GROUP_ID)
+                                TabClosureParams.forCloseTabGroup(
+                                                mIncognitoTabModel,
+                                                TabGroupId.fromRawToken(TAB_GROUP_ID))
                                         .allowUndo(true)
                                         .hideTabGroups(false)
                                         .build()),
@@ -5736,7 +5738,8 @@ public class TabListMediatorUnitTest {
         verify(mTabRemover)
                 .closeTabs(
                         eq(
-                                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID)
+                                TabClosureParams.forCloseTabGroup(
+                                                mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID))
                                         .allowUndo(true)
                                         .hideTabGroups(true)
                                         .build()),
@@ -7817,7 +7820,8 @@ public class TabListMediatorUnitTest {
         verify(mTabRemover)
                 .closeTabs(
                         eq(
-                                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID)
+                                TabClosureParams.forCloseTabGroup(
+                                                mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID))
                                         .allowUndo(shouldAllowUndo)
                                         .hideTabGroups(shouldHideTabGroups)
                                         .build()),

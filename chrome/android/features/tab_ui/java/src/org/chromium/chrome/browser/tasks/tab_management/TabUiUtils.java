@@ -68,7 +68,13 @@ public class TabUiUtils {
             boolean allowUndo,
             boolean hideTabGroups,
             @Nullable Callback<Boolean> didCloseCallback) {
-        TabClosureParams.Builder builder = TabClosureParams.forCloseTabGroup(tabModel, tabGroupId);
+        if (tabGroupId == null) {
+            Callback.runNullSafe(didCloseCallback, false);
+            return;
+        }
+
+        TabClosureParams.Builder builder =
+                TabClosureParams.forCloseTabGroup(tabModel, TabGroupId.fromRawToken(tabGroupId));
         if (builder == null) {
             Callback.runNullSafe(didCloseCallback, false);
             return;

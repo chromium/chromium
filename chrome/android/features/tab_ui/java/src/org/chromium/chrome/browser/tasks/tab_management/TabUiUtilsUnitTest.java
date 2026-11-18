@@ -52,6 +52,7 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
@@ -147,7 +148,8 @@ public class TabUiUtilsUnitTest {
         verify(mTabRemover)
                 .closeTabs(
                         eq(
-                                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID)
+                                TabClosureParams.forCloseTabGroup(
+                                                mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID))
                                         .hideTabGroups(hideTabGroups)
                                         .allowUndo(true)
                                         .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
@@ -198,7 +200,8 @@ public class TabUiUtilsUnitTest {
         verify(mTabRemover)
                 .closeTabs(
                         eq(
-                                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID)
+                                TabClosureParams.forCloseTabGroup(
+                                                mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID))
                                         .hideTabGroups(hideTabGroups)
                                         .allowUndo(true)
                                         .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)

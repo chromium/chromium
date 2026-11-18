@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.tabmodel;
 
 import com.google.errorprone.annotations.DoNotMock;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,9 +38,8 @@ public class TabClosureParams {
      * @param tabGroupId The ID of the tab group.
      * @return A builder for the tab group or null if the group is not found.
      */
-    public static @Nullable Builder forCloseTabGroup(
-            TabModel tabModel, @Nullable Token tabGroupId) {
-        List<Tab> relatedTabs = tabModel.getTabsInGroup(tabGroupId);
+    public static @Nullable Builder forCloseTabGroup(TabModel tabModel, TabGroupId tabGroupId) {
+        List<Tab> relatedTabs = tabModel.getTabsInGroup(tabGroupId.getToken());
         if (relatedTabs.isEmpty()) return null;
 
         return closeTabs(relatedTabs).isTabGroup(true);

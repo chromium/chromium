@@ -428,7 +428,9 @@ public class TabsDeterministicSimulationTest {
                                 new ArrayList<>(mCollectionModel.getAllTabGroupIds());
                         Token groupId = groupIds.get(mGlobalRandom.nextInt(groupIds.size()));
                         Log.i(TAG, "closeTabs: closeTabGroup(" + groupId + ")");
-                        var params = TabClosureParams.forCloseTabGroup(mCollectionModel, groupId);
+                        var params =
+                                TabClosureParams.forCloseTabGroup(
+                                        mCollectionModel, TabGroupId.fromRawToken(groupId));
                         if (params != null) {
                             remover.closeTabs(params.build(), false);
                         }

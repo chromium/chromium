@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -165,7 +166,8 @@ public class TabClosureParamsUnitTest {
         List<Tab> tabs = List.of(mTab1, mTab2);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
         TabClosureParams params =
-                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID).build();
+                TabClosureParams.forCloseTabGroup(mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID))
+                        .build();
 
         assertEquals("Tabs should be mTab1, mTab2", tabs, params.tabs);
         assertFalse("Should not be all tabs", params.isAllTabs);
@@ -277,7 +279,8 @@ public class TabClosureParamsUnitTest {
     public void testToBuilder_PreservesIsTabGroup() {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
         TabClosureParams params =
-                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID).build();
+                TabClosureParams.forCloseTabGroup(mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID))
+                        .build();
 
         TabClosureParams copy = params.toBuilder().build();
 

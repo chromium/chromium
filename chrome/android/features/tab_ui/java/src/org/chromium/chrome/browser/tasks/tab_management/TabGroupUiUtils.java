@@ -43,6 +43,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -823,7 +824,8 @@ public class TabGroupUiUtils {
     }
 
     private static boolean closeTabGroup(TabModel tabModel, Token groupId, boolean allowDialog) {
-        TabClosureParams.Builder builder = TabClosureParams.forCloseTabGroup(tabModel, groupId);
+        TabClosureParams.Builder builder =
+                TabClosureParams.forCloseTabGroup(tabModel, TabGroupId.fromRawToken(groupId));
         if (builder == null) {
             return false;
         }

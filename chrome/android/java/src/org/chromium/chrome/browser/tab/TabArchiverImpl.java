@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -316,7 +317,8 @@ public class TabArchiverImpl implements TabArchiver {
                     .closeTabs(
                             assumeNonNull(
                                             TabClosureParams.forCloseTabGroup(
-                                                    regularTabModel, tabGroupId))
+                                                    regularTabModel,
+                                                    TabGroupId.fromRawToken(tabGroupId)))
                                     .hideTabGroups(true)
                                     .allowUndo(false)
                                     .build(),

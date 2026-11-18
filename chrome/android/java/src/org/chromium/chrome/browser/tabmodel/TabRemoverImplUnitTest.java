@@ -59,6 +59,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -414,7 +415,9 @@ public class TabRemoverImplUnitTest {
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID.tabGroupId)).thenReturn(List.of(tab0));
         TabClosureParams params =
-                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID.tabGroupId).build();
+                TabClosureParams.forCloseTabGroup(
+                                mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID.tabGroupId))
+                        .build();
 
         mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
@@ -810,7 +813,9 @@ public class TabRemoverImplUnitTest {
         Tab tab1 = mTabModel.addTab(/* id= */ 1);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID.tabGroupId)).thenReturn(List.of(tab0));
         TabClosureParams params =
-                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID.tabGroupId).build();
+                TabClosureParams.forCloseTabGroup(
+                                mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID.tabGroupId))
+                        .build();
         assertTrue("Precondition: should be a tab group closure", params.isTabGroup);
 
         TabClosureParams newParams =

@@ -54,6 +54,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -418,7 +419,9 @@ public class TabbedModeTabModelStoreTest {
                             assertNotNull(groupIdInternal);
 
                             TabClosureParams params =
-                                    TabClosureParams.forCloseTabGroup(mTabModel, groupIdInternal)
+                                    TabClosureParams.forCloseTabGroup(
+                                                    mTabModel,
+                                                    TabGroupId.fromRawToken(groupIdInternal))
                                             .allowUndo(true)
                                             .build();
                             mTabModel.getTabRemover().closeTabs(params, /* allowDialog= */ false);
@@ -530,7 +533,8 @@ public class TabbedModeTabModelStoreTest {
                             Token id = mTabModel.getTabById(tabId1).getTabGroupId();
                             assertNotNull(id);
                             TabClosureParams params =
-                                    TabClosureParams.forCloseTabGroup(mTabModel, id)
+                                    TabClosureParams.forCloseTabGroup(
+                                                    mTabModel, TabGroupId.fromRawToken(id))
                                             .allowUndo(false)
                                             .build();
                             mTabModel.getTabRemover().closeTabs(params, /* allowDialog= */ false);

@@ -155,6 +155,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
@@ -1672,7 +1673,8 @@ public class TabGridDialogMediatorUnitTest {
         verify(mTabRemover)
                 .closeTabs(
                         eq(
-                                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID)
+                                TabClosureParams.forCloseTabGroup(
+                                                mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID))
                                         .allowUndo(shouldAllowUndo)
                                         .hideTabGroups(shouldHideTabGroups)
                                         .tabClosingSource(TabClosingSource.BOTTOM_TAB_GROUP_STRIP)
