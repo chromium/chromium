@@ -62,6 +62,7 @@
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -90,6 +91,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/webauthn/passkey_unlock_error_strings.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
@@ -133,11 +135,14 @@
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_device_info/test_device_info_builder.h"
+#include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -2353,7 +2358,7 @@ PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
     kActionableItems_PasskeyUnlockError,
     ProfileMenuClickTest_PasskeyUnlockError,
     /*enabled_features=*/{device::kPasskeyUnlockErrorUi},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{device::kPasskeyUnlockIdentityErrorUi}) {
   // For ensuring that the Passkey unlock card will be displayed we need to
   // ensure that we are in signed-in state, and that the sync history is
   // enabled.
@@ -2385,12 +2390,83 @@ PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
     kActionableItems_PasskeyUnlockError_WhenUnconsentedAccountSignedIn,
     ProfileMenuClickTest_PasskeyUnlockError_WhenUnconsentedAccountSignedIn,
     /*enabled_features=*/{device::kPasskeyUnlockErrorUi},
-    /*disabled_features=*/{}) {
+    /*disabled_features=*/{device::kPasskeyUnlockIdentityErrorUi}) {
   // Ensuring that we are in the state when sync-the-transport is enabled but
   // sync-the-feature is not enabled. In this case we can already display a
   // passkey promo.
   Signin();
   RunTest();
+}
+
+class ProfileMenuViewPasskeyUnlockIdentityErrorTest
+    : public ProfileMenuViewBrowserTest {
+ public:
+  ProfileMenuViewPasskeyUnlockIdentityErrorTest() {
+    feature_list_.InitWithFeatures(
+        {device::kPasskeyUnlockErrorUi, device::kPasskeyUnlockIdentityErrorUi},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewPasskeyUnlockIdentityErrorTest,
+                       OpenPasskeyUnlockTab) {
+  Profile* profile = browser()->GetProfile();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, kTestEmail, signin::ConsentLevel::kSignin);
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile));
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin,
+                            account_info.GetCoreAccountInfo());
+  sync_service->SetPasskeysLocked(true);
+  ASSERT_EQ(sync_service->GetUserActionableError(),
+            syncer::SyncService::UserActionableError::kPasskeysLocked);
+
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
+  ASSERT_TRUE(profile_menu_view());
+
+  // Advance focus to the first actionable item in the menu (the Sync error
+  // button) and click it with `perform_menu_actions` enabled.
+  profile_menu_view()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+  views::View* focused_item =
+      profile_menu_view()->GetFocusManager()->GetFocusedView();
+  ASSERT_TRUE(focused_item);
+  auto* error_button = views::AsViewClass<views::LabelButton>(focused_item);
+  ASSERT_TRUE(error_button);
+  EXPECT_EQ(error_button->GetText(),
+            webauthn::GetPasskeyErrorProfileMenuButtonLabel());
+
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
+  const int initial_tab_count = tab_strip->count();
+  base::HistogramTester histogram_tester;
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  Click(focused_item);
+  content::WebContents* unlock_tab = tab_waiter.Wait();
+
+  EXPECT_EQ(tab_strip->count(), initial_tab_count + 1);
+  ASSERT_TRUE(unlock_tab);
+  EXPECT_EQ(tab_strip->GetActiveWebContents(), unlock_tab);
+  EXPECT_EQ(unlock_tab->GetVisibleURL(),
+            GaiaUrls::GetInstance()->SigninChromePasskeyUnlockUrl(
+                /*account_index=*/0));
+  histogram_tester.ExpectUniqueSample(
+      "Profile.Menu.ClickedActionableItem",
+      ProfileMenuViewBase::ActionableItem::kSyncErrorButton,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.RecoveryFlowTriggeredEndpoint",
+      trusted_vault::TrustedVaultRecoveryFlowEndpoint::kDesktop,
+      /*expected_bucket_count=*/1);
+  TrustedVaultEncryptionKeysTabHelper* tab_helper =
+      TrustedVaultEncryptionKeysTabHelper::FromWebContents(unlock_tab);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->user_action_trigger(),
+            trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                kPasskeyUnlockProfileMenu);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

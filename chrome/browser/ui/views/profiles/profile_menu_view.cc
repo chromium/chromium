@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/web_app_id_constants.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -86,8 +87,10 @@
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/subscription_eligibility/ai_subscription_tier_names.h"
 #include "components/sync/service/sync_service.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/vector_icons/vector_icons.h"
+#include "device/fido/public/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
@@ -130,6 +133,11 @@ std::u16string GetSyncErrorButtonText(
           signin::ConsentLevel::kSync)) {
     // Only shown for "Sync-the-feature".
     return l10n_util::GetStringUTF16(IDS_SYNC_RELOGIN_BUTTON_MAYBE_TITLE_CASE);
+  }
+
+  if (error == syncer::SyncService::UserActionableError::kPasskeysLocked) {
+    CHECK(base::FeatureList::IsEnabled(device::kPasskeyUnlockIdentityErrorUi));
+    return webauthn::GetPasskeyErrorProfileMenuButtonLabel();
   }
 
   return l10n_util::GetStringUTF16(
@@ -376,8 +384,11 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
               kProfileMenu);
       break;
     case syncer::SyncService::UserActionableError::kPasskeysLocked:
-      // TODO(crbug.com/470338958): Handle `kPasskeysLocked` in the profile
-      // menu.
+      CHECK(
+          base::FeatureList::IsEnabled(device::kPasskeyUnlockIdentityErrorUi));
+      webauthn::PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
+          &browser(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                          kPasskeyUnlockProfileMenu);
       break;
     case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();
