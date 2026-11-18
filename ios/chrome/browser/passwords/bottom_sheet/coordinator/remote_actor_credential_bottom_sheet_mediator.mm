@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_mediator.h"
 
-#import <UIKit/UIKit.h>
-
 #import <memory>
 #import <optional>
 #import <utility>
@@ -17,7 +15,6 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "base/types/expected.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
@@ -33,6 +30,7 @@
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_credential_sharing_delegate_bridge.h"
 #import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_utils.h"
+#import "ios/chrome/browser/shared/ui/util/accessibility_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
 #import "url/origin.h"
@@ -40,16 +38,6 @@
 namespace {
 
 using password_manager::RemoteActorCredentialSharingResult;
-
-// Time to wait before finishing the flow in the success confirmation state.
-// Matches the autofill save bottom sheets.
-constexpr base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
-
-// Time to wait before finishing the flow in the success confirmation state when
-// VoiceOver is running. Longer than `kConfirmationDismissDelay` to give
-// VoiceOver enough time to read the announcement.
-constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
-    base::Seconds(5);
 
 }  // namespace
 
@@ -301,10 +289,7 @@ constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
   [_consumer showConfirmationState];
 
   __weak __typeof(self) weakSelf = self;
-  _confirmationTimer.Start(FROM_HERE,
-                           UIAccessibilityIsVoiceOverRunning()
-                               ? kConfirmationDismissDelayIfVoiceOverRunning
-                               : kConfirmationDismissDelay,
+  _confirmationTimer.Start(FROM_HERE, GetConfirmationDismissDelay(),
                            base::BindOnce(^{
                              [weakSelf finishWithSuccess];
                            }));

@@ -138,6 +138,15 @@ source_set("omnibox_util") {
   ]
 }
 
+source_set("accessibility_util") {
+  sources = [
+    "accessibility_util.h",
+    "accessibility_util.mm",
+  ]
+  public_deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("url_with_title") {
   sources = [
     "url_with_title.h",

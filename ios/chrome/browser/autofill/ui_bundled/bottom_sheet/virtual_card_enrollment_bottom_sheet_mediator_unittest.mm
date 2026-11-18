@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/ui/util/accessibility_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -24,10 +25,6 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/gfx/image/image_skia.h"
 #import "ui/gfx/image/image_unittest_util.h"
-
-// Expected time delay between showing the confirmation and dismissing the
-// virtual card enrollment prompt.
-const base::TimeDelta kExpectedConfirmationDismissDelay = base::Seconds(1.5);
 
 @interface TestVirtualCardEnrollmentBottomSheetConsumer
     : NSObject <VirtualCardEnrollmentBottomSheetConsumer>
@@ -318,8 +315,7 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
   // Do not dismiss before the delay.
   OCMReject([mock_browser_coordinator_handler_
       legacyDismissVirtualCardEnrollmentBottomSheet]);
-  task_env_.FastForwardBy(kExpectedConfirmationDismissDelay -
-                          base::Milliseconds(1));
+  task_env_.FastForwardBy(kConfirmationDismissDelay - base::Milliseconds(1));
 
   EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
 }
@@ -335,7 +331,7 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
   // Dismiss after the delay.
   OCMExpect([mock_browser_coordinator_handler_
       legacyDismissVirtualCardEnrollmentBottomSheet]);
-  task_env_.FastForwardBy(kExpectedConfirmationDismissDelay);
+  task_env_.FastForwardBy(kConfirmationDismissDelay);
 
   EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
 }

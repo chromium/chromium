@@ -21,26 +21,9 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/browser/shared/ui/util/accessibility_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ui/gfx/image/image.h"
-
-namespace {
-// Time duration to wait before auto-closing modal in save card success
-// confirmation state.
-static constexpr base::TimeDelta kConfirmationStateDuration =
-    base::Seconds(1.5);
-
-// Time duration to wait before auto-closing modal in save card success
-// confirmation state when VoiceOver is running. This is slightly greater than
-// `kConfirmationStateDuration` to give VoiceOver enough time to read the
-// required content.
-// TODO(crbug.com/413009143): When VO is running do not use this and listen for
-// VO announcement to finish before auto-closing the modal in confirmation
-// state.
-static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
-    base::Seconds(5);
-
-}  // namespace
 
 @interface SaveCardInfobarModalOverlayMediator ()
 // The save card modal config from the request.
@@ -330,11 +313,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   // Auto close modal after showing successful card save confirmation.
   __weak __typeof(self) weakSelf = self;
   _autoCloseConfirmationTimer.Start(
-      FROM_HERE,
-      UIAccessibilityIsVoiceOverRunning()
-          ? kConfirmationStateDurationIfVoiceOverRunning
-          : kConfirmationStateDuration,
-      base::BindOnce(^{
+      FROM_HERE, GetConfirmationDismissDelay(), base::BindOnce(^{
         [weakSelf dimissConfirmationStateOnTimeout];
       }));
 }

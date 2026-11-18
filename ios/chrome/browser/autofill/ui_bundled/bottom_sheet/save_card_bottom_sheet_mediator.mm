@@ -10,7 +10,6 @@
 
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_model/data_model_util.h"
@@ -20,12 +19,12 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/util/autofill_credit_card_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/util/autofill_settings_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/shared/ui/util/accessibility_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -56,16 +55,6 @@ class ModelObserverBridge
                           ModelObserverBridge>
       scoped_model_observation_{this};
 };
-
-// Time duration to wait before auto dismissing the bottomsheet in success
-// confirmation state when VoiceOver is running. This is slightly greater than
-// `kConfirmationStateDuration` to give VoiceOver enough time to read the
-// required content.
-// TODO(crbug.com/413009143): When VO is running do not use this and listen for
-// VO announcement to finish before auto dismissing the bottomsheet in
-// confirmation state.
-static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
-    base::Seconds(5);
 
 std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
   std::u16string month;
@@ -439,10 +428,7 @@ std::pair<NSString*, NSString*> ParseExpirationDate(NSString* expirationDate) {
   // Auto dismiss bottomsheet after showing successful save card confirmation.
   __weak __typeof(self) weakSelf = self;
   _autoDismissConfirmationTimer.Start(
-      FROM_HERE,
-      UIAccessibilityIsVoiceOverRunning()
-          ? kConfirmationDismissDelayIfVoiceOverRunning
-          : kConfirmationDismissDelay,
+      FROM_HERE, GetConfirmationDismissDelay(),
       base::BindOnce(
           [](__weak __typeof(self) weakSelf) {
             if (weakSelf) {

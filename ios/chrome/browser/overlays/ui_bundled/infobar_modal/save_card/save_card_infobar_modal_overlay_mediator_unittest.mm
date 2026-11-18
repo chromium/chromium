@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card/save_card_infobar_modal_overlay_mediator_delegate.h"
+#import "ios/chrome/browser/shared/ui/util/accessibility_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -40,11 +41,6 @@ using SaveCreditCardPromptResultIOS =
     autofill::autofill_metrics::SaveCreditCardPromptResultIOS;
 using SaveCreditCardOptions =
     autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions;
-
-// Time duration to wait before auto-closing modal in save card success
-// confirmation state.
-static constexpr base::TimeDelta kConfirmationStateDuration =
-    base::Seconds(1.5);
 
 // Details of the card to be saved.
 constexpr NSString* kCardHolderName = @"Name";
@@ -571,7 +567,7 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
   EXPECT_CALL(*delegate_, SetInfobarIsPresenting(NO));
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   EXPECT_CALL(*delegate_, OnConfirmationClosed);
-  task_environment()->FastForwardBy(kConfirmationStateDuration);
+  task_environment()->FastForwardBy(kConfirmationDismissDelay);
 }
 
 // Tests that modal is not auto-closed and
@@ -590,9 +586,9 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
   EXPECT_CALL(*delegate_, OnConfirmationClosed).Times(0);
 
   // Advance timer slightly less than the actual timeout duration i.e
-  // `kConfirmationStateDuration`.
+  // `kConfirmationDismissDelay`.
   base::TimeDelta delta = base::Seconds(0.5);
-  task_environment()->FastForwardBy(kConfirmationStateDuration - delta);
+  task_environment()->FastForwardBy(kConfirmationDismissDelay - delta);
   EXPECT_EQ(delta, task_environment()->NextMainThreadPendingTaskDelay());
 }
 
@@ -663,7 +659,7 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
   EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissInfobarModal:nil];
-  task_environment()->FastForwardBy(kConfirmationStateDuration);
+  task_environment()->FastForwardBy(kConfirmationDismissDelay);
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
@@ -691,7 +687,7 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
   // reason for dismissal as `kNotInteracted`.
   EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
-  task_environment()->FastForwardBy(kConfirmationStateDuration);
+  task_environment()->FastForwardBy(kConfirmationDismissDelay);
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",

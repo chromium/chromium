@@ -19,18 +19,8 @@
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/message/autofill_legal_message_line.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
-
-// Time duration to wait before auto dismissing the bottomsheet in success
-// confirmation state when VoiceOver is running. This is slightly greater than
-// `kConfirmationStateDuration` to give VoiceOver enough time to read the
-// required content.
-// TODO(crbug.com/413009143): When VO is running do not use this and listen for
-// VO announcement to finish before auto dismissing the bottomsheet in
-// confirmation state.
-static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
-    base::Seconds(5);
+#import "ios/chrome/browser/shared/ui/util/accessibility_util.h"
 
 @interface AutofillAISaveEntityMediator () <
     IOSAutofillEntityDataManagerObserver> {
@@ -273,10 +263,7 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
 
   __weak __typeof(self) weakSelf = self;
   _autoDismissConfirmationTimer.Start(
-      FROM_HERE,
-      UIAccessibilityIsVoiceOverRunning()
-          ? kConfirmationDismissDelayIfVoiceOverRunning
-          : kConfirmationDismissDelay,
+      FROM_HERE, GetConfirmationDismissDelay(),
       base::BindOnce(
           [](__weak __typeof(self) weakSelf) {
             [weakSelf dismissConfirmationStateOnTimeout];

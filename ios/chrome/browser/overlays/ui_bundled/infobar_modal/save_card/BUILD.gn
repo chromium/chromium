@@ -29,6 +29,7 @@ source_set("save_card") {
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:mediators",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:accessibility_util",
     "//ui/base",
     "//ui/gfx",
   ]
@@ -64,6 +65,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/ui_bundled/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/ui/util:accessibility_util",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",

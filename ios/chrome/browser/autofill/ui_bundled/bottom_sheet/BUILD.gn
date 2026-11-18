@@ -23,7 +23,7 @@ source_set("constants") {
     "bottom_sheet_constants.h",
     "bottom_sheet_constants.mm",
   ]
-  deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("bottom_sheet") {
@@ -151,7 +151,6 @@ source_set("save_card_bottom_sheet_view_controller") {
     "//build:branding_buildflags",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill/model/message",
-    "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
     "//ios/chrome/browser/autofill/ui_bundled/util",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
@@ -197,7 +196,6 @@ source_set("save_card_bottom_sheet_mediator") {
     "save_card_bottom_sheet_mediator.mm",
   ]
   deps = [
-    ":constants",
     ":save_card_bottom_sheet_consumer",
     ":save_card_bottom_sheet_mutator",
     "//base",
@@ -210,6 +208,7 @@ source_set("save_card_bottom_sheet_mediator") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:accessibility_util",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -219,7 +218,6 @@ source_set("save_card_bottom_sheet_mediator_unittest") {
   testonly = true
   sources = [ "save_card_bottom_sheet_mediator_unittest.mm" ]
   deps = [
-    ":constants",
     ":save_card_bottom_sheet_consumer",
     ":save_card_bottom_sheet_mediator",
     "//base",
@@ -233,6 +231,7 @@ source_set("save_card_bottom_sheet_mediator_unittest") {
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/autofill/ui_bundled:ui_type",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util:accessibility_util",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
@@ -299,7 +298,6 @@ source_set("virtual_card_enrollment_bottom_sheet_mediator") {
     "virtual_card_enrollment_bottom_sheet_mediator.mm",
   ]
   deps = [
-    ":constants",
     ":virtual_card_enrollment_bottom_sheet_consumer",
     ":virtual_card_enrollment_bottom_sheet_data",
     ":virtual_card_enrollment_bottom_sheet_mutator",
@@ -308,6 +306,7 @@ source_set("virtual_card_enrollment_bottom_sheet_mediator") {
     "//ios/chrome/browser/autofill/model/credit_card",
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util:accessibility_util",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -350,6 +349,7 @@ source_set("virtual_card_enrollment_bottom_sheet_mediator_unittest") {
     "//components/autofill/core/browser:test_support",
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/util:accessibility_util",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/gfx:test_support",
@@ -370,7 +370,6 @@ source_set("virtual_card_enrollment_bottom_sheet_view_controller") {
     "//components/resources:components_scaled_resources_grit",
     "//components/strings",
     "//ios/chrome/browser/autofill/model/message",
-    "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet/resources",
     "//ios/chrome/browser/autofill/ui_bundled/util",
     "//ios/chrome/browser/net/model:crurl",
