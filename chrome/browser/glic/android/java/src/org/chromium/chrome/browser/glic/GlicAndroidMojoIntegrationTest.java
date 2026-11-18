@@ -248,4 +248,42 @@ public class GlicAndroidMojoIntegrationTest {
                     Assert.assertFalse(service.isTabPinnedToAnyInstance(tabs));
                 });
     }
+
+    @Test
+    @LargeTest
+    public void testInvokeWithConversation_NullTab_DoesNotOpenGlic() {
+        // Glic is a bottom sheet on a tab, so a tab-less call opens nothing.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        getService()
+                                .invokeWithConversation(
+                                        /* tab= */ null,
+                                        "test-conv-null-tab",
+                                        GlicInvocationSource.UNSUPPORTED));
+        // Instances are created synchronously, so a tab-less call that opened Glic shows one here.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertEquals(0, getService().getRecentlyActiveInstances(10).size()));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        getService()
+                                .invokeWithConversation(
+                                        mTab, "test-conv-1", GlicInvocationSource.UNSUPPORTED));
+        waitForWebClientConnected();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertEquals(1, getService().getRecentlyActiveInstances(10).size()));
+        CriteriaHelper.pollUiThread(
+                this::isGlicSheetShowing,
+                MOJO_BINDING_TIMEOUT_MS,
+                MOJO_BINDING_POLLING_INTERVAL_MS);
+    }
+
+    /** Must be called on the UI thread. */
+    private boolean isGlicSheetShowing() {
+        TabbedRootUiCoordinator coordinator =
+                (TabbedRootUiCoordinator)
+                        mActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
+        return coordinator.getTabBottomSheetManagerForTesting().isSheetShowing();
+    }
 }

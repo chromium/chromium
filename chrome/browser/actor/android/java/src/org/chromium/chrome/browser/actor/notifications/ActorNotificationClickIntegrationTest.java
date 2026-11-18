@@ -20,11 +20,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -61,14 +64,18 @@ import org.chromium.chrome.browser.actor.ActorTaskJni;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceController;
 import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceManager;
+import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.glic.GlicIntentConstants;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -78,6 +85,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -571,12 +580,17 @@ public class ActorNotificationClickIntegrationTest {
                 postRoutedTaskNotification(taskId, ActorTaskState.ACTING, actingTab);
         var watcher =
                 expectRoutedTapHistograms(ActorTaskState.ACTING, /* expectConversationId= */ true);
+        var bringToFrontWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Intent.BringTabToFront.Result",
+                        ChromeLauncherActivity.BringTabToFrontResult.SUCCESS);
 
         getPostedNotification(notificationManager, taskId).contentIntent.send();
 
         waitForSelectedTab(actingTab);
         verifyGlicOpenedOn(actingTab);
         watcher.assertExpected();
+        bringToFrontWatcher.assertExpected();
         assertNotNull(
                 "Tapping a running task must keep its notification",
                 getPostedNotification(notificationManager, taskId));
@@ -602,6 +616,103 @@ public class ActorNotificationClickIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(() -> {});
         verify(mGlicKeyedService, never()).invokeWithConversation(any(), anyString(), anyInt());
         watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING,
+        ChromeFeatureList.MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER
+    })
+    public void testUntrustedIntentWithActorExtras_ToLauncher_DoesNotRoute() throws Exception {
+        int taskId = 305;
+        Tab actingTab = startWithActingTabInBackground();
+        MockNotificationManagerProxy notificationManager =
+                postRoutedTaskNotification(taskId, ActorTaskState.FINISHED, actingTab);
+        Tab selectedTab = mActivityTestRule.getActivityTab();
+        // Spoofed intents with actor extras still record the click.
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Actor.Notification.ClickTaskState", ActorTaskState.FINISHED)
+                        .expectNoRecords("Actor.Notification.FetchTabId.Status")
+                        .expectNoRecords("Android.Intent.BringTabToFront.Result")
+                        .build();
+
+        Intent intent =
+                new Intent()
+                        .setClass(mContext, ChromeLauncherActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        .putExtra(IntentHandler.BRING_TAB_TO_FRONT_EXTRA, actingTab.getId())
+                        .putExtra(
+                                IntentHandler.BRING_TAB_TO_FRONT_SOURCE_EXTRA,
+                                IntentHandler.BringToFrontSource.NOTIFICATION)
+                        .putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true)
+                        .putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId)
+                        .putExtra(
+                                NotificationConstants.EXTRA_ACTOR_TASK_STATE,
+                                ActorTaskState.FINISHED)
+                        .putExtra(
+                                GlicIntentConstants.EXTRA_CONVERSATION_ID, ROUTED_CONVERSATION_ID);
+        mContext.startActivity(intent);
+
+        // The rest of the intent is handled synchronously after the click is recorded.
+        watcher.pollInstrumentationThreadUntilSatisfied();
+        ThreadUtils.runOnUiThreadBlocking(() -> {});
+        watcher.assertExpected();
+        assertEquals(selectedTab, mActivityTestRule.getActivityTab());
+        verify(mGlicKeyedService, never()).invokeWithConversation(any(), anyString(), anyInt());
+        assertNotNull(
+                "Spoofed intent must not dismiss the notification",
+                findPostedNotification(notificationManager, taskId));
+    }
+
+    @Test
+    @MediumTest
+    public void testNotificationTapAfterActivityFinished_RestoresTabAndRecordsNotificationLaunch()
+            throws Exception {
+        int taskId = 306;
+        Tab actingTab = startWithActingTabInBackground();
+        int actingTabId = actingTab.getId();
+        // Finishing the last activity starts a foreground service whose notification needs a real
+        // channel, which the mocked notification manager would not create.
+        Resources resources = mContext.getResources();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        new ChannelsInitializer(
+                                        new NotificationManagerProxyImpl(),
+                                        ChromeChannelDefinitions.getInstance(),
+                                        resources)
+                                .safeInitialize(ChromeChannelDefinitions.ChannelId.BROWSER));
+        MockNotificationManagerProxy notificationManager =
+                postRoutedTaskNotification(taskId, ActorTaskState.ACTING, actingTab);
+        Notification notification = getPostedNotification(notificationManager, taskId);
+        ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "MobileStartup.LaunchCause", LaunchCauseMetrics.LaunchCause.NOTIFICATION);
+
+        ChromeTabbedActivity activity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.CREATED,
+                        () -> {
+                            try {
+                                notification.contentIntent.send();
+                            } catch (PendingIntent.CanceledException e) {
+                                throw new AssertionError(e);
+                            }
+                        });
+        mActivityTestRule.setActivity(activity);
+        mActivityTestRule.waitForActivityCompletelyLoaded();
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab tab = mActivityTestRule.getActivityTab();
+                    return tab != null && tab.getId() == actingTabId;
+                },
+                "The restored acting tab was not selected");
+        watcher.pollInstrumentationThreadUntilSatisfied();
     }
 
     /**

@@ -37,10 +37,18 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.actor.notifications.ActorNotificationFactory;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -57,6 +65,7 @@ public class ChromeLauncherActivityTest {
 
     private static final int TEST_TAB_ID = 100;
     private static final int TEST_WINDOW_ID = 2;
+    private static final int ACTOR_TASK_ID = 7;
 
     private static final String HISTOGRAM_BRING_TAB_TO_FRONT_RESULT =
             "Android.Intent.BringTabToFront.Result";
@@ -119,6 +128,9 @@ public class ChromeLauncherActivityTest {
     @Mock private ActivityManager mActivityManager;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private TabModel mTabModel;
+    @Mock private Profile mProfile;
+    @Mock private ActorKeyedService mActorKeyedService;
+    @Mock private ActorTask mActorTask;
 
     public static class TestChromeLauncherActivity extends ChromeLauncherActivity {}
 
@@ -336,5 +348,70 @@ public class ChromeLauncherActivityTest {
         Assert.assertTrue(launcherActivity.isFinishing());
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER})
+    public void testActorNotificationIntent_ProfileNotInitialized_LeavesTabUnresolved() {
+        Assert.assertFalse(ProfileManager.isInitialized());
+        Intent intent = createActorNotificationIntent();
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(HISTOGRAM_BRING_TAB_TO_FRONT_RESULT)
+                        .build();
+
+        ChromeLauncherActivity launcherActivity =
+                Robolectric.buildActivity(TestChromeLauncherActivity.class, intent).create().get();
+
+        Assert.assertEquals(
+                Tab.INVALID_TAB_ID,
+                launcherActivity
+                        .getIntent()
+                        .getIntExtra(IntentHandler.BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID));
+        verify(mTabWindowManager, never()).getTabWindowInfoById(anyInt());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER})
+    public void testActorNotificationIntent_ProfileInitialized_StampsAndRoutesToTaskTab() {
+        Intent intent = createActorNotificationIntent();
+        stubTaskTabInWindow(TEST_WINDOW_ID);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        HISTOGRAM_BRING_TAB_TO_FRONT_RESULT,
+                        ChromeLauncherActivity.BringTabToFrontResult.SUCCESS);
+
+        ChromeLauncherActivity launcherActivity =
+                Robolectric.buildActivity(TestChromeLauncherActivity.class, intent).create().get();
+
+        Assert.assertEquals(
+                TEST_TAB_ID,
+                launcherActivity
+                        .getIntent()
+                        .getIntExtra(IntentHandler.BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID));
+        Assert.assertTrue(mTabbedActivity.mOnNewIntentCalled);
+        histogramWatcher.assertExpected();
+    }
+
+    private void stubTaskTabInWindow(int windowId) {
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        when(mActorKeyedService.getTask(ACTOR_TASK_ID)).thenReturn(mActorTask);
+        when(mActorTask.getTargetTabId()).thenReturn(TEST_TAB_ID);
+        TabWindowInfo tabWindowInfo =
+                new TabWindowInfo(windowId, mTabModelSelector, mTabModel, mTab);
+        when(mTabWindowManager.getTabWindowInfoById(TEST_TAB_ID)).thenReturn(tabWindowInfo);
+        when(mActivityManager.getAppTasks()).thenReturn(Collections.emptyList());
+    }
+
+    private static Intent createActorNotificationIntent() {
+        Intent intent =
+                IntentHandler.createTrustedBringTabToFrontIntent(
+                        Tab.INVALID_TAB_ID, IntentHandler.BringToFrontSource.NOTIFICATION);
+        intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, ACTOR_TASK_ID);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, ActorTaskState.FINISHED);
+        return intent;
     }
 }
