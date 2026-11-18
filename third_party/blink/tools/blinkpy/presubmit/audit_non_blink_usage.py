@@ -163,6 +163,7 @@ _CONFIG = [
             'base::ScopedFD',
             'base::Seconds',
             'base::ShouldRecordSubsampledMetric',
+            'base::ShouldUseStatefulMemoryPressure',
             'base::sequence_manager::TaskTimeObserver',
             'base::sequence_manager::SequenceManager',
             'base::SequencedTaskRunner',

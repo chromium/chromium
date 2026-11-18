@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/feature_list.h"
@@ -54,6 +55,8 @@ constexpr base::MemoryConsumerTraits kGrShaderCacheTraits(
     // Recompiling shaders is slow and causes jank during rendering.
     base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
 
+constexpr std::string_view kMemoryConsumerName = "GrShaderCache";
+
 }  // namespace
 
 GrShaderCache::GrShaderCache(size_t max_cache_size_bytes, Client* client)
@@ -63,7 +66,7 @@ GrShaderCache::GrShaderCache(size_t max_cache_size_bytes, Client* client)
       store_(Store::NO_AUTO_EVICT),
       client_(client),
       memory_consumer_registration_(
-          "GrShaderCache",
+          kMemoryConsumerName,
           kGrShaderCacheTraits,
           this,
           base::AsyncMemoryConsumerRegistration::CheckUnregister::kEnabled) {
@@ -214,7 +217,7 @@ bool GrShaderCache::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
 
 void GrShaderCache::OnUpdateMemoryLimit() {
   base::AutoLock auto_lock(lock_);
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     base::MemoryLimit clamped_memory_limit =
         std::clamp(memory_limit(), base::kCriticalMemoryPressureThreshold,
                    base::kNoMemoryPressureThreshold);
@@ -235,7 +238,7 @@ void GrShaderCache::OnReleaseMemory() {
   current_max_size_bytes_ = target_limit;
   EnforceLimits(0u);
 
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     current_max_size_bytes_ = cache_size_limit_;
   }
 }

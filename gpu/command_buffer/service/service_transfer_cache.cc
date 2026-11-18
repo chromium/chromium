@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/byte_size.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/utils.h"
@@ -448,7 +447,8 @@ int ServiceTransferCache::RemoveOldEntriesUntil(
 }
 
 void ServiceTransferCache::OnUpdateMemoryLimit(base::MemoryLimit memory_limit) {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(
+          kGpuChannelManagerMemoryConsumerName)) {
     size_t target_limit = gpu::UpdateShaderCacheSizeOnMemoryLimit(
         max_cache_size_limit_, memory_limit);
     // Ensure no memory is released during OnUpdateMemoryLimit.
@@ -458,7 +458,8 @@ void ServiceTransferCache::OnUpdateMemoryLimit(base::MemoryLimit memory_limit) {
 
 void ServiceTransferCache::OnReleaseMemory(base::MemoryLimit memory_limit) {
   AssertContextCurrentOrLost();
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(
+          kGpuChannelManagerMemoryConsumerName)) {
     // In OnUpdateMemoryLimit(), cache_size_limit_ is clamped to total_size_
     // to avoid unexpected eviction during subsequent CreateLocalEntry() calls.
     // When OnReleaseMemory() is called to explicitly free memory, we must

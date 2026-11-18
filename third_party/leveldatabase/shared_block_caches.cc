@@ -5,9 +5,9 @@
 #include "third_party/leveldatabase/shared_block_caches.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
@@ -28,6 +28,8 @@ constexpr base::MemoryConsumerTraits kSharedBlockCachesTraits(
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Registered with AsyncMemoryConsumerRegistration.
     base::MemoryConsumerTraits::ExecutionType::kAsynchronous);
+
+constexpr std::string_view kMemoryConsumerName = "SharedBlockCaches";
 
 }  // namespace
 
@@ -58,14 +60,14 @@ SharedBlockCaches::~SharedBlockCaches() {
 void SharedBlockCaches::RegisterMemoryConsumer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   registration_.emplace(
-      "SharedBlockCaches", kSharedBlockCachesTraits, this,
+      kMemoryConsumerName, kSharedBlockCachesTraits, this,
       // Leaked when owned by the leveldb_chrome globals.
       base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled);
 }
 
 void SharedBlockCaches::OnUpdateMemoryLimit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return;
   }
   // Grow the caches to the target capacity, or prevent them from growing past
@@ -87,7 +89,7 @@ void SharedBlockCaches::OnUpdateMemoryLimit() {
 
 void SharedBlockCaches::OnReleaseMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     SetCapacity(memory_limit().Scale(default_capacity_));
     return;
   }

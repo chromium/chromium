@@ -114,6 +114,9 @@ skgpu::VulkanBackendContext GetBackendContextParams(
   return backend_context;
 }
 
+constexpr std::string_view kMemoryConsumerName =
+    "VulkanInProcessContextProvider";
+
 }  // namespace
 
 // static
@@ -170,7 +173,7 @@ VulkanInProcessContextProvider::VulkanInProcessContextProvider(
       active_sync_cpu_memory_limit_(sync_cpu_memory_limit) {
   memory_consumer_registration_ =
       std::make_unique<base::AsyncMemoryConsumerRegistration>(
-          "VulkanInProcessContextProvider", kMemoryConsumerTraits, this);
+          kMemoryConsumerName, kMemoryConsumerTraits, this);
 }
 
 VulkanInProcessContextProvider::~VulkanInProcessContextProvider() {
@@ -334,7 +337,7 @@ std::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()
     return std::nullopt;
   }
 
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return active_sync_cpu_memory_limit_.load(std::memory_order_relaxed);
   }
 
@@ -360,7 +363,7 @@ void VulkanInProcessContextProvider::OnUpdateMemoryLimit() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     // We cap the ratio to 1.0 to ensure that we never exceed the
     // user-provided sync_cpu_memory_limit, even if the memory coordinator
     // allows for more memory usage (ratio > 1.0).
@@ -387,7 +390,7 @@ void VulkanInProcessContextProvider::OnReleaseMemory() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     // We cap the ratio to 1.0 to ensure that we never exceed the
     // user-provided sync_cpu_memory_limit, even if the memory coordinator
     // allows for more memory usage (ratio > 1.0).

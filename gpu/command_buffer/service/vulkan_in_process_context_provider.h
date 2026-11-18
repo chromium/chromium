@@ -35,9 +35,9 @@ class GPU_GLES2_EXPORT VulkanInProcessContextProvider
   // memory immediately. |cooldown_duration_at_memory_pressure_critical| is the
   // duration (default 15s to sync with memory monitor cycles) for which a zero
   // limit is applied after a CRITICAL memory pressure signal is received. If
-  // the kStatefulMemoryPressure feature is enabled, the limit scales
-  // dynamically based on the pressure level instead of using the fixed cooldown
-  // period.
+  // stateful memory pressure is used (see
+  // base::ShouldUseStatefulMemoryPressure()), the limit scales dynamically
+  // based on the pressure level instead of using the fixed cooldown period.
   static scoped_refptr<VulkanInProcessContextProvider> Create(
       VulkanImplementation* vulkan_implementation,
       uint32_t heap_memory_limit = 0,

@@ -5,6 +5,7 @@
 
 #include "net/ssl/ssl_client_session_cache.h"
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -44,6 +45,8 @@ constexpr base::MemoryConsumerTraits kSSLClientSessionCacheTraits(
 constexpr bool kRegisterMemoryConsumer =
     !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN);
 
+constexpr std::string_view kMemoryConsumerName = "SSLClientSessionCache";
+
 }  // namespace
 
 SSLClientSessionCache::Key::Key() = default;
@@ -69,7 +72,7 @@ SSLClientSessionCache::SSLClientSessionCache(const Config& config)
       cache_(config.max_entries) {
   if (kRegisterMemoryConsumer) {
     memory_consumer_registration_.emplace(
-        "SSLClientSessionCache", kSSLClientSessionCacheTraits, this,
+        kMemoryConsumerName, kSSLClientSessionCacheTraits, this,
         base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled);
   }
 }
@@ -235,7 +238,7 @@ void SSLClientSessionCache::FlushExpiredSessions() {
 }
 
 void SSLClientSessionCache::OnUpdateMemoryLimit() {
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return;
   }
 
@@ -256,7 +259,7 @@ void SSLClientSessionCache::OnReleaseMemory() {
     // additional roundtrips replacing all of the entries.
     return;
   }
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     // Now we actually evict entries to reach the target size.
     cache_.UpdateMaxSize(memory_limit().Scale(config_.max_entries));
     return;

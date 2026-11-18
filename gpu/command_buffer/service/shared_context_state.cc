@@ -1136,7 +1136,8 @@ void SharedContextState::PurgeGaneshMemory(base::MemoryLimit memory_limit) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(
+          kGpuChannelManagerMemoryConsumerName)) {
     size_t target_resource_cache_bytes =
         gpu::UpdateShaderCacheSizeOnMemoryLimit(max_resource_cache_bytes_,
                                                 memory_limit);
@@ -1186,7 +1187,8 @@ void SharedContextState::PurgeMemory(base::MemoryLimit memory_limit) {
   }
 
   if (memory_limit <= base::kModerateMemoryPressureThreshold ||
-      base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+      base::ShouldUseStatefulMemoryPressure(
+          kGpuChannelManagerMemoryConsumerName)) {
     UpdateSkiaOwnedMemorySize();
   }
 
@@ -1196,7 +1198,8 @@ void SharedContextState::PurgeMemory(base::MemoryLimit memory_limit) {
 }
 
 void SharedContextState::OnUpdateMemoryLimit(base::MemoryLimit memory_limit) {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(
+          kGpuChannelManagerMemoryConsumerName)) {
     if (transfer_cache_) {
       transfer_cache_->OnUpdateMemoryLimit(memory_limit);
     }

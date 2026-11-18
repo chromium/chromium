@@ -13,7 +13,8 @@ namespace features {
 // Please keep features in alphabetical order.
 // Enables stateful memory pressure handling in BlobMemoryController, where the
 // in-memory blob quota scales with the memory limit. Only has an effect if
-// base::kStatefulMemoryPressure is also enabled. When disabled,
+// base::ShouldUseStatefulMemoryPressure() also returns true for the
+// BlobMemoryController. When disabled,
 // BlobMemoryController registers as a stateless memory consumer and uses
 // one-shot paging to disk on memory pressure.
 COMPONENT_EXPORT(STORAGE_BROWSER)

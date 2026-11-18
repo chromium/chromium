@@ -66,7 +66,8 @@ class LRURendererCache final : public base::MemoryConsumer {
 
   // Returns the actual maximum amount of renderers allowed, which changes
   // depending on the memory allocation ratio provided by the Memory
-  // Coordinator, if kStatefulMemoryPressure is enabled.
+  // Coordinator, if stateful memory pressure is used (see
+  // base::ShouldUseStatefulMemoryPressure()).
   size_t GetCurrentMaxRenderers() const;
 
   // Evict pre-launched renderers so that the total number of in-use and cached

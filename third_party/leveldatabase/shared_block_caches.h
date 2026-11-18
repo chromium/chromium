@@ -27,7 +27,8 @@ namespace leveldb_chrome {
 // Owns the block caches shared by Chrome's leveldb databases, and adapts them
 // to the memory limit assigned by the memory coordinator.
 //
-// When `base::kStatefulMemoryPressure` is enabled, the capacity of the caches
+// When stateful memory pressure is used (see
+// `base::ShouldUseStatefulMemoryPressure()`), the capacity of the caches
 // follows the memory limit. Otherwise, the caches are pruned on memory
 // pressure.
 //

@@ -38,6 +38,7 @@
 #include "gpu/command_buffer/service/memory_program_cache.h"
 #include "gpu/command_buffer/service/passthrough_program_cache.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_crash_keys.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -399,7 +400,7 @@ GpuChannelManager::GpuChannelManager(
 
   if (kRegisterMemoryConsumer) {
     memory_consumer_registration_.emplace(
-        "GpuChannelManager", kGpuChannelManagerTraits, this,
+        kGpuChannelManagerMemoryConsumerName, kGpuChannelManagerTraits, this,
         base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled);
   }
 

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 
-#include "base/feature_list.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
@@ -31,6 +30,8 @@ constexpr base::MemoryConsumerTraits kUniqueFontSelectorTraits{
     // Holds references managed by Blink Oilpan GC.
     base::MemoryConsumerTraits::ReleaseGCReferences::kYes};
 
+constexpr char kMemoryConsumerName[] = "UniqueFontSelector";
+
 }  // namespace
 
 UniqueFontSelector::UniqueFontSelector(FontSelector* base_selector)
@@ -38,7 +39,7 @@ UniqueFontSelector::UniqueFontSelector(FontSelector* base_selector)
       current_max_fonts_(CanvasFontCache::MaxFonts()) {
   if (base_selector_) {
     memory_consumer_registration_.emplace(
-        "UniqueFontSelector", kUniqueFontSelectorTraits, this,
+        kMemoryConsumerName, kUniqueFontSelectorTraits, this,
         MemoryConsumerRegistration::CheckUnregister::kDisabled);
   }
 }
@@ -91,7 +92,7 @@ void UniqueFontSelector::RegisterForInvalidationCallbacks(
 }
 
 void UniqueFontSelector::OnUpdateMemoryLimit() {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     unsigned target_max = static_cast<unsigned>(CanvasFontCache::MaxFonts() *
                                                 memory_limit_ratio());
     current_max_fonts_ =
@@ -100,7 +101,7 @@ void UniqueFontSelector::OnUpdateMemoryLimit() {
 }
 
 void UniqueFontSelector::OnReleaseMemory() {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     current_max_fonts_ = static_cast<unsigned>(CanvasFontCache::MaxFonts() *
                                                memory_limit_ratio());
     EvictExcessEntries();

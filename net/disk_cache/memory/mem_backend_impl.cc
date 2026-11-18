@@ -8,10 +8,10 @@
 #include <cmath>
 #include <functional>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/byte_size.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory_coordinator/memory_consumer.h"
@@ -77,13 +77,15 @@ constexpr base::MemoryConsumerTraits kMemBackendImplTraits(
     // Eviction runs inline synchronously.
     base::MemoryConsumerTraits::ExecutionType::kSynchronous);
 
+constexpr std::string_view kMemoryConsumerName = "MemBackendImpl";
+
 }  // namespace
 
 MemBackendImpl::MemBackendImpl(net::NetLog* net_log)
     : Backend(net::MEMORY_CACHE),
       net_log_(net_log),
       memory_consumer_registration_(
-          "MemBackendImpl",
+          kMemoryConsumerName,
           kMemBackendImplTraits,
           this,
           base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled) {}
@@ -328,7 +330,7 @@ void MemBackendImpl::OnExternalCacheHit(const std::string& key) {
 
 void MemBackendImpl::SetMaxBytes(base::ByteSize max_bytes) {
   max_size_ = base::saturated_cast<int32_t>(max_bytes.InBytes());
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     current_max_size_ = CalculateTargetMemoryLimit();
   } else {
     current_max_size_ = max_size_;
@@ -381,7 +383,7 @@ int32_t MemBackendImpl::CalculateTargetMemoryLimit() const {
 }
 
 void MemBackendImpl::OnUpdateMemoryLimit() {
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return;
   }
   // IMPORTANT: Ensure no memory is released during this call.
@@ -391,7 +393,7 @@ void MemBackendImpl::OnUpdateMemoryLimit() {
 }
 
 void MemBackendImpl::OnReleaseMemory() {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     // Now we actually evict entries to reach the target size.
     current_max_size_ = CalculateTargetMemoryLimit();
     EvictTill(current_max_size_);

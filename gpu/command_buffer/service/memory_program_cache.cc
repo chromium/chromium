@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
@@ -272,6 +272,8 @@ constexpr base::MemoryConsumerTraits kMemoryProgramCacheTraits(
     // Compiling and linking shaders is highly CPU intensive.
     base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
 
+constexpr std::string_view kMemoryConsumerName = "MemoryProgramCache";
+
 }  // namespace
 
 MemoryProgramCache::MemoryProgramCache(
@@ -288,7 +290,7 @@ MemoryProgramCache::MemoryProgramCache(
       store_(ProgramLRUCache::NO_AUTO_EVICT),
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
       memory_consumer_registration_(
-          "MemoryProgramCache",
+          kMemoryConsumerName,
           kMemoryProgramCacheTraits,
           this,
           base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled),
@@ -302,7 +304,7 @@ void MemoryProgramCache::ClearBackend() {
 }
 
 size_t MemoryProgramCache::GetCurrentMaxSizeBytes() const {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return current_max_size_bytes_;
   }
   return max_size_bytes();
@@ -586,7 +588,7 @@ size_t MemoryProgramCache::Trim(size_t limit) {
 }
 
 void MemoryProgramCache::OnUpdateMemoryLimit() {
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return;
   }
   // To match previous behavior, the size must be 1/4 at 50% memory limit.
@@ -596,7 +598,7 @@ void MemoryProgramCache::OnUpdateMemoryLimit() {
 }
 
 void MemoryProgramCache::OnReleaseMemory() {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     // To match previous behavior, the size must be 1/4 at 50% memory limit.
     double ratio = std::clamp(memory_limit_ratio(), 0.0, 1.0);
     size_t target_size = max_size_bytes() * std::pow(ratio, 2.0);

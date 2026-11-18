@@ -301,11 +301,13 @@ uint64_t GetTotalSizeAndFileSizes(
   return total_size_output;
 }
 
+constexpr std::string_view kMemoryConsumerName = "BlobMemoryController";
+
 // Returns true if the stateful memory pressure behavior should be used. When
-// false, the controller behaves exactly as if base::kStatefulMemoryPressure was
-// disabled.
+// false, the controller behaves exactly as if stateful memory pressure was
+// disabled for it (see base::ShouldUseStatefulMemoryPressure()).
 bool IsStatefulMemoryPressureEnabled() {
-  return base::FeatureList::IsEnabled(base::kStatefulMemoryPressure) &&
+  return base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName) &&
          base::FeatureList::IsEnabled(features::kBlobStatefulMemoryPressure);
 }
 
@@ -613,7 +615,7 @@ BlobMemoryController::BlobMemoryController(
       populated_memory_items_(
           base::LRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
       memory_consumer_registration_(
-          "BlobMemoryController",
+          kMemoryConsumerName,
           GetBlobMemoryControllerTraits(),
           this,
           base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled) {}

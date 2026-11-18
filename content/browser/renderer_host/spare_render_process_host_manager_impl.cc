@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 
 #include "base/byte_size.h"
 #include "base/check.h"
@@ -340,11 +341,14 @@ constexpr base::MemoryConsumerTraits kSpareRenderProcessHostManagerTraits(
     // Launching a replacement renderer process is expensive.
     base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
 
+constexpr std::string_view kMemoryConsumerName =
+    "SpareRenderProcessHostManagerImpl";
+
 }  // namespace
 
 SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
     : memory_consumer_registration_(
-          "SpareRenderProcessHostManagerImpl",
+          kMemoryConsumerName,
           kSpareRenderProcessHostManagerTraits,
           this,
           base::MemoryConsumerRegistration::CheckUnregister::kDisabled)
@@ -521,7 +525,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
   // Don't create a spare renderer when the system is under load.  This is
   // currently approximated by only looking at the memory pressure.  See also
   // https://crbug.com/852905.
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     if (GetTargetSpareRPHCount() == 0) {
       no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
       return nullptr;
@@ -912,7 +916,7 @@ void SpareRenderProcessHostManagerImpl::TrimSpares(
 size_t SpareRenderProcessHostManagerImpl::GetTargetSpareRPHCount() const {
   const size_t baseline = GetSpareRPHCount();
 
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return baseline;
   }
 
@@ -1030,7 +1034,7 @@ void SpareRenderProcessHostManagerImpl::SetIsBrowserIdle(bool is_browser_idle) {
 }
 
 void SpareRenderProcessHostManagerImpl::OnUpdateMemoryLimit() {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     // If memory limit improved and we have headroom, sequentially warm up extra
     // spares:
     if (spare_rphs_.size() < GetTargetSpareRPHCount()) {
@@ -1047,7 +1051,7 @@ void SpareRenderProcessHostManagerImpl::OnUpdateMemoryLimit() {
 }
 
 void SpareRenderProcessHostManagerImpl::OnReleaseMemory() {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     if (!base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
       return;
     }
@@ -1105,7 +1109,7 @@ bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     // Don't create spares when under memory pressure.
     if (memory_limit() < base::MemoryLimit::NoPressureThreshold()) {
       return false;

@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/byte_size.h"
@@ -507,6 +508,8 @@ const base::FeatureParam<bool> kPrerenderScaleNonImmediate{
 const base::FeatureParam<bool> kPrerenderScaleEmbedder{
     &base::kStatefulMemoryPressure, "PrerenderScaleEmbedder", false};
 
+constexpr std::string_view kMemoryConsumerName = "PrerenderHostRegistry";
+
 }  // namespace
 
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents) {
@@ -514,7 +517,7 @@ PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents) {
           blink::features::kPrerender2MemoryControls) &&
       kRegisterMemoryConsumer) {
     memory_consumer_registration_.emplace(
-        "PrerenderHostRegistry", kPrerenderHostRegistryTraits, this,
+        kMemoryConsumerName, kPrerenderHostRegistryTraits, this,
         base::MemoryConsumerRegistration::CheckUnregister::kDisabled);
   }
   Observe(&web_contents);
@@ -2040,7 +2043,7 @@ void PrerenderHostRegistry::OnReleaseMemory() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     for (auto limit_group : {PrerenderLimitGroup::kSpeculationRulesImmediate,
                              PrerenderLimitGroup::kSpeculationRulesNonImmediate,
                              PrerenderLimitGroup::kEmbedder}) {
@@ -2093,7 +2096,7 @@ int PrerenderHostRegistry::GetScaledLimit(
     PrerenderLimitGroup limit_group) const {
   const int max_limit = GetMaxLimit(limit_group);
 
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return max_limit;
   }
 

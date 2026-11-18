@@ -131,6 +131,8 @@ int GetResourceTypePriority(ResourceType type) {
   }
 }
 
+constexpr char kMemoryConsumerName[] = "MemoryCache";
+
 }  // namespace
 
 static Persistent<MemoryCache>* g_memory_cache;
@@ -188,7 +190,7 @@ MemoryCache* MemoryCache::Get() {
 MemoryCache::MemoryCache(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : memory_consumer_registration_(
-          "MemoryCache",
+          kMemoryConsumerName,
           kMemoryCacheTraits,
           this,
           MemoryConsumerRegistration::CheckUnregister::kDisabled),
@@ -573,7 +575,7 @@ void MemoryCache::OnReleaseMemory() {
   strong_references_max_size_ = GetTargetStrongReferencesMaxSize();
   PruneStrongReferences();
 
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     const size_t baseline = static_cast<size_t>(
         features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
     strong_references_max_size_ = baseline;
@@ -582,7 +584,7 @@ void MemoryCache::OnReleaseMemory() {
 
 void MemoryCache::OnUpdateMemoryLimit() {
   if (!base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference) ||
-      !base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+      !base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return;
   }
 

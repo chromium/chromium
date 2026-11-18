@@ -309,7 +309,8 @@ class GlicInstanceCoordinatorImpl
   size_t ComputeTargetMaxAwakeInstancesLimit() const;
 
   // Returns the currently enforced maximum number of awake instances allowed.
-  // When `base::kStatefulMemoryPressure` is enabled, this limit is dynamically
+  // When stateful memory pressure is used (see
+  // `base::ShouldUseStatefulMemoryPressure()`), this limit is dynamically
   // scaled down based on the current system memory pressure level.
   size_t GetCurrentMaxAwakeInstancesLimit() const;
 

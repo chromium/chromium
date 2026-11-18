@@ -1201,7 +1201,7 @@ size_t GlicInstanceCoordinatorImpl::ComputeTargetMaxAwakeInstancesLimit()
   CHECK(base::FeatureList::IsEnabled(kGlicMaxAwakeInstances));
   const size_t baseline_limit =
       static_cast<size_t>(std::max(1, kGlicMaxAwakeInstancesLimit.Get()));
-  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return baseline_limit;
   }
 
@@ -1685,7 +1685,7 @@ void GlicInstanceCoordinatorImpl::OnUpdateMemoryLimit() {
   web_contents_warming_pool_->OnUpdateMemoryLimit(memory_limit());
 
   if (!base::FeatureList::IsEnabled(kGlicMaxAwakeInstances) ||
-      !base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+      !base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     return;
   }
 
@@ -1698,7 +1698,7 @@ void GlicInstanceCoordinatorImpl::OnReleaseMemory() {
   web_contents_warming_pool_->OnReleaseMemory();
 
   if (!base::FeatureList::IsEnabled(kGlicMaxAwakeInstances) ||
-      !base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+      !base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
     if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
       TrimAwakeInstancesTo(0u);
     }
