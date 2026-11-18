@@ -575,8 +575,10 @@ void StyleResolverState::UpdateLineHeight() {
 }
 
 bool StyleResolverState::CanAffectAnimations() const {
+  const Element* animating_element = GetAnimatingElement();
   return conditionally_affects_animations_ ||
-         StyleBuilder().CanAffectAnimations();
+         StyleBuilder().CanAffectAnimations() ||
+         (animating_element && animating_element->HasAnimations());
 }
 
 void StyleResolverState::SetComputedStyleFlagsFromAuthorFlags(

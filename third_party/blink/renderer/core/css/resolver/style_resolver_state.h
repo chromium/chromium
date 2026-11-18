@@ -234,7 +234,9 @@ class CORE_EXPORT StyleResolverState {
   void SetHadNoMatchedProperties() { had_no_matched_properties_ = true; }
 
   // True if the cascade observed any  "animation" or "transition" properties,
-  // or when such properties were found within non-matching container queries.
+  // when such properties were found within non-matching container queries, or
+  // when the animating element has existing animations. Removing declarations
+  // can still affect existing animations by cancelling them.
   //
   // The method is supposed to represent whether or not animations can be
   // affected by at least one of the style variations produced by evaluating
