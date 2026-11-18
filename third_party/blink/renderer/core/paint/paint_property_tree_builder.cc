@@ -4325,12 +4325,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
   }
 
   if (NeedsStickyTranslation(object_)) {
-    const auto& box_model = To<LayoutBoxModelObject>(object_);
     pixel_snap_offset = context_.current.paint_offset;
-    auto total_offset =
-        context_.current.paint_offset + box_model.StickyPositionOffset();
-    ResetPaintOffset(total_offset -
-                     PhysicalOffset(ToRoundedVector2d(total_offset)));
+    // The sub-pixel remainder left in the paint offset must not depend on
+    // the scroll offset. StickyPositionOffset() is not whole-pixel, but the
+    // StickyTranslation node's value is: UpdateStickyTranslation rounds
+    // paint_offset + StickyPositionOffset(), and cc recomputes the same
+    // rounded value when the sticky element is composited. Whole-pixel
+    // translation changes reuse the existing raster, while a
+    // scroll-dependent remainder would move sticky content inside its layer
+    // and re-raster it on every frame.
+    ResetPaintOffset(pixel_snap_offset -
+                     PhysicalOffset(ToRoundedVector2d(pixel_snap_offset)));
   }
 
   PhysicalOffset paint_offset_delta =

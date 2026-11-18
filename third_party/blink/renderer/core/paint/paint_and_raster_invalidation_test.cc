@@ -1462,4 +1462,53 @@ TEST_F(PaintInvalidatorCustomClientTest,
   EXPECT_FALSE(InvalidationRecorded());
 }
 
+TEST_P(PaintAndRasterInvalidationTest, StickyUnderFractionalCompositorScroll) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #scroller { width: 300px; height: 300px; overflow: scroll;
+                  will-change: transform; }
+      #sticky { position: sticky; top: 0; width: 100px; height: 30px;
+                background: blue; }
+      #icon { width: 22px; height: 22px; background: green;
+              will-change: transform; }
+      #content { height: 3000px; }
+    </style>
+    <div id="scroller">
+      <div id="sticky">sticky text</div>
+      <div id="icon"></div>
+      <div id="content"></div>
+    </div>
+  )HTML");
+
+  auto* scrollable_area = To<LayoutBox>(GetLayoutObjectByElementId("scroller"))
+                              ->GetScrollableArea();
+  ASSERT_TRUE(scrollable_area);
+
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+  for (int i = 1; i <= 3; i++) {
+    scrollable_area->DidCompositorScroll(gfx::PointF(0, 6.7f * i),
+                                         cc::ScrollSourceType::kNone);
+    UpdateAllLifecyclePhasesForTest();
+  }
+
+  for (wtf_size_t index = 0; index < 8; index++) {
+    auto* client = GetDocument()
+                       .View()
+                       ->GetPaintArtifactCompositor()
+                       ->ContentLayerClientForTesting(index);
+    if (!client) {
+      continue;
+    }
+    const auto* tracking = client->GetRasterInvalidator().GetTracking();
+    if (!tracking) {
+      continue;
+    }
+    EXPECT_FALSE(tracking->HasInvalidations())
+        << client->Layer().DebugName() << ": "
+        << tracking->Invalidations().size() << " invalidations";
+  }
+  GetDocument().View()->SetTracksRasterInvalidations(false);
+}
+
 }  // namespace blink
