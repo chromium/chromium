@@ -33,6 +33,7 @@ AccessibilityExtensionCursorsTest = class extends CommonE2ETestBase {
     globalThis.SYNC = CursorMovement.SYNC;
     globalThis.BACKWARD = constants.Dir.BACKWARD;
     globalThis.FORWARD = constants.Dir.FORWARD;
+    globalThis.EventType = chrome.automation.EventType;
     globalThis.RoleType = chrome.automation.RoleType;
   }
 
@@ -455,47 +456,61 @@ AX_TEST_F(
       assertTrue(webRange.isWebRange());
     });
 
-// Disabled due to being flaky on ChromeOS. See https://crbug.com/40777058.
 AX_TEST_F(
-    'AccessibilityExtensionCursorsTest', 'DISABLED_SingleDocSelection',
+    'AccessibilityExtensionCursorsTest', 'SingleDocSelection',
     async function() {
       const root = await this.runWithLoadedTree(`
     <span>start</span>
-    <p><a href="google.com">google home page</a></p>
+    <p><a href="#a">google home page</a></p>
     <p>some more text</p>
     <p>end of text</p>
   `);
-      // For some reason, Blink fails if we don't first select something
-      // on the page.
-      CursorRange.fromNode(root).select();
       const link = root.find({role: RoleType.LINK});
-      const p1 = root.find({role: RoleType.PARAGRAPH});
-      const p2 = p1.nextSibling;
+      assertNotNullNorUndefined(link);
+      assertNotNullNorUndefined(link.firstChild);
 
-      const singleSel =
-          new CursorRange(new Cursor(link, 0), new Cursor(link, 1));
+      const paragraphs = root.findAll({role: RoleType.PARAGRAPH});
+      assertEquals(3, paragraphs.length);
+      const p1 = paragraphs[1];
+      const p2 = paragraphs[2];
+      assertNotNullNorUndefined(p1);
+      assertNotNullNorUndefined(p2);
+      assertNotNullNorUndefined(p1.firstChild);
+      assertNotNullNorUndefined(p2.firstChild);
 
+      const singleSel = new CursorRange(
+          new Cursor(link.firstChild, 0), new Cursor(link.firstChild, 1));
       const multiSel = new CursorRange(
           new Cursor(p1.firstChild, 2), new Cursor(p2.firstChild, 4));
 
-      function verifySel() {
-        if (root.selectionStartObject === link.firstChild) {
-          assertEquals(link.firstChild, root.selectionStartObject);
-          assertEquals(0, root.selectionStartOffset);
-          assertEquals(link.firstChild, root.selectionEndObject);
-          assertEquals(1, root.selectionEndOffset);
-          this.listenOnce(root, 'textSelectionChanged', verifySel);
-          multiSel.select();
-        } else if (root.selectionStartObject === p1.firstChild) {
-          assertEquals(p1.firstChild, root.selectionStartObject);
-          assertEquals(2, root.selectionStartOffset);
-          assertEquals(p2.firstChild, root.selectionEndObject);
-          assertEquals(4, root.selectionEndOffset);
-        }
-      }
+      // Register the listener before calling select() and ignore any stale or
+      // intermediate selection updates until the document selection matches the
+      // target range (crbug.com/40777058).
+      const selectAndWaitForRange = async range => {
+        const onSelectionChanged =
+            this.waitForEvent(root, EventType.DOCUMENT_SELECTION_CHANGED);
+        range.select();
+        await onSelectionChanged;
 
-      this.listenOnce(root, 'textSelectionChanged', verifySel, true);
-      singleSel.select();
+        while (root.selectionStartObject !== range.start.node ||
+               root.selectionStartOffset !== range.start.index ||
+               root.selectionEndObject !== range.end.node ||
+               root.selectionEndOffset !== range.end.index) {
+          await this.waitForEvent(root, EventType.DOCUMENT_SELECTION_CHANGED);
+        }
+      };
+
+      await selectAndWaitForRange(singleSel);
+      assertEquals(link.firstChild, root.selectionStartObject);
+      assertEquals(0, root.selectionStartOffset);
+      assertEquals(link.firstChild, root.selectionEndObject);
+      assertEquals(1, root.selectionEndOffset);
+
+      await selectAndWaitForRange(multiSel);
+      assertEquals(p1.firstChild, root.selectionStartObject);
+      assertEquals(2, root.selectionStartOffset);
+      assertEquals(p2.firstChild, root.selectionEndObject);
+      assertEquals(4, root.selectionEndOffset);
     });
 
 AX_TEST_F(
