@@ -39,6 +39,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1123,6 +1124,40 @@ TEST_F(UserManagerTest, MaxUserProfilesPreservesDeviceOwnerWhenLimitIsOne) {
       user_manager::UserManager::Get()->GetPersistedUsers();
   ASSERT_EQ(1U, users.size());
   EXPECT_EQ(users[0]->GetAccountId(), kOwnerAccountId);
+}
+
+TEST_F(UserManagerTest, SaveAuthPrefsSkipsUnchangedLocalStateUpdate) {
+  ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
+                  .AddRegularUser(kAccountId0));
+
+  // ScopedDictPrefUpdate notifies PrefChangeRegistrar and marks Local State
+  // dirty on destruction even when setting an identical value, so counting
+  // pref change notifications verifies whether the update was skipped.
+  PrefChangeRegistrar registrar;
+  registrar.Init(TestingBrowserProcess::GetGlobal()->local_state());
+  int changes = 0;
+  auto on_change = base::BindLambdaForTesting([&]() { ++changes; });
+  registrar.Add(user_manager::prefs::kUserOAuthTokenStatus, on_change);
+  registrar.Add(user_manager::prefs::kUserForceOnlineSignin, on_change);
+
+  // First save writes both missing per-user entries to Local State.
+  auto* user_manager = user_manager::UserManager::Get();
+  user_manager->SaveUserOAuthStatus(
+      kAccountId0, user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
+  user_manager->SaveForceOnlineSignin(kAccountId0, false);
+  EXPECT_EQ(changes, 2);
+
+  // Saving the same values again (as on repeat logins) should be a no-op.
+  user_manager->SaveUserOAuthStatus(
+      kAccountId0, user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
+  user_manager->SaveForceOnlineSignin(kAccountId0, false);
+  EXPECT_EQ(changes, 2);
+
+  // Changing the values should still update Local State.
+  user_manager->SaveUserOAuthStatus(
+      kAccountId0, user_manager::User::OAUTH2_TOKEN_STATUS_INVALID);
+  user_manager->SaveForceOnlineSignin(kAccountId0, true);
+  EXPECT_EQ(changes, 4);
 }
 
 }  // namespace ash

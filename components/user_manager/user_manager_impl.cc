@@ -803,6 +803,12 @@ void UserManagerImpl::SaveUserOAuthStatus(
   if (IsUserNonCryptohomeDataEphemeral(account_id)) {
     return;
   }
+  // Avoid dirtying and flushing Local State when the stored status matches.
+  if (local_state_->GetDict(prefs::kUserOAuthTokenStatus)
+          .FindInt(account_id.GetUserEmail()) ==
+      static_cast<int>(oauth_token_status)) {
+    return;
+  }
 
   {
     ScopedDictPrefUpdate oauth_status_update(local_state_.get(),
@@ -825,6 +831,11 @@ void UserManagerImpl::SaveForceOnlineSignin(const AccountId& account_id,
   // Do not update local state if data stored or cached outside the user's
   // cryptohome is to be treated as ephemeral.
   if (IsUserNonCryptohomeDataEphemeral(account_id)) {
+    return;
+  }
+  // Avoid dirtying and flushing Local State when the stored flag matches.
+  if (local_state_->GetDict(prefs::kUserForceOnlineSignin)
+          .FindBool(account_id.GetUserEmail()) == force_online_signin) {
     return;
   }
 
