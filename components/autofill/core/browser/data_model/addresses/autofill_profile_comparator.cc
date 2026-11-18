@@ -8,13 +8,14 @@
 
 #include <algorithm>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -466,21 +467,21 @@ bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
 }
 
 // static
-std::set<std::u16string_view> AutofillProfileComparator::UniqueTokens(
+base::flat_set<std::u16string_view> AutofillProfileComparator::UniqueTokens(
     std::u16string_view s) {
   std::vector<std::u16string_view> tokens = base::SplitStringPiece(
       s, kSpace, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return std::set<std::u16string_view>(tokens.begin(), tokens.end());
+  return base::flat_set<std::u16string_view>(std::move(tokens));
 }
 
 // static
 AutofillProfileComparator::CompareTokensResult
 AutofillProfileComparator::CompareTokens(std::u16string_view s1,
                                          std::u16string_view s2) {
-  // Note: std::includes() expects the items in each range to be in sorted order,
-  // hence the use of std::set<>.
-  std::set<std::u16string_view> t1 = UniqueTokens(s1);
-  std::set<std::u16string_view> t2 = UniqueTokens(s2);
+  // Note: std::includes() expects the items in each range to be in sorted
+  // order, hence the use of base::flat_set<>.
+  base::flat_set<std::u16string_view> t1 = UniqueTokens(s1);
+  base::flat_set<std::u16string_view> t2 = UniqueTokens(s2);
 
   // Does `s1` contain all of the tokens in `s2`? As a special case, return 0 if
   // the two sets are exactly the same.

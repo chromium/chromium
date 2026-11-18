@@ -6,11 +6,11 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_AUTOFILL_PROFILE_COMPARATOR_H_
 
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
@@ -156,9 +156,13 @@ class AutofillProfileComparator {
     S2_CONTAINS_S1,
   };
 
-  // Returns the set of unique tokens in `s`. Note that the string data backing
-  // `s` is expected to have a lifetime which exceeds the call to UniqueTokens.
-  static std::set<std::u16string_view> UniqueTokens(std::u16string_view s);
+  // Returns the sorted set of unique tokens in `s`. Uses `base::flat_set`
+  // rather than an unordered set (such as `absl::flat_hash_set`) because
+  // callers (e.g., `CompareTokens()`) require sorted iteration order for
+  // `std::includes()`. Note that the string data backing `s` is expected to
+  // have a lifetime which exceeds the call to UniqueTokens.
+  static base::flat_set<std::u16string_view> UniqueTokens(
+      std::u16string_view s);
 
   // Compares the unique tokens in s1 and s2.
   static CompareTokensResult CompareTokens(std::u16string_view s1,
