@@ -15,9 +15,11 @@
 #include "crypto/hmac.h"
 #include "crypto/random.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 namespace storage {
 
@@ -50,23 +52,32 @@ int64_t ComputeStableResponsePadding(const blink::StorageKey& storage_key,
   static const std::array<uint8_t, 16> s_padding_key =
       crypto::RandBytesAsArray<16>();
 
-  DCHECK(!response_url.empty());
+  // Fall back to random padding for invalid or unexpected inputs rather than
+  // DCHECKing: callers may pass persisted cache metadata or responses with
+  // unset/pre-epoch timestamps or non-safelisted methods (e.g., opaque
+  // redirects).
+  if (response_time <= base::Time::UnixEpoch() ||
+      (request_method != net::HttpRequestHeaders::kGetMethod &&
+       request_method != net::HttpRequestHeaders::kHeadMethod &&
+       request_method != net::HttpRequestHeaders::kPostMethod)) {
+    return ComputeRandomResponsePadding();
+  }
+
+  GURL url(response_url);
+  if (!url.is_valid()) {
+    return ComputeRandomResponsePadding();
+  }
+  const GURL simplified_url = net::SimplifyUrlForRequest(url);
+  DCHECK(simplified_url.is_valid());
 
   net::SchemefulSite site(storage_key.origin());
-
-  DCHECK_GT(response_time, base::Time::UnixEpoch());
   int64_t microseconds =
       (response_time - base::Time::UnixEpoch()).InMicroseconds();
 
-  // It should only be possible to have a CORS safe-listed method here since
-  // the spec does not permit other methods for no-cors requests.
-  DCHECK(request_method == net::HttpRequestHeaders::kGetMethod ||
-         request_method == net::HttpRequestHeaders::kHeadMethod ||
-         request_method == net::HttpRequestHeaders::kPostMethod);
-
-  std::string key = base::StringPrintf(
-      "%s-%" PRId64 "-%s-%s-%" PRId64, response_url.c_str(), microseconds,
-      site.Serialize().c_str(), request_method.c_str(), side_data_size);
+  std::string key = base::StringPrintf("%s-%" PRId64 "-%s-%s-%" PRId64,
+                                       simplified_url.spec().c_str(),
+                                       microseconds, site.Serialize().c_str(),
+                                       request_method.c_str(), side_data_size);
 
   auto hmac = crypto::hmac::SignSha256(s_padding_key, base::as_byte_span(key));
   return base::U64FromNativeEndian(base::as_byte_span(hmac).first<8>()) %

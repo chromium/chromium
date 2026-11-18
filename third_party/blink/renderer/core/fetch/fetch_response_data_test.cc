@@ -4,16 +4,21 @@
 
 #include "third_party/blink/renderer/core/fetch/fetch_response_data.h"
 
+#include <optional>
+
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -448,6 +453,71 @@ TEST_F(FetchResponseDataTest, CacheStorageSideDataWriterPreservedOnClone) {
   remote.FlushForTesting();
   test_writer.FlushForTesting();
   EXPECT_EQ(1u, test_writer.write_count());
+}
+
+TEST_F(FetchResponseDataTest, InitFromResourceResponsePadding) {
+  V8TestingScope scope(KURL("https://example.org/page.html"));
+  constexpr base::Time kResponseTime =
+      base::Time::FromSecondsSinceUnixEpoch(1700000000);
+
+  auto create_cached_response =
+      [&](const Vector<KURL>& url_list,
+          network::mojom::FetchResponseType response_type =
+              network::mojom::FetchResponseType::kOpaque,
+          std::optional<base::Time> response_time = std::nullopt) {
+        ResourceResponse resource_response(url_list.back());
+        resource_response.SetHttpStatusCode(200);
+        resource_response.SetWasCached(true);
+        resource_response.SetResponseTime(
+            response_time.value_or(kResponseTime));
+
+        FetchResponseData* response_data = FetchResponseData::Create();
+        response_data->InitFromResourceResponse(
+            scope.GetExecutionContext(), response_type, url_list,
+            http_names::kGET, network::mojom::CredentialsMode::kOmit,
+            resource_response);
+        return response_data;
+      };
+
+  FetchResponseData* base_response =
+      create_cached_response({KURL("https://example.com/script.js")});
+  FetchResponseData* empty_ref_response =
+      create_cached_response({KURL("https://example.com/script.js#")});
+  FetchResponseData* ref_a_response =
+      create_cached_response({KURL("https://example.com/script.js#a")});
+  FetchResponseData* ref_b_response =
+      create_cached_response({KURL("https://example.com/script.js#b")});
+  FetchResponseData* redirected_response =
+      create_cached_response({KURL("https://example.com/start"),
+                              KURL("https://example.com/script.js#c")});
+
+  EXPECT_GE(base_response->GetPadding(), 0);
+  EXPECT_EQ(base_response->GetPadding(), empty_ref_response->GetPadding());
+  EXPECT_EQ(base_response->GetPadding(), ref_a_response->GetPadding());
+  EXPECT_EQ(base_response->GetPadding(), ref_b_response->GetPadding());
+  EXPECT_EQ(base_response->GetPadding(), redirected_response->GetPadding());
+
+  // FetchResponseData::UrlList() continues to preserve the full URL per spec.
+  ASSERT_EQ(1u, ref_a_response->UrlList().size());
+  EXPECT_EQ(KURL("https://example.com/script.js#a"),
+            ref_a_response->UrlList()[0]);
+
+  FetchResponseData* redirect_base = create_cached_response(
+      {KURL("https://example.com/redirect")},
+      network::mojom::FetchResponseType::kOpaqueRedirect);
+  FetchResponseData* redirect_with_ref = create_cached_response(
+      {KURL("https://example.com/redirect#a")},
+      network::mojom::FetchResponseType::kOpaqueRedirect);
+  EXPECT_EQ(redirect_base->GetPadding(), redirect_with_ref->GetPadding());
+
+  FetchResponseData* query_response =
+      create_cached_response({KURL("https://example.com/script.js?v=1")});
+  FetchResponseData* different_time_response =
+      create_cached_response({KURL("https://example.com/script.js")},
+                             network::mojom::FetchResponseType::kOpaque,
+                             kResponseTime + base::Seconds(1));
+  EXPECT_NE(base_response->GetPadding(), query_response->GetPadding());
+  EXPECT_NE(base_response->GetPadding(), different_time_response->GetPadding());
 }
 
 }  // namespace blink

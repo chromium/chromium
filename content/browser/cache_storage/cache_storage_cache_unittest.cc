@@ -2857,6 +2857,96 @@ TEST_F(CacheStorageCacheTest, TestDoubleOpaquePut) {
   EXPECT_EQ(size_after_first_put, Size());
 }
 
+TEST_F(CacheStorageCacheTest, ComputeStableResponsePaddingUrlSimplification) {
+  const auto storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(BodyUrl()));
+  const base::Time response_time =
+      base::Time::UnixEpoch() + base::Seconds(1000);
+  const std::string method = net::HttpRequestHeaders::kGetMethod;
+
+  const int64_t base_padding = storage::ComputeStableResponsePadding(
+      storage_key, BodyUrl().spec(), response_time, method);
+  EXPECT_GE(base_padding, 0);
+
+  EXPECT_EQ(base_padding,
+            storage::ComputeStableResponsePadding(
+                storage_key, BodyUrl().spec() + "#", response_time, method));
+  EXPECT_EQ(base_padding, storage::ComputeStableResponsePadding(
+                              storage_key, BodyUrlWithRef("a").spec(),
+                              response_time, method));
+  EXPECT_EQ(base_padding, storage::ComputeStableResponsePadding(
+                              storage_key, BodyUrlWithRef("b").spec(),
+                              response_time, method));
+  EXPECT_EQ(base_padding,
+            storage::ComputeStableResponsePadding(
+                storage_key, "http://user:pass@example.com/body.html#a",
+                response_time, method));
+
+  EXPECT_NE(base_padding,
+            storage::ComputeStableResponsePadding(
+                storage_key, BodyUrlWithQuery().spec(), response_time, method));
+  EXPECT_NE(base_padding,
+            storage::ComputeStableResponsePadding(
+                storage_key, NoBodyUrl().spec(), response_time, method));
+  EXPECT_NE(base_padding,
+            storage::ComputeStableResponsePadding(storage_key, BodyUrl().spec(),
+                                                  response_time, method,
+                                                  /*side_data_size=*/1024));
+
+  // Invalid inputs fall back to random padding without crashing.
+  auto expect_random_padding = [&](const std::string& url, base::Time time,
+                                   const std::string& req_method) {
+    std::set<int64_t> values;
+    for (int i = 0; i < 10; ++i) {
+      int64_t padding = storage::ComputeStableResponsePadding(storage_key, url,
+                                                              time, req_method);
+      EXPECT_GE(padding, 0);
+      values.insert(padding);
+    }
+    EXPECT_GT(values.size(), 1u);
+  };
+  expect_random_padding("", response_time, method);
+  expect_random_padding("not-a-valid-url", response_time, method);
+  expect_random_padding(BodyUrl().spec(), base::Time(), method);
+  expect_random_padding(BodyUrl().spec(), base::Time::UnixEpoch(), method);
+  expect_random_padding(BodyUrl().spec(), response_time, "INVALID");
+}
+
+TEST_F(CacheStorageCacheTest, SideDataPaddingUrlSimplification) {
+  const base::Time response_time = base::Time::Now();
+  const std::string side_data_content(1024, 'X');
+  scoped_refptr<net::IOBuffer> side_data_buffer =
+      base::MakeRefCounted<net::StringIOBuffer>(side_data_content);
+
+  blink::mojom::FetchAPIRequestPtr request =
+      BackgroundFetchSettledFetch::CloneRequest(body_request_);
+
+  blink::mojom::FetchAPIResponsePtr response1(CreateOpaqueResponse());
+  response1->response_time = response_time;
+  response1->url_list = {BodyUrlWithRef("a")};
+  ASSERT_TRUE(Put(request, std::move(response1)));
+  ASSERT_TRUE(WriteSideData(request->url, response_time, side_data_buffer,
+                            side_data_content.length()));
+  const int64_t size1 = Size();
+  ASSERT_TRUE(Delete(request));
+
+  blink::mojom::FetchAPIResponsePtr response2(CreateOpaqueResponse());
+  response2->response_time = response_time;
+  response2->url_list = {BodyUrlWithRef("b")};
+  ASSERT_TRUE(Put(request, std::move(response2)));
+  ASSERT_TRUE(WriteSideData(request->url, response_time, side_data_buffer,
+                            side_data_content.length()));
+  EXPECT_EQ(size1, Size());
+  ASSERT_TRUE(Delete(request));
+
+  blink::mojom::FetchAPIResponsePtr response3(CreateOpaqueResponse());
+  response3->response_time = response_time;
+  response3->url_list = {GURL()};
+  ASSERT_TRUE(Put(request, std::move(response3)));
+  EXPECT_TRUE(WriteSideData(request->url, response_time, side_data_buffer,
+                            side_data_content.length()));
+}
+
 TEST_P(CacheStorageCacheTestP, ForceCloseWithoutBackend) {
   base::test::TestFuture<void> closed;
   cache_->ForceClose(closed.GetCallback());
