@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -81,14 +82,13 @@ void IterateAndReportPerf(const char* test_name,
                                "iterations/second");
 }
 
-BadMessageObserver::BadMessageObserver() : got_bad_message_(false) {
-  mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-      &BadMessageObserver::OnReportBadMessage, base::Unretained(this)));
-}
+BadMessageObserver::BadMessageObserver()
+    : got_bad_message_(false),
+      error_handler_(
+          base::BindRepeating(&BadMessageObserver::OnReportBadMessage,
+                              base::Unretained(this))) {}
 
-BadMessageObserver::~BadMessageObserver() {
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-}
+BadMessageObserver::~BadMessageObserver() = default;
 
 std::string BadMessageObserver::WaitForBadMessage() {
   if (!got_bad_message_) {
@@ -98,12 +98,11 @@ std::string BadMessageObserver::WaitForBadMessage() {
 }
 
 void BadMessageObserver::OnReportBadMessage(const std::string& message) {
-  if (got_bad_message_) {
-    return;
-  }
+  CHECK(!got_bad_message_);
 
   last_error_for_bad_message_ = message;
   got_bad_message_ = true;
+  error_handler_.reset();
   run_loop_.Quit();
 }
 

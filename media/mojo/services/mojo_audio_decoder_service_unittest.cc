@@ -89,9 +89,6 @@ class MojoAudioDecoderServiceTest : public testing::Test {
       : mojo_media_client_(base::BindRepeating(
             &MojoAudioDecoderServiceTest::CreateAudioDecoder,
             base::Unretained(this))) {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &MojoAudioDecoderServiceTest::OnProcessError, base::Unretained(this)));
-
     service_ = std::make_unique<MojoAudioDecoderService>(
         &mojo_media_client_, &mojo_cdm_service_context_,
         task_environment_.GetMainThreadTaskRunner());
@@ -101,7 +98,6 @@ class MojoAudioDecoderServiceTest : public testing::Test {
   }
 
   ~MojoAudioDecoderServiceTest() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
     if (client_receiver_) {
       client_receiver_->Close();
     }
@@ -195,6 +191,9 @@ class MojoAudioDecoderServiceTest : public testing::Test {
 
   bool bad_message_called_ = false;
   base::OnceClosure bad_message_quit_closure_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting process_error_handler_{
+      base::BindRepeating(&MojoAudioDecoderServiceTest::OnProcessError,
+                          base::Unretained(this))};
 };
 
 TEST_F(MojoAudioDecoderServiceTest, Construct_Success) {

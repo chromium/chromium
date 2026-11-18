@@ -549,16 +549,15 @@ TEST_F(ReceiverTest, ReportBadMessage) {
       [&] { receiver.ReportBadMessage("received bad message"); }));
 
   std::string received_error;
-  SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { received_error = error; }));
+  ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { received_error = error; }));
 
   remote->Ping(base::DoNothing());
   EXPECT_FALSE(called);
   run_loop.Run();
   EXPECT_TRUE(called);
   EXPECT_EQ("received bad message", received_error);
-
-  SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(ReceiverTest, GetBadMessageCallback) {
@@ -568,8 +567,9 @@ TEST_F(ReceiverTest, GetBadMessageCallback) {
   ReportBadMessageCallback bad_message_callback;
 
   std::string received_error;
-  SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { received_error = error; }));
+  ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { received_error = error; }));
 
   {
     Receiver<test::PingService> receiver(&impl,
@@ -584,8 +584,6 @@ TEST_F(ReceiverTest, GetBadMessageCallback) {
 
   std::move(bad_message_callback).Run("delayed bad message");
   EXPECT_EQ("delayed bad message", received_error);
-
-  SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(ReceiverTest, InvalidPendingReceivers) {

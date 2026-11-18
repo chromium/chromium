@@ -590,6 +590,18 @@ _BANNED_IOS_EGTEST_FUNCTIONS: Sequence[BanRule] = (
     ),
 )
 
+_BANNED_CPP_TEST_FUNCTIONS: Sequence[BanRule] = (
+    BanRule(
+        r'/\bSetDefaultProcessErrorHandler\s*\(',
+        (
+            'Do not use mojo::SetDefaultProcessErrorHandler in tests.',
+            'Use mojo::ScopedDefaultProcessErrorHandlerForTesting instead.',
+        ),
+        True,
+        excluded_paths=(_THIRD_PARTY_EXCEPT_BLINK,),
+    ),
+)
+
 _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     BanRule(
         r'/\b(TimeTicks::UnixEpoch|SetSharedUnixEpoch)\b',
@@ -4203,6 +4215,17 @@ def CheckNoBannedPatterns(input_api, output_api):
     CheckFilesForFormat(
         file_filter=lambda f: f.LocalPath().endswith(cpp_extensions),
         ban_rules=_BANNED_CPP_FUNCTIONS,
+    )
+
+    CheckFilesForFormat(
+        file_filter=lambda f: (
+            f.UnixLocalPath().endswith(cpp_extensions)
+            and any(
+                input_api.re.match(p, f.UnixLocalPath())
+                for p in _TEST_CODE_EXCLUDED_PATHS
+            )
+        ),
+        ban_rules=_BANNED_CPP_TEST_FUNCTIONS,
     )
 
     CheckFilesForFormat(

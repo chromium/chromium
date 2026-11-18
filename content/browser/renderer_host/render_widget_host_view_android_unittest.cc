@@ -2222,8 +2222,9 @@ TEST_F(RenderWidgetHostViewAndroidTest,
       client_remote.BindNewEndpointAndPassDedicatedReceiver());
 
   std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { bad_message_error = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { bad_message_error = error; }));
 
   // Send an unexpected kKeyDown event from the GPU process.
   blink::WebKeyboardEvent key_event(blink::WebInputEvent::Type::kKeyDown,
@@ -2238,8 +2239,6 @@ TEST_F(RenderWidgetHostViewAndroidTest,
 
   EXPECT_EQ(bad_message_error,
             "Unexpected event type received from GPU process");
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 // Verifies that MojoRenderInputRouterDelegateImpl rejects non-touch/non-gesture
@@ -2256,8 +2255,9 @@ TEST_F(RenderWidgetHostViewAndroidTest,
       client_remote.BindNewEndpointAndPassDedicatedReceiver());
 
   std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { bad_message_error = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { bad_message_error = error; }));
 
   // Send an unexpected kKeyDown ack from the GPU process.
   blink::WebKeyboardEvent key_event(blink::WebInputEvent::Type::kKeyDown,
@@ -2274,8 +2274,6 @@ TEST_F(RenderWidgetHostViewAndroidTest,
 
   EXPECT_EQ(bad_message_error,
             "Unexpected event type received from GPU process");
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(RenderWidgetHostViewAndroidTest, UpdateVisibilityWhileDetached) {

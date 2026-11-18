@@ -80,16 +80,10 @@ class SessionStorageImplTestBase : public testing::Test {
 
   ~SessionStorageImplTestBase() override { EXPECT_TRUE(temp_dir_.Delete()); }
 
-  void SetUp() override {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &SessionStorageImplTestBase::OnBadMessage, base::Unretained(this)));
-  }
-
   void TearDown() override {
     if (session_storage_) {
       ShutDownSessionStorage();
     }
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
   void OnBadMessage(const std::string& reason) { bad_message_called_ = true; }
@@ -242,6 +236,9 @@ class SessionStorageImplTestBase : public testing::Test {
       SessionStorageImpl::BackingMode::kRestoreDiskState;
   std::unique_ptr<SessionStorageImpl> session_storage_;
   mojo::Remote<mojom::SessionStorageControl> remote_session_storage_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&SessionStorageImplTestBase::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 class SessionStorageImplTest

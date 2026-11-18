@@ -80,7 +80,7 @@ class StorageAccessBrowserTest : public ContentBrowserTest,
   BindStorageAccessHandleInFrame(RenderFrameHostImpl* target_host) {
     // Setup message interceptor.
     std::optional<std::string> received_error;
-    mojo::SetDefaultProcessErrorHandler(
+    mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
         base::BindLambdaForTesting([&](const std::string& error) {
           ASSERT_EQ(received_error, std::nullopt);
           received_error = error;
@@ -96,9 +96,6 @@ class StorageAccessBrowserTest : public ContentBrowserTest,
     mojo::Remote<blink::mojom::StorageAccessHandle> storage_remote;
     broker_remote->GetInterface(storage_remote.BindNewPipeAndPassReceiver());
     broker_remote.FlushForTesting();
-
-    // Cleanup message interceptor.
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 
     if (received_error) {
       return base::unexpected(received_error.value());

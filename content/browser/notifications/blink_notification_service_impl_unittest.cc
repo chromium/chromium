@@ -146,15 +146,9 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     // Provide a mock permission manager to the |browser_context_|.
     browser_context_.SetPermissionControllerDelegate(
         std::make_unique<testing::NiceMock<MockPermissionManager>>());
-
-    mojo::SetDefaultProcessErrorHandler(
-        base::BindRepeating(&BlinkNotificationServiceImplTest::OnMojoError,
-                            base::Unretained(this)));
   }
 
   void TearDown() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-
     embedded_worker_helper_.reset();
 
     // Give pending shutdown operations a chance to finish.
@@ -475,6 +469,10 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
   bool read_notification_data_callback_result_ = false;
 
   RenderViewHostTestEnabler rvh_enabler_;
+
+  mojo::ScopedDefaultProcessErrorHandlerForTesting mojo_error_handler_{
+      base::BindRepeating(&BlinkNotificationServiceImplTest::OnMojoError,
+                          base::Unretained(this))};
 
  protected:
   std::unique_ptr<WebContents> contents_;

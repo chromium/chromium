@@ -16,6 +16,7 @@
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/origin.h"
 
@@ -384,6 +385,7 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
   void OnMojoError(const std::string& error);
 
   base::RepeatingCallback<void(const std::string&)> mojo_error_handler_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting mojo_error_handler_guard_;
 };
 
 }  // namespace content

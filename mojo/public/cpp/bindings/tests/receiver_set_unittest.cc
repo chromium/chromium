@@ -299,7 +299,7 @@ TEST_F(ReceiverSetTest, ReceiverSetReportBadMessage) {
   PingImpl impl;
 
   std::string last_received_error;
-  SetDefaultProcessErrorHandler(
+  ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindRepeating([](std::string* out_error,
                              const std::string& error) { *out_error = error; },
                           &last_received_error));
@@ -328,15 +328,13 @@ TEST_F(ReceiverSetTest, ReceiverSetReportBadMessage) {
   }
 
   EXPECT_TRUE(receivers.empty());
-
-  SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(ReceiverSetTest, ReceiverSetGetBadMessageCallback) {
   PingImpl impl;
 
   std::string last_received_error;
-  SetDefaultProcessErrorHandler(
+  ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindRepeating([](std::string* out_error,
                              const std::string& error) { *out_error = error; },
                           &last_received_error));
@@ -378,15 +376,13 @@ TEST_F(ReceiverSetTest, ReceiverSetGetBadMessageCallback) {
   }
 
   EXPECT_TRUE(receivers.empty());
-
-  SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(ReceiverSetTest, ReceiverSetGetBadMessageCallbackOutlivesReceiverSet) {
   PingImpl impl;
 
   std::string last_received_error;
-  SetDefaultProcessErrorHandler(
+  ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindRepeating([](std::string* out_error,
                              const std::string& error) { *out_error = error; },
                           &last_received_error));
@@ -406,8 +402,6 @@ TEST_F(ReceiverSetTest, ReceiverSetGetBadMessageCallbackOutlivesReceiverSet) {
 
   std::move(bad_message_callback).Run("message 1");
   EXPECT_EQ("message 1", last_received_error);
-
-  SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 class PingProviderImpl : public AssociatedPingProvider, public PingService {

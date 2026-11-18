@@ -50,9 +50,6 @@ class BlobURLStoreImplTestP
     InitializeScopedFeatureList();
 
     context_ = std::make_unique<BlobStorageContext>();
-
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &BlobURLStoreImplTestP::OnBadMessage, base::Unretained(this)));
   }
 
   void InitializeScopedFeatureList() {
@@ -91,10 +88,6 @@ class BlobURLStoreImplTestP
   bool StoragePartitioningEnabled() {
     return test_case_ == PartitionedBlobUrlTestCase::
                              kBlockCrossPartitionBlobUrlFetchingEnabled;
-  }
-
-  void TearDown() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
   void OnBadMessage(const std::string& error) {
@@ -166,6 +159,9 @@ class BlobURLStoreImplTestP
   std::unique_ptr<BlobStorageContext> context_;
   BlobUrlRegistry url_registry_;
   std::vector<std::string> bad_messages_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&BlobURLStoreImplTestP::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 TEST_P(BlobURLStoreImplTestP, BasicRegisterRevoke) {

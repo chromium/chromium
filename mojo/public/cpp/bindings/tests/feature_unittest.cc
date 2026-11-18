@@ -253,14 +253,7 @@ class PassesInterfacesImpl : public mojom::PassesInterfaces {
 
 class FeatureBindingsTest : public BindingsTestBase {
  public:
-  void SetUp() override {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &FeatureBindingsTest::OnProcessError, base::Unretained(this)));
-  }
-
-  void TearDown() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
+  void TearDown() override { error_handler_.Reset(); }
 
   void SetErrorHandler(base::OnceClosure handler) {
     error_handler_ = std::move(handler);
@@ -274,6 +267,9 @@ class FeatureBindingsTest : public BindingsTestBase {
   }
 
   base::OnceClosure error_handler_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting process_error_handler_{
+      base::BindRepeating(&FeatureBindingsTest::OnProcessError,
+                          base::Unretained(this))};
 };
 
 //// Tests /////

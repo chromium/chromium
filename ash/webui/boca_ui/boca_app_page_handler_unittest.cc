@@ -1327,8 +1327,9 @@ TEST_F(BocaAppPageHandlerConsumerTest, GetSessionWithFullInputTest) {
 
 TEST_F(BocaAppPageHandlerConsumerTest, StartSpotlightFailsForConsumer) {
   std::string bad_message;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&bad_message](const std::string& error) { bad_message = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&bad_message](const std::string& error) { bad_message = error; }));
 
   remote().get()->StartSpotlight("123456789012", base::DoNothing());
 
@@ -1336,8 +1337,6 @@ TEST_F(BocaAppPageHandlerConsumerTest, StartSpotlightFailsForConsumer) {
       base::test::RunUntil([&bad_message]() { return !bad_message.empty(); }));
 
   EXPECT_EQ("StartSpotlight without active producer session", bad_message);
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, StartSpotlightIgnoresRaceCondition) {
@@ -1345,16 +1344,15 @@ TEST_F(BocaAppPageHandlerProducerTest, StartSpotlightIgnoresRaceCondition) {
       .WillRepeatedly(Return(nullptr));
 
   std::string bad_message;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&bad_message](const std::string& error) { bad_message = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&bad_message](const std::string& error) { bad_message = error; }));
 
   base::test::TestFuture<void> future;
   remote().get()->StartSpotlight("123456789012", future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
   EXPECT_TRUE(bad_message.empty());
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(BocaAppPageHandlerProducerTest,
@@ -2871,8 +2869,9 @@ TEST_F(BocaAppPageHandlerProducerTest, TestPrefGetterAndSetter) {
 TEST_F(BocaAppPageHandlerProducerTest, TestSetUserPrefDisallowedType) {
   boca_app_handler()->SetPrefForTesting(pref_service());
   std::string bad_message;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&bad_message](const std::string& error) { bad_message = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&bad_message](const std::string& error) { bad_message = error; }));
 
   remote()->SetUserPref(mojom::BocaValidPref::kNavigationSetting,
                         base::Value(42), base::DoNothing());
@@ -2880,8 +2879,6 @@ TEST_F(BocaAppPageHandlerProducerTest, TestSetUserPrefDisallowedType) {
   ASSERT_TRUE(
       base::test::RunUntil([&bad_message]() { return !bad_message.empty(); }));
   EXPECT_EQ("Using disallowed type for pref.", bad_message);
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, EndViewScreenSessionSucceeded) {
@@ -3415,8 +3412,9 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenSuccess) {
 
 TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenInvalidReceiverId) {
   std::string bad_message;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&bad_message](const std::string& error) { bad_message = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&bad_message](const std::string& error) { bad_message = error; }));
 
   auto student =
       mojom::Identity::New("1", "a", "a@gmail.com", GURL("cdn://s1"));
@@ -3427,8 +3425,6 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenInvalidReceiverId) {
       base::test::RunUntil([&bad_message]() { return !bad_message.empty(); }));
 
   EXPECT_EQ("Invalid receiver_id.", bad_message);
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenFailure) {

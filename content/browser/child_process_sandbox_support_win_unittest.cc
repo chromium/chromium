@@ -36,11 +36,6 @@ class SandboxSupportWinUnitTest : public testing::Test {
     impl_.BindReceiver(sandbox_support_.BindNewPipeAndPassReceiver());
   }
 
-  void SetUp() override {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &SandboxSupportWinUnitTest::OnProcessError, base::Unretained(this)));
-  }
-
   content::mojom::SandboxSupport& sandbox_support() {
     return *sandbox_support_;
   }
@@ -53,6 +48,9 @@ class SandboxSupportWinUnitTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<content::mojom::SandboxSupport> sandbox_support_;
   SandboxSupportImpl impl_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&SandboxSupportWinUnitTest::OnProcessError,
+                          base::Unretained(this))};
 };
 }  // namespace
 

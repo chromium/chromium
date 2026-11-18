@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "mojo/public/cpp/system/functions.h"
 
 namespace mojo {
 
@@ -159,6 +160,7 @@ class BadMessageObserver {
   std::string last_error_for_bad_message_;
   bool got_bad_message_;
   base::RunLoop run_loop_;
+  std::optional<ScopedDefaultProcessErrorHandlerForTesting> error_handler_;
 };
 
 // Test helper for swapping out a Mojo implementation pointer for testing in a

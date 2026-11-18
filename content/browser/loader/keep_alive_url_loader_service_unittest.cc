@@ -355,12 +355,6 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
     network_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>(
             /*observe_loader_requests=*/true);
-    // Intercepts Mojo bad-message error.
-    mojo::SetDefaultProcessErrorHandler(
-        base::BindLambdaForTesting([&](const std::string& error) {
-          ASSERT_FALSE(mojo_bad_message_.has_value());
-          mojo_bad_message_ = error;
-        }));
     RenderViewHostTestHarness::SetUp();
 
     test_web_contents()->NavigateAndCommit(GURL("https://example.com"));
@@ -376,7 +370,6 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
     pending_navigation_.reset();
     network_url_loader_factory_ = nullptr;
     loader_service_ = nullptr;
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
     mojo_bad_message_ = std::nullopt;
     RenderViewHostTestHarness::TearDown();
   }
@@ -470,6 +463,12 @@ class KeepAliveURLLoaderServiceTestBase : public RenderViewHostTestHarness {
   // The test target.
   std::unique_ptr<KeepAliveURLLoaderService> loader_service_ = nullptr;
   std::optional<std::string> mojo_bad_message_;
+  // Intercepts Mojo bad-message error.
+  mojo::ScopedDefaultProcessErrorHandlerForTesting mojo_error_handler_{
+      base::BindLambdaForTesting([&](const std::string& error) {
+        ASSERT_FALSE(mojo_bad_message_.has_value());
+        mojo_bad_message_ = error;
+      })};
 };
 
 class KeepAliveURLLoaderServiceTest : public KeepAliveURLLoaderServiceTestBase {

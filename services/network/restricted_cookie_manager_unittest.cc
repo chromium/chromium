@@ -295,15 +295,6 @@ class RestrictedCookieManagerTest
   }
   ~RestrictedCookieManagerTest() override = default;
 
-  void SetUp() override {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &RestrictedCookieManagerTest::OnBadMessage, base::Unretained(this)));
-  }
-
-  void TearDown() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
-
   mojom::RestrictedCookieManagerRole RestrictedCookieManagerRole() const {
     return std::get<0>(GetParam());
   }
@@ -468,6 +459,9 @@ class RestrictedCookieManagerTest
   std::unique_ptr<RestrictedCookieManagerSync> sync_service_;
   std::optional<std::string> expecting_bad_message_;
   bool received_bad_message_ = false;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&RestrictedCookieManagerTest::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 namespace {

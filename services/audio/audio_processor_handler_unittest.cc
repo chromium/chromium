@@ -393,8 +393,9 @@ TEST_F(AudioProcessorHandlerTest,
       /*voice_isolation_handler=*/nullptr);
 
   std::string bad_message;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { bad_message = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { bad_message = error; }));
 
   // Disabling voice isolation when it is not available is a no-op and should
   // not report a bad message.
@@ -407,7 +408,6 @@ TEST_F(AudioProcessorHandlerTest,
   remote.FlushForTesting();
 
   EXPECT_EQ(bad_message, "Voice isolation cannot be enabled.");
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 #endif
 

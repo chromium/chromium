@@ -254,7 +254,7 @@ TEST_F(KeySystemSupportImplTest, TwoObservers_ObserverAlreadyBound) {
   key_system_support_->SetObserver(std::move(observer_1_remote));
   key_system_support_->SetObserver(std::move(observer_2_remote));
 
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindLambdaForTesting([&](const std::string& error) {
         EXPECT_EQ(error,
                   std::string(media::mojom::KeySystemSupportObserver::Name_) +

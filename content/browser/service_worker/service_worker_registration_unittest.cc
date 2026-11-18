@@ -816,18 +816,6 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorkerActivationTestWithDevTools,
 class ServiceWorkerRegistrationObjectHostTest
     : public ServiceWorkerRegistrationTest {
  protected:
-  void SetUp() override {
-    ServiceWorkerRegistrationTest::SetUp();
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &ServiceWorkerRegistrationObjectHostTest::OnMojoError,
-        base::Unretained(this)));
-  }
-
-  void TearDown() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-    ServiceWorkerRegistrationTest::TearDown();
-  }
-
   // Pass nullptr for |out_error_msg| if it's not needed.
   blink::mojom::ServiceWorkerErrorType CallUpdate(
       blink::mojom::ServiceWorkerRegistrationObjectHost* registration_host,
@@ -991,6 +979,9 @@ class ServiceWorkerRegistrationObjectHostTest
   void OnMojoError(const std::string& error) { bad_messages_.push_back(error); }
 
   std::vector<std::string> bad_messages_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting mojo_error_handler_{
+      base::BindRepeating(&ServiceWorkerRegistrationObjectHostTest::OnMojoError,
+                          base::Unretained(this))};
 };
 
 class ServiceWorkerRegistrationObjectHostUpdateTest

@@ -12169,21 +12169,18 @@ TEST_F(NetworkContextTestWithMockTime, EnableTrustTokensWithStoreOnDisk) {
 
 class NetworkContextExpectBadMessageTest : public NetworkContextTest {
  public:
-  NetworkContextExpectBadMessageTest() {
-    mojo::SetDefaultProcessErrorHandler(
-        base::BindLambdaForTesting([&](const std::string&) {
-          EXPECT_FALSE(got_bad_message_);
-          got_bad_message_ = true;
-        }));
-  }
-  ~NetworkContextExpectBadMessageTest() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
+  NetworkContextExpectBadMessageTest() = default;
+  ~NetworkContextExpectBadMessageTest() override = default;
 
  protected:
   void AssertBadMessage() { EXPECT_TRUE(got_bad_message_); }
 
   bool got_bad_message_ = false;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindLambdaForTesting([&](const std::string&) {
+        EXPECT_FALSE(got_bad_message_);
+        got_bad_message_ = true;
+      })};
 };
 
 TEST_F(NetworkContextExpectBadMessageTest,

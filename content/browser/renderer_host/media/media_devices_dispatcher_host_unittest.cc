@@ -980,8 +980,9 @@ TEST_P(MediaDevicesDispatcherHostTest, SetPreferredSinkIdNotMainFrame) {
       blink::features::kPreferredAudioOutputDevices);
 
   std::string received_error;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { received_error = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { received_error = error; }));
 
   mojo::Remote<blink::mojom::MediaDevicesDispatcherHost> client;
   MediaDevicesDispatcherHost::Create(
@@ -998,8 +999,6 @@ TEST_P(MediaDevicesDispatcherHostTest, SetPreferredSinkIdNotMainFrame) {
   EXPECT_EQ(
       received_error,
       "setPreferredSinkId can only be called from the top-level document.");
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_P(MediaDevicesDispatcherHostTest, SelectAudioOutputNoFeature) {

@@ -59,13 +59,8 @@ class MockAudioServiceStreamFactory : public audio::FakeStreamFactory {
 class BadMessageListener {
  public:
   explicit BadMessageListener(base::RepeatingClosure on_bad_message = {})
-      : on_bad_message_(std::move(on_bad_message)) {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &BadMessageListener::OnBadMessage, base::Unretained(this)));
-  }
-  ~BadMessageListener() {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
+      : on_bad_message_(std::move(on_bad_message)) {}
+  ~BadMessageListener() = default;
 
   void OnBadMessage(const std::string& error) {
     bad_messages_.push_back(error);
@@ -79,6 +74,9 @@ class BadMessageListener {
  private:
   base::RepeatingClosure on_bad_message_;
   std::vector<std::string> bad_messages_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&BadMessageListener::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 }  // namespace

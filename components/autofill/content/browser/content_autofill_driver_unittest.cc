@@ -401,10 +401,8 @@ class ContentAutofillDriverWithFakeAutofillAgent
 // RAII type that intercepts mojom::ReportBadMessage() calls.
 class BadMessageHelper {
  public:
-  BadMessageHelper() { mojo::SetDefaultProcessErrorHandler(callback_.Get()); }
-  ~BadMessageHelper() {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
+  BadMessageHelper() = default;
+  ~BadMessageHelper() = default;
 
   // This callback is invoked when a bad message arrives.
   base::MockRepeatingCallback<void(const std::string&)>& callback() {
@@ -413,6 +411,8 @@ class BadMessageHelper {
 
  private:
   base::MockRepeatingCallback<void(const std::string&)> callback_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      callback_.Get()};
   // mojo::ReportBadMessage() needs a MessageDispatchContext.
   mojo::Message dummy_message_{0, 0, 0, 0, nullptr};
   mojo::internal::MessageDispatchContext context_{&dummy_message_};

@@ -50,11 +50,6 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    // Intercept Mojo bad-message errors.
-    mojo::SetDefaultProcessErrorHandler(
-        base::BindRepeating(&PublicIpAddressGeolocatorTest::OnMojoBadMessage,
-                            base::Unretained(this)));
-
     receiver_set_.Add(
         std::make_unique<PublicIpAddressGeolocator>(
             PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS, notifier_.get(),
@@ -63,11 +58,6 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
                 &PublicIpAddressGeolocatorTest::OnGeolocatorBadMessage,
                 base::Unretained(this))),
         public_ip_address_geolocator_.BindNewPipeAndPassReceiver());
-  }
-
-  void TearDown() override {
-    // Stop intercepting Mojo bad-message errors.
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
   // Deal with mojo bad message.
@@ -103,6 +93,11 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
   // before `notifier_`. This destruction order aligns with the
   // `PublicIpAddressGeolocationProvider`.
   mojo::UniqueReceiverSet<mojom::Geolocation> receiver_set_;
+
+  // Intercept Mojo bad-message errors.
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&PublicIpAddressGeolocatorTest::OnMojoBadMessage,
+                          base::Unretained(this))};
 };
 
 // Basic test of a client invoking QueryNextPosition.

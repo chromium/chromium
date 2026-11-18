@@ -157,7 +157,7 @@ TEST_F(NoStatePrefetchProcessorImplTest, StartTwice) {
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindLambdaForTesting([&](const std::string& error) {
         EXPECT_TRUE(bad_message_error.empty());
         bad_message_error = error;
@@ -182,9 +182,6 @@ TEST_F(NoStatePrefetchProcessorImplTest, StartTwice) {
   remote->Start(std::move(attributes2));
   remote.FlushForTesting();
   EXPECT_EQ(bad_message_error, "NSPPI_START_TWICE");
-  // Clean up error handler, to avoid causing other tests run in the same
-  // process from crashing.
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(NoStatePrefetchProcessorImplTest, StartWithSameOriginReferrer) {
@@ -224,7 +221,7 @@ TEST_F(NoStatePrefetchProcessorImplTest, StartWithCrossOriginReferrer) {
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindLambdaForTesting([&](const std::string& error) {
         EXPECT_TRUE(bad_message_error.empty());
         bad_message_error = error;
@@ -243,9 +240,6 @@ TEST_F(NoStatePrefetchProcessorImplTest, StartWithCrossOriginReferrer) {
   remote.FlushForTesting();
   EXPECT_EQ(bad_message_error, "NSPPI_INVALID_REFERRER_ORIGIN");
   EXPECT_FALSE(link_manager->is_start_called());
-  // Clean up error handler, to avoid causing other tests run in the same
-  // process from crashing.
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(NoStatePrefetchProcessorImplTest, Cancel) {

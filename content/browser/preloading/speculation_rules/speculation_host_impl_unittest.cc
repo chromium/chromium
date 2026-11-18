@@ -51,7 +51,6 @@ class SpeculationHostImplTest : public RenderViewHostImplTestHarness {
   void TearDown() override {
     web_contents_.reset();
     browser_context_.reset();
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
     RenderViewHostImplTestHarness::TearDown();
   }
 
@@ -155,7 +154,7 @@ TEST_F(SpeculationHostImplTest, ReportNonHttpMessage) {
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindLambdaForTesting([&](const std::string& error) {
         EXPECT_FALSE(error.empty());
         EXPECT_TRUE(bad_message_error.empty());
@@ -185,7 +184,7 @@ TEST_F(SpeculationHostImplTest,
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindLambdaForTesting([&](const std::string& error) {
         EXPECT_FALSE(error.empty());
         EXPECT_TRUE(bad_message_error.empty());
@@ -221,7 +220,7 @@ TEST_F(SpeculationHostImplTest,
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindLambdaForTesting([&](const std::string& error) {
         EXPECT_FALSE(error.empty());
         EXPECT_TRUE(bad_message_error.empty());
@@ -253,7 +252,7 @@ TEST_F(SpeculationHostImplTest, ReportEmptySpeculationRulesTags) {
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindLambdaForTesting([&](const std::string& error) {
         EXPECT_FALSE(error.empty());
         EXPECT_TRUE(bad_message_error.empty());
@@ -309,8 +308,9 @@ TEST_F(SpeculationHostImplTest, OnLCPPredictedSubframe) {
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { bad_message_error = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { bad_message_error = error; }));
 
   EXPECT_FALSE(PreloadingDecider::GetForCurrentDocument(subframe_rfh));
   remote->OnLCPPredicted();

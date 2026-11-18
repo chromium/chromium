@@ -58,7 +58,6 @@ class CookieStoreTest : public testing::Test {
 
   void TearDown() override {
     EXPECT_EQ(std::string(), bad_message_);
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
   CookieStore* CreateCookieStore(const V8TestingScope& scope) {
@@ -100,10 +99,7 @@ class CookieStoreTest : public testing::Test {
             /*devtools_cookies_setting_overrides=*/
             net::CookieSettingOverrides(),
             /*prefer_bound_cookie_context=*/false,
-            /*cookie_observer=*/mojo::NullRemote())) {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &CookieStoreTest::OnBadMessage, base::Unretained(this)));
-  }
+            /*cookie_observer=*/mojo::NullRemote())) {}
 
   HeapMojoRemote<network::mojom::blink::RestrictedCookieManager>
   CreateRemoteAndInstallReceiver(const V8TestingScope& scope) {
@@ -131,6 +127,9 @@ class CookieStoreTest : public testing::Test {
   network::CookieSettings cookie_settings_;
   std::unique_ptr<network::RestrictedCookieManager> backend_;
   std::string bad_message_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&CookieStoreTest::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 class CookieEventListener : public NativeEventListener {

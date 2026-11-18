@@ -9,11 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
@@ -91,6 +93,10 @@ class BackgroundSyncServiceImplTestHarness : public testing::Test {
   std::unique_ptr<EmbeddedWorkerTestHelper> embedded_worker_helper_;
   std::unique_ptr<StoragePartitionImpl> storage_partition_impl_;
   scoped_refptr<ServiceWorkerRegistration> sw_registration_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting mojo_error_handler_{
+      base::BindRepeating(
+          &BackgroundSyncServiceImplTestHarness::CollectMojoError,
+          base::Unretained(this))};
 };
 
 }  // namespace content

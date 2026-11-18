@@ -993,7 +993,7 @@ TEST_F(SharedHttpCacheClientTest, DuplicateCreateClientReportsBadMessage) {
   ASSERT_TRUE(db_init_future.Wait());
 
   base::test::TestFuture<std::string> bad_message_future;
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       bad_message_future
           .GetSequenceBoundRepeatingCallback<const std::string&>());
 
@@ -1003,8 +1003,6 @@ TEST_F(SharedHttpCacheClientTest, DuplicateCreateClientReportsBadMessage) {
   factory_remote->CreateClient(
       std::move(file_set2), second_client_remote.BindNewPipeAndPassReceiver());
   EXPECT_EQ("Duplicate CreateClient call", bad_message_future.Take());
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(SharedHttpCacheClientTest, DestructOnNonClientSequence) {

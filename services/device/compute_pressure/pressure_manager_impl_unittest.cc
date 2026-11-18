@@ -246,7 +246,7 @@ TEST_F(PressureManagerImplTest, AddClientExistingToken) {
   EXPECT_TRUE(manager_.is_connected());
 
   std::string last_received_error;
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindRepeating([](std::string* out_error,
                              const std::string& error) { *out_error = error; },
                           &last_received_error));

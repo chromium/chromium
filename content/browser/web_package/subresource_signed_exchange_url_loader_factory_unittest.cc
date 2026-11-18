@@ -115,8 +115,9 @@ TEST(SubresourceSignedExchangeURLLoaderFactoryTest,
       /* request_initiator_origin_lock = */ initiator_origin);
 
   std::string received_error;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { received_error = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { received_error = error; }));
 
   mojo::Remote<network::mojom::URLLoader> loader;
   network::TestURLLoaderClient client;
@@ -132,8 +133,6 @@ TEST(SubresourceSignedExchangeURLLoaderFactoryTest,
   EXPECT_EQ(received_error,
             "SubresourceSignedExchangeURLLoaderFactory: "
             "request.url does not match inner_url");
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST(SubresourceSignedExchangeURLLoaderFactoryTest,
@@ -152,8 +151,9 @@ TEST(SubresourceSignedExchangeURLLoaderFactoryTest,
       /* request_initiator_origin_lock = */ initiator_origin_lock);
 
   std::string received_error;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { received_error = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { received_error = error; }));
 
   mojo::Remote<network::mojom::URLLoader> loader;
   network::TestURLLoaderClient client;
@@ -170,8 +170,6 @@ TEST(SubresourceSignedExchangeURLLoaderFactoryTest,
   EXPECT_EQ(received_error,
             "SubresourceSignedExchangeURLLoaderFactory: "
             "lock VS initiator mismatch");
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 std::unique_ptr<PrefetchedSignedExchangeCacheEntry> CreateWorkingCacheEntry(
@@ -223,8 +221,9 @@ TEST(SubresourceSignedExchangeURLLoaderFactoryTest, CorsBypassViaKNavigate) {
       /*request_initiator_origin_lock=*/attacker_origin);
 
   std::string received_error;
-  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { received_error = error; }));
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { received_error = error; }));
 
   mojo::Remote<network::mojom::URLLoader> loader;
   network::TestURLLoaderClient client;
@@ -250,8 +249,6 @@ TEST(SubresourceSignedExchangeURLLoaderFactoryTest, CorsBypassViaKNavigate) {
   EXPECT_EQ(received_error,
             "SubresourceSignedExchangeURLLoaderFactory: "
             "kNavigate mode is forbidden for subresources");
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 }  // namespace

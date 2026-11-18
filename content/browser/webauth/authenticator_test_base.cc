@@ -28,7 +28,6 @@
 #include "device/fido/public/public_key_credential_user_entity.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/system/functions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -376,7 +375,10 @@ TestAuthenticatorContentBrowserClient::GetWebAuthenticationRequestDelegate(
 
 AuthenticatorTestBase::AuthenticatorTestBase()
     : RenderViewHostTestHarness(
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+      mojo_error_handler_guard_(
+          base::BindRepeating(&AuthenticatorTestBase::OnMojoError,
+                              base::Unretained(this))) {}
 
 AuthenticatorTestBase::~AuthenticatorTestBase() = default;
 
@@ -398,9 +400,6 @@ void AuthenticatorTestBase::SetUp() {
 
   WebAuthRequestSecurityCheckerImpl::
       UseSystemSharedURLLoaderFactoryForTesting() = true;
-
-  mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-      &AuthenticatorTestBase::OnMojoError, base::Unretained(this)));
 
 #if BUILDFLAG(IS_CHROMEOS)
   chromeos::TpmManagerClient::InitializeFake();
@@ -427,7 +426,7 @@ void AuthenticatorTestBase::TearDown() {
   WebAuthRequestSecurityCheckerImpl::
       UseSystemSharedURLLoaderFactoryForTesting() = false;
 
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+  mojo_error_handler_.Reset();
 
   virtual_device_factory_ = nullptr;
   AuthenticatorEnvironment::GetInstance()->Reset();

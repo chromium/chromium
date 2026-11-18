@@ -1114,16 +1114,15 @@ TEST_F(AssociatedInterfaceTest, AssociatedReceiverReportBadMessage) {
   }));
 
   std::string received_error;
-  SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
-      [&](const std::string& error) { received_error = error; }));
+  ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&](const std::string& error) { received_error = error; }));
 
   remote->Echo(-1, IntegerSenderImpl::EchoCallback());
   EXPECT_FALSE(called);
   run_loop.Run();
   EXPECT_TRUE(called);
   EXPECT_EQ("Reporting bad message for value == -1", received_error);
-
-  SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(AssociatedInterfaceTest, AssociatedReceiverDedicatedPipe) {

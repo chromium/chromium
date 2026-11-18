@@ -41,14 +41,8 @@ namespace {
 
 class BadMessageTestHelper {
  public:
-  BadMessageTestHelper() {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &BadMessageTestHelper::OnBadMessage, base::Unretained(this)));
-  }
-
-  ~BadMessageTestHelper() {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
+  BadMessageTestHelper() = default;
+  ~BadMessageTestHelper() = default;
 
   const std::optional<std::string>& GetLastBadMessage() const {
     return last_bad_message_report_;
@@ -61,6 +55,9 @@ class BadMessageTestHelper {
   }
 
   std::optional<std::string> last_bad_message_report_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&BadMessageTestHelper::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 struct CreateContextSuccess {

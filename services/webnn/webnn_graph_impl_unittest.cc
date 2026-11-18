@@ -289,7 +289,7 @@ bool ValidateDispatch(
   // Validate the inputs in the `Dispatch` function.
   bool valid = true;
   // Set up the error handler for bad mojo messages.
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindLambdaForTesting([&](const std::string& error_message) {
         EXPECT_EQ(error_message, kBadMessageInvalidTensor);
         valid = false;
@@ -315,7 +315,6 @@ bool ValidateDispatch(
   // Ensure Dispatch message has a chance to finish before removing the error
   // handler.
   webnn_context.FlushForTesting();
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   return valid;
 }
 

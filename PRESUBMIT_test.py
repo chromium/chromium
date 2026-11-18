@@ -3978,6 +3978,51 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertNotIn("base/negatives.cc", results[7].message)
         self.assertIn("Use int16_t instead of jshort", results[7].message)
 
+    def testSetDefaultProcessErrorHandlerInTests(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile(
+                "foo/bar_unittest.cc",
+                [
+                    "int x = 0;  // Mention SetDefaultProcessErrorHandler",
+                    "mojo::SetDefaultProcessErrorHandler(base::DoNothing());",
+                ],
+            ),
+            MockFile(
+                "foo/bar_browsertest.cc",
+                ["SetDefaultProcessErrorHandler(base::DoNothing());"],
+            ),
+            MockFile(
+                r"foo\test\bar.cc",
+                ["mojo::SetDefaultProcessErrorHandler(base::DoNothing());"],
+            ),
+            MockFile(
+                "third_party/blink/renderer/foo_unittest.cc",
+                ["mojo::SetDefaultProcessErrorHandler(base::DoNothing());"],
+            ),
+            MockFile(
+                "foo/bar.cc",
+                ["mojo::SetDefaultProcessErrorHandler(base::DoNothing());"],
+            ),
+            MockFile(
+                "third_party/foo/test/bar.cc",
+                ["mojo::SetDefaultProcessErrorHandler(base::DoNothing());"],
+            ),
+        ]
+
+        results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
+
+        self.assertEqual(4, len(results))
+        self.assertIn("foo/bar_unittest.cc:2:", results[0].message)
+        self.assertIn("ScopedDefaultProcessErrorHandlerForTesting",
+                      results[0].message)
+        self.assertIn("foo/bar_browsertest.cc", results[1].message)
+        self.assertIn(r"foo\test\bar.cc", results[2].message)
+        self.assertIn("third_party/blink/renderer/foo_unittest.cc",
+                      results[3].message)
+        for excluded in ("foo/bar.cc", "third_party/foo/test/bar.cc"):
+            self.assertTrue(all(excluded not in r.message for r in results))
+
 
 
 class NoProductionCodeUsingTestOnlyFunctionsTest(unittest.TestCase):

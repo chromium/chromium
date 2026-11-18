@@ -609,7 +609,7 @@ TEST(MojoAudioEncoderServiceTest, ServiceRejectsInvalidInputs) {
     // Intercept bad message reports.
     bool bad_message_received = false;
     base::RunLoop bad_message_loop;
-    mojo::SetDefaultProcessErrorHandler(
+    mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
         base::BindLambdaForTesting([&](const std::string& error) {
           bad_message_received = true;
           bad_message_loop.Quit();
@@ -619,8 +619,6 @@ TEST(MojoAudioEncoderServiceTest, ServiceRejectsInvalidInputs) {
     remote->Encode(std::move(buffer), base::DoNothing());
     bad_message_loop.Run();
     EXPECT_TRUE(bad_message_received);
-
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   };
 
   // Test bitstream format input.

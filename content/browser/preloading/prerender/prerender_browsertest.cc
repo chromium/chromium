@@ -7685,7 +7685,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Set up the error handler for bad mojo messages.
   std::string bad_message_error;
-  mojo::SetDefaultProcessErrorHandler(
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
       base::BindLambdaForTesting([&](const std::string& error) {
         EXPECT_FALSE(error.empty());
         EXPECT_TRUE(bad_message_error.empty());

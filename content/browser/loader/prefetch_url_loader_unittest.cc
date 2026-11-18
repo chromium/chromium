@@ -41,13 +41,8 @@ namespace {
 
 class ScopedBadMessageCounter {
  public:
-  ScopedBadMessageCounter() {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &ScopedBadMessageCounter::OnBadMessage, base::Unretained(this)));
-  }
-  ~ScopedBadMessageCounter() {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
+  ScopedBadMessageCounter() = default;
+  ~ScopedBadMessageCounter() = default;
 
   ScopedBadMessageCounter(const ScopedBadMessageCounter&) = delete;
   ScopedBadMessageCounter& operator=(const ScopedBadMessageCounter&) = delete;
@@ -63,6 +58,9 @@ class ScopedBadMessageCounter {
 
   int count_ = 0;
   std::string last_error_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&ScopedBadMessageCounter::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 class PrefetchURLLoaderTest : public RenderViewHostTestHarness {

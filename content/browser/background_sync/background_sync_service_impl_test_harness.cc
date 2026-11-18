@@ -25,7 +25,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/test/storage_partition_test_helpers.h"
 #include "content/test/test_background_sync_context.h"
-#include "mojo/public/cpp/system/functions.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -103,10 +102,6 @@ void BackgroundSyncServiceImplTestHarness::SetUp() {
   // Don't let the tests be confused by the real-world device connectivity
   background_sync_test_util::SetIgnoreNetworkChanges(true);
 
-  mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-      &BackgroundSyncServiceImplTestHarness::CollectMojoError,
-      base::Unretained(this)));
-
   CreateTestHelper();
   CreateStoragePartition();
   CreateBackgroundSyncContext();
@@ -128,8 +123,6 @@ void BackgroundSyncServiceImplTestHarness::TearDown() {
 
   // Restore the network observer functionality for subsequent tests
   background_sync_test_util::SetIgnoreNetworkChanges(false);
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 
   storage_partition_impl_->OnBrowserContextWillBeDestroyed();
 }

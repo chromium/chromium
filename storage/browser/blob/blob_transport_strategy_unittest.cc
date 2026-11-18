@@ -72,15 +72,8 @@ class BlobTransportStrategyTest : public testing::Test {
     limits_.min_page_file_size = kTestBlobStorageMinFileSizeBytes;
     limits_.max_file_size = kTestBlobStorageMaxFileSizeBytes;
 
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &BlobTransportStrategyTest::OnBadMessage, base::Unretained(this)));
-
     // Disallow IO on the main loop.
     disallow_blocking_.emplace();
-  }
-
-  void TearDown() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
   void OnBadMessage(const std::string& error) {
@@ -114,6 +107,10 @@ class BlobTransportStrategyTest : public testing::Test {
   size_t reply_request_count_ = 0;
   size_t stream_request_count_ = 0;
   size_t file_request_count_ = 0;
+
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&BlobTransportStrategyTest::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 class BasicTests : public BlobTransportStrategyTest,

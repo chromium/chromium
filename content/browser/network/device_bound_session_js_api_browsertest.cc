@@ -408,7 +408,7 @@ class DeviceBoundSessionJsApiBinderBrowserTest
       mojo::Remote<network::mojom::RestrictedDeviceBoundSessionManager>&
           manager) {
     std::optional<std::string> bad_message;
-    mojo::SetDefaultProcessErrorHandler(
+    mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
         base::BindLambdaForTesting([&](const std::string& error) {
           EXPECT_EQ(bad_message, std::nullopt);
           bad_message = error;
@@ -423,7 +423,6 @@ class DeviceBoundSessionJsApiBinderBrowserTest
     // A dropped receiver shows up as a disconnect once the pipe is flushed.
     manager.FlushForTesting();
 
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
     return bad_message;
   }
 };

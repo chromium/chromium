@@ -64,15 +64,15 @@ constexpr int kAIModeDisabled = 1;
 
 class MockBadMessageHelper {
  public:
-  MockBadMessageHelper() {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &MockBadMessageHelper::OnBadMessage, base::Unretained(this)));
-  }
-  ~MockBadMessageHelper() {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
+  MockBadMessageHelper() = default;
+  ~MockBadMessageHelper() = default;
 
   MOCK_METHOD(void, OnBadMessage, (const std::string& error));
+
+ private:
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&MockBadMessageHelper::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 class StubRemoteActorSelectionDialogController

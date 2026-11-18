@@ -140,7 +140,10 @@ class AudioServiceInputStreamTest : public testing::Test {
 #endif
         stream_factory_receiver_(
             &stream_factory_,
-            remote_stream_factory_.BindNewPipeAndPassReceiver()) {
+            remote_stream_factory_.BindNewPipeAndPassReceiver()),
+        error_handler_(base::BindRepeating(
+            &AudioServiceInputStreamTest::BadMessageCallback,
+            base::Unretained(this))) {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
     ON_CALL(mock_ml_model_manager_,
             GetModel(mojom::MlModelType::kResidualEchoEstimation))
@@ -156,16 +159,6 @@ class AudioServiceInputStreamTest : public testing::Test {
       delete;
 
   ~AudioServiceInputStreamTest() override { audio_manager_.Shutdown(); }
-
-  void SetUp() override {
-    mojo::SetDefaultProcessErrorHandler(
-        base::BindRepeating(&AudioServiceInputStreamTest::BadMessageCallback,
-                            base::Unretained(this)));
-  }
-
-  void TearDown() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
 
   mojo::PendingRemote<media::mojom::AudioInputStream> CreateStream(
       bool enable_agc) {
@@ -241,6 +234,7 @@ class AudioServiceInputStreamTest : public testing::Test {
   StrictMock<MockStreamClient> client_;
   StrictMock<MockStreamObserver> observer_;
   NiceMock<MockLog> log_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_;
 };
 
 TEST_F(AudioServiceInputStreamTest, ConstructDestruct) {

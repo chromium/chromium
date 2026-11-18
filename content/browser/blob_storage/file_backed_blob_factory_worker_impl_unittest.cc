@@ -17,7 +17,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/system/functions.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_item.h"
@@ -59,7 +58,6 @@ class FileBackedBlobFactoryWorkerImplTest : public testing::Test {
 
   void TearDown() override {
     ChildProcessSecurityPolicyImpl::GetInstance()->Remove(process_id_);
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
   void WaitForBlobCompletion(storage::BlobDataHandle* blob_handle) {

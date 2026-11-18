@@ -136,17 +136,12 @@ class TestEnvironment {
                         /*ml_model_manager=*/nullptr),
         stream_factory_receiver_(
             &stream_factory_,
-            remote_stream_factory_.BindNewPipeAndPassReceiver()) {
-    mojo::SetDefaultProcessErrorHandler(bad_message_callback_.Get());
-  }
+            remote_stream_factory_.BindNewPipeAndPassReceiver()) {}
 
   TestEnvironment(const TestEnvironment&) = delete;
   TestEnvironment& operator=(const TestEnvironment&) = delete;
 
-  ~TestEnvironment() {
-    audio_manager_.Shutdown();
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
+  ~TestEnvironment() { audio_manager_.Shutdown(); }
 
   using MockDeleteCallback = base::MockCallback<OutputStream::DeleteCallback>;
   using MockBadMessageCallback =
@@ -227,6 +222,8 @@ class TestEnvironment {
   NiceMock<MockLog> log_;
   StrictMock<MockCreatedCallback> created_callback_;
   StrictMock<MockBadMessageCallback> bad_message_callback_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      bad_message_callback_.Get()};
 };
 
 TEST(AudioServiceOutputStreamTest, ConstructDestruct) {

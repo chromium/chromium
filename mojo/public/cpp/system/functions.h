@@ -32,9 +32,9 @@ inline MojoTimeTicks GetTimeTicksNow() {
 //
 // This can be used to globally listen for reports of bad incoming IPCs.
 //
-// Note: New callers in tests should prefer
-// `ScopedDefaultProcessErrorHandlerForTesting` below so that the previous
-// handler is automatically restored when the test finishes.
+// Note: Callers in tests must use
+// `ScopedDefaultProcessErrorHandlerForTesting` below instead so that the
+// previous handler is automatically restored when the test finishes.
 using DefaultProcessErrorHandler =
     base::RepeatingCallback<void(const std::string& error)>;
 void MOJO_CPP_SYSTEM_EXPORT

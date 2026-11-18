@@ -147,17 +147,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 class BadMessageTestHelper {
  public:
   BadMessageTestHelper()
-      : dummy_message_(0, 0, 0, 0, nullptr), context_(&dummy_message_) {
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &BadMessageTestHelper::OnBadMessage, base::Unretained(this)));
-  }
+      : dummy_message_(0, 0, 0, 0, nullptr), context_(&dummy_message_) {}
 
   BadMessageTestHelper(const BadMessageTestHelper&) = delete;
   BadMessageTestHelper& operator=(const BadMessageTestHelper&) = delete;
 
-  ~BadMessageTestHelper() {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
+  ~BadMessageTestHelper() = default;
 
   const std::vector<std::string>& bad_message_reports() const {
     return bad_message_reports_;
@@ -172,6 +167,9 @@ class BadMessageTestHelper {
 
   mojo::Message dummy_message_;
   mojo::internal::MessageDispatchContext context_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&BadMessageTestHelper::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 TEST_F(CorsURLLoaderTest, NoCorsWithInvalidMethod) {

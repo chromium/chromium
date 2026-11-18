@@ -217,19 +217,16 @@ class WebSocketFactoryTest : public testing::Test {
 class WebSocketFactoryBadMessageTest : public WebSocketFactoryTest {
  public:
   WebSocketFactoryBadMessageTest()
-      : dummy_message_(0, 0, 0, 0, nullptr), context_(&dummy_message_) {
-    mojo::SetDefaultProcessErrorHandler(
-        future_.GetRepeatingCallback<const std::string&>());
-  }
+      : dummy_message_(0, 0, 0, 0, nullptr), context_(&dummy_message_) {}
 
-  ~WebSocketFactoryBadMessageTest() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  }
+  ~WebSocketFactoryBadMessageTest() override = default;
 
   std::string GetBadMessage() { return future_.Get(); }
 
  private:
   base::test::TestFuture<std::string> future_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      future_.GetRepeatingCallback<const std::string&>()};
 
   // Because we don't really call the factory from mojo, we need to create a
   // fake message context.

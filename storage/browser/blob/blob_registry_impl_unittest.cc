@@ -83,9 +83,6 @@ class BlobRegistryImplTest : public testing::Test {
     registry_impl_->Bind(registry_.BindNewPipeAndPassReceiver(),
                          std::move(delegate));
 
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &BlobRegistryImplTest::OnBadMessage, base::Unretained(this)));
-
     BlobStorageLimits limits;
     limits.max_ipc_memory_size = kTestBlobStorageIPCThresholdBytes;
     limits.max_shared_memory_size = kTestBlobStorageMaxSharedMemoryBytes;
@@ -102,8 +99,6 @@ class BlobRegistryImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-
     // Give pending tasks a chance to run since they may release Mojo bindings
     // resources.
     base::RunLoop().RunUntilIdle();
@@ -207,6 +202,9 @@ class BlobRegistryImplTest : public testing::Test {
   size_t file_request_count_ = 0;
 
   std::vector<std::string> bad_messages_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler_{
+      base::BindRepeating(&BlobRegistryImplTest::OnBadMessage,
+                          base::Unretained(this))};
 };
 
 TEST_F(BlobRegistryImplTest, Register_EmptyBlob) {

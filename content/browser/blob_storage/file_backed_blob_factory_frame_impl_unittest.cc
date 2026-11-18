@@ -17,7 +17,6 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/system/functions.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_item.h"
@@ -71,12 +70,6 @@ class FileBackedBlobFactoryFrameImplTest
         main_test_rfh(), factory_.BindNewEndpointAndPassDedicatedReceiver());
 
     main_test_rfh()->SetLastCommittedUrl(GURL(kMainFrameUrl));
-  }
-  void TearDown() override {
-    // Clean up error handler, to avoid causing other tests run in the same
-    // process from crashing.
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-    RenderViewHostImplTestHarness::TearDown();
   }
 
   void WaitForBlobCompletion(storage::BlobDataHandle* blob_handle) {

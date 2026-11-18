@@ -130,8 +130,6 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   void SetUp() override {
     old_content_browser_client_ =
         SetBrowserClientForTesting(&test_content_browser_client_);
-    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
-        &ServiceWorkerContainerHostTest::OnMojoError, base::Unretained(this)));
 
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
     context_ = helper_->context()->AsWeakPtr();
@@ -168,7 +166,6 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     registration3_ = nullptr;
     helper_.reset();
     SetBrowserClientForTesting(old_content_browser_client_);
-    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   }
 
   // Creates a committed ServiceWorkerContainerHost.
@@ -347,8 +344,10 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   std::vector<std::string> bad_messages_;
 
  private:
-
   url::ScopedSchemeRegistryForTests scoped_registry_;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting mojo_error_handler_{
+      base::BindRepeating(&ServiceWorkerContainerHostTest::OnMojoError,
+                          base::Unretained(this))};
 };
 
 TEST_F(ServiceWorkerContainerHostTest, MatchRegistration) {
