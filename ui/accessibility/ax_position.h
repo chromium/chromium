@@ -3236,9 +3236,8 @@ class AXPosition {
       return false;
     }
 
-    // No line breaks were skipped — fall back to original paragraph
-    // boundary check.
-    return previous_position->AtEndOfParagraph();
+    // Any generated newline before this position follows the previous text.
+    return previous_position->IsFollowedByGeneratedNewline();
   }
 
   // Returns a text position located right before the next character (from this

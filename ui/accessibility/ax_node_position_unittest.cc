@@ -10570,6 +10570,48 @@ TEST_F(AXPositionTest,
   EXPECT_EQ(0, result->text_offset());
 }
 
+// Regression test for crbug.com/579982168.
+TEST_F(AXPositionTest,
+       CreatePreviousCharacterPositionFromEmptyTextAtEndOfContent) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
+
+  // ++kRootWebArea
+  // ++++kStaticText "A"
+  // ++++kParagraph (line-breaking)
+  // ++++++kStaticText ""  end of content
+  TestAXTreeUpdateNode paragraph(ax::mojom::Role::kParagraph,
+                                 {TestAXTreeUpdateNode("")});
+  paragraph.data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  Init(TestAXTreeUpdate(
+      {ax::mojom::Role::kRootWebArea, {TestAXTreeUpdateNode("A"), paragraph}}));
+  const AXNode& text = *GetTree()->root()->children()[0];
+  const AXNode& empty_text = *GetTree()->root()->children()[1]->children()[0];
+
+  // No generated newline is reported between "A" and the trailing empty text.
+  auto end_of_text =
+      CreateTextPosition(text, 1, ax::mojom::TextAffinity::kDownstream);
+  EXPECT_FALSE(end_of_text->IsFollowedByGeneratedNewline());
+  auto position =
+      CreateTextPosition(empty_text, 0, ax::mojom::TextAffinity::kDownstream);
+  EXPECT_FALSE(position->IsPrecededByGeneratedNewline());
+
+  // Stepping back from the trailing empty text reaches the start of "A".
+  auto result = position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_EQ(&text, result->GetAnchor());
+  EXPECT_EQ(0, result->text_offset());
+
+  // The next character position from there is the end of "A".
+  result = result->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_EQ(&text, result->GetAnchor());
+  EXPECT_EQ(1, result->text_offset());
+}
+
 TEST_F(AXPositionTest, CreatePreviousCharacterPosition) {
   TestPositionType text_position = CreateTextPosition(
       inline_box2_, 5 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
