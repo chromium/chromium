@@ -1,4 +1,13 @@
 specific_include_rules = {
+  "document_scanner_discovery_confirmation_dialog\\.cc": [
+    "+ash/strings/grit/ash_strings.h",
+  ],
+  "document_scanner_start_scan_confirmation_dialog\\.cc": [
+    "+ash/strings/grit/ash_strings.h",
+  ],
+  "print_job_confirmation_dialog\\.cc": [
+    "+ash/strings/grit/ash_strings.h",
+  ],
   "request_file_system_dialog\\.cc": [
     "+ash/strings/grit/ash_strings.h",
   ],

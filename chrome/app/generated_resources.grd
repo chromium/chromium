@@ -6273,46 +6273,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         ''' It also controls what page is shown when you search from the Omnibox.'''
       </message>
 
-      <!-- Strings for the print job confirmation dialog triggered by chrome.printing -->
-      <message name="IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_BUBBLE_TITLE" desc="Title of a bubble with print job confirmation dialog triggered by chrome.printing API">
-        Print request
-      </message>
-      <message name="IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_BUBBLE_HEADING" desc="Heading of a bubble with print job confirmation dialog triggered by chrome.printing API">
-        "<ph name="EXTENSION_NAME">$1<ex>Managed Printing</ex></ph>" wants to print <ph name="FILE_NAME">$2<ex>sample.pdf</ex></ph> with <ph name="PRINTER_NAME">$3<ex>Lexmark CS417dn</ex></ph>.
-      </message>
-      <message name="IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_ALLOW" desc="Text for the allow button on the print job confirmation dialog">
-        Allow
-      </message>
-      <message name="IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_DENY" desc="Text for the deny button on the print job confirmation dialog">
-        Deny
-      </message>
-
-      <!-- Strings for the documentscanner confirmation dialogs triggered by chrome.documentScan -->
-      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_DISCOVERY_REQUEST_BUBBLE_TITLE" desc="Title of a bubble with scanner discovery confirmation dialog triggered by chrome.documentScan API">
-        Find document scanners
-      </message>
-      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_DISCOVERY_REQUEST_BUBBLE_HEADING" desc="Heading of a bubble with scanner discovery confirmation dialog triggered by chrome.documentScan API">
-        "<ph name="EXTENSION_NAME">$1<ex>Scanner Forwarder</ex></ph>" wants to find and access document scanners.
-      </message>
-      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_DISCOVERY_REQUEST_ALLOW" desc="Text for the allow button on the document scanner discovery confirmation dialog">
-        Allow
-      </message>
-      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_DISCOVERY_REQUEST_DENY" desc="Text for the deny button on the document scanner discovery confirmation dialog">
-        Deny
-      </message>
-      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_BUBBLE_TITLE" desc="Title of a bubble with start scan confirmation dialog triggered by chrome.documentScan API">
-        Start scan
-      </message>
-      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_BUBBLE_HEADING" desc="Heading of a bubble with start scan confirmation dialog triggered by chrome.documentScan API">
-        "<ph name="EXTENSION_NAME">$1<ex>Scanner Forwarder</ex></ph>" wants to scan from "<ph name="SCANNER_NAME">$2<ex>Fancy Scanner</ex></ph>".
-      </message>
-      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_ALLOW" desc="Text for the allow button on the document scanner start scan confirmation dialog">
-        Allow
-      </message>
-      <message name="IDS_EXTENSIONS_DOCUMENT_SCAN_API_START_SCAN_REQUEST_DENY" desc="Text for the deny button on the document scanner start scan confirmation dialog">
-        Deny
-      </message>
-
       <message name="IDS_EXTENSIONS_SETTINGS_API_THIRD_LINE_CONFIRMATION" desc="Third line in the Settings API bubble, always appended after the first (and optional second) line to make one paragraph. See IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE for reason for triple quotes.">
         ''' If you didn't want these changes, you can restore your previous settings.'''
       </message>

@@ -16,8 +16,8 @@ source_set("document_scanner_discovery_confirmation_dialog") {
   ]
 
   deps = [
+    "//ash/strings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ui/extensions",
     "//extensions/common:common_constants",
     "//ui/base",
@@ -32,8 +32,8 @@ source_set("document_scanner_start_scan_confirmation_dialog") {
   ]
 
   deps = [
+    "//ash/strings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ui/extensions",
     "//extensions/common",
     "//skia",
@@ -49,8 +49,8 @@ source_set("print_job_confirmation_dialog") {
   ]
 
   deps = [
+    "//ash/strings",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/views:layout_provider",
     "//components/constrained_window",
