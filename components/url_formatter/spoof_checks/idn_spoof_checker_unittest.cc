@@ -363,6 +363,9 @@ const IDNTestCase kIdnCases[] = {
     {"xn--e1anqp.ru", u"\u043c\u0435\u0445\u0441.ru", kSafe},
     // мехс.рф (Cyrillic whole-script confusable allowed in Cyrillic IDN TLD)
     {"xn--e1anqp.xn--p1ai", u"\u043c\u0435\u0445\u0441.\u0440\u0444", kSafe},
+    // мехс.рус (likewise; .рус isn't in the allowed list)
+    {"xn--e1anqp.xn--p1acf", u"\u043c\u0435\u0445\u0441.\u0440\u0443\u0441",
+     kSafe},
 
     // The same as above three, but in IDN TLD (рф).
     // 1) ѕсоре.рф with ѕсоре in Cyrillic.

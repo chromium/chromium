@@ -244,7 +244,7 @@ IDNSpoofChecker::IDNSpoofChecker() {
        "[[:Cyrl:]]",
        "[аысԁеԍһіюкјӏморԗԛѕтџԝхуъьҽпгѵѡ]",
        // TLDs containing most of the Cyrillic domains.
-       {"bg", "by", "kz", "pyc", "ru", "su", "ua", "uz"}},
+       {"bg", "by", "kz", "ru", "su", "ua", "uz"}},
       {// Ethiopic (Ge'ez). Variants of these characters such as ሁ and ሡ could
        // arguably be added to this list. However, we are only restricting
        // the more obvious characters to keep the list short and to reduce the
