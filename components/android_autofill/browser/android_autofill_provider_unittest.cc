@@ -7,10 +7,12 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/android/android_info.h"
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -34,10 +36,12 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -49,10 +53,13 @@
 #include "components/webauthn/android/stub_webauthn_client_android.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory_test_api.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -3513,6 +3520,152 @@ TEST_F(AndroidAutofillProviderTestHidingLogic,
   NavigateAndCommitFrame(sub_frame_, GURL("https://bar.com/"));
 }
 
+// Tests cross-frame form flattening, session start, and subframe submission
+// routing through the real `ContentAutofillDriver` and `AutofillDriverRouter`.
+class AndroidAutofillProviderCrossFrameRouterTest
+    : public AndroidAutofillProviderTest {
+ public:
+  void SetUp() override {
+    AndroidAutofillProviderTest::SetUp();
+    NavigateAndCommit(GURL("https://merchant.test/checkout.html"));
+    payment_frame_ = content::RenderFrameHostTester::For(main_frame())
+                         ->AppendChild(std::string("payment"));
+    payment_frame_ = NavigateAndCommitFrame(payment_frame_,
+                                            GURL("https://psp.test/card.html"));
+
+    iframe_form_.set_renderer_id(test::MakeFormRendererId());
+    iframe_form_.set_fields(
+        {CreateTestFormField("Card number", "number", "",
+                             FormControlType::kInputText, "cc-number"),
+         CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText,
+                             "cc-csc")});
+
+    main_form_.set_renderer_id(test::MakeFormRendererId());
+    main_form_.set_fields(
+        {CreateTestFormField("Name on card", "name", "",
+                             FormControlType::kInputText, "cc-name"),
+         CreateTestFormField("Expiration month", "month", "",
+                             FormControlType::kInputText, "cc-exp-month"),
+         CreateTestFormField("Expiration year", "year", "",
+                             FormControlType::kInputText, "cc-exp-year")});
+    FrameTokenWithPredecessor child_frame;
+    child_frame.token =
+        LocalFrameToken(payment_frame_->GetFrameToken().value());
+    child_frame.predecessor = 0;
+    main_form_.set_child_frames({child_frame});
+
+    autofill_driver(payment_frame_)
+        .renderer_events()
+        .FormsSeen({iframe_form_}, /*removed_forms=*/{});
+    autofill_driver(main_frame())
+        .renderer_events()
+        .FormsSeen({main_form_}, /*removed_forms=*/{});
+
+    const FormStructure* form_structure =
+        android_autofill_manager(main_frame())
+            .FindCachedFormById(
+                FormGlobalId(main_frame_token(), main_form_.renderer_id()));
+    ASSERT_TRUE(form_structure);
+    browser_form_ = form_structure->ToFormData();
+    ASSERT_EQ(browser_form_.fields().size(), 5u);
+  }
+
+  void TearDown() override {
+    payment_frame_ = nullptr;
+    AndroidAutofillProviderTest::TearDown();
+  }
+
+ protected:
+  raw_ptr<content::RenderFrameHost> payment_frame_ = nullptr;
+  FormData main_form_;
+  FormData iframe_form_;
+  FormData browser_form_;
+};
+
+// Tests that submitting the child-frame form of a flattened cross-frame
+// checkout form commits the ongoing `AndroidAutofillProvider` session and
+// records CreditCard submission metrics on the root manager.
+TEST_F(AndroidAutofillProviderCrossFrameRouterTest,
+       SubframeSubmissionCommitsCrossFrameSession) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(provider_bridge(),
+              StartAutofillSession(EqualsFormData(browser_form_),
+                                   EqualsFieldInfo(/*index=*/1),
+                                   /*has_server_predictions=*/false));
+  autofill_driver(payment_frame_)
+      .renderer_events()
+      .AskForValuesToFill(
+          iframe_form_, iframe_form_.fields()[0].renderer_id(),
+          gfx::Rect(10, 10),
+          AutofillSuggestionTriggerSource::kTextFieldValueChanged,
+          /*password_request=*/std::nullopt);
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            url::Origin::Create(GURL("https://psp.test")));
+  EXPECT_EQ(test_api(autofill_provider()).last_queried_field_rfh_id(),
+            payment_frame_->GetGlobalId());
+
+  EXPECT_CALL(field_bridge(1), UpdateFieldFromJava)
+      .WillOnce([](FormFieldData& field) {
+        field.set_value(u"4111111111111111");
+        field.set_is_autofilled_according_to_renderer(true);
+      });
+  provider_bridge_delegate().OnAutofillAvailable();
+
+  EXPECT_CALL(provider_bridge(),
+              OnFormSubmitted(mojom::SubmissionSource::FORM_SUBMISSION));
+  autofill_driver(payment_frame_)
+      .renderer_events()
+      .FormSubmitted(iframe_form_, mojom::SubmissionSource::FORM_SUBMISSION);
+  EXPECT_EQ(test_api(autofill_provider()).form(), nullptr);
+
+  Reset(autofill_driver());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingAssistance2.CreditCard", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FillingCorrectness2.CreditCard", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WebView.KeyMetrics.FormSubmission.Autofilled2.CreditCard", true,
+      1);
+}
+
+// Tests that a `FormSubmitted()` event from an unlinked subframe does not
+// commit or reset an ongoing cross-frame Autofill session.
+TEST_F(AndroidAutofillProviderCrossFrameRouterTest,
+       SubframeSubmissionOfUnlinkedFormIsIgnored) {
+  autofill_driver(payment_frame_)
+      .renderer_events()
+      .AskForValuesToFill(
+          iframe_form_, iframe_form_.fields()[0].renderer_id(),
+          gfx::Rect(10, 10),
+          AutofillSuggestionTriggerSource::kTextFieldValueChanged,
+          /*password_request=*/std::nullopt);
+  ASSERT_NE(test_api(autofill_provider()).form(), nullptr);
+
+  content::RenderFrameHost* unlinked_frame =
+      content::RenderFrameHostTester::For(main_frame())
+          ->AppendChild(std::string("unlinked"));
+  unlinked_frame = NavigateAndCommitFrame(
+      unlinked_frame, GURL("https://other.test/widget.html"));
+
+  FormData unlinked_form;
+  unlinked_form.set_renderer_id(test::MakeFormRendererId());
+  unlinked_form.set_fields({CreateTestFormField("Search", "q", "query",
+                                                FormControlType::kInputText)});
+  autofill_driver(unlinked_frame)
+      .renderer_events()
+      .FormsSeen({unlinked_form}, /*removed_forms=*/{});
+
+  EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
+  autofill_driver(unlinked_frame)
+      .renderer_events()
+      .FormSubmitted(unlinked_form, mojom::SubmissionSource::FORM_SUBMISSION);
+  EXPECT_NE(test_api(autofill_provider()).form(), nullptr);
+}
+
 class MockContentAutofillDriver : public ContentAutofillDriver {
  public:
   using ContentAutofillDriver::ContentAutofillDriver;
@@ -3636,11 +3789,12 @@ class AndroidAutofillManagerSecurityPolicyTypesTest
     return *autofill_manager_injector_[main_rfh()];
   }
 
- private:
+ protected:
   MockContentAutofillDriver& driver() {
     return *autofill_driver_injector_[main_rfh()];
   }
 
+ private:
   test::AutofillUnitTestEnvironment autofill_environment_;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
@@ -3914,6 +4068,135 @@ TEST_F(AndroidAutofillManagerSecurityPolicyTypesTest,
   histogram_tester.ExpectUniqueSample(
       kCrossOriginMainFrameValidationHistogram,
       MainFrameCreditCardFieldValidationResult::kAllowed, 2);
+}
+
+// Tests `AndroidAutofillProvider::OnAutofillAvailable()` end-to-end on a
+// cross-origin form, verifying the autofilled fields and `triggered_origin`
+// forwarded to `ContentAutofillDriver::ApplyFormAction()`.
+class AndroidAutofillProviderCrossFrameFillTest
+    : public AndroidAutofillManagerSecurityPolicyTypesTest {
+ public:
+  void SetUp() override {
+    AndroidAutofillBridgeFactory::GetInstance()
+        .SetFormFieldDataAndroidTestingFactory(base::BindLambdaForTesting(
+            []() -> std::unique_ptr<FormFieldDataAndroidBridge> {
+              return std::make_unique<
+                  NiceMock<MockFormFieldDataAndroidBridge>>();
+            }));
+    AndroidAutofillBridgeFactory::GetInstance()
+        .SetAndroidAutofillProviderTestingFactory(base::BindLambdaForTesting(
+            [&bridge_ptr = provider_bridge_](
+                AndroidAutofillProviderBridge::Delegate* delegate)
+                -> std::unique_ptr<AndroidAutofillProviderBridge> {
+              auto bridge = std::make_unique<
+                  NiceMock<MockAndroidAutofillProviderBridge>>();
+              bridge_ptr = bridge.get();
+              return bridge;
+            }));
+    AndroidAutofillManagerSecurityPolicyTypesTest::SetUp();
+    AndroidAutofillProvider::CreateForWebContents(web_contents());
+  }
+
+  void TearDown() override {
+    provider_bridge_ = nullptr;
+    AndroidAutofillManagerSecurityPolicyTypesTest::TearDown();
+    AndroidAutofillBridgeFactory::GetInstance()
+        .SetFormFieldDataAndroidTestingFactory({});
+    AndroidAutofillBridgeFactory::GetInstance()
+        .SetAndroidAutofillProviderTestingFactory({});
+  }
+
+  AndroidAutofillProvider& autofill_provider() {
+    return *AndroidAutofillProvider::FromWebContents(web_contents());
+  }
+
+  AndroidAutofillProviderBridge::Delegate& provider_bridge_delegate() {
+    return static_cast<AndroidAutofillProviderBridge::Delegate&>(
+        autofill_provider());
+  }
+
+  MockFormFieldDataAndroidBridge& field_bridge(size_t index) {
+    FormDataAndroid* session_form = test_api(autofill_provider()).form();
+    CHECK(session_form);
+    return static_cast<MockFormFieldDataAndroidBridge&>(
+        test_api(*session_form).field_bridge(index));
+  }
+
+ private:
+  raw_ptr<MockAndroidAutofillProviderBridge> provider_bridge_ = nullptr;
+};
+
+// Tests that when autofill is triggered from a main-frame field,
+// `OnAutofillAvailable()` passes only the autofilled fields across both frames
+// and uses the main frame's origin as `triggered_origin`.
+TEST_F(AndroidAutofillProviderCrossFrameFillTest,
+       CrossFrameAutofillFromMainFramePassesFilledFieldsAndMainOrigin) {
+  manager().OnAskForValuesToFillTest(form(), field_id(kName));
+
+  EXPECT_CALL(field_bridge(kName), UpdateFieldFromJava)
+      .WillOnce([](FormFieldData& field) {
+        field.set_value(u"Jane Doe");
+        field.set_is_autofilled_according_to_renderer(true);
+      });
+  EXPECT_CALL(field_bridge(kNumber), UpdateFieldFromJava)
+      .WillOnce([](FormFieldData& field) {
+        field.set_value(u"4111111111111111");
+        field.set_is_autofilled_according_to_renderer(true);
+      });
+
+  EXPECT_CALL(
+      driver(),
+      ApplyFormAction(
+          mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+          ElementsAre(
+              AllOf(Property(&FormFieldData::global_id, field_id(kName)),
+                    Property(&FormFieldData::value, u"Jane Doe")),
+              AllOf(Property(&FormFieldData::global_id, field_id(kNumber)),
+                    Property(&FormFieldData::value, u"4111111111111111"))),
+          _, /*supports_refill=*/false, main_origin(),
+          UnorderedElementsAre(Pair(field_id(kName), UNKNOWN_TYPE),
+                               Pair(field_id(kNumber), UNKNOWN_TYPE))))
+      .WillOnce(Return(base::flat_set<FieldGlobalId>()));
+
+  provider_bridge_delegate().OnAutofillAvailable();
+}
+
+// Tests that when autofill is triggered from an iframe field,
+// `OnAutofillAvailable()` passes the autofilled fields across both frames and
+// uses the iframe field's origin as `triggered_origin`.
+TEST_F(AndroidAutofillProviderCrossFrameFillTest,
+       CrossFrameAutofillFromIframePassesFilledFieldsAndIframeOrigin) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidAutofillFillNonSensitiveCardFieldsInMainFrame);
+
+  manager().OnAskForValuesToFillTest(form(), field_id(kNumber));
+
+  EXPECT_CALL(field_bridge(kName), UpdateFieldFromJava)
+      .WillOnce([](FormFieldData& field) {
+        field.set_value(u"Jane Doe");
+        field.set_is_autofilled_according_to_renderer(true);
+      });
+  EXPECT_CALL(field_bridge(kNumber), UpdateFieldFromJava)
+      .WillOnce([](FormFieldData& field) {
+        field.set_value(u"4111111111111111");
+        field.set_is_autofilled_according_to_renderer(true);
+      });
+
+  EXPECT_CALL(
+      driver(),
+      ApplyFormAction(
+          mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+          ElementsAre(
+              AllOf(Property(&FormFieldData::global_id, field_id(kName)),
+                    Property(&FormFieldData::value, u"Jane Doe")),
+              AllOf(Property(&FormFieldData::global_id, field_id(kNumber)),
+                    Property(&FormFieldData::value, u"4111111111111111"))),
+          _, /*supports_refill=*/false, iframe_origin(),
+          UnorderedElementsAre(Pair(field_id(kName), CREDIT_CARD_NAME_FULL),
+                               Pair(field_id(kNumber), UNKNOWN_TYPE))))
+      .WillOnce(Return(base::flat_set<FieldGlobalId>()));
+
+  provider_bridge_delegate().OnAutofillAvailable();
 }
 
 }  // namespace
