@@ -5253,6 +5253,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           ],
           ['--color-sys-on-surface', 'rgb(227, 227, 227)'],
           ['--color-sys-on-surface-subtle', 'rgb(196, 199, 197)'],
+          ['--color-sys-state-disabled', 'rgba(227, 227, 227, 0.38)'],
           ['--color-sys-neutral-outline', 'rgb(68, 71, 70)'],
           ['--color-sys-surface-container-high', 'rgb(42, 42, 42)'],
           ['--color-sys-divider', 'rgb(68, 71, 70)'],
@@ -5283,6 +5284,16 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           assertEquals(
               'rgb(68, 71, 70)',
               omniboxStyle.getPropertyValue('--color-searchbox-border').trim());
+          assertEquals(
+              'rgba(227, 227, 227, 0.38)',
+              omniboxStyle.getPropertyValue('--color-searchbox-placeholder')
+                  .trim());
+          const lensPlaceholder = omnibox.$.lensPlaceholder;
+          if (lensPlaceholder) {
+            assertEquals(
+                'rgba(227, 227, 227, 0.38)',
+                window.getComputedStyle(lensPlaceholder).color);
+          }
 
           const profileIcon = omnibox.shadowRoot.querySelector<HTMLElement>(
               'omnibox-everywhere-profile-icon')!;
@@ -5342,6 +5353,11 @@ suite('OmniboxEverywhereContextMenuTest', () => {
           assertEquals(
               'rgb(227, 227, 227)',
               composeboxStyle.getPropertyValue('--color-composebox-font')
+                  .trim());
+          assertEquals(
+              'rgba(227, 227, 227, 0.38)',
+              composeboxStyle
+                  .getPropertyValue('--cr-composebox-input-placeholder-color')
                   .trim());
         } finally {
           darkTokens.forEach(([k]) => rootStyle.removeProperty(k));

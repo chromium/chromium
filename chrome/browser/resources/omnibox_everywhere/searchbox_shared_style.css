@@ -99,7 +99,7 @@
   --color-searchbox-foreground: var(--color-sys-on-surface);
   --color-searchbox-lens-voice-icon-background: var(
       --color-omnibox-results-icon);
-  --color-searchbox-placeholder: var(--color-sys-on-surface-subtle);
+  --color-searchbox-placeholder: var(--color-sys-state-disabled);
   --color-searchbox-results-action-chip: var(
       --color-omnibox-results-button-border);
   --color-searchbox-results-action-chip-focus-outline: var(

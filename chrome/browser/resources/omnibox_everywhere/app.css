@@ -72,7 +72,7 @@ omnibox-everywhere-composebox {
   --color-composebox-type-ahead-chip: var(
       --color-omnibox-composebox-chip-background);
   --color-composebox-font-light: var(--color-sys-on-surface);
-  --color-searchbox-placeholder: var(--color-composebox-type-ahead);
+  --color-searchbox-placeholder: var(--color-sys-state-disabled);
   display: block;
 }
 

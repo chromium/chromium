@@ -92,7 +92,7 @@
       --color-omnibox-action-icon-hover);
   --color-composebox-voice-search-font: var(--color-sys-on-surface);
   --color-file-chip-remove-button-fill: var(--color-sys-on-surface-subtle);
-  --cr-composebox-input-placeholder-color: var(--color-sys-on-surface-subtle);
+  --cr-composebox-input-placeholder-color: var(--color-searchbox-placeholder);
   --cr-composebox-voice-icon-fill-color: var(--color-sys-on-surface-subtle);
   --cr-composebox-submit-border-radius: 100px;
   --cr-composebox-submit-height: 32px;
