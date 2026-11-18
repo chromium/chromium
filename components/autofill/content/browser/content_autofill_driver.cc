@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/content/browser/bad_message.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/renderer_data_validation.h"
@@ -341,7 +342,8 @@ ContentAutofillDriver::~ContentAutofillDriver() {
   owner_->router().UnregisterDriver(*this, /*driver_is_dying=*/true);
 }
 
-void ContentAutofillDriver::Reset(ContentAutofillDriverFactoryPassKey) {
+void ContentAutofillDriver::Reset(
+    base::PassKey<ContentAutofillDriverFactory> pass_key) {
   owner_->router().UnregisterDriver(*this, /*driver_is_dying=*/false);
 }
 

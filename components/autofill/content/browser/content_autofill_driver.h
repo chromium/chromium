@@ -121,13 +121,6 @@ class AutofillDriverRouter;
 class ContentAutofillDriver : public AutofillDriver,
                               public mojom::AutofillDriver {
  public:
-  class ContentAutofillDriverFactoryPassKey {
-   private:
-    friend class ContentAutofillDriverFactory;
-    friend class ContentAutofillDriverTestApi;
-    ContentAutofillDriverFactoryPassKey() = default;
-  };
-
   // Gets the driver for |render_frame_host|.
   // If |render_frame_host| is currently being deleted, this may be nullptr.
   static ContentAutofillDriver* GetForRenderFrameHost(
@@ -144,7 +137,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // Clears the driver's and the manager's stored forms and other state,
   // *except* for the LifecycleState, which is controlled by the
   // AutofillDriverFactory. Called on certain types of navigations.
-  void Reset(ContentAutofillDriverFactoryPassKey pass_key);
+  void Reset(base::PassKey<ContentAutofillDriverFactory> pass_key);
 
   content::RenderFrameHost* render_frame_host() { return &*render_frame_host_; }
   const content::RenderFrameHost* render_frame_host() const {
