@@ -6,6 +6,7 @@ import 'chrome://resources/cr_components/composebox/threads_rail.js';
 import './lhs_ghost_loader.js';
 
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {ThreadsRailElement} from 'chrome://resources/cr_components/composebox/threads_rail.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -149,6 +150,12 @@ export enum LhsView {
   EXPANDED = 'expanded',
 }
 
+export interface LeftHandSideElement {
+  $: {
+    folded: ThreadsRailElement,
+  };
+}
+
 export class LeftHandSideElement extends CrLitElement {
   static get is() {
     return 'cr-left-hand-side';
@@ -249,8 +256,7 @@ export class LeftHandSideElement extends CrLitElement {
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    const folded = this.shadowRoot.querySelector<HTMLElement>('#folded');
-    this.collapsedWidth_ = folded ? folded.offsetWidth : 0;
+    this.collapsedWidth_ = this.$.folded.offsetWidth;
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -574,10 +580,9 @@ export class LeftHandSideElement extends CrLitElement {
                            `--color-new-tab-page-threads-rail-${cssVarSuffix}`)
                        .trim();
     }
-    const folded = this.shadowRoot.querySelector<HTMLElement>('#folded');
-    assert(folded);
     const iconSize = parseInt(
-        getComputedStyle(folded).getPropertyValue('--threads-rail-icon-size'),
+        getComputedStyle(this.$.folded)
+            .getPropertyValue('--threads-rail-icon-size'),
         10);
     const message: ChromeToSearchLhsMessage = {
       type: NtpLhsMessageType.NTP_LHS_SET_THEME,
