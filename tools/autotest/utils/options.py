@@ -3,12 +3,8 @@
 # found in the LICENSE file.
 
 import click
-import functools
-import os
 
-from dataclasses import dataclass, fields
-
-import utils
+from dataclasses import dataclass
 
 
 @dataclass
@@ -35,7 +31,6 @@ class AutotestConfig:
   suite: bool | None
   builder: bool | None
   files: tuple[str, ...]
-  gemini: bool | None
   device: str | None
   extras: list[str] | None = None  # To hold ctx.args
 
@@ -94,17 +89,6 @@ class Formatter(click.Command):
 
 def autotest_options(f):
   """Decorator to group all autotest CLI options."""
-
-  @functools.wraps(f)
-  def wrapper(*args, **kwargs):
-    if kwargs.get('gemini') and utils.IsLlm():
-      raise click.UsageError(
-        'Cannot run autotest with --gemini from within an active '
-        'Gemini CLI session to prevent nested agent invocations.'
-      )
-    return f(*args, **kwargs)
-
-  # Apply the options to the wrapper function
   options = [
     click.option('-d', '--device', help='Target device serial'),
     click.option(
@@ -234,12 +218,6 @@ def autotest_options(f):
       help='Run entire test suites instead of individual tests.',
     ),
     click.option(
-      '--gemini',
-      is_flag=True,
-      help='If a test fails, interactively launch the Gemini CLI to '
-      'diagnose the failure and propose a fix.',
-    ),
-    click.option(
       '--builder',
       is_flag=True,
       help='Simulate a given builder via UTR. Run with no extra '
@@ -249,5 +227,5 @@ def autotest_options(f):
   ]
   # Apply in reverse so the first item in the list appears first in --help
   for option in reversed(options):
-    wrapper = option(wrapper)
-  return wrapper
+    f = option(f)
+  return f

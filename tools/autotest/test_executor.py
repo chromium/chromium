@@ -4,7 +4,6 @@
 
 import os
 import shlex
-import shutil
 import subprocess
 import sys
 import logging
@@ -16,9 +15,6 @@ import utils.telemetry as telemetry
 
 sys.path.append(str(const.SRC_DIR / 'build'))
 import gn_helpers
-
-sys.path.append(str(const.SRC_DIR / 'agents' / 'common'))
-import gemini_helpers
 
 
 def _log_build(msg: str):
@@ -128,7 +124,6 @@ def RunTestTargets(
   no_fast_local_dev: bool,
   no_single_variant: bool,
   is_suite: bool = False,
-  gemini: bool | None = False,
   web_test_files: list[str] | set[str] | None = None,
 ) -> int:
   total_passed = total_failed = 0
@@ -171,8 +166,6 @@ def RunTestTargets(
 
     if not is_suite and len(targets) <= 1:
       if return_code != 0:
-        if gemini:
-          _RunGeminiDiagnostic(cmd, summary)
         return return_code
       continue
 
@@ -188,8 +181,6 @@ def RunTestTargets(
 
     if return_code != 0:
       any_failed = True
-      if gemini:
-        _RunGeminiDiagnostic(cmd, summary)
 
   if dry_run or (not is_suite and len(targets) <= 1):
     return 0
@@ -207,59 +198,3 @@ def RunTestTargets(
       logging.info(f'  - {test}')
 
   return 1 if any_failed else 0
-
-
-def _RunGeminiDiagnostic(
-  cmd: list[str], test_summary: command.TestSummary
-) -> None:
-  logging.info('\n=== Diagnosis and Suggested Fix ===\n')
-
-  command_str = shlex.join(cmd)
-
-  # Format only failed tests to avoid flooding the context window with passed tests.
-  failed_lines = []
-  for i, (name, log) in enumerate(sorted(test_summary.failed_tests)):
-    clean_log = (log or "").strip()
-    indented_log = '    ' + clean_log.replace('\n', '\n    ')
-    failed_lines.append(
-      f"[{i + 1}/{len(test_summary.failed_tests)}] {name}\n{indented_log}"
-    )
-
-  failed_str = '\n\n'.join(failed_lines)
-  summary_text = (
-    f"Test count: {test_summary.test_count}\n\nFailed tests:\n{failed_str}"
-  )
-
-  prompt = (
-    f"The following test command failed:\n```bash\n{command_str}\n```\n\n"
-    f"Here is the structured test summary, including exact failure logs:\n```\n{summary_text}\n```\n\n"
-    f"Please diagnose this test failure. Use your file reading and code search tools "
-    f"to look at the relevant source code and test files mentioned in the logs.\n\n"
-    f"I highly recommend running `git diff` first to see if any recent changes might have caused this failure.\n\n"
-    f"Follow these steps to structure your response:\n"
-    f"1.  **Diagnose the Failure:** Explain why the tests failed, analyzing the discrepancy between expected and actual behavior.\n"
-    f"2.  **Propose a Fix:** Suggest a concrete fix and explain exactly how you plan to implement it. Prefer modifying the code or the test logic to achieve the intended behavior. Deleting a test should be a last resort, only recommended if the test is fundamentally invalid or testing removed functionality.\n"
-    f"3.  **Ask for Confirmation:** Before writing any code or modifying any files, explicitly ask the user for confirmation to go ahead and implement the proposed fix."
-  )
-
-  logging.info(
-    "Launching Gemini CLI to analyze the failure (this may take a moment)..."
-  )
-  try:
-    gemini_cmd = gemini_helpers.get_gemini_command(use_alias=True)
-    # Run the gemini CLI with the -i flag for interactive mode.
-    # Do not capture output so the user can interact.
-    subprocess.run(gemini_cmd + ['-i', prompt], check=True)
-  except FileNotFoundError:
-    logging.error(
-      "Gemini CLI ('gemini') is not installed or not in system PATH."
-    )
-    logging.error(
-      "\nNote: If 'gemini' is configured as a shell alias, Python cannot execute it."
-    )
-    logging.error(
-      "Please add the gemini executable directory to your PATH, or create a symlink:"
-    )
-    logging.error("  ln -s /path/to/actual/gemini ~/.local/bin/gemini")
-  except subprocess.CalledProcessError as e:
-    logging.error(f"Gemini CLI failed with exit status {e.returncode}.")

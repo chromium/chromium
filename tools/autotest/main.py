@@ -307,7 +307,6 @@ def main(ctx, **kwargs) -> int:
       config.no_fast_local_dev,
       config.no_single_variant,
       is_suite=config.suite,
-      gemini=config.gemini,
       web_test_files=web_test_files,
     )
   )
