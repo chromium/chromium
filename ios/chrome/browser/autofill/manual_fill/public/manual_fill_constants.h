@@ -98,6 +98,9 @@ extern NSString* const kExpandedManualFillAutofillFormButtonID;
 // Accessibility identifier of the keyboard button.
 extern NSString* const kAccessoryKeyboardAccessibilityIdentifier;
 
+// Accessibility identifier for a summary cell of the expanded manual fill view.
+extern NSString* const kExpandedManualFillSummaryCellID;
+
 // Possible data types when manually filling a form.
 enum class ManualFillDataType {
   kCredential = 0,

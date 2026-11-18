@@ -82,6 +82,9 @@ NSString* const kExpandedManualFillAutofillFormButtonID =
 NSString* const kAccessoryKeyboardAccessibilityIdentifier =
     @"ManualFillAccessoryKeyboardAccessibilityIdentifier";
 
+NSString* const kExpandedManualFillSummaryCellID =
+    @"ExpandedManualFillSummaryCellID";
+
 }  // namespace manual_fill
 
 @implementation ManualFillUtil

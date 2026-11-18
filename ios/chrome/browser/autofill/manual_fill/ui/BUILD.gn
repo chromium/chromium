@@ -37,12 +37,15 @@ source_set("ui") {
     "manual_fill_password_cell.h",
     "manual_fill_password_cell.mm",
     "manual_fill_password_cell_mutator.h",
+    "manual_fill_summary_item.h",
+    "manual_fill_summary_item.mm",
     "password_consumer.h",
     "password_list_navigator.h",
     "password_view_controller.h",
     "password_view_controller.mm",
   ]
   deps = [
+    "//base",
     "//components/autofill/ios/browser",
     "//components/google/core/common",
     "//components/password_manager/core/browser",
@@ -62,6 +65,8 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
@@ -69,6 +74,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -85,6 +91,7 @@ source_set("unit_tests") {
     "manual_fill_card_cell_unittest.mm",
     "manual_fill_cell_utils_unittest.mm",
     "manual_fill_labeled_chip_unittest.mm",
+    "manual_fill_summary_item_unittest.mm",
     "password_view_controller_unittest.mm",
   ]
   deps = [
@@ -97,10 +104,14 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/test/app:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }
