@@ -5,14 +5,18 @@
 #ifndef UI_ANDROID_OVERSCROLL_REFRESH_HANDLER_H_
 #define UI_ANDROID_OVERSCROLL_REFRESH_HANDLER_H_
 
-#include "base/android/jni_weak_ref.h"
+#include <optional>
+
 #include "base/android/scoped_java_ref.h"
+#include "base/sequence_checker.h"
 #include "ui/android/overscroll_refresh.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/events/back_gesture_event.h"
 
 namespace ui {
 
+// Must be constructed, used, and destroyed on the same sequence (the UI thread
+// when backed by a Java handler).
 class UI_ANDROID_EXPORT OverscrollRefreshHandler {
  public:
   explicit OverscrollRefreshHandler(
@@ -44,10 +48,9 @@ class UI_ANDROID_EXPORT OverscrollRefreshHandler {
   virtual void PullReset();
 
  private:
-  base::android::ScopedJavaLocalRef<jobject> GetRefreshHandlerChecked(
-      JNIEnv* env) const;
-
   bool has_handler_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace ui

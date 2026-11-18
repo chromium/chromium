@@ -4,23 +4,12 @@
 
 package org.chromium.ui;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
-import org.jni_zero.CalledByNative;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /** Simple interface allowing customized response to an overscrolling pull input. */
 @NullMarked
 public interface OverscrollRefreshHandler {
-    // Use a map to store refs to Java objects. This is necessary to avoid a ScopedJavaGlobalRef in
-    // C++ of which there are only 51200 app wide. Effectively private.
-    static final Map<Long, OverscrollRefreshHandler> sRefs = new HashMap<>();
-
     // LINT.IfChange
     int DEFAULT_NAVIGATION_EDGE_WIDTH = 24;
 
@@ -31,11 +20,9 @@ public interface OverscrollRefreshHandler {
      *
      * @param type Type of the overscroll action.
      * @param initiatingEdge Whether the history gesture is being initiated from the LEFT or RIGHT
-     *     edge of the screen. Only used with the HISTORY_NAVIGATION `type`. TODO(bokan): Can we
-     *     make the initiatingEdge param nullable in JNI?
+     *     edge of the screen. Only used with the HISTORY_NAVIGATION `type`.
      * @return Whether the handler will consume the overscroll sequence.
      */
-    @CalledByNative
     boolean start(@OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge);
 
     /**
@@ -45,7 +32,6 @@ public interface OverscrollRefreshHandler {
      *     up).
      * @param yDelta The change in vertical pull distance.
      */
-    @CalledByNative
     void pull(float xDelta, float yDelta);
 
     /**
@@ -53,11 +39,9 @@ public interface OverscrollRefreshHandler {
      *
      * @param status The activation status of the release gesture.
      */
-    @CalledByNative
     void release(@OverscrollActivationStatus int status);
 
     /** Reset the active pull state. */
-    @CalledByNative
     void reset();
 
     /**
@@ -67,21 +51,4 @@ public interface OverscrollRefreshHandler {
      *     appropriately.
      */
     void setEnabled(boolean enabled);
-
-    @CalledByNative
-    private static void setRef(long nativePtr, OverscrollRefreshHandler handler) {
-        var oldValue = sRefs.put(nativePtr, handler);
-        assert oldValue == null;
-    }
-
-    @CalledByNative
-    private static OverscrollRefreshHandler getRef(long nativePtr) {
-        return assertNonNull(sRefs.get(nativePtr));
-    }
-
-    @CalledByNative
-    private static void removeRef(long nativePtr) {
-        var oldValue = sRefs.remove(nativePtr);
-        assert oldValue != null;
-    }
 }
