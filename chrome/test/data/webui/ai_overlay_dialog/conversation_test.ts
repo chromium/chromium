@@ -141,7 +141,7 @@ suite('ConversationTest', () => {
   test('BuiltInDefaultsExported', () => {
     assertTrue(DEFAULT_API_CONFIG.endpointUrl.startsWith('wss://'));
     assertTrue(DEFAULT_API_CONFIG.model.length > 0);
-    assertTrue(DEFAULT_API_CONFIG.apiKey.length > 0);
+    assertEquals('', DEFAULT_API_CONFIG.apiKey);
     assertEquals('generic', DEFAULT_PERSONA.id);
     assertEquals('Chrome', DEFAULT_PERSONA.name);
     assertEquals('Achernar', DEFAULT_PERSONA.voice);
