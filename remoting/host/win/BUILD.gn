@@ -105,6 +105,14 @@ source_set("acl_util") {
   deps = [ "//base" ]
 }
 
+source_set("file_security_util") {
+  sources = [
+    "file_security_util.cc",
+    "file_security_util.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
 component("rdp_window") {
   sources = [
     "com_imported_mstscax.h",
@@ -248,6 +256,7 @@ source_set("unit_tests") {
     "event_trace_data.cc",
     "event_trace_data.h",
     "event_trace_data_unittest.cc",
+    "file_security_util_unittest.cc",
     "hang_watchdog_unittest.cc",
     "host_window_win_util_unittest.cc",
     "input_extra_info_unittest.cc",
@@ -261,6 +270,7 @@ source_set("unit_tests") {
 
   deps = [
     ":chromoting_module",
+    ":file_security_util",
     ":win",
     "//base/test:test_support",
     "//ipc",

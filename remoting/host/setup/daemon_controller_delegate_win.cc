@@ -57,6 +57,9 @@ const char kConfigDirSecurityDescriptor[] =
 const char kUnprivilegedConfigFileSecurityDescriptor[] =
     "O:BAG:BAD:(A;;GA;;;SY)(A;;GA;;;BA)(A;;GR;;;AU)";
 
+// TODO(crbug.com/551615326): Migrate `IsHandleReparsePoint()`, `IsPathSafe()`,
+// and `SetDirAcl()` to the helpers in remoting/host/win/file_security_util.h.
+
 // Helper to check if a handle refers to a reparse point (junction or symlink).
 // This is used to prevent Local Privilege Escalation (LPE) via junction
 // following.
