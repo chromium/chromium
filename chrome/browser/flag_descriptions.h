@@ -1974,9 +1974,6 @@ inline constexpr char kGlicDefaultTabContextSettingDescription[] =
     "Controls whether tab context is enabled by default within new Glic "
     "sessions. Required for Side Panel.";
 
-inline constexpr char kGlicPdfSummarizeName[] = "Glic Pdf Summarize";
-inline constexpr char kGlicPdfSummarizeDescription[] =
-    "Enables the pdf summarize button.";
 inline constexpr char kGlicWarmingName[] = "Glic Pre-Warming";
 inline constexpr char kGlicWarmingDescription[] =
     "Enables the pre-warming of the Glic panel's web client.";
