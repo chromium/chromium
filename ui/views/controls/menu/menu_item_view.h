@@ -351,6 +351,12 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
     invalidate_dimensions();
   }
 
+  // Sets the horizontal spacing between the icon area and this item's label,
+  // in place of the menu's default. Other items in the menu are unaffected, so
+  // this item's label no longer lines up with theirs.
+  void SetIconLabelSpacing(std::optional<int> icon_label_spacing);
+  std::optional<int> GetIconLabelSpacing() const { return icon_label_spacing_; }
+
   // Returns the total height of the title and optional secondary title.
   int GetLabelTextHeight() const;
 
@@ -449,6 +455,10 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   // Returns the earliest horizontal position where content may appear.
   int GetContentStart() const;
+
+  // Returns the menu's default horizontal spacing between the icon area and
+  // the labels.
+  int GetDefaultIconLabelSpacing() const;
 
   // Returns the trailing horizontal padding after content.
   int GetTrailingPadding() const;
@@ -681,6 +691,10 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // Get the horizontal position at which to draw the menu item's label.
   int GetLabelStartForThisItem() const;
 
+  // Returns how much further this item's label starts than the menu's shared
+  // label start, because of `icon_label_spacing_`.
+  int GetExtraIconLabelSpacing() const;
+
   // Used by MenuController to cache the menu position in use by the
   // active menu.
   MenuPosition actual_menu_position() const { return actual_menu_position_; }
@@ -720,8 +734,13 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // could interact with model state.
   bool IsScheduledForDeletion() const;
 
-  // Calculates the X coordinate of the icon.
+  // Calculates the X and Y coordinates of the icon.
   int CalculateIconX(const ImageView* icon_view) const;
+  int CalculateIconY(const gfx::Rect& row, int icon_height) const;
+
+  // Calculates the Y coordinate of the top of the title. `row` is this item's
+  // bounds without the background's padding.
+  int CalculateTitleY(const gfx::Rect& row) const;
 
   void SetForegroundColorId(std::optional<ui::ColorId> foreground_color_id) {
     foreground_color_id_ = foreground_color_id;
@@ -890,6 +909,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   std::optional<ui::ColorId> submenu_arrow_color_id_;
   std::optional<int> top_margin_;
   std::optional<int> bottom_margin_;
+  std::optional<int> icon_label_spacing_;
   int secondary_title_vertical_spacing_ = 0;
 
   base::CallbackListSubscription visible_changed_callback_;

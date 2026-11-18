@@ -694,6 +694,15 @@ void MenuItemView::SetSecondaryTitle(const std::u16string& secondary_title) {
   invalidate_dimensions();  // Triggers preferred size recalculation.
 }
 
+void MenuItemView::SetIconLabelSpacing(std::optional<int> icon_label_spacing) {
+  if (icon_label_spacing_ == icon_label_spacing) {
+    return;
+  }
+  icon_label_spacing_ = icon_label_spacing;
+  invalidate_dimensions();
+  InvalidateLayout();
+}
+
 int MenuItemView::GetLabelTextHeight() const {
   const int text_height = GetFontList().GetHeight();
   if (secondary_title_.empty()) {
@@ -871,6 +880,14 @@ int MenuItemView::GetContentStart() const {
          ((controller && controller->use_ash_system_ui_layout())
               ? config.touchable_item_horizontal_padding
               : config.item_horizontal_padding);
+}
+
+int MenuItemView::GetDefaultIconLabelSpacing() const {
+  const MenuConfig& config = MenuConfig::instance();
+  const auto* const controller = GetMenuController();
+  return (controller && controller->use_ash_system_ui_layout())
+             ? config.touchable_item_horizontal_padding
+             : config.icon_label_spacing;
 }
 
 int MenuItemView::GetTrailingPadding() const {
@@ -1065,7 +1082,7 @@ ProposedLayout MenuItemView::CalculateProposedLayout(
 
     if (radio_check_image_view_) {
       const int x = CalculateIconX(radio_check_image_view_);
-      const int y = row.y() + (row.height() - kMenuCheckSize) / 2;
+      const int y = CalculateIconY(row, kMenuCheckSize);
       layout.child_layouts.emplace_back(
           radio_check_image_view_.get(), radio_check_image_view_->GetVisible(),
           gfx::Rect(x, y, kMenuCheckSize, kMenuCheckSize));
@@ -1073,7 +1090,7 @@ ProposedLayout MenuItemView::CalculateProposedLayout(
     if (icon_view_) {
       const gfx::Size preferred_size = icon_view_->GetPreferredSize({});
       const int x = CalculateIconX(icon_view_);
-      const int y = row.y() + (row.height() - preferred_size.height()) / 2;
+      const int y = CalculateIconY(row, preferred_size.height());
       layout.child_layouts.emplace_back(
           icon_view_.get(), icon_view_->GetVisible(),
           gfx::Rect(x, y, preferred_size.width(), preferred_size.height()));
@@ -1365,16 +1382,16 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
   const Colors colors = CalculateColors(paint_as_selected);
 
   // The content is centered in the row, inside the background's padding.
-  const gfx::Insets padding = GetBackgroundPadding();
+  gfx::Rect row(size());
+  row.Inset(GetBackgroundPadding());
 
   // Paint the icon for drag handles. In normal mode, the icon is painted by
   // View::PaintChildren().
   if (icon_view_ && icon_view_->GetVisible() && mode == PaintMode::kForDrag) {
     const gfx::Size preferred_size = icon_view_->GetPreferredSize({});
-    // Use the shared helper function to determine the X coordinate.
+    // Use the shared helper functions to determine the icon coordinates.
     const int x = CalculateIconX(icon_view_);
-    const int y = padding.top() +
-                  (height() - padding.height() - preferred_size.height()) / 2;
+    const int y = CalculateIconY(row, preferred_size.height());
     gfx::Rect icon_bounds(x, y, preferred_size.width(),
                           preferred_size.height());
     AdjustBoundsForRTLUI(&icon_bounds);
@@ -1389,15 +1406,8 @@ void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
   }
 
   const gfx::FontList& font_list = GetFontList();
-
-  // Calculate the margins.
-  const int top_margin_val = padding.top() + GetTopMargin();
-  const int bottom_margin_val = padding.bottom() + GetBottomMargin();
-  const int available_height = height() - top_margin_val - bottom_margin_val;
   const int text_height = font_list.GetHeight();
-  const int total_text_height = GetLabelTextHeight();
-  const int top_margin =
-      top_margin_val + (available_height - total_text_height) / 2;
+  const int top_margin = CalculateTitleY(row);
 
   // Render the foreground.
   const SubmenuView* const submenu = GetContainingSubmenu();
@@ -1880,7 +1890,7 @@ int MenuItemView::GetLabelStartForThisItem() const {
   const SubmenuView* const submenu = GetContainingSubmenu();
   if (!icon_view_ ||
       (!icons_in_label && type_ != Type::kCheckbox && type_ != Type::kRadio)) {
-    return submenu->label_start();
+    return submenu->label_start() + GetExtraIconLabelSpacing();
   }
 
   // The icon will be drawn starting where the label normally starts, so indent
@@ -1889,8 +1899,20 @@ int MenuItemView::GetLabelStartForThisItem() const {
                              ? submenu->icon_area_width()
                              : icon_view_->GetPreferredSize({}).width();
   return submenu->label_start() + icon_width +
-         LayoutProvider::Get()->GetDistanceMetric(
-             DISTANCE_RELATED_LABEL_HORIZONTAL);
+         icon_label_spacing_.value_or(LayoutProvider::Get()->GetDistanceMetric(
+             DISTANCE_RELATED_LABEL_HORIZONTAL));
+}
+
+int MenuItemView::GetExtraIconLabelSpacing() const {
+  // The menu only leaves a gap before `label_start()` when it has a leading
+  // icon or check/radio column before `label_start()`.
+  const SubmenuView* const submenu = GetContainingSubmenu();
+  if (!icon_label_spacing_.has_value() ||
+      submenu->label_start() == submenu->content_start()) {
+    return 0;
+  }
+  // The shared label start already includes the default spacing.
+  return icon_label_spacing_.value() - GetDefaultIconLabelSpacing();
 }
 
 std::u16string MenuItemView::GetMinorText() const {
@@ -2087,6 +2109,19 @@ int MenuItemView::CalculateIconX(const ImageView* icon_view) const {
   const int centering_offset = (icon_area_width - icon_width) / 2;
 
   return icon_area_start_x + centering_offset;
+}
+
+int MenuItemView::CalculateIconY(const gfx::Rect& row, int icon_height) const {
+  return CalculateTitleY(row) + (GetFontList().GetHeight() - icon_height) / 2;
+}
+
+int MenuItemView::CalculateTitleY(const gfx::Rect& row) const {
+  // The title, and the secondary title below it if there is one, are centered
+  // between the row's margins.
+  const int available_height =
+      row.height() - GetTopMargin() - GetBottomMargin();
+  return row.y() + GetTopMargin() +
+         (available_height - GetLabelTextHeight()) / 2;
 }
 
 int MenuItemView::GetVerticalMargin() const {
@@ -2292,6 +2327,7 @@ void MenuItemActionViewInterface::ActionItemChangedImpl(
 }
 
 BEGIN_METADATA(MenuItemView)
+ADD_PROPERTY_METADATA(std::optional<int>, IconLabelSpacing)
 END_METADATA
 
 // EmptyMenuMenuItem ----------------------------------------------------------

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -782,6 +783,135 @@ TEST_F(MenuItemViewLayoutTest, SecondaryTitleHeight) {
   const int font_h = MenuConfig::instance().font_list.GetHeight();
   EXPECT_EQ(font_h, test_item()->GetLabelTextHeight());
   EXPECT_EQ(font_h * 2 + 2, two_line->GetLabelTextHeight());
+}
+
+// Icons and check marks align vertically with the primary title rather than
+// the center of the full row.
+TEST_F(MenuItemViewLayoutTest, IconAlignedWithPrimaryTitle) {
+  constexpr int kIconSize = 16;
+  const ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
+      kCheckSmallIcon, ui::kColorMenuIcon, kIconSize);
+
+  MenuItemView* two_line = root_menu()->AppendMenuItemImpl(
+      2, u"Primary", icon, MenuItemView::Type::kCheckbox);
+  two_line->SetSecondaryTitle(u"Secondary");
+
+  MenuItemView* asymmetric = root_menu()->AppendMenuItemImpl(
+      3, u"Primary", icon, MenuItemView::Type::kCheckbox);
+  asymmetric->set_top_margin(12);
+  asymmetric->set_bottom_margin(2);
+
+  PerformLayout();
+
+  const int font_h = MenuConfig::instance().font_list.GetHeight();
+  const int aligned_y = two_line->GetTopMargin() + (font_h - kIconSize) / 2;
+  EXPECT_LT(aligned_y, (two_line->height() - kIconSize) / 2);
+  EXPECT_EQ(aligned_y, two_line->icon_view()->y());
+  EXPECT_EQ(aligned_y, TestMenuItemView::radio_check_image_view(two_line)->y());
+
+  // When the row is taller than its text, the text block is centered in the
+  // extra height and the icon follows the primary title.
+  constexpr int kExtraHeight = 20;
+  two_line->SetSize(
+      gfx::Size(two_line->width(), two_line->height() + kExtraHeight));
+  EXPECT_EQ(aligned_y + kExtraHeight / 2, two_line->icon_view()->y());
+  EXPECT_EQ(aligned_y + kExtraHeight / 2,
+            TestMenuItemView::radio_check_image_view(two_line)->y());
+
+  // A single-line item with asymmetric margins still aligns with its title
+  // rather than the row center.
+  const int asymmetric_available_h = asymmetric->height() -
+                                     asymmetric->GetTopMargin() -
+                                     asymmetric->GetBottomMargin();
+  const int asymmetric_y = asymmetric->GetTopMargin() +
+                           (asymmetric_available_h - font_h) / 2 +
+                           (font_h - kIconSize) / 2;
+  EXPECT_NE((asymmetric->height() - kIconSize) / 2, asymmetric_y);
+  EXPECT_EQ(asymmetric_y, asymmetric->icon_view()->y());
+  EXPECT_EQ(asymmetric_y,
+            TestMenuItemView::radio_check_image_view(asymmetric)->y());
+}
+
+// An item's icon-to-label spacing moves only that item's label.
+TEST_F(MenuItemViewLayoutTest, IconLabelSpacingAppliesToOneItem) {
+  constexpr int kIconSize = 16;
+  constexpr int kExtraSpacing = 8;
+  const ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
+      kCheckSmallIcon, ui::kColorMenuIcon, kIconSize);
+  test_item()->SetTitle(u"Title");
+  test_item()->SetIcon(icon);
+
+  const int default_spacing = MenuConfig::instance().icon_label_spacing;
+  MenuItemView* wide = root_menu()->AppendMenuItem(2, u"Title", icon);
+  wide->SetIconLabelSpacing(default_spacing + kExtraSpacing);
+
+  MenuItemView* checkbox_default = root_menu()->AppendMenuItemImpl(
+      3, u"Title", icon, MenuItemView::Type::kCheckbox);
+  MenuItemView* checkbox_wide = root_menu()->AppendMenuItemImpl(
+      4, u"Title", icon, MenuItemView::Type::kCheckbox);
+  checkbox_wide->SetIconLabelSpacing(default_spacing + kExtraSpacing);
+  MenuItemView* checkbox_zero = root_menu()->AppendMenuItemImpl(
+      5, u"Title", icon, MenuItemView::Type::kCheckbox);
+  checkbox_zero->SetIconLabelSpacing(0);
+
+  PerformLayout();
+
+  // The label is part of the item's width, so a later label start makes the
+  // item that much wider.
+  EXPECT_EQ(test_item()->GetDimensions().standard_width + kExtraSpacing,
+            wide->GetDimensions().standard_width);
+  // The label start shared by the menu's other items does not move.
+  const int shared_label_start =
+      root_menu()->GetContentStart() + kIconSize + default_spacing;
+  EXPECT_EQ(shared_label_start, root_menu()->GetSubmenu()->label_start());
+
+  // On a checkbox item that also has an icon, the icon stays at the shared
+  // label start and the spacing adjusts the gap between the icon and the text.
+  EXPECT_EQ(shared_label_start, checkbox_default->icon_view()->x());
+  EXPECT_EQ(shared_label_start, checkbox_wide->icon_view()->x());
+  EXPECT_EQ(shared_label_start, checkbox_zero->icon_view()->x());
+  EXPECT_EQ(checkbox_default->GetDimensions().standard_width + kExtraSpacing,
+            checkbox_wide->GetDimensions().standard_width);
+  EXPECT_EQ(checkbox_default->GetDimensions().standard_width - default_spacing,
+            checkbox_zero->GetDimensions().standard_width);
+}
+
+TEST_F(MenuItemViewLayoutTest, IconLabelSpacingWithIconsInLabel) {
+  base::AutoReset<bool> icons_in_label(
+      &const_cast<MenuConfig&>(MenuConfig::instance()).icons_in_label, true);
+  constexpr int kIconSize = 16;
+  constexpr int kExtraSpacing = 8;
+  const int default_spacing = MenuConfig::instance().icon_label_spacing;
+
+  // With only checkbox items and no icons, `SubmenuView::icon_area_width()` is
+  // 0 under `icons_in_label`, while `label_start()` still includes the check
+  // column and default spacing.
+  test_item()->SetTitle(u"Title");
+  MenuItemView* check_default = root_menu()->AppendMenuItemImpl(
+      2, u"Title", ui::ImageModel(), MenuItemView::Type::kCheckbox);
+  MenuItemView* check_wide = root_menu()->AppendMenuItemImpl(
+      3, u"Title", ui::ImageModel(), MenuItemView::Type::kCheckbox);
+  check_wide->SetIconLabelSpacing(default_spacing + kExtraSpacing);
+
+  PerformLayout();
+
+  EXPECT_EQ(0, root_menu()->GetSubmenu()->icon_area_width());
+  EXPECT_EQ(check_default->GetDimensions().standard_width + kExtraSpacing,
+            check_wide->GetDimensions().standard_width);
+
+  // When items have icons in the label area, the per-item spacing adjusts the
+  // gap between the icon and the label.
+  const ui::ImageModel icon = ui::ImageModel::FromVectorIcon(
+      kCheckSmallIcon, ui::kColorMenuIcon, kIconSize);
+  TestMenuItemView menu_with_icons;
+  MenuItemView* icon_default =
+      menu_with_icons.AppendMenuItem(1, u"Title", icon);
+  MenuItemView* icon_wide = menu_with_icons.AppendMenuItem(2, u"Title", icon);
+  icon_wide->SetIconLabelSpacing(default_spacing + kExtraSpacing);
+  menu_with_icons.UpdateEmptyMenusAndMetrics();
+
+  EXPECT_EQ(icon_default->GetDimensions().standard_width + kExtraSpacing,
+            icon_wide->GetDimensions().standard_width);
 }
 
 class MenuItemViewPaintUnitTest : public ViewsTestBase {

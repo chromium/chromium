@@ -187,10 +187,7 @@ void SubmenuView::UpdateMenuPartSizes() {
   content_start_ = parent_menu_item_->GetContentStart();
   label_start_ = content_start_ + icon_area_width_;
   if (icon_area_width_) {
-    const auto* const controller = parent_menu_item_->GetMenuController();
-    label_start_ += (controller && controller->use_ash_system_ui_layout())
-                        ? config.touchable_item_horizontal_padding
-                        : config.icon_label_spacing;
+    label_start_ += parent_menu_item_->GetDefaultIconLabelSpacing();
   }
 
   if (config.icons_in_label) {
