@@ -842,7 +842,6 @@ void SiteSettingsHandler::OnJavascriptDisallowed() {
   system_permission_settings_observation_.reset();
   observations_.RemoveAllObservations();
   chooser_observations_.RemoveAllObservations();
-  auto_blocker_observations_.RemoveAllObservations();
   host_zoom_map_subscriptions_.clear();
   pref_change_registrar_->Remove(prefs::kBlockAutoplayEnabled);
   observed_profiles_.RemoveAllObservations();
@@ -952,18 +951,6 @@ void SiteSettingsHandler::OnObjectPermissionChanged(
                         *guard_content_settings_type)),
                     base::Value(site_settings::ContentSettingsTypeToGroupName(
                         data_content_settings_type)));
-}
-
-void SiteSettingsHandler::OnEmbargoStarted(const GURL& origin,
-                                           ContentSettingsType content_type) {
-  OnContentSettingChanged(ContentSettingsPattern::FromURLNoWildcard(origin),
-                          ContentSettingsPattern::Wildcard(), content_type);
-}
-
-void SiteSettingsHandler::OnEmbargoRemoved(const GURL& origin,
-                                           ContentSettingsType content_type) {
-  OnContentSettingChanged(ContentSettingsPattern::FromURLNoWildcard(origin),
-                          ContentSettingsPattern::Wildcard(), content_type);
 }
 
 void SiteSettingsHandler::OnZoomLevelChanged(
@@ -2232,13 +2219,6 @@ void SiteSettingsHandler::ObserveSourcesForProfile(Profile* profile) {
     observations_.AddObservation(map);
   }
 
-  auto* auto_blocker =
-      PermissionDecisionAutoBlockerFactory::GetForProfile(profile);
-  if (auto_blocker &&
-      !auto_blocker_observations_.IsObservingSource(auto_blocker)) {
-    auto_blocker_observations_.AddObservation(auto_blocker);
-  }
-
   auto* usb_context = UsbChooserContextFactory::GetForProfile(profile);
   if (!chooser_observations_.IsObservingSource(usb_context)) {
     chooser_observations_.AddObservation(usb_context);
@@ -2290,13 +2270,6 @@ void SiteSettingsHandler::StopObservingSourcesForProfile(Profile* profile) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
   if (observations_.IsObservingSource(map)) {
     observations_.RemoveObservation(map);
-  }
-
-  auto* auto_blocker =
-      PermissionDecisionAutoBlockerFactory::GetForProfile(profile);
-  if (auto_blocker &&
-      auto_blocker_observations_.IsObservingSource(auto_blocker)) {
-    auto_blocker_observations_.RemoveObservation(auto_blocker);
   }
 
   auto* usb_context = UsbChooserContextFactory::GetForProfile(profile);

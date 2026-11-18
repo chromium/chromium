@@ -72,13 +72,7 @@ class PermissionDecisionAutoBlocker : public PermissionDecisionAutoBlockerBase,
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnEmbargoStarted(const GURL& origin,
-                                  ContentSettingsType content_type) = 0;
-
-    // Called when an active embargo for `origin` and `content_type` is
-    // lifted via RemoveEmbargoAndResetCounts(). Not called when an embargo
-    // expires naturally.
-    virtual void OnEmbargoRemoved(const GURL& origin,
-                                  ContentSettingsType content_type) {}
+                                  ContentSettingsType content_setting) = 0;
   };
 
   PermissionDecisionAutoBlocker() = delete;
@@ -172,10 +166,7 @@ class PermissionDecisionAutoBlocker : public PermissionDecisionAutoBlockerBase,
                          const char* key);
 
   void NotifyEmbargoStarted(const GURL& origin,
-                            ContentSettingsType content_type);
-
-  void NotifyEmbargoRemoved(const GURL& origin,
-                            ContentSettingsType content_type);
+                            ContentSettingsType content_setting);
 
   // Keys used for storing count data in a website setting.
   static const char kPromptDismissCountKey[];
