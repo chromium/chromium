@@ -166,7 +166,9 @@ const HostType& GetX11HostType() {
   static const base::NoDestructor<UnitSessionHostType> instance(
       "x11",
       "Multi-process host. Chrome Remote Desktop starts an X11 desktop "
-      "session for the user, and keeps it running.",
+      "session for the user, and keeps it running. Requires an installed "
+      "desktop environment that supports X11 (not supported by newer "
+      "versions of GNOME).",
       "chrome-remote-desktop-x11-session@");
   return *instance;
 }

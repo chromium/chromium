@@ -367,6 +367,10 @@ TEST_F(HostTypeMigratorTest, SingleToMulti_CopiesStateBeforeStoppingCurrent) {
   EXPECT_TRUE(env_->IsUnitActive(kMultiProcessUnit));
   EXPECT_THAT(HostType::GetConfigured(*env_), ValueIs(gdm_managed()));
   EXPECT_THAT(output, HasSubstr("Successfully migrated to gdm-managed host."));
+  EXPECT_THAT(
+      output,
+      HasSubstr("If the connection doesn't work as expected, try rebooting the "
+                "machine."));
 }
 
 TEST_F(HostTypeMigratorTest, MultiToSingle_CopiesStateAndDeletesRoutingConfig) {
@@ -636,8 +640,13 @@ TEST_F(HostTypeMigratorTest, Repair_RestartsUnitAndRerunsStartHook) {
 
   testing::internal::CaptureStdout();
   EXPECT_TRUE(Migrate(gdm_managed(), *gdm_managed()));
-  EXPECT_THAT(testing::internal::GetCapturedStdout(),
+  std::string output = testing::internal::GetCapturedStdout();
+  EXPECT_THAT(output,
               HasSubstr("Successfully set up the gdm-managed host again."));
+  EXPECT_THAT(
+      output,
+      HasSubstr("If the connection doesn't work as expected, try rebooting the "
+                "machine."));
   EXPECT_THAT(env_->unit_operations(),
               ElementsAre(base::StrCat({"disable ", kMultiProcessUnit}),
                           base::StrCat({"enable ", kMultiProcessUnit})));

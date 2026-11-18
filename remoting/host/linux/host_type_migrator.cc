@@ -526,8 +526,11 @@ bool HostTypeMigrator::Run() {
     if (!Repair()) {
       return false;
     }
-    std::cout << "Successfully set up the " << target_host_type_->name()
-              << " host again.\n";
+    std::cout
+        << "Successfully set up the " << target_host_type_->name()
+        << " host again.\n"
+        << "If the connection doesn't work as expected, try rebooting the "
+           "machine.\n";
     return true;
   }
 
@@ -537,7 +540,9 @@ bool HostTypeMigrator::Run() {
     return false;
   }
   std::cout << "Successfully migrated to " << target_host_type_->name()
-            << " host.\n";
+            << " host.\n"
+            << "If the connection doesn't work as expected, try rebooting the "
+               "machine.\n";
   return true;
 }
 
