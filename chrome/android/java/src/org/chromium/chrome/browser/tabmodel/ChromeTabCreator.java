@@ -749,7 +749,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             // investigate and fix the root cause.
             if (tab.getUrl().getScheme().equals(UrlConstants.FILE_SCHEME)) {
                 tab.reloadIgnoringCache();
-            } else if (tab.needsReload()) {
+            } else if (params.shouldReload()) {
                 tab.reload();
             }
         }

@@ -124,7 +124,10 @@ public class ReparentingTabsTask {
                     .add(
                             tab.getId(),
                             new TabReparentingParams(
-                                    tab, /* sourceSelector= */ null, finalizeCallback));
+                                    tab,
+                                    /* sourceSelector= */ null,
+                                    /* shouldReload= */ false,
+                                    finalizeCallback));
             ReparentingTask.from(tab).detach();
         }
 

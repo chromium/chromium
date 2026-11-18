@@ -407,6 +407,7 @@ public class TabPersistentStoreUnitTest {
                         new TabReparentingParams(
                                 tabToReparent,
                                 /* sourceSelector= */ null,
+                                /* shouldReload= */ false,
                                 /* finalizeCallback= */ null));
         when(mNormalTabCreator.isReparenting(1)).thenReturn(true);
         when(mNormalTabCreator.createFrozenTab(eq(expectedTabState), eq(1), eq(0)))
@@ -497,6 +498,7 @@ public class TabPersistentStoreUnitTest {
                         new TabReparentingParams(
                                 tabToReparent,
                                 /* sourceSelector= */ null,
+                                /* shouldReload= */ false,
                                 /* finalizeCallback= */ null));
         when(mIncognitoTabCreator.isReparenting(1)).thenReturn(true);
         mPersistentStore =

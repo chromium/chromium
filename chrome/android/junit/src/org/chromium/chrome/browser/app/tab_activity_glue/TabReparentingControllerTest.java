@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
@@ -101,6 +102,7 @@ public class TabReparentingControllerTest {
         TabReparentingParams trp = (TabReparentingParams) params;
         Tab tab = trp.getTabToReparent();
         Assert.assertNotNull(tab);
+        Assert.assertFalse(trp.shouldReload());
         verify(mTask, times(1)).detach();
     }
 
@@ -222,6 +224,52 @@ public class TabReparentingControllerTest {
     }
 
     @Test
+    public void testReparenting_shouldReloadOnlyLoadingTabs() {
+        Tab tab1 = createAndAddMockTab(/* id= */ 1, /* incognito= */ false);
+        Tab tab2 = createAndAddMockTab(/* id= */ 2, /* incognito= */ false);
+        Tab tab3 = createAndAddMockTab(/* id= */ 3, /* incognito= */ false);
+        Tab tab4 = createAndAddMockTab(/* id= */ 4, /* incognito= */ false);
+
+        doReturn(tab1).when(mTabModelSelector).getCurrentTab();
+        doReturn(true).when(tab1).needsReload();
+
+        boolean[] tab2Loading = {true};
+        doAnswer(_ -> tab2Loading[0]).when(tab2).isLoading();
+        doAnswer(
+                        _ -> {
+                            tab2Loading[0] = false;
+                            return null;
+                        })
+                .when(tab2)
+                .stopLoading();
+
+        doReturn(true).when(tab3).needsReload();
+
+        mController.prepareTabsForReparenting();
+        Assert.assertFalse(tab2.isLoading());
+        Assert.assertFalse(
+                ((TabReparentingParams) mRealAsyncTabParamsManager.getAsyncTabParams().get(1))
+                        .shouldReload());
+        Assert.assertTrue(
+                ((TabReparentingParams) mRealAsyncTabParamsManager.getAsyncTabParams().get(2))
+                        .shouldReload());
+        Assert.assertFalse(
+                ((TabReparentingParams) mRealAsyncTabParamsManager.getAsyncTabParams().get(3))
+                        .shouldReload());
+        Assert.assertFalse(
+                ((TabReparentingParams) mRealAsyncTabParamsManager.getAsyncTabParams().get(4))
+                        .shouldReload());
+
+        mController.prepareTabsForReparenting();
+        Assert.assertTrue(
+                ((TabReparentingParams) mRealAsyncTabParamsManager.getAsyncTabParams().get(2))
+                        .shouldReload());
+        verify(tab2, times(1)).stopLoading();
+        verify(tab2.getWebContents().getNavigationController(), times(1)).setNeedsReload();
+        verify(mTask, times(4)).detach();
+    }
+
+    @Test
     public void testReparenting_finalizeCallbackDetachesTabFromOldSelector() {
         mForegroundTab = createAndAddMockTab(1, /* incognito= */ false);
 
@@ -248,7 +296,10 @@ public class TabReparentingControllerTest {
         mRealAsyncTabParamsManager.add(
                 1,
                 new TabReparentingParams(
-                        mForegroundTab, /* sourceSelector= */ null, /* finalizeCallback= */ null));
+                        mForegroundTab,
+                        /* sourceSelector= */ null,
+                        /* shouldReload= */ false,
+                        /* finalizeCallback= */ null));
 
         verify(mTabModelSelector).detachTabForReparenting(mForegroundTab);
         verify(mDestroyTabPersistentStoreRunnable, never()).run();

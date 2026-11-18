@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -313,7 +314,10 @@ public class ChromeTabCreatorJUnitTest {
         boolean[] finalizeRan = new boolean[1];
         TabReparentingParams params =
                 new TabReparentingParams(
-                        mockTab, /* sourceSelector= */ null, () -> finalizeRan[0] = true);
+                        mockTab,
+                        /* sourceSelector= */ null,
+                        /* shouldReload= */ false,
+                        () -> finalizeRan[0] = true);
         AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
 
         doAnswer(
@@ -339,6 +343,42 @@ public class ChromeTabCreatorJUnitTest {
     }
 
     @Test
+    public void testCreateFrozenTab_ReparentingReloadsOnlyWhenRequestedOrFileScheme() {
+        mTabCreator.setTabModel(mTabModel);
+        mTabCreator.setTabModelOrderController(mock(TabModelOrderController.class));
+
+        Tab unloadedTab =
+                createReparentedFrozenTab(
+                        /* tabId= */ 101,
+                        PRIMARY_URL,
+                        /* shouldReload= */ false,
+                        /* needsReload= */ true,
+                        /* index= */ 0);
+        verify(unloadedTab, never()).reload();
+        verify(unloadedTab, never()).reloadIgnoringCache();
+
+        Tab reloadingTab =
+                createReparentedFrozenTab(
+                        /* tabId= */ 102,
+                        PRIMARY_URL,
+                        /* shouldReload= */ true,
+                        /* needsReload= */ false,
+                        /* index= */ 1);
+        verify(reloadingTab).reload();
+        verify(reloadingTab, never()).reloadIgnoringCache();
+
+        Tab fileTab =
+                createReparentedFrozenTab(
+                        /* tabId= */ 103,
+                        "file:///sdcard/photo.jpg",
+                        /* shouldReload= */ false,
+                        /* needsReload= */ false,
+                        /* index= */ 2);
+        verify(fileTab).reloadIgnoringCache();
+        verify(fileTab, never()).reload();
+    }
+
+    @Test
     public void testRedirectTabCreator_ReparentingDestroysAsyncParams() {
         MultiInstanceOrchestrator orchestrator = mock(MultiInstanceOrchestrator.class);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(orchestrator);
@@ -360,7 +400,10 @@ public class ChromeTabCreatorJUnitTest {
         Tab mockTab = mock(Tab.class);
         TabReparentingParams params =
                 new TabReparentingParams(
-                        mockTab, /* sourceSelector= */ null, /* finalizeCallback= */ null);
+                        mockTab,
+                        /* sourceSelector= */ null,
+                        /* shouldReload= */ false,
+                        /* finalizeCallback= */ null);
         AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
 
         Intent intent = new Intent();
@@ -400,7 +443,10 @@ public class ChromeTabCreatorJUnitTest {
         Tab mockTab = mock(Tab.class);
         TabReparentingParams params =
                 new TabReparentingParams(
-                        mockTab, /* sourceSelector= */ null, /* finalizeCallback= */ null);
+                        mockTab,
+                        /* sourceSelector= */ null,
+                        /* shouldReload= */ false,
+                        /* finalizeCallback= */ null);
         AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
 
         assertNull(redirectTabCreator.createFrozenTab(/* state= */ null, tabId, /* index= */ 0));
@@ -458,7 +504,10 @@ public class ChromeTabCreatorJUnitTest {
 
         TabReparentingParams params =
                 new TabReparentingParams(
-                        mockTab, /* sourceSelector= */ null, /* finalizeCallback= */ null);
+                        mockTab,
+                        /* sourceSelector= */ null,
+                        /* shouldReload= */ false,
+                        /* finalizeCallback= */ null);
         AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
 
         Intent intent = new Intent();
@@ -486,5 +535,33 @@ public class ChromeTabCreatorJUnitTest {
                 AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId));
         verify(tabModel)
                 .addTab(eq(mockTab), anyInt(), eq(TabLaunchType.FROM_REPARENTING), anyInt());
+    }
+
+    private Tab createReparentedFrozenTab(
+            int tabId, String url, boolean shouldReload, boolean needsReload, int index) {
+        Tab tab = mock(Tab.class);
+        when(tab.isIncognito()).thenReturn(false);
+        when(tab.getUrl()).thenReturn(new GURL(url));
+        if (needsReload) {
+            when(tab.needsReload()).thenReturn(true);
+        }
+        when(tab.getUserDataHost()).thenReturn(new UserDataHost());
+        AsyncTabParamsManagerSingleton.getInstance()
+                .add(
+                        tabId,
+                        new TabReparentingParams(
+                                tab,
+                                /* sourceSelector= */ null,
+                                shouldReload,
+                                /* finalizeCallback= */ null));
+
+        assertEquals(tab, mTabCreator.createFrozenTab(new TabState(), tabId, index));
+        verify(mTabModel)
+                .addTab(
+                        tab,
+                        index,
+                        TabLaunchType.FROM_RESTORE,
+                        TabCreationState.LIVE_IN_BACKGROUND);
+        return tab;
     }
 }

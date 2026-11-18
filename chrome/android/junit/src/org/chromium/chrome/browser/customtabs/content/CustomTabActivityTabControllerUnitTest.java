@@ -572,7 +572,10 @@ public class CustomTabActivityTabControllerUnitTest {
         Runnable finalizeCallback = mock(Runnable.class);
         AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
         AsyncTabParamsManagerSingleton.getInstance()
-                .add(tab.getId(), new TabReparentingParams(tab, sourceSelector, finalizeCallback));
+                .add(
+                        tab.getId(),
+                        new TabReparentingParams(
+                                tab, sourceSelector, /* shouldReload= */ false, finalizeCallback));
         doAnswer(
                         invocation -> {
                             Runnable callback = invocation.getArgument(1);

@@ -30,6 +30,12 @@ public interface AsyncTabParams {
     /** Returns the tab that would be reparenting through this {@link AsyncTabParams}. */
     @Nullable Tab getTabToReparent();
 
+    /**
+     * Returns whether the tab to reparent should be reloaded once attached during activity
+     * recreation.
+     */
+    boolean shouldReload();
+
     /** Returns the callback to run once tab reparenting has finished, if any. */
     @Nullable Runnable getFinalizeCallback();
 

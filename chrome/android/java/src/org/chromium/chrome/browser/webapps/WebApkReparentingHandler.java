@@ -192,7 +192,10 @@ public class WebApkReparentingHandler {
                 .add(
                         tabId,
                         new TabReparentingParams(
-                                tab, /* sourceSelector= */ null, /* finalizeCallback= */ null));
+                                tab,
+                                /* sourceSelector= */ null,
+                                /* shouldReload= */ false,
+                                /* finalizeCallback= */ null));
 
         // Detach tab from old window
         ReparentingTask.from(tab).detach();

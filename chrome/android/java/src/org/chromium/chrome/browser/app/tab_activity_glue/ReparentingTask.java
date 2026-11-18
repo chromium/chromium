@@ -154,7 +154,10 @@ public class ReparentingTask implements UserData {
                 .add(
                         mTab.getId(),
                         new TabReparentingParams(
-                                mTab, /* sourceSelector= */ null, finalizeCallback));
+                                mTab,
+                                /* sourceSelector= */ null,
+                                /* shouldReload= */ false,
+                                finalizeCallback));
 
         detach();
     }

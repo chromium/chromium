@@ -79,7 +79,8 @@ public class TabReparentingController {
         int tabsStillLoading = 0;
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
-            if (tab.isLoading()) {
+            boolean wasLoading = tab.isLoading();
+            if (wasLoading) {
                 tab.stopLoading();
                 WebContents webContents = tab.getWebContents();
                 if (webContents != null) {
@@ -95,10 +96,14 @@ public class TabReparentingController {
                 continue;
             }
 
+            // Only force an eager reload when an in-progress load was interrupted above; unloaded
+            // or discarded background tabs stay deferred, and any foreground tab needing a reload
+            // restores naturally via Tab#show when selected.
             TabReparentingParams params =
                     new TabReparentingParams(
                             tab,
                             selector,
+                            wasLoading,
                             () -> {
                                 // Destroy old store first so its observer won't delete persisted
                                 // tab/group rows the new Activity restores; weak refs keep

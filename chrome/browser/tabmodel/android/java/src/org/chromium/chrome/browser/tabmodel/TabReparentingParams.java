@@ -19,23 +19,34 @@ import java.lang.ref.WeakReference;
 public class TabReparentingParams implements AsyncTabParams {
     private final Tab mTabToReparent;
     private final @Nullable WeakReference<TabModelSelector> mSourceSelector;
+    private final boolean mShouldReload;
     private final @Nullable Runnable mFinalizeCallback;
 
     /**
+     * Constructs parameters for reparenting a tab across activities.
+     *
      * @param tabToReparent The tab being moved to another activity.
      * @param sourceSelector The {@link TabModelSelector} the tab is still attached to. Non-null
      *     only when that selector is in reparenting mode (activity recreation; see {@link
      *     TabModelSelector#isReparentingInProgress()}), where removing the tab from its model is
      *     deferred until reparenting finishes or these params are destroyed. Null in all other
      *     cases, where the selector removes the tab from its model as soon as it is detached.
+     * @param shouldReload Whether the tab should be reloaded once attached during activity
+     *     recreation in {@code ChromeTabCreator#createFrozenTab()}. Typically {@code false} except
+     *     when an in-progress load was interrupted for activity recreation: cross-activity
+     *     reparenting keeps existing {@link WebContents} state, unloaded/discarded background tabs
+     *     stay deferred, and any active/foreground tab needing a reload restores naturally via
+     *     {@code Tab#show} when selected.
      * @param finalizeCallback Run once reparenting has finished. Null if there is nothing to do.
      */
     public TabReparentingParams(
             Tab tabToReparent,
             @Nullable TabModelSelector sourceSelector,
+            boolean shouldReload,
             @Nullable Runnable finalizeCallback) {
         mTabToReparent = tabToReparent;
         mSourceSelector = sourceSelector != null ? new WeakReference<>(sourceSelector) : null;
+        mShouldReload = shouldReload;
         mFinalizeCallback =
                 sourceSelector == null
                         ? finalizeCallback
@@ -68,6 +79,11 @@ public class TabReparentingParams implements AsyncTabParams {
     @Override
     public Tab getTabToReparent() {
         return mTabToReparent;
+    }
+
+    @Override
+    public boolean shouldReload() {
+        return mShouldReload;
     }
 
     @Override

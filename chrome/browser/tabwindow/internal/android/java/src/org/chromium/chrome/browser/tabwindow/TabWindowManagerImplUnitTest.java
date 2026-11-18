@@ -592,6 +592,7 @@ public class TabWindowManagerImplUnitTest {
                 new TabReparentingParams(
                         new MockTab(0, mProfile),
                         /* sourceSelector= */ null,
+                        /* shouldReload= */ false,
                         /* finalizeCallback= */ null);
         assertNull(mSubject.getTabById(asyncTabId));
         mAsyncTabParamsManager.add(asyncTabId, placeholderParams);
@@ -649,6 +650,7 @@ public class TabWindowManagerImplUnitTest {
                 new TabReparentingParams(
                         new MockTab(0, mProfile),
                         /* sourceSelector= */ null,
+                        /* shouldReload= */ false,
                         /* finalizeCallback= */ null);
         assertNull(mSubject.getTabById(asyncTabId));
         mAsyncTabParamsManager.add(asyncTabId, placeholderParams);

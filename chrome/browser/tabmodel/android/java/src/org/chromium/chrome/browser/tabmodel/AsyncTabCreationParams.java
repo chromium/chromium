@@ -103,6 +103,11 @@ public class AsyncTabCreationParams implements AsyncTabParams {
     }
 
     @Override
+    public boolean shouldReload() {
+        return false;
+    }
+
+    @Override
     public @Nullable Runnable getFinalizeCallback() {
         return null;
     }

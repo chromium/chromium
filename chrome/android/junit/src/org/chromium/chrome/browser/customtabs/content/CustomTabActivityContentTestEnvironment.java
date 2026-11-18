@@ -300,7 +300,10 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 .add(
                         tabId,
                         new TabReparentingParams(
-                                tab, /* sourceSelector= */ null, /* finalizeCallback= */ null));
+                                tab,
+                                /* sourceSelector= */ null,
+                                /* shouldReload= */ false,
+                                /* finalizeCallback= */ null));
         IntentHandler.setTabId(mIntent, tabId);
         IntentUtils.setForceIsTrustedIntentForTesting(true);
         return tab;
@@ -316,7 +319,10 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 .add(
                         tab.getId(),
                         new TabReparentingParams(
-                                tab, /* sourceSelector= */ null, /* finalizeCallback= */ null));
+                                tab,
+                                /* sourceSelector= */ null,
+                                /* shouldReload= */ false,
+                                /* finalizeCallback= */ null));
     }
 
     /** Makes {@code getOffTheRecordProfile(false)} return the off-the-record profile. */

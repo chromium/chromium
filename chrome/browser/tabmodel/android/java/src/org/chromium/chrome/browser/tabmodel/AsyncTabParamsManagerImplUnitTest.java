@@ -132,7 +132,11 @@ public class AsyncTabParamsManagerImplUnitTest {
     public void testAdd_OverwritingReparentingParamsDetachesFromOriginalModel() {
         TabModelSelector sourceSelector = mock(TabModelSelector.class);
         TabReparentingParams params1 =
-                new TabReparentingParams(mRegularTab, sourceSelector, /* finalizeCallback= */ null);
+                new TabReparentingParams(
+                        mRegularTab,
+                        sourceSelector,
+                        /* shouldReload= */ false,
+                        /* finalizeCallback= */ null);
 
         mManager.add(/* tabId= */ 1, params1);
         mManager.add(/* tabId= */ 1, params1);

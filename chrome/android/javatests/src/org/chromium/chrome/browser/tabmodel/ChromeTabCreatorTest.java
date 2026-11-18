@@ -676,6 +676,11 @@ public class ChromeTabCreatorTest {
                     }
 
                     @Override
+                    public boolean shouldReload() {
+                        return false;
+                    }
+
+                    @Override
                     public Runnable getFinalizeCallback() {
                         return null;
                     }
