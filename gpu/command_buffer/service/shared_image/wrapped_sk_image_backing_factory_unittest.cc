@@ -497,15 +497,23 @@ TEST_P(WrappedSkImageBackingFactoryTest,
 
   auto mailbox = Mailbox::Generate();
   gfx::Size size(100, 100);
-  SharedImageUsageSet usage = SHARED_IMAGE_USAGE_RASTER_READ |
-                              SHARED_IMAGE_USAGE_RASTER_WRITE |
-                              SHARED_IMAGE_USAGE_DISPLAY_READ;
+  // GLES2 usage is required by SharedImageManager::ProduceGLTexture*().
+  SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2_READ;
 
+  // WrappedSkImageBackingFactory doesn't advertise GLES2 usage with Ganesh, so
+  // SharedImageFactory wouldn't pick it for `usage`. Register it as the testing
+  // factory to force the initial backing to be a WrappedSkImageBacking, then
+  // unregister it so that the dynamic allocation below goes through the real
+  // backing factories.
+  factory.RegisterSharedImageBackingFactoryForTesting(backing_factory_.get());
   bool created = factory.CreateSharedImage(
       mailbox,
       SharedImageInfo(format, size, kColorSpace, kSurfaceOrigin,
                       kPremul_SkAlphaType, usage, "TestLabel"),
       gpu::kNullSurfaceHandle);
+  factory.RegisterSharedImageBackingFactoryForTesting(nullptr);
   ASSERT_TRUE(created);
 
   // Initialize pixel data via Skia representation while context_state_ is

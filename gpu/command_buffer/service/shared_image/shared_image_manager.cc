@@ -212,6 +212,14 @@ SharedImageManager::ProduceGLTexture(const Mailbox& mailbox,
     return nullptr;
   }
 
+  if (!backing->usage().HasAny(SHARED_IMAGE_USAGE_GLES2_READ |
+                               SHARED_IMAGE_USAGE_GLES2_WRITE)) {
+    LOG(ERROR)
+        << "SharedImageManager::ProduceGLTexture with incorrect usage, client: "
+        << backing->debug_label();
+    return nullptr;
+  }
+
   auto representation = backing->ProduceGLTexture(this, tracker);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceGLTexture: Trying to produce a "
@@ -233,6 +241,14 @@ SharedImageManager::ProduceGLTexturePassthrough(const Mailbox& mailbox,
   if (!backing) {
     LOG(ERROR) << "SharedImageManager::ProduceGLTexturePassthrough: Trying to "
                   "produce a representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  if (!backing->usage().HasAny(SHARED_IMAGE_USAGE_GLES2_READ |
+                               SHARED_IMAGE_USAGE_GLES2_WRITE)) {
+    LOG(ERROR) << "SharedImageManager::ProduceGLTexturePassthrough with "
+                  "incorrect usage, client: "
+               << backing->debug_label();
     return nullptr;
   }
 
