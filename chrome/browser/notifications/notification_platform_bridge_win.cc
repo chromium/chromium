@@ -30,6 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/win/core_winrt_util.h"
@@ -191,9 +192,10 @@ class NotificationPlatformBridgeWinImpl
     // Delete any remaining temp files in the image folder from the previous
     // sessions.
     CHECK(notification_task_runner_, base::NotFatalUntil::M161);
-    content::BrowserThread::PostBestEffortTask(
-        FROM_HERE, notification_task_runner_,
-        image_retainer_->GetCleanupTask());
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindPostTask(notification_task_runner_,
+                           image_retainer_->GetCleanupTask()));
 
     notification_task_runner_->PostTask(
         FROM_HERE,

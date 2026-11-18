@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/macros/uniquify.h"
 #include "base/memory/scoped_refptr.h"
@@ -104,17 +103,6 @@ class CONTENT_EXPORT BrowserThread {
 
   BrowserThread(const BrowserThread&) = delete;
   BrowserThread& operator=(const BrowserThread&) = delete;
-
-  // Posts a |task| to run at BEST_EFFORT priority using an arbitrary
-  // |task_runner| for which we do not control the priority.
-  //
-  // This is useful when a task needs to run on |task_runner| (for thread-safety
-  // reasons) but should be delayed until after critical phases (e.g. startup).
-  // TODO(crbug.com/40553790): Add support for sequence-funneling and remove
-  // this method.
-  static void PostBestEffortTask(const base::Location& from_here,
-                                 scoped_refptr<base::TaskRunner> task_runner,
-                                 base::OnceClosure task);
 
   // Callable on any thread.  Returns whether the given well-known thread is
   // initialized.

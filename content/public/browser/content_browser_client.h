@@ -374,8 +374,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // "startup" the embedder has in mind). This may be called on any thread.
   // Note: prefer to simply post a task with BEST_EFFORT priority. This will
   // delay the task until higher priority tasks are finished, which includes
-  // critical startup tasks. The BrowserThread::PostBestEffortTask() helper can
-  // post a BEST_EFFORT task to an arbitrary task runner.
+  // critical startup tasks. If a task must run on an existing non-BEST_EFFORT
+  // TaskRunner, bounce it through a BEST_EFFORT TaskRunner first. For example:
+  // `base::ThreadPool::PostTask(FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+  // base::BindPostTask(task_runner, ...))`.
   virtual void PostAfterStartupTask(
       const base::Location& from_here,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,

@@ -10,8 +10,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -249,18 +247,6 @@ BrowserThread::GetTaskRunnerForThread(ID identifier) {
 // static
 void BrowserThread::RunAllPendingTasksOnThreadForTesting(ID identifier) {
   BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(identifier);
-}
-
-// static
-void BrowserThread::PostBestEffortTask(
-    const base::Location& from_here,
-    scoped_refptr<base::TaskRunner> task_runner,
-    base::OnceClosure task) {
-  content::GetIOThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
-                         std::move(task_runner), from_here, std::move(task)));
 }
 
 namespace internal {

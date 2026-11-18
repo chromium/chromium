@@ -19,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -253,67 +252,6 @@ TEST_F(BrowserThreadTest, PostTaskAndReply) {
   base::RunLoop run_loop;
   ASSERT_TRUE(GetIOThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE, base::DoNothing(), run_loop.QuitWhenIdleClosure()));
-  run_loop.Run();
-}
-
-class BrowserThreadWithCustomSchedulerTest : public testing::Test {
- private:
-  class TaskEnvironmentWithCustomScheduler
-      : public base::test::TaskEnvironment {
-   public:
-    TaskEnvironmentWithCustomScheduler()
-        : base::test::TaskEnvironment(
-              internal::CreateBrowserTaskPrioritySettings(),
-              SubclassCreatesDefaultTaskRunner{}) {
-      std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler =
-          BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
-      DeferredInitFromSubclass(
-          browser_ui_thread_scheduler->GetDefaultTaskQueue());
-      BrowserTaskExecutor::CreateForTesting(
-          std::move(browser_ui_thread_scheduler),
-          std::make_unique<BrowserIOThreadDelegate>());
-
-      io_thread_ = BrowserTaskExecutor::CreateIOThread();
-      BrowserTaskExecutor::InitializeIOThread();
-      io_thread_->RegisterAsBrowserThread();
-    }
-
-    ~TaskEnvironmentWithCustomScheduler() override {
-      io_thread_.reset();
-      BrowserThreadImpl::ResetGlobalsForTesting(BrowserThread::IO);
-      BrowserTaskExecutor::ResetForTesting();
-    }
-
-   private:
-    std::unique_ptr<BrowserProcessIOThread> io_thread_;
-  };
-
- public:
-  using QueueType = BrowserTaskQueues::QueueType;
-
- protected:
-  TaskEnvironmentWithCustomScheduler task_environment_;
-};
-
-TEST_F(BrowserThreadWithCustomSchedulerTest, PostBestEffortTask) {
-  base::MockOnceClosure best_effort_task;
-  base::MockOnceClosure regular_task;
-
-  auto task_runner = GetUIThreadTaskRunner({base::TaskPriority::HIGHEST});
-
-  task_runner->PostTask(FROM_HERE, regular_task.Get());
-  BrowserThread::PostBestEffortTask(FROM_HERE, task_runner,
-                                    best_effort_task.Get());
-
-  EXPECT_CALL(regular_task, Run).Times(1);
-  EXPECT_CALL(best_effort_task, Run).Times(0);
-  task_environment_.RunUntilIdle();
-
-  testing::Mock::VerifyAndClearExpectations(&regular_task);
-
-  BrowserTaskExecutor::OnStartupComplete();
-  base::RunLoop run_loop;
-  EXPECT_CALL(best_effort_task, Run).WillOnce([&]() { run_loop.Quit(); });
   run_loop.Run();
 }
 

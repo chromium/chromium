@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/supports_user_data.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
@@ -130,10 +131,12 @@ ChromeBlobStorageContext* ChromeBlobStorageContext::GetFor(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
       // Removes our old blob directories if they exist.
-      BrowserThread::PostBestEffortTask(
-          FROM_HERE, file_task_runner,
-          base::BindOnce(&RemoveOldBlobStorageDirectories,
-                         std::move(blob_storage_parent), blob_storage_dir));
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+          base::BindPostTask(file_task_runner,
+                             base::BindOnce(&RemoveOldBlobStorageDirectories,
+                                            std::move(blob_storage_parent),
+                                            blob_storage_dir)));
     }
 
     if (io_thread_valid) {
