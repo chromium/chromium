@@ -981,6 +981,28 @@ public class ActorNotificationServiceTest {
     }
 
     @Test
+    public void
+            testMaybeDismissNotificationFromIntent_CancelledTaskRemoved_DismissesNotification() {
+        int taskId = 104;
+        int state = ActorTaskState.CANCELLED;
+        when(mKeyedService.getTask(taskId)).thenReturn(null);
+        Profile mockProfile = mock(Profile.class);
+        when(mockProfile.getOriginalProfile()).thenReturn(mock(Profile.class));
+        ActorKeyedServiceFactory.setForTesting(mKeyedService);
+
+        Intent intent = new Intent();
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+        mMockNotificationManager.notify(taskId, new Notification());
+
+        ActorNotificationService.maybeDismissNotificationFromIntent(intent, mockProfile);
+
+        assertTrue(
+                "Cancelled task notification should be cancelled on intent receipt",
+                mMockNotificationManager.getNotifications().isEmpty());
+    }
+
+    @Test
     public void testMaybeDismissNotificationFromIntent_ActiveTask_DoesNotDismissNotification() {
         int taskId = 103;
         int state = ActorTaskState.ACTING;

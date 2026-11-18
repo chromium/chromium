@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -715,6 +716,118 @@ public class ActorNotificationClickIntegrationTest {
         watcher.pollInstrumentationThreadUntilSatisfied();
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
+    public void testNotificationTap_FinishedTaskGone_RoutesToStampedTabAndDismisses()
+            throws Exception {
+        int taskId = 311;
+        Tab actingTab = startWithActingTabInBackground();
+        MockNotificationManagerProxy notificationManager =
+                postRoutedTaskNotification(taskId, ActorTaskState.FINISHED, actingTab);
+        when(mActorKeyedService.getTask(taskId)).thenReturn(null);
+        when(mActorKeyedService.getTaskByConversationId(ROUTED_CONVERSATION_ID)).thenReturn(null);
+
+        getPostedNotification(notificationManager, taskId).contentIntent.send();
+
+        waitForSelectedTab(actingTab);
+        verifyGlicInvokedOn(actingTab);
+        CriteriaHelper.pollUiThread(
+                () -> findPostedNotification(notificationManager, taskId) == null);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
+    public void testNotificationTap_FinishedTaskGoneAndTabClosed_OpensGlicOnSelectedTab()
+            throws Exception {
+        int taskId = 313;
+        Tab actingTab = startWithActingTabInBackground();
+        MockNotificationManagerProxy notificationManager =
+                postRoutedTaskNotification(taskId, ActorTaskState.FINISHED, actingTab);
+        when(mActorKeyedService.getTask(taskId)).thenReturn(null);
+        when(mActorKeyedService.getTaskByConversationId(ROUTED_CONVERSATION_ID)).thenReturn(null);
+        Tab selectedTab = mActivityTestRule.getActivityTab();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mActivityTestRule
+                                .getActivity()
+                                .getCurrentTabModel()
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(actingTab)
+                                                .allowUndo(false)
+                                                .build(),
+                                        /* allowDialog= */ false));
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Notification.FetchTabId.Status",
+                        ActorFetchTabIdStatus.TAB_NOT_FOUND);
+
+        getPostedNotification(notificationManager, taskId).contentIntent.send();
+
+        watcher.pollInstrumentationThreadUntilSatisfied();
+        ThreadUtils.runOnUiThreadBlocking(() -> {});
+        assertEquals(selectedTab, mActivityTestRule.getActivityTab());
+        // With the task's tab gone, Glic falls back to the selected regular tab.
+        verifyGlicInvokedOn(selectedTab);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNotificationTap_IncognitoTabSelected_SelectsActingTabAndOpensGlic()
+            throws Exception {
+        int taskId = 321;
+        Tab actingTab = startWithActingTabInBackground();
+        MockNotificationManagerProxy notificationManager =
+                postRoutedTaskNotification(taskId, ActorTaskState.ACTING, actingTab);
+        mActivityTestRule.newIncognitoTabFromMenu();
+
+        getPostedNotification(notificationManager, taskId).contentIntent.send();
+
+        waitForSelectedTab(actingTab);
+        verifyGlicInvokedOn(actingTab);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNotificationTap_TabClosedWhileIncognitoSelected_OpensGlicOnRegularTab()
+            throws Exception {
+        int taskId = 322;
+        Tab actingTab = startWithActingTabInBackground();
+        Tab regularTab = mActivityTestRule.getActivityTab();
+        MockNotificationManagerProxy notificationManager =
+                postRoutedTaskNotification(taskId, ActorTaskState.ACTING, actingTab);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mActivityTestRule
+                                .getActivity()
+                                .getCurrentTabModel()
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(actingTab)
+                                                .allowUndo(false)
+                                                .build(),
+                                        /* allowDialog= */ false));
+        mActivityTestRule.newIncognitoTabFromMenu();
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Notification.FetchTabId.Status",
+                        ActorFetchTabIdStatus.TAB_NOT_FOUND);
+
+        getPostedNotification(notificationManager, taskId).contentIntent.send();
+
+        // With the task's tab gone, Glic can't open on the selected incognito tab, so it falls back
+        // to the selected regular tab.
+        verifyGlicInvokedOn(regularTab);
+        assertEquals(regularTab, mActivityTestRule.getActivityTab());
+        watcher.assertExpected();
+    }
+
     /**
      * Counts how often each untagged notification is cancelled. A Mockito spy would also record
      * calls made from background threads, whose callbacks keep the activity alive and fail leak
@@ -827,6 +940,13 @@ public class ActorNotificationClickIntegrationTest {
     private void waitForSelectedTab(Tab tab) {
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivityTab() == tab, "The acting tab was not selected");
+    }
+
+    /** Verifies Glic opened once, on the task's conversation, whatever the invocation source. */
+    private void verifyGlicInvokedOn(Tab tab) {
+        verify(mGlicKeyedService, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .invokeWithConversation(eq(tab), eq(ROUTED_CONVERSATION_ID), anyInt());
+        verify(mGlicKeyedService).invokeWithConversation(any(), anyString(), anyInt());
     }
 
     private void verifyGlicOpenedOn(Tab tab) {

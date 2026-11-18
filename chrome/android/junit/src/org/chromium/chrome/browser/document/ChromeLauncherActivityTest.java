@@ -66,6 +66,7 @@ public class ChromeLauncherActivityTest {
     private static final int TEST_TAB_ID = 100;
     private static final int TEST_WINDOW_ID = 2;
     private static final int ACTOR_TASK_ID = 7;
+    private static final int OTHER_WINDOW_ID = 3;
 
     private static final String HISTOGRAM_BRING_TAB_TO_FRONT_RESULT =
             "Android.Intent.BringTabToFront.Result";
@@ -392,6 +393,31 @@ public class ChromeLauncherActivityTest {
                         .getIntExtra(IntentHandler.BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID));
         Assert.assertTrue(mTabbedActivity.mOnNewIntentCalled);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOVE_TO_FRONT_IN_LAUNCH_INTENT_DISPATCHER})
+    public void testActorNotificationIntent_TwoWindows_RoutesOnlyToTabWindow() {
+        MockChromeTabbedActivity decoyWindowActivity =
+                Robolectric.buildActivity(MockChromeTabbedActivity.class).create().get();
+        try {
+            MultiWindowUtils.setActivityByWindowIdForTesting(OTHER_WINDOW_ID, decoyWindowActivity);
+            stubTaskTabInWindow(TEST_WINDOW_ID);
+            var histogramWatcher =
+                    HistogramWatcher.newSingleRecordWatcher(
+                            HISTOGRAM_BRING_TAB_TO_FRONT_RESULT,
+                            ChromeLauncherActivity.BringTabToFrontResult.SUCCESS);
+
+            Robolectric.buildActivity(
+                            TestChromeLauncherActivity.class, createActorNotificationIntent())
+                    .create();
+
+            Assert.assertTrue(mTabbedActivity.mOnNewIntentCalled);
+            Assert.assertFalse(decoyWindowActivity.mOnNewIntentCalled);
+            histogramWatcher.assertExpected();
+        } finally {
+            decoyWindowActivity.finish();
+        }
     }
 
     private void stubTaskTabInWindow(int windowId) {
