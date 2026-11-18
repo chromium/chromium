@@ -15,7 +15,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -25,7 +24,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -393,13 +391,7 @@ class TouchEventConverterEvdevTest : public testing::Test {
       delete;
 
   // Overridden from testing::Test:
-  void SetUp() override {
-    // By default, tests disable single-cancel and enable palm on touch_major ==
-    // major_max.
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures({}, {kEnableSingleCancelTouch});
-    SetUpDevice();
-  }
+  void SetUp() override { SetUpDevice(); }
 
   void SetUpDevice() {
     // Set up pipe to satisfy message pump (unused).
@@ -477,7 +469,6 @@ class TouchEventConverterEvdevTest : public testing::Test {
 
  protected:
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -1272,189 +1263,6 @@ TEST_F(TouchEventConverterEvdevTest, TrackingIdShouldNotResetCancelByPalm) {
   ui::TouchEventParams ev2_4 = dispatched_touch_event(7);
   EXPECT_EQ(EventType::kTouchCancelled, ev2_4.type);
   EXPECT_EQ(1, ev2_4.slot);
-}
-
-TEST_F(TouchEventConverterEvdevTest,
-       TrackingIdShouldNotResetCancelByPalmSingleCancel) {
-  // Flip field to true.
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitAndEnableFeature(kEnableSingleCancelTouch);
-
-  ui::MockTouchEventConverterEvdev* dev = device();
-
-  EventDeviceInfo devinfo;
-  EXPECT_TRUE(CapabilitiesToDeviceInfo(kLinkWithToolTypeTouchscreen, &devinfo));
-
-  timeval time;
-  time = {1429651083, 686882};
-  int major_max = devinfo.GetAbsMaximum(ABS_MT_TOUCH_MAJOR);
-  struct input_event mock_kernel_queue_max_major[] = {
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, 0},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_FINGER},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1003},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 749},
-      {time, EV_ABS, ABS_MT_PRESSURE, 50},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 116},
-      {time, EV_ABS, ABS_MT_SLOT, 1},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, 1},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_FINGER},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1103},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 649},
-      {time, EV_ABS, ABS_MT_PRESSURE, 50},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 116},
-      {time, EV_KEY, BTN_TOUCH, 1},
-      {time, EV_ABS, ABS_X, 1003},
-      {time, EV_ABS, ABS_Y, 749},
-      {time, EV_ABS, ABS_PRESSURE, 50},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, major_max},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, -1},
-      {time, EV_ABS, ABS_MT_SLOT, 1},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, -1},
-      {time, EV_SYN, SYN_REPORT, 0},
-  };
-  // No events will be generated from the following queue. Here is why:
-  // The touch in SLOT 0 was identified as a palm in previous events, thus it
-  // was cancelled. In the following events, there is new trcking id for slot
-  // 0, but there is no MT_TOOL_FINGER and TOUCH_MAJOR saying it's a finger.
-  // Thus the slot will continue to be a palm and its events will be cancelled.
-  struct input_event mock_kernel_new_touch_without_new_major[] = {
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, 3},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1003},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 749},
-      {time, EV_ABS, ABS_MT_PRESSURE, 50},
-      {time, EV_ABS, ABS_MT_SLOT, 1},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, 4},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_FINGER},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1103},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 649},
-      {time, EV_ABS, ABS_MT_PRESSURE, 50},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 116},
-      {time, EV_KEY, BTN_TOUCH, 1},
-      {time, EV_ABS, ABS_X, 1003},
-      {time, EV_ABS, ABS_Y, 749},
-      {time, EV_ABS, ABS_PRESSURE, 50},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, -1},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_SLOT, 1},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, -1},
-      {time, EV_SYN, SYN_REPORT, 0},
-  };
-
-  // This time, there is MT_TOOL_FINGER for slot 0, thus events should be
-  // dispatched. Note that slot 0 is reported palm, and then both terminate.
-  struct input_event mock_kernel_queue_tool_palm[] = {
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, 2},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_FINGER},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1003},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 749},
-      {time, EV_ABS, ABS_MT_PRESSURE, 50},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 116},
-      {time, EV_ABS, ABS_MT_SLOT, 1},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, 3},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_FINGER},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1103},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 649},
-      {time, EV_ABS, ABS_MT_PRESSURE, 50},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 116},
-      {time, EV_KEY, BTN_TOUCH, 1},
-      {time, EV_ABS, ABS_X, 1003},
-      {time, EV_ABS, ABS_Y, 749},
-      {time, EV_ABS, ABS_PRESSURE, 50},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_PALM},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, -1},
-      {time, EV_SYN, SYN_REPORT, 0},
-  };
-
-  // Set test now time to ensure above timestamps are in the past.
-  SetTestNowTime(time);
-
-  // Initialize the device.
-  dev->Initialize(devinfo);
-
-  dev->ConfigureReadMock(mock_kernel_queue_max_major,
-                         std::size(mock_kernel_queue_max_major), 0);
-  dev->ReadNow();
-  EXPECT_EQ(4u, size());
-  {
-    ui::TouchEventParams ev1_1 = dispatched_touch_event(0);
-    EXPECT_EQ(EventType::kTouchPressed, ev1_1.type);
-    EXPECT_EQ(0, ev1_1.slot);
-    EXPECT_EQ(1003, ev1_1.location.x());
-    EXPECT_EQ(749, ev1_1.location.y());
-
-    ui::TouchEventParams ev1_2 = dispatched_touch_event(1);
-    EXPECT_EQ(EventType::kTouchPressed, ev1_2.type);
-    EXPECT_EQ(1, ev1_2.slot);
-    EXPECT_EQ(1103, ev1_2.location.x());
-    EXPECT_EQ(649, ev1_2.location.y());
-
-    ui::TouchEventParams ev1_3 = dispatched_touch_event(2);
-    EXPECT_EQ(EventType::kTouchCancelled, ev1_3.type);
-    EXPECT_EQ(0, ev1_3.slot);
-
-    // We do not expect this to be cancelled.
-    ui::TouchEventParams ev1_4 = dispatched_touch_event(3);
-    EXPECT_EQ(EventType::kTouchReleased, ev1_4.type);
-    EXPECT_EQ(1, ev1_4.slot);
-  }
-  // We expect 3 touches to be read: fine: touch at slot 1 is pressed and then
-  // moved and then lifted. touch 0 ignored.
-  dev->ConfigureReadMock(mock_kernel_new_touch_without_new_major,
-                         std::size(mock_kernel_new_touch_without_new_major), 0);
-  dev->ReadNow();
-  EXPECT_EQ(7u, size());
-  {
-    ui::TouchEventParams ev2_1 = dispatched_touch_event(4);
-    EXPECT_EQ(EventType::kTouchPressed, ev2_1.type);
-    EXPECT_EQ(1, ev2_1.slot);
-    EXPECT_EQ(1103, ev2_1.location.x());
-    EXPECT_EQ(649, ev2_1.location.y());
-
-    ui::TouchEventParams ev2_2 = dispatched_touch_event(5);
-    EXPECT_EQ(EventType::kTouchMoved, ev2_2.type);
-    EXPECT_EQ(1, ev2_2.slot);
-    EXPECT_EQ(1103, ev2_2.location.x());
-    EXPECT_EQ(649, ev2_2.location.y());
-
-    ui::TouchEventParams ev2_3 = dispatched_touch_event(6);
-    EXPECT_EQ(EventType::kTouchReleased, ev2_3.type);
-    EXPECT_EQ(1, ev2_3.slot);
-  }
-  dev->ConfigureReadMock(mock_kernel_queue_tool_palm,
-                         std::size(mock_kernel_queue_tool_palm), 0);
-  dev->ReadNow();
-  EXPECT_EQ(10u, size());
-  {
-    ui::TouchEventParams ev3_1 = dispatched_touch_event(7);
-    EXPECT_EQ(EventType::kTouchPressed, ev3_1.type);
-    EXPECT_EQ(0, ev3_1.slot);
-    EXPECT_EQ(1003, ev3_1.location.x());
-    EXPECT_EQ(749, ev3_1.location.y());
-
-    ui::TouchEventParams ev3_2 = dispatched_touch_event(8);
-    EXPECT_EQ(EventType::kTouchPressed, ev3_2.type);
-    EXPECT_EQ(1, ev3_2.slot);
-    EXPECT_EQ(1103, ev3_2.location.x());
-    EXPECT_EQ(649, ev3_2.location.y());
-
-    ui::TouchEventParams ev3_3 = dispatched_touch_event(9);
-    EXPECT_EQ(EventType::kTouchCancelled, ev3_3.type);
-    EXPECT_EQ(0, ev3_3.slot);
-    // Touch at slot 1: it's still going!
-  }
 }
 
 // crbug.com/477695

@@ -19,7 +19,6 @@
 #include <queue>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -184,10 +183,6 @@ std::optional<ui::HeatmapPalmDetector::CropHeatmap> GetCropHeatmap(
 }  // namespace
 
 namespace ui {
-
-BASE_FEATURE(kEnableSingleCancelTouch,
-             "EnableSingleTouchCancel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 TouchEventConverterEvdev::TouchEventConverterEvdev(
     base::ScopedFD fd,
@@ -688,8 +683,7 @@ bool TouchEventConverterEvdev::MaybeCancelAllTouches() {
   // TODO(denniskempin): Remove once upper layers properly handle single
   // cancelled touches.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableCancelAllTouches) ||
-      base::FeatureList::IsEnabled(kEnableSingleCancelTouch)) {
+          switches::kDisableCancelAllTouches)) {
     return false;
   }
   for (size_t i = 0; i < events_.size(); i++) {
