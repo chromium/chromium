@@ -764,7 +764,6 @@ crbug.com/1046784 [ Linux ] http/tests/devtools/coverage/coverage-suspended.js [
 crbug.com/1046784 [ Release Win ] http/tests/devtools/coverage/coverage-suspended.js [ Slow ]
 crbug.com/1046784 [ Linux ] inspector-protocol/dom/set-outer-html.js [ Slow ]
 crbug.com/1046784 [ Release Win ] inspector-protocol/dom/set-outer-html.js [ Slow ]
-crbug.com/1046784 http/tests/devtools/file-system-project.js [ Slow ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/bindings/navigator-frame-attach-detach.js [ Slow ]
 crbug.com/1046784 [ Release Win ] http/tests/devtools/bindings/navigator-frame-attach-detach.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Slow ]
