@@ -1246,11 +1246,17 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             return null;
         }
 
-        // Match the same wallpaper with a compatible primary color. targetCollection's color is
-        // null on an in-flight Android download, while downloadedCollection's color is non-null
-        // once NtpSyncedThemeManager extracts the seed color from the bitmap. Only reject when
-        // both have a non-null primary color and they differ.
-        if (!targetCollection.hasSameThemeAndCompatibleColor(downloadedCollection)) {
+        // The downloaded bitmap is only reused for the image it was downloaded for. A theme
+        // collection with daily refresh is the same theme whichever image it shows, so the image
+        // is compared separately.
+        //
+        // Without daily refresh, the primary colors must be compatible as well: targetCollection's
+        // color is null on an in-flight Android download, while downloadedCollection's color is
+        // non-null once NtpSyncedThemeManager extracts the seed color from the bitmap, so the
+        // bitmap is only rejected when both colors are non-null and differ. With daily refresh the
+        // color isn't compared, since it follows the image.
+        if (!targetCollection.hasSameThemeAndCompatibleColor(downloadedCollection)
+                || !targetCollection.hasSameImage(downloadedCollection)) {
             return null;
         }
 

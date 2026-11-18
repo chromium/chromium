@@ -105,6 +105,21 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
         return mCustomBackgroundInfo;
     }
 
+    /**
+     * Returns whether {@code other} shows the same image, which means it has the same image URL.
+     * The theme isn't compared. With daily refresh, one theme shows different images over time. A
+     * static image and a daily refresh collection can also show the same image. Two backgrounds
+     * without an image URL don't show the same image.
+     */
+    @Override
+    public boolean hasSameImage(@Nullable NtpBackgroundDataBase other) {
+        return other instanceof NtpBackgroundDataThemeCollection otherCollection
+                && !mCustomBackgroundInfo.backgroundUrl.isEmpty()
+                && Objects.equals(
+                        mCustomBackgroundInfo.backgroundUrl,
+                        otherCollection.mCustomBackgroundInfo.backgroundUrl);
+    }
+
     // NtpBackgroundDataBase implementations.
     @Override
     public @NtpBackgroundType int getBackgroundType() {
@@ -129,8 +144,14 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
 
     @Override
     public boolean hasSameThemeAndColor(@Nullable Object obj) {
+        // Two backgrounds look the same only if they are the same theme and show the same image
+        // with the same color. With daily refresh, one collection shows different images over
+        // time, and those look different.
         return obj instanceof NtpBackgroundDataThemeCollection other
-                && equals(obj)
+                && equals(other)
+                && Objects.equals(
+                        mCustomBackgroundInfo.backgroundUrl,
+                        other.mCustomBackgroundInfo.backgroundUrl)
                 && Objects.equals(getPrimaryColor(), other.getPrimaryColor());
     }
 
@@ -139,6 +160,8 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
         if (!(obj instanceof NtpBackgroundDataThemeCollection other) || !equals(obj)) {
             return false;
         }
+
+        if (mCustomBackgroundInfo.isDailyRefreshEnabled) return true;
 
         @Nullable
         @ColorInt

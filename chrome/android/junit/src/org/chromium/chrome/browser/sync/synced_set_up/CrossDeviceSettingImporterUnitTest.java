@@ -2383,6 +2383,44 @@ public class CrossDeviceSettingImporterUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testRedoSettingImport_SameDailyRefreshCollectionOtherImage_FetchesImage() {
+        // The desktop and this device use the same collection with daily refresh, but show
+        // different images. The import leaves the theme alone, so the desktop image isn't
+        // downloaded at this point.
+        NtpBackgroundDataThemeCollection desktopTheme =
+                createDailyRefreshThemeCollection(
+                        PlatformType.DESKTOP,
+                        "https://example.com/desktop_image.png",
+                        /* bitmap= */ null);
+        NtpBackgroundDataThemeCollection localTheme =
+                createDailyRefreshThemeCollection(
+                        PlatformType.ANDROID,
+                        "https://example.com/local_image.png",
+                        Bitmap.createBitmap(
+                                /* width= */ 1, /* height= */ 1, Bitmap.Config.ARGB_8888));
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localTheme);
+        initializeCrossDeviceSettingImporter()
+                .showOfferUndoSnackbarAfterDialogs(
+                        mProfile,
+                        new CrossDeviceSettingImporter.SyncedSetupSettings(Map.of(), localTheme),
+                        new CrossDeviceSettingImporter.SyncedSetupSettings(Map.of(), desktopTheme),
+                        /* nonNtp= */ false);
+
+        // The user clicks Undo, selects the default theme and then clicks Redo.
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        mSnackbarCaptor.getValue().getController().onAction(/* actionData= */ null);
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(null);
+        verify(mSnackbarManager, times(2)).showSnackbar(mSnackbarCaptor.capture());
+        mSnackbarCaptor.getValue().getController().onAction(/* actionData= */ null);
+
+        // Redo now has to apply the desktop theme. Its image was never downloaded, and the bitmap
+        // of the local image must not be used for it, so Redo fetches the desktop image.
+        verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
+        verify(mImageFetcher).fetchImage(any(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
     public void
             testApplyThemeSettings_samePlatformNullBitmap_callsMaybeApplyBackgroundUpdateFromDeviceSync() {
         CustomBackgroundInfo bgInfo =
@@ -3016,5 +3054,24 @@ public class CrossDeviceSettingImporterUnitTest {
         when(mNtpSyncedThemeManager.isSyncedThemeReady()).thenReturn(true);
         mNtpSyncedThemeReadinessCallbackCaptor.getValue().run();
         return importer;
+    }
+
+    /**
+     * Returns an image of a theme collection with daily refresh from the given platform. A null
+     * bitmap means the image isn't downloaded on this device.
+     */
+    private static NtpBackgroundDataThemeCollection createDailyRefreshThemeCollection(
+            @PlatformType int platformType, String imageUrl, @Nullable Bitmap bitmap) {
+        return new NtpBackgroundDataThemeCollection(
+                platformType,
+                new CustomBackgroundInfo(
+                        new GURL(imageUrl),
+                        "collection_1",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true),
+                /* backgroundImageInfo= */ null,
+                bitmap,
+                /* primaryColor= */ null,
+                /* fileIdHash= */ null);
     }
 }

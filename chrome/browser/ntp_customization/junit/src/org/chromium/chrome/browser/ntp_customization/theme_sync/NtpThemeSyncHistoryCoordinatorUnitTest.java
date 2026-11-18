@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -438,6 +439,21 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
         assertBackgroundDataChangedImpl(localColor, /* expectedRecreate= */ false);
+    }
+
+    @Test
+    public void testPrepareToShow_DailyRefreshThemeCollectionRotated_HighlightsEntry() {
+        // The history entry holds the image the collection was selected with. The collection has
+        // since rotated to another image with another color, and its entry is still highlighted.
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(
+                createDailyRefreshThemeCollection(TEST_IMAGE_URL_1, Color.RED));
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData())
+                .thenReturn(createDailyRefreshThemeCollection(TEST_IMAGE_URL_2, Color.BLUE));
+
+        mCoordinator.prepareToShow();
+
+        assertEquals(
+                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
     }
 
     @Test
@@ -1243,6 +1259,30 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         "remote_theme_hash");
         remoteTheme.setIsBitmapSaved(isBitmapSaved);
         return remoteTheme;
+    }
+
+    /**
+     * Returns a locally selected image of {@link #TEST_COLLECTION_ID} with daily refresh, whose
+     * image file is saved.
+     */
+    private static NtpBackgroundDataThemeCollection createDailyRefreshThemeCollection(
+            String imageUrl, @ColorInt int primaryColor) {
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        new GURL(imageUrl),
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
+        NtpBackgroundDataThemeCollection theme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        info,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        primaryColor,
+                        TEST_FILE_ID_HASH);
+        theme.setIsBitmapSaved(/* isBitmapSaved= */ true);
+        return theme;
     }
 
     private int findRemoteThemeCollectionPositionImpl(List<NtpBackgroundDataBase> dataList) {

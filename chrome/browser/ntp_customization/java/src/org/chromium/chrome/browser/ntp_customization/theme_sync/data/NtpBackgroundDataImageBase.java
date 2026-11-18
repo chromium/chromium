@@ -20,8 +20,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 
-import java.util.Objects;
-
 /** Base data class for NTP image-based background data. */
 @NullMarked
 public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
@@ -159,7 +157,7 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
         NtpBackgroundDataBase currentBackgroundData =
                 NtpCustomizationConfigManager.getInstance().getNtpBackgroundData();
         if (currentBackgroundData instanceof NtpBackgroundDataImageBase imageBaseData
-                && Objects.equals(currentBackgroundData, this)) {
+                && hasSameImage(imageBaseData)) {
             borrowFromCurrentBackground(imageBaseData);
             onImageLoadedCallback.onResult(mBitmap);
         } else if (getPreviewBitmap() != null) {
@@ -175,12 +173,25 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
     }
 
     /**
-     * Borrows the bitmap of the current background, which equals this one, as well as its {@link
-     * BackgroundImageInfo}, primary color and file ID hash if this one doesn't have them yet. This
-     * completes e.g. a recommended theme collection card, which only has a preview bitmap, so that
-     * it can be applied without fetching the image.
+     * Returns whether this background and {@code other} show the same image, whatever their colors,
+     * so that the bitmap and the image file of one fit the other. See the class comment of {@link
+     * NtpBackgroundDataBase}.
      *
-     * @param currentBackgroundData The current background, which equals this one.
+     * <p>{@link #equals} is enough for an uploaded image, since it compares the image file. A theme
+     * collection compares the image URL instead, see {@link
+     * NtpBackgroundDataThemeCollection#hasSameImage}.
+     */
+    public boolean hasSameImage(@Nullable NtpBackgroundDataBase other) {
+        return equals(other);
+    }
+
+    /**
+     * Borrows the bitmap of the current background, which shows the same image as this one, as well
+     * as its {@link BackgroundImageInfo}, primary color and file ID hash if this one doesn't have
+     * them yet. This completes e.g. a recommended theme collection card, which only has a preview
+     * bitmap, so that it can be applied without fetching the image.
+     *
+     * @param currentBackgroundData The current background, which shows the same image as this one.
      */
     private void borrowFromCurrentBackground(NtpBackgroundDataImageBase currentBackgroundData) {
         mBitmap = currentBackgroundData.getBitmap();

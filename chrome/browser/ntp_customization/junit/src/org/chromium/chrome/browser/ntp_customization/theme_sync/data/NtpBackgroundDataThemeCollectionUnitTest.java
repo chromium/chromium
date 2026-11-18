@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
@@ -212,6 +213,88 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
     }
 
     @Test
+    public void testHasSameThemeAndCompatibleColor_dailyRefresh() {
+        // The same collection with daily refresh on two devices, each showing its own image.
+        NtpBackgroundDataThemeCollection red =
+                createThemeCollection(
+                        createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
+                        Color.RED);
+        NtpBackgroundDataThemeCollection otherImageBlue =
+                createThemeCollection(
+                        createDailyRefreshInfo(JUnitTestGURLs.URL_2, TEST_COLLECTION_ID),
+                        Color.BLUE);
+        NtpBackgroundDataThemeCollection otherCollection =
+                createThemeCollection(
+                        createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_OTHER_COLLECTION_ID),
+                        Color.RED);
+
+        // The image and its color rotate on each device, so neither is compared.
+        assertTrue(red.hasSameThemeAndCompatibleColor(otherImageBlue));
+        assertFalse(red.hasSameThemeAndCompatibleColor(otherCollection));
+    }
+
+    @Test
+    public void testHasSameThemeAndColor_dailyRefresh() {
+        NtpBackgroundDataThemeCollection red =
+                createThemeCollection(
+                        createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
+                        Color.RED);
+
+        // Another image of the collection looks different.
+        assertFalse(
+                red.hasSameThemeAndColor(
+                        createThemeCollection(
+                                createDailyRefreshInfo(JUnitTestGURLs.URL_2, TEST_COLLECTION_ID),
+                                Color.RED)));
+        // The same image with another color looks different.
+        assertFalse(
+                red.hasSameThemeAndColor(
+                        createThemeCollection(
+                                createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
+                                Color.BLUE)));
+        // The same image with the same color looks the same.
+        assertTrue(
+                red.hasSameThemeAndColor(
+                        createThemeCollection(
+                                createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
+                                Color.RED)));
+    }
+
+    @Test
+    public void testHasSameImage() {
+        NtpBackgroundDataThemeCollection staticImage =
+                createThemeCollection(createStaticInfo(), Color.RED);
+        NtpBackgroundDataThemeCollection dailyImage =
+                createThemeCollection(
+                        createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID),
+                        Color.RED);
+
+        // The color isn't compared.
+        assertTrue(staticImage.hasSameImage(createThemeCollection(createStaticInfo(), Color.BLUE)));
+        // Another image of the collection with daily refresh is the same theme, but not the same
+        // image.
+        assertFalse(
+                dailyImage.hasSameImage(
+                        createThemeCollection(
+                                createDailyRefreshInfo(JUnitTestGURLs.URL_2, TEST_COLLECTION_ID),
+                                Color.RED)));
+        // A static image and a daily refresh image with the same URL are different themes, but show
+        // the same image.
+        assertTrue(staticImage.hasSameImage(dailyImage));
+        // Two backgrounds without an image URL don't show the same image.
+        CustomBackgroundInfo infoWithoutUrl =
+                createDailyRefreshInfo(GURL.emptyGURL(), TEST_COLLECTION_ID);
+        assertFalse(
+                createThemeCollection(infoWithoutUrl, Color.RED)
+                        .hasSameImage(createThemeCollection(infoWithoutUrl, Color.RED)));
+        // Neither null nor a background without an image shows the same image.
+        assertFalse(staticImage.hasSameImage(null));
+        assertFalse(
+                staticImage.hasSameImage(
+                        new NtpBackgroundDataBase(PlatformType.ANDROID, "default")));
+    }
+
+    @Test
     public void testToJsonAndFromJson() throws JSONException {
         testToJsonAndFromJsonImpl(
                 /* fileIdHash= */ null,
@@ -283,7 +366,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
 
     @Test
     public void testGetBitmapOrLoadImage_borrowsFromCurrentBackground() {
-        NtpBackgroundDataThemeCollection currentData = setUpCurrentThemeCollection();
+        NtpBackgroundDataThemeCollection currentData =
+                setUpCurrentThemeCollection(createStaticInfo());
 
         // A recommended theme collection card only has a preview bitmap.
         Bitmap previewBitmap = Bitmap.createBitmap(5, 5, Bitmap.Config.ARGB_8888);
@@ -305,10 +389,11 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
 
     @Test
     public void testGetBitmapOrLoadImage_borrowsFromCurrentBackground_keepsOwnData() {
-        NtpBackgroundDataThemeCollection currentData = setUpCurrentThemeCollection();
+        NtpBackgroundDataThemeCollection currentData =
+                setUpCurrentThemeCollection(createStaticInfo());
+        String ownFileIdHash = "own_file_id_hash";
 
         // A history entry loaded from prefs has no bitmap in memory yet.
-        String ownFileIdHash = "own_file_id_hash";
         BackgroundImageInfo ownImageInfo =
                 new BackgroundImageInfo(
                         new Matrix(),
@@ -330,6 +415,32 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         assertSame(ownImageInfo, historyEntry.getBackgroundImageInfo());
         assertEquals(Color.GREEN, historyEntry.getPrimaryColor().intValue());
         assertEquals(ownFileIdHash, historyEntry.getFileIdHash());
+    }
+
+    @Test
+    public void testGetBitmapOrLoadImage_dailyRefreshOtherImage_doesNotBorrow() {
+        NtpBackgroundDataThemeCollection currentData =
+                setUpCurrentThemeCollection(
+                        createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID));
+
+        // The history entry of the collection holds the image it was selected with, which the
+        // collection has rotated away from since. It equals the current background and differs
+        // from it only in the image URL, so the current bitmap is not borrowed.
+        NtpBackgroundDataThemeCollection historyEntry =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        createDailyRefreshInfo(JUnitTestGURLs.URL_2, TEST_COLLECTION_ID),
+                        currentData.getBackgroundImageInfo(),
+                        /* bitmap= */ null,
+                        currentData.getPrimaryColor(),
+                        currentData.getFileIdHash());
+        assertEquals(currentData, historyEntry);
+
+        historyEntry.getBitmapOrLoadImage(_ -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // The entry's own image file doesn't exist in this test, so nothing is loaded.
+        assertNull(historyEntry.getBitmap());
     }
 
     @Test
@@ -645,6 +756,21 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         assertNotEquals(info1, infoDailyRefreshEnabled);
     }
 
+    @Test
+    public void testCustomBackgroundInfo_equalsAndHashCode_dailyRefresh() {
+        CustomBackgroundInfo daily =
+                createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_COLLECTION_ID);
+        CustomBackgroundInfo dailyOtherImage =
+                createDailyRefreshInfo(JUnitTestGURLs.URL_2, TEST_COLLECTION_ID);
+        CustomBackgroundInfo dailyOtherCollection =
+                createDailyRefreshInfo(JUnitTestGURLs.URL_1, TEST_OTHER_COLLECTION_ID);
+
+        // A collection with daily refresh is one theme whichever image a device shows.
+        assertEquals(daily, dailyOtherImage);
+        assertEquals(daily.hashCode(), dailyOtherImage.hashCode());
+        assertNotEquals(daily, dailyOtherCollection);
+    }
+
     private static NtpBackgroundDataThemeCollection createThemeCollection(
             CustomBackgroundInfo info, @Nullable @ColorInt Integer primaryColor) {
         return new NtpBackgroundDataThemeCollection(
@@ -656,21 +782,33 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                 /* fileIdHash= */ null);
     }
 
+    /** Returns the info of a static image of {@link #TEST_COLLECTION_ID}. */
+    private static CustomBackgroundInfo createStaticInfo() {
+        return new CustomBackgroundInfo(
+                JUnitTestGURLs.URL_1,
+                TEST_COLLECTION_ID,
+                /* isUploadedImage= */ false,
+                /* isDailyRefreshEnabled= */ false);
+    }
+
+    /** Returns the info of an image of the given theme collection with daily refresh enabled. */
+    private static CustomBackgroundInfo createDailyRefreshInfo(GURL url, String collectionId) {
+        return new CustomBackgroundInfo(
+                url, collectionId, /* isUploadedImage= */ false, /* isDailyRefreshEnabled= */ true);
+    }
+
     /**
-     * Sets a theme collection, which has a bitmap, a BackgroundImageInfo, a primary color and a
-     * file ID hash, as the current background and returns it.
+     * Sets a theme collection with the given info, which has a bitmap, a BackgroundImageInfo, a
+     * primary color and a file ID hash, as the current background and returns it.
      */
-    private static NtpBackgroundDataThemeCollection setUpCurrentThemeCollection() {
+    private static NtpBackgroundDataThemeCollection setUpCurrentThemeCollection(
+            CustomBackgroundInfo info) {
         Matrix matrix = new Matrix();
         matrix.setTranslate(10f, 0f);
         NtpBackgroundDataThemeCollection currentData =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID,
-                        new CustomBackgroundInfo(
-                                JUnitTestGURLs.URL_1,
-                                TEST_COLLECTION_ID,
-                                /* isUploadedImage= */ false,
-                                /* isDailyRefreshEnabled= */ false),
+                        info,
                         new BackgroundImageInfo(
                                 matrix,
                                 new Matrix(matrix),

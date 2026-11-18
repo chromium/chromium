@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
@@ -193,6 +194,38 @@ public class NtpBackgroundDataUploadImageUnitTest {
         verify(mCallback).onResult(mBitmap);
         // Also verify that testData now has the bitmap cached.
         assertEquals(mBitmap, testData.getImageBitmapForTesting());
+    }
+
+    @Test
+    public void testLoadImage_otherCurrentBackgroundData_doesNotBorrow() {
+        BackgroundImageInfo info =
+                new BackgroundImageInfo(
+                        new Matrix(),
+                        new Matrix(),
+                        /* portraitWindowSize= */ null,
+                        /* landscapeWindowSize= */ null);
+        NtpBackgroundDataUploadImage currentData =
+                new NtpBackgroundDataUploadImage(
+                        PlatformType.ANDROID,
+                        info,
+                        mBitmap,
+                        /* primaryColor= */ null,
+                        FILE_ID_HASH);
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(currentData);
+
+        // Another uploaded image: it has its own file, so the current bitmap doesn't fit it.
+        NtpBackgroundDataUploadImage testData =
+                new NtpBackgroundDataUploadImage(
+                        PlatformType.ANDROID,
+                        info,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ null,
+                        "other_file_id_hash");
+
+        testData.getBitmapOrLoadImage(mCallback);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(testData.getImageBitmapForTesting());
     }
 
     @Test

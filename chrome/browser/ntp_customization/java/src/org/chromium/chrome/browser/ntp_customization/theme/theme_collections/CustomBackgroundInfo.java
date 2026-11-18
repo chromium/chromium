@@ -125,23 +125,35 @@ public class CustomBackgroundInfo {
     }
 
     /**
-     * Compares the fields that identify the image itself. The attribution lines and the attribution
-     * action URL are deliberately left out, see {@link #attributionLine1} and {@link
+     * Compares the fields that identify the theme. The attribution lines and the attribution action
+     * URL are deliberately left out, see {@link #attributionLine1} and {@link
      * #attributionActionUrl}.
+     *
+     * <p>A theme collection with daily refresh is identified by the collection rather than by the
+     * image: each device rotates through the collection on its own schedule and only the setting is
+     * synced, so two such infos are the same theme whichever image each device currently shows. The
+     * daily refresh setting itself must still match, as turning it on or off is a change of theme.
      */
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj instanceof CustomBackgroundInfo other) {
-            return Objects.equals(backgroundUrl, other.backgroundUrl)
-                    && Objects.equals(collectionId, other.collectionId)
-                    && isUploadedImage == other.isUploadedImage
-                    && isDailyRefreshEnabled == other.isDailyRefreshEnabled;
+        if (!(obj instanceof CustomBackgroundInfo other)) return false;
+
+        if (!Objects.equals(collectionId, other.collectionId)
+                || isUploadedImage != other.isUploadedImage
+                || isDailyRefreshEnabled != other.isDailyRefreshEnabled) {
+            return false;
         }
-        return false;
+
+        return isDailyRefreshEnabled || Objects.equals(backgroundUrl, other.backgroundUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled);
+        // equals() ignores the URL of a daily refresh theme collection, so hashCode() must too.
+        return Objects.hash(
+                isDailyRefreshEnabled ? null : backgroundUrl,
+                collectionId,
+                isUploadedImage,
+                isDailyRefreshEnabled);
     }
 }
