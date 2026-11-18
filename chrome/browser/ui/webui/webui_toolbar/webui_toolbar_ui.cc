@@ -584,7 +584,8 @@ base::DictValue WebUIToolbarUI::BuildInitialState() {
   if (is_deferred) {
     values.Set(kIsUnbound, true);
   } else if (pending_bound_profile_state_) {
-    values.Set(kIsUnbound, true);
+    // Bound before commit: the page is not unbound, so it shows its content
+    // from the first frame, and it applies the bound colors itself.
     if (const std::string* colors_css =
             pending_bound_profile_state_->FindString(kColorsCss)) {
       values.Set(kColorsCss, *colors_css);
@@ -600,19 +601,22 @@ base::DictValue WebUIToolbarUI::BuildInitialStateForTesting() {
 void WebUIToolbarUI::ApplyBoundUserProfile(Profile& profile,
                                            bool colors_changed) {
   // Bound-state delivery covers three cases depending on how far the spare's
-  // navigation has progressed when a window takes and binds it:
+  // navigation has progressed when a window takes and binds it. A page that
+  // read the unbound `initialState` keeps its content unpainted until it
+  // applies a bind message, so cases 1 and 2 send one even when no field
+  // differs.
   // 1. Take after commit: send the diff on the frame channel right away. The
   //    page applies it, or stashes it if its script has not run yet.
   // 2. Take after the frame got the unbound `initialState` and before commit:
-  //    overwrite `initialState` with the bound values (keeping
-  //    `isUnbound: true` and adding `colorsCss` when colors changed), and also
-  //    send the diff at commit in case the page reads `initialState` before
-  //    the overwrite lands (applying it twice is harmless). Note that if
-  //    `NavigationClient::CommitNavigation` is already in flight on
+  //    overwrite `initialState` with the bound values (dropping `isUnbound`
+  //    and adding `colorsCss` when colors changed), and also send the diff at
+  //    commit in case the page reads the unbound `initialState` before the
+  //    overwrite lands (a page that read the overwritten state ignores it).
+  //    If `NavigationClient::CommitNavigation` is already in flight on
   //    `IPC::Channel` while `has_committed_navigation_` is still false on the
   //    UI thread, `WasShown` can precede `DidFinishNavigation()`'s
-  //    `SendBoundProfileState()` when `<toolbar-app>` cached `initialState`
-  //    before the overwrite landed.
+  //    `SendBoundProfileState()`; the page stays unpainted until it applies
+  //    it.
   // 3. Take before the frame got the unbound `initialState` (or with no WebUI
   //    yet): send nothing; frame creation reads the bound profile directly.
   CHECK_EQ(&profile, GetUserProfile());
@@ -624,9 +628,6 @@ void WebUIToolbarUI::ApplyBoundUserProfile(Profile& profile,
   CHECK(seed_data);
   base::DictValue bound_state =
       BuildBoundProfileState(profile, *seed_data, colors_changed);
-  if (bound_state.empty()) {
-    return;
-  }
   if (has_committed_navigation_) {
     SendBoundProfileState(bound_state);
     return;

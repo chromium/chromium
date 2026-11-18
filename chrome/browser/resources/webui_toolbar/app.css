@@ -14,6 +14,13 @@
   height: 100%;
 }
 
+/* An unbound spare keeps its template profile's state off screen until it
+ * applies the adopting window's bind message. Unlike visibility, descendants
+ * cannot override opacity, and layout still runs. */
+:host([awaiting-bind]) {
+  opacity: 0;
+}
+
 /* Controls are excluded from the draggable 'app-region' declared on the
  * document, so only the space around them is treated as window caption.
  * Children that are not controls themselves override this in their own

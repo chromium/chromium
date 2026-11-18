@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -15,6 +18,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/tabs/windows_api.h"
@@ -103,6 +107,8 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -2233,6 +2239,114 @@ class InitialWebUIUnboundPrerenderBrowserTest
                         ".querySelector('#avatar')"));
   }
 
+  // Stores in `window.__firstFrameProbe` the toolbar state at the first
+  // animation frame where `toolbar-app` is not gated by `awaiting-bind`, and
+  // counts the gated frames before it, which must be transparent and inert.
+  void InstallFirstFrameProbe(content::WebContents* spare) {
+    // End with `true` so `ExecJs` does not await the `requestAnimationFrame`
+    // Promise while `spare` is still hidden.
+    ASSERT_TRUE(content::ExecJs(spare, R"(
+      window.__gatedFrames = 0;
+      let gatedVisibleFrames = 0;
+      void (window.__firstFrameProbe = new Promise(resolve => {
+        const probe = () => {
+          const app = document.querySelector('toolbar-app');
+          if (app.hasAttribute('awaiting-bind')) {
+            window.__gatedFrames++;
+            if (getComputedStyle(app).opacity !== '0' || !app.inert) {
+              gatedVisibleFrames++;
+            }
+            requestAnimationFrame(probe);
+            return;
+          }
+          const lastSheet = document.adoptedStyleSheets.at(-1);
+          resolve({
+            gatedVisibleFrames,
+            opacity: getComputedStyle(app).opacity,
+            inert: app.inert,
+            adoptedStyleSheets: document.adoptedStyleSheets.length,
+            hasToolbarColorRule: !!lastSheet &&
+                Array.from(lastSheet.cssRules)
+                    .some(r => r.cssText.includes('--color-toolbar')),
+            hasVersionedColorsCss: !!document.querySelector(
+                "link[href*='//theme/colors.css'][href*='version=']"),
+            toolbarColor: getComputedStyle(document.documentElement)
+                .getPropertyValue('--color-toolbar').trim(),
+            hasGlicButton: !!app.shadowRoot.querySelector('#glic-button'),
+            hasAvatarButton: !!app.shadowRoot.querySelector('#avatar'),
+            homeHidden: !!app.shadowRoot.querySelector('#home')?.hidden,
+          });
+        };
+        requestAnimationFrame(probe);
+      }));
+      true;
+    )"));
+  }
+
+  // Waits for a ready, unpainted, gated unbound spare, installs the
+  // first-frame probe on it, and returns it (or nullptr on failure).
+  content::WebContents* PrepareUnboundSpareForFirstFrameProbe() {
+    content::WebContents* spare = WaitForUnboundSpare();
+    if (!spare) {
+      ADD_FAILURE() << "Timed out waiting for unbound spare";
+      return nullptr;
+    }
+    if (!content::WaitForLoadStop(spare)) {
+      ADD_FAILURE() << "WaitForLoadStop failed for unbound spare";
+      return nullptr;
+    }
+    if (spare->CompletedFirstVisuallyNonEmptyPaint()) {
+      ADD_FAILURE() << "Unbound spare already completed first paint";
+      return nullptr;
+    }
+    WaitForUnboundSpareToolbarReady(spare);
+    EXPECT_EQ(true, content::EvalJs(spare,
+                                    "const app = "
+                                    "document.querySelector('toolbar-app');"
+                                    "app.hasAttribute('awaiting-bind') && "
+                                    "app.inert"));
+    InstallFirstFrameProbe(spare);
+    return spare;
+  }
+
+  // Waits for the first visually non-empty paint of `spare`, adopted by
+  // `browser`, and returns what `InstallFirstFrameProbe()` recorded.
+  base::Value WaitForFirstFrameProbe(BrowserWindowInterface* browser,
+                                     content::WebContents* spare) {
+    WebUIToolbarWebView* webview =
+        ToolbarButtonProvider::From(browser)->GetWebUIToolbarViewForTesting();
+    EXPECT_TRUE(webview);
+    if (webview && !spare->CompletedFirstVisuallyNonEmptyPaint()) {
+      base::RunLoop first_paint_loop;
+      webview->SetDidFirstNonEmptyPaintCallbackForTesting(
+          first_paint_loop.QuitClosure());
+      first_paint_loop.Run();
+    }
+    return content::EvalJs(spare, "window.__firstFrameProbe").TakeValue();
+  }
+
+  // Verifies that `probe_result` recorded no visible or interactive gated
+  // frames and that the first ungated frame is opaque and interactive. Returns
+  // the probe dictionary, or nullopt on failure.
+  std::optional<base::DictValue> ExpectUngatedFirstFrame(
+      base::Value probe_result) {
+    if (!probe_result.is_dict()) {
+      ADD_FAILURE() << "Expected dict probe result, got: "
+                    << probe_result.DebugString();
+      return std::nullopt;
+    }
+    base::DictValue probe_dict = std::move(probe_result).TakeDict();
+    EXPECT_EQ(0, probe_dict.FindInt("gatedVisibleFrames"));
+    const std::string* opacity = probe_dict.FindString("opacity");
+    if (!opacity) {
+      ADD_FAILURE() << "Missing opacity in probe result";
+    } else {
+      EXPECT_EQ("1", *opacity);
+    }
+    EXPECT_EQ(false, probe_dict.FindBool("inert"));
+    return probe_dict;
+  }
+
   bool CssColorsMatch(content::WebContents* contents,
                       const std::string& css_a,
                       const std::string& css_b) {
@@ -2364,6 +2478,194 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
   EXPECT_TRUE(WaitForUnboundSpare());
 }
 
+// Verifies that the adopted toolbar shows no frame of the template profile's
+// state: frames that run before the bind message applies are gated and
+// transparent, and the first ungated frame shows the bound state.
+IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
+                       BoundProfileAppliedBeforeFirstPaint) {
+  content::WebContents* spare = PrepareUnboundSpareForFirstFrameProbe();
+  ASSERT_TRUE(spare);
+  const int initial_sheets =
+      content::EvalJs(spare, "document.adoptedStyleSheets.length").ExtractInt();
+  const std::string unbound_toolbar_color =
+      content::EvalJs(spare,
+                      "getComputedStyle(document.documentElement)"
+                      ".getPropertyValue('--color-toolbar').trim()")
+          .ExtractString();
+
+  base::HistogramTester histogram_tester;
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito);
+  ASSERT_EQ(spare, GetToolbarContents(incognito));
+  histogram_tester.ExpectUniqueSample(kTakeResultHistogram,
+                                      TakeResult::kAdopted, 1);
+
+  std::optional<base::DictValue> probe_dict =
+      ExpectUngatedFirstFrame(WaitForFirstFrameProbe(incognito, spare));
+  const std::string expected_incognito_css = ui::ConvertSkColorToCSSColor(
+      spare->GetColorProvider().GetColor(kColorToolbar));
+  ASSERT_TRUE(probe_dict);
+  // On a slow bot, `ColorChangeUpdater` may load a versioned `colors.css` and
+  // retire the bound sheet before the first frame. The color checks below
+  // cover both cases.
+  if (probe_dict->FindInt("adoptedStyleSheets") == initial_sheets) {
+    EXPECT_EQ(true, probe_dict->FindBool("hasVersionedColorsCss"));
+  } else {
+    EXPECT_EQ(initial_sheets + 1, probe_dict->FindInt("adoptedStyleSheets"));
+    EXPECT_EQ(true, probe_dict->FindBool("hasToolbarColorRule"));
+  }
+  EXPECT_EQ(kIncognitoHasGlic, probe_dict->FindBool("hasGlicButton"));
+  EXPECT_EQ(kIncognitoHasAvatar, probe_dict->FindBool("hasAvatarButton"));
+  const std::string* first_frame_color = probe_dict->FindString("toolbarColor");
+  ASSERT_TRUE(first_frame_color);
+  EXPECT_FALSE(
+      CssColorsMatch(spare, *first_frame_color, unbound_toolbar_color));
+  EXPECT_TRUE(
+      CssColorsMatch(spare, *first_frame_color, expected_incognito_css));
+}
+
+// Negative control for the first-frame tests: taking `spare` without binding,
+// hosting it in a temporary `views::Widget` + `views::WebView`, and calling
+// `WasShown()` runs animation frames while still unbound. `awaiting-bind` keeps
+// them transparent and inert. Removing the gate by hand makes the probe record
+// the template profile's state, which those tests would reject.
+IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
+                       FirstFrameProbeRecordsUnboundStateWithoutGate) {
+  content::WebContents* spare = PrepareUnboundSpareForFirstFrameProbe();
+  ASSERT_TRUE(spare);
+  const int initial_sheets =
+      content::EvalJs(spare, "document.adoptedStyleSheets.length").ExtractInt();
+
+  WebUIContentsPrerenderer::TakeOutcome taken =
+      service()->toolbar_prerenderer_for_testing()->Take();
+  ASSERT_EQ(spare, taken.contents.get());
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.context = browser()->GetWindow()->GetNativeWindow();
+  params.bounds = gfx::Rect(0, 0, 800, 40);
+  widget->Init(std::move(params));
+  auto* host_webview = widget->SetContentsView(
+      std::make_unique<views::WebView>(webui::GetTopChromeWebUIProfile()));
+  host_webview->SetOwnedWebContents(std::move(taken.contents));
+  widget->Show();
+  spare->WasShown();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(spare, "window.__gatedFrames > 0").ExtractBool();
+  }));
+  ASSERT_TRUE(
+      content::ExecJs(spare,
+                      "const app = document.querySelector('toolbar-app');"
+                      "app.removeAttribute('awaiting-bind');"
+                      "app.inert = false;"));
+  base::Value probe_result =
+      content::EvalJs(spare, "window.__firstFrameProbe").TakeValue();
+  spare = nullptr;
+  widget->CloseNow();
+  widget.reset();
+
+  std::optional<base::DictValue> probe_dict =
+      ExpectUngatedFirstFrame(std::move(probe_result));
+  ASSERT_TRUE(probe_dict);
+  EXPECT_EQ(initial_sheets, probe_dict->FindInt("adoptedStyleSheets"));
+  EXPECT_EQ(false, probe_dict->FindBool("hasToolbarColorRule"));
+  EXPECT_EQ(kRegularHasGlic, probe_dict->FindBool("hasGlicButton"));
+  EXPECT_EQ(kRegularHasAvatar, probe_dict->FindBool("hasAvatarButton"));
+
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
+  ASSERT_TRUE(incognito);
+  content::WebContents* incognito_toolbar = GetToolbarContents(incognito);
+  ASSERT_TRUE(incognito_toolbar);
+  ASSERT_TRUE(content::WaitForLoadStop(incognito_toolbar));
+  const std::string expected_incognito_css = ui::ConvertSkColorToCSSColor(
+      incognito_toolbar->GetColorProvider().GetColor(kColorToolbar));
+  const std::string* first_frame_color = probe_dict->FindString("toolbarColor");
+  ASSERT_TRUE(first_frame_color);
+  EXPECT_FALSE(CssColorsMatch(incognito_toolbar, *first_frame_color,
+                              expected_incognito_css));
+}
+
+// Creating profiles needs a full user session on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+// Verifies that a window of a second regular profile with a dark theme and the
+// home button on, adopting a spare seeded from the light first profile with the
+// home button off, shows its own colors and home button in its first ungated
+// animation frame.
+IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
+                       SecondProfileStateAppliedBeforeFirstPaint) {
+  Profile* first_profile = browser()->GetProfile();
+  ASSERT_FALSE(first_profile->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& second_profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->user_data_dir().Append(
+                           FILE_PATH_LITERAL("SecondUnbound")));
+  second_profile.GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  ThemeServiceFactory::GetForProfile(&second_profile)
+      ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
+
+  // Build the spare from the first profile after the second one exists.
+  service()->toolbar_prerenderer_for_testing()->Reset();
+  service()->toolbar_prerenderer_for_testing()->ScheduleRefill(nullptr);
+  content::WebContents* spare = PrepareUnboundSpareForFirstFrameProbe();
+  ASSERT_TRUE(spare);
+  const std::string unbound_toolbar_color =
+      content::EvalJs(spare,
+                      "getComputedStyle(document.documentElement)"
+                      ".getPropertyValue('--color-toolbar').trim()")
+          .ExtractString();
+
+  base::HistogramTester histogram_tester;
+  BrowserWindowInterface* second_browser = CreateBrowser(&second_profile);
+  ASSERT_TRUE(second_browser);
+  ASSERT_EQ(spare, GetToolbarContents(second_browser));
+  histogram_tester.ExpectUniqueSample(kTakeResultHistogram,
+                                      TakeResult::kAdopted, 1);
+  EXPECT_EQ(&second_profile, webui::GetUserProfile(spare));
+
+  std::optional<base::DictValue> probe_dict =
+      ExpectUngatedFirstFrame(WaitForFirstFrameProbe(second_browser, spare));
+  const std::string expected_css = ui::ConvertSkColorToCSSColor(
+      spare->GetColorProvider().GetColor(kColorToolbar));
+  ASSERT_TRUE(probe_dict);
+  EXPECT_EQ(false, probe_dict->FindBool("homeHidden"));
+  const std::string* first_frame_color = probe_dict->FindString("toolbarColor");
+  ASSERT_TRUE(first_frame_color);
+  EXPECT_FALSE(
+      CssColorsMatch(spare, *first_frame_color, unbound_toolbar_color));
+  EXPECT_TRUE(CssColorsMatch(spare, *first_frame_color, expected_css));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Verifies that a window of the spare's template profile, whose bind message
+// carries no differing field, still lifts the gate and shows the template
+// state in its first ungated animation frame.
+IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundPrerenderBrowserTest,
+                       EmptyDiffLiftsGateBeforeFirstPaint) {
+  content::WebContents* spare = PrepareUnboundSpareForFirstFrameProbe();
+  ASSERT_TRUE(spare);
+  const int initial_sheets =
+      content::EvalJs(spare, "document.adoptedStyleSheets.length").ExtractInt();
+
+  base::HistogramTester histogram_tester;
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(second_browser);
+  ASSERT_EQ(spare, GetToolbarContents(second_browser));
+  histogram_tester.ExpectUniqueSample(kTakeResultHistogram,
+                                      TakeResult::kAdopted, 1);
+
+  std::optional<base::DictValue> probe_dict =
+      ExpectUngatedFirstFrame(WaitForFirstFrameProbe(second_browser, spare));
+  ASSERT_TRUE(probe_dict);
+  // No `colorsCss` was sent.
+  EXPECT_EQ(initial_sheets, probe_dict->FindInt("adoptedStyleSheets"));
+  EXPECT_EQ(kRegularHasGlic, probe_dict->FindBool("hasGlicButton"));
+  EXPECT_EQ(kRegularHasAvatar, probe_dict->FindBool("hasAvatarButton"));
+}
+
 // Verifies that without `TopChromeWebUIPrerenderingAtStartup`, no spare exists
 // before the startup window, which builds its own toolbar, and the refill
 // after it still builds a spare.
@@ -2389,8 +2691,8 @@ class InitialWebUIUnboundStartupPrerenderBrowserTest
 };
 
 // Verifies that with `TopChromeWebUIPrerenderingAtStartup`, the startup window
-// adopts the unbound spare built before it opened, binds its profile, and
-// the refill builds the next spare.
+// adopts the unbound spare built before it opened, binds its profile, shows
+// the toolbar ungated, and the refill builds the next spare.
 IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundStartupPrerenderBrowserTest,
                        StartupWindowAdoptsStartupSpare) {
   base::HistogramBase* histogram =
@@ -2407,6 +2709,13 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIUnboundStartupPrerenderBrowserTest,
   ASSERT_TRUE(toolbar);
   EXPECT_EQ(webui::GetTopChromeWebUIProfile(), toolbar->GetBrowserContext());
   EXPECT_EQ(browser()->GetProfile(), webui::GetUserProfile(toolbar));
+  ASSERT_TRUE(content::WaitForLoadStop(toolbar));
+  EXPECT_EQ(false, content::EvalJs(toolbar,
+                                   "document.querySelector('toolbar-app')"
+                                   ".hasAttribute('awaiting-bind')"));
+  EXPECT_EQ(false, content::EvalJs(toolbar,
+                                   "document.querySelector('toolbar-app')"
+                                   ".inert"));
   EXPECT_TRUE(WaitForUnboundSpare());
 }
 }  // namespace waap

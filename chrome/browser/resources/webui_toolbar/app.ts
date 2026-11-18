@@ -50,6 +50,9 @@ function clearBoundColorsCss() {
   boundColorsCss = '';
 }
 
+// Set on `toolbar-app` while it shows an unbound spare's template state.
+const AWAITING_BIND_ATTRIBUTE = 'awaiting-bind';
+
 // Adopts `colorsCss` until the next `COLOR_PROVIDER_CHANGED` event. Returns
 // false if `colorsCss` is empty or already applied.
 function applyBoundColorsCss(colorsCss?: string): boolean {
@@ -318,6 +321,7 @@ export class ToolbarAppElement extends AppElementBase {
   private registeredTrackedElements_ = new Map<string, HTMLElement>();
   private hasStartedRegisteringTrackedElements_ = false;
   private isColorChangeUpdaterStarted_ = false;
+  private isBoundProfileApplied_ = false;
   private hasReadState_ = false;
   // Set when the browser's first ToolbarState (the
   // ToolbarUIService.getInitialState() answer) arrives, and reset when this
@@ -392,7 +396,10 @@ export class ToolbarAppElement extends AppElementBase {
       e.preventDefault();
     });
     this.iconTable_ = IconTable.getInstance();
-    if (!this.initialState_.getBoolean(ToolbarStateKey.IS_UNBOUND)) {
+    // An unbound spare, or a spare bound before commit with `colorsCss`,
+    // starts this when it applies the bound state.
+    if (!this.initialState_.getBoolean(ToolbarStateKey.IS_UNBOUND) &&
+        !this.initialState_.getString(ToolbarStateKey.COLORS_CSS)) {
       this.startColorChangeUpdater_();
     }
     MetricsReporterImpl.getInstance().mark(MARK_JS_RESOURCES_LOADED);
@@ -458,6 +465,11 @@ export class ToolbarAppElement extends AppElementBase {
       };
       controlsChanged = true;
     }
+    // Show the content now that the bound state is applied. Lit renders the
+    // changes above in a microtask, before the next frame.
+    this.isBoundProfileApplied_ = true;
+    this.removeAttribute(AWAITING_BIND_ATTRIBUTE);
+    this.inert = false;
     if (!controlsChanged) {
       return;
     }
@@ -562,9 +574,6 @@ export class ToolbarAppElement extends AppElementBase {
               const isFirstToolbarState = !this.hasReceivedToolbarState_;
               if (isFirstToolbarState) {
                 this.hasReceivedToolbarState_ = true;
-                // An unbound spare adopted with no bound-state diff starts
-                // `colors.css` updates here.
-                this.startColorChangeUpdater_();
                 this.updateComplete.then(async () => {
                   const extensions =
                       this.shadowRoot.querySelector<ExtensionsElement>(
@@ -616,11 +625,11 @@ export class ToolbarAppElement extends AppElementBase {
     }
 
     if (this.initialState_.getBoolean(ToolbarStateKey.IS_UNBOUND)) {
-      // A window that adopted this spare before commit overwrote
-      // `initialState`, adding `colorsCss` if its colors differ.
-      if (applyBoundColorsCss(
-              this.initialState_.getString(ToolbarStateKey.COLORS_CSS))) {
-        this.startColorChangeUpdater_();
+      // Keep the template profile's state off screen and non-interactive
+      // until the adopting window's bind message is applied.
+      if (!this.isBoundProfileApplied_) {
+        this.setAttribute(AWAITING_BIND_ATTRIBUTE, '');
+        this.inert = true;
       }
       window.__webuiToolbarApplyBoundProfile = (state: BoundProfileState) =>
           this.applyBoundProfile(state);
@@ -630,6 +639,23 @@ export class ToolbarAppElement extends AppElementBase {
       if (stashedState) {
         delete window.__webuiToolbarBoundProfile;
         this.applyBoundProfile(stashedState);
+      }
+    } else {
+      // A window that adopted this spare before commit overwrote
+      // `initialState`, adding `colorsCss` if its colors differ.
+      const colorsCss =
+          this.initialState_.getString(ToolbarStateKey.COLORS_CSS);
+      if (colorsCss && !this.isBoundProfileApplied_) {
+        this.applyBoundProfile({colorsCss});
+      }
+      if (colorsCss ||
+          this.initialState_.getBoolean(
+              ToolbarStateKey.IS_FALLBACK_PREWARMING)) {
+        // `DidFinishNavigation()` still sends the bound diff at commit in
+        // case the page read the unbound `initialState` before the
+        // overwrite landed; ignore it here without stashing it on `window`.
+        delete window.__webuiToolbarBoundProfile;
+        window.__webuiToolbarApplyBoundProfile = () => {};
       }
     }
   }

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_user_profile.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_prerenderer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -191,6 +192,8 @@ InitialWebUIProfileService::TakeToolbarContents(Profile& window_profile) {
         waap::PrewarmHelper::BindUserProfile(*outcome.contents, window_profile);
     WebUIToolbarUI::OnUserProfileBound(*outcome.contents, window_profile,
                                        colors_changed);
+    // An unbound toolbar keeps its content unpainted until it is bound.
+    CHECK_EQ(webui::GetUserProfile(outcome.contents.get()), &window_profile);
   }
   return std::move(outcome.contents);
 }

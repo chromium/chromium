@@ -1618,6 +1618,8 @@ suite('ToolbarAppTest', () => {
     await app.updateComplete;
 
     assertEquals(undefined, window.__webuiToolbarBoundProfile);
+    assertFalse(app.hasAttribute('awaiting-bind'));
+    assertFalse(app.inert);
     assertEquals(1, document.adoptedStyleSheets.length);
     assertEquals(
         'rgb(1, 2, 3)',
@@ -1631,13 +1633,15 @@ suite('ToolbarAppTest', () => {
     assertEquals(0, document.adoptedStyleSheets.length);
   });
 
-  test('UnboundPreDomContentLoadedInitialStateAppliesColorsCss', async () => {
+  test('BoundBeforeCommitAppliesColorsCssWithoutGate', async () => {
     loadTimeData.overrideValues({
       enableGlicButton: true,
       enableAvatarButton: true,
       enableHomeButton: true,
     });
     document.adoptedStyleSheets = [];
+    // A window that binds the spare before commit overwrites `initialState`
+    // with its bound values, without `isUnbound`.
     browserProxy.setInitialState({
       initialWebUISurfaceSyncEnabled: true,
       isFallbackPrewarming: true,
@@ -1647,7 +1651,6 @@ suite('ToolbarAppTest', () => {
       homeButtonShouldBeShown: true,
       isProfileEligibleForGlic: true,
       canShowAvatarForProfile: true,
-      isUnbound: true,
       colorsCss: ':root { --test-pre-dcl-color: rgb(90, 80, 70); }',
     });
 
@@ -1655,6 +1658,8 @@ suite('ToolbarAppTest', () => {
     document.body.appendChild(app);
     await app.updateComplete;
 
+    assertFalse(app.hasAttribute('awaiting-bind'));
+    assertFalse(app.inert);
     assertEquals(1, document.adoptedStyleSheets.length);
     assertEquals(
         'rgb(90, 80, 70)',
@@ -1664,13 +1669,138 @@ suite('ToolbarAppTest', () => {
     assertTrue(!!app.shadowRoot.querySelector('#glic-button'));
     assertTrue(!!app.shadowRoot.querySelector('#avatar'));
 
-    // Re-applying the same diff at commit leaves the sheet as is.
-    window.__webuiToolbarApplyBoundProfile!({
-      colorsCss: ':root { --test-pre-dcl-color: rgb(90, 80, 70); }',
-      isProfileEligibleForGlic: true,
-      canShowAvatarForProfile: true,
-      homeButtonShouldBeShown: true,
+    // Simulate `DidFinishNavigation()` running `kApplyBoundProfileFn` at
+    // commit: a page that read the overwritten `initialState` ignores it
+    // without leaking `window.__webuiToolbarBoundProfile`.
+    const fallbackApply =
+        (state: NonNullable<Window['__webuiToolbarBoundProfile']>) => {
+          window.__webuiToolbarBoundProfile = state;
+        };
+    (window.__webuiToolbarApplyBoundProfile ?? fallbackApply)({
+      colorsCss: ':root { --test-pre-dcl-color: rgb(1, 2, 3); }',
+      isProfileEligibleForGlic: false,
+      canShowAvatarForProfile: false,
+      homeButtonShouldBeShown: false,
     });
+    assertEquals(undefined, window.__webuiToolbarBoundProfile);
+    assertEquals(1, document.adoptedStyleSheets.length);
+    assertEquals(
+        'rgb(90, 80, 70)',
+        getComputedStyle(document.documentElement)
+            .getPropertyValue('--test-pre-dcl-color')
+            .trim());
+    assertTrue(!!app.shadowRoot.querySelector('#glic-button'));
+    assertTrue(!!app.shadowRoot.querySelector('#avatar'));
+
+    ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(
+        new CustomEvent(COLOR_PROVIDER_CHANGED));
+    assertEquals(0, document.adoptedStyleSheets.length);
+
+    // Reconnecting after a theme change does not re-apply stale `colorsCss`
+    // from `initialState`.
+    document.body.removeChild(app);
+    document.body.appendChild(app);
+    await app.updateComplete;
+    assertEquals(0, document.adoptedStyleSheets.length);
+    document.body.removeChild(app);
+
+    // Pre-commit bind with no `colorsCss` (`isFallbackPrewarming` only) also
+    // clears any pre-connect stashed diff and ignores commit-time sends.
+    window.__webuiToolbarBoundProfile = {isProfileEligibleForGlic: false};
+    browserProxy.setInitialState({
+      initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
+      isNavigationLoading: false,
+      backButtonEnabled: false,
+      forwardButtonEnabled: false,
+      homeButtonShouldBeShown: false,
+      isProfileEligibleForGlic: true,
+      canShowAvatarForProfile: false,
+    });
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await app.updateComplete;
+
+    assertFalse(app.hasAttribute('awaiting-bind'));
+    assertFalse(app.inert);
+    assertEquals(undefined, window.__webuiToolbarBoundProfile);
+    assertTrue(!!app.shadowRoot.querySelector('#glic-button'));
+    (window.__webuiToolbarApplyBoundProfile ?? fallbackApply)({});
+    assertEquals(undefined, window.__webuiToolbarBoundProfile);
+  });
+
+  test('UnboundGateHidesContentUntilBind', async () => {
+    // A toolbar that did not start unbound has no gate.
+    browserProxy.setInitialState({
+      initialWebUISurfaceSyncEnabled: false,
+    });
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await app.updateComplete;
+    assertFalse(app.hasAttribute('awaiting-bind'));
+    assertFalse(app.inert);
+    assertEquals('1', getComputedStyle(app).opacity);
+    document.body.removeChild(app);
+
+    browserProxy.setInitialState({
+      initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
+      isNavigationLoading: false,
+      isProfileEligibleForGlic: false,
+      canShowAvatarForProfile: false,
+      isUnbound: true,
+    });
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await app.updateComplete;
+    assertTrue(app.hasAttribute('awaiting-bind'));
+    assertTrue(app.inert);
+    assertEquals('0', getComputedStyle(app).opacity);
+    // The content is rendered, only hidden.
+    assertTrue(!!app.shadowRoot.querySelector('#reload'));
+
+    // A bind message with no differing field still lifts the gate, before the
+    // next frame.
+    window.__webuiToolbarApplyBoundProfile!({});
+    assertFalse(app.hasAttribute('awaiting-bind'));
+    assertFalse(app.inert);
+    assertEquals('1', getComputedStyle(app).opacity);
+
+    // Reattaching after the bind does not hide the content again.
+    document.body.removeChild(app);
+    document.body.appendChild(app);
+    await app.updateComplete;
+    assertFalse(app.hasAttribute('awaiting-bind'));
+    assertFalse(app.inert);
+  });
+
+  test('UnboundToolbarStateBeforeBindKeepsBoundColorsCss', async () => {
+    document.adoptedStyleSheets = [];
+    browserProxy.setInitialState({
+      initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: true,
+      isNavigationLoading: false,
+      isProfileEligibleForGlic: false,
+      canShowAvatarForProfile: false,
+      isUnbound: true,
+    });
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await app.updateComplete;
+
+    // Receiving initial `ToolbarState` while still unbound does not start
+    // `ColorChangeUpdater` early, so the bind message's adopted sheet stays
+    // until `COLOR_PROVIDER_CHANGED`.
+    browserProxy.fireToolbarStateListener([], createMockToolbarState());
+    await app.updateComplete;
+    assertTrue(app.hasAttribute('awaiting-bind'));
+    assertTrue(app.inert);
+
+    window.__webuiToolbarApplyBoundProfile!({
+      colorsCss: ':root { --test-late-bind-color: rgb(10, 20, 30); }',
+    });
+    assertFalse(app.hasAttribute('awaiting-bind'));
+    assertFalse(app.inert);
     assertEquals(1, document.adoptedStyleSheets.length);
 
     ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(

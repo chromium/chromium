@@ -204,10 +204,10 @@ class WebUIToolbarUIUnboundTest : public ChromeRenderViewHostTestHarness {
 // Verifies that an unbound WebUIToolbarUI seeded from a template profile
 // populates `BuildInitialState()` and its color provider from that seed, clears
 // generic font family maps while unbound, skips in-process colors.css, removes
-// the seed user data on bind, and sends no JS message when bound to a profile
-// whose state matches the seed.
+// the seed user data on bind, and still sends an empty bind message, which
+// lifts the page's gate, when bound to a profile whose state matches the seed.
 TEST_F(WebUIToolbarUIUnboundTest,
-       SeededInitialStateAndNoMessageWhenNothingDiffers) {
+       SeededInitialStateAndEmptyMessageWhenNothingDiffers) {
   profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
   const ui::ColorProviderKey baseline_key =
       ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(nullptr);
@@ -247,12 +247,17 @@ TEST_F(WebUIToolbarUIUnboundTest,
       config.sources.contains(url::Origin::Create(GURL("chrome://theme/"))));
   EXPECT_TRUE(config.sources.contains(toolbar_origin));
 
-  // Binding to the matching profile removes the seed user data and sends no
-  // message.
+  // Binding to the matching profile removes the seed user data and sends an
+  // empty bind message.
   EXPECT_FALSE(BindAndApply(*harness, *profile()));
   EXPECT_FALSE(WebUIToolbarUnboundSeedUserData::FromWebContents(
       harness->contents.get()));
-  EXPECT_TRUE(harness->test_web_ui.call_data().empty());
+  ASSERT_EQ(1u, harness->test_web_ui.call_data().size());
+  EXPECT_EQ(kApplyBoundProfileFn,
+            harness->test_web_ui.call_data()[0]->function_name());
+  const base::Value* arg = harness->test_web_ui.call_data()[0]->arg1();
+  ASSERT_TRUE(arg && arg->is_dict());
+  EXPECT_TRUE(arg->GetDict().empty());
 }
 
 // Verifies that binding after commit sends only the fields that
@@ -305,8 +310,8 @@ TEST_F(WebUIToolbarUIUnboundTest,
 
 // Verifies the pre-commit bind cases:
 // - Bind after `WebUIRenderFrameCreated()` and before commit overwrites
-//   `initialState` (keeping `isUnbound: true` and adding `colorsCss`) and
-//   sends the diff at commit.
+//   `initialState` (dropping `isUnbound` and adding `colorsCss`) and sends the
+//   diff at commit, even an empty one.
 // - Bind before `WebUIRenderFrameCreated()` sends nothing and lets frame
 //   creation read the bound profile directly.
 TEST_F(WebUIToolbarUIUnboundTest,
@@ -329,11 +334,12 @@ TEST_F(WebUIToolbarUIUnboundTest,
     EXPECT_TRUE(BindAndApply(*harness, *profile()));
     EXPECT_TRUE(harness->test_web_ui.call_data().empty());
 
-    // Overwritten `initialState` carries bound values, `isUnbound: true`, and
-    // `colorsCss` for a page that has not read `initialState` yet.
+    // Overwritten `initialState` carries bound values and `colorsCss` for a
+    // page that has not read `initialState` yet. Without `isUnbound`, that
+    // page has no gate.
     base::DictValue overwritten =
         harness->toolbar_ui->BuildInitialStateForTesting();
-    EXPECT_EQ(true, overwritten.FindBool("isUnbound"));
+    EXPECT_FALSE(overwritten.contains("isUnbound"));
     EXPECT_EQ(true, overwritten.FindBool("homeButtonShouldBeShown"));
     const std::string* overwritten_css = overwritten.FindString("colorsCss");
     ASSERT_TRUE(overwritten_css);
@@ -351,7 +357,27 @@ TEST_F(WebUIToolbarUIUnboundTest,
     EXPECT_TRUE(flushed.FindString("colorsCss"));
   }
 
-  // 2. Bind before `WebUIRenderFrameCreated()` sends nothing.
+  // 2. Bind after frame creation and before commit with nothing differing
+  // still sends an empty message at commit.
+  {
+    std::unique_ptr<UnboundToolbarHarness> harness =
+        CreateUnboundToolbar(*profile(), /*create_frame=*/true,
+                             /*commit=*/false);
+    EXPECT_FALSE(BindAndApply(*harness, *profile()));
+    base::DictValue overwritten =
+        harness->toolbar_ui->BuildInitialStateForTesting();
+    EXPECT_FALSE(overwritten.contains("isUnbound"));
+    EXPECT_FALSE(overwritten.contains("colorsCss"));
+    EXPECT_TRUE(harness->test_web_ui.call_data().empty());
+
+    Commit(*harness);
+    ASSERT_EQ(1u, harness->test_web_ui.call_data().size());
+    EXPECT_EQ(kApplyBoundProfileFn,
+              harness->test_web_ui.call_data()[0]->function_name());
+    EXPECT_TRUE(harness->test_web_ui.call_data()[0]->arg1()->GetDict().empty());
+  }
+
+  // 3. Bind before `WebUIRenderFrameCreated()` sends nothing.
   {
     profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, false);
     std::unique_ptr<UnboundToolbarHarness> harness =

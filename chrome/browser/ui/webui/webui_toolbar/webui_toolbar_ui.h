@@ -106,7 +106,9 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   // Delivers any fields that differ from the unbound spare's seeded values
   // (including `colorsCss` only when `colors_changed` is true) to the
   // `WebUIToolbarUI` controller of `web_contents`, if any, and removes
-  // `WebUIToolbarUnboundSeedUserData` from `web_contents`.
+  // `WebUIToolbarUnboundSeedUserData` from `web_contents`. A page that got the
+  // unbound initial state always gets a bind message, even an empty one, since
+  // it keeps its content unpainted until then.
   static void OnUserProfileBound(content::WebContents& web_contents,
                                  Profile& profile,
                                  bool colors_changed);
