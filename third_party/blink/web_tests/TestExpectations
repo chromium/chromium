@@ -9157,6 +9157,12 @@ crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue
 crbug.com/559885106 [ Linux ] external/wpt/webdriver/tests/classic/new_session/unhandled_prompt_behavior.py [ Failure Pass ]
 crbug.com/560754596 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py [ Failure Pass ]
 
+# Gardener 2026-09-30 (cherry-picked from crrev.com/c/8496187)
+crbug.com/527852129 [ Linux ] external/wpt/scroll-animations/animation-trigger/animation-trigger-state.tentative.html [ Failure Pass ]
+crbug.com/527852129 [ Mac ] external/wpt/scroll-animations/animation-trigger/animation-trigger-state.tentative.html [ Failure Pass ]
+crbug.com/527852129 [ Linux ] virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-state.tentative.html [ Failure Pass ]
+crbug.com/527852129 [ Mac ] virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-state.tentative.html [ Failure Pass ]
+
 # Gardener 2026-09-25
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/coordinates.py [ Pass Timeout ]
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_modifier.py [ Failure Pass ]
