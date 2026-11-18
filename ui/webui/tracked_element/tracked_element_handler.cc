@@ -536,16 +536,10 @@ void TrackedElementHandler::ReportBadMessage(
              << " and secondary identifier: " << id->secondary_identifier;
   // Do not include element IDs in the crash message; this causes issues with
   // crash clustering. Instead store them as keys.
-  static auto* const native_identifier_key =
-      base::debug::AllocateCrashKeyString("tracked-element-native-identifier",
-                                          base::debug::CrashKeySize::Size256);
-  static auto* const secondary_identifier_key =
-      base::debug::AllocateCrashKeyString(
-          "tracked-element-secondary-identifier",
-          base::debug::CrashKeySize::Size256);
-  base::debug::SetCrashKeyString(native_identifier_key, id->native_identifier);
-  base::debug::SetCrashKeyString(secondary_identifier_key,
-                                 id->secondary_identifier);
+  SCOPED_CRASH_KEY_STRING256("tracked-element", "native-identifier",
+                             id->native_identifier);
+  SCOPED_CRASH_KEY_STRING256("tracked-element", "secondary-identifier",
+                             id->secondary_identifier);
   receiver_.ReportBadMessage(description);
 }
 
