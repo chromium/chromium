@@ -263,7 +263,9 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
   struct ProfileData {
     explicit ProfileData(UkmDataManagerTestUtils* test_utils,
                          const std::string& result_pref)
-        : result_pref(result_pref), test_utils(test_utils) {
+        : result_pref(result_pref),
+          test_utils(test_utils),
+          bookmark_node_(/*id=*/100, base::Uuid::GenerateRandomV4(), GURL()) {
       TestProfileIOS::Builder builder;
       builder.AddTestingFactory(
           SegmentationPlatformServiceFactory::GetInstance(),
@@ -271,16 +273,14 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
               .Then(SegmentationPlatformServiceFactory::GetDefaultFactory()));
       builder.AddTestingFactory(
           commerce::ShoppingServiceFactory::GetInstance(),
-          base::BindRepeating([](ProfileIOS* profile)
-                                  -> std::unique_ptr<KeyedService> {
-            std::unique_ptr<bookmarks::BookmarkNode> bookmark =
-                std::make_unique<bookmarks::BookmarkNode>(
-                    /*id=*/100, base::Uuid::GenerateRandomV4(), GURL());
-            std::unique_ptr<commerce::MockShoppingService> shopping_service =
-                std::make_unique<commerce::MockShoppingService>();
-            shopping_service->SetGetAllShoppingBookmarksValue({bookmark.get()});
-            return std::move(shopping_service);
-          }));
+          base::BindOnce(
+              [](const bookmarks::BookmarkNode* bookmark_node) {
+                using commerce::MockShoppingService;
+                auto service = std::make_unique<MockShoppingService>();
+                service->SetGetAllShoppingBookmarksValue({bookmark_node});
+                return service;
+              },
+              base::Unretained(&bookmark_node_)));
       profile = std::move(builder).Build();
       service =
           SegmentationPlatformServiceFactory::GetForProfile(profile.get());
@@ -300,9 +300,9 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
 
     const std::string result_pref;
     const raw_ptr<UkmDataManagerTestUtils> test_utils;
+    const bookmarks::BookmarkNode bookmark_node_;
     std::unique_ptr<TestProfileIOS> profile;
     raw_ptr<SegmentationPlatformService> service;
-    std::unique_ptr<bookmarks::BookmarkNode> bookmark_;
   };
 
   void WaitForServiceInit() {
