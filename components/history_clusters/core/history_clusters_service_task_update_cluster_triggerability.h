@@ -104,8 +104,7 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   // clusters. Will syncly invoke `Start()` to initiate the next iteration.
   void OnPersistedClusterTriggerability(base::TimeTicks start_time);
 
-  // Marks the task as done, runs `callback_`, and logs metrics about the task
-  // run.
+  // Marks the task as done and runs `callback_`.
   void MarkDoneAndRunCallback();
 
   // Never nullptr.
@@ -130,18 +129,6 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   // Whether it is likely that there are unclustered visits to cluster or old
   // clusters that do not yet have their triggerability calculated.
   const bool likely_has_unclustered_visits_or_unprocessed_clusters_ = false;
-
-  // Tracks whether at least one cluster's triggerability was updated (for
-  // metrics only).
-  bool updated_cluster_triggerability_ = false;
-
-  // Tracks whether at least one cluster's triggerability was updated after the
-  // first call with all filtered clusters returned (for metrics only).
-  // Initially nullopt but false after receiving a response with no clusters and
-  // true after receiving a response with clusters after having received a
-  // response with no clusters.
-  std::optional<bool>
-      updated_cluster_triggerability_after_filtered_clusters_empty_;
 
   // Used for async callbacks.
   base::WeakPtrFactory<HistoryClustersServiceTaskUpdateClusterTriggerability>
