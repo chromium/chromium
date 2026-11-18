@@ -349,6 +349,67 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
             *row2.FindString("size"));
 }
 
+TEST_F(OnDeviceAiSettingsHandlerTest,
+       HandleGetOnDeviceAiCapabilities_DownloadingAndUpdatingModels) {
+  FakeOnDeviceModelControl fake_control;
+  handler()->set_model_control(&fake_control);
+
+  const base::ByteSize kNanoSize = base::GiB(1);
+
+  fake_control.SetModels({
+      OnDeviceModelControl::ModelInfo(
+          OnDeviceBaseModel::kGemma4,
+          OnDeviceModelControl::ModelStatus::kDownloading,
+          /*size_bytes=*/0),
+      OnDeviceModelControl::ModelInfo(OnDeviceBaseModel::kV3NanoGpu,
+                                      OnDeviceModelControl::ModelStatus::kReady,
+                                      kNanoSize.InBytes()),
+      OnDeviceModelControl::ModelInfo(
+          OnDeviceBaseModel::kSpeechRecognitionSmallExpert,
+          OnDeviceModelControl::ModelStatus::kUpdating,
+          /*size_bytes=*/0),
+  });
+
+  base::ListValue args;
+  args.Append("callback_id");
+  handler()->HandleGetOnDeviceAiCapabilities(args);
+
+  ASSERT_EQ(1u, test_web_ui()->call_data().size());
+  const content::TestWebUI::CallData& call_data =
+      *test_web_ui()->call_data()[0];
+  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+  EXPECT_EQ("callback_id", call_data.arg1()->GetString());
+  EXPECT_TRUE(call_data.arg2()->GetBool());
+
+  const base::ListValue& capabilities = call_data.arg3()->GetList();
+  ASSERT_EQ(3u, capabilities.size());
+
+  // Within GeneralPurpose, V3NanoGpu (kReady, 1 GiB) sorts before Gemma4
+  // (kDownloading, 0 B).
+  const base::DictValue& row0 = capabilities[0].GetDict();
+  EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kV3NanoGpu),
+            row0.FindInt("id"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kReady),
+            row0.FindInt("status"));
+  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(kNanoSize)),
+            *row0.FindString("size"));
+
+  const base::DictValue& row1 = capabilities[1].GetDict();
+  EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kGemma4), row1.FindInt("id"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kDownloading),
+            row1.FindInt("status"));
+  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(base::ByteSize(0))),
+            *row1.FindString("size"));
+
+  const base::DictValue& row2 = capabilities[2].GetDict();
+  EXPECT_EQ(static_cast<int>(OnDeviceBaseModel::kSpeechRecognitionSmallExpert),
+            row2.FindInt("id"));
+  EXPECT_EQ(static_cast<int>(OnDeviceModelControl::ModelStatus::kUpdating),
+            row2.FindInt("status"));
+  EXPECT_EQ(base::UTF16ToUTF8(ui::FormatBytes(base::ByteSize(0))),
+            *row2.FindString("size"));
+}
+
 TEST_F(OnDeviceAiSettingsHandlerTest, HandleDeleteOnDeviceAiCapability) {
   FakeOnDeviceModelControl fake_control;
   handler()->set_model_control(&fake_control);

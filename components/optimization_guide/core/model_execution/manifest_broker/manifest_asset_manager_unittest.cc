@@ -1786,6 +1786,81 @@ TEST_F(ManifestAssetManagerTest, GetModelsReflectsComponentStates) {
     EXPECT_GT(models[2].size_bytes, 0u);
   }
 
+  // Once component updater starts downloading `downloading_asset`, it
+  // transitions from `kDownloadable` to `kDownloading`.
+  component_state_.UpdateDownloadProgress(downloading_asset.public_key, 100,
+                                          1000);
+  {
+    auto models = get_models();
+    ASSERT_EQ(models.size(), 3u);
+    EXPECT_EQ(models[0].base_model, OnDeviceBaseModel::kV3NanoCpu);
+    EXPECT_EQ(models[0].status, OnDeviceModelControl::ModelStatus::kDownloading);
+    EXPECT_EQ(models[0].size_bytes, 0u);
+  }
+
+  // Updating the manifest to v2 while component updater has not yet started
+  // downloading v2 keeps `ready_asset` as `kReady` (with v1's disk size).
+  DummyAsset ready_asset_v2 = ready_asset.WithVersion("2.0");
+  UpdateManifest(DummyManifest()
+                     .Add(ready_asset_v2)
+                     .Add(unknown_ready_asset)
+                     .Add(registered_asset)
+                     .Add(downloading_asset));
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(ready_asset_v2.ToInstallTarget()));
+  {
+    auto models = get_models();
+    ASSERT_EQ(models.size(), 3u);
+    EXPECT_EQ(models[2].base_model, OnDeviceBaseModel::kGemma4);
+    EXPECT_EQ(models[2].status, OnDeviceModelControl::ModelStatus::kReady);
+    EXPECT_GT(models[2].size_bytes, 0u);
+  }
+
+  // Once component updater starts downloading v2, `ready_asset` transitions to
+  // `kUpdating` until the new version finishes installing.
+  component_state_.UpdateDownloadProgress(ready_asset_v2.public_key, 100, 1000);
+  {
+    auto models = get_models();
+    ASSERT_EQ(models.size(), 3u);
+    EXPECT_EQ(models[2].base_model, OnDeviceBaseModel::kGemma4);
+    EXPECT_EQ(models[2].status, OnDeviceModelControl::ModelStatus::kUpdating);
+    EXPECT_EQ(models[2].size_bytes, 0u);
+  }
+
+  // `UninstallCapability` is a no-op for `kDownloadable`, `kDownloading`, and
+  // `kUpdating` models, and `InstallCapability` is a no-op for `kDownloading`
+  // and `kUpdating` models.
+  manifest_broker_state_->UninstallCapability(OnDeviceBaseModel::kV3NanoGpu);
+  manifest_broker_state_->UninstallCapability(OnDeviceBaseModel::kV3NanoCpu);
+  manifest_broker_state_->UninstallCapability(OnDeviceBaseModel::kGemma4);
+  manifest_broker_state_->InstallCapability(OnDeviceBaseModel::kV3NanoCpu);
+  manifest_broker_state_->InstallCapability(OnDeviceBaseModel::kGemma4);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(
+      component_state_.WasUninstallRequested(registered_asset.public_key));
+  EXPECT_FALSE(
+      component_state_.WasUninstallRequested(downloading_asset.public_key));
+  EXPECT_FALSE(
+      component_state_.WasUninstallRequested(ready_asset_v2.public_key));
+  {
+    auto models = get_models();
+    ASSERT_EQ(models.size(), 3u);
+    EXPECT_EQ(models[0].status, OnDeviceModelControl::ModelStatus::kDownloading);
+    EXPECT_EQ(models[1].status,
+              OnDeviceModelControl::ModelStatus::kDownloadable);
+    EXPECT_EQ(models[2].status, OnDeviceModelControl::ModelStatus::kUpdating);
+  }
+
+  MakeAssetInstallable(ready_asset_v2);
+  task_environment_.RunUntilIdle();
+  {
+    auto models = get_models();
+    ASSERT_EQ(models.size(), 3u);
+    EXPECT_EQ(models[2].base_model, OnDeviceBaseModel::kGemma4);
+    EXPECT_EQ(models[2].status, OnDeviceModelControl::ModelStatus::kReady);
+    EXPECT_GT(models[2].size_bytes, 0u);
+  }
+
   // Advance past the 10s disk space freshness window so kUninstalling is
   // deferred; `ready_asset` immediately transitions to `kDownloadable`.
   task_environment_.FastForwardBy(base::Seconds(11));
@@ -1840,6 +1915,7 @@ TEST_F(ManifestAssetManagerTest, GetModelsEmptyOnUninstallManifest) {
     manifest_broker_state_->GetModels(future.GetCallback());
     ASSERT_EQ(future.Get().size(), 1u);
     EXPECT_EQ(future.Get()[0].base_model, OnDeviceBaseModel::kGemma4);
+    EXPECT_EQ(future.Get()[0].status, OnDeviceModelControl::ModelStatus::kReady);
   }
 
   // Turning off the user setting activates an uninstall manifest with no
@@ -1972,7 +2048,7 @@ TEST_F(ManifestAssetManagerTest, ModelInstallStateAndObserverEvents) {
       observation(&observer);
   observation.Observe(manifest_broker_state_.get());
 
-  manifest_broker_state_->UninstallCapability(OnDeviceBaseModel::kGemma4);
+  manifest_broker_state_->SetUseCaseRequested(gemma4.use_case, false);
   EXPECT_TRUE(component_state_.WaitForUninstall(gemma4.public_key));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(

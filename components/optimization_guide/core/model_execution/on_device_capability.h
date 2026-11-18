@@ -392,6 +392,10 @@ class OnDeviceModelControl {
     kReady = 0,
     // Model is supported on this device and available to be downloaded.
     kDownloadable = 1,
+    // Model is being downloaded for the first time.
+    kDownloading = 2,
+    // A new version of an already-installed model is being downloaded.
+    kUpdating = 3,
   };
 
   // Information about a base model in the manifest.
@@ -414,11 +418,13 @@ class OnDeviceModelControl {
   virtual void UninstallModels() = 0;
 
   // Installs a specific base model capability identified by `base_model` along
-  // with any dependent adaptations and safety models.
+  // with any dependent adaptations and safety models. No-op unless the model
+  // is currently in `kDownloadable` status.
   virtual void InstallCapability(OnDeviceBaseModel base_model) = 0;
 
   // Uninstalls a specific base model capability identified by `base_model`
-  // along with any dependent adaptations and unshared safety models.
+  // along with any dependent adaptations and unshared safety models. No-op
+  // unless the model is currently in `kReady` status.
   virtual void UninstallCapability(OnDeviceBaseModel base_model) = 0;
 
   // Waits for broker initialization (raising manifest load priority), then

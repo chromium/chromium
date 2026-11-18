@@ -135,11 +135,13 @@ class ManifestAssetManager : public UsageTracker::Observer,
   void UninstallAllAssets();
 
   // Requests installation for all use cases requiring the base model asset
-  // identified by `base_model` and recomputes asset priorities.
+  // identified by `base_model` and recomputes asset priorities. No-op unless
+  // the model is currently in `kDownloadable` status.
   void InstallCapability(OnDeviceBaseModel base_model);
 
   // Requests uninstall for all use cases requiring the base model asset
-  // identified by `base_model` and recomputes asset priorities.
+  // identified by `base_model` and recomputes asset priorities. No-op unless
+  // the model is currently in `kReady` status.
   void UninstallCapability(OnDeviceBaseModel base_model);
 
  private:
@@ -176,6 +178,9 @@ class ManifestAssetManager : public UsageTracker::Observer,
         const std::string& target_version) const;
     bool IsReadyFor(const std::string& target_version) const {
       return AsAssetState(target_version).has_value();
+    }
+    bool has_installed_version() const {
+      return install_dir_.has_value() && version_.has_value();
     }
 
     std::string asset_id() const { return asset_id_; }
@@ -317,6 +322,10 @@ class ManifestAssetManager : public UsageTracker::Observer,
   // given public key.
   void NotifyFactory(const std::string& public_key,
                      const ComponentContext& context);
+
+  OnDeviceModelControl::ModelStatus ComputeModelStatus(
+      const ComponentContext* context,
+      const proto::OnDemandComponent& component) const;
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<UsageTracker> usage_tracker_;

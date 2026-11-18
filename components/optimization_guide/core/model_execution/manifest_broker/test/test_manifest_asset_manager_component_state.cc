@@ -238,6 +238,18 @@ void TestManifestAssetManagerComponentState::RunPendingRegistrations(
     if (it != installed_components_.end()) {
       is_already_installed =
           (it->second.target.version == registration.target.version);
+      // Match `ComponentInstaller::FinishRegistration()`: if an older version
+      // is already on disk, notify `OnAssetReady` for it before
+      // `InstallerRegistered(..., /*is_already_installed=*/false)`.
+      if (!is_already_installed && it->second.target.version.has_value() &&
+          registration.manager) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &ManifestAssetManagerDelegate::AssetManager::OnAssetReady,
+                registration.manager, it->second.target.public_key_hex,
+                *it->second.target.version, it->second.install_dir));
+      }
     }
     if (registration.manager) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

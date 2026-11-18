@@ -66,6 +66,40 @@ constexpr char kInstallStateKey[] = "install_state";
 // can't treat it as an installation of any real version.
 constexpr char kUninstallingVersion[] = "uninstalling";
 
+// Whether `component_update_service` is currently downloading or installing an
+// update for `crx_id`. False if `component_update_service` is null or the
+// component is unknown.
+// Note: only the component updater's state is consulted, so a requested
+// download is reported as `kDownloadable` (or `kReady` for an update) until
+// the updater actually starts on it.
+bool IsComponentUpdateInProgress(
+    component_updater::ComponentUpdateService* component_update_service,
+    const std::string& crx_id) {
+  if (!component_update_service) {
+    return false;
+  }
+  component_updater::CrxUpdateItem item;
+  if (!component_update_service->GetComponentDetails(crx_id, &item)) {
+    return false;
+  }
+  // See class comment: components/update_client/component.h
+  switch (item.state) {
+    case update_client::ComponentState::kCanUpdate:
+    case update_client::ComponentState::kDownloading:
+    case update_client::ComponentState::kDecompressing:
+    case update_client::ComponentState::kPatching:
+    case update_client::ComponentState::kUpdating:
+      return true;
+    case update_client::ComponentState::kNew:
+    case update_client::ComponentState::kChecking:
+    case update_client::ComponentState::kUpdated:
+    case update_client::ComponentState::kUpToDate:
+    case update_client::ComponentState::kUpdateError:
+    case update_client::ComponentState::kRun:
+      return false;
+  }
+}
+
 }  // namespace
 
 ManifestAssetManager::ComponentContext::ComponentContext() = default;
@@ -548,9 +582,12 @@ void ManifestAssetManager::InstallCapability(OnDeviceBaseModel base_model) {
   if (base_model == OnDeviceBaseModel::kUnknown) {
     return;
   }
-  for (const auto& [asset_id, _] :
+  for (const auto& [asset_id, component] :
        factory_->manifest().GetAssets().on_demand_components()) {
-    if (ConvertComponentKeyToEnum(asset_id) != base_model) {
+    if (ConvertComponentKeyToEnum(asset_id) != base_model ||
+        ComputeModelStatus(ledger_.GetContext(component.public_key()),
+                           component) !=
+            OnDeviceModelControl::ModelStatus::kDownloadable) {
       continue;
     }
     for (const auto& use_case_name :
@@ -566,17 +603,24 @@ void ManifestAssetManager::UninstallCapability(OnDeviceBaseModel base_model) {
   if (base_model == OnDeviceBaseModel::kUnknown) {
     return;
   }
-  for (const auto& [asset_id, _] :
+  bool any_uninstalled = false;
+  for (const auto& [asset_id, component] :
        factory_->manifest().GetAssets().on_demand_components()) {
-    if (ConvertComponentKeyToEnum(asset_id) != base_model) {
+    if (ConvertComponentKeyToEnum(asset_id) != base_model ||
+        ComputeModelStatus(ledger_.GetContext(component.public_key()),
+                           component) !=
+            OnDeviceModelControl::ModelStatus::kReady) {
       continue;
     }
     for (const auto& use_case_name :
          factory_->manifest().GetUseCasesRequiringAsset(asset_id)) {
       usage_tracker_->RequestUninstall(use_case_name);
+      any_uninstalled = true;
     }
   }
-  RecomputeAssetPriorities();
+  if (any_uninstalled) {
+    RecomputeAssetPriorities();
+  }
 }
 
 bool ManifestAssetManager::IsEvictionEnabled() const {
@@ -955,6 +999,32 @@ void ManifestAssetManager::NotifyFactory(const std::string& public_key,
                              context.AsAssetState(component->target_version()));
 }
 
+OnDeviceModelControl::ModelStatus ManifestAssetManager::ComputeModelStatus(
+    const ComponentContext* context,
+    const proto::OnDemandComponent& component) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!context ||
+      !asset_priorities_.IsAtLeast(AssetPriority::kEvictable,
+                                   context->asset_id()) ||
+      context->state() == ComponentState::kNotRegistered ||
+      context->state() == ComponentState::kUninstalling) {
+    return OnDeviceModelControl::ModelStatus::kDownloadable;
+  }
+  if (context->IsReadyFor(component.target_version())) {
+    return OnDeviceModelControl::ModelStatus::kReady;
+  }
+  const std::optional<std::string> crx_id =
+      GetCrxIdFromPublicKeyHex(component.public_key());
+  const bool in_progress =
+      crx_id && IsComponentUpdateInProgress(component_update_service_, *crx_id);
+  if (context->has_installed_version()) {
+    return in_progress ? OnDeviceModelControl::ModelStatus::kUpdating
+                       : OnDeviceModelControl::ModelStatus::kReady;
+  }
+  return in_progress ? OnDeviceModelControl::ModelStatus::kDownloading
+                     : OnDeviceModelControl::ModelStatus::kDownloadable;
+}
+
 std::vector<mojom::BrokerAssetInfoPtr> ManifestAssetManager::GetBrokerAssets()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1015,15 +1085,12 @@ ManifestAssetManager::GetBaseModels() const {
     }
     const ComponentContext* context =
         ledger_.GetContext(component->public_key());
-    const bool is_ready =
-        context &&
-        asset_priorities_.IsAtLeast(AssetPriority::kEvictable, asset_id) &&
-        context->IsReadyFor(component->target_version());
     OnDeviceModelControl::ModelStatus status =
-        is_ready ? OnDeviceModelControl::ModelStatus::kReady
-                 : OnDeviceModelControl::ModelStatus::kDownloadable;
+        ComputeModelStatus(context, *component);
     base::FilePath install_dir =
-        is_ready ? *context->install_dir() : base::FilePath();
+        status == OnDeviceModelControl::ModelStatus::kReady
+            ? *context->install_dir()
+            : base::FilePath();
     models_by_base_model.emplace(
         base_model, std::make_pair(
                         OnDeviceModelControl::ModelInfo{
