@@ -87,6 +87,8 @@ _ABIS_TO_DIGIT_MASK.
 _APKS = {
     '32': [
         ('CHROME', 'CHROME', '32'),
+        # 32-bit Chrome with a 64-bit placeholder library.
+        ('CHROME_32_64', 'CHROME', '32_64'),
         ('CHROME_MODERN', 'CHROME_MODERN', '32'),
         ('MONOCHROME', 'MONOCHROME', '32'),
         ('TRICHROME', 'TRICHROME', '32'),

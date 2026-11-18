@@ -53,6 +53,12 @@ if (target_os == "android") {
       "webview_beta_version_code = \"@WEBVIEW_BETA_VERSION_CODE@\" " +
       "webview_auto_version_code = \"@WEBVIEW_AUTO_VERSION_CODE@\" "
 
+  if (target_cpu == "arm" || target_cpu == "x86") {
+    # For a 32-bit Chrome that contains a 64-bit placeholder library.
+    _version_dictionary_template +=
+        "chrome_32_64_version_code = \"@CHROME_32_64_VERSION_CODE@\" "
+  }
+
   # Generate hybrid configurations for target_cpu's that can run in hybrid
   # configurations. i.e. "riscv64" does not show up in this list, as it's a
   # 64-bit-only target_cpu.
@@ -185,6 +191,7 @@ if (is_mac) {
                            "chrome_desktop_version_code",
                            "chrome_desktop_beta_version_code",
                            "chrome_32_version_code",
+                           "chrome_32_64_version_code",
                            "monochrome_version_code",
                            "monochrome_32_version_code",
                            "monochrome_32_64_version_code",

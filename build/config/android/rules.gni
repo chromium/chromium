@@ -4620,6 +4620,11 @@ if (!is_robolectric && enable_java_templates) {
   #    is_multi_abi: If true will add a library placeholder for the missing ABI
   #      if either the primary or the secondary ABI has no native libraries set.
   #
+  #    add_64_bit_abi_placeholder: (optional): If true, adds a library
+  #      placeholder for the 64-bit counterpart of the 32-bit target_cpu to
+  #      each module that contains native libraries. Only valid when
+  #      target_cpu is 32-bit.
+  #
   #    default_modules_for_testing: (optional): A list of DFM that the wrapper
   #      script should install. This is for local testing only, and does not
   #      affect the actual DFM in production.
@@ -4909,6 +4914,7 @@ if (!is_robolectric && enable_java_templates) {
       create_android_app_bundle_module(_create_module_target) {
         forward_variables_from(invoker,
                                [
+                                 "add_64_bit_abi_placeholder",
                                  "is_multi_abi",
                                  "uncompress_dex",
                                ])

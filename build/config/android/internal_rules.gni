@@ -5056,6 +5056,9 @@ if (enable_java_templates) {
 #     with this file as the base.
 #   is_multi_abi: If true will add a library placeholder for the missing ABI if
 #     either the primary or the secondary ABI has no native libraries set.
+#   add_64_bit_abi_placeholder: If true, adds a library placeholder for the
+#     64-bit counterpart of the 32-bit target_cpu if the module contains
+#     native libraries.
 #   module_name: The module's name.
 #   native_libraries_config: Path to file listing native libraries to be
 #     packaged into each module.
@@ -5115,7 +5118,19 @@ template("create_android_app_bundle_module") {
       "--secondary-native-lib-placeholders=@FileArg($_rebased_build_config:native:secondary_abi_placeholders)",
     ]
   }
-  if (defined(invoker.is_multi_abi) && invoker.is_multi_abi) {
+  _is_multi_abi = defined(invoker.is_multi_abi) && invoker.is_multi_abi
+  if (defined(invoker.add_64_bit_abi_placeholder) &&
+      invoker.add_64_bit_abi_placeholder) {
+    assert(target_cpu == "arm" || target_cpu == "x86",
+           "add_64_bit_abi_placeholder not supported for $target_cpu")
+    _placeholder_abi = "arm64-v8a"
+    if (target_cpu == "x86") {
+      _placeholder_abi = "x86_64"
+    }
+    _args += [ "--secondary-android-abi=$_placeholder_abi" ]
+    _is_multi_abi = true
+  }
+  if (_is_multi_abi) {
     _args += [ "--is-multi-abi" ]
   }
   if (defined(invoker.uncompress_dex) && invoker.uncompress_dex) {
