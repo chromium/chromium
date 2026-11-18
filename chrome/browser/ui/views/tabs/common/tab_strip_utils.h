@@ -26,6 +26,7 @@ gfx::Rect GetTabStripViewTargetBounds(const views::View* view);
 
 // Returns the tab strip view for the provided `view`. Iterates
 // through the parent hierarchy until a `TabStripView` is found.
+const TabStripView* GetTabStripView(const views::View* view);
 TabStripView* GetTabStripView(views::View* view);
 
 // Returns true if the `ScrollView` ancestor of `view` is scrollable along the

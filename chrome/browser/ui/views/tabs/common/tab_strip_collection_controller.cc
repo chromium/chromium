@@ -1055,6 +1055,11 @@ void TabStripCollectionController::AnnounceTabRemovedFromGroup(
                 contents_string));
 }
 
+BrowserWindowInterface*
+TabStripCollectionController::GetBrowserWindowInterface() const {
+  return browser_view_->browser();
+}
+
 BrowserFrameView* TabStripCollectionController::GetBrowserFrameView() const {
   return browser_view_->browser_widget()
              ? browser_view_->browser_widget()->GetFrameView()

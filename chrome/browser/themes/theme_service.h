@@ -373,6 +373,7 @@ class ThemeService : public KeyedService,
   friend class theme_service_internal::ThemeServiceTestBase;
   friend class ThemeServiceBrowserTest;
   friend class BrowserWidgetColorProviderTest;
+  friend class TabViewTest;
   friend class waap::PrewarmHelper;
 
   // Returns a ColorProviderKey configured with Profile-scoped state. The

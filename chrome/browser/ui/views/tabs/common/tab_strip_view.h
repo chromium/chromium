@@ -18,6 +18,7 @@
 class HorizontalTabStripOverflowIndicatorView;
 class PrefService;
 class TabCollectionNode;
+class TabStripCollectionController;
 class PinnedTabContainerView;
 class UnpinnedTabContainerView;
 class TabScrollButtonContainer;
@@ -45,6 +46,8 @@ class TabStripView final : public views::View,
   TabStripView(const TabStripView&) = delete;
   TabStripView& operator=(const TabStripView&) = delete;
   ~TabStripView() override;
+
+  const TabStripCollectionController* GetController() const;
 
   views::Separator* GetTabsSeparator() const { return tabs_separator_; }
 
