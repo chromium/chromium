@@ -114,6 +114,8 @@ found in the LICENSE file.
     <dimen name="location_bar_min_url_width">20dp</dimen>
     <dimen name="location_bar_min_verbose_status_text_width">48dp</dimen>
     <dimen name="location_bar_minimalistic_ui_threshold">160dp</dimen>
+    <!-- Gap kept between URL text and the optional button's expanded chip. -->
+    <dimen name="location_bar_optional_button_url_gap">4dp</dimen>
     <dimen name="location_bar_start_padding">0dp</dimen>
     <dimen name="location_bar_status_extra_padding">4dp</dimen>
     <dimen name="location_bar_status_icon_holding_space_size">8dp</dimen>

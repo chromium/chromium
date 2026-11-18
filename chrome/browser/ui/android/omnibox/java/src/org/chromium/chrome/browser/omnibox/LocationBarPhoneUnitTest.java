@@ -10,8 +10,12 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
+import android.graphics.Canvas;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
@@ -68,6 +72,7 @@ public class LocationBarPhoneUnitTest {
     private static final int LAYOUT_ROUNDING_TOLERANCE_PX = 2;
 
     private static final int LOCATION_BAR_HEIGHT_PX = 200;
+    private static final int OPTIONAL_BUTTON_OVERLAP_PX = 100;
     private static final String SHORT_URL = "google.com";
     private static final String LONG_URL =
             "https://www.google.com/search?q=" + "verylong".repeat(200);
@@ -80,12 +85,15 @@ public class LocationBarPhoneUnitTest {
     @Mock private StatusCoordinator mStatusCoordinator;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private Canvas mCanvas;
 
     private Activity mActivity;
     private LocationBarPhone mLocationBar;
     private UrlBar mUrlBar;
     private View mStatusView;
+    private View mOptionalButton;
     private int mLocationBarWidthPx;
+    private int mOptionalButtonUrlGapPx;
 
     @Before
     public void setUp() {
@@ -118,6 +126,11 @@ public class LocationBarPhoneUnitTest {
 
         mUrlBar = mLocationBar.findViewById(R.id.url_bar);
         mStatusView = mLocationBar.findViewById(R.id.location_bar_status);
+        mOptionalButton = mLocationBar.findViewById(R.id.optional_button);
+        mOptionalButtonUrlGapPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_optional_button_url_gap);
         // LocationBarPhone hides the group until the mediator reveals it; see
         // LocationBarMediator#onFinishNativeInitialization.
         mLocationBar.setUrlAndStatusGroupVisibility(true);
@@ -258,10 +271,83 @@ public class LocationBarPhoneUnitTest {
         assertEquals(View.VISIBLE, micButton.getVisibility());
     }
 
+    @Test
+    public void urlBarDrawingStopsShortOfOptionalButton_whenButtonCoversUrl() {
+        showUrlWithOptionalButton(LONG_URL);
+        mOptionalButton.setLeft(mUrlBar.getRight() - OPTIONAL_BUTTON_OVERLAP_PX);
+
+        mLocationBar.drawChild(mCanvas, mUrlBar, /* drawingTime= */ 0);
+
+        verify(mCanvas)
+                .clipRect(
+                        0,
+                        0,
+                        mOptionalButton.getLeft() - mOptionalButtonUrlGapPx,
+                        mLocationBar.getHeight());
+    }
+
+    @Test
+    public void urlBarDrawingStopsShortOfOptionalButton_inRtl() {
+        setLayoutDirectionRtl();
+        showUrlWithOptionalButton(LONG_URL);
+        mOptionalButton.setRight(mUrlBar.getLeft() + OPTIONAL_BUTTON_OVERLAP_PX);
+
+        mLocationBar.drawChild(mCanvas, mUrlBar, /* drawingTime= */ 0);
+
+        verify(mCanvas)
+                .clipRect(
+                        mOptionalButton.getRight() + mOptionalButtonUrlGapPx,
+                        0,
+                        mLocationBar.getWidth(),
+                        mLocationBar.getHeight());
+    }
+
+    @Test
+    public void urlBarDrawnInFull_whenOptionalButtonBesideUrl() {
+        showUrlWithOptionalButton(LONG_URL);
+
+        mLocationBar.drawChild(mCanvas, mUrlBar, /* drawingTime= */ 0);
+
+        verifyUrlBarNotClippedAtOptionalButton();
+    }
+
+    @Test
+    public void urlBarDrawnInFull_whenOptionalButtonHidden() {
+        showUrlWithOptionalButton(LONG_URL);
+        mOptionalButton.setLeft(mUrlBar.getRight() - OPTIONAL_BUTTON_OVERLAP_PX);
+        mOptionalButton.setVisibility(View.GONE);
+
+        mLocationBar.drawChild(mCanvas, mUrlBar, /* drawingTime= */ 0);
+
+        verifyUrlBarNotClippedAtOptionalButton();
+    }
+
     /** Sets the URL bar text and runs a full, synchronous measure and layout pass. */
     private void showUrl(String url) {
         mUrlBar.setText(url);
         layoutAtWidth(mLocationBarWidthPx);
+    }
+
+    /** Lays the URL out beside a visible optional button at its collapsed width. */
+    private void showUrlWithOptionalButton(String url) {
+        mOptionalButton.setVisibility(View.VISIBLE);
+        showUrl(url);
+    }
+
+    /** Makes the location bar lay out right to left from the next layout pass. */
+    private void setLayoutDirectionRtl() {
+        // Views resolve to RTL only when the application declares RTL support.
+        mActivity.getApplicationInfo().flags |= ApplicationInfo.FLAG_SUPPORTS_RTL;
+        mLocationBar.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+    }
+
+    private void verifyUrlBarNotClippedAtOptionalButton() {
+        verify(mCanvas, never())
+                .clipRect(
+                        0,
+                        0,
+                        mOptionalButton.getLeft() - mOptionalButtonUrlGapPx,
+                        mLocationBar.getHeight());
     }
 
     /**
