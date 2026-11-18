@@ -222,7 +222,14 @@ public class OtherDevicesShortcutControllerTest {
 
         observerCaptor.getValue().onModelReady();
 
+        // The observer is removed immediately, while sendTabToDevice() is posted to avoid
+        // re-entering SendTabToSelfModel's ObserverList during onModelReady() iteration.
         verify(mNativeMock).removeModelObserver(eq(789L));
+        verify(mNativeMock, never())
+                .sendTabToDevice(any(), any(), any(), any(), any(), any(), anyInt());
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback> callbackCaptor =
                 ArgumentCaptor.forClass(
                         SendTabToSelfAndroidBridge.CommitConfirmationCallback.class);
