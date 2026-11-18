@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/webauthn/gpm_browser_authenticator.h"
+#include "chrome/browser/webauthn/gpm/gpm_browser_authenticator.h"
 
 #include <memory>
 #include <optional>

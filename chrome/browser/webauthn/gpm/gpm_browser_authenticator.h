@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEBAUTHN_GPM_BROWSER_AUTHENTICATOR_H_
-#define CHROME_BROWSER_WEBAUTHN_GPM_BROWSER_AUTHENTICATOR_H_
+#ifndef CHROME_BROWSER_WEBAUTHN_GPM_GPM_BROWSER_AUTHENTICATOR_H_
+#define CHROME_BROWSER_WEBAUTHN_GPM_GPM_BROWSER_AUTHENTICATOR_H_
 
 #include <array>
 #include <cstdint>
@@ -112,4 +112,4 @@ class GpmBrowserAuthenticator : public device::FidoAuthenticator {
   base::WeakPtrFactory<GpmBrowserAuthenticator> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_WEBAUTHN_GPM_BROWSER_AUTHENTICATOR_H_
+#endif  // CHROME_BROWSER_WEBAUTHN_GPM_GPM_BROWSER_AUTHENTICATOR_H_
