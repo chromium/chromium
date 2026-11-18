@@ -687,8 +687,7 @@ bool BuildEnvironmentWithApk(bool use_64_bit,
   auto is_env_var = [](std::string_view entry, std::string_view var) {
     return entry.starts_with(var) && entry.substr(var.size()).starts_with('=');
   };
-  for (char** envp = environ; *envp != nullptr; UNSAFE_TODO(++envp)) {
-    std::string_view entry(*envp);
+  for (std::string& entry : env->GetAllVars()) {
     // Omit LD_PRELOAD when launching a cross-bitness handler, as any preloaded
     // library paths from the current process will have the wrong ELF class and
     // cause the target linker to abort on startup.
@@ -697,7 +696,7 @@ bool BuildEnvironmentWithApk(bool use_64_bit,
         (!is_same_bitness && is_env_var(entry, kLdPreloadVar))) {
       continue;
     }
-    result->emplace_back(entry);
+    result->push_back(std::move(entry));
   }
 
   return true;

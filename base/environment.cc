@@ -23,6 +23,13 @@
 #include <stdlib.h>
 #endif
 
+#if BUILDFLAG(IS_POSIX)
+#include <vector>
+
+#include "base/containers/to_vector.h"
+#include "base/process/environment_internal.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -106,5 +113,11 @@ bool Environment::UnSetVar(cstring_view variable_name) {
 bool Environment::HasVar(cstring_view variable_name) {
   return GetVar(variable_name).has_value();
 }
+
+#if BUILDFLAG(IS_POSIX)
+std::vector<std::string> Environment::GetAllVars() {
+  return ToVector<std::string>(internal::GetEnvironment());
+}
+#endif
 
 }  // namespace base

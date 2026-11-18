@@ -6,11 +6,18 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include <vector>
+
+#include "base/strings/strcat.h"
+#endif
 
 typedef PlatformTest EnvironmentTest;
 
@@ -94,5 +101,34 @@ TEST_F(EnvironmentTest, UnSetVar) {
   // And check that the variable has been unset.
   EXPECT_FALSE(env->HasVar(kFooUpper));
 }
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(EnvironmentTest, GetAllVars) {
+  Environment env;
+  std::optional<std::string> env_value = env.GetVar(kValidEnvironmentVariable);
+  ASSERT_TRUE(env_value.has_value());
+  EXPECT_THAT(env.GetAllVars(),
+              testing::Contains(
+                  StrCat({kValidEnvironmentVariable, "=", env_value.value()})));
+
+  constexpr char kTestVar[] = "BASE_ENVIRONMENT_GET_ALL_VARS_TEST";
+  EXPECT_FALSE(env.HasVar(kTestVar));
+
+  ASSERT_TRUE(env.SetVar(kTestVar, "foo"));
+  EXPECT_THAT(env.GetAllVars(),
+              testing::Contains("BASE_ENVIRONMENT_GET_ALL_VARS_TEST=foo"));
+
+  ASSERT_TRUE(env.SetVar(kTestVar, ""));
+  EXPECT_THAT(env.GetAllVars(),
+              testing::Contains("BASE_ENVIRONMENT_GET_ALL_VARS_TEST="));
+  EXPECT_THAT(env.GetAllVars(), testing::Not(testing::Contains(
+                                    "BASE_ENVIRONMENT_GET_ALL_VARS_TEST=foo")));
+
+  ASSERT_TRUE(env.UnSetVar(kTestVar));
+  EXPECT_THAT(
+      env.GetAllVars(),
+      testing::Not(testing::Contains("BASE_ENVIRONMENT_GET_ALL_VARS_TEST=")));
+}
+#endif
 
 }  // namespace base

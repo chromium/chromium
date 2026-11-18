@@ -15,6 +15,10 @@
 #include "base/strings/cstring_view.h"
 #include "build/build_config.h"
 
+#if BUILDFLAG(IS_POSIX)
+#include <vector>
+#endif
+
 namespace base {
 
 namespace env_vars {
@@ -52,6 +56,12 @@ class BASE_EXPORT Environment {
   // Returns true on success, otherwise returns false. This method should not
   // be called in a multi-threaded process.
   virtual bool UnSetVar(cstring_view variable_name);
+
+#if BUILDFLAG(IS_POSIX)
+  // Returns all environment variables from the system's `environ` array,
+  // typically in "KEY=VALUE" format.
+  virtual std::vector<std::string> GetAllVars();
+#endif
 };
 
 #if BUILDFLAG(IS_WIN)
