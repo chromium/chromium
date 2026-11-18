@@ -2914,6 +2914,20 @@
           </message>
         </else>
       </if>
+
+      <!-- OOBE update installation -->
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_INSTALLING_UPDATE" desc="Label shown on the updates installation screen during OOBE">
+            Please wait while Chrome installs the latest system updates.
+          </message>
+        </then>
+        <else>
+          <message name="IDS_INSTALLING_UPDATE" desc="Label shown on the updates installation screen during OOBE">
+            Please wait while Chromium installs the latest system updates.
+          </message>
+        </else>
+      </if>
     </messages>
   </release>
 </grit>

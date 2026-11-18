@@ -2381,13 +2381,6 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
-      <!-- OOBE -->
-      <if expr="is_chromeos">
-        <message name="IDS_INSTALLING_UPDATE" desc="Label shown on the updates installation screen during OOBE">
-          Please wait while Chromium installs the latest system updates.
-        </message>
-      </if>
-
       <!-- Native notifications for Windows 10 -->
       <if expr="is_win">
         <message name="IDS_WIN_NOTIFICATION_SETTINGS_CONTEXT_MENU_ITEM_NAME" desc="The name of the button in Windows Notification Center which leads to Chrome notification settings.">

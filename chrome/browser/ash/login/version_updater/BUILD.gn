@@ -20,7 +20,6 @@ static_library("version_updater") {
 
   deps = [
     "//ash/login/resources:login_strings",
-    "//chrome/app:branded_strings",
     "//ui/base",
   ]
 }
