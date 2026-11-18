@@ -51,6 +51,12 @@ inline constexpr char kDismissedHistoryScopePromo[] =
 
 inline constexpr char kFocusedSrpWebCount[] = "omnibox.focused_srp_web_count";
 
+// Boolean that specifies whether the user has ever submitted an AI Mode query
+// after opening the Fusebox popup menu. Used to suppress the fusebox promo card
+// for users that have already discovered and used the fusebox.
+inline constexpr char kFuseboxAimQuerySubmitted[] =
+    "omnibox.fusebox_aim_query_submitted";
+
 // Boolean that specifies whether the omnibox should be positioned at the bottom
 // of the screen.
 inline constexpr char kIsOmniboxInBottomPosition[] =

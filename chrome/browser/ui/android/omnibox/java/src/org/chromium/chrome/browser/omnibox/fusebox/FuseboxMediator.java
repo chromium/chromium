@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundS
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.consent.DriveConsentDialog;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -94,6 +95,7 @@ import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -421,6 +423,18 @@ class FuseboxMediator implements BackPressHandler {
         updateFuseboxState();
     }
 
+    /** Called when the current Omnibox session concludes with a user navigation. */
+    void onUserNavigated() {
+        if (!isInInputSession()) {
+            return;
+        }
+        if (mInput.isFuseboxPopupUsed()
+                && !mProfile.isOffTheRecord()
+                && ToolModeUtils.isAimRequest(mInput.getRequestType())) {
+            UserPrefs.get(mProfile).setBoolean(Pref.FUSEBOX_AIM_QUERY_SUBMITTED, true);
+        }
+    }
+
     private void setAutocompleteInput(@Nullable AutocompleteInput input) {
         if (mInput != null) {
             mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
@@ -689,6 +703,7 @@ class FuseboxMediator implements BackPressHandler {
         // Prevent rapid clicks from "showing" the popup more than once.
         if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) return;
         mPopupItemSelected = false;
+        mInput.setFuseboxPopupUsed();
 
         boolean shouldShowBottomSheetPopup = OmniboxFeatures.shouldShowBottomSheetPopup();
         updateModelForCurrentTab();

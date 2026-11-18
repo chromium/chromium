@@ -416,19 +416,23 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testNotifyOmniboxSessionEnded() {
+        mCoordinator.setMediatorForTesting(mMediator);
         mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
         mCoordinator.notifyOmniboxSessionEnded(true);
 
         verify(mMetrics).notifyOmniboxSessionEnded(eq(true), anyInt(), anyInt(), anyInt(), any());
+        verify(mMediator).onUserNavigated();
 
         mCoordinator.endInput();
-        clearInvocations(mMetrics);
+        clearInvocations(mMetrics, mMediator);
 
         mCoordinator.beginInput(mSession);
         mCoordinator.notifyOmniboxSessionEnded(false);
 
         verify(mMetrics).notifyOmniboxSessionEnded(eq(false), anyInt(), anyInt(), anyInt(), any());
+        verify(mMediator, never()).onUserNavigated();
     }
 
     @Test

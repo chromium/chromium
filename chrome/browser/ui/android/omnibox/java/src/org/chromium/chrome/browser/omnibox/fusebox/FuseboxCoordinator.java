@@ -513,6 +513,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                 mInput.getRequestType(),
                 mInput.getModelMode(),
                 mModelList);
+        if (userDidNavigate && mMediator != null) {
+            mMediator.onUserNavigated();
+        }
     }
 
     /** Resets the current input session back to search mode. */

@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMo
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
@@ -132,6 +133,8 @@ import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -296,6 +299,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private TabLoadingService mTabLoadingService;
     @Mock private SimpleRecyclerViewAdapter mMockAdapter;
     @Mock private Callback<Integer> mPopupStateObserver;
+    @Mock private PrefService mPrefService;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
@@ -338,6 +342,7 @@ public class FuseboxMediatorUnitTest {
                 .when(mProfileResolverNatives.tokenizeProfileToBytes(any()))
                 .thenReturn(new byte[] {1, 2, 3});
         TrackerFactory.setTrackerForTests(mTracker);
+        UserPrefs.setPrefServiceForTesting(mPrefService);
 
         mContext =
                 new ContextThemeWrapper(
@@ -4313,5 +4318,48 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.CANVAS);
 
         watcher.assertExpected();
+    }
+
+    @Test
+    public void onUserNavigated_aimWithPopup_recordsPref() {
+        mMediator.onPlusButtonClicked();
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+
+        mMediator.onUserNavigated();
+
+        verify(mPrefService).setBoolean(Pref.FUSEBOX_AIM_QUERY_SUBMITTED, true);
+    }
+
+    @Test
+    public void onUserNavigated_popupNotUsed_doesNotRecordPref() {
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+
+        mMediator.onUserNavigated();
+
+        verify(mPrefService, never())
+                .setBoolean(eq(Pref.FUSEBOX_AIM_QUERY_SUBMITTED), anyBoolean());
+    }
+
+    @Test
+    public void onUserNavigated_conventionalSearch_doesNotRecordPref() {
+        mMediator.onPlusButtonClicked();
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+
+        mMediator.onUserNavigated();
+
+        verify(mPrefService, never())
+                .setBoolean(eq(Pref.FUSEBOX_AIM_QUERY_SUBMITTED), anyBoolean());
+    }
+
+    @Test
+    public void onUserNavigated_offTheRecord_doesNotRecordPref() {
+        doReturn(true).when(mProfile).isOffTheRecord();
+        mMediator.onPlusButtonClicked();
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+
+        mMediator.onUserNavigated();
+
+        verify(mPrefService, never())
+                .setBoolean(eq(Pref.FUSEBOX_AIM_QUERY_SUBMITTED), anyBoolean());
     }
 }

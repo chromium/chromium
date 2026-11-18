@@ -56,6 +56,16 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
+    public void testReset_clearsFuseboxPopupUsed() {
+        mInput.setFuseboxPopupUsed();
+        assertTrue(mInput.isFuseboxPopupUsed());
+
+        mInput.reset();
+
+        assertFalse(mInput.isFuseboxPopupUsed());
+    }
+
+    @Test
     public void setUserText() {
         mInput.setUserText("test");
         assertEquals("test", mInput.getUserText());
@@ -516,6 +526,7 @@ public class AutocompleteInputUnitTest {
         input1.setSelection(new TextSelection(selectionStart, selectionEnd));
         input1.setRefineActionUsage(refineActionUsage);
         input1.setSuggestionsListScrolled();
+        input1.setFuseboxPopupUsed();
         input1.setFocusReason(focusReason);
         input1.setModelMode(modelMode);
         input1.setRequestType(requestType);
@@ -538,6 +549,7 @@ public class AutocompleteInputUnitTest {
         assertEquals(selectionEnd, input2.getSelection().to);
         assertEquals(refineActionUsage, input2.getRefineActionUsage());
         assertTrue(input2.isSuggestionsListScrolled());
+        assertTrue(input2.isFuseboxPopupUsed());
         assertEquals(focusReason, input2.getFocusReason());
         assertEquals(modelMode, input2.getModelMode());
         assertEquals(requestType, input2.getRequestType());

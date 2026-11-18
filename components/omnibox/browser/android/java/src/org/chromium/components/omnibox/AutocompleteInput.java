@@ -193,6 +193,7 @@ public class AutocompleteInput implements UserData {
     private TextSelection mSelection;
     private @RefineActionUsage int mRefineActionUsage;
     private boolean mSuggestionsListScrolled;
+    private boolean mFuseboxPopupUsed;
     private @OmniboxFocusReason int mFocusReason;
     private @ModelMode int mModelMode;
 
@@ -253,6 +254,7 @@ public class AutocompleteInput implements UserData {
         mSelection = other.mSelection; // Copied.
         mRefineActionUsage = other.mRefineActionUsage;
         mSuggestionsListScrolled = other.mSuggestionsListScrolled;
+        mFuseboxPopupUsed = other.mFuseboxPopupUsed;
         mFocusReason = other.mFocusReason;
         mModelMode = other.mModelMode;
         mUserText.set(other.mUserText.get());
@@ -690,6 +692,7 @@ public class AutocompleteInput implements UserData {
         mInitialPreviewMatchUrl = null;
         mUrlFocusTime = 0;
         mSuggestionsListScrolled = false;
+        mFuseboxPopupUsed = false;
         mAutocompleteStateSupplier.set(AutocompleteState.ENABLED);
         mDisplayStateSupplier.set(DisplayState.WEBSITE);
 
@@ -711,6 +714,16 @@ public class AutocompleteInput implements UserData {
 
     public void setSuggestionsListScrolled() {
         mSuggestionsListScrolled = true;
+    }
+
+    /** Returns whether the Fusebox popup menu was opened during this session. */
+    public boolean isFuseboxPopupUsed() {
+        return mFuseboxPopupUsed;
+    }
+
+    /** Marks that the Fusebox popup menu was opened during this session. */
+    public void setFuseboxPopupUsed() {
+        mFuseboxPopupUsed = true;
     }
 
     /**

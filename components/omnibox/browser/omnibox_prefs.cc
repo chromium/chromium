@@ -39,6 +39,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       kDismissedFeaturedEnterpriseSiteSearchIphPrefName, false);
   registry->RegisterBooleanPref(kDismissedHistoryScopePromo, false);
   registry->RegisterBooleanPref(kBottomOmniboxEverUsed, false);
+  registry->RegisterBooleanPref(kFuseboxAimQuerySubmitted, false);
 
   registry->RegisterIntegerPref(kShownCountGeminiIph, 0);
   registry->RegisterIntegerPref(kShownCountEnterpriseSearchAggregatorIph, 0);
