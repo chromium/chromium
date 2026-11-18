@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
@@ -1775,10 +1776,12 @@ TEST_F(MLGraphTest, MLTransposeEliminationTransformerTest) {
         MakeGarbageCollected<TransposeEliminationTransformer>(builder);
     transpose_elimination_transformer->Transform(named_outputs);
 
-    // Expect no change in the graph.
+    // Should be transformed to:
+    // [a] -> transpose -> [b]
+    //  \---> relu -> [d]
     EXPECT_EQ(b->Operator()->Inputs()[0], a);
-    EXPECT_EQ(c->Operator()->Inputs()[0], b);
-    EXPECT_EQ(d->Operator()->Inputs()[0], c);
+    EXPECT_EQ(c->Operator()->Inputs()[0], nullptr);
+    EXPECT_EQ(d->Operator()->Inputs()[0], a);
 
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, named_outputs);
@@ -2184,6 +2187,189 @@ TEST_F(MLGraphTest, MLTransposeEliminationTransformerTest) {
     auto input_operand_id = graph_info->input_operands[0];
     EXPECT_EQ(element_wise_binary->lhs_operand_id, input_operand_id);
     EXPECT_EQ(element_wise_binary->rhs_operand_id, input_operand_id);
+  }
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
+                                           exception_state);
+    ASSERT_THAT(builder, testing::NotNull());
+
+    // Multi-consumer diamond (crbug.com/578362669):
+    // [a] -> relu -> [x] -> transpose({0,2,3,1}) -> [nhwc]
+    //   Branch A: [nhwc] -> reduceMean({1,2}) -> [pooled] ->
+    //             transpose({0,3,1,2}) -> [pooled_nchw]
+    //   Branch B: [nhwc] -> transpose({0,3,1,2}) -> [restored] -> sigmoid ->
+    //             [activated]
+    //   Output:   mul([activated], [pooled_nchw]) -> [out]
+    //
+    // `nhwc` cannot be eliminated by `BracketingContextBuilder` because it
+    // feeds `reduceMean`, but the directly adjacent cancelling transpose
+    // `restored` (`{0,3,1,2}`) should be eliminated so `sigmoid` consumes `x`
+    // directly while keeping `nhwc` for `reduceMean`.
+    auto* a = BuildInput(scope.GetScriptState(), builder, "a", {1, 2, 3, 4},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* x = builder->relu(a, MLOperatorOptions::Create(), exception_state);
+    ASSERT_THAT(x, testing::NotNull());
+
+    auto* to_nhwc_options = MLTransposeOptions::Create();
+    to_nhwc_options->setPermutation({0, 2, 3, 1});
+    auto* nhwc = builder->transpose(x, to_nhwc_options, exception_state);
+    ASSERT_THAT(nhwc, testing::NotNull());
+
+    auto* reduce_options = MLReduceOptions::Create();
+    reduce_options->setAxes({1, 2});
+    reduce_options->setKeepDimensions(true);
+    auto* pooled = builder->reduceMean(nhwc, reduce_options, exception_state);
+    ASSERT_THAT(pooled, testing::NotNull());
+
+    auto* pool_to_nchw_options = MLTransposeOptions::Create();
+    pool_to_nchw_options->setPermutation({0, 3, 1, 2});
+    auto* pooled_nchw =
+        builder->transpose(pooled, pool_to_nchw_options, exception_state);
+    ASSERT_THAT(pooled_nchw, testing::NotNull());
+
+    auto* to_nchw_options = MLTransposeOptions::Create();
+    to_nchw_options->setPermutation({0, 3, 1, 2});
+    auto* restored = builder->transpose(nhwc, to_nchw_options, exception_state);
+    ASSERT_THAT(restored, testing::NotNull());
+
+    auto* activated = builder->sigmoid(restored, MLOperatorOptions::Create(),
+                                       exception_state);
+    ASSERT_THAT(activated, testing::NotNull());
+
+    auto* out = builder->mul(activated, pooled_nchw,
+                             MLOperatorOptions::Create(), exception_state);
+    ASSERT_THAT(out, testing::NotNull());
+
+    MLNamedOperands named_outputs = {{"out", out}};
+    auto* transpose_elimination_transformer =
+        MakeGarbageCollected<TransposeEliminationTransformer>(builder);
+    transpose_elimination_transformer->Transform(named_outputs);
+
+    EXPECT_EQ(nhwc->Operator()->Inputs()[0], x);
+    EXPECT_EQ(restored->Operator()->Inputs()[0], nullptr);
+    EXPECT_EQ(activated->Operator()->Inputs()[0], x);
+
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, named_outputs);
+    ASSERT_THAT(graph, testing::NotNull());
+  }
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
+                                           exception_state);
+    ASSERT_THAT(builder, testing::NotNull());
+
+    // Nested cancelling chain:
+    // [a] -> T1({0,2,3,1}) -> T2({0,3,2,1}) -> T3({0,3,2,1}) -> T4({0,3,1,2})
+    //     -> relu -> [out]
+    // All four transposes should be eliminated.
+    auto* a = BuildInput(scope.GetScriptState(), builder, "a", {1, 2, 3, 4},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* opts1 = MLTransposeOptions::Create();
+    opts1->setPermutation({0, 2, 3, 1});
+    auto* t1 = builder->transpose(a, opts1, exception_state);
+    auto* opts2 = MLTransposeOptions::Create();
+    opts2->setPermutation({0, 3, 2, 1});
+    auto* t2 = builder->transpose(t1, opts2, exception_state);
+    auto* opts3 = MLTransposeOptions::Create();
+    opts3->setPermutation({0, 3, 2, 1});
+    auto* t3 = builder->transpose(t2, opts3, exception_state);
+    auto* opts4 = MLTransposeOptions::Create();
+    opts4->setPermutation({0, 3, 1, 2});
+    auto* t4 = builder->transpose(t3, opts4, exception_state);
+    auto* out = builder->relu(t4, MLOperatorOptions::Create(), exception_state);
+    ASSERT_THAT(out, testing::NotNull());
+
+    MLNamedOperands named_outputs = {{"out", out}};
+    MakeGarbageCollected<TransposeEliminationTransformer>(builder)->Transform(
+        named_outputs);
+
+    EXPECT_EQ(out->Operator()->Inputs()[0], a);
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, named_outputs);
+    ASSERT_THAT(graph, testing::NotNull());
+  }
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
+                                           exception_state);
+    ASSERT_THAT(builder, testing::NotNull());
+
+    // Safety guard: when `T2` is a graph output, it must not be rewired to a
+    // graph `kInput` or to an operator output already bound in `named_outputs`.
+    auto* a = BuildInput(scope.GetScriptState(), builder, "a", {3, 4, 5},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* opts1 = MLTransposeOptions::Create();
+    opts1->setPermutation({0, 2, 1});
+    auto* b = builder->transpose(a, opts1, exception_state);
+    auto* opts2 = MLTransposeOptions::Create();
+    opts2->setPermutation({0, 2, 1});
+    auto* c = builder->transpose(b, opts2, exception_state);
+
+    auto* x = builder->relu(a, MLOperatorOptions::Create(), exception_state);
+    auto* opts3 = MLTransposeOptions::Create();
+    opts3->setPermutation({0, 2, 1});
+    auto* d = builder->transpose(x, opts3, exception_state);
+    auto* opts4 = MLTransposeOptions::Create();
+    opts4->setPermutation({0, 2, 1});
+    auto* e = builder->transpose(d, opts4, exception_state);
+
+    MLNamedOperands named_outputs = {{"c", c}, {"x", x}, {"e", e}};
+    MakeGarbageCollected<TransposeEliminationTransformer>(builder)->Transform(
+        named_outputs);
+
+    EXPECT_EQ(c->Operator()->Inputs()[0], b);
+    EXPECT_EQ(e->Operator()->Inputs()[0], d);
+
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, named_outputs);
+    ASSERT_THAT(graph, testing::NotNull());
+  }
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    auto* builder = MLGraphBuilder::Create(scope.GetScriptState(), context,
+                                           exception_state);
+    ASSERT_THAT(builder, testing::NotNull());
+
+    // Bracketing priority:
+    // [a] -> relu0 -> [x] -> T1({0,3,1,2}) [graph output] -> T2({0,2,3,1}) ->
+    //     relu1 -> T3({0,3,1,2}) [graph output]
+    // Running `BracketingContextBuilder` before adjacent cancelling transpose
+    // elimination eliminates both `T2` and `T3` (leaving only `T1`), rather
+    // than eagerly pairing `T1` + `T2` and stranding `T3`.
+    auto* a = BuildInput(scope.GetScriptState(), builder, "a", {1, 3, 4, 2},
+                         V8MLOperandDataType::Enum::kFloat32, exception_state);
+    auto* x = builder->relu(a, MLOperatorOptions::Create(), exception_state);
+    auto* opts1 = MLTransposeOptions::Create();
+    opts1->setPermutation({0, 3, 1, 2});
+    auto* t1 = builder->transpose(x, opts1, exception_state);
+    auto* opts2 = MLTransposeOptions::Create();
+    opts2->setPermutation({0, 2, 3, 1});
+    auto* t2 = builder->transpose(t1, opts2, exception_state);
+    auto* r1 = builder->relu(t2, MLOperatorOptions::Create(), exception_state);
+    auto* opts3 = MLTransposeOptions::Create();
+    opts3->setPermutation({0, 3, 1, 2});
+    auto* t3 = builder->transpose(r1, opts3, exception_state);
+
+    MLNamedOperands named_outputs = {{"t1", t1}, {"t3", t3}};
+    MakeGarbageCollected<TransposeEliminationTransformer>(builder)->Transform(
+        named_outputs);
+
+    EXPECT_EQ(t1->Operator()->Inputs()[0], x);
+    EXPECT_EQ(t2->Operator()->Inputs()[0], nullptr);
+    EXPECT_EQ(t3->Operator()->Inputs()[0], nullptr);
+    MLOperand* updated_r1 = r1->Operator()->Outputs()[0];
+    EXPECT_EQ(updated_r1->Operator()->Inputs()[0], t1);
+    EXPECT_EQ(named_outputs[1].second, updated_r1);
+
+    auto [graph, error_name, error_message] =
+        BuildGraph(scope, builder, named_outputs);
+    ASSERT_THAT(graph, testing::NotNull());
   }
 }
 

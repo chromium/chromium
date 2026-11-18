@@ -30,6 +30,10 @@ class MODULES_EXPORT TransposeEliminationTransformer
       MLOperator* transpose,
       HeapHashSet<Member<const MLOperator>>& graph_output_operators,
       MLNamedOperands& named_outputs);
+  void EliminateAdjacentTranspose(
+      MLOperator* transpose,
+      HeapHashSet<Member<const MLOperator>>& graph_output_operators,
+      MLNamedOperands& named_outputs);
 
   HeapHashSet<Member<const MLOperator>> visited_transposes_;
 };

@@ -25,6 +25,18 @@ void TransposeEliminationTransformer::Transform(
       HandleTranspose(op, graph_output_operators, named_outputs);
     }
   }
+
+  // Eliminate remaining directly adjacent cancelling transposes
+  // (`T1(p) -> T2(p_inv)`), such as when `T1` cannot be eliminated by
+  // `BracketingContextBuilder` because it is a graph output or also feeds a
+  // layout-sensitive operator like `reduceMean` (crbug.com/578362669).
+  sorted_operators = GetOperatorsInTopologicalOrder(named_outputs);
+  for (auto& op : sorted_operators) {
+    if (op->Kind() == webnn::mojom::blink::Operation::Tag::kTranspose &&
+        !visited_transposes_.Contains(op)) {
+      EliminateAdjacentTranspose(op, graph_output_operators, named_outputs);
+    }
+  }
 }
 
 void TransposeEliminationTransformer::Trace(Visitor* visitor) const {
@@ -293,37 +305,12 @@ void TransposeEliminationTransformer::HandleTranspose(
       BracketingContextBuilder::CreateAndBuildBracketingContext(
           graph_output_operators, transpose);
 
-  if (!context) {
+  if (!context || context->intermediate_nodes.empty()) {
     return;
   }
 
   CHECK_GT(context->in_transposes.size(), 0u);
   CHECK_GT(context->out_transposes.size(), 0u);
-
-  bool is_in_transposes_input_all_graph_input = true;
-  bool is_out_transposes_output_all_graph_output = true;
-
-  for (auto& in_transpose : context->in_transposes) {
-    if (in_transpose->PositionalInputs()[0]->Kind() !=
-        webnn::mojom::blink::Operand::Kind::kInput) {
-      is_in_transposes_input_all_graph_input = false;
-      break;
-    }
-  }
-
-  for (auto& out_transpose : context->out_transposes) {
-    if (!graph_output_operators.Contains(out_transpose)) {
-      is_out_transposes_output_all_graph_output = false;
-      break;
-    }
-  }
-
-  // Make sure the final graph at least has one operator.
-  if (is_in_transposes_input_all_graph_input &&
-      is_out_transposes_output_all_graph_output &&
-      context->intermediate_nodes.size() == 0) {
-    return;
-  }
 
   // Perform the eliminations.
   auto original_input_shape = context->in_transposes[0]->Inputs()[0]->shape();
@@ -360,6 +347,66 @@ void TransposeEliminationTransformer::HandleTranspose(
         }
       }
     }
+  }
+}
+
+void TransposeEliminationTransformer::EliminateAdjacentTranspose(
+    MLOperator* transpose,
+    HeapHashSet<Member<const MLOperator>>& graph_output_operators,
+    MLNamedOperands& named_outputs) {
+  CHECK_EQ(transpose->Kind(), webnn::mojom::blink::Operation::Tag::kTranspose);
+  MLOperand* transpose_input = transpose->PositionalInputs()[0].Get();
+  if (!transpose_input ||
+      transpose_input->Kind() != webnn::mojom::blink::Operand::Kind::kOutput) {
+    return;
+  }
+
+  MLOperator* prev_transpose = transpose_input->Operator();
+  if (prev_transpose->Kind() !=
+      webnn::mojom::blink::Operation::Tag::kTranspose) {
+    return;
+  }
+
+  const wtf_size_t rank = transpose->Outputs()[0]->Rank();
+  Vector<uint32_t> perm =
+      static_cast<const MLTransposeOptions*>(transpose->Options())
+          ->getPermutationOr(CreateDefaultPermutation(rank));
+  Vector<uint32_t> prev_perm =
+      static_cast<const MLTransposeOptions*>(prev_transpose->Options())
+          ->getPermutationOr(CreateDefaultPermutation(rank));
+  if (prev_perm != InversePermutation(perm)) {
+    return;
+  }
+
+  MLOperand* source_operand = prev_transpose->PositionalInputs()[0].Get();
+  if (graph_output_operators.Contains(transpose)) {
+    // A graph output operand must be produced by an operator (not a graph input
+    // or constant, which also preserves at least one operator in the graph) and
+    // must not alias an operator whose output is already in `named_outputs`.
+    if (source_operand->Kind() != webnn::mojom::blink::Operand::Kind::kOutput ||
+        graph_output_operators.Contains(source_operand->Operator())) {
+      return;
+    }
+  }
+
+  visited_transposes_.insert(transpose);
+  SwapInput(transpose, 0u, source_operand);
+  RemoveUnaryOperator(transpose);
+
+  if (graph_output_operators.Contains(transpose)) {
+    graph_output_operators.erase(transpose);
+    graph_output_operators.insert(source_operand->Operator());
+    for (auto& named_output : named_outputs) {
+      if (named_output.second.Get() == transpose->Outputs()[0].Get()) {
+        named_output.second = source_operand;
+      }
+    }
+  }
+
+  if (transpose_input->DependentOperators().empty() &&
+      !graph_output_operators.Contains(prev_transpose)) {
+    visited_transposes_.insert(prev_transpose);
+    RemoveUnaryOperator(prev_transpose);
   }
 }
 
