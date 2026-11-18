@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -17,6 +18,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom-blink.h"
 #include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -25,12 +30,14 @@
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_thread.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "v8/include/cppgc/testing.h"
 
 namespace blink {
 
@@ -543,4 +550,205 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ServiceWorkerGlobalScopeAbortedErrorMessageTest,
                          testing::Bool());
 
+namespace {
+
+// Mojo response receiver that records fallback invocations and signals
+// completion when either `OnFallback()` arrives or the remote pipe is reset
+// prematurely during Oilpan garbage collection.
+class TestFetchResponseCallback
+    : public mojom::blink::ServiceWorkerFetchResponseCallback {
+ public:
+  explicit TestFetchResponseCallback(base::RepeatingClosure on_done_closure)
+      : on_done_closure_(std::move(on_done_closure)) {}
+
+  mojo::PendingRemote<mojom::blink::ServiceWorkerFetchResponseCallback>
+  BindNewPipeAndPassRemote() {
+    auto remote = receiver_.BindNewPipeAndPassRemote();
+    // Reset the receiver and quit the run loop if the remote disconnects
+    // without sending a response (which happens when the HeapMojoRemote wrapper
+    // is collected by GC before OnFallback() is invoked).
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &TestFetchResponseCallback::OnDisconnect, base::Unretained(this)));
+    return remote;
+  }
+
+  int fallback_count() const { return fallback_count_; }
+  int request_body_count() const { return request_body_count_; }
+
+  // mojom::blink::ServiceWorkerFetchResponseCallback:
+  void OnResponse(
+      mojom::blink::FetchAPIResponsePtr response,
+      mojom::blink::ServiceWorkerFetchEventTimingPtr timing,
+      mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors) override {}
+  void OnResponseStream(
+      mojom::blink::FetchAPIResponsePtr response,
+      mojom::blink::ServiceWorkerStreamHandlePtr body_as_stream,
+      mojom::blink::ServiceWorkerFetchEventTimingPtr timing,
+      mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors) override {}
+  void OnFallback(
+      std::optional<network::DataElementChunkedDataPipe> request_body,
+      mojom::blink::ServiceWorkerFetchEventTimingPtr timing,
+      mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors) override {
+    ++fallback_count_;
+    if (request_body.has_value()) {
+      ++request_body_count_;
+    }
+    receiver_.reset();
+    if (on_done_closure_) {
+      on_done_closure_.Run();
+    }
+  }
+
+ private:
+  void OnDisconnect() {
+    receiver_.reset();
+    if (on_done_closure_) {
+      on_done_closure_.Run();
+    }
+  }
+
+  mojo::Receiver<mojom::blink::ServiceWorkerFetchResponseCallback> receiver_{
+      this};
+  base::RepeatingClosure on_done_closure_;
+  int fallback_count_ = 0;
+  int request_body_count_ = 0;
+};
+
+class ServiceWorkerGlobalScopeGCTest : public ServiceWorkerGlobalScopeTest {
+ public:
+  void SetUp() override {
+    // Configure `--cppgc-random-gc-interval` before `ServiceWorkerThread`
+    // construction so the worker backing thread's `CppHeap` initializes
+    // `allocation_timeout_` on thread attachment.
+    v8::V8::SetFlagsFromString(
+        "--fuzzer-random-seed=42 --cppgc-random-gc-interval=50");
+    ServiceWorkerGlobalScopeTest::SetUp();
+  }
+
+  void TearDown() override {
+    ServiceWorkerGlobalScopeTest::TearDown();
+    v8::V8::SetFlagsFromString("--cppgc-random-gc-interval=0");
+  }
+};
+
+}  // namespace
+
+// Verifies that `RespondToFetchEventWithNoResponse` retains the
+// `HeapMojoRemote` response callback wrapper in `fetch_response_callbacks_`
+// across the Oilpan hash table allocation in
+// `pending_streaming_upload_fetch_events_.insert(...)` when a garbage
+// collection is triggered on allocation (crbug.com/565681452).
+TEST_F(ServiceWorkerGlobalScopeGCTest,
+       RespondToFetchEventWithNoResponse_StreamingUploadGC) {
+  const KURL script_url("http://fake.url/");
+  auto creation_params = GlobalScopeCreationParams::CreateForWorkerForTesting(
+      security_origin_.get(), script_url);
+  std::ignore = creation_params->browser_interface_broker
+                    .InitWithNewPipeAndPassReceiver();
+  worker_thread_->Start(std::move(creation_params),
+                        WorkerBackingThreadStartupData::CreateDefault(),
+                        std::make_unique<WorkerDevToolsParams>());
+
+  base::WaitableEvent completion_event;
+  PostCrossThreadTask(
+      *worker_thread_->GetWorkerBackingThread().BackingThread().GetTaskRunner(),
+      FROM_HERE,
+      CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                          CrossThreadUnretained(&completion_event)));
+  completion_event.Wait();
+
+  base::RunLoop run_loop;
+  TestFetchResponseCallback response_callback(run_loop.QuitClosure());
+  mojo::PendingRemote<mojom::blink::ServiceWorkerFetchResponseCallback>
+      response_callback_remote = response_callback.BindNewPipeAndPassRemote();
+
+  PostCrossThreadTask(
+      *worker_thread_->GetWorkerBackingThread().BackingThread().GetTaskRunner(),
+      FROM_HERE,
+      CrossThreadBindOnce(
+          [](WorkerThread* thread,
+             mojo::PendingRemote<
+                 mojom::blink::ServiceWorkerFetchResponseCallback>
+                 response_callback_remote) {
+            auto* global_scope =
+                To<ServiceWorkerGlobalScope>(thread->GlobalScope());
+            global_scope->DeferPrepareForEvaluation();
+            global_scope->RunDeferredPrepareForEvaluation();
+            auto* service_worker =
+                static_cast<mojom::blink::ServiceWorker*>(global_scope);
+            service_worker->ExecuteScriptForTest(
+                "self.onfetch = e => e.respondWith(new Promise(() => {}));",
+                /*wants_result=*/false, base::DoNothing());
+            global_scope->DidEvaluateScript();
+
+            const KURL request_url("https://example.com/upload");
+            auto dispatch_fetch_event =
+                [&](mojo::PendingRemote<
+                    mojom::blink::ServiceWorkerFetchResponseCallback>
+                        callback) {
+                  auto request = mojom::blink::FetchAPIRequest::New();
+                  request->url = request_url;
+                  request->method = "POST";
+                  request->is_main_resource_load = true;
+
+                  auto params = mojom::blink::DispatchFetchEventParams::New();
+                  params->request = std::move(request);
+                  params->client_id = "client_id";
+
+                  service_worker->DispatchFetchEventForMainResource(
+                      std::move(params), std::move(callback),
+                      base::DoNothing());
+                };
+
+            // Start two fetch events (IDs 1 and 2). Both stay unanswered, so
+            // both response callbacks remain registered once event dispatch
+            // has returned. Only event 1 is responded to below. Event 2 keeps
+            // the callback map non-empty: removing the last entry may shrink
+            // the table, i.e. allocate, inside `Take()` while the taken
+            // callback is referenced only from the stack, which the GC forced
+            // below does not scan.
+            dispatch_fetch_event(std::move(response_callback_remote));
+            mojo::PendingRemote<
+                mojom::blink::ServiceWorkerFetchResponseCallback>
+                unanswered_callback;
+            std::ignore = unanswered_callback.InitWithNewPipeAndPassReceiver();
+            dispatch_fetch_event(std::move(unanswered_callback));
+
+            // Make every subsequent Oilpan allocation on this thread trigger a
+            // GC. The countdown drawn with the fixture's initial interval (50)
+            // must run out before the new interval takes effect, hence the 50
+            // throwaway allocations.
+            v8::V8::SetFlagsFromString("--cppgc-random-gc-interval=1");
+            for (int i = 0; i < 50; ++i) {
+              MakeGarbageCollected<FetchRequestData>(global_scope);
+            }
+
+            mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>
+                pipe_getter;
+            std::ignore = pipe_getter.InitWithNewPipeAndPassReceiver();
+            std::optional<network::DataElementChunkedDataPipe> request_body(
+                std::in_place, std::move(pipe_getter),
+                network::DataElementChunkedDataPipe::ReadOnlyOnce(true));
+
+            // Respond from the top of this task, where no event dispatch is on
+            // the stack, and have the GCs triggered inside the call ignore the
+            // stack. A response callback that is no longer reachable from the
+            // heap when the event is recorded as a pending streaming upload is
+            // then collected before it is invoked.
+            cppgc::testing::OverrideEmbedderStackStateScope stack_state_scope(
+                ThreadState::Current()->heap_handle(),
+                cppgc::EmbedderStackState::kNoHeapPointers);
+            global_scope->RespondToFetchEventWithNoResponse(
+                /*fetch_event_id=*/1, /*fetch_event=*/nullptr, request_url,
+                /*range_request=*/false, std::move(request_body),
+                base::TimeTicks::Now(), base::TimeTicks::Now(),
+                /*errors=*/nullptr);
+          },
+          CrossThreadUnretained(worker_thread_.get()),
+          std::move(response_callback_remote)));
+  run_loop.Run();
+
+  EXPECT_EQ(1, response_callback.fallback_count());
+  EXPECT_EQ(1, response_callback.request_body_count());
+}
 }  // namespace blink

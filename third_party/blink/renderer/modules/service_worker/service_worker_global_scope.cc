@@ -1022,8 +1022,6 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
   // out.
   if (!fetch_response_callbacks_.Contains(fetch_event_id))
     return;
-  mojom::blink::ServiceWorkerFetchResponseCallback* response_callback =
-      fetch_response_callbacks_.Take(fetch_event_id)->Value().get();
 
   auto timing = mojom::blink::ServiceWorkerFetchEventTiming::New();
   timing->dispatch_event_time = event_dispatch_time;
@@ -1035,8 +1033,14 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
     pending_streaming_upload_fetch_events_.insert(fetch_event_id, fetch_event);
   }
 
-  response_callback->OnFallback(std::move(request_body), std::move(timing),
-                                std::move(errors));
+  // Take and invoke the callback after all Oilpan allocations (such as
+  // `pending_streaming_upload_fetch_events_.insert()`), as a GC triggered
+  // after `Take()` would collect the unrooted `HeapMojoRemote` wrapper and
+  // reset its underlying Mojo proxy before `OnFallback()` is called.
+  fetch_response_callbacks_.Take(fetch_event_id)
+      ->Value()
+      ->OnFallback(std::move(request_body), std::move(timing),
+                   std::move(errors));
 }
 void ServiceWorkerGlobalScope::OnStreamingUploadCompletion(int fetch_event_id) {
   pending_streaming_upload_fetch_events_.erase(fetch_event_id);
@@ -1059,17 +1063,15 @@ void ServiceWorkerGlobalScope::RespondToFetchEvent(
   if (!fetch_response_callbacks_.Contains(fetch_event_id))
     return;
 
-  mojom::blink::ServiceWorkerFetchResponseCallback* response_callback =
-      fetch_response_callbacks_.Take(fetch_event_id)->Value().get();
-
   auto timing = mojom::blink::ServiceWorkerFetchEventTiming::New();
   timing->dispatch_event_time = event_dispatch_time;
   timing->respond_with_settled_time = respond_with_settled_time;
 
   NoteRespondedToFetchEvent(request_url, range_request);
 
-  response_callback->OnResponse(std::move(response), std::move(timing),
-                                std::move(errors));
+  fetch_response_callbacks_.Take(fetch_event_id)
+      ->Value()
+      ->OnResponse(std::move(response), std::move(timing), std::move(errors));
 }
 
 void ServiceWorkerGlobalScope::RespondToFetchEventWithResponseStream(
@@ -1090,8 +1092,6 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithResponseStream(
   // out.
   if (!fetch_response_callbacks_.Contains(fetch_event_id))
     return;
-  mojom::blink::ServiceWorkerFetchResponseCallback* response_callback =
-      fetch_response_callbacks_.Take(fetch_event_id)->Value().get();
 
   auto timing = mojom::blink::ServiceWorkerFetchEventTiming::New();
   timing->dispatch_event_time = event_dispatch_time;
@@ -1099,9 +1099,10 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithResponseStream(
 
   NoteRespondedToFetchEvent(request_url, range_request);
 
-  response_callback->OnResponseStream(std::move(response),
-                                      std::move(body_as_stream),
-                                      std::move(timing), std::move(errors));
+  fetch_response_callbacks_.Take(fetch_event_id)
+      ->Value()
+      ->OnResponseStream(std::move(response), std::move(body_as_stream),
+                         std::move(timing), std::move(errors));
 }
 
 void ServiceWorkerGlobalScope::DidHandleFetchEvent(
@@ -1224,9 +1225,9 @@ void ServiceWorkerGlobalScope::RespondToAbortPaymentEvent(
               perfetto::Flow::ProcessScoped(
                   event_id, kServiceWorkerGlobalScopeTraceScope));
   DCHECK(abort_payment_result_callbacks_.Contains(event_id));
-  payments::mojom::blink::PaymentHandlerResponseCallback* result_callback =
-      abort_payment_result_callbacks_.Take(event_id)->Value().get();
-  result_callback->OnResponseForAbortPayment(payment_aborted);
+  abort_payment_result_callbacks_.Take(event_id)
+      ->Value()
+      ->OnResponseForAbortPayment(payment_aborted);
 }
 
 void ServiceWorkerGlobalScope::DidHandleAbortPaymentEvent(
@@ -1253,9 +1254,9 @@ void ServiceWorkerGlobalScope::RespondToCanMakePaymentEvent(
               perfetto::Flow::ProcessScoped(
                   event_id, kServiceWorkerGlobalScopeTraceScope));
   DCHECK(can_make_payment_result_callbacks_.Contains(event_id));
-  payments::mojom::blink::PaymentHandlerResponseCallback* result_callback =
-      can_make_payment_result_callbacks_.Take(event_id)->Value().get();
-  result_callback->OnResponseForCanMakePayment(std::move(response));
+  can_make_payment_result_callbacks_.Take(event_id)
+      ->Value()
+      ->OnResponseForCanMakePayment(std::move(response));
 }
 
 void ServiceWorkerGlobalScope::DidHandleCanMakePaymentEvent(
@@ -1282,9 +1283,9 @@ void ServiceWorkerGlobalScope::RespondToPaymentRequestEvent(
               perfetto::Flow::ProcessScoped(
                   payment_event_id, kServiceWorkerGlobalScopeTraceScope));
   DCHECK(payment_response_callbacks_.Contains(payment_event_id));
-  payments::mojom::blink::PaymentHandlerResponseCallback* response_callback =
-      payment_response_callbacks_.Take(payment_event_id)->Value().get();
-  response_callback->OnResponseForPaymentRequest(std::move(response));
+  payment_response_callbacks_.Take(payment_event_id)
+      ->Value()
+      ->OnResponseForPaymentRequest(std::move(response));
 }
 
 void ServiceWorkerGlobalScope::DidHandlePaymentRequestEvent(
