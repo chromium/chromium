@@ -70,7 +70,6 @@ int LocalFileStreamReader::Read(scoped_refptr<net::IOBuffer> buf,
   DCHECK(!has_pending_open_);
 
   if (stream_impl_) {
-    callback_ = std::move(callback);
     const auto result =
         stream_impl_->Read(buf.get(), buf_len,
                            base::BindOnce(&LocalFileStreamReader::OnRead,
@@ -78,8 +77,8 @@ int LocalFileStreamReader::Read(scoped_refptr<net::IOBuffer> buf,
     const int read_result = result.has_value()
                                 ? base::checked_cast<int>(result->InBytes())
                                 : result.error();
-    if (read_result != net::ERR_IO_PENDING) {
-      std::move(callback_).Run(read_result);
+    if (read_result == net::ERR_IO_PENDING) {
+      callback_ = std::move(callback);
     }
     return read_result;
   }
@@ -135,7 +134,10 @@ void LocalFileStreamReader::OnScopedFileAccessRequested(
     net::CompletionOnceCallback callback,
     file_access::ScopedFileAccess scoped_file_access) {
   if (!scoped_file_access.is_allowed()) {
-    std::move(callback).Run(net::ERR_ACCESS_DENIED);
+    // Post asynchronously so `Read()` never invokes its completion callback
+    // synchronously before returning `net::ERR_IO_PENDING`.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), net::ERR_ACCESS_DENIED));
     return;
   }
 
