@@ -27,12 +27,33 @@ source_set("service_name") {
   ]
 }
 
+# Who may send requests to the local-actuation Mach service, and the layout of
+# its messages.
+source_set("peer_verifier") {
+  sources = [
+    "local_actuation_peer_verifier.cc",
+    "local_actuation_peer_verifier.h",
+    "local_actuation_wire_format.cc",
+    "local_actuation_wire_format.h",
+    "peer_verifier.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "local_actuation_service_name_unittest.cc" ]
+  sources = [
+    "local_actuation_service_name_unittest.cc",
+    "local_actuation_wire_format_unittest.cc",
+  ]
 
   deps = [
+    ":peer_verifier",
     ":service_name",
     "//base",
     "//testing/gtest",
