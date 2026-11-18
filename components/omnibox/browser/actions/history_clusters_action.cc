@@ -106,9 +106,6 @@ void HistoryClustersAction::RecordActionShown(size_t position,
         AutocompleteResult::kMaxAutocompletePositionValue);
   }
 
-  base::UmaHistogramBoolean("Omnibox.SuggestionUsed.ResumeJourneyCTR",
-                            executed);
-
   // Record cluster keyword type UMA metrics.
   RecordShownUsedEnumAndCtrMetrics<
       history::ClusterKeywordData::ClusterKeywordType>(
