@@ -33,6 +33,7 @@
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
 #include "chrome/browser/ttc/core/voice_focused_contents_tracker.h"
+#include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ttc/app/public/conversation.h"
@@ -40,6 +41,10 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_SPEECH_SERVICE)
+#include "chrome/browser/ttc/core/hotl/soda_hotl_installer.h"
+#endif
 
 namespace ttc {
 
@@ -110,6 +115,9 @@ SessionControllerImpl::SessionControllerImpl(
     pointer_tracker_ = std::make_unique<PointerTracker>(
         PointerTrackerConfigFromFeatureParams());
   }
+#if BUILDFLAG(ENABLE_SPEECH_SERVICE)
+  hotl::PrecacheSodaForHotl(CHECK_DEREF(service.profile()));
+#endif
   voice_focused_contents_tracker_observation_.Observe(
       voice_focused_contents_tracker_.get());
 

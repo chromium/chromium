@@ -27,10 +27,10 @@ class HotlSpeechRecognizer {
 
   virtual ~HotlSpeechRecognizer() = default;
 
-  // Starts local speech recognition for `locale` (BCP-47 tag, e.g. "en-US";
-  // if empty, defaults to the user's Live Caption language preference).
-  // Invokes `on_transcript` whenever a finalized speech segment arrives, or
-  // `on_error` if local recognition cannot start or disconnects.
+  // Starts local speech recognition for `locale` (non-empty BCP-47 tag, e.g.
+  // "en-US", resolved via `hotl::GetHotlRecognitionLanguage`). Invokes
+  // `on_transcript` whenever a finalized speech segment arrives, or `on_error`
+  // if local recognition cannot start or disconnects.
   virtual void Start(std::string_view locale,
                      TranscriptCallback on_transcript,
                      ErrorCallback on_error) = 0;

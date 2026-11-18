@@ -181,6 +181,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
+    "//chrome/services/speech/buildflags",
     "//components/critical_actions/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/content/browser",
@@ -202,12 +203,19 @@ source_set("impl") {
   ]
   if (enable_speech_service) {
     sources += [
+      "hotl/soda_hotl_installer.cc",
+      "hotl/soda_hotl_installer.h",
       "hotl/soda_hotl_speech_recognizer.cc",
       "hotl/soda_hotl_speech_recognizer.h",
     ]
     deps += [
+      "//chrome/browser:browser_process",
       "//chrome/browser/speech",
-      "//chrome/services/speech/buildflags",
+      "//components/live_caption:constants",
+      "//components/prefs",
+      "//components/soda",
+      "//components/soda:constants",
+      "//components/soda:utils",
       "//media",
       "//media/mojo/mojom:audio_data",
       "//media/mojo/mojom:speech_recognition",
@@ -355,12 +363,27 @@ source_set("unit_tests") {
     "//google_apis",
   ]
   if (enable_speech_service) {
-    sources += [ "hotl/soda_hotl_speech_recognizer_unittest.cc" ]
+    sources += [
+      "hotl/soda_hotl_installer_unittest.cc",
+      "hotl/soda_hotl_speech_recognizer_unittest.cc",
+    ]
     deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/speech",
+      "//chrome/services/speech/buildflags",
+      "//components/live_caption:constants",
+      "//components/prefs",
+      "//components/soda",
+      "//components/soda:constants",
+      "//components/soda:test_support",
+      "//components/soda:utils",
       "//media",
       "//media/mojo/mojom:audio_data",
       "//media/mojo/mojom:speech_recognition",
     ]
+    if (is_chromeos) {
+      deps += [ "//ash/constants" ]
+    }
   }
   if (is_android) {
     sources += [ "voice_focused_contents_tracker_android_unittest.cc" ]

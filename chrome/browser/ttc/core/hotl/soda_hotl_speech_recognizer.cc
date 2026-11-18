@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
+#include "chrome/browser/ttc/core/hotl/soda_hotl_installer.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
@@ -59,6 +60,7 @@ CreateProfileContextBinder(Profile& profile) {
         if (!weak_profile) {
           return;
         }
+        hotl::PrecacheSodaForHotl(*weak_profile);
         speech::SpeechRecognitionService* service =
             GetSpeechRecognitionService(weak_profile.get());
         if (service) {
@@ -89,6 +91,7 @@ void SodaHotlSpeechRecognizer::Start(std::string_view locale,
                                      ErrorCallback on_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!context_remote_.is_bound());
+  CHECK(!locale.empty());
   on_transcript_ = std::move(on_transcript);
   on_error_ = std::move(on_error);
 
@@ -99,9 +102,7 @@ void SodaHotlSpeechRecognizer::Start(std::string_view locale,
   auto options = media::mojom::SpeechRecognitionOptions::New();
   options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
   options->enable_formatting = false;
-  if (!locale.empty()) {
-    options->language = std::string(locale);
-  }
+  options->language = std::string(locale);
   options->is_server_based = false;
   options->allow_multi_language = false;
   // TODO(crbug.com/560229926): Introduce RecognizerClientType::kTtc in
@@ -111,8 +112,6 @@ void SodaHotlSpeechRecognizer::Start(std::string_view locale,
   options->recognizer_client_type =
       media::mojom::RecognizerClientType::kLiveCaption;
 
-  // TODO(crbug.com/560229926): Pre-download SODA and language pack via
-  // SodaInstaller upon user's first TTC session start so models are pre-cached.
   // TODO(crbug.com/560229926): Validate SODA platform support across rollout
   // hardware tiers; fallback to UI button click on unsupported platforms.
   context_remote_->BindRecognizer(

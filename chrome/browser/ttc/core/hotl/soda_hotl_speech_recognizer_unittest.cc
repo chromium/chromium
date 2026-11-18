@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -377,14 +378,10 @@ TEST_F(SodaHotlSpeechRecognizerTest, DestroyingWhileActiveRunsNoError) {
   EXPECT_EQ(errors, 0);
 }
 
-TEST_F(SodaHotlSpeechRecognizerTest, EmptyLocaleOmitsLanguageOption) {
+TEST_F(SodaHotlSpeechRecognizerTest, EmptyLocaleCrashes) {
   SodaHotlSpeechRecognizer recognizer = CreateRecognizer();
-  StartAndWait(recognizer, base::DoNothing(), base::DoNothing(),
-               /*locale=*/"");
-
-  ASSERT_NE(fake_.last_options(), nullptr);
-  EXPECT_FALSE(fake_.last_options()->language.has_value());
-  EXPECT_FALSE(fake_.last_options()->allow_multi_language);
+  EXPECT_CHECK_DEATH(
+      recognizer.Start(/*locale=*/"", base::DoNothing(), base::DoNothing()));
 }
 
 TEST_F(SodaHotlSpeechRecognizerTest, StopThenStartResetsSessionCleanly) {
