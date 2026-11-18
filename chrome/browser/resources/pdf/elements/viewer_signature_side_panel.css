@@ -10,6 +10,7 @@
  * #css_wrapper_metadata_end */
 
 ink-color-selector,
-signature-selector {
+signature-selector,
+signature-size-selector {
   margin: 16px 0 32px;
 }

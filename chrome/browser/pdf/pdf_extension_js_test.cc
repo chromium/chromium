@@ -836,6 +836,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2SignaturesTest,
   RunMochaTest("ink2_signature_side_panel_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2SignaturesTest,
+                       Ink2SignatureSizeSelector) {
+  RunMochaTest("ink2_signature_size_selector_test.js", "test.pdf");
+}
+
 using PDFExtensionJSInk2BeforeUnloadTest = PDFExtensionJSInk2Test;
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2BeforeUnloadTest, DrawStroke) {

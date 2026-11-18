@@ -15,9 +15,10 @@ suite('Ink2SignatureSidePanel', function() {
     document.body.appendChild(sidePanel);
   });
 
-  // Test that the side panel has signature and color selector elements.
+  // Test that the side panel has signature, size, and color selector elements.
   test('HasSelectors', function() {
     assertTrue(!!sidePanel.shadowRoot.querySelector('signature-selector'));
+    assertTrue(!!sidePanel.shadowRoot.querySelector('signature-size-selector'));
     const colorSelector =
         sidePanel.shadowRoot.querySelector('ink-color-selector');
     assertTrue(!!colorSelector);

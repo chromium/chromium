@@ -4,6 +4,7 @@
 
 import './ink_color_selector.js';
 import './signature_selector.js';
+import './signature_size_selector.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 

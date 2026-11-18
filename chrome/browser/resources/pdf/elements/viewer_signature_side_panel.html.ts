@@ -7,8 +7,10 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {ViewerSignatureSidePanelElement} from './viewer_signature_side_panel.js';
 
 export function getHtml(this: ViewerSignatureSidePanelElement) {
-  // TODO(crbug.com/573256245): Replace placeholder string and hide color
-  // control when there are no saved signatures.
+  // TODO(crbug.com/573256245): Replace placeholder string and hide size and
+  // color controls when there are no saved signatures.
+  // TODO(crbug.com/573299995): Bind `currentSize` and handle
+  // `@current-size-changed` when wiring up signature size changes.
   // TODO(crbug.com/573256246): Bind `currentColor` and handle
   // `@current-color-changed` when wiring up signature color changes.
   // clang-format off
@@ -16,6 +18,8 @@ export function getHtml(this: ViewerSignatureSidePanelElement) {
 <div class="side-panel-content">
   <h2>Signatures</h2>
   <signature-selector></signature-selector>
+  <h2>$i18n{ink2Size}</h2>
+  <signature-size-selector></signature-size-selector>
   <h2>$i18n{ink2Color}</h2>
   <ink-color-selector label="$i18n{ink2Color}" .colors="${this.colors}">
   </ink-color-selector>

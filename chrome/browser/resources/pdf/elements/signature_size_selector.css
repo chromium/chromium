@@ -1,0 +1,28 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./pdf_shared.css.js
+ * #import=./shared_vars.css.js
+ * #include=pdf-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+cr-icon-button {
+  /* TODO(crbug.com/573299995): Update button colors once UX finalizes them. */
+  --cr-icon-button-fill-color: var(--viewer-icon-ink-fill-color);
+  --cr-icon-button-size: 36px;
+}
+
+#percentage {
+  font-size: 13px;
+  text-align: center;
+  width: 55px;
+}
