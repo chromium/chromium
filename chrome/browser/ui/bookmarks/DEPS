@@ -1,3 +1,9 @@
 include_rules = [
     "+components/bookmarks",
 ]
+
+specific_include_rules = {
+    r"bookmark_browsertest\.cc": [
+        "+ash/wm/window_pin_util.h",
+    ],
+}

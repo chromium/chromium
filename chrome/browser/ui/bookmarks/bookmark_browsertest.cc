@@ -70,6 +70,18 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_pin_util.h"
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/common/chrome_features.h"
+#include "components/split_tabs/split_tab_visual_data.h"
+#endif
+
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 using bookmarks::UrlAndTitle;
@@ -1027,3 +1039,124 @@ IN_PROC_BROWSER_TEST_F(BookmarkPrerenderBrowsertest,
   EXPECT_TRUE(host_observer.was_activated());
   EXPECT_TRUE(bookmark_observer.is_starred());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class BookmarkLockedFullscreenBrowserTest
+    : public BookmarkBrowsertest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BookmarkLockedFullscreenBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController, GetParam());
+  }
+
+ protected:
+  void EnterLockedFullscreen() {
+    if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+      ASSERT_TRUE(chromeos::LockedStateController::From(browser())->Lock(
+          chromeos::LockedState::kExtensionLocked));
+    } else {
+      ash::PinWindow(browser()->GetWindow()->GetNativeWindow(),
+                     /*trusted=*/true);
+      chrome::BrowserCommandController::From(browser())
+          ->LockedFullscreenStateChanged();
+    }
+  }
+
+  void ExitLockedFullscreen() {
+    if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+      ASSERT_TRUE(chromeos::LockedStateController::From(browser())->Unlock(
+          chromeos::LockedState::kExtensionLocked));
+    } else {
+      ash::UnpinWindow(browser()->GetWindow()->GetNativeWindow());
+      chrome::BrowserCommandController::From(browser())
+          ->LockedFullscreenStateChanged();
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Regression test for crbug.com/586988816: ensure the bookmark bar is hidden in
+// ChromeOS locked fullscreen even when a foreground tab (including an inactive
+// pane in a split view) is on the New Tab Page or force-show flags are active.
+IN_PROC_BROWSER_TEST_P(BookmarkLockedFullscreenBrowserTest,
+                       HiddenOnNtpSplitViewInLockedFullscreen) {
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->GetProfile());
+  bookmarks::AddIfNotBookmarked(bookmark_model, GURL("https://example.com"),
+                                u"Example");
+
+  // Prepare a split view with a non-NTP active tab and an NTP pane.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(AddTabAtIndex(1, GURL(chrome::kChromeUINewTabURL),
+                            ui::PAGE_TRANSITION_TYPED));
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  auto* controller = BookmarkBarController::From(browser());
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  EXPECT_EQ(BookmarkBar::SHOW, controller->bookmark_bar_state());
+  EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
+
+  // Entering locked fullscreen must hide the bookmark bar.
+  EnterLockedFullscreen();
+  EXPECT_EQ(BookmarkBar::HIDDEN, controller->bookmark_bar_state());
+  EXPECT_FALSE(browser_view->IsBookmarkBarVisible());
+
+  // Force-show flags must also not expose the bookmark bar while locked.
+  controller->SetForceShowBookmarkBarFlag(
+      BookmarkBarController::ForceShowFlag::kTabGroupSaved);
+  EXPECT_EQ(BookmarkBar::HIDDEN, controller->bookmark_bar_state());
+  EXPECT_FALSE(browser_view->IsBookmarkBarVisible());
+  controller->ClearForceShowBookmarkBarFlag(
+      BookmarkBarController::ForceShowFlag::kTabGroupSaved);
+
+  // Unlocking restores the bookmark bar on the split NTP.
+  ExitLockedFullscreen();
+  EXPECT_EQ(BookmarkBar::SHOW, controller->bookmark_bar_state());
+  EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
+}
+
+// Ensure non-immersive extension-requested fullscreen (where
+// ShouldHideUIForFullscreen() is true) and untrusted window pinning on ChromeOS
+// still keep the bookmark bar available on the NTP (conservative scope).
+IN_PROC_BROWSER_TEST_P(BookmarkLockedFullscreenBrowserTest,
+                       ShownInExtensionFullscreenAndUntrustedPin) {
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->GetProfile());
+  bookmarks::AddIfNotBookmarked(bookmark_model, GURL("https://example.com"),
+                                u"Example");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+
+  auto* controller = BookmarkBarController::From(browser());
+  EXPECT_EQ(BookmarkBar::SHOW, controller->bookmark_bar_state());
+
+  // Extension-requested fullscreen disables immersive mode on ChromeOS, so
+  // ShouldHideUIForFullscreen() is true, yet the detached NTP bookmark bar
+  // remains shown because the window is not trusted-pinned.
+  auto* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
+  fullscreen_controller->ToggleBrowserFullscreenModeWithExtension(
+      GURL("https://example.com"));
+  EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  EXPECT_TRUE(BrowserWindowFullscreenController::From(browser())
+                  ->ShouldHideUIForFullscreen());
+  EXPECT_EQ(BookmarkBar::SHOW, controller->bookmark_bar_state());
+  fullscreen_controller->ToggleBrowserFullscreenModeWithExtension(
+      GURL("https://example.com"));
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+
+  // Untrusted screen pinning is user-escapable and uses immersive mode.
+  aura::Window* native_window = browser()->GetWindow()->GetNativeWindow();
+  ash::PinWindow(native_window, /*trusted=*/false);
+  EXPECT_EQ(BookmarkBar::SHOW, controller->bookmark_bar_state());
+  ash::UnpinWindow(native_window);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BookmarkLockedFullscreenBrowserTest,
+                         testing::Bool());
+#endif  // BUILDFLAG(IS_CHROMEOS)
