@@ -3541,6 +3541,18 @@ TEST_F(GlicInstanceMetricsTest,
 }
 
 TEST_F(GlicInstanceMetricsTest,
+       NativeFreTriggered_RecordsActionOnlyForNativeFreOpen) {
+  metrics_.OnOpen(mojom::InvocationSource::kFre,
+                  ShowOptions::ForSidePanel(mock_tab_));
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.NativeFreTriggered"),
+            0);
+
+  metrics_.OnOpen(mojom::InvocationSource::kFre, MakeNativeFreShowOptions());
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.NativeFreTriggered"),
+            1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
        NativeFreDismissOrError_SuppressesLoadingDismissAndActionableMetrics) {
   ShowOptions show_options = MakeNativeFreShowOptions();
 

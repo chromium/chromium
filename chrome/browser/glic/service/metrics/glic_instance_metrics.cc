@@ -1085,6 +1085,8 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
       cui_trackers_.push_back(std::move(fre_tracker));
     }
     if (native_fre_state_ == NativeFreState::kWaitingForAccept) {
+      base::RecordAction(
+          base::UserMetricsAction("Glic.Fre.NativeFreTriggered"));
       if (base::FeatureList::IsEnabled(features::kGlicOptInImpressionMetrics) &&
           !opt_in_impression_recorded_for_current_open_) {
         RecordOptInImpression();

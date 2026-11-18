@@ -13913,6 +13913,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Fre.NativeFreTriggered">
+  <owner>alexiswu@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <description>
+    Logged each time a Glic panel open is routed to the Android native FRE for a
+    profile that has not consented. Logged once per panel open, not on re-show
+    after a tab switch or peek. Android only. Subtract from
+    Glic.Onboarding.OptInImpression (logged for native and web FRE) to estimate
+    web FRE impressions.
+  </description>
+</action>
+
 <action name="Glic.Fre.NoThanks">
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
