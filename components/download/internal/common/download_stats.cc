@@ -472,20 +472,6 @@ void RecordDownloadMimeType(const std::string& mime_type_string,
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void RecordDownloadMimeTypeForNormalProfile(const std::string& mime_type_string,
-                                            bool is_transient) {
-  DownloadContent download_content =
-      DownloadContentFromMimeType(mime_type_string, false);
-  base::UmaHistogramEnumeration("Download.Start.ContentType.NormalProfile",
-                                download_content);
-#if BUILDFLAG(IS_ANDROID)
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Download.Start.ContentType.NormalProfile.",
-                    is_transient ? "Transient" : "NonTransient"}),
-      download_content);
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 void RecordFileBandwidth(size_t length,
                          base::TimeDelta elapsed_time) {
   base::UmaHistogramCustomCounts(

@@ -1770,7 +1770,6 @@ void DownloadItemImpl::Start(
     if (!delegate_->IsOffTheRecord()) {
       RecordDownloadCountWithSource(NEW_DOWNLOAD_COUNT_NORMAL_PROFILE,
                                     download_source_);
-      RecordDownloadMimeTypeForNormalProfile(mime_type_, transient_);
     }
   }
 
