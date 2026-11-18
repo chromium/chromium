@@ -611,16 +611,31 @@ public class ToolbarPositionControllerTest {
     public void testBottomControlsStacker_progressBarLayer() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
-        mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
 
         BottomControlsLayer progressBarLayer =
                 mBottomControlsStacker.getLayerForTesting(LayerType.PROGRESS_BAR);
         assertEquals(0, progressBarLayer.getHeight());
-        assertEquals(LayerVisibility.VISIBLE, progressBarLayer.getLayerVisibility());
+        assertEquals(LayerVisibility.SHOWING, progressBarLayer.getLayerVisibility());
         assertEquals(LayerScrollBehavior.DEFAULT_SCROLL_OFF, progressBarLayer.getScrollBehavior());
+
+        // While the bottom toolbar is animating in, offset updates position the progress bar above
+        // the toolbar so it does not stay at the bottom of the screen.
+        progressBarLayer.onBrowserControlsOffsetUpdate(-TOOLBAR_HEIGHT);
+        assertEquals((float) -TOOLBAR_HEIGHT, mProgressBarContainer.getTranslationY(), 0f);
+
+        mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
+        assertEquals(LayerVisibility.VISIBLE, progressBarLayer.getLayerVisibility());
 
         progressBarLayer.onBrowserControlsOffsetUpdate(-12);
         assertEquals(-12f, mProgressBarContainer.getTranslationY(), 0f);
+
+        // While animating back to the top, offset updates for the hiding bottom controls must not
+        // overwrite the reset top translation.
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
+        assertControlsAtTop();
+        assertEquals(LayerVisibility.HIDING, progressBarLayer.getLayerVisibility());
+        progressBarLayer.onBrowserControlsOffsetUpdate(-24);
+        assertEquals(0f, mProgressBarContainer.getTranslationY(), 0f);
     }
 
     @Test

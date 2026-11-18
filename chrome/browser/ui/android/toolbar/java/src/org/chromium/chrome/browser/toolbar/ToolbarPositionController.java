@@ -379,9 +379,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
                     @Override
                     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
-                        if (mLayerVisibility == LayerVisibility.VISIBLE) {
+                        if (mLayerVisibility != LayerVisibility.HIDDEN) {
                             mLayerOffset = layerYOffset;
-                            updateViewOffset(this, mToolbarProgressBarContainer);
+
+                            if (mCurrentPosition.get() == ControlsPosition.BOTTOM) {
+                                updateViewOffset(this, mToolbarProgressBarContainer);
+                            }
                         }
                     }
                 };
