@@ -14,8 +14,6 @@ Note: This is a jinja2 template, processed at build time into the final resource
     <!-- Colors should be mirrored by Theme.BrowserUI.DialogWhenLarge and
          Theme.BrowserUI.AlertDialog.NoActionBar. -->
     <style name="Theme.BrowserUI.Light" parent="Theme.Material3Expressive.Light.NoActionBar">
-        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
-
         {% macro color_palette_light_attributes() %}
         <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_40</item>
@@ -49,6 +47,8 @@ Note: This is a jinja2 template, processed at build time into the final resource
         {{ color_palette_light_attributes() }}
 
         {% macro other_color_attributes() %}
+        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
+
         <!-- Text colors-->
         <item name="android:textColorPrimary">@color/default_text_color_list</item>
         <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
@@ -227,8 +227,6 @@ Note: This is a jinja2 template, processed at build time into the final resource
 
     <!-- Colors should be mirrored by Theme.BrowserUI -->
     <style name="Theme.BrowserUI.Light.DialogWhenLarge" parent="Theme.Material3Expressive.Light.DialogWhenLarge">
-        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
-
         {{ color_palette_light_attributes() }}
         {{ other_color_attributes() }}
         {{ misc_attributes() }}
@@ -241,8 +239,6 @@ Note: This is a jinja2 template, processed at build time into the final resource
          include all the attributes that |ThemeOverlay.BrowserUI.AlertDialog| has.
          -->
     <style name="Theme.BrowserUI.Light.AlertDialog.NoActionBar" parent="Theme.Material3Expressive.Light.Dialog.Alert">
-        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
-
         {{ color_palette_light_attributes() }}
         {{ other_color_attributes() }}
         {{ misc_attributes() }}
