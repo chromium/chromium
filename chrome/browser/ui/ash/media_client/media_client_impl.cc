@@ -481,7 +481,9 @@ void MediaClientImpl::DisableCustomMediaKeyHandler(
   }
 
   auto it = media_key_delegates_.find(context);
-  CHECK_EQ(it->second, delegate, base::NotFatalUntil::M162);
+  // TODO(crbug.com/583058611): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(it->second, delegate);
 
   media_key_delegates_.erase(it);
 
