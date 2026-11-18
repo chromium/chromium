@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_actor_attribution_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/glic_enums.mojom.h"
 #include "components/actor/core/task_source_info.h"
@@ -35,8 +37,10 @@
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "url/origin.h"
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
@@ -119,6 +123,36 @@ void PopulateInstalledExtensionInfo(content::BrowserContext* browser_context,
   // sideloaded one that declares the same ID.
   extension_info.set_install_location(ToInstallLocation(extension->location()));
   extension_info.set_is_from_store(extension->from_webstore());
+}
+
+// Returns the strongest extension signal on a download that was not started
+// via the `chrome.downloads` API. Used for metrics only: these signals do not
+// attribute the download yet. `download` must not be null.
+ExtensionDownloadAttributionSignal ClassifyUnattributedDownload(
+    download::DownloadItem* download) {
+  // An extension frame (popup, offscreen document) made the request itself.
+  const std::optional<url::Origin>& initiator = download->GetRequestInitiator();
+  if (initiator.has_value() &&
+      initiator->scheme() == extensions::kExtensionScheme) {
+    return ExtensionDownloadAttributionSignal::kExtensionRequestInitiator;
+  }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  // TODO(crbug.com/570065942): Prefer the actor at download start once it is
+  // snapshotted onto the `DownloadItem`. The tab's current actor can differ
+  // from it: the actor may have been set, cleared or replaced since the
+  // download started.
+  // Use the original WebContents: the actor is per-tab state and can outlive
+  // the primary page that started the download.
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetOriginalWebContents(download);
+  if (web_contents &&
+      ExtensionActorTracker::GetActiveActor(web_contents).has_value()) {
+    return ExtensionDownloadAttributionSignal::kTabActor;
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
+  return ExtensionDownloadAttributionSignal::kNone;
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
@@ -214,8 +248,13 @@ std::optional<ExtensionInfo> GetExtensionInitiatorInfo(
   const extensions::DownloadedByExtension* by_ext =
       extensions::DownloadedByExtension::Get(download);
   if (!by_ext || by_ext->id().empty()) {
+    base::UmaHistogramEnumeration(kExtensionActorLookupDownloadResultHistogram,
+                                  ClassifyUnattributedDownload(download));
     return std::nullopt;
   }
+  base::UmaHistogramEnumeration(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kDownloadedByExtension);
 
   ExtensionInfo extension_info;
 
@@ -255,8 +294,13 @@ std::optional<ExtensionInfo> GetActiveExtensionInitiatorInfo(
   std::optional<extensions::ExtensionId> actor_id =
       ExtensionActorTracker::GetActiveActor(web_contents);
   if (!actor_id.has_value()) {
+    base::UmaHistogramEnumeration(
+        kExtensionActorLookupWebContentsResultHistogram,
+        ExtensionActorAttributionResult::kNoActor);
     return std::nullopt;
   }
+  base::UmaHistogramEnumeration(kExtensionActorLookupWebContentsResultHistogram,
+                                ExtensionActorAttributionResult::kAttributed);
 
   ExtensionInfo extension_info;
   extension_info.set_id(*actor_id);

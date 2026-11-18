@@ -19,6 +19,8 @@ class BrowserContext;
 
 namespace enterprise_connectors {
 
+enum class ExtensionActorClearReason;
+
 // Tracks the extension that most recently acted on this tab, for enterprise
 // security reporting events.
 //
@@ -85,6 +87,9 @@ class ExtensionActorTracker
       content::WebContents* web_contents,
       const extensions::ExtensionId& extension_id,
       bool is_initial_navigation);
+
+  // Clears the active actor, recording `reason` if one was set.
+  void ResetActiveActor(ExtensionActorClearReason reason);
 
   std::optional<extensions::ExtensionId> active_actor_id_;
   bool is_initial_navigation_ = false;

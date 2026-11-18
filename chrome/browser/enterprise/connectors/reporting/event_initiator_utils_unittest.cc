@@ -12,7 +12,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_actor_attribution_metrics.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/extensions/test_standalone_window_controller.h"
@@ -32,6 +35,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -48,16 +52,19 @@
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/fake_download_item.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
 #include "chrome/browser/enterprise/connectors/reporting/tab_cdp_actor_tracker.h"
@@ -86,6 +93,21 @@ constexpr char kExtensionName[] = "Test Extension";
 constexpr char kExtensionVersion[] = "1.2.3";
 constexpr char kConversationId[] = "test-conversation-id";
 constexpr char kTriggeringContextId[] = "test-triggering-context-id";
+
+// A download item whose request initiator can be set, which
+// `content::FakeDownloadItem` does not support.
+class TestDownloadItem : public testing::NiceMock<download::MockDownloadItem> {
+ public:
+  explicit TestDownloadItem(
+      std::optional<url::Origin> request_initiator = std::nullopt)
+      : request_initiator_(std::move(request_initiator)) {
+    ON_CALL(*this, GetRequestInitiator())
+        .WillByDefault(testing::ReturnRef(request_initiator_));
+  }
+
+ private:
+  std::optional<url::Origin> request_initiator_;
+};
 
 }  // namespace
 
@@ -125,14 +147,27 @@ class EventInitiatorUtilsTest : public testing::Test {
     return extension;
   }
 
+  // Creates a download with `request_initiator` that is not associated with
+  // any extension. If `web_contents` is non-null it is attached as the
+  // originating tab, along with `profile_`.
+  std::unique_ptr<TestDownloadItem> CreateDownload(
+      std::optional<url::Origin> request_initiator = std::nullopt,
+      content::WebContents* web_contents = nullptr) {
+    auto item =
+        std::make_unique<TestDownloadItem>(std::move(request_initiator));
+    content::DownloadItemUtils::AttachInfoForTesting(item.get(), &profile_,
+                                                     web_contents);
+    return item;
+  }
+
   // Creates a download initiated by extension `id`. If `attach_profile` is
   // true, `profile_` is attached to the item as its BrowserContext, as
   // DownloadManagerImpl does for real downloads.
-  std::unique_ptr<content::FakeDownloadItem> CreateDownloadByExtension(
+  std::unique_ptr<TestDownloadItem> CreateDownloadByExtension(
       const std::string& id,
       const std::string& name = kExtensionName,
       bool attach_profile = true) {
-    auto item = std::make_unique<content::FakeDownloadItem>();
+    auto item = std::make_unique<TestDownloadItem>();
     if (attach_profile) {
       content::DownloadItemUtils::AttachInfoForTesting(
           item.get(), &profile_, /*web_contents=*/nullptr);
@@ -159,25 +194,148 @@ TEST_F(EventInitiatorUtilsTest, FeatureDisabledReturnsNullopt) {
 
   base::test::ScopedFeatureList disabled;
   disabled.InitAndDisableFeature(kEnterpriseExtensionActorAttribution);
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
   EXPECT_FALSE(GetActiveExtensionInitiatorInfo(web_contents).has_value());
+
+  // Nothing is recorded while the feature is disabled.
+  histogram_tester.ExpectTotalCount(
+      kExtensionActorLookupDownloadResultHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      kExtensionActorLookupWebContentsResultHistogram, 0);
 }
 
 TEST_F(EventInitiatorUtilsTest, NullDownloadReturnsNullopt) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(GetExtensionInitiatorInfo(/*download=*/nullptr).has_value());
+  histogram_tester.ExpectTotalCount(
+      kExtensionActorLookupDownloadResultHistogram, 0);
 }
 
 TEST_F(EventInitiatorUtilsTest, DownloadWithoutExtensionReturnsNullopt) {
-  content::FakeDownloadItem item;
+  TestDownloadItem item;
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(GetExtensionInitiatorInfo(&item).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kNone, 1);
 }
 
 TEST_F(EventInitiatorUtilsTest, EmptyExtensionIdReturnsNullopt) {
+  base::HistogramTester histogram_tester;
   auto item = CreateDownloadByExtension(/*id=*/"");
   EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kNone, 1);
 }
 
+// A download requested by an extension frame is not attributed yet, but the
+// signal is recorded.
+TEST_F(EventInitiatorUtilsTest,
+       ExtensionRequestInitiatorIsRecordedNotAttributed) {
+  base::HistogramTester histogram_tester;
+  auto item = CreateDownload(url::Origin::Create(
+      GURL(base::StrCat({extensions::kExtensionScheme, "://", kExtensionId}))));
+  EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kExtensionRequestInitiator, 1);
+}
+
+// A web-origin initiator is not an extension signal on its own.
+TEST_F(EventInitiatorUtilsTest, WebRequestInitiatorIsNotAnExtensionSignal) {
+  base::HistogramTester histogram_tester;
+  auto item = CreateDownload(url::Origin::Create(GURL("https://example.com")));
+  EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kNone, 1);
+}
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+// A download from a tab with an active extension actor is not attributed yet,
+// but the signal is recorded.
+TEST_F(EventInitiatorUtilsTest, TabActorIsRecordedNotAttributed) {
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Runtime.evaluate");
+
+  base::HistogramTester histogram_tester;
+  auto item = CreateDownload(url::Origin::Create(GURL("https://example.com")),
+                             web_contents);
+  EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kTabActor, 1);
+}
+
+// The tab actor is still found when the download has no frame id, e.g. after
+// the primary page changed.
+TEST_F(EventInitiatorUtilsTest, TabActorIsRecordedWithoutFrameId) {
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Runtime.evaluate");
+
+  base::HistogramTester histogram_tester;
+  TestDownloadItem item(url::Origin::Create(GURL("https://example.com")));
+  content::DownloadItemUtils::AttachInfo(&item, &profile_, web_contents,
+                                         content::GlobalRenderFrameHostId());
+  EXPECT_FALSE(GetExtensionInitiatorInfo(&item).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kTabActor, 1);
+}
+
+TEST_F(EventInitiatorUtilsTest, TabWithoutActorIsNotAnExtensionSignal) {
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+
+  base::HistogramTester histogram_tester;
+  auto item = CreateDownload(/*request_initiator=*/std::nullopt, web_contents);
+  EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kNone, 1);
+}
+
+// Signals are checked in order: chrome.downloads, then request initiator,
+// then tab actor. Only the strongest is recorded.
+TEST_F(EventInitiatorUtilsTest, StrongestDownloadSignalWins) {
+  InstallExtension(ManifestLocation::kInternal,
+                   extensions::Extension::FROM_WEBSTORE);
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Runtime.evaluate");
+  const url::Origin extension_origin = url::Origin::Create(
+      GURL(base::StrCat({extensions::kExtensionScheme, "://", kExtensionId})));
+
+  {
+    base::HistogramTester histogram_tester;
+    auto item = CreateDownload(extension_origin, web_contents);
+    EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+    histogram_tester.ExpectUniqueSample(
+        kExtensionActorLookupDownloadResultHistogram,
+        ExtensionDownloadAttributionSignal::kExtensionRequestInitiator, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    auto item = CreateDownload(extension_origin, web_contents);
+    new extensions::DownloadedByExtension(item.get(), kExtensionId,
+                                          kExtensionName);
+    EXPECT_TRUE(GetExtensionInitiatorInfo(item.get()).has_value());
+    histogram_tester.ExpectUniqueSample(
+        kExtensionActorLookupDownloadResultHistogram,
+        ExtensionDownloadAttributionSignal::kDownloadedByExtension, 1);
+  }
+}
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
 TEST_F(EventInitiatorUtilsTest, WebstoreExtensionPopulatesProvenance) {
+  base::HistogramTester histogram_tester;
   InstallExtension(ManifestLocation::kInternal,
                    extensions::Extension::FROM_WEBSTORE);
   auto item = CreateDownloadByExtension(kExtensionId);
@@ -191,6 +349,10 @@ TEST_F(EventInitiatorUtilsTest, WebstoreExtensionPopulatesProvenance) {
   EXPECT_EQ(kExtensionVersion, extension_info->version());
   EXPECT_EQ(ExtensionInfo::INTERNAL, extension_info->install_location());
   EXPECT_TRUE(extension_info->is_from_store());
+
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kDownloadedByExtension, 1);
 }
 
 // The name in ExtensionRegistry may differ from the name snapshotted when the
@@ -262,6 +424,7 @@ TEST_F(EventInitiatorUtilsTest, DisabledExtensionIsStillAttributed) {
 // attributed with its ID and snapshotted name, but with no provenance claims
 // attached.
 TEST_F(EventInitiatorUtilsTest, UnknownExtensionReportsIdWithoutProvenance) {
+  base::HistogramTester histogram_tester;
   auto item = CreateDownloadByExtension(kUninstalledExtensionId);
 
   std::optional<ExtensionInfo> extension_info =
@@ -275,6 +438,11 @@ TEST_F(EventInitiatorUtilsTest, UnknownExtensionReportsIdWithoutProvenance) {
   EXPECT_FALSE(extension_info->has_version());
   EXPECT_FALSE(extension_info->has_install_location());
   EXPECT_FALSE(extension_info->has_is_from_store());
+
+  // Still counted as attributed.
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupDownloadResultHistogram,
+      ExtensionDownloadAttributionSignal::kDownloadedByExtension, 1);
 }
 
 TEST_F(EventInitiatorUtilsTest, EmptySnapshottedNameIsNotSet) {
@@ -357,17 +525,25 @@ INSTANTIATE_TEST_SUITE_P(
                                 ExtensionInfo::EXTERNAL_COMPONENT}));
 
 TEST_F(EventInitiatorUtilsTest, NullWebContentsReturnsNullopt) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(
       GetActiveExtensionInitiatorInfo(/*web_contents=*/nullptr).has_value());
+  histogram_tester.ExpectTotalCount(
+      kExtensionActorLookupWebContentsResultHistogram, 0);
 }
 
 TEST_F(EventInitiatorUtilsTest, WebContentsWithoutActiveActorReturnsNullopt) {
+  base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       web_contents_factory_.CreateWebContents(&profile_);
   EXPECT_FALSE(GetActiveExtensionInitiatorInfo(web_contents).has_value());
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupWebContentsResultHistogram,
+      ExtensionActorAttributionResult::kNoActor, 1);
 }
 
 TEST_F(EventInitiatorUtilsTest, WebContentsWithActiveActorPopulatesProvenance) {
+  base::HistogramTester histogram_tester;
   InstallExtension(ManifestLocation::kInternal,
                    extensions::Extension::FROM_WEBSTORE);
   content::WebContents* web_contents =
@@ -384,10 +560,15 @@ TEST_F(EventInitiatorUtilsTest, WebContentsWithActiveActorPopulatesProvenance) {
   EXPECT_EQ(kExtensionVersion, extension_info->version());
   EXPECT_EQ(ExtensionInfo::INTERNAL, extension_info->install_location());
   EXPECT_TRUE(extension_info->is_from_store());
+
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupWebContentsResultHistogram,
+      ExtensionActorAttributionResult::kAttributed, 1);
 }
 
 TEST_F(EventInitiatorUtilsTest,
        WebContentsWithUninstalledActorReportsIdWithoutProvenance) {
+  base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
       web_contents_factory_.CreateWebContents(&profile_);
   ExtensionActorTracker::SetActiveActor(web_contents, kUninstalledExtensionId,
@@ -402,6 +583,10 @@ TEST_F(EventInitiatorUtilsTest,
   EXPECT_FALSE(extension_info->has_version());
   EXPECT_FALSE(extension_info->has_install_location());
   EXPECT_FALSE(extension_info->has_is_from_store());
+
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorLookupWebContentsResultHistogram,
+      ExtensionActorAttributionResult::kAttributed, 1);
 }
 
 // The `SessionID` overload resolves the tab through the browser's tab strips,

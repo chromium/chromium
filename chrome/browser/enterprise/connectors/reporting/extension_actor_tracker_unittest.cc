@@ -8,7 +8,9 @@
 #include <optional>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/connectors/reporting/extension_actor_attribution_metrics.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -63,6 +65,7 @@ class ExtensionActorTrackerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ExtensionActorTrackerTest, SetAndClearActiveActorLifecycle) {
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(std::nullopt,
             ExtensionActorTracker::GetActiveActor(web_contents()));
 
@@ -99,13 +102,23 @@ TEST_F(ExtensionActorTrackerTest, SetAndClearActiveActorLifecycle) {
   EXPECT_EQ("extension_beta",
             ExtensionActorTracker::GetActiveActor(web_contents()));
 
+  // Replacing the actor is not a clear.
+  histogram_tester.ExpectTotalCount(kExtensionActorTrackerClearedHistogram, 0);
+
   ExtensionActorTracker::ClearActiveActor(web_contents());
   EXPECT_EQ(std::nullopt,
             ExtensionActorTracker::GetActiveActor(web_contents()));
+  histogram_tester.ExpectUniqueSample(kExtensionActorTrackerClearedHistogram,
+                                      ExtensionActorClearReason::kExplicit, 1);
+
+  // Clearing an already-cleared tab records nothing.
+  ExtensionActorTracker::ClearActiveActor(web_contents());
+  histogram_tester.ExpectTotalCount(kExtensionActorTrackerClearedHistogram, 1);
 }
 
 TEST_F(ExtensionActorTrackerTest,
        UserInteractionClearsActorUnlessDebuggerOrScroll) {
+  base::HistogramTester histogram_tester;
   ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
                                         "Runtime.evaluate");
 
@@ -121,15 +134,24 @@ TEST_F(ExtensionActorTrackerTest,
   tracker()->DidGetUserInteraction(scroll_event);
   EXPECT_EQ("extension_alpha",
             ExtensionActorTracker::GetActiveActor(web_contents()));
+  histogram_tester.ExpectTotalCount(kExtensionActorTrackerClearedHistogram, 0);
 
   blink::WebMouseEvent mouse_down_event;
   mouse_down_event.SetType(blink::WebInputEvent::Type::kMouseDown);
   tracker()->DidGetUserInteraction(mouse_down_event);
   EXPECT_EQ(std::nullopt,
             ExtensionActorTracker::GetActiveActor(web_contents()));
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorTrackerClearedHistogram,
+      ExtensionActorClearReason::kUserInteraction, 1);
+
+  // Further interactions without an actor record nothing.
+  tracker()->DidGetUserInteraction(mouse_down_event);
+  histogram_tester.ExpectTotalCount(kExtensionActorTrackerClearedHistogram, 1);
 }
 
 TEST_F(ExtensionActorTrackerTest, DidFinishNavigationClearsCrossDocumentOnly) {
+  base::HistogramTester histogram_tester;
   ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
                                         "Runtime.evaluate");
 
@@ -140,6 +162,7 @@ TEST_F(ExtensionActorTrackerTest, DidFinishNavigationClearsCrossDocumentOnly) {
   tracker()->DidFinishNavigation(&same_doc_nav);
   EXPECT_EQ("extension_alpha",
             ExtensionActorTracker::GetActiveActor(web_contents()));
+  histogram_tester.ExpectTotalCount(kExtensionActorTrackerClearedHistogram, 0);
 
   NiceMock<content::MockNavigationHandle> cross_doc_nav(web_contents());
   cross_doc_nav.set_has_committed(true);
@@ -148,6 +171,13 @@ TEST_F(ExtensionActorTrackerTest, DidFinishNavigationClearsCrossDocumentOnly) {
   tracker()->DidFinishNavigation(&cross_doc_nav);
   EXPECT_EQ(std::nullopt,
             ExtensionActorTracker::GetActiveActor(web_contents()));
+  histogram_tester.ExpectUniqueSample(
+      kExtensionActorTrackerClearedHistogram,
+      ExtensionActorClearReason::kNonExtensionNavigation, 1);
+
+  // A second non-extension navigation without an actor records nothing.
+  tracker()->DidFinishNavigation(&cross_doc_nav);
+  histogram_tester.ExpectTotalCount(kExtensionActorTrackerClearedHistogram, 1);
 }
 
 TEST_F(ExtensionActorTrackerTest, BrowserInitiatedNavigationClearsActor) {
@@ -160,6 +190,7 @@ TEST_F(ExtensionActorTrackerTest, BrowserInitiatedNavigationClearsActor) {
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                   ui::PAGE_TRANSITION_FORWARD_BACK)}) {
     SCOPED_TRACE(transition);
+    base::HistogramTester histogram_tester;
     ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
                                           "Runtime.evaluate");
 
@@ -170,6 +201,14 @@ TEST_F(ExtensionActorTrackerTest, BrowserInitiatedNavigationClearsActor) {
     tracker()->DidStartNavigation(&user_nav);
     EXPECT_EQ(std::nullopt,
               ExtensionActorTracker::GetActiveActor(web_contents()));
+    histogram_tester.ExpectUniqueSample(
+        kExtensionActorTrackerClearedHistogram,
+        ExtensionActorClearReason::kBrowserInitiatedNavigation, 1);
+
+    // A second browser-initiated navigation with no actor records nothing.
+    tracker()->DidStartNavigation(&user_nav);
+    histogram_tester.ExpectTotalCount(kExtensionActorTrackerClearedHistogram,
+                                      1);
   }
 }
 
