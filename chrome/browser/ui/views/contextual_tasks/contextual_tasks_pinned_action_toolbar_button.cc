@@ -13,7 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_menu_model.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "ui/actions/actions.h"
@@ -110,7 +110,7 @@ class EphemeralButtonMenuModel : public ui::MenuModel {
   bool IsCloseSidePanelItemVisible() const {
     for (size_t i = 0; i < GetItemCount(); ++i) {
       if (GetElementIdentifierAt(i) ==
-          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem) {
+          ContextualTasksEphemeralButtonController::kRemoveForTaskMenuItem) {
         return IsVisibleAt(i);
       }
     }
