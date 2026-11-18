@@ -1814,13 +1814,16 @@ public class NtpCustomizationUtils {
     /**
      * Calculates the adjusted bottom margin for the Logo view in pixels. Offsets the standard logo
      * margin against the vertical shadow padding to prevent visual layout shifts regardless of
-     * whether the shadow is visible or not.
+     * whether the shadow is visible or not. In the NTP Aurora V2 layouts without the composeplate
+     * row, this includes extra space that keeps the feed aligned, see {@link
+     * NewTabPageUtils#getLogoBottomMarginDeltaPx(Resources)}.
      *
      * @param resources Android resources.
      * @return The final adjusted bottom margin in pixels.
      */
     public static int getLogoViewBottomMarginPx(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
+        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom)
+                + NewTabPageUtils.getLogoBottomMarginDeltaPx(resources);
     }
 
     /**

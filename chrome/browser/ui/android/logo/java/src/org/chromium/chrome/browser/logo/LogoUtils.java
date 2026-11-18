@@ -35,8 +35,16 @@ public class LogoUtils {
         int REGULAR = 1;
     }
 
-    /** Returns the top margin of the LogoView when the current logo is a google doodle. */
+    /**
+     * Returns the top margin of the LogoView when the current logo is a google doodle, including
+     * the extra space redistributed from the composeplate row in NTP Aurora V2.
+     */
     public static int getTopMarginForDoodle(Resources resources) {
+        return getBaseTopMarginForDoodle(resources)
+                + NewTabPageUtils.getLogoTopMarginDeltaPx(resources);
+    }
+
+    private static int getBaseTopMarginForDoodle(Resources resources) {
         switch (NewTabPageUtils.getPaddingStyleForAurora()) {
             case PaddingStyle.SMALL, PaddingStyle.MEDIUM:
                 return resources.getDimensionPixelSize(R.dimen.doodle_margin_top_small);
@@ -47,8 +55,16 @@ public class LogoUtils {
         }
     }
 
-    /** Returns the top margin of the default Google logo. */
+    /**
+     * Returns the top margin of the default Google logo, including the extra space redistributed
+     * from the composeplate row in NTP Aurora V2.
+     */
     public static int getTopMarginForLogo(Resources resources) {
+        return getBaseTopMarginForLogo(resources)
+                + NewTabPageUtils.getLogoTopMarginDeltaPx(resources);
+    }
+
+    private static int getBaseTopMarginForLogo(Resources resources) {
         switch (NewTabPageUtils.getPaddingStyleForAurora()) {
             case PaddingStyle.SMALL:
                 return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top_small);

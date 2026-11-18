@@ -219,8 +219,10 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                 NewTabPageUtils.getTilesLayoutTopMarginTargetView(mMvTilesContainerLayout);
         ViewGroup.MarginLayoutParams marginLayoutParams =
                 (ViewGroup.MarginLayoutParams) targetView.getLayoutParams();
+        Resources resources = mActivity.getResources();
         marginLayoutParams.topMargin =
-                mActivity.getResources().getDimensionPixelSize(topMarginDimen);
+                resources.getDimensionPixelSize(topMarginDimen)
+                        + NewTabPageUtils.getMvtTopMarginDeltaPx(resources);
         targetView.setLayoutParams(marginLayoutParams);
     }
 
