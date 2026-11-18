@@ -376,8 +376,10 @@ void ProfileDynamicMenu::BuildOtherProfilesSection(
       !profile->IsEnterpriseIsolatedModeProfile()) {
     if (has_profile_manager) {
       parent_item->AddChild(AppMenuActionItem::CreateDivider());
-      parent_item->AddChild(AppMenuActionItem::CreateHeader(
-          l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE)));
+      const std::u16string other_profiles_title =
+          l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE);
+      parent_item->AddChild(
+          AppMenuActionItem::CreateHeader(other_profiles_title));
 
       const int avatar_icon_size =
           GetLayoutConstant(LayoutConstant::kAppMenuProfileRowAvatarIconSize);
@@ -429,6 +431,9 @@ void ProfileDynamicMenu::BuildOtherProfilesSection(
                          ui::kColorMenuBackground);
 
         auto action_item = std::move(builder).Build();
+        action_item->SetProperty(
+            AppMenuActionItem::kSearchContextKey,
+            std::make_unique<std::u16string>(other_profiles_title));
         if (has_ai_ring && !display_name.empty()) {
           action_item->SetAccessibleName(l10n_util::GetStringFUTF16(
               IDS_PROFILE_AVATAR_NAME_WITH_AI_MEMBERSHIP, display_name));

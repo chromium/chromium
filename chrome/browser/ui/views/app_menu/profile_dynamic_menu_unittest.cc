@@ -166,6 +166,10 @@ TEST_F(ProfileDynamicMenuTest, BuildOtherProfiles_MultipleProfiles) {
   EXPECT_EQ(children[2]->GetProperty(AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kRow);
   EXPECT_EQ(children[2]->GetActionItem()->GetText(), u"Profile 2");
+  ASSERT_NE(children[2]->GetProperty(AppMenuActionItem::kSearchContextKey),
+            nullptr);
+  EXPECT_EQ(*children[2]->GetProperty(AppMenuActionItem::kSearchContextKey),
+            l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
   EXPECT_EQ(children[3]->GetProperty(AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kDivider);
 }

@@ -279,6 +279,38 @@ TEST_F(AppMenuSearchControllerTest, SubmenusAndBreadcrumbs) {
 }
 
 TEST_F(AppMenuSearchControllerTest,
+       SearchContextKeyOverridesSubmenuBreadcrumb) {
+  auto profile_submenu = actions::ActionItem::Builder()
+                             .SetActionId(kActionProfileSubmenu)
+                             .SetText(u"Person 1")
+                             .Build();
+
+  profile_submenu->AddChild(actions::ActionItem::Builder()
+                                .SetActionId(kActionManageGoogleAccount)
+                                .SetText(u"Manage your Google Account")
+                                .Build());
+
+  auto other_profile =
+      actions::ActionItem::Builder().SetText(u"Person 2").Build();
+  other_profile->SetProperty(AppMenuActionItem::kSearchContextKey,
+                             u"Other Chrome profiles");
+  profile_submenu->AddChild(std::move(other_profile));
+
+  menu_root_->AddChild(std::move(profile_submenu));
+
+  controller_->InitializeSearchIndex();
+
+  const auto& items = controller_->search_items_for_testing();
+  ASSERT_EQ(items.size(), 2u);
+
+  EXPECT_EQ(items[0]->GetTitle(), u"Manage your Google Account");
+  EXPECT_EQ(items[0]->GetSecondaryText(), u"Person 1");
+
+  EXPECT_EQ(items[1]->GetTitle(), u"Person 2");
+  EXPECT_EQ(items[1]->GetSecondaryText(), u"Other Chrome profiles");
+}
+
+TEST_F(AppMenuSearchControllerTest,
        ExtractsDomainFromBookmarkUrlAsSecondaryText) {
   TestingProfile profile;
   BookmarkModelFactory::GetInstance()->SetTestingFactory(

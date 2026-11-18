@@ -81,6 +81,7 @@ class AppMenuActionItem {
   static const ui::ClassProperty<ui::ImageModel*>* const kMinorIconKey;
   static const ui::ClassProperty<std::u16string*>* const kMinorTextKey;
   static const ui::ClassProperty<std::u16string*>* const kSecondaryTextKey;
+  static const ui::ClassProperty<std::u16string*>* const kSearchContextKey;
   static const ui::ClassProperty<ui::MenuSeparatorType>* const kSeparatorKey;
   static const ui::ClassProperty<std::u16string*>* const kChipTextKey;
   static const ui::ClassProperty<bool>* const kIsCheckableKey;

@@ -308,6 +308,11 @@ void AppMenuSearchController::FlattenHierarchyRecursive(
     }
   }
 
+  if (const std::u16string* context_override =
+          action->GetProperty(AppMenuActionItem::kSearchContextKey)) {
+    context = *context_override;
+  }
+
   AddSearchItem(
       action, item_type, title,
       url ? url_formatter::
