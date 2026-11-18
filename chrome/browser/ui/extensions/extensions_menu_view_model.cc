@@ -6,8 +6,8 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/user_metrics.h"
@@ -426,102 +426,7 @@ void LogSiteSettingsUpdate(PermissionsManager::UserSiteSetting site_setting) {
   }
 }
 
-base::debug::CrashKeyString* GetCurrentSiteAccessCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ext_site_access_before_granting", base::debug::CrashKeySize::Size64);
-  return crash_key;
-}
-
-base::debug::CrashKeyString* GetCurrentSiteInteractionCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ext_site_interaction_before_granting",
-      base::debug::CrashKeySize::Size64);
-  return crash_key;
-}
-
-base::debug::CrashKeyString* GetCurrentUrlCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ext_web_contents_before_granting", base::debug::CrashKeySize::Size64);
-  return crash_key;
-}
-
-std::string_view GetCurrentSiteAccessCrashValue(
-    PermissionsManager::UserSiteAccess site_access) {
-  switch (site_access) {
-    case PermissionsManager::UserSiteAccess::kOnClick:
-      return "OnClick";
-    case PermissionsManager::UserSiteAccess::kOnSite:
-      return "OnSite";
-    case PermissionsManager::UserSiteAccess::kOnAllSites:
-      return "OnAllSites";
-    default:
-      return "InvalidValue";
-  }
-}
-
-std::string_view GetCurrentSiteInteractionCrashValue(
-    SitePermissionsHelper::SiteInteraction site_interaction) {
-  switch (site_interaction) {
-    case SitePermissionsHelper::SiteInteraction::kNone:
-      return "None";
-    case SitePermissionsHelper::SiteInteraction::kWithheld:
-      return "Withheld";
-    case SitePermissionsHelper::SiteInteraction::kActiveTab:
-      return "ActiveTab";
-    case SitePermissionsHelper::SiteInteraction::kGranted:
-      return "Granted";
-    default:
-      return "InvalidValue";
-  }
-}
-
-std::string GetCurrentUrlCrashValue(content::WebContents* web_contents) {
-  if (!web_contents) {
-    return "empty web conents";
-  }
-  auto url = web_contents->GetLastCommittedURL();
-  if (url.is_empty()) {
-    return "empty url";
-  }
-  return url.GetHost();
-}
-
 }  // namespace
-
-namespace debug {
-
-// Helper for adding a crash keys when we encounter crashes when granting site
-// access.
-//
-// All keys are logged every time this class is instantiated.
-// TODO(crbug.com/456129773): Remove when crash is fixed.
-class ScopedGrantSiteAccessCrashKeys {
- public:
-  explicit ScopedGrantSiteAccessCrashKeys(
-      PermissionsManager::UserSiteAccess current_site_access,
-      SitePermissionsHelper::SiteInteraction current_site_interaction,
-      content::WebContents* web_contents)
-      : current_site_access_crash_key_(
-            GetCurrentSiteAccessCrashKey(),
-            GetCurrentSiteAccessCrashValue(current_site_access)),
-        current_site_interaction_crash_key_(
-            GetCurrentSiteInteractionCrashKey(),
-            GetCurrentSiteInteractionCrashValue(current_site_interaction)),
-        current_url_crash_key_(GetCurrentUrlCrashKey(),
-                               GetCurrentUrlCrashValue(web_contents)) {}
-  ~ScopedGrantSiteAccessCrashKeys() = default;
-
- private:
-  // The current site access of the extension when GrantSiteAccess() was called.
-  base::debug::ScopedCrashKeyString current_site_access_crash_key_;
-  // The current site interaction of the extension when GrantSiteAccess() was
-  // called.
-  base::debug::ScopedCrashKeyString current_site_interaction_crash_key_;
-  // The current URL (hostname) when GrantSiteAccess() was called.
-  base::debug::ScopedCrashKeyString current_url_crash_key_;
-};
-
-}  // namespace debug
 
 ExtensionsMenuViewModel::ControlState::ControlState() = default;
 ExtensionsMenuViewModel::ControlState::ControlState(const ControlState&) =
@@ -574,6 +479,7 @@ ExtensionsMenuViewModel::ExtensionsMenuViewModel(
 
 ExtensionsMenuViewModel::~ExtensionsMenuViewModel() {
   // Stop observing to avoid notifications during destruction.
+  weak_factory_.InvalidateWeakPtrs();
   WebContentsObserver::Observe(nullptr);
   tab_list_interface_observation_.Reset();
   toolbar_model_observation_.Reset();
@@ -593,11 +499,18 @@ void ExtensionsMenuViewModel::UpdateSiteAccess(
     const url::Origin& target_origin,
     PermissionsManager::UserSiteAccess site_access) {
   content::WebContents* web_contents = GetActiveWebContents();
+  Profile* profile = browser_->GetProfile();
+  const extensions::Extension* extension = GetExtension(*profile, extension_id);
+  if (!web_contents || !extension) {
+    return;
+  }
+
+  base::ScopedClosureRunner notify_action_updated(
+      base::BindOnce(&ExtensionsMenuViewModel::MaybeNotifyActionUpdated,
+                     weak_factory_.GetWeakPtr(), extension_id));
 
   LogSiteAccessUpdate(site_access);
 
-  Profile* profile = browser_->GetProfile();
-  const extensions::Extension* extension = GetExtension(*profile, extension_id);
   auto url = web_contents->GetLastCommittedURL();
   if (extension->permissions_data()->IsRestrictedUrl(url, nullptr)) {
     return;
@@ -611,6 +524,11 @@ void ExtensionsMenuViewModel::UpdateSiteAccess(
 void ExtensionsMenuViewModel::AllowHostAccessRequest(
     const extensions::ExtensionId& extension_id) {
   content::WebContents* web_contents = GetActiveWebContents();
+  Profile* profile = browser_->GetProfile();
+  const extensions::Extension* extension = GetExtension(*profile, extension_id);
+  if (!web_contents || !extension) {
+    return;
+  }
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   if (!action_runner) {
@@ -618,14 +536,15 @@ void ExtensionsMenuViewModel::AllowHostAccessRequest(
   }
 
   // Accepting a host access request grants always access to the site.
-  Profile* profile = browser_->GetProfile();
   extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
-      *GetExtension(*profile, extension_id), web_contents,
+      *extension, web_contents,
       extensions::PermissionsManager::UserSiteAccess::kOnSite,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu"));
+
+  MaybeNotifyActionUpdated(extension_id);
 }
 
 void ExtensionsMenuViewModel::DismissHostAccessRequest(
@@ -656,6 +575,16 @@ void ExtensionsMenuViewModel::GrantSiteAccess(
   content::WebContents* web_contents = GetActiveWebContents();
   auto* profile = browser_->GetProfile();
   const extensions::Extension* extension = GetExtension(*profile, extension_id);
+  if (!web_contents || !extension) {
+    return;
+  }
+
+  // Ensure the UI entry stays synchronized with the underlying permission state
+  // even if granting early-returns (undoing any optimistic UI toggle flip) or
+  // before asynchronous permission notifications complete.
+  base::ScopedClosureRunner notify_action_updated(
+      base::BindOnce(&ExtensionsMenuViewModel::MaybeNotifyActionUpdated,
+                     weak_factory_.GetWeakPtr(), extension_id));
 
   // Verify that the origin displayed when the action was initiated matches the
   // current origin of the WebContents.
@@ -663,41 +592,44 @@ void ExtensionsMenuViewModel::GrantSiteAccess(
           web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
     return;
   }
-  auto* toolbar_model = ToolbarActionsModel::Get(profile);
   auto url = web_contents->GetLastCommittedURL();
   if (extension->permissions_data()->IsRestrictedUrl(url, nullptr)) {
     return;
   }
+  auto* toolbar_model = ToolbarActionsModel::Get(profile);
+  if (!CanUserCustomizeExtensionSiteAccess(*extension, *profile, *toolbar_model,
+                                           *web_contents)) {
+    return;
+  }
   auto* permissions_manager = PermissionsManager::Get(profile);
 
-  // Can only grant site access when user can customize the extension's site
-  // access and it's currently on click.
+  // The UI toggle can be out of sync with the underlying permission state if
+  // permissions changed while async observer notifications were in flight or a
+  // previous toggle interaction early-returned. If site access is already
+  // granted, do nothing and let `notify_action_updated` resynchronize the UI.
   auto current_site_access =
       permissions_manager->GetUserSiteAccess(*extension, url);
-  CHECK(CanUserCustomizeExtensionSiteAccess(*extension, *profile,
-                                            *toolbar_model, *web_contents));
-
-  // TODO(crbug.com/456129773): Remove crash keys when site toggle crash is
-  // fixed.
   auto current_site_interaction =
       SitePermissionsHelper(profile).GetSiteInteraction(*extension,
                                                         web_contents);
-  debug::ScopedGrantSiteAccessCrashKeys grant_site_access_crash_keys(
-      current_site_access, current_site_interaction, web_contents);
-  CHECK_EQ(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
+  if (current_site_access != PermissionsManager::UserSiteAccess::kOnClick ||
+      current_site_interaction ==
+          SitePermissionsHelper::SiteInteraction::kGranted) {
+    return;
+  }
 
-  // Update site access when extension requested host permissions for the
-  // current site (that is, site access was withheld).
+  // Update site access when extension requested host permissions that can be
+  // restored for the current site (or broadly if broad access was previously
+  // granted).
   PermissionsManager::ExtensionSiteAccess extension_site_access =
       permissions_manager->GetSiteAccess(*extension, url);
-  if (extension_site_access.withheld_site_access ||
-      extension_site_access.withheld_all_sites_access) {
-    // Restore to previous access by looking whether broad site access was
-    // previously granted.
+  const bool restore_broad_access =
+      extension_site_access.withheld_all_sites_access &&
+      permissions_manager->HasPreviousBroadSiteAccess(extension_id);
+  if (restore_broad_access || extension_site_access.withheld_site_access) {
     PermissionsManager::UserSiteAccess new_site_access =
-        permissions_manager->HasPreviousBroadSiteAccess(extension_id)
-            ? PermissionsManager::UserSiteAccess::kOnAllSites
-            : PermissionsManager::UserSiteAccess::kOnSite;
+        restore_broad_access ? PermissionsManager::UserSiteAccess::kOnAllSites
+                             : PermissionsManager::UserSiteAccess::kOnSite;
     SitePermissionsHelper permissions_helper(profile);
     permissions_helper.UpdateSiteAccess(*extension, web_contents,
                                         new_site_access, target_origin);
@@ -719,6 +651,16 @@ void ExtensionsMenuViewModel::RevokeSiteAccess(
   content::WebContents* web_contents = GetActiveWebContents();
   auto* profile = browser_->GetProfile();
   const extensions::Extension* extension = GetExtension(*profile, extension_id);
+  if (!web_contents || !extension) {
+    return;
+  }
+
+  // Ensure the UI entry stays synchronized with the underlying permission state
+  // even if revoking early-returns (undoing any optimistic UI toggle flip) or
+  // clears tab-specific permissions that don't fire toolbar action updates.
+  base::ScopedClosureRunner notify_action_updated(
+      base::BindOnce(&ExtensionsMenuViewModel::MaybeNotifyActionUpdated,
+                     weak_factory_.GetWeakPtr(), extension_id));
 
   // Verify that the origin displayed when the action was initiated matches the
   // current origin of the WebContents.
@@ -727,20 +669,19 @@ void ExtensionsMenuViewModel::RevokeSiteAccess(
   if (!target_origin.IsSameOriginWith(actual_origin)) {
     return;
   }
-  auto* toolbar_model = ToolbarActionsModel::Get(profile);
-
-  // Can only revoke site access when user can customize the extension's site
-  // access.
-  CHECK(CanUserCustomizeExtensionSiteAccess(*extension, *profile,
-                                            *toolbar_model, *web_contents));
 
   auto url = web_contents->GetLastCommittedURL();
   if (extension->permissions_data()->IsRestrictedUrl(url, nullptr)) {
     return;
   }
+
+  auto* toolbar_model = ToolbarActionsModel::Get(profile);
+  if (!CanUserCustomizeExtensionSiteAccess(*extension, *profile, *toolbar_model,
+                                           *web_contents)) {
+    return;
+  }
+
   auto* permissions_manager = PermissionsManager::Get(profile);
-  auto current_site_access =
-      permissions_manager->GetUserSiteAccess(*extension, url);
   PermissionsManager::ExtensionSiteAccess extension_site_access =
       permissions_manager->GetSiteAccess(*extension, url);
 
@@ -748,7 +689,6 @@ void ExtensionsMenuViewModel::RevokeSiteAccess(
   // host permissions for the current site (that is, extension has site access).
   if (extension_site_access.has_site_access ||
       extension_site_access.has_all_sites_access) {
-    CHECK_NE(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
     SitePermissionsHelper permissions_helper(profile);
     permissions_helper.UpdateSiteAccess(
         *extension, web_contents, PermissionsManager::UserSiteAccess::kOnClick,
@@ -756,16 +696,24 @@ void ExtensionsMenuViewModel::RevokeSiteAccess(
     return;
   }
 
-  // Otherwise, extension has one-time access and we need to clear tab
-  // permissions (e.g extension with activeTab was granted one-time access).
-  CHECK_EQ(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
+  // Otherwise, if the extension currently has granted one-time access (e.g.
+  // activeTab), clear tab permissions. If access was already revoked, do
+  // nothing and let `notify_action_updated` resynchronize the UI.
+  auto current_site_interaction =
+      SitePermissionsHelper(profile).GetSiteInteraction(*extension,
+                                                        web_contents);
+  if (current_site_interaction !=
+      SitePermissionsHelper::SiteInteraction::kGranted) {
+    return;
+  }
+
   extensions::ActiveTabPermissionGranter::FromWebContents(web_contents)
       ->ClearActiveExtensionAndNotify(extension_id);
 
   auto* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   if (action_runner) {
-    action_runner->ShowReloadPageBubble({GetExtension(*profile, extension_id)});
+    action_runner->ShowReloadPageBubble({extension});
   }
 }
 
@@ -1471,6 +1419,22 @@ void ExtensionsMenuViewModel::OnActionIconUpdated(
   // update the corresponding views.
   for (Observer& observer : observers_) {
     observer.OnActionIconUpdated(extension_id, *index);
+  }
+}
+
+void ExtensionsMenuViewModel::MaybeNotifyActionUpdated(
+    const extensions::ExtensionId& extension_id) {
+  if (!GetActiveWebContents()) {
+    return;
+  }
+
+  std::optional<int> index = GetActionIndex(extension_id);
+  if (!index) {
+    return;
+  }
+
+  for (Observer& observer : observers_) {
+    observer.OnActionUpdated(extension_id, *index);
   }
 }
 

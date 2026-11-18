@@ -420,6 +420,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Callback for when an icon in `action_models_` updates.
   void OnActionIconUpdated(const extensions::ExtensionId& extension_id);
 
+  // Notifies observers that the action with `extension_id` was updated, if an
+  // active WebContents and action model exist.
+  void MaybeNotifyActionUpdated(const extensions::ExtensionId& extension_id);
+
   // Updates the model when web contents changed, and notifies observers.
   void OnWebContentsChanged(content::WebContents* web_contents);
 
@@ -457,6 +461,8 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   base::ScopedObservation<TabListInterface, TabListInterfaceObserver>
       tab_list_interface_observation_{this};
+
+  base::WeakPtrFactory<ExtensionsMenuViewModel> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_MODEL_H_
