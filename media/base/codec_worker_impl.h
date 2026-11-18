@@ -8,9 +8,6 @@
 #ifndef MEDIA_BASE_CODEC_WORKER_IMPL_H_
 #define MEDIA_BASE_CODEC_WORKER_IMPL_H_
 
-#include <cstring>
-
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
@@ -56,7 +53,7 @@ class CodecWorkerImpl {
   }
 
   static void Init(Worker* const worker) {
-    UNSAFE_TODO(memset(worker, 0, sizeof(*worker)));
+    *worker = {};
     worker->status_ = StatusNotOk;
     worker->impl_ = nullptr;
   }
