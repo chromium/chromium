@@ -1625,16 +1625,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.MultiGpu.Nvidia" enum="NvidiaDeviceId"
-    expires_after="2023-04-16">
-  <owner>zmo@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Nvidia device IDs from multi-gpu devices. Recorded when GPU process launches
-    and sends GPUInfo to browser process.
-  </summary>
-</histogram>
-
 <histogram name="GPU.OsCompositor.NumLayersModified" units="layers"
     expires_after="2026-06-01">
   <owner>vasilyt@chromium.org</owner>

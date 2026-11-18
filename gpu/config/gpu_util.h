@@ -120,10 +120,6 @@ GPU_CONFIG_EXPORT void CollectDevicePerfInfo(DevicePerfInfo* device_perf_info,
                                              bool in_browser_process);
 GPU_CONFIG_EXPORT void RecordDevicePerfInfoHistograms();
 
-// In a multi-gpu device, record the discrete gpu device id.
-// Currently only record for AMD/Nvidia GPUs.
-GPU_CONFIG_EXPORT void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info);
-
 // Record histograms for NPU device id.
 // Currently only record for Intel NPUs.
 GPU_CONFIG_EXPORT void RecordNpuHistograms(const GPUInfo& gpu_info);

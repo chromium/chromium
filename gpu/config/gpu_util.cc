@@ -469,20 +469,6 @@ uint32_t EstimateAmountOfTotalDiskSpaceMB() {
   return static_cast<uint32_t>(sum.InMiB());
 }
 
-// Only record Nvidia GPUs.
-void RecordGpuHistogram(uint32_t vendor_id, uint32_t device_id) {
-  switch (vendor_id) {
-    case 0x10de:
-      base::SparseHistogram::FactoryGet(
-          "GPU.MultiGpu.Nvidia", base::HistogramBase::kUmaTargetedHistogramFlag)
-          ->Add(device_id);
-      break;
-    default:
-      // Do nothing if it's not Nvidia.
-      break;
-  }
-}
-
 // Only record Intel NPU.
 void RecordNpuHistogram(uint32_t vendor_id, uint32_t device_id) {
   switch (vendor_id) {
@@ -1228,16 +1214,6 @@ void RecordDevicePerfInfoHistograms() {
                             device_perf_info->intel_gpu_generation);
   UMA_HISTOGRAM_BOOLEAN("GPU.SoftwareRendering",
                         device_perf_info->software_rendering);
-}
-
-void RecordDiscreteGpuHistograms(const GPUInfo& gpu_info) {
-  if (gpu_info.GpuCount() < 2)
-    return;
-  // To simplify logic, if there are multiple GPUs identified on a device,
-  // assume Nvidia is the discrete GPU.
-  RecordGpuHistogram(gpu_info.gpu.vendor_id, gpu_info.gpu.device_id);
-  for (const auto& gpu : gpu_info.secondary_gpus)
-    RecordGpuHistogram(gpu.vendor_id, gpu.device_id);
 }
 
 void RecordNpuHistograms(const GPUInfo& gpu_info) {

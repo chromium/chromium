@@ -1228,44 +1228,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Tier2_AdditionalFormats"/>
 </enum>
 
-<enum name="NvidiaDeviceId">
-  <int value="1600" label="0x0640, GeForce 9500 GT"/>
-  <int value="2601" label="0x0A29, GeForce GT 330M"/>
-  <int value="4053" label="0x0FD5, GeForce GT 650M Mac Edition"/>
-  <int value="4056" label="0x0FD8, GeForce GT 640M Mac Edition"/>
-  <int value="4073" label="0x0FE9, GeForce GT 750M Mac Edition"/>
-  <int value="4074" label="0x0FEA, GeForce GT 755M Mac Edition"/>
-  <int value="4416"
-      label="0x1140, GeForce 610M/710M/810M/820M / GT 620M/625M/630M/720M"/>
-  <int value="4509" label="0x119D, GeForce GTX 775M Mac Edition"/>
-  <int value="4510" label="0x119E, GeForce GTX 780M Mac Edition"/>
-  <int value="4514" label="0x11A2, GeForce GTX 675MX Mac Edition"/>
-  <int value="4515" label="0x11A3, GeForce GTX 680MX"/>
-  <int value="4761" label="0x1299, GeForce 920M"/>
-  <int value="4929" label="0x1341, GeForce 840M"/>
-  <int value="4935" label="0x1347, GeForce 940M"/>
-  <int value="4941" label="0x134D, GeForce 940MX"/>
-  <int value="4943" label="0x134F, GeForce 920MX"/>
-  <int value="5018" label="0x139A, GeForce GTX 950M"/>
-  <int value="5019" label="0x139B, GeForce GTX 960M"/>
-  <int value="5965" label="0x174D, GeForce MX130"/>
-  <int value="5966" label="0x174E, GeForce MX110"/>
-  <int value="7171" label="0x1C03, GeForce GTX 1060 6GB"/>
-  <int value="7200" label="0x1C20, GeForce GTX 1060 Mobile"/>
-  <int value="7298" label="0x1C82, GeForce GTX 1050 Ti"/>
-  <int value="7308" label="0x1C8C, GeForce GTX 1050 Ti Mobile"/>
-  <int value="7309" label="0x1C8D, GeForce GTX 1050 Mobile"/>
-  <int value="7440" label="0x1D10, GeForce MX150"/>
-  <int value="7441" label="0x1D11, GeForce MX230"/>
-  <int value="7443" label="0x1D13, GeForce MX250"/>
-  <int value="7825" label="0x1E91, GeForce RTX 2070 SUPER Mobile / Max-Q"/>
-  <int value="7957" label="0x1F15, GeForce RTX 2060 Mobile"/>
-  <int value="8081" label="0x1F91, GeForce GTX 1650 Mobile / Max-Q"/>
-  <int value="8085" label="0x1F95, GeForce GTX 1650 Ti Mobile"/>
-  <int value="8089" label="0x1F99, GeForce ?"/>
-  <int value="8593" label="0x2191, GeForce GTX 1660 Ti Mobile"/>
-</enum>
-
 <enum name="OverlayStrategies">
   <int value="0" label="Unknown"/>
   <int value="1" label="No overlay"/>
