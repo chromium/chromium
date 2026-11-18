@@ -29,9 +29,9 @@ public interface SelectionActionMenuDelegate {
             DefaultItem.COPY,
             DefaultItem.PASTE,
             DefaultItem.PASTE_AS_PLAIN_TEXT,
+            DefaultItem.SHARE,
             DefaultItem.SELECT_ALL,
-            DefaultItem.WEB_SEARCH,
-            DefaultItem.SHARE
+            DefaultItem.WEB_SEARCH
         };
     }
 
@@ -45,6 +45,23 @@ public interface SelectionActionMenuDelegate {
      */
     default @DefaultItem int[] getDefaultMenuItemOrder(@MenuType int menuType) {
         return SelectionActionMenuDelegate.getDefaultMenuItemOrder();
+    }
+
+    /**
+     * Gives the delegate the ability to modify an item before it is added to the menu.
+     *
+     * @param menuType whether the menu is a floating action mode menu or a dropdown menu.
+     * @param isSelectionReadOnly {@code true} if the input field is not editable.
+     * @param selectedText the highlighted text for which this menu is being shown.
+     * @param builder the item's builder with all fields populated ready to be added to the menu.
+     * @return the built item with any modifications made or null to skip adding the item.
+     */
+    default @Nullable SelectionMenuItem buildItem(
+            @MenuType int menuType,
+            boolean isSelectionReadOnly,
+            String selectedText,
+            SelectionMenuItem.Builder builder) {
+        return builder.isEnabled() ? builder.build() : null;
     }
 
     /**

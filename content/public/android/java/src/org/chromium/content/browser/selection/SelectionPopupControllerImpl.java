@@ -1270,6 +1270,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 false,
                 "test",
                 true,
+                new SelectActionMenuHelper.ItemBuilder(
+                        mSelectionActionMenuDelegate, MenuType.FLOATING, false, "test"),
                 mSelectionActionMenuDelegate);
         pendingMenu.getMenuAsActionMode(menu);
     }
