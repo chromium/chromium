@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,6 +15,7 @@
 
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -42,6 +44,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -49,6 +52,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -103,16 +107,21 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
       content::BrowserContext* browser_context)
       : RendererStartupHelper(browser_context) {}
 
-  // Values received by SetPolicyActivityLoggingEnabled(), in order.
-  const std::vector<bool>& policy_activity_logging_updates() const {
-    return policy_activity_logging_updates_;
+  // Values received by SetPolicyActivityLoggingEnabled() for the process with
+  // `process_id`, in order.
+  std::vector<bool> policy_activity_logging_updates(
+      content::ChildProcessId process_id) const {
+    auto it = policy_activity_logging_updates_.find(process_id);
+    return it == policy_activity_logging_updates_.end() ? std::vector<bool>()
+                                                        : it->second;
   }
 
  protected:
   mojo::PendingAssociatedRemote<mojom::Renderer> BindNewRendererRemote(
       content::RenderProcessHost* process) override {
     mojo::AssociatedRemote<mojom::Renderer> remote;
-    receivers_.Add(this, remote.BindNewEndpointAndPassDedicatedReceiver());
+    receivers_.Add(this, remote.BindNewEndpointAndPassDedicatedReceiver(),
+                   process->GetID());
     return remote.Unbind();
   }
 
@@ -121,7 +130,8 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   void ActivateExtension(const std::string& extension_id) override {}
   void SetActivityLoggingEnabled(bool enabled) override {}
   void SetPolicyActivityLoggingEnabled(bool enabled) override {
-    policy_activity_logging_updates_.push_back(enabled);
+    policy_activity_logging_updates_[receivers_.current_context()].push_back(
+        enabled);
   }
   void LoadExtensions(
       std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions) override {
@@ -177,8 +187,10 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
       bool update_origin_allowlist) override {}
   void WatchPages(const std::vector<std::string>& css_selectors) override {}
 
-  mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
-  std::vector<bool> policy_activity_logging_updates_;
+  mojo::AssociatedReceiverSet<mojom::Renderer, content::ChildProcessId>
+      receivers_;
+  std::map<content::ChildProcessId, std::vector<bool>>
+      policy_activity_logging_updates_;
 };
 
 class ActivityLogTest : public ChromeRenderViewHostTestHarness {
@@ -668,7 +680,7 @@ TEST_F(ActivityLogTestWithoutSwitch, TelemetryActivation) {
   feature_list.InitAndEnableFeature(
       extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
   base::CallbackListSubscription subscription =
-      activity_log->AddTelemetrySubscriber(base::DoNothing());
+      activity_log->AddTelemetrySubscriber(profile(), base::DoNothing());
   EXPECT_TRUE(activity_log->IsTelemetryLoggingActive());
 
   // 3. Remove the subscriber -> false.
@@ -679,7 +691,8 @@ TEST_F(ActivityLogTestWithoutSwitch, TelemetryActivation) {
   base::test::ScopedFeatureList feature_list2;
   feature_list2.InitAndDisableFeature(
       extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
-  subscription = activity_log->AddTelemetrySubscriber(base::DoNothing());
+  subscription =
+      activity_log->AddTelemetrySubscriber(profile(), base::DoNothing());
   EXPECT_FALSE(activity_log->IsTelemetryLoggingActive());
 }
 
@@ -691,11 +704,14 @@ TEST_F(ActivityLogTestWithoutSwitch, TelemetryNotifiesAllSubscribers) {
   int first_count = 0;
   int second_count = 0;
   base::CallbackListSubscription first_subscription =
-      activity_log->AddTelemetrySubscriber(base::BindLambdaForTesting(
-          [&](scoped_refptr<Action> action) { ++first_count; }));
+      activity_log->AddTelemetrySubscriber(
+          profile(), base::BindLambdaForTesting(
+                         [&](scoped_refptr<Action> action) { ++first_count; }));
   base::CallbackListSubscription second_subscription =
-      activity_log->AddTelemetrySubscriber(base::BindLambdaForTesting(
-          [&](scoped_refptr<Action> action) { ++second_count; }));
+      activity_log->AddTelemetrySubscriber(
+          profile(),
+          base::BindLambdaForTesting(
+              [&](scoped_refptr<Action> action) { ++second_count; }));
 
   activity_log->LogAction(base::MakeRefCounted<Action>(
       kExtensionId, base::Time::Now(), Action::ACTION_DOM_ACCESS,
@@ -712,9 +728,9 @@ TEST_F(ActivityLogTestWithoutSwitch,
   feature_list.InitAndEnableFeature(
       extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
   base::CallbackListSubscription first_subscription =
-      activity_log->AddTelemetrySubscriber(base::DoNothing());
+      activity_log->AddTelemetrySubscriber(profile(), base::DoNothing());
   base::CallbackListSubscription second_subscription =
-      activity_log->AddTelemetrySubscriber(base::DoNothing());
+      activity_log->AddTelemetrySubscriber(profile(), base::DoNothing());
 
   first_subscription = {};
   EXPECT_TRUE(activity_log->IsTelemetryLoggingActive());
@@ -734,14 +750,15 @@ TEST_F(ActivityLogTestWithoutSwitch,
           RendererStartupHelperFactory::GetForBrowserContext(profile()));
 
   base::CallbackListSubscription first_subscription =
-      activity_log->AddTelemetrySubscriber(base::DoNothing());
+      activity_log->AddTelemetrySubscriber(profile(), base::DoNothing());
   base::CallbackListSubscription second_subscription =
-      activity_log->AddTelemetrySubscriber(base::DoNothing());
+      activity_log->AddTelemetrySubscriber(profile(), base::DoNothing());
   first_subscription = {};
   second_subscription = {};
 
   renderer_startup_helper->FlushAllForTesting();
-  EXPECT_THAT(renderer_startup_helper->policy_activity_logging_updates(),
+  EXPECT_THAT(renderer_startup_helper->policy_activity_logging_updates(
+                  process()->GetID()),
               testing::ElementsAre(true, false));
 }
 
@@ -754,7 +771,7 @@ TEST_F(ActivityLogTestWithoutSwitch,
   int count = 0;
   base::CallbackListSubscription subscription;
   subscription = activity_log->AddTelemetrySubscriber(
-      base::BindLambdaForTesting([&](scoped_refptr<Action> action) {
+      profile(), base::BindLambdaForTesting([&](scoped_refptr<Action> action) {
         ++count;
         subscription = {};
       }));
@@ -778,7 +795,7 @@ TEST_F(ActivityLogTestWithoutSwitch, TelemetryShouldLog) {
                                        "tabs.query"));
 
   base::CallbackListSubscription subscription =
-      activity_log->AddTelemetrySubscriber(base::DoNothing());
+      activity_log->AddTelemetrySubscriber(profile(), base::DoNothing());
 
   // 1. DOM access should always be logged.
   EXPECT_TRUE(activity_log->ShouldLog(kExtensionId, Action::ACTION_DOM_ACCESS,
@@ -1067,6 +1084,341 @@ TEST_F(ActivityLogIsolatedModeTest,
   ASSERT_TRUE(action);
   ASSERT_TRUE(action->page_incognito());
   EXPECT_FALSE(action->isolated_mode());
+}
+
+// Sets the features of a test fixture. It must be the first base class of the
+// fixture, so that the features are set before the other base classes create
+// the task environment and the profiles.
+class ScopedFeaturesMixin {
+ protected:
+  explicit ScopedFeaturesMixin(
+      const base::flat_map<base::test::FeatureRef, bool>& feature_states) {
+    feature_list_.InitWithFeatureStates(feature_states);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Enables DOM activity telemetry. The primary Off-The-Record profile is a
+// regular Incognito profile.
+class ActivityLogTelemetryContextTest : private ScopedFeaturesMixin,
+                                        public ActivityLogTestWithoutSwitch {
+ protected:
+  explicit ActivityLogTelemetryContextTest(bool milestone2_enabled = true)
+      : ScopedFeaturesMixin(
+            {{extensions_features::kEnterpriseExtensionDOMActivityTelemetry,
+              true},
+             {enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2,
+              milestone2_enabled}}) {}
+
+  ActivityLog* activity_log() { return ActivityLog::GetInstance(profile()); }
+
+  InterceptingRendererStartupHelper* renderer_startup_helper() {
+    return static_cast<InterceptingRendererStartupHelper*>(
+        RendererStartupHelperFactory::GetForBrowserContext(profile()));
+  }
+
+  // Adds a telemetry subscriber for `context` that appends to `actions`.
+  [[nodiscard]] base::CallbackListSubscription AddTelemetrySubscriber(
+      content::BrowserContext* context,
+      std::vector<scoped_refptr<Action>>& actions) {
+    return activity_log()->AddTelemetrySubscriber(
+        context,
+        base::BindLambdaForTesting([&actions](scoped_refptr<Action> action) {
+          actions.push_back(std::move(action));
+        }));
+  }
+
+  static scoped_refptr<Action> CreateDomAction() {
+    return base::MakeRefCounted<Action>(kExtensionId, base::Time::Now(),
+                                        Action::ACTION_DOM_ACCESS,
+                                        "Document.cookie");
+  }
+};
+
+TEST_F(ActivityLogTelemetryContextTest,
+       TelemetryIsActiveForIncognitoContextWithRegularSubscriber) {
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(incognito_profile->IsIncognitoProfile());
+  base::CallbackListSubscription subscription =
+      activity_log()->AddTelemetrySubscriber(profile(), base::DoNothing());
+
+  EXPECT_TRUE(
+      activity_log()->IsTelemetryLoggingActiveForContext(incognito_profile));
+}
+
+TEST_F(ActivityLogTelemetryContextTest,
+       TelemetryKeepsIncognitoActivityRegular) {
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(incognito_profile->IsIncognitoProfile());
+  std::vector<scoped_refptr<Action>> regular_actions;
+  base::CallbackListSubscription regular_subscription =
+      AddTelemetrySubscriber(profile(), regular_actions);
+
+  scoped_refptr<Action> action = CreateDomAction();
+  action->set_page_url(GURL("https://example.com"));
+  action->set_page_incognito(true);
+  activity_log()->LogAction(action);
+
+  EXPECT_THAT(regular_actions, testing::ElementsAre(action));
+}
+
+// The primary Off-The-Record profile is an Enterprise Isolated Mode profile.
+class ActivityLogIsolatedModeTelemetryTest
+    : public ActivityLogTelemetryContextTest {
+ protected:
+  explicit ActivityLogIsolatedModeTelemetryTest(bool milestone2_enabled = true)
+      : ActivityLogTelemetryContextTest(milestone2_enabled) {}
+
+  void SetUp() override {
+    ActivityLogTelemetryContextTest::SetUp();
+    isolated_profile_ =
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    ASSERT_TRUE(isolated_profile_->IsEnterpriseIsolatedModeProfile());
+    ASSERT_EQ(ActivityLog::GetInstance(isolated_profile_), activity_log());
+  }
+
+  void TearDown() override {
+    isolated_profile_ = nullptr;
+    ActivityLogTelemetryContextTest::TearDown();
+  }
+
+  Profile* isolated_profile() { return isolated_profile_; }
+
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
+  raw_ptr<Profile> isolated_profile_ = nullptr;
+};
+
+TEST_F(ActivityLogIsolatedModeTelemetryTest,
+       TelemetryIsActiveOnlyForSubscribedContext) {
+  std::vector<scoped_refptr<Action>> isolated_actions;
+  base::CallbackListSubscription isolated_subscription =
+      AddTelemetrySubscriber(isolated_profile(), isolated_actions);
+
+  EXPECT_TRUE(
+      activity_log()->IsTelemetryLoggingActiveForContext(isolated_profile()));
+  EXPECT_FALSE(activity_log()->IsTelemetryLoggingActiveForContext(profile()));
+}
+
+TEST_F(ActivityLogIsolatedModeTelemetryTest,
+       TelemetryLoggingIsActiveWithOnlyIsolatedModeSubscriber) {
+  ASSERT_FALSE(activity_log()->IsTelemetryLoggingActive());
+  ASSERT_FALSE(activity_log()->ShouldLog(
+      kExtensionId, Action::ACTION_DOM_ACCESS, "Document.cookie"));
+
+  base::CallbackListSubscription isolated_subscription =
+      activity_log()->AddTelemetrySubscriber(isolated_profile(),
+                                             base::DoNothing());
+
+  EXPECT_TRUE(activity_log()->IsTelemetryLoggingActive());
+  EXPECT_TRUE(activity_log()->ShouldLog(kExtensionId, Action::ACTION_DOM_ACCESS,
+                                        "Document.cookie"));
+}
+
+TEST_F(ActivityLogIsolatedModeTelemetryTest,
+       TelemetryRoutesIsolatedModeActionToIsolatedSubscribers) {
+  std::vector<scoped_refptr<Action>> regular_actions;
+  std::vector<scoped_refptr<Action>> isolated_actions;
+  base::CallbackListSubscription regular_subscription =
+      AddTelemetrySubscriber(profile(), regular_actions);
+  base::CallbackListSubscription isolated_subscription =
+      AddTelemetrySubscriber(isolated_profile(), isolated_actions);
+
+  scoped_refptr<Action> action = CreateDomAction();
+  action->set_isolated_mode(true);
+  activity_log()->LogAction(action);
+
+  EXPECT_THAT(regular_actions, testing::IsEmpty());
+  EXPECT_THAT(isolated_actions, testing::ElementsAre(action));
+}
+
+TEST_F(
+    ActivityLogIsolatedModeTelemetryTest,
+    TelemetryRoutesExecuteScriptOnUrlLessIsolatedModeTabToIsolatedSubscribers) {
+  std::vector<scoped_refptr<Action>> regular_actions;
+  std::vector<scoped_refptr<Action>> isolated_actions;
+  base::CallbackListSubscription regular_subscription =
+      AddTelemetrySubscriber(profile(), regular_actions);
+  base::CallbackListSubscription isolated_subscription =
+      AddTelemetrySubscriber(isolated_profile(), isolated_actions);
+  std::unique_ptr<content::WebContents> tab =
+      content::WebContentsTester::CreateTestWebContents(isolated_profile(),
+                                                        nullptr);
+  sessions::SessionTabHelper::CreateForWebContents(
+      tab.get(), sessions::SessionTabHelper::DelegateLookup());
+  ASSERT_FALSE(tab->GetURL().is_valid());
+  MockWindowController window_controller(isolated_profile(), tab.get());
+
+  auto action = base::MakeRefCounted<Action>(kExtensionId, base::Time::Now(),
+                                             Action::ACTION_API_CALL,
+                                             "scripting.executeScript");
+  action->mutable_args().Append(base::DictValue().Set(
+      "target",
+      base::DictValue().Set("tabId", ExtensionTabUtil::GetTabId(tab.get()))));
+  activity_log()->LogAction(action);
+
+  EXPECT_THAT(regular_actions, testing::IsEmpty());
+  EXPECT_THAT(isolated_actions, testing::ElementsAre(action));
+}
+
+TEST_F(ActivityLogIsolatedModeTelemetryTest,
+       TelemetryIgnoresPageIncognitoForRouting) {
+  std::vector<scoped_refptr<Action>> regular_actions;
+  std::vector<scoped_refptr<Action>> isolated_actions;
+  base::CallbackListSubscription regular_subscription =
+      AddTelemetrySubscriber(profile(), regular_actions);
+  base::CallbackListSubscription isolated_subscription =
+      AddTelemetrySubscriber(isolated_profile(), isolated_actions);
+
+  scoped_refptr<Action> action = CreateDomAction();
+  action->set_page_url(GURL("https://example.com"));
+  action->set_page_incognito(true);
+  activity_log()->LogAction(action);
+
+  EXPECT_THAT(regular_actions, testing::ElementsAre(action));
+  EXPECT_THAT(isolated_actions, testing::IsEmpty());
+}
+
+TEST_F(ActivityLogIsolatedModeTelemetryTest,
+       TelemetryKeepsRegularActionsInRegularSubscribers) {
+  std::vector<scoped_refptr<Action>> regular_actions;
+  std::vector<scoped_refptr<Action>> isolated_actions;
+  base::CallbackListSubscription regular_subscription =
+      AddTelemetrySubscriber(profile(), regular_actions);
+  base::CallbackListSubscription isolated_subscription =
+      AddTelemetrySubscriber(isolated_profile(), isolated_actions);
+
+  scoped_refptr<Action> action = CreateDomAction();
+  activity_log()->LogAction(action);
+
+  EXPECT_THAT(regular_actions, testing::ElementsAre(action));
+  EXPECT_THAT(isolated_actions, testing::IsEmpty());
+}
+
+TEST_F(ActivityLogIsolatedModeTelemetryTest,
+       TelemetryRemovingIsolatedSubscriberKeepsRegularActive) {
+  std::vector<scoped_refptr<Action>> regular_actions;
+  std::vector<scoped_refptr<Action>> isolated_actions;
+  base::CallbackListSubscription regular_subscription =
+      AddTelemetrySubscriber(profile(), regular_actions);
+  base::CallbackListSubscription isolated_subscription =
+      AddTelemetrySubscriber(isolated_profile(), isolated_actions);
+
+  isolated_subscription = {};
+
+  EXPECT_TRUE(activity_log()->IsTelemetryLoggingActiveForContext(profile()));
+  EXPECT_FALSE(
+      activity_log()->IsTelemetryLoggingActiveForContext(isolated_profile()));
+}
+
+TEST_F(ActivityLogIsolatedModeTelemetryTest,
+       TelemetryNotifiesIsolatedModeRenderersOfIsolatedSubscribers) {
+  content::MockRenderProcessHost isolated_process(isolated_profile());
+  isolated_process.Init();
+  renderer_startup_helper()->OnRenderProcessHostCreated(&isolated_process);
+
+  base::CallbackListSubscription isolated_subscription =
+      activity_log()->AddTelemetrySubscriber(isolated_profile(),
+                                             base::DoNothing());
+  isolated_subscription = {};
+
+  renderer_startup_helper()->FlushAllForTesting();
+  EXPECT_THAT(renderer_startup_helper()->policy_activity_logging_updates(
+                  isolated_process.GetID()),
+              testing::ElementsAre(true, false));
+}
+
+TEST_F(ActivityLogIsolatedModeTelemetryTest,
+       TelemetryDoesNotNotifyRegularRenderersOfIsolatedSubscribers) {
+  content::MockRenderProcessHost isolated_process(isolated_profile());
+  isolated_process.Init();
+  renderer_startup_helper()->OnRenderProcessHostCreated(&isolated_process);
+
+  base::CallbackListSubscription isolated_subscription =
+      activity_log()->AddTelemetrySubscriber(isolated_profile(),
+                                             base::DoNothing());
+  isolated_subscription = {};
+
+  renderer_startup_helper()->FlushAllForTesting();
+  ASSERT_THAT(renderer_startup_helper()->policy_activity_logging_updates(
+                  isolated_process.GetID()),
+              testing::ElementsAre(true, false));
+  EXPECT_THAT(renderer_startup_helper()->policy_activity_logging_updates(
+                  process()->GetID()),
+              testing::IsEmpty());
+}
+
+TEST_F(ActivityLogIsolatedModeTelemetryTest,
+       TelemetryDoesNotNotifyIsolatedModeRenderersOfRegularSubscribers) {
+  content::MockRenderProcessHost isolated_process(isolated_profile());
+  isolated_process.Init();
+  renderer_startup_helper()->OnRenderProcessHostCreated(&isolated_process);
+
+  base::CallbackListSubscription regular_subscription =
+      activity_log()->AddTelemetrySubscriber(profile(), base::DoNothing());
+  regular_subscription = {};
+
+  renderer_startup_helper()->FlushAllForTesting();
+  ASSERT_THAT(renderer_startup_helper()->policy_activity_logging_updates(
+                  process()->GetID()),
+              testing::ElementsAre(true, false));
+  EXPECT_THAT(renderer_startup_helper()->policy_activity_logging_updates(
+                  isolated_process.GetID()),
+              testing::IsEmpty());
+}
+
+class ActivityLogIsolatedModeWithoutMilestone2Test
+    : public ActivityLogIsolatedModeTelemetryTest {
+ protected:
+  ActivityLogIsolatedModeWithoutMilestone2Test()
+      : ActivityLogIsolatedModeTelemetryTest(/*milestone2_enabled=*/false) {}
+};
+
+TEST_F(ActivityLogIsolatedModeWithoutMilestone2Test,
+       TelemetryRoutesIsolatedModeActionToRegularSubscribers) {
+  std::vector<scoped_refptr<Action>> regular_actions;
+  base::CallbackListSubscription regular_subscription =
+      AddTelemetrySubscriber(profile(), regular_actions);
+
+  scoped_refptr<Action> action = CreateDomAction();
+  action->set_isolated_mode(true);
+  activity_log()->LogAction(action);
+
+  EXPECT_THAT(regular_actions, testing::ElementsAre(action));
+}
+
+TEST_F(ActivityLogIsolatedModeWithoutMilestone2Test,
+       TelemetryIsActiveForIsolatedModeContextWithRegularSubscriber) {
+  std::vector<scoped_refptr<Action>> regular_actions;
+  base::CallbackListSubscription regular_subscription =
+      AddTelemetrySubscriber(profile(), regular_actions);
+
+  EXPECT_TRUE(
+      activity_log()->IsTelemetryLoggingActiveForContext(isolated_profile()));
+}
+
+TEST_F(ActivityLogIsolatedModeWithoutMilestone2Test,
+       TelemetryDoesNotNotifyIsolatedModeRenderersWithoutMilestone2) {
+  content::MockRenderProcessHost isolated_process(isolated_profile());
+  isolated_process.Init();
+  renderer_startup_helper()->OnRenderProcessHostCreated(&isolated_process);
+
+  base::CallbackListSubscription subscription =
+      activity_log()->AddTelemetrySubscriber(profile(), base::DoNothing());
+  subscription = {};
+
+  renderer_startup_helper()->FlushAllForTesting();
+  ASSERT_THAT(renderer_startup_helper()->policy_activity_logging_updates(
+                  process()->GetID()),
+              testing::ElementsAre(true, false));
+  EXPECT_THAT(renderer_startup_helper()->policy_activity_logging_updates(
+                  isolated_process.GetID()),
+              testing::IsEmpty());
 }
 
 }  // namespace extensions

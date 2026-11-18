@@ -742,7 +742,8 @@ bool ChromeExtensionsBrowserClient::IsActivityLoggingEnabled(
 bool ChromeExtensionsBrowserClient::IsTelemetryLoggingEnabled(
     content::BrowserContext* context) {
   ActivityLog* activity_log = ActivityLog::GetInstance(context);
-  return activity_log && activity_log->IsTelemetryLoggingActive();
+  return activity_log &&
+         activity_log->IsTelemetryLoggingActiveForContext(context);
 }
 
 void ChromeExtensionsBrowserClient::GetTabAndWindowIdForWebContents(

@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -40,6 +41,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension_features.h"
@@ -1454,6 +1456,79 @@ IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
   // The signal is dropped: the Isolated Mode profile has no service yet.
   EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
   EXPECT_FALSE(HasEsbSignals(*telemetry_service(), extension_id));
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionTelemetryServiceIsolatedModeBrowserTest,
+                       KeepsIsolatedModeDomActivityOutOfRegularService) {
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}},
+       {enterprise_connectors::kExtensionDOMActivityEvent, {"*"}}});
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+        "name": "DOM Access Extension",
+        "version": "0.1",
+        "manifest_version": 3,
+        "content_scripts": [
+          {
+            "matches": ["<all_urls>"],
+            "js": ["content_script.js"],
+            "run_at": "document_start"
+          }
+        ]
+      })";
+  static constexpr char kContentScript[] =
+      R"(
+        console.log(document.cookie);
+        chrome.test.notifyPass();
+      )";
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+  const extensions::ExtensionId extension_id = extension->id();
+
+  BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
+  Profile* isolated_profile = isolated_browser->GetProfile();
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      isolated_browser,
+      embedded_test_server()->GetURL("example.com", "/empty.html")));
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  if (!IsMilestone2Enabled()) {
+    // With Milestone 2 off, Isolated Mode activity is handled like other
+    // Off-The-Record activity.
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return HasEnterpriseSignals(*telemetry_service(), extension_id);
+    }));
+    return;
+  }
+
+  // The activity isn't collected: telemetry logging is off for the Isolated
+  // Mode renderers while the profile has no subscriber.
+  EXPECT_FALSE(
+      extensions::ExtensionsBrowserClient::Get()->IsTelemetryLoggingEnabled(
+          isolated_profile));
+  EXPECT_FALSE(HasEnterpriseSignals(*telemetry_service(), extension_id));
+
+  // DOM activity in a regular tab is reported by the regular profile's
+  // service.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("example.com", "/empty.html")));
+  ASSERT_TRUE(result_catcher.GetNextResult());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return HasEnterpriseSignals(*telemetry_service(), extension_id);
+  }));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

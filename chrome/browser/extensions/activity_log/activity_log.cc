@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
@@ -34,6 +35,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/activity_log_policy_util.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -571,6 +573,21 @@ void SetActivityHandlers() {
     activity_monitor::SetWebRequestMonitor(&LogWebRequestActivity);
 }
 
+// Returns true if `profile` has telemetry separate from its original profile.
+bool UsesIsolatedModeTelemetry(const Profile& profile) {
+  return enterprise_isolated_mode::
+             IsExtensionTelemetryEnabledInIsolatedMode() &&
+         profile.IsEnterpriseIsolatedModeProfile();
+}
+
+// Returns true if `action` should only go to Isolated Mode subscribers. It
+// reaches no telemetry subscriber if the Isolated Mode profile has none.
+bool IsIsolatedModeAction(const Action& action) {
+  return enterprise_isolated_mode::
+             IsExtensionTelemetryEnabledInIsolatedMode() &&
+         action.isolated_mode();
+}
+
 }  // namespace
 
 // SET THINGS UP. --------------------------------------------------------------
@@ -612,10 +629,14 @@ ActivityLog::ActivityLog(content::BrowserContext* context)
 
   observers_ = base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>();
 
-  // Unretained is safe: the removal callback is owned by
-  // `telemetry_subscribers_`, a member of `this`.
-  telemetry_subscribers_.set_removal_callback(base::BindRepeating(
-      &ActivityLog::OnTelemetrySubscriberRemoved, base::Unretained(this)));
+  // Unretained is safe: the removal callbacks are owned by the subscriber
+  // lists, which are members of `this`.
+  telemetry_subscribers_.set_removal_callback(
+      base::BindRepeating(&ActivityLog::OnTelemetrySubscriberRemoved,
+                          base::Unretained(this), /*isolated=*/false));
+  isolated_telemetry_subscribers_.set_removal_callback(
+      base::BindRepeating(&ActivityLog::OnTelemetrySubscriberRemoved,
+                          base::Unretained(this), /*isolated=*/true));
 
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   CheckActive(true);  // use cached
@@ -748,29 +769,48 @@ void ActivityLog::RemoveObserver(ActivityLog::Observer* observer) {
 }
 
 base::CallbackListSubscription ActivityLog::AddTelemetrySubscriber(
+    content::BrowserContext* context,
     TelemetryCallback callback) {
   CHECK(!callback.is_null());
+  Profile* subscriber_profile = Profile::FromBrowserContext(context);
+  CHECK(profile_->IsSameOrParent(subscriber_profile));
   if (!base::FeatureList::IsEnabled(
           extensions_features::kEnterpriseExtensionDOMActivityTelemetry)) {
     return {};
   }
 
-  bool was_active = IsTelemetryLoggingActive();
+  bool isolated = UsesIsolatedModeTelemetry(*subscriber_profile);
+  TelemetryCallbackList& subscribers =
+      isolated ? isolated_telemetry_subscribers_ : telemetry_subscribers_;
+  bool was_active = !subscribers.empty();
   base::CallbackListSubscription subscription =
-      telemetry_subscribers_.Add(std::move(callback));
+      subscribers.Add(std::move(callback));
   if (!was_active) {
-    NotifyRenderersOfTelemetryLogging();
+    NotifyRenderersOfTelemetryLogging(isolated);
   }
   return subscription;
 }
 
 bool ActivityLog::IsTelemetryLoggingActive() const {
+  return !telemetry_subscribers_.empty() ||
+         !isolated_telemetry_subscribers_.empty();
+}
+
+bool ActivityLog::IsTelemetryLoggingActiveForContext(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  CHECK(profile_->IsSameOrParent(profile));
+  if (UsesIsolatedModeTelemetry(*profile)) {
+    return !isolated_telemetry_subscribers_.empty();
+  }
   return !telemetry_subscribers_.empty();
 }
 
-void ActivityLog::OnTelemetrySubscriberRemoved() {
-  if (!IsTelemetryLoggingActive()) {
-    NotifyRenderersOfTelemetryLogging();
+void ActivityLog::OnTelemetrySubscriberRemoved(bool isolated) {
+  const TelemetryCallbackList& subscribers =
+      isolated ? isolated_telemetry_subscribers_ : telemetry_subscribers_;
+  if (subscribers.empty()) {
+    NotifyRenderersOfTelemetryLogging(isolated);
   }
 }
 
@@ -805,7 +845,11 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
     database_policy_->ProcessAction(action);
   if (has_listeners_)
     observers_->Notify(FROM_HERE, &Observer::OnExtensionActivity, action);
-  telemetry_subscribers_.Notify(action);
+  if (IsIsolatedModeAction(*action)) {
+    isolated_telemetry_subscribers_.Notify(action);
+  } else {
+    telemetry_subscribers_.Notify(action);
+  }
   if (testing_mode_)
     VLOG(1) << action->PrintForDebug();
 }
@@ -1012,7 +1056,7 @@ void ActivityLog::OnExtensionSystemReady() {
   }
 }
 
-void ActivityLog::NotifyRenderersOfTelemetryLogging() {
+void ActivityLog::NotifyRenderersOfTelemetryLogging(bool isolated) {
   for (content::RenderProcessHost::iterator iter(
            content::RenderProcessHost::AllHostsIterator());
        !iter.IsAtEnd(); iter.Advance()) {
@@ -1020,15 +1064,21 @@ void ActivityLog::NotifyRenderersOfTelemetryLogging() {
     if (host->IsInitializedAndNotDead()) {
       Profile* host_profile =
           Profile::FromBrowserContext(host->GetBrowserContext());
-      // Don't gather telemetry from incognito profiles.
-      if (!host_profile->IsOffTheRecord() &&
-          profile_->IsSameOrParent(host_profile)) {
+      // Only renderers whose state may have changed are updated. Other running
+      // Off-The-Record renderers aren't updated, and those started later get
+      // the regular profile's state from IsTelemetryLoggingEnabled().
+      // TODO(crbug.com/575331296): Make both paths agree for Off-The-Record
+      // renderers.
+      bool notify = isolated ? UsesIsolatedModeTelemetry(*host_profile)
+                             : !host_profile->IsOffTheRecord();
+      if (notify && profile_->IsSameOrParent(host_profile)) {
         mojom::Renderer* renderer =
             RendererStartupHelperFactory::GetForBrowserContext(
                 host->GetBrowserContext())
                 ->GetRenderer(host);
         if (renderer) {
-          renderer->SetPolicyActivityLoggingEnabled(IsTelemetryLoggingActive());
+          renderer->SetPolicyActivityLoggingEnabled(
+              IsTelemetryLoggingActiveForContext(host_profile));
         }
       }
     }

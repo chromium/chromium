@@ -4,9 +4,11 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
@@ -1953,11 +1956,13 @@ class ExtensionTelemetryServiceIsolatedModeTest
     : public ExtensionTelemetryServiceTest {
  protected:
   // `ExtensionTelemetryEventRouter` is only created for Isolated Mode
-  // profiles when Milestone 2 is enabled.
+  // profiles when Milestone 2 is enabled. DOM activity telemetry also needs
+  // its own feature.
   ExtensionTelemetryServiceIsolatedModeTest()
       : ExtensionTelemetryServiceTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-            {enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2}) {
+            {enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2,
+             extensions_features::kEnterpriseExtensionDOMActivityTelemetry}) {
     isolated_profile_ =
         profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
@@ -2089,6 +2094,42 @@ TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
   histogram_tester.ExpectTotalCount(
       base::StrCat({kReportSizeHistogram, ".Isolated"}), 1);
   histogram_tester.ExpectTotalCount(kReportSizeHistogram, 0);
+}
+
+TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
+       CreatesActivityLogIngesterAlongsideRegularOne) {
+  // Simulate the regular profile's ingester. Both profiles share the same
+  // `ActivityLog`.
+  auto* activity_log = extensions::ActivityLog::GetInstance(&profile_);
+  ASSERT_EQ(extensions::ActivityLog::GetInstance(isolated_profile_),
+            activity_log);
+  base::CallbackListSubscription regular_subscription =
+      activity_log->AddTelemetrySubscriber(&profile_, base::DoNothing());
+
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent,
+                         enterprise_connectors::kExtensionDOMActivityEvent});
+  ASSERT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+  EXPECT_TRUE(HasActivityLogIngester());
+  EXPECT_TRUE(
+      activity_log->IsTelemetryLoggingActiveForContext(isolated_profile_));
+}
+
+TEST_F(ExtensionTelemetryServiceIsolatedModeTest,
+       DestroyingIsolatedServiceKeepsRegularDomTelemetry) {
+  auto* activity_log = extensions::ActivityLog::GetInstance(&profile_);
+  base::CallbackListSubscription regular_subscription =
+      activity_log->AddTelemetrySubscriber(&profile_, base::DoNothing());
+  SetEnterpriseReportingConfig(
+      /*enabled=*/true, {enterprise_connectors::kExtensionTelemetryEvent,
+                         enterprise_connectors::kExtensionDOMActivityEvent});
+  ASSERT_TRUE(HasActivityLogIngester());
+
+  telemetry_service_.reset();
+
+  EXPECT_FALSE(
+      activity_log->IsTelemetryLoggingActiveForContext(isolated_profile_));
+  EXPECT_TRUE(activity_log->IsTelemetryLoggingActiveForContext(&profile_));
 }
 
 }  // namespace safe_browsing

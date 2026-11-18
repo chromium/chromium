@@ -1918,6 +1918,12 @@ void ExtensionTelemetryService::UpdateDOMActivityLoggingState() {
     activity_log_ingester_.reset();
   }
 
+  // Only the regular profile's service registers the synthetic trial, so an
+  // Off-The-Record service can't overwrite its group.
+  if (profile_->IsOffTheRecord()) {
+    return;
+  }
+
   auto* management_service =
       policy::ManagementServiceFactory::GetForProfile(profile_);
   bool is_cloud_managed =

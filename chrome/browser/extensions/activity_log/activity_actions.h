@@ -107,6 +107,9 @@ class Action : public base::RefCountedThreadSafe<Action> {
   // used for the APIs whose tab ID the ActivityLog resolves. Unlike
   // page_incognito and arg_incognito, the flag doesn't depend on the URLs, and
   // it is only kept in memory.
+  // Code that creates an Action must set the flag: the ActivityLog uses it to
+  // choose the telemetry subscribers that receive the action, and an action
+  // without it goes to the regular profile's subscribers.
   bool isolated_mode() const { return isolated_mode_; }
   void set_isolated_mode(bool isolated_mode) { isolated_mode_ = isolated_mode; }
 

@@ -24,9 +24,9 @@ ActivityLogIngester::ActivityLogIngester(
   auto* activity_log = extensions::ActivityLog::GetInstance(profile);
   if (activity_log) {
     // Unretained is safe: the subscription is owned by `this`.
-    telemetry_subscription_ =
-        activity_log->AddTelemetrySubscriber(base::BindRepeating(
-            &ActivityLogIngester::OnExtensionActivity, base::Unretained(this)));
+    telemetry_subscription_ = activity_log->AddTelemetrySubscriber(
+        profile, base::BindRepeating(&ActivityLogIngester::OnExtensionActivity,
+                                     base::Unretained(this)));
   }
 }
 
