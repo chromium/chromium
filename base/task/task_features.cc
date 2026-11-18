@@ -44,6 +44,20 @@ BASE_FEATURE(kAlignWakeUps, FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTimerSlackMac, FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kMacPumpTasksBeforeFinishLaunching, FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kMacPumpBeforeFinishLaunchingMaxMs,
+                   &kMacPumpTasksBeforeFinishLaunching,
+                   18);
+
+BASE_FEATURE_PARAM(int,
+                   kMacPumpAfterFinishLaunchingMaxMs,
+                   &kMacPumpTasksBeforeFinishLaunching,
+                   45);
+#endif  // BUILDFLAG(IS_MAC)
+
 BASE_FEATURE(kRunTasksByBatches,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
              FEATURE_ENABLED_BY_DEFAULT);

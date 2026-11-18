@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #import "base/mac/mac_util.h"
+#include "base/message_loop/message_pump_apple.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #import "chrome/browser/app_controller_mac.h"
@@ -116,6 +117,12 @@ void CancelTerminate() {
       base::mac::MacOSVersion() >= 14'00'00 &&
       base::FeatureList::IsEnabled(
           features::kSonomaAccessibilityActivationRefinements);
+
+  {
+    TRACE_EVENT0("startup",
+                 "BrowserCrApplication::DrainPostFinishLaunchingTasks");
+    base::message_pump_apple::DrainPostFinishLaunchingTasks();
+  }
 }
 
 - (void)observeValueForKeyPath:(NSString*)keyPath

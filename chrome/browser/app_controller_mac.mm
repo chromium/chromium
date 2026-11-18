@@ -931,8 +931,6 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 // (NSApplicationDelegate protocol) This is the Apple-approved place to override
 // the default handlers.
 - (void)applicationWillFinishLaunching:(NSNotification*)notification {
-  NSWindow.allowsAutomaticWindowTabbing = NO;
-
   [self initShareMenu];
 }
 
@@ -1294,6 +1292,10 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 // This is called after profiles have been loaded and preferences registered.
 // It is safe to access the default profile here.
 - (void)applicationDidFinishLaunching:(NSNotification*)notify {
+  if (_isShuttingDown) {
+    return;
+  }
+
   if (g_browser_process->browser_policy_connector()
           ->chrome_browser_cloud_management_controller()
           ->IsEnterpriseStartupDialogShowing()) {

@@ -348,6 +348,10 @@ class BASE_EXPORT MessagePumpUIApplication : public MessagePumpCFRunLoopBase {
 
 #else  // !BUILDFLAG(IS_IOS)
 
+namespace message_pump_apple {
+BASE_EXPORT void DrainPostFinishLaunchingTasks();
+}  // namespace message_pump_apple
+
 class MessagePumpNSApplication : public MessagePumpCFRunLoopBase {
  public:
   MessagePumpNSApplication();
@@ -361,7 +365,14 @@ class MessagePumpNSApplication : public MessagePumpCFRunLoopBase {
   bool DoQuit() override;
 
  private:
+  friend void message_pump_apple::DrainPostFinishLaunchingTasks();
+
   void EnterExitRunLoop(CFRunLoopActivity activity) override;
+
+  // Runs immediate `delegate()->DoWork()` batches for roughly `budget` without
+  // invoking `DoIdleWork()`, then schedules any remaining work on the main
+  // `CFRunLoop`.
+  void DrainStartupWork(TimeDelta budget);
 
   // True if DoRun is managing its own run loop as opposed to letting
   // -[NSApplication run] handle it.  The outermost run loop in the application
@@ -369,9 +380,17 @@ class MessagePumpNSApplication : public MessagePumpCFRunLoopBase {
   // in DoRun.
   bool running_own_loop_ = false;
 
-  // True if Quit() was called while a modal window was shown and needed to be
-  // deferred.
+  // True while `DoRun()` is inside `-[NSApplication run]`, including after
+  // `-[NSApplication stop:]` clears `NSApp.running` until `run` unwinds.
+  bool in_nsapp_run_ = false;
+
+  // True if `Quit()` was called while a modal window was shown (or during the
+  // post-`finishLaunching` startup drain) and needed to be deferred.
   bool quit_pending_ = false;
+
+  // True once the one-shot startup task drains have been consumed for this
+  // pump instance.
+  bool startup_drain_completed_ = false;
 };
 
 class MessagePumpCrApplication : public MessagePumpNSApplication {
@@ -414,6 +433,18 @@ BASE_EXPORT bool UsingCrApp();
 // Wrapper to query -[NSApp isHandlingSendEvent] from C++ code.
 // Requires NSApp to implement CrAppProtocol.
 BASE_EXPORT bool IsHandlingSendEvent();
+
+// Drains ready UI tasks up to `kMacPumpAfterFinishLaunchingMaxMs` for the
+// active top-level `MessagePumpNSApplication::DoRun()` when
+// `kMacPumpTasksBeforeFinishLaunching` is enabled. Must be called on the main
+// thread right after `-[NSApplication finishLaunching]` before entering the
+// main `CFRunLoop`.
+BASE_EXPORT void DrainPostFinishLaunchingTasks();
+
+// Returns true on the main thread while `MessagePumpNSApplication` is actively
+// draining startup tasks right before `-[NSApplication run]` enters its main
+// `CFRunLoop`.
+BASE_EXPORT bool IsDrainingStartupTasks();
 #endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace message_pump_apple

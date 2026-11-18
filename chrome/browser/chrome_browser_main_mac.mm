@@ -154,6 +154,11 @@ int ChromeBrowserMainPartsMac::PreCreateThreads() {
     return ret;
   }
 
+  // Disable automatic Cocoa window tabbing early so any window creation or UI
+  // work running before `-applicationWillFinishLaunching:` observes the final
+  // setting.
+  NSWindow.allowsAutomaticWindowTabbing = NO;
+
   // Create the app delegate by requesting the shared AppController.
   CHECK_EQ(nil, NSApp.delegate);
   AppController* app_controller = AppController.sharedController;

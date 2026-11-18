@@ -11,6 +11,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/apple/call_with_eh_frame.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -51,6 +52,14 @@ constexpr CFTimeInterval kCFTimeIntervalMax =
 // Set to true if message_pump_apple::Create() is called before NSApp is
 // initialized.  Only accessed from the main thread.
 bool g_not_using_cr_app = false;
+
+// Active top-level pump eligible for a post-`-finishLaunching` startup drain
+// during `-[NSApplication run]`. Only accessed from the main thread.
+MessagePumpNSApplication* g_top_level_startup_pump = nullptr;
+
+// Pump currently executing `MessagePumpNSApplication::DrainStartupWork()`
+// (reset inside nested `DoRun()` calls). Only accessed from the main thread.
+MessagePumpNSApplication* g_startup_drain_pump = nullptr;
 #endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
@@ -784,7 +793,11 @@ MessagePumpNSApplication::MessagePumpNSApplication() = default;
 MessagePumpNSApplication::~MessagePumpNSApplication() = default;
 
 void MessagePumpNSApplication::DoRun(Delegate* delegate) {
-  bool last_running_own_loop = running_own_loop_;
+  const bool was_in_startup_drain = g_startup_drain_pump == this;
+  // A nested `Run()` started from a drained task is not itself a startup drain.
+  // The outer drain state is restored when this `Run()` returns.
+  AutoReset<MessagePumpNSApplication*> reset_startup_drain(
+      &g_startup_drain_pump, nullptr);
 
   // NSApp must be initialized by calling:
   // [{some class which implements CrAppProtocol} sharedApplication]
@@ -793,12 +806,31 @@ void MessagePumpNSApplication::DoRun(Delegate* delegate) {
   // RegisterCrApp() or RegisterBrowserCrApp().
   CHECK(NSApp);
 
-  if (!NSApp.running) {
-    running_own_loop_ = false;
+  if (!NSApp.running && !in_nsapp_run_ && !was_in_startup_drain &&
+      !running_own_loop_) {
+    const bool should_drain_startup =
+        nesting_level() == 0 && FeatureList::GetInstance() &&
+        !std::exchange(startup_drain_completed_, true) &&
+        FeatureList::IsEnabled(kMacPumpTasksBeforeFinishLaunching);
+    if (should_drain_startup) {
+      const TimeDelta pre_budget =
+          Milliseconds(kMacPumpBeforeFinishLaunchingMaxMs.Get());
+      if (pre_budget.is_positive()) {
+        DrainStartupWork(pre_budget);
+        if (!keep_running()) {
+          return;
+        }
+      }
+    }
+
+    AutoReset<MessagePumpNSApplication*> top_pump(
+        &g_top_level_startup_pump, should_drain_startup ? this : nullptr);
+    AutoReset<bool> in_nsapp_run(&in_nsapp_run_, true);
+
     // NSApplication manages autorelease pools itself when run this way.
     [NSApp run];
   } else {
-    running_own_loop_ = true;
+    AutoReset<bool> reset_running_own_loop(&running_own_loop_, true);
     while (keep_running()) {
       OptionalAutoreleasePool autorelease_pool(this);
       NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
@@ -810,17 +842,23 @@ void MessagePumpNSApplication::DoRun(Delegate* delegate) {
       }
     }
   }
-
-  running_own_loop_ = last_running_own_loop;
 }
 
 bool MessagePumpNSApplication::DoQuit() {
-  // If the app is displaying a modal window in a native run loop, we can only
-  // quit our run loop after the window is closed. Otherwise the [NSApplication
-  // stop] below will apply to the modal window run loop instead. To work around
-  // this, the quit is applied when we re-enter our own run loop after the
-  // window is gone (see MessagePumpNSApplication::EnterExitRunLoop).
-  if (nesting_level() > run_nesting_level() && NSApp.modalWindow != nil) {
+  if (!NSApp.running && !in_nsapp_run_ && !running_own_loop_) {
+    return true;
+  }
+
+  // Defer `-[NSApplication stop:]` in two cases:
+  // 1. A modal window is running a native run loop, where `stop:` would apply
+  //    to the modal loop instead of ours.
+  // 2. We are draining post-`finishLaunching` tasks before `-[NSApplication
+  //    run]` enters its main `CFRunLoop`, so we wait until `kCFRunLoopEntry`
+  //    to stop the main loop cleanly.
+  // In both cases `EnterExitRunLoop()` applies the deferred quit once we enter
+  // our own run loop with no modal window.
+  if ((nesting_level() > run_nesting_level() && NSApp.modalWindow != nil) ||
+      (!running_own_loop_ && g_startup_drain_pump == this)) {
     quit_pending_ = true;
     return false;
   }
@@ -844,14 +882,43 @@ bool MessagePumpNSApplication::DoQuit() {
 }
 
 void MessagePumpNSApplication::EnterExitRunLoop(CFRunLoopActivity activity) {
-  // If we previously tried quitting while a modal window was active, check if
-  // the window is gone now and we're no longer nested in a system run loop.
+  // Apply a quit deferred while a modal window was active or during the
+  // post-`finishLaunching` startup drain once we're back in our own run loop
+  // with no modal window.
   if (activity == kCFRunLoopEntry && quit_pending_ &&
       nesting_level() <= run_nesting_level() && NSApp.modalWindow == nil) {
     quit_pending_ = false;
     if (DoQuit()) {
       OnDidQuit();
     }
+  }
+}
+
+void MessagePumpNSApplication::DrainStartupWork(TimeDelta budget) {
+  CHECK(NSThread.isMainThread);
+  DCHECK_EQ(nesting_level(), 0);
+  AutoReset<MessagePumpNSApplication*> in_drain(&g_startup_drain_pump, this);
+  const TimeTicks deadline = TimeTicks::Now() + budget;
+  bool has_more_immediate_work = true;
+  while (keep_running() && !quit_pending_ && TimeTicks::Now() < deadline) {
+    OptionalAutoreleasePool autorelease_pool(this);
+    __block Delegate::NextWorkInfo next_work_info;
+    apple::CallWithEHFrame(^{
+      next_work_info = delegate()->DoWork();
+    });
+    has_more_immediate_work = next_work_info.is_immediate();
+    // A `Quit()` deferred via `quit_pending_` is applied in
+    // `EnterExitRunLoop()`.
+    if (!keep_running() || quit_pending_) {
+      break;
+    }
+    if (!has_more_immediate_work) {
+      ScheduleDelayedWork(next_work_info);
+      break;
+    }
+  }
+  if (has_more_immediate_work) {
+    ScheduleWork();
   }
 }
 
@@ -943,6 +1010,24 @@ bool IsHandlingSendEvent() {
   DCHECK([NSApp conformsToProtocol:@protocol(CrAppProtocol)]);
   NSObject<CrAppProtocol>* app = static_cast<NSObject<CrAppProtocol>*>(NSApp);
   return [app isHandlingSendEvent];
+}
+
+void DrainPostFinishLaunchingTasks() {
+  CHECK(NSThread.isMainThread);
+  MessagePumpNSApplication* pump =
+      std::exchange(g_top_level_startup_pump, nullptr);
+  if (!pump || pump->nesting_level() != 0) {
+    return;
+  }
+  const TimeDelta budget =
+      Milliseconds(kMacPumpAfterFinishLaunchingMaxMs.Get());
+  if (budget.is_positive()) {
+    pump->DrainStartupWork(budget);
+  }
+}
+
+bool IsDrainingStartupTasks() {
+  return NSThread.isMainThread && g_startup_drain_pump != nullptr;
 }
 
 #endif  // !BUILDFLAG(IS_IOS)
