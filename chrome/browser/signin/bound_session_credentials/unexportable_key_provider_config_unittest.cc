@@ -225,6 +225,22 @@ TEST_F(UnexportableKeyProviderConfigTest,
                     "dbsc-prototype",
                 },
                 "."));
+
+  const crypto::UnexportableKeyProvider::Config colocation_config =
+      GetConfigForStoragePartitionPathAndPurpose(profile, base::FilePath(),
+                                                 KeyPurpose::kColocationProof);
+  EXPECT_EQ(colocation_config.keychain_access_group, kKeychainAccessGroup);
+  EXPECT_EQ(colocation_config.application_tag,
+            base::JoinString(
+                {
+                    kKeychainAccessGroup,
+                    kUserDataDirHash,
+                    "test_profile",
+                    kUnixEpochHash,
+                    kDefaultStoragePartitionPathHash,
+                    "colocation",
+                },
+                "."));
 }
 
 TEST_F(UnexportableKeyProviderConfigTest,
@@ -279,6 +295,23 @@ TEST_F(UnexportableKeyProviderConfigTest,
                     "dbsc-prototype",
                 },
                 "."));
+
+  const crypto::UnexportableKeyProvider::Config colocation_config =
+      GetConfigForStoragePartitionPathAndPurpose(
+          profile, base::FilePath("test_partition"),
+          KeyPurpose::kColocationProof);
+  EXPECT_EQ(colocation_config.keychain_access_group, kKeychainAccessGroup);
+  EXPECT_EQ(colocation_config.application_tag,
+            base::JoinString(
+                {
+                    kKeychainAccessGroup,
+                    kUserDataDirHash,
+                    "test_profile",
+                    kUnixEpochHash,
+                    kTestStoragePartitionPathHash,
+                    "colocation",
+                },
+                "."));
 }
 
 TEST_F(UnexportableKeyProviderConfigTest, ApplicationTagsArePrefixOfEachOther) {
@@ -321,13 +354,23 @@ TEST_F(UnexportableKeyProviderConfigTest,
       GetConfigForStoragePartitionPathAndPurpose(
           profile, base::FilePath(), KeyPurpose::kRefreshTokenBinding)
           .application_tag;
+  const std::string colocation_tag =
+      GetConfigForStoragePartitionPathAndPurpose(profile, base::FilePath(),
+                                                 KeyPurpose::kColocationProof)
+          .application_tag;
 
   EXPECT_THAT(dbsc_prototype_tag, Not(StartsWith(dbsc_standard_tag)));
   EXPECT_THAT(dbsc_prototype_tag, Not(StartsWith(lst_tag)));
+  EXPECT_THAT(dbsc_prototype_tag, Not(StartsWith(colocation_tag)));
   EXPECT_THAT(dbsc_standard_tag, Not(StartsWith(dbsc_prototype_tag)));
   EXPECT_THAT(dbsc_standard_tag, Not(StartsWith(lst_tag)));
+  EXPECT_THAT(dbsc_standard_tag, Not(StartsWith(colocation_tag)));
   EXPECT_THAT(lst_tag, Not(StartsWith(dbsc_prototype_tag)));
   EXPECT_THAT(lst_tag, Not(StartsWith(dbsc_standard_tag)));
+  EXPECT_THAT(lst_tag, Not(StartsWith(colocation_tag)));
+  EXPECT_THAT(colocation_tag, Not(StartsWith(dbsc_prototype_tag)));
+  EXPECT_THAT(colocation_tag, Not(StartsWith(dbsc_standard_tag)));
+  EXPECT_THAT(colocation_tag, Not(StartsWith(lst_tag)));
 }
 
 TEST_F(UnexportableKeyProviderConfigTest,

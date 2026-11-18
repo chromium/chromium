@@ -68,6 +68,7 @@ chromium-metrics-reviews@google.com.
 <variants name="UnexportableKeysBackgroundTaskOrigin">
   <variant name="" summary="any origin"/>
   <variant name=".BoundSessionCredentials" summary="DBSC prototype"/>
+  <variant name=".ColocationProof" summary="co-location proof"/>
   <variant name=".DeviceBoundSessions" summary="DBSC standard"/>
   <variant name=".OrphanedKeyGarbageCollection"
       summary="orphaned key garbage collection"/>

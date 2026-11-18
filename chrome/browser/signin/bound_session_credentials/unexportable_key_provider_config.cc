@@ -64,6 +64,7 @@ std::string_view PurposeToString(KeyPurpose purpose) {
           {kRefreshTokenBinding, "lst"},
           {kDeviceBoundSessionCredentials, "dbsc-standard"},
           {kDeviceBoundSessionCredentialsPrototype, "dbsc-prototype"},
+          {kColocationProof, "colocation"},
       });
 
   static_assert(IsPrefixFree(base::ToVector(

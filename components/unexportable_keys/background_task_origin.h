@@ -15,6 +15,7 @@ enum class BackgroundTaskOrigin {
   kDeviceBoundSessionCredentials = 1,
   kDeviceBoundSessionCredentialsPrototype = 2,
   kOrphanedKeyGarbageCollection = 3,
+  kColocationProof = 4,
 };
 
 std::string_view GetBackgroundTaskOriginSuffixForHistograms(

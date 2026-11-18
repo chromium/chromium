@@ -1180,6 +1180,11 @@ INSTANTIATE_TEST_SUITE_P(
             .origin = BackgroundTaskOrigin::kOrphanedKeyGarbageCollection,
             .expected_origin_suffix = ".OrphanedKeyGarbageCollection",
             .test_suffix = "OrphanedKeyGarbageCollection",
+        },
+        TestParams{
+            .origin = BackgroundTaskOrigin::kColocationProof,
+            .expected_origin_suffix = ".ColocationProof",
+            .test_suffix = "ColocationProof",
         }),
     [](const testing::TestParamInfo<TestParams>& info) {
       return info.param.test_suffix;

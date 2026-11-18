@@ -28,6 +28,7 @@ enum class KeyPurpose {
   kDeviceBoundSessionCredentials,
   // Temporary, will be removed when replaced by DBSC Standard.
   kDeviceBoundSessionCredentialsPrototype,
+  kColocationProof,
 };
 
 // Returns the default config for the `UnexportableKeyProvider`. This config

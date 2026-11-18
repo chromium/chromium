@@ -98,6 +98,8 @@ unexportable_keys::BackgroundTaskOrigin GetTaskOriginForPurpose(
       return ToEnum::kDeviceBoundSessionCredentials;
     case FromEnum::kDeviceBoundSessionCredentialsPrototype:
       return ToEnum::kDeviceBoundSessionCredentialsPrototype;
+    case FromEnum::kColocationProof:
+      return ToEnum::kColocationProof;
   }
 }
 

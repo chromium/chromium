@@ -20,6 +20,8 @@ std::string_view GetBackgroundTaskOriginSuffixForHistograms(
       return ".BoundSessionCredentials";
     case BackgroundTaskOrigin::kOrphanedKeyGarbageCollection:
       return ".OrphanedKeyGarbageCollection";
+    case BackgroundTaskOrigin::kColocationProof:
+      return ".ColocationProof";
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/crypto/histograms.xml:UnexportableKeysBackgroundTaskOrigin)
 }
