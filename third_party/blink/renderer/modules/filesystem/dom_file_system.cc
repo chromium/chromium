@@ -87,7 +87,7 @@ DOMFileSystem* DOMFileSystem::CreateIsolatedFileSystem(
   root_url.Append('/');
 
   return MakeGarbageCollected<DOMFileSystem>(
-      context, filesystem_name.ToString(),
+      context, filesystem_name.ReleaseString(),
       mojom::blink::FileSystemType::kIsolated, KURL(root_url));
 }
 

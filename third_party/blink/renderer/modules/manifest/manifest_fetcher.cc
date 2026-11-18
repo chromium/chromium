@@ -79,8 +79,7 @@ void ManifestFetcher::DidFinishLoading(uint64_t) {
   DCHECK(!completed_);
   completed_ = true;
 
-  std::move(callback_).Run(response_, data_.ToString());
-  data_.Clear();
+  std::move(callback_).Run(response_, data_.ReleaseString());
 }
 
 void ManifestFetcher::DidFail(uint64_t, const ResourceError& error) {

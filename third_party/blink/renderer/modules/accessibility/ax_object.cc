@@ -1971,7 +1971,7 @@ String AXObject::KeyboardShortcut() const {
       modifier_string_builder.Append("Shift+");
     if (modifiers & WebInputEvent::kMetaKey)
       modifier_string_builder.Append("Win+");
-    *modifier_string = modifier_string_builder.ToString();
+    *modifier_string = modifier_string_builder.ReleaseString();
   }
 
   return StrCat({*modifier_string, access_key});
@@ -5046,7 +5046,7 @@ String AXObject::SimplifyName(const String& str,
   if (has_after_space) {
     result.Append(' ');
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String AXObject::ComputedName(ax::mojom::blink::NameFrom* name_from_out) const {
@@ -5581,7 +5581,7 @@ String AXObject::TextFromElements(
     return String();
   if (related_objects)
     *related_objects = local_related_objects;
-  return accumulated_text.ToString();
+  return accumulated_text.ReleaseString();
 }
 
 // static

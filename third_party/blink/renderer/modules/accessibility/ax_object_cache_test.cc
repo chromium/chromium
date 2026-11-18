@@ -1673,7 +1673,7 @@ TEST_F(AccessibilityTest,
   for (int i = 0; i < 150; ++i) {
     body.Append("<p>x</p>");
   }
-  SetBodyInnerHTML(body.ToString());
+  SetBodyInnerHTML(body.ReleaseString());
 
   auto& cache = GetAXObjectCache();
   AXObject* owner = GetAXObjectByElementId("owner");
@@ -1807,7 +1807,7 @@ TEST_F(AccessibilityTest, ComputeNodesOnLineAfterLongMultilineText) {
   }
   html.Append("\n<span id='first'>first</span><span id='second'>second</span>");
   html.Append("</div>");
-  SetBodyInnerHTML(html.ToString());
+  SetBodyInnerHTML(html.ReleaseString());
 
   const LayoutObject* first =
       GetElementById("first")->firstChild()->GetLayoutObject();

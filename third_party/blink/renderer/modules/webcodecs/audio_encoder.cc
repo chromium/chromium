@@ -88,7 +88,7 @@ bool VerifyDurationValues(int64_t microseconds,
   error_builder.Append(
       " Needs to be a multiple of 2500 and in the range of [2500, 120000] "
       "microseconds.");
-  *js_error_message = error_builder.ToString();
+  *js_error_message = error_builder.ReleaseString();
   return false;
 }
 

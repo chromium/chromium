@@ -1940,7 +1940,7 @@ String BaseRenderingContext2D::font() const {
       ComputedStyleUtils::ValueForFontFamily(font_description.Family())
           ->CssText());
 
-  return serialized_font.ToString();
+  return serialized_font.ReleaseString();
 }
 
 bool BaseRenderingContext2D::WillSetFont() const {

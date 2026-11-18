@@ -292,7 +292,7 @@ base::expected<void, String> ValidateNamedMLTensors(
       message.Append("\" doesn't match the expected shape: [");
       AppendVectorOfNumbers(info->shape(), message);
       message.Append("]");
-      return base::unexpected(message.ToString());
+      return base::unexpected(message.ReleaseString());
     }
     if (tensor->context() != context) {
       return base::unexpected(

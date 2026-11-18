@@ -201,7 +201,7 @@ void ContentNodeTreeToStringHelper(
 String ContentNodeTreeToString(const mojom::blink::AIPageContentNode* node) {
   StringBuilder builder;
   ContentNodeTreeToStringHelper(node, nullptr, 0, builder);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 String ContentNodeTreeToStringWithMarkedNode(
@@ -209,7 +209,7 @@ String ContentNodeTreeToStringWithMarkedNode(
     const mojom::blink::AIPageContentNode* marked_node) {
   StringBuilder builder;
   ContentNodeTreeToStringHelper(node, marked_node, 0, builder);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 namespace {
@@ -257,14 +257,14 @@ String ContentNodeParentChainToString(
     AppendNodeToBuilder(node, builder);
     builder.Append('\n');
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 String ContentNodeToString(const mojom::blink::AIPageContentNode* target,
                            bool format_on_single_line) {
   StringBuilder builder;
   AppendNodeToBuilder(target, builder, format_on_single_line);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

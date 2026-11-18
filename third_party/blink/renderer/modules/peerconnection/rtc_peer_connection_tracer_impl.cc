@@ -75,7 +75,7 @@ String SerializeSessionDescription(
   }
   StringBuilder result;
   json->WriteJSON(&result);
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 // Serializes the fields RTCIceCandidatePlatform needs, so that the garbage

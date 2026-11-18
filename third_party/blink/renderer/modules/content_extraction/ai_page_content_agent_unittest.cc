@@ -3332,7 +3332,7 @@ TEST_F(AIPageContentAgentTest, MathML_RecursionDepthAtCapSucceeds) {
 
   const auto& root = ContentRootNode();
   ASSERT_EQ(root.children_nodes.size(), 1u);
-  CheckMathNode(*root.children_nodes[0], expected.ToString(),
+  CheckMathNode(*root.children_nodes[0], expected.ReleaseString(),
                 /*expected_is_block=*/false);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.AIPageContent.MathSerializedSize", 1);

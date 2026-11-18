@@ -119,7 +119,7 @@ String WebTimeRangesToString(const WebTimeRanges& ranges) {
     string_builder.Append(']');
   }
   string_builder.Append(" }");
-  return string_builder.ToString();
+  return string_builder.ReleaseString();
 }
 
 // These track IDs are used as to differentiate tracks within a SourceBuffer.

@@ -182,7 +182,7 @@ TEST_P(TextEncoderTest, EncodeStackBufferBoundary85And86) {
   for (int i = 0; i < 85; ++i) {
     builder_85.Append(StringView(u"あ"));
   }
-  String str_85 = builder_85.ToString();
+  String str_85 = builder_85.ReleaseString();
   EXPECT_EQ(85u, str_85.length());
 
   auto result_85 =
@@ -204,7 +204,7 @@ TEST_P(TextEncoderTest, EncodeStackBufferBoundary85And86) {
   for (int i = 0; i < 86; ++i) {
     builder_86.Append(StringView(u"あ"));
   }
-  String str_86 = builder_86.ToString();
+  String str_86 = builder_86.ReleaseString();
   EXPECT_EQ(86u, str_86.length());
 
   auto result_86 =
@@ -232,7 +232,7 @@ TEST_P(TextEncoderTest, EncodeLongNonAsciiFallback) {
   for (int i = 0; i < 100; ++i) {
     builder.Append(StringView(u"🚀"));
   }
-  String long_string = builder.ToString();
+  String long_string = builder.ReleaseString();
   EXPECT_GT(long_string.length(), 85u);
 
   auto result =
@@ -332,7 +332,7 @@ TEST_P(TextEncoderTest, FastPathAndLengthHistograms) {
     // Short non-ASCII: 3 emojis = 6 UTF-16 code units (<= 85)
     StringBuilder builder;
     builder.Append(StringView(u"🚀🎉✨"));
-    String short_utf8 = builder.ToString();
+    String short_utf8 = builder.ReleaseString();
     encoder->encode(scope.GetScriptState(), short_utf8, exception_state);
     histogram_tester.ExpectUniqueSample("Blink.TextEncoder.Encode.InputLength",
                                         short_utf8.length(), 1);
@@ -350,7 +350,7 @@ TEST_P(TextEncoderTest, FastPathAndLengthHistograms) {
     for (int i = 0; i < 100; ++i) {
       builder.Append(static_cast<UChar>(0x00E9));
     }
-    String long_str = builder.ToString();
+    String long_str = builder.ReleaseString();
     encoder->encode(scope.GetScriptState(), long_str, exception_state);
     histogram_tester.ExpectUniqueSample("Blink.TextEncoder.Encode.InputLength",
                                         100, 1);

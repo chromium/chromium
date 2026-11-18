@@ -264,7 +264,7 @@ class ErrorContext {
       result.Append(StringView(messages_[i]));
     }
 
-    return result.ToString();
+    return result.ReleaseString();
   }
 
   String ToString(const char* message) const {

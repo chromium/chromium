@@ -897,7 +897,7 @@ String MediaRecorderHandler::ActualMimeType() {
         break;
     }
   }
-  return mime_type.ToString();
+  return mime_type.ReleaseString();
 }
 
 void MediaRecorderHandler::TrackAdded(const WebString& track_id) {

@@ -115,7 +115,7 @@ String SerializeOfferOptions(blink::RTCOfferOptionsPlatform* options) {
   }
   StringBuilder value;
   json->WriteJSON(&value);
-  return value.ToString();
+  return value.ReleaseString();
 }
 
 String SerializeAnswerOptions(blink::RTCAnswerOptionsPlatform* options) {
@@ -129,7 +129,7 @@ String SerializeAnswerOptions(blink::RTCAnswerOptionsPlatform* options) {
   }
   StringBuilder value;
   json->WriteJSON(&value);
-  return value.ToString();
+  return value.ReleaseString();
 }
 
 String SerializeDirection(webrtc::RtpTransceiverDirection direction) {
@@ -294,7 +294,7 @@ String SerializeAddTransceiver(
 
   StringBuilder value;
   json->WriteJSON(&value);
-  return value.ToString();
+  return value.ReleaseString();
 }
 
 // Serializes the parts of a track that are of interest, i.e. its kind and id
@@ -319,7 +319,7 @@ String SerializeTrackEvent(const PeerConnectionTracker::TrackInfo& track,
 
   StringBuilder value;
   json->WriteJSON(&value);
-  return value.ToString();
+  return value.ReleaseString();
 }
 
 // Serializes things that are of interest from the RTCConfiguration.
@@ -387,7 +387,7 @@ String SerializeConfiguration(
   // TODO(hbos): Add serialization of certificate.
   StringBuilder value;
   json->WriteJSON(&value);
-  return value.ToString();
+  return value.ReleaseString();
 }
 
 const char* GetTransceiverUpdatedReasonString(
@@ -831,7 +831,7 @@ void PeerConnectionTracker::TrackSetSessionDescription(
   SendPeerConnectionUpdate(
       id,
       source == kSourceLocal ? "setLocalDescription" : "setRemoteDescription",
-      value.ToString());
+      value.ReleaseString());
 }
 
 void PeerConnectionTracker::TrackSetSessionDescriptionImplicit(
@@ -894,7 +894,7 @@ void PeerConnectionTracker::TrackAddIceCandidate(
   json->WriteJSON(&value);
   SendPeerConnectionUpdate(
       id, source == kSourceLocal ? "onicecandidate" : "addIceCandidate",
-      value.ToString());
+      value.ReleaseString());
 }
 
 void PeerConnectionTracker::TrackAddIceCandidateFailed(
@@ -934,7 +934,7 @@ void PeerConnectionTracker::TrackIceCandidateError(
   json->SetInteger("error_code", error_code);
   StringBuilder value;
   json->WriteJSON(&value);
-  SendPeerConnectionUpdate(id, "onicecandidateerror", value.ToString());
+  SendPeerConnectionUpdate(id, "onicecandidateerror", value.ReleaseString());
 }
 
 void PeerConnectionTracker::TrackAddTransceiver(
@@ -972,7 +972,7 @@ void PeerConnectionTracker::TrackTransceiver(
 
   StringBuilder value;
   json->WriteJSON(&value);
-  SendPeerConnectionUpdate(id, callback_type, value.ToString());
+  SendPeerConnectionUpdate(id, callback_type, value.ReleaseString());
 }
 
 void PeerConnectionTracker::TrackAddTransceiverCall(
@@ -1041,7 +1041,7 @@ void PeerConnectionTracker::TrackCreateDataChannel(
   json->WriteJSON(&value);
   SendPeerConnectionUpdate(
       id, source == kSourceLocal ? "createDataChannel" : "ondatachannel",
-      value.ToString());
+      value.ReleaseString());
 }
 
 void PeerConnectionTracker::TrackClose(RTCPeerConnectionHandler* pc_handler) {
@@ -1190,7 +1190,7 @@ void PeerConnectionTracker::TrackGetUserMediaSuccess(
     json->SetString("label", stream->getAudioTracks()[0]->label());
     StringBuilder value;
     json->WriteJSON(&value);
-    audio_track_info = value.ToString();
+    audio_track_info = value.ReleaseString();
   } else {
     audio_track_info = "null";
   }
@@ -1201,7 +1201,7 @@ void PeerConnectionTracker::TrackGetUserMediaSuccess(
     json->SetString("label", stream->getVideoTracks()[0]->label());
     StringBuilder value;
     json->WriteJSON(&value);
-    video_track_info = value.ToString();
+    video_track_info = value.ReleaseString();
   } else {
     video_track_info = "null";
   }
@@ -1247,7 +1247,7 @@ void PeerConnectionTracker::TrackGetDisplayMediaSuccess(
     json->SetString("label", stream->getAudioTracks()[0]->label());
     StringBuilder value;
     json->WriteJSON(&value);
-    audio_track_info = value.ToString();
+    audio_track_info = value.ReleaseString();
   } else {
     audio_track_info = "null";
   }
@@ -1258,7 +1258,7 @@ void PeerConnectionTracker::TrackGetDisplayMediaSuccess(
     json->SetString("label", stream->getVideoTracks()[0]->label());
     StringBuilder value;
     json->WriteJSON(&value);
-    video_track_info = value.ToString();
+    video_track_info = value.ReleaseString();
   } else {
     video_track_info = "null";
   }

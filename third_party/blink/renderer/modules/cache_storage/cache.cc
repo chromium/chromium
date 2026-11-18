@@ -491,7 +491,7 @@ class Cache::BarrierCallbackForPutComplete final
                   message.Append(error->message);
                 }
                 RejectCacheStorageWithError(resolver, error->value,
-                                            message.ToString());
+                                            message.ReleaseString());
               }
             },
             method_name_, base::TimeTicks::Now(), operation_count, trace_id_,
@@ -667,7 +667,7 @@ class Cache::CodeCacheHandleCallbackForPut final
     StringBuilder script_text_builder;
     script_text_builder.Append(text_decoder->Decode(array_buffer->ByteSpan()));
     script_text_builder.Append(text_decoder->Flush());
-    String script_text = script_text_builder.ToString();
+    String script_text = script_text_builder.ReleaseString();
 
     scoped_refptr<CachedMetadata> cached_metadata =
         GenerateFullCodeCache(script_text, initial_encoding);
@@ -1226,7 +1226,7 @@ ScriptPromise<IDLBoolean> Cache::DeleteImpl(ScriptState* script_state,
                     message.Append(error->message);
                   }
                   RejectCacheStorageWithError(resolver, error->value,
-                                              message.ToString());
+                                              message.ReleaseString());
                   break;
               }
             } else {

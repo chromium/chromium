@@ -301,7 +301,7 @@ String RTCEncodedAudioFrame::toString() const {
   sb.Append("size: ");
   sb.AppendNumber(data()->ByteLength());
   sb.Append("}");
-  return sb.ToString();
+  return sb.ReleaseString();
 }
 
 base::UnguessableToken RTCEncodedAudioFrame::OwnerId() {

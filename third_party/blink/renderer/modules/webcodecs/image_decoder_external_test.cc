@@ -74,7 +74,7 @@ class ImageDecoderTest : public testing::Test {
     file_path.Append(test::BlinkWebTestsDir());
     file_path.Append('/');
     file_path.Append(file_name);
-    std::optional<Vector<char>> data = test::ReadFromFile(file_path.ToString());
+    std::optional<Vector<char>> data = test::ReadFromFile(file_path);
     CHECK(data && data->size()) << "Missing file: " << file_name;
     return std::move(*data);
   }

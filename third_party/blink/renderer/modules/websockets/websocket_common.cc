@@ -218,7 +218,7 @@ String WebSocketCommon::EncodeSubprotocolString(const String& protocol) {
     else
       builder.Append(protocol[i]);
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 String WebSocketCommon::JoinStrings(const Vector<String>& strings,

@@ -450,7 +450,7 @@ String RTCEncodedVideoFrame::toString() const {
   sb.Append(" bytes, type: ");
   sb.Append(type().AsCStr());
   sb.Append("}");
-  return sb.ToString();
+  return sb.ReleaseString();
 }
 
 void RTCEncodedVideoFrame::SyncDelegate() const {

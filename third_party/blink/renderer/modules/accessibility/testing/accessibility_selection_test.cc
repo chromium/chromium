@@ -286,7 +286,7 @@ class AXSelectionDeserializer final {
       builder.Append(character);
     }
 
-    return builder.ToString();
+    return builder.ReleaseString();
   }
 
   // Extracts selection markers offsets from text control elements.

@@ -3350,7 +3350,7 @@ void AIPageContentAgent::ContentBuilder::AddLabel(
           AIPageContentLabelExpandFallbackSourcesEnabled()) {
     accumulated_text.Append(GetFallbackLabel(*element));
   }
-  attributes.label = accumulated_text.ToString();
+  attributes.label = accumulated_text.ReleaseString();
 }
 
 void AIPageContentAgent::ContentBuilder::PopulateLabelForDomNodeId(

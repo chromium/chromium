@@ -389,7 +389,7 @@ String GetUUIDForGATTAttribute(GATTAttribute attribute,
       break;
   }
   // Otherwise, throw a TypeError.
-  exception_state.ThrowTypeError(error_message.ToString());
+  exception_state.ThrowTypeError(error_message.ReleaseString());
   return String();
 }
 

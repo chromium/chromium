@@ -246,7 +246,7 @@ TEST_F(RTCTest, StartDiagnosticLoggingMetadataEntryTooLong) {
   for (size_t i = 0; i < RTCMetadataValidator::kMaxMetadataLength + 1; ++i) {
     builder.Append('a');
   }
-  metadata.push_back(std::make_pair(builder.ToString(), String("value")));
+  metadata.push_back(std::make_pair(builder.ReleaseString(), String("value")));
   options->setMetadata(metadata);
 
   auto promise = GetRTC()->startDiagnosticLogging(GetScriptState(), options);
@@ -268,7 +268,7 @@ TEST_F(RTCTest, StartDiagnosticLoggingMetadataEntryTooLongUtf8) {
   builder.Append(
       String::FromUtf8(base::as_bytes(base::span_from_cstring("é"))));
 
-  metadata.push_back(std::make_pair(builder.ToString(), String("value")));
+  metadata.push_back(std::make_pair(builder.ReleaseString(), String("value")));
   options->setMetadata(metadata);
 
   auto promise = GetRTC()->startDiagnosticLogging(GetScriptState(), options);
@@ -304,7 +304,7 @@ TEST_F(RTCTest, FinishDiagnosticLoggingMetadataEntryTooLong) {
   for (size_t i = 0; i < RTCMetadataValidator::kMaxMetadataLength + 1; ++i) {
     builder.Append('a');
   }
-  metadata.push_back(std::make_pair(builder.ToString(), String("value")));
+  metadata.push_back(std::make_pair(builder.ReleaseString(), String("value")));
   options->setMetadata(metadata);
 
   auto promise = GetRTC()->finishDiagnosticLogging(GetScriptState(), options);

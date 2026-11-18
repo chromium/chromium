@@ -890,7 +890,7 @@ void CanvasRenderingContext2DState::SetLetterSpacing(
   StringBuilder builder;
   builder.AppendNumber(num_spacing);
   builder.Append(CSSPrimitiveValue::UnitTypeToString(unit));
-  parsed_letter_spacing_ = builder.ToString();
+  parsed_letter_spacing_ = builder.ReleaseString();
   // Convert letter spacing to pixel length and set it in font_description.
   FontDescription font_description(GetFontDescription());
   CSSToLengthConversionData conversion_data =
@@ -928,7 +928,7 @@ void CanvasRenderingContext2DState::SetWordSpacing(
   StringBuilder builder;
   builder.AppendNumber(num_spacing);
   builder.Append(CSSPrimitiveValue::UnitTypeToString(unit));
-  parsed_word_spacing_ = builder.ToString();
+  parsed_word_spacing_ = builder.ReleaseString();
   // Convert letter spacing to pixel length and set it in font_description.
   FontDescription font_description(GetFontDescription());
   CSSToLengthConversionData conversion_data =

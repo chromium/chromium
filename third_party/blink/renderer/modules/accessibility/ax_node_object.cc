@@ -1644,7 +1644,7 @@ String AXNodeObject::GetCSSContentText(const Element* element) {
 
   StringBuilder builder;
   CollectLayoutTextContentRecursive(builder, element->GetLayoutObject());
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 // The following lists are for deciding whether the tags aside,
@@ -5049,7 +5049,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     masked_text.ReserveCapacity(unmasked_text_length);
     for (unsigned int i = 0; i < unmasked_text_length; ++i)
       masked_text.Append(mask_character);
-    return masked_text.ToString();
+    return masked_text.ReleaseString();
   }
 
   // Handle other HTML input elements that aren't text controls, like date and
@@ -5822,7 +5822,7 @@ String AXNodeObject::TextFromDescendants(
       last_used_name_from = child_name_from;
   }
 
-  return accumulated_text.ToString();
+  return accumulated_text.ReleaseString();
 }
 
 // static
@@ -8535,7 +8535,7 @@ String AXNodeObject::GetValueContributionToName(AXObjectSet& visited) const {
           accumulated_text.Append(child->ComputedName());
         }
       }
-      return accumulated_text.ToString();
+      return accumulated_text.ReleaseString();
     }
   }
 

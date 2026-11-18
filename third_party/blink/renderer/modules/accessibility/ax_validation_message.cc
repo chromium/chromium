@@ -125,13 +125,14 @@ String AXValidationMessage::TextAlternative(
     message.Append(form_control_element->ValidationSubMessage());
   }
 
+  String message_string = message.ReleaseString();
   if (name_sources) {
     name_sources->push_back(NameSource(true));
     name_sources->back().type = ax::mojom::NameFrom::kContents;
-    name_sources->back().text = message.ToString();
+    name_sources->back().text = message_string;
   }
 
-  return message.ToString();
+  return message_string;
 }
 
 }  // namespace blink

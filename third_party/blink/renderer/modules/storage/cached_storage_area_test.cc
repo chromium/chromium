@@ -835,9 +835,10 @@ TEST_P(StringEncoding, RoundTrip_InvalidUTF16) {
     validKey.Append(UChar(0xde00));
     validKey.Append(UChar(0xfffd));
     validKey.Append("bar");
-    EXPECT_EQ(Uint8VectorToString(
-                  StringToUint8Vector(key.ToString(), GetParam()), GetParam()),
-              validKey);
+    EXPECT_EQ(
+        Uint8VectorToString(
+            StringToUint8Vector(key.ReleaseString(), GetParam()), GetParam()),
+        validKey);
   }
 }
 
@@ -845,15 +846,12 @@ TEST_P(StringEncoding, RoundTrip_InvalidUTF16) {
 
 TEST_F(CachedStorageAreaTest, StringEncoding_LocalStorage) {
   String ascii_key("simplekey");
-  StringBuilder non_ascii_key;
-  non_ascii_key.Append("key");
-  non_ascii_key.Append(UChar(0xd83d));
-  non_ascii_key.Append(UChar(0xde00));
+  String non_ascii_key(u"key\U0001f600");
   EXPECT_EQ(
       StringToUint8Vector(ascii_key, FormatOption::kLocalStorageDetectFormat)
           .size(),
       ascii_key.length() + 1);
-  EXPECT_EQ(StringToUint8Vector(non_ascii_key.ToString(),
+  EXPECT_EQ(StringToUint8Vector(non_ascii_key,
                                 FormatOption::kLocalStorageDetectFormat)
                 .size(),
             non_ascii_key.length() * 2 + 1);
@@ -861,18 +859,15 @@ TEST_F(CachedStorageAreaTest, StringEncoding_LocalStorage) {
 
 TEST_F(CachedStorageAreaTest, StringEncoding_UTF8) {
   String ascii_key("simplekey");
-  StringBuilder non_ascii_key;
-  non_ascii_key.Append("key");
-  non_ascii_key.Append(UChar(0xd83d));
-  non_ascii_key.Append(UChar(0xde00));
+  String non_ascii_key(u"key\U0001f600");
   EXPECT_EQ(
       StringToUint8Vector(ascii_key, FormatOption::kSessionStorageForceUTF8)
           .size(),
       ascii_key.length());
-  EXPECT_EQ(StringToUint8Vector(non_ascii_key.ToString(),
-                                FormatOption::kSessionStorageForceUTF8)
-                .size(),
-            7u);
+  EXPECT_EQ(
+      StringToUint8Vector(non_ascii_key, FormatOption::kSessionStorageForceUTF8)
+          .size(),
+      7u);
 }
 
 TEST_F(CachedStorageAreaTest, StringEncoding_UTF16) {

@@ -2381,7 +2381,7 @@ void WebTransport::Init(const String& url_for_diagnostics,
 
       fingerprints.push_back(
           network::mojom::blink::WebTransportCertificateFingerprint::New(
-              hash->algorithm(), value_builder.ToString()));
+              hash->algorithm(), value_builder.ReleaseString()));
     }
   }
   if (!fingerprints.empty()) {

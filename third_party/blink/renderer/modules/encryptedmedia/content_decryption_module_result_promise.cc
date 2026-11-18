@@ -117,7 +117,7 @@ void ContentDecryptionModuleResultPromise::CompleteWithError(
   }
 
   WebCdmExceptionToPromiseRejection(resolver_, exception_code,
-                                    result.ToString());
+                                    result.ReleaseString());
   resolver_.Clear();
 }
 

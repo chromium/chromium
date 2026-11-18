@@ -182,7 +182,7 @@ const String MediaConstraintsPrivate::ToString() const {
     }
     builder.Append('}');
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 // *Constraints
@@ -235,7 +235,7 @@ String LongConstraint::ToString() const {
   MaybeEmitNamedNumber(builder, has_exact_, "exact", exact_);
   MaybeEmitNamedNumber(builder, has_ideal_, "ideal", ideal_);
   builder.Append('}');
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 const double DoubleConstraint::kConstraintEpsilon = 0.00001;
@@ -281,7 +281,7 @@ String DoubleConstraint::ToString() const {
   MaybeEmitNamedNumber(builder, has_exact_, "exact", exact_);
   MaybeEmitNamedNumber(builder, has_ideal_, "ideal", ideal_);
   builder.Append('}');
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 DoubleOrBooleanConstraint::DoubleOrBooleanConstraint(const char* name)
@@ -405,7 +405,7 @@ String StringConstraint::ToString() const {
     builder.Append(']');
   }
   builder.Append('}');
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 BooleanConstraint::BooleanConstraint(const char* name)
@@ -436,7 +436,7 @@ String BooleanConstraint::ToString() const {
   MaybeEmitNamedBoolean(builder, has_exact_, "exact", Exact());
   MaybeEmitNamedBoolean(builder, has_ideal_, "ideal", Ideal());
   builder.Append('}');
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 BooleanOrStringConstraint::BooleanOrStringConstraint(const char* name)
@@ -466,7 +466,7 @@ String BooleanOrStringConstraint::ToString() const {
   MaybeEmitNamedBoolean(builder, HasIdealBoolean(), "ideal", IdealBoolean());
   MaybeEmitNamedString(builder, HasIdealString(), "exact", IdealString());
   builder.Append('}');
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 MediaTrackConstraintSetPlatform::MediaTrackConstraintSetPlatform()
@@ -618,7 +618,7 @@ String MediaTrackConstraintSetPlatform::ToString() const {
       first = false;
     }
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 // MediaConstraints

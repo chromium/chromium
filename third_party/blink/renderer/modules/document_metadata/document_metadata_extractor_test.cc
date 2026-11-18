@@ -496,7 +496,7 @@ TEST_F(DocumentMetadataExtractorTest, truncateLongString) {
   EntityPtr restaurant = Entity::New();
   restaurant->type = "Restaurant";
   restaurant->properties.push_back(
-      CreateStringProperty("name", maxLengthString.ToString()));
+      CreateStringProperty("name", maxLengthString.ReleaseString()));
 
   expected->entities.push_back(std::move(restaurant));
   EXPECT_EQ(expected, extracted);

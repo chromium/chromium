@@ -357,7 +357,7 @@ TEST(DOMWebSocketTest, maximumReasonSize) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMWebSocket::kConnecting, websocket_scope.Socket().readyState());
 
-  websocket_scope.Socket().close(1000, reason.ToString(),
+  websocket_scope.Socket().close(1000, reason.ReleaseString(),
                                  scope.GetExceptionState());
 
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -383,7 +383,7 @@ TEST(DOMWebSocketTest, reasonSizeExceeding) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMWebSocket::kConnecting, websocket_scope.Socket().readyState());
 
-  websocket_scope.Socket().close(1000, reason.ToString(),
+  websocket_scope.Socket().close(1000, reason.ReleaseString(),
                                  scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());

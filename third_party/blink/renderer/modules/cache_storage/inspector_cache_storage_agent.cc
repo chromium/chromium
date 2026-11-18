@@ -88,7 +88,7 @@ String BuildCacheId(const String& storage_key,
   }
   id.Append('|');
   id.Append(cache_name);
-  return id.ToString();
+  return id.ReleaseString();
 }
 
 ProtocolResponse ParseCacheId(const String& id,

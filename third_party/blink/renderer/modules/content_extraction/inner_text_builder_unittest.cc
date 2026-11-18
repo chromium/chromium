@@ -207,7 +207,7 @@ String JoinTextSegments(const mojom::blink::InnerTextFrame& frame) {
       builder.Append(segment->get_text());
     }
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 TEST(InnerTextBuilderTest, IncludesActiveEditContextTextAtElementPosition) {
