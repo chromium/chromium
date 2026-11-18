@@ -1506,6 +1506,16 @@ class WebUIPinnedToolbarActionsSmartSelectionBrowserTest
                                    {});
   }
 
+  void SetUpOnMainThread() override {
+    WebUIPinnedToolbarActionsBrowserTest::SetUpOnMainThread();
+    if (actions::ActionItem* action_item =
+            actions::ActionManager::Get().FindAction(
+                kActionGlicSmartSelectionToolbar,
+                BrowserActions::From(browser())->root_action_item())) {
+      action_item->SetVisible(true);
+    }
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };

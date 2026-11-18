@@ -110,6 +110,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -220,6 +221,8 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sharing_message/features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
 #include "components/spellcheck/common/spellcheck_common.h"
@@ -5998,9 +6001,12 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
 }
 
 bool RenderViewContextMenu::CanAppendGlicSmartSuggestionItem() const {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
   return base::FeatureList::IsEnabled(features::kGlicSuggestionContextMenu) &&
          IsNormalBrowser() && !IsAnyGlicWebContents(this) &&
          glic::GlicEnabling::IsEnabledForProfile(GetProfile()) &&
+         identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
          IsPageContextEligible(embedder_web_contents_);
 }
 

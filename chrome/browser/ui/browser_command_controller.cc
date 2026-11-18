@@ -31,6 +31,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -68,6 +69,8 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/skills/features.h"
 #include "components/subscription_eligibility/ai_subscription_tier_names.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -1523,6 +1526,10 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
     if (auto* const action = FindAction(kActionSidePanelShowGlic, browser_)) {
       action->SetVisible(false);
     }
+    if (auto* const action =
+            FindAction(kActionGlicSmartSelectionToolbar, browser_)) {
+      action->SetVisible(false);
+    }
     if (auto* service =
             glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())) {
       service->CloseAllForLockedFullscreen();
@@ -1636,6 +1643,14 @@ void BrowserCommandController::UpdateGlicState() {
 
       if (auto* const action = FindAction(kActionSidePanelShowGlic, browser_)) {
         action->SetVisible(glic::GlicEnabling::ShouldShowGlicButton(profile()));
+      }
+      if (auto* const action =
+              FindAction(kActionGlicSmartSelectionToolbar, browser_)) {
+        auto* identity_manager =
+            IdentityManagerFactory::GetForProfileIfExists(profile());
+        action->SetVisible(
+            identity_manager &&
+            identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
       }
     }
   }
@@ -1827,6 +1842,14 @@ void BrowserCommandController::UpdateCommandsForEnableGlicChanged() {
       if (auto* const action = actions::ActionManager::Get().FindAction(
               kActionSidePanelShowGlic, root_action_item)) {
         action->SetVisible(glic::GlicEnabling::ShouldShowGlicButton(profile()));
+      }
+      if (auto* const action = actions::ActionManager::Get().FindAction(
+              kActionGlicSmartSelectionToolbar, root_action_item)) {
+        auto* identity_manager =
+            IdentityManagerFactory::GetForProfileIfExists(profile());
+        action->SetVisible(
+            identity_manager &&
+            identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
       }
     }
   }

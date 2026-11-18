@@ -4,6 +4,7 @@
 
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -34,6 +36,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "printing/buildflags/buildflags.h"
@@ -1226,7 +1229,8 @@ class GlicSmartSuggestionContextMenuBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kGlicContextMenu,
                               features::kGlicSuggestionContextMenu,
-                              features::kGlicSelectionOverlayPromptBox},
+                              features::kGlicSelectionOverlayPromptBox,
+                              features::kGlicShowForSignedOut},
         /*disabled_features=*/{features::kGlicSelectionPrompt});
   }
 
@@ -1281,6 +1285,19 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
         .ExtractBool();
   }));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Signing out of the primary account is not supported on ChromeOS.
+IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
+                       ItemHiddenWhenSignedOut) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile()));
+
+  auto menu = CreateContextMenu();
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
                        ExecWithTextSelectionPreselectsRegionAndSetsOptions) {

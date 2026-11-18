@@ -37,6 +37,7 @@
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/selection/features.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -58,6 +59,8 @@
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -765,6 +768,13 @@ bool SelectionOverlayController::CanStartSession() {
       actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
   if (actor_service && actor_service->IsActiveOnTab(*tab_)) {
     LOG(ERROR) << "Tab has active actuation task: " << web_contents->GetURL();
+    return false;
+  }
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(tab_->GetProfile());
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    LOG(ERROR) << "Not signed in for " << web_contents->GetURL();
     return false;
   }
   if (!IsPageContextEligible()) {

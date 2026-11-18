@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/selection/metrics_logger.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -67,6 +69,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -178,6 +181,23 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Glic.Prewarming.ChecksResult.SelectionOverlay", 0);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Signing out of the primary account is not supported on ChromeOS.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest, DoesNotShowWhenSignedOut) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(tab->GetProfile()));
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
                        WarmsWhenOpenedWithoutInstance) {
@@ -2961,6 +2981,12 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                           "Timeout waiting for overlay to close"));
   EXPECT_FALSE(
       pinned_actions->IsActionHighlighted(kActionGlicSmartSelectionToolbar));
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(action->GetVisible());
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(tab->GetProfile()));
+  EXPECT_FALSE(action->GetVisible());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace glic
