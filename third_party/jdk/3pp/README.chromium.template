@@ -13,9 +13,10 @@ Description:
 The Java Development Kit (JDK) is a software development environment used for
 developing Java applications and applets. (linux-x64, mac-arm64)
 
-On linux-x64, the package also contains bin/javac-graalvm: a GraalVM
-native-image build of the JDK's javac (built by 3pp/3pp.py using Oracle GraalVM,
-which is licensed under the GraalVM Free Terms and Conditions).
+On linux-x64, the package also contains bin/jdk-tools-graalvm: a GraalVM
+native-image build of the JDK's javac, javap, and jdeps tools (built by
+3pp/3pp.py using Oracle GraalVM, which is licensed under the GraalVM Free Terms
+and Conditions).
 
 Check Current Version:
  * run ./print_version.sh
@@ -46,7 +47,7 @@ To roll to a new JDK major version:
  * Pause the auto-roller: https://skia-autoroll.corp.goog/r/jdk-chromium
  * Change _MAJOR_VERSION in 3pp/3pp.py
  * Change _GRAALVM_MAJOR_VERSION in //build/3pp_common/graalvm.py to match
-   (javac-graalvm, and all other GraalVM native-images, are built with it).
+   (jdk-tools-graalvm, and all other GraalVM native-images, are built with it).
  * Wait for the 3pp packager to create a new package
  * Land a manual roll by:
    * Updating jdk_version in //DEPS
@@ -57,5 +58,5 @@ To roll to a new JDK major version:
 Local Modifications:
  * Added README.chromium metadata file.
  * bin/java is a wrapper script that adds -XX:+PerfDisableSharedMem.
- * bin/javac-graalvm is added (see above). It is built with a patched
+ * bin/jdk-tools-graalvm is added (see above). It is built with a patched
    jdk.internal.jrtfs.SystemImage so that java.home is respected.

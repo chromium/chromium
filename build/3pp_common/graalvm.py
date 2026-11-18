@@ -8,6 +8,7 @@ import logging
 import os
 import pathlib
 import shutil
+import subprocess
 import tempfile
 import urllib.request
 import zipfile
@@ -434,19 +435,27 @@ def build_native_image(
                 profile = os.path.abspath(
                     os.path.join(work_dir, f'profile{i}.iprof')
                 )
-                # Like tracing runs, training runs may exit non-zero.
-                common.run_cmd(
+                # Like tracing runs, training runs may exit non-zero. Capture
+                # stdout/stderr so verbose tools (e.g. javap/jdeps) don't flood
+                # packager logs, dumping output only on failure.
+                res = common.run_cmd(
                     [
                         instrumented,
                         f'-XX:ProfilesDumpFile={profile}',
                         f'-Djava.home={graal_home}',
                     ]
                     + pgo_args,
-                    check=check_workloads,
+                    check=False,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    universal_newlines=True,
+                    errors='replace',
                 )
-                if not os.path.exists(profile):
+                profile_exists = os.path.exists(profile)
+                if (check_workloads and res.returncode) or not profile_exists:
                     raise RuntimeError(
-                        f'PGO training run did not write {profile}'
+                        f'PGO training run failed (exit {res.returncode}, '
+                        f'profile exists={profile_exists}):\n{res.stdout}'
                     )
                 profiles.append(profile)
             final_args = [
