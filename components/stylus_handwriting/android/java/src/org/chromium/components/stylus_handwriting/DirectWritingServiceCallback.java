@@ -30,6 +30,7 @@ import org.chromium.blink.mojom.StylusWritingGestureGranularity;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.content.browser.input.StylusGestureConverter;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.mojo_base.mojom.String16;
@@ -41,6 +42,7 @@ import org.chromium.mojo_base.mojom.String16;
  * when requested on the {@link BinderThread}.
  */
 @NullMarked
+@UsedByReflection("DirectWritingSettingsHelper.java")
 class DirectWritingServiceCallback extends IDirectWritingServiceCallback.Stub {
     static final String BUNDLE_KEY_SHOW_KEYBOARD = "showKeyboard";
     private static final String TAG = "DwCallbackImpl";
@@ -129,6 +131,9 @@ class DirectWritingServiceCallback extends IDirectWritingServiceCallback.Stub {
                     }
                 }
             };
+
+    @UsedByReflection("DirectWritingSettingsHelper.java")
+    public DirectWritingServiceCallback() {}
 
     private void handleDwGesture(Bundle bundle) {
         if (mStylusWritingImeCallback == null) return;
