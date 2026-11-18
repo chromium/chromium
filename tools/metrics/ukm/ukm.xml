@@ -2324,8 +2324,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Android.MultiWindowChangeActivity">
-  <owner>gangwu@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
+  <owner>skavuluru@google.com</owner>
   <summary>
     Records when the activity enter or exit Android N+ multi-window mode.
   </summary>
@@ -2344,8 +2344,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Android.MultiWindowState">
-  <owner>gangwu@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
+  <owner>skavuluru@google.com</owner>
   <summary>
     Records the multi window state when the activity is shown.
   </summary>
@@ -2385,8 +2385,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Android.ScreenRotation">
-  <owner>gangwu@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>shuyng@google.com</owner>
   <summary>
     Records when a user rotates the device triggering a screen orientation
     change.
@@ -2406,8 +2406,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Android.UserRequestedUserAgentChange">
-  <owner>gangwu@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>shuyng@google.com</owner>
   <summary>
     Records when a user pressed 'Request Desktop Site' in the app menu.
   </summary>
