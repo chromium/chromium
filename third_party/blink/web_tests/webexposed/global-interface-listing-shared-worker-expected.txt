@@ -980,6 +980,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter M
 [Worker]     getter N
 [Worker]     getter componentType
+[Worker]     getter maxSubgroupSize
+[Worker]     getter minSubgroupSize
 [Worker]     getter resultComponentType
 [Worker]     method constructor
 [Worker] interface GPUSupportedFeatures

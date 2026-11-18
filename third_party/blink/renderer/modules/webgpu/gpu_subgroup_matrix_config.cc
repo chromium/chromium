@@ -24,6 +24,12 @@ V8GPUSubgroupMatrixComponentType::Enum FromDawnEnum(
       return V8GPUSubgroupMatrixComponentType::Enum::kI8;
     case wgpu::SubgroupMatrixComponentType::U8:
       return V8GPUSubgroupMatrixComponentType::Enum::kU8;
+    case wgpu::SubgroupMatrixComponentType::Bf16:
+      return V8GPUSubgroupMatrixComponentType::Enum::kBf16;
+    case wgpu::SubgroupMatrixComponentType::F8_e4m3:
+      return V8GPUSubgroupMatrixComponentType::Enum::kF8E4M3;
+    case wgpu::SubgroupMatrixComponentType::F8_e5m2:
+      return V8GPUSubgroupMatrixComponentType::Enum::kF8E5M2;
     default:
       NOTREACHED();
   }

@@ -11,6 +11,9 @@ enum GPUSubgroupMatrixComponentType {
     "i32",
     "u8",
     "i8",
+    "bf16",
+    "f8_e4m3",
+    "f8_e5m2",
 };
 
 [
@@ -23,4 +26,6 @@ enum GPUSubgroupMatrixComponentType {
     readonly attribute unsigned long long M;
     readonly attribute unsigned long long N;
     readonly attribute unsigned long long K;
+    readonly attribute unsigned long long minSubgroupSize;
+    readonly attribute unsigned long long maxSubgroupSize;
 };

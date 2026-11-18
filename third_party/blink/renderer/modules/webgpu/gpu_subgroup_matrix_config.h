@@ -24,6 +24,8 @@ class GPUSubgroupMatrixConfig : public ScriptWrappable {
   uint64_t M() const { return config_.M; }
   uint64_t N() const { return config_.N; }
   uint64_t K() const { return config_.K; }
+  uint64_t minSubgroupSize() const { return config_.minSubgroupSize; }
+  uint64_t maxSubgroupSize() const { return config_.maxSubgroupSize; }
 
  private:
   wgpu::SubgroupMatrixConfig config_;

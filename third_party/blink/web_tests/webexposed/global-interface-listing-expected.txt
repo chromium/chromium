@@ -3478,6 +3478,8 @@ interface GPUSubgroupMatrixConfig
     getter M
     getter N
     getter componentType
+    getter maxSubgroupSize
+    getter minSubgroupSize
     getter resultComponentType
     method constructor
 interface GPUSupportedFeatures
