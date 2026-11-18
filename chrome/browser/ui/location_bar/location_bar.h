@@ -27,6 +27,7 @@ class CommandUpdater;
 class LocationBarModel;
 class LocationBarTesting;
 class OmniboxController;
+class PageInfoBubbleSpecification;
 class PermissionDashboardController;
 class OmniboxView;
 class OmniboxPopupPresenterDelegate;
@@ -44,7 +45,7 @@ class WebContents;
 namespace ui {
 class MouseEvent;
 class TrackedElement;
-}
+}  // namespace ui
 
 namespace views {
 class Widget;
@@ -147,6 +148,12 @@ class LocationBar {
   // Announces an alert for accessibility screen readers.
   virtual void AnnounceAlert(const std::u16string& announcement) = 0;
 
+  // Returns whether accessibility alerts sent through `AnnounceAlert()` have a
+  // live accessible surface that can deliver them. Returns false on stub or
+  // unmounted surfaces so callers do not mark one-shot announcements as sent
+  // when the alert would be dropped.
+  virtual bool CanAnnounceAlert() const;
+
   // Called when anything has changed that might affect the layout or contents
   // of the views around the edit, including the text of the edit and the
   // status of any keyword- or hint-related state.
@@ -169,6 +176,18 @@ class LocationBar {
   // Returns the ElementContext used to look up tracked elements in this
   // location bar.
   virtual ui::ElementContext GetElementContext() const;
+
+  // Returns whether permission chips owned by this location bar may fall back
+  // to anchoring bubbles on the browser window's contents view when neither the
+  // chip nor the location bar element is tracked yet. Secondary UI surfaces
+  // (such as side panels) return false so bubbles fail closed instead of
+  // anchoring to the main browser window.
+  virtual bool ShouldFallbackToWindowContentsAnchor() const;
+
+  // Allows custom location bar surfaces to customize Page Info bubble specs
+  // (such as UMA surface attribution) opened from permission chips.
+  virtual void ConfigurePageInfoBubbleSpecification(
+      PageInfoBubbleSpecification& specification);
 
   // Returns true if the location bar is currently in the middle of a popup
   // state transition.

@@ -127,8 +127,9 @@ WebUILocationBar::WebUILocationBar(BrowserWindowInterface* browser,
       delegate_(delegate),
       content_setting_image_control_(this),
       page_action_control_(
-          browser ? BrowserActions::From(browser)->root_action_item()
-                  : nullptr),
+          browser && BrowserActions::From(browser)
+              ? BrowserActions::From(browser)->root_action_item()
+              : nullptr),
       using_full_popup_(omnibox::internal::IsWebUIOmniboxFullPopupEnabled()) {
   permission_dashboard_ = std::make_unique<WebUIPermissionDashboard>(this);
   permission_dashboard_controller_ =
@@ -1152,6 +1153,10 @@ void WebUILocationBar::AnnounceAlert(const std::u16string& announcement) {
   if (toolbar_delegate_) {
     toolbar_delegate_->AnnounceAlert(announcement);
   }
+}
+
+bool WebUILocationBar::CanAnnounceAlert() const {
+  return toolbar_delegate_ != nullptr;
 }
 
 bool WebUILocationBar::ShouldHideContentSettingImage() {

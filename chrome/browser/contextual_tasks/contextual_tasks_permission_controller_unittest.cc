@@ -6,22 +6,35 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/location_bar/location_bar_override_data.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/permissions/permission_prompt.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_uma_constants.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
+#include "components/permissions/test/mock_permission_request.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
@@ -30,6 +43,10 @@ namespace contextual_tasks {
 class ContextualTasksPermissionControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  ContextualTasksPermissionControllerTest()
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -595,6 +612,330 @@ TEST_F(ContextualTasksPermissionControllerTest, RecordsPermissionChipClicks) {
       "ContextualTasks.PermissionChip.Click",
       ContextualTasksPermissionChipType::kBlockedActivityIndicator, 1);
   histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Click", 2);
+}
+
+TEST_F(ContextualTasksPermissionControllerTest,
+       IndicatorAccessibilityNamePreservedAcrossTaskSwitchesAndClearedOnHide) {
+  const GURL url("https://example.com");
+  std::unique_ptr<content::WebContents> toolbar_web_contents =
+      CreateTestWebContents();
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      mock_browser_window());
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_panel_controller, GetToolbarWebContents())
+      .WillByDefault(testing::Return(toolbar_web_contents.get()));
+
+  ContextualTasksLocationBar* location_bar =
+      controller()->GetLocationBarForTesting();
+  ASSERT_TRUE(location_bar->CanAnnounceAlert());
+  WebUIPermissionChip* indicator_chip =
+      location_bar->permission_dashboard()->indicator_chip();
+  PermissionDashboardController* dashboard_controller =
+      location_bar->GetPermissionDashboardController();
+
+  NavigateAndCommit(url);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+  content_settings::PageSpecificContentSettings* first_pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  first_pscs->OnMediaStreamPermissionSet(
+      url, {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+            content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+
+  const std::u16string expected_mic_blocked_name =
+      l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED);
+  EXPECT_EQ(indicator_chip->GetState()->accessibility_name,
+            expected_mic_blocked_name);
+  ASSERT_TRUE(dashboard_controller->indicator_model_for_testing());
+  EXPECT_FALSE(dashboard_controller->indicator_model_for_testing()
+                   ->ShouldNotifyAccessibility(web_contents()));
+
+  // Switch to Task B with a blocked camera indicator.
+  std::unique_ptr<content::WebContents> second_web_contents =
+      CreateTestWebContents();
+  controller()->RegisterWebContents(second_web_contents.get());
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      second_web_contents.get(), url);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      second_web_contents.get(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(
+          second_web_contents.get()));
+  controller()->Update(second_web_contents.get());
+  content_settings::PageSpecificContentSettings::GetForFrame(
+      second_web_contents->GetPrimaryMainFrame())
+      ->OnMediaStreamPermissionSet(
+          url, {content_settings::PageSpecificContentSettings::kCameraAccessed,
+                content_settings::PageSpecificContentSettings::kCameraBlocked});
+
+  const std::u16string expected_camera_blocked_name =
+      l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED);
+  EXPECT_EQ(indicator_chip->GetState()->accessibility_name,
+            expected_camera_blocked_name);
+
+  // Switch back to Task A: even though Task A already notified accessibility on
+  // its first visit, the indicator chip's accessible name must restore Task A's
+  // full blocked-microphone string rather than leaking Task B's camera string
+  // or falling back to "Not allowed".
+  controller()->Update(web_contents());
+  EXPECT_EQ(indicator_chip->GetState()->accessibility_name,
+            expected_mic_blocked_name);
+
+  first_pscs->ResetMediaBlockedState(ContentSettingsType::MEDIASTREAM_MIC,
+                                     /*update_indicators=*/true);
+  EXPECT_FALSE(indicator_chip->GetVisible());
+  EXPECT_TRUE(indicator_chip->GetState()->accessibility_name.empty());
+
+  controller()->UnregisterWebContents(second_web_contents.get());
+}
+
+TEST_F(
+    ContextualTasksPermissionControllerTest,
+    DefersIndicatorAccessibilityNotificationUntilAlertDeliverableWithoutDoubleCounting) {
+  class DeliverableLocationBar : public LocationBarStub,
+                                 public ContentSettingImageViewDelegate {
+   public:
+    explicit DeliverableLocationBar(content::WebContents* contents)
+        : web_contents_(contents),
+          media_model_(ContentSettingImageModel::CreateForContentType(
+              ContentSettingImageModel::ImageType::kMediaStream)),
+          dashboard_(this),
+          dashboard_controller_(this, this, &dashboard_) {}
+
+    content::WebContents* GetWebContents() override { return web_contents_; }
+    bool CanAnnounceAlert() const override { return true; }
+    void AnnounceAlert(const std::u16string& announcement) override {
+      announcements_.push_back(announcement);
+    }
+
+    bool ShouldHideContentSettingImage() override { return false; }
+    content::WebContents* GetContentSettingWebContents() override {
+      return web_contents_;
+    }
+    ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
+        override {
+      return nullptr;
+    }
+
+    bool UpdateDashboard() {
+      return dashboard_controller_.Update(media_model_.get());
+    }
+    ContentSettingImageModel* media_model() { return media_model_.get(); }
+    const std::vector<std::u16string>& announcements() const {
+      return announcements_;
+    }
+
+   private:
+    raw_ptr<content::WebContents> web_contents_;
+    std::unique_ptr<ContentSettingImageModel> media_model_;
+    WebUIPermissionDashboard dashboard_;
+    PermissionDashboardController dashboard_controller_;
+    std::vector<std::u16string> announcements_;
+  };
+
+  base::HistogramTester histogram_tester;
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+
+  // Even if cached toolbar WebContents exist from a prior open, a closed side
+  // panel has no live view to deliver screen-reader alerts.
+  std::unique_ptr<content::WebContents> toolbar_web_contents =
+      CreateTestWebContents();
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      mock_browser_window());
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(testing::Return(false));
+  ON_CALL(mock_panel_controller, GetToolbarWebContents())
+      .WillByDefault(testing::Return(toolbar_web_contents.get()));
+
+  ContextualTasksLocationBar* location_bar =
+      controller()->GetLocationBarForTesting();
+  ASSERT_TRUE(location_bar);
+  EXPECT_FALSE(location_bar->CanAnnounceAlert());
+
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  pscs->OnMediaStreamPermissionSet(
+      url, {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+            content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+
+  PermissionDashboardController* dashboard_controller =
+      location_bar->GetPermissionDashboardController();
+  ASSERT_TRUE(dashboard_controller);
+  ASSERT_TRUE(dashboard_controller->indicator_model_for_testing());
+  EXPECT_TRUE(dashboard_controller->indicator_model_for_testing()
+                  ->ShouldNotifyAccessibility(web_contents()));
+  histogram_tester.ExpectUniqueSample(
+      "Permissions.ActivityIndicator.LHS.AudioCapture.Show",
+      permissions::ActivityIndicatorState::kBlockedOnSiteLevel, 1);
+
+  // Repeated updates while alerts remain undeliverable must neither flip
+  // `AccessibilityWasNotified()` nor double-count the Show metric.
+  controller()->Update(web_contents());
+  EXPECT_TRUE(dashboard_controller->indicator_model_for_testing()
+                  ->ShouldNotifyAccessibility(web_contents()));
+  histogram_tester.ExpectTotalCount(
+      "Permissions.ActivityIndicator.LHS.AudioCapture.Show", 1);
+
+  // Simulate transferring the task WebContents to a main-window LocationBar
+  // where alerts are deliverable: the deferred alert fires once and the Show
+  // metric is still recorded only once.
+  controller()->UnregisterWebContents(web_contents());
+  DeliverableLocationBar main_window_location_bar(web_contents());
+  EXPECT_TRUE(main_window_location_bar.UpdateDashboard());
+  EXPECT_EQ(main_window_location_bar.announcements().size(), 1u);
+  EXPECT_FALSE(
+      main_window_location_bar.media_model()->ShouldNotifyAccessibility(
+          web_contents()));
+  histogram_tester.ExpectTotalCount(
+      "Permissions.ActivityIndicator.LHS.AudioCapture.Show", 1);
+}
+
+TEST_F(ContextualTasksPermissionControllerTest,
+       FailsClosedWithoutTrackedAnchor) {
+  class FakePermissionPromptDelegate
+      : public permissions::PermissionPrompt::Delegate {
+   public:
+    FakePermissionPromptDelegate(content::WebContents* web_contents,
+                                 const GURL& origin,
+                                 bool quiet_ui = false)
+        : web_contents_(web_contents), origin_(origin), quiet_ui_(quiet_ui) {
+      requests_.push_back(std::make_unique<permissions::MockPermissionRequest>(
+          origin, permissions::RequestType::kNotifications));
+    }
+    ~FakePermissionPromptDelegate() override = default;
+
+    const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+    Requests() const override {
+      return requests_;
+    }
+    GURL GetRequestingOrigin() const override { return origin_; }
+    GURL GetEmbeddingOrigin() const override { return origin_; }
+    void Accept(const PromptOptions&) override {}
+    void AcceptThisTime(const PromptOptions&) override {}
+    void Deny(const PromptOptions&) override {}
+    void Dismiss(const PromptOptions&) override {}
+    void Ignore(const PromptOptions&) override {}
+    void SwitchToLoudPrompt() override {}
+    GeolocationAccuracy GetInitialGeolocationAccuracySelection()
+        const override {
+      return GeolocationAccuracy::kPrecise;
+    }
+    std::optional<permissions::GeolocationPromptType> GetGeolocationPromptType()
+        const override {
+      return std::nullopt;
+    }
+    void FinalizeCurrentRequests() override {}
+    void OpenHelpCenterLink(const ui::Event&) override {}
+    void PreIgnoreQuietPrompt() override {}
+    std::optional<permissions::PermissionUiSelector::QuietUiReason>
+    ReasonForUsingQuietUi() const override {
+      return quiet_ui_ ? std::optional(permissions::PermissionUiSelector::
+                                           QuietUiReason::kEnabledInPrefs)
+                       : std::nullopt;
+    }
+    bool ShouldCurrentRequestUseQuietUI() const override { return quiet_ui_; }
+    bool ShouldDropCurrentRequestIfCannotShowQuietly() const override {
+      return false;
+    }
+    bool WasCurrentRequestAlreadyDisplayed() override { return false; }
+    void SetDismissOnTabClose() override {}
+    void SetPromptShown() override { ++prompt_shown_count_; }
+    void SetDecisionTime() override {}
+    void SetManageClicked() override {}
+    void SetLearnMoreClicked() override {}
+    void SetHatsShownCallback(base::OnceCallback<void()>) override {}
+    content::WebContents* GetAssociatedWebContents() override {
+      return web_contents_;
+    }
+    base::WeakPtr<Delegate> GetWeakPtr() override {
+      return weak_factory_.GetWeakPtr();
+    }
+    bool RecreateView() override { return false; }
+    const permissions::PermissionPrompt* GetCurrentPrompt() const override {
+      return nullptr;
+    }
+    int prompt_shown_count() const { return prompt_shown_count_; }
+
+   private:
+    raw_ptr<content::WebContents> web_contents_;
+    GURL origin_;
+    bool quiet_ui_ = false;
+    int prompt_shown_count_ = 0;
+    std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
+    base::WeakPtrFactory<FakePermissionPromptDelegate> weak_factory_{this};
+  };
+
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+
+  ContextualTasksLocationBar* location_bar =
+      controller()->GetLocationBarForTesting();
+  ASSERT_TRUE(location_bar);
+  EXPECT_FALSE(location_bar->ShouldFallbackToWindowContentsAnchor());
+
+  PermissionDashboardController* dashboard_controller =
+      location_bar->GetPermissionDashboardController();
+  ASSERT_TRUE(dashboard_controller);
+  EXPECT_TRUE(location_bar->permission_dashboard()->GetAnchor().IsNull());
+
+  // Without a tracked WebUI chip or toolbar anchor, `ShowPageInfoDialog()`
+  // fails closed instead of falling back to the main window's contents view.
+  dashboard_controller->ShowPageInfoDialogForTesting();
+  EXPECT_EQ(dashboard_controller->page_info_for_testing(), nullptr);
+
+  // Likewise, clicking a confirmation request chip while its WebUI anchor is
+  // untracked bails out before `ResetTimers()` so the confirmation collapse
+  // timer keeps running.
+  std::unique_ptr<content::WebContents> toolbar_web_contents =
+      CreateTestWebContents();
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      mock_browser_window());
+  ON_CALL(mock_panel_controller, GetToolbarWebContents())
+      .WillByDefault(testing::Return(toolbar_web_contents.get()));
+  permissions::PermissionRequestManager::CreateForWebContents(web_contents());
+  FakePermissionPromptDelegate fake_delegate(web_contents(), url);
+  ChipController* chip_controller = location_bar->GetChipController();
+  ASSERT_TRUE(chip_controller);
+  chip_controller->InitializePermissionPrompt(fake_delegate.GetWeakPtr());
+  chip_controller->OnRequestDecided(permissions::PermissionAction::GRANTED);
+  ASSERT_TRUE(chip_controller->is_confirmation_showing());
+  ASSERT_TRUE(chip_controller->is_collapse_timer_running_for_testing());
+  ASSERT_TRUE(chip_controller->chip()->GetAnchor().IsNull());
+
+  chip_controller->chip()->ExecuteForTesting();
+  EXPECT_EQ(chip_controller->get_prompt_bubble_view_for_testing(), nullptr);
+  EXPECT_TRUE(chip_controller->is_collapse_timer_running_for_testing());
+  chip_controller->ResetPermissionPromptChip();
+
+  // Clicking a quiet request chip pauses timers while waiting for the WebUI
+  // anchor; if the fallback times out with no tracked toolbar anchor, no
+  // bubble opens, `SetPromptShown()` is not called, and the collapse timer
+  // resumes instead of leaving the chip stuck open.
+  FakePermissionPromptDelegate quiet_delegate(web_contents(), url,
+                                              /*quiet_ui=*/true);
+  chip_controller->ShowPermissionPrompt(quiet_delegate.GetWeakPtr());
+  ASSERT_TRUE(chip_controller->IsPermissionPromptChipVisible());
+  chip_controller->chip()->EndAnimationForTesting();
+  ASSERT_TRUE(chip_controller->is_collapse_timer_running_for_testing());
+
+  chip_controller->chip()->ExecuteForTesting();
+  EXPECT_TRUE(chip_controller->is_waiting_for_anchor_for_testing());
+  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
+
+  task_environment()->FastForwardBy(base::Seconds(3));
+  EXPECT_FALSE(chip_controller->is_waiting_for_anchor_for_testing());
+  EXPECT_FALSE(chip_controller->IsBubbleShowing());
+  EXPECT_EQ(chip_controller->get_prompt_bubble_view_for_testing(), nullptr);
+  EXPECT_EQ(quiet_delegate.prompt_shown_count(), 0);
+  EXPECT_TRUE(chip_controller->is_collapse_timer_running_for_testing());
+  chip_controller->ResetPermissionPromptChip();
 }
 
 }  // namespace contextual_tasks

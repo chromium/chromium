@@ -20,9 +20,20 @@ PermissionDashboardController* LocationBar::GetPermissionDashboardController() {
   return nullptr;
 }
 
+bool LocationBar::CanAnnounceAlert() const {
+  return true;
+}
+
 ui::ElementContext LocationBar::GetElementContext() const {
   return ui::ElementContext();
 }
+
+bool LocationBar::ShouldFallbackToWindowContentsAnchor() const {
+  return true;
+}
+
+void LocationBar::ConfigurePageInfoBubbleSpecification(
+    PageInfoBubbleSpecification& specification) {}
 
 void LocationBar::AddLocationBarObserver(Observer* observer) {
   observers_.AddObserver(observer);

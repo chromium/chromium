@@ -63,6 +63,7 @@ class LocationBarStub : public LocationBar {
       override;
   ChipController* GetChipController() override;
   void AnnounceAlert(const std::u16string& announcement) override;
+  bool CanAnnounceAlert() const override;
   void OnChanged() override;
   void UpdateWithoutTabRestore() override;
   ui::TrackedElement* GetAnchorOrNull() override;

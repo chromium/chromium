@@ -10,11 +10,13 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
+#include "components/page_info/page_info.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -92,6 +94,21 @@ ui::ElementContext ContextualTasksLocationBar::GetElementContext() const {
     }
   }
   return ui::ElementContext();
+}
+
+bool ContextualTasksLocationBar::CanAnnounceAlert() const {
+  ContextualTasksPanelController* coordinator = GetCoordinator();
+  return coordinator && coordinator->IsPanelOpenForContextualTask() &&
+         coordinator->GetToolbarWebContents() != nullptr;
+}
+
+bool ContextualTasksLocationBar::ShouldFallbackToWindowContentsAnchor() const {
+  return false;
+}
+
+void ContextualTasksLocationBar::ConfigurePageInfoBubbleSpecification(
+    PageInfoBubbleSpecification& specification) {
+  specification.SetSurface(PageInfo::Surface::kContextualTasks);
 }
 
 void ContextualTasksLocationBar::InvalidateLayout() {}

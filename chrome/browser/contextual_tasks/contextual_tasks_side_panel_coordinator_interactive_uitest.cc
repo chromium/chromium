@@ -73,6 +73,7 @@
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/page_info/core/page_info_action.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -590,6 +591,7 @@ IN_PROC_BROWSER_TEST_F(
       "el => el.hasAttribute('visible') && "
       "el.getBoundingClientRect().width > 0";
 
+  base::HistogramTester histogram_tester;
   RunTestSequence(
       Do([&]() {
         coordinator->Show(
@@ -645,6 +647,9 @@ IN_PROC_BROWSER_TEST_F(
           },
           GURL("chrome://settings/content/"
                "siteDetails?site=https%3A%2F%2Fwww.google.com")));
+  histogram_tester.ExpectBucketCount("WebsiteSettings.Action.ContextualTasks",
+                                     page_info::PAGE_INFO_OPENED, 1);
+  histogram_tester.ExpectTotalCount("WebsiteSettings.Action.Default", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -699,6 +704,7 @@ IN_PROC_BROWSER_TEST_F(
       "el.chipState?.userDecision !== null && "
       "el.getBoundingClientRect().width > 0";
 
+  base::HistogramTester histogram_tester;
   RunTestSequence(
       Do([&]() {
         coordinator->Show(
@@ -755,6 +761,9 @@ IN_PROC_BROWSER_TEST_F(
           },
           GURL("chrome://settings/content/"
                "siteDetails?site=https%3A%2F%2Fwww.google.com")));
+  histogram_tester.ExpectBucketCount("WebsiteSettings.Action.ContextualTasks",
+                                     page_info::PAGE_INFO_OPENED, 1);
+  histogram_tester.ExpectTotalCount("WebsiteSettings.Action.Default", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
@@ -1548,9 +1557,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(coordinator->IsPanelOpenForContextualTask());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    ContextualTasksSidePanelCoordinatorInteractiveUiTest,
-    OpenUrlFromOmniboxEverywhere_DoesNotInheritOpenerTask) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       OpenUrlFromOmniboxEverywhere_DoesNotInheritOpenerTask) {
   SetUpTasks();
   // Set tab1 (which is associated with a contextual task and open side panel)
   // as the active tab.
@@ -2476,8 +2484,9 @@ class ContextualTasksSignedOutPinnedButtonInteractiveUiTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksSignedOutPinnedButtonInteractiveUiTest,
-                       SignedOutOpenInZeroState_DoesNotRedirectAndShowsToolbar) {
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSignedOutPinnedButtonInteractiveUiTest,
+    SignedOutOpenInZeroState_DoesNotRedirectAndShowsToolbar) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
   const WebContentsInteractionTestUtil::DeepQuery kTopToolbarQuery = {
       "contextual-tasks-app", "top-toolbar#toolbar"};

@@ -478,6 +478,10 @@ void PermissionChipView::SetAccessibilityIgnored(bool is_ignored) {
 }
 
 void PermissionChipView::SetAccessibilityName(const std::u16string& name) {
+  if (name.empty()) {
+    GetViewAccessibility().RemoveName();
+    return;
+  }
   GetViewAccessibility().SetName(name);
 }
 

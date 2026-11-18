@@ -585,6 +585,7 @@ source_set("ui_impl") {
       "//components/contextual_tasks/public:feature_list",
       "//components/embedder_support:user_agent",
       "//components/feature_engagement/public",
+      "//components/page_info",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//third_party/blink/public/common:headers",
@@ -929,6 +930,7 @@ source_set("unit_tests") {
   if (!is_android) {
     deps += [
       "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
       "//chrome/browser/feature_engagement",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui/hats:test_support",
@@ -1130,6 +1132,7 @@ source_set("interactive_ui_tests") {
       "//components/infobars/content",
       "//components/infobars/core",
       "//components/lens:enterprise_policy",
+      "//components/page_info/core",
       "//components/search_engines",
       "//components/sessions",
       "//components/strings:components_strings",
