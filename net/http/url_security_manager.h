@@ -62,6 +62,11 @@ class NET_EXPORT_PRIVATE URLSecurityManager {
       std::unique_ptr<HttpAuthFilter> allowlist_default) = 0;
   virtual void SetDelegateAllowlist(
       std::unique_ptr<HttpAuthFilter> allowlist_delegate) = 0;
+
+  // Returns true if an explicit server allowlist is configured (as opposed to
+  // platform-specific default rules like the Windows Internet Explorer Zone
+  // Manager).
+  virtual bool HasDefaultAllowlist() const = 0;
 };
 
 class URLSecurityManagerAllowlist : public URLSecurityManager {
@@ -83,9 +88,7 @@ class URLSecurityManagerAllowlist : public URLSecurityManager {
       std::unique_ptr<HttpAuthFilter> allowlist_default) override;
   void SetDelegateAllowlist(
       std::unique_ptr<HttpAuthFilter> allowlist_delegate) override;
-
- protected:
-  bool HasDefaultAllowlist() const;
+  bool HasDefaultAllowlist() const override;
 
  private:
   std::unique_ptr<const HttpAuthFilter> allowlist_default_;

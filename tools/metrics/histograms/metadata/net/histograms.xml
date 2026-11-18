@@ -4027,6 +4027,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpAuth.NegotiateCnameValidationResult"
+    enum="NegotiateCnameValidationResult" expires_after="2027-05-01">
+  <owner>ydago@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Recorded when Negotiate authentication resolves a DNS CNAME canonical name
+    for a server (non-proxy) request while ValidateNegotiateCnameAllowlist is
+    enabled. Reports whether the canonical host matched the challenged origin,
+    passed policy allowlists (with or without clamping delegation), used default
+    Windows dotless-intranet zone behavior, or was rejected.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpAuth.NegotiateTargetPrincipalValidationResult"
     enum="NegotiateTargetHostValidationResult" expires_after="2027-05-01">
   <owner>ydago@chromium.org</owner>

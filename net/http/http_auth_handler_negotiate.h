@@ -123,7 +123,28 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NegotiateTargetHostValidationResult)
 
+  // Result of validating a DNS CNAME canonical host against the challenged
+  // origin and `HttpAuthPreferences`.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(NegotiateCnameValidationResult)
+  enum class CnameValidationResult {
+    kSameHost = 0,
+    kAllowedDifferentHost = 1,
+    kAllowedWithClampedDelegation = 2,
+    kAllowedWindowsDotlessIntranet = 3,
+    kInvalidCanonicalHost = 4,
+    kMissingPreferences = 5,
+    kDisallowedByServerAllowlist = 6,
+    kMaxValue = kDisallowedByServerAllowlist,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NegotiateCnameValidationResult)
+
   const std::string& spn_for_testing() const { return spn_; }
+  HttpAuth::DelegationType delegation_type_for_testing() const {
+    return delegation_type_;
+  }
 
  protected:
   // HttpAuthHandler
@@ -146,6 +167,8 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
     STATE_NONE,
   };
 
+  struct TargetHostValidation;
+
   std::string CreateSPN(const std::string& server,
                         const url::SchemeHostPort& scheme_host_port);
 
@@ -155,15 +178,30 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
 
   int DoResolveCanonicalName();
   int DoResolveCanonicalNameComplete(int rv);
+  // Validates a DNS CNAME `canonical_host` of a server when
+  // `kValidateNegotiateCnameAllowlist` is enabled, recording the result to UMA
+  // and NetLog and clamping delegation to what `canonical_host` allows when it
+  // passes validation, or to `kNone` when it is rejected. Returns whether to
+  // use `canonical_host` for the SPN instead of the requested host.
+  bool ShouldUseCanonicalNameForSpn(const std::string& canonical_host);
   int DoGenerateAuthToken();
   int DoGenerateAuthTokenComplete(int rv);
   HttpAuth::DelegationType GetDelegationType() const;
 
-  // Validates a candidate target host (such as the service principal host from
-  // `HttpAuthMechanism::GetTargetPrincipalHost()`) against `scheme_host_port_`
-  // and `http_auth_preferences_`.
-  TargetHostValidationResult ValidateTargetHost(
-      std::string_view target_host) const;
+  // Validates a candidate target host (a DNS CNAME canonical host or the
+  // service principal host from `HttpAuthMechanism::GetTargetPrincipalHost()`)
+  // against `scheme_host_port_` and `http_auth_preferences_`. When
+  // `allow_delegation_clamping` is true and the target host only permits a
+  // lower delegation level than `delegation_type_`, returns
+  // `kAllowedDifferentHost` with `allowed_delegation` set to the lower level;
+  // otherwise returns `kDisallowedByDelegateAllowlist`. When
+  // `allow_bracketed_ipv6` is false (for DNS CNAMEs passed directly to
+  // `CreateSPN()`), bracketed IPv6 literals are rejected; when true (for
+  // already-canonicalized target principal hosts and `scheme_host_port_`),
+  // bracketed IPv6 literals are accepted.
+  TargetHostValidation ValidateTargetHost(std::string_view target_host,
+                                          bool allow_delegation_clamping,
+                                          bool allow_bracketed_ipv6) const;
 
   std::unique_ptr<HttpAuthMechanism> auth_system_;
   const raw_ptr<HostResolver> resolver_;

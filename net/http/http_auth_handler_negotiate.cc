@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -36,9 +37,11 @@
 #include "net/http/http_request_info.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/ssl_info.h"
 #include "url/scheme_host_port.h"
+#include "url/url_canon.h"
 
 namespace net {
 
@@ -55,6 +58,47 @@ base::DictValue NetLogParameterChannelBindings(
 
   dict.Set("token", base::HexEncode(channel_binding_token));
   return dict;
+}
+
+// Normalizes a candidate hostname for `url::SchemeHostPort` comparison and
+// policy evaluation, rejecting empty strings, embedded NULs, `'%'` (so URL
+// canonicalization cannot unescape `%2e` into `'.'`), non-ASCII input (so IDNA
+// mapping cannot turn fullwidth characters into ASCII), bracketed literals
+// unless `allow_bracketed_ipv6` is true, and any non-canonical host forms
+// (such as integer/octal IPv4 or non-RFC-5952 IPv6).
+std::string NormalizeHostForValidation(std::string_view host,
+                                       bool allow_bracketed_ipv6) {
+  if (host.empty() || host.contains('\0') || host.contains('%') ||
+      !base::IsStringASCII(host)) {
+    return std::string();
+  }
+  std::string trimmed_host = TrimEndingDot(host);
+  if (trimmed_host.empty() || trimmed_host.ends_with('.') ||
+      (!allow_bracketed_ipv6 && trimmed_host.starts_with('['))) {
+    return std::string();
+  }
+  url::CanonHostInfo host_info;
+  std::string canonicalized_host =
+      trimmed_host.starts_with('[')
+          ? CanonicalizeHost(trimmed_host, &host_info)
+          : CanonicalizeHostSupportsBareIPV6(trimmed_host, &host_info);
+  if (host_info.family == url::CanonHostInfo::BROKEN ||
+      canonicalized_host.empty()) {
+    return std::string();
+  }
+  // Require the input to already be in canonical form (modulo ASCII case, a
+  // single trailing dot, and optional IPv6 brackets when allowed) because
+  // `CreateSPN()` uses the raw canonical host string directly (e.g.,
+  // `"167772162"` vs `"10.0.0.2"`, or `"2001:0db8::1"` vs `"2001:db8::1"`).
+  std::string expected_host = base::ToLowerASCII(trimmed_host);
+  if (host_info.family == url::CanonHostInfo::IPV6 &&
+      !expected_host.starts_with('[')) {
+    expected_host = base::StrCat({"[", expected_host, "]"});
+  }
+  if (canonicalized_host != expected_host) {
+    return std::string();
+  }
+  return canonicalized_host;
 }
 
 // Uses |negotiate_auth_system_factory| to create the auth system, otherwise
@@ -121,6 +165,13 @@ std::string_view TargetHostValidationFailureReason(
 }
 
 }  // namespace
+
+struct HttpAuthHandlerNegotiate::TargetHostValidation {
+  TargetHostValidationResult result =
+      TargetHostValidationResult::kUnparsableHost;
+  HttpAuth::DelegationType allowed_delegation = HttpAuth::DelegationType::kNone;
+  bool used_windows_dotless_intranet = false;
+};
 
 HttpAuthHandlerNegotiate::Factory::Factory(
     HttpAuthMechanismFactory negotiate_auth_system_factory)
@@ -422,8 +473,11 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalNameComplete(int rv) {
       // `include_canonical_name`.
       DCHECK_LE(resolve_host_request_->GetDnsAliasResults().size(), 1u);
       if (!resolve_host_request_->GetDnsAliasResults().empty()) {
-        server = *resolve_host_request_->GetDnsAliasResults().begin();
-        DCHECK(!server.empty());
+        const std::string& canonical_host =
+            *resolve_host_request_->GetDnsAliasResults().begin();
+        if (ShouldUseCanonicalNameForSpn(canonical_host)) {
+          server = canonical_host;
+        }
       }
     } else {
       // Even in the error case, try to use origin_.host instead of
@@ -438,6 +492,89 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalNameComplete(int rv) {
   spn_ = CreateSPN(server, scheme_host_port_);
   resolve_host_request_ = nullptr;
   return rv;
+}
+
+bool HttpAuthHandlerNegotiate::ShouldUseCanonicalNameForSpn(
+    const std::string& canonical_host) {
+  // The server and delegation allowlists only apply to servers, so proxy auth
+  // keeps using the canonical name unvalidated. Disabling
+  // `kValidateNegotiateCnameAllowlist` skips validation altogether.
+  if (target_ == HttpAuth::AUTH_PROXY ||
+      !base::FeatureList::IsEnabled(
+          features::kValidateNegotiateCnameAllowlist)) {
+    return !canonical_host.empty();
+  }
+
+  TargetHostValidation validation =
+      ValidateTargetHost(canonical_host, /*allow_delegation_clamping=*/true,
+                         /*allow_bracketed_ipv6=*/false);
+  CnameValidationResult cname_result =
+      CnameValidationResult::kInvalidCanonicalHost;
+  bool allowed = false;
+  switch (validation.result) {
+    case TargetHostValidationResult::kSameHost:
+      cname_result = CnameValidationResult::kSameHost;
+      allowed = true;
+      break;
+    case TargetHostValidationResult::kAllowedDifferentHost:
+      allowed = true;
+      // Delegation may also be clamped for Windows dotless intranet hosts
+      // (see `AUTH_CNAME_DELEGATION_CLAMPED`).
+      if (validation.used_windows_dotless_intranet) {
+        cname_result = CnameValidationResult::kAllowedWindowsDotlessIntranet;
+      } else if (validation.allowed_delegation < delegation_type_) {
+        cname_result = CnameValidationResult::kAllowedWithClampedDelegation;
+      } else {
+        cname_result = CnameValidationResult::kAllowedDifferentHost;
+      }
+      break;
+    case TargetHostValidationResult::kUnparsableHost:
+      cname_result = CnameValidationResult::kInvalidCanonicalHost;
+      break;
+    case TargetHostValidationResult::kMissingPreferences:
+      cname_result = CnameValidationResult::kMissingPreferences;
+      break;
+    case TargetHostValidationResult::kDisallowedByServerAllowlist:
+      cname_result = CnameValidationResult::kDisallowedByServerAllowlist;
+      break;
+    case TargetHostValidationResult::kPrincipalQueryFailed:
+    case TargetHostValidationResult::kNonHttpServicePrincipal:
+    case TargetHostValidationResult::kDisallowedByDelegateAllowlist:
+    case TargetHostValidationResult::kAllowedWithClampedDelegation:
+      // Only reported for target principals or without delegation clamping.
+      NOTREACHED();
+  }
+  base::UmaHistogramEnumeration("Net.HttpAuth.NegotiateCnameValidationResult",
+                                cname_result);
+
+  // When the canonical name is rejected, the SPN falls back to the requested
+  // host, which GSSAPI libraries may still canonicalize through DNS back to
+  // `canonical_host`, so never delegate credentials in that case.
+  DelegationType allowed_delegation =
+      allowed ? validation.allowed_delegation : DelegationType::kNone;
+  if (!allowed) {
+    net_log().AddEvent(NetLogEventType::AUTH_CNAME_REJECTED, [&] {
+      base::DictValue params;
+      params.Set("requested_host", scheme_host_port_.host());
+      params.Set("canonical_host", NetLogStringValue(canonical_host));
+      params.Set("reason",
+                 TargetHostValidationFailureReason(validation.result));
+      return params;
+    });
+    VLOG(1) << "Canonical name " << canonical_host
+            << " for SPN rejected by auth allowlist check";
+  }
+  if (allowed_delegation < delegation_type_) {
+    net_log().AddEvent(NetLogEventType::AUTH_CNAME_DELEGATION_CLAMPED, [&] {
+      base::DictValue params;
+      params.Set("requested_host", scheme_host_port_.host());
+      params.Set("canonical_host", NetLogStringValue(canonical_host));
+      return params;
+    });
+    delegation_type_ = allowed_delegation;
+    auth_system_->SetDelegation(delegation_type_);
+  }
+  return allowed;
 }
 
 int HttpAuthHandlerNegotiate::DoGenerateAuthToken() {
@@ -466,7 +603,11 @@ int HttpAuthHandlerNegotiate::DoGenerateAuthTokenComplete(int rv) {
         principal_host = auth_system_->GetTargetPrincipalHost();
     std::optional<TargetHostValidationResult> validation_result;
     if (principal_host.has_value()) {
-      validation_result = ValidateTargetHost(*principal_host);
+      validation_result =
+          ValidateTargetHost(*principal_host,
+                             /*allow_delegation_clamping=*/false,
+                             /*allow_bracketed_ipv6=*/true)
+              .result;
     } else {
       validation_result = ToTargetHostValidationResult(principal_host.error());
     }
@@ -545,33 +686,45 @@ int HttpAuthHandlerNegotiate::DoGenerateAuthTokenComplete(int rv) {
   return rv;
 }
 
-HttpAuthHandlerNegotiate::TargetHostValidationResult
-HttpAuthHandlerNegotiate::ValidateTargetHost(
-    std::string_view target_host) const {
-  std::string trimmed_target_host = TrimEndingDot(target_host);
-  if (trimmed_target_host.empty() || trimmed_target_host.ends_with('.')) {
-    return TargetHostValidationResult::kUnparsableHost;
+HttpAuthHandlerNegotiate::TargetHostValidation
+HttpAuthHandlerNegotiate::ValidateTargetHost(std::string_view target_host,
+                                             bool allow_delegation_clamping,
+                                             bool allow_bracketed_ipv6) const {
+  TargetHostValidation validation;
+  validation.allowed_delegation = delegation_type_;
+
+  std::string normalized_target_host =
+      NormalizeHostForValidation(target_host, allow_bracketed_ipv6);
+  if (normalized_target_host.empty()) {
+    validation.result = TargetHostValidationResult::kUnparsableHost;
+    return validation;
   }
   // Build a `url::SchemeHostPort` with the request's scheme and port to
-  // evaluate the same per-origin policies against `trimmed_target_host`.
+  // evaluate the same per-origin policies against `normalized_target_host`.
   url::SchemeHostPort target_scheme_host_port(scheme_host_port_.scheme(),
-                                              trimmed_target_host,
+                                              normalized_target_host,
                                               scheme_host_port_.port());
   if (!target_scheme_host_port.IsValid()) {
-    return TargetHostValidationResult::kUnparsableHost;
+    validation.result = TargetHostValidationResult::kUnparsableHost;
+    return validation;
   }
-  // Compare after `TrimEndingDot()` so a trailing-dot request URL (such as
-  // `https://service.corp.com./`) matches a principal whose trailing dot was
-  // stripped by the Kerberos library.
+  // Compare after normalization so trailing-dot URLs and bare IPv6 literals
+  // match their canonical `url::SchemeHostPort` forms.
+  std::string normalized_requested_host = NormalizeHostForValidation(
+      scheme_host_port_.host(), /*allow_bracketed_ipv6=*/true);
   if (target_scheme_host_port.host() ==
-      TrimEndingDot(scheme_host_port_.host())) {
-    return TargetHostValidationResult::kSameHost;
+      (normalized_requested_host.empty()
+           ? TrimEndingDot(scheme_host_port_.host())
+           : normalized_requested_host)) {
+    validation.result = TargetHostValidationResult::kSameHost;
+    return validation;
   }
   // On POSIX, where GSSAPI reports a principal host, `Init()` already rejects
   // server auth without preferences (`AllowsDefaultCredentials()` returns
   // false), so fail closed here too.
   if (!http_auth_preferences_) {
-    return TargetHostValidationResult::kMissingPreferences;
+    validation.result = TargetHostValidationResult::kMissingPreferences;
+    return validation;
   }
 #if BUILDFLAG(IS_POSIX)
   // POSIX Negotiate mechanisms (`HttpAuthGSSAPI` and
@@ -585,17 +738,46 @@ HttpAuthHandlerNegotiate::ValidateTargetHost(
   if (uses_default_credentials &&
       !http_auth_preferences_->CanUseDefaultCredentials(
           target_scheme_host_port)) {
-    return TargetHostValidationResult::kDisallowedByServerAllowlist;
+#if BUILDFLAG(IS_WIN)
+    // On Windows when `AuthServerAllowlist` is unset, `URLSecurityManagerWin`
+    // maps dotless intranet URLs (e.g. `http://intranet`) to `URLZONE_INTRANET`
+    // while their DNS-expanded FQDNs contain dots and map to
+    // `URLZONE_INTERNET`. Preserve default Windows zone behavior for dotless
+    // intranet hosts when no explicit allowlist is configured.
+    if (!http_auth_preferences_->HasDefaultAllowlist() &&
+        !normalized_requested_host.empty() &&
+        !normalized_requested_host.contains('.') &&
+        !normalized_requested_host.starts_with('[') &&
+        http_auth_preferences_->CanUseDefaultCredentials(scheme_host_port_)) {
+      validation.used_windows_dotless_intranet = true;
+    } else {
+      validation.result =
+          TargetHostValidationResult::kDisallowedByServerAllowlist;
+      return validation;
+    }
+#else
+    validation.result =
+        TargetHostValidationResult::kDisallowedByServerAllowlist;
+    return validation;
+#endif
   }
   // The delegation configured on `auth_system_` in `Init()` must also be
   // allowed for the target host, since that is who receives the delegated
-  // credentials.
-  if (delegation_type_ != DelegationType::kNone &&
-      http_auth_preferences_->GetDelegationType(target_scheme_host_port) <
-          delegation_type_) {
-    return TargetHostValidationResult::kDisallowedByDelegateAllowlist;
+  // credentials (or clamped beforehand when validating a DNS CNAME).
+  if (delegation_type_ != DelegationType::kNone) {
+    DelegationType target_delegation =
+        http_auth_preferences_->GetDelegationType(target_scheme_host_port);
+    if (target_delegation < delegation_type_) {
+      if (!allow_delegation_clamping) {
+        validation.result =
+            TargetHostValidationResult::kDisallowedByDelegateAllowlist;
+        return validation;
+      }
+      validation.allowed_delegation = target_delegation;
+    }
   }
-  return TargetHostValidationResult::kAllowedDifferentHost;
+  validation.result = TargetHostValidationResult::kAllowedDifferentHost;
+  return validation;
 }
 
 DelegationType HttpAuthHandlerNegotiate::GetDelegationType() const {

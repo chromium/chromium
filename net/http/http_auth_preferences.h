@@ -54,6 +54,10 @@ class NET_EXPORT HttpAuthPreferences {
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   virtual bool CanUseDefaultCredentials(
       const url::SchemeHostPort& auth_scheme_host_port) const;
+  // Returns true if an explicit server allowlist is configured on the
+  // underlying `URLSecurityManager` (as opposed to platform-specific default
+  // rules like the Windows Internet Explorer Zone Manager).
+  virtual bool HasDefaultAllowlist() const;
   virtual HttpAuth::DelegationType GetDelegationType(
       const url::SchemeHostPort& auth_scheme_host_port) const;
 

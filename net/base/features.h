@@ -1235,6 +1235,14 @@ NET_EXPORT BASE_DECLARE_FEATURE(kRejectHttp09FromHttpProxy);
 // target principal altogether.
 NET_EXPORT BASE_DECLARE_FEATURE(kValidateNegotiateTargetPrincipalHost);
 
+// Enables validating in `HttpAuthHandlerNegotiate` the canonical DNS name
+// (CNAME) of a server against the ambient-credential and delegation allowlists
+// before using it in the Kerberos service principal name (SPN), recording the
+// result to UMA and NetLog. A canonical name that fails validation is not used
+// for the SPN (falling back to the requested host) and nothing is delegated,
+// while one that passes has delegation clamped to what it allows. Disabling it
+// skips validation altogether.
+NET_EXPORT BASE_DECLARE_FEATURE(kValidateNegotiateCnameAllowlist);
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

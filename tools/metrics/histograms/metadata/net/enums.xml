@@ -1264,6 +1264,20 @@ historical analysis. -->
 
 <!-- LINT.ThenChange(//services/network/accept_ch_frame_interceptor.h:NeedsObserverCheckReason) -->
 
+<!-- LINT.IfChange(NegotiateCnameValidationResult) -->
+
+<enum name="NegotiateCnameValidationResult">
+  <int value="0" label="Same host"/>
+  <int value="1" label="Allowed different host"/>
+  <int value="2" label="Allowed with clamped delegation"/>
+  <int value="3" label="Allowed Windows dotless intranet"/>
+  <int value="4" label="Invalid canonical host"/>
+  <int value="5" label="Missing preferences"/>
+  <int value="6" label="Disallowed by server allowlist"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_auth_handler_negotiate.h:NegotiateCnameValidationResult) -->
+
 <enum name="NegotiatedHttpDatagramVersion">
   <int value="0" label="Not supported"/>
   <int value="1" label="draft-04"/>

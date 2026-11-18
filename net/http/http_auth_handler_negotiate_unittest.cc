@@ -5,14 +5,19 @@
 #include "net/http/http_auth_handler_negotiate.h"
 
 #include <memory>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -65,6 +70,46 @@ using net::test::IsOk;
 namespace net {
 
 constexpr char kFakeToken[] = "FakeToken";
+
+namespace {
+
+// Records the delegation type that is configured when generating a token.
+class DelegationRecordingAuthSystem : public HttpAuthMechanism {
+ public:
+  // `observed_delegation` is retained and must be non-null and outlive `this`.
+  explicit DelegationRecordingAuthSystem(
+      HttpAuth::DelegationType* observed_delegation)
+      : observed_delegation_(
+            raw_ref<HttpAuth::DelegationType>::from_ptr(observed_delegation)) {}
+
+  // HttpAuthMechanism:
+  bool Init(const NetLogWithSource& /*net_log*/) override { return true; }
+  bool NeedsIdentity() const override { return true; }
+  bool AllowsExplicitCredentials() const override { return true; }
+  HttpAuth::AuthorizationResult ParseChallenge(
+      HttpAuthChallengeTokenizer* /*tok*/) override {
+    return HttpAuth::AUTHORIZATION_RESULT_ACCEPT;
+  }
+  int GenerateAuthToken(const AuthCredentials* /*credentials*/,
+                        const std::string& /*spn*/,
+                        const std::string& /*channel_bindings*/,
+                        std::string* auth_token,
+                        const NetLogWithSource& /*net_log*/,
+                        CompletionOnceCallback /*callback*/) override {
+    *observed_delegation_ = delegation_type_;
+    *auth_token = kFakeToken;
+    return OK;
+  }
+  void SetDelegation(HttpAuth::DelegationType delegation_type) override {
+    delegation_type_ = delegation_type;
+  }
+
+ private:
+  HttpAuth::DelegationType delegation_type_ = HttpAuth::DelegationType::kNone;
+  const raw_ref<HttpAuth::DelegationType> observed_delegation_;
+};
+
+}  // namespace
 
 class HttpAuthHandlerNegotiateTest : public PlatformTest,
                                      public WithTaskEnvironment {
@@ -304,6 +349,43 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
     return network_anoymization_key_;
   }
 
+  // Creates a server handler for `url_string` whose auth system stores the
+  // delegation type configured when generating a token in
+  // `observed_delegation`, which must be non-null and outlive `this` and the
+  // returned handler.
+  std::unique_ptr<HttpAuthHandlerNegotiate> CreateDelegationRecordingHandler(
+      const std::string& url_string,
+      HttpAuth::DelegationType* observed_delegation) {
+    CHECK(observed_delegation);
+    delegation_recording_factory_ =
+        std::make_unique<HttpAuthHandlerNegotiate::Factory>(base::BindRepeating(
+            [](HttpAuth::DelegationType* out,
+               const HttpAuthPreferences* /*prefs*/)
+                -> std::unique_ptr<HttpAuthMechanism> {
+              return std::make_unique<DelegationRecordingAuthSystem>(out);
+            },
+            base::Unretained(observed_delegation)));
+    delegation_recording_factory_->set_http_auth_preferences(
+        http_auth_preferences_.get());
+#if BUILDFLAG(IS_WIN)
+    delegation_recording_factory_->set_library(
+        base::MakeRefCounted<MockAuthLibrary>(NEGOSSP_NAME));
+#elif !BUILDFLAG(IS_ANDROID)
+    delegation_recording_factory_->set_library(
+        base::MakeRefCounted<MockAuthLibrary>());
+#endif
+    std::unique_ptr<HttpAuthHandler> generic_handler;
+    if (delegation_recording_factory_->CreateAuthHandlerFromString(
+            "Negotiate", HttpAuth::AUTH_SERVER, SSLInfo(),
+            network_anonymization_key(), url::SchemeHostPort(GURL(url_string)),
+            NetLogWithSource::Make(NetLogSourceType::NONE), resolver_.get(),
+            &generic_handler) != OK) {
+      return nullptr;
+    }
+    return base::WrapUnique(
+        static_cast<HttpAuthHandlerNegotiate*>(generic_handler.release()));
+  }
+
  private:
   NetworkAnonymizationKey network_anoymization_key_;
 
@@ -315,6 +397,8 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
   std::unique_ptr<MockCachingHostResolver> resolver_;
   std::unique_ptr<HttpAuthPreferences> http_auth_preferences_;
   std::unique_ptr<HttpAuthHandlerNegotiate::Factory> factory_;
+  std::unique_ptr<HttpAuthHandlerNegotiate::Factory>
+      delegation_recording_factory_;
 
   // |auth_library_| is passed to |factory_|, which assumes ownership of it, but
   // can't be a scoped pointer to it since the tests need access when they set
@@ -484,6 +568,841 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
   EXPECT_EQ(OK, callback3.GetResult(result));
 }
 
+TEST_F(HttpAuthHandlerNegotiateTest, CnameOutsideAllowlistNotUsedForSpn) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "HTTP/app.dev.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "vault.prod.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler.get() != nullptr);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(
+      BUILDFLAG(IS_WIN) ? "HTTP/app.dev.corp.com" : "HTTP@app.dev.corp.com",
+      auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::
+          kDisallowedByServerAllowlist,
+      1);
+  std::vector<NetLogEntry> entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::AUTH_CNAME_REJECTED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("app.dev.corp.com",
+            GetStringValueFromParams(entries[0], "requested_host"));
+  EXPECT_EQ("vault.prod.corp.com",
+            GetStringValueFromParams(entries[0], "canonical_host"));
+  EXPECT_EQ("disallowed_by_server_allowlist",
+            GetStringValueFromParams(entries[0], "reason"));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, CnameInsideAllowlistUsedForSpn) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "HTTP/service.dev.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "service.dev.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler.get() != nullptr);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(BUILDFLAG(IS_WIN) ? "HTTP/service.dev.corp.com"
+                              : "HTTP@service.dev.corp.com",
+            auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kAllowedDifferentHost,
+      1);
+  EXPECT_TRUE(
+      net_log_observer.GetEntriesWithType(NetLogEventType::AUTH_CNAME_REJECTED)
+          .empty());
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest,
+       CnameMatchesBothServerAndDelegateAllowlistsPreservesDelegation) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "HTTP/service.prod.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.corp.com");
+  prefs->SetDelegateAllowlist("*.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "service.prod.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler.get() != nullptr);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(BUILDFLAG(IS_WIN) ? "HTTP/service.prod.corp.com"
+                              : "HTTP@service.prod.corp.com",
+            auth_handler->spn_for_testing());
+  EXPECT_EQ(HttpAuth::DelegationType::kUnconstrained,
+            auth_handler->delegation_type_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kAllowedDifferentHost,
+      1);
+  EXPECT_TRUE(
+      net_log_observer
+          .GetEntriesWithType(NetLogEventType::AUTH_CNAME_DELEGATION_CLAMPED)
+          .empty());
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest,
+       CnameInServerAllowlistOutsideDelegateAllowlistClampsDelegation) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.corp.com");
+  prefs->SetDelegateAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "vault.prod.corp.com");
+
+  HttpAuth::DelegationType observed_delegation =
+      HttpAuth::DelegationType::kUnconstrained;
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler =
+      CreateDelegationRecordingHandler("http://app.dev.corp.com",
+                                       &observed_delegation);
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(BUILDFLAG(IS_WIN) ? "HTTP/vault.prod.corp.com"
+                              : "HTTP@vault.prod.corp.com",
+            auth_handler->spn_for_testing());
+  EXPECT_EQ(HttpAuth::DelegationType::kNone,
+            auth_handler->delegation_type_for_testing());
+  EXPECT_EQ(HttpAuth::DelegationType::kNone, observed_delegation);
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::
+          kAllowedWithClampedDelegation,
+      1);
+  std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::AUTH_CNAME_DELEGATION_CLAMPED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("app.dev.corp.com",
+            GetStringValueFromParams(entries[0], "requested_host"));
+  EXPECT_EQ("vault.prod.corp.com",
+            GetStringValueFromParams(entries[0], "canonical_host"));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest,
+       ExplicitCredentials_CnameOutsideDelegateAllowlistClampsDelegation) {
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary(), "HTTP/vault.prod.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.corp.com");
+  prefs->SetDelegateAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "vault.prod.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler.get() != nullptr);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  AuthCredentials credentials(u"user", u"password");
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    &credentials, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(BUILDFLAG(IS_WIN) ? "HTTP/vault.prod.corp.com"
+                              : "HTTP@vault.prod.corp.com",
+            auth_handler->spn_for_testing());
+  EXPECT_EQ(HttpAuth::DelegationType::kNone,
+            auth_handler->delegation_type_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::
+          kAllowedWithClampedDelegation,
+      1);
+}
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(HttpAuthHandlerNegotiateTest,
+       PosixExplicitCredentials_CnameOutsideServerAllowlistNotUsedForSpn) {
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary(), "HTTP/app.dev.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "vault.prod.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler.get() != nullptr);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  AuthCredentials credentials(u"user", u"password");
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    &credentials, &request_info, callback.callback(), &token)));
+  EXPECT_EQ("HTTP@app.dev.corp.com", auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::
+          kDisallowedByServerAllowlist,
+      1);
+}
+#endif  // BUILDFLAG(IS_POSIX)
+
+TEST_F(HttpAuthHandlerNegotiateTest, MixedCaseAndTrailingDotCnameNormalized) {
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary(), "HTTP/Service.Dev.Corp.Com.@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "Service.Dev.Corp.Com.");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler.get() != nullptr);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(BUILDFLAG(IS_WIN) ? "HTTP/Service.Dev.Corp.Com."
+                              : "HTTP@Service.Dev.Corp.Com.",
+            auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kAllowedDifferentHost,
+      1);
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, BareIpv6CnameMatchesSameHost) {
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary(), "HTTP/2001:db8::1@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("[2001:db8::1]");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://[2001:db8::1]";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler.get() != nullptr);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(BUILDFLAG(IS_WIN) ? "HTTP/2001:db8::1" : "HTTP@2001:db8::1",
+            auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kSameHost, 1);
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, BareIpv6CnameAllowedByAllowlist) {
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary(), "HTTP/2001:DB8::1@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("app.dev.corp.com,[2001:db8::1]");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "2001:db8::1",
+                                        "2001:DB8::1");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler.get() != nullptr);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(BUILDFLAG(IS_WIN) ? "HTTP/2001:DB8::1" : "HTTP@2001:DB8::1",
+            auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kAllowedDifferentHost,
+      1);
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, NonRfc5952Ipv6CnameRejected) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "HTTP/app.dev.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "2001:db8::1",
+                                        "2001:0db8:0:0:0:0:0:1");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(
+      BUILDFLAG(IS_WIN) ? "HTTP/app.dev.corp.com" : "HTTP@app.dev.corp.com",
+      auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kInvalidCanonicalHost,
+      1);
+  std::vector<NetLogEntry> entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::AUTH_CNAME_REJECTED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("unparsable_host", GetStringValueFromParams(entries[0], "reason"));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, NonRfc5952LeadingZeroIpv6CnameRejected) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "HTTP/app.dev.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "2001:db8::1",
+                                        "2001:0DB8::1");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(
+      BUILDFLAG(IS_WIN) ? "HTTP/app.dev.corp.com" : "HTTP@app.dev.corp.com",
+      auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kInvalidCanonicalHost,
+      1);
+  std::vector<NetLogEntry> entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::AUTH_CNAME_REJECTED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("unparsable_host", GetStringValueFromParams(entries[0], "reason"));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, BracketedIpv6CnameRejected) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "HTTP/app.dev.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "2001:db8::1",
+                                        "[2001:db8::1]");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(
+      BUILDFLAG(IS_WIN) ? "HTTP/app.dev.corp.com" : "HTTP@app.dev.corp.com",
+      auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kInvalidCanonicalHost,
+      1);
+  std::vector<NetLogEntry> entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::AUTH_CNAME_REJECTED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("unparsable_host", GetStringValueFromParams(entries[0], "reason"));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, PercentEncodedCnameRejected) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "HTTP/app.dev.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "app%2edev.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  const std::string url_string = "http://app.dev.corp.com";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
+  ASSERT_TRUE(auth_handler.get() != nullptr);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(
+      BUILDFLAG(IS_WIN) ? "HTTP/app.dev.corp.com" : "HTTP@app.dev.corp.com",
+      auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kInvalidCanonicalHost,
+      1);
+  std::vector<NetLogEntry> entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::AUTH_CNAME_REJECTED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("unparsable_host", GetStringValueFromParams(entries[0], "reason"));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, CnameAllowlistValidationKillswitch) {
+  AddScopedFeatureList().InitAndDisableFeature(
+      features::kValidateNegotiateCnameAllowlist);
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.dev.corp.com");
+  prefs->SetDelegateAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "vault.prod.corp.com");
+
+  HttpAuth::DelegationType observed_delegation =
+      HttpAuth::DelegationType::kNone;
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler =
+      CreateDelegationRecordingHandler("http://app.dev.corp.com",
+                                       &observed_delegation);
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(BUILDFLAG(IS_WIN) ? "HTTP/vault.prod.corp.com"
+                              : "HTTP@vault.prod.corp.com",
+            auth_handler->spn_for_testing());
+  EXPECT_EQ(HttpAuth::DelegationType::kUnconstrained,
+            auth_handler->delegation_type_for_testing());
+  EXPECT_EQ(HttpAuth::DelegationType::kUnconstrained, observed_delegation);
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpAuth.NegotiateCnameValidationResult", 0);
+  EXPECT_TRUE(
+      net_log_observer.GetEntriesWithType(NetLogEventType::AUTH_CNAME_REJECTED)
+          .empty());
+  EXPECT_TRUE(
+      net_log_observer
+          .GetEntriesWithType(NetLogEventType::AUTH_CNAME_DELEGATION_CLAMPED)
+          .empty());
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest,
+       CnameOutsideServerAllowlistClampsDelegation) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.dev.corp.com");
+  prefs->SetDelegateAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "vault.prod.corp.com");
+
+  HttpAuth::DelegationType observed_delegation =
+      HttpAuth::DelegationType::kUnconstrained;
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler =
+      CreateDelegationRecordingHandler("http://app.dev.corp.com",
+                                       &observed_delegation);
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(
+      BUILDFLAG(IS_WIN) ? "HTTP/app.dev.corp.com" : "HTTP@app.dev.corp.com",
+      auth_handler->spn_for_testing());
+  EXPECT_EQ(HttpAuth::DelegationType::kNone,
+            auth_handler->delegation_type_for_testing());
+  EXPECT_EQ(HttpAuth::DelegationType::kNone, observed_delegation);
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::
+          kDisallowedByServerAllowlist,
+      1);
+  EXPECT_EQ(1u, net_log_observer
+                    .GetEntriesWithType(NetLogEventType::AUTH_CNAME_REJECTED)
+                    .size());
+  std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
+      NetLogEventType::AUTH_CNAME_DELEGATION_CLAMPED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("app.dev.corp.com",
+            GetStringValueFromParams(entries[0], "requested_host"));
+  EXPECT_EQ("vault.prod.corp.com",
+            GetStringValueFromParams(entries[0], "canonical_host"));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, NonCanonicalIpv4CnameRejected) {
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary(), "HTTP/app.dev.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("app.dev.corp.com,10.0.0.2");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  // `"167772162"` canonicalizes to `"10.0.0.2"`, but would name a different
+  // principal in the SPN.
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.2",
+                                        "167772162");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  EXPECT_EQ(OK, CreateHandler(false, false, true, "http://app.dev.corp.com",
+                              &auth_handler));
+  ASSERT_TRUE(auth_handler);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(
+      BUILDFLAG(IS_WIN) ? "HTTP/app.dev.corp.com" : "HTTP@app.dev.corp.com",
+      auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kInvalidCanonicalHost,
+      1);
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, FullwidthCnameRejected) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary(), "HTTP/app.dev.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  // Fullwidth `'s'` (U+FF53) and ideographic full stop (U+3002) IDNA-map to
+  // `"service.dev.corp.com"`, which matches `"*.dev.corp.com"`, but the raw
+  // string would name a different principal in the SPN.
+  constexpr char kFullwidthCname[] =
+      "\xef\xbd\x93"
+      "ervice\xe3\x80\x82"
+      "dev.corp.com";
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        kFullwidthCname);
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  EXPECT_EQ(OK, CreateHandler(false, false, true, "http://app.dev.corp.com",
+                              &auth_handler));
+  ASSERT_TRUE(auth_handler);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(
+      BUILDFLAG(IS_WIN) ? "HTTP/app.dev.corp.com" : "HTTP@app.dev.corp.com",
+      auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kInvalidCanonicalHost,
+      1);
+  std::vector<NetLogEntry> entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::AUTH_CNAME_REJECTED);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ("unparsable_host", GetStringValueFromParams(entries[0], "reason"));
+  EXPECT_EQ("%ESCAPED:\xe2\x80\x8b %EF%BD%93ervice%E3%80%82dev.corp.com",
+            GetStringValueFromParams(entries[0], "canonical_host"));
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest, ProxyAuthUsesCnameWithoutValidation) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kValidateNegotiateCnameAllowlist);
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary(), "HTTP/vault.prod.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "vault.prod.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  EXPECT_EQ(OK, CreateProxyHandler(/*disable_cname_lookup=*/false,
+                                   /*use_port=*/false,
+                                   /*synchronous_resolve_mode=*/true,
+                                   "http://app.dev.corp.com", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ(BUILDFLAG(IS_WIN) ? "HTTP/vault.prod.corp.com"
+                              : "HTTP@vault.prod.corp.com",
+            auth_handler->spn_for_testing());
+  histogram_tester.ExpectTotalCount(
+      "Net.HttpAuth.NegotiateCnameValidationResult", 0);
+}
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(HttpAuthHandlerNegotiateTest,
+       WinExplicitCredentials_CnameOutsideServerAllowlistUsedForSpn) {
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary());
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "vault.prod.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  EXPECT_EQ(OK, CreateHandler(false, false, true, "http://app.dev.corp.com",
+                              &auth_handler));
+  ASSERT_TRUE(auth_handler);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  AuthCredentials credentials(u"user", u"password");
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    &credentials, &request_info, callback.callback(), &token)));
+  // The server allowlist only governs ambient credentials.
+  EXPECT_EQ("HTTP/vault.prod.corp.com", auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::kAllowedDifferentHost,
+      1);
+}
+
+namespace {
+
+// Emulates `URLSecurityManagerWin` zone mapping: allows ambient credentials and
+// unconstrained delegation only for `allowed_hosts`.
+class FakeZoneHttpAuthPreferences : public HttpAuthPreferences {
+ public:
+  FakeZoneHttpAuthPreferences(std::set<std::string> allowed_hosts,
+                              bool has_default_allowlist)
+      : allowed_hosts_(std::move(allowed_hosts)),
+        has_default_allowlist_(has_default_allowlist) {}
+
+  // HttpAuthPreferences:
+  bool CanUseDefaultCredentials(
+      const url::SchemeHostPort& auth_scheme_host_port) const override {
+    return allowed_hosts_.contains(auth_scheme_host_port.host());
+  }
+  bool HasDefaultAllowlist() const override { return has_default_allowlist_; }
+  HttpAuth::DelegationType GetDelegationType(
+      const url::SchemeHostPort& auth_scheme_host_port) const override {
+    return allowed_hosts_.contains(auth_scheme_host_port.host())
+               ? HttpAuth::DelegationType::kUnconstrained
+               : HttpAuth::DelegationType::kNone;
+  }
+
+ private:
+  const std::set<std::string> allowed_hosts_;
+  const bool has_default_allowlist_;
+};
+
+}  // namespace
+
+TEST_F(HttpAuthHandlerNegotiateTest,
+       WinDotlessIntranetCnameUsedWithoutAllowlist) {
+  base::HistogramTester histogram_tester;
+  RecordingNetLogObserver net_log_observer;
+
+  SetupMocks(AuthLibrary());
+  SetHttpAuthPreferences(std::make_unique<FakeZoneHttpAuthPreferences>(
+      std::set<std::string>{"intranet"}, /*has_default_allowlist=*/false));
+
+  resolver()->rules()->AddIPLiteralRule("intranet", "10.0.0.3",
+                                        "intranet.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  EXPECT_EQ(
+      OK, CreateHandler(false, false, true, "http://intranet", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ("HTTP/intranet.corp.com", auth_handler->spn_for_testing());
+  EXPECT_EQ(HttpAuth::DelegationType::kNone,
+            auth_handler->delegation_type_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::
+          kAllowedWindowsDotlessIntranet,
+      1);
+  EXPECT_EQ(1u, net_log_observer
+                    .GetEntriesWithType(
+                        NetLogEventType::AUTH_CNAME_DELEGATION_CLAMPED)
+                    .size());
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest,
+       WinDotlessIntranetCnameRejectedWithAllowlist) {
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary());
+  SetHttpAuthPreferences(std::make_unique<FakeZoneHttpAuthPreferences>(
+      std::set<std::string>{"intranet"}, /*has_default_allowlist=*/true));
+
+  resolver()->rules()->AddIPLiteralRule("intranet", "10.0.0.3",
+                                        "intranet.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  EXPECT_EQ(
+      OK, CreateHandler(false, false, true, "http://intranet", &auth_handler));
+  ASSERT_TRUE(auth_handler);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ("HTTP/intranet", auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::
+          kDisallowedByServerAllowlist,
+      1);
+}
+
+TEST_F(HttpAuthHandlerNegotiateTest,
+       WinDottedHostCnameRejectedWithoutAllowlist) {
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary());
+  SetHttpAuthPreferences(std::make_unique<FakeZoneHttpAuthPreferences>(
+      std::set<std::string>{"app.corp.com"}, /*has_default_allowlist=*/false));
+
+  resolver()->rules()->AddIPLiteralRule("app.corp.com", "10.0.0.3",
+                                        "vault.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  EXPECT_EQ(OK, CreateHandler(false, false, true, "http://app.corp.com",
+                              &auth_handler));
+  ASSERT_TRUE(auth_handler);
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
+                    nullptr, &request_info, callback.callback(), &token)));
+  EXPECT_EQ("HTTP/app.corp.com", auth_handler->spn_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::
+          kDisallowedByServerAllowlist,
+      1);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(USE_EXTERNAL_GSSAPI)
+TEST_F(HttpAuthHandlerNegotiateTest,
+       CnameClampedDelegationPassesTargetPrincipalValidation) {
+  AddScopedFeatureList().InitWithFeatures(
+      {features::kValidateNegotiateTargetPrincipalHost,
+       features::kValidateNegotiateCnameAllowlist},
+      {});
+  base::HistogramTester histogram_tester;
+
+  SetupMocks(AuthLibrary(), "HTTP/vault.prod.corp.com@REALM");
+  std::unique_ptr<HttpAuthPreferences> prefs = CreateHttpAuthPreferences();
+  prefs->SetServerAllowlist("*.corp.com");
+  prefs->SetDelegateAllowlist("*.dev.corp.com");
+  SetHttpAuthPreferences(std::move(prefs));
+
+  resolver()->rules()->AddIPLiteralRule("app.dev.corp.com", "10.0.0.3",
+                                        "vault.prod.corp.com");
+
+  std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
+  ASSERT_EQ(OK, CreateHandler(false, false, true, "http://app.dev.corp.com",
+                              &auth_handler));
+  ASSERT_TRUE(auth_handler);
+
+  TestCompletionCallback callback;
+  HttpRequestInfo request_info;
+  std::string token;
+  int rv = auth_handler->GenerateAuthToken(nullptr, &request_info,
+                                           callback.callback(), &token);
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  EXPECT_FALSE(token.empty());
+  EXPECT_EQ(HttpAuth::DelegationType::kNone,
+            auth_handler->delegation_type_for_testing());
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateCnameValidationResult",
+      HttpAuthHandlerNegotiate::CnameValidationResult::
+          kAllowedWithClampedDelegation,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.HttpAuth.NegotiateTargetPrincipalValidationResult",
+      HttpAuthHandlerNegotiate::TargetHostValidationResult::
+          kAllowedDifferentHost,
+      1);
+}
+#endif  // BUILDFLAG(USE_EXTERNAL_GSSAPI)
+
 #if BUILDFLAG(IS_POSIX)
 
 // This test is only for GSSAPI, as we can't use explicit credentials with
@@ -491,8 +1410,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
 TEST_F(HttpAuthHandlerNegotiateTest, ServerNotInKerberosDatabase) {
   SetupErrorMocks(AuthLibrary(), GSS_S_FAILURE, 0x96C73A07);  // No server
   std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
-  EXPECT_EQ(OK, CreateHandler(
-      false, false, false, "http://alias:500", &auth_handler));
+  EXPECT_EQ(OK, CreateHandler(false, false, false, "http://alias:500",
+                              &auth_handler));
   ASSERT_TRUE(auth_handler.get() != nullptr);
   TestCompletionCallback callback;
   HttpRequestInfo request_info;
@@ -508,8 +1427,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, ServerNotInKerberosDatabase) {
 TEST_F(HttpAuthHandlerNegotiateTest, NoKerberosCredentials) {
   SetupErrorMocks(AuthLibrary(), GSS_S_FAILURE, 0x96C73AC3);  // No credentials
   std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
-  EXPECT_EQ(OK, CreateHandler(
-      false, false, false, "http://alias:500", &auth_handler));
+  EXPECT_EQ(OK, CreateHandler(false, false, false, "http://alias:500",
+                              &auth_handler));
   ASSERT_TRUE(auth_handler.get() != nullptr);
   TestCompletionCallback callback;
   HttpRequestInfo request_info;

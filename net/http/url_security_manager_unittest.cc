@@ -53,7 +53,9 @@ TEST(URLSecurityManager, UseDefaultCredentials) {
   // The URL security manager takes ownership of |auth_filter|.
   std::unique_ptr<URLSecurityManager> url_security_manager(
       URLSecurityManager::Create());
+  EXPECT_FALSE(url_security_manager->HasDefaultAllowlist());
   url_security_manager->SetDefaultAllowlist(std::move(auth_filter));
+  EXPECT_TRUE(url_security_manager->HasDefaultAllowlist());
   ASSERT_TRUE(url_security_manager.get());
 
   for (size_t i = 0; i < std::size(kTestDataList); ++i) {

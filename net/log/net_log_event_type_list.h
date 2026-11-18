@@ -3861,6 +3861,25 @@ EVENT_TYPE(AUTH_TARGET_PRINCIPAL_REJECTED)
 //  }
 EVENT_TYPE(AUTH_TARGET_PRINCIPAL_DELEGATION_CLAMPED)
 
+// Logged when `HttpAuthHandlerNegotiate` rejects a DNS CNAME canonical host
+// against the challenged origin and `HttpAuthPreferences`, falling back to the
+// requested host for the SPN.
+//  {
+//     "requested_host": <Host of the origin that issued the challenge>,
+//     "canonical_host": <Canonical host returned by DNS CNAME resolution>,
+//     "reason": <Specific validation failure reason string>
+//  }
+EVENT_TYPE(AUTH_CNAME_REJECTED)
+
+// Logged when `HttpAuthHandlerNegotiate` clamps credential delegation because
+// the DNS CNAME canonical host's allowlist policy permits less delegation (or
+// none, when the canonical host is rejected).
+//  {
+//     "requested_host": <Host of the origin that issued the challenge>,
+//     "canonical_host": <Canonical host returned by DNS CNAME resolution>
+//  }
+EVENT_TYPE(AUTH_CNAME_DELEGATION_CLAMPED)
+
 // ------------------------------------------------------------------------
 // Global events
 // ------------------------------------------------------------------------

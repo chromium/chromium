@@ -52,6 +52,10 @@ bool HttpAuthPreferences::CanUseDefaultCredentials(
          security_manager_->CanUseDefaultCredentials(auth_scheme_host_port);
 }
 
+bool HttpAuthPreferences::HasDefaultAllowlist() const {
+  return security_manager_->HasDefaultAllowlist();
+}
+
 using DelegationType = HttpAuth::DelegationType;
 
 DelegationType HttpAuthPreferences::GetDelegationType(
