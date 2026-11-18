@@ -344,7 +344,7 @@ PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
   return overflow;
 }
 
-LayoutUnit GapGeometry::GetCrossingGapSize(
+LayoutUnit GapGeometry::MaxInsetWidthBound(
     GridTrackSizingDirection direction) const {
   // Column rules cross row gaps; row rules cross column gaps.
   const LayoutUnit base_size =
@@ -354,14 +354,37 @@ LayoutUnit GapGeometry::GetCrossingGapSize(
     return base_size;
   }
 
-  const std::optional<LayoutUnit> max_cross_gap_size = MaxCrossGapSize();
-  if (!max_cross_gap_size) {
-    return base_size;
-  }
+  const LayoutUnit single_gap_size =
+      std::max(base_size, MaxCrossGapSize().value_or(LayoutUnit::Min()));
 
-  // For flex containers, per-line cross gap sizes can differ due to content
-  // distribution. Use the max across all lines for a conservative bound.
-  return std::max(base_size, *max_cross_gap_size);
+  // Grid and multicol cross gaps align across the container, so junctions are
+  // never wider than one gap. In flex and grid-lanes, cross gaps on adjacent
+  // lines or lanes need not align and can overlap along a main gap, and
+  // percentage insets resolve against that combined overlap window.
+  if ((container_type_ == ContainerType::kFlex ||
+       container_type_ == ContainerType::kGridLanes) &&
+      !main_gaps_.empty()) {
+    const GridTrackSizingDirection cross_direction =
+        OppositeDirection(direction);
+    const wtf_size_t paintable_cross_gaps = PaintableGapCount(cross_direction);
+    if (paintable_cross_gaps >= 2) {
+      const LayoutUnit cross_min = cross_direction == kForColumns
+                                       ? min_gap_offset_.inline_offset
+                                       : min_gap_offset_.block_offset;
+      const LayoutUnit cross_max = cross_direction == kForColumns
+                                       ? max_gap_offset_.inline_offset
+                                       : max_gap_offset_.block_offset;
+      DCHECK_LE(cross_min, cross_max);
+      // An overlap window cannot exceed the outer extent from the first to the
+      // last cross gap, or the combined width of all paintable cross gaps.
+      const LayoutUnit first_to_last_gap_width =
+          (cross_max - cross_min) + single_gap_size;
+      const LayoutUnit total_cross_gap_width =
+          single_gap_size * paintable_cross_gaps;
+      return std::min(first_to_last_gap_width, total_cross_gap_width);
+    }
+  }
+  return single_gap_size;
 }
 
 String GapGeometry::ToString(bool verbose) const {

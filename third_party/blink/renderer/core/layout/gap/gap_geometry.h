@@ -133,14 +133,10 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       LayoutUnit block_thickness,
       const GapDecorationInkOutsets& outsets) const;
 
-  // Returns the gap size perpendicular to a rule running in `direction`
-  // (the "crossing" gap for that rule). Used as the percentage basis for
-  // junction gap-decoration insets.
-  //
-  // For flex containers, per-line cross gap sizes can differ due to content
-  // distribution; this returns the maximum across all lines as a conservative
-  // bound (for ink overflow computation).
-  LayoutUnit GetCrossingGapSize(GridTrackSizingDirection direction) const;
+  // Returns a conservative upper bound on `GetMaxInsetWidth` for rule insets
+  // in `direction`, including distributed crossing gaps and flex or grid-lanes
+  // overlap windows. Used for ink overflow computation.
+  LayoutUnit MaxInsetWidthBound(GridTrackSizingDirection direction) const;
 
   ContainerType GetContainerType() const { return container_type_; }
 

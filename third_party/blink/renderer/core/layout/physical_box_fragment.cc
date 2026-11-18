@@ -1143,24 +1143,24 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
     GapGeometry::GapDecorationInkOutsets outsets;
 
     // Column rule insets extend the block axis.
-    const LayoutUnit col_crossing_gap_size =
-        gap_geometry->GetCrossingGapSize(kForColumns);
+    const LayoutUnit col_inset_width_bound =
+        gap_geometry->MaxInsetWidthBound(kForColumns);
     outsets.block_start = MaxGapDecorationInsetOutset(
         style.ColumnRuleInsetCapStart(), style.ColumnRuleInsetJunctionStart(),
-        col_crossing_gap_size);
+        col_inset_width_bound);
     outsets.block_end = MaxGapDecorationInsetOutset(
         style.ColumnRuleInsetCapEnd(), style.ColumnRuleInsetJunctionEnd(),
-        col_crossing_gap_size);
+        col_inset_width_bound);
 
     // Row rule insets extend the inline axis.
-    const LayoutUnit row_crossing_gap_size =
-        gap_geometry->GetCrossingGapSize(kForRows);
+    const LayoutUnit row_inset_width_bound =
+        gap_geometry->MaxInsetWidthBound(kForRows);
     outsets.inline_start = MaxGapDecorationInsetOutset(
         style.RowRuleInsetCapStart(), style.RowRuleInsetJunctionStart(),
-        row_crossing_gap_size);
+        row_inset_width_bound);
     outsets.inline_end = MaxGapDecorationInsetOutset(
         style.RowRuleInsetCapEnd(), style.RowRuleInsetJunctionEnd(),
-        row_crossing_gap_size);
+        row_inset_width_bound);
 
     PhysicalRect rect = gap_geometry->ComputeInkOverflowForGaps(
         Style().GetWritingDirection(), Size(), inline_thickness,
