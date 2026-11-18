@@ -67,7 +67,8 @@ public class SafetyHubCompromisedPasswordsModuleHelper implements SafetyHubModul
     @Override
     public String getSummary() {
         int totalCompromisedPasswordsCount =
-                mAccountCompromisedPasswordsCount + mLocalCompromisedPasswordsCount;
+                Math.max(0, mAccountCompromisedPasswordsCount)
+                        + Math.max(0, mLocalCompromisedPasswordsCount);
         return mContext.getResources()
                 .getQuantityString(
                         R.plurals.safety_hub_compromised_passwords_summary,

@@ -740,4 +740,74 @@ public class SafetyHubPasswordsModuleMediatorTest {
         verify(mAccountDataSource, times(0)).triggerNewCredentialFetch();
         verify(mLocalDataSource, times(0)).triggerNewCredentialFetch();
     }
+
+    @Test
+    public void singleCompromisedAccountPassword_unavailableLocalPasswords() {
+        int compromisedAccountPasswordsCount = 1;
+        mockAccountPasswordCounts(compromisedAccountPasswordsCount, /* reused= */ 0, /* weak= */ 0);
+        mockLocalPasswordCounts(/* compromised= */ -1, /* reused= */ -1, /* weak= */ -1);
+
+        mockAccountPasswordState(
+                SafetyHubAccountPasswordsDataSource.ModuleType.HAS_COMPROMISED_PASSWORDS);
+        mockLocalPasswordState(SafetyHubLocalPasswordsDataSource.ModuleType.UNAVAILABLE_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(
+                SafetyHubAccountPasswordsDataSource.ModuleType.HAS_COMPROMISED_PASSWORDS);
+        mModuleMediator.localPasswordsStateChanged(
+                SafetyHubLocalPasswordsDataSource.ModuleType.UNAVAILABLE_PASSWORDS);
+
+        String expectedSummary =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_compromised_passwords_summary,
+                                compromisedAccountPasswordsCount,
+                                compromisedAccountPasswordsCount);
+        assertEquals(expectedSummary, mPreference.getSummary().toString());
+    }
+
+    @Test
+    public void reusedLocalPasswordsExist_signedOutWithInvalidAccountCounts() {
+        int reusedLocalPasswordsCount = 1;
+        mockAccountPasswordCounts(/* compromised= */ -1, /* reused= */ -1, /* weak= */ -1);
+        mockLocalPasswordCounts(/* compromised= */ 0, reusedLocalPasswordsCount, /* weak= */ 0);
+
+        mockAccountPasswordState(SafetyHubAccountPasswordsDataSource.ModuleType.SIGNED_OUT);
+        mockLocalPasswordState(SafetyHubLocalPasswordsDataSource.ModuleType.HAS_REUSED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(
+                SafetyHubAccountPasswordsDataSource.ModuleType.SIGNED_OUT);
+        mModuleMediator.localPasswordsStateChanged(
+                SafetyHubLocalPasswordsDataSource.ModuleType.HAS_REUSED_PASSWORDS);
+
+        String expectedSummary =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_reused_passwords_summary,
+                                reusedLocalPasswordsCount,
+                                reusedLocalPasswordsCount);
+        assertEquals(expectedSummary, mPreference.getSummary().toString());
+    }
+
+    @Test
+    public void weakLocalPasswordsExist_signedOutWithInvalidAccountCounts() {
+        int weakLocalPasswordsCount = 1;
+        mockAccountPasswordCounts(/* compromised= */ -1, /* reused= */ -1, /* weak= */ -1);
+        mockLocalPasswordCounts(/* compromised= */ 0, /* reused= */ 0, weakLocalPasswordsCount);
+
+        mockAccountPasswordState(SafetyHubAccountPasswordsDataSource.ModuleType.SIGNED_OUT);
+        mockLocalPasswordState(SafetyHubLocalPasswordsDataSource.ModuleType.HAS_WEAK_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(
+                SafetyHubAccountPasswordsDataSource.ModuleType.SIGNED_OUT);
+        mModuleMediator.localPasswordsStateChanged(
+                SafetyHubLocalPasswordsDataSource.ModuleType.HAS_WEAK_PASSWORDS);
+
+        String expectedSummary =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_weak_passwords_summary,
+                                weakLocalPasswordsCount,
+                                weakLocalPasswordsCount);
+        assertEquals(expectedSummary, mPreference.getSummary().toString());
+    }
 }

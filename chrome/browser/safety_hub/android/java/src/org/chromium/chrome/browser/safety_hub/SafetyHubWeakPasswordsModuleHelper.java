@@ -51,7 +51,8 @@ public class SafetyHubWeakPasswordsModuleHelper implements SafetyHubModuleHelper
 
     @Override
     public String getSummary() {
-        int totalWeakPasswordsCount = mAccountWeakPasswordsCount + mLocalWeakPasswordsCount;
+        int totalWeakPasswordsCount =
+                Math.max(0, mAccountWeakPasswordsCount) + Math.max(0, mLocalWeakPasswordsCount);
         return mContext.getResources()
                 .getQuantityString(
                         R.plurals.safety_hub_weak_passwords_summary,

@@ -51,7 +51,8 @@ public class SafetyHubReusedPasswordsModuleHelper implements SafetyHubModuleHelp
 
     @Override
     public String getSummary() {
-        int totalReusedPasswordsCount = mAccountReusedPasswordsCount + mLocalReusedPasswordsCount;
+        int totalReusedPasswordsCount =
+                Math.max(0, mAccountReusedPasswordsCount) + Math.max(0, mLocalReusedPasswordsCount);
         return mContext.getResources()
                 .getQuantityString(
                         R.plurals.safety_hub_reused_passwords_summary,
