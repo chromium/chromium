@@ -708,6 +708,20 @@ TEST(ProvisioningDomainConfigToDictTest, SerializesConfigToDict) {
   EXPECT_EQ(1u, dict.FindList("extra_headers")->size());
 }
 
+// Tests that the hash of a fixed config matches a hard-coded value. The hash
+// keys configs persisted in `kProvisioningDomainProxyConfigs`, so it must not
+// depend on per-process state or change between releases: a different value
+// drops every cached config on the next launch.
+TEST(ComputePolicyHashTest, MatchesGoldenValue) {
+  ProvisioningDomainConfig policy;
+  policy.pvd_id = "example.pvd.com";
+  policy.auth_config = ProxyAuthConfig{AuthType::kProfileBearerToken,
+                                       AuthScope::kCloudSecureGateway};
+  policy.extra_headers = {ProxyExtraHeader("x-custom-key", "custom-value")};
+
+  EXPECT_EQ("2098268777", ComputePolicyHash(policy));
+}
+
 TEST(ProvisioningDomainProxyConfigToDictTest, ParseAndSerializeRoundtrip) {
   std::optional<ProvisioningDomainProxyConfig> config =
       ParseProvisioningDomainConfig(GetValidPvdJsonResponse());

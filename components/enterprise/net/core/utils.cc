@@ -12,7 +12,9 @@
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/hash/hash.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -20,7 +22,6 @@
 #include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
-#include "components/policy/core/common/values_util.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -611,8 +612,14 @@ const ProvisioningDomainProxyConfig::ProxyEndpoint* FindMatchingProxyEndpoint(
 }
 
 std::string ComputePolicyHash(const ProvisioningDomainConfig& policy_config) {
-  return base::NumberToString(policy::PolicyValueHash(
-      base::Value(ProvisioningDomainConfigToDict(policy_config))));
+  // `policy::PolicyValueHash()` can't be used: it builds on `base::FastHash()`
+  // and `base::HashInts()`, which are seeded per process when DCHECKs are on
+  // and aren't guaranteed stable across releases. `base::DictValue` keys are
+  // sorted, so the JSON form is canonical.
+  std::optional<std::string> json =
+      base::WriteJson(ProvisioningDomainConfigToDict(policy_config));
+  CHECK(json.has_value());
+  return base::NumberToString(base::PersistentHash(*json));
 }
 
 base::DictValue ProvisioningDomainConfigToDict(

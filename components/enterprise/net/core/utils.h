@@ -75,8 +75,9 @@ const ProvisioningDomainProxyConfig::ProxyEndpoint* FindMatchingProxyEndpoint(
     const GURL& destination_url,
     const net::ProxyChain& proxy_chain);
 
-// Computes a deterministic hash string for a ProvisioningDomainConfig policy
-// struct.
+// Computes a hash string for a `ProvisioningDomainConfig` policy struct. The
+// result keys the persisted `kProvisioningDomainProxyConfigs` cache, so it is
+// stable across launches and releases.
 std::string ComputePolicyHash(const ProvisioningDomainConfig& policy_config);
 
 // Serializes a ProvisioningDomainConfig struct into a base::DictValue
