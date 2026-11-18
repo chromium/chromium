@@ -6522,7 +6522,7 @@
   {
     "name": "ios-trusted-vault-notification",
     "owners": [ "ylahodiuk@google.com", "rgod@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 165
   },
   {
     "name": "ios-unified-manual-fallback-sheet",
