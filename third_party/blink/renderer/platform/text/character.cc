@@ -303,14 +303,12 @@ bool HasLikelyScript(UChar32 character) {
   if (!U_SUCCESS(err))
     return false;
 
-  if (RuntimeEnabledFeatures::ScriptBasedOnUnicodeBlockEnabled()) {
-    if (script == USCRIPT_INHERITED || script == USCRIPT_COMMON) {
-      // For characters whose ICU script is USCRIPT_INHERITED or
-      // USCRIPT_COMMON, infer a likely script based on their Unicode block.
-      // This helps select more accurate fallback fonts for
-      // inherited marks, punctuation, and similar characters.
-      script = GetScriptBasedOnUnicodeBlock(character);
-    }
+  if (script == USCRIPT_INHERITED || script == USCRIPT_COMMON) {
+    // For characters whose ICU script is USCRIPT_INHERITED or
+    // USCRIPT_COMMON, infer a likely script based on their Unicode block.
+    // This helps select more accurate fallback fonts for
+    // inherited marks, punctuation, and similar characters.
+    script = GetScriptBasedOnUnicodeBlock(character);
   }
   // USCRIPT_UNKNOWN has no font coverage; treating it as "likely script"
   // makes ChooseHintIndex pin font fallback to a code point like U+FE1A
