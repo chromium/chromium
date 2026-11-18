@@ -19,13 +19,13 @@ source_set("launchpad") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
-    "//components/personal_context/proto:personal_context_proto",
     "//url",
   ]
 
   deps = [
     "//chrome/browser/personal_context",
     "//components/personal_context/core",
+    "//components/personal_context/proto:personal_context_proto",
   ]
 }
 
@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/personal_context/core",
     "//components/personal_context/core:test_support",
+    "//components/personal_context/proto:personal_context_proto",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
