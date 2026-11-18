@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
@@ -215,6 +216,10 @@ class IndigoBrowserTestMixin : public T {
            fake_api_.GetGenerateUrl().spec()},
           {features::kIndigoSkipEnterpriseCheck.name, "true"}}},
         {blink::features::kImageReplacement, {}}};
+    if (ToolbarFollowsReplacedImage()) {
+      enabled_features.push_back(
+          {features::kIndigoToolbarFollowsReplacedImage, {}});
+    }
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsContextualCuesMode()) {
       // Makes Contextual Cueing ask its cue targets, including Indigo's, for a
@@ -454,6 +459,8 @@ class IndigoBrowserTestMixin : public T {
   // Whether Indigo delegates its entry points to Contextual Cueing instead of
   // showing them itself (legacy mode).
   virtual bool IsContextualCuesMode() const = 0;
+
+  virtual bool ToolbarFollowsReplacedImage() const { return false; }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeApi fake_api_;
@@ -893,6 +900,59 @@ IN_PROC_BROWSER_TEST_P(IndigoBrowserTest, ToolbarPositioningTransform) {
 
       WaitForState(kToolbarBoundsState,
                    IsCloseToTopRightOf(std::ref(image_bounds))),
+      StopObservingState(kToolbarBoundsState));
+}
+
+class IndigoToolbarFollowsReplacedImageBrowserTest : public IndigoBrowserTest {
+ protected:
+  bool ToolbarFollowsReplacedImage() const override { return true; }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         IndigoToolbarFollowsReplacedImageBrowserTest,
+                         testing::Bool(),
+                         &DescribeIndigoMode);
+
+IN_PROC_BROWSER_TEST_P(IndigoToolbarFollowsReplacedImageBrowserTest,
+                       ToolbarFollowsMirrorOfReplacedImage) {
+  const GURL url = embedded_test_server()->GetURL("/image.html");
+  raw_ptr<views::View> toolbar_view = nullptr;
+  // The clone is 100px lower than the original image.
+  gfx::Rect image_bounds{50, 150, 200, 200};
+
+  RunTestSequence(
+      NavigateAndClickAnchoredMessage(url),
+      AfterShow(IndigoToolbar::kToolbarElementId,
+                base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                  toolbar_view = AsView(el);
+                })));
+
+  // Some sites re-create the image, e.g. on resize. The content script then
+  // starts a mirror replacement on the new element.
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+      const img = document.getElementById('target_image');
+      const clone = img.cloneNode();
+      clone.style.top = '150px';
+      img.replaceWith(clone);)"));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      "window.indigo.startImageReplacement("
+      "    document.getElementById('target_image'), {disposition: 'mirror'});",
+      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, ISOLATED_WORLD_ID_INDIGO));
+
+  RunTestSequence(
+      ObserveState(kToolbarBoundsState, std::ref(toolbar_view)),
+      WithElement(kWebContentsId,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    auto* contents = el->AsA<TrackedElementWebContents>();
+                    views::WebView* web_view = contents->owner()->GetWebView();
+                    views::View::ConvertRectToScreen(web_view, &image_bounds);
+                  })),
+      WaitForState(kToolbarBoundsState,
+                   IsCloseToTopRightOf(std::ref(image_bounds))),
+      EnsurePresent(IndigoToolbar::kToolbarElementId),
       StopObservingState(kToolbarBoundsState));
 }
 

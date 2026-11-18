@@ -18,6 +18,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/token.h"
 #include "base/types/pass_key.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/contextual_cueing/features.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
+#include "chrome/browser/indigo/indigo_toolbar_anchor.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -89,10 +91,6 @@ const char kForceIndigoSwitch[] = "force-indigo";
 
 namespace {
 const char kForceIndigoOnboardingSwitch[] = "force-indigo-onboarding";
-
-// The minimum width of the primary image frame in DIPs below which
-// the transformation will fail.
-constexpr int kMinPrimaryImageWidthDips = 170;
 
 class Require1PSkillRefreshObserver : public skills::SkillsService::Observer {
  public:
@@ -1185,41 +1183,45 @@ void IndigoPageActionController::OnTrackedElementRectsChanged(
 
   std::optional<base::Token> primary_token =
       manager->GetPrimaryTrackedElementId();
-  if (!primary_token) {
-    ClearTrackedBoundsAndHideToolbar();
-    return;
-  }
 
   const auto feature_id = static_cast<viz::TrackedElementFeature>(
       page_content_annotations::TrackedElementFeature::kIndigoImageReplacement);
 
   auto it = rects.find(feature_id);
   if (it == rects.end()) {
-    ClearTrackedBoundsAndHideToolbar();
+    SetTrackedBounds(std::nullopt);
     return;
   }
 
-  bool found = false;
-  for (const auto& rect : it->second) {
-    if (rect.id == *primary_token) {
-      float dip_scale = 1.0f / device_scale_factor;
-      tracked_bounds_ = gfx::ScaleToRoundedRect(rect.visible_bounds, dip_scale);
-      if (toolbar_) {
-        toolbar_->UpdateTrackedPosition(*tracked_bounds_);
-      }
-      found = true;
-      break;
+  const viz::TrackedElementRect* anchor = nullptr;
+  if (base::FeatureList::IsEnabled(
+          features::kIndigoToolbarFollowsReplacedImage)) {
+    anchor = SelectToolbarAnchor(it->second, primary_token, device_scale_factor,
+                                 manager->GetTrackedReplacementIds());
+  } else if (primary_token) {
+    auto primary = std::ranges::find(it->second, *primary_token,
+                                     &viz::TrackedElementRect::id);
+    if (primary != it->second.end()) {
+      anchor = &*primary;
     }
   }
-  if (!found) {
-    ClearTrackedBoundsAndHideToolbar();
+  if (!anchor) {
+    SetTrackedBounds(std::nullopt);
+    return;
   }
+
+  float dip_scale = 1.0f / device_scale_factor;
+  SetTrackedBounds(gfx::ScaleToRoundedRect(anchor->visible_bounds, dip_scale));
 }
 
-void IndigoPageActionController::ClearTrackedBoundsAndHideToolbar() {
-  tracked_bounds_ = std::nullopt;
+void IndigoPageActionController::SetTrackedBounds(
+    const std::optional<gfx::Rect>& bounds) {
+  if (bounds == tracked_bounds_) {
+    return;
+  }
+  tracked_bounds_ = bounds;
   if (toolbar_) {
-    toolbar_->UpdateTrackedPosition(gfx::Rect());
+    toolbar_->UpdateTrackedPosition(tracked_bounds_.value_or(gfx::Rect()));
   }
 }
 

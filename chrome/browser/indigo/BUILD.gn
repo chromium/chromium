@@ -29,6 +29,7 @@ source_set("indigo") {
     "indigo_prefs.h",
     "indigo_service.h",
     "indigo_service_factory.h",
+    "indigo_toolbar_anchor.h",
   ]
 
   public_deps = [
@@ -71,6 +72,7 @@ source_set("impl") {
     "indigo_prefs.cc",
     "indigo_service.cc",
     "indigo_service_factory.cc",
+    "indigo_toolbar_anchor.cc",
   ]
 
   deps = [
@@ -114,6 +116,7 @@ source_set("impl") {
     "//components/skills/public",
     "//components/variations/service",
     "//components/vector_icons",
+    "//components/viz/common",
     "//content/public/browser",
     "//google_apis/common",
     "//net",
@@ -157,6 +160,7 @@ source_set("unit_tests") {
     "indigo_metrics_unittest.cc",
     "indigo_page_action_controller_unittest.cc",
     "indigo_service_unittest.cc",
+    "indigo_toolbar_anchor_unittest.cc",
   ]
   deps = [
     ":impl",
@@ -186,6 +190,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
     "//components/skills/mocks",
+    "//components/viz/common",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",

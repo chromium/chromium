@@ -98,8 +98,10 @@ void IndigoImageReplacementManager::RegisterImageReplacement(
       std::move(image_replacement));
   mojo::PendingRemote<blink::mojom::ImageReplacementHost> host_remote;
   auto host_receiver = host_remote.InitWithNewPipeAndPassReceiver();
+  // With the flag on, mirrors are tracked too so the toolbar can follow them.
   std::optional<int32_t> feature_id;
-  if (is_primary) {
+  if (is_primary || base::FeatureList::IsEnabled(
+                        features::kIndigoToolbarFollowsReplacedImage)) {
     feature_id =
         static_cast<int32_t>(page_content_annotations::TrackedElementFeature::
                                  kIndigoImageReplacement);
@@ -241,6 +243,18 @@ IndigoImageReplacementManager::GetPrimaryTrackedElementId() const {
   }
   CHECK(image_replacement->is_primary());
   return image_replacement->tracked_element_id();
+}
+
+absl::flat_hash_set<base::Token>
+IndigoImageReplacementManager::GetTrackedReplacementIds() const {
+  absl::flat_hash_set<base::Token> ids;
+  for (const auto& [_, image_replacement] : receivers_.GetAllContexts()) {
+    if (const std::optional<base::Token>& id =
+            image_replacement->tracked_element_id()) {
+      ids.insert(*id);
+    }
+  }
+  return ids;
 }
 
 void IndigoImageReplacementManager::ReplacementFrameAttached(

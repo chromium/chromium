@@ -113,6 +113,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void SetTrackedBoundsForTesting(const std::optional<gfx::Rect>& bounds) {
     tracked_bounds_ = bounds;
   }
+  const std::optional<gfx::Rect>& tracked_bounds_for_testing() const {
+    return tracked_bounds_;
+  }
 
   // Shows a toast notification informing the user that an error has occurred.
   // Note: `result` is only used for metrics purposes and doesn't affect the
@@ -347,7 +350,8 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   std::optional<IndigoTransformationTriggerSource>
       last_non_retry_trigger_source_;
 
-  // The latest tracked bounds of the primary image, in DIPs.
+  // The latest bounds of the toolbar's anchor (the primary image or a visible
+  // copy of it), in DIPs.
   std::optional<gfx::Rect> tracked_bounds_;
 
   // Timer to delay the invocation of IndigoAgent after Glic is invoked and the
@@ -364,7 +368,8 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
   void RegisterObserverWithHost(content::RenderWidgetHost* host);
   void UnregisterObserverFromHost(content::RenderWidgetHost* host);
-  void ClearTrackedBoundsAndHideToolbar();
+  // Stores `bounds` and pushes them to the toolbar if they changed.
+  void SetTrackedBounds(const std::optional<gfx::Rect>& bounds);
   void ResolvePendingEligibilityCallbacks(bool eligible);
   void OnEligibilityTimeout();
 

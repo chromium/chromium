@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/token.h"
 #include "base/types/expected.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
@@ -21,6 +22,7 @@
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -97,6 +99,8 @@ class IndigoImageReplacementManager
   void ClearCachedImage();
 
   std::optional<base::Token> GetPrimaryTrackedElementId() const;
+  // Returns the tracked element ids of all live replacements.
+  absl::flat_hash_set<base::Token> GetTrackedReplacementIds() const;
   std::optional<InvocationId> active_invocation_id() const {
     return active_invocation_id_;
   }

@@ -1344,6 +1344,11 @@ const base::FeatureParam<base::TimeDelta> kIndigoGeneratedImageCacheLifetime{
 // images.
 BASE_FEATURE(kIndigoContextMenuCopy, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Lets the Indigo toolbar follow a visible copy of the replaced image when the
+// primary isn't painted, was removed, or a much larger copy overlaps it.
+BASE_FEATURE(kIndigoToolbarFollowsReplacedImage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // A feature that controls whether Instant uses a spare renderer.
 BASE_FEATURE(kInstantUsesSpareRenderer, base::FEATURE_DISABLED_BY_DEFAULT);
 
