@@ -1,15 +1,15 @@
 caption: Refresh rate for user policy
 desc: |-
-  Setting the policy specifies the period in milliseconds at which the device management service is queried for user policy information. Valid values range from 1,800,000 (30 minutes) to 86,400,000 (1 day). Values outside this range will be clamped to the respective boundary.
+  Setting the policy specifies the period in milliseconds at which the device management service is queried for user policy information. Valid values range from 1,800,000 (30 minutes) to 86,400,000 (1 day). Values outside this range will be clamped to the respective boundary, except on Android and iOS, where values above this range are clamped to 604,800,000 (1 week).
 
-        Leaving the policy unset uses the default value of 3 hours.
+        Leaving the policy unset uses the default value of 3 hours, or 1 day on Android and iOS.
 
         Note: Policy notifications force a refresh when the policy changes, making frequent refreshes unnecessary. So, if the platform supports these notifications, the refresh delay is 24 hours (ignoring defaults and the value of this policy).
 default: 10800000
 example_value: 3600000
 features:
   dynamic_refresh: true
-  per_profile: true
+  per_profile: false
 future_on:
 - fuchsia
 owners:
@@ -23,5 +23,6 @@ supported_on:
 - chrome_os:11-
 - chrome.*:79-
 - ios:90-
+- android:160-
 tags: []
 type: int

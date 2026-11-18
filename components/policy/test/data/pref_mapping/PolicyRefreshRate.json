@@ -15,5 +15,19 @@
         300000
       ]
     }
+  },
+  {
+    "os": [
+      "android"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.user_refresh_rate",
+      "pref_location": "local_state",
+      "default_value": 86400000,
+      "values_to_test": [
+        300000,
+        3600000
+      ]
+    }
   }
 ]
