@@ -486,7 +486,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling openh264rs
   # and whatever else without interference from each other.
-  'openh264rs_revision': '17bcbb11cfd6e6065c56b4c5b62fc442275b31b0',
+  'openh264rs_revision': '9862518ef0f8cb391ff43689131da257a5387a26',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Speedometer main
   # and whatever else without interference from each other.
