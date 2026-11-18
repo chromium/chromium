@@ -2090,6 +2090,39 @@ class FullWebUIOmniboxInteractiveTest
                  Do([this]() { paint_as_active_subscription_ = {}; }));
   }
 
+  auto WaitForNoWebUIFocusRing() {
+    return InAnyContext(WaitForJsConditionAt(
+        kPopupWebView, kPopupSearchbox,
+        "(el) => {\n"
+        "  if (!el || el.hasAttribute('is-logically-focused_')) {\n"
+        "    return false;\n"
+        "  }\n"
+        "  const wrapper = el.shadowRoot.querySelector('#inputWrapper');\n"
+        "  if (!wrapper || wrapper.matches(':focus-within')) {\n"
+        "    return false;\n"
+        "  }\n"
+        "  const boxShadow = getComputedStyle(wrapper).boxShadow;\n"
+        "  return !/0px 0px 0px 1px(,|$)/.test(boxShadow);\n"
+        "}"));
+  }
+
+  auto CheckNoLocationBarFocusRing() {
+    return If(
+        [this]() {
+          return BrowserView::GetBrowserViewForBrowser(browser())
+                     ->GetLocationBarView() != nullptr;
+        },
+        Then(WaitForLocationBarFocusRingHidden(),
+             CheckLocationBarFocusRing(false)));
+  }
+
+  auto ClickUnfocusedWebUIInput() {
+    return InSameContextAs(
+        kPopupWebView,
+        MoveMouseTo(kPopupWebView, DeepQueryToRelativePosition(kWebUIInput)),
+        ClickMouse(ui_controls::LEFT, /*release=*/false), ReleaseMouse());
+  }
+
  private:
   // Returns the screen point of the boundary between the characters before and
   // after `char_offset` in the WebUI input's current value, measured with the
@@ -2700,6 +2733,68 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       // Press Enter and verify navigation is a search for the latest query.
       SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN, ui::EF_NONE),
       WaitForGoogleSearch(kTab1, {{"q", "hello"}}));
+}
+
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, DraftingFlowOnNtp) {
+  RunTestSequence(
+      // 1. Start on the initial NTP with the omnibox focused.
+      FocusOmniboxOnInitialNtp(kTab1), WaitForPopupActive(),
+      CheckPageClassification(&omnibox::IsNTPPage),
+      InAnyContext(WaitForWebUIInputValue("")),
+
+      // 2. Type "hello world" with real key presses; suggestions open.
+      TypeWebUITextWithKeyPresses("hello"),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_SPACE, ui::EF_NONE)),
+      TypeWebUITextWithKeyPresses("world"),
+      InAnyContext(WaitForWebUIInputValue("hello world")),
+      WaitForOmniboxText(u"hello world"), CheckUserInputInProgress(true),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion,
+                           "hello world"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+
+      // 3. Click outside: dropdown closes, draft stays with no focus ring.
+      ClickWebPageBody(kTab1),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      CheckPopupState(OmniboxPopupState::kFull),
+      WaitForVisibleOmniboxUnfocused(),
+      InAnyContext(WaitForWebUIInputValue("hello world")),
+      WaitForOmniboxText(u"hello world"), CheckUserInputInProgress(true),
+      InAnyContext(CheckWebUIInputSelection(0, 0)), WaitForNoWebUIFocusRing(),
+      CheckNoLocationBarFocusRing(),
+
+      // 4. Click back in: full text is selected and dropdown stays closed.
+      WaitForPopupToStopForwardingMouseEvents(), ClickUnfocusedWebUIInput(),
+      WaitForOmniboxFocus(true), WaitForPopupActive(),
+      InAnyContext(WaitForWebUIInputValue("hello world")),
+      InAnyContext(CheckWebUIInputSelection(0, 11)),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      WaitForInputWrapperFocusRing(true),
+
+      // 5. Click before "world" (offset 6): caret is placed there.
+      ClickWebUIInputAtCharOffset(6), WaitForOmniboxFocus(true),
+      InAnyContext(WaitForWebUIInputValue("hello world")),
+      InAnyContext(CheckWebUIInputSelection(6, 6)),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+
+      // 6. Type at the caret: text inserts in place and suggestions reopen.
+      TypeWebUITextWithKeyPresses("big"),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_SPACE, ui::EF_NONE)),
+      InAnyContext(WaitForWebUIInputValue("hello big world")),
+      InAnyContext(CheckWebUIInputSelection(10, 10)),
+      WaitForOmniboxText(u"hello big world"),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion,
+                           "hello big world"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"));
 }
 
 // Verifies that entering keyword mode by clicking the keyword chip on the NTP
@@ -9566,6 +9661,133 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxFakeGoogleSrpInteractiveTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          FullWebUIOmniboxFakeGoogleSrpInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WebUIToolbarEnabled"
+                                             : "WebUIToolbarDisabled";
+                         });
+
+class FullWebUIOmniboxSrpDraftingInteractiveTest
+    : public FullWebUIOmniboxInteractiveTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FullWebUIOmniboxInteractiveTest::SetUpCommandLine(command_line);
+    embedded_https_test_server().RegisterRequestHandler(
+        base::BindRepeating(&ServeSearchResultsPage));
+    ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+    command_line->AppendSwitchASCII(
+        switches::kGoogleBaseURL,
+        embedded_https_test_server().base_url().spec());
+  }
+
+ protected:
+  void PreRunTestOnMainThread() override {
+    embedded_https_test_server().StartAcceptingConnections();
+    FullWebUIOmniboxInteractiveTest::PreRunTestOnMainThread();
+  }
+
+  auto WaitForTestServerSearchCommitted(const std::string& expected_query) {
+    return PollUntil(
+        [this, expected_query]() {
+          content::WebContents* contents =
+              browser()->tab_strip_model()->GetActiveWebContents();
+          if (!contents || contents->IsLoading()) {
+            return false;
+          }
+          const GURL& url = contents->GetLastCommittedURL();
+          std::string query;
+          return url.host() == embedded_https_test_server().base_url().host() &&
+                 url.path() == "/search" &&
+                 net::GetValueForKeyInQuery(url, "q", &query) &&
+                 query == expected_query;
+        },
+        "WaitForTestServerSearchCommitted");
+  }
+
+ private:
+  static std::unique_ptr<net::test_server::HttpResponse> ServeSearchResultsPage(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().path() != "/search") {
+      return nullptr;
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_content_type("text/html");
+    response->set_content("<title>Search results</title>Search results");
+    return response;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxSrpDraftingInteractiveTest,
+                       DraftingFlowOnSrp) {
+  RunTestSequence(
+      // 1. Search for "cats" from the initial NTP to land on a Google SRP.
+      FocusOmniboxOnInitialNtp(kTab1), WaitForPopupActive(),
+      TypeWebUITextWithKeyPresses("cats"),
+      InAnyContext(WaitForWebUIInputValue("cats")),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion, "cats"),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_RETURN, ui::EF_NONE)
+                       .SetMustRemainVisible(false)),
+      WaitForTestServerSearchCommitted("cats"), WaitForWebContentsReady(kTab1),
+      WaitForPopupDismissed(), WaitForPopupState(OmniboxPopupState::kNone),
+      CheckUserInputInProgress(false), UninstrumentWebContents(kPopupWebView),
+      CheckPageClassification(&omnibox::IsSearchResultsPage),
+
+      // 2. Click the unfocused omnibox on the "cats" SRP and type "dogs" with
+      // real key presses; suggestions open.
+      ClickUnfocusedOmnibox(), WaitForPopupReady(), WaitForPopupActive(),
+      WaitForWebUIInputAllSelected(), WaitForPopupToStopForwardingMouseEvents(),
+      TypeWebUITextWithKeyPresses("dogs"),
+      InAnyContext(WaitForWebUIInputValue("dogs")), WaitForOmniboxText(u"dogs"),
+      CheckUserInputInProgress(true),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion, "dogs"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+
+      // 3. Click outside: dropdown closes, "dogs" draft stays with no focus
+      // ring.
+      ClickWebPageBody(kTab1),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      CheckPopupState(OmniboxPopupState::kFull),
+      WaitForVisibleOmniboxUnfocused(),
+      InAnyContext(WaitForWebUIInputValue("dogs")), WaitForOmniboxText(u"dogs"),
+      CheckUserInputInProgress(true),
+      InAnyContext(CheckWebUIInputSelection(0, 0)), WaitForNoWebUIFocusRing(),
+      CheckNoLocationBarFocusRing(),
+
+      // 4. Click back in: full text "dogs" is selected and dropdown stays
+      // closed.
+      ClickUnfocusedWebUIInput(), WaitForOmniboxFocus(true),
+      WaitForPopupActive(), InAnyContext(WaitForWebUIInputValue("dogs")),
+      InAnyContext(CheckWebUIInputSelection(0, 4)),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      WaitForInputWrapperFocusRing(true),
+
+      // 5. Click mid-word (offset 2): caret is placed there.
+      ClickWebUIInputAtCharOffset(2), WaitForOmniboxFocus(true),
+      InAnyContext(WaitForWebUIInputValue("dogs")),
+      InAnyContext(CheckWebUIInputSelection(2, 2)),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+
+      // 6. Type at the caret: text inserts in place and suggestions reopen.
+      TypeWebUITextWithKeyPresses("x"),
+      InAnyContext(WaitForWebUIInputValue("doxgs")),
+      InAnyContext(CheckWebUIInputSelection(3, 3)),
+      WaitForOmniboxText(u"doxgs"),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion, "doxgs"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FullWebUIOmniboxSrpDraftingInteractiveTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "WebUIToolbarEnabled"
