@@ -25,7 +25,7 @@ CARendererLayerParams::CARendererLayerParams(
     const gfx::HDRMetadata& hdr_metadata,
     gfx::ProtectedVideoType protected_video_type,
     bool is_render_pass_draw_quad,
-    std::vector<CABackdropFilter> backdrop_filters,
+    const CABackdropFilters& backdrop_filters,
     std::optional<gfx::RRectF> backdrop_filter_bounds,
     std::optional<gfx::RectF> backdrop_filter_clip)
     : is_clipped(is_clipped),
@@ -44,7 +44,7 @@ CARendererLayerParams::CARendererLayerParams(
       hdr_metadata(hdr_metadata),
       protected_video_type(protected_video_type),
       is_render_pass_draw_quad(is_render_pass_draw_quad),
-      backdrop_filters(std::move(backdrop_filters)),
+      backdrop_filters(backdrop_filters),
       backdrop_filter_bounds(std::move(backdrop_filter_bounds)),
       backdrop_filter_clip(std::move(backdrop_filter_clip)) {}
 

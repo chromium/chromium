@@ -997,14 +997,14 @@ CARendererLayerTree::ContentLayer::ContentLayer(
 
 CARendererLayerTree::ContentLayer::ContentLayer(
     TransformLayer* parent_layer,
-    std::vector<CABackdropFilter> backdrop_filters,
+    const CABackdropFilters& backdrop_filters,
     const gfx::RRectF& backdrop_filter_bounds,
     const std::optional<gfx::RectF>& backdrop_filter_clip)
     : parent_layer_(parent_layer),
       rect_(backdrop_filter_bounds.rect()),
       ca_filter_(kCAFilterLinear),
       type_(CALayerType::kBackdropFilter),
-      backdrop_filters_(std::move(backdrop_filters)),
+      backdrop_filters_(backdrop_filters),
       backdrop_filter_bounds_(backdrop_filter_bounds),
       backdrop_filter_clip_(backdrop_filter_clip) {}
 

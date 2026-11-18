@@ -236,7 +236,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     ContentLayer(TransformLayer* parent_layer,
                  const CARendererLayerParams& params);
     ContentLayer(TransformLayer* parent_layer,
-                 std::vector<CABackdropFilter> backdrop_filters,
+                 const CABackdropFilters& backdrop_filters,
                  const gfx::RRectF& backdrop_filter_bounds,
                  const std::optional<gfx::RectF>& backdrop_filter_clip);
 
@@ -292,7 +292,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     gfx::ProtectedVideoType protected_video_type_ =
         gfx::ProtectedVideoType::kClear;
 
-    std::vector<CABackdropFilter> backdrop_filters_;
+    CABackdropFilters backdrop_filters_;
     gfx::RRectF backdrop_filter_bounds_;
     std::optional<gfx::RectF> backdrop_filter_clip_;
 

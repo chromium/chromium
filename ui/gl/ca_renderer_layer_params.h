@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
@@ -56,6 +57,11 @@ struct GL_EXPORT CABackdropColorFilter {
 using CABackdropFilter =
     std::variant<CABackdropBlurFilter, CABackdropColorFilter>;
 
+// Because we expect at most two filter specifications (blur + color transform)
+// avoid heap allocations by using an inlined vector with low capacity. This
+// does result in slightly higher memory consumption and a few extra copies.
+using CABackdropFilters = absl::InlinedVector<CABackdropFilter, 2>;
+
 struct GL_EXPORT CARendererLayerParams {
   CARendererLayerParams(
       bool is_clipped,
@@ -74,7 +80,7 @@ struct GL_EXPORT CARendererLayerParams {
       const gfx::HDRMetadata& hdr_metadata,
       gfx::ProtectedVideoType protected_video_type,
       bool is_render_pass_draw_quad,
-      std::vector<CABackdropFilter> backdrop_filters = {},
+      const CABackdropFilters& backdrop_filters = {},
       std::optional<gfx::RRectF> backdrop_filter_bounds = std::nullopt,
       std::optional<gfx::RectF> backdrop_filter_clip = std::nullopt);
   CARendererLayerParams(const CARendererLayerParams& other);
@@ -96,7 +102,7 @@ struct GL_EXPORT CARendererLayerParams {
   gfx::HDRMetadata hdr_metadata;
   gfx::ProtectedVideoType protected_video_type;
   bool is_render_pass_draw_quad;
-  std::vector<CABackdropFilter> backdrop_filters;
+  CABackdropFilters backdrop_filters;
   // Clip bounds in RenderPass local space. Must be representable via native
   // CALayer cornerRadius + maskedCorners. If std::nullopt, defaults to `rect`.
   std::optional<gfx::RRectF> backdrop_filter_bounds;

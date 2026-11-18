@@ -55,7 +55,7 @@ struct CALayerProperties {
 
   bool allow_av_layers = true;
   bool allow_solid_color_layers = true;
-  std::vector<ui::CABackdropFilter> backdrop_filters;
+  ui::CABackdropFilters backdrop_filters;
   std::optional<gfx::RRectF> backdrop_filter_bounds;
   std::optional<gfx::RectF> backdrop_filter_clip;
 };
