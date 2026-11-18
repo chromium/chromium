@@ -80,6 +80,8 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     return {
       dropdownIsVisible: {type: Boolean, reflect: true},
       multiLineEnabled: {type: Boolean, reflect: true},
+      clipSelectionListbox:
+          {type: Boolean, reflect: true, attribute: 'clip-selection-listbox'},
       singleLineOnInlineAutocomplete: {type: Boolean},
       forceSingleLine_:
           {type: Boolean, reflect: true, attribute: 'force-single-line'},
@@ -113,6 +115,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
 
   accessor dropdownIsVisible: boolean = false;
   accessor multiLineEnabled: boolean = false;
+  accessor clipSelectionListbox: boolean = false;
   accessor singleLineOnInlineAutocomplete: boolean = false;
   accessor forceSingleLine_: boolean = false;
   accessor showEllipsis_: boolean = false;
