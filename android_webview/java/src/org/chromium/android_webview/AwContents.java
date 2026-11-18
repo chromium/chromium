@@ -424,6 +424,7 @@ public class AwContents implements SmartClipProvider {
     // Owned by mDestroyConsumer, which destroys it on destroyNatives() or when this is GC'ed.
     private @Nullable JniUniquePtr<NativeAwContents> mNativeAwContents;
     private AwBrowserContext mBrowserContext;
+    private @Nullable AwDownloadHandler mDownloadHandler;
     private ViewGroup mContainerView;
     private volatile ViewGroup mPrimaryContainerView;
     private AwDrawFnImpl mDrawFunctor;
@@ -4246,6 +4247,36 @@ public class AwContents implements SmartClipProvider {
     }
 
     /**
+     * Sets the handler for downloads started in this AwContents. While a handler is set, WebView
+     * runs the Chromium download engine for these downloads and hands each one to the handler as an
+     * {@link AwWebDownload}, which the handler saves with {@link AwWebDownload#saveTo} or rejects
+     * with {@link AwWebDownload#cancel()}. The legacy {@code DownloadListener} is not notified for
+     * downloads in this AwContents. Replaces any previously set handler.
+     *
+     * @see #clearDownloadHandler()
+     */
+    public void setDownloadHandler(AwDownloadHandler handler) {
+        ThreadUtils.assertOnUiThread();
+        if (TRACE) Log.i(TAG, "%s setDownloadHandler=%s", this, handler);
+        mDownloadHandler = handler;
+    }
+
+    /**
+     * Clears the handler set by {@link #setDownloadHandler}, restoring the legacy {@code
+     * DownloadListener} behavior for downloads started afterwards in this AwContents.
+     */
+    public void clearDownloadHandler() {
+        ThreadUtils.assertOnUiThread();
+        if (TRACE) Log.i(TAG, "%s clearDownloadHandler", this);
+        mDownloadHandler = null;
+    }
+
+    @CalledByNative
+    private boolean hasDownloadHandler() {
+        return mDownloadHandler != null;
+    }
+
+    /**
      * Inserts a {@link VisualStateCallback}.
      *
      * <p>The {@link VisualStateCallback} will be inserted in Blink and will be invoked when the
@@ -4396,6 +4427,28 @@ public class AwContents implements SmartClipProvider {
             @JniType("std::string") String path, long size, Callback<String> callback) {
         if (callback == null) return;
         AwThreadUtils.postToUiThreadLooper(callback.bind(size < 0 ? null : path));
+    }
+
+    @CalledByNative
+    private void onDownloadRequested(
+            JniUniquePtr<AwWebDownload.NativeAwWebDownload> nativeAwWebDownload,
+            @JniType("std::string") String url,
+            @JniType("std::string") String mimeType,
+            long contentLength,
+            @JniType("std::string") String suggestedFilename) {
+        AwWebDownload download =
+                new AwWebDownload(
+                        nativeAwWebDownload, url, mimeType, contentLength, suggestedFilename);
+        AwDownloadHandler handler = mDownloadHandler;
+        if (handler == null) {
+            download.cancel();
+            return;
+        }
+        // TODO(crbug.com/41474845): Block dangerous downloads by default instead of routing them
+        // to the embedder's handler.
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICallback.ON_DOWNLOAD_REQUESTED")) {
+            handler.onDownloadRequested(download);
+        }
     }
 
     @CalledByNative

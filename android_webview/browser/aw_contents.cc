@@ -22,6 +22,7 @@
 #include "android_webview/browser/aw_renderer_priority.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_web_contents_delegate.h"
+#include "android_webview/browser/aw_web_download.h"
 #include "android_webview/browser/content_restriction/aw_content_restriction_manager_client.h"
 #include "android_webview/browser/gfx/aw_picture.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
@@ -130,6 +131,7 @@
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -1761,6 +1763,32 @@ void AwContents::SetJsOnlineProperty(JNIEnv* env, bool network_up) {
           web_contents_->GetPrimaryMainFrame()->GetProcess());
 
   aw_render_process->SetJsOnlineProperty(network_up);
+}
+
+bool AwContents::HasDownloadHandler() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  return obj && Java_AwContents_hasDownloadHandler(env, obj);
+}
+
+void AwContents::OnDownloadRequested(std::unique_ptr<AwWebDownload> download,
+                                     const GURL& url,
+                                     const std::string& mime_type,
+                                     int64_t content_length,
+                                     const std::string& suggested_filename) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (!obj) {
+    return;
+  }
+  // The Java AwWebDownload owns the native object from here on and destroys it
+  // once the download is over, or once it is garbage collected. The Java peer
+  // cancels the download if the handler was cleared in the meantime.
+  Java_AwContents_onDownloadRequested(
+      env, obj, jni_zero::MakeUnique(std::move(download)), url.spec(),
+      mime_type, content_length, suggested_filename);
 }
 
 void AwContents::TrimMemory(JNIEnv* env, int32_t level, bool visible) {

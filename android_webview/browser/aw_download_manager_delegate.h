@@ -18,8 +18,12 @@ class WebContents;
 
 namespace android_webview {
 
-// Android WebView does not use Chromium downloads, so implement methods here to
-// unconditionally cancel the download.
+// Decides how downloads started in a WebView are handled. By default, WebView
+// does not run Chromium downloads: InterceptDownloadIfApplicable() cancels the
+// request and forwards it to the embedder's legacy DownloadListener. WebViews
+// with a download handler (see AwContents#setDownloadHandler) instead let the
+// Chromium download engine run, and DetermineDownloadTarget() hands each
+// download to the handler, which chooses where to save it.
 class AwDownloadManagerDelegate : public content::DownloadManagerDelegate,
                                   public base::SupportsUserData::Data {
  public:
@@ -32,6 +36,9 @@ class AwDownloadManagerDelegate : public content::DownloadManagerDelegate,
   ~AwDownloadManagerDelegate() override;
 
   // content::DownloadManagerDelegate implementation.
+  bool DetermineDownloadTarget(
+      download::DownloadItem* item,
+      download::DownloadTargetCallback* callback) override;
   bool InterceptDownloadIfApplicable(
       const GURL& url,
       const std::string& user_agent,

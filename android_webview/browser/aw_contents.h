@@ -39,6 +39,7 @@
 #include "content/public/common/child_process_id.h"
 #include "third_party/jni_zero/jni_zero.h"
 
+class GURL;
 class SkBitmap;
 
 namespace content {
@@ -57,6 +58,7 @@ namespace android_webview {
 
 class AwContentsClientBridge;
 class AwPdfExporter;
+class AwWebDownload;
 class AwWebContentsDelegate;
 class PermissionRequestHandler;
 
@@ -350,6 +352,19 @@ class AwContents : public FindHelper::Listener,
   void OnInputEvent(JNIEnv* env);
 
   void SetJsOnlineProperty(JNIEnv* env, bool network_up);
+
+  // Downloads. See AwContents#setDownloadHandler.
+  // Asks the Java peer whether a download handler is set.
+  bool HasDownloadHandler();
+  // Hands `download` to the Java peer, which takes ownership of it and passes
+  // it to the download handler, or cancels it if no handler is set. If the
+  // Java peer is gone, `download` is destroyed, which cancels the download.
+  void OnDownloadRequested(std::unique_ptr<AwWebDownload> download,
+                           const GURL& url,
+                           const std::string& mime_type,
+                           int64_t content_length,
+                           const std::string& suggested_filename);
+
   void TrimMemory(JNIEnv* env, int32_t level, bool visible);
 
   void GrantFileSchemeAccesstoChildProcess(JNIEnv* env);
