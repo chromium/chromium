@@ -215,7 +215,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     // LINT.ThenChange(//tools/metrics/histograms/metadata/custom_tabs/enums.xml:ContextualCustomActionType)
 
     static class ContextMenuUma {
-        // Note: these values must match the ContextMenuOptionAndroid enum in enums.xml.
+        // Note: these values must match the ContextMenuOptionAndroid enum in
+        // tools/metrics/histograms/metadata/android/enums.xml.
         // Only add values to the end, right before NUM_ENTRIES!
         // LINT.IfChange(ContextMenuUma.Action)
         @IntDef({
@@ -349,7 +350,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int NUM_ENTRIES = 63;
         }
 
-        // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
+        // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:ContextMenuOptionAndroid)
 
         /**
          * Records a histogram entry when the user selects an item from a context menu.

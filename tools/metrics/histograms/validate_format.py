@@ -27,6 +27,7 @@ _NAMESPACES_IN_MULTIPLE_FILES = [
   'autocomplete',
   'browser',
   'chromeos',
+  'contextmenu',
   'fcminvalidations',
   'graphics',
   'launch',

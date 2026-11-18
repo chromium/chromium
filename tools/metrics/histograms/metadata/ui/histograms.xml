@@ -36,23 +36,6 @@ chromium-metrics-reviews@google.com.
       summary="Aggregated metrics for ProfileMenuViewBase bubbles"/>
 </variants>
 
-<variants name="ContextMenuAndroidTypes">
-  <variant name="" summary=""/>
-  <variant name=".Image"
-      summary="The context menu was shown for a (non-link) image."/>
-  <variant name=".ImageLink"
-      summary="The context menu was shown for an image which is also a link."/>
-  <variant name=".Link"
-      summary="The context menu was shown for a (non-image) link"/>
-  <variant name=".LinkWithInterestFor"
-      summary="The context menu was shown for a link (image or non-image)
-               that has the `interestfor` attribute."/>
-  <variant name=".Page" summary="The context menu was shown for a page."/>
-  <variant name=".SharedHighlightingInteraction"
-      summary="The context menu was shown from tap on highlighted text."/>
-  <variant name=".Video" summary="The context menu was shown for a video"/>
-</variants>
-
 <!-- LINT.IfChange(CreationSource) -->
 
 <variants name="CreationSource">
@@ -294,37 +277,6 @@ chromium-metrics-reviews@google.com.
   <token key="BubbleName" variants="BubbleName"/>
 </histogram>
 
-<histogram name="ContextMenu.LensSupportStatus" enum="LensSupportStatus"
-    expires_after="2027-04-04">
-  <owner>benwgold@google.com</owner>
-  <owner>lens-chrome@google.com</owner>
-  <summary>
-    Whether the user supports the Lens intent and if not, the reason why.
-    Recorded only if the feature is enabled when the long-press context menu is
-    shown for an image.
-  </summary>
-</histogram>
-
-<histogram name="ContextMenu.SelectedOptionAndroid{Type}"
-    enum="ContextMenuOptionAndroid" expires_after="never">
-<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
-
-<!-- expires-never: part of vital metric ChromeSearch.Actions -->
-
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    {Type}
-
-    The option that the user selected from a context menu on Android. This is
-    logged on Android only; check out ContextMenu.SelectedOptionIOS for iOS, and
-    ContextMenu.SelectedOptionDesktop for desktop. Note that if a menu is
-    invoked on mixed content, only one of the submetrics receives the log; read
-    the code to determine which one.
-  </summary>
-  <token key="Type" variants="ContextMenuAndroidTypes"/>
-</histogram>
-
 <histogram name="ContextMenu.SelectedOptionDesktop{ContextMenuTypeDesktop}"
     enum="ContextMenuOptionDesktop" expires_after="2027-04-11">
   <owner>avi@chromium.org</owner>
@@ -350,27 +302,6 @@ chromium-metrics-reviews@google.com.
         summary="The context menu was shown for a text selection"/>
     <variant name=".Video" summary="The context menu was shown for a video"/>
   </token>
-</histogram>
-
-<histogram name="ContextMenu.Shown{Type}" enum="BooleanPresent"
-    expires_after="2027-04-11">
-  <owner>mpearson@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    {Type}
-
-    Recorded when a context menu is shown, sliced by whether a web contents was
-    present. (It generally should be; indeed, this code path should not be
-    followed when it is absent. For instance, invoking a context menu from the
-    new tab page or from the sad tab page will not cause an emission to this
-    histogram.) Note that this refers to link context menus, not the
-    cut-copy-paste context menus that can appear during long presses on text on
-    a web page or long presses in the omnibox. This is an Android-only metric;
-    compare with RenderViewContextMenu.Shown and RenderViewContextMenu.Used on
-    desktop.
-  </summary>
-  <token key="Type" variants="ContextMenuAndroidTypes"/>
 </histogram>
 
 <histogram name="ContextMenu.ViewsTextServices.Emoji" enum="Boolean"

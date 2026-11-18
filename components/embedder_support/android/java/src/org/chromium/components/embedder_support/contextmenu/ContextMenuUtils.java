@@ -205,8 +205,8 @@ public final class ContextMenuUtils {
 
     /**
      * Get the suffix for the context menu type determined by the params. Histogram values should
-     * match with the values defined in tools/metrics/histograms/metadata/ui/histograms.xml under
-     * ContextMenuAndroidTypes.
+     * match with the values defined in tools/metrics/histograms/metadata/android/histograms.xml
+     * under ContextMenuAndroidTypes.
      *
      * @param params The list of params for the opened context menu.
      * @return A string value for the histogram suffix.
