@@ -1202,6 +1202,9 @@ public class WindowAndroid
     @CalledByNative
     @Override
     public void destroy() {
+        if (mInsetObserver != null && mWindowInsetObserver != null) {
+            mInsetObserver.removeObserver(mWindowInsetObserver);
+        }
         long now = SystemClock.uptimeMillis();
         // This is safe to call even if the window was not occluded before destruction.
         updateMetricsOnUnoccluded();
