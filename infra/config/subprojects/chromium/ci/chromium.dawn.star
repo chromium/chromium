@@ -564,7 +564,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "dawn_chromium_isolated_scripts",
+            "dawn_chromium_isolated_scripts_hardware",
             "gpu_common_gtests_passthrough",
             "gpu_dawn_compat_telemetry_tests",
         ],
@@ -592,10 +592,6 @@ ci.thin_tester(
             ),
             # ci_only for bots where capacity is constrained.
             "webgpu_cts_with_validation_tests": targets.mixin(
-                ci_only = True,
-            ),
-            # ci_only for bots where capacity is constrained.
-            "webgpu_swiftshader_web_platform_cts_with_validation_tests": targets.mixin(
                 ci_only = True,
             ),
         },
@@ -634,7 +630,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "dawn_chromium_isolated_scripts",
+            "dawn_chromium_isolated_scripts_hardware",
             "gpu_common_gtests_passthrough",
             "gpu_dawn_compat_telemetry_tests",
         ],
@@ -683,7 +679,10 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     targets = targets.bundle(
-        targets = [],
+        targets = [
+            "dawn_chromium_isolated_scripts_software",
+            "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
+        ],
         mixins = [
             "gpu_linux_gce_stable",
         ],
@@ -1236,10 +1235,6 @@ ci.thin_tester(
             # "webgpu_cts_with_validation_tests": targets.mixin(
             #     ci_only = True,
             # ),
-            # # ci_only for bots where capacity is constrained.
-            # "webgpu_swiftshader_web_platform_cts_with_validation_tests": targets.mixin(
-            #     ci_only = True,
-            # ),
         },
     ),
     targets_settings = targets.settings(
@@ -1321,7 +1316,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "dawn_chromium_isolated_scripts",
+            "dawn_chromium_isolated_scripts_hardware",
             "gpu_common_gtests_passthrough",
             "gpu_dawn_compat_telemetry_tests",
             "gpu_dawn_webgpu_cts_default_features",
@@ -1353,10 +1348,6 @@ ci.thin_tester(
             ),
             # ci_only for bots where capacity is constrained.
             "webgpu_cts_with_validation_tests": targets.mixin(
-                ci_only = True,
-            ),
-            # ci_only for bots where capacity is constrained.
-            "webgpu_swiftshader_web_platform_cts_with_validation_tests": targets.mixin(
                 ci_only = True,
             ),
         },
@@ -1393,7 +1384,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "dawn_chromium_isolated_scripts",
+            "dawn_chromium_isolated_scripts_hardware",
             "gpu_common_gtests_passthrough",
             "gpu_dawn_compat_telemetry_tests",
         ],
@@ -1443,7 +1434,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "dawn_chromium_isolated_scripts",
+            "dawn_chromium_isolated_scripts_hardware",
             "gpu_common_gtests_passthrough",
             "gpu_dawn_compat_telemetry_tests",
         ],
@@ -1490,7 +1481,10 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     targets = targets.bundle(
-        targets = [],
+        targets = [
+            "dawn_chromium_isolated_scripts_software",
+            "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
+        ],
         mixins = [
             "gpu_linux_gce_stable",
         ],

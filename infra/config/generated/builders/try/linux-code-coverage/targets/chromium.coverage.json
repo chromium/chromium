@@ -2142,8 +2142,8 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
         "isolate_profile_data": true,

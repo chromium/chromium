@@ -2219,7 +2219,6 @@ targets.mixin(
         "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
     ],
     linux_args = [
-        "--no-xvfb",
         "--additional-driver-flag=--enable-features=Vulkan",
     ],
     merge = targets.merge(

@@ -2322,8 +2322,22 @@ targets.bundle(
 targets.bundle(
     name = "dawn_chromium_isolated_scripts",
     targets = [
-        "gpu_dawn_common_isolated_scripts",
+        "dawn_chromium_isolated_scripts_hardware",
+        "dawn_chromium_isolated_scripts_software",
+    ],
+)
+
+targets.bundle(
+    name = "dawn_chromium_isolated_scripts_hardware",
+    targets = [
         "gpu_dawn_webgpu_blink_web_tests",
+    ],
+)
+
+targets.bundle(
+    name = "dawn_chromium_isolated_scripts_software",
+    targets = [
+        "gpu_dawn_common_isolated_scripts",
         "gpu_dawn_webgpu_blink_web_tests_force_swiftshader",
     ],
 )
@@ -3528,7 +3542,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_dawn_compat_telemetry_tests",
     targets = [
-        "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
         "gpu_dawn_webgpu_compat_cts",
         "gpu_dawn_webgpu_cts",
     ],
@@ -3754,6 +3767,10 @@ targets.bundle(
                     "--use-webgpu-adapter=swiftshader",
                     "--test-filter=*web_platform*",
                 ],
+                linux_args = [
+                    "--xvfb",
+                    "--extra-browser-args=--use-vulkan=swiftshader --use-angle=swiftshader",
+                ],
                 swarming = targets.swarming(
                     shards = 2,
                 ),
@@ -3768,6 +3785,10 @@ targets.bundle(
                     "--use-webgpu-adapter=swiftshader",
                     "--test-filter=*web_platform*",
                     "--enable-dawn-backend-validation",
+                ],
+                linux_args = [
+                    "--xvfb",
+                    "--extra-browser-args=--use-vulkan=swiftshader --use-angle=swiftshader",
                 ],
                 swarming = targets.swarming(
                     shards = 2,
@@ -3792,6 +3813,9 @@ targets.bundle(
                 args = [
                     "--flag-specific=webgpu",
                 ],
+                linux_args = [
+                    "--no-xvfb",
+                ],
             ),
             "webgpu_cts",
         ],
@@ -3801,6 +3825,9 @@ targets.bundle(
                     "--flag-specific=webgpu-with-backend-validation",
                     # Increase the timeout when using backend validation layers (crbug.com/1208253)
                     "--timeout-ms=30000",
+                ],
+                linux_args = [
+                    "--no-xvfb",
                 ],
             ),
             "webgpu_cts",
@@ -3820,6 +3847,10 @@ targets.bundle(
                 args = [
                     "--flag-specific=webgpu-swiftshader",
                 ],
+                linux_args = [
+                    "--additional-driver-flag=--use-vulkan=swiftshader",
+                    "--additional-driver-flag=--use-angle=swiftshader",
+                ],
             ),
             "webgpu_cts",
         ],
@@ -3829,6 +3860,10 @@ targets.bundle(
                     "--flag-specific=webgpu-swiftshader-with-backend-validation",
                     # Increase the timeout when using backend validation layers (crbug.com/1208253)
                     "--timeout-ms=30000",
+                ],
+                linux_args = [
+                    "--additional-driver-flag=--use-vulkan=swiftshader",
+                    "--additional-driver-flag=--use-angle=swiftshader",
                 ],
             ),
             "webgpu_cts",
