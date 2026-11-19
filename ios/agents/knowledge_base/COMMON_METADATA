@@ -46,6 +46,113 @@ agentic_review {
   exclude_rules: "styleguide/c++/knowledge_base/types/prefer-using-over-typedef.md"
 
   capability_groups {
+    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "@protocol\\s+\\w*DataSource\\b"
+    content_patterns: "-\\s*\\([^)]+\\)\\s*\\w*[Dd]ataSource\\s*:\\s*\\([^)]+\\)"
+    content_patterns: ":\\s*\\([^)\\n]*\\b\\w*(?:ViewController|View|DataSource|Mediator)\\s*\\*?\\s*\\)"
+    content_patterns: ":\\s*\\([^)]*\\bid\\b[^)]*\\)\\s*(?:dataSource|consumerDataSource)\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/consumer-data-source-only-for-interaction-queries.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "-\\s*\\([^)]+\\)\\s*(?:remove|update|delete|insert|reload|replace)\\w*\\s*:\\s*\\([^)]*\\b(?:NSU?Integer|int|size_t)\\b"
+    content_patterns: "\\b\\w*[Aa]t(?:Index|Indexes|IndexPath|Row)s?\\s*:\\s*\\([^)]*\\b(?:NSU?Integer|int|size_t|NSIndexSet|NSIndexPath)\\b"
+    content_patterns: "\\b(?:remove|update|delete|insert|reload|replace)\\w*At(?:Index|Row)\\s*:"
+    content_patterns: "\\b(?:index|itemIndex|rowIndex)\\s*:\\s*\\([^)]*\\b(?:NSU?Integer|int|size_t)\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/consumer-protocol-identify-items-by-stable-id-not-index.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "-\\s*\\([^)]+\\)\\s*(?:add|increment|append|adjust)\\w*\\s*:\\s*\\([^)]*\\b(?:int\\w*|uint\\w*|float|double|NSInteger|NSUInteger|CGFloat)\\b"
+    content_patterns: "-\\s*\\([^)]+\\)\\s*(?:add|increment)\\w*(?:Bytes|Count|Size|Progress|Offset|Amount|Value)\\s*:"
+    content_patterns: "-\\s*\\([^)]+\\)\\s*\\w*(?:Delta|Increment|Relative)\\w*\\s*:"
+    content_patterns: ":\\s*\\([^)]+\\)\\s*\\w*(?:Delta|Increment)\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/consumer-protocol-state-independence-complete-values.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: ":\\s*\\([^)]*\\bstd::(?:u16)?string(?:_view)?\\b"
+    content_patterns: "-\\s*\\([^)]*\\bstd::(?:u16)?string(?:_view)?\\b[^)]*\\)"
+    content_patterns: "@property\\s*\\([^)]*\\)\\s*[^;]*\\bstd::(?:u16)?string(?:_view)?\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/consumer-protocols-no-cpp-strings.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\b(?:const\\s+)?(?:TabGroup|BookmarkNode|WebState)\\s*\\*"
+    content_patterns: "\\b(?:bookmarks|syncer)::[A-Za-z0-9_]+|\\bweb::(?:WebState|NavigationManager|NavigationItem|NavigationContext|WebFramesManager|WebFrame|BrowserState|CertPolicy|FaviconStatus|SSLStatus)\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/consumer-protocols-pass-simple-value-types-not-model-objects.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\b(?:weakSelf|strongSelf|weak_self|strong_self|self)\\s*->"
+    content_patterns: "\\b(?:strongSelf|strong_self)\\s*=\\s*(?:weakSelf|weak_self)\\b"
+    content_patterns: "\\[(?:weakSelf|weak_self)\\s+[a-zA-Z0-9_]+"
+    content_patterns: "\\b(?:__strong\\s+)?(?:__)?typeof(?:__)?\\s*\\([^)]*weakSelf[^)]*\\)\\s*strongSelf\\b"
+    content_patterns: "\\b[A-Za-z0-9_]*(?:[Cc]ompletion|[Cc]allback|[Hh]andler|[Aa]ction|[Bb]lock|[Pp]rovider)\\w*\\s*[:=]\\s*(?:\\([^)\\n]*\\)\\s*)?\\^"
+    content_patterns: "\\b(?:weakSelf|weak_self)\\s*=\\s*self\\b"
+    content_patterns: "\\bbase::Bind(?:Once|Repeating)\\s*\\(\\s*\\^"
+    content_patterns: "(?:[:=(,\\[]|\\breturn\\s+|  )\\s*\\^\\s*(?:[A-Za-z_]\\w*(?:<[^>\\n]*>)?\\s*\\**\\s*)?(?:\\(|\\{)"
+    rules: "ios/agents/knowledge_base/rules/general/blocks-must-be-kept-short-single-method-call.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\bid<[^>\\n]*\\b\\w+Commands\\b"
+    content_patterns: "\\bOCM(?:Strict)?ProtocolMock\\(@protocol\\([A-Za-z0-9_]+Commands\\)\\)"
+    content_patterns: "\\bHandlerForProtocol\\s*\\("
+    content_patterns: "@protocol\\s+[A-Za-z0-9_]+Handler\\b"
+    content_patterns: "\\b[a-zA-Z0-9_]*(?:[cC]ommand|[cC]ommands)[_]?[hH]andler\\b"
+    content_patterns: "(?::\\s*\\((?:[^()\\n]|\\([^()\\n]*\\))*?(?:\\(\\s*\\^[^()\\n]*\\)|\\b\\w*Block(?:[A-Z]\\w*)?\\b)(?:[^()\\n]|\\([^()\\n]*\\))*\\)|\\)\\s*\\))\\s*\\w*[Hh]andler\\b"
+    content_patterns: "\\bGet\\w+Commands?Dispatcher\\s*\\("
+    rules: "ios/agents/knowledge_base/rules/chrome/command-handler-property-naming-convention.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*coordinator[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "-\\s*\\(void\\)\\s*(?:stop\\b|stopAnimated:)"
+    content_patterns: "\\[(?:_?[A-Za-z0-9_]*Coordinator|self)\\s+(?:stop\\s*\\]|stopAnimated:)"
+    content_patterns: "\\[_?[A-Za-z0-9_]*[Mm]ediator\\s+disconnect\\]"
+    content_patterns: "\\b_?[A-Za-z0-9_]*(?:[Mm]ediator|[Cc]oordinator)\\s*=\\s*nil\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/coordinator-teardown-disconnects-mediator-in-stop.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.m"
+    path_expression_exclusion: "ios/third_party/.*"
+    path_expression_exclusion: "ios/web_view/shell/.*"
+    rules: "ios/agents/knowledge_base/rules/general/all-ios-source-files-must-be-objective-cpp.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*_egtest\\.mm"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\b(?:AppLaunchConfiguration|appConfigurationForTestCase)\\b"
+    content_patterns: "\\bfeatures_(?:enabled|disabled)\\b"
+    content_patterns: "\\b(?:base::test::)?ScopedFeatureList\\b"
+    content_patterns: "\\b(?:base::)?FeatureList::IsEnabled\\b"
+    content_patterns: "(?:\\badditional_args\\b|--(?:enable|disable)-features=)"
+    content_patterns: "\\bensureAppLaunchedWith(?:Configuration|FeaturesEnabled)\\b"
+    content_patterns: "\\bAppLaunchManager\\b"
+    content_patterns: "\\bisRunningTest:\\s*@selector\\b"
+    content_patterns: "\\b(?:relaunchApp|relaunchForTestCase|relaunchWithAppConfiguration)\\b"
+    rules: "ios/agents/knowledge_base/rules/general/app-configuration-for-egtest-feature-flags.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*coordinator[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\b(?:_|self\\.)viewController\\.(?:hide|hidden|show|is|should|has|set|may|enable|disable)[A-Za-z0-9_]*\\s*="
+    content_patterns: "\\b\\w+BrowserAgent::FromBrowser\\([^;\\n]*\\)->"
+    content_patterns: "\\b\\w+(?:Service|Manager)?Factory::GetFor(?:Profile|BrowserState)\\([^;\\n]*\\)->"
+    content_patterns: "\\b(?:NSNotificationCenter|UIPasteboard|ClipboardRecentContent)\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/coordinator-does-not-drive-mediator-business-logic.md"
+  }
+  capability_groups {
     path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "@property[^;\\n]*\\b(?:Browser|ProfileIOS|AppState|ProfileState|SceneState|ApplicationContext|CommandDispatcher)\\s*\\*"
@@ -128,5 +235,70 @@ agentic_review {
     content_patterns: "\\bfor\\s*\\(\\s*(?:__(?:strong|weak)\\s+)?(?:[A-Z]\\w*\\s*\\*|id)\\s*\\w+\\s+in\\s+(?:[^)\\n]*\\.subviews\\b|\\[[^\\]\\n]*\\bsubviews\\])"
     content_patterns: "\\b[A-Z]\\w*(?:<[^>\\n]*>)?\\s*\\*\\s*Find[A-Z]\\w*\\s*\\(\\s*UIView\\s*\\*"
     rules: "ios/agents/knowledge_base/rules/chrome/use-uikit-test-util-for-view-lookup.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
+    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    path_expression_exclusion: ".*_command\\.h"
+    path_expression_exclusion: "ios/chrome/browser/shared/public/commands/command_dispatcher\\.h"
+    content_patterns: ":\\s*\\((?:[^()\\n]|\\([^()\\n]*\\))+\\)\\s*\\w+\\s+[A-Za-z_]\\w*\\s*:"
+    content_patterns: "  [A-Za-z_]\\w*\\s*:\\s*\\((?:[^()\\n]|\\([^()\\n]*\\))+\\)\\s*\\w+\\s*(?:;|$)"
+    rules: "ios/agents/knowledge_base/rules/chrome/bundle-complex-command-parameters-into-command-objects.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
+    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    path_expression_exclusion: ".*_command\\.(?:h|mm)"
+    path_expression_exclusion: "ios/chrome/browser/shared/public/commands/command_dispatcher\\.(?:h|mm)"
+    content_patterns: "[-+]\\s*\\(\\s*(?:[^v)\\s]|v[^o)\\s]|vo[^i)\\s]|voi[^d)\\s]|void\\s*\\*|void\\w)[^)]*\\)"
+    rules: "ios/agents/knowledge_base/rules/chrome/command-methods-must-return-void.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
+    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    path_expression_exclusion: ".*_command\\.(?:h|mm)"
+    path_expression_exclusion: "ios/chrome/browser/shared/public/commands/command_dispatcher\\.(?:h|mm)"
+    content_patterns: "@protocol\\s+\\w+Commands\\s*<[^>\\n]*\\b\\w+Commands\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/command-protocols-flat-no-protocol-inheritance.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
+    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    path_expression_exclusion: ".*_command\\.(?:h|mm)"
+    path_expression_exclusion: "ios/chrome/browser/shared/public/commands/command_dispatcher\\.(?:h|mm)"
+    content_patterns: ":\\s*\\(\\s*(?:__\\w+\\s+)?UI[A-Z]\\w*\\s*\\*"
+    content_patterns: ":\\s*\\(\\s*(?:const\\s+)?(?:CG(?:Point|Rect|Size|Vector)|UIEdgeInsets|NSDirectionalEdgeInsets)\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/commands-pass-minimal-context-not-ui-or-geometry.md"
+  }
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*commands[^/]*\\.h"
+    path_expression: "ios/chrome/browser/shared/public/commands/(?:.*/)?[^/]*\\.h"
+    path_expression_exclusion: "ios/third_party/.*"
+    path_expression_exclusion: ".*_command\\.(?:h|mm)"
+    path_expression_exclusion: "ios/chrome/browser/shared/public/commands/command_dispatcher\\.(?:h|mm)"
+    content_patterns: "-\\s*\\(\\s*void\\s*\\)\\s*(?:load|reload|navigate|goBack|goForward|add|create|insert|update|modify|edit|delete|remove|clear|save|store|persist|set|mark|toggle|record|sync|fetch)[A-Z]\\w*"
+    content_patterns: ":\\s*\\([^)]*\\b(?:WebState|WebStateList|BookmarkNode|PrefService|TemplateURL|HistoryService)\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/commands-strictly-for-ui-transitions-not-model-mutations.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/(?:.*/)?[^/]*coordinator[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\[\\s*(?:self|weakSelf)\\s+(?:stop|start|workflowEnded)\\b"
+    content_patterns: "\\[\\s*(?:self|weakSelf)\\.baseViewController\\s+dismissViewControllerAnimated:"
+    rules: "ios/agents/knowledge_base/rules/chrome/coordinators-do-not-own-lifecycle.md"
+  }
+  capability_groups {
+    path_expression: "ios/chrome/browser/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/(?:.*/)?[^/]*test[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "\\b(?:_|self\\.)[A-Za-z0-9_]*Coordinator\\.(?:viewController|baseViewController)\\.[a-zA-Z0-9_]+\\s*="
+    content_patterns: "\\b(?:_|self\\.)[A-Za-z0-9_]*Coordinator\\.[A-Za-z0-9_]*(?:ViewController|Controller|BVC)\\s*="
+    content_patterns: "\\b(?:_|self\\.)[A-Za-z0-9_]*Coordinator\\.viewController\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/coordinator-view-controller-property-for-containment-only.md"
   }
 }
