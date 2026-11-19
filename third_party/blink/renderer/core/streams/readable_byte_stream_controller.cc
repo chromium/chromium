@@ -1865,12 +1865,17 @@ void ReadableByteStreamController::PullSteps(ScriptState* script_state,
   // 5. If autoAllocateChunkSize is not undefined,
   if (auto_allocate_chunk_size) {
     //   a. Let buffer be Construct(%ArrayBuffer%, « autoAllocateChunkSize »).
-    auto* buffer = DOMArrayBuffer::Create(auto_allocate_chunk_size, 1);
+    auto* buffer = DOMArrayBuffer::CreateOrNull(auto_allocate_chunk_size, 1);
     //   b. If buffer is an abrupt completion,
     //     i. Perform readRequest’s error steps, given buffer.[[Value]].
     //     ii. Return.
-    //   This is not needed as DOMArrayBuffer::Create() is designed to
-    //   crash if it cannot allocate the memory.
+    if (!buffer) {
+      read_request->ErrorSteps(
+          script_state,
+          V8ThrowException::CreateRangeError(script_state->GetIsolate(),
+                                             "Array buffer allocation failed"));
+      return;
+    }
 
     //   c. Let pullIntoDescriptor be a new pull-into descriptor with:
     //      buffer              buffer.[[Value]],

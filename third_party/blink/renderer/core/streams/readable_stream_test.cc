@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "partition_alloc/partition_alloc.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -22,7 +23,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_byob_reader_read_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_get_reader_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_iterator_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_stream_pipe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_readablestreambyobreader_readablestreamdefaultreader.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
@@ -35,6 +38,7 @@
 #include "third_party/blink/renderer/core/streams/test_utils.h"
 #include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
+#include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -1395,6 +1399,165 @@ TEST_F(ReadableByteStreamTest, CloseStream) {
   EXPECT_FALSE(Stream()->IsReadable());
   EXPECT_TRUE(Stream()->IsClosed());
   EXPECT_FALSE(Stream()->IsErrored());
+}
+
+constexpr char kAllocationFailedMessage[] = "Array buffer allocation failed";
+
+bool IsRangeError(ScriptState* script_state,
+                  ScriptValue value,
+                  const String& message) {
+  v8::Local<v8::Object> object;
+  if (!value.V8Value()->ToObject(script_state->GetContext()).ToLocal(&object)) {
+    return false;
+  }
+  if (!object->IsNativeError()) {
+    return false;
+  }
+
+  const auto& Has = [script_state, object](const String& key,
+                                           const String& expected) -> bool {
+    v8::Local<v8::Value> actual;
+    return object
+               ->Get(script_state->GetContext(),
+                     V8AtomicString(script_state->GetIsolate(), key))
+               .ToLocal(&actual) &&
+           ToCoreStringWithUndefinedOrNullCheck(script_state->GetIsolate(),
+                                                actual) == expected;
+  };
+
+  return Has("name", "RangeError") && Has("message", message);
+}
+
+ReadableStream* CreateOversizedAutoAllocateByteStream(
+    V8TestingScope& scope,
+    size_t auto_allocate_chunk_size) {
+  v8::Isolate* isolate = scope.GetIsolate();
+  v8::Local<v8::Context> context = scope.GetContext();
+  EXPECT_TRUE(context->Global()
+                  ->Set(context, V8String(isolate, "chunkSize"),
+                        v8::Number::New(isolate, static_cast<double>(
+                                                     auto_allocate_chunk_size)))
+                  .IsJust());
+  ScriptValue stream_val =
+      EvalWithPrintingError(&scope,
+                            "new ReadableStream({"
+                            "  type: 'bytes',"
+                            "  autoAllocateChunkSize: chunkSize,"
+                            "  pull(controller) {"
+                            "    if (controller.byobRequest) {"
+                            "      controller.byobRequest.view[0] = 42;"
+                            "      controller.byobRequest.respond(1);"
+                            "    }"
+                            "  }"
+                            "})");
+  return V8ReadableStream::ToWrappable(isolate, stream_val.V8Value());
+}
+
+TEST_F(ReadableByteStreamTest, AutoAllocateChunkSizeTooLargeReadRejects) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  ReadableStream* stream = CreateOversizedAutoAllocateByteStream(
+      scope, partition_alloc::MaxAllocationSize() + 1);
+  ASSERT_TRUE(stream);
+  EXPECT_TRUE(stream->IsReadable());
+  EXPECT_FALSE(stream->IsErrored());
+
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester read_tester(
+      script_state, reader->read(script_state, ASSERT_NO_EXCEPTION));
+  read_tester.WaitUntilSettled();
+
+  EXPECT_TRUE(read_tester.IsRejected());
+  EXPECT_TRUE(IsRangeError(script_state, read_tester.Value(),
+                           kAllocationFailedMessage));
+  EXPECT_TRUE(stream->IsReadable());
+  EXPECT_FALSE(stream->IsErrored());
+
+  reader->releaseLock(script_state, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(stream->IsLocked());
+
+  // Subsequent reads via a BYOB reader with a small view still work.
+  auto* byob_reader =
+      stream->GetBYOBReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+  NotShared<DOMArrayBufferView> view =
+      NotShared<DOMUint8Array>(DOMUint8Array::Create(1));
+  ScriptPromiseTester byob_read_tester(
+      script_state,
+      byob_reader->read(script_state, view,
+                        ReadableStreamBYOBReaderReadOptions::Create(),
+                        ASSERT_NO_EXCEPTION));
+  byob_read_tester.WaitUntilSettled();
+  ASSERT_TRUE(byob_read_tester.IsFulfilled());
+  EXPECT_THAT(GetReadResultBytes(script_state, byob_read_tester.Value()),
+              testing::ElementsAre(42));
+}
+
+TEST_F(ReadableByteStreamTest, AutoAllocateChunkSizeTooLargePipeToRejects) {
+  const auto run_pipe_to_case = [](bool prevent_abort) {
+    SCOPED_TRACE(prevent_abort ? "preventAbort=true" : "preventAbort=false");
+    V8TestingScope scope;
+    auto* script_state = scope.GetScriptState();
+    ReadableStream* stream = CreateOversizedAutoAllocateByteStream(
+        scope, partition_alloc::MaxAllocationSize() + 1);
+    ASSERT_TRUE(stream);
+    WritableStream* writable =
+        WritableStream::Create(script_state, ASSERT_NO_EXCEPTION);
+    ASSERT_TRUE(writable);
+
+    auto* options = StreamPipeOptions::Create();
+    options->setPreventAbort(prevent_abort);
+    ScriptPromiseTester pipe_tester(
+        script_state,
+        stream->pipeTo(script_state, writable, options, ASSERT_NO_EXCEPTION));
+    pipe_tester.WaitUntilSettled();
+
+    EXPECT_TRUE(pipe_tester.IsRejected());
+    EXPECT_TRUE(IsRangeError(script_state, pipe_tester.Value(),
+                             kAllocationFailedMessage));
+    EXPECT_FALSE(stream->IsLocked());
+    EXPECT_TRUE(stream->IsReadable());
+    EXPECT_FALSE(stream->IsErrored());
+    EXPECT_FALSE(writable->locked());
+    if (prevent_abort) {
+      EXPECT_TRUE(writable->IsWritable());
+    } else {
+      EXPECT_TRUE(writable->IsErrored());
+      EXPECT_TRUE(IsRangeError(
+          script_state,
+          ScriptValue(scope.GetIsolate(),
+                      writable->GetStoredError(scope.GetIsolate())),
+          kAllocationFailedMessage));
+    }
+  };
+
+  run_pipe_to_case(/*prevent_abort=*/false);
+  run_pipe_to_case(/*prevent_abort=*/true);
+}
+
+TEST_F(ReadableByteStreamTest,
+       AutoAllocateChunkSizeTooLargeAsyncIterationRejects) {
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  ReadableStream* stream = CreateOversizedAutoAllocateByteStream(
+      scope, partition_alloc::MaxAllocationSize() + 1);
+  ASSERT_TRUE(stream);
+
+  auto* iterator = stream->valuesForBinding(
+      script_state, ReadableStreamIteratorOptions::Create(),
+      ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(iterator);
+  EXPECT_TRUE(stream->IsLocked());
+
+  ScriptPromiseTester next_tester(script_state, iterator->next(script_state));
+  next_tester.WaitUntilSettled();
+
+  EXPECT_TRUE(next_tester.IsRejected());
+  EXPECT_TRUE(IsRangeError(script_state, next_tester.Value(),
+                           kAllocationFailedMessage));
+  EXPECT_FALSE(stream->IsLocked());
+  EXPECT_TRUE(stream->IsReadable());
+  EXPECT_FALSE(stream->IsErrored());
 }
 
 }  // namespace

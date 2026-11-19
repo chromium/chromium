@@ -66,8 +66,7 @@ class PipeToEngine::PipeToReadRequest final : public ReadRequest {
       // released. Exit early in that case.
       return;
     }
-    instance_->ReadableError(
-        instance_->Readable()->GetStoredError(script_state->GetIsolate()));
+    instance_->ReadableError(e);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -393,8 +392,15 @@ void PipeToEngine::ReadableError(v8::Local<v8::Value> error) {
   // a. If preventAbort is false, shutdown with an action of !
   //    WritableStreamAbort(dest, source.[[storedError]]) and with
   //    source.[[storedError]].
-  DCHECK(error->SameValue(
-      Readable()->GetStoredError(script_state_->GetIsolate())));
+  //
+  // Note: |error| matches source.[[storedError]] when source is errored,
+  // whereas PullSteps autoAllocateChunkSize allocation failure errors only
+  // the ReadRequest without erroring source. Shutting down the pipe with
+  // |error| in that case intentionally avoids hanging when source does not
+  // transition to "errored".
+  DCHECK(!ReadableStream::IsErrored(Readable()) ||
+         error->SameValue(
+             Readable()->GetStoredError(script_state_->GetIsolate())));
   if (!pipe_options_->PreventAbort()) {
     ShutdownWithAction(&PipeToEngine::WritableStreamAbortAction, error);
   } else {
