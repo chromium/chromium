@@ -12501,6 +12501,11 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS" desc="Text informing the user about keys not available for binding.">
         The following keys aren’t supported: Tab, Shift, Control, Escape, Caps lock, Volume
       </message>
+
+      <!-- Gaia loading screen -->
+      <message name="IDS_LOGIN_GAIA_LOADING_MESSAGE" desc="Message on the OOBE gaia loading screen">
+        Please wait...
+      </message>
     </messages>
   </release>
 </grit>
