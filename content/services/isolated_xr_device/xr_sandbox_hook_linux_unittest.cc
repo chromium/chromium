@@ -6,7 +6,6 @@
 
 #include <dlfcn.h>
 #include <fcntl.h>
-#include <gnu/libc-version.h>
 
 #include <algorithm>
 #include <optional>
@@ -130,8 +129,12 @@ class XrSandboxHookLinuxLoaderTest : public testing::Test {
  protected:
   // libc stands in for a runtime the hook already loaded by its real path.
   static base::FilePath LibcPath() {
+    // Look up the symbol via dlsym() rather than taking &gnu_get_libc_version:
+    // under CFI-icall, a function pointer can resolve to a local jump table
+    // entry in this binary instead of libc.so.
+    void* sym = dlsym(RTLD_DEFAULT, "gnu_get_libc_version");
     Dl_info info;
-    if (!dladdr(reinterpret_cast<void*>(&gnu_get_libc_version), &info)) {
+    if (!sym || !dladdr(sym, &info)) {
       return base::FilePath();
     }
     return base::MakeAbsoluteFilePath(base::FilePath(info.dli_fname));
