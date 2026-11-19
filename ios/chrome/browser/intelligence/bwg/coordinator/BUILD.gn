@@ -67,6 +67,22 @@ source_set("container_mediator") {
   ]
 }
 
+source_set("actuation_worklog_builders") {
+  sources = [
+    "gemini_actuation_worklog_builders.h",
+    "gemini_actuation_worklog_builders.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/actor/ui",
+    "//ios/chrome/browser/intelligence/bwg/model",
+    "//ios/chrome/browser/intelligence/bwg/model:custom_ui",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+  ]
+}
+
 source_set("actor_task_store") {
   sources = [
     "gemini_actor_task_store.h",
@@ -80,6 +96,7 @@ source_set("actor_task_store") {
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
   ]
   deps = [
+    ":actuation_worklog_builders",
     "//base",
     "//components/actor/core",
     "//components/autofill/core/browser",
@@ -169,6 +186,7 @@ source_set("unit_tests") {
   sources = [
     "gemini_actor_task_store_manager_unittest.mm",
     "gemini_actor_task_store_unittest.mm",
+    "gemini_actuation_worklog_builders_unittest.mm",
     "gemini_container_coordinator_unittest.mm",
     "gemini_container_mediator_unittest.mm",
     "gemini_container_ui_state_manager_unittest.mm",
@@ -178,6 +196,7 @@ source_set("unit_tests") {
 
   deps = [
     ":actor_task_store",
+    ":actuation_worklog_builders",
     ":container_mediator",
     ":coordinator",
     "//base",
@@ -217,6 +236,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/bwg/model",
     "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
     "//ios/chrome/browser/intelligence/bwg/model:config",
+    "//ios/chrome/browser/intelligence/bwg/model:custom_ui",
     "//ios/chrome/browser/intelligence/bwg/model:gateway_manager",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/intelligence/bwg/model:page_context",

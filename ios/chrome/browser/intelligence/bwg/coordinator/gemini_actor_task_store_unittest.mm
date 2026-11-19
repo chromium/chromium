@@ -345,6 +345,22 @@ TEST_F(GeminiActorTaskStoreTest, StateChangeIsPublished) {
               l10n_util::GetNSString(IDS_IOS_ACTOR_HEADER_TASK_DONE));
 }
 
+// Tests that the worklog ends with a single task ended item once the task
+// reaches a terminal state.
+TEST_F(GeminiActorTaskStoreTest, TerminalStateAppendsTaskEnded) {
+  AttachAndRegister();
+  const NSUInteger item_count = observer_.items.count;
+
+  [store_ actorTaskWithID:task_id_ didChangeState:kFinished fromState:kActing];
+  [store_ actorTaskWithID:task_id_
+           didChangeState:kCancelled
+                fromState:kFinished];
+
+  ASSERT_EQ(observer_.items.count, item_count + 1);
+  EXPECT_NSEQ(observer_.items.lastObject.title,
+              l10n_util::GetNSString(IDS_IOS_ACTOR_WORKLOG_TASK_ENDED));
+}
+
 // Tests that the minimized header shows the latest task update, and shows it
 // again once the task runs after a status was displayed.
 TEST_F(GeminiActorTaskStoreTest, HeaderTracksCurrentStep) {
@@ -936,7 +952,10 @@ TEST_F(GeminiActorTaskStoreTest, StopDiscardsPendingSuggestionCard) {
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return observer_.intervention == nil; }));
   EXPECT_EQ(observer_.suggestions, nil);
-  EXPECT_EQ(observer_.items.count, item_count);
+  // The card is replaced by the task ended item.
+  ASSERT_EQ(observer_.items.count, item_count + 1);
+  EXPECT_NSEQ(observer_.items.lastObject.title,
+              l10n_util::GetNSString(IDS_IOS_ACTOR_WORKLOG_TASK_ENDED));
   EXPECT_FALSE(completion_called);
 }
 

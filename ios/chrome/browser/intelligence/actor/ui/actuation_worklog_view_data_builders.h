@@ -47,7 +47,7 @@ ActuationWorklogItem* ActuationWorklogItemForUserResponse(NSString* response);
 // Returns the item showing that the task continues after a user response.
 ActuationWorklogItem* ActuationWorklogItemForTaskContinues();
 
-// Returns the item showing that the task ended after a user response.
+// Returns the item showing that the task ended.
 ActuationWorklogItem* ActuationWorklogItemForTaskEnded();
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_ACTUATION_WORKLOG_VIEW_DATA_BUILDERS_H_

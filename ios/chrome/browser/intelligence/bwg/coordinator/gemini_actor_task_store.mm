@@ -18,13 +18,14 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data_builders.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_actuation_worklog_builders.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-// Point size of the SF symbols of the first step and card items.
+// Point size of the SF symbols of the card items.
 constexpr CGFloat kIconSize = 16.0;
 
 // Icon size for SF symbols in accessory items.
@@ -266,15 +267,9 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   _taskTitle = [taskTitle copy];
   _taskState = state;
 
-  ActuationWorklogItem* firstItem = [ActuationWorklogItem
-      labeledItemWithTitle:l10n_util::GetNSString(
-                               IDS_IOS_GEMINI_FIRST_ACTUATION_STEP_TITLE)
-                  subtitle:l10n_util::GetNSString(
-                               IDS_IOS_GEMINI_FIRST_ACTUATION_STEP_SUBTITLE)
-                      icon:SymbolWithPointSize(SymbolPlayFill, kIconSize)];
-  [self appendItem:firstItem toolType:std::nullopt];
+  [self appendItem:ActuationWorklogItemForTaskStarted() toolType:std::nullopt];
 
-  // The initial task update follows the Gemini first step.
+  // The initial task update follows the task started item.
   [self appendTaskUpdate:taskUpdate toolType:std::nullopt];
   [self showTaskPausedInterventionIfNeeded];
   [self publishState];
@@ -289,6 +284,10 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
     // The intervention is stale once the task resumes or ends.
     [self cancelSuggestionSelection];
     [self discardIntervention];
+  }
+  // Live worklogs end like the ones of completed tasks.
+  if (actor::IsTerminalState(newState) && !actor::IsTerminalState(oldState)) {
+    [self appendItem:ActuationWorklogItemForTaskEnded() toolType:std::nullopt];
   }
   [self showTaskPausedInterventionIfNeeded];
   [self publishState];

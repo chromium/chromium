@@ -425,7 +425,7 @@
       <message name="IDS_IOS_ACTOR_WORKLOG_TASK_CONTINUES" desc="Title of the worklog step shown when an actor task resumes after the user responded. [iOS only]">
         Task continues
       </message>
-      <message name="IDS_IOS_ACTOR_WORKLOG_TASK_ENDED" desc="Title of the worklog step shown when an actor task ends after the user responded. [iOS only]">
+      <message name="IDS_IOS_ACTOR_WORKLOG_TASK_ENDED" desc="Title of the worklog step shown when an actor task ends. [iOS only]">
         Task ended
       </message>
       <message name="IDS_IOS_ACTOR_WORKLOG_USER_RESPONDED_TITLE" desc="Title of the worklog step shown when the user responds to the actor, either by typing a message or by tapping a button. [iOS only]">
