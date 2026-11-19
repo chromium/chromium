@@ -4,6 +4,7 @@
 
 #include "ui/touch_selection/touch_selection_controller.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -1939,6 +1940,131 @@ TEST_F(TouchSelectionControllerUAFTest, AutoResetWriteAfterFree) {
 
   // If fixed, this should not crash.
   EXPECT_EQ(nullptr, controller_.get());
+}
+
+// Destroys the controller from the client callback for `destroy_on_event_`.
+class TouchSelectionControllerCalloutUAFTest
+    : public TouchSelectionControllerTest {
+ public:
+  void OnSelectionEvent(SelectionEventType event) override {
+    TouchSelectionControllerTest::OnSelectionEvent(event);
+    if (event == destroy_on_event_) {
+      controller_.reset();
+    }
+  }
+
+ protected:
+  void ShowInsertion() {
+    OnTapEvent();
+    ChangeInsertion(gfx::RectF(5, 5, 0, 10), true);
+    EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_SHOWN));
+  }
+
+  void ShowSelection() {
+    OnLongPressEvent();
+    ChangeSelection(gfx::RectF(0, 0, 0, 10), true, gfx::RectF(50, 0, 0, 10),
+                    true);
+    EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLES_SHOWN));
+  }
+
+  std::optional<SelectionEventType> destroy_on_event_;
+};
+
+// HideHandles() from the no-handle branch of OnSelectionBoundsChanged().
+TEST_F(TouchSelectionControllerCalloutUAFTest, InsertionCleared) {
+  ShowInsertion();
+  destroy_on_event_ = INSERTION_HANDLE_CLEARED;
+  ClearInsertion();
+  EXPECT_EQ(nullptr, controller_.get());
+}
+
+TEST_F(TouchSelectionControllerCalloutUAFTest, SelectionCleared) {
+  ShowSelection();
+  destroy_on_event_ = SELECTION_HANDLES_CLEARED;
+  ClearSelection();
+  EXPECT_EQ(nullptr, controller_.get());
+}
+
+// DeactivateInsertion() during an insertion to selection transition.
+TEST_F(TouchSelectionControllerCalloutUAFTest, InsertionClearedBySelection) {
+  ShowInsertion();
+  destroy_on_event_ = INSERTION_HANDLE_CLEARED;
+  OnLongPressEvent();
+  ChangeSelection(gfx::RectF(0, 0, 0, 10), true, gfx::RectF(50, 0, 0, 10),
+                  true);
+  EXPECT_EQ(nullptr, controller_.get());
+}
+
+// OnDragEnd() from TouchHandle::EndDrag().
+TEST_F(TouchSelectionControllerCalloutUAFTest, SelectionDragStopped) {
+  ShowSelection();
+  base::TimeTicks event_time = base::TimeTicks::Now();
+  SetDraggingEnabled(true);
+  EXPECT_TRUE(controller().WillHandleTouchEvent(
+      MockMotionEvent(MockMotionEvent::Action::DOWN, event_time, 0, 0)));
+  EXPECT_TRUE(controller().WillHandleTouchEvent(
+      MockMotionEvent(MockMotionEvent::Action::MOVE, event_time, 0, 5)));
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLE_DRAG_STARTED));
+
+  destroy_on_event_ = SELECTION_HANDLE_DRAG_STOPPED;
+  EXPECT_TRUE(controller().WillHandleTouchEvent(
+      MockMotionEvent(MockMotionEvent::Action::UP, event_time, 0, 5)));
+  EXPECT_EQ(nullptr, controller_.get());
+}
+
+// OnDragEnd() from LongPressDragSelector when a scroll begins mid-drag.
+TEST_F(TouchSelectionControllerCalloutUAFTest, LongPressDragScrollBegin) {
+  TouchSelectionController::Config config = kDefaultConfig;
+  config.enable_longpress_drag_selection = true;
+  InitializeControllerWithConfig(config);
+
+  MockMotionEvent event;
+  EXPECT_FALSE(controller().WillHandleTouchEvent(event.PressPoint(0, 0)));
+  OnLongPressEvent();
+  ChangeSelection(gfx::RectF(-50, 0, 0, 10), true, gfx::RectF(50, 0, 0, 10),
+                  true);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLES_SHOWN));
+  EXPECT_TRUE(controller().WillHandleTouchEvent(event.MovePoint(0, 0, 0)));
+  EXPECT_TRUE(controller().WillHandleTouchEvent(
+      event.MovePoint(0, 0, kDefaultTapSlop)));
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLE_DRAG_STARTED));
+
+  destroy_on_event_ = SELECTION_HANDLE_DRAG_STOPPED;
+  controller().OnScrollBeginEvent();
+  EXPECT_EQ(nullptr, controller_.get());
+}
+
+// Hides the handles from the client callback, as RenderWidgetHostViewAndroid
+// teardown does.
+class TouchSelectionControllerHideInCalloutTest
+    : public TouchSelectionControllerTest {
+ public:
+  void OnSelectionEvent(SelectionEventType event) override {
+    TouchSelectionControllerTest::OnSelectionEvent(event);
+    if (event == INSERTION_HANDLE_CLEARED) {
+      // Delivered after the transition, so the selection is already active.
+      EXPECT_EQ(TouchSelectionController::ActiveStatus::kSelectionActive,
+                controller().active_status());
+      controller().HideAndDisallowShowingAutomatically();
+    }
+  }
+};
+
+// Notifications from a nested call are delivered after the outer ones, so the
+// last notification matches the final state.
+TEST_F(TouchSelectionControllerHideInCalloutTest, HideOnInsertionCleared) {
+  OnTapEvent();
+  ChangeInsertion(gfx::RectF(5, 5, 0, 10), true);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_SHOWN));
+
+  OnLongPressEvent();
+  ChangeSelection(gfx::RectF(0, 0, 0, 10), true, gfx::RectF(50, 0, 0, 10),
+                  true);
+  EXPECT_THAT(GetAndResetEvents(),
+              ElementsAre(INSERTION_HANDLE_CLEARED, SELECTION_HANDLES_SHOWN,
+                          SELECTION_HANDLES_CLEARED));
+  EXPECT_EQ(TouchSelectionController::ActiveStatus::kInactive,
+            controller().active_status());
 }
 
 }  // namespace

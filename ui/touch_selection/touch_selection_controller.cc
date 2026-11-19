@@ -72,6 +72,7 @@ TouchSelectionController::~TouchSelectionController() {
 void TouchSelectionController::OnSelectionBoundsChanged(
     const gfx::SelectionBound& start,
     const gfx::SelectionBound& end) {
+  ScopedNotificationBatch batch(*this);
   if (start == start_ && end_ == end)
     return;
 
@@ -178,6 +179,7 @@ void TouchSelectionController::OnViewportChanged(
 }
 
 bool TouchSelectionController::WillHandleTouchEvent(const MotionEvent& event) {
+  ScopedNotificationBatch batch(*this);
   bool handled = WillHandleTouchEventImpl(event);
   // If Action::DOWN is consumed, the rest of touch sequence should be consumed,
   // too, regardless of value of |handled|.
@@ -227,6 +229,7 @@ void TouchSelectionController::OnScrollBeginEvent() {
   // state of touch selection controller and long-press drag selector.
   // TODO(mohsen): Remove this workaround when we have enough information about
   // the cause of a selection change (see https://crbug.com/571897).
+  ScopedNotificationBatch batch(*this);
   longpress_drag_selector_.OnScrollBeginEvent();
   response_pending_input_event_ = InputEventType::kNone;
 }
@@ -260,11 +263,13 @@ void TouchSelectionController::HideHandles() {
 }
 
 void TouchSelectionController::HideAndDisallowShowingAutomatically() {
+  ScopedNotificationBatch batch(*this);
   HideHandles();
   show_touch_handles_ = false;
 }
 
 void TouchSelectionController::HideAndDestroy() {
+  ScopedNotificationBatch batch(*this);
   HideHandles();
   start_selection_handle_.reset();
   end_selection_handle_.reset();
@@ -448,7 +453,7 @@ void TouchSelectionController::OnDragBegin(
     DCHECK_EQ(active_status_, ActiveStatus::kInsertionActive);
     if (config_.hide_active_handle)
       insertion_handle_->SetTransparent();
-    client_->OnSelectionEvent(INSERTION_HANDLE_DRAG_STARTED);
+    NotifySelectionEvent(INSERTION_HANDLE_DRAG_STARTED);
     anchor_drag_to_selection_start_ = true;
     return;
   }
@@ -487,7 +492,7 @@ void TouchSelectionController::OnDragBegin(
   // When moving the handle we want to move only the extent point. Before doing
   // so we must make sure that the base point is set correctly.
   client_->SelectBetweenCoordinates(base, extent);
-  client_->OnSelectionEvent(SELECTION_HANDLE_DRAG_STARTED);
+  NotifySelectionEvent(SELECTION_HANDLE_DRAG_STARTED);
 }
 
 void TouchSelectionController::OnDragUpdate(
@@ -524,9 +529,9 @@ void TouchSelectionController::OnDragUpdate(
 void TouchSelectionController::OnDragEnd(
     const TouchSelectionDraggable& draggable) {
   if (&draggable == insertion_handle_.get()) {
-    client_->OnSelectionEvent(INSERTION_HANDLE_DRAG_STOPPED);
+    NotifySelectionEvent(INSERTION_HANDLE_DRAG_STOPPED);
   } else {
-    client_->OnSelectionEvent(SELECTION_HANDLE_DRAG_STOPPED);
+    NotifySelectionEvent(SELECTION_HANDLE_DRAG_STOPPED);
   }
   LogDragType(draggable);
   drag_selector_initiating_gesture_ = DragSelectorInitiatingGesture::kNone;
@@ -540,7 +545,7 @@ bool TouchSelectionController::IsWithinTapSlop(
 
 void TouchSelectionController::OnHandleTapped(const TouchHandle& handle) {
   if (insertion_handle_ && &handle == insertion_handle_.get())
-    client_->OnSelectionEvent(INSERTION_HANDLE_TAPPED);
+    NotifySelectionEvent(INSERTION_HANDLE_TAPPED);
 }
 
 void TouchSelectionController::SetNeedsAnimate() {
@@ -580,6 +585,7 @@ void TouchSelectionController::HandleSwipeToMoveCursorGestureAck(
     const gfx::PointF& point,
     const std::optional<bool>& cursor_control,
     bool is_in_root_view) {
+  ScopedNotificationBatch batch(*this);
   switch (type) {
     case ui::EventType::kGestureScrollBegin: {
       DCHECK(cursor_control.has_value());
@@ -588,7 +594,7 @@ void TouchSelectionController::HandleSwipeToMoveCursorGestureAck(
       }
       swipe_to_move_cursor_activated_ = true;
       OnSwipeToMoveCursorBegin();
-      client_->OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STARTED);
+      NotifySelectionEvent(ui::INSERTION_HANDLE_DRAG_STARTED);
       break;
     }
     case ui::EventType::kGestureScrollUpdate: {
@@ -613,7 +619,7 @@ void TouchSelectionController::HandleSwipeToMoveCursorGestureAck(
       }
       swipe_to_move_cursor_activated_ = false;
       OnSwipeToMoveCursorEnd();
-      client_->OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STOPPED);
+      NotifySelectionEvent(ui::INSERTION_HANDLE_DRAG_STOPPED);
       break;
     }
     default:
@@ -633,8 +639,8 @@ void TouchSelectionController::OnInsertionChanged() {
 
   UpdateHandleLayoutIfNecessary();
 
-  client_->OnSelectionEvent(activated ? INSERTION_HANDLE_SHOWN
-                                      : INSERTION_HANDLE_MOVED);
+  NotifySelectionEvent(activated ? INSERTION_HANDLE_SHOWN
+                                 : INSERTION_HANDLE_MOVED);
 }
 
 void TouchSelectionController::OnSelectionChanged() {
@@ -655,8 +661,8 @@ void TouchSelectionController::OnSelectionChanged() {
 
   UpdateHandleLayoutIfNecessary();
 
-  client_->OnSelectionEvent(activated ? SELECTION_HANDLES_SHOWN
-                                      : SELECTION_HANDLES_MOVED);
+  NotifySelectionEvent(activated ? SELECTION_HANDLES_SHOWN
+                                 : SELECTION_HANDLES_MOVED);
 }
 
 bool TouchSelectionController::ActivateInsertionIfNecessary() {
@@ -686,7 +692,7 @@ void TouchSelectionController::DeactivateInsertion() {
   DCHECK(insertion_handle_);
   active_status_ = ActiveStatus::kInactive;
   insertion_handle_->SetEnabled(false);
-  client_->OnSelectionEvent(INSERTION_HANDLE_CLEARED);
+  NotifySelectionEvent(INSERTION_HANDLE_CLEARED);
 }
 
 bool TouchSelectionController::ActivateSelectionIfNecessary() {
@@ -734,7 +740,42 @@ void TouchSelectionController::DeactivateSelection() {
   start_selection_handle_->SetEnabled(false);
   end_selection_handle_->SetEnabled(false);
   active_status_ = ActiveStatus::kInactive;
-  client_->OnSelectionEvent(SELECTION_HANDLES_CLEARED);
+  NotifySelectionEvent(SELECTION_HANDLES_CLEARED);
+}
+
+TouchSelectionController::ScopedNotificationBatch::ScopedNotificationBatch(
+    TouchSelectionController& controller)
+    : controller_(controller) {
+  ++controller_.notification_batch_depth_;
+}
+
+TouchSelectionController::ScopedNotificationBatch::~ScopedNotificationBatch() {
+  if (controller_.notification_batch_depth_ > 1 ||
+      controller_.pending_notifications_.empty()) {
+    --controller_.notification_batch_depth_;
+    return;
+  }
+  controller_.DispatchNotifications();
+}
+
+void TouchSelectionController::NotifySelectionEvent(SelectionEventType event) {
+  DCHECK_GT(notification_batch_depth_, 0);
+  pending_notifications_.push_back(event);
+}
+
+void TouchSelectionController::DispatchNotifications() {
+  DCHECK_EQ(notification_batch_depth_, 1);
+  base::WeakPtr<TouchSelectionController> weak_this =
+      weak_factory_.GetWeakPtr();
+  // Index-based loop as re-entrant calls from the client may append events.
+  for (size_t i = 0; i < pending_notifications_.size(); ++i) {
+    client_->OnSelectionEvent(pending_notifications_[i]);
+    if (!weak_this) {
+      return;
+    }
+  }
+  pending_notifications_.clear();
+  --notification_batch_depth_;
 }
 
 void TouchSelectionController::UpdateHandleLayoutIfNecessary() {
