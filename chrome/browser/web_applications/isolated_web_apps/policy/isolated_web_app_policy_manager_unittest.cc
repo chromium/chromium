@@ -1269,12 +1269,17 @@ class IsolatedWebAppPolicyManagerOnDemandUpdateDownloadedTest
  protected:
   void SetUp() override {
     IsolatedWebAppTest::SetUp();
-    IwaKeyDistributionInfoProvider::GetInstanceForTesting()
-        .SkipManagedAllowlistChecksForTesting(true);
+    auto& kd_provider = IwaKeyDistributionInfoProvider::GetInstanceForTesting();
+    kd_provider.SkipManagedAllowlistChecksForTesting(true);
+    base::test::TestFuture<base::expected<void, IwaComponentUpdateError>>
+        component_updated_future;
+    auto subscription = kd_provider.OnComponentUpdatedForTesting(
+        component_updated_future.GetRepeatingCallback());
     component_wrapper_ = std::make_unique<IwaComponentWrapper>();
     component_wrapper_->InstallComponentAsync(base::Version("1.0.0"),
                                               /*component_data=*/{},
                                               IsIwaComponentPreloaded());
+    ASSERT_THAT(component_updated_future.Take(), base::test::HasValue());
   }
 
   void TearDown() override {
