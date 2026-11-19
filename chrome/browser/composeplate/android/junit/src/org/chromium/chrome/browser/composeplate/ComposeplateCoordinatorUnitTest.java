@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
@@ -26,6 +27,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -36,8 +39,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -49,6 +54,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ComposeplateCoordinator}. */
@@ -72,7 +78,7 @@ public class ComposeplateCoordinatorUnitTest {
 
     private Context mContext;
     private ComposeplateView mComposeplateView;
-    private View mIncognitoButton;
+    private View mTrailingButton;
     private View mComposeplateButton;
     private View mOptionalButton;
     private ComposeplateCoordinator mCoordinator;
@@ -92,7 +98,7 @@ public class ComposeplateCoordinatorUnitTest {
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.composeplate_view_layout, parentView, false);
         parentView.addView(mComposeplateView);
-        mIncognitoButton = mComposeplateView.findViewById(R.id.incognito_button);
+        mTrailingButton = mComposeplateView.findViewById(R.id.trailing_button);
         mComposeplateButton = mComposeplateView.findViewById(R.id.composeplate_button);
         mOptionalButton = mComposeplateView.findViewById(R.id.optional_button);
 
@@ -124,38 +130,48 @@ public class ComposeplateCoordinatorUnitTest {
     @Test
     public void testRecordButtonsImpression_optionalButtonHidden() {
         testRecordButtonsImpressionImpl(
-                ComposeplateViewButtonType.CREATE_IMAGE, /* isOptionalButtonVisible= */ false);
+                ComposeplateViewButtonType.INCOGNITO,
+                ComposeplateViewButtonType.CREATE_IMAGE,
+                /* isOptionalButtonVisible= */ false);
     }
 
     @Test
     public void testRecordButtonsImpression_createImageButtonVisible() {
         testRecordButtonsImpressionImpl(
-                ComposeplateViewButtonType.CREATE_IMAGE, /* isOptionalButtonVisible= */ true);
+                ComposeplateViewButtonType.INCOGNITO,
+                ComposeplateViewButtonType.CREATE_IMAGE,
+                /* isOptionalButtonVisible= */ true);
     }
 
     @Test
     public void testRecordButtonsImpression_addImageButtonVisible() {
         testRecordButtonsImpressionImpl(
-                ComposeplateViewButtonType.ADD_IMAGE, /* isOptionalButtonVisible= */ true);
+                ComposeplateViewButtonType.INCOGNITO,
+                ComposeplateViewButtonType.ADD_IMAGE,
+                /* isOptionalButtonVisible= */ true);
+    }
+
+    @Test
+    public void testRecordButtonsImpression_trailingButtonAddImage() {
+        testRecordButtonsImpressionImpl(
+                ComposeplateViewButtonType.ADD_IMAGE,
+                ComposeplateViewButtonType.CREATE_IMAGE,
+                /* isOptionalButtonVisible= */ false);
+    }
+
+    @Test
+    public void testRecordButtonsImpression_trailingButtonCreateImage() {
+        testRecordButtonsImpressionImpl(
+                ComposeplateViewButtonType.CREATE_IMAGE,
+                ComposeplateViewButtonType.ADD_IMAGE,
+                /* isOptionalButtonVisible= */ true);
     }
 
     @Test
     public void testRecordButtonsImpression_optionalButtonTypeNotSet() {
-        mCoordinator.setVisibility(/* visible= */ true, /* isCurrentPage= */ false);
         mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
 
-        String histogramName = ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION;
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                histogramName,
-                                ComposeplateViewButtonType.AI_MODE,
-                                ComposeplateViewButtonType.INCOGNITO)
-                        .build();
-
-        mCoordinator.recordButtonsImpression();
-
-        histogramWatcher.assertExpected();
+        verifyDefaultButtonsImpression();
     }
 
     @Test
@@ -198,8 +214,11 @@ public class ComposeplateCoordinatorUnitTest {
     }
 
     private void testRecordButtonsImpressionImpl(
-            @ComposeplateViewButtonType int optionalButtonType, boolean isOptionalButtonVisible) {
+            @ComposeplateViewButtonType int trailingButtonType,
+            @ComposeplateViewButtonType int optionalButtonType,
+            boolean isOptionalButtonVisible) {
         mCoordinator.setVisibility(/* visible= */ true, /* isCurrentPage= */ false);
+        mCoordinator.setTrailingButtonClickListener(mOriginalOnClickListener, trailingButtonType);
         mCoordinator.setOptionalButtonClickListener(mOriginalOnClickListener, optionalButtonType);
         mCoordinator.setOptionalButtonVisibility(isOptionalButtonVisible);
 
@@ -209,7 +228,7 @@ public class ComposeplateCoordinatorUnitTest {
                         .expectIntRecords(
                                 histogramName,
                                 ComposeplateViewButtonType.AI_MODE,
-                                ComposeplateViewButtonType.INCOGNITO);
+                                trailingButtonType);
         if (isOptionalButtonVisible) {
             builder.expectIntRecord(histogramName, optionalButtonType);
         }
@@ -221,18 +240,36 @@ public class ComposeplateCoordinatorUnitTest {
     }
 
     @Test
-    public void testSetIncognitoClickListener() {
-        mCoordinator.setIncognitoClickListener(mOriginalOnClickListener);
+    public void testTrailingButtonClickListener_Incognito() {
+        testTrailingButtonClickListenerImpl(
+                ComposeplateViewButtonType.INCOGNITO,
+                ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_INCOGNITO_BUTTON);
+    }
 
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "NewTabPage.Module.Click",
-                        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_INCOGNITO_BUTTON);
+    @Test
+    public void testTrailingButtonClickListener_CreateImage() {
+        testTrailingButtonClickListenerImpl(
+                ComposeplateViewButtonType.CREATE_IMAGE,
+                ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON);
+    }
 
-        mIncognitoButton.performClick();
+    @Test
+    public void testTrailingButtonClickListener_AddImage() {
+        testTrailingButtonClickListenerImpl(
+                ComposeplateViewButtonType.ADD_IMAGE,
+                ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON);
+    }
 
-        histogramWatcher.assertExpected();
-        verify(mOriginalOnClickListener).onClick(mIncognitoButton);
+    @Test
+    public void testTrailingButtonClickListener_UnsupportedButtonType() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        mCoordinator.setTrailingButtonClickListener(
+                                mOriginalOnClickListener, ComposeplateViewButtonType.AI_MODE));
+
+        // The trailing button is still recorded as the incognito button.
+        verifyDefaultButtonsImpression();
     }
 
     @Test
@@ -263,32 +300,49 @@ public class ComposeplateCoordinatorUnitTest {
                 ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON);
     }
 
+    @Test
+    public void testOptionalButtonClickListener_Incognito() {
+        // The incognito button is only supported as the trailing button.
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        mCoordinator.setOptionalButtonClickListener(
+                                mOriginalOnClickListener, ComposeplateViewButtonType.INCOGNITO));
+    }
+
+    @Test
+    public void testOptionalButtonClickListener_UnsupportedButtonType() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        mCoordinator.setOptionalButtonClickListener(
+                                mOriginalOnClickListener, ComposeplateViewButtonType.AI_MODE));
+
+        // The optional button still has no type, so it isn't recorded even if it is visible.
+        mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
+        verifyDefaultButtonsImpression();
+    }
+
     private void testOptionalButtonClickListenerImpl(
             @ComposeplateViewButtonType int buttonType,
             @ModuleTypeOnStartAndNtp int expectedModuleType) {
         mCoordinator.setOptionalButtonClickListener(mOriginalOnClickListener, buttonType);
 
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "NewTabPage.Module.Click", expectedModuleType);
-
-        mOptionalButton.performClick();
-
-        histogramWatcher.assertExpected();
-        verify(mOriginalOnClickListener).onClick(mOptionalButton);
+        verifyButtonClick(mOptionalButton, expectedModuleType);
     }
 
     @Test
     public void testDestroy() {
-        mCoordinator.setIncognitoClickListener(mOriginalOnClickListener);
+        mCoordinator.setTrailingButtonClickListener(
+                mOriginalOnClickListener, ComposeplateViewButtonType.INCOGNITO);
         mCoordinator.setComposeplateButtonClickListener(mOriginalOnClickListener);
 
-        assertNotNull(mPropertyModel.get(ComposeplateProperties.INCOGNITO_CLICK_LISTENER));
+        assertNotNull(mPropertyModel.get(ComposeplateProperties.TRAILING_BUTTON_CLICK_LISTENER));
         assertNotNull(
                 mPropertyModel.get(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER));
 
         mCoordinator.destroy();
-        assertNull(mPropertyModel.get(ComposeplateProperties.INCOGNITO_CLICK_LISTENER));
+        assertNull(mPropertyModel.get(ComposeplateProperties.TRAILING_BUTTON_CLICK_LISTENER));
         assertNull(mPropertyModel.get(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER));
     }
 
@@ -409,27 +463,47 @@ public class ComposeplateCoordinatorUnitTest {
 
     @Test
     public void testSetOptionalButtonText() {
-        String text = "Create";
-        CharSequence defaultContentDescription = mOptionalButton.getContentDescription();
-        mCoordinator.setOptionalButtonText(text);
-
-        assertEquals(text, mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_TEXT));
-        TextView optionalButtonText = mComposeplateView.findViewById(R.id.optional_button_text);
-        assertEquals(text, optionalButtonText.getText().toString());
-        // The text doesn't affect the content description.
-        assertEquals(defaultContentDescription, mOptionalButton.getContentDescription());
+        testSetButtonTextImpl(
+                mCoordinator::setOptionalButtonText,
+                ComposeplateProperties.OPTIONAL_BUTTON_TEXT,
+                mOptionalButton,
+                R.id.optional_button_text);
     }
 
     @Test
     public void testSetOptionalButtonContentDescription() {
-        String contentDescription = "Create image";
-        mCoordinator.setOptionalButtonContentDescription(contentDescription);
+        testSetButtonContentDescriptionImpl(
+                mCoordinator::setOptionalButtonContentDescription,
+                ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION,
+                mOptionalButton);
+    }
+
+    @Test
+    public void testSetTrailingButtonIcon() {
+        @DrawableRes int iconResId = R.drawable.composeplate_button_foreground;
+        mCoordinator.setTrailingButtonIcon(iconResId);
 
         assertEquals(
-                contentDescription,
-                mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION));
-        assertEquals(contentDescription, mOptionalButton.getContentDescription());
-        assertEquals(contentDescription, mOptionalButton.getTooltipText());
+                iconResId, mPropertyModel.get(ComposeplateProperties.TRAILING_BUTTON_ICON_RES_ID));
+        ImageView iconView = mComposeplateView.findViewById(R.id.trailing_button_icon);
+        assertEquals(iconResId, Shadows.shadowOf(iconView.getDrawable()).getCreatedFromResId());
+    }
+
+    @Test
+    public void testSetTrailingButtonText() {
+        testSetButtonTextImpl(
+                mCoordinator::setTrailingButtonText,
+                ComposeplateProperties.TRAILING_BUTTON_TEXT,
+                mTrailingButton,
+                R.id.trailing_button_text);
+    }
+
+    @Test
+    public void testSetTrailingButtonContentDescription() {
+        testSetButtonContentDescriptionImpl(
+                mCoordinator::setTrailingButtonContentDescription,
+                ComposeplateProperties.TRAILING_BUTTON_CONTENT_DESCRIPTION,
+                mTrailingButton);
     }
 
     @Test
@@ -594,7 +668,7 @@ public class ComposeplateCoordinatorUnitTest {
      * @param isOptionalButtonVisible Whether the optional button is visible.
      * @param expectedUseLffLayout Whether the buttons are expected to use the large form factor
      *     layout, i.e., all buttons show their texts and share the width equally. Otherwise, the
-     *     optional button is icon-only and wraps its content, and so does the incognito button when
+     *     optional button is icon-only and wraps its content, and so does the trailing button when
      *     the optional button is visible.
      */
     private void verifyButtonLayout(boolean isOptionalButtonVisible, boolean expectedUseLffLayout) {
@@ -611,19 +685,19 @@ public class ComposeplateCoordinatorUnitTest {
                 expectedUseLffLayout ? 0 : ViewGroup.LayoutParams.WRAP_CONTENT,
                 mOptionalButton.getLayoutParams().width);
 
-        boolean isIncognitoButtonCompact = isOptionalButtonVisible && !expectedUseLffLayout;
+        boolean isTrailingButtonCompact = isOptionalButtonVisible && !expectedUseLffLayout;
         assertEquals(
-                !isIncognitoButtonCompact,
-                mPropertyModel.get(ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE));
+                !isTrailingButtonCompact,
+                mPropertyModel.get(ComposeplateProperties.IS_TRAILING_BUTTON_TEXT_VISIBLE));
         assertEquals(
-                isIncognitoButtonCompact ? View.GONE : View.VISIBLE,
-                mComposeplateView.findViewById(R.id.incognito_button_text).getVisibility());
+                isTrailingButtonCompact ? View.GONE : View.VISIBLE,
+                mComposeplateView.findViewById(R.id.trailing_button_text).getVisibility());
         assertEquals(
-                isIncognitoButtonCompact,
-                mPropertyModel.get(ComposeplateProperties.IS_INCOGNITO_BUTTON_WRAP_CONTENT));
+                isTrailingButtonCompact,
+                mPropertyModel.get(ComposeplateProperties.IS_TRAILING_BUTTON_WRAP_CONTENT));
         assertEquals(
-                isIncognitoButtonCompact ? ViewGroup.LayoutParams.WRAP_CONTENT : 0,
-                mIncognitoButton.getLayoutParams().width);
+                isTrailingButtonCompact ? ViewGroup.LayoutParams.WRAP_CONTENT : 0,
+                mTrailingButton.getLayoutParams().width);
 
         // The composeplate button always takes the remaining width.
         assertEquals(0, mComposeplateButton.getLayoutParams().width);
@@ -670,5 +744,65 @@ public class ComposeplateCoordinatorUnitTest {
 
     private static int getMarginEnd(View view) {
         return ((ViewGroup.MarginLayoutParams) view.getLayoutParams()).getMarginEnd();
+    }
+
+    private void testTrailingButtonClickListenerImpl(
+            @ComposeplateViewButtonType int buttonType,
+            @ModuleTypeOnStartAndNtp int expectedModuleType) {
+        mCoordinator.setTrailingButtonClickListener(mOriginalOnClickListener, buttonType);
+
+        verifyButtonClick(mTrailingButton, expectedModuleType);
+    }
+
+    private void verifyDefaultButtonsImpression() {
+        mCoordinator.setVisibility(/* visible= */ true, /* isCurrentPage= */ false);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION,
+                                ComposeplateViewButtonType.AI_MODE,
+                                ComposeplateViewButtonType.INCOGNITO)
+                        .build();
+
+        mCoordinator.recordButtonsImpression();
+
+        histogramWatcher.assertExpected();
+    }
+
+    private void verifyButtonClick(View button, @ModuleTypeOnStartAndNtp int expectedModuleType) {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Module.Click", expectedModuleType);
+
+        button.performClick();
+
+        histogramWatcher.assertExpected();
+        verify(mOriginalOnClickListener).onClick(button);
+    }
+
+    private void testSetButtonTextImpl(
+            Callback<String> setter,
+            WritableObjectPropertyKey<String> key,
+            View button,
+            @IdRes int buttonTextId) {
+        String text = "Create";
+        CharSequence defaultContentDescription = button.getContentDescription();
+        setter.onResult(text);
+
+        assertEquals(text, mPropertyModel.get(key));
+        TextView buttonText = mComposeplateView.findViewById(buttonTextId);
+        assertEquals(text, buttonText.getText().toString());
+        // The text doesn't affect the content description.
+        assertEquals(defaultContentDescription, button.getContentDescription());
+    }
+
+    private void testSetButtonContentDescriptionImpl(
+            Callback<String> setter, WritableObjectPropertyKey<String> key, View button) {
+        String contentDescription = "Create image";
+        setter.onResult(contentDescription);
+
+        assertEquals(contentDescription, mPropertyModel.get(key));
+        assertEquals(contentDescription, button.getContentDescription());
+        assertEquals(contentDescription, button.getTooltipText());
     }
 }

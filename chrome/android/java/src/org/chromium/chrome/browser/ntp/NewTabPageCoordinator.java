@@ -682,7 +682,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mComposeplateCoordinator =
                 new ComposeplateCoordinator(
                         composeplateView, mIsLff, assertNonNull(mUiConfig).getHorizontalInset());
-        mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
+        mComposeplateCoordinator.setTrailingButtonClickListener(
+                this::onIncognitoButtonClicked, ComposeplateViewButtonType.INCOGNITO);
         // Don't log click metrics in this listener, since the mComposeplateCoordinator will
         // log.
         mComposeplateCoordinator.setComposeplateButtonClickListener(

@@ -9,12 +9,11 @@ import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.AI
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.APPLY_WHITE_BACKGROUND;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.COLOR_STATE_LIST;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER;
-import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.INCOGNITO_CLICK_LISTENER;
-import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE;
-import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_INCOGNITO_BUTTON_WRAP_CONTENT;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_OPTIONAL_BUTTON_TEXT_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_OPTIONAL_BUTTON_WRAP_CONTENT;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_TRAILING_BUTTON_TEXT_VISIBLE;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_TRAILING_BUTTON_WRAP_CONTENT;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION;
@@ -23,6 +22,10 @@ import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OP
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_MARGIN_END;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.OPTIONAL_BUTTON_TEXT;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.TEXT_STYLE_RES_ID;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.TRAILING_BUTTON_CLICK_LISTENER;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.TRAILING_BUTTON_CONTENT_DESCRIPTION;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.TRAILING_BUTTON_ICON_RES_ID;
+import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.TRAILING_BUTTON_TEXT;
 
 import android.view.View;
 
@@ -36,11 +39,6 @@ public class ComposeplateViewBinder {
     public static void bind(PropertyModel model, ComposeplateView view, PropertyKey propertyKey) {
         if (IS_VISIBLE == propertyKey) {
             view.setVisibility(model.get(IS_VISIBLE) ? View.VISIBLE : View.GONE);
-        } else if (INCOGNITO_CLICK_LISTENER == propertyKey) {
-            View incognitoButton = view.findViewById(R.id.incognito_button);
-            if (incognitoButton != null) {
-                incognitoButton.setOnClickListener(model.get(INCOGNITO_CLICK_LISTENER));
-            }
         } else if (COMPOSEPLATE_BUTTON_CLICK_LISTENER == propertyKey) {
             View composeplateButton = view.findViewById(R.id.composeplate_button);
             if (composeplateButton != null) {
@@ -68,18 +66,27 @@ public class ComposeplateViewBinder {
         } else if (OPTIONAL_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
             view.setOptionalButtonContentDescription(
                     model.get(OPTIONAL_BUTTON_CONTENT_DESCRIPTION));
+        } else if (TRAILING_BUTTON_CLICK_LISTENER == propertyKey) {
+            view.setTrailingButtonClickListener(model.get(TRAILING_BUTTON_CLICK_LISTENER));
+        } else if (TRAILING_BUTTON_ICON_RES_ID == propertyKey) {
+            view.setTrailingButtonIcon(model.get(TRAILING_BUTTON_ICON_RES_ID));
+        } else if (TRAILING_BUTTON_TEXT == propertyKey) {
+            view.setTrailingButtonText(model.get(TRAILING_BUTTON_TEXT));
+        } else if (TRAILING_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
+            view.setTrailingButtonContentDescription(
+                    model.get(TRAILING_BUTTON_CONTENT_DESCRIPTION));
         } else if (OPTIONAL_BUTTON_LATERAL_PADDING == propertyKey) {
             view.setButtonLateralPadding(model.get(OPTIONAL_BUTTON_LATERAL_PADDING));
         } else if (OPTIONAL_BUTTON_MARGIN_END == propertyKey) {
             view.setButtonMarginEnd(model.get(OPTIONAL_BUTTON_MARGIN_END));
-        } else if (IS_INCOGNITO_BUTTON_TEXT_VISIBLE == propertyKey) {
-            view.setIncognitoButtonTextVisibility(model.get(IS_INCOGNITO_BUTTON_TEXT_VISIBLE));
+        } else if (IS_TRAILING_BUTTON_TEXT_VISIBLE == propertyKey) {
+            view.setTrailingButtonTextVisibility(model.get(IS_TRAILING_BUTTON_TEXT_VISIBLE));
         } else if (IS_OPTIONAL_BUTTON_TEXT_VISIBLE == propertyKey) {
             view.setOptionalButtonTextVisibility(model.get(IS_OPTIONAL_BUTTON_TEXT_VISIBLE));
         } else if (IS_OPTIONAL_BUTTON_WRAP_CONTENT == propertyKey) {
             view.setOptionalButtonWrapContent(model.get(IS_OPTIONAL_BUTTON_WRAP_CONTENT));
-        } else if (IS_INCOGNITO_BUTTON_WRAP_CONTENT == propertyKey) {
-            view.setIncognitoButtonWrapContent(model.get(IS_INCOGNITO_BUTTON_WRAP_CONTENT));
+        } else if (IS_TRAILING_BUTTON_WRAP_CONTENT == propertyKey) {
+            view.setTrailingButtonWrapContent(model.get(IS_TRAILING_BUTTON_WRAP_CONTENT));
         } else {
             assert false : "Unhandled property detected in ComposeplateViewBinder!";
         }

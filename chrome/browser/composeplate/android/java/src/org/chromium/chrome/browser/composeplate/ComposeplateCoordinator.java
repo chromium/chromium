@@ -59,6 +59,14 @@ public class ComposeplateCoordinator {
     private @Nullable @ComposeplateViewButtonType Integer mOptionalButtonType;
 
     /**
+     * The {@link ComposeplateViewButtonType} of the trailing button, used to record its impression
+     * metrics. It is the incognito button, as declared in the layout, until the trailing button's
+     * click listener is set.
+     */
+    private @ComposeplateViewButtonType int mTrailingButtonType =
+            ComposeplateViewButtonType.INCOGNITO;
+
+    /**
      * Constructs a new ComposeplateCoordinator.
      *
      * @param parentView The parent {@link ViewGroup} for the composeplate.
@@ -133,7 +141,7 @@ public class ComposeplateCoordinator {
 
     /**
      * Records an impression for each visible button on the composeplate: the AI Mode button and,
-     * when the beside-MVT layout is not enabled, the incognito button and (if shown) the optional
+     * when the beside-MVT layout is not enabled, the trailing button and (if shown) the optional
      * button. Nothing is recorded if the composeplate isn't visible. Should only be called when the
      * New Tab Page is shown to the user.
      */
@@ -144,8 +152,7 @@ public class ComposeplateCoordinator {
                 ComposeplateViewButtonType.AI_MODE);
         if (NewTabPageUtils.isBesideMvtModuleEnabled()) return;
 
-        ComposeplateMetricsUtils.recordComposeplateButtonImpression(
-                ComposeplateViewButtonType.INCOGNITO);
+        ComposeplateMetricsUtils.recordComposeplateButtonImpression(mTrailingButtonType);
         if (mOptionalButtonType != null
                 && mModel.get(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE)) {
             ComposeplateMetricsUtils.recordComposeplateButtonImpression(mOptionalButtonType);
@@ -153,16 +160,54 @@ public class ComposeplateCoordinator {
     }
 
     /**
-     * Sets the click listener for the incognito button.
+     * Sets the click listener for the trailing button, along with the type of the button that the
+     * trailing button shows. When the type changes, the icon, text and content description of the
+     * trailing button should be updated too, see {@link #setTrailingButtonIcon(int)}, {@link
+     * #setTrailingButtonText(String)} and {@link #setTrailingButtonContentDescription(String)}.
      *
-     * @param incognitoClickListener The click listener for the incognito button.
+     * @param trailingButtonClickListener The click listener for the trailing button.
+     * @param buttonType The {@link ComposeplateViewButtonType} shown on the trailing button, used
+     *     to record the click and impression metrics. Must be {@link
+     *     ComposeplateViewButtonType#INCOGNITO}, {@link ComposeplateViewButtonType#CREATE_IMAGE} or
+     *     {@link ComposeplateViewButtonType#ADD_IMAGE}.
      */
-    public void setIncognitoClickListener(View.OnClickListener incognitoClickListener) {
+    public void setTrailingButtonClickListener(
+            View.OnClickListener trailingButtonClickListener,
+            @ComposeplateViewButtonType int buttonType) {
+        // Resolved first, since it throws for an unsupported button type.
+        @ModuleTypeOnStartAndNtp int moduleType = getModuleTypeForButton(buttonType);
+        mTrailingButtonType = buttonType;
         mModel.set(
-                ComposeplateProperties.INCOGNITO_CLICK_LISTENER,
-                createEnhancedClickListener(
-                        incognitoClickListener,
-                        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_INCOGNITO_BUTTON));
+                ComposeplateProperties.TRAILING_BUTTON_CLICK_LISTENER,
+                createEnhancedClickListener(trailingButtonClickListener, moduleType));
+    }
+
+    /**
+     * Sets the icon of the trailing button.
+     *
+     * @param iconResId The resource id of the icon drawable to show on the trailing button.
+     */
+    public void setTrailingButtonIcon(@DrawableRes int iconResId) {
+        mModel.set(ComposeplateProperties.TRAILING_BUTTON_ICON_RES_ID, iconResId);
+    }
+
+    /**
+     * Sets the text of the trailing button. It is hidden when the trailing button is icon-only; see
+     * {@link #setTrailingButtonContentDescription(String)} for the accessible name.
+     *
+     * @param text The text of the trailing button.
+     */
+    public void setTrailingButtonText(@Nullable String text) {
+        mModel.set(ComposeplateProperties.TRAILING_BUTTON_TEXT, text);
+    }
+
+    /**
+     * Sets the content description of the trailing button, which is also used as its tooltip.
+     *
+     * @param contentDescription The content description of the trailing button.
+     */
+    public void setTrailingButtonContentDescription(@Nullable String contentDescription) {
+        mModel.set(ComposeplateProperties.TRAILING_BUTTON_CONTENT_DESCRIPTION, contentDescription);
     }
 
     /**
@@ -230,7 +275,7 @@ public class ComposeplateCoordinator {
     }
 
     public void destroy() {
-        mModel.set(ComposeplateProperties.INCOGNITO_CLICK_LISTENER, null);
+        mModel.set(ComposeplateProperties.TRAILING_BUTTON_CLICK_LISTENER, null);
         mModel.set(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER, null);
         mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER, null);
     }
@@ -290,8 +335,8 @@ public class ComposeplateCoordinator {
      * <ul>
      *   <li>With the large form factor layout, i.e., on large form factor devices except in narrow
      *       windows, the optional button shows its text and all buttons share the width equally.
-     *   <li>Otherwise, the optional button is icon-only. When it is visible, the incognito button
-     *       is also icon-only, and both buttons wrap their content, so that the composeplate button
+     *   <li>Otherwise, the optional button is icon-only. When it is visible, the trailing button is
+     *       also icon-only, and both buttons wrap their content, so that the composeplate button
      *       takes the rest of the width.
      * </ul>
      */
@@ -302,10 +347,10 @@ public class ComposeplateCoordinator {
         mModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_TEXT_VISIBLE, useLffLayout);
         mModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_WRAP_CONTENT, !useLffLayout);
         mModel.set(
-                ComposeplateProperties.IS_INCOGNITO_BUTTON_TEXT_VISIBLE,
+                ComposeplateProperties.IS_TRAILING_BUTTON_TEXT_VISIBLE,
                 !isOptionalButtonVisible || useLffLayout);
         mModel.set(
-                ComposeplateProperties.IS_INCOGNITO_BUTTON_WRAP_CONTENT,
+                ComposeplateProperties.IS_TRAILING_BUTTON_WRAP_CONTENT,
                 isOptionalButtonVisible && !useLffLayout);
     }
 
@@ -376,16 +421,24 @@ public class ComposeplateCoordinator {
     public void setOptionalButtonClickListener(
             View.OnClickListener optionalButtonClickListener,
             @ComposeplateViewButtonType int buttonType) {
+        // The incognito button is only supported as the trailing button.
+        if (buttonType == ComposeplateViewButtonType.INCOGNITO) {
+            throw new IllegalArgumentException("Unsupported button type: " + buttonType);
+        }
+
+        // Resolved first, since it throws for an unsupported button type.
+        @ModuleTypeOnStartAndNtp int moduleType = getModuleTypeForButton(buttonType);
         mOptionalButtonType = buttonType;
         mModel.set(
                 ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER,
-                createEnhancedClickListener(
-                        optionalButtonClickListener, getModuleTypeForButton(buttonType)));
+                createEnhancedClickListener(optionalButtonClickListener, moduleType));
     }
 
     private static @ModuleTypeOnStartAndNtp int getModuleTypeForButton(
             @ComposeplateViewButtonType int buttonType) {
         return switch (buttonType) {
+            case ComposeplateViewButtonType.INCOGNITO ->
+                    ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_INCOGNITO_BUTTON;
             case ComposeplateViewButtonType.CREATE_IMAGE ->
                     ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON;
             case ComposeplateViewButtonType.ADD_IMAGE ->

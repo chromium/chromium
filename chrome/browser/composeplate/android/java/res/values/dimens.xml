@@ -8,7 +8,7 @@ found in the LICENSE file.
 
 <resources>
     <dimen name="composeplate_view_button_margin">8dp</dimen>
-    <!-- The lateral padding of the icon-only optional and incognito buttons
+    <!-- The lateral padding of the icon-only optional and trailing buttons
          with the phone layout. It is reduced in very narrow windows, e.g.,
          split screen at the minimum width, to leave enough space for the AI
          Mode button. See values-w360dp/dimens.xml for the regular value. -->

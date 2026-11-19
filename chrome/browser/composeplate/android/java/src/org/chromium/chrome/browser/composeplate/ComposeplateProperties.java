@@ -21,9 +21,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 interface ComposeplateProperties {
     WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
 
-    WritableObjectPropertyKey<View.OnClickListener> INCOGNITO_CLICK_LISTENER =
-            new WritableObjectPropertyKey<>();
-
     WritableObjectPropertyKey<View.OnClickListener> COMPOSEPLATE_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
@@ -81,14 +78,33 @@ interface ComposeplateProperties {
     WritableObjectPropertyKey<@Nullable String> OPTIONAL_BUTTON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
-    /** The lateral (start and end) padding of the optional and incognito buttons, in pixels. */
+    /**
+     * The click listener of the trailing button, i.e., the last button of the composeplate. The
+     * trailing button shows the incognito icon and strings declared in the layout, unless the icon,
+     * text and content description below are set.
+     */
+    WritableObjectPropertyKey<View.@Nullable OnClickListener> TRAILING_BUTTON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
+    /** The resource id of the trailing button's icon drawable. */
+    WritableIntPropertyKey TRAILING_BUTTON_ICON_RES_ID = new WritableIntPropertyKey();
+
+    /** The text of the trailing button. */
+    WritableObjectPropertyKey<@Nullable String> TRAILING_BUTTON_TEXT =
+            new WritableObjectPropertyKey<>();
+
+    /** The content description of the trailing button, also used as its tooltip. */
+    WritableObjectPropertyKey<@Nullable String> TRAILING_BUTTON_CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
+    /** The lateral (start and end) padding of the optional and trailing buttons, in pixels. */
     WritableIntPropertyKey OPTIONAL_BUTTON_LATERAL_PADDING = new WritableIntPropertyKey();
 
     /** The end margin of the composeplate and optional buttons, in pixels. */
     WritableIntPropertyKey OPTIONAL_BUTTON_MARGIN_END = new WritableIntPropertyKey();
 
-    /** Whether the text of the incognito button is visible. */
-    WritableBooleanPropertyKey IS_INCOGNITO_BUTTON_TEXT_VISIBLE = new WritableBooleanPropertyKey();
+    /** Whether the text of the trailing button is visible. */
+    WritableBooleanPropertyKey IS_TRAILING_BUTTON_TEXT_VISIBLE = new WritableBooleanPropertyKey();
 
     /** Whether the text of the optional button is visible. */
     WritableBooleanPropertyKey IS_OPTIONAL_BUTTON_TEXT_VISIBLE = new WritableBooleanPropertyKey();
@@ -100,15 +116,14 @@ interface ComposeplateProperties {
     WritableBooleanPropertyKey IS_OPTIONAL_BUTTON_WRAP_CONTENT = new WritableBooleanPropertyKey();
 
     /**
-     * Whether the incognito button wraps its content. Otherwise, it shares the width equally with
+     * Whether the trailing button wraps its content. Otherwise, it shares the width equally with
      * the other weighted buttons.
      */
-    WritableBooleanPropertyKey IS_INCOGNITO_BUTTON_WRAP_CONTENT = new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey IS_TRAILING_BUTTON_WRAP_CONTENT = new WritableBooleanPropertyKey();
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
-                INCOGNITO_CLICK_LISTENER,
                 COMPOSEPLATE_BUTTON_CLICK_LISTENER,
                 APPLY_WHITE_BACKGROUND,
                 COLOR_STATE_LIST,
@@ -120,10 +135,14 @@ interface ComposeplateProperties {
                 OPTIONAL_BUTTON_CLICK_LISTENER,
                 OPTIONAL_BUTTON_TEXT,
                 OPTIONAL_BUTTON_CONTENT_DESCRIPTION,
+                TRAILING_BUTTON_CLICK_LISTENER,
+                TRAILING_BUTTON_ICON_RES_ID,
+                TRAILING_BUTTON_TEXT,
+                TRAILING_BUTTON_CONTENT_DESCRIPTION,
                 OPTIONAL_BUTTON_LATERAL_PADDING,
                 OPTIONAL_BUTTON_MARGIN_END,
-                IS_INCOGNITO_BUTTON_TEXT_VISIBLE,
-                IS_INCOGNITO_BUTTON_WRAP_CONTENT,
+                IS_TRAILING_BUTTON_TEXT_VISIBLE,
+                IS_TRAILING_BUTTON_WRAP_CONTENT,
                 IS_OPTIONAL_BUTTON_TEXT_VISIBLE,
                 IS_OPTIONAL_BUTTON_WRAP_CONTENT,
             };

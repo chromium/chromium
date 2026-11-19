@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.After;
@@ -1297,6 +1298,31 @@ public class NewTabPageCoordinatorUnitTest {
         assertEquals(View.GONE, optionalButton.getVisibility());
     }
 
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/1"
+    })
+    public void testIncognitoButtonClicked() {
+        // The composeplate is created in setUp() since the default search engine is Google.
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        View trailingButton = mNewTabPageLayout.findViewById(R.id.trailing_button);
+        assertEquals(View.VISIBLE, trailingButton.getVisibility());
+        String expectedContentDescription =
+                mActivity.getString(R.string.accessibility_new_incognito_tab_page);
+        assertEquals(expectedContentDescription, trailingButton.getContentDescription());
+        assertEquals(expectedContentDescription, trailingButton.getTooltipText());
+        TextView trailingButtonText = mNewTabPageLayout.findViewById(R.id.trailing_button_text);
+        assertEquals(
+                mActivity.getString(R.string.notification_category_incognito),
+                trailingButtonText.getText().toString());
+
+        clickButtonAndVerifyClickMetric(
+                R.id.trailing_button, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_INCOGNITO_BUTTON);
+
+        verify(mManager).loadUrl(any(LoadUrlParams.class), /* incognito= */ eq(true));
+    }
+
     /**
      * Verifies that clicking the Create image chip focuses the search box in image generation mode
      * and records the click.
@@ -1309,7 +1335,8 @@ public class NewTabPageCoordinatorUnitTest {
     public void testCreateImageButtonClicked() {
         // The composeplate is created in setUp() since the default search engine is Google.
         assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
-        clickOptionalButtonAndVerifyClickMetric(
+        clickButtonAndVerifyClickMetric(
+                R.id.optional_button,
                 ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON);
 
         verify(mManager)
@@ -1332,8 +1359,8 @@ public class NewTabPageCoordinatorUnitTest {
     public void testAddImageButtonClicked_focusesSearchBoxForGallery() {
         // The composeplate is created in setUp() since the default search engine is Google.
         assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
-        clickOptionalButtonAndVerifyClickMetric(
-                ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON);
+        clickButtonAndVerifyClickMetric(
+                R.id.optional_button, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON);
 
         verify(mManager)
                 .focusSearchBox(
@@ -2646,13 +2673,13 @@ public class NewTabPageCoordinatorUnitTest {
                 /* shouldNotifySyncedThemeManager= */ false);
     }
 
-    private void clickOptionalButtonAndVerifyClickMetric(
-            @ModuleTypeOnStartAndNtp int expectedModuleType) {
+    private void clickButtonAndVerifyClickMetric(
+            @IdRes int buttonId, @ModuleTypeOnStartAndNtp int expectedModuleType) {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "NewTabPage.Module.Click", expectedModuleType);
 
-        mNewTabPageLayout.findViewById(R.id.optional_button).performClick();
+        mNewTabPageLayout.findViewById(buttonId).performClick();
 
         histogramWatcher.assertExpected();
     }

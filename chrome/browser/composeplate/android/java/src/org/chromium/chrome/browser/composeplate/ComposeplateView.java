@@ -16,9 +16,8 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.StyleRes;
 import androidx.core.view.ViewCompat;
 
-import org.jni_zero.internal.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 
 @NullMarked
@@ -27,11 +26,12 @@ public class ComposeplateView extends LinearLayout {
 
     private @Nullable View mComposeplateButton;
     private @Nullable View mOptionalButton;
-    private @Nullable View mIncognitoButton;
+    private @Nullable View mTrailingButton;
     private @Nullable ImageView mComposeplateButtonIcon;
     private @Nullable ImageView mOptionalButtonIcon;
+    private @Nullable ImageView mTrailingButtonIcon;
     private @Nullable TextView mOptionalButtonText;
-    private @Nullable TextView mIncognitoButtonText;
+    private @Nullable TextView mTrailingButtonText;
 
     /** The tint of the icons, initially the one declared in the layout. */
     private @Nullable ColorStateList mIconTint;
@@ -49,11 +49,12 @@ public class ComposeplateView extends LinearLayout {
 
         mComposeplateButton = findViewById(R.id.composeplate_button);
         mOptionalButton = findViewById(R.id.optional_button);
-        mIncognitoButton = findViewById(R.id.incognito_button);
+        mTrailingButton = findViewById(R.id.trailing_button);
         mComposeplateButtonIcon = findViewById(R.id.composeplate_button_icon);
         mOptionalButtonIcon = findViewById(R.id.optional_button_icon);
+        mTrailingButtonIcon = findViewById(R.id.trailing_button_icon);
         mOptionalButtonText = findViewById(R.id.optional_button_text);
-        mIncognitoButtonText = findViewById(R.id.incognito_button_text);
+        mTrailingButtonText = findViewById(R.id.trailing_button_text);
         if (mComposeplateButtonIcon != null) {
             mIconTint = mComposeplateButtonIcon.getImageTintList();
         }
@@ -74,8 +75,8 @@ public class ComposeplateView extends LinearLayout {
             ComposeplateUtils.applyComposeplateBackground(context, mOptionalButton, apply);
         }
 
-        if (mIncognitoButton != null) {
-            ComposeplateUtils.applyComposeplateBackground(context, mIncognitoButton, apply);
+        if (mTrailingButton != null) {
+            ComposeplateUtils.applyComposeplateBackground(context, mTrailingButton, apply);
         }
     }
 
@@ -89,14 +90,8 @@ public class ComposeplateView extends LinearLayout {
             setColorStateList(mComposeplateButtonIcon, colorStateList);
         }
 
-        if (mOptionalButtonIcon != null) {
-            setColorStateList(mOptionalButtonIcon, colorStateList);
-        }
-
-        if (mIncognitoButton != null) {
-            setColorStateList(
-                    mIncognitoButton.findViewById(R.id.incognito_button_icon), colorStateList);
-        }
+        setColorStateList(mOptionalButtonIcon, colorStateList);
+        setColorStateList(mTrailingButtonIcon, colorStateList);
     }
 
     /**
@@ -111,7 +106,7 @@ public class ComposeplateView extends LinearLayout {
                     textStyleResId);
         }
 
-        setTextStyle(mIncognitoButtonText, textStyleResId);
+        setTextStyle(mTrailingButtonText, textStyleResId);
         setTextStyle(mOptionalButtonText, textStyleResId);
     }
 
@@ -193,6 +188,52 @@ public class ComposeplateView extends LinearLayout {
     }
 
     /**
+     * Updates the icon of the trailing button.
+     *
+     * @param iconResId The resource id of the icon drawable to show on the trailing button.
+     */
+    void setTrailingButtonIcon(@DrawableRes int iconResId) {
+        if (mTrailingButtonIcon == null) return;
+
+        mTrailingButtonIcon.setImageResource(iconResId);
+    }
+
+    /**
+     * Sets the click listener of the trailing button.
+     *
+     * @param listener The click listener to set on the trailing button.
+     */
+    void setTrailingButtonClickListener(@Nullable OnClickListener listener) {
+        if (mTrailingButton == null) return;
+
+        mTrailingButton.setOnClickListener(listener);
+    }
+
+    /**
+     * Updates the text of the trailing button.
+     *
+     * @param text The text of the trailing button.
+     */
+    void setTrailingButtonText(@Nullable String text) {
+        if (mTrailingButtonText == null) return;
+
+        mTrailingButtonText.setText(text);
+    }
+
+    /**
+     * Updates the content description of the trailing button. It is also used as the tooltip of the
+     * button.
+     *
+     * @param contentDescription The content description of the trailing button.
+     */
+    void setTrailingButtonContentDescription(@Nullable String contentDescription) {
+        if (mTrailingButton == null) return;
+
+        mTrailingButton.setContentDescription(contentDescription);
+        mTrailingButton.setTooltipText(contentDescription);
+    }
+
+    /**
      * Updates the visibility of the optional button.
      *
      * @param visible Whether the optional button is visible.
@@ -225,13 +266,13 @@ public class ComposeplateView extends LinearLayout {
     }
 
     /**
-     * Sets whether the incognito button wraps its content instead of sharing the width equally with
+     * Sets whether the trailing button wraps its content instead of sharing the width equally with
      * the other weighted buttons.
      *
-     * @param wrapContent Whether the incognito button wraps its content.
+     * @param wrapContent Whether the trailing button wraps its content.
      */
-    void setIncognitoButtonWrapContent(boolean wrapContent) {
-        updateButtonLayoutParams(mIncognitoButton, getWidth(wrapContent), getWeight(wrapContent));
+    void setTrailingButtonWrapContent(boolean wrapContent) {
+        updateButtonLayoutParams(mTrailingButton, getWidth(wrapContent), getWeight(wrapContent));
     }
 
     /**
@@ -259,24 +300,24 @@ public class ComposeplateView extends LinearLayout {
     }
 
     /**
-     * Updates the visibility of the incognito button's text.
+     * Updates the visibility of the trailing button's text.
      *
-     * @param visible Whether the incognito button's text is visible.
+     * @param visible Whether the trailing button's text is visible.
      */
-    void setIncognitoButtonTextVisibility(boolean visible) {
-        if (mIncognitoButtonText == null) return;
+    void setTrailingButtonTextVisibility(boolean visible) {
+        if (mTrailingButtonText == null) return;
 
-        mIncognitoButtonText.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mTrailingButtonText.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
-     * Sets the lateral (start and end) padding of the optional and incognito buttons.
+     * Sets the lateral (start and end) padding of the optional and trailing buttons.
      *
      * @param padding The padding in pixels.
      */
     void setButtonLateralPadding(int padding) {
         updateButtonHorizontalPadding(mOptionalButton, padding);
-        updateButtonHorizontalPadding(mIncognitoButton, padding);
+        updateButtonHorizontalPadding(mTrailingButton, padding);
     }
 
     /**
