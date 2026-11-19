@@ -28,6 +28,9 @@ public final class WebFeatures {
     // WebContentBuilder
     public static final String WEB_CONTENT = "WEB_CONTENT";
 
+    // WebContentBuilder (preserves wrapped resource context across re-attachment)
+    public static final String WEB_CONTENT_V2 = "WEB_CONTENT_V2";
+
     // WebFeature.WEB_SURFACE
     public static final String WEB_SURFACE = "WEB_SURFACE_V2";
 

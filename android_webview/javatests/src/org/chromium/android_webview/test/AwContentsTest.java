@@ -13,6 +13,8 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PRO
 
 import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.MutableContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -88,6 +90,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.net.test.util.WebServer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -276,6 +279,58 @@ public class AwContentsTest extends AwParameterizedTest {
                 "AwContents.adopt() must register an OnApplyWindowInsetsListener on the new"
                         + " container.",
                 newContainer.mInsetsListener);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testAdoptUsesClassLoaderContextWrapper() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView initialContainer =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AwContents awContents = initialContainer.getAwContents();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((ViewGroup) initialContainer.getParent()).removeView(initialContainer);
+
+                    // Simulate WebContent.detach(): adopt into an ApplicationContext container.
+                    FrameLayout detachedContainer =
+                            new FrameLayout(ContextUtils.getApplicationContext());
+                    awContents.adopt(
+                            detachedContainer, initialContainer.getInternalAccessDelegate());
+                    Assert.assertNull(awContents.getWebContents().getTopLevelNativeWindow());
+
+                    // Simulate WebContent re-attach with a fresh ContextWrapper around Activity.
+                    Context rawReattachContext =
+                            new ContextWrapper(mActivityTestRule.getActivity());
+                    AwTestContainerView reattachedContainer =
+                            new AwTestContainerView(rawReattachContext, false);
+                    awContents.adopt(
+                            reattachedContainer, reattachedContainer.getInternalAccessDelegate());
+
+                    Context wrappedReattachContext = awContents.getProvidedContext();
+                    Assert.assertNotSame(rawReattachContext, wrappedReattachContext);
+                    WindowAndroid windowAndroid =
+                            awContents.getWebContents().getTopLevelNativeWindow();
+                    Assert.assertNotNull(windowAndroid);
+                    Assert.assertSame(wrappedReattachContext, windowAndroid.getContext().get());
+
+                    // Direct transfer to another Activity container without an intermediate detach.
+                    Context rawTransferContext =
+                            new ContextWrapper(mActivityTestRule.getActivity());
+                    AwTestContainerView transferContainer =
+                            new AwTestContainerView(rawTransferContext, false);
+                    awContents.adopt(
+                            transferContainer, transferContainer.getInternalAccessDelegate());
+
+                    Context wrappedTransferContext = awContents.getProvidedContext();
+                    Assert.assertNotSame(rawTransferContext, wrappedTransferContext);
+                    WindowAndroid transferredWindow =
+                            awContents.getWebContents().getTopLevelNativeWindow();
+                    Assert.assertNotNull(transferredWindow);
+                    Assert.assertSame(wrappedTransferContext, transferredWindow.getContext().get());
+                });
     }
 
     @Test

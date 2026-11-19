@@ -1618,10 +1618,10 @@ public class AwContents implements SmartClipProvider {
             mSettings.updateContext();
         }
 
-        WindowAndroidWrapper newWindowAndroid = getWindowAndroid(newContext);
+        WindowAndroidWrapper newWindowAndroid = getWindowAndroid(mContext);
         if (newWindowAndroid != mWindowAndroid) {
             mWindowAndroid = newWindowAndroid;
-            if (ContextUtils.activityFromContext(newContext) != null) {
+            if (ContextUtils.activityFromContext(mContext) != null) {
                 mWebContents.setTopLevelNativeWindow(mWindowAndroid.getWindowAndroid());
             } else {
                 mWebContents.setTopLevelNativeWindow(null);
@@ -1629,7 +1629,7 @@ public class AwContents implements SmartClipProvider {
             mDestroyConsumer.updateWindowAndroid(newWindowAndroid);
         }
         if (mAutofillProvider != null) {
-            mAutofillProvider.switchToContext(new WeakReference<>(newContext));
+            mAutofillProvider.switchToContext(new WeakReference<>(mContext));
         }
     }
 
