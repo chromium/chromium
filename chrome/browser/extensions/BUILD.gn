@@ -2430,6 +2430,7 @@ source_set("browser_tests") {
     "api/search/search_api_browsertest.cc",
     "api/sessions/sessions_apitest.cc",
     "api/settings_overrides/settings_overrides_browsertest.cc",
+    "api/sidebar/sidebar_apitest.cc",
     "api/storage/settings_apitest.cc",
     "api/system_display/system_display_extension_apitest.cc",
     "api/system_network/system_network_apitest.cc",

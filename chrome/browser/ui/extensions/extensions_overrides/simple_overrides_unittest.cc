@@ -130,6 +130,11 @@ constexpr const char* kDisallowedFeatures[] = {
     "oauth2.auto_approve",
     "platforms",
     "sandbox",
+    // TODO(crbug.com/586554274): Use
+    // `extensions::api::sidebar::ManifestKeys::kSidebar` in the compiled
+    // manifest keys section above once sidebar.webidl declares the `sidebar`
+    // manifest key.
+    "sidebar",
     "storage",
 };
 

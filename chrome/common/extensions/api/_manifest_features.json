@@ -43,6 +43,12 @@
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },
+  "sidebar": {
+    "channel": "trunk",
+    "extension_types": ["extension"],
+    "feature_flag": "ApiSidebar",
+    "min_manifest_version": 3
+  },
   "storage": {
     "channel": "stable",
     "extension_types": [

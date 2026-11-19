@@ -38,6 +38,7 @@ schema_sources_ = [
   "search.idl",
   "sessions.json",
   "side_panel.idl",
+  "sidebar.webidl",
   "tab_capture.idl",
   "tab_groups.json",
   "tabs.json",

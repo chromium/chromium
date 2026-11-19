@@ -136,6 +136,10 @@ BASE_DECLARE_FEATURE(kApiDesktopAndroidNativeMessaging);
 // messaging extension IDs.
 BASE_DECLARE_FEATURE(kApiDesktopAndroidNativeMessagingBypassExtensionAllowlist);
 
+// Controls the availability of the `sidebar` manifest key and the
+// `chrome.sidebar` API.
+BASE_DECLARE_FEATURE(kApiSidebar);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////

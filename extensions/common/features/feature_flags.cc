@@ -32,6 +32,7 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiOdfsConfigPrivate,
     &extensions_features::kApiProxyOverrideRulesPrivate,
     &extensions_features::kApiRuntimeGetDocumentId,
+    &extensions_features::kApiSidebar,
     &extensions_features::kApiTabsSplitView,
     &extensions_features::kExperimentalOmniboxLabs,
     &extensions_features::kExtensionAsyncListenerRegistration,

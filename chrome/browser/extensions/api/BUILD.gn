@@ -54,6 +54,7 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/runtime",
     "//chrome/browser/extensions/api/search",
     "//chrome/browser/extensions/api/side_panel",
+    "//chrome/browser/extensions/api/sidebar",
     "//chrome/browser/extensions/api/tab_capture",
     "//chrome/browser/extensions/api/tab_groups",
     "//chrome/browser/extensions/api/web_navigation",

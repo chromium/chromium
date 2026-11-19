@@ -733,6 +733,10 @@
     "dependencies": ["permission:sidePanel"],
     "contexts": ["privileged_extension"]
   },
+  "sidebar": {
+    "dependencies": ["manifest:sidebar"],
+    "contexts": ["privileged_extension"]
+  },
   "systemPrivate": {
     "dependencies": ["permission:systemPrivate"],
     "contexts": ["privileged_extension"]
