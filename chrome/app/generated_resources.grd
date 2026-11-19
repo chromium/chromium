@@ -15856,34 +15856,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </if>
     </if>
 
-    <if expr="is_chromeos">
-      <!-- CrOSUsb Notification -->
-      <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION" desc="Content for notification shown to the user when a USB device gets plugged in.">
-          Open Settings to connect <ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph> to <ph name="USB_VM_NAME">$2<ex>Linux</ex></ph>
-      </message>
-      <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_TITLE" desc="Title for notification shown to the user when a USB device gets plugged in.">
-        USB device detected
-      </message>
-      <message name="IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM" desc="Label for notification button shown to the user when a USB device gets plugged in to allow a virtual machine to use the device">
-          Connect to <ph name="USB_VM_NAME">$1<ex>Linux</ex></ph>
-      </message>
-      <message name="IDS_CROSUSB_UNKNOWN_DEVICE_FROM_MANUFACTURER" desc="String describing an unknown device in notification shown when a USB device gets plugged in.">
-        USB device from <ph name="MANUFACTURER_NAME">$1<ex>Google</ex></ph>
-      </message>
-      <message name="IDS_CROSUSB_UNKNOWN_DEVICE" desc="String describing an unknown device in notification shown when a USB device gets plugged in.">
-        USB device
-      </message>
-      <message name="IDS_CROSUSB_NOTIFICATION_ARCVM" desc="Name for ARCVM in USB attach notification when a USB device gets plugged in.">
-        Android apps
-      </message>
-      <message name="IDS_CROSUSB_NOTIFICATION_ARCVM_BUTTON" desc="Button text of name for ARCVM in USB attach notification when a USB device gets plugged in.">
-        Android
-      </message>
-      <message name="IDS_CROSUSB_NOTIFICATION_OR" desc="Word between multiple VM names in notification shown to user when a USB device gets plugged in.">
-        or
-      </message>
-    </if>
-
     <!-- Audio device strings. -->
     <message name="IDS_DEFAULT_AUDIO_DEVICE_NAME" desc="System default audio device (microphone or loudspeaker). This is typically presented to users in a drop-down list of device choices.">
         Default

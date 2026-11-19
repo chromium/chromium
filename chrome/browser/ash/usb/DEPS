@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/profiles",
-  "+chrome/grit",
 
   "+ui/message_center/message_center.h",
 ]

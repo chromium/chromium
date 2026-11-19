@@ -12467,6 +12467,32 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_PLATFORM_KEYS_SELECT_CERT_DIALOG_TEXT" desc="The text in the dialog that prompts the user to select a certificate when an extension requests certificates through the platformKeys API.">
         <ph name="EXTENSION_NAME">$1<ex>My OpenVPN App</ex></ph> wants permanent access to a certificate to authenticate itself on your behalf.
       </message>
+
+      <!-- CrOSUsb Notification -->
+      <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION" desc="Content for notification shown to the user when a USB device gets plugged in.">
+        Open Settings to connect <ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph> to <ph name="USB_VM_NAME">$2<ex>Linux</ex></ph>
+      </message>
+      <message name="IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_TITLE" desc="Title for notification shown to the user when a USB device gets plugged in.">
+        USB device detected
+      </message>
+      <message name="IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM" desc="Label for notification button shown to the user when a USB device gets plugged in to allow a virtual machine to use the device">
+        Connect to <ph name="USB_VM_NAME">$1<ex>Linux</ex></ph>
+      </message>
+      <message name="IDS_CROSUSB_UNKNOWN_DEVICE_FROM_MANUFACTURER" desc="String describing an unknown device in notification shown when a USB device gets plugged in.">
+        USB device from <ph name="MANUFACTURER_NAME">$1<ex>Google</ex></ph>
+      </message>
+      <message name="IDS_CROSUSB_UNKNOWN_DEVICE" desc="String describing an unknown device in notification shown when a USB device gets plugged in.">
+        USB device
+      </message>
+      <message name="IDS_CROSUSB_NOTIFICATION_ARCVM" desc="Name for ARCVM in USB attach notification when a USB device gets plugged in.">
+        Android apps
+      </message>
+      <message name="IDS_CROSUSB_NOTIFICATION_ARCVM_BUTTON" desc="Button text of name for ARCVM in USB attach notification when a USB device gets plugged in.">
+        Android
+      </message>
+      <message name="IDS_CROSUSB_NOTIFICATION_OR" desc="Word between multiple VM names in notification shown to user when a USB device gets plugged in.">
+        or
+      </message>
     </messages>
   </release>
 </grit>
