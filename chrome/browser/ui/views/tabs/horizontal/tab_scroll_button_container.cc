@@ -83,7 +83,7 @@ TabScrollButtonContainer::TabScrollButtonIPHController::
       tab_scroll_button_container_(tab_scroll_button_container) {
   CHECK(tab_scroll_button_container_);
   observation_.Observe(tab_scroll_button_container_);
-  if (tab_scroll_button_container_->GetVisible()) {
+  if (tab_scroll_button_container_->IsDrawn()) {
     show_iph_timer_.Start(
         FROM_HERE, kIPHDisplayDelay,
         base::BindOnce(&TabScrollButtonContainer::TabScrollButtonIPHController::
@@ -99,7 +99,10 @@ void TabScrollButtonContainer::TabScrollButtonIPHController::
     OnViewVisibilityChanged(views::View* observed_view,
                             views::View* starting_view,
                             bool visible) {
-  if (!visible) {
+  // `visible` reflects `starting_view`, so ancestor or Widget visibility
+  // changes notify hidden descendants as well. Check `IsDrawn()` too so the
+  // timer only runs when the container itself is actually shown.
+  if (!visible || !tab_scroll_button_container_->IsDrawn()) {
     show_iph_timer_.Stop();
     return;
   }
@@ -124,6 +127,9 @@ void TabScrollButtonContainer::TabScrollButtonIPHController::
 }
 
 void TabScrollButtonContainer::TabScrollButtonIPHController::MaybeShowIPH() {
+  if (!tab_scroll_button_container_->IsDrawn()) {
+    return;
+  }
   if (auto* user_education =
           BrowserUserEducationInterface::From(browser_window_interface_)) {
     user_education->MaybeShowFeaturePromo(

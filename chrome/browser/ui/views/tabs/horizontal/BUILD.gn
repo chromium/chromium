@@ -92,6 +92,8 @@ source_set("unit_tests") {
     "//chrome/browser/ui/views/tabs:tab_strip_button",
     "//chrome/browser/ui/views/tabs/common:impl",
     "//chrome/test:test_support",
+    "//chrome/test/user_education:impl",
+    "//components/feature_engagement/public",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

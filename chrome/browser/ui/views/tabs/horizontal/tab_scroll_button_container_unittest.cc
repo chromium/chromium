@@ -6,10 +6,13 @@
 
 #include <memory>
 
+#include "base/test/task_environment.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -132,4 +135,52 @@ TEST_F(TabScrollButtonContainerTest,
                 ->background_color()
                 .toSkColor(),
             expected_inactive_hover_color);
+}
+
+TEST_F(TabScrollButtonContainerTest,
+       IphOnlyTriggersWhenContainerIsActuallyDrawn) {
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface;
+  testing::NiceMock<MockBrowserUserEducationInterface> user_education(
+      &browser_window_interface);
+  ON_CALL(user_education, HasFeaturePromoBeenDismissed(testing::Ref(
+                              feature_engagement::kIPHTabScrollButtonFeature)))
+      .WillByDefault(testing::Return(false));
+  ON_CALL(user_education, MaybeShowFeaturePromo(testing::_))
+      .WillByDefault(testing::Return(true));
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  views::View* root_container =
+      widget->SetContentsView(std::make_unique<views::View>());
+  TabScrollButtonContainer* scroll_container = root_container->AddChildView(
+      std::make_unique<TabScrollButtonContainer>(&browser_window_interface));
+  scroll_container->SetVisible(false);
+
+  // Showing the widget propagates a visibility change with `visible = true`
+  // from the RootView even though `scroll_container` is hidden. The IPH
+  // must not trigger while the container is not drawn.
+  EXPECT_CALL(user_education, MaybeShowFeaturePromo(testing::_)).Times(0);
+  widget->ShowInactive();
+  task_environment()->FastForwardBy(base::Seconds(5));
+  testing::Mock::VerifyAndClearExpectations(&user_education);
+
+  // Hiding before the delay elapses should also cancel the IPH timer.
+  scroll_container->SetVisible(true);
+  task_environment()->FastForwardBy(base::Seconds(1));
+  scroll_container->SetVisible(false);
+  EXPECT_CALL(user_education, MaybeShowFeaturePromo(testing::_)).Times(0);
+  task_environment()->FastForwardBy(base::Seconds(5));
+  testing::Mock::VerifyAndClearExpectations(&user_education);
+
+  // Keeping the container drawn for the full delay triggers the IPH.
+  EXPECT_CALL(
+      user_education,
+      MaybeShowFeaturePromo(testing::Field(
+          &user_education::FeaturePromoParams::feature,
+          testing::Property(
+              &raw_ref<const base::Feature>::get,
+              testing::Ref(feature_engagement::kIPHTabScrollButtonFeature)))))
+      .Times(1);
+  scroll_container->SetVisible(true);
+  task_environment()->FastForwardBy(base::Seconds(5));
 }
