@@ -99,17 +99,7 @@ bool IsInputMethodEngineAllowed(const std::vector<std::string>& allowlist,
 }
 
 bool IsAppTypeAllowed(chromeos::AppType app_type) {
-  if (base::FeatureList::IsEnabled(features::kOrcaArc) &&
-      app_type == chromeos::AppType::ARC_APP) {
-    return true;
-  }
-
-  constexpr auto kAppTypeDenylist = base::MakeFixedFlatSet<chromeos::AppType>({
-      chromeos::AppType::ARC_APP,
-      chromeos::AppType::CROSTINI_APP,
-  });
-
-  return !kAppTypeDenylist.contains(app_type);
+  return app_type != chromeos::AppType::CROSTINI_APP;
 }
 
 bool IsTriggerableFromConsentStatus(
