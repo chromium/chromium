@@ -6252,6 +6252,261 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('', searchbox.getInputElement().inputElement.value);
  });
 
+ async function setUpForFastTab(aimButtonVisible: boolean) {
+   callbackRouter.setInputState(
+       createDefaultOmniboxInputState({text: '', isFocused: true}));
+   await microtasksFinished();
+   testProxy.page.setAimButtonVisible(aimButtonVisible);
+   await microtasksFinished();
+ }
+
+ // Types `text` into the input, which queries autocomplete for it.
+ async function typeIntoInput(text: string) {
+   const inputEl = searchbox.getInputElement().inputElement;
+   inputEl.value = text;
+   inputEl.setSelectionRange(text.length, text.length);
+   inputEl.dispatchEvent(
+       new InputEvent('input', {bubbles: true, composed: true}));
+   await microtasksFinished();
+ }
+
+ // Presses Tab on the input, like a user does, and returns the event.
+ async function pressTabOnInput(shiftKey = false) {
+   const tabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     shiftKey,
+     bubbles: true,
+     cancelable: true,
+     composed: true,
+   });
+   searchbox.getInputElement().inputElement.dispatchEvent(tabEvent);
+   await microtasksFinished();
+   return tabEvent;
+ }
+
+ function createKeywordChipMatch(keyword: string) {
+   return createSearchMatch({
+     allowedToBeDefaultMatch: true,
+     fillIntoEdit: keyword,
+     keywordModel: createMatchKeywordModel({
+       type: KeywordType.kChip,
+       keyword,
+       chipHint: `Search ${keyword}`,
+     }),
+   });
+ }
+
+ test('TabWaitsForResultsOfTypedInput', async () => {
+   await setUpForFastTab(/*aimButtonVisible=*/ true);
+   await typeIntoInput('cc');
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+     queryId: searchbox.activeQueryId,
+     input: 'cc',
+     matches: [createSearchMatch({allowedToBeDefaultMatch: true})],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   // Type 's' and press Tab before the 'ccs' results arrive. Tab waits instead
+   // of focusing the AI Mode button based on the 'cc' results.
+   await typeIntoInput('ccs');
+   const queryId = searchbox.activeQueryId;
+   const tabEvent = await pressTabOnInput();
+   assertTrue(tabEvent.defaultPrevented);
+   assertFalse(searchbox.isAiModeVirtualFocused());
+   assertFalse(searchbox.keywordModeManager.isInKeywordMode);
+
+   // The 'ccs' results have a keyword chip, so Tab enters keyword mode.
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+     queryId,
+     input: 'ccs',
+     matches: [createKeywordChipMatch('ccs')],
+   }));
+   await microtasksFinished();
+   assertEquals(0, searchbox.selection.line);
+   assertEquals(SelectionLineState.kKeywordMode, searchbox.selection.state);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertFalse(searchbox.isAiModeVirtualFocused());
+ });
+
+ test('TabWaitsForResultsOfTypedInputWhenDropdownClosed', async () => {
+   await setUpForFastTab(/*aimButtonVisible=*/ true);
+   searchbox.focusInput();
+   await microtasksFinished();
+
+   // Type and press Tab before any results arrive. Tab waits instead of
+   // focusing the AI Mode button.
+   await typeIntoInput('ccs');
+   const queryId = searchbox.activeQueryId;
+   assertFalse(searchbox.dropdownIsVisible);
+   const tabEvent = await pressTabOnInput();
+   assertTrue(tabEvent.defaultPrevented);
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+     queryId,
+     input: 'ccs',
+     matches: [createKeywordChipMatch('ccs')],
+   }));
+   await microtasksFinished();
+   assertEquals(SelectionLineState.kKeywordMode, searchbox.selection.state);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertFalse(searchbox.isAiModeVirtualFocused());
+ });
+
+ test('EnterWhileTabWaitsForResultsIsDropped', async () => {
+   await setUpForFastTab(/*aimButtonVisible=*/ true);
+   searchbox.focusInput();
+   await microtasksFinished();
+
+   // Type and press Tab before any results arrive, so Tab waits.
+   await typeIntoInput('ccs');
+   const queryId = searchbox.activeQueryId;
+   assertFalse(searchbox.dropdownIsVisible);
+   const tabEvent = await pressTabOnInput();
+   assertTrue(tabEvent.defaultPrevented);
+
+   // Press Enter while Tab waits. It's dropped instead of submitting 'ccs'
+   // before Tab enters keyword mode.
+   testProxy.handler.resetResolver('openAutocompleteMatch');
+   const enterEvent = new KeyboardEvent('keydown', {
+     key: 'Enter',
+     bubbles: true,
+     cancelable: true,
+     composed: true,
+   });
+   searchbox.getInputElement().inputElement.dispatchEvent(enterEvent);
+   await microtasksFinished();
+   assertTrue(enterEvent.defaultPrevented);
+   assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+
+   // When the results arrive, Tab enters keyword mode and Enter isn't
+   // replayed.
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+     queryId,
+     input: 'ccs',
+     matches: [createKeywordChipMatch('ccs')],
+   }));
+   await microtasksFinished();
+   assertEquals(SelectionLineState.kKeywordMode, searchbox.selection.state);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+ });
+
+ test('TypingDropsTabWaitingForResults', async () => {
+   await setUpForFastTab(/*aimButtonVisible=*/ true);
+
+   // Type, press Tab, and keep typing before the results arrive.
+   await typeIntoInput('ccs');
+   const tabEvent = await pressTabOnInput();
+   assertTrue(tabEvent.defaultPrevented);
+   searchbox.getInputElement().inputElement.dispatchEvent(new KeyboardEvent(
+       'keydown', {key: 'q', bubbles: true, cancelable: true, composed: true}));
+   await typeIntoInput('ccsq');
+
+   // Tab doesn't act on the results for the newer input.
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+     queryId: searchbox.activeQueryId,
+     input: 'ccsq',
+     matches: [createKeywordChipMatch('ccsq')],
+   }));
+   await microtasksFinished();
+   assertEquals(0, searchbox.selection.line);
+   assertEquals(SelectionLineState.kNormal, searchbox.selection.state);
+   assertFalse(searchbox.keywordModeManager.isInKeywordMode);
+ });
+
+ test('ShiftTabWaitsForResultsOfTypedInput', async () => {
+   await setUpForFastTab(/*aimButtonVisible=*/ false);
+   searchbox.focusInput();
+   await microtasksFinished();
+   handler.reset();
+
+   // Type and press Shift+Tab before the results arrive. Shift+Tab waits
+   // instead of moving focus out of the omnibox while the dropdown is closed.
+   await typeIntoInput('abc');
+   const queryId = searchbox.activeQueryId;
+   assertFalse(searchbox.dropdownIsVisible);
+   const tabEvent = await pressTabOnInput(/*shiftKey=*/ true);
+   assertTrue(tabEvent.defaultPrevented);
+   assertEquals(0, handler.getCallCount('advanceFocus'));
+
+   // When the results arrive, Shift+Tab wraps around to the last match.
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+     queryId,
+     input: 'abc',
+     matches: [
+       createSearchMatch({allowedToBeDefaultMatch: true}),
+       createSearchMatch(),
+     ],
+   }));
+   await microtasksFinished();
+   assertEquals(1, searchbox.selection.line);
+   assertEquals(SelectionLineState.kNormal, searchbox.selection.state);
+   assertEquals(0, handler.getCallCount('advanceFocus'));
+ });
+
+ test('TabDoesNotWaitForZeroSuggestResults', async () => {
+   await setUpForFastTab(/*aimButtonVisible=*/ true);
+   searchbox.focusInput();
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: 'https://example.com',
+     isFocused: true,
+     matchesUpdate: MatchesUpdate.kQueryZps,
+   }));
+   await microtasksFinished();
+   const queryArgs = testProxy.handler.getArgs('queryAutocomplete');
+   const [, , , , , , isOnFocus] = queryArgs[queryArgs.length - 1];
+   assertTrue(isOnFocus);
+   assertFalse(searchbox.dropdownIsVisible);
+
+   // The zero-prefix results haven't arrived, but Tab is handled right away
+   // and focuses the AI Mode button.
+   const tabEvent = await pressTabOnInput();
+   assertTrue(tabEvent.defaultPrevented);
+   assertEquals(searchbox.$.composeButton, searchbox.shadowRoot.activeElement);
+ });
+
+ test('TabFromNestedControlDoesNotWaitForResults', async () => {
+   await setUpForFastTab(/*aimButtonVisible=*/ true);
+   await typeIntoInput('cc');
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+     queryId: searchbox.activeQueryId,
+     input: 'cc',
+     matches: [createSearchMatch({allowedToBeDefaultMatch: true})],
+   }));
+   await microtasksFinished();
+   assertTrue(searchbox.dropdownIsVisible);
+
+   // Type 's', then press Tab on a control nested in the input wrapper before
+   // the 'ccs' results arrive. Tab doesn't wait, so it doesn't prevent native
+   // focus navigation.
+   await typeIntoInput('ccs');
+   const queryId = searchbox.activeQueryId;
+   const entrypoint = searchbox.shadowRoot.querySelector(
+       'omnibox-popup-contextual-entrypoint');
+   assertTrue(!!entrypoint);
+   const tabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     bubbles: true,
+     cancelable: true,
+     composed: true,
+   });
+   entrypoint.dispatchEvent(tabEvent);
+   await microtasksFinished();
+   assertFalse(tabEvent.defaultPrevented);
+
+   // Tab isn't replayed when the 'ccs' results arrive.
+   searchbox.onAutocompleteResultChanged(createAutocompleteResult({
+     queryId,
+     input: 'ccs',
+     matches: [createKeywordChipMatch('ccs')],
+   }));
+   await microtasksFinished();
+   assertEquals(SelectionLineState.kNormal, searchbox.selection.state);
+   assertFalse(searchbox.keywordModeManager.isInKeywordMode);
+ });
+
  test('AimButtonUserInputState', async () => {
    const composeButton = searchbox.$.composeButton;
    assertTrue(!!composeButton);

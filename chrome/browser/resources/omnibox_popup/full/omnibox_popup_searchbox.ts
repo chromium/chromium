@@ -830,6 +830,10 @@ export class OmniboxPopupSearchboxElement extends
     return true;
   }
 
+  override shouldTabWaitForResults(): boolean {
+    return this.virtualFocusEnabled;
+  }
+
   override isBackgroundTabNavigation(e: KeyboardEvent|MouseEvent): boolean {
     // Duplicate logic from
     // `searchbox::ComputeOpenDispositionFromModifiersAndLogToUma()` to
