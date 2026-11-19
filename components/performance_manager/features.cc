@@ -190,7 +190,13 @@ const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible{
     &kPMProcessPriorityPolicy, "rendered_out_of_view_is_not_visible", false};
 
 const base::FeatureParam<bool> kRendererHighInitialPriority{
-    &kPMProcessPriorityPolicy, "renderer_high_initial_priority", false};
+    &kPMProcessPriorityPolicy, "renderer_high_initial_priority",
+#if BUILDFLAG(IS_ANDROID)
+    false
+#else
+    true
+#endif
+};
 
 BASE_FEATURE(kSubframeNotVisibleIfParentNotVisible,
              base::FEATURE_DISABLED_BY_DEFAULT);

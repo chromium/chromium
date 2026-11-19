@@ -15151,27 +15151,6 @@
             ]
         }
     ],
-    "PMProcessPriorityPolicy": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PMProcessPriorityPolicy",
-                    "params": {
-                        "renderer_high_initial_priority": "true"
-                    },
-                    "enable_features": [
-                        "PMProcessPriorityPolicy"
-                    ]
-                }
-            ]
-        }
-    ],
     "PMWithheldFromViewVoter": [
         {
             "platforms": [
