@@ -11,10 +11,11 @@ import org.chromium.build.annotations.Nullable;
 
 /**
  * An activity level delegate to handle native initialization and activity lifecycle related tasks
- * that depend on native code. The lifecycle callbacks defined here are called synchronously with
- * their counterparts in Activity only if the native libraries have been loaded. If the libraries
- * have not been loaded yet, the calls in ChromeActivityNativeDelegate will be in the right order
- * among themselves, but can be deferred and out of sync wrt to Activity calls.
+ * that depend on native code. The lifecycle callbacks defined here (other than {@link
+ * #onCreateWithNative()}) are called synchronously with their counterparts in Activity only after
+ * native initialization and the activity's profile have loaded. Until then, the calls in
+ * ChromeActivityNativeDelegate will be in the right order among themselves, but can be deferred and
+ * out of sync wrt to Activity calls.
  */
 @NullMarked
 public interface ChromeActivityNativeDelegate {

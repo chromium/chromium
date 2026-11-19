@@ -13,11 +13,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
@@ -174,6 +176,7 @@ public class ChromeBrowserInitializer {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     try (TraceEvent _ = TraceEvent.scoped("Activity.maybePreconnect")) {
+                        if (delegate.isActivityFinishingOrDestroyed()) return;
                         // Run as early as possible. It should also be in a separate task (and
                         // after) initNetworkChangeNotifier, as this posts a task to the UI thread
                         // that would interfere with preconneciton otherwise. By preconnecting
@@ -226,9 +229,9 @@ public class ChromeBrowserInitializer {
                                 .reportStartupMode(startupMode));
 
         if (isAsync) {
-            // We want to start this queue once the C++ startup tasks have run; allow the
-            // C++ startup to run asynchronously, and set it up to start the Java queue once
-            // it has finished.
+            // We want to start this queue once C++ startup tasks have run and the delegate's
+            // ProfileProvider (if any) is available, so post-native init and *WithNative lifecycle
+            // callbacks wait for the activity's profile.
             startChromeBrowserProcessesAsync(
                     delegate.shouldStartGpuProcess(),
                     delegate.startMinimalBrowser(),
@@ -240,7 +243,15 @@ public class ChromeBrowserInitializer {
 
                         @Override
                         public void onSuccess(@Nullable StartupMetrics metrics) {
-                            tasks.start(false);
+                            OneshotSupplier<ProfileProvider> profileProviderSupplier =
+                                    delegate.getProfileProviderSupplier();
+                            if (profileProviderSupplier != null
+                                    && !delegate.isActivityFinishingOrDestroyed()) {
+                                profileProviderSupplier.runSyncOrOnAvailable(
+                                        _ -> tasks.start(false));
+                            } else {
+                                tasks.start(false);
+                            }
                         }
                     });
         } else {

@@ -837,6 +837,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     protected abstract OneshotSupplier<ProfileProvider> createProfileProvider();
 
     /** Return a supplier for the ProfileProvider. */
+    @Override
     public OneshotSupplier<ProfileProvider> getProfileProviderSupplier() {
         // TODO(crbug.com/40275690): Convert to a thrown exception if no asserts are discovered.
         assert mProfileProviderSupplier != null;

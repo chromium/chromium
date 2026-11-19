@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.init;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 
 /**
  * Interface that any {@link AsyncInitializationActivity} can use to interact with this delegate
@@ -97,5 +99,12 @@ public interface BrowserParts {
      */
     default boolean startMinimalBrowser() {
         return false;
+    }
+
+    /**
+     * @return The {@link OneshotSupplier} for the {@link ProfileProvider}, or null if none.
+     */
+    default @Nullable OneshotSupplier<ProfileProvider> getProfileProviderSupplier() {
+        return null;
     }
 }
