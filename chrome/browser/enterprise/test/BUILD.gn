@@ -50,7 +50,6 @@ source_set("test_support") {
 
     deps += [
       "//chrome/browser:browser_process",
-      "//chrome/test:test_support",
       "//components/enterprise",
       "//components/enterprise:test_support",
     ]

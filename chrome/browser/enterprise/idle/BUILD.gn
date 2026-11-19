@@ -18,10 +18,18 @@ source_set("unit_tests") {
     ]
     deps += [
       "//base",
+      "//base/test:test_support",
+      "//chrome/browser/browsing_data:constants",
       "//chrome/browser/enterprise:impl",
-      "//chrome/test:test_support",
+      "//chrome/common:constants",
+      "//chrome/test/base:testing_profile",
+      "//content/test:test_support",
+      "//testing/gmock",
       "//testing/gtest",
     ]
+    if (toolkit_views) {
+      deps += [ "//chrome/test/views" ]
+    }
   }
 }
 
@@ -35,15 +43,24 @@ if (!is_android && !is_chromeos_device && (is_win || is_mac || is_linux)) {
     deps = [
       "//base",
       "//chrome/browser/enterprise:impl",
+      "//chrome/browser/policy",
       "//chrome/browser/ui/focus",
       "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/profiles:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/user_education",
-      "//chrome/test:test_support",
       "//chrome/test/base:chrome_test_path_utils",
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:interactive_test_utils",
+      "//chrome/test/base:testing_profile",
+      "//chrome/test/base:ui_test_utils",
+      "//components/keep_alive_registry",
+      "//components/policy/core/common:test_support",
       "//content/test:test_support",
       "//testing/gmock",
       "//ui/base:ozone_buildflags",
+      "//ui/base:test_support",
     ]
     if (use_ozone) {
       deps += [ "//ui/ozone" ]

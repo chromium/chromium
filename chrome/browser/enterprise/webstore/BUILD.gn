@@ -13,7 +13,6 @@ source_set("unit_tests") {
     deps += [
       "//base",
       "//chrome/browser/enterprise:impl",
-      "//chrome/test:test_support",
       "//components/enterprise:test_support",
       "//testing/gtest",
     ]

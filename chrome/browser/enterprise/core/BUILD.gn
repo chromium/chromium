@@ -42,7 +42,9 @@ source_set("unit_tests") {
       ":core",
       ":test_support",
       "//base",
-      "//chrome/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/test/base:testing_profile",
+      "//content/test:test_support",
       "//testing/gtest",
     ]
   }

@@ -30,9 +30,12 @@ source_set("unit_tests") {
 
   deps = [
     "//base",
+    "//chrome/app:branded_strings",
     "//chrome/browser/enterprise:impl",
-    "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//chrome/test/base:testing_profile",
+    "//components/strings:components_strings",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 
@@ -42,7 +45,10 @@ source_set("unit_tests") {
       "oidc_managed_profile_creation_delegate_unittest.cc",
       "token_managed_profile_creation_delegate_unittest.cc",
     ]
-    deps += [ "//components/enterprise:test_support" ]
+    deps += [
+      "//chrome/browser/profiles:profile_test_util",
+      "//components/enterprise:test_support",
+    ]
   }
 }
 
@@ -78,12 +84,15 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/signin",
-      "//chrome/test:test_support",
       "//chrome/test/base:profile_lifecycle_test_utils",
+      "//chrome/test/base:ui_test_utils",
+      "//chrome/test/interaction",
       "//components/device_signals/core/browser:pref_names",
       "//components/enterprise:test_support",
+      "//components/policy/core/common:test_support",
       "//components/policy/test_support",
       "//components/prefs",
+      "//components/sync:test_support",
       "//content/test:test_support",
       "//google_apis",
       "//testing/gmock",

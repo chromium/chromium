@@ -40,7 +40,6 @@ if (!is_android) {
       "//base",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui/browser_window",
-      "//chrome/test:test_support",
       "//content/test:test_support",
       "//testing/gmock",
     ]

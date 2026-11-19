@@ -9,8 +9,9 @@ source_set("unit_tests") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/enterprise:impl",
-    "//chrome/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

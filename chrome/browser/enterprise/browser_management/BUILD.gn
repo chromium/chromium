@@ -46,7 +46,11 @@ if (!is_android) {
 
     deps = [
       "//base",
-      "//chrome/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/enterprise",
+      "//chrome/test/base:in_process_browser_test",
+      "//components/policy/core/common",
+      "//components/prefs",
       "//content/test:test_support",
       "//testing/gmock",
     ]

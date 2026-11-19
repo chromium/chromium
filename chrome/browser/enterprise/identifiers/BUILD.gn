@@ -11,10 +11,12 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/enterprise:impl",
-    "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//chrome/test/base:testing_profile",
     "//components/enterprise:test_support",
     "//components/enterprise/isolated_mode",
+    "//components/policy/core/common:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 

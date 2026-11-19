@@ -12,8 +12,10 @@ source_set("unit_tests") {
     sources += [ "saml_response_parser_unittest.cc" ]
     deps += [
       "//base",
+      "//base/test:test_support",
       "//chrome/browser/enterprise:impl",
-      "//chrome/test:test_support",
+      "//services/data_decoder/public/cpp:test_support",
+      "//testing/gmock",
       "//testing/gtest",
     ]
   }
@@ -35,8 +37,12 @@ if (!is_android && (is_win || is_mac || is_linux)) {
       "//chrome/browser/enterprise/signin:test_support",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/signin",
-      "//chrome/test:test_support",
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:ui_test_utils",
+      "//components/ukm:test_support",
       "//content/test:test_support",
+      "//net:test_support",
+      "//services/data_decoder/public/cpp:test_support",
       "//testing/gmock",
     ]
   }

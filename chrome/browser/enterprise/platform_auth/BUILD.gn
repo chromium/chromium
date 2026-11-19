@@ -50,7 +50,6 @@ source_set("unit_tests") {
     ":features",
     "//base",
     "//chrome/browser/enterprise:impl",
-    "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//testing/gtest",
   ]
@@ -77,6 +76,11 @@ source_set("unit_tests") {
       "platform_auth_navigation_throttle_unittest.cc",
       "platform_auth_provider_manager_unittest.cc",
     ]
+    deps += [
+      "//chrome/test/base:testing_profile",
+      "//components/sync_preferences:test_support",
+      "//content/test:test_support",
+    ]
   }
 
   if (is_mac) {
@@ -91,6 +95,9 @@ source_set("unit_tests") {
     deps += [
       "//chrome/test/base:testing_browser_process",
       "//components/enterprise/platform_auth:enterprise_platform_auth",
+      "//components/prefs:test_support",
+      "//net/traffic_annotation:test_support",
+      "//services/network:test_support",
       "//third_party/ocmock",
       "//url",
     ]
@@ -108,7 +115,6 @@ if (!is_android) {
       "//base",
       "//chrome/browser/enterprise:impl",
       "//chrome/browser/ui/browser_window",
-      "//chrome/test:test_support",
       "//content/test:test_support",
       "//testing/gmock",
     ]
@@ -123,6 +129,8 @@ if (!is_android) {
         "//chrome/browser/ui:browser_tabstrip",
         "//chrome/test/base:chrome_test_utils",
         "//chrome/test/base:platform_browser_test",
+        "//components/policy/core/common:test_support",
+        "//net:test_support",
       ]
     }
 
@@ -134,6 +142,7 @@ if (!is_android) {
         "scoped_cf_prefs_observer_override.h",
       ]
       deps += [
+        "//chrome/test/base:ui_test_utils",
         "//components/enterprise/platform_auth:enterprise_platform_auth",
         "//third_party/ocmock",
       ]
@@ -157,9 +166,10 @@ if (is_android) {
       "//base",
       "//chrome/android:chrome_jni_headers",
       "//chrome/browser/enterprise:impl",
-      "//chrome/test:test_support",
       "//chrome/test/base:chrome_test_utils",
+      "//components/policy/core/common:test_support",
       "//content/test:test_support",
+      "//net:test_support",
       "//testing/gmock",
     ]
   }
