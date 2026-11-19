@@ -10176,7 +10176,24 @@
             "platforms": [
                 "linux",
                 "mac",
-                "windows",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "arm": "3"
+                    },
+                    "enable_features": [
+                        "PdfGlicSummarize"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicPdfSummarizeButtonCros": [
+        {
+            "platforms": [
                 "chromeos"
             ],
             "experiments": [
