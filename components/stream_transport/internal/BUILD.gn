@@ -130,6 +130,8 @@ source_set("service") {
   ]
 
   sources = [
+    "client_session_starter.cc",
+    "client_session_starter.h",
     "transport_service_impl.cc",
     "transport_service_impl.h",
   ]
@@ -146,10 +148,12 @@ source_set("service") {
     ":features",
     ":session_stream_recorder",
     "//components/signin/public/base",
+    "//components/stream_transport/internal/proto",
     "//components/stream_transport/internal/upstream_message_client",
     "//components/stream_transport/public",
     "//components/stream_transport/public/proto_stream",
     "//components/stream_transport/public/proto_stream:factory",
+    "//google_apis",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -194,6 +198,7 @@ source_set("unit_tests") {
     "//components/stream_transport/public/proto_stream",
     "//components/stream_transport/test_support",
     "//components/stream_transport/test_support/proto_stream",
+    "//google_apis",
     "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",

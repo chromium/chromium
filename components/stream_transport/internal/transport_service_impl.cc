@@ -10,13 +10,17 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notimplemented.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/stream_transport/internal/client_session_starter.h"
 #include "components/stream_transport/internal/features.h"
 #include "components/stream_transport/internal/session_stream_recorder.h"
 #include "components/stream_transport/internal/transport_channel_impl.h"
@@ -123,6 +127,8 @@ TransportServiceImpl::TransportServiceImpl(
         base::BindOnce(&CreateStreamClient, url_loader_factory,
                        base::Unretained(identity_manager),
                        std::move(config.watch_sessions_endpoint)));
+    client_session_starter_ = std::make_unique<ClientSessionStarter>(
+        channel_.get(), identity_manager);
   }
 
   // The internals page is the only consumer of the recorded session history,
@@ -192,6 +198,9 @@ void TransportServiceImpl::OnIdentityManagerShutdown(
 
 void TransportServiceImpl::ResetForAccountChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (client_session_starter_) {
+    client_session_starter_->AbortPendingStartsForAccountChange();
+  }
   if (channel_) {
     channel_->ResetForAccountChange();
   }
@@ -202,6 +211,10 @@ void TransportServiceImpl::ResetForAccountChange() {
 
 void TransportServiceImpl::TearDownChannel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (client_session_starter_) {
+    auto starter = std::move(client_session_starter_);
+    starter->Clear();
+  }
   if (!channel_) {
     return;
   }
@@ -253,8 +266,17 @@ TransportSession* TransportServiceImpl::StartClientSession(
     PayloadType payload_type,
     const google::protobuf::MessageLite& message,
     StartClientSessionCallback callback) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!client_session_starter_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            base::unexpected(StartClientSessionError::kChannelUnavailable)));
+    return nullptr;
+  }
+  return client_session_starter_->StartClientSession(
+      session_id, payload_type, message, std::move(callback));
 }
 
 }  // namespace stream_transport

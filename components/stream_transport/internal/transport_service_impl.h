@@ -25,6 +25,7 @@ class MessageLite;
 
 namespace stream_transport {
 
+class ClientSessionStarter;
 class SessionStreamRecorderFactory;
 class TransportChannelImpl;
 
@@ -77,6 +78,7 @@ class TransportServiceImpl : public TransportService,
       session_stream_recorder_factory_;
 
   std::unique_ptr<TransportChannelImpl> channel_;
+  std::unique_ptr<ClientSessionStarter> client_session_starter_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

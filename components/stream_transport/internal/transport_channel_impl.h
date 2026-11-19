@@ -110,6 +110,21 @@ class TransportChannelImpl : public TransportChannel,
       const google::protobuf::MessageLite& message,
       InitialSendCompleteCallback callback);
 
+  // Sends a fire-and-forget upstream message for an unregistered session
+  // (e.g. a `CloseSession` cleanup command after a cancelled or rejected
+  // handshake where sequence 1 already succeeded on the server).
+  void SendUnregisteredUpstreamMessage(
+      std::string_view session_id,
+      int64_t client_sequence_number,
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DispatchUpstreamMessage(session_id, client_sequence_number,
+                            /*responding_to_sequence_number=*/std::nullopt,
+                            payload_type, message,
+                            InitialSendCompleteCallback());
+  }
+
   // MessageStreamClient::Observer:
   void OnStreamMessage(const std::string& message) override;
   void OnStreamStatus(const std::string& status) override;
@@ -131,6 +146,15 @@ class TransportChannelImpl : public TransportChannel,
 
   base::WeakPtr<TransportChannel> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  base::WeakPtr<TransportChannelImpl> GetImplWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  TransportSessionRegistryImpl* session_registry() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return session_registry_.get();
   }
 
   // Test-only: the resume body a (re)connect would send right now.
