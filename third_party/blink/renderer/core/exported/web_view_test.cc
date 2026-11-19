@@ -161,6 +161,7 @@
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/cursors.h"
+#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
@@ -7622,6 +7623,10 @@ TEST_F(WebViewTest, ApplyWebPreferencesSkipsPrewarmingEmptyFontFamilies) {
   empty_font_prefs.cursive_font_family_map.clear();
   empty_font_prefs.fantasy_font_family_map.clear();
   empty_font_prefs.math_font_family_map.clear();
+
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(FontCache::GetFontPrewarmer(), nullptr);
+#endif
 
   {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)

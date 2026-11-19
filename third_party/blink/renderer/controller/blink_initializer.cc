@@ -169,13 +169,6 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   // has been initialized.
   Partitions::InitializeArrayBufferPartition();
   V8Initializer::InitializeInSandboxAllocator();
-
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kAndroidSystemFontPrewarming)) {
-    static base::NoDestructor<FontPrewarmer> font_prewarmer;
-    FontCache::SetFontPrewarmer(font_prewarmer.get());
-  }
-#endif
 }
 
 void InitializeCommonWithIsolate(v8::Isolate* isolate) {
@@ -191,6 +184,12 @@ void Initialize(Platform* platform,
   DCHECK(binders);
   Platform::InitializeMainThread(platform, main_thread_scheduler);
   InitializeCommon(platform, binders);
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kAndroidSystemFontPrewarming)) {
+    static base::NoDestructor<FontPrewarmer> font_prewarmer;
+    FontCache::SetFontPrewarmer(font_prewarmer.get());
+  }
+#endif
   v8::Isolate* isolate = V8Initializer::InitializeMainThread();
   InitializeCommonWithIsolate(isolate);
 }
