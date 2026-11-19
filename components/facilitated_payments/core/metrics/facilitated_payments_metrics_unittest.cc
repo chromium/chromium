@@ -106,6 +106,22 @@ TEST(FacilitatedPaymentsMetricsTest, LogQrCodeValidationResult) {
       QrCodeValidationResult::kNotPaymentCode, /*expected_bucket_count=*/1);
 }
 
+// Tests that each source element type of a decoded QR code is logged.
+TEST(FacilitatedPaymentsMetricsTest, LogQrCodeSourceElementType) {
+  for (int i = 0; i <= static_cast<int>(QrCodeSourceElementType::kMaxValue);
+       ++i) {
+    const auto type = static_cast<QrCodeSourceElementType>(i);
+    SCOPED_TRACE(i);
+    base::HistogramTester histogram_tester;
+
+    LogQrCodeSourceElementType(type);
+
+    histogram_tester.ExpectUniqueSample(
+        "FacilitatedPayments.QrCode.SourceElementType", type,
+        /*expected_bucket_count=*/1);
+  }
+}
+
 TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopiedInIframe) {
   base::HistogramTester histogram_tester;
 

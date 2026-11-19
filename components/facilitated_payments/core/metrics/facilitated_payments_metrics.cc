@@ -207,6 +207,11 @@ void LogQrCodeDetectedUkm(ukm::SourceId ukm_source_id,
       .Record(ukm::UkmRecorder::Get());
 }
 
+void LogQrCodeSourceElementType(QrCodeSourceElementType type) {
+  base::UmaHistogramEnumeration("FacilitatedPayments.QrCode.SourceElementType",
+                                type);
+}
+
 void LogPixIframeIsSameOriginAsMainFrame(bool is_same_origin) {
   base::UmaHistogramBoolean("FacilitatedPayments.Pix.Iframe.IsSameOrigin",
                             is_same_origin);

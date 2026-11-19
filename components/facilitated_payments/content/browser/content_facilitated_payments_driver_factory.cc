@@ -12,6 +12,7 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/content/browser/security_checker.h"
@@ -89,6 +90,17 @@ QrCodeDetectionResult GetQrCodeDetectionResult(
   }
   return qr_code_count == 1 ? QrCodeDetectionResult::kSingleQrCodeFound
                             : QrCodeDetectionResult::kMultipleQrCodesFound;
+}
+
+QrCodeSourceElementType GetQrCodeSourceElementType(
+    wallet::WalletBarcodeSourceElement source_element) {
+  switch (source_element) {
+    case wallet::WalletBarcodeSourceElement::kImg:
+      return QrCodeSourceElementType::kImg;
+    case wallet::WalletBarcodeSourceElement::kCanvas:
+      return QrCodeSourceElementType::kCanvas;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -214,9 +226,12 @@ void ContentFacilitatedPaymentsDriverFactory::OnBarcodesDetected(
   std::vector<std::string> qr_codes;
   qr_codes.reserve(qr_code_count);
   for (wallet::WalletBarcode& barcode : barcodes) {
-    if (barcode.format == wallet::WalletBarcodeFormat::QR_CODE) {
-      qr_codes.push_back(std::move(barcode.raw_value));
+    if (barcode.format != wallet::WalletBarcodeFormat::QR_CODE) {
+      continue;
     }
+    LogQrCodeSourceElementType(
+        GetQrCodeSourceElementType(barcode.source_element));
+    qr_codes.push_back(std::move(barcode.raw_value));
   }
   driver.OnPaymentQrCodesDetected(qr_codes,
                                   render_frame_host->GetPageUkmSourceId());

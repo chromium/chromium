@@ -719,6 +719,34 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
             static_cast<int64_t>(QrCodeValidationResult::kValid));
 }
 
+// Tests that the source element of each decoded QR code, and only of QR codes,
+// is logged.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_QrCodes_LogsSourceElementTypes) {
+  static constexpr char kSourceElementTypeHistogram[] =
+      "FacilitatedPayments.QrCode.SourceElementType";
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  barcode_detector_->Finish(
+      {{.raw_value = kDuitNowCode,
+        .format = wallet::WalletBarcodeFormat::QR_CODE,
+        .source_element = wallet::WalletBarcodeSourceElement::kImg},
+       {.raw_value = kDuitNowCode,
+        .format = wallet::WalletBarcodeFormat::QR_CODE,
+        .source_element = wallet::WalletBarcodeSourceElement::kCanvas},
+       {.raw_value = kDuitNowCode,
+        .format = wallet::WalletBarcodeFormat::DATA_MATRIX,
+        .source_element = wallet::WalletBarcodeSourceElement::kCanvas}});
+
+  histogram_tester.ExpectBucketCount(kSourceElementTypeHistogram,
+                                     QrCodeSourceElementType::kImg, 1);
+  histogram_tester.ExpectBucketCount(kSourceElementTypeHistogram,
+                                     QrCodeSourceElementType::kCanvas, 1);
+  histogram_tester.ExpectTotalCount(kSourceElementTypeHistogram, 2);
+}
+
 // Tests that the QR codes of a pass that finishes after the page was navigated
 // away from are not validated, since they no longer belong to the shown page.
 TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,

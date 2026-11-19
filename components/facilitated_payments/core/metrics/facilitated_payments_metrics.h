@@ -373,6 +373,18 @@ enum class QrCodeValidationResult {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.QrCode.ValidationResult)
 
+// The kind of page element that a QR code was decoded from.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(QrCodeSourceElementType)
+enum class QrCodeSourceElementType {
+  kImg = 0,
+  kCanvas = 1,
+  kMaxValue = kCanvas,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.QrCode.SourceElementType)
+
 // Converts `PaymentLinkValidator::Scheme` to a string for logging.
 std::string SchemeToString(PaymentLinkValidator::Scheme scheme);
 
@@ -411,6 +423,9 @@ void LogQrCodeValidationResult(QrCodeScheme scheme,
 void LogQrCodeDetectedUkm(ukm::SourceId ukm_source_id,
                           QrCodeScheme scheme,
                           QrCodeValidationResult result);
+
+// Logs the kind of page element that a decoded QR code came from.
+void LogQrCodeSourceElementType(QrCodeSourceElementType type);
 
 // Log when a given payment link in a certain page for an eWallet push payment
 // flow is detected.

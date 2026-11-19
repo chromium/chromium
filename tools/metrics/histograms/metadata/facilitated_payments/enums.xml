@@ -273,6 +273,15 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:QrCodeScheme) -->
 
+<!-- LINT.IfChange(FacilitatedPayments.QrCode.SourceElementType) -->
+
+<enum name="FacilitatedPayments.QrCode.SourceElementType">
+  <int value="0" label="img element"/>
+  <int value="1" label="canvas element"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:QrCodeSourceElementType) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.QrCode.ValidationResult) -->
 
 <enum name="FacilitatedPayments.QrCode.ValidationResult">

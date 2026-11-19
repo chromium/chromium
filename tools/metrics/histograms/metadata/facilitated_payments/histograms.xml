@@ -749,6 +749,24 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="FacilitatedPayments.QrCode.SourceElementType"
+    enum="FacilitatedPayments.QrCode.SourceElementType"
+    expires_after="2027-04-30">
+  <owner>qihuizhao@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether a QR code decoded from a page's images came from an img or a
+    canvas element. Used to measure how many QR codes are only found because
+    canvas elements are extracted, since payment QR codes are often drawn on a
+    canvas by a JavaScript library. [Trigger] A payment QR code decoding pass
+    decodes at least one QR code on the page's primary main frame while it is
+    still active. [Frequency] Logged once for each QR code that the pass
+    decoded. Logged at most once per page, since detection stops for the page
+    once a QR code is found.
+  </summary>
+</histogram>
+
 <histogram name="FacilitatedPayments.QrCode.SuccessfulAttemptIndex"
     units="attempts" expires_after="2027-04-30">
   <owner>qihuizhao@google.com</owner>
