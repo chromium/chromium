@@ -781,7 +781,7 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
     pending_credentials.type = PasswordForm::Type::kGenerated;
   }
 
-  if (client_->IsPasswordChangeOngoing()) {
+  if (parsed_submitted_form.type == PasswordForm::Type::kChangeSubmission) {
     pending_credentials.type = PasswordForm::Type::kChangeSubmission;
   }
 

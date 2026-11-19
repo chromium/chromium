@@ -1418,25 +1418,28 @@ void PasswordFormManager::UpdateBackupPassword(
     const std::u16string& backup_password) {
   CHECK(parsed_submitted_form_);
   parsed_submitted_form_->SetPasswordBackupNote(backup_password);
+  parsed_submitted_form_->type = PasswordForm::Type::kChangeSubmission;
   CreatePendingCredentials();
 }
 
-void PasswordFormManager::PresaveGeneratedPasswordAsBackup(
-    const PasswordFormManager& form_manager,
+void PasswordFormManager::SaveWithBackupPassword(
     PasswordForm form,
-    const PasswordString& generated_password) {
-  CHECK(!form.password_value.empty());
+    const PasswordString& primary_password,
+    const PasswordString& backup_password) {
+  CHECK(!primary_password.empty());
+  CHECK(!backup_password.empty());
   CHECK(!form.username_value.empty());
-  form.SetPasswordBackupNote(generated_password.value());
-  // Create a temporary manager to avoid changing the state of |this|.
-  // TODO(crbug.com/422125487): Fix metrics duplication.
-  std::unique_ptr<PasswordFormManager> temporary_password_form_manager =
-      form_manager.Clone();
-  temporary_password_form_manager->parsed_submitted_form_ =
-      std::make_unique<PasswordForm>(std::move(form));
-  temporary_password_form_manager->is_submitted_ = true;
-  temporary_password_form_manager->CreatePendingCredentials();
-  temporary_password_form_manager->Save();
+  form.password_value = primary_password;
+  // Required by `PasswordToSave()` and `VotesUploader::UploadPasswordVote()`
+  // when `HasNewPasswordElement()` is true; cleared otherwise.
+  form.new_password_value =
+      form.HasNewPasswordElement() ? primary_password : PasswordString();
+  form.SetPasswordBackupNote(backup_password.value());
+  form.type = PasswordForm::Type::kChangeSubmission;
+  parsed_submitted_form_ = std::make_unique<PasswordForm>(std::move(form));
+  is_submitted_ = true;
+  CreatePendingCredentials();
+  Save();
 }
 
 void PasswordFormManager::PresaveGeneratedPasswordInternal(

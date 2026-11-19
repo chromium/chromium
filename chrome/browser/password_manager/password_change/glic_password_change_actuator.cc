@@ -356,9 +356,10 @@ GlicPasswordChangeActuator::GetOrGenerateNewPassword(
   // it.
   password_manager::PasswordForm form_to_save(*parsed_form);
   form_to_save.username_value = credential_.username_value;
-  form_to_save.password_value = credential_.password_value;
-  password_manager::PasswordFormManager::PresaveGeneratedPasswordAsBackup(
-      *form_manager_, std::move(form_to_save), *generated_password_);
+  // TODO(crbug.com/422125487): Fix metrics duplication.
+  form_manager_->Clone()->SaveWithBackupPassword(std::move(form_to_save),
+                                                 credential_.password_value,
+                                                 *generated_password_);
   // Refetch the credentials so that `form_manager_` is aware of the backup.
   form_manager_->GetFormFetcher()->Fetch();
 

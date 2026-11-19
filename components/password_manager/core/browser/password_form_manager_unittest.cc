@@ -2367,42 +2367,82 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordExistingCredential) {
             saved_form.password_value);
 }
 
-// Here the form manager uses real implementation of |FormSaver| instead of a
-// mock. FormSave is cloned within PresaveGeneratedPasswordAsBackup and
-// destroyed immediately, so there is no way verify the mocked call.
-TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordAsBackup) {
+TEST_P(PasswordFormManagerTest, SaveWithBackupPassword) {
   auto mock_store = base::MakeRefCounted<MockPasswordStoreInterface>();
   auto password_save_manager = std::make_unique<PasswordSaveManagerImpl>(
       /*profile_form_saver=*/std::make_unique<FormSaverImpl>(mock_store.get()),
       /*account_form_saver=*/nullptr);
-  PasswordFormManager form_manager(&client_, driver_.AsWeakPtr(),
-                                   observed_form_, fetcher_.get(),
-                                   std::move(password_save_manager), nullptr);
+  PasswordFormManager form_manager(
+      &client_, driver_.AsWeakPtr(), observed_form_only_password_fields_,
+      fetcher_.get(), std::move(password_save_manager), nullptr);
   fetcher_->NotifyFetchCompleted();
   const std::string signon_realm = "https://example.com/";
   const GURL url = GURL(signon_realm);
   const std::u16string username = u"user";
-  const std::u16string primary_password = u"primary";
-  const std::u16string backup_password = u"backup";
+  const PasswordString primary_password(u"primary_1!");
+  const PasswordString backup_password(u"backup_2@");
   PasswordForm input_form;
   input_form.url = url;
   input_form.signon_realm = signon_realm;
+  input_form.form_data = observed_form_only_password_fields_;
   input_form.username_value = username;
-  input_form.password_value = PasswordString(std::u16string(primary_password));
-  PasswordForm expected_form(input_form);
-  expected_form.SetPasswordBackupNote(backup_password);
+  // Pre-existing password values on `input_form` must be ignored.
+  input_form.password_value = PasswordString(u"ignored_password");
+  input_form.new_password_value = PasswordString(u"ignored_new_password");
+  input_form.password_element_renderer_id = FieldRendererId(4);
+  input_form.new_password_element_renderer_id = FieldRendererId(5);
   password_manager::StoredCredential saved_form;
 
-  EXPECT_CALL(*mock_store.get(), AddLogin).WillOnce(MoveArg<0>(&saved_form));
-  PasswordFormManager::PresaveGeneratedPasswordAsBackup(
-      form_manager, input_form,
-      PasswordString(std::u16string(backup_password)));
+  EXPECT_CALL(*mock_store, AddLogin).WillOnce(MoveArg<0>(&saved_form));
+  form_manager.Clone()->SaveWithBackupPassword(input_form, primary_password,
+                                               backup_password);
+  Mock::VerifyAndClearExpectations(mock_store.get());
 
-  EXPECT_EQ(expected_form.username_value, saved_form.username_value);
-  EXPECT_EQ(expected_form.password_value, saved_form.password_value);
-  EXPECT_EQ(expected_form.GetPasswordBackup(), saved_form.GetPasswordBackup());
-  EXPECT_EQ(expected_form.url, saved_form.url);
-  EXPECT_EQ(expected_form.signon_realm, saved_form.signon_realm);
+  EXPECT_FALSE(form_manager.is_submitted());
+  EXPECT_EQ(saved_form.username_value, username);
+  EXPECT_EQ(saved_form.password_value, primary_password);
+  EXPECT_EQ(saved_form.GetPasswordBackup(), backup_password.value());
+  EXPECT_EQ(saved_form.type, PasswordForm::Type::kChangeSubmission);
+  EXPECT_EQ(saved_form.url, url);
+  EXPECT_EQ(saved_form.signon_realm, signon_realm);
+
+  PasswordForm fetched_form = ToPasswordForm(saved_form);
+  fetched_form.in_store = PasswordForm::Store::kProfileStore;
+  fetched_form.match_type = affiliations::MatchType::kExact;
+  fetcher_->SetNonFederated({fetched_form});
+  fetcher_->NotifyFetchCompleted();
+
+  password_manager::StoredCredential updated_form;
+  EXPECT_CALL(*mock_store, UpdateLogin(_, _))
+      .WillOnce(MoveArg<0>(&updated_form));
+  form_manager.SaveWithBackupPassword(input_form, backup_password,
+                                      primary_password);
+  Mock::VerifyAndClearExpectations(mock_store.get());
+
+  EXPECT_EQ(updated_form.username_value, username);
+  EXPECT_EQ(updated_form.password_value, backup_password);
+  EXPECT_EQ(updated_form.GetPasswordBackup(), primary_password.value());
+  EXPECT_EQ(updated_form.type, PasswordForm::Type::kChangeSubmission);
+
+  // Also verify a form without `new_password_element_renderer_id` ignores any
+  // pre-existing `new_password_value`.
+  PasswordForm single_password_form = input_form;
+  single_password_form.new_password_element_renderer_id = FieldRendererId();
+  fetched_form = ToPasswordForm(updated_form);
+  fetched_form.in_store = PasswordForm::Store::kProfileStore;
+  fetched_form.match_type = affiliations::MatchType::kExact;
+  fetcher_->SetNonFederated({fetched_form});
+  fetcher_->NotifyFetchCompleted();
+
+  password_manager::StoredCredential updated_single_field_form;
+  EXPECT_CALL(*mock_store, UpdateLogin(_, _))
+      .WillOnce(MoveArg<0>(&updated_single_field_form));
+  form_manager.SaveWithBackupPassword(single_password_form, primary_password,
+                                      backup_password);
+
+  EXPECT_EQ(updated_single_field_form.password_value, primary_password);
+  EXPECT_EQ(updated_single_field_form.GetPasswordBackup(),
+            backup_password.value());
 }
 
 TEST_P(PasswordFormManagerTest, UpdateBackupPassword) {
@@ -2415,6 +2455,8 @@ TEST_P(PasswordFormManagerTest, UpdateBackupPassword) {
 
   EXPECT_EQ(form_manager_->GetPendingCredentials().GetPasswordBackup(),
             backup_password);
+  EXPECT_EQ(form_manager_->GetPendingCredentials().type,
+            PasswordForm::Type::kChangeSubmission);
 }
 
 TEST_P(PasswordFormManagerTest, RecordsExactMatch) {

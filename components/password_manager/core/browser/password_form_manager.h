@@ -234,13 +234,12 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   bool IsNewLogin() const;
   FormFetcher* GetFormFetcher();
   // Writes to the password store the credential defined by
-  // |form.username_value|, |form.password_value|, |form.url| with the
-  // |generated_password| as a backup password. Uses |form_manager| for writing
-  // but doesn't change its state.
-  static void PresaveGeneratedPasswordAsBackup(
-      const PasswordFormManager& form_manager,
-      PasswordForm form,
-      const PasswordString& generated_password);
+  // `form.username_value`, `form.url`, and `primary_password`, with
+  // `backup_password` stored as a backup password. Any existing
+  // `password_value` or `new_password_value` on `form` itself is ignored.
+  void SaveWithBackupPassword(PasswordForm form,
+                              const PasswordString& primary_password,
+                              const PasswordString& backup_password);
   void PresaveGeneratedPassword(const autofill::FormData& form_data,
                                 const PasswordString& generated_password);
   void PasswordNoLongerGenerated();

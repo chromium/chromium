@@ -121,9 +121,11 @@ void ChangePasswordFormFiller::TriggerFilling(
 
   password_manager::PasswordForm form_to_save(form);
   form_to_save.username_value = username_;
-  form_to_save.password_value = stored_password_;
-  password_manager::PasswordFormManager::PresaveGeneratedPasswordAsBackup(
-      *form_manager_, form_to_save, generated_password_);
+  // Save on a temporary clone so `form_manager_` stays unsubmitted until the
+  // renderer finishes filling the form.
+  // TODO(crbug.com/422125487): Fix metrics duplication.
+  form_manager_->Clone()->SaveWithBackupPassword(
+      std::move(form_to_save), stored_password_, generated_password_);
   form_manager_->GetFormFetcher()->Fetch();
 }
 
