@@ -179,8 +179,37 @@ void ImageWriter::UnmountVolumes(base::OnceClosure continuation) {
     ::FindVolumeClose(volume_finder);
   }
 
-  if (success)
+  if (success) {
+    DeleteDriveLayout();
     std::move(continuation).Run();
+  }
+}
+
+void ImageWriter::DeleteDriveLayout() {
+  // Writing raw sectors to the disk does not make Windows re-read its
+  // partition table, so without this Windows keeps the partitions that were on
+  // the device before the write. Once the volume locks taken in
+  // UnmountVolumes() are released, Windows can then remount those stale
+  // partitions on top of the new image and write to them, corrupting the image
+  // after it has been verified. Deleting the layout up front and asking
+  // Windows to re-read it makes Windows drop those partitions before anything
+  // is written.
+  //
+  // The partition table is intentionally not re-read again once the write
+  // completes: that would make Windows mount the new image's partitions (and
+  // possibly modify them) before the write is verified.
+  DWORD bytes_returned = 0;
+  if (!::DeviceIoControl(device_file_.GetPlatformFile(),
+                         IOCTL_DISK_DELETE_DRIVE_LAYOUT, nullptr, 0, nullptr, 0,
+                         &bytes_returned, nullptr)) {
+    // Not fatal: the write will still overwrite the partition table.
+    PLOG(WARNING) << "Unable to delete drive layout.";
+  }
+  if (!::DeviceIoControl(device_file_.GetPlatformFile(),
+                         IOCTL_DISK_UPDATE_PROPERTIES, nullptr, 0, nullptr, 0,
+                         &bytes_returned, nullptr)) {
+    PLOG(WARNING) << "Unable to update disk properties.";
+  }
 }
 
 }  // namespace image_writer

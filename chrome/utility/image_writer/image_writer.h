@@ -79,6 +79,13 @@ class ImageWriter final {
   void WriteChunk();
   void VerifyChunk();
 
+#if BUILDFLAG(IS_WIN)
+  // Removes the partition table from the device and makes Windows drop the
+  // partitions it has cached for it. Must be called after the volumes on the
+  // device have been locked and dismounted.
+  void DeleteDriveLayout();
+#endif
+
   base::FilePath image_path_;
   base::FilePath device_path_;
 
