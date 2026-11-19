@@ -22,7 +22,19 @@ class GlicSelectionOverlayWebUIBrowserTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
                        GlicSelectionOverlay) {
   RunTest("glic/selection_overlay/glic_selection_overlay_test.js",
-          "mocha.run()");
+          "runMochaSuite('GlicSelectionOverlay')");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
+                       GlicSelectionOverlayClick) {
+  RunTest("glic/selection_overlay/glic_selection_overlay_test.js",
+          "runMochaSuite('GlicSelectionOverlayClick')");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
+                       GlicSelectionOverlayLayout) {
+  RunTest("glic/selection_overlay/glic_selection_overlay_test.js",
+          "runMochaSuite('GlicSelectionOverlayLayout')");
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSelectionOverlayWebUIBrowserTest,
