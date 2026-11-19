@@ -141,19 +141,22 @@ public class AdaptiveUiProperties {
     public static final WritableObjectPropertyKey<@Nullable OnBackPressedCallback>
             BACK_PRESS_HANDLER = new WritableObjectPropertyKey<>();
 
-    /** Optional custom body {@link View} (such as inputs or lists) shown below the description. */
+    /**
+     * Optional custom body {@link View} (such as inputs or lists) shown below the description.
+     * Neither the sheet nor the dialog adds side padding around it, so the view supplies its own.
+     */
     public static final WritableObjectPropertyKey<@Nullable View> CUSTOM_VIEW =
             new WritableObjectPropertyKey<>();
 
     /**
      * Whether {@link #CUSTOM_VIEW} scrolls its own content (such as a list or a web view). When
      * {@code true}, the body is placed outside the container's scroll view and gets the height left
-     * between the description and the footer, so it must scroll whatever doesn't fit. In a sheet
-     * the body then spans the full sheet width, and the sheet can only be dragged down while
-     * neither the body nor any visible view inside it can scroll up. Set this whenever the body
-     * scrolls by itself: a scrolling body left inside the container's scroll view is laid out at
-     * its full height and fights that scroll view for touches. Read-only because the containers
-     * pick the layout once, when the entry is shown. Defaults to {@code false}.
+     * between the description and the footer, so it must scroll whatever doesn't fit. A sheet can
+     * then only be dragged down while neither the body nor any visible view inside it can scroll
+     * up. Set this whenever the body scrolls by itself: a scrolling body left inside the
+     * container's scroll view is laid out at its full height and fights that scroll view for
+     * touches. Read-only because the containers pick the layout once, when the entry is shown.
+     * Defaults to {@code false}.
      */
     public static final ReadableBooleanPropertyKey CUSTOM_VIEW_SCROLLS_ITSELF =
             new ReadableBooleanPropertyKey();

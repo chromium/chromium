@@ -846,6 +846,36 @@ public class AdaptiveUiSheetCoordinatorTest {
         assertEquals(0, oldParent.getChildCount());
     }
 
+    @Test
+    public void testCustomViewHasNoSideMargin() {
+        View customView = new View(mActivity);
+        AdaptiveUiSheetCoordinator content =
+                createContent(
+                        newModelBuilder()
+                                .with(AdaptiveUiProperties.DESCRIPTION, "Description")
+                                .with(AdaptiveUiProperties.CUSTOM_VIEW, customView)
+                                .with(AdaptiveUiProperties.FOOTER_MESSAGE, "Footer")
+                                .build());
+        int width = 1000;
+        View contentView = content.getContentView();
+        contentView.measure(
+                View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        contentView.layout(0, 0, width, contentView.getMeasuredHeight());
+
+        // Like the dialog, the sheet leaves side padding to the custom view; text keeps its margin.
+        int margin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.adaptive_ui_sheet_horizontal_margin);
+        assertEquals(width, customView.getWidth());
+        assertEquals(
+                width - 2 * margin, find(content, R.id.adaptive_ui_sheet_description).getWidth());
+        assertEquals(
+                width - 2 * margin,
+                find(content, R.id.adaptive_ui_sheet_footer_message).getWidth());
+    }
+
     // ---------------------------------------------------------------------------------------
     // Live updates.
     // ---------------------------------------------------------------------------------------
