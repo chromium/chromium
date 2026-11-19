@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,8 +62,8 @@ class FIFOClient {
 
  private:
   void RunTaskOnOwnThread() {
-    double interval_with_jitter = interval_ms_
-        + (static_cast<double>(std::rand()) / RAND_MAX) * jitter_range_ms_;
+    double interval_with_jitter =
+        interval_ms_ + base::RandDouble() * jitter_range_ms_;
     elapsed_ms_ += interval_with_jitter;
     ++counter_;
     RunTask();

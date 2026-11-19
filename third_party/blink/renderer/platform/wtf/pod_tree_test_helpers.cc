@@ -27,6 +27,8 @@
 
 #include <cstdlib>
 
+#include "base/rand_util.h"
+
 namespace blink::tree_test_helpers {
 
 void InitRandom(const int32_t seed) {
@@ -34,8 +36,7 @@ void InitRandom(const int32_t seed) {
 }
 
 int32_t NextRandom(const int32_t maximum_value) {
-  // rand_r is not available on Windows
-  return rand() % maximum_value;
+  return base::RandIntInclusive(0, maximum_value - 1);
 }
 
 }  // namespace blink::tree_test_helpers

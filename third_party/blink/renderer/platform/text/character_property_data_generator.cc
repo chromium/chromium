@@ -16,7 +16,6 @@
 
 #include <cassert>
 #include <cstring>
-#include <filesystem>
 #include <fstream>
 #include <iterator>
 #include <memory>
@@ -25,6 +24,7 @@
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "third_party/blink/renderer/platform/text/character_emoji_data.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
@@ -54,10 +54,10 @@ void InitializeIcu(const char* exec_path) {
   // ICU can't load the data file by itself because ICU tries to load the
   // versioned data file (e.g., "icudt73l.dat"), while the Chromium build system
   // creates the unversioned data file (e.g., "icudtl.dat").
-  std::filesystem::path path{exec_path};
-  path = path.parent_path() / "icudt" U_ICUDATA_TYPE_LETTER ".dat";
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(exec_path);
+  path = path.DirName().AppendASCII("icudt" U_ICUDATA_TYPE_LETTER ".dat");
 
-  std::ifstream data_ifstream(path, std::ios_base::binary);
+  std::ifstream data_ifstream(path.value().c_str(), std::ios_base::binary);
   if (!data_ifstream.is_open()) {
     // When the build config is `!use_icu_data_file`, the ICU data is built into
     // the binary.

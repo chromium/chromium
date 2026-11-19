@@ -34,6 +34,7 @@
 #include <cstdlib>
 #include <tuple>
 
+#include "base/rand_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
@@ -77,7 +78,8 @@ TEST(SharedBufferReaderTest, readDataInMultiples) {
   static constexpr size_t kBytesPerIteration = 64;
 
   Vector<char> test_data(kIterationsCount * kBytesPerIteration);
-  std::generate(test_data.begin(), test_data.end(), &std::rand);
+  std::generate(test_data.begin(), test_data.end(),
+                [] { return base::RandIntInclusive(0, RAND_MAX); });
 
   scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create(test_data);
   SharedBufferReader reader(shared_buffer);
@@ -95,7 +97,8 @@ TEST(SharedBufferReaderTest, readDataInMultiples) {
 
 TEST(SharedBufferReaderTest, clearSharedBufferBetweenCallsToReadData) {
   Vector<char> test_data(128);
-  std::generate(test_data.begin(), test_data.end(), &std::rand);
+  std::generate(test_data.begin(), test_data.end(),
+                [] { return base::RandIntInclusive(0, RAND_MAX); });
 
   scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create(test_data);
   SharedBufferReader reader(shared_buffer);

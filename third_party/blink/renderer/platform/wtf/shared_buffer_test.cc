@@ -37,6 +37,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -179,7 +180,8 @@ TEST(SharedBufferTest, getAsBytesLargeSegments) {
 
 TEST(SharedBufferTest, copy) {
   Vector<char> test_data(10000);
-  std::generate(test_data.begin(), test_data.end(), &std::rand);
+  std::generate(test_data.begin(), test_data.end(),
+                [] { return base::RandIntInclusive(0, RAND_MAX); });
 
   scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create(test_data);
   shared_buffer->Append(test_data);
@@ -246,7 +248,8 @@ TEST(SharedBufferTest, FlatData) {
 
 TEST(SharedBufferTest, GetIteratorAt) {
   Vector<char> data(300);
-  std::generate(data.begin(), data.end(), &std::rand);
+  std::generate(data.begin(), data.end(),
+                [] { return base::RandIntInclusive(0, RAND_MAX); });
   auto [first_segment, second_segment] = base::span(data).split_at(127u);
   auto buffer = SharedBuffer::Create();
   buffer->Append(first_segment);
