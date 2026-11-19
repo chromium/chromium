@@ -14,5 +14,11 @@
         false
       ]
     }
+  },
+  {
+    "os": [
+      "android"
+    ],
+    "reason_for_missing_test": "The pref is registered on Android once the on-device translation stack is built there."
   }
 ]
