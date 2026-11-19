@@ -315,6 +315,21 @@ class ContextualTasksWebContentsUserData
   void RemoveImplicitTabContext();
   void PreservePreStagedContext();
 
+  struct PendingImageContext {
+    std::string file_name;
+    std::string mime_type;
+    std::string bytes;
+  };
+  void SetPendingImageContext(std::string file_name,
+                              std::string mime_type,
+                              std::string bytes) {
+    pending_image_context_ = PendingImageContext{
+        std::move(file_name), std::move(mime_type), std::move(bytes)};
+  }
+  std::optional<PendingImageContext> TakePendingImageContext() {
+    return std::exchange(pending_image_context_, std::nullopt);
+  }
+
   // Associates `tab_session_id` with the task, if any, so the task knows which
   // tabs have been attached as context.
   void AssociateTabWithTask(SessionID tab_session_id);
@@ -460,6 +475,7 @@ class ContextualTasksWebContentsUserData
   base::flat_set<GURL> dismissed_implicit_urls_;
   bool preserve_prestaged_context_ = false;
   bool has_unsubmitted_query_ = false;
+  std::optional<PendingImageContext> pending_image_context_;
   base::RepeatingClosureList zero_state_callbacks_;
 
   base::flat_map<base::UnguessableToken,

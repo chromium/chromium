@@ -2479,6 +2479,7 @@ Called by update_net_error_codes.py.-->
   <int value="59" label="Ask Gemini"/>
   <int value="60" label="Ask Gemini (Image)"/>
   <int value="61" label="Ask Google about this page"/>
+  <int value="62" label="Ask Google about this image"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java:ContextMenuUma.Action) -->

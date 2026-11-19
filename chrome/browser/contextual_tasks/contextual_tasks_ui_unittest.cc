@@ -30,6 +30,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/list_accounts_response.pb.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
@@ -42,7 +43,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"  // nogncheck
 #include "chrome/browser/ui/actions/chrome_actions.h"    // nogncheck
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"  // nogncheck
@@ -147,6 +147,10 @@ class MockContextualTasksComposeboxHandler
               GetSelectedTabIds,
               (),
               (const, override));
+  MOCK_METHOD(void,
+              AddFileContextFromBytes,
+              (std::string, std::string, std::string),
+              (override));
 };
 
 class MockTaskInfoDelegate : public TaskInfoDelegate {
@@ -1527,6 +1531,57 @@ TEST_F(ContextualTasksUiTest, SetComposeboxHandler) {
 
   // Reset the handler in the controller before it goes out of scope to avoid
   // dangling pointer.
+  controller.SetComposeboxHandler(nullptr);
+}
+
+TEST_F(ContextualTasksUiTest, AddImageContextFromBytes_Immediate) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  auto handler = std::make_unique<MockContextualTasksComposeboxHandler>();
+  auto* handler_ptr = handler.get();
+  controller.SetComposeboxHandler(handler_ptr);
+
+  EXPECT_CALL(*handler_ptr,
+              AddFileContextFromBytes("image.png", "image/png", "bytes"))
+      .Times(1);
+  controller.AddImageContextFromBytes("image.png", "image/png", "bytes");
+
+  EXPECT_EQ(ContextualTasksWebContentsUserData::FromWebContents(
+                embedded_web_contents_.get()),
+            nullptr);
+
+  controller.SetComposeboxHandler(nullptr);
+}
+
+TEST_F(ContextualTasksUiTest, AddImageContextFromBytes_Queued) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUI controller(&web_ui);
+
+  auto handler = std::make_unique<MockContextualTasksComposeboxHandler>();
+  auto* handler_ptr = handler.get();
+  EXPECT_CALL(*handler_ptr,
+              AddFileContextFromBytes(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  controller.AddImageContextFromBytes("image.png", "image/png", "bytes");
+  testing::Mock::VerifyAndClearExpectations(handler_ptr);
+
+  EXPECT_CALL(*handler_ptr,
+              AddFileContextFromBytes("image.png", "image/png", "bytes"))
+      .Times(1);
+  controller.SetComposeboxHandler(handler_ptr);
+  testing::Mock::VerifyAndClearExpectations(handler_ptr);
+
+  // Drained once; subsequent handler attachment must not replay it.
+  EXPECT_CALL(*handler_ptr,
+              AddFileContextFromBytes(testing::_, testing::_, testing::_))
+      .Times(0);
+  controller.SetComposeboxHandler(nullptr);
+  controller.SetComposeboxHandler(handler_ptr);
+
   controller.SetComposeboxHandler(nullptr);
 }
 

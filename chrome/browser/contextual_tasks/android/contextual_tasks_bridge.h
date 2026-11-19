@@ -22,6 +22,7 @@ class GURL;
 class Profile;
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
@@ -72,6 +73,14 @@ class ContextualTasksBridge {
   static void ToggleAskGoogleSidePanel(
       content::WebContents* web_contents,
       lens::LensOverlayInvocationSource invocation_source);
+
+  // Opens the Contextual Tasks side panel for the given `web_contents` and
+  // attaches the context menu image node from `render_frame_host` (alongside
+  // the active tab) as context in the composebox.
+  static void OpenAskGoogleAboutThisImage(
+      content::WebContents* web_contents,
+      content::RenderFrameHost* render_frame_host,
+      const std::string& image_title);
 
   void Destroy();
 

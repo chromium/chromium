@@ -1088,6 +1088,17 @@ void ContextualTasksComposeboxHandler::MultiFilesSelected(
   file_dialog_.reset();
 }
 
+void ContextualTasksComposeboxHandler::AddFileContextFromBytes(
+    std::string file_name,
+    std::string mime_type,
+    std::string bytes) {
+  auto file_data = std::make_unique<FileData>();
+  file_data->name = std::move(file_name);
+  file_data->mime_type = std::move(mime_type);
+  file_data->bytes = std::move(bytes);
+  OnFileRead(std::move(file_data));
+}
+
 void ContextualTasksComposeboxHandler::OnFileRead(
     std::unique_ptr<FileData> file_data) {
   if (file_data->bytes.empty()) {

@@ -279,6 +279,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.ASK_GEMINI,
             Action.ASK_GEMINI_IMAGE,
             Action.ASK_GOOGLE_ABOUT_PAGE,
+            Action.ASK_GOOGLE_ABOUT_IMAGE,
         })
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
@@ -344,7 +345,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int ASK_GEMINI = 59;
             int ASK_GEMINI_IMAGE = 60;
             int ASK_GOOGLE_ABOUT_PAGE = 61;
-            int NUM_ENTRIES = 62;
+            int ASK_GOOGLE_ABOUT_IMAGE = 62;
+            int NUM_ENTRIES = 63;
         }
 
         // LINT.ThenChange(/tools/metrics/histograms/enums.xml:ContextMenuOptionAndroid)
@@ -894,6 +896,11 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 imageGroup.add(createShareListItem(Item.SHARE_IMAGE, Item.DIRECT_SHARE_IMAGE));
             }
 
+            if (ContextualTasksUtils.shouldShowAskGoogleEntryPoint(
+                    getTab(), ChromeFeatureList.sContextualTasksEntryPointsImageContextMenu)) {
+                imageGroup.add(createListItem(Item.ASK_GOOGLE_ABOUT_IMAGE));
+            }
+
             if (shouldShowAskGeminiForImage()) {
                 imageGroup.add(createListItem(Item.ASK_GEMINI_IMAGE));
                 mShownGlicSources.add(GlicInvocationSource.SHARED_IMAGE);
@@ -1248,6 +1255,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             ContextualTasksUtils.openAskGoogleAboutThisPage(
                     getTab(),
                     LensOverlayInvocationSource.CONTENT_AREA_CONTEXT_MENU_PAGE_ASK_GOOGLE);
+        } else if (itemId == R.id.contextmenu_ask_google_about_image) {
+            recordContextMenuSelection(ContextMenuUma.Action.ASK_GOOGLE_ABOUT_IMAGE);
+            ContextualTasksUtils.openAskGoogleAboutThisImage(
+                    getTab(), mNativeDelegate.getRenderFrameHost(), getTitleOrGuessIfNotPresent());
         } else if (itemId == R.id.contextmenu_send_tab_to_self) {
             recordContextMenuSelection(ContextMenuUma.Action.SEND_TAB_TO_SELF);
             Tab tab = getTab();
