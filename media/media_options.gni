@@ -140,7 +140,7 @@ declare_args() {
 # Use another declare_args() to allow dependence on args defined above.
 declare_args() {
   # Enable the Rust port of OpenH264 in the media library.
-  media_use_rust_openh264 = media_use_openh264 && is_linux
+  media_use_rust_openh264 = media_use_openh264 && (is_linux || is_mac)
 
   # Enable usage of Symphonia audio decoder within the media library.
   media_use_symphonia_decoder = media_use_symphonia
