@@ -3042,10 +3042,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
 
   // Delete this before destroying the widget, to guard against reentrancy
   // by in-process screen readers such as JAWS.
-  if (browser_accessibility_manager_) {
-    browser_accessibility_manager_->DetachFromParentManager();
-    browser_accessibility_manager_.reset();
-  }
+  ResetBrowserAccessibilityManager();
 
   // Note: The RenderWidgetHost of the main frame is owned by the RenderViewHost
   // instead. In this case the RenderViewHost is responsible for shutting down
@@ -4240,9 +4237,17 @@ void RenderFrameHostImpl::AccessibilityReset() {
   render_accessibility_->Reset(*accessibility_reset_token_);
 }
 
+void RenderFrameHostImpl::ResetBrowserAccessibilityManager() {
+  if (!browser_accessibility_manager_) {
+    return;
+  }
+  browser_accessibility_manager_->DetachFromParentManager();
+  browser_accessibility_manager_.reset();
+}
+
 void RenderFrameHostImpl::UnrecoverableAccessibilityError() {
   CHECK(!ui::AXTreeManager::IsFailFastMode());
-  browser_accessibility_manager_.reset();
+  ResetBrowserAccessibilityManager();
   if (!render_accessibility_) {
     return;
   }
@@ -7219,7 +7224,7 @@ void RenderFrameHostImpl::SwapOuterDelegateFrame(
   // that any in-flight tree updates received before the unload ACK are ignored.
   last_ax_mode_ = ui::AXMode();
   render_accessibility_.reset();
-  browser_accessibility_manager_.reset();
+  ResetBrowserAccessibilityManager();
   ax_unique_ids_.clear();
   accessibility_reset_token_.reset();
   ax_tree_data_ = ui::AXTreeData();
@@ -14302,8 +14307,7 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
       browser_accessibility_manager_) {
     // Missing kWebContents and/or kNativeAPIs, so BrowserAccessibilityManager
     // is no longer necessary.
-    browser_accessibility_manager_->DetachFromParentManager();
-    browser_accessibility_manager_.reset();
+    ResetBrowserAccessibilityManager();
     // Retain ax_unique_ids_ so that if browser accessibility is re-enabled, the
     // platform nodes corresponding to the blink nodes will have the same IDs.
   }
@@ -20630,8 +20634,7 @@ void RenderFrameHostImpl::SetEmbeddingToken(
   // Finally, since the AXTreeID changed, we have to ensure the
   // BrowserAccessibilityManager gets a new tree as well.
   if (browser_accessibility_manager_) {
-    browser_accessibility_manager_->DetachFromParentManager();
-    browser_accessibility_manager_.reset();
+    ResetBrowserAccessibilityManager();
     // Clear the node id mapping on account of having a new tree.
     ax_unique_ids_.clear();
   }

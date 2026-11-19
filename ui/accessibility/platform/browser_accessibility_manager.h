@@ -649,6 +649,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
 #endif  // DCHECK_IS_ON()
 
  private:
+  void ResetParentComputedHypertext();
+
   void BuildAXTreeHitTestCacheInternal(
       const BrowserAccessibility* node,
       std::vector<const BrowserAccessibility*>* storage);

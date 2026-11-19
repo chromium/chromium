@@ -1660,6 +1660,10 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
   hypertext_.needs_update = false;
 }
 
+void AXPlatformNodeBase::ResetComputedHypertext() {
+  hypertext_ = AXLegacyHypertext();
+}
+
 void AXPlatformNodeBase::AddAttributeToList(const char* name,
                                             const char* value,
                                             PlatformAttributeList* attributes) {

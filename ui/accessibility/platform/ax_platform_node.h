@@ -87,6 +87,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // this object.
   virtual void NotifyAccessibilityEvent(ax::mojom::Event event_type) = 0;
 
+  // Clears any cached hypertext state on this node.
+  virtual void ResetComputedHypertext() {}
+
   // Returns the top-level URL for the active document. This should generally
   // correspond to what would be shown in the Omnibox.
   virtual std::string GetRootURL() const = 0;

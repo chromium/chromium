@@ -81,6 +81,7 @@ BrowserAccessibilityComWin : public AXPlatformNodeWin,
   COMPONENT_EXPORT(AX_PLATFORM) void Destroy() override;
   COMPONENT_EXPORT(AX_PLATFORM) void OnReferenced() override;
   COMPONENT_EXPORT(AX_PLATFORM) void OnDereferenced() override;
+  COMPONENT_EXPORT(AX_PLATFORM) void ResetComputedHypertext() override;
 
   struct WinAttributes {
     WinAttributes();

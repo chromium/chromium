@@ -25,12 +25,14 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_com_win.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
 #include "ui/accessibility/platform/browser_accessibility_win.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
+#include "ui/accessibility/test_single_ax_tree_manager.h"
 
 namespace {
 
@@ -1412,6 +1414,164 @@ TEST_F(BrowserAccessibilityManagerWinTest,
   bundle.updates[0].nodes = {button};
   EXPECT_TRUE(manager->OnAccessibilityEvents(bundle));
   EXPECT_TRUE(checked);
+}
+
+TEST_F(BrowserAccessibilityManagerWinTest,
+       DetachFromParentManagerResetsHypertextWithoutEvents) {
+  test_browser_accessibility_delegate_->accelerated_widget_ =
+      gfx::kMockAcceleratedWidget;
+
+  for (bool reset_hypertext_before_detach : {false, true}) {
+    SCOPED_TRACE(reset_hypertext_before_detach);
+
+    AXTreeID parent_tree_id = AXTreeID::CreateNewAXTreeID();
+    AXTreeID child_tree_id = AXTreeID::CreateNewAXTreeID();
+
+    AXNodeData parent_root;
+    parent_root.id = 1;
+    parent_root.role = ax::mojom::Role::kRootWebArea;
+    parent_root.child_ids = {2};
+
+    AXNodeData iframe;
+    iframe.id = 2;
+    iframe.role = ax::mojom::Role::kIframe;
+    iframe.AddChildTreeId(child_tree_id);
+
+    AXTreeUpdate parent_update =
+        MakeAXTreeUpdateForTesting(parent_root, iframe);
+    parent_update.has_tree_data = true;
+    parent_update.tree_data.tree_id = parent_tree_id;
+
+    std::unique_ptr<BrowserAccessibilityManager> parent_manager(
+        BrowserAccessibilityManager::Create(
+            parent_update, node_id_delegate_,
+            test_browser_accessibility_delegate_.get()));
+
+    TestAXNodeIdDelegate child_node_id_delegate;
+    auto child_delegate = std::make_unique<TestAXPlatformTreeManagerDelegate>();
+    child_delegate->is_root_frame_ = false;
+    child_delegate->accelerated_widget_ = gfx::kMockAcceleratedWidget;
+
+    AXNodeData child_root;
+    child_root.id = 1;
+    child_root.role = ax::mojom::Role::kRootWebArea;
+
+    AXTreeUpdate child_update = MakeAXTreeUpdateForTesting(child_root);
+    child_update.has_tree_data = true;
+    child_update.tree_data.tree_id = child_tree_id;
+    child_update.tree_data.parent_tree_id = parent_tree_id;
+
+    std::unique_ptr<BrowserAccessibilityManager> child_manager(
+        BrowserAccessibilityManager::Create(
+            child_update, child_node_id_delegate, child_delegate.get()));
+    AXUpdatesAndEvents connect_bundle;
+    ASSERT_TRUE(child_manager->OnAccessibilityEvents(connect_bundle));
+
+    BrowserAccessibility* parent_iframe =
+        child_manager->GetParentNodeFromParentTreeAsBrowserAccessibility();
+    ASSERT_EQ(parent_manager->GetFromID(2), parent_iframe);
+
+    BrowserAccessibilityComWin* iframe_com =
+        ToBrowserAccessibilityWin(parent_iframe)->GetCOM();
+    LONG hyperlink_count = -1;
+    EXPECT_EQ(S_OK, iframe_com->get_nHyperlinks(&hyperlink_count));
+    EXPECT_EQ(1, hyperlink_count);
+
+    Microsoft::WRL::ComPtr<IAccessibleHyperlink> hyperlink;
+    EXPECT_EQ(S_OK, iframe_com->get_hyperlink(0, &hyperlink));
+    EXPECT_NE(nullptr, hyperlink.Get());
+    hyperlink.Reset();
+
+    iframe_com->ComputeStylesIfNeeded();
+    EXPECT_FALSE(iframe_com->offset_to_text_attributes().empty());
+
+    if (reset_hypertext_before_detach) {
+      iframe_com->ResetComputedHypertext();
+      EXPECT_TRUE(iframe_com->offset_to_text_attributes().empty());
+    }
+
+    int platform_events_fired = 0;
+    parent_manager->ToBrowserAccessibilityManagerWin()
+        ->SetPlatformEventCallbackForTesting(base::BindLambdaForTesting(
+            [&](BrowserAccessibilityManagerWin::PlatformEventTypeForTesting,
+                LONG, BrowserAccessibility*) { ++platform_events_fired; }));
+
+    child_manager->DetachFromParentManager();
+    EXPECT_EQ(0, platform_events_fired);
+    EXPECT_EQ(S_OK, iframe_com->get_nHyperlinks(&hyperlink_count));
+    EXPECT_EQ(0, hyperlink_count);
+    EXPECT_EQ(E_INVALIDARG, iframe_com->get_hyperlink(0, &hyperlink));
+    EXPECT_TRUE(iframe_com->offset_to_text_attributes().empty());
+
+    child_manager.reset();
+    EXPECT_EQ(0, platform_events_fired);
+    EXPECT_EQ(S_OK, iframe_com->get_nHyperlinks(&hyperlink_count));
+    EXPECT_EQ(0, hyperlink_count);
+    EXPECT_EQ(E_INVALIDARG, iframe_com->get_hyperlink(0, &hyperlink));
+    EXPECT_TRUE(iframe_com->offset_to_text_attributes().empty());
+
+    parent_manager->ToBrowserAccessibilityManagerWin()
+        ->SetPlatformEventCallbackForTesting({});
+  }
+}
+
+TEST_F(BrowserAccessibilityManagerWinTest, DetachFromNonPlatformParentManager) {
+  for (bool detach_explicitly : {true, false}) {
+    SCOPED_TRACE(detach_explicitly);
+
+    AXTreeID parent_tree_id = AXTreeID::CreateNewAXTreeID();
+    AXTreeID child_tree_id = AXTreeID::CreateNewAXTreeID();
+
+    AXNodeData parent_root;
+    parent_root.id = 1;
+    parent_root.role = ax::mojom::Role::kRootWebArea;
+    parent_root.child_ids = {2};
+
+    AXNodeData iframe;
+    iframe.id = 2;
+    iframe.role = ax::mojom::Role::kIframe;
+    iframe.AddChildTreeId(child_tree_id);
+
+    AXTreeUpdate parent_update =
+        MakeAXTreeUpdateForTesting(parent_root, iframe);
+    parent_update.has_tree_data = true;
+    parent_update.tree_data.tree_id = parent_tree_id;
+
+    TestSingleAXTreeManager non_platform_parent_manager;
+    non_platform_parent_manager.Init(parent_update);
+    ASSERT_FALSE(non_platform_parent_manager.is_platform_tree_manager());
+
+    TestAXNodeIdDelegate child_node_id_delegate;
+    auto child_delegate = std::make_unique<TestAXPlatformTreeManagerDelegate>();
+    child_delegate->is_root_frame_ = false;
+    child_delegate->is_web_content_source_ = false;
+    child_delegate->accelerated_widget_ = gfx::kMockAcceleratedWidget;
+
+    AXNodeData child_root;
+    child_root.id = 1;
+    child_root.role = ax::mojom::Role::kRootWebArea;
+
+    AXTreeUpdate child_update = MakeAXTreeUpdateForTesting(child_root);
+    child_update.has_tree_data = true;
+    child_update.tree_data.tree_id = child_tree_id;
+    child_update.tree_data.parent_tree_id = parent_tree_id;
+
+    std::unique_ptr<BrowserAccessibilityManager> child_manager(
+        BrowserAccessibilityManager::Create(
+            child_update, child_node_id_delegate, child_delegate.get()));
+    AXUpdatesAndEvents connect_bundle;
+    ASSERT_TRUE(child_manager->OnAccessibilityEvents(connect_bundle));
+
+    EXPECT_NE(nullptr, child_manager->GetParentNodeFromParentTree());
+    EXPECT_EQ(
+        nullptr,
+        child_manager->GetParentNodeFromParentTreeAsBrowserAccessibility());
+
+    if (detach_explicitly) {
+      child_manager->DetachFromParentManager();
+    }
+    child_manager.reset();
+  }
 }
 
 }  // namespace ui

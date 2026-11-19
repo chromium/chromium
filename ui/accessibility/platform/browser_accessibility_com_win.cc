@@ -79,6 +79,13 @@ void BrowserAccessibilityComWin::OnDereferenced() {
                       perfetto::Flow::FromPointer(this));
 }
 
+void BrowserAccessibilityComWin::ResetComputedHypertext() {
+  AXPlatformNodeWin::ResetComputedHypertext();
+  if (win_attributes_) {
+    win_attributes_->offset_to_text_attributes.clear();
+  }
+}
+
 //
 // IAccessible2 overrides:
 //

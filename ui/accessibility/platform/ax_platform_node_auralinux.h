@@ -254,6 +254,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   // exist.
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
+  void ResetComputedHypertext() override;
 
   // AXPlatformNodeBase overrides.
   bool IsPlatformCheckable() const override;
@@ -457,6 +458,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
 
   FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeAuraLinuxTest,
                            FindStartOfStyleWithNoStyles);
+  FRIEND_TEST_ALL_PREFIXES(AXPlatformNodeAuraLinuxTest,
+                           ResetComputedHypertextClearsCachedState);
 };
 
 }  // namespace ui

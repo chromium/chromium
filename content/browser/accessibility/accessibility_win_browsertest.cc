@@ -11,11 +11,13 @@
 #include <wrl/implements.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/heap_array.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -26,7 +28,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
@@ -36,6 +40,7 @@
 #include "content/browser/accessibility/accessibility_test_helpers.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl_win.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -44,6 +49,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
@@ -53,6 +60,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/context_menu_interceptor.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
@@ -60,8 +68,11 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "third_party/isimpledom/ISimpleDOMNode.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/browser_accessibility_com_win.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
 #include "ui/accessibility/platform/browser_accessibility_win.h"
 #include "ui/accessibility/platform/iaccessible2/scoped_co_mem_array.h"
@@ -6958,6 +6969,358 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   LONG role_button_2 = 0;
   ASSERT_HRESULT_SUCCEEDED(ia2_button_2->role(&role_button_2));
   EXPECT_EQ(role_button_2, ROLE_SYSTEM_PUSHBUTTON);
+}
+
+namespace {
+
+// Waits until `child_rfh` has a `BrowserAccessibilityManager` connected to its
+// parent node in the parent `BrowserAccessibilityManager`, and returns that
+// parent node.
+ui::BrowserAccessibility* WaitForConnectedParentAccessibilityNode(
+    RenderFrameHostImpl* child_rfh) {
+  if (!base::test::RunUntil([child_rfh]() {
+        ui::BrowserAccessibilityManager* child_bam =
+            child_rfh->browser_accessibility_manager();
+        return child_bam && child_bam->CanFireEvents() &&
+               child_bam->GetParentNodeFromParentTreeAsBrowserAccessibility() !=
+                   nullptr;
+      })) {
+    return nullptr;
+  }
+
+  AccessibilityNotificationWaiter waiter(
+      WebContents::FromRenderFrameHost(child_rfh),
+      ax::mojom::Event::kEndOfTest);
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kSignalEndOfTest;
+  child_rfh->AccessibilityPerformAction(action_data);
+  if (!waiter.WaitForNotification()) {
+    return nullptr;
+  }
+
+  ui::BrowserAccessibilityManager* child_bam =
+      child_rfh->browser_accessibility_manager();
+  return child_bam
+             ? child_bam->GetParentNodeFromParentTreeAsBrowserAccessibility()
+             : nullptr;
+}
+
+struct ConnectedIframeState {
+  void ClearParentAccessibilityPointers() {
+    iframe_com = nullptr;
+    parent_iframe = nullptr;
+  }
+
+  void Close() {
+    ClearParentAccessibilityPointers();
+    child_rfh = nullptr;
+    main_rfh = nullptr;
+    web_contents = nullptr;
+    if (Shell* shell_to_close = std::exchange(shell, nullptr)) {
+      shell_to_close->Close();
+    }
+  }
+
+  raw_ptr<Shell> shell = nullptr;
+  raw_ptr<WebContentsImpl> web_contents = nullptr;
+  raw_ptr<RenderFrameHostImpl> main_rfh = nullptr;
+  raw_ptr<RenderFrameHostImpl> child_rfh = nullptr;
+  raw_ptr<ui::BrowserAccessibility> parent_iframe = nullptr;
+  raw_ptr<ui::BrowserAccessibilityComWin> iframe_com = nullptr;
+};
+
+// Navigates `shell` to `url` (optionally inserting a dynamic blank `<iframe>`
+// so its next navigation commits in place), waits for the child frame's
+// `BrowserAccessibilityManager` to connect to the parent tree, and populates
+// and verifies `iframe_com`'s hypertext cache.
+std::optional<ConnectedIframeState> SetUpBrowserWithConnectedIframe(
+    Shell* shell,
+    const GURL& url,
+    bool insert_dynamic_blank_iframe = false) {
+  ConnectedIframeState state;
+  state.shell = shell;
+  state.web_contents = static_cast<WebContentsImpl*>(shell->web_contents());
+  if (!NavigateToURL(shell, url)) {
+    return std::nullopt;
+  }
+
+  if (insert_dynamic_blank_iframe &&
+      !ExecJs(state.web_contents,
+              "const iframe = document.createElement('iframe');"
+              "document.body.appendChild(iframe);")) {
+    return std::nullopt;
+  }
+
+  state.main_rfh = state.web_contents->GetPrimaryMainFrame();
+  state.child_rfh =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(state.main_rfh, 0));
+  if (!state.child_rfh) {
+    return std::nullopt;
+  }
+  if (insert_dynamic_blank_iframe &&
+      state.child_rfh->has_committed_any_navigation()) {
+    return std::nullopt;
+  }
+
+  state.parent_iframe =
+      WaitForConnectedParentAccessibilityNode(state.child_rfh);
+  if (!state.parent_iframe) {
+    return std::nullopt;
+  }
+  state.iframe_com =
+      ui::ToBrowserAccessibilityWin(state.parent_iframe)->GetCOM();
+
+  LONG hyperlink_count = -1;
+  if (FAILED(state.iframe_com->get_nHyperlinks(&hyperlink_count)) ||
+      hyperlink_count != 1) {
+    return std::nullopt;
+  }
+  Microsoft::WRL::ComPtr<IAccessibleHyperlink> hyperlink;
+  if (FAILED(state.iframe_com->get_hyperlink(0, &hyperlink)) || !hyperlink) {
+    return std::nullopt;
+  }
+  return state;
+}
+
+class CommitPlatformEventRecorder : public WebContentsObserver {
+ public:
+  CommitPlatformEventRecorder(WebContents* web_contents,
+                              ui::BrowserAccessibilityManagerWin* bam_win,
+                              ui::BrowserAccessibilityComWin* iframe_com)
+      : WebContentsObserver(web_contents),
+        bam_win_(bam_win),
+        iframe_com_(iframe_com) {
+    bam_win_->SetPlatformEventCallbackForTesting(base::BindLambdaForTesting(
+        [this](ui::BrowserAccessibilityManagerWin::PlatformEventTypeForTesting,
+               LONG, ui::BrowserAccessibility*) { ++events_fired_; }));
+  }
+
+  ~CommitPlatformEventRecorder() override { ClearCallback(); }
+
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    ClearCallback();
+    if (ui::BrowserAccessibilityComWin* iframe_com =
+            std::exchange(iframe_com_, nullptr)) {
+      EXPECT_EQ(S_OK, iframe_com->get_nHyperlinks(&hyperlink_count_at_commit_));
+      Microsoft::WRL::ComPtr<IAccessibleHyperlink> hyperlink;
+      hyperlink_hr_at_commit_ = iframe_com->get_hyperlink(0, &hyperlink);
+    }
+  }
+
+  int events_fired() const { return events_fired_; }
+  LONG hyperlink_count_at_commit() const { return hyperlink_count_at_commit_; }
+  HRESULT hyperlink_hr_at_commit() const { return hyperlink_hr_at_commit_; }
+
+ private:
+  void ClearCallback() {
+    if (ui::BrowserAccessibilityManagerWin* bam_win =
+            std::exchange(bam_win_, nullptr)) {
+      bam_win->SetPlatformEventCallbackForTesting({});
+    }
+  }
+
+  raw_ptr<ui::BrowserAccessibilityManagerWin> bam_win_;
+  raw_ptr<ui::BrowserAccessibilityComWin> iframe_com_;
+  int events_fired_ = 0;
+  LONG hyperlink_count_at_commit_ = -1;
+  HRESULT hyperlink_hr_at_commit_ = S_OK;
+};
+
+}  // namespace
+
+// Verifies that resetting a child frame's `BrowserAccessibilityManager` across
+// `UnrecoverableAccessibilityError()`, `SwapOuterDelegateFrame()`,
+// `UpdateAccessibilityMode()`, and `SetEmbeddingToken()` invalidates the parent
+// iframe's hypertext cache without synchronously firing platform events.
+IN_PROC_BROWSER_TEST_F(
+    AccessibilityWinBrowserTest,
+    ResetBrowserAccessibilityManagerDoesNotFirePlatformEvents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+  const GURL iframe_url =
+      embedded_test_server()->GetURL("/accessibility/html/iframe.html");
+
+  // 1. `RenderFrameHostImpl::UnrecoverableAccessibilityError()`.
+  {
+    std::optional<ConnectedIframeState> state =
+        SetUpBrowserWithConnectedIframe(CreateBrowser(), iframe_url);
+    ASSERT_TRUE(state.has_value());
+
+    int events_fired = 0;
+    state->main_rfh->browser_accessibility_manager()
+        ->ToBrowserAccessibilityManagerWin()
+        ->SetPlatformEventCallbackForTesting(base::BindLambdaForTesting(
+            [&](ui::BrowserAccessibilityManagerWin::PlatformEventTypeForTesting,
+                LONG, ui::BrowserAccessibility*) { ++events_fired; }));
+
+    // `UnrecoverableAccessibilityError()` also disables accessibility across
+    // `web_contents`, which resets `main_rfh`'s manager too.
+    state->ClearParentAccessibilityPointers();
+    state->child_rfh->UnrecoverableAccessibilityError();
+
+    EXPECT_EQ(0, events_fired);
+    EXPECT_EQ(nullptr, state->child_rfh->browser_accessibility_manager());
+    state->Close();
+  }
+
+  // 2. `RenderFrameHostImpl::SwapOuterDelegateFrame()` via
+  // `AttachInnerWebContents()`.
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    std::optional<ConnectedIframeState> state =
+        SetUpBrowserWithConnectedIframe(CreateBrowser(), iframe_url);
+    ASSERT_TRUE(state.has_value());
+
+    int events_fired = 0;
+    ui::BrowserAccessibilityManagerWin* outer_bam_win =
+        state->main_rfh->browser_accessibility_manager()
+            ->ToBrowserAccessibilityManagerWin();
+    outer_bam_win->SetPlatformEventCallbackForTesting(
+        base::BindLambdaForTesting(
+            [&](ui::BrowserAccessibilityManagerWin::PlatformEventTypeForTesting,
+                LONG, ui::BrowserAccessibility*) { ++events_fired; }));
+
+    std::unique_ptr<WebContents> inner_contents = WebContents::Create(
+        WebContents::CreateParams(state->web_contents->GetBrowserContext()));
+    state->web_contents->AttachInnerWebContents(
+        std::move(inner_contents), state->child_rfh, /*is_full_page=*/false);
+
+    EXPECT_EQ(0, events_fired);
+    EXPECT_EQ(nullptr, state->child_rfh->browser_accessibility_manager());
+    LONG hyperlink_count = -1;
+    EXPECT_EQ(S_OK, state->iframe_com->get_nHyperlinks(&hyperlink_count));
+    EXPECT_EQ(0, hyperlink_count);
+    Microsoft::WRL::ComPtr<IAccessibleHyperlink> hyperlink;
+    EXPECT_EQ(E_INVALIDARG, state->iframe_com->get_hyperlink(0, &hyperlink));
+
+    outer_bam_win->SetPlatformEventCallbackForTesting({});
+    state->Close();
+  }
+
+  // 3. `RenderFrameHostImpl::UpdateAccessibilityMode()` when disabling
+  // accessibility on an attached inner `WebContents` while the outer
+  // `WebContents`'s parent manager remains live, as well as whole-`WebContents`
+  // teardown (where `ForEachRenderFrameHostImpl` visits `main_rfh` first).
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    std::optional<ConnectedIframeState> state =
+        SetUpBrowserWithConnectedIframe(CreateBrowser(), iframe_url);
+    ASSERT_TRUE(state.has_value());
+
+    RenderFrameHostImpl* placeholder_rfh =
+        std::exchange(state->child_rfh, nullptr);
+    auto* inner_contents = static_cast<WebContentsImpl*>(
+        CreateAndAttachInnerContents(placeholder_rfh));
+    ASSERT_NE(nullptr, inner_contents);
+    ASSERT_TRUE(NavigateToURL(inner_contents,
+                              embedded_test_server()->GetURL("/title2.html")));
+
+    RenderFrameHostImpl* inner_main_rfh = inner_contents->GetPrimaryMainFrame();
+    ASSERT_EQ(state->parent_iframe,
+              WaitForConnectedParentAccessibilityNode(inner_main_rfh));
+    LONG hyperlink_count = -1;
+    ASSERT_EQ(S_OK, state->iframe_com->get_nHyperlinks(&hyperlink_count));
+    ASSERT_EQ(1, hyperlink_count);
+
+    int events_fired = 0;
+    ui::BrowserAccessibilityManagerWin* outer_bam_win =
+        state->main_rfh->browser_accessibility_manager()
+            ->ToBrowserAccessibilityManagerWin();
+    outer_bam_win->SetPlatformEventCallbackForTesting(
+        base::BindLambdaForTesting(
+            [&](ui::BrowserAccessibilityManagerWin::PlatformEventTypeForTesting,
+                LONG, ui::BrowserAccessibility*) { ++events_fired; }));
+
+    inner_contents->SetAccessibilityMode(ui::AXMode());
+
+    EXPECT_EQ(0, events_fired);
+    EXPECT_EQ(nullptr, inner_main_rfh->browser_accessibility_manager());
+    ASSERT_NE(nullptr, state->main_rfh->browser_accessibility_manager());
+    EXPECT_EQ(S_OK, state->iframe_com->get_nHyperlinks(&hyperlink_count));
+    EXPECT_EQ(0, hyperlink_count);
+    Microsoft::WRL::ComPtr<IAccessibleHyperlink> hyperlink;
+    EXPECT_EQ(E_INVALIDARG, state->iframe_com->get_hyperlink(0, &hyperlink));
+
+    outer_bam_win->SetPlatformEventCallbackForTesting({});
+    state->Close();
+  }
+  {
+    std::optional<ConnectedIframeState> state =
+        SetUpBrowserWithConnectedIframe(CreateBrowser(), iframe_url);
+    ASSERT_TRUE(state.has_value());
+
+    int events_fired = 0;
+    state->main_rfh->browser_accessibility_manager()
+        ->ToBrowserAccessibilityManagerWin()
+        ->SetPlatformEventCallbackForTesting(base::BindLambdaForTesting(
+            [&](ui::BrowserAccessibilityManagerWin::PlatformEventTypeForTesting,
+                LONG, ui::BrowserAccessibility*) { ++events_fired; }));
+
+    state->ClearParentAccessibilityPointers();
+    state->web_contents->SetAccessibilityMode(ui::AXMode());
+
+    EXPECT_EQ(0, events_fired);
+    EXPECT_EQ(nullptr, state->child_rfh->browser_accessibility_manager());
+    EXPECT_EQ(nullptr, state->main_rfh->browser_accessibility_manager());
+    state->Close();
+  }
+
+  // 4. `RenderFrameHostImpl::SetEmbeddingToken()` during an in-place commit on
+  // an initial `about:blank` iframe.
+  {
+    std::optional<ConnectedIframeState> state = SetUpBrowserWithConnectedIframe(
+        CreateBrowser(), embedded_test_server()->GetURL("/title1.html"),
+        /*insert_dynamic_blank_iframe=*/true);
+    ASSERT_TRUE(state.has_value());
+
+    const int32_t old_child_unique_id =
+        state->child_rfh->browser_accessibility_manager()
+            ->GetBrowserAccessibilityRoot()
+            ->GetAXPlatformNode()
+            ->GetUniqueId();
+
+    const GURL target_url = embedded_test_server()->GetURL("/title2.html");
+    TestNavigationManager nav_manager(state->web_contents, target_url);
+    ExecuteScriptAsync(state->child_rfh,
+                       JsReplace("location = $1", target_url));
+    ASSERT_TRUE(nav_manager.WaitForResponse());
+
+    LONG hyperlink_count = -1;
+    ASSERT_EQ(S_OK, state->iframe_com->get_nHyperlinks(&hyperlink_count));
+    ASSERT_EQ(1, hyperlink_count);
+
+    CommitPlatformEventRecorder recorder(
+        state->web_contents,
+        state->main_rfh->browser_accessibility_manager()
+            ->ToBrowserAccessibilityManagerWin(),
+        state->iframe_com);
+    ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+    EXPECT_EQ(0, recorder.events_fired());
+    EXPECT_EQ(0, recorder.hyperlink_count_at_commit());
+    EXPECT_EQ(E_INVALIDARG, recorder.hyperlink_hr_at_commit());
+
+    // Once the new child document's accessibility tree connects, `iframe_com`
+    // should expose the new child root hyperlink rather than a stale ID.
+    ASSERT_EQ(state->parent_iframe,
+              WaitForConnectedParentAccessibilityNode(state->child_rfh));
+    const int32_t new_child_unique_id =
+        state->child_rfh->browser_accessibility_manager()
+            ->GetBrowserAccessibilityRoot()
+            ->GetAXPlatformNode()
+            ->GetUniqueId();
+    EXPECT_NE(old_child_unique_id, new_child_unique_id);
+
+    EXPECT_EQ(S_OK, state->iframe_com->get_nHyperlinks(&hyperlink_count));
+    EXPECT_EQ(1, hyperlink_count);
+    Microsoft::WRL::ComPtr<IAccessibleHyperlink> new_hyperlink;
+    ASSERT_EQ(S_OK, state->iframe_com->get_hyperlink(0, &new_hyperlink));
+    Microsoft::WRL::ComPtr<IAccessible2> new_ia2;
+    ASSERT_HRESULT_SUCCEEDED(new_hyperlink.As(&new_ia2));
+    LONG ia2_unique_id = 0;
+    ASSERT_EQ(S_OK, new_ia2->get_uniqueID(&ia2_unique_id));
+    EXPECT_EQ(-new_child_unique_id, ia2_unique_id);
+
+    state->Close();
+  }
 }
 
 }  // namespace content

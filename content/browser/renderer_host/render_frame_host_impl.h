@@ -4126,6 +4126,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost.
   void SetEmbeddingToken(const base::UnguessableToken& embedding_token);
 
+  // Detaches `browser_accessibility_manager_` from its parent manager and
+  // resets it.
+  void ResetBrowserAccessibilityManager();
+
   // Records a DocumentCreated UKM event. Called after the navigation has
   // committed.
   void RecordDocumentCreatedUkmEvent(const url::Origin& origin,
@@ -4769,14 +4773,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   std::unique_ptr<service_manager::InterfaceProvider> remote_interfaces_;
 
+  // A mapping of each AXNodeID managed by `browser_accessibility_manager_`,
+  // which is only unique within its renderer, to an AXUniqueId, which is unique
+  // within the scope of the web contents. Declared before
+  // `browser_accessibility_manager_` so it outlives the manager
+  // (`OnAXNodeDeleted`).
+  absl::flat_hash_map<ui::AXNodeID, ui::AXUniqueId> ax_unique_ids_;
+
   // The object managing the accessibility tree for this frame.
   std::unique_ptr<ui::BrowserAccessibilityManager>
       browser_accessibility_manager_;
-
-  // A mapping of each AXNodeID managed by `browser_accessibility_manager_`,
-  // which is only unique within its renderer, to an AXUniqueId, which is unique
-  // within the scope of the web contents.
-  absl::flat_hash_map<ui::AXNodeID, ui::AXUniqueId> ax_unique_ids_;
 
   // This is the value of the reset token expected for accessibility messages.
   // Any message with a different reset token will be dropped.

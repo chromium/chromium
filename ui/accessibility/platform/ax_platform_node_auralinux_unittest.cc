@@ -3462,4 +3462,52 @@ TEST_F(AXPlatformNodeAuraLinuxTest, FindStartOfStyleWithNoStyles) {
   EXPECT_EQ(0, node->FindStartOfStyle(4, ax::mojom::MoveDirection::kBackward));
 }
 
+TEST_F(AXPlatformNodeAuraLinuxTest, ResetComputedHypertextClearsCachedState) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2, 3};
+
+  // Include a non-BMP character (U+1F600) so `GetHypertextAdjustments()`
+  // populates a non-empty `text_unicode_adjustments_` vector.
+  AXNodeData text;
+  text.id = 2;
+  text.role = ax::mojom::Role::kStaticText;
+  text.SetName("Hi \xF0\x9F\x98\x80");
+
+  AXNodeData link;
+  link.id = 3;
+  link.role = ax::mojom::Role::kLink;
+  link.SetName("Link");
+
+  Init(root, text, link);
+
+  AXPlatformNodeAuraLinux* node = GetRootPlatformNode();
+  ASSERT_NE(nullptr, node);
+
+  EXPECT_FALSE(node->GetHypertext().empty());
+  EXPECT_FALSE(node->GetAXHypertext().needs_update);
+  EXPECT_EQ(1u, node->GetAXHypertext().hyperlinks.size());
+  EXPECT_EQ(1u, node->GetAXHypertext().hyperlink_offset_to_index.size());
+
+  const base::OffsetAdjuster::Adjustments& adjustments =
+      node->GetHypertextAdjustments();
+  EXPECT_FALSE(adjustments.empty());
+  ASSERT_TRUE(node->text_unicode_adjustments_.has_value());
+
+  int start_offset = -1;
+  int end_offset = -1;
+  node->GetTextAttributes(0, &start_offset, &end_offset);
+  EXPECT_FALSE(node->offset_to_text_attributes_.empty());
+
+  node->ResetComputedHypertext();
+
+  EXPECT_TRUE(node->GetAXHypertext().needs_update);
+  EXPECT_TRUE(node->GetAXHypertext().hypertext.empty());
+  EXPECT_TRUE(node->GetAXHypertext().hyperlinks.empty());
+  EXPECT_TRUE(node->GetAXHypertext().hyperlink_offset_to_index.empty());
+  EXPECT_FALSE(node->text_unicode_adjustments_.has_value());
+  EXPECT_TRUE(node->offset_to_text_attributes_.empty());
+}
+
 }  // namespace ui

@@ -4316,6 +4316,12 @@ void AXPlatformNodeAuraLinux::UpdateHypertext() {
   }
 }
 
+void AXPlatformNodeAuraLinux::ResetComputedHypertext() {
+  AXPlatformNodeBase::ResetComputedHypertext();
+  text_unicode_adjustments_ = std::nullopt;
+  offset_to_text_attributes_.clear();
+}
+
 const AXLegacyHypertext& AXPlatformNodeAuraLinux::GetAXHypertext() {
   return hypertext_;
 }

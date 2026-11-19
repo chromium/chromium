@@ -107,6 +107,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   bool IsDestroyed() const override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
+  void ResetComputedHypertext() override;
 
   // For testing.
   AXPlatformNodeDelegate* SetDelegateForTesting(

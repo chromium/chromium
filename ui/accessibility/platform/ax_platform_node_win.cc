@@ -8619,10 +8619,6 @@ bool AXPlatformNodeWin::IsHyperlink() {
   return false;
 }
 
-void AXPlatformNodeWin::ResetComputedHypertext() {
-  hypertext_ = AXLegacyHypertext();
-}
-
 bool AXPlatformNodeWin::HasEventListenerForEvent(EVENTID event_id) {
   if (!base::FeatureList::IsEnabled(features::kUiaEventOptimization)) {
     return true;

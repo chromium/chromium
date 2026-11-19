@@ -32,6 +32,7 @@
 #include "ui/accessibility/ax_tree_update_util.h"
 #include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/buildflags.h"
 
 namespace ui {
@@ -181,7 +182,11 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
       device_scale_factor_(1.0f),
       use_custom_device_scale_factor_for_testing_(false) {}
 
-BrowserAccessibilityManager::~BrowserAccessibilityManager() = default;
+BrowserAccessibilityManager::~BrowserAccessibilityManager() {
+  // Reset the parent child-tree owner's hypertext cache when a child tree
+  // manager is destroyed directly without `DetachFromParentManager()`.
+  ResetParentComputedHypertext();
+}
 
 // A flag for use in tests to ensure events aren't suppressed or delayed.
 // static
@@ -2157,10 +2162,20 @@ void BrowserAccessibilityManager::DetachFromParentManager() {
   if (!std::exchange(connected_to_parent_tree_node_, false)) {
     return;
   }
-  // Notify the parent to invalidate its hypertext cache before disconnecting,
-  // otherwise stale hyperlink IDs can cause type confusion after reassignment.
-  if (AXNode* parent = GetParentNodeFromParentTree()) {
-    UpdateAttributesOnParent(parent);
+  // Invalidate the parent's hypertext cache before disconnecting so stale
+  // hyperlink IDs are not retained, without synchronously firing platform
+  // accessibility events during manager teardown.
+  ResetParentComputedHypertext();
+}
+
+void BrowserAccessibilityManager::ResetParentComputedHypertext() {
+  BrowserAccessibility* parent =
+      GetParentNodeFromParentTreeAsBrowserAccessibility();
+  if (!parent) {
+    return;
+  }
+  if (AXPlatformNode* parent_platform_node = parent->GetAXPlatformNode()) {
+    parent_platform_node->ResetComputedHypertext();
   }
 }
 
