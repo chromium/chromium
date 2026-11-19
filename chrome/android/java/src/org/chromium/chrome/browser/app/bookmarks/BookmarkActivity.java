@@ -208,7 +208,7 @@ public class BookmarkActivity extends SnackbarActivity {
                                 mOriginalProfile.getPrimaryOtrProfile(/* createIfNeeded= */ false))
                         : mOriginalProfile;
         new BookmarkManagerOpenerImpl()
-                .showBookmarkManagerInTab(profile, parentTabId, parentComponent);
+                .showBookmarkManagerInTab(this, profile, parentTabId, parentComponent);
         finish();
     }
 

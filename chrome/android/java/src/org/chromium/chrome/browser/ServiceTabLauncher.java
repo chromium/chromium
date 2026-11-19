@@ -233,7 +233,8 @@ public class ServiceTabLauncher {
                 canLaunchInApp
                         ? WebappRegistry.getInstance().getWebappDataStorageForUrl(url)
                         : null;
-        ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(incognito);
+        ChromeAsyncTabLauncher chromeAsyncTabLauncher =
+                new ChromeAsyncTabLauncher(incognito, /* activity= */ null);
 
         // Launch into a TrustedWebActivity if one exists for the URL.
         Context appContext = ContextUtils.getApplicationContext();

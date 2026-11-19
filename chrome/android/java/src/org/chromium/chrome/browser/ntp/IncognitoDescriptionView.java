@@ -22,6 +22,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -168,7 +169,9 @@ public class IncognitoDescriptionView extends LinearLayout {
                         R.string.incognito_ntp_block_third_party_cookies_description_android);
         Callback<View> spanOnClickCallback =
                 _ ->
-                        new ChromeAsyncTabLauncher(/* incognito= */ true)
+                        new ChromeAsyncTabLauncher(
+                                        /* incognito= */ true,
+                                        ContextUtils.activityFromContext(context))
                                 .launchUrl(TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
         ChromeClickableSpan span =
                 new ChromeClickableSpan(view.getSpanColor(), spanOnClickCallback);

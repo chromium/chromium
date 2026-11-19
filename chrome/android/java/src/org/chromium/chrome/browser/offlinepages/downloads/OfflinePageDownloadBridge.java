@@ -129,7 +129,7 @@ public class OfflinePageDownloadBridge {
                         ? new AsyncTabCreationParams(params)
                         : new AsyncTabCreationParams(params, componentName);
         final ChromeAsyncTabLauncher chromeAsyncTabLauncher =
-                new ChromeAsyncTabLauncher(isIncognito);
+                new ChromeAsyncTabLauncher(isIncognito, /* activity= */ null);
         chromeAsyncTabLauncher.launchNewTab(
                 asyncParams, TabLaunchType.FROM_CHROME_UI, Tab.INVALID_TAB_ID);
     }

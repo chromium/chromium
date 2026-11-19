@@ -50,20 +50,18 @@ public class OtherFormsOfHistoryDialogFragment extends DialogFragment
 
         // Linkify the <link></link> span in the dialog text.
         TextView textView = view.findViewById(R.id.text);
+        ChromeClickableSpan linkSpan =
+                new ChromeClickableSpan(
+                        getContext(),
+                        _ ->
+                                new ChromeAsyncTabLauncher(/* incognito= */ false, getActivity())
+                                        .launchUrl(
+                                                UrlConstants.MY_ACTIVITY_URL_IN_CBD_NOTICE,
+                                                TabLaunchType.FROM_CHROME_UI));
         final SpannableString textWithLink =
                 SpanApplier.applySpans(
                         textView.getText().toString(),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new ChromeClickableSpan(
-                                        getContext(),
-                                        _ ->
-                                                new ChromeAsyncTabLauncher(/* incognito= */ false)
-                                                        .launchUrl(
-                                                                UrlConstants
-                                                                        .MY_ACTIVITY_URL_IN_CBD_NOTICE,
-                                                                TabLaunchType.FROM_CHROME_UI))));
+                        new SpanApplier.SpanInfo("<link>", "</link>", linkSpan));
 
         textView.setText(textWithLink);
         textView.setMovementMethod(LinkMovementMethod.getInstance());

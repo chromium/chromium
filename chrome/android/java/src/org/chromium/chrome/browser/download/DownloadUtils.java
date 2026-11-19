@@ -177,7 +177,7 @@ public class DownloadUtils {
             LoadUrlParams params = new LoadUrlParams(UrlConstants.DOWNLOADS_URL);
             ChromeAsyncTabLauncher delegate =
                     new ChromeAsyncTabLauncher(
-                            /* incognito= */ OtrProfileId.isOffTheRecord(otrProfileId));
+                            /* incognito= */ OtrProfileId.isOffTheRecord(otrProfileId), activity);
             delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ tab);
         } else {
             DownloadActivityLauncher.getInstance()
@@ -674,7 +674,9 @@ public class DownloadUtils {
             if (encodedPdfUrl != null) {
                 LoadUrlParams params = new LoadUrlParams(encodedPdfUrl);
                 ChromeAsyncTabLauncher delegate =
-                        new ChromeAsyncTabLauncher(OtrProfileId.isOffTheRecord(req.mOtrProfileId));
+                        new ChromeAsyncTabLauncher(
+                                OtrProfileId.isOffTheRecord(req.mOtrProfileId),
+                                ContextUtils.activityFromContext(req.mContext));
                 delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
                 return true;
             }
@@ -794,7 +796,7 @@ public class DownloadUtils {
             String encodedPdfUrl = PdfUtils.encodePdfPageUrl(fileUri);
             assertNonNull(encodedPdfUrl);
             LoadUrlParams params = new LoadUrlParams(encodedPdfUrl);
-            ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(isIncognito);
+            ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(isIncognito, activity);
             delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
             return;
         }

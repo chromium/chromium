@@ -506,7 +506,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 SyncSettingsUtils.toOnClickListener(
                         this,
                         () ->
-                                new ChromeAsyncTabLauncher(/* incognito= */ false)
+                                new ChromeAsyncTabLauncher(/* incognito= */ false, getActivity())
                                         .launchUrl(
                                                 SEARCH_AI_MODE_CONNECTED_APPS_URL,
                                                 TabLaunchType.FROM_CHROME_UI)));
@@ -551,7 +551,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 new ChromeClickableSpan(
                         requireContext(),
                         (view) -> {
-                            new ChromeAsyncTabLauncher(/* incognito= */ false)
+                            new ChromeAsyncTabLauncher(/* incognito= */ false, getActivity())
                                     .launchUrl(INCOGNITO_HELP_URL, TabLaunchType.FROM_CHROME_UI);
                         });
         switchToIncognito.setSummary(
@@ -579,7 +579,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                             /* startActivityOptions= */ null,
                             NewWindowAppSource.SETTINGS);
         } else {
-            new ChromeAsyncTabLauncher(/* incognito= */ true)
+            new ChromeAsyncTabLauncher(/* incognito= */ true, getActivity())
                     .launchUrl(
                             UrlConstantResolver.getOriginalNtpUrl(), TabLaunchType.FROM_CHROME_UI);
         }

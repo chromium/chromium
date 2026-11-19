@@ -31,6 +31,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
@@ -39,6 +40,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentRecordingActivity;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
@@ -82,6 +86,7 @@ public class HistoryManagerUtilsUnitTest {
 
     @Before
     public void setUp() {
+        AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().clear();
         DeviceInfo.setIsDesktopForTesting(true);
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         when(mProfileResolverNatives.tokenizeProfileToBytes(any()))
@@ -105,6 +110,7 @@ public class HistoryManagerUtilsUnitTest {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mUrlConstantResolver.getNtpUrl()).thenReturn(UrlConstants.NTP_URL);
+        when(mUrlConstantResolver.getHistoryPageUrl()).thenReturn(UrlConstants.NATIVE_HISTORY_URL);
         UrlConstantResolverFactory.setForTesting(mUrlConstantResolver);
         mDisclaimerCoordinator =
                 new IncognitoHistoryDisclaimerCoordinator(
@@ -115,6 +121,7 @@ public class HistoryManagerUtilsUnitTest {
     public void tearDown() {
         mDisclaimerCoordinator.destroy();
         mActivityController.destroy();
+        AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().clear();
     }
 
     @Test
@@ -154,14 +161,33 @@ public class HistoryManagerUtilsUnitTest {
     @Test
     public void testShowHistoryManager_regularProfile_opensHistoryTab() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
+        IntentRecordingActivity activity = buildIntentRecordingActivity();
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
 
         HistoryManagerUtils.showHistoryManager(mWindowAndroid, /* tab= */ null, mProfile);
 
         assertFalse(mDisclaimerCoordinator.isShowing());
-        Intent intent =
-                Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
-        assertNotNull(intent);
+        assertEquals(1, activity.getStartedIntents().size());
+        Intent intent = activity.getStartedIntents().get(0);
+        assertEquals(ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals(UrlConstants.HISTORY_URL, intent.getDataString());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_WEB_UI_HISTORY)
+    @Config(qualifiers = "sw600dp")
+    public void testShowHistoryManager_tabletFlagOff_opensHistoryTabFromActivityContext() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        IntentRecordingActivity activity = buildIntentRecordingActivity();
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+
+        HistoryManagerUtils.showHistoryManager(mWindowAndroid, mTab, mProfile);
+
+        assertFalse(mDisclaimerCoordinator.isShowing());
+        assertEquals(1, activity.getStartedIntents().size());
+        Intent intent = activity.getStartedIntents().get(0);
+        assertEquals(ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
+        assertEquals(UrlConstants.NATIVE_HISTORY_URL, intent.getDataString());
     }
 
     @Test
@@ -242,5 +268,9 @@ public class HistoryManagerUtilsUnitTest {
 
         verify(mTab, never()).loadUrl(any());
         assertTrue(mDisclaimerCoordinator.isShowing());
+    }
+
+    private static IntentRecordingActivity buildIntentRecordingActivity() {
+        return Robolectric.buildActivity(IntentRecordingActivity.class).setup().get();
     }
 }

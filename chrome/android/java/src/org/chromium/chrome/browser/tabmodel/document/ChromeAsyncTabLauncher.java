@@ -12,10 +12,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
 import org.chromium.content_public.browser.LoadUrlParams;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Asynchronously creates tabs by creating/starting up activities. To explicitly launch a URL in a
@@ -25,13 +28,17 @@ import org.chromium.content_public.browser.LoadUrlParams;
 @NullMarked
 public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     private final boolean mIsIncognito;
+    private final WeakReference<@Nullable Activity> mActivityRef;
 
     /**
      * Creates a TabDelegate.
+     *
      * @param incognito Whether or not the TabDelegate handles the creation of incognito tabs.
+     * @param activity Optional originating {@link Activity} used to start the launch intent.
      */
-    public ChromeAsyncTabLauncher(boolean incognito) {
+    public ChromeAsyncTabLauncher(boolean incognito, @Nullable Activity activity) {
         mIsIncognito = incognito;
+        mActivityRef = new WeakReference<>(activity);
     }
 
     /**
@@ -61,7 +68,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
      * @param parentId ID of the parent tab, if it exists.
      */
     public void launchNewTab(
-            AsyncTabCreationParams asyncParams, @TabLaunchType int type, int parentId) {
+            AsyncTabCreationParams asyncParams, @TabLaunchType int type, @TabId int parentId) {
         assert asyncParams != null;
 
         // Tabs shouldn't be launched in affiliated mode when a webcontents exists.
@@ -70,7 +77,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
 
         Intent intent =
                 IntentHandler.createAsyncNewTabIntent(asyncParams, parentId, type, mIsIncognito);
-        IntentHandler.startActivityForTrustedIntent(intent);
+        startActivityForTrustedIntent(intent);
     }
 
     /**
@@ -81,6 +88,21 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     public void launchNewStandaloneFrame(Intent intent) {
         assert intent != null;
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        IntentHandler.startActivityForTrustedIntent(intent);
+        startActivityForTrustedIntent(intent);
+    }
+
+    private void startActivityForTrustedIntent(Intent intent) {
+        // Start from the originating Activity when available. Starting from the ApplicationContext
+        // can pick up a stale launchDisplayId for a removed secondary display (b/576289739).
+        Activity activity = mActivityRef.get();
+        if (activity != null) {
+            IntentHandler.startActivityForTrustedIntent(activity, intent);
+        } else {
+            IntentHandler.startActivityForTrustedIntent(intent);
+        }
+    }
+
+    WeakReference<@Nullable Activity> getActivityRefForTesting() {
+        return mActivityRef;
     }
 }

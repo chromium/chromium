@@ -43,6 +43,7 @@ if (is_android) {
     sources = [
       "//chrome/browser/bookmarks/android/junit/src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModel.java",
       "src/org/chromium/chrome/browser/ChromeRobolectricTestRunner.java",
+      "src/org/chromium/chrome/browser/IntentRecordingActivity.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/TestTabModel.java",
       "src/org/chromium/chrome/browser/multiwindow/MultiWindowTestUtils.java",
     ]
@@ -1433,6 +1434,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorImplTest.java",
       "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorProfileSupplierTest.java",
       "src/org/chromium/chrome/browser/tabmodel/TabPersistentStoreUnitTest.java",
+      "src/org/chromium/chrome/browser/tabmodel/document/ChromeAsyncTabLauncherUnitTest.java",
     ]
 
     deps = [

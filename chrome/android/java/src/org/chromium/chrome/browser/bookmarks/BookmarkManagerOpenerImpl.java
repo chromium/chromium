@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
@@ -56,6 +57,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
         int parentTabId = tab == null ? Tab.INVALID_TAB_ID : tab.getId();
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
             showBookmarkManagerOnTablet(
+                    activity,
                     parentTabId,
                     /* parentComponent= */ activity == null ? null : activity.getComponentName(),
                     url,
@@ -69,15 +71,18 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
      * Opens the last used bookmark folder in a new tab. Used to move the bookmark manager out of
      * {@link BookmarkActivity} when the display grows to tablet width.
      *
+     * @param activity The activity initiating the tab launch.
      * @param profile The profile associated with the bookmarks.
-     * @param parentTabId The ID of the tab the bookmark manager was opened from, or {@link
-     *     Tab#INVALID_TAB_ID}.
-     * @param parentComponent The component of the browsing activity that launched the bookmark
-     *     manager, if known.
+     * @param parentTabId The originating tab ID, or {@link Tab#INVALID_TAB_ID}.
+     * @param parentComponent The browsing activity component that opened the manager, if known.
      */
     public void showBookmarkManagerInTab(
-            Profile profile, int parentTabId, @Nullable ComponentName parentComponent) {
+            Activity activity,
+            Profile profile,
+            @TabId int parentTabId,
+            @Nullable ComponentName parentComponent) {
         showBookmarkManagerOnTablet(
+                activity,
                 parentTabId,
                 parentComponent,
                 getFirstUrlToLoad(/* folderId= */ null, profile),
@@ -155,7 +160,8 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
     }
 
     private void showBookmarkManagerOnTablet(
-            int parentTabId,
+            Activity activity,
+            @TabId int parentTabId,
             @Nullable ComponentName parentComponent,
             String url,
             boolean incognito) {
@@ -165,7 +171,7 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
                 parentComponent != null
                         ? new AsyncTabCreationParams(loadUrlParams, parentComponent)
                         : new AsyncTabCreationParams(loadUrlParams);
-        ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(incognito);
+        ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(incognito, activity);
         delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, parentTabId);
     }
 

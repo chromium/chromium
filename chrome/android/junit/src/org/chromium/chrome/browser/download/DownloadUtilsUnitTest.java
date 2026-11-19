@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
@@ -49,12 +50,16 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.IntentRecordingActivity;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.download.DownloadMetrics.DownloadOpenTarget;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
@@ -99,6 +104,7 @@ public class DownloadUtilsUnitTest {
     @After
     public void tearDown() {
         DownloadUtils.resetLastOpenFileForTesting();
+        AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().clear();
         DownloadManagerService.setDownloadManagerService(mOriginalDownloadManagerService);
     }
 
@@ -588,5 +594,49 @@ public class DownloadUtilsUnitTest {
 
         assertNull(Shadows.shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity());
         verify(mMockDownloadManagerService, never()).updateLastAccessTime(any(), any());
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void
+            testOpenItemInChrome_PdfWrappedActivityContext_StartsActivityFromUnwrappedActivity() {
+        when(mMockDownloadManagerService.isDownloadOpenableInBrowser(any(), anyBoolean()))
+                .thenReturn(true);
+        IntentRecordingActivity activity =
+                Robolectric.buildActivity(IntentRecordingActivity.class).setup().get();
+        Context wrappedContext = new ContextWrapper(activity);
+
+        assertTrue(
+                DownloadUtils.openItemInChrome(
+                        createCompletedDownload(TEST_MIME_TYPE),
+                        wrappedContext,
+                        TEST_OTR_PROFILE_ID,
+                        DownloadOpenSource.DOWNLOAD_TRAY));
+
+        assertEquals(1, activity.getStartedIntents().size());
+        Intent intent = activity.getStartedIntents().get(0);
+        assertEquals(ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
+        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0);
+    }
+
+    @Test
+    @Feature({"Download"})
+    @Config(qualifiers = "sw600dp")
+    public void testShowDownloadManagerOnTablet_StartsActivityFromActivityContext() {
+        IntentRecordingActivity activity =
+                Robolectric.buildActivity(IntentRecordingActivity.class).setup().get();
+
+        assertTrue(
+                DownloadUtils.showDownloadManager(
+                        activity,
+                        /* tab= */ null,
+                        /* otrProfileId= */ null,
+                        DownloadOpenSource.MENU,
+                        /* showPrefetchedContent= */ false));
+
+        assertEquals(1, activity.getStartedIntents().size());
+        Intent intent = activity.getStartedIntents().get(0);
+        assertEquals(ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
+        assertEquals(UrlConstants.DOWNLOADS_URL, intent.getDataString());
     }
 }

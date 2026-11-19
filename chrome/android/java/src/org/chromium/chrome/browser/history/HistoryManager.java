@@ -237,8 +237,8 @@ public class HistoryManager
                         showAppFilter,
                         shouldClusterByDomain,
                         openHistoryItemCallback,
-                        new ChromeAsyncTabLauncher(/* incognito= */ false),
-                        new ChromeAsyncTabLauncher(/* incognito= */ true));
+                        new ChromeAsyncTabLauncher(/* incognito= */ false, mActivity),
+                        new ChromeAsyncTabLauncher(/* incognito= */ true, mActivity));
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(),
                 mContentManager.getRecyclerView(),

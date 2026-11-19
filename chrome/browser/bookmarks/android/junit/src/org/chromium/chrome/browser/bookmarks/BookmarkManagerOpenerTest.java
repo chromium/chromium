@@ -17,6 +17,7 @@ import android.content.Intent;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,11 +25,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.IntentRecordingActivity;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
@@ -63,6 +67,11 @@ public class BookmarkManagerOpenerTest {
         mActivity = activity;
     }
 
+    @After
+    public void tearDown() {
+        AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().clear();
+    }
+
     @Test
     public void testReopeningBookmarkManagerRecordsMetric() {
         BookmarkUtils.setLastUsedUrl("https://test.com");
@@ -91,9 +100,10 @@ public class BookmarkManagerOpenerTest {
                 phoneIntent.getIntExtra(IntentHandler.EXTRA_PARENT_TAB_ID, Tab.INVALID_TAB_ID));
 
         doReturn(true).when(mProfile).isOffTheRecord();
-        opener.showBookmarkManagerInTab(mProfile, parentTabId, mActivity.getComponentName());
-        Intent tabIntent = shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
-        assertNotNull(tabIntent);
+        IntentRecordingActivity bookmarkActivity = buildIntentRecordingActivity();
+        opener.showBookmarkManagerInTab(
+                bookmarkActivity, mProfile, parentTabId, mActivity.getComponentName());
+        Intent tabIntent = getActivityStartedIntent(bookmarkActivity);
         assertEquals("chrome-native://bookmarks/folder/3", tabIntent.getDataString());
         assertEquals(
                 parentTabId,
@@ -102,5 +112,41 @@ public class BookmarkManagerOpenerTest {
                 tabIntent.getBooleanExtra(
                         IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, /* defaultValue= */ false));
         assertEquals(mActivity.getComponentName(), tabIntent.getComponent());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testShowBookmarkManagerOnTablet_withCurrentTab_startsActivityFromActivity() {
+        doReturn(7).when(mCurrentTab).getId();
+        IntentRecordingActivity activity = buildIntentRecordingActivity();
+
+        mBookmarkManagerOpener.showBookmarkManager(
+                activity, mCurrentTab, mProfile, /* folderId= */ null);
+
+        Intent intent = getActivityStartedIntent(activity);
+        assertEquals(activity.getComponentName(), intent.getComponent());
+        assertEquals(7, intent.getIntExtra(IntentHandler.EXTRA_PARENT_TAB_ID, Tab.INVALID_TAB_ID));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testShowBookmarkManagerOnTablet_withNullTab_startsActivityFromActivity() {
+        IntentRecordingActivity activity = buildIntentRecordingActivity();
+
+        mBookmarkManagerOpener.showBookmarkManager(
+                activity, /* tab= */ null, mProfile, /* folderId= */ null);
+
+        Intent intent = getActivityStartedIntent(activity);
+        assertEquals(activity.getComponentName(), intent.getComponent());
+        assertEquals(Tab.INVALID_TAB_ID, intent.getIntExtra(IntentHandler.EXTRA_PARENT_TAB_ID, 0));
+    }
+
+    private static IntentRecordingActivity buildIntentRecordingActivity() {
+        return Robolectric.buildActivity(IntentRecordingActivity.class).setup().get();
+    }
+
+    private static Intent getActivityStartedIntent(IntentRecordingActivity activity) {
+        assertEquals(1, activity.getStartedIntents().size());
+        return activity.getStartedIntents().get(0);
     }
 }

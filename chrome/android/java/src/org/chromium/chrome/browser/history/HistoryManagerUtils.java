@@ -60,7 +60,7 @@ public class HistoryManagerUtils {
             // History shows up as a tab on tablets and desktop Android.
             LoadUrlParams params = new LoadUrlParams(historyUrl);
             ChromeAsyncTabLauncher delegate =
-                    new ChromeAsyncTabLauncher(/* incognito= */ profile.isOffTheRecord());
+                    new ChromeAsyncTabLauncher(/* incognito= */ profile.isOffTheRecord(), activity);
             delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ tab);
         } else {
             Intent intent = new Intent();

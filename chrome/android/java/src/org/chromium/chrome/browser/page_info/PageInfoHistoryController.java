@@ -98,8 +98,10 @@ public class PageInfoHistoryController
                         mTabSupplier,
                         new HistoryUmaRecorder(),
                         new BrowsingHistoryBridge(profile),
-                        new ChromeAsyncTabLauncher(/* incognito= */ false),
-                        new ChromeAsyncTabLauncher(/* incognito= */ true));
+                        new ChromeAsyncTabLauncher(
+                                /* incognito= */ false, mMainController.getActivity()),
+                        new ChromeAsyncTabLauncher(
+                                /* incognito= */ true, mMainController.getActivity()));
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }
