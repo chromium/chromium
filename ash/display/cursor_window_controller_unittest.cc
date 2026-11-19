@@ -5,6 +5,7 @@
 #include "ash/display/cursor_window_controller.h"
 
 #include <cmath>
+#include <optional>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -345,25 +346,22 @@ TEST_F(CursorWindowControllerTest, ShouldEnableCursorCompositing) {
   prefs->SetBoolean(prefs::kDockedMagnifierEnabled, false);
   EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
 
-  // Enable large cursor, cursor compositing should be enabled only if
-  // the target large cursor size is larger than current display's maximum
-  // cursor size.
+  // Set a custom cursor size. Cursor compositing should be enabled only if the
+  // target custom cursor size exceeds the current display's maximum cursor
+  // size.
+  const int max_cursor_height =
+      static_cast<int>(display_maximum_cursor_size_in_dip.height());
+  ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   cursor_window_controller()->SetDisplay(display);
-  prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
-  prefs->SetInteger(prefs::kAccessibilityLargeCursorDipSize,
-                    display_maximum_cursor_size_in_dip.height() + 1);
+  cursor_manager->SetCustomCursorSize(max_cursor_height + 1);
+  Shell::Get()->UpdateCursorCompositingEnabled();
   EXPECT_TRUE(cursor_window_controller()->is_cursor_compositing_enabled());
 
-  // Disable large cursor, cursor compositing should be disabled.
-  prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, false);
+  cursor_manager->SetCustomCursorSize(std::nullopt);
+  Shell::Get()->UpdateCursorCompositingEnabled();
   EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());
 
-  // Re-enable large cursor, since large cursor size is smaller than display's
-  // maximum cursor size, cursor should use hardware compositing instead of
-  // software compositing.
-  prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
-  prefs->SetInteger(prefs::kAccessibilityLargeCursorDipSize,
-                    display_maximum_cursor_size_in_dip.height() - 1);
+  cursor_manager->SetCustomCursorSize(max_cursor_height);
   cursor_window_controller()->SetDisplay(display);
   Shell::Get()->UpdateCursorCompositingEnabled();
   EXPECT_FALSE(cursor_window_controller()->is_cursor_compositing_enabled());

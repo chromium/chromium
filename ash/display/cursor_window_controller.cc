@@ -506,17 +506,14 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
     }
   }
 
-  if (prefs->GetBoolean(prefs::kAccessibilityLargeCursorEnabled) &&
-      custom_cursor_size_) {
-    // If current display's cursor plane size (i.e. maximum cursor size) is
-    // larger than the large cursor size, then large cursor can be drawn
-    // using hardware plane. Otherwise, software compositing is needed
-    // for cursor.
-    if (gfx::ConvertSizeToDips(display_.maximum_cursor_size(),
-                               display_.device_scale_factor())
-            .height() < *custom_cursor_size_) {
-      return true;
-    }
+  // If the current display's cursor plane size (i.e. maximum cursor size) is
+  // larger than the custom cursor size, then the cursor can be drawn using the
+  // hardware plane. Otherwise, software compositing is needed.
+  if (custom_cursor_size_ &&
+      gfx::ConvertSizeToDips(display_.maximum_cursor_size(),
+                             display_.device_scale_factor())
+              .height() < *custom_cursor_size_) {
+    return true;
   }
 
   return prefs->GetBoolean(prefs::kAccessibilityHighContrastEnabled) ||
