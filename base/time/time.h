@@ -1257,9 +1257,7 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // client-side trial to try to use QPC anyway. This function returns true for
   // all devices in the trial (which is all the devices without an invariant
   // TSC), and populates `trial_name` and `group_name` for them. `group_name`
-  // can be "Enabled" and "Control", as well as "Excluded" for devices where
-  // QueryPerformanceFrequency returns 0 (which shouldn't happen, but the
-  // assertion to validate this is new).
+  // can be "Enabled", "Control", or "ExcludedBecauseNoCommandLine".
   static bool GetHighResolutionTimeTicksFieldTrial(std::string* trial_name,
                                                    std::string* group_name);
 

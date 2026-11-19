@@ -534,65 +534,59 @@ void InitializeNowFunctionPointer() {
   CHECK(QueryPerformanceFrequency(&ticks_per_sec));
   CHECK_GT(ticks_per_sec.QuadPart, 0);
 
-  // If the QPC implementation is expensive and/or unreliable, TimeTicks::Now()
-  // will still use the low-resolution clock. A CPU lacking a non-stop time
-  // counter will cause Windows to provide an alternate QPC implementation that
-  // works, but is expensive to use.
-  //
-  // Otherwise, Now uses the high-resolution QPC clock. As of 9 September 2024,
-  // ~97% of users fall within this category.
-  bool eligible_for_high_res_time_ticks = false;
-
   // To debug an issue where in the field, all clients are in the Control group.
   // We suspect it might be due to the command line not being ready before this
   // function is called in some build configurations.
   bool opted_out_because_no_command_line = false;
 
-  // `ticks_per_sec.QuadPart <= 0` shouldn't happen post-WinXP (see CHECKs
-  // above) but if it does, QPC is broken and shouldn't be used for any reason.
-  if (ticks_per_sec.QuadPart > 0) {
-    CPU cpu;
-    // QPC is enabled for all devices with invariant TSCs.
-    // On devices where the CPU doesn't report having an invariant TSC, we would
-    // previously have considered the QPC overhead to be unacceptable. For this
-    // field trial, try enabling the high-res, QPC-based implementation of
-    // TimeTicks on 50% of such devices.
-    bool force_high_res_time_ticks = false;
-    // There is an explicit check for
-    // `base::CommandLine::InitializedForCurrentProcess()` not being null here,
-    // because some targets (like `generate_colors_info`) use `TimeTicks` during
-    // the build without initializing this command line object. In those cases,
-    // it's also not necessary to roll the dice to force high res timer since
-    // we're not running a browser.
-    if (base::CommandLine::InitializedForCurrentProcess()) {
-      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kForceHighResTimeTicks)) {
-        // If `switches::kForceHighResTimeTicks` is present, it's because this
-        // is a child process that is being instructed to use the same clock as
-        // its parent browser process. In this case, force the use of high
-        // resolution TimeTicks iff `switches::kForceHighResTimeTicks` is set to
-        // "enabled". It can also take the value of "disabled" when the browser
-        // is in either the "Control" or "Excluded" groups.
-        auto switch_value =
-            base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                switches::kForceHighResTimeTicks);
-        if (switch_value == "enabled") {
-          force_high_res_time_ticks = true;
-        }
-      } else {
-        // If `switches::kForceHighResTimeTicks` isn't present, this is either
-        // the browser process so we should roll a dice to determine if we're in
-        // the field trial, or this device already uses high resolution
-        // TimeTicks so the dice roll will not be used.
-        force_high_res_time_ticks = base::RandDouble() < 0.5;
+  // QPC is enabled for all devices with invariant TSCs.
+  // On devices where the CPU doesn't report having an invariant TSC, we would
+  // previously have considered the QPC overhead to be unacceptable. For this
+  // field trial, try enabling the high-res, QPC-based implementation of
+  // TimeTicks on 50% of such devices.
+  bool force_high_res_time_ticks = false;
+  // There is an explicit check for
+  // `base::CommandLine::InitializedForCurrentProcess()` not being null here,
+  // because some targets (like `generate_colors_info`) use `TimeTicks` during
+  // the build without initializing this command line object. In those cases,
+  // it's also not necessary to roll the dice to force high res timer since
+  // we're not running a browser.
+  if (base::CommandLine::InitializedForCurrentProcess()) {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kForceHighResTimeTicks)) {
+      // If `switches::kForceHighResTimeTicks` is present, it's because this
+      // is a child process that is being instructed to use the same clock as
+      // its parent browser process. In this case, force the use of high
+      // resolution TimeTicks iff `switches::kForceHighResTimeTicks` is set to
+      // "enabled". It can also take the value of "disabled" when the browser
+      // is in either the "Control" or "ExcludedBecauseNoCommandLine" groups.
+      auto switch_value =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kForceHighResTimeTicks);
+      if (switch_value == "enabled") {
+        force_high_res_time_ticks = true;
       }
     } else {
-      opted_out_because_no_command_line = true;
+      // If `switches::kForceHighResTimeTicks` isn't present, this is either
+      // the browser process so we should roll a dice to determine if we're in
+      // the field trial, or this device already uses high resolution
+      // TimeTicks so the dice roll will not be used.
+      force_high_res_time_ticks = base::RandDouble() < 0.5;
     }
-
-    eligible_for_high_res_time_ticks =
-        cpu.has_non_stop_time_stamp_counter() || force_high_res_time_ticks;
+  } else {
+    opted_out_because_no_command_line = true;
   }
+
+  // If the QPC implementation is expensive and/or unreliable, TimeTicks::Now()
+  // will still use the low-resolution clock. A CPU lacking a non-stop time
+  // counter will cause Windows to provide an alternate QPC implementation that
+  // works, but is expensive to use.
+  //
+  // Otherwise, Now uses the high-resolution QPC clock. As of November 2026,
+  // ~99.4% of updateable users (excluding clients stuck on M109 or older due to
+  // unsupported OS versions) fall within this category.
+  const bool eligible_for_high_res_time_ticks =
+      force_high_res_time_ticks || CPU().has_non_stop_time_stamp_counter();
 
   const TimeTicksNowFunction now_function =
       eligible_for_high_res_time_ticks ? &QPCNow : &RolloverProtectedNow;
@@ -645,7 +639,6 @@ TimeTicks InitialNowFunction() {
 
 enum class HighResolutionTrialState {
   kAlreadyHighResolution,
-  kExcludedFromTrial,
   kDontUseHighResolution,
   kUseHighResolution,
   kExcludedBecauseNoCommandLine,
@@ -660,13 +653,8 @@ HighResolutionTrialState GetHighResolutionTrialState() {
 
   // IsHighResolution() initializes the clock if it hasn't been done.
   bool is_high_res = TimeTicks::IsHighResolution();
-  if (g_qpc_ticks_per_second == 0) {
-    // QPC is broken and can't be enabled.
-    return HighResolutionTrialState::kExcludedFromTrial;
-  }
 
-  CPU cpu;
-  if (!cpu.has_non_stop_time_stamp_counter()) {
+  if (!CPU().has_non_stop_time_stamp_counter()) {
     if (g_opted_out_of_qpc_trial_because_no_command_line.load(
             std::memory_order_relaxed)) {
       // If there was no command line ready when initializing the time
@@ -857,9 +845,6 @@ bool TimeTicks::GetHighResolutionTimeTicksFieldTrial(std::string* trial_name,
   switch (state) {
     case HighResolutionTrialState::kAlreadyHighResolution:
       return false;
-    case HighResolutionTrialState::kExcludedFromTrial:
-      *group_name = "Excluded";
-      break;
     case HighResolutionTrialState::kDontUseHighResolution:
       *group_name = "Control";
       break;
@@ -885,12 +870,11 @@ void TimeTicks::MaybeAddHighResolutionTimeTicksSwitch(
       // If the device is already using an ideal QPC implementation for
       // TimeTicks, don't pass any command line flag.
       break;
-    case HighResolutionTrialState::kExcludedFromTrial:
     case HighResolutionTrialState::kExcludedBecauseNoCommandLine:
-      // In the cases of "Control" and "Excluded", tell the child process not to
-      // use QPC for TimeTicks to match the browser process.
-      [[fallthrough]];
     case HighResolutionTrialState::kDontUseHighResolution:
+      // In the cases of "Control" and "ExcludedBecauseNoCommandLine", tell the
+      // child process not to use QPC for TimeTicks to match the browser
+      // process.
       command_line->AppendSwitchASCII(switches::kForceHighResTimeTicks,
                                       "disabled");
       break;
