@@ -961,11 +961,11 @@ void ContextualTasksWebContentsUserData::OnTaskDisassociatedFromTab(
   base::UnguessableToken token = session_handle->GetTokenForTab(tab_id);
   if (token.is_empty()) {
     auto selected_tabs = GetSelectedTabs();
-    if (auto it = std::ranges::find_if(
-            selected_tabs,
-            [&](const contextual_search::TabInfo& tab) {
-              return tab.tab_id == tab_id.id();
-            });
+    if (auto it =
+            std::ranges::find_if(selected_tabs,
+                                 [&](const contextual_search::TabInfo& tab) {
+                                   return tab.tab_id == tab_id.id();
+                                 });
         it != selected_tabs.end()) {
       token = it->context_token;
     }
@@ -1383,7 +1383,7 @@ void ContextualTasksWebContentsUserData::
       auto open_tab =
           std::ranges::find_if(open_tabs, [&](const OpenTabInfo& tab) {
             return session_handle->AreUrlsEquivalent(resource.url, title,
-                                                      tab.url, tab.title);
+                                                     tab.url, tab.title);
           });
       if (open_tab != open_tabs.end()) {
         tab_id = open_tab->session_id;
@@ -1542,6 +1542,14 @@ void ContextualTasksWebContentsUserData::SetSmartTabSharingActive(bool active) {
   }
 #endif
   session_handle->OnSmartTabSharingToggled(active);
+  if (active) {
+    Profile* profile =
+        Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+    if (auto* context_service =
+            ContextualTasksContextServiceFactory::GetForProfile(profile)) {
+      context_service->EnsureObservingPageEmbeddingsService();
+    }
+  }
   for (const auto& selected_tab : previous_selected_tabs) {
     if (implicit_tab_ && selected_tab.context_token == implicit_tab_->token &&
         selected_tab.url.is_valid()) {

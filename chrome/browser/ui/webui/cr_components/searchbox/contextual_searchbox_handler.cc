@@ -672,6 +672,9 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
   contextual_tasks_context_service_ =
       contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
           profile);
+  if (contextual_tasks_context_service_ && IsSmartTabSharingActive()) {
+    contextual_tasks_context_service_->EnsureObservingPageEmbeddingsService();
+  }
   contextual_tasks_service_ =
       contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
   // It is safe to use base::Unretained(this) here because `desktop_delegate_`
@@ -1076,6 +1079,9 @@ void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
     }
   }
   smart_tab_sharing_active_for_thread_ = active;
+  if (active && contextual_tasks_context_service_) {
+    contextual_tasks_context_service_->EnsureObservingPageEmbeddingsService();
+  }
   auto* session_handle = GetContextualSessionHandle();
   if (session_handle) {
     session_handle->OnSmartTabSharingToggled(active);

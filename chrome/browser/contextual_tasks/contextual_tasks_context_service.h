@@ -140,6 +140,10 @@ class ContextualTasksContextService
   virtual void OnTypedQuery(
       base::WeakPtr<BrowserWindowInterface> browser_window_interface);
 
+  // Ensures this service is observing `PageEmbeddingsService` so page
+  // embeddings are computed and cached for tab selection.
+  virtual void EnsureObservingPageEmbeddingsService();
+
   void SetClockForTesting(const base::TickClock* tick_clock);
 
  protected:

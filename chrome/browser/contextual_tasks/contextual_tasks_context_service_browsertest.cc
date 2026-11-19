@@ -195,9 +195,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void TearDown() override {
-    InProcessBrowserTest::TearDown();
-  }
+  void TearDown() override { InProcessBrowserTest::TearDown(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
@@ -316,7 +314,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
                 browser()->GetProfile()),
             background_task_runner);
     service()->multi_turn_model_handler_->OnModelUpdated(optimization_target,
-                                                          model_info);
+                                                         model_info);
   }
 
   MockPageEmbeddingsService* page_embeddings_service() {
@@ -827,9 +825,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   conversation_thread.shared_tab_titles.push_back("shared tab 1");
   conversation_thread.shared_tab_titles.push_back("shared tab 2");
 
-  service()->GetRelevantTabsForConversationThread(options, conversation_thread,
-                                            /*explicit_urls=*/{valid_url()},
-                                            future.GetCallback());
+  service()->GetRelevantTabsForConversationThread(
+      options, conversation_thread,
+      /*explicit_urls=*/{valid_url()}, future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
@@ -924,23 +922,22 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceMultiTurnTest,
       .model_file_path = model_file_path,
       .model_metadata = any_metadata,
   };
-  UpdateMultiTurnModel(optimization_guide::proto::
-                  OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_MULTI_TURN_TAB_RELEVANCE,
-              model_info);
+  UpdateMultiTurnModel(
+      optimization_guide::proto::
+          OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_MULTI_TURN_TAB_RELEVANCE,
+      model_info);
 
   NavigateToValidURL();
   NotifyEmbedderMetadata();
 
-  std::vector<page_content_annotations::PassageEmbedding>
-      fake_page_embeddings = {
-          {std::make_pair(
-               "page title",
-               page_content_annotations::EmbeddingPassageType::kTitle),
-           passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})},
-          {std::make_pair(
-               "passage 1",
-               page_content_annotations::EmbeddingPassageType::kPageContent),
-           passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}};
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {{std::make_pair("page title",
+                       page_content_annotations::EmbeddingPassageType::kTitle),
+        passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})},
+       {std::make_pair(
+            "passage 1",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
       .WillRepeatedly(Return(fake_page_embeddings));
 
@@ -974,16 +971,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceMultiTurnTest,
   NavigateToValidURL();
   NotifyEmbedderMetadata();
 
-  std::vector<page_content_annotations::PassageEmbedding>
-      fake_page_embeddings = {
-          {std::make_pair(
-               "page title",
-               page_content_annotations::EmbeddingPassageType::kTitle),
-           passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})},
-          {std::make_pair(
-               "passage 1",
-               page_content_annotations::EmbeddingPassageType::kPageContent),
-           passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}};
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {{std::make_pair("page title",
+                       page_content_annotations::EmbeddingPassageType::kTitle),
+        passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})},
+       {std::make_pair(
+            "passage 1",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
       .WillRepeatedly(Return(fake_page_embeddings));
 
@@ -1319,7 +1314,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   options.min_model_score = 0.5f;
   // Set request timeout to 100ms so that the test finishes quickly after the
   // timeout tasks runs. Since the model executor task runner is paused,
-  // model execution will not proceed and this request is guaranteed to time out.
+  // model execution will not proceed and this request is guaranteed to time
+  // out.
   options.tab_selection_timeout = base::Milliseconds(100);
 
   service()->GetRelevantTabsForQuery(options, "summarize the test page now",
@@ -2311,6 +2307,76 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceSmartTabSharingTest,
       static_cast<int>(SmartTabSharingSettingsValue::kEnabled));
   EXPECT_TRUE(
       ContextualTasksContextService::GetIsSmartTabSharingEnabled(profile));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       DemandDrivenPageEmbeddingsObservation) {
+  Profile* profile = browser()->GetProfile();
+  testing::StrictMock<MockPageEmbeddingsService> mock_page_embeddings_service(
+      page_content_extraction_service());
+  FakeEmbedderMetadataProvider embedder_metadata_provider;
+  FakeEmbedder embedder;
+
+  // Construction without default-on Smart Tab Sharing does not observe
+  // PageEmbeddingsService.
+  EXPECT_CALL(mock_page_embeddings_service, AddObserver(_)).Times(0);
+  auto context_service = std::make_unique<ContextualTasksContextService>(
+      profile, &mock_page_embeddings_service, &embedder_metadata_provider,
+      &embedder, OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      page_content_extraction_service());
+  testing::Mock::VerifyAndClearExpectations(&mock_page_embeddings_service);
+
+  // Explicit opt-in / query intent triggers observation once, and subsequent
+  // calls are idempotent.
+  EXPECT_CALL(mock_page_embeddings_service, AddObserver(context_service.get()))
+      .Times(1);
+  EXPECT_CALL(mock_page_embeddings_service,
+              RemoveObserver(context_service.get()))
+      .Times(1);
+  context_service->OnTypedQuery(/*browser_window_interface=*/nullptr);
+  context_service->EnsureObservingPageEmbeddingsService();
+  context_service->OnTypedQuery(/*browser_window_interface=*/nullptr);
+  context_service.reset();
+}
+
+class ContextualTasksContextServiceSmartTabSharingDefaultOnTest
+    : public ContextualTasksContextServiceTest {
+ protected:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {kContextualTasksContext,
+             {{"ContextualTasksContextSmartTabSharing", "true"},
+              {"ContextualTasksContextOnlyUseTitles", "false"},
+              {"ContextualTasksContextTabSelectionScoreThreshold", "0.8"},
+              {"ContextualTasksContextContentVisibilityThreshold", "0.8"}}},
+            {kContextualTasksContextSmartTabSharingDefaultOnAvailability, {}},
+            {kContextualTasksContextLogging, {}},
+            {kContextualTasksForceEntryPointEligibility, {}},
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksContextServiceSmartTabSharingDefaultOnTest,
+    DefaultOnSmartTabSharingObservesOnConstruction) {
+  Profile* profile = browser()->GetProfile();
+  profile->GetPrefs()->SetBoolean(kContextualTasksShareOpenTabsEveryThread,
+                                  true);
+
+  testing::StrictMock<MockPageEmbeddingsService> mock_page_embeddings_service(
+      page_content_extraction_service());
+  FakeEmbedderMetadataProvider embedder_metadata_provider;
+  FakeEmbedder embedder;
+
+  EXPECT_CALL(mock_page_embeddings_service, AddObserver(_)).Times(1);
+  EXPECT_CALL(mock_page_embeddings_service, RemoveObserver(_)).Times(1);
+  auto context_service = std::make_unique<ContextualTasksContextService>(
+      profile, &mock_page_embeddings_service, &embedder_metadata_provider,
+      &embedder, OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      page_content_extraction_service());
+  context_service.reset();
 }
 
 }  // namespace contextual_tasks

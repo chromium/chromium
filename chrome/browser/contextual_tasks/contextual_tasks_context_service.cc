@@ -342,7 +342,14 @@ ContextualTasksContextService::ContextualTasksContextService(
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   scoped_embedder_metadata_provider_observation_.Observe(
       embedder_metadata_provider_);
-  scoped_page_embeddings_service_observation_.Observe(page_embeddings_service_);
+  if (GetIsSmartTabSharingEnabled(profile_) &&
+      base::FeatureList::IsEnabled(
+          kContextualTasksContextSmartTabSharingDefaultOnAvailability) &&
+      profile_->GetPrefs() &&
+      profile_->GetPrefs()->GetBoolean(
+          kContextualTasksShareOpenTabsEveryThread)) {
+    EnsureObservingPageEmbeddingsService();
+  }
 
   if (base::FeatureList::IsEnabled(
           kContextualTasksContextMultiTurnTabRelevance)) {
@@ -411,6 +418,7 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
     const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
         callback) {
+  EnsureObservingPageEmbeddingsService();
   base::TimeTicks now = tick_clock_->NowTicks();
 
   AUTO_CONTEXT_LOG(base::StringPrintf("Processing query %s in mode %d", query,
@@ -484,6 +492,7 @@ void ContextualTasksContextService::GetRelevantTabsForConversationThread(
     const std::vector<GURL>& explicit_urls,
     base::OnceCallback<void(std::vector<base::WeakPtr<content::WebContents>>)>
         callback) {
+  EnsureObservingPageEmbeddingsService();
   if (!base::FeatureList::IsEnabled(
           kContextualTasksContextMultiTurnTabRelevance)) {
     GetRelevantTabsForQuery(options, conversation_thread.query, explicit_urls,
@@ -573,20 +582,19 @@ void ContextualTasksContextService::GetRelevantTabsForConversationThread(
     passages.push_back(GetFormattedQueryString(turn.query));
   }
 
-  passage_embeddings::Embedder::Job job =
-      embedder_->ComputePassagesEmbeddings(
-          passage_embeddings::PassagePriority::kUrgent, std::move(passages),
-          base::BindOnce(&ContextualTasksContextService::
-                             OnConversationThreadEmbeddingReady,
-                         weak_ptr_factory_.GetWeakPtr(), truncated_thread,
-                         options, now, active_tab_at_query_time, explicit_urls,
-                         request_id));
+  passage_embeddings::Embedder::Job job = embedder_->ComputePassagesEmbeddings(
+      passage_embeddings::PassagePriority::kUrgent, std::move(passages),
+      base::BindOnce(
+          &ContextualTasksContextService::OnConversationThreadEmbeddingReady,
+          weak_ptr_factory_.GetWeakPtr(), truncated_thread, options, now,
+          active_tab_at_query_time, explicit_urls, request_id));
   pending_requests_[request_id] =
       std::make_unique<PendingRequest>(std::move(job), std::move(callback));
 }
 
 void ContextualTasksContextService::OnTypedQuery(
     base::WeakPtr<BrowserWindowInterface> browser_window_interface) {
+  EnsureObservingPageEmbeddingsService();
   if (!embedder_model_version_) {
     // Do not queue if embedder is not available.
     return;
@@ -595,7 +603,17 @@ void ContextualTasksContextService::OnTypedQuery(
   // Process embeddings for all tabs as the user has intent to call
   // `GetRelevantTabsForQuery` soon.
   WarmupAllEligibleTabs(browser_window_interface);
-  page_embeddings_service_->ProcessEmbeddingsOnDemand();
+  if (page_embeddings_service_) {
+    page_embeddings_service_->ProcessEmbeddingsOnDemand();
+  }
+}
+
+void ContextualTasksContextService::EnsureObservingPageEmbeddingsService() {
+  if (page_embeddings_service_ &&
+      !scoped_page_embeddings_service_observation_.IsObserving()) {
+    scoped_page_embeddings_service_observation_.Observe(
+        page_embeddings_service_);
+  }
 }
 
 void ContextualTasksContextService::EmbedderMetadataUpdated(
@@ -1343,9 +1361,9 @@ void ContextualTasksContextService::SelectRelevantTabsForConversationThread(
   PopulateTabSelectionModeInLog(options.tab_selection_mode, quality_log);
 
   CHECK(!embeddings.empty());
-  QueryState query_state = CreateQueryState(
-      conversation_thread.query, embeddings[0], context_tab_at_query_time,
-      all_eligible_tabs);
+  QueryState query_state =
+      CreateQueryState(conversation_thread.query, embeddings[0],
+                       context_tab_at_query_time, all_eligible_tabs);
 
   // Populate multi-turn embeddings manually.
   query_state.conversation_thread_queries_embeddings.assign(
