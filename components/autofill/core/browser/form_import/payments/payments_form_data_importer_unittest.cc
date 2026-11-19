@@ -4,9 +4,11 @@
 
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer_test_api.h"
@@ -21,8 +23,10 @@
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/sync/test/test_sync_service.h"
@@ -488,6 +492,48 @@ TEST_F(PaymentsFormDataImporterTest, ExtractCreditCard_2DigitYear) {
 
   SubmitFormAndExpectImportedCardWithData(form, "John Smith",
                                           "4111111111111111", "05", "2045");
+}
+
+class PaymentsFormDataImporterLocalizedMonthTest
+    : public base::test::WithFeatureOverride,
+      public PaymentsFormDataImporterTest {
+ public:
+  PaymentsFormDataImporterLocalizedMonthTest()
+      : base::test::WithFeatureOverride(
+            features::kAutofillFixParseMonthFromString) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PaymentsFormDataImporterLocalizedMonthTest);
+
+// Tests that a `<select>` expiration month field with localized option text
+// (e.g. zero-padded "05月" in Japanese with non-numeric option value "m5")
+// fails to import when the fix is disabled and imports month 05 when
+// `kAutofillFixParseMonthFromString` is enabled.
+TEST_P(PaymentsFormDataImporterLocalizedMonthTest,
+       ExtractCreditCard_LocalizedSelectExpirationMonth) {
+  autofill_client().set_app_locale(base::i18n::GetKnownLanguageTag("ja"));
+
+  FormData form =
+      CreateFullCreditCardForm("Taro Yamada", "4111111111111111", "05", "2045");
+  ASSERT_EQ(form.fields()[2].name(), u"exp_month");
+  test_api(form).field(2) = test::CreateTestSelectField(
+      "Exp Month:", "exp_month", "m5",
+      {"m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m10", "m11",
+       "m12"},
+      {"01月", "02月", "03月", "04月", "05月", "06月", "07月", "08月", "09月",
+       "10月", "11月", "12月"});
+  test_api(form).field(2).set_selected_option_text(u"05月");
+
+  if (IsParamFeatureEnabled()) {
+    SubmitFormAndExpectImportedCardWithData(form, "Taro Yamada",
+                                            "4111111111111111", "05", "2045");
+  } else {
+    std::unique_ptr<FormStructure> form_structure =
+        ConstructFormStructureFromFormData(form);
+    std::optional<CreditCard> extracted = ExtractCreditCard(*form_structure);
+    EXPECT_TRUE(!extracted || extracted->expiration_month() == 0);
+  }
 }
 
 // Tests that a credit card is extracted when the card matches a masked server

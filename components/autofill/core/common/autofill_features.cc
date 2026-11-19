@@ -838,6 +838,13 @@ BASE_FEATURE(kAutofillExtractShadowDomIframes,
 BASE_FEATURE(kAutofillFixLabelGenerationForStreetAddress,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, `data_util::ParseMonthFromString()` checks both standalone and
+// format month names with digit/word boundaries and falls back to English month
+// names for empty, invalid, or non-English locales.
+// TODO(crbug.com/584249423): Clean up when launched.
+BASE_FEATURE(kAutofillFixParseMonthFromString,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the rewriter uses updated rewrite rules.
 // TODO(crbug.com/445863287): Cleanup when launched.
 BASE_FEATURE(kAutofillFixRewriterRules, base::FEATURE_ENABLED_BY_DEFAULT);

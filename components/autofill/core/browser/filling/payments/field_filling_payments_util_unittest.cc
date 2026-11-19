@@ -941,6 +941,39 @@ TEST_F(FieldFillingPaymentsUtilTest, FillSelectControlWithMonthName_French) {
 }
 
 TEST_F(FieldFillingPaymentsUtilTest,
+       FillSelectControlWithLocalizedAndEnglishFallbackMonthNames) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillFixParseMonthFromString};
+  CreditCard credit_card = test::GetCreditCard();
+  credit_card.SetExpirationMonth(5);
+
+  AutofillField ja_field{test::CreateTestSelectField(
+      "", "", "",
+      {"m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8", "m9", "m10", "m11",
+       "m12"},
+      {"01月", "02月", "03月", "04月", "05月", "06月", "07月", "08月", "09月",
+       "10月", "11月", "12月"})};
+  ja_field.set_heuristic_type(GetActiveHeuristicSource(),
+                              CREDIT_CARD_EXP_MONTH);
+  EXPECT_EQ(
+      GetFillingValueForCreditCard(credit_card, /*app_locale=*/"ja",
+                                   mojom::ActionPersistence::kFill, ja_field,
+                                   /*is_cvc_filling_supported=*/true),
+      u"m5");
+
+  credit_card.SetExpirationMonth(11);
+  AutofillField en_field = CreateTestSelectAutofillField(
+      {"01 - Jan", "02 - Feb", "03 - Mar", "04 - Apr", "05 - May", "06 - Jun",
+       "07 - Jul", "08 - Aug", "09 - Sep", "10 - Oct", "11 - Nov", "12 - Dec"},
+      CREDIT_CARD_EXP_MONTH);
+  EXPECT_EQ(
+      GetFillingValueForCreditCard(credit_card, /*app_locale=*/"ja",
+                                   mojom::ActionPersistence::kFill, en_field,
+                                   /*is_cvc_filling_supported=*/true),
+      u"11 - Nov");
+}
+
+TEST_F(FieldFillingPaymentsUtilTest,
        FillSelectControlWithNumericMonthSansLeadingZero) {
   std::vector<const char*> kMonthsNumeric = {
       "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",

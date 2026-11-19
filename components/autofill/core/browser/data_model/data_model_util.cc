@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <memory>
@@ -19,6 +20,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/char_iterator.h"
 #include "base/i18n/string_search.h"
 #include "base/i18n/unicodestring.h"
 #include "base/notreached.h"
@@ -115,6 +117,221 @@ bool MatchesMonth(std::u16string icu_month, std::u16string_view input) {
   const bool has_trailing_boundary =
       match_end == input.size() || !IsWordChar(input[match_end]);
   return has_leading_boundary && has_trailing_boundary;
+}
+
+// Returns a span of localized symbols/names for months.
+base::span<const icu::UnicodeString> GetMonthsSpan(
+    const icu::DateFormatSymbols& date_format_symbols,
+    icu::DateFormatSymbols::DtContextType context,
+    icu::DateFormatSymbols::DtWidthType width) {
+  int32_t num_months = 0;
+  const icu::UnicodeString* months =
+      date_format_symbols.getMonths(num_months, context, width);
+  if (!months || num_months <= 0) {
+    return {};
+  }
+  // SAFETY: `icu::DateFormatSymbols::getMonths()` sets `num_months` to the
+  // length of the internal C-style array returned in `months`.
+  return UNSAFE_BUFFERS(
+      base::span(months, base::checked_cast<size_t>(num_months)));
+}
+
+// Returns whether `text` contains only Unicode digits and whitespace (or is
+// empty).
+bool ContainsOnlyDigitsOrWhitespace(std::u16string_view text) {
+  for (base::i18n::UTF16CharIterator it(text); !it.end(); it.Advance()) {
+    if (!u_isdigit(it.get()) && !u_isUWhiteSpace(it.get())) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Returns whether `code_point` is part of a word: an alphanumeric character,
+// an underscore, or a Unicode combining mark (e.g., an NFD accent separating a
+// base letter from a substring match, as in "de\u0301marche").
+bool IsWordCodePoint(int32_t code_point) {
+  const auto char_type = u_charType(code_point);
+  return u_isalnum(code_point) || code_point == u'_' ||
+         char_type == U_NON_SPACING_MARK ||
+         char_type == U_COMBINING_SPACING_MARK || char_type == U_ENCLOSING_MARK;
+}
+
+// Returns whether a digit-leading `icu_month` (e.g. Japanese "1月".."12月") has
+// a valid leading boundary given `prev_it` pointing at the code point
+// immediately before the match.
+// A non-digit predecessor (e.g. "年" in "2025年11月") is valid. A preceding
+// digit is rejected unless it is a single leading zero before a 1-digit month
+// (so zero-padded "01月" matches ICU's unpadded "1月", whereas "001月",
+// "010月", and "13月" are rejected).
+bool HasValidDigitLeadingBoundary(
+    std::u16string_view icu_month,
+    const base::i18n::UTF16CharIterator& prev_it) {
+  const int32_t prev = prev_it.get();
+  if (!u_isdigit(prev)) {
+    return true;
+  }
+  // Two-digit month names (e.g. "10月".."12月") must never be preceded by
+  // another digit (rejects e.g. "010月", "110月").
+  base::i18n::UTF16CharIterator month_it(icu_month);
+  if (u_isdigit(month_it.NextCodePoint())) {
+    return false;
+  }
+  // Only zero-padding ('0' / fullwidth '０') preserves the month value. Other
+  // leading digits (e.g. '1' in "11月" or "13月") change the numeric value
+  // ("11月" is matched as month 11 earlier; "13月" is invalid).
+  if (u_charDigitValue(prev) != 0) {
+    return false;
+  }
+  // Reject multiple leading digits/zeros (e.g. "001月", "101月").
+  return prev_it.start() || !u_isdigit(prev_it.PreviousCodePoint());
+}
+
+// Returns whether a match of non-empty `icu_month` at `target[start..end)` sits
+// on valid leading and trailing boundaries:
+// - Leading boundary (when `start > 0`):
+//   - If `icu_month` starts with a digit (e.g. Japanese "1月".."12月"), the
+//     preceding code point must not be a digit, except for a single leading
+//     zero before a 1-digit month (so zero-padded Japanese "01月" matches ICU's
+//     unpadded "1月" for January). Non-digit predecessors (e.g. "年" in
+//     "2025年11月") are allowed.
+//   - Otherwise, the preceding code point must not be a word code point
+//     (rejects mid-word matches like "sie" in "Wrzesień" or "一月" in
+//     "十一月").
+// - Trailing boundary (when `end < target.size()`):
+//   - The following code point must not be a word code point (rejects
+//     continuations like "MayTheForceBeWithYou", "May2026", or "Tháng 1" in
+//     "Tháng 10").
+bool HasValidMonthBoundary(std::u16string_view icu_month,
+                           std::u16string_view target,
+                           size_t start,
+                           size_t end) {
+  if (start > 0) {
+    // Step by UTF-16 code points so supplementary characters like "𐐀May" stay
+    // intact.
+    base::i18n::UTF16CharIterator prev_it =
+        base::i18n::UTF16CharIterator::UpperBound(target, start);
+    prev_it.Rewind();
+    base::i18n::UTF16CharIterator month_start(icu_month);
+    if (u_isdigit(month_start.get())) {
+      if (!HasValidDigitLeadingBoundary(icu_month, prev_it)) {
+        return false;
+      }
+    } else if (IsWordCodePoint(prev_it.get())) {
+      return false;
+    }
+  }
+  if (end < target.size()) {
+    const int32_t next =
+        base::i18n::UTF16CharIterator::UpperBound(target, end).get();
+    if (IsWordCodePoint(next)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Returns the length (in UTF-16 code units) of the first match of `icu_month`
+// in `target` (after trimming leading and trailing periods, e.g. French
+// "févr.") using case- and accent-insensitive substring search that satisfies
+// `HasValidMonthBoundary()`, or `std::nullopt` if none matches. Returns
+// `std::nullopt` if `icu_month` consists only of digits and whitespace (bare
+// numeric months are handled before named-month lookup) or if `target` is
+// empty.
+std::optional<size_t> MatchMonthNameLength(std::u16string_view icu_month,
+                                           std::u16string_view target) {
+  icu_month = base::TrimString(icu_month, u".", base::TRIM_ALL);
+  if (ContainsOnlyDigitsOrWhitespace(icu_month) || target.empty()) {
+    return std::nullopt;
+  }
+
+  base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents searcher{
+      std::u16string(icu_month)};
+  size_t offset = 0;
+  size_t match_index = 0;
+  size_t match_length = 0;
+  while (offset < target.size() &&
+         searcher.Search(target.substr(offset), &match_index, &match_length)) {
+    const size_t start = offset + match_index;
+    const size_t end = start + match_length;
+    if (match_length == 0 || end > target.size()) {
+      return std::nullopt;
+    }
+    if (HasValidMonthBoundary(icu_month, target, start, end)) {
+      return match_length;
+    }
+    base::i18n::UTF16CharIterator next_it =
+        base::i18n::UTF16CharIterator::LowerBound(target, start);
+    next_it.Advance();
+    offset = next_it.array_pos();
+  }
+  return std::nullopt;
+}
+
+// Attempts to parse a localized month name from `trimmed` using ICU's
+// `DateFormatSymbols` for `locale`, checking `WIDE` before `ABBREVIATED` across
+// `STANDALONE` and `FORMAT` contexts.
+std::optional<int> ParseNamedMonthForLocale(std::u16string_view trimmed,
+                                            const icu::Locale& locale) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::DateFormatSymbols date_format_symbols(locale, status);
+  if (U_FAILURE(status)) {
+    return std::nullopt;
+  }
+
+  // Only `WIDE` and `ABBREVIATED` are checked: ICU aliases `SHORT` to
+  // `ABBREVIATED` for months, and `NARROW` yields ambiguous single-character
+  // initials (e.g. "J", "M") or bare digits.
+  for (auto width :
+       {icu::DateFormatSymbols::WIDE, icu::DateFormatSymbols::ABBREVIATED}) {
+    std::optional<int> best_month;
+    size_t best_match_length = 0;
+    for (auto context :
+         {icu::DateFormatSymbols::STANDALONE, icu::DateFormatSymbols::FORMAT}) {
+      const base::span<const icu::UnicodeString> months =
+          GetMonthsSpan(date_format_symbols, context, width);
+      // Credit card expiration months use the 12-month Gregorian calendar.
+      // Clamp to 12 because some non-Gregorian ICU calendars (e.g. Hebrew,
+      // Ethiopic) return 13 entries and index 12 is never a valid month in
+      // [1, 12].
+      const int num_months =
+          static_cast<int>(std::min<size_t>(months.size(), 12));
+      // Test all 12 months and keep the longest match rather than assuming
+      // longer names always appear later (e.g. Mongolian "арван нэгдүгээр сар"
+      // [11] contains "нэгдүгээр сар" [1], whereas in CLDR Nuer "tiop thar pɛt"
+      // [1] contains "pɛt" [2]).
+      for (int i = 0; i < num_months; ++i) {
+        if (std::optional<size_t> match_length = MatchMonthNameLength(
+                base::i18n::UnicodeStringToString16(months[i]), trimmed);
+            match_length && *match_length > best_match_length) {
+          best_match_length = *match_length;
+          best_month = i + 1;
+        }
+      }
+    }
+    if (best_month) {
+      return best_month;
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<int> ParseNamedMonth(std::u16string_view trimmed,
+                                   std::string_view app_locale) {
+  if (app_locale.empty()) {
+    return ParseNamedMonthForLocale(trimmed, icu::Locale::getEnglish());
+  }
+  const icu::Locale locale(std::string(app_locale).c_str());
+  if (locale.isBogus()) {
+    return ParseNamedMonthForLocale(trimmed, icu::Locale::getEnglish());
+  }
+  return ParseNamedMonthForLocale(trimmed, locale)
+      .or_else([&]() -> std::optional<int> {
+        if (std::string_view(locale.getLanguage()) == "en") {
+          return std::nullopt;
+        }
+        return ParseNamedMonthForLocale(trimmed, icu::Locale::getEnglish());
+      });
 }
 
 }  // namespace
@@ -324,6 +541,11 @@ std::optional<int> ParseMonthFromString(std::u16string_view text,
   // Try parsing the `trimmed` as a number (this doesn't require `app_locale`).
   if (base::StringToInt(trimmed, &month))
     return GetExpirationMonth(month);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillFixParseMonthFromString)) {
+    return ParseNamedMonth(trimmed, app_locale);
+  }
 
   if (app_locale.empty())
     return std::nullopt;
