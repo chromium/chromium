@@ -931,6 +931,32 @@ public class AwContentsTest extends AwParameterizedTest {
                         awContents, mContentsClient, script));
     }
 
+    /**
+     * Verifies that SharedWorker is not exposed in WebView.
+     *
+     * Note: It is OK to delete this test if you are consciously enabling SharedWorker in WebView
+     * and have fixed related issues. For example, see crbug.com/575037727.
+     */
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testSharedWorkersDisabled() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AwContents awContents = testView.getAwContents();
+
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        mActivityTestRule.loadUrlSync(
+                awContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        Assert.assertEquals(
+                "false",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "'SharedWorker' in window"));
+    }
+
     private @RendererPriority int getRendererPriorityOnUiThread(final AwContents awContents)
             throws Exception {
         return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getEffectivePriorityForTesting());
