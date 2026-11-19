@@ -151,7 +151,6 @@ bool ShouldSkipCSDAllowlist() {
       switches::kSkipCSDAllowlistOnPreclassification);
 }
 
-
 safe_browsing::mojom::ClientSideDetectionType GetClientSideDetectionMojomType(
     ClientSideDetectionType client_side_detection_type) {
   switch (client_side_detection_type) {
@@ -772,6 +771,8 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
 void ClientSideDetectionHost::CancelPendingRequests() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   weak_factory_.InvalidateWeakPtrs();
+  multimodal_screenshot_watchdog_timer_.Stop();
+  pending_multimodal_screenshot_callback_.Reset();
   DropPendingCapture();
   browser_classification_.reset();
   CancelBrowserSideClassification();
@@ -815,24 +816,30 @@ bool ClientSideDetectionHost::VisualCapturer::IsSurfaceAvailableForCopy(
 void ClientSideDetectionHost::VisualCapturer::CopyFromSurface(
     content::WebContents* web_contents,
     base::TimeDelta timeout,
+    bool scale_to_dips,
     CopyCallback callback) {
   content::RenderWidgetHostView* view = web_contents->GetRenderWidgetHostView();
   CHECK(view);
 
-  // Scale the capture to the view's size in DIPs, capped to
-  // `kMaxHighResScreenshotWidth` x `kMaxHighResScreenshotHeight` while
-  // preserving aspect ratio. This matches what the renderer-side extractor
-  // produces (the visual viewport in DIPs), keeps high-DPI captures small, and
-  // bounds readback size on ultrawide/maximized displays; viz does the scaling.
   const gfx::Size view_size = view->GetViewBounds().size();
-  gfx::Size output_size = view_size;
-  if (output_size.width() > kMaxHighResScreenshotWidth ||
-      output_size.height() > kMaxHighResScreenshotHeight) {
-    const float scale = std::min(
-        static_cast<float>(kMaxHighResScreenshotWidth) / output_size.width(),
-        static_cast<float>(kMaxHighResScreenshotHeight) / output_size.height());
-    output_size = gfx::ScaleToFlooredSize(output_size, scale);
-    output_size.SetToMax(gfx::Size(1, 1));
+  gfx::Size output_size;
+  if (scale_to_dips) {
+    // Scale the capture to the view's size in DIPs, capped to
+    // `kMaxHighResScreenshotWidth` x `kMaxHighResScreenshotHeight` while
+    // preserving aspect ratio. This matches what the renderer-side extractor
+    // produces (the visual viewport in DIPs), keeps high-DPI captures small,
+    // and bounds readback size on ultrawide/maximized displays; viz does the
+    // scaling.
+    output_size = view_size;
+    if (output_size.width() > kMaxHighResScreenshotWidth ||
+        output_size.height() > kMaxHighResScreenshotHeight) {
+      const float scale = std::min(
+          static_cast<float>(kMaxHighResScreenshotWidth) / output_size.width(),
+          static_cast<float>(kMaxHighResScreenshotHeight) /
+              output_size.height());
+      output_size = gfx::ScaleToFlooredSize(output_size, scale);
+      output_size.SetToMax(gfx::Size(1, 1));
+    }
   }
   gfx::Rect src_rect;
 #if BUILDFLAG(IS_ANDROID)
@@ -1047,7 +1054,7 @@ void ClientSideDetectionHost::MaybeCopySurface() {
       base::BindOnce(&ClientSideDetectionHost::OnCopyFromSurfaceTimeout,
                      weak_factory_.GetWeakPtr()));
   visual_capturer_->CopyFromSurface(
-      web_contents(), timeout,
+      web_contents(), timeout, /*scale_to_dips=*/true,
       base::BindOnce(&ClientSideDetectionHost::OnCopyFromSurfaceDone,
                      weak_factory_.GetWeakPtr(), pending_capture_->capture_id));
 }
@@ -1480,10 +1487,6 @@ void ClientSideDetectionHost::OnAsyncSafeBrowsingCheckTrackerDestructed() {
   async_check_observation_.Reset();
 }
 
-
-
-
-
 void ClientSideDetectionHost::MaybeFillScreenshotData(
     ClientPhishingRequest* request) {
   if (request->client_side_detection_type() !=
@@ -1530,8 +1533,6 @@ void ClientSideDetectionHost::OnTextCopiedToClipboard(
     const std::u16string& copied_text) {
   ClientSideDetectionHostBase::OnTextCopiedToClipboard(copied_text);
 }
-
-
 
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(
     ClientSideDetectionType request_type,
@@ -1699,7 +1700,6 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       std::move(verdict));
 }
 
-
 visual_utils::CanExtractVisualFeaturesResult
 ClientSideDetectionHost::DetermineVisualFeaturesExtraction() {
   int viewport_width = -1;
@@ -1755,7 +1755,6 @@ ClientSideDetectionHost::DetermineVisualFeaturesExtraction() {
                                 can_extract_visual_features_result);
   return can_extract_visual_features_result;
 }
-
 
 void ClientSideDetectionHost::PhishingImageEmbeddingDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
@@ -1976,20 +1975,32 @@ void ClientSideDetectionHost::MaybeCaptureScreenshotAndStartIntelligentScan(
     std::string inner_text) {
   if (ShouldCaptureScreenshotForIntelligentScan() &&
       IsTabVisibleAndOnUrl(GURL(verdict->url()))) {
-    if (content::RenderWidgetHostView* view =
-            web_contents()->GetRenderWidgetHostView()) {
-      gfx::Rect src_rect =
-#if BUILDFLAG(IS_ANDROID)
-          gfx::Rect(view->GetVisibleViewportSize());
-#else
-          gfx::Rect();
-#endif
-      view->CopyFromSurface(
-          src_rect, gfx::Size(), base::TimeDelta(),
+    if (web_contents()->GetRenderWidgetHostView()) {
+      base::TimeDelta timeout =
+          kClientSideDetectionServerModelMultimodalCopyFromSurfaceTimeout.Get();
+      if (!timeout.is_positive()) {
+        timeout = base::TimeDelta();
+      }
+      const int capture_id = ++multimodal_screenshot_capture_id_;
+      pending_multimodal_screenshot_callback_ =
           base::BindOnce(&ClientSideDetectionHost::OnScreenshotTaken,
                          weak_factory_.GetWeakPtr(), std::move(verdict),
                          did_match_high_confidence_allowlist, is_invalid_ip,
-                         std::move(inner_text), tick_clock()->NowTicks()));
+                         std::move(inner_text), tick_clock()->NowTicks());
+      multimodal_screenshot_watchdog_timer_.Stop();
+      if (timeout.is_positive()) {
+        multimodal_screenshot_watchdog_timer_.Start(
+            FROM_HERE, timeout + kCopyFromSurfaceTimeoutAllowance,
+            base::BindOnce(
+                &ClientSideDetectionHost::CompleteMultimodalScreenshotCapture,
+                weak_factory_.GetWeakPtr(), capture_id,
+                base::unexpected(content::CopyFromSurfaceError::kTimeout)));
+      }
+      visual_capturer_->CopyFromSurface(
+          web_contents(), timeout, /*scale_to_dips=*/false,
+          base::BindOnce(
+              &ClientSideDetectionHost::CompleteMultimodalScreenshotCapture,
+              weak_factory_.GetWeakPtr(), capture_id));
       return;
     } else {
       base::UmaHistogramEnumeration(
@@ -2000,6 +2011,17 @@ void ClientSideDetectionHost::MaybeCaptureScreenshotAndStartIntelligentScan(
   StartIntelligentScan(std::move(verdict), did_match_high_confidence_allowlist,
                        is_invalid_ip, std::move(inner_text),
                        /*tab_screenshot=*/std::nullopt);
+}
+
+void ClientSideDetectionHost::CompleteMultimodalScreenshotCapture(
+    int capture_id,
+    const content::CopyFromSurfaceResult& result) {
+  if (!pending_multimodal_screenshot_callback_ ||
+      capture_id != multimodal_screenshot_capture_id_) {
+    return;
+  }
+  multimodal_screenshot_watchdog_timer_.Stop();
+  std::move(pending_multimodal_screenshot_callback_).Run(result);
 }
 
 void ClientSideDetectionHost::OnScreenshotTaken(
@@ -2018,7 +2040,10 @@ void ClientSideDetectionHost::OnScreenshotTaken(
     failure_status =
         MultimodalScreenshotCaptureStatus::kTabNotVisibleOrUrlChanged;
   } else if (!result.has_value()) {
-    failure_status = MultimodalScreenshotCaptureStatus::kCopyFromSurfaceFailed;
+    failure_status =
+        result.error() == content::CopyFromSurfaceError::kTimeout
+            ? MultimodalScreenshotCaptureStatus::kCopyFromSurfaceTimedOut
+            : MultimodalScreenshotCaptureStatus::kCopyFromSurfaceFailed;
   } else if (result->bitmap.drawsNothing()) {
     failure_status = MultimodalScreenshotCaptureStatus::kEmptyBitmap;
   }

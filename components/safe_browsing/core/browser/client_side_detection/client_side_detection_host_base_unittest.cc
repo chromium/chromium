@@ -139,9 +139,7 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   void set_current_url_override(const GURL& url) {
     current_url_override_ = url;
   }
-  void clear_current_url_override() {
-    current_url_override_.reset();
-  }
+  void clear_current_url_override() { current_url_override_.reset(); }
   MOCK_METHOD(void,
               ClassifyPhishingThroughThresholds,
               (ClientPhishingRequest * verdict),
@@ -572,10 +570,9 @@ TEST_F(ClientSideDetectionHostBaseTest,
   EXPECT_EQ(request.client_side_detection_type(), TRIGGER_MODELS);
   EXPECT_EQ(request.population().user_population(),
             ChromeUserPopulation::ENHANCED_PROTECTION);
-  EXPECT_THAT(
-      request.population().finch_active_groups(),
-      ::testing::Not(::testing::Contains(::testing::HasSubstr(
-          "ClientSideDetectionKeyboardLockUniformPageDelay"))));
+  EXPECT_THAT(request.population().finch_active_groups(),
+              ::testing::Not(::testing::Contains(::testing::HasSubstr(
+                  "ClientSideDetectionKeyboardLockUniformPageDelay"))));
   EXPECT_THAT(
       request.population().finch_active_groups(),
       ::testing::Contains("ClientSideDetectionCopyFromSurface.Control"));
@@ -1666,6 +1663,8 @@ TEST_F(ClientSideDetectionHostBaseTest,
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.Multimodal.ScreenshotCaptureSize",
       std::string("fake_png_bytes").size(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotExceedsMaxSize", false, 1);
 }
 
 TEST_F(ClientSideDetectionHostBaseTest,
@@ -1699,10 +1698,144 @@ TEST_F(ClientSideDetectionHostBaseTest,
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.Multimodal.ScreenshotCaptureSize",
       std::string("fake_png_bytes").size(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotExceedsMaxSize", false, 1);
 }
 
 TEST_F(ClientSideDetectionHostBaseTest,
-       KeyboardLockUniformImageRetry_CancelledOnSameDocumentNavigationUrlChange) {
+       StartIntelligentScan_DropsScreenshotExceedingMaxBytes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionServerModelMultimodal,
+      {{"MaxScreenshotBytes", "10"}});
+  base::HistogramTester histogram_tester;
+  GURL url("https://example.com/");
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(url.spec());
+  verdict->set_client_side_detection_type(TRIGGER_MODELS);
+
+  MockClientSideDetectionServiceBase mock_csd_service;
+  MockIntelligentScanDelegate mock_intelligent_scan_delegate;
+  host_ = std::make_unique<TestClientSideDetectionHostBase>(
+      cache_manager_.get(), &prefs_, /*history_service=*/nullptr,
+      mock_csd_service.GetWeakPtr(), /*is_off_the_record=*/false,
+      &mock_intelligent_scan_delegate);
+  host_->set_current_url(url);
+
+  const std::string kLongInnerText(100, 'a');
+  const std::string kOversizedScreenshot(11, 'x');
+  EXPECT_CALL(mock_intelligent_scan_delegate,
+              StartIntelligentScan(kLongInnerText, url.spec(),
+                                   std::optional<std::string>(std::nullopt), _))
+      .WillOnce(Return(base::UnguessableToken::Create()));
+
+  host_->StartIntelligentScan(std::move(verdict),
+                              /*did_match_high_confidence_allowlist=*/false,
+                              /*is_invalid_ip=*/false, kLongInnerText,
+                              kOversizedScreenshot);
+  EXPECT_FALSE(
+      host_->last_intelligent_scan_tab_screenshot_for_testing().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize",
+      kOversizedScreenshot.size(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotExceedsMaxSize", true, 1);
+}
+
+TEST_F(
+    ClientSideDetectionHostBaseTest,
+    StartIntelligentScan_SkipsWhenInnerTextTooShortAndScreenshotExceedsMaxBytes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionServerModelMultimodal,
+      {{"MaxScreenshotBytes", "10"}});
+  base::HistogramTester histogram_tester;
+  GURL url("https://example.com/");
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(url.spec());
+  verdict->set_client_side_detection_type(TRIGGER_MODELS);
+
+  MockClientSideDetectionServiceBase mock_csd_service;
+  MockIntelligentScanDelegate mock_intelligent_scan_delegate;
+  host_ = std::make_unique<TestClientSideDetectionHostBase>(
+      cache_manager_.get(), &prefs_, /*history_service=*/nullptr,
+      mock_csd_service.GetWeakPtr(), /*is_off_the_record=*/false,
+      &mock_intelligent_scan_delegate);
+  host_->set_current_url(url);
+  SetEnhancedProtectionPrefForTests(&prefs_, false);
+
+  EXPECT_CALL(mock_intelligent_scan_delegate, StartIntelligentScan(_, _, _, _))
+      .Times(0);
+  EXPECT_CALL(mock_csd_service, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce([&](std::unique_ptr<ClientPhishingRequest> sent_verdict,
+                    ClientSideDetectionServiceBase::
+                        ClientReportPhishingRequestCallback callback,
+                    const std::string& access_token) {
+        ASSERT_TRUE(sent_verdict->has_intelligent_scan_info());
+        EXPECT_EQ(sent_verdict->intelligent_scan_info().no_info_reason(),
+                  IntelligentScanInfo::TEXT_TOO_SHORT);
+      });
+
+  const std::string kOversizedScreenshot(11, 'x');
+  host_->StartIntelligentScan(std::move(verdict),
+                              /*did_match_high_confidence_allowlist=*/false,
+                              /*is_invalid_ip=*/false, /*inner_text=*/"text",
+                              kOversizedScreenshot);
+  EXPECT_FALSE(
+      host_->last_intelligent_scan_tab_screenshot_for_testing().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize",
+      kOversizedScreenshot.size(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotExceedsMaxSize", true, 1);
+}
+
+TEST_F(ClientSideDetectionHostBaseTest,
+       StartIntelligentScan_AllowsAnyScreenshotSizeWhenMaxBytesNegative) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionServerModelMultimodal,
+      {{"MaxScreenshotBytes", "-1"}});
+  base::HistogramTester histogram_tester;
+  GURL url("https://example.com/");
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(url.spec());
+  verdict->set_client_side_detection_type(TRIGGER_MODELS);
+
+  MockClientSideDetectionServiceBase mock_csd_service;
+  MockIntelligentScanDelegate mock_intelligent_scan_delegate;
+  host_ = std::make_unique<TestClientSideDetectionHostBase>(
+      cache_manager_.get(), &prefs_, /*history_service=*/nullptr,
+      mock_csd_service.GetWeakPtr(), /*is_off_the_record=*/false,
+      &mock_intelligent_scan_delegate);
+  host_->set_current_url(url);
+
+  const std::string kScreenshot(2 * 1024 * 1024 + 1, 'x');
+  ASSERT_GT(kScreenshot.size(),
+            static_cast<size_t>(
+                kClientSideDetectionServerModelMultimodalMaxScreenshotBytes
+                    .default_value));
+  EXPECT_CALL(mock_intelligent_scan_delegate,
+              StartIntelligentScan("text", url.spec(),
+                                   std::optional<std::string>(kScreenshot), _))
+      .WillOnce(Return(base::UnguessableToken::Create()));
+
+  host_->StartIntelligentScan(std::move(verdict),
+                              /*did_match_high_confidence_allowlist=*/false,
+                              /*is_invalid_ip=*/false, /*inner_text=*/"text",
+                              kScreenshot);
+  EXPECT_EQ(host_->last_intelligent_scan_tab_screenshot_for_testing(),
+            kScreenshot);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotCaptureSize", kScreenshot.size(),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.Multimodal.ScreenshotExceedsMaxSize", false, 1);
+}
+
+TEST_F(
+    ClientSideDetectionHostBaseTest,
+    KeyboardLockUniformImageRetry_CancelledOnSameDocumentNavigationUrlChange) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kClientSideDetectionKeyboardLockUniformPageDelay,
@@ -1731,8 +1864,7 @@ TEST_F(ClientSideDetectionHostBaseTest,
       /*did_match_high_confidence_allowlist=*/false,
       /*is_invalid_ip=*/false,
       ClientSideDetectionHostBase::ImageEmbeddingResult::kSuccess,
-      /*image_feature_embedding=*/std::nullopt,
-      std::move(visual_features));
+      /*image_feature_embedding=*/std::nullopt, std::move(visual_features));
 
   // The retry timer should now be running.
   EXPECT_TRUE(host_->is_uniform_image_retry_timer_running());

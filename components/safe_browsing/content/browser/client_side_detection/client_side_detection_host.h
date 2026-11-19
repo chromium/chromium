@@ -160,11 +160,15 @@ class ClientSideDetectionHost
     // Whether `web_contents` has a view whose surface can be copied right now.
     virtual bool IsSurfaceAvailableForCopy(content::WebContents* web_contents);
 
-    // Copies the view's surface, scaled to the view's size in
-    // Device-Independent Pixels (DIPs), and runs `callback` on the calling
-    // sequence.
+    // Copies the view's surface and runs `callback` on the calling sequence.
+    // When `scale_to_dips` is true, scales the capture to the view's size in
+    // Device-Independent Pixels (DIPs), capped at
+    // `kMaxHighResScreenshotWidth` x `kMaxHighResScreenshotHeight`. When false,
+    // captures at native physical-pixel resolution
+    // (`output_size = gfx::Size()`).
     virtual void CopyFromSurface(content::WebContents* web_contents,
                                  base::TimeDelta timeout,
+                                 bool scale_to_dips,
                                  CopyCallback callback);
   };
 
@@ -258,8 +262,6 @@ class ClientSideDetectionHost
   void OnAsyncSafeBrowsingCheckTrackerDestructed() override;
 
   void RegisterAsyncCheckTracker();
-
-
 
   void RegisterAutofillManager();
 
@@ -459,6 +461,12 @@ class ClientSideDetectionHost
   // Returns true if the observed WebContents is currently visible and its
   // committed URL matches `url`.
   bool IsTabVisibleAndOnUrl(const GURL& url) const;
+
+  // Stops the multimodal screenshot watchdog timer and forwards `result` to
+  // `pending_multimodal_screenshot_callback_` if `capture_id` is still active.
+  void CompleteMultimodalScreenshotCapture(
+      int capture_id,
+      const content::CopyFromSurfaceResult& result);
 
   // Called when the viewport screenshot capture completes. Validates that the
   // tab is still visible and on the same URL, then posts a background task to
@@ -735,6 +743,14 @@ class ClientSideDetectionHost
   // can be told apart from the current capture's.
   int next_capture_id_ = 0;
   std::unique_ptr<VisualCapturer> visual_capturer_;
+
+  // The callback for the multimodal screenshot capture.
+  VisualCapturer::CopyCallback pending_multimodal_screenshot_callback_;
+  // Timer to cancel the multimodal screenshot capture if it takes too long.
+  base::OneShotTimer multimodal_screenshot_watchdog_timer_;
+  // The ID of the current multimodal screenshot capture. Used to invalidate
+  // stale callbacks.
+  int multimodal_screenshot_capture_id_ = 0;
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };
