@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.actor;
 
 import android.app.Activity;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -21,6 +23,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -33,16 +36,27 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Restores live background tabs from {@link BackgroundSession} instances back into open foreground
- * browser windows and records warm restoration latency metrics.
+ * Restores background tabs from {@link BackgroundSession} instances back into browser windows
+ * across both warm and cold window starts and records restoration latency metrics.
+ *
+ * <p>Disk-backed {@link ColdBackgroundTab} state loading during {@code TabPersistentStore} startup
+ * is handled separately by {@link BackgroundTabRestorationHelper}.
+ *
+ * <p>Note: This helper resides in {@code //chrome/android:chrome_java} rather than in {@link
+ * ActorTabStateHelper} (in {@code //chrome/browser/actor/android:java}) because {@link
+ * BackgroundTabPool} and {@link BackgroundTabPoolManager} reside in {@code
+ * //chrome/android:chrome_java}, which depends on {@code //chrome/browser/actor/android:java}.
+ * Moving this logic into {@link ActorTabStateHelper} would introduce an illegal circular GN build
+ * dependency.
  */
 @NullMarked
-final class WarmBackgroundTabRestorer {
-    private static final String TAG = "ActorBackgroundMgr";
+public final class BackgroundSessionTabRestorer {
+    private static final String TAG = "BgSessionRestorer";
 
-    private WarmBackgroundTabRestorer() {}
+    private BackgroundSessionTabRestorer() {}
 
-    static int restoreTabsForWindow(
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static int restoreTabsForWindow(
             TabModelSelector selector,
             int activeWindowId,
             WindowAndroid window,
@@ -71,33 +85,6 @@ final class WarmBackgroundTabRestorer {
                     (isColdStart ? waitDurationMs : 0) + restoreDurationMs, isColdStart);
         }
         return restoredTabCount;
-    }
-
-    /**
-     * Restores background tabs belonging to the active window context from the given sessions.
-     *
-     * <p>Note: This helper resides in {@code //chrome/android:chrome_java} rather than in {@link
-     * ActorTabStateHelper} (in {@code //chrome/browser/actor/android:java}) because {@link
-     * BackgroundTabPool} and {@link BackgroundTabPoolManager} reside in {@code
-     * //chrome/android:chrome_java}, which depends on {@code //chrome/browser/actor/android:java}.
-     * Moving this logic into {@link ActorTabStateHelper} would introduce an illegal circular GN
-     * build dependency.
-     */
-    static List<BackgroundSession> restoreActiveWindowBackgroundTabs(
-            TabModelSelector selector,
-            int activeWindowId,
-            WindowAndroid window,
-            List<BackgroundSession> backgroundSessions,
-            TabDelegateFactory tabDelegateFactory) {
-        List<BackgroundSession> sessionsToRemove = new ArrayList<>();
-        restoreActiveWindowBackgroundTabsInternal(
-                selector,
-                activeWindowId,
-                window,
-                backgroundSessions,
-                tabDelegateFactory,
-                sessionsToRemove);
-        return sessionsToRemove;
     }
 
     // TODO(crbug.com/585091500): Drop activeSessions parameter and derive stop condition from
@@ -223,7 +210,10 @@ final class WarmBackgroundTabRestorer {
         if (liveTab != null) {
             liveTab.attachToForeground(model, window, tabDelegateFactory);
             return true;
-        } else if (tabData.getPlaceholderTabId() == null) {
+        }
+
+        @TabId Integer placeholderId = tabData.getPlaceholderTabId();
+        if (placeholderId == null) {
             if (!originalTab.isDestroyed()) {
                 ActorTabStateHelper.restoreSessionTabToForeground(
                         originalTab,
@@ -235,16 +225,13 @@ final class WarmBackgroundTabRestorer {
                 return true;
             }
             return false;
-        } else {
-            Log.w(
-                    TAG,
-                    "LiveBackgroundTab %d was evicted or destroyed; skipping warm attach.",
-                    originalTab.getId());
-            Integer placeholderId = tabData.getPlaceholderTabId();
-            if (placeholderId != null) {
-                ActorTabStateHelper.removePlaceholderTab(model, placeholderId);
-            }
-            return false;
         }
+
+        Log.w(
+                TAG,
+                "LiveBackgroundTab %d was evicted or destroyed; skipping attach.",
+                originalTab.getId());
+        ActorTabStateHelper.removePlaceholderTab(model, placeholderId);
+        return false;
     }
 }

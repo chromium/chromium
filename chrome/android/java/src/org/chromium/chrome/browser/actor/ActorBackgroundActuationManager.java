@@ -443,7 +443,7 @@ public class ActorBackgroundActuationManager {
             TabDelegateFactory tabDelegateFactory,
             long waitDurationMs,
             boolean isColdStart) {
-        return WarmBackgroundTabRestorer.restoreTabsForWindow(
+        return BackgroundSessionTabRestorer.restoreTabsForWindow(
                         selector,
                         activeWindowId,
                         window,
@@ -455,30 +455,8 @@ public class ActorBackgroundActuationManager {
                 > 0;
     }
 
-    /**
-     * Restores background tabs belonging to the active window context from the given sessions.
-     *
-     * @param selector The TabModelSelector of the active foreground window.
-     * @param activeWindowId The WindowId of the active foreground window.
-     * @param window The WindowAndroid instance of the active foreground window.
-     * @param backgroundSessions The list of currently tracked active background sessions.
-     * @param tabDelegateFactory The delegate factory for the foreground window.
-     * @return List of BackgroundSession instances that have been completely restored.
-     */
-    // TODO(crbug.com/585091618): Call WarmBackgroundTabRestorer directly from tests and remove
-    // this wrapper.
-    public static List<BackgroundSession> restoreActiveWindowBackgroundTabsForTesting(
-            TabModelSelector selector,
-            int activeWindowId,
-            WindowAndroid window,
-            List<BackgroundSession> backgroundSessions,
-            TabDelegateFactory tabDelegateFactory) {
-        return WarmBackgroundTabRestorer.restoreActiveWindowBackgroundTabs(
-                selector, activeWindowId, window, backgroundSessions, tabDelegateFactory);
-    }
-
     private void restoreWarmSessions() {
-        WarmBackgroundTabRestorer.restoreWarmSessions(
+        BackgroundSessionTabRestorer.restoreWarmSessions(
                 mBackgroundSessions,
                 mBackgroundSessions,
                 this::removeBackgroundSessions,
@@ -486,15 +464,15 @@ public class ActorBackgroundActuationManager {
     }
 
     private void restoreWarmSession(BackgroundSession session) {
-        WarmBackgroundTabRestorer.restoreWarmSessions(
+        BackgroundSessionTabRestorer.restoreWarmSessions(
                 Collections.singletonList(session),
                 mBackgroundSessions,
                 this::removeBackgroundSessions,
                 ActorBackgroundActuationManager::flushTabStateToDisk);
     }
 
-    // TODO(crbug.com/585189803): Move flushTabStateToDisk into WarmBackgroundTabRestorer and drop
-    // flushStateCallback once the ChromeTabbedActivity DEPS restriction is removed.
+    // TODO(crbug.com/585189803): Move flushTabStateToDisk into BackgroundSessionTabRestorer and
+    // drop flushStateCallback once the ChromeTabbedActivity DEPS restriction is removed.
     private static void flushTabStateToDisk(Activity activity) {
         if (!(activity instanceof ChromeTabbedActivity cta)) {
             return;

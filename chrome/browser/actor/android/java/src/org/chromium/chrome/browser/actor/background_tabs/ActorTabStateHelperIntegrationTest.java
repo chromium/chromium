@@ -20,8 +20,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.chrome.browser.actor.ActorBackgroundActuationManager;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.BackgroundSessionTabRestorer;
 import org.chromium.chrome.browser.actor.BackgroundTabPool;
 import org.chromium.chrome.browser.actor.BackgroundTabPoolManager;
 import org.chromium.chrome.browser.actor.LiveBackgroundTab;
@@ -288,15 +288,17 @@ public class ActorTabStateHelperIntegrationTest {
                         pool.addLiveTab(liveTab);
 
                         // Execute restoration
-                        List<BackgroundSession> sessionsToRemove =
-                                ActorBackgroundActuationManager
-                                        .restoreActiveWindowBackgroundTabsForTesting(
-                                                selector,
-                                                activeWindowId,
-                                                window,
-                                                backgroundSessions,
-                                                delegateFactory);
-                        backgroundSessions.removeAll(sessionsToRemove);
+                        int restoredCount =
+                                BackgroundSessionTabRestorer.restoreTabsForWindow(
+                                        selector,
+                                        activeWindowId,
+                                        window,
+                                        backgroundSessions,
+                                        delegateFactory,
+                                        /* waitDurationMs= */ 0,
+                                        /* isColdStart= */ false,
+                                        backgroundSessions::removeAll);
+                        assertEquals(1, restoredCount);
                     } finally {
                         BackgroundTabPoolManager.release(pool);
                     }
@@ -360,15 +362,17 @@ public class ActorTabStateHelperIntegrationTest {
                         pool.addLiveTab(liveTab);
 
                         // Execute restoration
-                        List<BackgroundSession> sessionsToRemove =
-                                ActorBackgroundActuationManager
-                                        .restoreActiveWindowBackgroundTabsForTesting(
-                                                selector,
-                                                windowId,
-                                                window,
-                                                backgroundSessions,
-                                                delegateFactory);
-                        backgroundSessions.removeAll(sessionsToRemove);
+                        int restoredCount =
+                                BackgroundSessionTabRestorer.restoreTabsForWindow(
+                                        selector,
+                                        windowId,
+                                        window,
+                                        backgroundSessions,
+                                        delegateFactory,
+                                        /* waitDurationMs= */ 0,
+                                        /* isColdStart= */ false,
+                                        backgroundSessions::removeAll);
+                        assertEquals(1, restoredCount);
                     } finally {
                         BackgroundTabPoolManager.release(pool);
                     }

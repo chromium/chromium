@@ -68,11 +68,9 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link ActorBackgroundActuationManager}. */
@@ -425,14 +423,14 @@ public class ActorBackgroundActuationManagerTest {
 
         // 2. Restore the FCM-initiated tab to the foreground window.
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
-        List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
+        assertTrue(
+                mManager.restoreActiveWindowBackgroundTabs(
                         mTabModelSelector,
                         42,
                         mWindowAndroid,
-                        mManager.getBackgroundSessions(),
-                        mTabDelegateFactory);
-        mManager.removeBackgroundSessions(restored);
+                        mTabDelegateFactory,
+                        /* waitDurationMs= */ 0,
+                        /* isColdStart= */ false));
         assertEquals(0, mManager.getBackgroundSessions().size());
 
         // 3. Subsequently transition active tasks back to the background.
@@ -461,14 +459,14 @@ public class ActorBackgroundActuationManagerTest {
         // 4. Restore the tab to foreground, complete the FCM task, and verify a subsequent
         // non-FCM task on the same tab records TASK_INIT_BY_CHROME.
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
-        List<BackgroundSession> restoredAgain =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
+        assertTrue(
+                mManager.restoreActiveWindowBackgroundTabs(
                         mTabModelSelector,
                         42,
                         mWindowAndroid,
-                        mManager.getBackgroundSessions(),
-                        mTabDelegateFactory);
-        mManager.removeBackgroundSessions(restoredAgain);
+                        mTabDelegateFactory,
+                        /* waitDurationMs= */ 0,
+                        /* isColdStart= */ false));
         mManager.onTaskCompleted(123);
         ActorMetrics.getInstance().onTaskStateChangedForTesting(123, ActorTaskState.FINISHED);
 
@@ -509,14 +507,14 @@ public class ActorBackgroundActuationManagerTest {
 
         // 2. Restore the FCM-initiated tab to the foreground window.
         when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
-        List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
+        assertTrue(
+                mManager.restoreActiveWindowBackgroundTabs(
                         mTabModelSelector,
                         42,
                         mWindowAndroid,
-                        mManager.getBackgroundSessions(),
-                        mTabDelegateFactory);
-        mManager.removeBackgroundSessions(restored);
+                        mTabDelegateFactory,
+                        /* waitDurationMs= */ 0,
+                        /* isColdStart= */ false));
         assertEquals(0, mManager.getBackgroundSessions().size());
 
         // 3. The FCM task finishes while running in the foreground (never transitioned back to bg).
@@ -796,7 +794,8 @@ public class ActorBackgroundActuationManagerTest {
         // Verify offscreen rendering stopped
         verify(mOffscreenRenderingManager, atLeastOnce()).stopOffscreenRendering(mTab);
 
-        // Verify the ingested session is retained in mBackgroundSessions when no warm activity was alive
+        // Verify the ingested session is retained in mBackgroundSessions when no warm activity was
+        // alive
         assertEquals(1, mManager.getBackgroundSessions().size());
 
         TabStateExtractor.resetTabStatesForTesting();
@@ -924,242 +923,6 @@ public class ActorBackgroundActuationManagerTest {
         verify(mTab, never()).updateAttachment(any(), any());
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
         assertEquals(0, mManager.getBackgroundSessions().size());
-    }
-
-    @Test
-    public void testRestoreActiveWindowBackgroundTabs_MatchingWindow() {
-        when(mTab.getId()).thenReturn(100);
-        when(mTab.hasParentCollection()).thenReturn(false);
-        when(mTab.isDestroyed()).thenReturn(false);
-        when(mTab.isOffTheRecord()).thenReturn(false);
-
-        when(mPlaceholderTab.getId()).thenReturn(101);
-        when(mPlaceholderTab.isDestroyed()).thenReturn(false);
-
-        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
-        when(mTabModel.getTabById(101)).thenReturn(mPlaceholderTab);
-        when(mTabModel.indexOf(mPlaceholderTab)).thenReturn(0);
-
-        BackgroundSession session = new BackgroundSession(mTab, 500);
-        BackgroundSession.BackgroundTabData tabData = session.getTabDataList().get(0);
-        tabData.setTabWindowId(1);
-        tabData.setPlaceholderTabId(101);
-
-        BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
-        try {
-            LiveBackgroundTab liveTab =
-                    new LiveBackgroundTab(
-                            pool, mTab, 101, /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
-            pool.addLiveTab(liveTab);
-        } finally {
-            BackgroundTabPoolManager.release(pool);
-        }
-
-        List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
-        List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
-                        mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
-
-        assertEquals(1, restored.size());
-        assertEquals(session, restored.get(0));
-        assertTrue(session.getTabDataList().isEmpty());
-        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
-        verify(mTab).updateAttachment(mWindowAndroid, mTabDelegateFactory);
-        verify(mTabRemover).removeTab(mPlaceholderTab, false);
-    }
-
-    @Test
-    public void testRestoreActiveWindowBackgroundTabs_NonMatchingWindow() {
-        MultiWindowTestUtils.enableMultiInstance();
-        MultiWindowTestUtils.createInstance(
-                /* instanceId= */ 2,
-                /* url= */ "https://www.example.com",
-                /* tabCount= */ 1,
-                /* taskId= */ 57);
-
-        when(mTab.getId()).thenReturn(100);
-        when(mTab.hasParentCollection()).thenReturn(false);
-        when(mTab.isDestroyed()).thenReturn(false);
-        when(mTab.isOffTheRecord()).thenReturn(false);
-
-        BackgroundSession session = new BackgroundSession(mTab, 500);
-        BackgroundSession.BackgroundTabData tabData = session.getTabDataList().get(0);
-        tabData.setTabWindowId(2);
-        tabData.setPlaceholderTabId(101);
-
-        BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
-        try {
-            LiveBackgroundTab liveTab =
-                    new LiveBackgroundTab(
-                            pool, mTab, 101, /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
-            pool.addLiveTab(liveTab);
-        } finally {
-            BackgroundTabPoolManager.release(pool);
-        }
-
-        List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
-        List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
-                        mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
-
-        assertTrue(restored.isEmpty());
-        assertEquals(1, session.getTabDataList().size());
-        assertEquals(mTab, session.getTabDataList().get(0).getTab());
-        verify(mTab, never()).updateAttachment(any(), any());
-    }
-
-    @Test
-    public void testRestoreActiveWindowBackgroundTabs_ClosedWindow_RestoresIntoActiveWindow() {
-        MultiWindowTestUtils.enableMultiInstance();
-
-        when(mTab.getId()).thenReturn(100);
-        when(mTab.hasParentCollection()).thenReturn(false);
-        when(mTab.isDestroyed()).thenReturn(false);
-        when(mTab.isOffTheRecord()).thenReturn(false);
-
-        when(mPlaceholderTab.getId()).thenReturn(101);
-        when(mPlaceholderTab.isDestroyed()).thenReturn(false);
-
-        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
-        when(mTabModel.getTabById(101)).thenReturn(mPlaceholderTab);
-        when(mTabModel.indexOf(mPlaceholderTab)).thenReturn(0);
-
-        // Window 2 was closed while the tab was detached, so no instance is persisted for it.
-        BackgroundSession session = new BackgroundSession(mTab, 500);
-        BackgroundSession.BackgroundTabData tabData = session.getTabDataList().get(0);
-        tabData.setTabWindowId(2);
-        tabData.setPlaceholderTabId(101);
-
-        BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
-        try {
-            LiveBackgroundTab liveTab =
-                    new LiveBackgroundTab(
-                            pool, mTab, 101, /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
-            pool.addLiveTab(liveTab);
-        } finally {
-            BackgroundTabPoolManager.release(pool);
-        }
-
-        List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
-        List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
-                        mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
-
-        assertEquals(
-                "A tab whose window no longer exists should not be stranded.", 1, restored.size());
-        assertTrue(session.getTabDataList().isEmpty());
-        verify(mTab).updateAttachment(mWindowAndroid, mTabDelegateFactory);
-    }
-
-    @Test
-    public void testRestoreActiveWindowBackgroundTabs_InactiveWindow_RestoresIntoActiveWindow() {
-        MultiWindowTestUtils.enableMultiInstance();
-        // Window 2 is still persisted, but its task is gone from Android Recents.
-        MultiWindowTestUtils.createInstance(
-                /* instanceId= */ 2,
-                /* url= */ "https://www.example.com",
-                /* tabCount= */ 1,
-                /* taskId= */ -1);
-
-        when(mTab.getId()).thenReturn(100);
-        when(mTab.hasParentCollection()).thenReturn(false);
-        when(mTab.isDestroyed()).thenReturn(false);
-        when(mTab.isOffTheRecord()).thenReturn(false);
-
-        when(mPlaceholderTab.getId()).thenReturn(101);
-        when(mPlaceholderTab.isDestroyed()).thenReturn(false);
-
-        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
-        when(mTabModel.getTabById(101)).thenReturn(mPlaceholderTab);
-        when(mTabModel.indexOf(mPlaceholderTab)).thenReturn(0);
-
-        BackgroundSession session = new BackgroundSession(mTab, 500);
-        BackgroundSession.BackgroundTabData tabData = session.getTabDataList().get(0);
-        tabData.setTabWindowId(2);
-        tabData.setPlaceholderTabId(101);
-
-        BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
-        try {
-            LiveBackgroundTab liveTab =
-                    new LiveBackgroundTab(
-                            pool, mTab, 101, /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
-            pool.addLiveTab(liveTab);
-        } finally {
-            BackgroundTabPoolManager.release(pool);
-        }
-
-        List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
-        List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
-                        mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
-
-        assertEquals(
-                "A tab whose window has no live task should not be stranded.", 1, restored.size());
-        assertTrue(session.getTabDataList().isEmpty());
-        verify(mTab).updateAttachment(mWindowAndroid, mTabDelegateFactory);
-    }
-
-    @Test
-    public void testRestoreActiveWindowBackgroundTabs_EvictedTabCleanup() {
-        when(mTab.getId()).thenReturn(100);
-        when(mPlaceholderTab.getId()).thenReturn(101);
-        when(mTabModel.getTabById(101)).thenReturn(mPlaceholderTab);
-
-        BackgroundSession session = new BackgroundSession(mTab, 500);
-        BackgroundSession.BackgroundTabData tabData = session.getTabDataList().get(0);
-        tabData.setTabWindowId(1);
-        tabData.setPlaceholderTabId(101);
-
-        // Do not add liveTab to pool to simulate eviction/destruction from pool
-        List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
-        List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
-                        mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
-
-        assertEquals(1, restored.size());
-        assertEquals(session, restored.get(0));
-        assertTrue(session.getTabDataList().isEmpty());
-        verify(mTab, never()).updateAttachment(any(), any());
-        verify(mTabRemover).removeTab(mPlaceholderTab, false);
-    }
-
-    @Test
-    public void testRestoreActiveWindowBackgroundTabs_PlaceholderFreeTab_AppendsToEnd() {
-        when(mTab.getId()).thenReturn(100);
-        when(mTab.hasParentCollection()).thenReturn(false);
-        when(mTab.isDestroyed()).thenReturn(false);
-        when(mTab.isOffTheRecord()).thenReturn(false);
-        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
-        when(mTabModel.getCount()).thenReturn(3);
-
-        BackgroundSession session = new BackgroundSession(mTab, 500);
-        BackgroundSession.BackgroundTabData tabData = session.getTabDataList().get(0);
-        tabData.setTabWindowId(1);
-        tabData.setPlaceholderTabId(null);
-
-        BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
-        try {
-            LiveBackgroundTab liveTab =
-                    new LiveBackgroundTab(
-                            pool,
-                            mTab,
-                            Tab.INVALID_TAB_ID,
-                            /* originalTabIndex= */ TabModel.INVALID_TAB_INDEX);
-            pool.addLiveTab(liveTab);
-        } finally {
-            BackgroundTabPoolManager.release(pool);
-        }
-
-        List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
-        List<BackgroundSession> restored =
-                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabsForTesting(
-                        mTabModelSelector, 1, mWindowAndroid, sessions, mTabDelegateFactory);
-
-        assertEquals(1, restored.size());
-        assertTrue(session.getTabDataList().isEmpty());
-        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
-        verify(mTab).updateAttachment(mWindowAndroid, mTabDelegateFactory);
-        verify(mTabModel).addTab(eq(mTab), eq(3), anyInt(), anyInt());
     }
 
     @Test

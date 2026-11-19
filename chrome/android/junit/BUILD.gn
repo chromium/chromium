@@ -1775,6 +1775,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/actor/ActorBackgroundActuationManagerTest.java",
       "src/org/chromium/chrome/browser/actor/ActorForegroundServiceControllerImplTest.java",
       "src/org/chromium/chrome/browser/actor/ActorForegroundServiceImplTest.java",
+      "src/org/chromium/chrome/browser/actor/BackgroundSessionTabRestorerTest.java",
       "src/org/chromium/chrome/browser/actor/LiveBackgroundTabTest.java",
       "src/org/chromium/chrome/browser/actor/TestAsyncInitializationActivity.java",
       "src/org/chromium/chrome/browser/automotive/AutomotiveUtilsUnitTest.java",
