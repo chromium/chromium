@@ -59,17 +59,17 @@ promise_test(async t => {
   // Navigate the child to a new document. The tool's registering window is now
   // disconnected from the frame.
   await loadIframe(iframe, '/common/blank.html?new-document');
-  assert_equals(tool.window, null,
-      'Tool.window is null once its registering window is disconnected');
+  assert_equals(tool.source, null,
+      'Tool.source is null once its registering window is disconnected');
 
   // Collect everything that's collectable while `tool` is still held. Since
   // `Tool` doesn't keep the old window alive, its document is collected here.
   const liveWhileHeld = await collectUntilStable();
 
-  // The `Tool` is still usable after its window has been collected: `window`
+  // The `Tool` is still usable after its window has been collected: `source`
   // stays null, and executing it fails cleanly.
-  assert_equals(tool.window, null,
-      'Tool.window is still null after its registering window is collected');
+  assert_equals(tool.source, null,
+      'Tool.source is still null after its registering window is collected');
   await promise_rejects_dom(t, 'InvalidStateError',
       document.modelContext.executeTool(tool),
       'executeTool() rejects for a Tool whose registering window is gone');

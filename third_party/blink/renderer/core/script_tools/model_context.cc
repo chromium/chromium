@@ -1331,11 +1331,11 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
           script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // `window` is null if it was garbage collected, and its frame is missing if
+  // `source` is null if it was garbage collected, and its frame is missing if
   // the window was disconnected, i.e., the registering document was detached or
   // discarded in the gap between tool retrieval and tool execution.
-  DOMWindow* window = tool->window();
-  Frame* target_frame = window ? window->GetFrame() : nullptr;
+  DOMWindow* source = tool->source();
+  Frame* target_frame = source ? source->GetFrame() : nullptr;
   if (!target_frame) {
     resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
                                      kTargetFrameNotAccessibleErrorMessage);

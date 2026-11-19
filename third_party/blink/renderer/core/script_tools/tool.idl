@@ -28,9 +28,10 @@
   // at registration time.
   readonly attribute DOMString title;
 
-  // The document that registered this tool, and its origin. `window` is null
-  // once that document's frame has navigated away or been removed.
-  readonly attribute Window? window;
+  // The window of the document that registered this tool, and its origin.
+  // `source` is null once that document's frame has navigated away or been
+  // removed. The name mirrors `MessageEvent#source`.
+  readonly attribute Window? source;
   readonly attribute USVString origin;
 
   // All of the below members are null when the tool was registered without

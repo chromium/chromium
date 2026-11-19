@@ -13,15 +13,15 @@
 
 namespace blink {
 
-Tool::Tool(DOMWindow* window,
+Tool::Tool(DOMWindow* source,
            scoped_refptr<const SecurityOrigin> origin,
            mojom::blink::ScriptToolPtr script_tool,
            const ScriptValue& input_schema,
            const ScriptValue& output_schema)
-    : window_(window),
+    : source_(source),
       origin_(std::move(origin)),
       script_tool_(std::move(script_tool)) {
-  CHECK(window_);
+  CHECK(source_);
   CHECK(origin_);
   CHECK(script_tool_);
   // The browser only accepts (and therefore only returns) tools that were
@@ -40,7 +40,7 @@ Tool::Tool(DOMWindow* window,
 Tool::~Tool() = default;
 
 void Tool::Trace(Visitor* visitor) const {
-  visitor->Trace(window_);
+  visitor->Trace(source_);
   visitor->Trace(input_schema_);
   visitor->Trace(output_schema_);
   ScriptWrappable::Trace(visitor);
@@ -59,8 +59,8 @@ const String& Tool::title() const {
   return script_tool_->title;
 }
 
-DOMWindow* Tool::window() const {
-  return window_.Get();
+DOMWindow* Tool::source() const {
+  return source_.Get();
 }
 
 String Tool::origin() const {

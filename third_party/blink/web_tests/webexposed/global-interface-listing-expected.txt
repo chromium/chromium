@@ -10837,8 +10837,8 @@ interface Tool
     getter name
     getter origin
     getter outputSchema
+    getter source
     getter title
-    getter window
     method constructor
 interface ToolActivatedEvent : Event
     attribute @@toStringTag
