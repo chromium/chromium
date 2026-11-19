@@ -22,8 +22,11 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -446,6 +449,115 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeBackgroundTabLoadingTest,
   observer.WaitForNavigationFinished();
 
   EXPECT_FALSE(tab2->GetContents()->GetController().NeedsReload());
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TabModelJniBridgeBackgroundTabLoadingTest,
+    BroadcastSessionRestoreCompleteSkipsAlreadyInitializedTabs) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  const GURL url3 = embedded_test_server()->GetURL("/title3.html");
+  const GURL url4 = embedded_test_server()->GetURL("/simple.html");
+
+  // Tab 0 is active. Wait for any initial startup navigation on Tab 0 to settle
+  // before navigating it to `url1`.
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetTab(0);
+  ASSERT_TRUE(tab1);
+  ASSERT_TRUE(content::WaitForLoadStop(tab1->GetContents()));
+  ASSERT_TRUE(NavigateTab(tab1, url1));
+
+  auto create_restored_background_tab = [&](int index, const GURL& url) {
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(GetProfile()));
+    tabs::TabInterface* tab = bridge()->CreateTab(
+        /*parent=*/nullptr, std::move(web_contents), index,
+        TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE_BACKGROUND,
+        /*should_pin=*/false);
+    EXPECT_TRUE(tab);
+    std::vector<std::unique_ptr<content::NavigationEntry>> entries;
+    entries.push_back(content::NavigationEntry::Create());
+    entries.back()->SetURL(url);
+    tab->GetContents()->GetController().Restore(
+        0, content::RestoreType::kRestored, &entries);
+    EXPECT_TRUE(tab->GetContents()->GetController().NeedsReload());
+    EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url);
+    return tab;
+  };
+
+  // Tab 1: Background tab that already committed a navigation, then had
+  // SetNeedsReload() called (simulating renderer kill / discard / load cancel
+  // before deferred startup). Navigated before creating the restored tabs below
+  // so any nested message loop during navigation cannot trigger a deferred
+  // BroadcastSessionRestoreComplete() before all test tabs are set up.
+  std::unique_ptr<content::WebContents> committed_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  tabs::TabInterface* already_committed_tab = bridge()->CreateTab(
+      /*parent=*/nullptr, std::move(committed_web_contents), /*index=*/1,
+      TabModel::TabLaunchType::FROM_TAB_LIST_INTERFACE_BACKGROUND,
+      /*should_pin=*/false);
+  ASSERT_TRUE(already_committed_tab);
+  NavigateTab(already_committed_tab, url3);
+  if (bridge()->GetActiveIndex() != 0) {
+    GetTabListInterface()->ActivateTab(tab1->GetHandle());
+  }
+  ASSERT_EQ(bridge()->GetActiveIndex(), 0);
+  ASSERT_EQ(already_committed_tab->GetContents()
+                ->GetPrimaryMainFrame()
+                ->GetLastCommittedURL(),
+            url3);
+  already_committed_tab->GetContents()->GetController().SetNeedsReload();
+  ASSERT_TRUE(
+      already_committed_tab->GetContents()->GetController().NeedsReload());
+
+  // Tab 2: Restored background tab whose PageNode already had
+  // SetMainFrameRestoredState() called by an earlier
+  // ScheduleLoadForRestoredTabs call (simulating a reparented tab already
+  // scheduled by a prior TabModelJniBridge, whose in-flight restored load was
+  // stopped before commit), while NeedsReload() remains true and primary main
+  // frame has no committed URL.
+  tabs::TabInterface* already_scheduled_tab =
+      create_restored_background_tab(/*index=*/2, url2);
+  ASSERT_TRUE(already_scheduled_tab);
+  content::TestNavigationManager nav_manager(
+      already_scheduled_tab->GetContents(), url2);
+  performance_manager::policies::SetMaxSimultaneousBackgroundTabLoadsForTesting(
+      10);
+  performance_manager::policies::ScheduleLoadForRestoredTabs(
+      {already_scheduled_tab->GetContents()});
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  already_scheduled_tab->GetContents()->Stop();
+  already_scheduled_tab->GetContents()->GetController().SetNeedsReload();
+  ASSERT_TRUE(
+      already_scheduled_tab->GetContents()->GetController().NeedsReload());
+  ASSERT_TRUE(already_scheduled_tab->GetContents()
+                  ->GetPrimaryMainFrame()
+                  ->GetLastCommittedURL()
+                  .is_empty());
+  auto scheduled_page_node =
+      performance_manager::PerformanceManager::GetPrimaryPageNodeForWebContents(
+          already_scheduled_tab->GetContents());
+  ASSERT_TRUE(scheduled_page_node);
+  ASSERT_EQ(scheduled_page_node->GetMainFrameUrl(), url2);
+
+  // Tab 3: Fresh restored background tab, never scheduled or navigated yet.
+  tabs::TabInterface* fresh_restored_tab =
+      create_restored_background_tab(/*index=*/3, url4);
+  ASSERT_TRUE(fresh_restored_tab);
+
+  content::TestNavigationObserver observer(fresh_restored_tab->GetContents());
+  bridge()->BroadcastSessionRestoreComplete();
+  observer.WaitForNavigationFinished();
+
+  EXPECT_TRUE(
+      already_scheduled_tab->GetContents()->GetController().NeedsReload());
+  EXPECT_TRUE(
+      already_committed_tab->GetContents()->GetController().NeedsReload());
+  EXPECT_FALSE(
+      fresh_restored_tab->GetContents()->GetController().NeedsReload());
   EXPECT_TRUE(observer.last_navigation_succeeded());
 }
 

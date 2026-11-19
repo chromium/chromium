@@ -46,6 +46,8 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -507,11 +509,17 @@ void TabModelJniBridge::BroadcastSessionRestoreComplete() {
         continue;
       }
       if (content::WebContents* contents = GetWebContentsAt(i)) {
-        // Filter out tabs with empty/uncommitted URLs (e.g. initial NTP) to
-        // avoid DCHECK failures in BackgroundTabLoadingPolicy, and only queue
-        // tabs that actually need reload.
+        // Filter out tabs with empty/uncommitted URLs (e.g. initial NTP) or
+        // tabs that only need reload after already committing a navigation or
+        // being scheduled with BackgroundTabLoadingPolicy (e.g. across activity
+        // recreation/reparenting or after a background renderer kill/discard).
+        base::WeakPtr<performance_manager::PageNode> page_node =
+            performance_manager::PerformanceManager::
+                GetPrimaryPageNodeForWebContents(contents);
         if (!contents->GetLastCommittedURL().is_empty() &&
-            contents->GetController().NeedsReload()) {
+            contents->GetController().NeedsReload() &&
+            contents->GetPrimaryMainFrame()->GetLastCommittedURL().is_empty() &&
+            page_node && page_node->GetMainFrameUrl().is_empty()) {
           background_tabs.push_back(contents);
         }
       }
