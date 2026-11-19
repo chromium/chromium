@@ -535,6 +535,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   scoped_refptr<gpu::ClientSharedImage> ExportSharedImageFromBackBuffer(
       gpu::SyncToken& sync_token,
       viz::ReleaseCallback* out_release_callback);
+  scoped_refptr<gpu::ClientSharedImage> ExportSoftwareSharedImageFromBackBuffer(
+      gpu::SyncToken& sync_token,
+      viz::ReleaseCallback* out_release_callback);
 
   // Callbacks for SharedImages exported for external usage (e.g., by canvas/
   // compositor/static bitmap image).

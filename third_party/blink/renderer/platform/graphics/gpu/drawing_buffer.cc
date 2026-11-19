@@ -492,56 +492,20 @@ bool DrawingBuffer::PrepareTransferableResource(
     return false;
   }
 
-  if (IsUsingGpuCompositing()) {
-    gpu::SyncToken sync_token;
-    auto shared_image =
-        ExportSharedImageFromBackBuffer(sync_token, out_release_callback);
-    if (!shared_image) {
-      return false;
-    }
-
-    // Populate the output TransferableResource from the SharedImage.
-    *out_resource = viz::TransferableResource::Make(
-        shared_image, viz::TransferableResource::ResourceSource::kDrawingBuffer,
-        sync_token);
-    out_resource->hdr_metadata = hdr_metadata_;
-  } else {
-    // Populate the TransferableResource with a SharedImage for the software
-    // compositor.
-    scoped_refptr<gpu::ClientImage> resource =
-        CreateOrRecycleSoftwareResource();
-    if (!resource || !resource->GetSharedImage()) {
-      return false;
-    }
-
-    auto mapping = resource->GetSharedImage()->Map();
-    if (!mapping) {
-      return false;
-    }
-
-    ReadBackFramebuffer(
-        mapping->GetMemoryForPlane(0), resource->GetSharedImage()->format(),
-        kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin, kBackBuffer);
-
-    *out_resource = viz::TransferableResource::Make(
-        resource->GetSharedImage(),
-        viz::TransferableResource::ResourceSource::kDrawingBuffer,
-        resource->GetSyncToken());
-
-    out_resource->hdr_metadata = hdr_metadata_;
-
-    // This holds a ref on the DrawingBuffer that will keep it alive until the
-    // mailbox is released (and while the release callback is running). It also
-    // owns the resource.
-    *out_release_callback = base::BindOnce(
-        &DrawingBuffer::MailboxReleasedSoftware, weak_factory_.GetWeakPtr(),
-        software_resource_pool_->GetWeakPtr(), std::move(resource));
-
-    contents_changed_ = false;
-    if (preserve_drawing_buffer_ == kDiscard) {
-      SetBufferClearNeeded(true);
-    }
+  gpu::SyncToken sync_token;
+  auto shared_image =
+      IsUsingGpuCompositing()
+          ? ExportSharedImageFromBackBuffer(sync_token, out_release_callback)
+          : ExportSoftwareSharedImageFromBackBuffer(sync_token,
+                                                    out_release_callback);
+  if (!shared_image) {
+    return false;
   }
+
+  *out_resource = viz::TransferableResource::Make(
+      shared_image, viz::TransferableResource::ResourceSource::kDrawingBuffer,
+      sync_token);
+  out_resource->hdr_metadata = hdr_metadata_;
 
   return true;
 }
@@ -734,6 +698,42 @@ void DrawingBuffer::MailboxReleasedSoftware(
   }
 
   pool->ReleaseImage(std::move(resource));
+}
+
+scoped_refptr<gpu::ClientSharedImage>
+DrawingBuffer::ExportSoftwareSharedImageFromBackBuffer(
+    gpu::SyncToken& sync_token,
+    viz::ReleaseCallback* out_release_callback) {
+  scoped_refptr<gpu::ClientImage> resource = CreateOrRecycleSoftwareResource();
+  if (!resource || !resource->GetSharedImage()) {
+    return nullptr;
+  }
+
+  auto mapping = resource->GetSharedImage()->Map();
+  if (!mapping) {
+    return nullptr;
+  }
+
+  ReadBackFramebuffer(mapping->GetMemoryForPlane(0),
+                      resource->GetSharedImage()->format(), kPremul_SkAlphaType,
+                      kBottomLeft_GrSurfaceOrigin, kBackBuffer);
+
+  auto shared_image = resource->GetSharedImage();
+  sync_token = resource->GetSyncToken();
+
+  // This holds a ref on the DrawingBuffer that will keep it alive until the
+  // mailbox is released (and while the release callback is running). It also
+  // owns the resource.
+  *out_release_callback = base::BindOnce(
+      &DrawingBuffer::MailboxReleasedSoftware, weak_factory_.GetWeakPtr(),
+      software_resource_pool_->GetWeakPtr(), std::move(resource));
+
+  contents_changed_ = false;
+  if (preserve_drawing_buffer_ == kDiscard) {
+    SetBufferClearNeeded(true);
+  }
+
+  return shared_image;
 }
 
 scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
