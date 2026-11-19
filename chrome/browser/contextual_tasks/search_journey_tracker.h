@@ -225,10 +225,11 @@ class SearchJourneyTracker : public KeyedService,
                         SessionID opener_tab_id);
 
   // Called when `tab_id` becomes the tab the user is looking at. Returns true
-  // if `tab_id` is Tab A of an armed journey and is still on `nav_entry_id`,
-  // i.e. the user has returned. A journey whose Tab A is now on another entry
-  // is dropped. Unless intermediate tabs are allowed, activating a tab other
-  // than Tab A or Tab B also drops the journey, so only A -> B -> A counts.
+  // if `tab_id` is Tab A of an armed journey whose cue hasn't shown yet and is
+  // still on `nav_entry_id`, i.e. the user has returned. A journey whose Tab A
+  // is now on another entry is dropped. Unless intermediate tabs are allowed or
+  // the journey's cue has already shown, activating a tab other than Tab A or
+  // Tab B also drops the journey, so only A -> B -> A counts.
   bool OnTabActivated(SessionID tab_id, int nav_entry_id);
 
   // Returns the search terms of `url` if it's a Google results page of the

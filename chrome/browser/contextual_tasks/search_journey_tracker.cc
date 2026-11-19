@@ -253,13 +253,21 @@ bool SearchJourneyTracker::OnTabActivated(SessionID tab_id, int nav_entry_id) {
     const auto& [source_tab_id, journey] = pair;
     if (source_tab_id == tab_id) {
       // Only a return to the page the user left counts.
-      returned = journey.source_nav_entry_id == nav_entry_id;
-      if (!returned) {
+      if (journey.source_nav_entry_id != nav_entry_id) {
         RecordJourneyEnd(journey, SearchJourneyEndReason::kSourceTabNavigated);
+        return true;
       }
-      return !returned;
+      // Don't re-record a return once the cue has already shown.
+      if (!journey.cue_shown) {
+        returned = true;
+      }
+      return false;
     }
-    if (journey.search_tab_id == tab_id || allow_intermediate_tabs) {
+    // Once the cue has shown on Tab A, the A -> B -> A return already happened,
+    // so switching to another tab shouldn't drop the journey while the cue
+    // stays visible.
+    if (journey.search_tab_id == tab_id || journey.cue_shown ||
+        allow_intermediate_tabs) {
       return false;
     }
     // Any other tab is an intermediate tab, as in A -> B -> C -> A.
