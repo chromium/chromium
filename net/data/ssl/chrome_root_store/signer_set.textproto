@@ -1,7 +1,7 @@
 timestamp: {
-  seconds: 1794448800
+  seconds: 1794949200
 }
-version: "4.0.0"
+version: "5.0.0"
 compatibility_version: 1
 operators: {
   name: "mtcs.dev Test CA Operator"
@@ -22,6 +22,10 @@ operators: {
 operators: {
   name: "DigiCert, Inc."
   email: "plants.labs@digicert.com"
+}
+operators: {
+  name: "Sectigo"
+  email: "mtcops@sectigo.com"
 }
 issuers: {
   friendly_name: "mtcs.dev Test CA 2"
@@ -130,6 +134,33 @@ issuers: {
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
   spec_version: SPEC_VERSION_DRAFT07
 }
+issuers: {
+  friendly_name: "Sectigo Test CA 1"
+  base_id: "6449.5.2.1.1"
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1794949200
+    }
+  }
+  operator_history: {
+    name: "Sectigo"
+    operator_start: {
+      seconds: 1794949200
+    }
+  }
+  base_url: "https://loga.mon.mtclabs.sectigo.com"
+  type: SIGNER_TYPE_ISSUER
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  max_cert_lifetime: {
+    seconds: 4060800
+  }
+  key_sha256: "ca34422881aff6404eb41588f6e06bcf5c2bf4e175012972e6fe224015f942e1"
+  crs_root_id: 115
+  min_log_number: 1
+  signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+  spec_version: SPEC_VERSION_DRAFT07
+}
 mirrors: {
   friendly_name: "mtcs.dev Test Mirror 2"
   base_id: "11129.11.99.4"
@@ -217,4 +248,26 @@ mirrors: {
   key_sha256: "ce0c09cb2049bb2e1495526023158e57839df8fbce04ceabd9694480700eaa58"
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
   submission_prefix: "https://phase2.mtc.digicert.dev/plants/mirror"
+}
+mirrors: {
+  friendly_name: "Sectigo Test Mirror 1"
+  base_id: "6449.5.2.2.1"
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1794949200
+    }
+  }
+  operator_history: {
+    name: "Sectigo"
+    operator_start: {
+      seconds: 1794949200
+    }
+  }
+  base_url: "https://mirrora.mon.mtclabs.sectigo.com"
+  type: SIGNER_TYPE_MIRROR
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  key_sha256: "bb42401284016e3b2f7775eeae53e84b19033db4c9194411d8d90674667b599e"
+  signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+  submission_prefix: "https://mirrora.sub.mtclabs.sectigo.com"
 }
