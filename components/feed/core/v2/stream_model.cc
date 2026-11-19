@@ -312,10 +312,6 @@ ContentStats StreamModel::GetContentStats() const {
       stats.card_count++;
     }
   }
-
-  for (auto& entry : shared_states_) {
-    stats.shared_state_size += entry.second.data.size();
-  }
   return stats;
 }
 

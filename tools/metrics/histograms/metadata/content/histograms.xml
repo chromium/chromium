@@ -996,20 +996,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ContentSuggestions.{FeedType}.SharedStateSizeKB" units="KB"
-    expires_after="2024-05-26">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Reports the total size in KB of the shared state for the
-    {FeedType}. Reported once when loading {FeedType} content for display, and
-    once each time additional pages of content are added.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed" summary="For-You Feed"/>
-  </token>
-</histogram>
-
 <histogram name="ContentSuggestions.{FeedType}.StreamContentSizeKB" units="KB"
     expires_after="2025-11-30">
   <owner>jianli@chromium.org</owner>

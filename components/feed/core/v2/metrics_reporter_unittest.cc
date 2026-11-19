@@ -38,8 +38,7 @@ constexpr SurfaceId kSurfaceId = SurfaceId(5);
 const base::TimeDelta kEpsilon = base::Milliseconds(1);
 const ContentStats kContentStats = {
     /*card_count=*/12,
-    /*total_content_frame_size_bytes=*/100 * 1024,
-    /*shared_state_size=*/200 * 1024};
+    /*total_content_frame_size_bytes=*/100 * 1024};
 
 MetricsReporter::LoadStreamResultSummary NetworkLoadResults() {
   MetricsReporter::LoadStreamResultSummary summary;
@@ -246,8 +245,6 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatus) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.StreamContentSizeKB",
       kContentStats.total_content_frame_size_bytes / 1024, 1);
-  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.SharedStateSizeKB",
-                                kContentStats.shared_state_size / 1024, 1);
 }
 
 TEST_F(MetricsReporterTest, ReportsLoadStreamStatusWhenDisabled) {

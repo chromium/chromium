@@ -307,11 +307,6 @@ void MetricsReporter::LogContentStats(const StreamType& stream_type,
       base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
                     "StreamContentSizeKB"}),
       content_stats.total_content_frame_size_bytes / 1024);
-
-  base::UmaHistogramCounts10000(
-      base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
-                    "SharedStateSizeKB"}),
-      content_stats.shared_state_size / 1024);
 }
 
 void MetricsReporter::TrackTimeSpentInFeed(bool interacted_or_scrolled) {
