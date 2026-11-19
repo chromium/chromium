@@ -19,6 +19,10 @@ java_strings_grd("java_strings_grd") {
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tasks/tab_management/TabComponentId.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherPaneDrawableCoordinator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherPaneDrawableMediator.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherPaneDrawableProperties.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherPaneDrawableViewBinder.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/data_provider/FlatTabListDataProvider.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/data_provider/GroupedTabListDataProvider.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/data_provider/TabGroupItem.java",
@@ -33,9 +37,13 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/bars_common:java",
+    "//chrome/browser/ui/android/theme:java",
     "//components/tab_groups:tab_groups_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.chrome.tab_ui"
 }
@@ -292,22 +300,32 @@ android_library("test_support_javalib") {
 
 robolectric_library("junit") {
   testonly = true
+  resources_package = "org.chromium.chrome.tab_ui"
   sources = [
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherPaneDrawableCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherPaneDrawableMediatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherPaneDrawableViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/data_provider/FlatTabListDataProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/data_provider/GroupedTabListDataProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_management/data_provider/TabListDataProviderTestBase.java",
   ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_junit_test_support",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tab_ui/android:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/bars_common:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/tab_groups:tab_groups_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

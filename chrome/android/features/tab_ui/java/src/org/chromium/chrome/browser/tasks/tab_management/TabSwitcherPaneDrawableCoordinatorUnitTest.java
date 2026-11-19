@@ -24,6 +24,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.tab_ui.R;
 
 /**
  * Unit tests for {@link TabSwitcherPaneDrawableCoordinator}. Note these tests are largely for
