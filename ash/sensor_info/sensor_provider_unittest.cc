@@ -141,8 +141,7 @@ class SensorProviderTest : public testing::Test {
 
   FakeObserver observer_;
   std::unique_ptr<chromeos::sensors::FakeSensorHalServer> sensor_hal_server_;
-  std::map<int32_t,
-           raw_ptr<chromeos::sensors::FakeSensorDevice, CtnExperimental>>
+  std::map<int32_t, raw_ptr<chromeos::sensors::FakeSensorDevice>>
       sensor_devices_;
   std::unique_ptr<SensorProvider> provider_;
 };

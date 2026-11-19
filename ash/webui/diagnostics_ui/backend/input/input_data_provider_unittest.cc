@@ -254,8 +254,7 @@ class FakeDeviceManager : public ui::DeviceManager {
 };
 
 class FakeInputDataEventWatcher;
-typedef std::map<uint32_t, raw_ptr<FakeInputDataEventWatcher, CtnExperimental>>
-    watchers_t;
+typedef std::map<uint32_t, raw_ptr<FakeInputDataEventWatcher>> watchers_t;
 
 // Fake evdev watcher class that lets us manually post input
 // events into an InputDataProvider; this keeps an external

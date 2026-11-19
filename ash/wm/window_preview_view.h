@@ -69,15 +69,13 @@ class ASH_EXPORT WindowPreviewView
 
   raw_ptr<aura::Window> window_;
 
-  base::flat_map<aura::Window*, raw_ptr<WindowMirrorView, CtnExperimental>>
-      mirror_views_;
+  base::flat_map<aura::Window*, raw_ptr<WindowMirrorView>> mirror_views_;
 
   // Transient children of |window_| may be added as transients before they're
   // actually parented; i.e. `OnTransientChildWindowAdded()` is called before
   // `transient_child->parent()` is set. We track those here so that we can add
   // them to the view once they're parented.
-  base::flat_set<raw_ptr<aura::Window, CtnExperimental>>
-      unparented_transient_children_;
+  base::flat_set<raw_ptr<aura::Window>> unparented_transient_children_;
 
   const bool exclude_shadow_;
 };

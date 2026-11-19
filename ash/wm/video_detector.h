@@ -103,7 +103,7 @@ class ASH_EXPORT VideoDetector : public aura::EnvObserver,
   bool video_is_playing_;
 
   // Currently-fullscreen desks containers windows.
-  std::set<raw_ptr<aura::Window, SetExperimental>> fullscreen_desks_containers_;
+  std::set<raw_ptr<aura::Window>> fullscreen_desks_containers_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

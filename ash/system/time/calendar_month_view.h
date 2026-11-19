@@ -163,8 +163,7 @@ class ASH_EXPORT CalendarMonthView : public views::View,
   void UpdateIsFetchedAndRepaint(bool updated_is_fetched);
 
   // Gets the cells of each row that should be first focused on.
-  std::vector<raw_ptr<CalendarDateCellView, VectorExperimental>>
-  focused_cells() {
+  std::vector<raw_ptr<CalendarDateCellView>> focused_cells() {
     return focused_cells_;
   }
 
@@ -205,7 +204,7 @@ class ASH_EXPORT CalendarMonthView : public views::View,
 
   // The cells of each row that should be first focused on. These
   // `CalendarDateCellView`s are the children of this view.
-  std::vector<raw_ptr<CalendarDateCellView, VectorExperimental>> focused_cells_;
+  std::vector<raw_ptr<CalendarDateCellView>> focused_cells_;
 
   // UTC midnight to designate the month whose events will be fetched.
   base::Time fetch_month_;

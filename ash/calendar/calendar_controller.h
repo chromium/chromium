@@ -52,8 +52,7 @@ class ASH_EXPORT CalendarController : public SessionObserver {
   // The currently active user account id.
   AccountId active_user_account_id_;
 
-  std::map<const AccountId, raw_ptr<CalendarClient, CtnExperimental>>
-      clients_by_account_id_;
+  std::map<const AccountId, raw_ptr<CalendarClient>> clients_by_account_id_;
 };
 
 }  // namespace ash

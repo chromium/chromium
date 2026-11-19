@@ -37,7 +37,7 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
  public:
   using SnapGroups = std::vector<std::unique_ptr<SnapGroup>>;
   using WindowToSnapGroupMap =
-      base::flat_map<aura::Window*, raw_ptr<SnapGroup, CtnExperimental>>;
+      base::flat_map<aura::Window*, raw_ptr<SnapGroup>>;
 
   SnapGroupController();
   SnapGroupController(const SnapGroupController&) = delete;

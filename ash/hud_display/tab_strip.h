@@ -76,8 +76,7 @@ class HUDTabStrip : public views::BoxLayoutView {
 
  private:
   raw_ptr<HUDDisplayView> hud_;
-  std::vector<raw_ptr<HUDTabButton, VectorExperimental>>
-      tabs_;  // Ordered list of child tabs.
+  std::vector<raw_ptr<HUDTabButton>> tabs_;  // Ordered list of child tabs.
 };
 
 }  // namespace hud_display

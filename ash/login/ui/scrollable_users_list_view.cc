@@ -165,7 +165,7 @@ ScrollableUsersListView::TestApi::TestApi(ScrollableUsersListView* view)
 
 ScrollableUsersListView::TestApi::~TestApi() = default;
 
-const std::vector<raw_ptr<LoginUserView, VectorExperimental>>&
+const std::vector<raw_ptr<LoginUserView>>&
 ScrollableUsersListView::TestApi::user_views() const {
   return view_->user_views_;
 }

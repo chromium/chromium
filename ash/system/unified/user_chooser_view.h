@@ -102,7 +102,7 @@ class ASH_EXPORT UserChooserView : public views::View,
  private:
   FRIEND_TEST_ALL_PREFIXES(PowerButtonTest, UserItemButtonTooltipText);
 
-  std::vector<raw_ptr<UserItemButton, VectorExperimental>> user_item_buttons_;
+  std::vector<raw_ptr<UserItemButton>> user_item_buttons_;
 };
 
 }  // namespace ash

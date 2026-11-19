@@ -511,8 +511,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
   // not outlive the `folder_item_view_`.
   const raw_ptr<AppListItemView> folder_item_view_;
 
-  std::vector<raw_ptr<TopIconAnimationView, VectorExperimental>>
-      top_icon_views_;
+  std::vector<raw_ptr<TopIconAnimationView>> top_icon_views_;
 
   base::OnceClosure completion_callback_;
 };

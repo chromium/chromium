@@ -16,10 +16,9 @@ namespace ash {
 
 namespace {
 
-void MoveAnimation(
-    base::flat_set<raw_ptr<const lottie::Animation, CtnExperimental>>& from,
-    base::flat_set<raw_ptr<const lottie::Animation, CtnExperimental>>& to,
-    const lottie::Animation* animation) {
+void MoveAnimation(base::flat_set<raw_ptr<const lottie::Animation>>& from,
+                   base::flat_set<raw_ptr<const lottie::Animation>>& to,
+                   const lottie::Animation* animation) {
   if (to.contains(animation)) {
     CHECK(!from.contains(animation));
     return;

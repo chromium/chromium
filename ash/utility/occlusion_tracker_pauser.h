@@ -51,8 +51,7 @@ class ASH_EXPORT OcclusionTrackerPauser : public ui::CompositorObserver {
 
   // Keeps track of compositors that are animating. We can unpause when this is
   // empty.
-  base::flat_set<raw_ptr<ui::Compositor, CtnExperimental>>
-      animating_compositors_;
+  base::flat_set<raw_ptr<ui::Compositor>> animating_compositors_;
 
   std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause> scoped_pause_;
 };

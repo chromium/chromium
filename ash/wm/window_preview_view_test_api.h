@@ -31,8 +31,7 @@ class WindowPreviewViewTestApi {
 
   gfx::RectF GetUnionRect() const;
 
-  const base::flat_map<aura::Window*,
-                       raw_ptr<WindowMirrorView, CtnExperimental>>&
+  const base::flat_map<aura::Window*, raw_ptr<WindowMirrorView>>&
   GetMirrorViews() const;
 
   // Gets the mirror view in |mirror_views_| associated with |widget|. Returns

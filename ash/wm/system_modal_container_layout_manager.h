@@ -126,11 +126,11 @@ class ASH_EXPORT SystemModalContainerLayoutManager
   std::unique_ptr<WindowDimmer> window_dimmer_;
 
   // A stack of modal windows. Only the topmost can receive events.
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> modal_windows_;
+  std::vector<raw_ptr<aura::Window>> modal_windows_;
 
   // Windows contained in this set are centered. Windows are automatically
   // added to this based on IsBoundsCentered().
-  std::set<raw_ptr<const aura::Window, SetExperimental>> windows_to_center_;
+  std::set<raw_ptr<const aura::Window>> windows_to_center_;
 
   // An observer to update position of modals when display work area changes.
   display::ScopedDisplayObserver display_observer_{this};

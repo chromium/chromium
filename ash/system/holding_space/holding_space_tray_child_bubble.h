@@ -105,8 +105,7 @@ class ASH_EXPORT HoldingSpaceTrayChildBubble
   raw_ptr<HoldingSpaceViewDelegate> delegate_ = nullptr;
 
   // Views owned by view hierarchy.
-  std::vector<raw_ptr<HoldingSpaceItemViewsSection, VectorExperimental>>
-      sections_;
+  std::vector<raw_ptr<HoldingSpaceItemViewsSection>> sections_;
   raw_ptr<views::View> placeholder_ = nullptr;
 
   // Whether or not to ignore `ChildVisibilityChanged()` events. This is used

@@ -52,7 +52,7 @@ class VIEWS_EXPORT PhoneHubMoreAppsButton
   raw_ptr<views::TableLayout> table_layout_ = nullptr;
   raw_ptr<phonehub::AppStreamLauncherDataModel>
       app_stream_launcher_data_model_ = nullptr;
-  std::vector<raw_ptr<AppLoadingIcon, VectorExperimental>> app_loading_icons_;
+  std::vector<raw_ptr<AppLoadingIcon>> app_loading_icons_;
 };
 
 }  // namespace ash

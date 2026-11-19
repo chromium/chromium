@@ -112,8 +112,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
   class MenuModelWithWillCloseCallback;
   class ScopedA11yIgnore;
 
-  using ItemViewsByCommandId =
-      std::map<int, raw_ptr<ClipboardHistoryItemView, CtnExperimental>>;
+  using ItemViewsByCommandId = std::map<int, raw_ptr<ClipboardHistoryItemView>>;
 
   ClipboardHistoryMenuModelAdapter(
       std::unique_ptr<MenuModelWithWillCloseCallback> model,

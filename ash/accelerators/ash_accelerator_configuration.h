@@ -196,8 +196,7 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
   AcceleratorActionMap deprecated_accelerators_to_id_;
 
   // A map of accelerator ID's that are deprecated.
-  std::map<AcceleratorActionId,
-           raw_ptr<const DeprecatedAcceleratorData, CtnExperimental>>
+  std::map<AcceleratorActionId, raw_ptr<const DeprecatedAcceleratorData>>
       actions_with_deprecations_;
 
   // One accelerator action ID can potentially have multiple accelerators
@@ -214,8 +213,7 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
   // data is set.
   ActionIdToAcceleratorsMap default_id_to_accelerators_cache_;
   AcceleratorActionMap default_accelerators_to_id_cache_;
-  std::map<AcceleratorActionId,
-           raw_ptr<const DeprecatedAcceleratorData, CtnExperimental>>
+  std::map<AcceleratorActionId, raw_ptr<const DeprecatedAcceleratorData>>
       default_actions_with_deprecations_cache_;
   AcceleratorActionMap default_deprecated_accelerators_to_id_cache_;
 

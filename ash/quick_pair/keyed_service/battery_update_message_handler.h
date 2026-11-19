@@ -65,8 +65,7 @@ class BatteryUpdateMessageHandler : public MessageStreamLookup::Observer,
   void CleanUpMessageStream(const std::string& device_address);
 
   // Map of the classic pairing address to their corresponding MessageStreams.
-  base::flat_map<std::string, raw_ptr<MessageStream, CtnExperimental>>
-      message_streams_;
+  base::flat_map<std::string, raw_ptr<MessageStream>> message_streams_;
 
   scoped_refptr<device::BluetoothAdapter> adapter_;
 

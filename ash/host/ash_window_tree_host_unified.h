@@ -47,7 +47,7 @@ class AshWindowTreeHostUnified : public AshWindowTreeHostPlatform,
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  std::vector<raw_ptr<AshWindowTreeHost, VectorExperimental>> mirroring_hosts_;
+  std::vector<raw_ptr<AshWindowTreeHost>> mirroring_hosts_;
 };
 
 }  // namespace ash

@@ -106,8 +106,7 @@ class AppsAccessManager {
   void OnSetupOperationDeleted(int operation_id);
 
   int next_operation_id_ = 0;
-  base::flat_map<int, raw_ptr<AppsAccessSetupOperation, CtnExperimental>>
-      id_to_operation_map_;
+  base::flat_map<int, raw_ptr<AppsAccessSetupOperation>> id_to_operation_map_;
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<AppsAccessManager> weak_ptr_factory_{this};
 };

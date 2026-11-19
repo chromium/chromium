@@ -43,8 +43,7 @@ class FakeMessageStreamLookup : public MessageStreamLookup {
                                     MessageStream* message_stream);
 
  private:
-  base::flat_map<std::string, raw_ptr<MessageStream, CtnExperimental>>
-      message_streams_;
+  base::flat_map<std::string, raw_ptr<MessageStream>> message_streams_;
   base::ObserverList<Observer> observers_;
 };
 

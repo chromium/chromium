@@ -88,11 +88,9 @@ class ASH_EXPORT AmbientAnimationProgressTracker
                                      lottie::AnimationObserver>
       animation_observations_{this};
   // Registered animations that have been Start()ed.
-  base::flat_set<raw_ptr<const lottie::Animation, CtnExperimental>>
-      started_animations_;
+  base::flat_set<raw_ptr<const lottie::Animation>> started_animations_;
   // Registered animations that have not been Start()ed yet.
-  base::flat_set<raw_ptr<const lottie::Animation, CtnExperimental>>
-      inactive_animations_;
+  base::flat_set<raw_ptr<const lottie::Animation>> inactive_animations_;
 };
 
 }  // namespace ash

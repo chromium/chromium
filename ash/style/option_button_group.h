@@ -55,7 +55,7 @@ class ASH_EXPORT OptionButtonGroup : public views::View {
   // The padding between the icon and label.
   const int image_label_spacing_;
 
-  std::vector<raw_ptr<OptionButtonBase, VectorExperimental>> buttons_;
+  std::vector<raw_ptr<OptionButtonBase>> buttons_;
   base::CallbackListSubscription enabled_changed_subscription_;
 };
 

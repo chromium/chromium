@@ -22,7 +22,7 @@ gfx::RectF WindowPreviewViewTestApi::GetUnionRect() const {
   return preview_view_->GetUnionRect();
 }
 
-const base::flat_map<aura::Window*, raw_ptr<WindowMirrorView, CtnExperimental>>&
+const base::flat_map<aura::Window*, raw_ptr<WindowMirrorView>>&
 WindowPreviewViewTestApi::GetMirrorViews() const {
   return preview_view_->mirror_views_;
 }

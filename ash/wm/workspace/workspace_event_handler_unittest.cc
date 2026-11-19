@@ -104,7 +104,7 @@ class WindowPropertyObserver : public aura::WindowObserver {
   }
 
   raw_ptr<aura::Window> window_;
-  std::vector<raw_ptr<const void, VectorExperimental>> properties_changed_;
+  std::vector<raw_ptr<const void>> properties_changed_;
 };
 
 TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisResizeEdge) {
