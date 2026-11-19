@@ -19,7 +19,6 @@ class PinnedToolbarActions;
 class ExtensionsContainerViews;
 class ReloadButton;
 class ReloadControl;
-class ToolbarButton;
 class WebUIToolbarWebView;
 
 namespace page_actions {
@@ -91,9 +90,6 @@ class ToolbarButtonProvider {
 
   // Returns the avatar button interface.
   virtual AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface() = 0;
-
-  // Returns the back button.
-  virtual ToolbarButton* GetBackButton() = 0;
 
   // Returns the reload button delegate, it can be either `ReloadButton` or
   // `WebUIToolbarWebView` depending on the enabled features.

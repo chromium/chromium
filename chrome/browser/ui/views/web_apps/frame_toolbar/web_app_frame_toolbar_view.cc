@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
-#include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
@@ -371,10 +370,6 @@ void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
 AvatarToolbarButtonInterface*
 WebAppFrameToolbarView::GetAvatarToolbarButtonInterface() {
   return right_container_ ? right_container_->avatar_button() : nullptr;
-}
-
-ToolbarButton* WebAppFrameToolbarView::GetBackButton() {
-  return left_container_ ? left_container_->back_button() : nullptr;
 }
 
 ReloadControl* WebAppFrameToolbarView::GetReloadButton() {
