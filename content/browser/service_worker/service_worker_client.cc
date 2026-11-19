@@ -32,6 +32,8 @@
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -65,6 +67,33 @@ std::optional<int64_t> GetOngoingNavigationId(
     }
   }
   return std::nullopt;
+}
+
+bool DoesDedicatedWorkerDisallowServiceWorkerControl(
+    ChildProcessId process_id,
+    blink::DedicatedWorkerToken dedicated_worker_token) {
+  auto* process = RenderProcessHost::FromID(process_id);
+  if (!process) {
+    return false;
+  }
+  auto* storage_partition = process->GetStoragePartition();
+  if (!storage_partition) {
+    return false;
+  }
+  auto* worker_service = static_cast<DedicatedWorkerServiceImpl*>(
+      storage_partition->GetDedicatedWorkerService());
+  if (!worker_service) {
+    return false;
+  }
+  auto* worker_host =
+      worker_service->GetDedicatedWorkerHostFromToken(dedicated_worker_token);
+  if (!worker_host) {
+    return false;
+  }
+  auto* rfh = worker_host->GetAncestorRenderFrameHost();
+  auto* web_contents = WebContentsImpl::FromRenderFrameHostImpl(rfh);
+  return web_contents &&
+         web_contents->DoesWebContentsDisallowServiceWorkerControl();
 }
 
 }  // namespace
@@ -152,6 +181,22 @@ ServiceWorkerClient::ServiceWorkerClient(
       ongoing_navigation_frame_tree_node_id_(
           ongoing_navigation_frame_tree_node_id) {
   DCHECK(context_);
+  // `NavigationRequest` also sets `begin_params_->skip_service_worker` for
+  // `WebContents` that disallow service worker control, which bypasses
+  // main-resource fetch interception. Setting
+  // `disallows_service_worker_control_` on the client itself is still required
+  // to block non-interception paths (`AllowServiceWorker()`,
+  // `clients.claim()`, `clients.matchAll()`/`get()`, and inheritance by
+  // dedicated worker or `about:srcdoc` clients).
+  if (auto* frame_tree_node = FrameTreeNode::GloballyFindByID(
+          ongoing_navigation_frame_tree_node_id_)) {
+    if (auto* web_contents =
+            WebContentsImpl::FromFrameTreeNode(frame_tree_node);
+        web_contents &&
+        web_contents->DoesWebContentsDisallowServiceWorkerControl()) {
+      SetDisallowsServiceWorkerControl();
+    }
+  }
 }
 
 ServiceWorkerClient::ServiceWorkerClient(
@@ -187,6 +232,13 @@ ServiceWorkerClient::ServiceWorkerClient(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(process_id_for_worker_client_);
+  if (const auto* dedicated_worker_token =
+          std::get_if<blink::DedicatedWorkerToken>(&client_info_)) {
+    if (DoesDedicatedWorkerDisallowServiceWorkerControl(
+            process_id_for_worker_client_, *dedicated_worker_token)) {
+      SetDisallowsServiceWorkerControl();
+    }
+  }
 }
 
 ServiceWorkerClient::~ServiceWorkerClient() {
@@ -515,25 +567,6 @@ ServiceWorkerClient::CommitResponse(
       }
       rfh->AddServiceWorkerClient(client_uuid(),
                                   weak_ptr_factory_.GetWeakPtr());
-      // A window client hosted by a privileged WebContents (see //chrome's
-      // PrivilegedWebContents) that forbids service worker control is
-      // permanently ineligible to be controlled by a service worker. This is
-      // determined here, at response commit, because that is the first point
-      // where the client's RenderFrameHost (and thus its WebContents) is known.
-      // Interception of the navigation itself is prevented separately, at
-      // navigation start (NavigationRequest sets skip_service_worker); this bit
-      // additionally blocks the non-interception control paths (ClaimClients,
-      // registration/controller inheritance), so a privileged client can never
-      // become controlled.
-      if (WebContentsImpl* web_contents =
-              WebContentsImpl::FromRenderFrameHostImpl(rfh)) {
-        const std::optional<WebContents::PrivilegedParams>& privileged_params =
-            web_contents->privileged_params();
-        if (privileged_params &&
-            privileged_params->disallow_service_worker_control) {
-          SetDisallowsServiceWorkerControl();
-        }
-      }
     }
   }
 

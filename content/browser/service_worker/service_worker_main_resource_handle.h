@@ -121,7 +121,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
   // controller of the to-be-created global scope.
   std::unique_ptr<ScopedServiceWorkerClient> scoped_service_worker_client_;
 
-  // Only set and used for workers with a blob URL.
+  // Set for workers and about:srcdoc iframes to inherit state (such as
+  // service-worker ineligibility, and the controller for blob/srcdoc URLs)
+  // from their creator client.
   const base::WeakPtr<ServiceWorkerClient> parent_service_worker_client_;
 
   // FetchEvent.clientId

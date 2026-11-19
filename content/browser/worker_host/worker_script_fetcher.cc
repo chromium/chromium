@@ -26,6 +26,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/network_restrictions_worker_throttle.h"
 #include "content/browser/worker_host/worker_script_loader.h"
@@ -367,6 +368,12 @@ void WorkerScriptFetcher::CreateAndStart(
   resource_request->trusted_params->isolation_info =
       ancestor_render_frame_host.GetStorageKey().ToPartialNetIsolationInfo();
   resource_request->storage_access_api_status = storage_access_api_status;
+  if (auto* web_contents =
+          WebContentsImpl::FromRenderFrameHostImpl(&ancestor_render_frame_host);
+      web_contents &&
+      web_contents->DoesWebContentsDisallowServiceWorkerControl()) {
+    resource_request->skip_service_worker = true;
+  }
 
   // TODO(https://crbug.com/406525486): Permissions policies for workers are
   // currently not supported so an all-blocking permissions policy is set.

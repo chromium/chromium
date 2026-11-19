@@ -346,6 +346,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
   // SyntheticResponse, do not skip service worker.
   bool skip_service_worker =
       tentative_resource_request.skip_service_worker ||
+      handle_->service_worker_client()->disallows_service_worker_control() ||
       !OriginCanAccessServiceWorkers(tentative_resource_request.url) ||
       !(handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
             handle_->service_worker_client()->key()) ||

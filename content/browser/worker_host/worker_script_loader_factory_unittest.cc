@@ -11,6 +11,7 @@
 #include "content/browser/isolation_context.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/process_lock.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -721,6 +722,58 @@ TEST_F(WorkerScriptLoaderFactoryTest,
     client.RunUntilComplete();
     EXPECT_EQ(net::OK, client.completion_status().error_code);
   }
+}
+
+// Tests that a worker `ServiceWorkerClient` created for a non-blob URL
+// inherits `disallows_service_worker_control` from its parent
+// `ServiceWorkerClient`.
+TEST_F(WorkerScriptLoaderFactoryTest,
+       DisallowsServiceWorkerControlInheritedFromParentClient) {
+  GURL url("https://www.example.com/worker.js");
+
+  ScopedServiceWorkerClient parent_client =
+      helper_->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForWindow(/*are_ancestors_secure=*/true,
+                                              FrameTreeNodeId());
+  parent_client->SetDisallowsServiceWorkerControl();
+
+  auto handle_with_parent = std::make_unique<ServiceWorkerMainResourceHandle>(
+      helper_->context_wrapper(), base::DoNothing(),
+      /*fetch_event_client_id=*/parent_client->client_uuid(),
+      parent_client->AsWeakPtr());
+
+  auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+      helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+      handle_with_parent.get(), browser_context_getter_,
+      network_loader_factory_);
+
+  network::TestURLLoaderClient client;
+  mojo::PendingRemote<network::mojom::URLLoader> loader =
+      CreateTestLoaderAndStart(url, factory.get(), &client);
+  client.RunUntilResponseReceived();
+
+  base::WeakPtr<ServiceWorkerClient> worker_client =
+      handle_with_parent->service_worker_client();
+  ASSERT_TRUE(worker_client);
+  EXPECT_TRUE(worker_client->disallows_service_worker_control());
+  EXPECT_FALSE(worker_client->IsEligibleForServiceWorkerController());
+
+  auto container_info =
+      handle_with_parent->scoped_service_worker_client()
+          ->CommitResponseAndRelease(
+              /*rfh_id=*/std::nullopt, PolicyContainerPolicies(),
+              /*coep_reporter=*/{}, /*dip_reporter=*/{}, ukm::kInvalidSourceId);
+  (*handle_with_parent->scoped_service_worker_client())->SetContainerReady();
+  factory->GetScriptLoader()->OnFetcherCallbackCalled();
+  client.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
+  ASSERT_TRUE(worker_client);
+  EXPECT_TRUE(worker_client->disallows_service_worker_control());
+  EXPECT_FALSE(worker_client->IsEligibleForServiceWorkerController());
 }
 
 // TODO(falken): Add a test for a shared worker that's controlled by a service

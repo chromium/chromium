@@ -1838,7 +1838,8 @@ void ServiceWorkerVersion::GetClient(const std::string& client_uuid,
   ServiceWorkerClient* service_worker_client =
       context_->service_worker_client_owner().GetServiceWorkerClientByClientID(
           client_uuid);
-  if (!service_worker_client || service_worker_client->key() != key_) {
+  if (!service_worker_client || service_worker_client->key() != key_ ||
+      service_worker_client->disallows_service_worker_control()) {
     // The promise will be resolved to 'undefined'.
     // Note that we don't BadMessage here since Clients#get() can be passed an
     // arbitrary UUID. The BadMessages for the storage key mismatches below are
@@ -1869,6 +1870,7 @@ void ServiceWorkerVersion::GetClientInternal(const std::string& client_uuid,
       context_->service_worker_client_owner().GetServiceWorkerClientByClientID(
           client_uuid);
   if (!service_worker_client || service_worker_client->key() != key_ ||
+      service_worker_client->disallows_service_worker_control() ||
       !service_worker_client->is_execution_ready()) {
     std::move(callback).Run(nullptr);
     return;
@@ -2124,7 +2126,8 @@ void ServiceWorkerVersion::PostMessageToClient(
   ServiceWorkerClient* service_worker_client =
       context_->service_worker_client_owner().GetServiceWorkerClientByClientID(
           client_uuid);
-  if (!service_worker_client) {
+  if (!service_worker_client ||
+      service_worker_client->disallows_service_worker_control()) {
     // The client may already have been closed, just ignore.
     return;
   }
@@ -2219,7 +2222,8 @@ void ServiceWorkerVersion::FocusClient(const std::string& client_uuid,
   ServiceWorkerClient* service_worker_client =
       context_->service_worker_client_owner().GetServiceWorkerClientByClientID(
           client_uuid);
-  if (!service_worker_client) {
+  if (!service_worker_client ||
+      service_worker_client->disallows_service_worker_control()) {
     // The client may already have been closed, just fail.
     auto result = blink::mojom::FocusResult::NewErrorCode(
         blink::mojom::FocusError::CLIENT_NOT_FOUND);

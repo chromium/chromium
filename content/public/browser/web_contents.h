@@ -200,8 +200,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
     // features never collide.
     int32_t feature_id = 0;
 
-    // When true, documents in this WebContents are never controlled by a
-    // service worker.
+    // When true, documents and dedicated workers in this WebContents are never
+    // controlled by a service worker.
     bool disallow_service_worker_control = false;
 
     // When true, frames in this WebContents may not create or connect to

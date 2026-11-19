@@ -1303,15 +1303,33 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, GetRunningServiceWorkerInfos) {
       running_info.render_process_id);
 }
 
-// A document hosted by a privileged WebContents that disallows service worker
-// control is permanently ineligible to be controlled: even a service worker
-// that skipWaiting()s and calls clients.claim() cannot claim it, while an
-// ordinary tab at the same origin is claimed.
+// A document or dedicated worker hosted by a privileged WebContents that
+// disallows service worker control is permanently ineligible to be controlled:
+// even a service worker that skipWaiting()s and calls clients.claim() cannot
+// claim it, while an ordinary tab and its dedicated worker at the same origin
+// are claimed.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
                        PrivilegedWebContentsCannotBeClaimed) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (base::StartsWith(request.relative_url,
+                             "/service_worker/ready_worker.js")) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_content_type("application/javascript");
+          response->set_content("self.postMessage('ready');");
+          return response;
+        }
+        return nullptr;
+      }));
   StartServerAndNavigateToSetup();
   const GURL in_scope =
       embedded_test_server()->GetURL("/service_worker/empty.html");
+  const GURL ordinary_worker_url = embedded_test_server()->GetURL(
+      "/service_worker/ready_worker.js?ordinary");
+  const GURL privileged_worker_url = embedded_test_server()->GetURL(
+      "/service_worker/ready_worker.js?privileged");
 
   // Load an ordinary tab and a privileged WebContents at the same in-scope URL,
   // both uncontrolled (no service worker yet).
@@ -1332,6 +1350,22 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   ASSERT_TRUE(privileged_main->GetLastCommittedServiceWorkerClient());
   EXPECT_FALSE(privileged_main->GetLastCommittedServiceWorkerClient()
                    ->IsEligibleForServiceWorkerController());
+
+  // Start a non-blob dedicated worker in both the ordinary tab and the
+  // privileged WebContents and wait for both to be execution ready before any
+  // service worker is registered.
+  static constexpr char kStartReadyWorker[] = R"(
+    new Promise((resolve) => {
+      window.testWorker = new Worker($1);
+      window.testWorker.onmessage = (e) => resolve(e.data);
+    })
+  )";
+  EXPECT_EQ("ready",
+            EvalJs(ordinary_main,
+                   JsReplace(kStartReadyWorker, "ready_worker.js?ordinary")));
+  EXPECT_EQ("ready",
+            EvalJs(privileged_main,
+                   JsReplace(kStartReadyWorker, "ready_worker.js?privileged")));
 
   // Register a service worker that immediately activates and claims all
   // clients, from the ordinary tab, and wait for the ordinary tab to be
@@ -1356,12 +1390,43 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   ASSERT_TRUE(privileged_main->GetLastCommittedServiceWorkerClient());
   EXPECT_FALSE(
       privileged_main->GetLastCommittedServiceWorkerClient()->controller());
+
+  // Verify the dedicated worker clients: the ordinary dedicated worker is
+  // eligible and claimed, while the privileged dedicated worker is ineligible
+  // and remains uncontrolled.
+  ServiceWorkerClient* ordinary_worker_client = nullptr;
+  ServiceWorkerClient* privileged_worker_client = nullptr;
+  for (auto it = wrapper()
+                     ->context()
+                     ->service_worker_client_owner()
+                     .GetServiceWorkerClients(
+                         ordinary_main->GetStorageKey(),
+                         /*include_reserved_clients=*/false,
+                         /*include_back_forward_cached_clients=*/false);
+       !it.IsAtEnd(); ++it) {
+    if (it->GetClientType() !=
+        blink::mojom::ServiceWorkerClientType::kDedicatedWorker) {
+      continue;
+    }
+    if (it->creation_url() == ordinary_worker_url) {
+      ordinary_worker_client = &*it;
+    } else if (it->creation_url() == privileged_worker_url) {
+      privileged_worker_client = &*it;
+    }
+  }
+  ASSERT_TRUE(ordinary_worker_client);
+  EXPECT_TRUE(ordinary_worker_client->IsEligibleForServiceWorkerController());
+  EXPECT_TRUE(ordinary_worker_client->controller());
+  ASSERT_TRUE(privileged_worker_client);
+  EXPECT_FALSE(
+      privileged_worker_client->IsEligibleForServiceWorkerController());
+  EXPECT_FALSE(privileged_worker_client->controller());
 }
 
-// A window client hosted by a privileged WebContents that disallows service
-// worker control is invisible to a same-origin service worker's
-// clients.matchAll({includeUncontrolled: true}); an ordinary same-origin client
-// remains visible.
+// Window and worker clients hosted by a privileged WebContents that disallows
+// service worker control are invisible to a same-origin service worker's
+// clients.matchAll({includeUncontrolled: true}); ordinary same-origin window
+// and worker clients remain visible.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
                        PrivilegedWebContentsHiddenFromMatchAll) {
   StartServerAndNavigateToSetup();
@@ -1369,9 +1434,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
       embedded_test_server()->GetURL("/service_worker/empty.html");
   const GURL privileged_url =
       embedded_test_server()->GetURL("/service_worker/empty.html?privileged");
+  const GURL ordinary_worker_url =
+      embedded_test_server()->GetURL("/workers/post_ready.js?ordinary_worker");
+  const GURL privileged_worker_url = embedded_test_server()->GetURL(
+      "/workers/post_ready.js?privileged_worker");
 
-  // An ordinary tab registers a worker that reports window clients, and waits
-  // for it to become active.
+  // An ordinary tab registers a worker that reports clients, and waits for it
+  // to become active.
   EXPECT_TRUE(NavigateToURL(shell(), ordinary_url));
   EXPECT_EQ("ok", EvalJs(shell(), R"(
     (async () => {
@@ -1391,22 +1460,55 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   std::unique_ptr<WebContents> privileged(WebContents::Create(params));
   ASSERT_TRUE(NavigateToURL(privileged.get(), privileged_url));
 
-  // Ask the worker to enumerate window clients and report their URLs. The
-  // ordinary client is present; the privileged client is not.
-  const std::string urls = EvalJs(shell(), R"(
+  // Start a non-blob dedicated worker in both the ordinary tab and the
+  // privileged WebContents and wait until both workers are execution ready.
+  static constexpr char kStartReadyWorker[] = R"(
+    new Promise((resolve) => {
+      window.testWorker = new Worker($1);
+      window.testWorker.onmessage = (e) => resolve(e.data);
+    })
+  )";
+  EXPECT_EQ(
+      "ready",
+      EvalJs(shell(), JsReplace(kStartReadyWorker,
+                                "/workers/post_ready.js?ordinary_worker")));
+  EXPECT_EQ("ready",
+            EvalJs(privileged.get(),
+                   JsReplace(kStartReadyWorker,
+                             "/workers/post_ready.js?privileged_worker")));
+
+  static constexpr char kQueryClients[] = R"(
     (async () => {
       const reg = await navigator.serviceWorker.ready;
       const list = await new Promise((resolve) => {
         navigator.serviceWorker.addEventListener(
             'message', (e) => resolve(e.data), {once: true});
-        reg.active.postMessage('list');
+        reg.active.postMessage($1);
       });
       return list.join(',');
     })()
-  )")
-                               .ExtractString();
-  EXPECT_THAT(urls, ::testing::HasSubstr(ordinary_url.spec()));
-  EXPECT_THAT(urls, ::testing::Not(::testing::HasSubstr("?privileged")));
+  )";
+
+  // Ask the worker to enumerate window clients and report their URLs. The
+  // ordinary client is present; the privileged client is not.
+  const std::string window_urls =
+      EvalJs(shell(), JsReplace(kQueryClients, "list")).ExtractString();
+  EXPECT_THAT(window_urls, ::testing::HasSubstr(ordinary_url.spec()));
+  EXPECT_THAT(window_urls, ::testing::Not(::testing::HasSubstr("?privileged")));
+
+  // Ask the worker to enumerate worker clients and all clients. The ordinary
+  // dedicated worker is present; the privileged dedicated worker is not.
+  const std::string worker_urls =
+      EvalJs(shell(), JsReplace(kQueryClients, "worker")).ExtractString();
+  EXPECT_THAT(worker_urls, ::testing::HasSubstr(ordinary_worker_url.spec()));
+  EXPECT_THAT(worker_urls,
+              ::testing::Not(::testing::HasSubstr("?privileged_worker")));
+
+  const std::string all_urls =
+      EvalJs(shell(), JsReplace(kQueryClients, "all")).ExtractString();
+  EXPECT_THAT(all_urls, ::testing::HasSubstr(ordinary_url.spec()));
+  EXPECT_THAT(all_urls, ::testing::HasSubstr(ordinary_worker_url.spec()));
+  EXPECT_THAT(all_urls, ::testing::Not(::testing::HasSubstr("?privileged")));
 }
 
 // A WebContents created with PrivilegedParams
@@ -1486,6 +1588,124 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   auto privileged_client =
       privileged_main->GetLastCommittedServiceWorkerClient();
   EXPECT_TRUE(!privileged_client || !privileged_client->controller());
+}
+
+// A non-blob dedicated worker (including nested dedicated workers and workers
+// created from an about:blank subframe) in a privileged WebContents that
+// disallows service worker control skips the service worker for its main script
+// and subresource fetches and remains uncontrolled, while a dedicated worker at
+// the same URL in an ordinary tab is intercepted and controlled.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
+                       PrivilegedWebContentsDedicatedWorkerSkipsServiceWorker) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/service_worker/worker_intercept_sw.js") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_content_type("application/javascript");
+          response->set_content(R"(
+            self.addEventListener('fetch', (event) => {
+              if (event.request.url.endsWith('/worker_target.js')) {
+                event.respondWith(new Response(
+                    "self.postMessage('from_service_worker');",
+                    {headers: {'Content-Type': 'application/javascript'}}));
+              } else if (
+                  event.request.url.endsWith('/worker_subresource.txt')) {
+                event.respondWith(new Response('subresource_from_sw'));
+              }
+            });
+          )");
+          return response;
+        }
+        if (request.relative_url == "/service_worker/worker_target.js") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_content_type("application/javascript");
+          response->set_content(R"(
+            fetch('/service_worker/worker_subresource.txt')
+              .then(r => r.text())
+              .then(t => self.postMessage('from_network:' + t));
+          )");
+          return response;
+        }
+        if (request.relative_url == "/service_worker/nested_worker_target.js") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_content_type("application/javascript");
+          response->set_content(R"(
+            const w = new Worker('/service_worker/worker_target.js');
+            w.onmessage = (e) => self.postMessage('nested:' + e.data);
+          )");
+          return response;
+        }
+        if (request.relative_url == "/service_worker/worker_subresource.txt") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_content_type("text/plain");
+          response->set_content("subresource_from_network");
+          return response;
+        }
+        return nullptr;
+      }));
+  StartServerAndNavigateToSetup();
+
+  // Register a service worker that intercepts worker_target.js and
+  // worker_subresource.txt under /service_worker/.
+  ASSERT_TRUE(NavigateToURL(shell(),
+                            embedded_test_server()->GetURL(
+                                "/service_worker/create_service_worker.html")));
+  EXPECT_EQ("DONE", EvalJs(shell(), "register('worker_intercept_sw.js');"));
+
+  const GURL in_scope =
+      embedded_test_server()->GetURL("/service_worker/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), in_scope));
+
+  static constexpr char kRunWorker[] = R"(
+    new Promise((resolve, reject) => {
+      const w = new Worker($1);
+      w.onmessage = (e) => resolve(e.data);
+      w.onerror = (e) => reject('worker error');
+    })
+  )";
+
+  // Control: in an ordinary tab, the dedicated worker's main script request is
+  // intercepted by the service worker.
+  EXPECT_EQ("from_service_worker",
+            EvalJs(shell(),
+                   JsReplace(kRunWorker, "/service_worker/worker_target.js")));
+
+  // In a privileged WebContents that disallows service worker control,
+  // top-level dedicated workers, nested dedicated workers, and dedicated
+  // workers created from an about:blank subframe all bypass the service worker
+  // for both main script and subresource fetches.
+  WebContents::CreateParams params(
+      shell()->web_contents()->GetBrowserContext());
+  params.privileged_params = WebContents::PrivilegedParams{
+      .feature_id = 42,
+      .disallow_service_worker_control = true,
+  };
+  std::unique_ptr<WebContents> privileged(WebContents::Create(params));
+  ASSERT_TRUE(NavigateToURL(privileged.get(), in_scope));
+
+  EXPECT_EQ("from_network:subresource_from_network",
+            EvalJs(privileged.get(),
+                   JsReplace(kRunWorker, "/service_worker/worker_target.js")));
+  EXPECT_EQ(
+      "nested:from_network:subresource_from_network",
+      EvalJs(privileged.get(),
+             JsReplace(kRunWorker, "/service_worker/nested_worker_target.js")));
+  EXPECT_EQ("from_network:subresource_from_network",
+            EvalJs(privileged.get(), R"(
+    new Promise((resolve, reject) => {
+      const iframe = document.createElement('iframe');
+      document.body.appendChild(iframe);
+      const w = new iframe.contentWindow.Worker(
+          '/service_worker/worker_target.js');
+      w.onmessage = (e) => resolve(e.data);
+      w.onerror = (e) => reject('worker error');
+    })
+  )"));
 }
 
 // A document that commits with an opaque origin because its response carries a

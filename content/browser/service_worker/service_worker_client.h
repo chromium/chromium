@@ -408,8 +408,9 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // A client hosted by a privileged WebContents (see //chrome's
   // PrivilegedWebContents) that forbids service worker control is permanently
   // ineligible to be controlled by a service worker (see
-  // IsEligibleForServiceWorkerController). The bit is set for window clients at
-  // response commit and inherited by worker clients from their creator.
+  // IsEligibleForServiceWorkerController). The bit is set for window and
+  // worker clients at client creation and inherited by worker clients from
+  // their creator.
   bool disallows_service_worker_control() const {
     return disallows_service_worker_control_;
   }

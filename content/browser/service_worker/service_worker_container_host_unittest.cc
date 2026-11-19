@@ -20,12 +20,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_host.h"
+#include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_register_job.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -427,6 +429,52 @@ TEST_F(ServiceWorkerContainerHostTest,
       GlobalRenderFrameHostId(helper_->mock_render_process_id(),
                               /*mock frame_routing_id=*/1));
   EXPECT_EQ(nullptr, committed_client->MatchRegistration());
+}
+
+TEST_F(ServiceWorkerContainerHostTest,
+       WorkerClientInheritsDisallowsServiceWorkerControlFromCreator) {
+  ScopedServiceWorkerClient parent_client = CreateServiceWorkerClient(
+      context_.get(), GURL("https://www.example.com/example1"));
+  parent_client->SetDisallowsServiceWorkerControl();
+  ASSERT_TRUE(parent_client->disallows_service_worker_control());
+
+  ServiceWorkerMainResourceHandle handle(
+      helper_->context_wrapper(), base::DoNothing(),
+      parent_client->client_uuid(), parent_client->AsWeakPtr());
+  const GURL worker_url("https://www.example.com/worker.js");
+  const url::Origin origin = url::Origin::Create(worker_url);
+  handle.set_service_worker_client(
+      context_->service_worker_client_owner()
+          .CreateServiceWorkerClientForWorker(
+              helper_->mock_render_process_id(),
+              ServiceWorkerClientInfo(blink::DedicatedWorkerToken())),
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin, origin,
+                                 net::SiteForCookies::FromOrigin(origin)));
+
+  ASSERT_TRUE(handle.service_worker_client());
+  EXPECT_TRUE(
+      handle.service_worker_client()->disallows_service_worker_control());
+  EXPECT_TRUE(handle.InitializeForRequest(worker_url, origin,
+                                          /*client_for_prefetch=*/nullptr));
+  EXPECT_FALSE(
+      handle.service_worker_client()->IsEligibleForServiceWorkerController());
+  EXPECT_EQ(nullptr, handle.service_worker_client()->MatchRegistration());
+
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter;
+  std::ignore = coep_reporter.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+      dip_reporter;
+  std::ignore = dip_reporter.InitWithNewPipeAndPassReceiver();
+  std::ignore = handle.scoped_service_worker_client()->CommitResponseAndRelease(
+      /*rfh_id=*/std::nullopt, PolicyContainerPolicies(),
+      std::move(coep_reporter), std::move(dip_reporter), ukm::kInvalidSourceId);
+  ASSERT_TRUE(handle.service_worker_client());
+  ASSERT_TRUE(handle.service_worker_client()->container_host());
+  EXPECT_FALSE(
+      handle.service_worker_client()->container_host()->AllowServiceWorker(
+          GURL("https://www.example.com/"), worker_url));
 }
 
 TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_SameOriginRedirect) {
