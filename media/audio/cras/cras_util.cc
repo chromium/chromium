@@ -4,6 +4,7 @@
 
 #include "media/audio/cras/cras_util.h"
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -50,23 +51,6 @@ bool IsForSimpleUsage(std::string type) {
 
 bool IsInternalMic(std::string type) {
   return type == kInternalMic || type == kFrontMic || type == kRearMic;
-}
-
-// Connects to the CRAS server.
-libcras_client* CrasConnect() {
-  libcras_client* client;
-
-  client = libcras_client_create();
-  if (!client) {
-    LOG(ERROR) << "Couldn't create CRAS client.\n";
-    return nullptr;
-  }
-  if (libcras_client_connect_timeout(client, kCrasConnectTimeoutMs)) {
-    LOG(ERROR) << "Couldn't connect CRAS client.\n";
-    libcras_client_destroy(client);
-    return nullptr;
-  }
-  return client;
 }
 
 // Disconnects from the CRAS server.
@@ -191,7 +175,29 @@ void mergeDevices(CrasDevice& old_dev, CrasDevice& new_dev) {
 
 CrasUtil::CrasUtil() = default;
 
+CrasUtil::CrasUtil(const AudioManagerCrasBase* manager) : manager_(manager) {
+  CHECK(manager_);
+}
+
 CrasUtil::~CrasUtil() = default;
+
+libcras_client* CrasUtil::CrasConnect() {
+  if (manager_ && manager_->IsShuttingDown()) {
+    return nullptr;
+  }
+
+  libcras_client* client = libcras_client_create();
+  if (!client) {
+    LOG(ERROR) << "Couldn't create CRAS client.";
+    return nullptr;
+  }
+  if (libcras_client_connect_timeout(client, kCrasConnectTimeoutMs)) {
+    LOG(ERROR) << "Couldn't connect CRAS client.";
+    libcras_client_destroy(client);
+    return nullptr;
+  }
+  return client;
+}
 
 bool CrasUtil::CacheEffects() {
   libcras_client* client = CrasConnect();

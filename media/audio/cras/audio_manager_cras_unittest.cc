@@ -4,12 +4,24 @@
 
 #include "media/audio/cras/audio_manager_cras.h"
 
+#include <atomic>
+#include <memory>
+
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "media/audio/audio_device_description.h"
+#include "media/audio/audio_io.h"
 #include "media/audio/cras/cras_util.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_parameters.h"
+#include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -471,6 +483,97 @@ TEST_F(AudioManagerCrasTestDSP, BehaviorWithoutAnyEnforcedEffects) {
   EXPECT_TRUE(DspAecAllowed(params));
   EXPECT_FALSE(DspNsAllowed(params));
   EXPECT_FALSE(DspAgcAllowed(params));
+}
+
+TEST(AudioManagerCrasShutdownTest, ShutdownSkipsCrasConnections) {
+  class UnblockingAudioThread : public AudioThread {
+   public:
+    explicit UnblockingAudioThread(base::WaitableEvent* unblock_event)
+        : unblock_event_(unblock_event) {}
+    void Stop() override {
+      unblock_event_->Signal();
+      inner_.Stop();
+    }
+    bool IsHung() const override { return inner_.IsHung(); }
+    base::SingleThreadTaskRunner* GetTaskRunner() override {
+      return inner_.GetTaskRunner();
+    }
+    base::SingleThreadTaskRunner* GetWorkerTaskRunner() override {
+      return inner_.GetWorkerTaskRunner();
+    }
+
+   private:
+    TestAudioThread inner_{/*use_real_thread=*/true};
+    raw_ptr<base::WaitableEvent> unblock_event_;
+  };
+
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::HistogramTester histogram_tester;
+  FakeAudioLogFactory fake_audio_log_factory;
+  base::WaitableEvent task_started(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  base::WaitableEvent unblock_audio_thread(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  auto manager = std::make_unique<AudioManagerCras>(
+      std::make_unique<UnblockingAudioThread>(&unblock_audio_thread),
+      &fake_audio_log_factory);
+
+  EXPECT_FALSE(manager->IsShuttingDown());
+
+  std::atomic<bool> task_ran{false};
+
+  manager->GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WaitableEvent* started, base::WaitableEvent* unblock) {
+            started->Signal();
+            unblock->Wait();
+          },
+          &task_started, &unblock_audio_thread));
+
+  manager->GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](AudioManagerCras* mgr, std::atomic<bool>* ran) {
+            EXPECT_TRUE(mgr->IsShuttingDown());
+
+            AudioDeviceNames device_names;
+            EXPECT_FALSE(mgr->GetAudioOutputDeviceNames(&device_names));
+            EXPECT_TRUE(device_names.empty());
+
+            AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                   ChannelLayoutConfig::Stereo(), 48000, 512);
+            AudioOutputStream* out_stream = mgr->MakeAudioOutputStream(
+                params, AudioDeviceDescription::kDefaultDeviceId,
+                AudioManager::LogCallback());
+            ASSERT_NE(out_stream, nullptr);
+            EXPECT_FALSE(out_stream->Open());
+            out_stream->Close();
+
+            AudioInputStream* in_stream = mgr->MakeAudioInputStream(
+                params, AudioDeviceDescription::kDefaultDeviceId,
+                AudioManager::LogCallback());
+            ASSERT_NE(in_stream, nullptr);
+            EXPECT_EQ(in_stream->Open(),
+                      AudioInputStream::OpenOutcome::kFailed);
+            in_stream->Close();
+
+            ran->store(true);
+          },
+          base::Unretained(manager.get()), &task_ran));
+
+  task_started.Wait();
+
+  EXPECT_TRUE(manager->Shutdown());
+  EXPECT_TRUE(manager->IsShuttingDown());
+  EXPECT_TRUE(task_ran.load());
+  histogram_tester.ExpectTotalCount("Media.Audio.CrasUnifiedStreamOpenSuccess",
+                                    0);
+  histogram_tester.ExpectTotalCount("Media.Audio.CrasInputStreamOpenSuccess",
+                                    0);
 }
 
 }  // namespace

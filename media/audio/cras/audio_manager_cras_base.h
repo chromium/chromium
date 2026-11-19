@@ -7,6 +7,7 @@
 
 #include <cras_types.h>
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <vector>
@@ -27,6 +28,7 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
   ~AudioManagerCrasBase() override;
 
   // AudioManager implementation.
+  bool Shutdown() override;
   const std::string_view GetName() override;
 
   // AudioManagerBase implementation.
@@ -45,6 +47,13 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
       const AudioParameters& params,
       const std::string& device_id,
       const LogCallback& log_callback) override;
+  void SetAecDumpRecordingManager(base::WeakPtr<AecdumpRecordingManager>
+                                      aecdump_recording_manager) override;
+
+  // Returns true once Shutdown() has started. Safe to call from any thread.
+  bool IsShuttingDown() const {
+    return is_shutting_down_.load(std::memory_order_acquire);
+  }
 
   // Checks if |device_id| corresponds to the default device.
   // Set |is_input| to true for capture devices, false for output.
@@ -59,9 +68,6 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
   // Unregisters system AEC dump. Virtual to mock in unittest.
   virtual void DeregisterSystemAecDumpSource(AecdumpRecordingSource* stream);
 
-  void SetAecDumpRecordingManager(base::WeakPtr<AecdumpRecordingManager>
-                                      aecdump_recording_manager) override;
-
  protected:
   // Called by MakeLinearOutputStream and MakeLowLatencyOutputStream.
   AudioOutputStream* MakeOutputStream(const AudioParameters& params,
@@ -74,6 +80,8 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
                                     const LogCallback& log_callback);
 
  private:
+  std::atomic<bool> is_shutting_down_{false};
+
   // Manages starting / stopping of aecdump recording.
   base::WeakPtr<AecdumpRecordingManager> aecdump_recording_manager_;
 };

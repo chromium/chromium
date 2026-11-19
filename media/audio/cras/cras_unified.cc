@@ -213,6 +213,10 @@ CrasUnifiedStream::~CrasUnifiedStream() {
 }
 
 bool CrasUnifiedStream::Open() {
+  if (manager_->IsShuttingDown()) {
+    return false;
+  }
+
   // Sanity check input values.
   if (params_.sample_rate() <= 0) {
     LOG(WARNING) << "Unsupported audio frequency.";

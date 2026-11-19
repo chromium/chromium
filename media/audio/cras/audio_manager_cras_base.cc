@@ -45,6 +45,11 @@ AudioManagerCrasBase::AudioManagerCrasBase(
 
 AudioManagerCrasBase::~AudioManagerCrasBase() = default;
 
+bool AudioManagerCrasBase::Shutdown() {
+  is_shutting_down_.store(true, std::memory_order_release);
+  return AudioManagerBase::Shutdown();
+}
+
 const std::string_view AudioManagerCrasBase::GetName() {
   return "CRAS";
 }

@@ -12,9 +12,12 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 
 namespace media {
+
+class AudioManagerCrasBase;
 
 const int kCrasConnectTimeoutMs = 1000;
 
@@ -49,7 +52,8 @@ struct MEDIA_EXPORT CrasDevice {
 
 class MEDIA_EXPORT CrasUtil {
  public:
-  CrasUtil();
+  // |manager| must outlive |this|.
+  explicit CrasUtil(const AudioManagerCrasBase* manager);
 
   virtual ~CrasUtil();
 
@@ -83,6 +87,10 @@ class MEDIA_EXPORT CrasUtil {
   // Virtual for testing.
   virtual int CrasGetDefaultOutputBufferSize();
 
+ protected:
+  // For testing mocks only.
+  CrasUtil();
+
  private:
   // These booleans are in int type since libcras functions take these members
   // as pointers.
@@ -94,6 +102,10 @@ class MEDIA_EXPORT CrasUtil {
   int aec_group_id_ = -1;
   int default_output_buffer_size_ = 0;
   bool cras_effects_cached_ = false;
+  raw_ptr<const AudioManagerCrasBase> manager_ = nullptr;
+
+  // Connects to the CRAS server.
+  libcras_client* CrasConnect();
 
   // Caches constant effect config from CRAS.
   bool CacheEffects();

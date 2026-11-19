@@ -186,6 +186,10 @@ AudioInputStream::OpenOutcome CrasInputStream::Open() {
     NOTREACHED() << "CrasInputStream already open";
   }
 
+  if (audio_manager_->IsShuttingDown()) {
+    return OpenOutcome::kFailed;
+  }
+
   // Sanity check input values.
   if (params_.sample_rate() <= 0) {
     DLOG(WARNING) << "Unsupported audio frequency.";

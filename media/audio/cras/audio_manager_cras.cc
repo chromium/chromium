@@ -53,7 +53,7 @@ bool AudioManagerCras::HasAudioInputDevices() {
 AudioManagerCras::AudioManagerCras(std::unique_ptr<AudioThread> audio_thread,
                                    AudioLogFactory* audio_log_factory)
     : AudioManagerCrasBase(std::move(audio_thread), audio_log_factory),
-      cras_util_(std::make_unique<CrasUtil>()),
+      cras_util_(std::make_unique<CrasUtil>(this)),
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       weak_ptr_factory_(this) {
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
