@@ -28,6 +28,11 @@ class BrowserBoundKeyStoreAndroid : public BrowserBoundKeyStore {
 
   bool GetDeviceSupportsHardwareKeys() override;
 
+  // Allows keys on the TEE path to be software-backed, so that tests can
+  // create keys on emulators. Callers must reset this, because Java's
+  // ResettersForTesting does not run between native tests.
+  static void SetAllowSoftwareKeysForTesting(bool allow);
+
  protected:
   ~BrowserBoundKeyStoreAndroid() override;
 

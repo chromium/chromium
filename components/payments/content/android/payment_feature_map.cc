@@ -42,6 +42,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kGooglePayViaAndroidIntents,
     &kOmitParametersInReadyToPay,
     &kReconnectOnLostConnectionToUpdatePaymentDetailsService,
+    &kSecurePaymentConfirmationBbksAllowTeeStorage,
     &kShowReadyToPayDebugInfo,
     &kSurfaceWalletErrorCodeFromIntent,
     &kUpdatePaymentDetailsIntentFilterInPaymentApp,
@@ -66,6 +67,8 @@ BASE_FEATURE(kAndroidPaymentIntentsOmitDeprecatedParameters,
 BASE_FEATURE(kGooglePayViaAndroidIntents, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOmitParametersInReadyToPay, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kReconnectOnLostConnectionToUpdatePaymentDetailsService,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSecurePaymentConfirmationBbksAllowTeeStorage,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShowReadyToPayDebugInfo, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSurfaceWalletErrorCodeFromIntent,

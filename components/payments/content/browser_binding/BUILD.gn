@@ -96,6 +96,7 @@ if (is_android) {
       ":interface",
       "//base",
       "//base/test:test_support",
+      "//components/payments/content/android",
       "//components/payments/content/android/spc:browser_binding_jni",
       "//testing/gmock",
       "//testing/gtest",

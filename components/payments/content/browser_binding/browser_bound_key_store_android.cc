@@ -82,6 +82,12 @@ bool BrowserBoundKeyStoreAndroid::GetDeviceSupportsHardwareKeys() {
   return device_supports_hardware_keys_.value();
 }
 
+// static
+void BrowserBoundKeyStoreAndroid::SetAllowSoftwareKeysForTesting(bool allow) {
+  Java_BrowserBoundKeyStore_setAllowSoftwareKeysForTesting(  // IN-TEST
+      jni_zero::AttachCurrentThread(), allow);
+}
+
 BrowserBoundKeyStoreAndroid::~BrowserBoundKeyStoreAndroid() = default;
 
 scoped_refptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance(
