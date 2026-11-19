@@ -323,6 +323,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   // When use_native_frame is false, client-side decoration is set.
   // When use_native_frame is true, server-side decoration is set.
   bool use_native_frame_ = false;
+  // Set when the frame type changes, until the next configure. The frame
+  // insets change with the frame type, so the next configure derives the
+  // bounds from the window geometry size if the compositor leaves the size to
+  // the client.
+  bool frame_type_changed_ = false;
 
   std::optional<std::vector<gfx::Rect>> opaque_region_px_;
   std::optional<std::vector<gfx::Rect>> input_region_px_;

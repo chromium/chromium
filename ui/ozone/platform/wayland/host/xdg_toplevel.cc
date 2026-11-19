@@ -14,7 +14,6 @@
 #include "base/bit_cast.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
-#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/hit_test.h"
@@ -41,25 +40,12 @@ namespace {
 static_assert(sizeof(uint32_t) == sizeof(float),
               "Sizes much match for reinterpret cast to be meaningful");
 
-XdgToplevel::DecorationMode ToDecorationMode(uint32_t mode) {
-  switch (mode) {
-    case ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE:
-      return XdgToplevel::DecorationMode::kClientSide;
-    case ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE:
-      return XdgToplevel::DecorationMode::kServerSide;
-    default:
-      NOTREACHED();
-  }
-}
-
 uint32_t ToInt32(XdgToplevel::DecorationMode mode) {
   switch (mode) {
     case XdgToplevel::DecorationMode::kClientSide:
       return ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
     case XdgToplevel::DecorationMode::kServerSide:
       return ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE;
-    default:
-      NOTREACHED();
   }
 }
 
@@ -295,13 +281,18 @@ void XdgToplevel::OnWmCapabilities(void* data,
 void XdgToplevel::OnDecorationConfigure(void* data,
                                         zxdg_toplevel_decoration_v1* decoration,
                                         uint32_t mode) {
-  auto* self = static_cast<XdgToplevel*>(data);
-  CHECK(self, base::NotFatalUntil::M163);
-  self->decoration_mode_ = ToDecorationMode(mode);
+  // The mode chosen by the compositor is ignored. The frame is drawn based
+  // only on the client's frame type (see
+  // WaylandToplevelWindow::ShouldUseNativeFrame()).
 }
 
 void XdgToplevel::SetTopLevelDecorationMode(DecorationMode requested_mode) {
-  if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_) {
+  // Always send the request, even if the compositor already uses the
+  // requested mode. The compositor responds with an xdg_surface.configure,
+  // which is needed to update the window bounds and geometry for the new
+  // frame insets.
+  // Callers only request a mode when the frame type changes.
+  if (!zxdg_toplevel_decoration_) {
     return;
   }
 

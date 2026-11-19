@@ -41,6 +41,7 @@
 #include "ui/ozone/platform/wayland/test/test_xx_session_manager.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_tablet.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_text_input_manager.h"
+#include "ui/ozone/platform/wayland/test/test_zxdg_decoration_manager.h"
 #include "ui/ozone/platform/wayland/test/test_zxdg_output_manager.h"
 
 struct wl_client;
@@ -84,6 +85,8 @@ struct ServerConfig {
   bool supports_tablet = false;
   // Whether `supports_tablet` advertises wp_cursor_shape_manager_v1 too.
   bool supports_cursor_shape = true;
+  // Whether to advertise the zxdg_decoration_manager_v1 global.
+  bool supports_xdg_decoration = false;
 };
 
 class TestWaylandServerThread;
@@ -185,6 +188,9 @@ class TestWaylandServerThread : public base::Thread,
   MockXdgToplevelIconManagerV1* xdg_toplevel_icon_manager_v1() {
     return &xdg_toplevel_icon_manager_v1_;
   }
+  TestZxdgDecorationManagerV1* zxdg_decoration_manager_v1() {
+    return &zxdg_decoration_manager_v1_;
+  }
 
   wl_client* client() const { return client_; }
 
@@ -256,6 +262,7 @@ class TestWaylandServerThread : public base::Thread,
   TestXxSessionManager xx_session_manager_;
   TestZwpTabletManager zwp_tablet_manager_;
   TestWpCursorShapeManager wp_cursor_shape_manager_;
+  TestZxdgDecorationManagerV1 zxdg_decoration_manager_v1_;
   std::unique_ptr<TestSelectionDeviceManager> primary_selection_device_manager_;
 
   std::vector<std::unique_ptr<GlobalObject>> globals_;

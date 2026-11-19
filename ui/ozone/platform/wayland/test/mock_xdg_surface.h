@@ -19,6 +19,8 @@ struct wl_resource;
 
 namespace wl {
 
+class MockXdgSurface;
+
 extern const struct xdg_surface_interface kMockXdgSurfaceImpl;
 extern const struct xdg_toplevel_interface kMockXdgToplevelImpl;
 extern const struct zxdg_surface_v6_interface kMockZxdgSurfaceV6Impl;
@@ -59,7 +61,15 @@ class MockXdgTopLevel : public ServerObject {
   const gfx::Size& max_size() const { return max_size_; }
   void set_max_size(const gfx::Size& max_size) { max_size_ = max_size; }
 
+  // The xdg_surface that owns this toplevel role.
+  MockXdgSurface* xdg_surface() const { return xdg_surface_; }
+  void set_xdg_surface(MockXdgSurface* xdg_surface) {
+    xdg_surface_ = xdg_surface;
+  }
+
  private:
+  raw_ptr<MockXdgSurface> xdg_surface_ = nullptr;
+
   gfx::Size min_size_;
   gfx::Size max_size_;
 

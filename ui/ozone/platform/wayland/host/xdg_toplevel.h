@@ -31,7 +31,7 @@ class WaylandWindow;
 class XdgToplevel {
  public:
   using ShapeRects = std::vector<gfx::Rect>;
-  enum class DecorationMode { kNone, kClientSide, kServerSide };
+  enum class DecorationMode { kClientSide, kServerSide };
 
   explicit XdgToplevel(std::unique_ptr<XdgSurface> xdg_surface);
   XdgToplevel(const XdgToplevel&) = delete;
@@ -101,10 +101,6 @@ class XdgToplevel {
   wl::Object<xdg_toplevel> xdg_toplevel_;
 
   wl::Object<zxdg_toplevel_decoration_v1> zxdg_toplevel_decoration_;
-
-  // On client side, it keeps track of the decoration mode currently in
-  // use if xdg-decoration protocol extension is available.
-  DecorationMode decoration_mode_ = DecorationMode::kNone;
 };
 
 }  // namespace ui

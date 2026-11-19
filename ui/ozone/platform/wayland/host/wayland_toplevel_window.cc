@@ -516,6 +516,7 @@ void WaylandToplevelWindow::SetUseNativeFrame(bool use_native_frame) {
   }
   use_native_frame_ = use_native_frame;
   if (xdg_toplevel_) {
+    frame_type_changed_ = true;
     OnDecorationModeChanged();
   }
 
@@ -667,6 +668,8 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
     window_state = PlatformWindowState::kNormal;
   }
   pending_minimize_ = false;
+  const bool frame_type_changed = frame_type_changed_;
+  frame_type_changed_ = false;
 
   // Update state before notifying delegate.
   bool prev_xdg_active = is_xdg_active_;
@@ -787,6 +790,14 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
       bounds_dip = GetBoundsInDIP();
       pending_configure_state_.geometry_size_dip =
           applied_state().geometry_size_dip;
+      // The frame type changed, so the bounds still have the old frame's
+      // insets. Keep the window geometry size and derive the bounds from it
+      // with the new insets (crbug.com/378939144).
+      if (frame_type_changed && !applied_state().geometry_size_dip.IsEmpty()) {
+        bounds_dip.set_size(GeometrySizeToBoundsSizeDIP(
+            applied_state().geometry_size_dip, window_state,
+            applied_state().ui_scale));
+      }
     }
   } else if (bounds_dip.IsEmpty()) {
     // 0x0 maximized/fullscreen configure with no size from an earlier
