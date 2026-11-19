@@ -185,6 +185,7 @@ TabSearchBubbleUIBrowserTest.*
 TranslateBubbleVisualTest.InvokeUi_*
 UpdateRecommendedDialogTest.*
 VerticalTabStripTopContainerInteractiveUiTest.PixelTest*
+VerticalTabStripTopContainerTabSearchBubbleUiTest.PixelTest*
 *WatermarkBrowserTest.*
 *WatermarkTestPageBrowserTest.*
 *WatermarkTestPageDynamicBrowserTest.*

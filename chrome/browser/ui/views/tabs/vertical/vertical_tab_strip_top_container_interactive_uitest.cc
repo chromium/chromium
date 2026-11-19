@@ -7,10 +7,12 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -39,10 +41,11 @@ namespace {
 class VerticalTabStripTopContainerInteractiveUiTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    // TODO(crbug.com/579025166): Fix test failures related to missing tab
-    // search bubble.
-    return {organizer_panel::kOrganizerPanel};
+  // TODO(crbug.com/584313535): Remove once kOrganizerPanel is enabled by
+  // default.
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{organizer_panel::kOrganizerPanel, {}}};
   }
 
   auto SendTabSearchAccelerator() {
@@ -73,12 +76,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
       WaitForShow(kTabSearchButtonElementId),
       // Send Press to Vertical Tabs Tab Search Button.
-      SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId),
+      SendTabSearchAccelerator(), WaitForShow(kOrganizerPanelElementId),
       // Display Horizontal Tabs.
       ExitVerticalTabsMode(), WaitForShow(kTabStripFrameGrabHandleElementId),
       EnsurePresent(kTabStripFrameGrabHandleElementId),
       // Send Press to Horizontal Tabs Tab Search Button
-      SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId));
+      SendTabSearchAccelerator(), WaitForShow(kOrganizerPanelElementId));
 }
 
 // This test checks that we can click the tab search button starting from the
@@ -90,9 +93,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       ExitVerticalTabsMode(), WaitForShow(kTabStripFrameGrabHandleElementId),
       EnsurePresent(kTabStripFrameGrabHandleElementId),
       // Send Press to Horizontal Tabs Tab Search Button
-      SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId),
-      SendKeyPress(kTabSearchBubbleElementId, ui::VKEY_ESCAPE),
-      WaitForHide(kTabSearchBubbleElementId),
+      SendTabSearchAccelerator(), WaitForShow(kOrganizerPanelElementId),
+      SendAccelerator(kBrowserViewElementId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
+      WaitForHide(kOrganizerPanelElementId),
       // Display Vertical Tabs
       EnterVerticalTabsMode(),
       WaitForShow(kVerticalTabStripTopContainerElementId),
@@ -100,13 +104,63 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
       WaitForShow(kTabSearchButtonElementId),
       // Send Press to Vertical Tabs Tab Search Button
+      SendTabSearchAccelerator(), WaitForShow(kOrganizerPanelElementId));
+}
+
+// TODO(crbug.com/584313535): Remove this fixture and its tests once
+// kOrganizerPanel is enabled by default.
+class VerticalTabStripTopContainerTabSearchBubbleUiTest
+    : public VerticalTabStripTopContainerInteractiveUiTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {};
+  }
+
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {organizer_panel::kOrganizerPanel};
+  }
+};
+
+// This test checks that we can click the tab search button starting from the
+// vertical tab strip and then switching to the horizontal layout.
+IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerTabSearchBubbleUiTest,
+                       VerifyTabSearchVerticalToHorizontal) {
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
+      WaitForShow(kTabSearchButtonElementId), SendTabSearchAccelerator(),
+      WaitForShow(kTabSearchBubbleElementId), ExitVerticalTabsMode(),
+      WaitForShow(kTabStripFrameGrabHandleElementId),
+      EnsurePresent(kTabStripFrameGrabHandleElementId),
       SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId));
+}
+
+// This test checks that we can click the tab search button starting from the
+// horizontal tab strip and then switching to the vertical layout.
+IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerTabSearchBubbleUiTest,
+                       VerifyTabSearchHorizontalToVertical) {
+  RunTestSequence(
+      ExitVerticalTabsMode(), WaitForShow(kTabStripFrameGrabHandleElementId),
+      EnsurePresent(kTabStripFrameGrabHandleElementId),
+      SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId),
+      SendKeyPress(kTabSearchBubbleElementId, ui::VKEY_ESCAPE),
+      WaitForHide(kTabSearchBubbleElementId), EnterVerticalTabsMode(),
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
+      WaitForShow(kTabSearchButtonElementId), SendTabSearchAccelerator(),
+      WaitForShow(kTabSearchBubbleElementId));
 }
 
 // This test checks that we can click the tab group button in the top
 // container of the vertical tab strip
-IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
+IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerTabSearchBubbleUiTest,
                        VerifyTabGroupButton) {
+  tab_groups::TabGroupSyncServiceInitializedObserver initialized_observer(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser()->GetProfile()));
+  ASSERT_TRUE(initialized_observer.Wait());
+
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kEverythingMenuPinnedToTabstrip, true);
   EXPECT_TRUE(browser()
@@ -136,6 +190,42 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       WaitForShow(kTabGroupEditorBubbleId),
       CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerTabSearchBubbleUiTest,
+                       PixelTestUncollapsedState) {
+  RunTestSequence(
+      CheckResult(
+          [this]() {
+            return vertical_tab_strip_state_controller()->IsCollapsed();
+          },
+          false),
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+      Screenshot(kVerticalTabStripTopContainerElementId,
+                 /*screenshot_name=*/"UncollapsedVerticalTabStripTopContainer",
+                 /*baseline_cl=*/"8792490"));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerTabSearchBubbleUiTest,
+                       PixelTestCollapsedState) {
+  gfx::ScopedAnimationDurationScaleMode disable_animation(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      EnsurePresent(kVerticalTabStripCollapseButtonElementId),
+      PressButton(kVerticalTabStripCollapseButtonElementId),
+      WaitForEvent(kTabStripRegionElementId,
+                   kVerticalTabStripCollapsedCustomEventId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+      Screenshot(kVerticalTabStripTopContainerElementId,
+                 /*screenshot_name=*/"CollapsedVerticalTabStripTopContainer",
+                 /*baseline_cl=*/"8792490"));
 }
 
 // This test checks that we can click the collapse button in the vertical tab
@@ -307,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
           "Screenshots not supported in all testing environments."),
       Screenshot(kVerticalTabStripTopContainerElementId,
                  /*screenshot_name=*/"UncollapsedVerticalTabStripTopContainer",
-                 /*baseline_cl=*/"7797519"));
+                 /*baseline_cl=*/"8792490"));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
@@ -327,7 +417,29 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
           "Screenshots not supported in all testing environments."),
       Screenshot(kVerticalTabStripTopContainerElementId,
                  /*screenshot_name=*/"CollapsedVerticalTabStripTopContainer",
-                 /*baseline_cl=*/"7797519"));
+                 /*baseline_cl=*/"8792490"));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
+                       PixelTestCollapsedStateExpandOnHoverDisabled) {
+  gfx::ScopedAnimationDurationScaleMode disable_animation(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      EnsurePresent(kVerticalTabStripCollapseButtonElementId), Do([this]() {
+        vertical_tab_strip_state_controller()->SetExpandOnHoverEnabled(false);
+      }),
+      PressButton(kVerticalTabStripCollapseButtonElementId),
+      WaitForEvent(kTabStripRegionElementId,
+                   kVerticalTabStripCollapsedCustomEventId),
+      WaitForShow(kTabSearchButtonElementId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+      Screenshot(kVerticalTabStripTopContainerElementId,
+                 /*screenshot_name=*/"CollapsedVerticalTabStripTopContainer",
+                 /*baseline_cl=*/"8792490"));
 }
 
 class VerticalTabsTabGroupsInOrganizerIphTest
