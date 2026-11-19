@@ -23,6 +23,8 @@ class Origin;
 
 namespace webrtc {
 
+class MediaCaptureIndicator;
+
 // Lets code outside //chrome observe media capture request, stream and device
 // list updates, and ask the embedder to process or check media access. The
 // embedder creates and owns at most one instance.
@@ -82,6 +84,10 @@ class COMPONENT_EXPORT(COMPONENTS_WEBRTC_MEDIA_CAPTURE_DISPATCHER)
       content::RenderFrameHost* render_frame_host,
       const url::Origin& security_origin,
       blink::mojom::MediaStreamType type) = 0;
+
+  // Returns the indicator that tracks which WebContents are capturing media.
+  // Never null; it lives at least as long as this object.
+  virtual MediaCaptureIndicator* GetCaptureIndicator() = 0;
 
  protected:
   MediaCaptureDispatcher();

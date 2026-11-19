@@ -24,6 +24,8 @@ if (use_blink) {
     sources = [
       "media_capture_dispatcher.cc",
       "media_capture_dispatcher.h",
+      "media_capture_indicator.cc",
+      "media_capture_indicator.h",
     ]
     defines = [ "IS_COMPONENTS_WEBRTC_MEDIA_CAPTURE_DISPATCHER_IMPL" ]
     public_deps = [

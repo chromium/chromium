@@ -125,6 +125,9 @@ class MediaCaptureDevicesDispatcher
 
   scoped_refptr<MediaStreamCaptureIndicator> GetMediaStreamCaptureIndicator();
 
+  // webrtc::MediaCaptureDispatcher:
+  webrtc::MediaCaptureIndicator* GetCaptureIndicator() override;
+
   // Return true if there is any ongoing insecured capturing. The capturing is
   // deemed secure if all connected video sinks are reported secure and the
   // extension is trusted.

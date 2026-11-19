@@ -631,8 +631,9 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevice(
   if (web_contents() && stream_count == 1) {
     ObserverMethod obs_func = GetObserverMethodToCall(device);
     CHECK(obs_func, base::NotFatalUntil::M161);
-    for (Observer& obs : indicator_->observers_)
+    for (Observer& obs : indicator_->observers()) {
       (obs.*obs_func)(web_contents(), true);
+    }
   }
 }
 
@@ -645,8 +646,9 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::RemoveDevice(
   if (web_contents() && stream_count == 0) {
     ObserverMethod obs_func = GetObserverMethodToCall(device);
     CHECK(obs_func, base::NotFatalUntil::M161);
-    for (Observer& obs : indicator_->observers_)
+    for (Observer& obs : indicator_->observers()) {
       (obs.*obs_func)(web_contents(), false);
+    }
   }
 }
 
@@ -673,10 +675,6 @@ MediaStreamCaptureIndicator::GetMediaType(blink::mojom::MediaStreamType type) {
     default:
       return MediaStreamCaptureIndicator::MediaType::kUnknown;
   }
-}
-
-MediaStreamCaptureIndicator::Observer::~Observer() {
-  CHECK(!IsInObserverList(), base::NotFatalUntil::M161);
 }
 
 int MediaStreamCaptureIndicator::g_stop_callback_id_ = 0;
@@ -807,29 +805,34 @@ void MediaStreamCaptureIndicator::StopMediaCapturing(
 void MediaStreamCaptureIndicator::UnregisterWebContents(
     WebContents* web_contents) {
   if (IsCapturingVideo(web_contents)) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers()) {
       observer.OnIsCapturingVideoChanged(web_contents, false);
+    }
   }
   if (IsCapturingAudio(web_contents)) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers()) {
       observer.OnIsCapturingAudioChanged(web_contents, false);
+    }
   }
   if (IsBeingMirrored(web_contents)) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers()) {
       observer.OnIsBeingMirroredChanged(web_contents, false);
+    }
   }
   if (IsCapturingTab(web_contents)) {
-    for (Observer& observer : observers_) {
+    for (Observer& observer : observers()) {
       observer.OnIsCapturingTabChanged(web_contents, false);
     }
   }
   if (IsCapturingWindow(web_contents)) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers()) {
       observer.OnIsCapturingWindowChanged(web_contents, false);
+    }
   }
   if (IsCapturingDisplay(web_contents)) {
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers()) {
       observer.OnIsCapturingDisplayChanged(web_contents, false);
+    }
   }
   usage_map_.erase(web_contents);
   UpdateNotificationUserInterface();

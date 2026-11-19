@@ -268,6 +268,11 @@ MediaCaptureDevicesDispatcher::GetMediaStreamCaptureIndicator() {
   return media_stream_capture_indicator_;
 }
 
+webrtc::MediaCaptureIndicator*
+MediaCaptureDevicesDispatcher::GetCaptureIndicator() {
+  return media_stream_capture_indicator_.get();
+}
+
 void MediaCaptureDevicesDispatcher::OnAudioCaptureDevicesChanged() {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   content::GetUIThreadTaskRunner({})->PostTask(

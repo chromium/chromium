@@ -13,10 +13,10 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
 #include "chrome/browser/media/webrtc/media_stream_ui.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/webrtc/media_capture_indicator.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -39,7 +39,8 @@ class StatusIcon;
 // Owned by MediaCaptureDevicesDispatcher, which is a singleton.
 class MediaStreamCaptureIndicator
     : public base::RefCountedThreadSafe<MediaStreamCaptureIndicator>,
-      public StatusIconMenuModel::Delegate {
+      public StatusIconMenuModel::Delegate,
+      public webrtc::MediaCaptureIndicator {
  public:
   enum MediaType {
     kUnknown = 0,
@@ -50,25 +51,6 @@ class MediaStreamCaptureIndicator
 
   // Maps blink::mojom::MediaStreamType to MediaType.
   static MediaType GetMediaType(blink::mojom::MediaStreamType type);
-
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnIsCapturingVideoChanged(content::WebContents* web_contents,
-                                           bool is_capturing_video) {}
-    virtual void OnIsCapturingAudioChanged(content::WebContents* web_contents,
-                                           bool is_capturing_audio) {}
-    virtual void OnIsBeingMirroredChanged(content::WebContents* web_contents,
-                                          bool is_being_mirrored) {}
-    virtual void OnIsCapturingTabChanged(content::WebContents* web_contents,
-                                         bool is_capturing_tab) {}
-    virtual void OnIsCapturingWindowChanged(content::WebContents* web_contents,
-                                            bool is_capturing_window) {}
-    virtual void OnIsCapturingDisplayChanged(content::WebContents* web_contents,
-                                             bool is_capturing_display) {}
-
-   protected:
-    ~Observer() override;
-  };
 
   MediaStreamCaptureIndicator();
 
@@ -93,11 +75,9 @@ class MediaStreamCaptureIndicator
   // microphone input).
   bool IsCapturingUserMedia(content::WebContents* web_contents) const;
 
-  // Returns true if |web_contents| is capturing video (e.g., webcam).
-  bool IsCapturingVideo(content::WebContents* web_contents) const;
-
-  // Returns true if |web_contents| is capturing audio (e.g., microphone).
-  bool IsCapturingAudio(content::WebContents* web_contents) const;
+  // webrtc::MediaCaptureIndicator:
+  bool IsCapturingVideo(content::WebContents* web_contents) const override;
+  bool IsCapturingAudio(content::WebContents* web_contents) const override;
 
   // Returns true if |web_contents| itself is being mirrored (e.g., a source of
   // media for remote broadcast).
@@ -116,11 +96,6 @@ class MediaStreamCaptureIndicator
   // |media_type| is underlying_type of MediaType.
   void StopMediaCapturing(content::WebContents* web_contents,
                           int media_type) const;
-
-  // Adds/Removes observers. Observers needs to be removed during the lifetime
-  // of this object.
-  void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
-  void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   static bool HasDataProtectionHandlerForTesting(
@@ -185,8 +160,6 @@ class MediaStreamCaptureIndicator
   typedef std::vector<raw_ptr<content::WebContents, VectorExperimental>>
       CommandTargets;
   CommandTargets command_targets_;
-
-  base::ObserverList<Observer, /* check_empty =*/true> observers_;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_CAPTURE_INDICATOR_H_
