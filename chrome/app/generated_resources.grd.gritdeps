@@ -6,7 +6,6 @@ chrome/app/actor_strings.grdp
 chrome/app/app_management_strings.grdp
 chrome/app/bookmarks_strings.grdp
 chrome/app/certificate_manager.grdp
-chrome/app/chromeos_strings.grdp
 chrome/app/extensions_strings.grdp
 chrome/app/glic_strings.grdp
 chrome/app/gmc_strings.grdp

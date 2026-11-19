@@ -312,11 +312,6 @@ are declared in tools/grit/grit_args.gni.
       <!-- Shortcut Input specific strings -->
       <part file="shortcut_input_strings.grdp" />
 
-      <!-- Chrome-OS-specific strings -->
-      <if expr="is_chromeos">
-        <part file="chromeos_strings.grdp" />
-      </if>
-
       <!-- Settings specific strings -->
       <part file="settings_strings.grdp" />
       <if expr="not is_android">

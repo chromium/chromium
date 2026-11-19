@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- ChromeOS-specific strings (included from generated_resources.grd).
-     Everything in this file is wrapped in <if expr="is_chromeos">. -->
-<grit-part>
-</grit-part>
