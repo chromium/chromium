@@ -227,6 +227,7 @@ source_set("impl") {
       "sampling/arc_shared_sampler.cc",
     ]
     deps += [
+      "//ash/strings",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/ash/crostini",
       "//chromeos/ash/components/dbus/concierge",

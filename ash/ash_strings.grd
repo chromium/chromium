@@ -12419,6 +12419,20 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_CONTENT_CONTEXT_OPEN_WITH_APP" desc="The label for an item in the content area context menu for opening a link with an app.">
         Open with <ph name="APP">$1<ex>Hangouts</ex></ph>
       </message>
+
+      <!-- Task Manager ARC process prefixes -->
+      <message name="IDS_TASK_MANAGER_ARC_PREFIX" desc="The prefix for an ARC general process row">
+        App: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_PREFIX_BACKGROUND_SERVICE" desc="The prefix for an ARC service process row">
+        Service: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_PREFIX_RECEIVER" desc="The prefix for an ARC receiver process row">
+        Receiver: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
+      <message name="IDS_TASK_MANAGER_ARC_SYSTEM" desc="The prefix for an ARC system processes row">
+        System: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>

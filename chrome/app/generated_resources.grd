@@ -4841,20 +4841,8 @@ are declared in tools/grit/grit_args.gni.
           Incognito PDF Subframe: <ph name="SUBFRAME_SITE">$1<ex>https://example.com/document.pdf</ex></ph>
         </message>
       </if>
-      <message name="IDS_TASK_MANAGER_ARC_PREFIX" desc="The prefix for an ARC general process row">
-        App: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-      </message>
       <message name="IDS_TASK_MANAGER_TOOL_PREFIX" desc="The prefix for a tool process row in the Task Manager">
         Tool: <ph name="PRINT_NAME">$1<ex>Manage People</ex></ph>
-      </message>
-      <message name="IDS_TASK_MANAGER_ARC_PREFIX_BACKGROUND_SERVICE" desc="The prefix for an ARC service process row">
-        Service: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-      </message>
-      <message name="IDS_TASK_MANAGER_ARC_PREFIX_RECEIVER" desc="The prefix for an ARC receiver process row">
-        Receiver: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
-      </message>
-      <message name="IDS_TASK_MANAGER_ARC_SYSTEM" desc="The prefix for an ARC system processes row">
-        System: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
       </message>
       <message name="IDS_TASK_MANAGER_LINUX_VM_PREFIX" desc="The prefix for a Linux virtual machine row">
         Linux Virtual Machine: <ph name="LINUX_VM_NAME">$1<ex>termina</ex></ph>

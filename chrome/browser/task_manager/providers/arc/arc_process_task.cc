@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/mojom/process.mojom.h"
