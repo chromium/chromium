@@ -75,7 +75,16 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
   void SwitchVideoCaptureHost(
       mojo::PendingRemote<media::mojom::VideoCaptureHost> host);
 
-  // Reference to the const capture params set on construction.
+  // Restarts capture with updated `params`, preserving monotonic frame
+  // timestamps across the restart.
+  void RestartWithParams(const media::VideoCaptureParams& params,
+                         FrameDeliverCallback deliver_callback);
+
+  // Returns true if this client has an active host binding that can be resumed
+  // via Resume().
+  bool CanResume() const;
+
+  // Reference to the current capture params.
   const media::VideoCaptureParams& params() const { return params_; }
 
  private:
@@ -93,7 +102,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
   scoped_refptr<media::VideoFrame> ConvertNv12FrameToI420(
       const media::VideoFrame& frame);
 
-  const media::VideoCaptureParams params_;
+  media::VideoCaptureParams params_;
   mojo::Remote<media::mojom::VideoCaptureHost> video_capture_host_;
 
   // Called when capturing failed to start.
@@ -129,6 +138,17 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
 
   // Indicates whether we're in the middle of switching video capture host.
   bool switching_video_capture_host_ = false;
+
+  // Indicates whether capture should automatically restart with updated
+  // `params_` once the current host reports STOPPED/ENDED.
+  bool restarting_with_params_ = false;
+
+  // Indicates whether Stop() has been sent for the current capture session.
+  bool stop_requested_ = false;
+
+  // Frame delivery callback to install when an in-flight parameter restart
+  // completes, while `frame_deliver_callback_` is cleared to drop stale frames.
+  FrameDeliverCallback pending_deliver_callback_;
 
   // Represents the timestamp for the last frame sent to be delivered through
   // `frame_deliver_callback_`.

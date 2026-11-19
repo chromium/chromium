@@ -773,4 +773,15 @@ TEST_F(VideoSenderTest, ClampsBitrateToConfiguredBounds) {
   RunTasksAndAdvanceClock(base::Milliseconds(33));
 }
 
+TEST_F(VideoSenderTest, SetMaxFrameRateUpdatesFrameSenderAndEncoder) {
+  FrameSenderConfig config = GetDefaultVideoSenderConfig();
+  config.max_frame_rate = 60.0;
+  CreateSender(EncoderType::kMock, config);
+
+  EXPECT_DOUBLE_EQ(video_sender().GetMaxFrameRate(), 60.0);
+  EXPECT_CALL(mock_encoder(), SetMaxFrameRate(30.0));
+  video_sender().SetMaxFrameRate(30.0);
+  EXPECT_DOUBLE_EQ(video_sender().GetMaxFrameRate(), 30.0);
+}
+
 }  // namespace media::cast

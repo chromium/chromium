@@ -34,8 +34,7 @@ bool IsHardwareEnabled(
     VideoCodec codec,
     const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
         profiles,
-    gfx::Size requested_resolution,
-    double requested_frame_rate);
+    gfx::Size requested_resolution);
 
 // Should be called before calling DenyListHardwareCodec() to ensure that we
 // don't attempt to disable the codec multiple times.
