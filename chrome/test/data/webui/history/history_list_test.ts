@@ -765,7 +765,7 @@ suite('HistoryListTest', function() {
     reviewButton.click();
     await microtasksFinished();
 
-    const url = await testProxy.whenCalled('navigateToUrl');
+    const [url] = await testProxy.handler.whenCalled('navigateToUrl');
     assertEquals('https://myactivity.google.com/product/gemini', url);
   });
 
@@ -867,7 +867,7 @@ suite('HistoryListTest', function() {
         reviewButton.click();
         await microtasksFinished();
 
-        const url = await testProxy.whenCalled('navigateToUrl');
+        const [url] = await testProxy.handler.whenCalled('navigateToUrl');
         assertEquals('https://myactivity.google.com/product/gemini', url);
       });
 
@@ -1213,7 +1213,7 @@ suite('HistoryListTest', function() {
     await finishSetup([createHistoryEntry('2016-03-15', fileURL)]);
     const items = element.shadowRoot.querySelectorAll('history-item');
     items[0]!.$.link.click();
-    const url = await testProxy.whenCalled('navigateToUrl');
+    const [url] = await testProxy.handler.whenCalled('navigateToUrl');
     assertEquals(fileURL, url);
   });
 

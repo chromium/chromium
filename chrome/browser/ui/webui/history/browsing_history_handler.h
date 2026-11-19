@@ -35,6 +35,8 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"  // nogncheck
 #endif
 
+class GURL;
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -107,6 +109,9 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   // history::mojom::PageHandler:
   void RequestAccountInfo(RequestAccountInfoCallback callback) override;
   void TurnOnHistorySync(history::mojom::AccessPoint access_point) override;
+  void NavigateToUrl(const GURL& url,
+                     bool open_in_new_tab,
+                     ui::mojom::ClickModifiersPtr modifiers) override;
   void OpenCriticalActionConversation(
       const std::string& critical_action_id,
       history::mojom::OpenConversationSource source,

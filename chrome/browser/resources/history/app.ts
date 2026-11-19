@@ -48,6 +48,7 @@ import type {HistoryIdentityState} from './browser_proxy.js';
 import {HistoryPageViewHistogram, HistorySignInState, SyncState} from './constants.js';
 import type {HistoryListElement} from './history_list.js';
 import type {HistoryToolbarElement} from './history_toolbar.js';
+import {eventToClickModifiers} from './mouse_event_util.js';
 import {Page, TABBED_PAGES} from './router.js';
 import type {HistoryRouterElement} from './router.js';
 import type {FooterInfo, HistorySideBarElement} from './side_bar.js';
@@ -89,7 +90,8 @@ function onDocumentClick(evt: Event) {
 
   if ((anchor.protocol === 'file:' || anchor.protocol === 'about:') &&
       (e.button === 0 || e.button === 1)) {
-    BrowserProxyImpl.getInstance().navigateToUrl(anchor.href, anchor.target, e);
+    BrowserProxyImpl.getInstance().handler.navigateToUrl(
+        anchor.href, anchor.target === '_blank', eventToClickModifiers(e));
     e.preventDefault();
   }
 }

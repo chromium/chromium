@@ -37,6 +37,7 @@ build_webui("build") {
     "history_list.ts",
     "history_toolbar.html.ts",
     "history_toolbar.ts",
+    "mouse_event_util.ts",
     "query_manager.ts",
     "router.ts",
     "searched_label.html.ts",

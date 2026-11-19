@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
 #include "chrome/browser/ui/webui/history/history_login_handler.h"
 #include "chrome/browser/ui/webui/history/history_ui_platform_handlers.h"
-#include "chrome/browser/ui/webui/history/navigation_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -208,7 +207,6 @@ HistoryUI::HistoryUI(content::WebUI* web_ui)
       base::BindRepeating(&HistoryUI::UpdateDataSource,
                           base::Unretained(this)));
 
-  web_ui->AddMessageHandler(std::make_unique<webui::NavigationHandler>());
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<HistoryLoginHandler>(base::BindRepeating(

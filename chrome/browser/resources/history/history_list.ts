@@ -29,6 +29,7 @@ import {BROWSING_GAP_TIME, VisitContextMenuAction} from './constants.js';
 import type {HistoryItemElement} from './history_item.js';
 import {getCss} from './history_list.css.js';
 import {getHtml} from './history_list.html.js';
+import {eventToClickModifiers} from './mouse_event_util.js';
 
 export interface ActionMenuModel {
   index: number;
@@ -625,8 +626,9 @@ export class HistoryListElement extends HistoryListElementBase {
     this.recordContextMenuActionsHistogram_(
         VisitContextMenuAction.REVIEW_GEMINI_ACTIVITY_CLICKED);
 
-    BrowserProxyImpl.getInstance().navigateToUrl(
-        loadTimeData.getString('myActivityGeminiAppsUrl'), '_blank', e);
+    BrowserProxyImpl.getInstance().handler.navigateToUrl(
+        loadTimeData.getString('myActivityGeminiAppsUrl'), true,
+        eventToClickModifiers(e));
     this.closeMenu_();
   }
 

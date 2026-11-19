@@ -18,10 +18,10 @@ import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
+import {eventToClickModifiers} from './mouse_event_util.js';
 import {getCss} from './synced_device_card.css.js';
 import {getHtml} from './synced_device_card.html.js';
 
@@ -121,17 +121,10 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
     BrowserProxyImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.LINK_CLICKED,
         SyncedTabsHistogram.LIMIT);
-    const modifiers: ClickModifiers = {
-      middleButton: e.button === 1,
-      altKey: e.altKey,
-      ctrlKey: e.ctrlKey,
-      metaKey: e.metaKey,
-      shiftKey: e.shiftKey,
-    };
     browserProxyFactory.getInstance().handler.openForeignSessionTab(
         this.sessionTag,
         Number((e.currentTarget as HTMLElement).dataset['sessionId']),
-        modifiers);
+        eventToClickModifiers(e));
     e.preventDefault();
   }
 

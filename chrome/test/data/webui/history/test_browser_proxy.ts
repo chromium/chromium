@@ -23,7 +23,6 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
   constructor() {
     super([
       'getInitialIdentityState',
-      'navigateToUrl',
       'otherDevicesInitialized',
       'recordAction',
       'recordBooleanHistogram',
@@ -94,10 +93,6 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
 
   setInitialIdentityState(identityState: HistoryIdentityState) {
     this.initialIdentityState_ = identityState;
-  }
-
-  navigateToUrl(url: string, _target: string, _e: MouseEvent) {
-    this.methodCalled('navigateToUrl', url);
   }
 
   otherDevicesInitialized() {

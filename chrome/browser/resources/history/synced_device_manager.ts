@@ -27,6 +27,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {HistoryIdentityState} from './browser_proxy.js';
 import {HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, SyncState} from './constants.js';
+import {eventToClickModifiers} from './mouse_event_util.js';
 import type {HistorySyncedDeviceCardElement} from './synced_device_card.js';
 import {getCss} from './synced_device_manager.css.js';
 import {getHtml} from './synced_device_manager.html.js';
@@ -326,8 +327,9 @@ export class HistorySyncedDeviceManagerElement extends
     assert(menu);
     this.actionMenuModel_ = null;
     menu.close();
-    BrowserProxyImpl.getInstance().navigateToUrl(
-        loadTimeData.getString('deviceTabVisibilitySettingsUrl'), '_blank', e);
+    BrowserProxyImpl.getInstance().handler.navigateToUrl(
+        loadTimeData.getString('deviceTabVisibilitySettingsUrl'), true,
+        eventToClickModifiers(e));
   }
 
   clearSyncedDevicesForTest() {

@@ -79,11 +79,19 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition_utils.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -713,6 +721,24 @@ void BrowsingHistoryHandler::TurnOnHistorySync(
   // promos are disabled on those platforms.
   NOTREACHED();
 #endif
+}
+
+void BrowsingHistoryHandler::NavigateToUrl(
+    const GURL& url,
+    bool open_in_new_tab,
+    ui::mojom::ClickModifiersPtr modifiers) {
+  if (!url.is_valid() || url.SchemeIs(url::kJavaScriptScheme)) {
+    mojo::ReportBadMessage("Invalid URL for NavigateToUrl.");
+    return;
+  }
+  ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromClick(
+      modifiers->middle_button, modifiers->alt_key, modifiers->ctrl_key,
+      modifiers->meta_key, modifiers->shift_key,
+      open_in_new_tab ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+                      : ui::mojom::WindowOpenDisposition::kCurrentTab);
+  web_contents_->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                             url, disposition, ui::PAGE_TRANSITION_LINK),
+                         /*navigation_handle_callback=*/{});
 }
 
 #if BUILDFLAG(IS_ANDROID)

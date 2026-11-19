@@ -20,8 +20,7 @@ suite('GoogleAccountFooter', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestHistoryBrowserProxy();
     BrowserProxyImpl.setInstance(testProxy);
-    callbackRouterRemote =
-        testProxy.callbackRouter.$.bindNewPipeAndPassRemote();
+    callbackRouterRemote = testProxy.pageRemote;
   });
 
   async function createApp() {
@@ -98,7 +97,7 @@ suite('GoogleAccountFooter', function() {
     clickGoogleAccountFooterLinkWithId('footerGoogleMyActivityLink');
     assertEquals(1, testProxy.actionMap['SideBarFooterGoogleMyActivityClick']);
 
-    const url = await testProxy.whenCalled('navigateToUrl');
+    const [url] = await testProxy.handler.whenCalled('navigateToUrl');
     assertEquals(
         'https://myactivity.google.com/myactivity/?utm_source=chrome_h', url);
   });
@@ -122,7 +121,7 @@ suite('GoogleAccountFooter', function() {
     assertEquals(
         1, testProxy.actionMap['SideBarFooterGeminiAppsActivityClick']);
 
-    const url = await testProxy.whenCalled('navigateToUrl');
+    const [url] = await testProxy.handler.whenCalled('navigateToUrl');
     assertEquals('https://myactivity.google.com/product/gemini', url);
   });
 
@@ -150,17 +149,17 @@ suite('GoogleAccountFooter', function() {
     clickGoogleAccountFooterLinkWithId('footerGoogleMyActivityLink');
     assertEquals(1, testProxy.actionMap['SideBarFooterGoogleMyActivityClick']);
 
-    const gma_url = await testProxy.whenCalled('navigateToUrl');
+    const [gma_url] = await testProxy.handler.whenCalled('navigateToUrl');
     assertEquals(
         'https://myactivity.google.com/myactivity/?utm_source=chrome_h',
         gma_url);
-    testProxy.resetResolver('navigateToUrl');
+    testProxy.handler.resetResolver('navigateToUrl');
 
     clickGoogleAccountFooterLinkWithId('footerGeminiAppsActivityLink');
     assertEquals(
         1, testProxy.actionMap['SideBarFooterGeminiAppsActivityClick']);
 
-    const gaa_url = await testProxy.whenCalled('navigateToUrl');
+    const [gaa_url] = await testProxy.handler.whenCalled('navigateToUrl');
     assertEquals('https://myactivity.google.com/product/gemini', gaa_url);
   });
 

@@ -5,6 +5,7 @@
 module history.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
 import "url/mojom/url.mojom";
 
 /**
@@ -317,6 +318,17 @@ interface PageHandler {
 
   // The user turns on the history sync by clicking the "Sync history" button.
   TurnOnHistorySync(AccessPoint access_point);
+
+  // Requests the browser to navigate to `url` on behalf of the WebUI (e.g., for
+  // file:, about:, or external URLs clicked in the history view that the
+  // renderer cannot directly navigate). `open_in_new_tab` indicates whether the
+  // default disposition (before applying `modifiers`) should open a new
+  // foreground tab instead of navigating the current tab, and `modifiers`
+  // reflect keyboard/mouse button click states used to compute the final window
+  // open disposition.
+  NavigateToUrl(url.mojom.Url url,
+                bool open_in_new_tab,
+                ui.mojom.ClickModifiers modifiers);
 
   // Opens the conversation associated with the given critical action in
   // split view. `source` identifies the requesting surface. With

@@ -63,14 +63,19 @@
 #include "components/sync/base/data_type.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
 #include "url/gurl.h"
 
@@ -160,6 +165,29 @@ class BrowsingHistoryHandlerWithWebUIForTesting
   base::SimpleTestClock test_clock_;
 };
 
+class ScopedMockWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  explicit ScopedMockWebContentsDelegate(content::WebContents* web_contents)
+      : web_contents_(web_contents) {
+    web_contents_->SetDelegate(this);
+  }
+  ~ScopedMockWebContentsDelegate() override {
+    web_contents_->SetDelegate(nullptr);
+  }
+
+  // content::WebContentsDelegate:
+  MOCK_METHOD(content::WebContents*,
+              OpenURLFromTab,
+              (content::WebContents * source,
+               const content::OpenURLParams& params,
+               base::OnceCallback<void(content::NavigationHandle&)>
+                   navigation_handle_callback),
+              (override));
+
+ private:
+  raw_ptr<content::WebContents> web_contents_;
+};
+
 }  // namespace
 
 class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
@@ -171,7 +199,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
     web_ui_->set_web_contents(web_contents());
 
     handler_ = std::make_unique<BrowsingHistoryHandlerWithWebUIForTesting>(
-        mojo::PendingReceiver<history::mojom::PageHandler>(), profile(),
+        handler_remote_.BindNewPipeAndPassReceiver(), profile(),
         web_contents());
 
     mock_page_ = std::make_unique<MockHistoryPage>();
@@ -246,6 +274,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    handler_remote_.reset();
     handler_.reset();
     web_ui_.reset();
     mock_page_.reset();
@@ -264,10 +293,14 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
   BrowsingHistoryHandlerWithWebUIForTesting* handler() {
     return handler_.get();
   }
+  mojo::Remote<history::mojom::PageHandler>& handler_remote() {
+    return handler_remote_;
+  }
   MockHistoryPage* mock_page() { return mock_page_.get(); }
 
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
+  mojo::Remote<history::mojom::PageHandler> handler_remote_;
   std::unique_ptr<BrowsingHistoryHandlerWithWebUIForTesting> handler_;
   std::unique_ptr<MockHistoryPage> mock_page_;
 };
@@ -520,6 +553,99 @@ TEST_F(BrowsingHistoryHandlerTest, DestroyWithPendingQueryHistoryOnBoundPipe) {
   remote.FlushForTesting();
 
   handler.reset();
+}
+
+TEST_F(BrowsingHistoryHandlerTest, NavigateToUrlDispositions) {
+  ScopedMockWebContentsDelegate mock_delegate(web_contents());
+  const GURL kUrl("https://www.example.com/");
+
+  // Plain click with `open_in_new_tab = false` navigates current tab.
+  EXPECT_CALL(
+      mock_delegate,
+      OpenURLFromTab(
+          web_contents(),
+          testing::AllOf(
+              testing::Field(&content::OpenURLParams::url, kUrl),
+              testing::Field(&content::OpenURLParams::disposition,
+                             WindowOpenDisposition::kCurrentTab),
+              testing::Field(&content::OpenURLParams::is_renderer_initiated,
+                             false)),
+          _))
+      .WillOnce(testing::Return(nullptr));
+  handler_remote()->NavigateToUrl(kUrl, /*open_in_new_tab=*/false,
+                                  ui::mojom::ClickModifiers::New());
+  handler_remote().FlushForTesting();
+
+  // Plain click with `open_in_new_tab = true` opens a new foreground tab.
+  EXPECT_CALL(mock_delegate,
+              OpenURLFromTab(
+                  web_contents(),
+                  testing::AllOf(
+                      testing::Field(&content::OpenURLParams::url, kUrl),
+                      testing::Field(&content::OpenURLParams::disposition,
+                                     WindowOpenDisposition::kNewForegroundTab)),
+                  _))
+      .WillOnce(testing::Return(nullptr));
+  handler_remote()->NavigateToUrl(kUrl, /*open_in_new_tab=*/true,
+                                  ui::mojom::ClickModifiers::New());
+  handler_remote().FlushForTesting();
+
+  // Middle click opens a new background tab.
+  EXPECT_CALL(mock_delegate,
+              OpenURLFromTab(
+                  web_contents(),
+                  testing::AllOf(
+                      testing::Field(&content::OpenURLParams::url, kUrl),
+                      testing::Field(&content::OpenURLParams::disposition,
+                                     WindowOpenDisposition::kNewBackgroundTab)),
+                  _))
+      .WillOnce(testing::Return(nullptr));
+  auto middle_click = ui::mojom::ClickModifiers::New();
+  middle_click->middle_button = true;
+  handler_remote()->NavigateToUrl(kUrl, /*open_in_new_tab=*/false,
+                                  std::move(middle_click));
+  handler_remote().FlushForTesting();
+
+  // Shift + middle click opens a new foreground tab.
+  EXPECT_CALL(mock_delegate,
+              OpenURLFromTab(
+                  web_contents(),
+                  testing::AllOf(
+                      testing::Field(&content::OpenURLParams::url, kUrl),
+                      testing::Field(&content::OpenURLParams::disposition,
+                                     WindowOpenDisposition::kNewForegroundTab)),
+                  _))
+      .WillOnce(testing::Return(nullptr));
+  auto shift_middle_click = ui::mojom::ClickModifiers::New();
+  shift_middle_click->middle_button = true;
+  shift_middle_click->shift_key = true;
+  handler_remote()->NavigateToUrl(kUrl, /*open_in_new_tab=*/false,
+                                  std::move(shift_middle_click));
+  handler_remote().FlushForTesting();
+}
+
+TEST_F(BrowsingHistoryHandlerTest, NavigateToUrlEmptyUrlReportsBadMessage) {
+  ScopedMockWebContentsDelegate mock_delegate(web_contents());
+  EXPECT_CALL(mock_delegate, OpenURLFromTab(_, _, _)).Times(0);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_remote()->NavigateToUrl(GURL(), /*open_in_new_tab=*/false,
+                                  ui::mojom::ClickModifiers::New());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Invalid URL for NavigateToUrl.");
+}
+
+TEST_F(BrowsingHistoryHandlerTest,
+       NavigateToUrlJavaScriptUrlReportsBadMessage) {
+  ScopedMockWebContentsDelegate mock_delegate(web_contents());
+  EXPECT_CALL(mock_delegate, OpenURLFromTab(_, _, _)).Times(0);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_remote()->NavigateToUrl(GURL("javascript:alert(1)"),
+                                  /*open_in_new_tab=*/false,
+                                  ui::mojom::ClickModifiers::New());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Invalid URL for NavigateToUrl.");
 }
 
 // TODO(crbug.com/584210521): Remove once kBrowsingHistoryFilterByDomain is

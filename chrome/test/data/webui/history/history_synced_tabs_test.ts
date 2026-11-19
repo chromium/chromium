@@ -322,7 +322,7 @@ suite('<history-synced-device-manager>', function() {
         manageVisibilityButton.textContent.trim());
 
     manageVisibilityButton.click();
-    const url = await testProxy.whenCalled('navigateToUrl');
+    const [url] = await testProxy.handler.whenCalled('navigateToUrl');
     assertEquals('chrome://settings/deviceTabVisibility', url);
     assertFalse(element.$.menu.getIfExists()!.open);
     assertEquals(0, foreignSessionProxy.getCallCount('deleteForeignSession'));

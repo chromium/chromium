@@ -37,7 +37,6 @@ export interface BrowserProxy {
   recordTime(histogram: string, time: number): void;
   recordLongTime(histogram: string, time: number): void;
   recordSigninPendingOffered(accessPoint: AccessPoint): void;
-  navigateToUrl(url: string, target: string, e: MouseEvent): void;
   otherDevicesInitialized(): void;
   getInitialIdentityState(): Promise<HistoryIdentityState>;
   getSyncedDevicesForFiltering(): Promise<{devices: Device[]}>;
@@ -79,12 +78,6 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   recordSigninPendingOffered(accessPoint: AccessPoint) {
     chrome.send('recordSigninPendingOffered', [accessPoint]);
-  }
-
-  navigateToUrl(url: string, target: string, e: MouseEvent) {
-    chrome.send(
-        'navigateToUrl',
-        [url, target, e.button, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey]);
   }
 
   otherDevicesInitialized() {
