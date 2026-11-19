@@ -71,6 +71,7 @@ export interface PasswordsImporterElement {
   $: {
     linkRow: CrLinkRowElement,
     selectFileButtonLinkRow: CrButtonElement,
+    spinner: HTMLElement,
   };
 }
 

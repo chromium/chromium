@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -20,6 +21,8 @@ import {getHtml} from './passwords_exporter.html.js';
 export interface PasswordsExporterElement {
   $: {
     exportSuccessToast: CrToastElement,
+    openInShellButton: CrButtonElement,
+    spinner: HTMLElement,
   };
 }
 

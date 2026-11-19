@@ -14,7 +14,7 @@ import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 // Checks the expected display of elements on PasswordsExporterElement creation.
 function verifyInitialUIState(exporter: PasswordsExporterElement) {
   assertTrue(!!exporter.shadowRoot.querySelector('#exportPasswordsButton'));
-  assertFalse(isVisible(exporter.shadowRoot.querySelector('.spinner')));
+  assertFalse(isVisible(exporter.$.spinner));
   assertFalse(!!exporter.shadowRoot.querySelector('#dialogError'));
 }
 
@@ -56,8 +56,7 @@ suite('PasswordExporterTest', function() {
 
     await updateExportStatus(passwordManager, ExportProgressStatus.kInProgress);
     await microtasksFinished();
-    assertTrue(
-        isVisible(passwordsExporter.shadowRoot.querySelector('.spinner')));
+    assertTrue(isVisible(passwordsExporter.$.spinner));
 
     const successToast = passwordsExporter.$.exportSuccessToast;
     assertFalse(successToast.open);
@@ -69,10 +68,7 @@ suite('PasswordExporterTest', function() {
     verifyInitialUIState(passwordsExporter);
     assertTrue(successToast.open);
 
-    const openInShellButton =
-        successToast.querySelector<CrButtonElement>('#openInShellButton');
-    assertTrue(!!openInShellButton);
-    openInShellButton.click();
+    passwordsExporter.$.openInShellButton.click();
     await passwordManager.whenCalled('showLastExportedFileInShell');
   });
 
@@ -135,7 +131,6 @@ suite('PasswordExporterTest', function() {
     // Wait for the .then block to execute.
     await microtasksFinished();
 
-    assertTrue(
-        isVisible(passwordsExporter.shadowRoot.querySelector('.spinner')));
+    assertTrue(isVisible(passwordsExporter.$.spinner));
   });
 });

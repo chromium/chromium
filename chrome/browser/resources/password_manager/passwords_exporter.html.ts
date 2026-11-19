@@ -18,7 +18,8 @@ export function getHtml(this: PasswordsExporterElement) {
       $i18n{downloadFile}
     </cr-button>
   ` : ''}
-  <div class="spinner" ?hidden="${!this.showExportInProgress_}"></div>
+  <div id="spinner" class="spinner" ?hidden="${!this.showExportInProgress_}">
+  </div>
 </cr-link-row>
 
 ${this.showPasswordsExportErrorDialog_ ? html`

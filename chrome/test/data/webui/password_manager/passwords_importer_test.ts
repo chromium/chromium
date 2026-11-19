@@ -42,9 +42,7 @@ async function triggerImportHelper(
   await importer.updateComplete;
 
   // In progress state after the click.
-  const spinner = importer.shadowRoot.querySelector('.spinner');
-  assertTrue(!!spinner);
-  assertTrue(isVisible(spinner));
+  assertTrue(isVisible(importer.$.spinner));
   assertFalse(isVisible(chooseFile));
 
   // Import flow should have been triggered.
@@ -390,9 +388,7 @@ suite('PasswordsImporterTest', function() {
     await importer.updateComplete;
 
     // In progress state after the click.
-    const spinner = importer.shadowRoot.querySelector('.spinner');
-    assertTrue(!!spinner);
-    assertTrue(isVisible(spinner));
+    assertTrue(isVisible(importer.$.spinner));
 
     assertFalse(
         !!importer.shadowRoot.querySelector<CrDialogElement>('#dialog'));
@@ -448,9 +444,7 @@ suite('PasswordsImporterTest', function() {
     await importer.updateComplete;
 
     // In progress state after the click.
-    const spinner = importer.shadowRoot.querySelector('.spinner');
-    assertTrue(!!spinner);
-    assertTrue(isVisible(spinner));
+    assertTrue(isVisible(importer.$.spinner));
 
     assertFalse(
         !!importer.shadowRoot.querySelector<CrDialogElement>('#dialog'));

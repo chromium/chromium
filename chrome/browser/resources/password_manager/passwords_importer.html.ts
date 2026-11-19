@@ -20,7 +20,8 @@ export function getHtml(this: PasswordsImporterElement) {
       aria-description="${this.getAriaDescription_()}">
     $i18n{selectFile}
   </cr-button>
-  <div class="spinner" ?hidden="${!this.isState_(DialogState.IN_PROGRESS)}">
+  <div id="spinner" class="spinner"
+      ?hidden="${!this.isState_(DialogState.IN_PROGRESS)}">
   </div>
 </cr-link-row>
 
