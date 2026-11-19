@@ -314,11 +314,13 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     return nullptr;
   }
 
-  bool use_separate_gl_texture =
-      ExternalVkImageBacking::UseSeparateGLTexture(context_state.get(), format);
-  // See the comment on the same check in Create().
-  if (enable_webgpu_on_vk_via_gl_interop && use_separate_gl_texture) {
-    DLOG(ERROR) << "Separate GL texture is not supported with WebGPU interop";
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->CreateNativePixmapFromHandle(kNullSurfaceHandle, size, format,
+                                         handle.Clone().native_pixmap_handle());
+  if (!pixmap) {
+    DLOG(ERROR) << "Failed to create NativePixmap from handle.";
     return nullptr;
   }
 
@@ -334,7 +336,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
                            ? ToVkFormatExternalSampler(format)
                            : ToVkFormatSinglePlanar(format);
   auto image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
-      device_queue, handle.Clone(), size, vk_format, color_space);
+      device_queue, std::move(handle), size, vk_format, color_space);
   if (!image) {
     DLOG(ERROR) << "Failed to create VkImage from GpuMemoryHandle.";
     return nullptr;
@@ -349,8 +351,8 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, si_info, estimated_size,
       std::move(context_state), std::move(textures), command_pool,
-      use_separate_gl_texture, enable_webgpu_on_vk_via_gl_interop,
-      std::move(handle), std::move(buffer_usage));
+      /*use_separate_gl_texture=*/false, enable_webgpu_on_vk_via_gl_interop,
+      std::move(pixmap), std::move(buffer_usage));
   backing->SetCleared();
   // The imported buffer's content is in the VkImage. Without recording that,
   // UpdateContent() sees no content bits set at all and copies nothing, so a
@@ -406,7 +408,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     VulkanCommandPool* command_pool,
     bool use_separate_gl_texture,
     bool enable_webgpu_on_vk_via_gl_interop,
-    gfx::GpuMemoryBufferHandle handle,
+    scoped_refptr<gfx::NativePixmap> pixmap,
     std::optional<gfx::BufferUsage> buffer_usage)
     : ClearTrackingSharedImageBacking(mailbox,
                                       si_info,
@@ -417,18 +419,8 @@ ExternalVkImageBacking::ExternalVkImageBacking(
       vk_textures_(std::move(vk_textures)),
       command_pool_(command_pool),
       use_separate_gl_texture_(use_separate_gl_texture),
-      enable_webgpu_on_vk_via_gl_interop_(enable_webgpu_on_vk_via_gl_interop) {
-#if BUILDFLAG(IS_OZONE)
-  if (!handle.is_null()) {
-    // Create a pixmap is there is a valid handle.
-    pixmap_ = ui::OzonePlatform::GetInstance()
-                  ->GetSurfaceFactoryOzone()
-                  ->CreateNativePixmapFromHandle(
-                      kNullSurfaceHandle, si_info.size, si_info.format,
-                      std::move(handle).native_pixmap_handle());
-  }
-#endif  // BUILDFLAG(IS_OZONE)
-}
+      enable_webgpu_on_vk_via_gl_interop_(enable_webgpu_on_vk_via_gl_interop),
+      pixmap_(std::move(pixmap)) {}
 
 ExternalVkImageBacking::~ExternalVkImageBacking() {
   auto semaphores = std::move(read_semaphores_);
@@ -834,12 +826,12 @@ bool ExternalVkImageBacking::MakeGLContextCurrent() {
 }
 
 bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
-  // It is not possible to import into GL when using external sampling.
-  // Short-circuit out if this is requested (it should not be requested in
-  // production, but might be in fuzzing flows).
-  if (format().PrefersExternalSampler()) {
-    LOG(ERROR)
-        << "Importing textures with external sampling into GL is not possible";
+  // It is not possible to import into GL when using external sampling or when
+  // the backing was created from a GMB. Short-circuit out if this is requested
+  // (it should not be requested in production, but might be in fuzzing flows).
+  if (format().PrefersExternalSampler() || pixmap_) {
+    LOG(ERROR) << "Importing textures with external sampling or created from "
+                  "GMB into GL is not possible";
     return false;
   }
 
