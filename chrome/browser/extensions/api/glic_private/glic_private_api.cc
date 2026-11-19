@@ -82,6 +82,7 @@ constexpr char kGlicApiInvokeSyntheticFieldTrialName[] =
     "GlicApiInvokeSyntheticFieldTrial";
 constexpr char kUniversalCartGroupName[] = "UniversalCart";
 constexpr char kGlicServiceNotAvailable[] = "Glic service not available";
+constexpr char kLockedFullscreen[] = "Browser is in locked fullscreen mode";
 
 using PromptCallback =
     base::OnceCallback<void(extensions::api::glic_private::ErrorCode,
@@ -733,6 +734,8 @@ GlicPrivateActivateTabWithConversationFunction::Run() {
     case glic::GlicInstanceCoordinator::ActivateTabResult::kTabNotInWindow:
       return RespondNow(Error(api::glic_private::ToString(
           api::glic_private::ErrorCode::kLocalTabNotInWindow)));
+    case glic::GlicInstanceCoordinator::ActivateTabResult::kLockedFullscreen:
+      return RespondNow(Error(kLockedFullscreen));
   }
 }
 

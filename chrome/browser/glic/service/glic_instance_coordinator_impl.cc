@@ -436,6 +436,10 @@ bool GlicInstanceCoordinatorImpl::IsConversationPanelShowingForTab(
 GlicInstanceCoordinator::ActivateTabResult
 GlicInstanceCoordinatorImpl::ActivateTabWithConversation(
     const std::string& conversation_id) {
+  if (IsAnyBrowserLockedFullscreen()) {
+    return GlicInstanceCoordinator::ActivateTabResult::kLockedFullscreen;
+  }
+
   GlicInstanceImpl* instance =
       GetInstanceImplForConversationId(conversation_id);
   if (!instance) {

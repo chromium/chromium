@@ -49,6 +49,7 @@ class GlicInstanceCoordinator {
     kConversationNotFound,
     kNoBoundTabs,
     kTabNotInWindow,
+    kLockedFullscreen,
   };
   static GlicInstanceCoordinator* Get(Profile* profile);
 

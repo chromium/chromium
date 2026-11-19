@@ -118,8 +118,10 @@
 #include "ash/wm/window_pin_util.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/test_utils.h"
@@ -1293,6 +1295,47 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreenGlic,
   EXPECT_FALSE(glic_service().instance_coordinator().IsAnyPanelShowing());
 
   ExitLockedFullscreen();
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreenGlic,
+                       ActivateTabWithConversationRejectsLockedFullscreen) {
+  // Bind the conversation to a tab in a second, unlocked browser window while
+  // `browser()` enters locked fullscreen so the test verifies both tab and
+  // cross-window activation refusal.
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(other_browser);
+  EXPECT_TRUE(chrome::ExecuteCommand(other_browser, IDC_OPEN_GLIC));
+  tabs::TabInterface* other_tab1 =
+      other_browser->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(other_tab1);
+  auto* instance = static_cast<glic::GlicInstanceImpl*>(
+      glic_service().GetInstanceForTab(other_tab1));
+  ASSERT_TRUE(instance);
+
+  auto info = glic::mojom::ConversationInfo::New();
+  info->conversation_id = "test_conversation_id";
+  instance->RegisterConversation(std::move(info), base::DoNothing());
+  MarkInstanceNonBlank(other_tab1);
+
+  AddBlankTabAndShow(other_browser);
+  tabs::TabInterface* other_tab2 =
+      other_browser->GetTabStripModel()->GetActiveTab();
+  ASSERT_NE(other_tab1, other_tab2);
+
+  EnterLockedFullscreen();
+  EXPECT_EQ(
+      glic_service().instance_coordinator().ActivateTabWithConversation(
+          "test_conversation_id"),
+      glic::GlicInstanceCoordinator::ActivateTabResult::kLockedFullscreen);
+  EXPECT_TRUE(browser()->GetWindow()->IsActive());
+  EXPECT_EQ(other_browser->GetTabStripModel()->GetActiveTab(), other_tab2);
+
+  ExitLockedFullscreen();
+  EXPECT_EQ(glic_service().instance_coordinator().ActivateTabWithConversation(
+                "test_conversation_id"),
+            glic::GlicInstanceCoordinator::ActivateTabResult::kSuccess);
+  EXPECT_EQ(other_browser->GetTabStripModel()->GetActiveTab(), other_tab1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
