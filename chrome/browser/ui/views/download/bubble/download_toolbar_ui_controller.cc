@@ -51,6 +51,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -58,6 +59,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
+#include "ui/events/event.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -65,6 +67,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -474,6 +477,7 @@ void DownloadToolbarUIController::OnSecurityDialogButtonPress(
 }
 
 void DownloadToolbarUIController::OnDialogInteracted() {
+  dialog_interacted_ = true;
   DeactivateAutoClose();
 }
 
@@ -509,6 +513,9 @@ void DownloadToolbarUIController::InvokeUI() {
     button_click_time_ = base::TimeTicks::Now();
     ShowBubble(DownloadBubbleMode::kComplete);
   } else {
+    // Escalating to chrome://downloads closes any open bubble programmatically
+    // with kUnspecified rather than counting as a user dismissal.
+    HideDetails();
     chrome::ShowDownloads(browser_view_->browser());
   }
   controller_->OnButtonPressed();
@@ -559,8 +566,8 @@ views::ImageView* DownloadToolbarUIController::GetImageBadgeForTesting() {
 DownloadToolbarUIController::BubbleCloser::BubbleCloser(
     views::BubbleAnchor anchor,
     views::Widget* bubble_widget,
-    base::WeakPtr<DownloadDisplay> download_display)
-    : download_display_(download_display) {
+    base::WeakPtr<DownloadToolbarUIController> controller)
+    : controller_(controller) {
   CHECK(!anchor.IsNull());
   CHECK(bubble_widget);
   bubble_widget_observation_.Observe(bubble_widget);
@@ -597,10 +604,12 @@ void DownloadToolbarUIController::BubbleCloser::OnEvent(
     return;
   }
 
-  if (download_display_) {
-    download_display_->HideDetails();
+  if (controller_ && controller_->IsShowingDetails()) {
+    controller_->CloseDialog(event.IsKeyEvent()
+                                 ? views::Widget::ClosedReason::kEscKeyPressed
+                                 : views::Widget::ClosedReason::kLostFocus);
   }
-  // `this` will be deleted.
+  // `this` may be deleted.
 }
 
 void DownloadToolbarUIController::BubbleCloser::OnWidgetDestroyed(
@@ -701,6 +710,7 @@ void DownloadToolbarUIController::OnBubbleAnchorAssembled(
   bubble_delegate->set_margins(GetPrimaryViewMargin());
   bubble_delegate->SetEnableArrowKeyTraversal(true);
   bubble_delegate_ = bubble_delegate.get();
+  dialog_interacted_ = false;
   views::Widget* bubble_widget =
       views::BubbleDialogDelegate::CreateBubbleDeprecated(
           std::move(bubble_delegate),
@@ -756,13 +766,43 @@ void DownloadToolbarUIController::OnBubbleAnchorAssembled(
   }
 }
 
+bool DownloadToolbarUIController::ShouldEmitBubbleDismissedEvent() const {
+  if (!bubble_delegate_ || !bubble_delegate_->GetWidget()) {
+    return false;
+  }
+  switch (bubble_delegate_->GetWidget()->closed_reason()) {
+    // `DialogDelegate` routes Esc on active `kComplete` bubbles through
+    // `CancelDialog()` -> `kCancelButtonClicked`.
+    case views::Widget::ClosedReason::kEscKeyPressed:
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+      return true;
+    case views::Widget::ClosedReason::kLostFocus:
+      // The partial bubble opens inactive without user action; require prior
+      // hover/focus interaction before counting click-away as a dismissal.
+      return primary_view_mode_ == DownloadBubbleMode::kComplete ||
+             dialog_interacted_;
+    case views::Widget::ClosedReason::kUnspecified:
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      return false;
+  }
+}
+
 void DownloadToolbarUIController::OnBubbleClosing() {
+  const bool user_dismissed = ShouldEmitBubbleDismissedEvent();
+  dialog_interacted_ = false;
   immersive_revealed_lock_.reset();
   bubble_delegate_ = nullptr;
   bubble_contents_ = nullptr;
   bubble_closer_.reset();
   UpdateIconDormant();
   action_item_->SetIsShowingBubble(false);
+
+  if (user_dismissed && browser_view_ && browser_view_->GetWidget() &&
+      !browser_view_->GetWidget()->IsClosed()) {
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        kDownloadBubbleDismissedEventId, browser_view_);
+  }
 }
 
 void DownloadToolbarUIController::OnPartialViewClosed() {
