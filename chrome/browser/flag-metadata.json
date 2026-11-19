@@ -5414,6 +5414,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "gaia-and-avatar-customization",
+    "owners": [ "quacksort@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 175
+  },
+  {
     "name": "gamepad-raw-input-change-event",
     "owners": ["gabrielbrito@microsoft.com", "deviceapi-team@google.com" ],
     "expiry_milestone": 152

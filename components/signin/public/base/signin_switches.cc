@@ -732,6 +732,8 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kGaiaAccountIdEnforcement, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGaiaAndAvatarCustomization, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHandleMdmErrorsForDasherAccounts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

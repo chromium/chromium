@@ -69,6 +69,14 @@ public final class SigninFeatureMap extends FeatureMap {
     }
 
     /**
+     * Returns whether the avatar of the Account page gets an edit badge and opens the Google
+     * Account profile picture picker when tapped.
+     */
+    public boolean isGaiaAndAvatarCustomizationEnabled() {
+        return isEnabledInNative(SigninFeatures.GAIA_AND_AVATAR_CUSTOMIZATION);
+    }
+
+    /**
      * @return the singleton SigninFeatureMap.
      */
     public static SigninFeatureMap getInstance() {

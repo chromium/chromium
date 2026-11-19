@@ -1758,6 +1758,12 @@ inline constexpr char kContextualCueingV2MultiSourceDescription[] =
     "Enables parallel evaluation of all registered cue targets and selects the "
     "winner with UCB scoring for contextual cueing V2.";
 
+inline constexpr char kGaiaAndAvatarCustomizationName[] =
+    "Gaia and avatar customization";
+inline constexpr char kGaiaAndAvatarCustomizationDescription[] =
+    "Lets signed-in users change their account profile picture using the "
+    "Google Account profile picture picker.";
+
 inline constexpr char kGeicActuationName[] = "GEiC web actuation";
 inline constexpr char kGeicActuationDescription[] =
     "Enables web actuation in the Gemini Enterprise in Chrome (GEiC) side "

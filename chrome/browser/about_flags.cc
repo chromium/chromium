@@ -13504,6 +13504,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux | kOsAndroid,
      MULTI_VALUE_TYPE(kForceAiSubscriptionTierChoices)},
 
+    {"gaia-and-avatar-customization",
+     flag_descriptions::kGaiaAndAvatarCustomizationName,
+     flag_descriptions::kGaiaAndAvatarCustomizationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kGaiaAndAvatarCustomization)},
+
     {"glic-context-menu-below-search",
      flag_descriptions::kGlicContextMenuBelowSearchName,
      flag_descriptions::kGlicContextMenuBelowSearchDescription, kOsDesktop,

@@ -9839,6 +9839,7 @@ from previous Chrome versions.
   <int value="-1526934250" label="BorealisProvision:disabled"/>
   <int value="-1526740682"
       label="EnableHistorySyncOptinExpansionPill:disabled"/>
+  <int value="-1526650436" label="GaiaAndAvatarCustomization:disabled"/>
   <int value="-1525432906" label="AllowLegacyMV2Extensions:disabled"/>
   <int value="-1525286543"
       label="DeviceBoundSessionsForRestrictedSites:enabled"/>
@@ -17102,6 +17103,7 @@ from previous Chrome versions.
   <int value="629635604"
       label="AutofillVisualImprovementsForSuggestionUi:enabled"/>
   <int value="629813156" label="BookmarksBarNTP:enabled"/>
+  <int value="630089010" label="GaiaAndAvatarCustomization:enabled"/>
   <int value="630244477" label="ServiceWorkerPaymentApps:enabled"/>
   <int value="630308195" label="SignInProfileCreation:enabled"/>
   <int value="630776247" label="USBGuard:disabled"/>

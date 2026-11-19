@@ -691,6 +691,12 @@ BASE_DECLARE_FEATURE_PARAM(int, kFullscreenSignInPromoUseDateInterval);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kGaiaAccountIdEnforcement);
 
+// Lets signed-in users change their account profile picture using the Google
+// Account profile picture picker. On Android, the avatar in account settings
+// gets an edit badge and opens the picker.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kGaiaAndAvatarCustomization);
+
 // Feature to handle mdm errors on Enterprise and EDU accounts
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kHandleMdmErrorsForDasherAccounts);

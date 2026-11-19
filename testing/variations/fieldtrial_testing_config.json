@@ -9567,6 +9567,22 @@
             ]
         }
     ],
+    "GaiaAndAvatarCustomizationAndroid": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GaiaAndAvatarCustomization"
+                    ]
+                }
+            ]
+        }
+    ],
     "GateMemoryMetricsOnVisibility": [
         {
             "platforms": [

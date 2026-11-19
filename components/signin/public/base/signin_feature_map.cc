@@ -39,6 +39,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kMigrateAccountManagerDelegate,
     &switches::kFullscreenSigninMediatorStateMachine,
     &switches::kFullscreenSignInPromoUseDate,
+    &switches::kGaiaAndAvatarCustomization,
     &switches::kHandleMdmErrorsForDasherAccountsOnAndroid,
     &switches::kSmartEmailLineBreaking,
     &switches::kSupportWebSigninAddSession,
