@@ -85,6 +85,18 @@
   <message name="IDS_ACTION_SYNONYMS_VISIT_CHROME_WEB_STORE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Visit Chrome Web Store') that users might type in the Chrome menu search bar to find the 'Visit Chrome Web Store' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     plugins, themes, install, extensions, customization, manage
   </message>
+  <!-- kActionZoomPlus: "Make text larger". -->
+  <message name="IDS_ACTION_SYNONYMS_ZOOM_PLUS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Make text larger') that users might type in the Chrome menu search bar to find the 'Make text larger' action, which zooms in on the current page. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    zoom in, magnify, enlarge, bigger, larger, increase, scale up, page zoom
+  </message>
+  <!-- kActionZoomMinus: "Make text smaller". -->
+  <message name="IDS_ACTION_SYNONYMS_ZOOM_MINUS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Make text smaller') that users might type in the Chrome menu search bar to find the 'Make text smaller' action, which zooms out on the current page. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    zoom out, shrink, smaller, reduce, decrease, scale down, page zoom
+  </message>
+  <!-- kActionFullscreen: "Full screen". -->
+  <message name="IDS_ACTION_SYNONYMS_FULLSCREEN" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Full screen') that users might type in the Chrome menu search bar to find the 'Full screen' action, which expands the browser window to fill the entire screen. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    fullscreen, full-screen, maximize, maximise, immersive, hide toolbar, presentation, F11
+  </message>
   <!-- kActionFind: "Find...". -->
   <message name="IDS_ACTION_SYNONYMS_FIND" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Find') that users might type in the Chrome menu search bar to find the 'Find' action, which searches for text on the current page. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     search, look, page, text, string, replace, editor, locate

@@ -1614,11 +1614,11 @@ are declared in tools/grit/grit_args.gni.
         </message>
       </if>
 
-      <message name="IDS_ACCNAME_ZOOM_PLUS2" desc="The accessible description of the Make Text Larger menu item in the merged menu">
-        Make Text Larger
+      <message name="IDS_ACCNAME_ZOOM_PLUS2" desc="The accessible description of the Make text larger menu item in the merged menu. Also shown as the item title in Chrome menu search results.">
+        Make text larger
       </message>
-      <message name="IDS_ACCNAME_ZOOM_MINUS2" desc="The accessible description of the Make Text Smaller menu item in the merged menu">
-        Make Text Smaller
+      <message name="IDS_ACCNAME_ZOOM_MINUS2" desc="The accessible description of the Make text smaller menu item in the merged menu. Also shown as the item title in Chrome menu search results.">
+        Make text smaller
       </message>
       <message name="IDS_NAME_WINDOW" desc="The text label of the Name Window menu item, used to give a user-specified name to a window.">
         Name &amp;window...

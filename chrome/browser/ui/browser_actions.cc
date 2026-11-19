@@ -3060,6 +3060,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kFullscreenIcon
                                                 : kFullscreenRefreshOldIcon))
+          .AddSynonyms(GetSynonymsForAction(IDS_ACTION_SYNONYMS_FULLSCREEN))
           .Build());
 
   root_action_item_->AddChild(
@@ -3832,6 +3833,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kAddIcon
                                                 : kZoomPlusMenuRefreshOldIcon))
+          .AddSynonyms(GetSynonymsForAction(IDS_ACTION_SYNONYMS_ZOOM_PLUS))
           .Build());
 
   root_action_item_->AddChild(
@@ -3848,6 +3850,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kRemoveIcon
                                                 : kZoomMinusMenuRefreshOldIcon))
+          .AddSynonyms(GetSynonymsForAction(IDS_ACTION_SYNONYMS_ZOOM_MINUS))
           .Build());
 
   root_action_item_->AddChild(

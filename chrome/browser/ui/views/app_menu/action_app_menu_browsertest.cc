@@ -553,8 +553,12 @@ INSTANTIATE_TEST_SUITE_P(
         SynonymSearchCase{u"locate", kActionFind},
         SynonymSearchCase{u"adblock", kActionExtensionsSubmenuManageExtensions},
         SynonymSearchCase{u"toolbar", kActionBookmarkBarSubmenuAlwaysShow},
-        SynonymSearchCase{u"open incognito window",
-                          kActionNewIncognitoWindow}));
+        SynonymSearchCase{u"open incognito window", kActionNewIncognitoWindow},
+        SynonymSearchCase{u"magnify", kActionZoomPlus},
+        SynonymSearchCase{u"zoom in", kActionZoomPlus},
+        SynonymSearchCase{u"shrink", kActionZoomMinus},
+        SynonymSearchCase{u"zoom out", kActionZoomMinus},
+        SynonymSearchCase{u"maximize", kActionFullscreen}));
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Profile-management and import actions are not shown in the app menu on
