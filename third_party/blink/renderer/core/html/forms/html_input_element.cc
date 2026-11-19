@@ -146,30 +146,11 @@ class ListAttributeTargetObserver : public IdTargetObserver {
   Member<HTMLInputElement> element_;
 };
 
-const int kDefaultSize = 20;
-
 HTMLInputElement::HTMLInputElement(Document& document,
                                    const CreateElementFlags flags)
     : TextControlElement(html_names::kInputTag, document),
       LazyActiveScriptWrappable<HTMLInputElement>({}),
-      size_(kDefaultSize),
-      has_dirty_value_(false),
-      is_checked_(false),
-      dirty_checkedness_(false),
-      is_indeterminate_(false),
-      dirty_indeterminateness_(false),
-      is_activated_submit_(false),
-      autocomplete_(kUninitialized),
-      has_non_empty_list_(false),
-      state_restored_(false),
       parsing_in_progress_(flags.IsCreatedByParser()),
-      can_receive_dropped_files_(false),
-      should_reveal_password_(false),
-      needs_to_update_view_value_(true),
-      is_placeholder_visible_(false),
-      has_been_password_field_(false),
-      is_shadow_tree_creation_scheduled_(false),
-      scheduled_shadow_tree_creation_index_hint_(0),
       // |input_type_| is lazily created when constructed by the parser to avoid
       // constructing unnecessarily a text InputType and its shadow subtree,
       // just to destroy them when the |type| attribute gets set by the parser
