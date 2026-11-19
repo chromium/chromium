@@ -382,6 +382,8 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_screen) {
   gfx::Rect relative_bounds =
       ConvertRectFromScreen(window_.get(), bounds_in_screen);
   window_->SetBounds(relative_bounds);
+  last_surface_size_ = bounds_in_screen.size();
+  last_device_scale_factor_ = window_->layer()->device_scale_factor();
   // TODO(crbug.com/508672616): See the note above about transparent background.
   window_->layer()->AsSurface()->SetShowSurface(
       viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),
@@ -412,6 +414,13 @@ void UnboundedSurfaceWindowAura::SetBounds(const gfx::Rect& bounds_in_screen) {
   gfx::Rect relative_bounds =
       ConvertRectFromScreen(window_.get(), bounds_in_screen);
   window_->SetBounds(relative_bounds);
+  const float device_scale_factor = window_->layer()->device_scale_factor();
+  if (bounds_in_screen.size() == last_surface_size_ &&
+      device_scale_factor == last_device_scale_factor_) {
+    return;
+  }
+  last_surface_size_ = bounds_in_screen.size();
+  last_device_scale_factor_ = device_scale_factor;
   local_surface_id_allocator_.GenerateId();
   window_->layer()->AsSurface()->SetShowSurface(
       viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),

@@ -142,6 +142,11 @@ class ScopedDismissRecorder : public UnboundedSurfaceWindow::Delegate {
       original_delegate_->OnWindowDestroyed();
     }
   }
+  void OnTargetViewMoved() override {
+    if (original_delegate_) {
+      original_delegate_->OnTargetViewMoved();
+    }
+  }
 
  private:
   base::WeakPtr<UnboundedSurfaceWindow> window_;

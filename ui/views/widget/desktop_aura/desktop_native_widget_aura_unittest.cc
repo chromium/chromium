@@ -992,13 +992,37 @@ TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupKeepsSizeOnHostResize) {
   const gfx::Size popup_size(339, 75);
   popup_window.owned_window()->SetBounds(gfx::Rect(popup_size));
 
-  aura::Window* top_level_window =
-      popup_window.top_level_widget()->GetNativeView();
-  top_level_window->SetBounds(
-      gfx::Rect(top_level_window->bounds().origin(),
+  views::Widget* top_level_widget = popup_window.top_level_widget();
+  top_level_widget->SetBounds(
+      gfx::Rect(top_level_widget->GetWindowBoundsInScreen().origin(),
                 gfx::Size(popup_size.width() + 1, popup_size.height() + 1)));
 
   EXPECT_EQ(gfx::Rect(popup_size), popup_window.owned_window()->bounds());
+
+  ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
+}
+
+// This test validates that moving an owned popup without changing its size
+// moves the hosting widget to the new screen origin and realigns the child
+// window back to (0, 0) inside the hosting widget instead of leaving it offset.
+TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupRealignedOnPureMove) {
+  DesktopAuraTopLevelWindowTest popup_window;
+
+  popup_window.set_use_async_mode(false);
+
+  ASSERT_NO_FATAL_FAILURE(
+      popup_window.CreateTopLevelWindow(gfx::Rect(0, 0, 200, 200), false));
+
+  const gfx::Size popup_size = popup_window.owned_window()->bounds().size();
+  const gfx::Rect moved_bounds(gfx::Point(40, 60), popup_size);
+  popup_window.owned_window()->SetBoundsInScreen(
+      moved_bounds,
+      display::Screen::Get()->GetDisplayNearestPoint(gfx::Point()));
+
+  EXPECT_EQ(moved_bounds,
+            popup_window.top_level_widget()->GetWindowBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(popup_size), popup_window.owned_window()->bounds());
+  EXPECT_EQ(moved_bounds, popup_window.owned_window()->GetBoundsInScreen());
 
   ASSERT_NO_FATAL_FAILURE(popup_window.DestroyOwnedWindow());
 }

@@ -52,6 +52,12 @@ class CONTENT_EXPORT UnboundedSurfaceWindow {
     // anymore.
     virtual void OnWindowDestroyed() = 0;
 
+    // Called when the target view may have moved relative to the root view
+    // without the renderer sending new bounds, e.g. when the embedder of an
+    // OOPIF re-lays out after a zoom change. The window's screen bounds are
+    // derived from the target view's position, so they may be stale.
+    virtual void OnTargetViewMoved() = 0;
+
    protected:
     virtual ~Delegate() = default;
   };
@@ -69,6 +75,10 @@ class CONTENT_EXPORT UnboundedSurfaceWindow {
   // Initiates the dismissal of this window. The delegate runs the dismissal
   // handshake with the renderer. Without a delegate, the window is destroyed.
   void Dismiss();
+
+  // Called by the target view when its transform to the root view may have
+  // changed, so that the delegate can reposition the window.
+  void NotifyTargetViewMoved();
 
   virtual void SetBounds(const gfx::Rect& bounds_in_screen) = 0;
   virtual viz::FrameSinkId GetFrameSinkId() const = 0;

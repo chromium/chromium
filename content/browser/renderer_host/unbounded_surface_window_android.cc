@@ -96,9 +96,10 @@ void UnboundedSurfaceWindowAndroid::SetBounds(const gfx::Rect& bounds_in_dips) {
   Java_UnboundedSurfacePopupWindow_resize(env, j_popup_window_,
                                           origin_pixels.x(), origin_pixels.y());
 
-  if (!size_changed) {
+  if (!size_changed && dsf == last_device_scale_factor_) {
     return;
   }
+  last_device_scale_factor_ = dsf;
 
   root_local_surface_id_allocator_.GenerateId();
   client_local_surface_id_allocator_.GenerateId();
@@ -223,6 +224,7 @@ bool UnboundedSurfaceWindowAndroid::InitWindow(
 
   bounds_in_dips_ = bounds_in_dips;
   float dsf = parent_view_->GetDeviceScaleFactor();
+  last_device_scale_factor_ = dsf;
   gfx::Point origin_pixels =
       gfx::ScaleToRoundedPoint(bounds_in_dips.origin(), dsf);
   gfx::Size size_pixels = gfx::ScaleToRoundedSize(bounds_in_dips.size(), dsf);

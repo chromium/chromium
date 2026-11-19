@@ -499,6 +499,8 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
   root_layer_->SetBounds(gfx::Rect(bounds_in_screen.size()));
 
   DisplayInfo display_info = GetDisplayInfo();
+  last_surface_size_ = bounds_in_screen.size();
+  last_scale_factor_ = display_info.scale_factor;
 
   gfx::Size size_pixels = gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
       bounds_in_screen.size(), display_info.scale_factor));
@@ -564,42 +566,50 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
 }
 
 void UnboundedSurfaceWindowMac::SetBounds(const gfx::Rect& bounds_in_screen) {
-  if (objc_storage_->window) {
-    NSRect ns_rect = gfx::ScreenRectToNSRect(bounds_in_screen);
-    const bool frame_changed =
-        !NSEqualRects([objc_storage_->window frame], ns_rect);
-    [objc_storage_->window setFrame:ns_rect display:YES];
-    [objc_storage_->window.contentView
-        setFrame:NSMakeRect(0, 0, ns_rect.size.width, ns_rect.size.height)];
-    if (frame_changed) {
-      UnboundedNSView* view = base::apple::ObjCCast<UnboundedNSView>(
-          [objc_storage_->window contentView]);
-      [view updatePointerInsideFromMouseLocation];
-    }
-    local_surface_id_allocator_.GenerateId();
+  if (!objc_storage_->window) {
+    return;
+  }
+  NSRect ns_rect = gfx::ScreenRectToNSRect(bounds_in_screen);
+  const bool frame_changed =
+      !NSEqualRects([objc_storage_->window frame], ns_rect);
+  [objc_storage_->window setFrame:ns_rect display:YES];
+  [objc_storage_->window.contentView
+      setFrame:NSMakeRect(0, 0, ns_rect.size.width, ns_rect.size.height)];
+  if (frame_changed) {
+    UnboundedNSView* view = base::apple::ObjCCast<UnboundedNSView>(
+        [objc_storage_->window contentView]);
+    [view updatePointerInsideFromMouseLocation];
+  }
 
-    if (root_layer_) {
-      root_layer_->SetBounds(gfx::Rect(bounds_in_screen.size()));
-    }
+  DisplayInfo display_info = GetDisplayInfo();
+  if (bounds_in_screen.size() == last_surface_size_ &&
+      display_info.scale_factor == last_scale_factor_) {
+    return;
+  }
+  last_surface_size_ = bounds_in_screen.size();
+  last_scale_factor_ = display_info.scale_factor;
 
-    if (recyclable_compositor_) {
-      DisplayInfo display_info = GetDisplayInfo();
+  local_surface_id_allocator_.GenerateId();
 
-      gfx::Size size_pixels = gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
-          bounds_in_screen.size(), display_info.scale_factor));
+  if (root_layer_) {
+    root_layer_->SetBounds(gfx::Rect(bounds_in_screen.size()));
+  }
 
-      recyclable_compositor_->UpdateSurface(
-          size_pixels, display_info.scale_factor,
-          display_info.display_color_spaces, display_info.display_id,
-          display_info.display_frequency);
-    }
+  if (recyclable_compositor_) {
+    gfx::Size size_pixels = gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
+        bounds_in_screen.size(), display_info.scale_factor));
 
-    if (root_layer_) {
-      root_layer_->SetShowSurface(
-          viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),
-          bounds_in_screen.size(), cc::DeadlinePolicy::UseDefaultDeadline(),
-          /*stretch_content_to_fill_bounds=*/false);
-    }
+    recyclable_compositor_->UpdateSurface(
+        size_pixels, display_info.scale_factor,
+        display_info.display_color_spaces, display_info.display_id,
+        display_info.display_frequency);
+  }
+
+  if (root_layer_) {
+    root_layer_->SetShowSurface(
+        viz::SurfaceId(frame_sink_id_, GetLocalSurfaceId()),
+        bounds_in_screen.size(), cc::DeadlinePolicy::UseDefaultDeadline(),
+        /*stretch_content_to_fill_bounds=*/false);
   }
 }
 

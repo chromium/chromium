@@ -146,6 +146,12 @@ void UnboundedSurfaceWindow::Dismiss() {
   ScheduleDeferredDestroy();
 }
 
+void UnboundedSurfaceWindow::NotifyTargetViewMoved() {
+  if (IsValid() && delegate_) {
+    delegate_->OnTargetViewMoved();
+  }
+}
+
 void UnboundedSurfaceWindow::ScheduleDeferredDestroy() {
   // Destruction is deferred to a posted task so that callers in active call
   // stacks (e.g. Mojo message dispatchers or timer callbacks) can return safely

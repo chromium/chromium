@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_auto_reset.h"
+#include "base/scoped_observation.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -66,6 +67,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_aura_utils.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/window_reorderer.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -100,7 +102,8 @@ namespace {
 
 // This class provides functionality to create a top level widget to host a
 // child window.
-class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
+class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver,
+                                           public WidgetObserver {
  public:
   // This function creates a widget with the bounds passed in which eventually
   // becomes the parent of the child window passed in.
@@ -182,7 +185,8 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
     aura::Window* native_window =
         top_level_handler->top_level_widget_->GetNativeView();
     child_window->AddObserver(top_level_handler);
-    native_window->AddObserver(top_level_handler);
+    top_level_handler->top_level_widget_observation_.Observe(
+        top_level_handler->top_level_widget_);
     top_level_handler->child_window_ = child_window;
     return native_window;
   }
@@ -196,16 +200,8 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
   void OnWindowDestroying(aura::Window* window) override {
     window->RemoveObserver(this);
 
-    // If the widget is being destroyed by the OS then we should not try and
-    // destroy it again.
-    if (top_level_widget_ && window == top_level_widget_->GetNativeView()) {
-      top_level_widget_ = nullptr;
-      return;
-    }
-
     if (top_level_widget_) {
-      CHECK(top_level_widget_->GetNativeView(), base::NotFatalUntil::M163);
-      top_level_widget_->GetNativeView()->RemoveObserver(this);
+      top_level_widget_observation_.Reset();
       // When we receive a notification that the child of the window created
       // above is being destroyed we go ahead and initiate the destruction of
       // the corresponding widget.
@@ -224,11 +220,24 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
     // the Widget::SetBounds function.
     if (top_level_widget_ && window == child_window_) {
       top_level_widget_->SetBounds(window->GetBoundsInScreen());
-    } else if (top_level_widget_ &&
-               window == top_level_widget_->GetNativeView()) {
-      // Only the origin is realigned: the widget's size is the child's size
-      // after a DIP/pixel round trip, so copying it back would feed rounding
-      // error into the child on fractional device scale factors.
+    }
+  }
+
+  // WidgetObserver:
+  void OnWidgetDestroying(Widget* widget) override {
+    top_level_widget_observation_.Reset();
+    // If the widget is being destroyed by the OS then we should not try and
+    // destroy it again.
+    top_level_widget_ = nullptr;
+  }
+
+  void OnWidgetBoundsChanged(Widget* widget,
+                             const gfx::Rect& new_bounds) override {
+    // Realign the child to (0, 0) on both moves and resizes of the hosting
+    // widget. Only the origin is realigned: the widget's size is the child's
+    // size after a DIP/pixel round trip, so copying it back would feed
+    // rounding error into the child on fractional device scale factors.
+    if (child_window_) {
       child_window_->SetBounds(gfx::Rect(child_window_->bounds().size()));
     }
   }
@@ -240,6 +249,8 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
 
   raw_ptr<Widget> top_level_widget_ = nullptr;
   raw_ptr<aura::Window> child_window_ = nullptr;
+  base::ScopedObservation<Widget, WidgetObserver> top_level_widget_observation_{
+      this};
 };
 
 class DesktopNativeWidgetAuraWindowParentingClient

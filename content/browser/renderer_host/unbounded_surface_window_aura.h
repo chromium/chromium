@@ -130,6 +130,8 @@ class UnboundedSurfaceWindowAura : public UnboundedSurfaceWindow,
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
   std::unique_ptr<aura::Window> window_;
   raw_ptr<aura::Window> root_window_ = nullptr;
+  gfx::Size last_surface_size_;
+  float last_device_scale_factor_ = 0.0f;
   ui::MotionEventAura pointer_state_;
   std::unique_ptr<DebugBorderDelegate> debug_border_delegate_;
   std::unique_ptr<ui::Layer> debug_border_layer_;

@@ -50,8 +50,9 @@ UnboundedSurfaceHostImpl::UnboundedSurfaceHostImpl(
   }
   CHECK(!root_view.HasActiveUnboundedSurface());
 
-  root_view.CreateUnboundedSurface(ConstrainBounds(bounds_in_dips),
-                                   frame_view_);
+  bounds_in_dips_ = bounds_in_dips;
+  bounds_in_screen_ = ConstrainBounds(bounds_in_dips_);
+  root_view.CreateUnboundedSurface(bounds_in_screen_, frame_view_);
   UnboundedSurfaceWindow* window = root_view.GetUnboundedSurfaceWindow();
   if (!window) {
     DestroySoon();
@@ -80,12 +81,16 @@ void UnboundedSurfaceHostImpl::GetCompositorFrameSink(
   }
 }
 
+// Run when zoom happens or the element's bounds change in the renderer.
 void UnboundedSurfaceHostImpl::UpdateBounds(const gfx::Rect& bounds_in_dips) {
-  if (!window_ || !root_view_) {
+  bounds_in_dips_ = bounds_in_dips;
+  if (!window_ || !root_view_ || !frame_view_) {
     return;
   }
-  window_->SetBounds(ConstrainBounds(bounds_in_dips));
-  NotifySurfaceAllocated();
+  // Applied even if the screen bounds are unchanged: the renderer also resends
+  // unchanged bounds when e.g. the device scale factor changes, which needs a
+  // new LocalSurfaceId.
+  ApplyWindowBounds(ConstrainBounds(bounds_in_dips_));
 }
 
 void UnboundedSurfaceHostImpl::DidPresentFrameAfterDismissal() {
@@ -131,9 +136,35 @@ void UnboundedSurfaceHostImpl::OnWindowDestroyed() {
   DestroySoon();
 }
 
-// TODO(crbug.com/567606993): Constraints are only applied when the renderer
-// sends new bounds. That doesn't happen when the window moves or when the
-// parent moves an OOPIF, so the surface can be left in a stale position.
+// Recalculates bounds for the hit target (hitbox) when receiving an update from
+// Viz, such as from zoom.
+void UnboundedSurfaceHostImpl::OnTargetViewMoved() {
+  if (!window_ || !root_view_ || !frame_view_ || dismiss_pending_) {
+    return;
+  }
+  gfx::Rect bounds_in_screen = ConstrainBounds(bounds_in_dips_);
+  if (bounds_in_screen != bounds_in_screen_) {
+    ApplyWindowBounds(bounds_in_screen);
+  }
+}
+
+void UnboundedSurfaceHostImpl::ApplyWindowBounds(
+    const gfx::Rect& bounds_in_screen) {
+  CHECK(window_);
+  const viz::LocalSurfaceId previous_id = window_->GetLocalSurfaceId();
+  bounds_in_screen_ = bounds_in_screen;
+  window_->SetBounds(bounds_in_screen_);
+  if (window_->GetLocalSurfaceId() != previous_id) {
+    NotifySurfaceAllocated();
+  }
+}
+
+// TODO(crbug.com/567606993): Bounds are recomputed when the renderer sends new
+// bounds, and when the target view moves within the root view (see
+// OnTargetViewMoved()), but not when the root view itself moves on screen
+// without dismissing the surface (e.g. OS-initiated window moves, or when
+// dismissal is canceled in beforetoggle), so the surface can be left in a
+// stale position.
 gfx::Rect UnboundedSurfaceHostImpl::ConstrainBounds(
     const gfx::Rect& bounds_in_dips) {
   CHECK(root_view_);

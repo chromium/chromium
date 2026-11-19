@@ -33,6 +33,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/renderer_host/unbounded_surface_window.h"
 #include "content/common/features.h"
 #include "content/common/input/synthetic_gesture_target.h"
 #include "content/public/browser/render_process_host.h"
@@ -951,6 +952,15 @@ void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
     selection_controller_client_->OnHitTestRegionUpdated();
   }
   input_helper_->NotifyHitTestRegionUpdated(region);
+
+  // Unbounded surfaces requested from this view are positioned with this
+  // view's transform to the root view, which comes from the hit test data.
+  if (RenderWidgetHostViewBase* root_view = GetRootView()) {
+    if (UnboundedSurfaceWindow* window = root_view->GetUnboundedSurfaceWindow();
+        window && window->GetTargetView() == this) {
+      window->NotifyTargetViewMoved();
+    }
+  }
 }
 
 bool RenderWidgetHostViewChildFrame::ScreenRectIsUnstableFor(

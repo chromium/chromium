@@ -52,6 +52,7 @@ class CONTENT_EXPORT UnboundedSurfaceHostImpl
   // UnboundedSurfaceWindow::Delegate:
   void OnDismissRequested() override;
   void OnWindowDestroyed() override;
+  void OnTargetViewMoved() override;
 
  private:
   // `root_view` hosts the native window. `frame_view` is the view of the
@@ -72,6 +73,10 @@ class CONTENT_EXPORT UnboundedSurfaceHostImpl
   // what the requesting document is allowed to cover.
   gfx::Rect ConstrainBounds(const gfx::Rect& bounds_in_dips);
 
+  // Moves/resizes `window_` to `bounds_in_screen`, notifying the renderer if a
+  // new LocalSurfaceId was allocated (e.g. on resize or DSF change).
+  void ApplyWindowBounds(const gfx::Rect& bounds_in_screen);
+
   void NotifySurfaceAllocated();
 
   // Deletes `this`, and therefore the surface, in a posted task, so that
@@ -81,6 +86,11 @@ class CONTENT_EXPORT UnboundedSurfaceHostImpl
   base::WeakPtr<RenderWidgetHostViewBase> root_view_;
   base::WeakPtr<RenderWidgetHostViewBase> frame_view_;
   base::WeakPtr<UnboundedSurfaceWindow> window_;
+
+  // The latest bounds sent by the renderer, relative to `frame_view_`.
+  gfx::Rect bounds_in_dips_;
+  // The screen bounds last applied to `window_`.
+  gfx::Rect bounds_in_screen_;
 
   mojo::AssociatedReceiver<blink::mojom::UnboundedSurfaceHost> receiver_{this};
   mojo::AssociatedRemote<blink::mojom::UnboundedSurfaceClient> client_;

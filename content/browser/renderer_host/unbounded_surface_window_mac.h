@@ -109,6 +109,8 @@ class CONTENT_EXPORT UnboundedSurfaceWindowMac
   std::unique_ptr<ui::RecyclableCompositorMac> recyclable_compositor_;
   std::unique_ptr<ui::LayerSurface> root_layer_;
   std::unique_ptr<ui::DisplayCALayerTree> display_ca_layer_tree_;
+  gfx::Size last_surface_size_;
+  float last_scale_factor_ = 0.0f;
   base::WeakPtrFactory<UnboundedSurfaceWindow> weak_ptr_factory_{this};
 };
 

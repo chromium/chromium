@@ -21,6 +21,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/input/synthetic_gesture_target.h"
 #include "content/common/input/synthetic_pointer_driver.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor.h"
@@ -1364,6 +1366,86 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   RunUntilInputProcessed(iframe->GetRenderWidgetHost());
 
   EXPECT_TRUE(EvalJs(iframe, "window.__clicked").ExtractBool());
+}
+
+// Verifies that a surface requested from an OOPIF follows the OOPIF when the
+// embedder moves it. The element does not move within the OOPIF, so the OOPIF's
+// renderer does not send new bounds, and the browser has to reposition the
+// surface when the OOPIF's transform changes (crbug.com/567606993).
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       SubframeSurfaceFollowsEmbedderRelayout) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/unbounded_subframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  WaitForHitTestData(iframe);
+
+  EXPECT_TRUE(ExecJs(iframe, "window.openUnbounded()"));
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  MainThreadFrameObserver(iframe->GetRenderWidgetHost()).Wait();
+
+  // The iframe is at document (50, 50) and the element at (120, 120) within
+  // it.
+  RenderWidgetHostViewBase* root_view = static_cast<RenderWidgetHostViewBase*>(
+      primary_main_frame_host()->GetRenderWidgetHost()->GetView());
+  const gfx::Vector2d root_offset =
+      root_view->GetViewBounds().OffsetFromOrigin();
+  EXPECT_EQ(gfx::Rect(170, 170, 50, 50) + root_offset, window->GetBounds());
+  const viz::LocalSurfaceId initial_surface_id = window->GetLocalSurfaceId();
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), R"(
+    const iframe = document.getElementById('test_iframe');
+    iframe.style.left = '150px';
+    iframe.style.top = '100px';
+  )"));
+
+  const gfx::Rect expected_bounds = gfx::Rect(270, 220, 50, 50) + root_offset;
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return window->GetBounds() == expected_bounds;
+  })) << "Expected "
+      << expected_bounds.ToString() << ", got "
+      << window->GetBounds().ToString();
+  EXPECT_EQ(initial_surface_id, window->GetLocalSurfaceId());
+}
+
+// Verifies that a surface requested from an OOPIF stays anchored to it when the
+// zoom level changes. Both the OOPIF and the element within it move, and the
+// OOPIF's renderer can send its new bounds before the browser knows the OOPIF's
+// new position.
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       SubframeSurfaceFollowsZoomChange) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/unbounded_subframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  WaitForHitTestData(iframe);
+
+  EXPECT_TRUE(ExecJs(iframe, "window.openUnbounded()"));
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  MainThreadFrameObserver(iframe->GetRenderWidgetHost()).Wait();
+
+  RenderWidgetHostViewBase* root_view = static_cast<RenderWidgetHostViewBase*>(
+      primary_main_frame_host()->GetRenderWidgetHost()->GetView());
+  const gfx::Vector2d root_offset =
+      root_view->GetViewBounds().OffsetFromOrigin();
+  EXPECT_EQ(gfx::Rect(170, 170, 50, 50) + root_offset, window->GetBounds());
+  const viz::LocalSurfaceId initial_surface_id = window->GetLocalSurfaceId();
+
+  HostZoomMap::SetZoomLevel(web_contents(), blink::ZoomFactorToZoomLevel(1.5));
+
+  // At 150%, the iframe is at (75, 75) and the element at (180, 180) within
+  // it, and the element is 75x75.
+  const gfx::Rect expected_bounds = gfx::Rect(255, 255, 75, 75) + root_offset;
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return window->GetBounds() == expected_bounds;
+  })) << "Expected "
+      << expected_bounds.ToString() << ", got "
+      << window->GetBounds().ToString();
+  EXPECT_NE(initial_surface_id, window->GetLocalSurfaceId());
 }
 
 // Verifies that when an unbounded element is positioned outside the subframe's
@@ -2877,6 +2959,52 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   EXPECT_EQ(view->GetViewBounds(), window->GetBounds());
 }
 
+// Verifies that moving an unbounded element without resizing it moves the
+// surface by the same distance. On desktop Aura, the surface is hosted in its
+// own top-level window, and such moves used to move it twice as far.
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, MoveWithoutResize) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <style>
+        body { margin: 0; padding: 0; }
+        #target {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          width: 50px;
+          height: 50px;
+        }
+      </style>
+      <div id="target" unbounded></div>
+    `;
+    document.getElementById('target').showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
+      primary_main_frame_host()->GetRenderWidgetHost()->GetView());
+  ASSERT_TRUE(view);
+  const gfx::Vector2d view_offset = view->GetViewBounds().OffsetFromOrigin();
+  EXPECT_EQ(gfx::Rect(10, 10, 50, 50) + view_offset, window->GetBounds());
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(),
+                     "document.getElementById('target').style.left = "
+                     "'110px';"));
+
+  const gfx::Rect expected_bounds = gfx::Rect(110, 10, 50, 50) + view_offset;
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return window->GetBounds() == expected_bounds;
+  })) << "Expected "
+      << expected_bounds.ToString() << ", got "
+      << window->GetBounds().ToString();
+}
+
 // Same as OpenWebIframeConstrainedToViewport, but with a cross-site (OOPIF)
 // iframe. The iframe's renderer can't clamp to the (remote) top frame, so the
 // browser is responsible for the viewport clamp.
@@ -3323,6 +3451,11 @@ class ScopedDismissRecorder : public UnboundedSurfaceWindow::Delegate {
   void OnWindowDestroyed() override {
     if (original_delegate_) {
       original_delegate_->OnWindowDestroyed();
+    }
+  }
+  void OnTargetViewMoved() override {
+    if (original_delegate_) {
+      original_delegate_->OnTargetViewMoved();
     }
   }
 

@@ -97,6 +97,7 @@ class UnboundedSurfaceWindowAndroid : public UnboundedSurfaceWindow,
 
   base::android::ScopedJavaGlobalRef<jobject> j_popup_window_;
   gfx::Rect bounds_in_dips_;
+  float last_device_scale_factor_ = 0.0f;
 
   base::WeakPtrFactory<UnboundedSurfaceWindowAndroid> weak_ptr_factory_{this};
 };
