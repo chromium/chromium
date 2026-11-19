@@ -830,6 +830,30 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   }
 }
 
+void WaylandToplevelWindow::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
+  auto state = GetLatestRequestedState();
+  const bool compositor_sized =
+      state.window_state == PlatformWindowState::kMaximized ||
+      state.window_state == PlatformWindowState::kFullScreen ||
+      (ShouldSetBounds(state.window_state) &&
+       state.tiled_edges != WindowTiledEdges());
+  if (!compositor_sized || !IsSurfaceConfigured() ||
+      state.geometry_size_dip.IsEmpty()) {
+    WaylandWindow::SetBoundsInDIP(bounds_dip);
+    return;
+  }
+
+  // The size of a maximized, fullscreen or tiled window is set by the
+  // compositor, which may keep it at the configured size regardless of the
+  // committed window geometry, and committing a different size while maximized
+  // is a protocol error. Keep the configured size so that a client-initiated
+  // resize (e.g. window.resizeTo()) does not shrink the window inside its tile
+  // or work area (crbug.com/586203821). This matches OnStateRequestApplied(),
+  // which treats any tiled edge as compositor-sized.
+  state.bounds_dip.set_origin(bounds_dip.origin());
+  RequestStateFromClient(state);
+}
+
 void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
   gfx::Rect new_bounds(origin, GetBoundsInDIP().size());
   WaylandWindow::SetBoundsInDIP(new_bounds);

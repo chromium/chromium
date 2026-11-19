@@ -772,6 +772,64 @@ TEST_P(WaylandWindowTest, GeometrySentOnTilingStateChange) {
   VerifyAndClearExpectations();
 }
 
+// Regression test for crbug.com/586203821. A client-initiated resize must keep
+// the configured size of a tiled, maximized or fullscreen window, since the
+// compositor keeps the window at the configured size and the window would
+// otherwise only fill part of it.
+TEST_P(WaylandWindowTest, ClientResizeKeepsCompositorSize) {
+  constexpr gfx::Size kTileSize{796, 896};
+  constexpr gfx::Rect kRequestedBounds{600, 500};
+
+  EXPECT_CALL(delegate_, OnWindowTiledStateChanged(_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _))
+      .Times(testing::AnyNumber());
+
+  struct {
+    std::vector<xdg_toplevel_state> states;
+    gfx::Size expected_size;
+  } kTestCases[]{
+      {{XDG_TOPLEVEL_STATE_TILED_LEFT, XDG_TOPLEVEL_STATE_TILED_RIGHT,
+        XDG_TOPLEVEL_STATE_TILED_TOP, XDG_TOPLEVEL_STATE_TILED_BOTTOM},
+       kTileSize},
+      // A left half tile, as sent by e.g. Mutter and KWin.
+      {{XDG_TOPLEVEL_STATE_TILED_LEFT, XDG_TOPLEVEL_STATE_TILED_TOP,
+        XDG_TOPLEVEL_STATE_TILED_BOTTOM},
+       kTileSize},
+      // A top-left quarter tile.
+      {{XDG_TOPLEVEL_STATE_TILED_LEFT, XDG_TOPLEVEL_STATE_TILED_TOP},
+       kTileSize},
+      {{XDG_TOPLEVEL_STATE_TILED_LEFT}, kTileSize},
+      {{XDG_TOPLEVEL_STATE_MAXIMIZED}, kTileSize},
+      {{XDG_TOPLEVEL_STATE_FULLSCREEN}, kTileSize},
+      {{}, kRequestedBounds.size()},
+  };
+  for (const auto& test_case : kTestCases) {
+    auto states = InitializeWlArrayWithActivatedState();
+    for (const auto state : test_case.states) {
+      AddStateToWlArray(state, states.get());
+    }
+    SendConfigureEvent(surface_id_, kTileSize, states);
+    AdvanceFrameToCurrent(window_.get(), delegate_);
+    ASSERT_EQ(kTileSize, window_->GetBoundsInDIP().size());
+
+    PostToServerAndWait([id = surface_id_, size = test_case.expected_size](
+                            wl::TestWaylandServerThread* server) {
+      wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+      ASSERT_TRUE(mock_surface);
+      wl::MockXdgSurface* xdg_surface = mock_surface->xdg_surface();
+      EXPECT_CALL(*xdg_surface, SetWindowGeometry(_))
+          .Times(testing::AnyNumber());
+      EXPECT_CALL(*xdg_surface, SetWindowGeometry(testing::Ne(gfx::Rect(size))))
+          .Times(0);
+    });
+    window_->SetBoundsInDIP(kRequestedBounds);
+    AdvanceFrameToCurrent(window_.get(), delegate_);
+    EXPECT_EQ(test_case.expected_size, window_->GetBoundsInDIP().size());
+    VerifyAndClearExpectations();
+  }
+}
+
 TEST_P(WaylandWindowTest, OnSequencePointClearsPreviousUnackedConfigures) {
   constexpr gfx::Rect kNormalBounds1{500, 300};
   constexpr gfx::Rect kNormalBounds2{800, 600};

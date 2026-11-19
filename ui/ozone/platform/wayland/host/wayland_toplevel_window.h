@@ -60,6 +60,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void UpdateActivationState();
 
   // WaylandWindow overrides:
+  void SetBoundsInDIP(const gfx::Rect& bounds_dip) override;
   void UpdateWindowScale(bool update_bounds) override;
   WaylandToplevelWindow* AsWaylandToplevelWindow() override;
 
