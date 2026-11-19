@@ -3480,7 +3480,13 @@ TEST_F(WidgetScrollViewTest, TransposedScrollAxisLockMomentumAndReset) {
   EXPECT_EQ(gfx::PointF(82, 0), test_api.CurrentOffset());
 }
 
-TEST_F(WidgetScrollViewTest, TransposedMouseWheelAxisLock) {
+// TODO(crbug.com/587715029): Data race under TSan.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_TransposedMouseWheelAxisLock DISABLED_TransposedMouseWheelAxisLock
+#else
+#define MAYBE_TransposedMouseWheelAxisLock TransposedMouseWheelAxisLock
+#endif
+TEST_F(WidgetScrollViewTest, MAYBE_TransposedMouseWheelAxisLock) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(::features::kUiCompositorScrollWithLayers);
 
