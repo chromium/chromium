@@ -259,7 +259,9 @@ HRESULT AXPlatformNodeTextProviderWin::RangeFromPoint(
   AXPlatformNodeWin* nearest_node =
       static_cast<AXPlatformNodeWin*>(owner()->NearestLeafToPoint(point));
   CHECK(nearest_node, base::NotFatalUntil::M163);
-  CHECK(nearest_node->IsLeaf(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/587217318): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(nearest_node->IsLeaf());
 
   AXNodePosition::AXPositionInstance start, end;
   start = nearest_node->GetDelegate()->CreateTextPositionAt(
