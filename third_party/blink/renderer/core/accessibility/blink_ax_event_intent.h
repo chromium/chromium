@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/commands/edit_command.h"
 #include "third_party/blink/renderer/core/editing/selection_modifier.h"
-#include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/text_granularity.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -31,19 +30,15 @@ namespace blink {
 class CORE_EXPORT BlinkAXEventIntent final {
  public:
   static BlinkAXEventIntent FromEditCommand(const EditCommand& edit_command);
-  static BlinkAXEventIntent FromClearedSelection(
-      const SetSelectionBy set_selection_by);
+  static BlinkAXEventIntent FromClearedSelection();
   static BlinkAXEventIntent FromModifiedSelection(
       const SelectionModifyAlteration alter,
       const SelectionModifyDirection direction,
       const TextGranularity granularity,
-      const SetSelectionBy set_selection_by,
       const TextDirection direction_of_selection,
       const PlatformWordBehavior platform_word_behavior);
-  static BlinkAXEventIntent FromNewSelection(
-      const TextGranularity granularity,
-      bool is_base_first,
-      const SetSelectionBy set_selection_by);
+  static BlinkAXEventIntent FromNewSelection(const TextGranularity granularity,
+                                             bool is_base_first);
 
   // Creates an empty (uninitialized) instance.
   BlinkAXEventIntent();

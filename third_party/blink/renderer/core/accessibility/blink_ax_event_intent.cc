@@ -204,8 +204,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromEditCommand(
 }
 
 // static
-BlinkAXEventIntent BlinkAXEventIntent::FromClearedSelection(
-    const SetSelectionBy set_selection_by) {
+BlinkAXEventIntent BlinkAXEventIntent::FromClearedSelection() {
   // text boundary and move direction are not needed in this case.
   return BlinkAXEventIntent(ax::mojom::blink::Command::kClearSelection);
 }
@@ -215,7 +214,6 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
     const SelectionModifyAlteration alter,
     const SelectionModifyDirection direction,
     const TextGranularity granularity,
-    const SetSelectionBy set_selection_by,
     const TextDirection direction_of_selection,
     const PlatformWordBehavior platform_word_behavior) {
   ax::mojom::blink::Command command;
@@ -348,8 +346,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
 // static
 BlinkAXEventIntent BlinkAXEventIntent::FromNewSelection(
     const TextGranularity granularity,
-    bool is_base_first,
-    const SetSelectionBy set_selection_by) {
+    bool is_base_first) {
   // Unfortunately, when setting a completely new selection, |text_boundary| is
   // not always known, or is hard to compute. For example, if a new selection
   // has been made using the mouse, it would be expensive to compute any

@@ -371,7 +371,6 @@ void FrameSelection::DidSetSelectionDeprecated(
     const SelectionInDomTree& new_selection,
     const SetSelectionOptions& options) {
   Document& current_document = GetDocument();
-  const SetSelectionBy set_selection_by = options.GetSetSelectionBy();
 
   // Provides details to accessibility about the selection change throughout the
   // current call stack.
@@ -384,10 +383,9 @@ void FrameSelection::DidSetSelectionDeprecated(
     scoped_blink_ax_event_intent.emplace(
         is_being_modified_ ? BlinkAXEventIntent()
         : new_selection.IsNone()
-            ? BlinkAXEventIntent::FromClearedSelection(set_selection_by)
+            ? BlinkAXEventIntent::FromClearedSelection()
             : BlinkAXEventIntent::FromNewSelection(
-                  options.Granularity(), new_selection.IsAnchorFirst(),
-                  set_selection_by),
+                  options.Granularity(), new_selection.IsAnchorFirst()),
         &current_document);
   }
 
@@ -421,6 +419,7 @@ void FrameSelection::DidSetSelectionDeprecated(
     }
   }
 
+  const SetSelectionBy set_selection_by = options.GetSetSelectionBy();
   NotifyTextControlOfSelectionChange(set_selection_by);
   if (set_selection_by == SetSelectionBy::kUser) {
     const CursorAlignOnScroll align = options.GetCursorAlignOnScroll();
@@ -651,7 +650,7 @@ bool FrameSelection::Modify(SelectionModifyAlteration alter,
   if (document.ExistingAXObjectCache()) {
     scoped_blink_ax_event_intent.emplace(
         BlinkAXEventIntent::FromModifiedSelection(
-            alter, direction, granularity, set_selection_by,
+            alter, direction, granularity,
             selection_modifier.DirectionOfSelection(), platform_word_behavior),
         &document);
   }
