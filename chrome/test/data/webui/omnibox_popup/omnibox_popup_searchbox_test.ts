@@ -8,6 +8,7 @@ import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, O
 import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {MetricsReporter} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -170,6 +171,10 @@ suite('OmniboxPopupSearchboxTest', function() {
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
     handler = TestMock.fromClass(OmniboxPopupPageHandlerRemote);
+    // Returns no AIM hint by default. Unlike a result set on the mock, this
+    // survives `handler.reset()`.
+    handler.requestAimHint = () =>
+        handler.methodCalled('requestAimHint') ?? Promise.resolve({hint: ''});
     const {instance, remote} =
         omniboxPopupBrowserProxyFactory.createForTest(handler);
     callbackRouter = remote;
@@ -3169,6 +3174,302 @@ suite('OmniboxPopupSearchboxTest', function() {
      await searchbox.$.input.updateComplete;
      assertEquals('', searchbox.$.input.inputElement.placeholder);
    });
+ });
+
+ const kAimHint = '\u21E5 Press tab then enter to ask AI Mode';
+
+ // Focuses the empty input and shows the AIM button.
+ async function focusEmptyInputWithAimButton(sequenceNumber: number = 1) {
+   callbackRouter.setInputState(
+       createDefaultOmniboxInputState({sequenceNumber, isFocused: true}));
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+ }
+
+ // Replaces the text of the focused input, like typing or deleting does.
+ async function setInputText(text: string) {
+   const input = searchbox.$.input.inputElement;
+   input.value = text;
+   input.dispatchEvent(new InputEvent(
+       'input', {inputType: text ? 'insertText' : 'deleteContentBackward'}));
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+ }
+
+ test('AimHintShownInFocusedEmptyInput', async () => {
+   handler.setPromiseResolveFor<'requestAimHint'>(
+       'requestAimHint', {hint: kAimHint});
+   await focusEmptyInputWithAimButton();
+
+   const input = searchbox.$.input.inputElement;
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   assertEquals(kAimHint, input.placeholder);
+   assertTrue(input.matches(':placeholder-shown'));
+   // Unlike the DSE placeholder, the hint is visible in the focused input.
+   assertTrue(input.matches(':focus'));
+   assertEquals('visible', getComputedStyle(input, '::placeholder').visibility);
+   assertTrue(searchbox.$.input.hasAttribute('aim-hint'));
+
+   // Typing hides the hint. Clearing the input shows it without a new request.
+   await setInputText('a');
+   assertFalse(input.matches(':placeholder-shown'));
+   await setInputText('');
+   assertEquals(kAimHint, input.placeholder);
+   assertTrue(input.matches(':placeholder-shown'));
+   assertEquals(1, handler.getCallCount('requestAimHint'));
+ });
+
+ test('AimHintOnlyRequestedForFocusedEmptyInput', async () => {
+   // An unfocused input.
+   callbackRouter.setInputState(createDefaultOmniboxInputState());
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+   assertEquals(0, handler.getCallCount('requestAimHint'));
+
+   // A focused input with text.
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     sequenceNumber: 2,
+     text: 'chrome://version',
+     fullUrl: 'chrome://version',
+     isFocused: true,
+     permanentDisplayText: 'chrome://version',
+   }));
+   await microtasksFinished();
+   assertEquals(0, handler.getCallCount('requestAimHint'));
+
+   // A focused, empty input without the AIM button.
+   testProxy.page.setAimButtonVisible(false);
+   callbackRouter.setInputState(
+       createDefaultOmniboxInputState({sequenceNumber: 3, isFocused: true}));
+   await microtasksFinished();
+   assertEquals(0, handler.getCallCount('requestAimHint'));
+
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+   assertEquals(1, handler.getCallCount('requestAimHint'));
+ });
+
+ // Whitespace hides the placeholder, so the hint isn't requested for it.
+ test('AimHintRequestedOnceWhitespaceIsDeleted', async () => {
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: 'chrome://version',
+     fullUrl: 'chrome://version',
+     isFocused: true,
+     permanentDisplayText: 'chrome://version',
+   }));
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+   await setInputText(' ');
+   assertEquals(0, handler.getCallCount('requestAimHint'));
+
+   await setInputText('');
+   assertEquals(1, handler.getCallCount('requestAimHint'));
+ });
+
+ // A keyword's placeholder takes precedence over the hint.
+ test('AimHintNotRequestedInKeywordMode', async () => {
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     userInputInProgress: true,
+     isFocused: true,
+     keywordModel: {
+       type: KeywordType.kInKeyword,
+       keyword: 'youtube.com',
+       displayText: 'Search YouTube',
+       iconPath: '',
+       placeholder: '',
+     },
+   }));
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+   assertTrue(searchbox.inKeywordMode);
+   assertEquals(0, handler.getCallCount('requestAimHint'));
+ });
+
+ // Focus that changes no reactive property still requests the hint.
+ test('AimHintRequestedOnInputFocusin', async () => {
+   callbackRouter.setInputState(createDefaultOmniboxInputState());
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+   assertEquals(0, handler.getCallCount('requestAimHint'));
+
+   searchbox.focusInput();
+   await microtasksFinished();
+   assertEquals(1, handler.getCallCount('requestAimHint'));
+ });
+
+ // The browser returns no hint if e.g. its impression limits were reached.
+ test('AimHintNotShownIfBrowserReturnsNone', async () => {
+   await focusEmptyInputWithAimButton();
+
+   const input = searchbox.$.input.inputElement;
+   assertEquals(1, handler.getCallCount('requestAimHint'));
+   assertEquals('', input.placeholder);
+   assertFalse(searchbox.$.input.hasAttribute('aim-hint'));
+
+   // The browser isn't asked again in the same focus session.
+   await setInputText('a');
+   await setInputText('');
+   assertEquals('', input.placeholder);
+   assertEquals(1, handler.getCallCount('requestAimHint'));
+ });
+
+ // While the AIM button has focus, the input shows the DSE placeholder.
+ test('AimHintHiddenWhileAimButtonFocused', async () => {
+   handler.setPromiseResolveFor<'requestAimHint'>(
+       'requestAimHint', {hint: kAimHint});
+   const dsePlaceholder = 'Ask Google or type a URL';
+   callbackRouter.setDefaultSearchProvider(
+       '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+       PlaceholderType.kAskOrTypeUrl, 'Google');
+   searchbox.dropdownIsVisible = false;
+   await focusEmptyInputWithAimButton();
+
+   const input = searchbox.$.input.inputElement;
+   assertEquals(kAimHint, input.placeholder);
+
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Tab',
+     cancelable: true,
+     bubbles: true,
+   }));
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals(searchbox.$.composeButton, searchbox.shadowRoot.activeElement);
+   assertEquals(dsePlaceholder, input.placeholder);
+   assertFalse(searchbox.$.input.hasAttribute('aim-hint'));
+
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Tab',
+     shiftKey: true,
+     cancelable: true,
+     bubbles: true,
+   }));
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals(searchbox.$.input, searchbox.shadowRoot.activeElement);
+   assertEquals(kAimHint, input.placeholder);
+
+   // Virtual focus on the AIM button hides the hint too.
+   searchbox.setSelection({
+     line: -1,
+     state: SelectionLineState.kFocusedButtonAim,
+     actionIndex: 0,
+   });
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals('', input.placeholder);
+
+   searchbox.setSelection(kDefaultSelection);
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals(kAimHint, input.placeholder);
+   assertEquals(1, handler.getCallCount('requestAimHint'));
+ });
+
+ // Hiding the AIM button hides the hint. Showing it again in the same focus
+ // session shows the hint without a new request.
+ test('AimHintHiddenWhileAimButtonHidden', async () => {
+   handler.setPromiseResolveFor<'requestAimHint'>(
+       'requestAimHint', {hint: kAimHint});
+   await focusEmptyInputWithAimButton();
+   const input = searchbox.$.input.inputElement;
+   assertEquals(kAimHint, input.placeholder);
+
+   testProxy.page.setAimButtonVisible(false);
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals('', input.placeholder);
+   assertFalse(searchbox.$.input.hasAttribute('aim-hint'));
+
+   testProxy.page.setAimButtonVisible(true);
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals(kAimHint, input.placeholder);
+   assertEquals(1, handler.getCallCount('requestAimHint'));
+ });
+
+ // The hint clears when the omnibox loses focus or the popup is hidden, and
+ // the next focus session requests it again.
+ [{
+   name: 'SetFocusFalse',
+   action: () => callbackRouter.setFocus(
+       /*isFocused=*/ false, /*queryZps=*/ false, /*selectAll=*/ false,
+       /*showFullUrl=*/ false),
+ },
+  {
+    name: 'ClearPopup',
+    action: () => callbackRouter.clearPopup(),
+  },
+  {
+    name: 'UnfocusedInputState',
+    action: () => callbackRouter.setInputState(createDefaultOmniboxInputState({
+      sequenceNumber: 2,
+      tabId: 2,
+      isTabSwitch: true,
+    })),
+  },
+ ].forEach(({name, action}) => {
+   test(`AimHintRequestedAgainAfter${name}`, async () => {
+     handler.setPromiseResolveFor<'requestAimHint'>(
+         'requestAimHint', {hint: kAimHint});
+     await focusEmptyInputWithAimButton();
+     const input = searchbox.$.input.inputElement;
+     assertEquals(kAimHint, input.placeholder);
+     assertEquals(1, handler.getCallCount('requestAimHint'));
+
+     action();
+     await microtasksFinished();
+     await searchbox.$.input.updateComplete;
+     assertEquals('', input.placeholder);
+     assertEquals(1, handler.getCallCount('requestAimHint'));
+
+     await focusEmptyInputWithAimButton(/*sequenceNumber=*/ 3);
+     assertEquals(kAimHint, input.placeholder);
+     assertEquals(2, handler.getCallCount('requestAimHint'));
+   });
+ });
+
+ // Like in Views, another tab's omnibox is another focus session, even if the
+ // omnibox stays focused across the tab switch.
+ test('AimHintRequestedAgainForAnotherFocusedTab', async () => {
+   handler.setPromiseResolveFor<'requestAimHint'>(
+       'requestAimHint', {hint: kAimHint});
+   await focusEmptyInputWithAimButton();
+   assertEquals(1, handler.getCallCount('requestAimHint'));
+
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     sequenceNumber: 2,
+     tabId: 1,
+     isTabSwitch: true,
+     isFocused: true,
+   }));
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals(2, handler.getCallCount('requestAimHint'));
+   assertEquals(kAimHint, searchbox.$.input.inputElement.placeholder);
+ });
+
+ // A reply that arrives after its focus session ended must not show the hint.
+ test('AimHintDroppedIfFocusLostBeforeBrowserReplies', async () => {
+   const reply = new PromiseResolver<{hint: string}>();
+   handler.setResultFor('requestAimHint', reply.promise);
+   await focusEmptyInputWithAimButton();
+   assertEquals(1, handler.getCallCount('requestAimHint'));
+
+   callbackRouter.setFocus(
+       /*isFocused=*/ false, /*queryZps=*/ false, /*selectAll=*/ false,
+       /*showFullUrl=*/ false);
+   await microtasksFinished();
+   // The browser returns no hint in the next focus session.
+   handler.setPromiseResolveFor<'requestAimHint'>('requestAimHint', {hint: ''});
+   await focusEmptyInputWithAimButton(/*sequenceNumber=*/ 2);
+   assertEquals(2, handler.getCallCount('requestAimHint'));
+
+   reply.resolve({hint: kAimHint});
+   await microtasksFinished();
+   await searchbox.$.input.updateComplete;
+   assertEquals('', searchbox.$.input.inputElement.placeholder);
  });
 
  test('TabSwitchInputStateIsolationAndReset', async () => {

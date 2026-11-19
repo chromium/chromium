@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
@@ -454,7 +458,8 @@ void OmniboxPopupHandler::NotifyDefaultSearchProviderChanged() {
     Profile* profile =
         web_contents_ ? webui::GetUserProfile(web_contents_) : nullptr;
     placeholder_type =
-        omnibox::ShouldUseAskPlaceholderText(profile, template_url_service)
+        omnibox::ShouldUseAskPlaceholderText(
+            omnibox::IsAimPopupEnabled(profile), template_url_service)
             ? omnibox_popup::mojom::PlaceholderType::kAskOrTypeUrl
             : omnibox_popup::mojom::PlaceholderType::kSearchOrTypeUrl;
     search_engine_name = base::UTF16ToUTF8(default_provider->short_name());
@@ -609,6 +614,29 @@ void OmniboxPopupHandler::AdvanceFocus(bool reverse) {
           OmniboxPopupWebContentsHelper::FromWebContents(web_contents_)) {
     helper->AdvanceFocus(reverse);
   }
+}
+
+void OmniboxPopupHandler::RequestAimHint(RequestAimHintCallback callback) {
+  // Only the full WebUI omnibox shows the hint in this page. Otherwise the
+  // omnibox view shows it and records its impressions.
+  const OmniboxView* view =
+      controller_ ? controller_->edit_model()->view() : nullptr;
+  if (!view || !view->IsFullWebUIOmnibox()) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+  // `hint` is the AIM hint only if the omnibox is focused and AIM is enabled.
+  std::u16string hint;
+  std::optional<std::u16string> unused_a11y_hint;
+  omnibox::ComputePlaceholderText(*controller_, hint, unused_a11y_hint);
+  if (!omnibox::IsAimPlaceholderText(*controller_, hint) ||
+      omnibox::AreAimHintImpressionLimitsReached(
+          *controller_, /*aim_hint_currently_shown=*/false)) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+  omnibox::RecordAimHintImpression(*controller_);
+  std::move(callback).Run(base::UTF16ToUTF8(hint));
 }
 
 searchbox::mojom::UrlEmphasisPtr OmniboxPopupHandler::ComputeUrlEmphasis(

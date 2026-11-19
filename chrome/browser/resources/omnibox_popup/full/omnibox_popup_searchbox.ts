@@ -238,6 +238,11 @@ export class OmniboxPopupSearchboxElement extends
        * (b/504669677).
        */
       aimButtonFocused_: {type: Boolean},
+      /**
+       * The AIM hint, e.g. "Press tab then enter to ask AI Mode". Empty unless
+       * the browser returned it for the current focus session.
+       */
+      aimHintText_: {type: String},
       searchboxVoiceSearchEnabled_: {
         type: Boolean,
         reflect: true,
@@ -381,6 +386,9 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getString('searchboxDefaultIcon');
   private accessor dsePlaceholderText_: string = '';
   private accessor aimButtonFocused_: boolean = false;
+  private accessor aimHintText_: string = '';
+  // The current focus session's request for `aimHintText_`, if any.
+  private aimHintRequest_: Promise<{hint: string}>|null = null;
   protected accessor searchboxVoiceSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
@@ -746,6 +754,8 @@ export class OmniboxPopupSearchboxElement extends
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+
+    this.maybeRequestAimHint_();
 
     if (changedProperties.has('selection') ||
         changedProperties.has('selectedMatchIndex')) {
@@ -1960,6 +1970,12 @@ export class OmniboxPopupSearchboxElement extends
     this.$.input.urlEmphasis = text === state.text ? state.urlEmphasis : null;
     this.hasUserInput_ = state.userInputInProgress && !!text.trim();
     this.currentSequenceNum_ = state.sequenceNumber;
+    if (state.tabId !== this.tabId_) {
+      // Like in Views, another tab's omnibox is another focus session.
+      // `updated()` requests the hint for it.
+      this.resetAimHint_();
+      this.requestUpdate();
+    }
     this.tabId_ = state.tabId;
     this.fullUrl_ = state.fullUrl;
     this.permanentDisplayText_ = state.permanentDisplayText;
@@ -2009,6 +2025,7 @@ export class OmniboxPopupSearchboxElement extends
     } else {
       this.deferredFocusAction_ = null;
       this.$.input.blur();
+      this.resetAimHint_();
     }
     if (state.showFullUrl) {
       this.maybeShowFullUrl_();
@@ -2211,6 +2228,7 @@ export class OmniboxPopupSearchboxElement extends
     // `focusout`, so reset its focus state, or a reshown popup would show the
     // placeholder.
     this.aimButtonFocused_ = false;
+    this.resetAimHint_();
     // The popup may be hidden while the omnibox is still logically focused
     // (e.g. after opening a match), without a `SetFocus(false)`. Reset that
     // too, so that the next show doesn't paint the collapsed focus ring before
@@ -2252,6 +2270,7 @@ export class OmniboxPopupSearchboxElement extends
     // here is necessary in order to guarantee that the AIM button is hidden
     // when the user defocuses the Omnibox.
     this.aimButtonVisible_ = false;
+    this.resetAimHint_();
   }
 
   /**
@@ -2379,6 +2398,7 @@ export class OmniboxPopupSearchboxElement extends
 
   protected onInputFocusin_() {
     this.searchboxPageHandler_.onFocusChanged(true);
+    this.maybeRequestAimHint_();
   }
 
   protected onComposeButtonFocusin_() {
@@ -2390,7 +2410,48 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   protected computeInputPlaceholderText_(): string {
-    return this.aimButtonFocused_ ? this.dsePlaceholderText_ : '';
+    if (this.aimButtonFocused_) {
+      return this.dsePlaceholderText_;
+    }
+    return this.shouldShowAimHint_() ? this.aimHintText_ : '';
+  }
+
+  protected shouldShowAimHint_(): boolean {
+    return !!this.aimHintText_ && this.canShowAimHint_();
+  }
+
+  // Like in Views, the hint needs a visible AIM button and no focused button.
+  // A keyword's placeholder takes precedence.
+  private canShowAimHint_(): boolean {
+    return this.aimButtonVisible_ && !this.aimButtonFocused_ &&
+        this.selection.state === SelectionLineState.kNormal &&
+        !this.inKeywordMode;
+  }
+
+  // Asks the browser for the AIM hint once the focused, empty input can show
+  // it. Asking counts as an impression, so ask only once per focus session.
+  private maybeRequestAimHint_() {
+    // Unlike for `isInputEmpty()`, whitespace counts as text: it hides the
+    // placeholder.
+    if (this.aimHintRequest_ || !this.canShowAimHint_() ||
+        this.shadowRoot?.activeElement !== this.$.input ||
+        this.$.input.getInputValue()) {
+      return;
+    }
+    const request = this.popupPageHandler_.requestAimHint();
+    this.aimHintRequest_ = request;
+    request.then(({hint}) => {
+      // Ignore the reply if the focus session ended in the meantime.
+      if (this.aimHintRequest_ === request) {
+        this.aimHintText_ = hint;
+      }
+    });
+  }
+
+  // Ends the hint's focus session, so that the next one asks the browser again.
+  private resetAimHint_() {
+    this.aimHintRequest_ = null;
+    this.aimHintText_ = '';
   }
 
   private computeDsePlaceholderText_(
@@ -2658,6 +2719,8 @@ export class OmniboxPopupSearchboxElement extends
     } else if (this.hasReceivedInitialInputState_) {
       this.onSearchboxInputTextUpdated(e);
     }
+    // `updated()` doesn't run if e.g. only whitespace was deleted.
+    this.maybeRequestAimHint_();
   }
 
   override onInputWrapperFocusout(e: FocusEvent) {

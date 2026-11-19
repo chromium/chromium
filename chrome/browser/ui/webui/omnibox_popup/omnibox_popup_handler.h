@@ -89,6 +89,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
   void OpenDevTools() override;
   void OpenDogfoodFeedback() override;
   void AdvanceFocus(bool reverse) override;
+  void RequestAimHint(RequestAimHintCallback callback) override;
 
   // Computes URL emphasis metadata for the given text.
   // This implementation is based on `OmniboxViewViews::UpdateTextStyle()`

@@ -176,6 +176,12 @@ interface PageHandler {
 
   // Advances keyboard focus out of the WebUI popup into the browser window.
   AdvanceFocus(bool reverse);
+
+  // Returns the AIM hint (e.g. "Press tab then enter to ask AI Mode") for the
+  // empty input's placeholder and records an impression of it, or returns ""
+  // if it shouldn't be shown. The page calls this at most once per focus
+  // session.
+  RequestAimHint() => (string hint);
 };
 
 // The WebUI page for the Omnibox Popup.

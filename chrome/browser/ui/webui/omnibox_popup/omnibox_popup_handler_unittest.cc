@@ -23,6 +23,10 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller_test_support.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/prefs/testing_pref_service.h"
@@ -248,6 +252,59 @@ TEST_F(OmniboxPopupHandlerTest,
                  testing::_, omnibox_popup::mojom::PlaceholderType::kNone, ""));
   handler_->NotifyDefaultSearchProviderChanged();
   page_.FlushForTesting();
+}
+
+// The handler is constructed without an `OmniboxController` in this fixture,
+// so there is no omnibox whose AIM hint could be shown.
+TEST_F(OmniboxPopupHandlerTest, RequestsNoAimHintWithoutController) {
+  base::test::TestFuture<const std::string&> hint;
+  handler_->RequestAimHint(hint.GetCallback());
+  EXPECT_EQ("", hint.Get());
+}
+
+// Only the full WebUI omnibox gets the AIM hint from the handler, which then
+// records an impression of it.
+TEST_F(OmniboxPopupHandlerTest, RequestsAimHintOnlyForFullWebUIOmnibox) {
+  auto client = std::make_unique<TestOmniboxClient>();
+  TestingPrefServiceSimple pref_service;
+  omnibox::RegisterProfilePrefs(pref_service.registry());
+  EXPECT_CALL(*client, GetPrefs())
+      .WillRepeatedly(testing::Return(&pref_service));
+  EXPECT_CALL(testing::Const(*client), GetPrefs())
+      .WillRepeatedly(testing::Return(&pref_service));
+  auto omnibox_controller =
+      std::make_unique<OmniboxController>(std::move(client));
+  auto test_omnibox_view =
+      std::make_unique<TestOmniboxView>(omnibox_controller.get());
+  omnibox_controller->edit_model()->set_view(test_omnibox_view.get());
+  // Make AIM eligible and focus the omnibox, so that its placeholder is the
+  // AIM hint.
+  auto* provider_client = static_cast<FakeAutocompleteProviderClient*>(
+      omnibox_controller->autocomplete_controller()
+          ->autocomplete_provider_client());
+  EXPECT_CALL(*provider_client->mock_aim_eligibility_service(), IsAimEligible())
+      .WillRepeatedly(testing::Return(true));
+  omnibox_controller->edit_model()->OnSetFocus(/*control_down=*/false);
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  handler_ = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  base::test::TestFuture<const std::string&> classic_omnibox_hint;
+  handler_->RequestAimHint(classic_omnibox_hint.GetCallback());
+  EXPECT_EQ("", classic_omnibox_hint.Get());
+  EXPECT_EQ(0, pref_service.GetInteger(omnibox::kAimHintTotalImpressions));
+
+  test_omnibox_view->set_is_full_webui_omnibox(true);
+  base::test::TestFuture<const std::string&> hint;
+  handler_->RequestAimHint(hint.GetCallback());
+  EXPECT_EQ(u"\u21E5 Press tab then enter to ask AI Mode",
+            base::UTF8ToUTF16(hint.Get()));
+  EXPECT_EQ(1, pref_service.GetInteger(omnibox::kAimHintTotalImpressions));
+
+  // Reset the handler to avoid dangling raw_ptr to the local
+  // omnibox_controller.
+  handler_.reset();
 }
 
 TEST_F(OmniboxPopupHandlerTest, SyncsDefaultSearchProviderPlaceholder) {

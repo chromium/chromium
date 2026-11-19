@@ -227,10 +227,21 @@ cr-searchbox-input::part(mirror) {
 
 /* Like the Views omnibox, the default search engine placeholder (shown while
  * the AIM button has focus) uses the regular text color to draw attention to
- * the omnibox, while the keyword placeholder stays dim to differentiate it
- * from user input. */
-cr-searchbox-input:not([in-keyword-mode]) {
+ * the omnibox, while the keyword placeholder and the AIM hint stay dim to
+ * differentiate them from user input. */
+cr-searchbox-input:not([in-keyword-mode]):not([aim-hint]) {
   --color-searchbox-placeholder: var(--color-omnibox-text);
+}
+
+/* The AIM hint uses the Views omnibox's color for dim placeholders. */
+cr-searchbox-input[aim-hint] {
+  --color-searchbox-placeholder: var(--color-omnibox-foreground-disabled);
+}
+
+/* cr-searchbox-input hides its placeholder on focus, but the AIM hint is for
+ * the focused input. */
+cr-searchbox-input[aim-hint]::part(searchbox-input):focus::placeholder {
+  visibility: visible;
 }
 
 /* Pad the input and #mirror alike, rather than adding a margin outside the

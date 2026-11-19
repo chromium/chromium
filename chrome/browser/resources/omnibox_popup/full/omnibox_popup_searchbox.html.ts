@@ -18,6 +18,7 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
       ?multi-line-enabled="${this.multiLineEnabled}"
       ?clip-selection-listbox="${this.unboundedSupported_}"
       placeholder-text="${this.computeInputPlaceholderText_()}"
+      ?aim-hint="${this.shouldShowAimHint_()}"
       searchbox-aria-description="${this.searchboxAriaDescription}"
       searchbox-icon="${this.searchboxIcon_}"
       .selectedMatch="${this.computeSelectedMatchForInput_()}"

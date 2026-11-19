@@ -197,9 +197,11 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
@@ -11254,6 +11256,86 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
                    !contents->GetController().GetPendingEntry();
           },
           true, "StaysOnNtp"));
+}
+
+// Starts on about:blank, so the omnibox is empty only once a test clears it.
+class FullWebUIOmniboxAimHintInteractiveTest
+    : public FullWebUIOmniboxAimInteractiveTest {
+ public:
+  FullWebUIOmniboxAimHintInteractiveTest() {
+    set_open_about_blank_on_browser_launch(true);
+  }
+
+ protected:
+  auto WaitForAimHint() {
+    return InAnyContext(WaitForJsConditionAt(
+        kPopupWebView, kWebUIInput,
+        "(el) => el.matches(':placeholder-shown') && el.placeholder === "
+        "'\\u21E5 Press tab then enter to ask AI Mode'"));
+  }
+
+  auto CheckAimHintImpressions(int expected_impressions) {
+    return CheckResult(
+        [this]() {
+          return browser()->GetProfile()->GetPrefs()->GetInteger(
+              omnibox::kAimHintTotalImpressions);
+        },
+        expected_impressions);
+  }
+
+  // Paints the Views omnibox that the popup covers, like a frame does.
+  auto PaintViewsOmnibox() {
+    return Do([this]() {
+      gfx::Canvas canvas(gfx::Size(200, 200), 1.0f, true);
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetLocationBarView()
+          ->omnibox_view()
+          ->OnPaint(&canvas);
+    });
+  }
+
+  // Blurs and refocuses the empty omnibox, which starts another focus session.
+  auto RefocusEmptyOmnibox() {
+    return Steps(
+        ClickWebPageBody(kTab1),
+        InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+        UninstrumentWebContents(kPopupWebView),
+        FocusOmniboxAndWaitForPopupReady(), WaitForWebUIInputValue(""));
+  }
+};
+
+// The focused, empty input shows the AIM hint, counting one impression per
+// focus session, until its impression limits are reached.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimHintInteractiveTest,
+                       ShowsHintOncePerFocusSessionWithinLimits) {
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      CheckAimHintImpressions(0),
+      // Clearing the input shows the hint. Only the popup counts the
+      // impression, not the Views omnibox that it covers.
+      ClearWebUIText(), WaitForAimHint(), PaintViewsOmnibox(),
+      CheckAimHintImpressions(1),
+      // Showing the hint again in the same focus session doesn't count.
+      InputWebUIText("a"), ClearWebUIText(), WaitForAimHint(),
+      CheckAimHintImpressions(1),
+      // The next focus session counts another impression.
+      RefocusEmptyOmnibox(), WaitForAimHint(), CheckAimHintImpressions(2),
+      // At the total impression limit, the browser no longer returns the hint.
+      Do([this]() {
+        browser()->GetProfile()->GetPrefs()->SetInteger(
+            omnibox::kAimHintTotalImpressions, 15);
+      }),
+      RefocusEmptyOmnibox(),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      InAnyContext(CheckJsResultAt(
+          kPopupWebView, kPopupSearchbox,
+          "async (el) => {"
+          "  const {hint} = await el.popupPageHandler_.requestAimHint();"
+          "  return hint + el.$.input.inputElement.placeholder;"
+          "}",
+          "")),
+      CheckAimHintImpressions(15));
 }
 
 class FullWebUIOmniboxAimPopupFlowsInteractiveTest

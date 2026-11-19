@@ -1810,8 +1810,10 @@ class OmniboxViewViewsPlaceholderTest : public InProcessBrowserTest {
   }
 
  protected:
-  LocationBar* location_bar() {
-    return BrowserWindow::FromBrowser(browser())->GetLocationBar();
+  OmniboxController& omnibox_controller() {
+    return *BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController();
   }
 
   OmniboxViewViews* omnibox_view() {
@@ -1836,8 +1838,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
       browser(), GURL(chrome::kChromeUIContextualTasksURL)));
 
   // Verify the Contextual Tasks placeholder text should be applied.
-  EXPECT_TRUE(
-      omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
+  EXPECT_TRUE(omnibox::ShouldInstallContextualTasksPlaceholderText(
+      omnibox_controller()));
 
   // Verify the placeholder text is set to the page title.
   std::u16string page_title = web_contents()->GetTitle();
@@ -1857,8 +1859,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
       ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER));
 
   // Verify the Contextual Tasks placeholder text should NOT be applied.
-  EXPECT_FALSE(
-      omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
+  EXPECT_FALSE(omnibox::ShouldInstallContextualTasksPlaceholderText(
+      omnibox_controller()));
 
   // Verify the placeholder text is set to the default search engine. The AIM
   // variant is used because the mock AIM eligibility service always returns
@@ -1881,8 +1883,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
                        MAYBE_NavigationToAndFromContextualTasks) {
   // Navigate to about:blank.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  EXPECT_FALSE(
-      omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
+  EXPECT_FALSE(omnibox::ShouldInstallContextualTasksPlaceholderText(
+      omnibox_controller()));
 
   // Verify the placeholder text is the default search engine. The AIM variant
   // is used because the mock AIM eligibility service always returns true for
@@ -1894,8 +1896,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   // Navigate to the Contextual Tasks page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIContextualTasksURL)));
-  EXPECT_TRUE(
-      omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
+  EXPECT_TRUE(omnibox::ShouldInstallContextualTasksPlaceholderText(
+      omnibox_controller()));
 
   // Verify the placeholder is set to the page title.
   EXPECT_EQ(web_contents()->GetTitle(), omnibox_view()->GetPlaceholderText());
@@ -1907,8 +1909,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
                                            chrome::ChromeUINewTabURLAsGURL()));
   ASSERT_NO_FATAL_FAILURE(
       ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER));
-  EXPECT_FALSE(
-      omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
+  EXPECT_FALSE(omnibox::ShouldInstallContextualTasksPlaceholderText(
+      omnibox_controller()));
 
   // Verify the placeholder text is set to the default search engine. The AIM
   // variant is used because the mock AIM eligibility service always returns
@@ -1920,8 +1922,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   // Navigate back to the Contextual Tasks page.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-  EXPECT_TRUE(
-      omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
+  EXPECT_TRUE(omnibox::ShouldInstallContextualTasksPlaceholderText(
+      omnibox_controller()));
 
   // Verify the placeholder is set to the page title.
   EXPECT_EQ(web_contents()->GetTitle(), omnibox_view()->GetPlaceholderText());
@@ -1931,8 +1933,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   // Navigate forward to the New Tab Page.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
-  EXPECT_FALSE(
-      omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
+  EXPECT_FALSE(omnibox::ShouldInstallContextualTasksPlaceholderText(
+      omnibox_controller()));
 
   // Verify the placeholder text is set to the default search engine. The AIM
   // variant is used because the mock AIM eligibility service always returns
@@ -1961,8 +1963,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
   web_contents()->UpdateTitleForEntry(entry, kNewTitle);
 
   // Verify the placeholder text is updated to the new page title.
-  EXPECT_TRUE(
-      omnibox::ShouldInstallContextualTasksPlaceholderText(location_bar()));
+  EXPECT_TRUE(omnibox::ShouldInstallContextualTasksPlaceholderText(
+      omnibox_controller()));
   EXPECT_EQ(kNewTitle, web_contents()->GetTitle());
   EXPECT_EQ(kNewTitle, omnibox_view()->GetPlaceholderText());
   // Verify the display text remains empty.

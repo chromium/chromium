@@ -2126,10 +2126,10 @@ TEST_F(OmniboxViewViewsTest,
   EXPECT_EQ(u"Placeholder", omnibox_view()->GetPlaceholderText());
 
   // Calling Update() when ResetDisplayTexts() returns false should still
-  // install placeholder text (recomputing from location bar / controller).
+  // install placeholder text (recomputing from the controller).
   EXPECT_FALSE(omnibox_controller()->edit_model()->ResetDisplayTexts());
   omnibox_view()->Update();
-  // TestingOmniboxView has a null location_bar_view, so ComputePlaceholderText
-  // resets placeholder text to empty.
-  EXPECT_TRUE(omnibox_view()->GetPlaceholderText().empty());
+  // The omnibox is blurred, so that's the default search engine placeholder.
+  EXPECT_EQ(u"Search Google or type a URL",
+            omnibox_view()->GetPlaceholderText());
 }
