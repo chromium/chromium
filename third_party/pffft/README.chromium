@@ -37,7 +37,8 @@ $ for patch in third_party/pffft/patches/*; do patch -s -p1 < $patch; done
 In case of conflict, update those patches accordingly and save them back in //third_party/pffft/patches/.
 
  * 01-rmv_printf.diff: remove printf and stop including stdio.h
- * 02-decl_validate_simd.diff: declare validate_pffft_simd() in pffft.h
+ * 02-decl_validate_simd.diff: declare validate_pffft_simd() in pffft.h and drop
+   the local declaration from test_pffft.c
  * 03-malloca.diff: replace _alloca (deprecated) with _malloca (MSVC case only) + cleanup
  * 04-fix_ptr_cast.diff: avoid MSVC warnings by fixing pointer cast
  * 05-fix-arch-detection.diff: better arch detection to avoid to define PFFFT_SIMD_DISABLE
