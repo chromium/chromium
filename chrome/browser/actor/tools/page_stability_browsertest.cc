@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -13,9 +12,13 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/page_stability_test_util.h"
+#include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/actor_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
@@ -758,6 +761,72 @@ IN_PROC_BROWSER_TEST_F(ActorSkipObservationDelayTest,
   fetch_response().WaitForRequest();
   ExpectOkResult(result);
   EXPECT_EQ(GetOutputText(), "INITIAL");
+}
+
+class ActorStabilizeOncePerBundleBrowserTest
+    : public ActorPageStabilityTestBase {
+ public:
+  ActorStabilizeOncePerBundleBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{::features::kGlicActor, {}},
+         {kActorStabilizeOncePerBundle, {}},
+         {kActorPageStability,
+          {{kActorPageStabilityTimeout.name, "30000ms"},
+           {kActorPageStabilityMinWait.name, "0ms"},
+           {kActorPaintStabilityInitialPaintTimeout.name, "30000ms"},
+           {kActorPaintStabilitySubsequentPaintTimeout.name, "30000ms"}}},
+         {kActorTypeToolObservationStartDelay,
+          {{kActorTypeToolObservationStartDelayDuration.name, "30s"}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActorStabilizeOncePerBundleBrowserTest,
+                       FinalWaitCoversAsyncFetchAndSkipsNonFinalStartDelay) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    const input = document.createElement('input');
+    input.id = 'testInput';
+    const btn = document.createElement('button');
+    btn.id = 'btnStatic';
+    btn.onclick = () => { window.secondClicked = true; };
+    document.body.append(input, btn);
+  )"));
+
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#testInput");
+  std::optional<int> fetch_btn_id =
+      GetDOMNodeId(*main_frame(), "#btnFetchAndWork");
+  std::optional<int> static_btn_id = GetDOMNodeId(*main_frame(), "#btnStatic");
+  ASSERT_TRUE(input_id && fetch_btn_id && static_btn_id);
+
+  base::ElapsedTimer timer;
+  ActResultFuture result;
+  task().Act(ToRequestList(MakeTypeRequest(*main_frame(), *input_id, "hello",
+                                           /*follow_by_enter=*/false),
+                           MakeClickRequest(*main_frame(), *fetch_btn_id),
+                           MakeClickRequest(*main_frame(), *static_btn_id)),
+             result.GetCallback());
+
+  fetch_response().WaitForRequest();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents(), "window.secondClicked === true")
+        .ExtractBool();
+  }));
+  Sleep(base::Milliseconds(100));
+  EXPECT_FALSE(result.IsReady());
+  EXPECT_EQ(GetOutputText(), "INITIAL");
+
+  Respond("FETCH FROM ACTION 1");
+  ExpectOkResult(result);
+  EXPECT_LT(timer.Elapsed(), kActorObservationDelayTimeout.Get());
+  EXPECT_EQ(content::EvalJs(web_contents(),
+                            "document.getElementById('testInput').value"),
+            "hello");
+  EXPECT_EQ(GetOutputText(), "WORK DONE");
 }
 
 }  // namespace

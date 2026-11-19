@@ -38,6 +38,7 @@
 #include "chrome/browser/actor/tools/fake_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
+#include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tool_result.h"
@@ -228,6 +229,7 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   }
   void ExecuteTool(const actor::TaskId& task_id,
                    ExecuteToolCallback callback) override {
+    RunNextToolHook();
     std::move(callback).Run(TakeToolResult());
   }
   void set_on_invoke_tool(
@@ -242,6 +244,7 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
       on_invoke_tool_.Run(std::move(request), std::move(callback));
       return;
     }
+    RunNextToolHook();
     std::move(callback).Run(TakeToolResult());
   }
   void StartActorJournal(
@@ -253,6 +256,7 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
       const TaskId& task_id,
       bool supports_paint_stability) override {
     ++page_stability_monitor_count_;
+    monitor_paint_stability_flags_.push_back(supports_paint_stability);
     if (bind_page_stability_monitors_) {
       page_stability_monitor_receivers_.Add(&page_stability_monitor_,
                                             std::move(monitor));
@@ -274,12 +278,26 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
 #endif
 
   // Makes the next tool executed in the renderer fail with `code`.
-  void FailNextTool(mojom::ActionResultCode code) { next_tool_failure_ = code; }
+  void FailNextTool(mojom::ActionResultCode code) {
+    SetNextToolResult(MakeResult(code));
+  }
+
+  void SetNextToolResult(mojom::ActionResultPtr result) {
+    next_tool_result_ = std::move(result);
+  }
+
+  void SetNextToolHook(base::OnceClosure hook) {
+    next_tool_hook_ = std::move(hook);
+  }
 
   // The number of PageStabilityMonitors created, i.e. of observation delayers
   // armed.
   int page_stability_monitor_count() const {
     return page_stability_monitor_count_;
+  }
+
+  const std::vector<bool>& monitor_paint_stability_flags() const {
+    return monitor_paint_stability_flags_;
   }
 
   // If set, created PageStabilityMonitors are bound to
@@ -303,10 +321,15 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
                   std::move(handle)));
   }
 
+  void RunNextToolHook() {
+    if (next_tool_hook_) {
+      std::move(next_tool_hook_).Run();
+    }
+  }
+
   mojom::ActionResultPtr TakeToolResult() {
-    if (std::optional<mojom::ActionResultCode> failure =
-            std::exchange(next_tool_failure_, std::nullopt)) {
-      return MakeResult(*failure);
+    if (next_tool_result_) {
+      return std::move(next_tool_result_);
     }
     return MakeOkResult();
   }
@@ -315,8 +338,10 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   base::RepeatingCallback<void(actor::mojom::ToolInvocationPtr,
                                InvokeToolCallback)>
       on_invoke_tool_;
-  std::optional<mojom::ActionResultCode> next_tool_failure_;
+  mojom::ActionResultPtr next_tool_result_;
+  base::OnceClosure next_tool_hook_;
   int page_stability_monitor_count_ = 0;
+  std::vector<bool> monitor_paint_stability_flags_;
   bool bind_page_stability_monitors_ = false;
   FakePageStabilityMonitor page_stability_monitor_;
   mojo::ReceiverSet<page_content_annotations::mojom::PageStabilityMonitor>
@@ -2045,6 +2070,263 @@ TEST_F(ToolControllerDeferredObservationTest,
   EXPECT_FALSE(tool_controller_->HasPendingObservation());
   EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 2);
   EXPECT_EQ(observation_delays().size(), 2u);
+}
+
+class ExecutionEngineStabilizeOncePerBundleTest : public ExecutionEngineTest {
+ public:
+  ExecutionEngineStabilizeOncePerBundleTest() {
+    bundle_feature_list_.InitAndEnableFeature(kActorStabilizeOncePerBundle);
+  }
+
+  void SetUp() override {
+    ExecutionEngineTest::SetUp();
+    // Browser-initiated navigations preconnect a socket when preloading is
+    // enabled, which crashes on Android where the in-process network service
+    // runs on the UI thread.
+    prefetch::SetPreloadPagesState(profile()->GetPrefs(),
+                                   prefetch::PreloadPagesState::kNoPreloading);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("http://localhost/"));
+    fake_chrome_render_frame_.OverrideBinder(main_rfh());
+    fake_chrome_render_frame_.set_bind_page_stability_monitors(true);
+  }
+
+ protected:
+  PageTarget MainFrameNodeTarget(int node_id = kFakeContentNodeId) {
+    std::string doc_id =
+        *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+            main_rfh()->GetGlobalFrameToken());
+    return PageTarget(
+        DomNode{.node_id = node_id, .document_identifier = doc_id});
+  }
+
+  std::unique_ptr<ToolRequest> MakeBundleClickRequest(
+      base::TimeDelta start_delay,
+      bool supports_paint_stability = true,
+      mojom::ClickType click_type = mojom::ClickType::kLeft,
+      bool requires_opening_web_contents = false) {
+    return std::make_unique<ClickToolRequest>(
+        ActorSurfaceHandle::From(GetTab()->GetHandle()), MainFrameNodeTarget(),
+        click_type, mojom::ClickCount::kSingle, requires_opening_web_contents,
+        ObservationDelayController::PageStabilityConfig{
+            .supports_paint_stability = supports_paint_stability,
+            .start_delay = start_delay});
+  }
+
+  std::unique_ptr<ToolRequest> MakeBundleSelectRequest(
+      std::string_view value = "opt") {
+    return std::make_unique<SelectToolRequest>(
+        ActorSurfaceHandle::From(GetTab()->GetHandle()), MainFrameNodeTarget(),
+        value);
+  }
+
+  const std::vector<base::TimeDelta>& observation_delays() const {
+    return fake_chrome_render_frame_.page_stability_monitor()
+        .observation_delays();
+  }
+
+ private:
+  base::test::ScopedFeatureList bundle_feature_list_;
+};
+
+TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
+       WaitsOnceAtEndOfPageActionBundle) {
+  {
+    base::test::ScopedFeatureList disabled;
+    disabled.InitAndDisableFeature(kActorStabilizeOncePerBundle);
+    ActResultFuture result;
+    task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1)),
+                             MakeBundleClickRequest(base::Seconds(2))),
+               result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 2);
+    EXPECT_THAT(observation_delays(),
+                testing::ElementsAre(base::Seconds(1), base::Seconds(2)));
+  }
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1)),
+                           MakeBundleClickRequest(base::Seconds(2)),
+                           MakeBundleClickRequest(base::Seconds(3))),
+             result.GetCallback());
+  ExpectOkResult(result);
+  EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 3);
+  EXPECT_THAT(fake_chrome_render_frame_.monitor_paint_stability_flags(),
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observation_delays(),
+              testing::ElementsAre(base::Seconds(1), base::Seconds(2),
+                                   base::Seconds(3)));
+}
+
+TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
+       PaintStabilityRequiresAllActionsInBundleToSupportIt) {
+  ActResultFuture click_then_select;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1)),
+                           MakeBundleSelectRequest()),
+             click_then_select.GetCallback());
+  ExpectOkResult(click_then_select);
+
+  ActResultFuture select_then_click;
+  task_->Act(ToRequestList(MakeBundleSelectRequest(),
+                           MakeBundleClickRequest(base::Seconds(2))),
+             select_then_click.GetCallback());
+  ExpectOkResult(select_then_click);
+
+  EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 2);
+  EXPECT_THAT(fake_chrome_render_frame_.monitor_paint_stability_flags(),
+              testing::ElementsAre(false, false));
+  EXPECT_THAT(observation_delays(),
+              testing::ElementsAre(base::TimeDelta(), base::Seconds(2)));
+}
+
+TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
+       NonPageFollowupAndTabBoundariesSettleBeforeSplittingBundle) {
+  std::vector<base::TimeDelta> delays_at_non_page;
+  std::unique_ptr<ToolRequest> non_page = std::make_unique<FakeToolRequest>(
+      base::BindLambdaForTesting([&](DeprecatedToolCallback cb) {
+        delays_at_non_page = observation_delays();
+        std::move(cb).Run(MakeOkResult());
+      }),
+      base::DoNothing(), ActorSurfaceHandle::From(GetTab()->GetHandle()));
+  ActResultFuture res1;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1)),
+                           MakeBundleClickRequest(base::Seconds(2)),
+                           std::move(non_page),
+                           MakeBundleClickRequest(base::Seconds(3)),
+                           MakeBundleClickRequest(base::Seconds(4))),
+             res1.GetCallback());
+  ExpectOkResult(res1);
+  EXPECT_THAT(delays_at_non_page, testing::ElementsAre(base::Seconds(2)));
+  EXPECT_THAT(observation_delays(),
+              testing::ElementsAre(base::Seconds(2), base::Seconds(4)));
+
+  fake_chrome_render_frame_.SetNextToolHook(base::BindLambdaForTesting([&]() {
+    task_->GetExecutionEngine().EnqueueFollowupAction(
+        MakeBundleClickRequest(base::Seconds(5)));
+  }));
+  ActResultFuture res2;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1)),
+                           MakeBundleClickRequest(base::Seconds(2))),
+             res2.GetCallback());
+  ExpectOkResult(res2);
+  EXPECT_THAT(
+      observation_delays(),
+      testing::ElementsAre(base::Seconds(2), base::Seconds(4), base::Seconds(1),
+                           base::Seconds(5), base::Seconds(2)));
+
+  // Switching tabs mid-sequence settles the first tab's bundle before acting on
+  // the second tab.
+  std::unique_ptr<content::WebContents> second_contents =
+      CreateTestWebContents();
+  TestTabState second_tab(second_contents.get());
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      second_contents.get(), GURL("http://localhost/other"));
+  fake_chrome_render_frame_.OverrideBinder(
+      second_contents->GetPrimaryMainFrame());
+  std::string second_doc_id =
+      *optimization_guide::DocumentIdentifierUserData::GetDocumentIdentifier(
+          second_contents->GetPrimaryMainFrame()->GetGlobalFrameToken());
+  std::unique_ptr<ToolRequest> second_tab_click =
+      std::make_unique<ClickToolRequest>(
+          ActorSurfaceHandle::From(second_tab.tab.GetHandle()),
+          PageTarget(DomNode{.node_id = kFakeContentNodeId,
+                             .document_identifier = second_doc_id}),
+          mojom::ClickType::kLeft, mojom::ClickCount::kSingle,
+          /*requires_opening_web_contents=*/false,
+          ObservationDelayController::PageStabilityConfig{
+              .supports_paint_stability = true,
+              .start_delay = base::Seconds(6)});
+  ActResultFuture res3;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1)),
+                           MakeBundleClickRequest(base::Seconds(2)),
+                           std::move(second_tab_click)),
+             res3.GetCallback());
+  ExpectOkResult(res3);
+  EXPECT_THAT(
+      observation_delays(),
+      testing::ElementsAre(base::Seconds(2), base::Seconds(4), base::Seconds(1),
+                           base::Seconds(5), base::Seconds(2), base::Seconds(2),
+                           base::Seconds(6)));
+  task_->Stop(kTaskComplete);
+}
+
+TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
+       NavigationMidBundleSettlesBeforeNextAction) {
+  fake_chrome_render_frame_.SetNextToolHook(base::BindLambdaForTesting([&]() {
+    content::NavigationSimulator::CreateRendererInitiated(
+        GURL("http://localhost/#section"), main_rfh())
+        ->CommitSameDocument();
+  }));
+  ActResultFuture res1;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1)),
+                           MakeBundleClickRequest(base::Seconds(2))),
+             res1.GetCallback());
+  ExpectOkResult(res1);
+  EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 2);
+  EXPECT_THAT(observation_delays(),
+              testing::ElementsAre(base::Seconds(1), base::Seconds(2)));
+}
+
+TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
+       NoOpLastActionStillWaitsForEarlierDeferredActions) {
+  fake_chrome_render_frame_.SetNextToolHook(base::BindLambdaForTesting([&]() {
+    fake_chrome_render_frame_.SetNextToolResult(
+        MakeOkResult(/*requires_page_stabilization=*/false));
+  }));
+  ActResultFuture result;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1)),
+                           MakeBundleClickRequest(base::Seconds(2))),
+             result.GetCallback());
+  ExpectOkResult(result);
+  EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 1);
+  EXPECT_THAT(observation_delays(), testing::ElementsAre(base::Seconds(2)));
+}
+
+TEST_F(ExecutionEngineStabilizeOncePerBundleTest,
+       EarlyTerminationSettlesOrPauseCancelsPendingObservation) {
+  // Action 2 fails mid-bundle: action 1's pending wait settles and action 3
+  // never runs.
+  ActResultFuture toctou_res;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(1)),
+                           MakeBundleClickRequest(
+                               base::Seconds(2),
+                               /*supports_paint_stability=*/true,
+                               mojom::ClickType::kLeftOnOccludedTarget),
+                           MakeBundleClickRequest(base::Seconds(3))),
+             toctou_res.GetCallback());
+  ASSERT_EQ(toctou_res.Get().size(), 2u);
+  EXPECT_TRUE(toctou_res.Get()[0].tool_result.Ok());
+  EXPECT_FALSE(toctou_res.Get()[1].tool_result.Ok());
+  EXPECT_EQ(fake_chrome_render_frame_.page_stability_monitor_count(), 1);
+  EXPECT_THAT(observation_delays(), testing::ElementsAre(base::Seconds(1)));
+
+  fake_chrome_render_frame_.SetNextToolHook(base::BindLambdaForTesting([&]() {
+    task_->GetExecutionEngine().FailCurrentTool(
+        mojom::ActionResultCode::kLoginNotLoginPage);
+  }));
+  ActResultFuture ext_res;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(2)),
+                           MakeBundleClickRequest(base::Seconds(3))),
+             ext_res.GetCallback());
+  ExpectErrorResult(ext_res, mojom::ActionResultCode::kLoginNotLoginPage);
+  EXPECT_THAT(observation_delays(),
+              testing::ElementsAre(base::Seconds(1), base::Seconds(2)));
+
+  base::RunLoop held_loop;
+  fake_chrome_render_frame_.page_stability_monitor().HoldNextWait(
+      held_loop.QuitClosure());
+  ActResultFuture pause_res;
+  task_->Act(ToRequestList(MakeBundleClickRequest(base::Seconds(4)),
+                           MakeBundleClickRequest(
+                               base::Seconds(5),
+                               /*supports_paint_stability=*/true,
+                               mojom::ClickType::kLeftOnOccludedTarget,
+                               /*requires_opening_web_contents=*/true)),
+             pause_res.GetCallback());
+  held_loop.Run();
+  EXPECT_FALSE(task_->GetExecutionEngine().TabsCanOpenNewWebContents());
+  task_->Pause(/*from_actor=*/false);
+  ExpectErrorResult(pause_res, mojom::ActionResultCode::kTaskPaused);
 }
 
 class ExecutionEngineNavigationGatingTest : public ExecutionEngineTest {

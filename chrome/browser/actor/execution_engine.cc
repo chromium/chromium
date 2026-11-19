@@ -50,6 +50,8 @@
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/javascript_dialog_interceptor.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/actor/tools/page_target_util.h"
+#include "chrome/browser/actor/tools/page_tool_request.h"
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -1403,7 +1405,7 @@ void ExecutionEngine::DidUninterruptTask() {
 }
 
 bool ExecutionEngine::TabsCanOpenNewWebContents() const {
-  return state() == State::kToolInvoke &&
+  return state() == State::kToolInvoke && !is_settling_pending_observation_ &&
          GetInProgressAction().RequiresOpeningWebContents();
 }
 
@@ -1414,6 +1416,7 @@ base::WeakPtr<ExecutionEngine> ExecutionEngine::GetWeakPtr() {
 void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {
   TRACE_EVENT0("actor", "ExecutionEngine::CancelOngoingActions");
   deferred_finish_tool_invoke_.Reset();
+  is_settling_pending_observation_ = false;
   if (tool_controller_) {
     tool_controller_->Cancel();
   }
@@ -1433,7 +1436,7 @@ void ExecutionEngine::FailCurrentTool(mojom::ActionResultCode reason) {
   TRACE_EVENT0("actor", "ExecutionEngine::FailCurrentTool");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_NE(reason, mojom::ActionResultCode::kOk);
-  if (state_ != State::kToolInvoke) {
+  if (state_ != State::kToolInvoke || is_settling_pending_observation_) {
     return;
   }
 
@@ -1523,6 +1526,15 @@ void ExecutionEngine::KickOffNextAction() {
          state_ == State::kComplete)
       << "Current state is " << StateToString(state_);
   CHECK_LT(next_action_index_, action_sequence_.size());
+
+  if (tool_controller_->HasPendingObservation() &&
+      (GetNextAction().IsFollowup() ||
+       tool_controller_->ShouldSettlePendingObservationBefore(
+           GetNextAction()))) {
+    tool_controller_->SettlePendingObservation(base::BindOnce(
+        &ExecutionEngine::KickOffNextAction, GetActionSequenceWeakPtr()));
+    return;
+  }
 
   SetState(State::kStartAction);
   if (!GetNextAction().IsFollowup()) {
@@ -1723,7 +1735,8 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
 
   SetState(State::kToolInvoke);
   tool_controller_->Invoke(base::BindOnce(&ExecutionEngine::FinishedToolInvoke,
-                                          GetActionSequenceWeakPtr()));
+                                          GetActionSequenceWeakPtr()),
+                           GetDeferredObservationConfig());
 }
 
 void ExecutionEngine::FinishedToolInvoke(ToolResult tool_result) {
@@ -1864,6 +1877,19 @@ void ExecutionEngine::CompleteActions(
   CHECK(!action_sequence_.empty());
   CHECK(act_callback_);
 
+  if (tool_controller_ && tool_controller_->HasPendingObservation()) {
+    is_settling_pending_observation_ = true;
+    tool_controller_->SettlePendingObservation(
+        base::BindOnce(static_cast<void (ExecutionEngine::*)(
+                           ToolResult, std::optional<size_t>,
+                           std::vector<InterceptedJavaScriptDialog>)>(
+                           &ExecutionEngine::CompleteActions),
+                       GetActionSequenceWeakPtr(), std::move(tool_result),
+                       action_index, std::move(javascript_dialogs)));
+    return;
+  }
+  is_settling_pending_observation_ = false;
+
   const mojom::ActionResultPtr& result = tool_result.deprecated_action_result();
   const bool is_ok = tool_result.Ok();
   const mojom::ActionResultCode result_code = result->code;
@@ -1917,6 +1943,7 @@ void ExecutionEngine::CompleteActions(
 
   action_sequence_.clear();
   next_action_index_ = 0;
+  external_tool_failure_reason_.reset();
   actions_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -2319,6 +2346,51 @@ ExecutionEngine::TakeInterceptedJavaScriptDialogs(const ToolRequest& action) {
     return {};
   }
   return JavaScriptDialogInterceptor::TakeInterceptedDialogs(*web_contents);
+}
+
+std::optional<ObservationDelayController::PageStabilityConfig>
+ExecutionEngine::GetDeferredObservationConfig() const {
+  if (!base::FeatureList::IsEnabled(kActorStabilizeOncePerBundle)) {
+    return std::nullopt;
+  }
+
+  const size_t index = InProgressActionIndex();
+  const PageToolRequest* current_page_request =
+      action_sequence_[index]->AsPageToolRequest();
+  if (!current_page_request || action_sequence_[index]->IsFollowup() ||
+      action_sequence_[index]->ShouldSkipObservationDelay()) {
+    return std::nullopt;
+  }
+  const ActorSurfaceHandle actor_surface =
+      current_page_request->GetActorSurfaceHandle();
+  content::RenderFrameHost* target_frame = FindTargetLocalRootFrame(
+      actor_surface, current_page_request->GetTarget());
+  if (!target_frame) {
+    return std::nullopt;
+  }
+  auto is_in_bundle = [&](size_t i) {
+    const ToolRequest& request = *action_sequence_[i];
+    const PageToolRequest* page_request = request.AsPageToolRequest();
+    return page_request && !request.IsFollowup() &&
+           !request.ShouldSkipObservationDelay() &&
+           page_request->GetActorSurfaceHandle() == actor_surface &&
+           FindTargetLocalRootFrame(actor_surface, page_request->GetTarget()) ==
+               target_frame;
+  };
+
+  if (index + 1 >= action_sequence_.size() || !is_in_bundle(index + 1)) {
+    return std::nullopt;
+  }
+
+  ObservationDelayController::PageStabilityConfig config =
+      action_sequence_[index]->GetObservationPageStabilityConfig();
+  for (size_t i = index + 1; i < action_sequence_.size() && is_in_bundle(i);
+       ++i) {
+    config.supports_paint_stability &= action_sequence_[i]
+                                           ->GetObservationPageStabilityConfig()
+                                           .supports_paint_stability;
+  }
+  return config;
 }
 
 size_t ExecutionEngine::GetResultIndexForAction(size_t action_index) const {

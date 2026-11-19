@@ -447,6 +447,13 @@ class ExecutionEngine : public ToolDelegate,
   std::vector<InterceptedJavaScriptDialog> TakeInterceptedJavaScriptDialogs(
       const ToolRequest& action);
 
+  // Returns the shared PageStabilityConfig to defer observation for the
+  // currently executing action when `kActorStabilizeOncePerBundle` is enabled
+  // and the next queued action can reuse the same observation delayer; returns
+  // `std::nullopt` if the current action must wait immediately.
+  std::optional<ObservationDelayController::PageStabilityConfig>
+  GetDeferredObservationConfig() const;
+
   void LogNavigationGating(const url::Origin& source,
                            base::optional_ref<const url::Origin> initiator,
                            const url::Origin& destination,
@@ -546,6 +553,11 @@ class ExecutionEngine : public ToolDelegate,
   // If set, the currently executing tool should be considered failed once it
   // completes.
   std::optional<mojom::ActionResultCode> external_tool_failure_reason_;
+
+  // True while `CompleteActions()` is draining a pending deferred observation.
+  // Prevents `TabsCanOpenNewWebContents()` and `FailCurrentTool()` from
+  // treating a tool as still in progress.
+  bool is_settling_pending_observation_ = false;
 
   // The results for actions so far.
   std::vector<ToolResultWithLatencyInfo> action_results_;
