@@ -4551,13 +4551,13 @@ public class ReadAloudControllerUnitTest {
         mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
         var data = Mockito.mock(PlaybackData.class);
         ReadAloudController.RestoreState restoreState =
-                mController.new RestoreState(mTab, data, true, false, 0L);
+                new ReadAloudController.RestoreState(mController, mTab, data, true, false, 0L);
         mController.setStateToRestoreOnBringingToForegroundForTests(restoreState);
         // for some reason the tab url goes null
         mTab.setGurlOverrideForTesting(new GURL(""));
         boolean failed = false;
         try {
-            restoreState.restore();
+            restoreState.restore(mController);
         } catch (AssertionError e) {
             failed = true;
         }

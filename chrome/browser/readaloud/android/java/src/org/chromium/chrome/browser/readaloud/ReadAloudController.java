@@ -345,7 +345,7 @@ public class ReadAloudController
     // include language or voice which should come from current tab state or
     // settings respectively.
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public class RestoreState implements UserData {
+    public static class RestoreState implements UserData {
         // Tab to play.
         private final Tab mTab;
         // Paragraph index to resume from.
@@ -363,11 +363,17 @@ public class ReadAloudController
         /**
          * Constructor.
          *
+         * @param controller Controller the state is captured from. Not retained.
          * @param tab Tab to play.
          * @param data Current PlaybackData which may be null if playback hasn't started yet.
          */
-        RestoreState(Tab tab, @Nullable PlaybackData data, long dateModified) {
+        RestoreState(
+                ReadAloudController controller,
+                Tab tab,
+                @Nullable PlaybackData data,
+                long dateModified) {
             this(
+                    controller,
                     tab,
                     data,
                     /* useOffsetInParagraph= */ true,
@@ -378,10 +384,12 @@ public class ReadAloudController
         /**
          * Constructor.
          *
+         * @param controller Controller the state is captured from. Not retained.
          * @param tab Tab to play.
          * @param data Current PlaybackData which may be null if playback hasn't started yet.
          */
         RestoreState(
+                ReadAloudController controller,
                 Tab tab,
                 @Nullable PlaybackData data,
                 boolean useOffsetInParagraph,
@@ -408,8 +416,9 @@ public class ReadAloudController
 
             // Only capture from the current playback, not from state re-wrapped from another
             // activity (see onTabSelected()).
-            boolean isCurrentPlaybackData = data != null && data == mCurrentPlaybackData;
-            if (isCurrentPlaybackData && mPlayback instanceof NativePlayback nativePlayback) {
+            boolean isCurrentPlaybackData = data != null && data == controller.mCurrentPlaybackData;
+            if (isCurrentPlaybackData
+                    && controller.mPlayback instanceof NativePlayback nativePlayback) {
                 mNativeWordPosition = nativePlayback.getCurrentWordPosition();
             } else {
                 mNativeWordPosition = null;
@@ -429,29 +438,30 @@ public class ReadAloudController
             return mData;
         }
 
-        /** Apply the saved playback state. */
-        void restore() {
-            restore(/* restorePlaybackPosition = */ true);
+        /** Apply the saved playback state to {@code controller}. */
+        void restore(ReadAloudController controller) {
+            restore(controller, /* restorePlaybackPosition= */ true);
         }
 
-        void restore(boolean restorePlaybackPosition) {
+        void restore(ReadAloudController controller, boolean restorePlaybackPosition) {
             if (GURL.isEmptyOrInvalid(mTab.getUrl())) {
                 ReadAloudMetrics.recordEmptyURLPlayback(
                         Entrypoint.RESTORED_PLAYBACK, Entrypoint.NUM_ENTRIES);
                 assert false;
                 return;
             }
-            maybeInitializePlaybackHooks();
-            createTabPlayback(mTab, mDateModified, Entrypoint.RESTORED_PLAYBACK)
+            controller.maybeInitializePlaybackHooks();
+            controller
+                    .createTabPlayback(mTab, mDateModified, Entrypoint.RESTORED_PLAYBACK)
                     .then(
                             playback -> {
-                                assumeNonNull(mPlayerCoordinator);
+                                assumeNonNull(controller.mPlayerCoordinator);
                                 if (mPlaying) {
-                                    mPlayerCoordinator.playbackReady(
+                                    controller.mPlayerCoordinator.playbackReady(
                                             playback, getInitialPlaybackState(playback));
                                     playback.play();
                                 } else {
-                                    mPlayerCoordinator.playbackReady(playback, PAUSED);
+                                    controller.mPlayerCoordinator.playbackReady(playback, PAUSED);
                                 }
 
                                 // Native only: mNativeWordPosition is always null for legacy.
@@ -802,7 +812,10 @@ public class ReadAloudController
                                 Log.d(TAG, "Saving state");
                                 RestoreState state =
                                         new RestoreState(
-                                                activeTab, mCurrentPlaybackData, mDateModified);
+                                                ReadAloudController.this,
+                                                activeTab,
+                                                mCurrentPlaybackData,
+                                                mDateModified);
                                 tab.getUserDataHost().setUserData(USER_DATA_KEY, state);
                             }
                             maybeStopPlayback(
@@ -853,10 +866,11 @@ public class ReadAloudController
                                                     + " this one");
                                     RestoreState updatedRestored =
                                             new RestoreState(
+                                                    ReadAloudController.this,
                                                     tab,
                                                     restored.getPlaybackData(),
                                                     restored.getDateModified());
-                                    updatedRestored.restore();
+                                    updatedRestored.restore(ReadAloudController.this);
                                     tab.getUserDataHost().removeUserData(USER_DATA_KEY);
                                 }
                                 maybeAddTranslationObserver(tab);
@@ -1898,9 +1912,10 @@ public class ReadAloudController
         Tab activeTab = mActivePlaybackTabSupplier.get();
         if (activeTab != null && mPlayback != null) {
             assert !GURL.isEmptyOrInvalid(activeTab.getUrl());
-            RestoreState state = new RestoreState(activeTab, mCurrentPlaybackData, mDateModified);
+            RestoreState state =
+                    new RestoreState(this, activeTab, mCurrentPlaybackData, mDateModified);
             resetCurrentPlayback(ReasonForStoppingPlayback.PLAYBACK_MODE_CHANGE);
-            state.restore(/* restorePlaybackPosition= */ false);
+            state.restore(this, /* restorePlaybackPosition= */ false);
         }
     }
 
@@ -1912,11 +1927,12 @@ public class ReadAloudController
         Tab activeTab = mActivePlaybackTabSupplier.get();
         if (activeTab != null && mPlayback != null) {
             assert !GURL.isEmptyOrInvalid(activeTab.getUrl());
-            RestoreState state = new RestoreState(activeTab, mCurrentPlaybackData, mDateModified);
+            RestoreState state =
+                    new RestoreState(this, activeTab, mCurrentPlaybackData, mDateModified);
             resetCurrentPlayback(ReasonForStoppingPlayback.VOICE_CHANGE);
             // This should re-request playback with the same playback state and paragraph
             // and the new voice.
-            state.restore();
+            state.restore(this);
         }
     }
 
@@ -1927,7 +1943,7 @@ public class ReadAloudController
         Tab activeTab = mActivePlaybackTabSupplier.get();
         if (activeTab != null) {
             mStateToRestoreOnVoiceMenuClose =
-                    new RestoreState(activeTab, mCurrentPlaybackData, mDateModified);
+                    new RestoreState(this, activeTab, mCurrentPlaybackData, mDateModified);
             resetCurrentPlayback(ReasonForStoppingPlayback.VOICE_PREVIEW);
         }
 
@@ -2149,7 +2165,7 @@ public class ReadAloudController
         }
 
         if (mStateToRestoreOnVoiceMenuClose != null) {
-            mStateToRestoreOnVoiceMenuClose.restore();
+            mStateToRestoreOnVoiceMenuClose.restore(this);
             mStateToRestoreOnVoiceMenuClose = null;
         }
     }
@@ -2351,6 +2367,7 @@ public class ReadAloudController
 
         mStateToRestoreOnBringingToForeground =
                 new RestoreState(
+                        this,
                         activeTab,
                         mCurrentPlaybackData,
                         /* useOffsetInParagraph= */ true,
@@ -2359,7 +2376,7 @@ public class ReadAloudController
     }
 
     private void restoreStateOnForeground() {
-        assumeNonNull(mStateToRestoreOnBringingToForeground).restore();
+        assumeNonNull(mStateToRestoreOnBringingToForeground).restore(this);
         mStateToRestoreOnBringingToForeground = null;
     }
 
