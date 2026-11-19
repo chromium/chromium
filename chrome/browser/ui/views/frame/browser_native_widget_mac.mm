@@ -77,6 +77,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace {
@@ -670,6 +671,13 @@ bool BrowserNativeWidgetMac::ExecuteCommand(
   if (!WillExecuteCommand(command, window_open_disposition,
                           is_before_first_responder)) {
     return false;
+  }
+
+  // MenuController skips its own accelerator cancellation while a menu
+  // Textfield has focus so editing and system shortcuts keep the menu open.
+  if (views::MenuController* const menu_controller =
+          views::MenuController::GetForOwnerWidget(GetWidget())) {
+    menu_controller->Cancel(views::MenuController::ExitType::kAll);
   }
 
   BrowserWindowInterface* browser = browser_view_->browser();

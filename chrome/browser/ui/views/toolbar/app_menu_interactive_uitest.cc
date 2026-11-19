@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -38,10 +39,12 @@
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
+#include "chrome/browser/ui/views/find_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -441,6 +444,101 @@ IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest,
       CheckResult([this]() { return ReadOmniboxText(browser()); },
                   u"omnibox text"));
 }
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest,
+                       NewTabAcceleratorClosesMenuWhenSearchFieldUnfocused) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  RunTestSequence(
+      MoveMouseTo(kToolbarBackButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuSearchBarView::kSearchFieldElementId),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, false),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_T, ui::EF_COMMAND_DOWN),
+      WaitForHide(AppMenuSearchBarView::kSearchFieldElementId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2));
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest,
+                       NewTabAcceleratorClosesMenuWhenSearchFieldFocused) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  RunTestSequence(
+      MoveMouseTo(kToolbarBackButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuSearchBarView::kSearchFieldElementId),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_DOWN, ui::EF_NONE),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, true),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_T, ui::EF_COMMAND_DOWN),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2),
+      WaitForHide(AppMenuSearchBarView::kSearchFieldElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AppMenuSearchInteractiveTest,
+    FindAcceleratorClosesMenuAndFocusesFindBarWhenSearchFieldFocused) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  RunTestSequence(
+      MoveMouseTo(kToolbarBackButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuSearchBarView::kSearchFieldElementId),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_DOWN, ui::EF_NONE),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, true),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_F, ui::EF_COMMAND_DOWN),
+      WaitForShow(FindBarView::kTextField),
+      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      WaitForHide(AppMenuSearchBarView::kSearchFieldElementId),
+      WithView(FindBarView::kTextField,
+               [](views::Textfield* field) { field->SetText(u""); }),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_A, ui::EF_NONE),
+      CheckViewProperty(FindBarView::kTextField, &views::Textfield::GetText,
+                        u"a"));
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest,
+                       EditingShortcutsKeepMenuOpenWhenSearchFieldFocused) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  RunTestSequence(
+      MoveMouseTo(kToolbarBackButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuSearchBarView::kSearchFieldElementId),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_DOWN, ui::EF_NONE),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, true),
+      // With no selection, Copy is disabled on the Textfield and falls through
+      // to the Edit menu selector without closing the menu.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_C, ui::EF_COMMAND_DOWN),
+      EnsurePresent(AppMenuSearchBarView::kSearchFieldElementId),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, true),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_D, ui::EF_NONE),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_O, ui::EF_NONE),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::Textfield::GetText, u"do"),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::Textfield::GetSelectedText, u""),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_A, ui::EF_COMMAND_DOWN),
+      EnsurePresent(AppMenuSearchBarView::kSearchFieldElementId),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, true),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::Textfield::GetSelectedText, u"do"),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_N, ui::EF_NONE),
+      EnsurePresent(AppMenuSearchBarView::kSearchFieldElementId),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, true),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::Textfield::GetText, u"n"));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // Chooses Cut, Copy and Paste from the "Find and edit" submenu. They act on
 // whatever had focus in the browser window when the menu opened. The parameter

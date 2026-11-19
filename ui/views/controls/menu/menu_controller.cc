@@ -1863,11 +1863,10 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
   const bool has_focused_text_input = HasFocusedTextfield();
 
 #if BUILDFLAG(IS_MAC)
-  // Keep the menu open for Ctrl/Alt/Cmd text-editing shortcuts (e.g. Cmd+A,
-  // Option+Arrow) while a menu-hosted Textfield has focus.
-  // TODO(crbug.com/558862328): Revisit once crrev.com/c/8621202 lands; it adds
-  // macOS text input for menu-hosted Textfields, and no menu hosts one before
-  // then.
+  // Keep the menu open for Ctrl/Alt/Cmd text and system shortcuts (e.g. Cmd+A,
+  // Option+Arrow, Ctrl+Cmd+Space) while a menu-hosted Textfield has focus;
+  // shortcuts that resolve to browser commands cancel the menu in
+  // BrowserNativeWidgetMac::ExecuteCommand().
   if (!has_focused_text_input && AcceleratorShouldCancelMenu(accelerator)) {
     Cancel(ExitType::kAll);
     return ui::POST_DISPATCH_PERFORM_DEFAULT;
