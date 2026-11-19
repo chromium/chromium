@@ -3547,7 +3547,7 @@ deps = {
   # Dependencies from src_internal
   'src/chromeos/ash/resources/internal': {
       'url': Var('chrome_git') + '/chrome/chromeos/ash/resources/internal.git' + '@' +
-        'd4509cba32a0981c86a9fd63db3186f32c1042e2',
+        'b27c82985f404f98e406a6b64e63892169ce5d1c',
       'condition': 'checkout_src_internal and checkout_chromeos',
   },
 
