@@ -262,10 +262,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         updateEdgeToEdgeMode(/* useEdgeToEdge= */ false);
         updateInsetObserver(null);
         updateBrowserCutoutObserver(null);
-        if (mWebContentsObserver != null) {
-            mWebContentsObserver.observe(null);
-            mWebContentsObserver = null;
-        }
+        updateWebContentObserver(/* webContents= */ null);
         mWindow = null;
     }
 
@@ -304,21 +301,22 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         }
     }
 
-    private void updateWebContentObserver(@Nullable WebContents webContents) {
+    private boolean updateWebContentObserver(@Nullable WebContents webContents) {
         if (mWebContentsObserver != null
                 && webContents != null
                 && mWebContentsObserver.getWebContents() == webContents) {
-            return;
+            return false;
         }
 
         if (mWebContentsObserver != null) {
-            mWebContentsObserver.observe(null);
+            mWebContentsObserver.observe(/* webContents= */ null);
             mWebContentsObserver = null;
         }
 
-        if (webContents == null) return;
+        if (webContents == null) return false;
 
         mWebContentsObserver = new FullscreenWebContentsObserver(webContents);
+        return true;
     }
 
     @Override
@@ -702,11 +700,14 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
     /** Called when web contents changed in the attached tab. */
     public void onContentChanged() {
-        updateWebContentObserver(mDelegate.getWebContents());
-        // The new WebContents starts with cleared display-cutout safe area state. If the page is
-        // already known to be in cover mode (e.g. same-page reload), proactively re-push the
-        // cached insets so CSS env(safe-area-inset-*) does not collapse to 0 across reload.
-        if (shouldUseBrowserEdgeToEdge()) {
+        WebContents webContents =
+                mWindow == null || mDelegate.getAttachedActivity() == null
+                        ? null
+                        : mDelegate.getWebContents();
+        // A newly attached WebContents starts with cleared display-cutout safe area state; if the
+        // tab is already in cover mode (e.g. prerender swap or WebContents recreation), proactively
+        // re-push cached insets so CSS env(safe-area-inset-*) does not collapse to 0.
+        if (updateWebContentObserver(webContents) && shouldUseBrowserEdgeToEdge()) {
             maybePushSafeAreaInsets(mCachedSafeAreaInsets);
         }
     }

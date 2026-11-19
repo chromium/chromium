@@ -8,9 +8,11 @@ import static androidx.core.view.WindowInsetsCompat.Type.ime;
 import static androidx.core.view.WindowInsetsCompat.Type.navigationBars;
 import static androidx.core.view.WindowInsetsCompat.Type.statusBars;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.description;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -91,6 +93,7 @@ public class DisplayCutoutControllerTest {
 
     @Mock private Tab mTab;
     @Mock private MockWebContents mWebContents;
+    @Mock private MockWebContents mSecondWebContents;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private InsetObserver mInsetObserver;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -771,6 +774,114 @@ public class DisplayCutoutControllerTest {
         verify(mWebContents, atLeastOnce()).addObserver(mWebContentObserverCaptor.capture());
         WebContentsObserver observer2 = mWebContentObserverCaptor.getValue();
         Assert.assertEquals(observer2, mController.getWebContentObserverForTesting());
+    }
+
+    private DisplayCutoutController createCoverShortEdgesController() {
+        DisplayCutoutController controller =
+                createShortEdgesController(
+                        mockStableBarInsets(INITIAL_STATUS_BAR_INSETS, INITIAL_NAV_BAR_INSETS));
+        controller.setViewportFit(ViewportFit.COVER);
+        return controller;
+    }
+
+    @Test
+    public void testOnContentChanged_sameWebContents_noop() {
+        DisplayCutoutController controller = createCoverShortEdgesController();
+        WebContentsObserver initialObserver = controller.getWebContentObserverForTesting();
+        Assert.assertNotNull(initialObserver);
+        clearInvocations(mWebContents);
+
+        // Calling onContentChanged with the same WebContents should not recreate the observer or
+        // re-push safe area insets.
+        controller.onContentChanged();
+        Assert.assertSame(initialObserver, controller.getWebContentObserverForTesting());
+        verify(mWebContents, never()).removeObserver(any());
+        verify(mWebContents, never()).addObserver(any());
+        verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
+    }
+
+    @Test
+    public void testOnContentChanged_swapsWebContents_pushesInsets() {
+        DisplayCutoutController controller = createCoverShortEdgesController();
+        WebContentsObserver initialObserver = controller.getWebContentObserverForTesting();
+        Assert.assertNotNull(initialObserver);
+        clearInvocations(mWebContents);
+
+        // Switching to a new WebContents while shouldUseBrowserEdgeToEdge() holds should replace
+        // the observer and push cached safe area insets.
+        when(mSecondWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        when(mDelegate.getWebContents()).thenReturn(mSecondWebContents);
+
+        controller.onContentChanged();
+        WebContentsObserver swappedObserver = controller.getWebContentObserverForTesting();
+        Assert.assertNotNull(swappedObserver);
+        Assert.assertNotSame(initialObserver, swappedObserver);
+        verify(mWebContents).removeObserver(initialObserver);
+        verify(mSecondWebContents).addObserver(swappedObserver);
+        verify(mSecondWebContents).setDisplayCutoutSafeArea(INITIAL_EXPECTED_SAFE_AREA);
+    }
+
+    @Test
+    public void testOnContentChanged_notInteractable_noPush() {
+        DisplayCutoutController controller = createCoverShortEdgesController();
+        WebContentsObserver initialObserver = controller.getWebContentObserverForTesting();
+        Assert.assertNotNull(initialObserver);
+        clearInvocations(mWebContents);
+
+        // When shouldUseBrowserEdgeToEdge() is false (e.g. tab not interactable even though
+        // isDrawEdgeToEdgeEnabled() is true), swapping WebContents updates the observer without
+        // pushing cached safe area insets.
+        lenient().when(mSecondWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        when(mDelegate.isInteractable()).thenReturn(false);
+        when(mDelegate.getWebContents()).thenReturn(mSecondWebContents);
+
+        controller.onContentChanged();
+        WebContentsObserver nonInteractableObserver = controller.getWebContentObserverForTesting();
+        Assert.assertNotNull(nonInteractableObserver);
+        Assert.assertNotSame(initialObserver, nonInteractableObserver);
+        verify(mWebContents).removeObserver(initialObserver);
+        verify(mSecondWebContents).addObserver(nonInteractableObserver);
+        verify(mSecondWebContents, never()).setDisplayCutoutSafeArea(any());
+    }
+
+    @Test
+    public void testOnContentChanged_detachedActivity_clearsObserver() {
+        DisplayCutoutController controller = createCoverShortEdgesController();
+        WebContentsObserver initialObserver = controller.getWebContentObserverForTesting();
+        Assert.assertNotNull(initialObserver);
+        clearInvocations(mWebContents);
+
+        // When detached from an Activity, onContentChanged clears the existing observer and does
+        // not observe the new WebContents or push safe area insets.
+        when(mDelegate.getAttachedActivity()).thenReturn(null);
+        lenient().when(mDelegate.getWebContents()).thenReturn(mSecondWebContents);
+
+        controller.onContentChanged();
+        verify(mWebContents).removeObserver(initialObserver);
+        Assert.assertNull(controller.getWebContentObserverForTesting());
+        verify(mSecondWebContents, never()).addObserver(any());
+        verify(mSecondWebContents, never()).setDisplayCutoutSafeArea(any());
+    }
+
+    @Test
+    public void testOnContentChanged_afterDetachFromWindow_staysDetached() {
+        DisplayCutoutController controller = createCoverShortEdgesController();
+        WebContentsObserver initialObserver = controller.getWebContentObserverForTesting();
+        Assert.assertNotNull(initialObserver);
+
+        // Detaching via onActivityAttachmentChanged(null) clears mWindow while
+        // getAttachedActivity() can remain non-null (e.g. TabImpl#detachFromWindow() retains
+        // mWindowAndroid); a subsequent onContentChanged() must stay detached.
+        clearInvocations(mWebContents);
+        controller.onActivityAttachmentChanged(null);
+        verify(mWebContents).removeObserver(initialObserver);
+        Assert.assertNull(controller.getWebContentObserverForTesting());
+
+        clearInvocations(mWebContents);
+        controller.onContentChanged();
+        Assert.assertNull(controller.getWebContentObserverForTesting());
+        verify(mWebContents, never()).addObserver(any());
+        verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
     }
 
     @Test
