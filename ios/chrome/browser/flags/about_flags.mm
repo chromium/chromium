@@ -810,31 +810,6 @@ constexpr FeatureEntry::FeatureVariation kFeedSwipeInProductHelpVariations[] = {
      kFeedSwipeInProductHelpStaticInSecondRun, nullptr},
     {"- Animated IPH", kFeedSwipeInProductHelpAnimated, nullptr}};
 
-constexpr FeatureEntry::FeatureParam kBackgroundRefreshRegressionTestControl[] =
-    {{"regression_test_arm", "control"}};
-constexpr FeatureEntry::FeatureParam
-    kBackgroundRefreshRegressionTestBaseline[] = {
-        {"regression_test_arm", "baseline"}};
-constexpr FeatureEntry::FeatureParam
-    kBackgroundRefreshRegressionTestShortPersistenceDelay[] = {
-        {"regression_test_arm", "short-persistence-delay"}};
-constexpr FeatureEntry::FeatureParam
-    kBackgroundRefreshRegressionTestLongRefreshInterval[] = {
-        {"regression_test_arm", "long-refresh-interval"}};
-constexpr FeatureEntry::FeatureParam
-    kBackgroundRefreshRegressionTestNoBeacon[] = {
-        {"regression_test_arm", "no-beacon"}};
-
-constexpr FeatureEntry::FeatureVariation
-    kBackgroundRefreshRegressionTestVariations[] = {
-        {"Control", kBackgroundRefreshRegressionTestControl, nullptr},
-        {"Baseline", kBackgroundRefreshRegressionTestBaseline, nullptr},
-        {"Short Persistence Delay",
-         kBackgroundRefreshRegressionTestShortPersistenceDelay, nullptr},
-        {"Long Refresh Interval",
-         kBackgroundRefreshRegressionTestLongRefreshInterval, nullptr},
-        {"No Beacon", kBackgroundRefreshRegressionTestNoBeacon, nullptr}};
-
 constexpr FeatureEntry::FeatureParam kBestOfAppFREArm1[] = {{"variant", "1"}};
 constexpr FeatureEntry::FeatureParam kBestOfAppFREArm2[] = {{"variant", "2"}};
 constexpr FeatureEntry::FeatureParam kBestOfAppFREArm3[] = {{"variant", "3"}};
@@ -1945,13 +1920,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"app-background-refresh-ios", flag_descriptions::kAppBackgroundRefreshName,
      flag_descriptions::kAppBackgroundRefreshDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableAppBackgroundRefresh)},
-    {"background-refresh-regression-test",
-     flag_descriptions::kBackgroundRefreshRegressionTestName,
-     flag_descriptions::kBackgroundRefreshRegressionTestDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kBackgroundRefreshRegressionTest,
-                                    kBackgroundRefreshRegressionTestVariations,
-                                    "BackgroundRefreshRegressionTest")},
     {"autofill-reject-form-submissions-without-user-gesture",
      flag_descriptions::kAutofillRejectFormSubmissionsWithoutUserGestureName,
      flag_descriptions::

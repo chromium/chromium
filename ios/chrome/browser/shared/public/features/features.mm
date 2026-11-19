@@ -1008,31 +1008,6 @@ bool IsAssistantSidePanelEnabled() {
          IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled();
 }
 
-BASE_FEATURE(kBackgroundRefreshRegressionTest,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-namespace {
-const base::FeatureParam<BackgroundRefreshRegressionTestArm>::Option
-    kBackgroundRefreshRegressionTestArmOptions[] = {
-        {BackgroundRefreshRegressionTestArm::kControl, "control"},
-        {BackgroundRefreshRegressionTestArm::kBaseline, "baseline"},
-        {BackgroundRefreshRegressionTestArm::kShortPersistenceDelay,
-         "short-persistence-delay"},
-        {BackgroundRefreshRegressionTestArm::kLongRefreshInterval,
-         "long-refresh-interval"},
-        {BackgroundRefreshRegressionTestArm::kNoBeacon, "no-beacon"}};
-}  // namespace
-
-const base::FeatureParam<BackgroundRefreshRegressionTestArm>
-    kBackgroundRefreshRegressionTestArmParam{
-        &kBackgroundRefreshRegressionTest, "regression_test_arm",
-        BackgroundRefreshRegressionTestArm::kControl,
-        &kBackgroundRefreshRegressionTestArmOptions};
-
-BackgroundRefreshRegressionTestArm GetBackgroundRefreshRegressionTestArm() {
-  return kBackgroundRefreshRegressionTestArmParam.Get();
-}
-
 bool IsUpdateTabGroupColorsEnabled() {
   return base::FeatureList::IsEnabled(tab_groups::kUpdateTabGroupColors);
 }

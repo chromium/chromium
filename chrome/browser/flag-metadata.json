@@ -1483,11 +1483,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "background-refresh-regression-test",
-    "owners": [ "marq@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "background-resource-fetch",
     "owners": ["horo@chromium.org"],
     "expiry_milestone": 160

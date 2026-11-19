@@ -387,12 +387,6 @@ inline constexpr char kBWGPromoConsentDescription[] =
     "Whether the promo consent flow is composed of a single or a double screen "
     "view.";
 
-inline constexpr char kBackgroundRefreshRegressionTestName[] =
-    "Background Refresh Regression Test";
-inline constexpr char kBackgroundRefreshRegressionTestDescription[] =
-    "Enables the Background Refresh Regression Test with multiple arms "
-    "to test various refresh and persistence parameters.";
-
 inline constexpr char kBestFeaturesScreenInFirstRunName[] =
     "Display Best Features screen in the FRE";
 inline constexpr char kBestFeaturesScreenInFirstRunDescription[] =

@@ -3621,24 +3621,6 @@
             ]
         }
     ],
-    "BackgroundRefreshRegressionTest": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Baseline",
-                    "params": {
-                        "regression_test_arm": "baseline"
-                    },
-                    "enable_features": [
-                        "BackgroundRefreshRegressionTest"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackgroundThreadPoolPIGeneral": [
         {
             "platforms": [
