@@ -235,7 +235,8 @@ class DevToolsBrowserContextTabModel {
         }
 
         @Override
-        public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
+        public @Nullable Tab createFrozenTab(
+                TabState state, int id, int index, @TabLaunchType int type) {
             return null;
         }
 

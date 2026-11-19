@@ -807,7 +807,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             tabState.legacyFileToDelete = null;
         }
         // This may not create a frozen tab for reparenting cases which is misleading.
-        Tab tab = tabCreator.createFrozenTab(tabState, tabToRestore.id, restoredIndex);
+        Tab tab =
+                tabCreator.createFrozenTab(
+                        tabState, tabToRestore.id, restoredIndex, TabLaunchType.FROM_RESTORE);
         if (tab != null && tabState.shouldMigrate) {
             mTabsToMigrate.add(tab);
         }

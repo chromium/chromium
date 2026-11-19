@@ -10,6 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -74,7 +75,9 @@ public class ColdBackgroundTab implements BackgroundPoolTab {
         }
 
         TabCreator tabCreator = tabModel.getTabCreator();
-        return assertNonNull(tabCreator.createFrozenTab(backgroundState, mTabId, index));
+        return assertNonNull(
+                tabCreator.createFrozenTab(
+                        backgroundState, mTabId, index, TabLaunchType.FROM_RESTORE));
     }
 
     private static void transferPlaceholderMetadata(

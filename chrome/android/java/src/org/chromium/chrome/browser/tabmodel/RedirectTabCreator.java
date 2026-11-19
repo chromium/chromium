@@ -107,7 +107,8 @@ public class RedirectTabCreator extends ChromeTabCreator {
     }
 
     @Override
-    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(
+            TabState state, int id, int index, @TabLaunchType int type) {
         AsyncTabParams params = mAsyncTabParamsManager.remove(id);
         if (params != null) {
             params.destroy();

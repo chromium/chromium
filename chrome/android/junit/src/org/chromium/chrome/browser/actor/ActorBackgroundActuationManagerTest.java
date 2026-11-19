@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
@@ -181,7 +182,8 @@ public class ActorBackgroundActuationManagerTest {
         when(mTabModel.iterator()).thenAnswer(inv -> Collections.singletonList(mTab).iterator());
 
         when(mPlaceholderTab.getId()).thenReturn(101);
-        when(mTabCreator.createFrozenTab(any(), anyInt(), anyInt())).thenReturn(mPlaceholderTab);
+        when(mTabCreator.createFrozenTab(any(), anyInt(), anyInt(), eq(TabLaunchType.FROM_RESTORE)))
+                .thenReturn(mPlaceholderTab);
         TabStateExtractor.setTabStateForTesting(TAB_ID, new TabState());
     }
 
@@ -623,7 +625,7 @@ public class ActorBackgroundActuationManagerTest {
 
         Tab placeholderTab2 = mock(Tab.class);
         when(placeholderTab2.getId()).thenReturn(201);
-        when(mTabCreator.createFrozenTab(any(), anyInt(), anyInt()))
+        when(mTabCreator.createFrozenTab(any(), anyInt(), anyInt(), eq(TabLaunchType.FROM_RESTORE)))
                 .thenReturn(mPlaceholderTab, placeholderTab2);
 
         when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);

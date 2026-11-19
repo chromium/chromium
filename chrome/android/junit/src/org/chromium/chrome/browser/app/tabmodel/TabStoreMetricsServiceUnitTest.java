@@ -185,7 +185,8 @@ public class TabStoreMetricsServiceUnitTest {
         shadowState.url = new GURL("http://url-shadow.com");
         shadowState.timestampMillis = 1000;
 
-        shadowFrozen.add(new CreateFrozenTabArguments(shadowState, 1, 0));
+        shadowFrozen.add(
+                new CreateFrozenTabArguments(shadowState, 1, 0, TabLaunchType.FROM_RESTORE));
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -389,7 +390,8 @@ public class TabStoreMetricsServiceUnitTest {
 
         TabState shadowState = new TabState();
         shadowState.url = JUnitTestGURLs.URL_2;
-        shadowFrozen.add(new CreateFrozenTabArguments(shadowState, 100, 0));
+        shadowFrozen.add(
+                new CreateFrozenTabArguments(shadowState, 100, 0, TabLaunchType.FROM_RESTORE));
 
         Map<@TabId Integer, String> regularFallbackTabs = new HashMap<>();
         regularFallbackTabs.put(

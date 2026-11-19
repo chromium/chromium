@@ -97,7 +97,8 @@ public class RecordingTabCreator implements TabCreator {
     }
 
     @Override
-    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(
+            TabState state, int id, int index, @TabLaunchType int type) {
         assertInitialized();
         if (mIsRecording && TabStateStorageFlagHelper.isTabStorageEnabled()) {
             mTabCount++;
@@ -106,7 +107,7 @@ public class RecordingTabCreator implements TabCreator {
                     new TabCreationData(
                             id, urlSpec, state.timestampMillis, state.isPinned, state.tabGroupId));
         }
-        return mDelegate.createFrozenTab(state, id, index);
+        return mDelegate.createFrozenTab(state, id, index, type);
     }
 
     @Override

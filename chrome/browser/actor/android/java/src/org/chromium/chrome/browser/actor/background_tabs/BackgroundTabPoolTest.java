@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabCacheManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
@@ -223,14 +224,17 @@ public class BackgroundTabPoolTest {
 
         BackgroundTabPool secondPool = new BackgroundTabPool(PROFILE_TOKEN, mOnEmptyCallback);
         Tab createdTab = createMockTab(TAB_ID_1);
-        when(mTabCreator.createFrozenTab(any(), eq(TAB_ID_1), eq(0))).thenReturn(createdTab);
+        when(mTabCreator.createFrozenTab(
+                        any(), eq(TAB_ID_1), eq(0), eq(TabLaunchType.FROM_RESTORE)))
+                .thenReturn(createdTab);
 
         BackgroundPoolTab coldLoaded = secondPool.loadTabByPlaceholderId(PLACEHOLDER_ID);
         assertNotNull(coldLoaded);
         assertTrue(coldLoaded instanceof ColdBackgroundTab);
 
         coldLoaded.attachTab(mTabModel, 0);
-        verify(mTabCreator).createFrozenTab(any(), eq(TAB_ID_1), eq(0));
+        verify(mTabCreator)
+                .createFrozenTab(any(), eq(TAB_ID_1), eq(0), eq(TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -252,7 +256,9 @@ public class BackgroundTabPoolTest {
 
         BackgroundTabPool secondPool = new BackgroundTabPool(PROFILE_TOKEN, mOnEmptyCallback);
         Tab createdTab = createMockTab(TAB_ID_1);
-        when(mTabCreator.createFrozenTab(any(), eq(TAB_ID_1), eq(0))).thenReturn(createdTab);
+        when(mTabCreator.createFrozenTab(
+                        any(), eq(TAB_ID_1), eq(0), eq(TabLaunchType.FROM_RESTORE)))
+                .thenReturn(createdTab);
 
         BackgroundPoolTab coldLoaded = secondPool.loadTabByOriginalId(TAB_ID_1);
         assertNotNull(coldLoaded);
@@ -260,7 +266,8 @@ public class BackgroundTabPoolTest {
         assertEquals(PLACEHOLDER_ID, coldLoaded.getPlaceholderTabId());
 
         coldLoaded.attachTab(mTabModel, 0);
-        verify(mTabCreator).createFrozenTab(any(), eq(TAB_ID_1), eq(0));
+        verify(mTabCreator)
+                .createFrozenTab(any(), eq(TAB_ID_1), eq(0), eq(TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -352,7 +359,9 @@ public class BackgroundTabPoolTest {
         mPool.destroy();
         BackgroundTabPool coldPool = new BackgroundTabPool(PROFILE_TOKEN, mOnEmptyCallback);
         Tab createdTab = createMockTab(TAB_ID_1);
-        when(mTabCreator.createFrozenTab(any(), eq(TAB_ID_1), eq(0))).thenReturn(createdTab);
+        when(mTabCreator.createFrozenTab(
+                        any(), eq(TAB_ID_1), eq(0), eq(TabLaunchType.FROM_RESTORE)))
+                .thenReturn(createdTab);
 
         BackgroundPoolTab coldLoaded = coldPool.loadTabByPlaceholderId(PLACEHOLDER_ID);
         assertNotNull(coldLoaded);
@@ -450,7 +459,9 @@ public class BackgroundTabPoolTest {
 
         BackgroundTabPool secondPool = new BackgroundTabPool(PROFILE_TOKEN, mOnEmptyCallback);
         Tab createdTab = createMockTab(TAB_ID_1);
-        when(mTabCreator.createFrozenTab(any(), eq(TAB_ID_1), eq(0))).thenReturn(createdTab);
+        when(mTabCreator.createFrozenTab(
+                        any(), eq(TAB_ID_1), eq(0), eq(TabLaunchType.FROM_RESTORE)))
+                .thenReturn(createdTab);
 
         BackgroundPoolTab coldLoaded = secondPool.loadTabByPlaceholderId(PLACEHOLDER_ID);
         assertNotNull(coldLoaded);

@@ -111,6 +111,31 @@ public class TabStateAttributesTest {
     }
 
     @Test
+    public void testDefaultDirtyState_FromUndoClosure() {
+        MockTab undoTab = new MockTab(1, mProfile, TabLaunchType.FROM_UNDO_CLOSURE);
+        undoTab.setUrl(JUnitTestGURLs.EXAMPLE_URL);
+        TabStateAttributesRegistry.createAttributesForTab(
+                undoTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
+        assertEquals(
+                DirtinessState.DIRTY,
+                TabStateAttributesRegistry.getAttributesFor(
+                                undoTab, TabStateAttributes.StoreKey.class)
+                        .getDirtinessState());
+        TabStateAttributesRegistry.clearForTesting(undoTab);
+
+        MockTab restoredTab = new MockTab(2, mProfile, TabLaunchType.FROM_RESTORE);
+        restoredTab.setUrl(JUnitTestGURLs.EXAMPLE_URL);
+        TabStateAttributesRegistry.createAttributesForTab(
+                restoredTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
+        assertEquals(
+                DirtinessState.CLEAN,
+                TabStateAttributesRegistry.getAttributesFor(
+                                restoredTab, TabStateAttributes.StoreKey.class)
+                        .getDirtinessState());
+        TabStateAttributesRegistry.clearForTesting(restoredTab);
+    }
+
+    @Test
     public void testTitleUpdate() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);

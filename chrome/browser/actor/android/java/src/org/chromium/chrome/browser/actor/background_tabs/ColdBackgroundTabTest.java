@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.actor.BackgroundTabPool;
 import org.chromium.chrome.browser.actor.ColdBackgroundTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -97,7 +98,11 @@ public class ColdBackgroundTabTest {
                         mBackgroundTabState,
                         PLACEHOLDER_TAB_ID);
 
-        when(mTabCreator.createFrozenTab(any(), eq(ORIGINAL_TAB_ID), eq(DESTINATION_INDEX)))
+        when(mTabCreator.createFrozenTab(
+                        any(),
+                        eq(ORIGINAL_TAB_ID),
+                        eq(DESTINATION_INDEX),
+                        eq(TabLaunchType.FROM_RESTORE)))
                 .thenReturn(mTab);
 
         Tab attachedTab = tab.attachTab(mTabModel, DESTINATION_INDEX, placeholderState);
@@ -108,7 +113,10 @@ public class ColdBackgroundTabTest {
         verify(mBackgroundTabPool).removeTabById(ORIGINAL_TAB_ID);
         verify(mTabCreator)
                 .createFrozenTab(
-                        eq(mBackgroundTabState), eq(ORIGINAL_TAB_ID), eq(DESTINATION_INDEX));
+                        eq(mBackgroundTabState),
+                        eq(ORIGINAL_TAB_ID),
+                        eq(DESTINATION_INDEX),
+                        eq(TabLaunchType.FROM_RESTORE));
         assertNull(placeholderState.contentsState);
     }
 
@@ -121,7 +129,11 @@ public class ColdBackgroundTabTest {
                         mBackgroundTabState,
                         PLACEHOLDER_TAB_ID);
 
-        when(mTabCreator.createFrozenTab(any(), eq(ORIGINAL_TAB_ID), eq(DESTINATION_INDEX)))
+        when(mTabCreator.createFrozenTab(
+                        any(),
+                        eq(ORIGINAL_TAB_ID),
+                        eq(DESTINATION_INDEX),
+                        eq(TabLaunchType.FROM_RESTORE)))
                 .thenReturn(mTab);
 
         Tab attachedTab =
@@ -131,7 +143,10 @@ public class ColdBackgroundTabTest {
         verify(mBackgroundTabPool).removeTabById(ORIGINAL_TAB_ID);
         verify(mTabCreator)
                 .createFrozenTab(
-                        eq(mBackgroundTabState), eq(ORIGINAL_TAB_ID), eq(DESTINATION_INDEX));
+                        eq(mBackgroundTabState),
+                        eq(ORIGINAL_TAB_ID),
+                        eq(DESTINATION_INDEX),
+                        eq(TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -145,7 +160,11 @@ public class ColdBackgroundTabTest {
                         mBackgroundTabState,
                         PLACEHOLDER_TAB_ID);
 
-        when(mTabCreator.createFrozenTab(any(), eq(ORIGINAL_TAB_ID), eq(DESTINATION_INDEX)))
+        when(mTabCreator.createFrozenTab(
+                        any(),
+                        eq(ORIGINAL_TAB_ID),
+                        eq(DESTINATION_INDEX),
+                        eq(TabLaunchType.FROM_RESTORE)))
                 .thenReturn(mTab);
 
         tab.attachTab(mTabModel, DESTINATION_INDEX, /* placeholderTabState= */ null);

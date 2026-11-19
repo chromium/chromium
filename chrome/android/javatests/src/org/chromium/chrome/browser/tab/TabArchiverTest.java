@@ -1034,7 +1034,10 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () ->
                         mArchivedTabCreator.createFrozenTab(
-                                state, tab.getId(), TabModel.INVALID_TAB_INDEX));
+                                state,
+                                tab.getId(),
+                                TabModel.INVALID_TAB_INDEX,
+                                TabLaunchType.FROM_RESTORE));
 
         assertEquals(2, getTabCountOnUiThread(mRegularTabModel));
         assertEquals(1, getTabCountOnUiThread(mArchivedTabModel));
@@ -1183,7 +1186,10 @@ public class TabArchiverTest {
                         () -> {
                             Tab tab =
                                     mArchivedTabCreator.createFrozenTab(
-                                            null, INVALID_TAB_ID, INVALID_TAB_INDEX);
+                                            null,
+                                            INVALID_TAB_ID,
+                                            INVALID_TAB_INDEX,
+                                            TabLaunchType.FROM_RESTORE);
                             // This will call PTD#from which posts a task for the result.
                             mTabArchiver.initializePersistedTabDataAsyncImpl(
                                     Arrays.asList(tab), 0, 0);
@@ -1221,7 +1227,10 @@ public class TabArchiverTest {
                         () -> {
                             Tab tab =
                                     mArchivedTabCreator.createFrozenTab(
-                                            null, INVALID_TAB_ID, INVALID_TAB_INDEX);
+                                            null,
+                                            INVALID_TAB_ID,
+                                            INVALID_TAB_INDEX,
+                                            TabLaunchType.FROM_RESTORE);
                             mTabArchiver.initializePersistedTabDataAsyncImpl(
                                     Arrays.asList(tab), 0, 0);
                             return tab;
@@ -1320,7 +1329,10 @@ public class TabArchiverTest {
                                             TabClosureParams.closeTab(tab).allowUndo(false).build(),
                                             /* allowDialog= */ false);
                             return mArchivedTabCreator.createFrozenTab(
-                                    state, tab.getId(), INVALID_TAB_INDEX);
+                                    state,
+                                    tab.getId(),
+                                    INVALID_TAB_INDEX,
+                                    TabLaunchType.FROM_RESTORE);
                         });
 
         assertEquals(1, getTabCountOnUiThread(mRegularTabModel));

@@ -2134,7 +2134,10 @@ public class RecentlyClosedBridgeTest {
                     TabState state = TabStateExtractor.from(tab);
                     closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
                     frozen[0] =
-                            mActivity.getCurrentTabCreator().createFrozenTab(state, tab.getId(), 1);
+                            mActivity
+                                    .getCurrentTabCreator()
+                                    .createFrozenTab(
+                                            state, tab.getId(), 1, TabLaunchType.FROM_RESTORE);
                 });
         return frozen[0];
     }

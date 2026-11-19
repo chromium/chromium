@@ -75,19 +75,16 @@ public class MockTabCreator implements TabCreator {
     }
 
     @Override
-    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
-        MockTab tab =
-                new MockTab(
-                        id,
-                        mSelector.getModel(mIsIncognito).getProfile(),
-                        TabLaunchType.FROM_RESTORE);
+    public @Nullable Tab createFrozenTab(
+            TabState state, int id, int index, @TabLaunchType int type) {
+        MockTab tab = new MockTab(id, mSelector.getModel(mIsIncognito).getProfile(), type);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(true));
         if (state != null) TabTestUtils.restoreFieldsFromState(tab, state);
         TabTestUtils.initialize(tab, null, null, null, null, null, null, false, null, false, false);
         tab.setIsInitialized(true);
         mSelector
                 .getModel(mIsIncognito)
-                .addTab(tab, index, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
+                .addTab(tab, index, type, TabCreationState.FROZEN_ON_RESTORE);
         storeTabInfo(state, id);
         return tab;
     }

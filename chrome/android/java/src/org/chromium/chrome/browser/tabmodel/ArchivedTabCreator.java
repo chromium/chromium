@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -85,11 +84,6 @@ public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
     }
 
     @Override
-    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
-        return createFrozenTab(state, id, index, TabLaunchType.FROM_RESTORE);
-    }
-
-    @Override
     public @Nullable Tab createFrozenTab(
             TabState state, int id, int index, @TabLaunchType int type) {
         assert mTabModel != null : "Creating frozen tab before native library initialized.";
@@ -105,7 +99,6 @@ public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
                         .build();
         mTabModel.addTab(tab, index, type, TabCreationState.FROZEN_FOR_LAZY_LOAD);
         if (type == TabLaunchType.FROM_UNDO_CLOSURE) {
-            TabStateAttributes.setDirty(tab);
             ArchivePersistedTabData.from(
                     tab,
                     archivePersistedTabData -> {

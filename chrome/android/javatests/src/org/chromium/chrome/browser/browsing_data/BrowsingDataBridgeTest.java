@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.WebContentsState;
@@ -292,7 +293,8 @@ public class BrowsingDataBridgeTest {
                             mActivityTestRule
                                     .getActivity()
                                     .getCurrentTabCreator()
-                                    .createFrozenTab(state, tab.getId(), 1);
+                                    .createFrozenTab(
+                                            state, tab.getId(), 1, TabLaunchType.FROM_RESTORE);
                     restored[0] =
                             TabStateExtractor.from(frozen[0])
                                     .contentsState

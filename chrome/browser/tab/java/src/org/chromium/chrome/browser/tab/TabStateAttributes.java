@@ -86,7 +86,9 @@ public class TabStateAttributes {
 
     TabStateAttributes(Tab tab, @Nullable @TabCreationState Integer creationState) {
         mTab = tab;
-        if (creationState == null || creationState == TabCreationState.FROZEN_FOR_LAZY_LOAD) {
+        if (creationState == null
+                || creationState == TabCreationState.FROZEN_FOR_LAZY_LOAD
+                || tab.getLaunchType() == TabLaunchType.FROM_UNDO_CLOSURE) {
             updateIsDirty(DirtinessState.DIRTY);
         } else if (creationState == TabCreationState.LIVE_IN_FOREGROUND
                 || creationState == TabCreationState.LIVE_IN_BACKGROUND) {

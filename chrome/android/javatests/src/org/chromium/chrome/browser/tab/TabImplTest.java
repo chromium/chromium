@@ -95,7 +95,8 @@ public class TabImplTest {
                                     .createFrozenTab(
                                             state,
                                             tab.getId(),
-                                            /* index= */ TabModel.INVALID_TAB_INDEX);
+                                            /* index= */ TabModel.INVALID_TAB_INDEX,
+                                            TabLaunchType.FROM_RESTORE);
                 });
     }
 
@@ -122,7 +123,10 @@ public class TabImplTest {
                                     .getActivity()
                                     .getCurrentTabCreator()
                                     .createFrozenTab(
-                                            state, foregroundTab.getId() + 100, /* index= */ 1);
+                                            state,
+                                            foregroundTab.getId() + 100,
+                                            /* index= */ 1,
+                                            TabLaunchType.FROM_RESTORE);
                 });
     }
 

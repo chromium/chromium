@@ -77,16 +77,17 @@ public class HeadlessTabCreator implements TabCreator, NeedsTabModel {
     }
 
     @Override
-    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(
+            TabState state, int id, int index, @TabLaunchType int type) {
         checkNotIncognito();
         Tab tab =
                 TabBuilder.createFromFrozenState(mProfile)
                         .setId(id)
+                        .setLaunchType(type)
                         .setDelegateFactory(new HeadlessTabDelegateFactory(TabModelType.HEADLESS))
                         .setTabState(state)
                         .build();
-        mTabModel.addTab(
-                tab, index, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
+        mTabModel.addTab(tab, index, type, TabCreationState.FROZEN_ON_RESTORE);
         return tab;
     }
 

@@ -69,20 +69,6 @@ public interface TabCreator {
             int position);
 
     /**
-     * On restore, allows us to create a frozen version of a tab using saved tab state we read from
-     * disk.
-     *
-     * @param state The tab state that the tab can be restored from.
-     * @param id The id to give the new tab.
-     * @param index The index for where to place the tab.
-     * @return The newly created tab or null if no tab was created. No tab may be created due to a
-     *     problem with the data, the current model, or just because this creator implementation
-     *     doesn't create tabs.
-     */
-    // TODO(crbug.com/557182836): Remove this 3-arg overload once callers pass TabLaunchType.
-    @Nullable Tab createFrozenTab(TabState state, int id, int index);
-
-    /**
      * On restore or undo, creates a frozen version of a tab using saved tab state and the specified
      * launch type.
      *
@@ -90,12 +76,11 @@ public interface TabCreator {
      * @param id The id to give the new tab.
      * @param index The index for where to place the tab.
      * @param type The {@link TabLaunchType} for the tab.
-     * @return The newly created tab or null if no tab was created.
+     * @return The newly created tab or null if no tab was created. No tab may be created due to a
+     *     problem with the data, the current model, or just because this creator implementation
+     *     doesn't create tabs.
      */
-    default @Nullable Tab createFrozenTab(
-            TabState state, int id, int index, @TabLaunchType int type) {
-        return createFrozenTab(state, id, index);
-    }
+    @Nullable Tab createFrozenTab(TabState state, int id, int index, @TabLaunchType int type);
 
     /**
      * Returns true if a tab with this ID is being reparented.

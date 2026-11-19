@@ -49,11 +49,14 @@ public class AccumulatingTabCreator implements TabCreator {
         public final TabState state;
         public final int id;
         public final int index;
+        public final @TabLaunchType int type;
 
-        public CreateFrozenTabArguments(TabState state, int id, int index) {
+        public CreateFrozenTabArguments(
+                TabState state, int id, int index, @TabLaunchType int type) {
             this.state = state;
             this.id = id;
             this.index = index;
+            this.type = type;
         }
     }
 
@@ -91,9 +94,10 @@ public class AccumulatingTabCreator implements TabCreator {
     }
 
     @Override
-    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(
+            TabState state, int id, int index, @TabLaunchType int type) {
         if (mIsRecording) {
-            createFrozenTabArgumentsList.add(new CreateFrozenTabArguments(state, id, index));
+            createFrozenTabArgumentsList.add(new CreateFrozenTabArguments(state, id, index, type));
         }
         return null;
     }

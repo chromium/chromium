@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -56,6 +58,11 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
+import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
+import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
+import org.chromium.chrome.browser.tab.TabTestUtils;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -149,7 +156,10 @@ public class ChromeTabCreatorJUnitTest {
 
         assertNull(
                 mTabCreator.createFrozenTab(
-                        new TabState(), /* id= */ 1, TabModel.INVALID_TAB_INDEX));
+                        new TabState(),
+                        /* id= */ 1,
+                        TabModel.INVALID_TAB_INDEX,
+                        TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -334,7 +344,8 @@ public class ChromeTabCreatorJUnitTest {
                 .when(tabModel)
                 .addTab(any(Tab.class), anyInt(), anyInt(), anyInt());
 
-        tabCreator.createFrozenTab(/* state= */ null, tabId, /* index= */ 0);
+        tabCreator.createFrozenTab(
+                /* state= */ null, tabId, /* index= */ 0, TabLaunchType.FROM_RESTORE);
 
         assertFalse(
                 "AsyncTabParams must be removed after createFrozenTab",
@@ -376,6 +387,45 @@ public class ChromeTabCreatorJUnitTest {
                         /* index= */ 2);
         verify(fileTab).reloadIgnoringCache();
         verify(fileTab, never()).reload();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
+    public void testCreateFrozenTab_FromUndoClosure() {
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(
+                /* isSignedInAndSyncEnabled= */ false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(/* enabled= */ false);
+        TabTestUtils.mockTabJni();
+
+        TabModelOrderController orderController = mock(TabModelOrderController.class);
+        mTabCreator.setTabModel(mTabModel);
+        mTabCreator.setTabModelOrderController(orderController);
+
+        TabState tabState = new TabState();
+        WebContentsState contentsState = mock(WebContentsState.class);
+        when(contentsState.getVirtualUrlFromState()).thenReturn(PRIMARY_URL);
+        when(contentsState.getDisplayTitleFromState()).thenReturn("Title");
+        tabState.contentsState = contentsState;
+
+        Tab tab =
+                mTabCreator.createFrozenTab(
+                        tabState, /* id= */ 1, /* index= */ 0, TabLaunchType.FROM_UNDO_CLOSURE);
+
+        assertNotNull(tab);
+        assertEquals(TabLaunchType.FROM_UNDO_CLOSURE, tab.getLaunchType());
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabPersistentStoreImpl.class);
+        assertNotNull(attributes);
+        assertEquals(DirtinessState.DIRTY, attributes.getDirtinessState());
+        verify(orderController)
+                .willOpenInForeground(
+                        TabLaunchType.FROM_UNDO_CLOSURE, /* isNewTabIncognitoBranded= */ false);
+        verify(mTabModel)
+                .addTab(
+                        tab,
+                        /* index= */ 0,
+                        TabLaunchType.FROM_UNDO_CLOSURE,
+                        TabCreationState.FROZEN_ON_RESTORE);
     }
 
     @Test
@@ -507,7 +557,9 @@ public class ChromeTabCreatorJUnitTest {
                         /* finalizeCallback= */ null);
         AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
 
-        assertNull(redirectTabCreator.createFrozenTab(/* state= */ null, tabId, /* index= */ 0));
+        assertNull(
+                redirectTabCreator.createFrozenTab(
+                        /* state= */ null, tabId, /* index= */ 0, TabLaunchType.FROM_RESTORE));
 
         assertFalse(
                 "AsyncTabParams must be removed after RedirectTabCreator.createFrozenTab",
@@ -625,7 +677,10 @@ public class ChromeTabCreatorJUnitTest {
                                 shouldReload,
                                 /* finalizeCallback= */ null));
 
-        assertEquals(tab, mTabCreator.createFrozenTab(new TabState(), tabId, index));
+        assertEquals(
+                tab,
+                mTabCreator.createFrozenTab(
+                        new TabState(), tabId, index, TabLaunchType.FROM_RESTORE));
         verify(mTabModel)
                 .addTab(
                         tab,

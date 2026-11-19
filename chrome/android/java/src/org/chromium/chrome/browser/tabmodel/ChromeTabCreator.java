@@ -706,7 +706,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
     }
 
     @Override
-    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(
+            TabState state, int id, int index, @TabLaunchType int type) {
         if (mTabModel == null || mTabModel instanceof StubTabModel || mOrderController == null) {
             return null;
         }
@@ -715,12 +716,10 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 (tabId) -> {
                     return selector != null ? selector.getTabById(tabId) : null;
                 };
-        boolean selectTab =
-                mOrderController.willOpenInForeground(TabLaunchType.FROM_RESTORE, mIncognito);
+        boolean selectTab = mOrderController.willOpenInForeground(type, mIncognito);
         boolean isReparenting = isReparenting(id);
         AsyncTabParams asyncParams = mAsyncTabParamsManager.getAsyncTabParams().get(id);
         Tab tab = null;
-        @TabLaunchType int launchType = TabLaunchType.FROM_RESTORE;
         @TabCreationState int creationState = TabCreationState.FROZEN_ON_RESTORE;
         if (isReparenting) {
             creationState = TabCreationState.LIVE_IN_BACKGROUND;
@@ -755,6 +754,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                             .setContentViewDeferred(
                                     ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled())
                             .setId(id)
+                            .setLaunchType(type)
                             .setTabResolver(resolver)
                             .setWindow(mNativeWindow)
                             .setDelegateFactory(createDefaultTabDelegateFactory())
@@ -763,7 +763,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                             .build();
         }
 
-        mTabModel.addTab(tab, index, launchType, creationState);
+        mTabModel.addTab(tab, index, type, creationState);
         mAsyncTabParamsManager.remove(id);
         return tab;
     }

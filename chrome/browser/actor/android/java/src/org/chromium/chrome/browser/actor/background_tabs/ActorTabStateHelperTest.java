@@ -146,7 +146,8 @@ public class ActorTabStateHelperTest {
         when(mTab.getIsPinned()).thenReturn(isPinned);
         when(mTabModel.indexOf(mTab)).thenReturn(0);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
-        when(mTabCreator.createFrozenTab(any(), anyInt(), eq(1))).thenReturn(mPlaceholderTab);
+        when(mTabCreator.createFrozenTab(any(), anyInt(), eq(1), eq(TabLaunchType.FROM_RESTORE)))
+                .thenReturn(mPlaceholderTab);
     }
 
     private void setupDetachmentMocks() {
@@ -191,7 +192,8 @@ public class ActorTabStateHelperTest {
         inOrder.verify(mOnTabDetaching).onResult(mTab);
         inOrder.verify(mTabRemover).removeTab(mTab, false);
 
-        verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
+        verify(mTabCreator)
+                .createFrozenTab(eq(testTabState), anyInt(), eq(1), eq(TabLaunchType.FROM_RESTORE));
         verify(mTabModel, never()).pinTab(anyInt(), anyBoolean());
     }
 
@@ -242,7 +244,8 @@ public class ActorTabStateHelperTest {
         inOrder.verify(mOnTabDetaching).onResult(mTab);
         inOrder.verify(mTabRemover).removeTab(mTab, false);
 
-        verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
+        verify(mTabCreator)
+                .createFrozenTab(eq(testTabState), anyInt(), eq(1), eq(TabLaunchType.FROM_RESTORE));
         verify(mTabModel, never()).pinTab(anyInt(), anyBoolean());
     }
 
@@ -279,7 +282,8 @@ public class ActorTabStateHelperTest {
         inOrder.verify(mOnTabDetaching).onResult(mTab);
         inOrder.verify(mTabRemover).removeTab(mTab, false);
 
-        verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
+        verify(mTabCreator)
+                .createFrozenTab(eq(testTabState), anyInt(), eq(1), eq(TabLaunchType.FROM_RESTORE));
         verify(mTabModel, never()).pinTab(anyInt(), anyBoolean());
     }
 
@@ -314,7 +318,8 @@ public class ActorTabStateHelperTest {
         when(mTabModel.iterator()).thenReturn(Arrays.asList(mTab, tab2).iterator());
         when(mTabModel.getTabById(102)).thenReturn(tab2);
         when(mTabModel.indexOf(tab2)).thenReturn(1);
-        when(mTabCreator.createFrozenTab(any(), anyInt(), eq(2))).thenReturn(mPlaceholderTab);
+        when(mTabCreator.createFrozenTab(any(), anyInt(), eq(2), eq(TabLaunchType.FROM_RESTORE)))
+                .thenReturn(mPlaceholderTab);
 
         ActorTask mockTask = mock(ActorTask.class);
         when(mockTask.getId()).thenReturn(500);
@@ -354,7 +359,8 @@ public class ActorTabStateHelperTest {
 
         ActorTabStateHelper.createAndInsertPlaceholder(mTab, mTabModel);
 
-        verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
+        verify(mTabCreator)
+                .createFrozenTab(eq(testTabState), anyInt(), eq(1), eq(TabLaunchType.FROM_RESTORE));
         verify(mTabModel, never()).pinTab(anyInt(), anyBoolean());
     }
 
@@ -368,7 +374,8 @@ public class ActorTabStateHelperTest {
 
         ActorTabStateHelper.createAndInsertPlaceholder(mTab, mTabModel);
 
-        verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
+        verify(mTabCreator)
+                .createFrozenTab(eq(testTabState), anyInt(), eq(1), eq(TabLaunchType.FROM_RESTORE));
         verify(mTabModel).pinTab(eq(101), eq(false));
         verify(mTabModel).moveTab(eq(101), eq(1));
     }
@@ -385,7 +392,8 @@ public class ActorTabStateHelperTest {
 
         ActorTabStateHelper.createAndInsertPlaceholder(mTab, mTabModel);
 
-        verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
+        verify(mTabCreator)
+                .createFrozenTab(eq(testTabState), anyInt(), eq(1), eq(TabLaunchType.FROM_RESTORE));
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(mPlaceholderTab)),
@@ -437,7 +445,8 @@ public class ActorTabStateHelperTest {
         Tab placeholder = mock(Tab.class);
         when(placeholder.getId()).thenReturn(300);
 
-        when(mTabCreator.createFrozenTab(eq(tab1State), anyInt(), eq(2)))
+        when(mTabCreator.createFrozenTab(
+                        eq(tab1State), anyInt(), eq(2), eq(TabLaunchType.FROM_RESTORE)))
                 .thenAnswer(
                         invocation -> {
                             int targetIndex = invocation.getArgument(2);

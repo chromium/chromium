@@ -282,7 +282,10 @@ public class TabArchiverImpl implements TabArchiver {
             if (tabState == null) continue;
             Tab archivedTab =
                     mArchivedTabCreator.createFrozenTab(
-                            tabState, tabId, TabModel.INVALID_TAB_INDEX);
+                            tabState,
+                            tabId,
+                            TabModel.INVALID_TAB_INDEX,
+                            TabLaunchType.FROM_RESTORE);
             archivedTabs.add(archivedTab);
             singleTabsToClose.add(tab);
         }
@@ -352,7 +355,10 @@ public class TabArchiverImpl implements TabArchiver {
             // Restore tab at the "start" of the list.
             Tab newTab =
                     tabCreator.createFrozenTab(
-                            tabState, tab.getId(), areTabsBeingOpened ? INVALID_TAB_INDEX : 0);
+                            tabState,
+                            tab.getId(),
+                            areTabsBeingOpened ? INVALID_TAB_INDEX : 0,
+                            TabLaunchType.FROM_RESTORE);
             if (newTab != null) {
                 // Update the timestamp so that the tab isn't immediately re-archived on the next
                 // pass.

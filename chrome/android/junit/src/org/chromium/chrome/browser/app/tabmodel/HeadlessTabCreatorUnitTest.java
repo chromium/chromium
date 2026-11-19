@@ -72,7 +72,9 @@ public class HeadlessTabCreatorUnitTest {
         when(contentsState.getVirtualUrlFromState()).thenReturn("https://example.com");
         when(contentsState.getDisplayTitleFromState()).thenReturn("Title");
         tabState.contentsState = contentsState;
-        Tab tab = mCreator.createFrozenTab(tabState, /* id= */ 1, /* index= */ 0);
+        Tab tab =
+                mCreator.createFrozenTab(
+                        tabState, /* id= */ 1, /* index= */ 0, TabLaunchType.FROM_RESTORE);
         assertNotNull(tab);
         assertNull(tab.getWebContents());
         assertFalse(tab.loadIfNeeded(/* forceBackingSize= */ false));

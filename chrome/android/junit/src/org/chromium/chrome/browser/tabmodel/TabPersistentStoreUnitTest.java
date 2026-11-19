@@ -351,7 +351,8 @@ public class TabPersistentStoreUnitTest {
         TabState ntpState = new TabState();
         mPersistentStore.restoreTab(ntpDetails, ntpState, false);
 
-        verify(mNormalTabCreator).createFrozenTab(eq(ntpState), eq(1), anyInt());
+        verify(mNormalTabCreator)
+                .createFrozenTab(eq(ntpState), eq(1), anyInt(), eq(TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -410,7 +411,8 @@ public class TabPersistentStoreUnitTest {
                                 /* shouldReload= */ false,
                                 /* finalizeCallback= */ null));
         when(mNormalTabCreator.isReparenting(1)).thenReturn(true);
-        when(mNormalTabCreator.createFrozenTab(eq(expectedTabState), eq(1), eq(0)))
+        when(mNormalTabCreator.createFrozenTab(
+                        eq(expectedTabState), eq(1), eq(0), eq(TabLaunchType.FROM_RESTORE)))
                 .thenReturn(tabToReparent);
         mPersistentStore =
                 new TabPersistentStoreImpl(
@@ -433,7 +435,9 @@ public class TabPersistentStoreUnitTest {
                 emptyNtpDetails, /* tabState= */ null, /* setAsActive= */ false);
         watcher.assertExpected();
 
-        verify(mNormalTabCreator).createFrozenTab(eq(expectedTabState), eq(1), eq(0));
+        verify(mNormalTabCreator)
+                .createFrozenTab(
+                        eq(expectedTabState), eq(1), eq(0), eq(TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -466,7 +470,9 @@ public class TabPersistentStoreUnitTest {
         Tab tab = mock(Tab.class);
         when(tab.getId()).thenReturn(1);
         when(tab.getUrl()).thenReturn(new GURL(url));
-        when(mNormalTabCreator.createFrozenTab(eq(tabState), eq(1), eq(0))).thenReturn(tab);
+        when(mNormalTabCreator.createFrozenTab(
+                        eq(tabState), eq(1), eq(0), eq(TabLaunchType.FROM_RESTORE)))
+                .thenReturn(tab);
 
         TabRestoreDetails details =
                 new TabRestoreDetails(1, 0, TriState.FALSE, url, /* fromMerge= */ false);
@@ -480,7 +486,8 @@ public class TabPersistentStoreUnitTest {
         assertNull(tabState.legacyFileToDelete);
         assertTrue(
                 mPersistentStore.getLegacyTabStateFilesToDeleteForTesting().contains(legacyFile));
-        verify(mNormalTabCreator).createFrozenTab(eq(tabState), eq(1), eq(0));
+        verify(mNormalTabCreator)
+                .createFrozenTab(eq(tabState), eq(1), eq(0), eq(TabLaunchType.FROM_RESTORE));
         assertTrue(mPersistentStore.getTabsToMigrateForTesting().contains(tab));
     }
 
@@ -518,7 +525,9 @@ public class TabPersistentStoreUnitTest {
                 new TabRestoreDetails(1, 0, TriState.TRUE, url, /* fromMerge= */ false);
         mPersistentStore.restoreTab(details, /* tabState= */ null, /* setAsActive= */ false);
 
-        verify(mIncognitoTabCreator).createFrozenTab(eq(expectedTabState), eq(1), eq(0));
+        verify(mIncognitoTabCreator)
+                .createFrozenTab(
+                        eq(expectedTabState), eq(1), eq(0), eq(TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -582,7 +591,9 @@ public class TabPersistentStoreUnitTest {
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.initializeRestoreVars(
                 /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
-        when(mNormalTabCreator.createFrozenTab(any(), anyInt(), anyInt())).thenReturn(mTab);
+        when(mNormalTabCreator.createFrozenTab(
+                        any(), anyInt(), anyInt(), eq(TabLaunchType.FROM_RESTORE)))
+                .thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_1));
 
         TabRestoreDetails regularTabRestoreDetails =
@@ -596,7 +607,9 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(regularTabRestoreDetailsDupe, state, false);
 
         // Restoring a dupe should only create a single tab, and skip the second.
-        verify(mNormalTabCreator, times(1)).createFrozenTab(eq(state), eq(RESTORE_TAB_ID_1), eq(0));
+        verify(mNormalTabCreator, times(1))
+                .createFrozenTab(
+                        eq(state), eq(RESTORE_TAB_ID_1), eq(0), eq(TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -1594,7 +1607,9 @@ public class TabPersistentStoreUnitTest {
         when(tab.getId()).thenReturn(101);
         TabState tabState = new TabState();
         tabState.isIncognito = true;
-        when(mIncognitoTabCreator.createFrozenTab(eq(tabState), eq(101), eq(0))).thenReturn(tab);
+        when(mIncognitoTabCreator.createFrozenTab(
+                        eq(tabState), eq(101), eq(0), eq(TabLaunchType.FROM_RESTORE)))
+                .thenReturn(tab);
         when(mIncognitoTabModel.indexOf(tab)).thenReturn(0);
 
         mPersistentStore =
@@ -1614,7 +1629,8 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(details, tabState, /* setAsActive= */ false);
 
         verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
-        verify(mIncognitoTabCreator).createFrozenTab(eq(tabState), eq(101), eq(0));
+        verify(mIncognitoTabCreator)
+                .createFrozenTab(eq(tabState), eq(101), eq(0), eq(TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -1631,7 +1647,8 @@ public class TabPersistentStoreUnitTest {
         Tab fallbackTab = mock(Tab.class);
         when(fallbackTab.getId()).thenReturn(101);
         when(fallbackTab.getUrl()).thenReturn(new GURL("https://google.com/"));
-        when(mNormalTabCreator.createFrozenTab(eq(tabState), eq(101), eq(0)))
+        when(mNormalTabCreator.createFrozenTab(
+                        eq(tabState), eq(101), eq(0), eq(TabLaunchType.FROM_RESTORE)))
                 .thenReturn(fallbackTab);
         when(mNormalTabModel.indexOf(fallbackTab)).thenReturn(0);
 
@@ -1653,7 +1670,8 @@ public class TabPersistentStoreUnitTest {
 
         verify(mBackgroundTabPool).getAllPlaceholderTabIds();
         verify(mBackgroundTabPool).loadTabByPlaceholderId(101);
-        verify(mNormalTabCreator).createFrozenTab(eq(tabState), eq(101), eq(0));
+        verify(mNormalTabCreator)
+                .createFrozenTab(eq(tabState), eq(101), eq(0), eq(TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -1772,9 +1790,11 @@ public class TabPersistentStoreUnitTest {
         Tab tab2 = mock(Tab.class);
         when(tab2.getId()).thenReturn(2);
         when(tab2.getUrl()).thenReturn(new GURL(INCOGNITO_TAB_STRING_1));
-        when(mNormalTabCreator.createFrozenTab(any(TabState.class), eq(1), anyInt()))
+        when(mNormalTabCreator.createFrozenTab(
+                        any(TabState.class), eq(1), anyInt(), eq(TabLaunchType.FROM_RESTORE)))
                 .thenReturn(tab1);
-        when(mIncognitoTabCreator.createFrozenTab(any(TabState.class), eq(2), anyInt()))
+        when(mIncognitoTabCreator.createFrozenTab(
+                        any(TabState.class), eq(2), anyInt(), eq(TabLaunchType.FROM_RESTORE)))
                 .thenReturn(tab2);
 
         TabRestoreDetails details1 =
@@ -1805,12 +1825,16 @@ public class TabPersistentStoreUnitTest {
 
         // Synchronous UI-thread path via maybeRestoreTabState.
         mPersistentStore.restoreTabStateForId(1);
-        verify(mNormalTabCreator).createFrozenTab(any(TabState.class), eq(1), anyInt());
+        verify(mNormalTabCreator)
+                .createFrozenTab(
+                        any(TabState.class), eq(1), anyInt(), eq(TabLaunchType.FROM_RESTORE));
 
         // Asynchronous batch path via LoadTabsTask.restoreTabState.
         mPersistentStore.restoreTabs(/* setActiveTab= */ false);
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mIncognitoTabCreator).createFrozenTab(any(TabState.class), eq(2), anyInt());
+        verify(mIncognitoTabCreator)
+                .createFrozenTab(
+                        any(TabState.class), eq(2), anyInt(), eq(TabLaunchType.FROM_RESTORE));
 
         watcher.assertExpected();
     }
@@ -2327,7 +2351,9 @@ public class TabPersistentStoreUnitTest {
 
         mPersistentStore.restoreTabStateForId(42);
 
-        verify(mNormalTabCreator).createFrozenTab(eq(prefetchedTabState), eq(42), eq(0));
+        verify(mNormalTabCreator)
+                .createFrozenTab(
+                        eq(prefetchedTabState), eq(42), eq(0), eq(TabLaunchType.FROM_RESTORE));
     }
 
     @Test
@@ -2370,7 +2396,8 @@ public class TabPersistentStoreUnitTest {
 
         mPersistentStore.restoreTabStateForId(42);
 
-        verify(mNormalTabCreator, never()).createFrozenTab(eq(prefetchedTabState), eq(42), eq(0));
+        verify(mNormalTabCreator, never())
+                .createFrozenTab(eq(prefetchedTabState), eq(42), eq(0), anyInt());
     }
 
     private void setupSaveStateActiveTabPrefsTest(@TabId int activeTabId, String activeTabUrl) {
@@ -2543,13 +2570,15 @@ public class TabPersistentStoreUnitTest {
         when(childTab.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_1));
 
         List<Tab> modelTabs = new ArrayList<>();
-        when(mNormalTabCreator.createFrozenTab(any(TabState.class), eq(102), eq(0)))
+        when(mNormalTabCreator.createFrozenTab(
+                        any(TabState.class), eq(102), eq(0), eq(TabLaunchType.FROM_RESTORE)))
                 .thenAnswer(
                         inv -> {
                             modelTabs.add(0, childTab);
                             return childTab;
                         });
-        when(mNormalTabCreator.createFrozenTab(any(TabState.class), eq(101), eq(0)))
+        when(mNormalTabCreator.createFrozenTab(
+                        any(TabState.class), eq(101), eq(0), eq(TabLaunchType.FROM_RESTORE)))
                 .thenAnswer(
                         inv -> {
                             modelTabs.add(0, openerTab);

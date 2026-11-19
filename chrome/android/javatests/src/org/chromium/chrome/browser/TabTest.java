@@ -490,7 +490,11 @@ public class TabTest {
                             return mActivityTestRule
                                     .getActivity()
                                     .getCurrentTabCreator()
-                                    .createFrozenTab(state, tab.getId(), /* index= */ 1);
+                                    .createFrozenTab(
+                                            state,
+                                            tab.getId(),
+                                            /* index= */ 1,
+                                            TabLaunchType.FROM_RESTORE);
                         });
         mExtraTabs.add(frozenTab);
         return frozenTab;

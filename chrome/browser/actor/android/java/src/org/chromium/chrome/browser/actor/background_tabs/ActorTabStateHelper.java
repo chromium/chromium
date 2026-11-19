@@ -186,7 +186,11 @@ public class ActorTabStateHelper {
         int placeholderId = TabIdManager.getInstance().generateValidId(Tab.INVALID_TAB_ID);
 
         Tab placeholderTab =
-                tabCreator.createFrozenTab(originalState, placeholderId, originalIndex + 1);
+                tabCreator.createFrozenTab(
+                        originalState,
+                        placeholderId,
+                        originalIndex + 1,
+                        TabLaunchType.FROM_RESTORE);
 
         if (placeholderTab != null) {
             transferGroupAndPinState(originalTab, placeholderTab, model, originalIndex);

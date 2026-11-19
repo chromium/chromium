@@ -510,7 +510,8 @@ class TabRestorer {
             TabState tabState, int tabId, int index, boolean isActiveTab, boolean isRecreating) {
         boolean isReparenting = mTabCreator.isReparenting(tabId);
         if (isReparenting) {
-            Tab tab = mTabCreator.createFrozenTab(tabState, tabId, index);
+            Tab tab =
+                    mTabCreator.createFrozenTab(tabState, tabId, index, TabLaunchType.FROM_RESTORE);
             if (tab != null) {
                 if (tabState.contentsState != null
                         && tab.getWebContentsState() != tabState.contentsState) {
@@ -605,7 +606,7 @@ class TabRestorer {
         if (url != null) {
             tabState.contentsState.setFallbackUrlForRestorationFailure(url.getSpec());
         }
-        return mTabCreator.createFrozenTab(tabState, tabId, index);
+        return mTabCreator.createFrozenTab(tabState, tabId, index, TabLaunchType.FROM_RESTORE);
     }
 
     private boolean wasActiveTabRestoredFromCache() {

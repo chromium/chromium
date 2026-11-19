@@ -112,7 +112,10 @@ public class ArchivedTabCreatorTest {
                 runOnUiThreadBlocking(
                         () ->
                                 mTabCreator.createFrozenTab(
-                                        extractStateAndCloseTab(tab), tab.getId(), /* index= */ 0));
+                                        extractStateAndCloseTab(tab),
+                                        tab.getId(),
+                                        /* index= */ 0,
+                                        TabLaunchType.FROM_RESTORE));
         assertNotNull(frozenTab);
         assertNull(frozenTab.getWebContents());
     }

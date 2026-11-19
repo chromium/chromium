@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntry;
 import org.chromium.chrome.browser.recent_tabs.RecentlyClosedGroup;
 import org.chromium.chrome.browser.recent_tabs.RecentlyClosedTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -639,7 +640,10 @@ public class HistoricalTabSaverImplTest {
                                     TabClosureParams.closeTab(tab).allowUndo(false).build(),
                                     /* allowDialog= */ false);
                     frozen[0] =
-                            mActivity.getCurrentTabCreator().createFrozenTab(state, tab.getId(), 1);
+                            mActivity
+                                    .getCurrentTabCreator()
+                                    .createFrozenTab(
+                                            state, tab.getId(), 1, TabLaunchType.FROM_RESTORE);
                 });
         return frozen[0];
     }

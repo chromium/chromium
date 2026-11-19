@@ -47,12 +47,16 @@ public class AccumulatingTabCreatorUnitTest {
         AccumulatingTabCreator tabCreator = new AccumulatingTabCreator();
         assertNull(
                 tabCreator.createFrozenTab(
-                        mTabState, Tab.INVALID_TAB_ID, TabModel.INVALID_TAB_INDEX));
+                        mTabState,
+                        Tab.INVALID_TAB_ID,
+                        TabModel.INVALID_TAB_INDEX,
+                        TabLaunchType.FROM_RESTORE));
         assertEquals(1, tabCreator.createFrozenTabArgumentsList.size());
         CreateFrozenTabArguments arguments = tabCreator.createFrozenTabArgumentsList.get(0);
         assertEquals(mTabState, arguments.state);
         assertEquals(Tab.INVALID_TAB_ID, arguments.id);
         assertEquals(TabModel.INVALID_TAB_INDEX, arguments.index);
+        assertEquals(TabLaunchType.FROM_RESTORE, arguments.type);
     }
 
     @Test
@@ -65,7 +69,10 @@ public class AccumulatingTabCreatorUnitTest {
 
         assertNull(
                 tabCreator.createFrozenTab(
-                        mTabState, Tab.INVALID_TAB_ID, TabModel.INVALID_TAB_INDEX));
+                        mTabState,
+                        Tab.INVALID_TAB_ID,
+                        TabModel.INVALID_TAB_INDEX,
+                        TabLaunchType.FROM_RESTORE));
         assertEquals(0, tabCreator.createFrozenTabArgumentsList.size());
     }
 }

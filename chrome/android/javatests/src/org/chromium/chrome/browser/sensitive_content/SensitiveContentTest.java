@@ -45,6 +45,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
@@ -504,7 +505,11 @@ public class SensitiveContentTest {
                     assertEquals(1, tabModel.getCount());
                     // Re-create the second tab using the same id and tab state.
                     tabModel.getTabCreator()
-                            .createFrozenTab(state, secondTabBeforeFreeze.getId(), /* index= */ 1);
+                            .createFrozenTab(
+                                    state,
+                                    secondTabBeforeFreeze.getId(),
+                                    /* index= */ 1,
+                                    TabLaunchType.FROM_RESTORE);
                     assertEquals(2, tabModel.getCount());
                     secondTabAfterFreeze[0] = tabModel.getTabAt(1);
                     assertNotNull(secondTabAfterFreeze[0]);
