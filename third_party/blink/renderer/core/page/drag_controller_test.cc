@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
@@ -48,8 +49,19 @@ class DragMockChromeClient : public RenderingTestChromeClient {
     last_cursor_offset = cursor_offset;
   }
 
+  void SetDeviceScaleFactor(float device_scale_factor) {
+    screen_info_.device_scale_factor = device_scale_factor;
+  }
+
+  const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
+    return screen_info_;
+  }
+
   gfx::Size last_drag_image_size;
   gfx::Vector2d last_cursor_offset;
+
+ private:
+  display::ScreenInfo screen_info_;
 };
 
 // PopulateDragDataTransfer() must always be called before StartDrag() because
@@ -756,6 +768,50 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
   // The offset is mapped using integers which can introduce rounding errors
   // (see TODO in DragController::DoSystemDrag) so we accept values near our
   // expectation until more precise offset mapping is available.
+  EXPECT_NEAR(expected_offset.x(), GetChromeClient().last_cursor_offset.x(), 1);
+  EXPECT_NEAR(expected_offset.y(), GetChromeClient().last_cursor_offset.y(), 1);
+}
+
+// The link drag image is generated at the device scale factor, and the cursor
+// offset is in the same physical pixels, so the cursor should be horizontally
+// centered on the image. Previously the offset was divided by the device scale
+// factor, which put the cursor at 1 / (2 * device_scale_factor) of the image
+// width, eg: 25% with a device scale factor of 2.
+TEST_F(DragControllerTest, DragLinkWithDeviceScaleFactor) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      * { margin: 0; }
+      a {
+        width: 50px;
+        height: 40px;
+        font-size: 30px;
+        display: block;
+      }
+    </style>
+    <a id='drag' href='https://foobarbaz.com'>foobarbaz</a>
+  )HTML");
+  GetChromeClient().SetDeviceScaleFactor(2);
+
+  WebMouseEvent mouse_event(WebInputEvent::Type::kMouseDown,
+                            WebInputEvent::kNoModifiers,
+                            WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = WebMouseEvent::Button::kRight;
+  mouse_event.SetFrameScale(1);
+  mouse_event.SetPositionInWidget(5, 10);
+
+  auto& drag_state = GetFrame().GetPage()->GetDragController().GetDragState();
+  drag_state.drag_type_ = kDragSourceActionLink;
+  drag_state.drag_src_ = GetElementById("drag");
+  drag_state.drag_data_transfer_ = DataTransfer::Create(
+      DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
+      DataObject::Create());
+  const gfx::Point drag_initiation_location(5, 10);
+  EXPECT_TRUE(PopulateAndStartDrag(GetFrame(), drag_state, mouse_event,
+                                   drag_initiation_location));
+
+  gfx::Size link_image_size = GetChromeClient().last_drag_image_size;
+  EXPECT_GT(link_image_size.Area64(), 0u);
+  gfx::Vector2d expected_offset(link_image_size.width() / 2, 2);
   EXPECT_NEAR(expected_offset.x(), GetChromeClient().last_cursor_offset.x(), 1);
   EXPECT_NEAR(expected_offset.y(), GetChromeClient().last_cursor_offset.y(), 1);
 }

@@ -1183,7 +1183,6 @@ std::unique_ptr<DragImage> DragImageForLink(const KURL& link_url,
 
 gfx::Rect DragRectForLink(const DragImage* link_image,
                           const gfx::Point& origin,
-                          float device_scale_factor,
                           float page_scale_factor) {
   if (!link_image) {
     return gfx::Rect(origin, gfx::Size());
@@ -1192,13 +1191,13 @@ gfx::Rect DragRectForLink(const DragImage* link_image,
   const gfx::Size image_size = link_image->Size();
   // Offset the image so that the cursor is horizontally centered.
   gfx::PointF image_offset(-image_size.width() / 2.f, -kLinkDragBorderInset);
-  // |origin| is in the coordinate space of the frame's contents whereas the
-  // size of |link_image| is in physical pixels. Adjust the image offset to be
-  // scaled in the frame's contents.
+  // |origin| is in the coordinate space of the frame's contents, which is
+  // already in physical pixels, like the size of |link_image|. Only the page
+  // scale factor needs to be undone, as DoSystemDrag() converts the drag rect
+  // to the viewport.
   // TODO(crbug.com/331670940): Unify this calculation with the
   // `DragImageForImage` scaling code.
-  const float scale = 1.f / (device_scale_factor * page_scale_factor);
-  image_offset.Scale(scale);
+  image_offset.Scale(1.f / page_scale_factor);
   image_offset += origin.OffsetFromOrigin();
   return gfx::Rect(gfx::ToRoundedPoint(image_offset), image_size);
 }
@@ -1344,7 +1343,6 @@ DragOverlay DetermineDragOverlay(
         DragImageForLink(link_url, drag_origin_hit_test_result.TextContent(),
                          device_scale_factor);
     overlay_rect = DragRectForLink(drag_image.get(), mouse_dragged_point,
-                                   device_scale_factor,
                                    frame->GetPage()->PageScaleFactor());
   }
   return DragOverlay{std::move(drag_image), overlay_rect};
