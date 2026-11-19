@@ -421,7 +421,7 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfAvailability) {
       observation(&mock_observer);
   observation.Observe(reader_mode_tab_helper());
 
-  // Set a non-empty DOM Distiller result.
+  // Set a non-empty Web Distiller result.
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
@@ -475,7 +475,7 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfDistillationFailure) {
       observation(&mock_observer);
   observation.Observe(reader_mode_tab_helper());
 
-  // Set an empty DOM Distiller result to simulate failure.
+  // Set an empty Web Distiller result to simulate failure.
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
@@ -506,7 +506,7 @@ TEST_F(ReaderModeTabHelperTest, DistillationFailureOnIneligiblePage) {
       observation(&mock_observer);
   observation.Observe(reader_mode_tab_helper());
 
-  // Set an empty DOM Distiller result to simulate failure.
+  // Set an empty Web Distiller result to simulate failure.
   GURL test_url("https://www.google.com");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
@@ -534,7 +534,7 @@ TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
   id<CRWWebViewProxy> original_proxy =
       web_view_proxy_tab_helper->GetWebViewProxy();
 
-  // Set a non-empty DOM Distiller result.
+  // Set a non-empty Web Distiller result.
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
@@ -571,7 +571,7 @@ TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
 TEST_F(ReaderModeTabHelperTest, TestTabHelpers) {
   EditMenuTabHelper::CreateForWebState(web_state());
 
-  // Set a non-empty DOM Distiller result.
+  // Set a non-empty Web Distiller result.
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
@@ -594,7 +594,7 @@ TEST_F(ReaderModeTabHelperTest, TestTabHelpers) {
 // Tests that when eligible content is displayed, the reader mode state is
 // recorded correctly.
 TEST_F(ReaderModeTabHelperTest, TestEligibleContentIsDisplayed) {
-  // Set a non-empty DOM Distiller result.
+  // Set a non-empty Web Distiller result.
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
@@ -689,7 +689,7 @@ TEST_F(ReaderModeTabHelperTest, TestDistillationTimeout) {
   ReaderModeTabHelper::CreateForWebState(web_state(),
                                          fake_distiller_service_.get());
 
-  // Set a non-empty DOM Distiller result.
+  // Set a non-empty Web Distiller result.
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
@@ -715,7 +715,7 @@ TEST_F(ReaderModeTabHelperTest, TestDistillationTimeout) {
 
 // Tests that distillation that completes prior to the timeout is recorded.
 TEST_F(ReaderModeTabHelperTest, TestDistillationCompletedAfterTimeout) {
-  // Set a non-empty DOM Distiller result.
+  // Set a non-empty Web Distiller result.
   GURL test_url("https://test.url/");
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,

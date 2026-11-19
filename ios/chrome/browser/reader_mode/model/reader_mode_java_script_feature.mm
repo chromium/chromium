@@ -19,7 +19,7 @@ namespace {
 const char kScriptName[] = "reader_mode";
 const char kScriptHandlerName[] = "ReaderModeMessageHandler";
 
-// Tab helper method to process the result of the DOM distiller heuristic.
+// Tab helper method to process the result of the distillability heuristic.
 void ReaderModeHeuristicResultAvailable(web::WebState* web_state,
                                         ReaderModeHeuristicResult result) {
   ReaderModeTabHelper* tab_helper =

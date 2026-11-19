@@ -62,7 +62,7 @@ class ReaderModeTest : public PlatformTest {
   TestProfileIOS* profile() { return profile_.get(); }
 
  private:
-  // Triggers the Reading Mode with the result from the DOM distiller heuristic.
+  // Triggers Reading Mode with the result from the distillability heuristic.
   void OnDomFeaturesRetrieved(base::WeakPtr<web::WebState> weak_web_state,
                               base::WeakPtr<web::WebFrame> weak_web_frame,
                               ReaderModeHeuristicResult result);
