@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_core_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_sampling_mode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_thinking_effort.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -158,6 +159,18 @@ TEST_F(ResolveSamplingParamsOptionTest,
   auto result3 = ResolveSamplingParamsOption(options3, GetFrame().DomWindow());
   ASSERT_TRUE(result3.has_value());
   ASSERT_FALSE(result3.value());
+}
+
+TEST(AIUtilsThinkingEffortTest, RoundTripsBetweenV8AndMojo) {
+  for (V8LanguageModelThinkingEffort::Enum effort :
+       {V8LanguageModelThinkingEffort::Enum::kNone,
+        V8LanguageModelThinkingEffort::Enum::kLow,
+        V8LanguageModelThinkingEffort::Enum::kMedium,
+        V8LanguageModelThinkingEffort::Enum::kHigh}) {
+    V8LanguageModelThinkingEffort v8_effort(effort);
+    EXPECT_EQ(ConvertThinkingEffortToV8(ConvertThinkingEffortToMojo(v8_effort)),
+              v8_effort);
+  }
 }
 
 TEST_F(AIUtilsTest,

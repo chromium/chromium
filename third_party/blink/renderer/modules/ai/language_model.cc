@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ai/language_model.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -250,10 +253,15 @@ class CloneLanguageModelClient
       info->sampling_mode =
           ConvertSamplingModeToMojo(*language_model_->samplingMode());
     }
+    if (!info->thinking_effort) {
+      info->thinking_effort =
+          ConvertThinkingEffortToMojo(language_model_->thinkingEffort());
+    }
     LanguageModel* cloned_language_model = MakeGarbageCollected<LanguageModel>(
         language_model_->GetExecutionContext(),
         std::move(language_model_remote), language_model_->GetTaskRunner(),
-        std::move(info), language_model_->has_context());
+        std::move(info), language_model_->has_context(),
+        language_model_->has_warned_non_balanced_thinking());
     GetResolver()->Resolve(cloned_language_model);
     Cleanup();
   }
@@ -472,14 +480,45 @@ LanguageModel::LanguageModel(
     mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     blink::mojom::blink::AILanguageModelInstanceInfoPtr info,
-    bool has_context)
+    bool has_context,
+    bool has_warned_non_balanced_thinking)
     : ExecutionContextClient(execution_context),
       task_runner_(task_runner),
       language_model_remote_(execution_context),
       info_(std::move(info)),
-      has_context_(has_context) {
+      has_context_(has_context),
+      has_warned_non_balanced_thinking_(has_warned_non_balanced_thinking) {
   CHECK(info_);
   language_model_remote_.Bind(std::move(pending_remote), task_runner);
+}
+
+void LanguageModel::MaybeWarnNonBalancedSamplingForThinking(
+    std::optional<mojom::blink::AILanguageModelThinkingEffort>
+        prompt_thinking_effort) {
+  if (has_warned_non_balanced_thinking_) {
+    return;
+  }
+  const mojom::blink::AILanguageModelThinkingEffort effective_effort =
+      prompt_thinking_effort.value_or(
+          info_ ? info_->thinking_effort.value_or(
+                      mojom::blink::AILanguageModelThinkingEffort::kNone)
+                : mojom::blink::AILanguageModelThinkingEffort::kNone);
+  if (effective_effort == mojom::blink::AILanguageModelThinkingEffort::kNone) {
+    return;
+  }
+  if (info_ && info_->sampling_mode ==
+                   mojom::blink::AILanguageModelSamplingMode::kBalanced) {
+    return;
+  }
+  has_warned_non_balanced_thinking_ = true;
+  if (ExecutionContext* execution_context = GetExecutionContext()) {
+    execution_context->AddConsoleMessage(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "Thinking mode works best with the default (\"balanced\") sampling "
+        "configuration. Using custom sampling options may degrade reasoning "
+        "quality.");
+  }
 }
 
 void LanguageModel::Trace(Visitor* visitor) const {
@@ -574,8 +613,13 @@ ScriptPromise<LanguageModel> LanguageModel::create(
   }
 
   auto sampling_params = std::move(sampling_params_or_exception.value());
+  // Also default to `"balanced"` when Thinking Mode is enabled alone so
+  // sessions created with default sampling use the calibrated preset and do
+  // not trigger `MaybeWarnNonBalancedSamplingForThinking()`.
   if (!sampling_mode.has_value() && !sampling_params &&
-      RuntimeEnabledFeatures::AIPromptAPIParamsEnabled(execution_context)) {
+      (RuntimeEnabledFeatures::AIPromptAPIParamsEnabled(execution_context) ||
+       RuntimeEnabledFeatures::AIPromptAPIThinkingModeEnabled(
+           execution_context))) {
     sampling_mode = mojom::blink::AILanguageModelSamplingMode::kBalanced;
   }
 
@@ -657,12 +701,16 @@ void LanguageModel::ExecuteAvailability(
   if (options && options->hasSamplingMode()) {
     sampling_mode = ConvertSamplingModeToMojo(options->samplingMode());
   }
+  std::optional<mojom::blink::AILanguageModelThinkingEffort> thinking_effort;
+  if (options && options->hasThinkingEffort()) {
+    thinking_effort = ConvertThinkingEffortToMojo(options->thinkingEffort());
+  }
 
   ai_manager_remote->CanCreateLanguageModel(
       mojom::blink::AILanguageModelCreateOptions::New(
           std::move(resolved_sampling_params), std::move(initial_prompts),
           std::move(expected_in), std::move(expected_out), std::move(tools),
-          sampling_mode, /*thinking_effort=*/std::nullopt),
+          sampling_mode, thinking_effort),
       std::move(callback));
 }
 
@@ -717,6 +765,11 @@ ScriptPromise<V8LanguageModelPromptResult> LanguageModel::prompt(
           script_state);
   auto promise = resolver->Promise();
 
+  std::optional<mojom::blink::AILanguageModelThinkingEffort> thinking_effort;
+  if (options->hasThinkingEffort()) {
+    thinking_effort = ConvertThinkingEffortToMojo(options->thinkingEffort());
+  }
+
   // Use WrapPersistent() to make sure LanguageModel is not garbage collected
   // during the response.
   auto pending_remote = CreateModelExecutionResponder(
@@ -738,7 +791,8 @@ ScriptPromise<V8LanguageModelPromptResult> LanguageModel::prompt(
       script_state, options->getSignalOr(nullptr), input, info_, json_schema,
       BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
                WrapPersistent(script_state), WrapPersistent(resolver),
-               std::move(*processed_constraint), std::move(pending_remote)),
+               std::move(*processed_constraint), std::move(pending_remote),
+               thinking_effort),
       BindOnce(&RejectResolver, WrapPersistent(resolver)));
   return promise;
 }
@@ -755,6 +809,11 @@ ReadableStream* LanguageModel::promptStreaming(
     return nullptr;
   }
 
+  std::optional<mojom::blink::AILanguageModelThinkingEffort> thinking_effort;
+  if (options->hasThinkingEffort()) {
+    thinking_effort = ConvertThinkingEffortToMojo(options->thinkingEffort());
+  }
+
   // Use WrapPersistent() to make sure LanguageModel is not garbage collected
   // during the response.
   auto [stream, remote] = CreateModelExecutionStreamingResponder(
@@ -768,7 +827,8 @@ ReadableStream* LanguageModel::promptStreaming(
       script_state, options->getSignalOr(nullptr), input, info_, json_schema,
       BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
                WrapPersistent(script_state), WrapPersistent(stream),
-               std::move(*processed_constraint), std::move(remote)),
+               std::move(*processed_constraint), std::move(remote),
+               thinking_effort),
       BindOnce(
           [](ReadableStream* readable_stream, ScriptState* script_state,
              const ScriptValue& error) {
@@ -793,6 +853,7 @@ void LanguageModel::ExecutePrompt(
     on_device_model::mojom::blink::ResponseConstraintPtr constraint,
     mojo::PendingRemote<mojom::blink::ModelStreamingResponder>
         pending_responder,
+    std::optional<mojom::blink::AILanguageModelThinkingEffort> thinking_effort,
     Vector<mojom::blink::AILanguageModelPromptPtr> prompts) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   LogPromptMessageMetrics(execution_context, prompts);
@@ -819,9 +880,9 @@ void LanguageModel::ExecutePrompt(
         ->Error(CreateSessionDestroyedException()->Wrap(script_state));
     return;
   }
+  MaybeWarnNonBalancedSamplingForThinking(thinking_effort);
   language_model_remote_->Prompt(std::move(prompts), std::move(constraint),
-                                 /*thinking_effort=*/std::nullopt,
-                                 std::move(pending_responder));
+                                 thinking_effort, std::move(pending_responder));
 }
 
 void LanguageModel::ExecuteMeasureInputUsage(

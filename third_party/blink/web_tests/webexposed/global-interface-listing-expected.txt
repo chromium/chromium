@@ -6125,6 +6125,7 @@ interface LanguageModel : EventTarget
     getter contextWindow
     getter oncontextoverflow
     getter samplingMode
+    getter thinkingEffort
     method append
     method clone
     method constructor

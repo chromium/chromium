@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_expected.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_sampling_mode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_thinking_effort.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_performance_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rewriter_create_options.h"
@@ -51,6 +52,14 @@ ConvertSamplingModeToMojo(V8LanguageModelSamplingMode sampling_mode);
 MODULES_EXPORT std::optional<V8LanguageModelSamplingMode>
 ConvertSamplingModeToV8(
     std::optional<mojom::blink::AILanguageModelSamplingMode> sampling_mode);
+
+// Converts an IDL thinking effort to the Mojo enum.
+MODULES_EXPORT mojom::blink::AILanguageModelThinkingEffort
+ConvertThinkingEffortToMojo(V8LanguageModelThinkingEffort effort);
+
+// Converts a Mojo thinking effort to the IDL enum.
+MODULES_EXPORT V8LanguageModelThinkingEffort
+ConvertThinkingEffortToV8(mojom::blink::AILanguageModelThinkingEffort effort);
 
 // Converts string language codes to AILanguageCode mojo struct.
 MODULES_EXPORT Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(

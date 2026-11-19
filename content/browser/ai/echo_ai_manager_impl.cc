@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
@@ -150,7 +151,9 @@ bool HasUnsupportedType(
     }
     if (options->thinking_effort.has_value() &&
         *options->thinking_effort !=
-            blink::mojom::AILanguageModelThinkingEffort::kNone) {
+            blink::mojom::AILanguageModelThinkingEffort::kNone &&
+        !base::FeatureList::IsEnabled(
+            blink::features::kAIPromptAPIThinkingMode)) {
       has_unsupported_type = true;
     }
   }
@@ -249,12 +252,15 @@ void EchoAIManagerImpl::CreateLanguageModel(
         return decltype(options->tools)(std::in_place);
       }));
 
+  const blink::mojom::AILanguageModelThinkingEffort thinking_effort =
+      options->thinking_effort.value_or(
+          blink::mojom::AILanguageModelThinkingEffort::kNone);
   auto return_language_model_callback =
       base::BindOnce(&EchoAIManagerImpl::ReturnAILanguageModelCreationResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
                      std::move(options->sampling_params), enabled_input_types,
                      enabled_output_types, std::move(options->initial_prompts),
-                     initial_size, std::move(tools));
+                     initial_size, std::move(tools), thinking_effort);
 
   if (!IsModelDownloadedForCurrentReciever()) {
     // Simulate downloading the model; cache state for the current receiver.
@@ -554,7 +560,8 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
         enabled_output_types,
     std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
     uint32_t initial_context_usage,
-    std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools) {
+    std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools,
+    blink::mojom::AILanguageModelThinkingEffort thinking_effort) {
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
   auto model_sampling_params =
       sampling_params
@@ -568,7 +575,7 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
       std::make_unique<EchoAILanguageModel>(
           model_sampling_params->Clone(), enabled_input_types,
           enabled_output_types, std::move(initial_prompts),
-          initial_context_usage, std::move(tools)),
+          initial_context_usage, std::move(tools), thinking_effort),
       language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
@@ -581,7 +588,7 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
               enabled_output_types.begin(), enabled_output_types.end()),
           /*audio_sample_rate_hz=*/std::nullopt,
           /*audio_channel_count=*/std::nullopt,
-          /*sampling_mode=*/std::nullopt, /*thinking_effort=*/std::nullopt));
+          /*sampling_mode=*/std::nullopt, thinking_effort));
 }
 
 void EchoAIManagerImpl::DoMockDownloadingAndReturn(base::OnceClosure callback) {

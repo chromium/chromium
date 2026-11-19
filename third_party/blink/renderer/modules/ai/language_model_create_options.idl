@@ -39,6 +39,8 @@ enum LanguageModelMessageType { "text", "image", "audio", "tool-call", "tool-res
 
 enum LanguageModelSamplingMode { "most-predictable", "predictable", "slightly-predictable", "balanced", "slightly-creative", "creative", "most-creative" };
 
+enum LanguageModelThinkingEffort { "none", "low", "medium", "high" };
+
 typedef (
   ImageBitmapSource
   or AudioBuffer
@@ -144,6 +146,8 @@ dictionary LanguageModelCreateCoreOptions {
   unrestricted double temperature;
 
   [RuntimeEnabled=AIPromptAPIParams] LanguageModelSamplingMode samplingMode;
+
+  [RuntimeEnabled=AIPromptAPIThinkingMode] LanguageModelThinkingEffort thinkingEffort;
 
   // The expected types and languages for the session.
   sequence<LanguageModelExpected> expectedInputs;

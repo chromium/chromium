@@ -533,7 +533,13 @@
       // Gates access to the thinking mode enhancement for "AIPromptAPI".
       // This feature alone does not expose any "AIPromptAPI" feature access.
       name: "AIPromptAPIThinkingMode",
-      status: "experimental",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "ChromeOS": "experimental",
+        "default": "",
+      },
     },
     {
       // Gates access to the tool use (function calling) enhancement for

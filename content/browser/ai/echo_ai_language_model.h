@@ -25,7 +25,9 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
       base::flat_set<blink::mojom::AILanguageModelPromptType> output_types,
       std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
       uint32_t initial_tokens_size,
-      std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools = {});
+      std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools = {},
+      blink::mojom::AILanguageModelThinkingEffort thinking_effort =
+          blink::mojom::AILanguageModelThinkingEffort::kNone);
   EchoAILanguageModel(const EchoAILanguageModel&) = delete;
   EchoAILanguageModel& operator=(const EchoAILanguageModel&) = delete;
 
@@ -105,6 +107,9 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
 
   // Tools available for this language model session.
   std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools_;
+
+  blink::mojom::AILanguageModelThinkingEffort thinking_effort_ =
+      blink::mojom::AILanguageModelThinkingEffort::kNone;
 
   // Response content from append input that has not yet been emitted.
   std::string pending_response_;

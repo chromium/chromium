@@ -11,6 +11,7 @@ dictionary LanguageModelCloneOptions {
 dictionary LanguageModelPromptOptions {
   object responseConstraint;
   boolean omitResponseConstraintInput = false;
+  [RuntimeEnabled=AIPromptAPIThinkingMode] LanguageModelThinkingEffort thinkingEffort;
   AbortSignal signal;
 };
 
@@ -143,6 +144,11 @@ interface LanguageModel : EventTarget {
 
   [RuntimeEnabled=AIPromptAPIParams]
   readonly attribute LanguageModelSamplingMode? samplingMode;
+
+  // The session's thinking effort from create(). Per prompt `thinkingEffort`
+  // overrides do not change this value.
+  [RuntimeEnabled=AIPromptAPIThinkingMode]
+  readonly attribute LanguageModelThinkingEffort thinkingEffort;
 
   // **DEPRECATED**: This legacy alias for oncontextoverflow will be removed.
   [

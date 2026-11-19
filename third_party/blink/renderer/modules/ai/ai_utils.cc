@@ -284,6 +284,40 @@ std::optional<V8LanguageModelSamplingMode> ConvertSamplingModeToV8(
   NOTREACHED();
 }
 
+mojom::blink::AILanguageModelThinkingEffort ConvertThinkingEffortToMojo(
+    V8LanguageModelThinkingEffort effort) {
+  switch (effort.AsEnum()) {
+    case V8LanguageModelThinkingEffort::Enum::kNone:
+      return mojom::blink::AILanguageModelThinkingEffort::kNone;
+    case V8LanguageModelThinkingEffort::Enum::kLow:
+      return mojom::blink::AILanguageModelThinkingEffort::kLow;
+    case V8LanguageModelThinkingEffort::Enum::kMedium:
+      return mojom::blink::AILanguageModelThinkingEffort::kMedium;
+    case V8LanguageModelThinkingEffort::Enum::kHigh:
+      return mojom::blink::AILanguageModelThinkingEffort::kHigh;
+  }
+  NOTREACHED();
+}
+
+V8LanguageModelThinkingEffort ConvertThinkingEffortToV8(
+    mojom::blink::AILanguageModelThinkingEffort effort) {
+  switch (effort) {
+    case mojom::blink::AILanguageModelThinkingEffort::kNone:
+      return V8LanguageModelThinkingEffort(
+          V8LanguageModelThinkingEffort::Enum::kNone);
+    case mojom::blink::AILanguageModelThinkingEffort::kLow:
+      return V8LanguageModelThinkingEffort(
+          V8LanguageModelThinkingEffort::Enum::kLow);
+    case mojom::blink::AILanguageModelThinkingEffort::kMedium:
+      return V8LanguageModelThinkingEffort(
+          V8LanguageModelThinkingEffort::Enum::kMedium);
+    case mojom::blink::AILanguageModelThinkingEffort::kHigh:
+      return V8LanguageModelThinkingEffort(
+          V8LanguageModelThinkingEffort::Enum::kHigh);
+  }
+  NOTREACHED();
+}
+
 Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
     const Vector<String>& language_codes) {
   Vector<mojom::blink::AILanguageCodePtr> result;

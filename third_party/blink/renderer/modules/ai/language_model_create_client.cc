@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ai/language_model_create_client.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -229,6 +231,10 @@ LanguageModelCreateClient::LanguageModelCreateClient(
       options_(options),
       resolved_sampling_params_(std::move(resolved_sampling_params)),
       sampling_mode_(sampling_mode),
+      thinking_effort_(options->hasThinkingEffort()
+                           ? std::make_optional(ConvertThinkingEffortToMojo(
+                                 options->thinkingEffort()))
+                           : std::nullopt),
       task_runner_(
           GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)) {
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
@@ -286,6 +292,7 @@ void LanguageModelCreateClient::Create(
   info->input_types = {mojom::blink::AILanguageModelPromptType::kText};
   info->output_types = {mojom::blink::AILanguageModelPromptType::kText};
   info->sampling_mode = sampling_mode_;
+  info->thinking_effort = thinking_effort_;
   Vector<mojom::blink::AILanguageModelExpectedPtr> expected_in, expected_out;
   if (options_->hasExpectedInputs()) {
     expected_in = ToMojoExpectations(options_->expectedInputs());
@@ -431,11 +438,16 @@ void LanguageModelCreateClient::OnResult(
       return;
     }
     info->sampling_mode = sampling_mode_;
+    if (!info->thinking_effort) {
+      info->thinking_effort = thinking_effort_;
+    }
     bool has_context =
         options_->hasInitialPrompts() && !options_->initialPrompts().empty();
-    GetResolver()->Resolve(MakeGarbageCollected<LanguageModel>(
+    auto* language_model = MakeGarbageCollected<LanguageModel>(
         GetExecutionContext(), std::move(pending_remote), task_runner_,
-        std::move(info), has_context));
+        std::move(info), has_context);
+    language_model->MaybeWarnNonBalancedSamplingForThinking();
+    GetResolver()->Resolve(language_model);
   } else {
     GetResolver()->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -503,8 +515,7 @@ void LanguageModelCreateClient::OnInitialPromptsResolved(
       mojom::blink::AILanguageModelCreateOptions::New(
           resolved_sampling_params_.Clone(), std::move(initial_prompts),
           std::move(expected_inputs), std::move(expected_outputs),
-          std::move(converted_tools_), sampling_mode_,
-          /*thinking_effort=*/std::nullopt),
+          std::move(converted_tools_), sampling_mode_, thinking_effort_),
       BindMonitorRemote());
 }
 

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
@@ -106,13 +108,15 @@ EchoAILanguageModel::EchoAILanguageModel(
     base::flat_set<blink::mojom::AILanguageModelPromptType> output_types,
     std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
     uint32_t initial_tokens_size,
-    std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools)
+    std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools,
+    blink::mojom::AILanguageModelThinkingEffort thinking_effort)
     : current_tokens_(initial_tokens_size),
       sampling_params_(std::move(sampling_params)),
       input_types_(std::move(input_types)),
       output_types_(std::move(output_types)),
       initial_prompts_(std::move(initial_prompts)),
       tools_(std::move(tools)),
+      thinking_effort_(thinking_effort),
       pending_response_(base::StrCat(
           {kResponsePrefix, PromptsToText(initial_prompts_).value_or("")})) {}
 
@@ -233,7 +237,9 @@ void EchoAILanguageModel::Prompt(
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   if (thinking_effort.has_value() &&
-      *thinking_effort != blink::mojom::AILanguageModelThinkingEffort::kNone) {
+      *thinking_effort != blink::mojom::AILanguageModelThinkingEffort::kNone &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kAIPromptAPIThinkingMode)) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
     responder->OnError(
@@ -307,7 +313,8 @@ void EchoAILanguageModel::Fork(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<EchoAILanguageModel>(
           sampling_params_.Clone(), input_types_, output_types_,
-          std::move(prompts_copy), current_tokens_, std::move(cloned_tools)),
+          std::move(prompts_copy), current_tokens_, std::move(cloned_tools),
+          thinking_effort_),
       language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),
@@ -317,7 +324,7 @@ void EchoAILanguageModel::Fork(
           base::ToVector(output_types_),
           /*audio_sample_rate_hz=*/std::nullopt,
           /*audio_channel_count=*/std::nullopt,
-          /*sampling_mode=*/std::nullopt, /*thinking_effort=*/std::nullopt));
+          /*sampling_mode=*/std::nullopt, thinking_effort_));
 }
 
 void EchoAILanguageModel::Destroy() {
