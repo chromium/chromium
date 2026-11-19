@@ -11,7 +11,7 @@ import {assertEquals, assertFalse, assertLT, assertNotEquals, assertTrue} from '
 
 import {applyContainerStyles, createShortContainer, setupTestEnvironment} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestReadAloudModel} from './test_read_aloud_model.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('LineFocusController', () => {
@@ -23,7 +23,7 @@ suite('LineFocusController', () => {
   let lineFocusVisualPositionChanged: boolean;
   let defaultContainer: HTMLElement;
   let speechController: SpeechController;
-  let readAloudModel: TestReadAloudModelBrowserProxy;
+  let readAloudModel: TestReadAloudModel;
   let metrics: TestMetricsBrowserProxy;
   let lineFocusModesChanged: boolean;
   let visualBrowserProxy: TestVisualBrowserProxy;

@@ -14,7 +14,7 @@ import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import {TestReadAloudModel} from './test_read_aloud_model.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 import {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
@@ -30,7 +30,7 @@ export interface TestSetupResult {
   metrics: TestMetricsBrowserProxy;
   nodeStore: NodeStore;
   notificationManager: VoiceNotificationManager;
-  readAloudModel: TestReadAloudModelBrowserProxy;
+  readAloudModel: TestReadAloudModel;
   readAloudNodeStore: ReadAloudNodeStore;
   selectionController: SelectionController;
   speech: TestSpeechBrowserProxy;
@@ -47,7 +47,7 @@ export interface AppTestSetupResult extends TestSetupResult {
 
 export interface AppTestFlags {
   readAnythingImprovedUiEnabled?: boolean;
-  // Uses the real ReadAloud model instead of TestReadAloudModelBrowserProxy.
+  // Uses the real ReadAloud model instead of TestReadAloudModel.
   // Only for integration tests that need text segmented from the DOM.
   useRealReadAloudModel?: boolean;
 }
@@ -91,7 +91,7 @@ export function setupTestEnvironment(flags?: AppTestFlags): TestSetupResult {
   // These depend on browser proxies only.
   const metrics = mockMetrics();
   const logger = ReadAnythingLogger.getInstance();
-  const readAloudModel = new TestReadAloudModelBrowserProxy();
+  const readAloudModel = new TestReadAloudModel();
   // A null instance makes getReadAloudModel() lazily create the real model.
   setInstance(flags?.useRealReadAloudModel ? null : readAloudModel);
   const nodeStore = new NodeStore();
@@ -273,8 +273,7 @@ export function createSpeechSynthesisVoice(
       overrides || {});
 }
 
-export function setContent(
-    text: string, model: TestReadAloudModelBrowserProxy): Node {
+export function setContent(text: string, model: TestReadAloudModel): Node {
   const id = 2;
   const node = document.createTextNode(text);
   NodeStore.getInstance().setDomNode(node, id);
@@ -299,7 +298,7 @@ export function setDomNodes(axNodeIds: number[]): Node[] {
 // Plays or pauses speech for a new <p> with the given text. If a model is
 // given, also sets the text as the current content.
 export function onPlayPauseToggle(
-    text: string, model?: TestReadAloudModelBrowserProxy): HTMLElement {
+    text: string, model?: TestReadAloudModel): HTMLElement {
   if (model) {
     setContent(text, model);
   }

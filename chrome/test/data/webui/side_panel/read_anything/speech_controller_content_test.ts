@@ -8,7 +8,7 @@ import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 import {createSpeechSynthesisVoice, onPlayPauseToggle, setContent, setDomNodes, setupAppTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestReadAloudModel} from './test_read_aloud_model.js';
 import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('SpeechController', () => {
@@ -19,7 +19,7 @@ suite('SpeechController', () => {
   let nodeStore: NodeStore;
   let highlighter: ReadAloudHighlighter;
   let selectionController: SelectionController;
-  let readAloudModel: TestReadAloudModelBrowserProxy;
+  let readAloudModel: TestReadAloudModel;
   let app: AppElement;
   let isSpeechActiveChanged: boolean;
   let audioCurrentlyPlayingChanged: boolean;

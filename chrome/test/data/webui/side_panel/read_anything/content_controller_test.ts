@@ -13,7 +13,7 @@ import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 import {setupBasicSpeech, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestReadAloudModel} from './test_read_aloud_model.js';
 import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
@@ -23,7 +23,7 @@ suite('ContentController', () => {
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
   let metrics: TestMetricsBrowserProxy;
-  let readAloudModel: TestReadAloudModelBrowserProxy;
+  let readAloudModel: TestReadAloudModel;
   let listener: ContentListener;
   let receivedContentStateChange: boolean;
   let receivedNewPageDrawn: boolean;

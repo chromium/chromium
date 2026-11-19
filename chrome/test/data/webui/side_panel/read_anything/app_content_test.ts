@@ -10,7 +10,7 @@ import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_
 
 import {emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
 import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
-import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestReadAloudModel} from './test_read_aloud_model.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('AppContent', () => {
@@ -21,7 +21,7 @@ suite('AppContent', () => {
   let emptyState: SpEmptyStateElement;
   let speechController: SpeechController;
   let nodeStore: NodeStore;
-  let readAloudModel: TestReadAloudModelBrowserProxy;
+  let readAloudModel: TestReadAloudModel;
   let visualBrowserProxy: TestVisualBrowserProxy;
 
   setup(async () => {

@@ -9,13 +9,13 @@ import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_asser
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createSpeechSynthesisVoice, emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
-import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestReadAloudModel} from './test_read_aloud_model.js';
 
 suite('WordBoundariesUsedForSpeech', () => {
   let app: AppElement;
   let wordBoundaries: WordBoundaries;
   let voiceLanguageController: VoiceLanguageController;
-  let readAloudModel: TestReadAloudModelBrowserProxy;
+  let readAloudModel: TestReadAloudModel;
 
   setup(async () => {
     const result = await setupAppTestEnvironment();

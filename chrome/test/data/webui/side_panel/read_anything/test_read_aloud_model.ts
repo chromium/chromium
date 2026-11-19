@@ -5,7 +5,7 @@
 import type {ReadAloudModel, ReadAloudNode, Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
-export class TestReadAloudModelBrowserProxy extends TestBrowserProxy implements
+export class TestReadAloudModel extends TestBrowserProxy implements
     ReadAloudModel {
   private currentTextSegments_: Segment[] = [];
   private highlightsForCurrentSegmentIndex_: Segment[] = [];

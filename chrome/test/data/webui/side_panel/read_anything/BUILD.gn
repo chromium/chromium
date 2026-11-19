@@ -66,7 +66,7 @@ build_webui_tests("build") {
     "speech_test.ts",
     "test_color_updater_browser_proxy.ts",
     "test_metrics_browser_proxy.ts",
-    "test_read_aloud_browser_proxy.ts",
+    "test_read_aloud_model.ts",
     "test_speech_browser_proxy.ts",
     "text_menu_test.ts",
     "text_segmenter_test.ts",

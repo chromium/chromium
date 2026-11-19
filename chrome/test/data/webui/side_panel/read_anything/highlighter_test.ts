@@ -9,14 +9,14 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-un
 
 import {assertHtml, assertHtmlContains, assertHtmlExcludes, createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
-import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import type {TestReadAloudModel} from './test_read_aloud_model.js';
 
 suite('Highlighter', () => {
   let highlighter: ReadAloudHighlighter;
   let nodeStore: NodeStore;
   let wordBoundaries: WordBoundaries;
   let voiceLanguageController: VoiceLanguageController;
-  let readAloudModel: TestReadAloudModelBrowserProxy;
+  let readAloudModel: TestReadAloudModel;
   let audioBrowserProxy: TestAudioBrowserProxy;
 
   function assertFullNodeIsHighlighted(id: number, text: string) {
