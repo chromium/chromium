@@ -402,11 +402,13 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             return null;
         }
         return new FlatTabListDataProvider(
-                mCurrentTabModelSupplier,
+                TabListDataProvider.createSingleModelListSupplier(mCurrentTabModelSupplier),
                 tab -> {
                     Token id = mCurrentTabGroupId.get();
                     return id != null && id.equals(tab.getTabGroupId());
-                });
+                },
+                /* comparator= */ null,
+                /* supportsMultipleModels= */ false);
     }
 
     private View.OnClickListener getColorIconClickListener() {

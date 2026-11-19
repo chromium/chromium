@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -26,15 +27,20 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -42,10 +48,13 @@ import java.util.function.Predicate;
 @RunWith(BaseRobolectricTestRunner.class)
 public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase {
     @Mock private TabListDataObserver mSecondObserver;
+    @Mock private Profile mProfile;
+    @Mock private Profile mOtherProfile;
 
     private final Predicate<Tab> mInCurrentGroupFilter = this::isInCurrentGroup;
 
     private @Nullable Token mCurrentTabGroupId = TAB_GROUP_ID;
+    private SettableNonNullObservableSupplier<List<TabModel>> mTabModelListSupplier;
 
     // ============================================================================================
     // Value Semantics Tests
@@ -861,7 +870,7 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
     @Test
     public void testBaseProvider_InScopeTabNotProjected_NotifiesClosureEventsAndNoOpsMove() {
         TabListDataProvider testProvider =
-                new TabListDataProvider(mTabModelSupplier) {
+                new TabListDataProvider(createTabModelListSupplier()) {
                     @Override
                     protected void rebuildItems() {}
 
@@ -886,6 +895,122 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
     }
 
     // ============================================================================================
+    // Multiple Models: Setup & Lifecycle
+    // ============================================================================================
+
+    @Test
+    public void testMultipleModels_NotSupported_Asserts() {
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        new FlatTabListDataProvider(
+                                ObservableSuppliers.createNonNull(
+                                        List.of(mTabModel, mOtherTabModel)),
+                                /* filter= */ null,
+                                /* comparator= */ null,
+                                /* supportsMultipleModels= */ false));
+    }
+
+    @Test
+    public void testSupportsMultipleModels_WithoutComparator_Asserts() {
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        new FlatTabListDataProvider(
+                                ObservableSuppliers.createNonNull(List.of(mTabModel)),
+                                /* filter= */ null,
+                                /* comparator= */ null,
+                                /* supportsMultipleModels= */ true));
+    }
+
+    @Test
+    public void testMultipleModels_DifferentProfiles_Asserts() {
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mOtherTabModel.getProfile()).thenReturn(mOtherProfile);
+
+        assertThrows(AssertionError.class, () -> setUpSortedProvider(mTabModel, mOtherTabModel));
+    }
+
+    @Test
+    public void testMultipleModels_SameProfile_DoesNotAssert() {
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mOtherTabModel.getProfile()).thenReturn(mProfile);
+
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+    }
+
+    @Test
+    public void testMultipleModels_OffTheRecordModelWithoutProfile_Asserts() {
+        // Like an incognito model before its first tab: off the record, but no Profile yet.
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mOtherTabModel.isOffTheRecord()).thenReturn(true);
+
+        assertThrows(AssertionError.class, () -> setUpSortedProvider(mTabModel, mOtherTabModel));
+    }
+
+    @Test
+    public void testMultipleModels_DuplicateModels_Asserts() {
+        List<TabModel> duplicateModels = List.of(mTabModel, mTabModel);
+        mTabModelListSupplier = ObservableSuppliers.createNonNull(duplicateModels);
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        new FlatTabListDataProvider(
+                                mTabModelListSupplier,
+                                /* filter= */ null,
+                                (a, b) -> Integer.compare(b.getId(), a.getId()),
+                                /* supportsMultipleModels= */ true));
+
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+        assertThrows(AssertionError.class, () -> mTabModelListSupplier.set(duplicateModels));
+    }
+
+    @Test
+    public void testSingleModel_SwitchToModelWithOtherProfile_DoesNotAssert() {
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mOtherTabModel.getProfile()).thenReturn(mOtherProfile);
+        mTabModelListSupplier = ObservableSuppliers.createNonNull(List.of(mTabModel));
+        initProvider(
+                new FlatTabListDataProvider(
+                        mTabModelListSupplier,
+                        /* filter= */ null,
+                        /* comparator= */ null,
+                        /* supportsMultipleModels= */ false));
+        mProvider.requestDataReset();
+        captureObserver(mTabModel);
+
+        // Like a regular to incognito switch: each list has one Profile.
+        mTabModelListSupplier.set(List.of(mOtherTabModel));
+        verifyDetached(/* times= */ 1, mTabModel);
+    }
+
+    @Test
+    public void testMultipleModels_StopAndDestroy_DetachFromEveryModel() {
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+
+        mProvider.stop();
+        verifyDetached(/* times= */ 1, mTabModel, mOtherTabModel);
+        assertItems();
+
+        mProvider.requestDataReset();
+        mProvider.destroy();
+        verifyDetached(/* times= */ 2, mTabModel, mOtherTabModel);
+        assertItems();
+    }
+
+    @Test
+    public void testMultipleModels_SupplierSwitch_DetachesEveryModel() {
+        setUpSortedProvider(mTabModel, mOtherTabModel);
+
+        mTabModelListSupplier.set(List.of(mOtherTabModel, mTabModel));
+        verifyDetached(/* times= */ 0, mTabModel, mOtherTabModel);
+
+        mTabModelListSupplier.set(List.of());
+        verifyDetached(/* times= */ 1, mTabModel, mOtherTabModel);
+        assertItems();
+    }
+
+    // ============================================================================================
     // Test Helpers
     // ============================================================================================
 
@@ -894,10 +1019,60 @@ public class FlatTabListDataProviderUnitTest extends TabListDataProviderTestBase
     }
 
     private void createProvider(@Nullable Predicate<Tab> filter) {
-        initProvider(new FlatTabListDataProvider(mTabModelSupplier, filter));
+        initProvider(
+                new FlatTabListDataProvider(
+                        createTabModelListSupplier(),
+                        filter,
+                        /* comparator= */ null,
+                        /* supportsMultipleModels= */ false));
     }
 
     private void setUpProviderWithTabs(@Nullable Predicate<Tab> filter, Tab... tabs) {
-        initProviderWithTabs(new FlatTabListDataProvider(mTabModelSupplier, filter), tabs);
+        initProviderWithTabs(
+                new FlatTabListDataProvider(
+                        createTabModelListSupplier(),
+                        filter,
+                        /* comparator= */ null,
+                        /* supportsMultipleModels= */ false),
+                tabs);
+    }
+
+    /** Sets up a provider over {@code models} that sorts tabs by descending ID. */
+    private void setUpSortedProvider(TabModel... models) {
+        setUpProviderWithComparator((a, b) -> Integer.compare(b.getId(), a.getId()), models);
+    }
+
+    /**
+     * Sets up a provider over {@code models} sorted by {@code comparator}, and checks that every
+     * model got the provider's observers.
+     */
+    private void setUpProviderWithComparator(Comparator<Tab> comparator, TabModel... models) {
+        mTabModelListSupplier = ObservableSuppliers.createNonNull(List.of(models));
+        initProvider(
+                new FlatTabListDataProvider(
+                        mTabModelListSupplier,
+                        /* filter= */ null,
+                        comparator,
+                        /* supportsMultipleModels= */ models.length > 1));
+        mProvider.requestDataReset();
+        captureObserver(models[0]);
+        verifyAttached(models);
+        clearInvocations(mObserver);
+    }
+
+    /** Verifies the provider's observers were added to each of {@code models}. */
+    private void verifyAttached(TabModel... models) {
+        for (TabModel model : models) {
+            verify(model).addObserver(mTabModelObserver);
+            verify(model).addTabGroupObserver(mTabGroupObserver);
+        }
+    }
+
+    /** Verifies the provider's observers were removed from each of {@code models}. */
+    private void verifyDetached(int times, TabModel... models) {
+        for (TabModel model : models) {
+            verify(model, times(times)).removeObserver(mTabModelObserver);
+            verify(model, times(times)).removeTabGroupObserver(mTabGroupObserver);
+        }
     }
 }

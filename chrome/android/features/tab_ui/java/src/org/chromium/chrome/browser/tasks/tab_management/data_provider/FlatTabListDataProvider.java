@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management.data_provider;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -18,6 +18,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -27,18 +29,27 @@ import java.util.function.Predicate;
 @NullMarked
 public class FlatTabListDataProvider extends TabListDataProvider {
     private final @Nullable Predicate<Tab> mFilter;
+    private final boolean mSupportsMultipleModels;
 
     /**
      * Constructs a new {@link FlatTabListDataProvider}.
      *
-     * @param tabModelSupplier Supplier of the current {@link TabModel}.
+     * @param tabModelListSupplier Supplier of the {@link TabModel}s to show tabs from.
      * @param filter Predicate to filter tabs, or null for all tabs.
+     * @param comparator Order to show tabs in, or null to use the model's order.
+     * @param supportsMultipleModels Whether the supplier may hold more than one model. Requires a
+     *     comparator, since one model's tab order can't place tabs from another.
      */
     public FlatTabListDataProvider(
-            NullableObservableSupplier<TabModel> tabModelSupplier,
-            @Nullable Predicate<Tab> filter) {
-        super(tabModelSupplier);
+            NonNullObservableSupplier<List<TabModel>> tabModelListSupplier,
+            @Nullable Predicate<Tab> filter,
+            @Nullable Comparator<Tab> comparator,
+            boolean supportsMultipleModels) {
+        super(tabModelListSupplier);
+        assert !supportsMultipleModels || comparator != null
+                : "Supporting several TabModels needs a comparator.";
         mFilter = filter;
+        mSupportsMultipleModels = supportsMultipleModels;
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
@@ -135,6 +146,8 @@ public class FlatTabListDataProvider extends TabListDataProvider {
     @Override
     protected void rebuildItems() {
         mItems.clear();
+        // TODO(crbug.com/587126481): Build items from every attached model and sort them by
+        // mComparator.
         TabModel model = getTabModelIfTabStateInitialized();
         if (model == null) return;
 
@@ -154,5 +167,10 @@ public class FlatTabListDataProvider extends TabListDataProvider {
     @Override
     protected boolean shouldShowTab(Tab tab) {
         return isTabInScope(tab);
+    }
+
+    @Override
+    protected boolean supportsMultipleModels() {
+        return mSupportsMultipleModels;
     }
 }

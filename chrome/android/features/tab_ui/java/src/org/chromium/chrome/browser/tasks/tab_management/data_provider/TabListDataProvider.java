@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management.data_provider;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
@@ -30,20 +32,34 @@ public abstract class TabListDataProvider {
     protected final List<TabListItem> mItems = new ArrayList<>();
 
     private final ObserverList<TabListDataObserver> mObservers = new ObserverList<>();
-    private final NullableObservableSupplier<TabModel> mTabModelSupplier;
-    private final Callback<@Nullable TabModel> mOnTabModelChanged = this::onTabModelChanged;
+    private final NonNullObservableSupplier<List<TabModel>> mTabModelListSupplier;
+    private final Callback<List<TabModel>> mOnTabModelsChanged = this::onTabModelsChanged;
 
-    private @Nullable TabModel mAttachedTabModel;
+    /** The models currently observed, in the order they were attached. */
+    private final List<TabModel> mAttachedTabModels = new ArrayList<>();
+
     private @Nullable TabModelObserver mTabModelObserver;
     private @Nullable TabGroupObserver mTabGroupObserver;
 
     /**
      * Constructs a {@link TabListDataProvider}.
      *
+     * @param tabModelListSupplier Supplier of the {@link TabModel}s to show tabs from.
+     */
+    protected TabListDataProvider(NonNullObservableSupplier<List<TabModel>> tabModelListSupplier) {
+        mTabModelListSupplier = tabModelListSupplier;
+    }
+
+    /**
+     * Returns a new supplier of a list holding the current model from {@code tabModelSupplier}, or
+     * an empty list when there is none. For surfaces that show tabs from one model.
+     *
      * @param tabModelSupplier Supplier of the current {@link TabModel}.
      */
-    protected TabListDataProvider(NullableObservableSupplier<TabModel> tabModelSupplier) {
-        mTabModelSupplier = tabModelSupplier;
+    public static NonNullObservableSupplier<List<TabModel>> createSingleModelListSupplier(
+            NullableObservableSupplier<TabModel> tabModelSupplier) {
+        return tabModelSupplier.createDerivedNonNull(
+                (@Nullable TabModel model) -> model == null ? List.of() : List.of(model));
     }
 
     /**
@@ -65,53 +81,56 @@ public abstract class TabListDataProvider {
     }
 
     /**
-     * Attaches to the current {@link TabModel}, rebuilds the item list, and notifies observers via
-     * {@link TabListDataObserver#onDataReset}.
+     * Attaches to the supplied {@link TabModel}s, rebuilds the item list, and notifies observers
+     * via {@link TabListDataObserver#onDataReset}.
      */
     public void requestDataReset() {
-        attachToModel(mTabModelSupplier.get());
+        attachToModels(mTabModelListSupplier.get());
         rebuildItems();
         List<TabListItem> unmodifiableItems = Collections.unmodifiableList(mItems);
         notifyObservers(obs -> obs.onDataReset(unmodifiableItems));
     }
 
     /**
-     * Detaches from the current {@link TabModel} and clears cached items when the surface hides.
+     * Detaches from every attached {@link TabModel} and clears cached items when the surface hides.
      */
     public void stop() {
-        detachFromCurrentModel();
+        detachFromAttachedModels();
     }
 
     /** Cleans up observers and resources. */
     public void destroy() {
         mObservers.clear();
-        mTabModelSupplier.removeObserver(mOnTabModelChanged);
-        detachFromCurrentModel();
+        mTabModelListSupplier.removeObserver(mOnTabModelsChanged);
+        detachFromAttachedModels();
         mTabModelObserver = null;
         mTabGroupObserver = null;
     }
 
     /**
-     * Registers observers and starts observing {@link TabModel} switches. Must be called at the end
-     * of the subclass constructor after subclass fields are initialized.
+     * Registers observers and starts observing changes to the supplied {@link TabModel}s. Must be
+     * called at the end of the subclass constructor after subclass fields are initialized.
      *
-     * @param tabModelObserver The {@link TabModelObserver} to register on the active {@link
+     * @param tabModelObserver The {@link TabModelObserver} to register on each attached {@link
      *     TabModel}.
-     * @param tabGroupObserver The {@link TabGroupObserver} to register on the active {@link
+     * @param tabGroupObserver The {@link TabGroupObserver} to register on each attached {@link
      *     TabModel}.
      */
     protected void initObservers(
             TabModelObserver tabModelObserver, TabGroupObserver tabGroupObserver) {
         mTabModelObserver = tabModelObserver;
         mTabGroupObserver = tabGroupObserver;
-        mTabModelSupplier.addSyncObserver(mOnTabModelChanged);
+        assertModelsSupported(mTabModelListSupplier.get());
+        mTabModelListSupplier.addSyncObserver(mOnTabModelsChanged);
     }
 
-    /** Returns the current {@link TabModel} if tab state is initialized, or null otherwise. */
+    /** Returns the first observed {@link TabModel} if its tab state is initialized, or null. */
     protected @Nullable TabModel getTabModelIfTabStateInitialized() {
-        return mAttachedTabModel != null && mAttachedTabModel.isTabStateInitialized()
-                ? mAttachedTabModel
-                : null;
+        // TODO(crbug.com/587126481): Limit this to single-model paths once the highlight model is
+        // decided; multi-model paths should use the tab's own model.
+        if (mAttachedTabModels.isEmpty()) return null;
+        TabModel tabModel = mAttachedTabModels.get(0);
+        return tabModel.isTabStateInitialized() ? tabModel : null;
     }
 
     /** Rebuilds {@link #mItems} from the current {@link TabModel}. */
@@ -134,6 +153,14 @@ public abstract class TabListDataProvider {
      * @param tab The {@link Tab} to evaluate.
      */
     protected abstract boolean shouldShowTab(Tab tab);
+
+    /**
+     * Returns whether this provider can show tabs from more than one {@link TabModel}. Subclasses
+     * that define an order across models override this.
+     */
+    protected boolean supportsMultipleModels() {
+        return false;
+    }
 
     /**
      * Returns whether the {@link TabGroupItem} for {@code tabGroupId} is about to be removed, so
@@ -558,36 +585,97 @@ public abstract class TabListDataProvider {
         }
     }
 
-    private void onTabModelChanged(@Nullable TabModel newModel) {
-        if (mAttachedTabModel == newModel) return;
-        // Detach from the previous model on switch; the surface re-attaches on its next
-        // requestDataReset(), matching TabListMediator#onTabModelChanged.
-        detachFromCurrentModel();
+    private void onTabModelsChanged(List<TabModel> newModels) {
+        assertModelsSupported(newModels);
+        if (hasSameModels(newModels)) return;
+        // Detach from the previous models on switch; the surface re-attaches on its next
+        // requestDataReset().
+        detachFromAttachedModels();
     }
 
-    private void attachToModel(@Nullable TabModel model) {
-        if (mAttachedTabModel == model || mTabModelObserver == null) return;
-        detachFromCurrentModel();
-        mAttachedTabModel = model;
-        if (mAttachedTabModel != null) {
-            mAttachedTabModel.addObserver(mTabModelObserver);
-            if (mTabGroupObserver != null) {
-                mAttachedTabModel.addTabGroupObserver(mTabGroupObserver);
-            }
+    private void attachToModels(List<TabModel> models) {
+        if (hasSameModels(models) || mTabModelObserver == null) return;
+        detachFromAttachedModels();
+        for (TabModel model : models) {
+            attachToModel(model);
         }
     }
 
-    private void detachFromCurrentModel() {
-        if (mAttachedTabModel != null) {
-            if (mTabModelObserver != null) {
-                mAttachedTabModel.removeObserver(mTabModelObserver);
-            }
-            if (mTabGroupObserver != null) {
-                mAttachedTabModel.removeTabGroupObserver(mTabGroupObserver);
-            }
+    private void detachFromAttachedModels() {
+        // detachFromModel() removes from mAttachedTabModels, so loop over a copy.
+        for (TabModel model : new ArrayList<>(mAttachedTabModels)) {
+            detachFromModel(model);
         }
-        mAttachedTabModel = null;
         mItems.clear();
+    }
+
+    private void attachToModel(TabModel model) {
+        if (mTabModelObserver != null) {
+            model.addObserver(mTabModelObserver);
+        }
+        if (mTabGroupObserver != null) {
+            model.addTabGroupObserver(mTabGroupObserver);
+        }
+        mAttachedTabModels.add(model);
+    }
+
+    private void detachFromModel(TabModel model) {
+        if (mTabModelObserver != null) {
+            model.removeObserver(mTabModelObserver);
+        }
+        if (mTabGroupObserver != null) {
+            model.removeTabGroupObserver(mTabGroupObserver);
+        }
+        mAttachedTabModels.remove(model);
+    }
+
+    /** Returns whether {@code models} holds the attached models, in any order. */
+    private boolean hasSameModels(List<TabModel> models) {
+        return mAttachedTabModels.size() == models.size() && mAttachedTabModels.containsAll(models);
+    }
+
+    /** Asserts that this provider can show {@code models} together. */
+    private void assertModelsSupported(List<TabModel> models) {
+        // Items are placed by walking one model's tab order, which gives no order across models.
+        // Showing several models needs a subclass that defines one (e.g. a comparator).
+        assert models.size() <= 1 || supportsMultipleModels()
+                : "Showing several TabModels needs an order across them, e.g. a comparator.";
+        assert haveSameProfile(models) : "All TabModels in one list must share one Profile.";
+        assert hasDistinctModels(models) : "All TabModels in one list must be distinct.";
+    }
+
+    /**
+     * Returns whether every model in {@code models} has the same off-the-record state, and every
+     * model that has a profile has the same one.
+     */
+    private static boolean haveSameProfile(List<TabModel> models) {
+        if (models.isEmpty()) return true;
+        // An incognito model has no profile until its first tab is created, but it already reports
+        // that it's off the record, so compare that for every model and skip the null profile.
+        boolean offTheRecord = models.get(0).isOffTheRecord();
+        Profile profile = null;
+        for (TabModel model : models) {
+            if (model.isOffTheRecord() != offTheRecord) return false;
+            Profile modelProfile = model.getProfile();
+            if (modelProfile == null) continue;
+            if (profile == null) {
+                profile = modelProfile;
+            } else if (modelProfile != profile) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Returns whether every model in {@code models} appears only once. */
+    private static boolean hasDistinctModels(List<TabModel> models) {
+        for (int i = 0; i < models.size(); i++) {
+            TabModel model = models.get(i);
+            for (int j = i + 1; j < models.size(); j++) {
+                if (model.equals(models.get(j))) return false;
+            }
+        }
+        return true;
     }
 
     List<TabListItem> getItemsForTesting() {

@@ -132,7 +132,9 @@ public class TabListEditorManager {
                     TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(
                                     TabListLayoutType.GROUPED)
                             ? new GroupedTabListDataProvider(
-                                    mCurrentTabModelSupplier, /* supportsGroupExpansion= */ false)
+                                    TabListDataProvider.createSingleModelListSupplier(
+                                            mCurrentTabModelSupplier),
+                                    /* supportsGroupExpansion= */ false)
                             : null;
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(

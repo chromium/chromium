@@ -870,7 +870,10 @@ public class TabItemPickerCoordinator {
             return null;
         }
         return new FlatTabListDataProvider(
-                tabModelSupplier, tab -> mEligibleTabIds.contains(tab.getId()));
+                TabListDataProvider.createSingleModelListSupplier(tabModelSupplier),
+                tab -> mEligibleTabIds.contains(tab.getId()),
+                /* comparator= */ null,
+                /* supportsMultipleModels= */ false);
     }
 
     /** Creates a TabListEditorCoordinator with set configurations for the Tab Picker UI. */

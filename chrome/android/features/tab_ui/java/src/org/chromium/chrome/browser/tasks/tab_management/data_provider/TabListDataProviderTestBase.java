@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.Nullable;
@@ -89,6 +90,11 @@ abstract class TabListDataProviderTestBase {
     public void setUp() {
         stubBackedTabModel(mTabModel, mModelTabs);
         stubBackedTabModel(mOtherTabModel, mOtherModelTabs);
+    }
+
+    /** Returns a new list supplier that follows {@link #mTabModelSupplier}. */
+    NonNullObservableSupplier<List<TabModel>> createTabModelListSupplier() {
+        return TabListDataProvider.createSingleModelListSupplier(mTabModelSupplier);
     }
 
     /** Makes {@code model} answer index and lookup queries from the live {@code tabs} list. */

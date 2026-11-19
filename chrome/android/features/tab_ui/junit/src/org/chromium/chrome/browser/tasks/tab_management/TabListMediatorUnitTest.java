@@ -9155,7 +9155,8 @@ public class TabListMediatorUnitTest {
 
         GroupedTabListDataProvider provider =
                 new GroupedTabListDataProvider(
-                        mCurrentTabModelSupplier, /* supportsGroupExpansion= */ true);
+                        TabListDataProvider.createSingleModelListSupplier(mCurrentTabModelSupplier),
+                        /* supportsGroupExpansion= */ true);
         setUpMediatorWithProvider(
                 TabListLayoutType.NESTED, /* supportsModifierMultiSelect= */ true, provider);
         mMediator.resetWithListOfTabs(
@@ -9217,7 +9218,8 @@ public class TabListMediatorUnitTest {
 
         GroupedTabListDataProvider provider =
                 new GroupedTabListDataProvider(
-                        mCurrentTabModelSupplier, /* supportsGroupExpansion= */ false);
+                        TabListDataProvider.createSingleModelListSupplier(mCurrentTabModelSupplier),
+                        /* supportsGroupExpansion= */ false);
         setUpMediatorWithProvider(
                 TabListLayoutType.GROUPED, /* supportsModifierMultiSelect= */ false, provider);
         mMediator.resetWithListOfTabs(
@@ -9263,7 +9265,11 @@ public class TabListMediatorUnitTest {
         stubTabModelWithTabs(mTabModel, tabs);
 
         FlatTabListDataProvider provider =
-                new FlatTabListDataProvider(mCurrentTabModelSupplier, /* filter= */ null);
+                new FlatTabListDataProvider(
+                        TabListDataProvider.createSingleModelListSupplier(mCurrentTabModelSupplier),
+                        /* filter= */ null,
+                        /* comparator= */ null,
+                        /* supportsMultipleModels= */ false);
         setUpMediatorWithProvider(
                 TabListLayoutType.FLAT, /* supportsModifierMultiSelect= */ false, provider);
         mMediator.resetWithListOfTabs(

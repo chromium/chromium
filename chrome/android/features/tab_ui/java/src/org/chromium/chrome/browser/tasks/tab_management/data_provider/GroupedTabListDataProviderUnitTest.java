@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
@@ -23,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -1567,17 +1569,32 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
         assertItems();
     }
 
+    @Test
+    public void testMultipleModels_Asserts() {
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        new GroupedTabListDataProvider(
+                                ObservableSuppliers.createNonNull(
+                                        List.of(mTabModel, mOtherTabModel)),
+                                /* supportsGroupExpansion= */ false));
+    }
+
     // ============================================================================================
     // Test Helpers
     // ============================================================================================
 
     private void createProvider(boolean supportsGroupExpansion) {
-        initProvider(new GroupedTabListDataProvider(mTabModelSupplier, supportsGroupExpansion));
+        initProvider(
+                new GroupedTabListDataProvider(
+                        createTabModelListSupplier(), supportsGroupExpansion));
     }
 
     private void setUpProviderWithTabs(boolean supportsGroupExpansion, Tab... tabs) {
         initProviderWithTabs(
-                new GroupedTabListDataProvider(mTabModelSupplier, supportsGroupExpansion), tabs);
+                new GroupedTabListDataProvider(
+                        createTabModelListSupplier(), supportsGroupExpansion),
+                tabs);
     }
 
     /**

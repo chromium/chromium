@@ -106,6 +106,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.D
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.GroupedTabListDataProvider;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabGridMediator;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalExternalViewDragDropReorderStrategy.DropTargetResult;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabItemHoverController.TabHoverListener;
@@ -607,7 +608,8 @@ public class VerticalTabListCoordinator {
         mDataProvider =
                 TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(TabListLayoutType.NESTED)
                         ? new GroupedTabListDataProvider(
-                                tabModelSelector.getCurrentTabModelSupplier(),
+                                TabListDataProvider.createSingleModelListSupplier(
+                                        tabModelSelector.getCurrentTabModelSupplier()),
                                 /* supportsGroupExpansion= */ true)
                         : null;
         TabListConfig tabListConfig =

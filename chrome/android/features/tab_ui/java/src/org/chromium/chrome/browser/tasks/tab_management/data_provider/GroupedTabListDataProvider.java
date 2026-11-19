@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management.data_provider;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,13 +41,15 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
     /**
      * Constructs a new {@link GroupedTabListDataProvider}.
      *
-     * @param tabModelSupplier Supplier of the current {@link TabModel}.
+     * @param tabModelListSupplier Supplier of the {@link TabModel} to show tabs from, as a list of
+     *     at most one model.
      * @param supportsGroupExpansion Whether tab groups can expand to show child {@link TabItem}s
      *     (true for Vertical Tabs, false for Grid Tab Switcher).
      */
     public GroupedTabListDataProvider(
-            NullableObservableSupplier<TabModel> tabModelSupplier, boolean supportsGroupExpansion) {
-        super(tabModelSupplier);
+            NonNullObservableSupplier<List<TabModel>> tabModelListSupplier,
+            boolean supportsGroupExpansion) {
+        super(tabModelListSupplier);
         mSupportsGroupExpansion = supportsGroupExpansion;
         mRemovingTabGroupIds = new HashSet<>();
 

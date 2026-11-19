@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListL
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneMediator.TabIndexLookup;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.GroupedTabListDataProvider;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
 import org.chromium.chrome.browser.tasks.tab_management.labels.SendTabToSelfTabLabeller;
 import org.chromium.chrome.browser.tasks.tab_management.labels.TabGroupLabeller;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripCoordinator;
@@ -456,7 +457,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(
                                     TabListLayoutType.GROUPED)
                             ? new GroupedTabListDataProvider(
-                                    tabModelSupplier, /* supportsGroupExpansion= */ false)
+                                    TabListDataProvider.createSingleModelListSupplier(
+                                            tabModelSupplier),
+                                    /* supportsGroupExpansion= */ false)
                             : null;
             TabListCoordinator tabListCoordinator =
                     new TabListCoordinator(

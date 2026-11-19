@@ -83,7 +83,8 @@ public class ClosableTabListEditorTest {
                             TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(
                                             TabListLayoutType.GROUPED)
                                     ? new GroupedTabListDataProvider(
-                                            currentTabModelSupplier,
+                                            TabListDataProvider.createSingleModelListSupplier(
+                                                    currentTabModelSupplier),
                                             /* supportsGroupExpansion= */ false)
                                     : null;
                     mTabListEditorCoordinator =

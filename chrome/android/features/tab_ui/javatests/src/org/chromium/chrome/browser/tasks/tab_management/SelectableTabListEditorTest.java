@@ -200,7 +200,8 @@ public class SelectableTabListEditorTest {
                             TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(
                                             TabListLayoutType.GROUPED)
                                     ? new GroupedTabListDataProvider(
-                                            currentTabModelSupplier,
+                                            TabListDataProvider.createSingleModelListSupplier(
+                                                    currentTabModelSupplier),
                                             /* supportsGroupExpansion= */ false)
                                     : null;
                     mTabListEditorCoordinator =

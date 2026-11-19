@@ -15,7 +15,7 @@ import java.util.Objects;
  * Tab card or row item representing a single tab in the tab list.
  *
  * <p>Immutable. Carries the tab ID plus the state owned by the provider, and never holds a {@link
- * Tab} reference: consumers resolve a tab by ID against the current tab model when needed.
+ * Tab} reference: consumers resolve a tab by ID against the provider's tab models when needed.
  */
 @NullMarked
 public final class TabItem implements TabListItem {

@@ -220,11 +220,14 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             if (TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(TabListLayoutType.FLAT)) {
                 mDataProvider =
                         new FlatTabListDataProvider(
-                                currentTabModelSupplier,
+                                TabListDataProvider.createSingleModelListSupplier(
+                                        currentTabModelSupplier),
                                 tab -> {
                                     Token id = mCurrentTabGroupId.get();
                                     return id != null && id.equals(tab.getTabGroupId());
-                                });
+                                },
+                                /* comparator= */ null,
+                                /* supportsMultipleModels= */ false);
             }
             mTabStripCoordinator =
                     new TabListCoordinator(
