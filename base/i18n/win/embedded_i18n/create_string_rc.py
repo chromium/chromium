@@ -294,7 +294,8 @@ class StringRcMaker(object):
     """Constructs a maker.
 
     Args:
-      inputs: A list of (grd_file, xtb_dir) pairs containing the source data.
+      inputs: An iterable of (grd_file, xtb_dir) pairs containing the source
+        data.
       expected_xtb_input_files: A list of xtb files that are expected to exist
         in the inputs folders. If there is a discrepency between what exists
         and what is expected the script will fail.
@@ -312,7 +313,9 @@ class StringRcMaker(object):
         the top of this file for more information on the format of the
         dictionary.
     """
-    self.inputs = inputs
+    # Materialize iterables (e.g., zip() from main()) since self.inputs may be
+    # iterated again when reporting missing string IDs.
+    self.inputs = list(inputs)
     self.expected_xtb_input_files = expected_xtb_input_files
     self.expected_xtb_input_files.sort()
     self.header_file = header_file
@@ -397,6 +400,21 @@ Extra input files:
         )
       )
       sys.exit(1)
+
+    # Fail if any requested string ID is absent from all input .grd files so
+    # accidental removals break the build here rather than emitting incomplete
+    # .rc/.h output.
+    if self.string_id_set:
+      found_string_ids = {t.resource_id_str for t in translated_strings}
+      missing_string_ids = sorted(self.string_id_set - found_string_ids)
+      if missing_string_ids:
+        grd_files = [grd_file for grd_file, _ in self.inputs]
+        raise RuntimeError(
+          'Requested string IDs were not found in input .grd file(s) '
+          '(%s):\n  %s'
+          % (', '.join(grd_files), '\n  '.join(missing_string_ids))
+        )
+
     return translated_strings
 
   def __ReadSourceAndTranslationsFrom(self, grd_file, xtb_files):
