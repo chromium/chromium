@@ -5,8 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SEARCH_SECURITY_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SEARCH_SECURITY_SECTION_H_
 
+#include <memory>
+
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/settings/search/settings_section.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+class DefaultDnsOverHttpsConfigSource;
+#endif
 class Profile;
 
 namespace settings_search {
@@ -23,6 +29,14 @@ class SecuritySection : public SettingsSection {
 
  private:
   void RegisterSearchItems(Profile* profile);
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Adds or removes the secure DNS provider item to match whether the
+  // Security page shows the dropdown.
+  void UpdateSecureDnsProviderItem();
+
+  std::unique_ptr<DefaultDnsOverHttpsConfigSource> doh_source_;
+  bool secure_dns_provider_shown_ = false;
+#endif
 };
 
 }  // namespace settings_search

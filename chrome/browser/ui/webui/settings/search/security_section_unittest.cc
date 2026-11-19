@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -27,9 +28,18 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#else
+#include "base/values.h"
+#include "chrome/browser/net/secure_dns_config.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/prefs/testing_pref_service.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/win_util.h"
 #include "device/fido/public/features.h"
 #include "device/fido/win/fake_webauthn_api.h"
 #include "device/fido/win/webauthn_api.h"
@@ -50,12 +60,25 @@ using ::testing::UnorderedElementsAreArray;
 class SecuritySectionTest : public testing::Test {
  protected:
   SecuritySectionTest() {
+#if !BUILDFLAG(IS_CHROMEOS)
+    stub_resolver_config_reader_.OverrideParentalControlsForTesting(
+        /*parental_controls_override=*/false);
+    SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
+        &stub_resolver_config_reader_);
+#endif
 #if BUILDFLAG(IS_WIN)
     // The Security keys subpage is hidden when the native Windows WebAuthn API
     // is available. Makes the API unavailable by default so that the subpage
     // items are registered regardless of the machine running the test. Tests
     // that cover the hidden case make the API available.
     fake_webauthn_api_.set_available(/*available=*/false);
+#endif
+  }
+
+  ~SecuritySectionTest() override {
+#if !BUILDFLAG(IS_CHROMEOS)
+    SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
+        nullptr);
 #endif
   }
 
@@ -89,6 +112,14 @@ class SecuritySectionTest : public testing::Test {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
+#else
+  TestingPrefServiceSimple* local_state() {
+    return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  }
+
+  void SetSecureDns(std::string_view mode) {
+    local_state()->SetString(prefs::kDnsOverHttpsMode, mode);
+  }
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -97,7 +128,12 @@ class SecuritySectionTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+#if !BUILDFLAG(IS_CHROMEOS)
+  StubResolverConfigReader stub_resolver_config_reader_{
+      TestingBrowserProcess::GetGlobal()->local_state()};
+#endif
 #if BUILDFLAG(IS_WIN)
+  base::win::ScopedDomainStateForTesting scoped_domain_{/*is_enrollee=*/false};
   device::FakeWinWebAuthnApi fake_webauthn_api_;
   device::WinWebAuthnApi::ScopedOverride webauthn_api_override_{
       &fake_webauthn_api_};
@@ -108,6 +144,9 @@ class SecuritySectionTest : public testing::Test {
 };
 
 TEST_F(SecuritySectionTest, RegistersSecurityItems) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  SetSecureDns(SecureDnsConfig::kModeOff);
+#endif
   RegisterItems();
 
   // Keep in sync with SecuritySection::RegisterSearchItems(), in the order the
@@ -215,6 +254,30 @@ TEST_F(SecuritySectionTest, GuestRegistersNothing) {
   RegisterItems();
 
   EXPECT_THAT(GetIds(), IsEmpty());
+}
+
+// Guards against a stale provider item after the secure DNS configuration
+// changes while Settings is open.
+TEST_F(SecuritySectionTest, SecureDnsProviderItemFollowsConfiguration) {
+  SetSecureDns(SecureDnsConfig::kModeOff);
+  RegisterItems();
+  EXPECT_THAT(GetIds(), Not(Contains(SettingId::kSecureDnsProvider)));
+
+  SetSecureDns(SecureDnsConfig::kModeAutomatic);
+  EXPECT_THAT(GetIds(), Contains(SettingId::kSecureDnsProvider));
+
+  local_state()->SetManagedPref(prefs::kDnsOverHttpsMode,
+                                base::Value(SecureDnsConfig::kModeAutomatic));
+  EXPECT_THAT(GetIds(), Not(Contains(SettingId::kSecureDnsProvider)));
+}
+
+// Guards against skipping the provider item when secure DNS is already on as
+// the section is created.
+TEST_F(SecuritySectionTest, SecureDnsProviderItemRegisteredOnCreation) {
+  SetSecureDns(SecureDnsConfig::kModeAutomatic);
+  RegisterItems();
+
+  EXPECT_THAT(GetIds(), Contains(SettingId::kSecureDnsProvider));
 }
 #endif
 

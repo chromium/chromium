@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/settings/search/mojom/setting_id.mojom.h"
 #include "chrome/browser/ui/webui/settings/search/settings_search_item.h"
 #include "chrome/browser/ui/webui/settings/search/settings_search_registry.h"
@@ -15,6 +16,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#endif
 
 namespace settings_search {
 
@@ -26,10 +33,20 @@ using ::testing::Property;
 
 TEST(SettingsSectionsTest, CreateSettingsSectionsRegistersSections) {
   content::BrowserTaskEnvironment task_environment;
+#if !BUILDFLAG(IS_CHROMEOS)
+  StubResolverConfigReader stub_resolver_config_reader(
+      TestingBrowserProcess::GetGlobal()->local_state());
+  SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
+      &stub_resolver_config_reader);
+#endif
   TestingProfile profile;
   SettingsSearchRegistry registry;
   std::vector<std::unique_ptr<SettingsSection>> sections =
       CreateSettingsSections(&registry, &profile);
+#if !BUILDFLAG(IS_CHROMEOS)
+  SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
+      nullptr);
+#endif
 
   EXPECT_THAT(registry.GetItems(),
               Contains(Pointee(Property(&SettingsSearchItem::id,

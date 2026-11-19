@@ -18,6 +18,13 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "base/functional/bind.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/default_dns_over_https_config_source.h"
+#include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
+#endif
+
 namespace settings_search {
 
 namespace {
@@ -91,6 +98,11 @@ void SecuritySection::RegisterSearchItems(Profile* profile) {
   // Mirrors loadTimeData "showSecureDnsSetting".
   registry()->AddItem(MakeItem(SettingId::kSecureDns, IDS_SETTINGS_SECURE_DNS,
                                IDS_SETTINGS_TAG_SECURE_DNS));
+  doh_source_ = std::make_unique<DefaultDnsOverHttpsConfigSource>(
+      g_browser_process->local_state(), /*set_up_pref_defaults=*/false);
+  doh_source_->SetDohChangeCallback(base::BindRepeating(
+      &SecuritySection::UpdateSecureDnsProviderItem, base::Unretained(this)));
+  UpdateSecureDnsProviderItem();
 #endif
   registry()->AddItem(
       MakeItem(SettingId::kJavascriptOptimization,
@@ -120,5 +132,24 @@ void SecuritySection::RegisterSearchItems(Profile* profile) {
   registry()->AddItem(MakeItem(SettingId::kAdvancedProtectionProgram,
                                IDS_SETTINGS_ADVANCED_PROTECTION_PROGRAM));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void SecuritySection::UpdateSecureDnsProviderItem() {
+  // The same value `SecureDnsHandler` sends the page as "showOptions". The item
+  // follows the saved configuration, not transient page state.
+  const bool provider_shown =
+      settings::SecureDnsHandler::ShouldShowProviderOptions();
+  if (provider_shown == secure_dns_provider_shown_) {
+    return;
+  }
+  secure_dns_provider_shown_ = provider_shown;
+  if (!provider_shown) {
+    registry()->RemoveItem(SettingId::kSecureDnsProvider);
+    return;
+  }
+  registry()->AddItem(MakeItem(SettingId::kSecureDnsProvider,
+                               IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION));
+}
+#endif
 
 }  // namespace settings_search

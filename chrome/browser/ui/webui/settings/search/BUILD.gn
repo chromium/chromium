@@ -36,6 +36,13 @@ source_set("search") {
     "//ui/base",
   ]
 
+  if (!is_chromeos) {
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/net",
+    ]
+  }
+
   if (is_linux) {
     deps += [
       "//components/prefs",
@@ -69,10 +76,12 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
+    "//chrome/browser/net",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/tabs/organizer",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/prefs",
     "//components/search",
     "//components/universal_optout",
@@ -89,6 +98,8 @@ source_set("unit_tests") {
       "//chrome/browser/ash/login/users:test_support",
       "//components/user_manager",
     ]
+  } else {
+    deps += [ "//components/prefs:test_support" ]
   }
 
   if (is_win) {
