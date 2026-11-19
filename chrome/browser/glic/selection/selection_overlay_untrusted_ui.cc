@@ -24,6 +24,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
@@ -72,6 +73,15 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddInteger("tapRegionHeight", 300);
   html_source->AddInteger("tapRegionWidth", 300);
   html_source->AddBoolean("enableGradientRegionStroke", false);
+  const auto* web_theme = ui::NativeTheme::GetInstanceForWeb();
+  html_source->AddInteger(
+      "pageScrollbarWidth",
+      web_theme->use_overlay_scrollbar()
+          ? 0
+          : web_theme
+                ->GetPartSize(ui::NativeTheme::kScrollbarVerticalTrack,
+                              ui::NativeTheme::kNormal, {})
+                .width());
   html_source->AddBoolean("enableWhiteRegionStroke", true);
   html_source->AddInteger("lineSelectionStrokeWidth", 40);
   html_source->AddInteger("colorLineSelectionGradient1",

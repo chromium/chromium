@@ -33,6 +33,7 @@ suite('GlicSelectionOverlay', () => {
     loadTimeData.overrideValues({
       enableSelectionOverlayPromptBox: true,
       enableShimmer: false,
+      pageScrollbarWidth: 0,
     });
 
     handler = TestMock.fromClass(SelectionOverlayPageHandlerRemote);
@@ -363,6 +364,7 @@ suite('GlicSelectionOverlayClick', () => {
     loadTimeData.overrideValues({
       enableSelectionOverlayPromptBox: enablePromptBox,
       enableShimmer: false,
+      pageScrollbarWidth: 0,
     });
     overlay = document.createElement('glic-selection-overlay');
     // The overlay fills its parent. Give it the viewport, as in the browser,
@@ -598,13 +600,18 @@ suite('GlicSelectionOverlayLayout', () => {
   });
 
   // Creates the overlay with the given flags and sends it a screenshot.
-  async function showOverlay(
-      {prompt = false, promptBox = false, dogfoodFeedback = false}) {
+  async function showOverlay({
+    prompt = false,
+    promptBox = false,
+    dogfoodFeedback = false,
+    scrollbarWidth = 0,
+  }) {
     loadTimeData.overrideValues({
       enableSelectionOverlayPrompt: prompt,
       enableSelectionOverlayPromptBox: promptBox,
       enableSelectionOverlayDogfoodFeedback: dogfoodFeedback,
       enableShimmer: false,
+      pageScrollbarWidth: scrollbarWidth,
     });
     overlay = document.createElement('glic-selection-overlay');
     // Covers the viewport, as in `selection-overlay-app`.
@@ -986,6 +993,25 @@ suite('GlicSelectionOverlayLayout', () => {
     const rect = promptRect();
     assertNear(window.innerWidth - MARGIN, rect.right, 'right');
     assertTrue(rect.left < toViewport(region).right - 2);
+  });
+
+  test('ChipsRowKeepsMarginFromPageScrollbar', async () => {
+    const region = {x: 0.95, y: 0.4, width: 0.06, height: 0.1};
+    await showOverlay({prompt: true, scrollbarWidth: 20});
+    await select(region, [chip('Summarize'), chip('Ask Gemini')]);
+
+    assertNear(window.innerWidth - 20 - MARGIN, promptRect().right, 'right');
+  });
+
+  test('WideChipsRowKeepsMarginFromPageScrollbar', async () => {
+    const region = {x: 0.5, y: 0.4, width: 0.1, height: 0.1};
+    await showOverlay({prompt: true, scrollbarWidth: 20});
+    // A row wider than the page is capped, not pushed under the scrollbar.
+    await select(region, [chip('x'.repeat(500))]);
+
+    const rect = promptRect();
+    assertNear(MARGIN, rect.left, 'left');
+    assertNear(window.innerWidth - 20 - MARGIN, rect.right, 'right');
   });
 
   // A card such as Explain replaces the chips row.

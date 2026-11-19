@@ -127,6 +127,10 @@ export class GlicSelectionOverlayElement extends
   // Whether the browser has the page content. Until then a prompt can't be
   // submitted.
   accessor pageContextReceived: boolean = false;
+  // The platform's usual page scrollbar width, which is part of the
+  // screenshot. The chips keep their margin from it.
+  private readonly pageScrollbarWidth_: number =
+      loadTimeData.getInteger('pageScrollbarWidth');
   // Whether the current gesture started with the right button.
   private isRightButtonGesture_: boolean = false;
   // Number of selected regions, as last sent by the browser.
@@ -466,7 +470,6 @@ export class GlicSelectionOverlayElement extends
     const margin = 16;
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const maxAvailableWidth = Math.max(0, viewportWidth - 2 * margin);
 
     const computeStyle = (width: number, height: number): string => {
       if (this.enableSelectionOverlayPromptBox) {
@@ -615,7 +618,6 @@ export class GlicSelectionOverlayElement extends
             chosen.maxWidth}px; align-items: ${chosen.alignItems};`;
       }
 
-      const effectiveWidth = Math.min(width, maxAvailableWidth);
       this.promptAboveSelection = false;
 
       // When the prompt box is not shown, anchor the bottom-left of the row at
@@ -623,14 +625,18 @@ export class GlicSelectionOverlayElement extends
       // fulfillment card replaces the row, keep the card's top-left corner at
       // the row's top-left corner so it expands downward. The row is positioned
       // by its left edge so the chips grow out of the spark's spot.
+      const contentRight = viewportWidth - this.pageScrollbarWidth_;
+      const chipsMaxWidth = Math.max(0, contentRight - 2 * margin);
+      const chipsWidth = Math.min(width, chipsMaxWidth);
       const clampedLeft = Math.max(
-          margin, Math.min(selRight, viewportWidth - effectiveWidth - margin));
+          margin, Math.min(selRight, contentRight - chipsWidth - margin));
 
       const idealTop = selTop -
           (this.shownInlineAction_ ? this.replacedChipsRowHeight_ : height);
       const targetTop = Math.max(
           margin, Math.min(idealTop, viewportHeight - height - margin));
-      return `left: ${clampedLeft}px; top: ${targetTop}px;`;
+      return `left: ${clampedLeft}px; top: ${targetTop}px; max-width: ${
+          chipsMaxWidth}px;`;
     };
 
     const container =
