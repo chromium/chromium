@@ -410,6 +410,14 @@
       invalidate: ["clip"],
     },
     {
+      name: "OpacityIsAuto",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      field_group: "*",
+      invalidate: ["opacity"],
+    },
+    {
       name: "HasAutoZIndex",
       field_template: "primitive",
       type_name: "bool",

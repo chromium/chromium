@@ -27,6 +27,17 @@
 
 @namespace url(http://www.w3.org/1998/Math/MathML);
 
+@supports blink-feature(CSSCustomHighlightExtensions) {
+    :root::selection,
+    :root::target-text,
+    :root::spelling-error,
+    :root::grammar-error,
+    :root::highlight(*),
+    :root::search-text {
+        opacity: auto;
+    }
+}
+
 /* Universal rules */
 * {
   font-size: math;

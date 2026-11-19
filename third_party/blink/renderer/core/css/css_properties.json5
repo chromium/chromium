@@ -4857,6 +4857,7 @@
     {
       name: "opacity",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      style_builder_custom_functions: ["inherit"],
       interpolable: true,
       compositable: true,
       tracks_animated_source: true,

@@ -28,6 +28,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <ranges>
 
 #include "base/check_op.h"
@@ -3444,6 +3445,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   void SetOpacity(float f) {
     float v = ClampTo<float>(f, 0, 1);
     SetOpacityInternal(v);
+    SetOpacityIsAuto(false);
+  }
+
+  void SetOpacity(std::optional<float> opacity) {
+    SetOpacity(opacity.value_or(1));
+    SetOpacityIsAuto(!opacity.has_value());
   }
 
   // Sets the element animating the given property.

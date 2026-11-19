@@ -31,6 +31,17 @@ html {
     view-transition-name: root;
 }
 
+@supports blink-feature(CSSCustomHighlightExtensions) {
+    :root::selection,
+    :root::target-text,
+    :root::spelling-error,
+    :root::grammar-error,
+    :root::highlight(*),
+    :root::search-text {
+        opacity: auto;
+    }
+}
+
 :active-view-transition {
     view-transition-name: root;
 }

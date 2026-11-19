@@ -7721,8 +7721,20 @@ const CSSValue* Opacity::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
+  if (style.OpacityIsAuto()) {
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
   return CSSNumericLiteralValue::Create(style.Opacity(),
                                         CSSPrimitiveValue::UnitType::kNumber);
+}
+
+void Opacity::ApplyInherit(StyleResolverState& state) const {
+  auto& builder = state.StyleBuilder();
+  builder.SetOpacity(state.ParentStyle()->Opacity());
+  builder.SetOpacityIsAuto(state.IsForHighlight() &&
+                           state.ParentStyle()->OpacityIsAuto());
+  builder.CopyAnimatedSourceFrom(CSSPropertyID::kOpacity, state.ParentStyle(),
+                                 /*has_untracked_dependencies=*/false);
 }
 
 const CSSValue* Order::CSSValueFromComputedStyleInternal(

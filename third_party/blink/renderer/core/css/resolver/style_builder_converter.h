@@ -264,7 +264,8 @@ class StyleBuilderConverter {
   static int ConvertIntegerOrNone(StyleResolverState&, const CSSValue&);
   static float ConvertAlpha(StyleResolverState&,
                             const CSSValue&);  // clamps to [0,1]
-  static float ConvertOpacity(StyleResolverState&, const CSSValue&);
+  static std::optional<float> ConvertOpacity(StyleResolverState&,
+                                             const CSSValue&);
   static ScopedCSSName* ConvertNoneOrCustomIdent(StyleResolverState&,
                                                  const CSSValue&);
   static ScopedCSSName* ConvertCustomIdent(StyleResolverState&,

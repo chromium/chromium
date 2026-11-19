@@ -2899,7 +2899,10 @@ bool StyleResolver::ApplyAnimatedStyle(
       filter = filter.Add(CSSProperty::kValidForMarker);
     }
     if (IsHighlightPseudoElement(state.StyleBuilder().StyleType())) {
-      filter = filter.Add(CSSProperty::kValidForHighlight);
+      filter = filter.Add(
+          RuntimeEnabledFeatures::CSSCustomHighlightExtensionsEnabled()
+              ? CSSProperty::kValidForHighlightWithExtensions
+              : CSSProperty::kValidForHighlight);
     }
     filter = filter.Add(CSSProperty::kNotAnimation);
 

@@ -27,6 +27,17 @@
 
 @namespace "http://www.w3.org/2000/svg";
 
+@supports blink-feature(CSSCustomHighlightExtensions) {
+    :root::selection,
+    :root::target-text,
+    :root::spelling-error,
+    :root::grammar-error,
+    :root::highlight(*),
+    :root::search-text {
+        opacity: auto;
+    }
+}
+
 /*
     When an outermost SVG 'svg' element is stand-alone or embedded inline within a parent XML grammar 
     which does not use CSS layout [CSS2-LAYOUT] or XSL formatting [XSL], the 'overflow' property on the 
