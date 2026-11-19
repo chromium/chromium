@@ -744,10 +744,6 @@
 -keepclassmembers class androidx.compose.ui.graphics.layer.view.ViewLayerContainer {
     protected void dispatchGetDisplayList();
 }
--keepclassmembers class androidx.compose.ui.graphics.layer.view.PlaceholderHardwareCanvas {
-    public int drawRenderNode(...);
-    public boolean isHardwareAccelerated();
-}
 
 # File: obj/third_party/androidx/androidx_compose_ui_ui_text_android_java/proguard.txt
 # Copyright (C) 2020 The Android Open Source Project
