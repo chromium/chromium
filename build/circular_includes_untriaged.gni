@@ -28,7 +28,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/app_list/search/omnibox:omnibox",
   "//chrome/browser/ash/app_list/search/system_info:system_info",
   "//chrome/browser/ash/app_list/search:search",
-  "//chrome/browser/ash/app_mode/web_app:web_app",
   "//chrome/browser/ash/app_mode:app_mode",
   "//chrome/browser/ash/app_restore:app_restore",
   "//chrome/browser/ash/arc/fileapi:fileapi",

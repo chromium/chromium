@@ -35,6 +35,7 @@ static_library("crd") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_mode/isolated_web_app",
+    "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
     "//chrome/browser/device_identity",
