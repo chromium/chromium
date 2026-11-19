@@ -889,6 +889,32 @@ struct CreateActorTabOptions {
   bool open_in_background;
 };
 
+// @generate glic_api
+// Optional parameters for `GlicBrowserHost#performActions`.
+struct PerformActionsOptions {
+  // Opaque identifier of the conversation turn initiating these actions. Once
+  // the host starts executing the actions, it is stored on the critical
+  // actions (e.g. downloads) logged for the task until the next accepted
+  // `performActions` call. It is intended for reopening the conversation at
+  // this turn. Older hosts ignore it.
+  //
+  // Contract for the web client:
+  // * It must be the ID of the user-visible response turn that should be
+  //   reopened. Pass the same ID for every `performActions` call of that turn
+  //   (e.g. all actuation rounds of one prompt); the turn associated with the
+  //   task only changes when the ID does.
+  // * It must be at most 512 bytes.
+  // * It must be sent on every `performActions` call for the task. Omitting it,
+  //   or passing an empty or longer ID, clears the turn associated with the
+  //   task, so critical actions logged for these actions are recorded without
+  //   a turn rather than attributed to an earlier turn.
+  // * Calls that are rejected, or superseded by a later call, before any of
+  //   their actions run leave the turn previously associated with the task
+  //   unchanged.
+  // @glic_type string?
+  string turn_id = "";
+};
+
 // Interface for actor-related functionality.
 interface ActorHandler {
   // Called when a form is presented in the autofill selection dialog.
@@ -922,12 +948,14 @@ interface ActorHandler {
   CreateTask(actor.webui.mojom.TaskOptions? task_options)
       => result<int32, CreateTaskErrorReason>;
 
-  // Executes the given actions. `action_proto` is a serialized proto of type
-  // optimization_guide::proto::Actions. Returns the result of the actions as a
-  // serialized proto of type optimization_guide::proto::ActionsResult.
+  // Executes the given actions. `actions_proto` is a serialized proto of type
+  // optimization_guide::proto::Actions. `options` provides optional metadata
+  // for the action batch (such as the originating conversation turn ID).
+  // Returns the result of the actions as a serialized proto of type
+  // optimization_guide::proto::ActionsResult.
   //
   // It is an error to act with a paused task.
-  PerformActions(array<uint8> actions_proto)
+  PerformActions(array<uint8> actions_proto, PerformActionsOptions? options)
       => result<mojo_base.mojom.ProtoWrapper, PerformActionsErrorReason>;
 
   // Cancel the actions for the specified actor task. Does not revert actions

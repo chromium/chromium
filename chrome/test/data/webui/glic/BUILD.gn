@@ -34,6 +34,7 @@ ts_library("build_extra_ts") {
     "browser_tests/glic_api_skills_browsertest.ts",
     "browser_tests/glic_api_zss_browsertest.ts",
     "browser_tests/glic_permission_enforcement_browsertest.ts",
+    "browser_tests/glic_actor_conversation_anchor_browsertest.ts",
     "browser_tests/glic_actor_task_lifecycle_browsertest.ts",
     "browser_tests/glic_actor_attempt_otp_filling_browsertest.ts",
     "browser_tests/glic_cue_target_browsertest.ts",
@@ -138,6 +139,7 @@ if (!is_android) {
     cc_test_files = [ "glic_browsertest.cc" ]
 
     files = [
+      "unit_tests/actor_client_test.ts",
       "unit_tests/glic_api_client_test.ts",
       "unit_tests/observable_test.ts",
       "unit_tests/mojo_logging_test.ts",

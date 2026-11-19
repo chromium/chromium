@@ -4,6 +4,9 @@
 
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 
+#include <string>
+#include <utility>
+
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -49,6 +52,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/sessions/core/session_id.h"
@@ -328,6 +332,7 @@ void GlicActorTaskManager::OnConversationRegistered(
 
 void GlicActorClientSession::PerformActions(
     const std::vector<uint8_t>& actions_proto,
+    mojom::PerformActionsOptionsPtr options,
     PerformActionsCallback callback) {
   LogApiRequestCount(GlicHostApiRequestId::kPerformActions);
   instance_metrics().OnPerformActions();
@@ -380,17 +385,54 @@ void GlicActorClientSession::PerformActions(
     return;
   }
 
+  // Apply the turn ID only once the actor accepts these actions, right before
+  // the first of them starts. That way the anchor is in place before any
+  // critical action caused by these actions is logged, and calls that the
+  // actor rejects or supersedes never change it. An omitted, empty or
+  // oversized turn ID still replaces the anchor of the previous turn, so these
+  // actions are never attributed to an earlier turn. The web client passes the
+  // same turn ID for every call of one response turn (e.g. all actuation rounds
+  // of one prompt), so the anchor normally only changes when a new turn starts.
+  // The CriticalActionService only stores anchors while action-level chat
+  // linkouts are enabled.
+  base::OnceClosure on_actions_accepted;
+  if (critical_actions::features::IsActionLevelChatLinkoutsEnabled()) {
+    std::string turn_id;
+    if (options) {
+      turn_id = std::move(options->turn_id);
+    }
+    on_actions_accepted = base::BindOnce(
+        &GlicActorClientSession::SetConversationAnchorForAcceptedActions,
+        GetWeakPtr(), task_id, std::move(turn_id));
+  }
+
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
       base::unexpected(mojom::PerformActionsErrorReason::kUnknown));
 
   actor_keyed_service_proto_wrapper_.PerformActions(
-      actions, base::BindOnce(
-                   [](PerformActionsCallback callback,
-                      optimization_guide::proto::ActionsResult response) {
-                     std::move(callback).Run(mojo_base::ProtoWrapper(response));
-                   },
-                   std::move(wrapped_callback)));
+      actions, std::move(on_actions_accepted),
+      base::BindOnce(
+          [](PerformActionsCallback callback,
+             optimization_guide::proto::ActionsResult response) {
+            std::move(callback).Run(mojo_base::ProtoWrapper(response));
+          },
+          std::move(wrapped_callback)));
+}
+
+void GlicActorClientSession::SetConversationAnchorForAcceptedActions(
+    actor::TaskId task_id,
+    std::string turn_id) {
+  auto* critical_action_service =
+      critical_actions::CriticalActionFactory::GetForProfile(&profile());
+  if (!critical_action_service) {
+    return;
+  }
+  // For Glic, the conversation anchor is the turn ID. An empty `turn_id`
+  // clears the anchor of the previous turn. The CriticalActionService drops
+  // turn IDs that are too long to store.
+  critical_action_service->SetActorTaskConversationAnchorId(
+      base::NumberToString(task_id.value()), turn_id);
 }
 
 void GlicActorClientSession::CancelActions(int32_t task_id,

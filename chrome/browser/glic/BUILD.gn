@@ -701,6 +701,7 @@ source_set("impl") {
     "//components/browser_actuator/public:feature_list",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/critical_actions/core/browser",
     "//components/enterprise",
     "//components/enterprise/buildflags",
     "//components/favicon/content",

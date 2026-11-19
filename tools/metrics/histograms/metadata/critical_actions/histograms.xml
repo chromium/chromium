@@ -66,6 +66,13 @@ chromium-metrics-reviews@google.com.
     CriticalActions.VisitIdResolutionOutcome.{ActionSource}) and are never
     saved, so its total is not comparable to
     CriticalActions.EventLogged.{ActionSource}.
+
+    For actor tasks started from Glic, actions that the Glic web client performs
+    without a turn ID clear the task's anchor, so critical actions they cause
+    are recorded as &quot;Failed: Cache miss at enqueue time&quot;. The web
+    client sends the same turn ID for all actions of one response turn (e.g. all
+    actuation rounds of one prompt), so the anchor only changes when a new turn
+    starts.
   </summary>
   <token key="ActionSource" variants="ActionSource"/>
 </histogram>

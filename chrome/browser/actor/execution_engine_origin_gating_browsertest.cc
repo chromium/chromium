@@ -466,7 +466,8 @@ class ExecutionEngineOriginGatingBrowserTestBase
                         ->GetActorTaskManager()
                         ->GetClientSessionForTesting();
     ASSERT_TRUE(session);
-    session->PerformActions(actions_bytes, future.GetCallback());
+    session->PerformActions(actions_bytes, /*options=*/nullptr,
+                            future.GetCallback());
   }
 
  protected:

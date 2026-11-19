@@ -82,6 +82,7 @@ export import PanelState = generated.PanelState;
 export import ParentConversationMetadata = generated.ParentConversationMetadata;
 export import PdfDocumentData = generated.PdfDocumentData;
 export import PendingCapturedRegion = generated.PendingCapturedRegion;
+export import PerformActionsOptions = generated.PerformActionsOptions;
 export import PinCandidate = generated.PinCandidate;
 export import PinTabsOptions = generated.PinTabsOptions;
 export import SafeBrowsingVerdict = generated.SafeBrowsingVerdict;
@@ -579,11 +580,16 @@ export declare interface GlicBrowserHost {
    *
    * The input corresponds to the Actions proto in
    * components/optimization_guide/proto/features/actions_data.proto.
+   * `options` optionally provides metadata such as the originating turn ID.
+   * New in Nov 2026: `options`. Older hosts ignore it.
+   * See `PerformActionsOptions` for the `turnId` contract; in particular it
+   * must be passed on every call.
    *
    * The output corresponds to the ActionsResult proto.
    *
    */
-  performActions?(actions: ArrayBuffer): Promise<ArrayBuffer>;
+  performActions?(actions: ArrayBuffer, options?: PerformActionsOptions):
+      Promise<ArrayBuffer>;
 
   /**
    * Cancel the actions for the specified actor task. It does not revert actions

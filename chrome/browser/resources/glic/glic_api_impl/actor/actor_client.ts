@@ -30,12 +30,13 @@ import type {                                                                //
 } from '../../actor_webui.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
 import {ActorClientReceiver, ActorHandlerRemote} from '../../glic.mojom-webui.js';
-import type {                                      //
-             ActorClientInterface,                 //
-             ActorTaskState as ActorTaskStateMojo, //
-             TabContextResult as TabContextMojo,   //
-             WebClientHandlerRemote,               //
-             WebClientInitialState,                //
+import type {                                                    //
+             ActorClientInterface,                               //
+             ActorTaskState as ActorTaskStateMojo,               //
+             PerformActionsOptions as PerformActionsOptionsMojo, //
+             TabContextResult as TabContextMojo,                 //
+             WebClientHandlerRemote,                             //
+             WebClientInitialState,                              //
 } from '../../glic.mojom-webui.js';
 import type * as glicApi from '../../glic_api/glic_api.js';
 import type {                                        //
@@ -52,6 +53,7 @@ import type {                                        //
              NavigationConfirmationRequest,          //
              Observable,                             //
              ObservableValue,                        //
+             PerformActionsOptions,                  //
              ResumeActorTaskResult,                  //
              SelectAutofillSuggestionsDialogRequest, //
              SelectCredentialDialogRequest,          //
@@ -258,11 +260,12 @@ export class GlicBrowserHostActor implements ActorClientInterface,
     }
   }
 
-  async performActions?(actions: ArrayBuffer): Promise<ArrayBuffer> {
+  async performActions?(actions: ArrayBuffer, options?: PerformActionsOptions):
+      Promise<ArrayBuffer> {
     assert(this.actorHandler);
     try {
-      const resultProto =
-          await this.actorHandler.performActions(byteArrayFromClient(actions));
+      const resultProto = await this.actorHandler.performActions(
+          byteArrayFromClient(actions), performActionsOptionsToMojo(options));
       const buffer = getArrayBufferFromBigBuffer(resultProto.smuggled);
       if (!buffer) {
         throw PerformActionsErrorReason.UNKNOWN;
@@ -714,6 +717,16 @@ function taskOptionsToMojo(taskOptions?: TaskOptions): TaskOptionsMojo|null {
       actuationTabId: taskOptions.actuationTabId ?
           idFromClient(taskOptions.actuationTabId) :
           null,
+    };
+  }
+  return null;
+}
+
+function performActionsOptionsToMojo(options?: PerformActionsOptions):
+    PerformActionsOptionsMojo|null {
+  if (options) {
+    return {
+      turnId: options.turnId ?? '',
     };
   }
   return null;

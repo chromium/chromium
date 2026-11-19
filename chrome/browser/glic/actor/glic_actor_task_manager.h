@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_ACTOR_GLIC_ACTOR_TASK_MANAGER_H_
 #define CHROME_BROWSER_GLIC_ACTOR_GLIC_ACTOR_TASK_MANAGER_H_
 
+#include <string>
 #include <string_view>
 
 #include "base/callback_list.h"
@@ -155,6 +156,7 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
   void CreateTask(actor::webui::mojom::TaskOptionsPtr options,
                   CreateTaskCallback callback) override;
   void PerformActions(const std::vector<uint8_t>& actions_proto,
+                      mojom::PerformActionsOptionsPtr options,
                       PerformActionsCallback callback) override;
   void CancelActions(int32_t task_id, CancelActionsCallback callback) override;
   void StopActorTask(int32_t task_id,
@@ -243,6 +245,11 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
   void CreateActorTabFinished(CreateActorTabCallback callback,
                               tabs::TabInterface* new_tab);
   void NotifyActorTaskStateChanged(actor::ActorTask& task);
+  // Runs when the actor accepts the actions of a `PerformActions()` call for
+  // `task_id`, right before the first of them starts. Makes `turn_id` the
+  // conversation anchor of the critical actions those actions cause.
+  void SetConversationAnchorForAcceptedActions(actor::TaskId task_id,
+                                               std::string turn_id);
   void StopTaskImpl(actor::TaskId task_id,
                     actor::ActorTask::StoppedReason reason);
   bool ValidateTaskIdMatchesCurrent(actor::TaskId task_id,

@@ -1151,6 +1151,30 @@ export declare interface CreateActorTabOptions {
   openInBackground?: boolean;
 }
 
+// Optional parameters for `GlicBrowserHost#performActions`.
+export declare interface PerformActionsOptions {
+  // Opaque identifier of the conversation turn initiating these actions. Once
+  // the host starts executing the actions, it is stored on the critical
+  // actions (e.g. downloads) logged for the task until the next accepted
+  // `performActions` call. It is intended for reopening the conversation at
+  // this turn. Older hosts ignore it.
+  //
+  // Contract for the web client:
+  // * It must be the ID of the user-visible response turn that should be
+  //   reopened. Pass the same ID for every `performActions` call of that turn
+  //   (e.g. all actuation rounds of one prompt); the turn associated with the
+  //   task only changes when the ID does.
+  // * It must be at most 512 bytes.
+  // * It must be sent on every `performActions` call for the task. Omitting it,
+  //   or passing an empty or longer ID, clears the turn associated with the
+  //   task, so critical actions logged for these actions are recorded without
+  //   a turn rather than attributed to an earlier turn.
+  // * Calls that are rejected, or superseded by a later call, before any of
+  //   their actions run leave the turn previously associated with the task
+  //   unchanged.
+  turnId?: string;
+}
+
 // Options used to customize region capture.
 export declare interface CaptureRegionParams {
   tabId: string;
