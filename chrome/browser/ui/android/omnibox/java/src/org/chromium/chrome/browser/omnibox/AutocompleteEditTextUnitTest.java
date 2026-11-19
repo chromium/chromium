@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.omnibox;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.spy;
@@ -14,6 +17,10 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Shader;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -22,6 +29,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.BaseInputConnection;
@@ -1671,5 +1679,49 @@ public class AutocompleteEditTextUnitTest {
 
         assertEquals(0, counter.mCount);
         assertTexts("hel", "lo world", "");
+    }
+
+    @Test
+    public void testSiteSearchChip_longNameFadesOut() {
+        mAutocomplete.layout(0, 0, 100, 50);
+        mAutocomplete.setSiteSearchChip("VeryLongSiteSearchEngineName");
+
+        SiteSearchChipDrawable drawable =
+                (SiteSearchChipDrawable) mAutocomplete.getCompoundDrawablesRelative()[0];
+        assertNotNull(drawable);
+        assertEquals(50, drawable.getBounds().width());
+        Shader initialShader = drawable.getTextPaintForTesting().getShader();
+        assertTrue(initialShader instanceof LinearGradient);
+
+        // Redrawing should reuse the cached shader without reallocating.
+        drawable.draw(new Canvas());
+        assertSame(initialShader, drawable.getTextPaintForTesting().getShader());
+
+        // Layout direction change should update the shader.
+        drawable.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        Shader rtlShader = drawable.getTextPaintForTesting().getShader();
+        assertTrue(rtlShader instanceof LinearGradient);
+        assertNotSame(initialShader, rtlShader);
+
+        // Expanding bounds to fit the full intrinsic width should clear the shader.
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        assertNull(drawable.getTextPaintForTesting().getShader());
+    }
+
+    @Test
+    public void testSiteSearchChip_rtlTextAlignsRightAndFadesOut() {
+        mAutocomplete.layout(0, 0, 100, 50);
+        mAutocomplete.setSiteSearchChip("البحث في ويكيبيديا العربية الطويل جدا");
+
+        SiteSearchChipDrawable drawable =
+                (SiteSearchChipDrawable) mAutocomplete.getCompoundDrawablesRelative()[0];
+        assertNotNull(drawable);
+        assertEquals(50, drawable.getBounds().width());
+        assertEquals(Paint.Align.RIGHT, drawable.getTextPaintForTesting().getTextAlign());
+        Shader shader = drawable.getTextPaintForTesting().getShader();
+        assertTrue(shader instanceof LinearGradient);
+
+        drawable.draw(new Canvas());
+        assertSame(shader, drawable.getTextPaintForTesting().getShader());
     }
 }

@@ -496,6 +496,21 @@ public class AutocompleteEditText extends EditTextWithLeading
     @Override
     public void setInputIsMultilineEligible(boolean isMultilineEligible) {}
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        if (w == oldw || mSiteSearchChipDrawable == null) return;
+
+        int targetWidth = computeSiteSearchChipWidth(mSiteSearchChipDrawable, w);
+        if (targetWidth == mSiteSearchChipDrawable.getBounds().width()) return;
+
+        mSiteSearchChipDrawable.setBounds(
+                0, 0, targetWidth, mSiteSearchChipDrawable.getIntrinsicHeight());
+        Drawable[] drawables = getCompoundDrawablesRelative();
+        setCompoundDrawablesRelative(
+                mSiteSearchChipDrawable, drawables[1], drawables[2], drawables[3]);
+    }
+
     /** Sets whether to use incognito colors. */
     public void setIncognitoColorsEnabled(boolean incognitoColorsEnabled) {
         if (mIncognitoColorsEnabled == incognitoColorsEnabled) return;
@@ -506,6 +521,14 @@ public class AutocompleteEditText extends EditTextWithLeading
         }
     }
 
+    private static int computeSiteSearchChipWidth(Drawable drawable, int viewWidth) {
+        int width = drawable.getIntrinsicWidth();
+        if (viewWidth > 0) {
+            width = Math.min(width, viewWidth / 2);
+        }
+        return width;
+    }
+
     @Override
     public void setSiteSearchChip(@Nullable String keyword) {
         if (keyword != null) {
@@ -513,11 +536,9 @@ public class AutocompleteEditText extends EditTextWithLeading
             mSiteSearchChipDrawable =
                     new SiteSearchChipDrawable(getContext(), keyword, mIncognitoColorsEnabled);
             mSiteSearchChipDrawable.setLayoutDirection(getLayoutDirection());
+            int width = computeSiteSearchChipWidth(mSiteSearchChipDrawable, getWidth());
             mSiteSearchChipDrawable.setBounds(
-                    0,
-                    0,
-                    mSiteSearchChipDrawable.getIntrinsicWidth(),
-                    mSiteSearchChipDrawable.getIntrinsicHeight());
+                    0, 0, width, mSiteSearchChipDrawable.getIntrinsicHeight());
         } else {
             mSiteSearchChipDrawable = null;
         }
