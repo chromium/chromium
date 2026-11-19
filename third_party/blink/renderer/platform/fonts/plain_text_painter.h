@@ -83,6 +83,17 @@ class PLATFORM_EXPORT PlainTextPainter
                            const cc::PaintFlags& flags,
                            Font::DrawType = Font::DrawType::kGlyphsOnly);
 
+  // Draws the logical range [from_index, to_index) of an already-shaped node
+  // at location, coalescing contiguous same-direction items
+  void DrawNode(const PlainTextNode& node,
+                wtf_size_t from_index,
+                wtf_size_t to_index,
+                const Font& font,
+                cc::PaintCanvas& canvas,
+                const gfx::PointF& location,
+                const cc::PaintFlags& flags,
+                Font::DrawType = Font::DrawType::kGlyphsOnly) const;
+
   // Glyph bounds will be the minimum rect containing all glyph strokes, in
   // coordinates using (<text run x position>, <baseline position>) as the
   // origin. If the pointer is not null, glyph_bounds is expected to be

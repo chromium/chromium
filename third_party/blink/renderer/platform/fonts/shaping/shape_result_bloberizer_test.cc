@@ -726,4 +726,39 @@ TEST_F(ShapeResultBloberizerTest, SubRunWithZeroGlyphs) {
   node->ComputeCharacterRange(0, 8);
 }
 
+// Verifies that FillGlyphs on an RTL PlainTextNode sub-range emits UTF-8 text
+// and descending cluster indices across multiple visually ordered items
+// (crbug.com/578524618). Tinos has both Hebrew and space, so the sub-range
+// stays in one font and one run on every platform; system standard fonts
+// on Mac and Android lack Hebrew and split it into per-font runs
+TEST_F(ShapeResultBloberizerTest, RtlMultiItemSubRunEmitText) {
+  const UChar kStr[] = {0x05D0, 0x05D1, 0x20,   0x05D2,
+                        0x05D3, 0x20,   0x05D4, 0x05D5};
+  TextRun text_run(StringView(base::span(kStr)), TextDirection::kRtl);
+
+  Font* font = blink::test::CreateTestFont(
+      AtomicString("Tinos"),
+      blink::test::BlinkRootDir() +
+          "/web_tests/third_party/Tinos/tinos-bold.ttf",
+      12);
+  PlainTextNode* node = MakeGarbageCollected<PlainTextNode>(
+      text_run, /* normalize_space */ false, *font, /* supports_bidi */ true,
+      /* cache */ nullptr);
+  ASSERT_GT(node->ItemList().size(), 1u);
+
+  constexpr wtf_size_t kFrom = 1;
+  constexpr wtf_size_t kTo = 7;
+  ShapeResultBloberizer bloberizer = ShapeResultBloberizer::FillGlyphs(
+      font->GetFontDescription(), *node, node->ItemList(), kFrom, kTo,
+      ShapeResultBloberizer::Type::kEmitText);
+
+  const String expected_text =
+      text_run.ToStringView().ToString().substr(kFrom, kTo - kFrom);
+  CheckBlobBuffer(bloberizer,
+                  {{
+                      {static_cast<int>(kTo - kFrom), expected_text.Utf8(),
+                       ExpectedRun::ClusterDirection::kDescending},
+                  }});
+}
+
 }  // namespace blink

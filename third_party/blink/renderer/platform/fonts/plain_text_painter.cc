@@ -123,10 +123,27 @@ bool PlainTextPainter::DrawWithBidiReorder(
   }
 
   const PlainTextNode& node = CreateNode(run, font);
-  const bool is_sub_run =
-      (from_index != 0 || to_index != node.TextContent().length());
+  DrawNode(node, from_index, to_index, font, canvas, location, flags,
+           draw_type);
+  return true;
+}
 
-  gfx::PointF curr_point = location;
+void PlainTextPainter::DrawNode(const PlainTextNode& node,
+                                wtf_size_t from_index,
+                                wtf_size_t to_index,
+                                const Font& font,
+                                cc::PaintCanvas& canvas,
+                                const gfx::PointF& location,
+                                const cc::PaintFlags& flags,
+                                Font::DrawType draw_type) const {
+  const wtf_size_t text_length = node.TextContent().length();
+  CHECK_LE(from_index, to_index);
+  CHECK_LE(to_index, text_length);
+  if (from_index == to_index) {
+    return;
+  }
+
+  const bool is_sub_run = (from_index != 0 || to_index != text_length);
   const ShapeResultBloberizer::Type blob_type =
       draw_type == Font::DrawType::kGlyphsOnly
           ? ShapeResultBloberizer::Type::kNormal
@@ -136,47 +153,43 @@ bool PlainTextPainter::DrawWithBidiReorder(
   if (!is_sub_run && !node.ContainsRtlItems()) [[likely]] {
     STACK_UNINITIALIZED ShapeResultBloberizer bloberizer =
         ShapeResultBloberizer::FillGlyphs(font_desc, node, blob_type);
-    DrawTextBlobs(bloberizer.Blobs(), canvas, curr_point, flags);
-    return true;
+    DrawTextBlobs(bloberizer.Blobs(), canvas, location, flags);
+    return;
   }
-  for (const PlainTextItem& item : node.ItemList()) {
-    if (item.EndOffset() <= from_index || to_index <= item.StartOffset()) {
+
+  gfx::PointF curr_point = location;
+  const base::span<const PlainTextItem> items(node.ItemList());
+  for (size_t i = 0; i < items.size();) {
+    if (items[i].EndOffset() <= from_index ||
+        to_index <= items[i].StartOffset()) {
+      ++i;
       continue;
     }
 
-    wtf_size_t subrun_from = 0;
-    wtf_size_t subrun_to = item.Length();
-    CharacterRange range(0, 0, 0, 0);
-    if (is_sub_run) [[unlikely]] {
-      // Calculate the required indexes for this specific run.
-      subrun_from =
-          from_index > item.StartOffset() ? from_index - item.StartOffset() : 0;
-      subrun_to = std::min(item.Length(), to_index - item.StartOffset());
-      TextRun subrun(item.Text(), item.Direction());
-      const PlainTextNode& sub_node =
-          CreateNode(subrun, font, /* supports_bidi */ false);
-      // The range provides information required for positioning the subrun.
-      range = sub_node.ComputeCharacterRange(subrun_from, subrun_to);
+    // Items are in visual order, so a same-direction RTL neighbor precedes
+    // its predecessor in logical order. Logically disjoint neighbors (e.g. at
+    // different BiDi levels) start a new blob
+    const TextDirection direction = items[i].Direction();
+    size_t end = i + 1;
+    while (end < items.size() && items[end].Direction() == direction &&
+           items[end].EndOffset() > from_index &&
+           to_index > items[end].StartOffset() &&
+           (IsLtr(direction)
+                ? items[end - 1].EndOffset() == items[end].StartOffset()
+                : items[end].EndOffset() == items[end - 1].StartOffset())) {
+      ++end;
     }
 
     // STACK_UNINITIALIZED fixes regression with
     // -ftrivial-auto-var-init=pattern. See crbug.com/1055652.
     STACK_UNINITIALIZED ShapeResultBloberizer bloberizer =
-        ShapeResultBloberizer::FillGlyphs(font_desc, item.Text(), subrun_from,
-                                          subrun_to, item.EnsureView(),
-                                          blob_type);
-
-    gfx::PointF draw_pos = curr_point;
-    if (is_sub_run) [[unlikely]] {
-      // Align the subrun with the point given.
-      draw_pos.Offset(-range.start, 0);
-      curr_point.Offset(range.Width(), 0);
-    } else {
-      curr_point.Offset(bloberizer.Advance(), 0);
-    }
-    DrawTextBlobs(bloberizer.Blobs(), canvas, draw_pos, flags);
+        ShapeResultBloberizer::FillGlyphs(font_desc, node,
+                                          items.subspan(i, end - i), from_index,
+                                          to_index, blob_type);
+    DrawTextBlobs(bloberizer.Blobs(), canvas, curr_point, flags);
+    curr_point.Offset(bloberizer.Advance(), 0);
+    i = end;
   }
-  return true;
 }
 
 float PlainTextPainter::ComputeInlineSize(const TextRun& run,

@@ -41,11 +41,6 @@ using CommitTextRunCallback = void (*)(void* context,
 CommitTextRunCallback g_commit_text_run_callback = nullptr;
 void* g_commit_text_run_context = nullptr;
 
-// A helper for FillGlyphsSlow().
-inline const ShapeResult* GetShapeResult(const PlainTextItem& item) {
-  return item.GetShapeResult();
-}
-
 }  // namespace
 
 // static
@@ -476,68 +471,110 @@ ShapeResultBloberizer::ShapeResultBloberizer(
     const FontDescription& font_description,
     const PlainTextNode& node,
     const Type type)
-    : ShapeResultBloberizer(font_description, type) {
+    : ShapeResultBloberizer(font_description,
+                            node,
+                            node.ItemList(),
+                            0,
+                            node.TextContent().length(),
+                            type) {
   DCHECK(!node.ContainsRtlItems());
-  const wtf_size_t to = node.TextContent().length();
-  if (CanUseFastPath(0, to, to, node.HasVerticalOffsets())) {
+}
+
+ShapeResultBloberizer::ShapeResultBloberizer(
+    const FontDescription& font_description,
+    const PlainTextNode& node,
+    base::span<const PlainTextItem> items,
+    wtf_size_t from,
+    wtf_size_t to,
+    const Type type)
+    : ShapeResultBloberizer(font_description, type) {
+  CHECK_LE(from, to);
+  CHECK_LE(to, node.TextContent().length());
+  if (items.empty() || from == to) {
+    return;
+  }
+
+  const TextDirection direction = items.front().Direction();
+  const bool is_rtl = IsRtl(direction);
+#if DCHECK_IS_ON()
+  for (size_t i = 0; i < items.size(); ++i) {
+    DCHECK_EQ(items[i].Direction(), direction);
+    DCHECK_LT(items[i].StartOffset(), to);
+    DCHECK_GT(items[i].EndOffset(), from);
+    if (i > 0) {
+      if (is_rtl) {
+        DCHECK_EQ(items[i].EndOffset(), items[i - 1].StartOffset());
+      } else {
+        DCHECK_EQ(items[i - 1].EndOffset(), items[i].StartOffset());
+      }
+    }
+  }
+#endif
+
+  const wtf_size_t slice_start =
+      is_rtl ? items.back().StartOffset() : items.front().StartOffset();
+  const wtf_size_t slice_end =
+      is_rtl ? items.front().EndOffset() : items.back().EndOffset();
+  const wtf_size_t run_from = std::max(from, slice_start);
+  const wtf_size_t run_to = std::min(to, slice_end);
+  CHECK_LT(run_from, run_to);
+
+  if (CanUseFastPath(run_from - slice_start, run_to - slice_start,
+                     slice_end - slice_start, node.HasVerticalOffsets())) {
     DVLOG(4) << "FillGlyphs fast path";
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kTextIntercepts);
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kEmitText);
     float advance = 0;
-    for (const auto& item : node.ItemList()) {
+    for (const PlainTextItem& item : items) {
       advance = FillFastHorizontalGlyphs(item.GetShapeResult(), advance);
     }
     advance_ = advance;
     return;
   }
 
-  FillGlyphsSlow(node.TextContent(), node.BaseDirection(), node.ItemList(), 0,
-                 to);
+  // ForEachGlyph accumulates advances from the visual left of first_item,
+  // so subtract the skipped prefix on the visual left of first_item
+  float leading_advance = 0;
+  const PlainTextItem& first_item = items.front();
+  const auto noop_callback = [](void*, wtf_size_t, Glyph, gfx::Vector2dF, float,
+                                bool, CanvasRotationInVertical,
+                                const SimpleFontData*) {};
+  if (!is_rtl && run_from > first_item.StartOffset()) {
+    leading_advance = first_item.GetShapeResult()->ForEachGlyph(
+        0, first_item.StartOffset(), run_from, first_item.StartOffset(),
+        noop_callback, nullptr);
+  } else if (is_rtl && run_to < first_item.EndOffset()) {
+    leading_advance = first_item.GetShapeResult()->ForEachGlyph(
+        0, run_to, first_item.EndOffset(), first_item.StartOffset(),
+        noop_callback, nullptr);
+  }
+
+  FillGlyphsSlow(node.TextContent(), items, run_from, run_to, -leading_advance);
 }
 
-template <typename ShapeList>
-void ShapeResultBloberizer::FillGlyphsSlow(StringView text,
-                                           TextDirection direction,
-                                           const ShapeList& list,
-                                           wtf_size_t from,
-                                           wtf_size_t to) {
+void ShapeResultBloberizer::FillGlyphsSlow(
+    StringView text,
+    base::span<const PlainTextItem> items,
+    wtf_size_t from,
+    wtf_size_t to,
+    float initial_advance) {
   if (type_ == Type::kEmitText) [[unlikely]] {
-    wtf_size_t word_offset = 0;
     ClusterStarts cluster_starts;
-    for (const auto& item : list) {
-      const ShapeResult* word_result = GetShapeResult(item);
-      word_result->ForEachGlyph(0, from, to, word_offset,
-                                ClusterStarts::Accumulate,
-                                static_cast<void*>(&cluster_starts));
-      word_offset += word_result->NumCharacters();
+    for (const PlainTextItem& item : items) {
+      item.GetShapeResult()->ForEachGlyph(0, from, to, item.StartOffset(),
+                                          ClusterStarts::Accumulate,
+                                          static_cast<void*>(&cluster_starts));
     }
     cluster_starts.Finish(from, to);
     SetText(text, from, to, cluster_starts.Data());
   }
 
-  float advance = 0;
-  if (IsRtl(direction)) {
-    wtf_size_t word_offset = text.length();
-    for (const auto& item : std::views::reverse(list)) {
-      const ShapeResult* word_result = GetShapeResult(item);
-      wtf_size_t word_characters = word_result->NumCharacters();
-      word_offset -= word_characters;
-      DVLOG(4) << " FillGlyphs RTL run from: " << from << " to: " << to
-               << " offset: " << word_offset << " length: " << word_characters;
-      advance = FillGlyphsForResult(word_result, text, from, to, advance,
-                                    word_offset);
-    }
-  } else {
-    wtf_size_t word_offset = 0;
-    for (const auto& item : list) {
-      const ShapeResult* word_result = GetShapeResult(item);
-      wtf_size_t word_characters = word_result->NumCharacters();
-      DVLOG(4) << " FillGlyphs LTR run from: " << from << " to: " << to
-               << " offset: " << word_offset << " length: " << word_characters;
-      advance = FillGlyphsForResult(word_result, text, from, to, advance,
-                                    word_offset);
-      word_offset += word_characters;
-    }
+  // items is already ordered visually left-to-right for both LTR and RTL
+  float advance = initial_advance;
+  for (const PlainTextItem& item : items) {
+    const ShapeResult* word_result = item.GetShapeResult();
+    advance = FillGlyphsForResult(word_result, text, from, to, advance,
+                                  item.StartOffset());
   }
 
   if (type_ == Type::kEmitText) [[unlikely]] {

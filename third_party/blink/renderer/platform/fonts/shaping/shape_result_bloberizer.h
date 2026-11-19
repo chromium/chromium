@@ -27,6 +27,7 @@ class PaintFlags;
 namespace blink {
 
 class FontDescription;
+class PlainTextItem;
 class PlainTextNode;
 class ShapeResultView;
 
@@ -52,6 +53,17 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
       const PlainTextNode& node,
       Type type) {
     return ShapeResultBloberizer(font_description, node, type);
+  }
+  // Fills glyphs for a contiguous same-direction slice of node.ItemList()
+  // overlapping [from, to), shifting x so the first emitted glyph starts at 0
+  static ShapeResultBloberizer FillGlyphs(
+      const FontDescription& font_description,
+      const PlainTextNode& node,
+      base::span<const PlainTextItem> items,
+      wtf_size_t from,
+      wtf_size_t to,
+      Type type) {
+    return ShapeResultBloberizer(font_description, node, items, from, to, type);
   }
   static ShapeResultBloberizer FillTextEmphasisGlyphs(
       const FontDescription& font_description,
@@ -99,6 +111,12 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
                         const ShapeResultView*,
                         Type);
   ShapeResultBloberizer(const FontDescription&, const PlainTextNode&, Type);
+  ShapeResultBloberizer(const FontDescription&,
+                        const PlainTextNode&,
+                        base::span<const PlainTextItem> items,
+                        wtf_size_t from,
+                        wtf_size_t to,
+                        Type);
   ShapeResultBloberizer(const FontDescription&,
                         const StringView&,
                         wtf_size_t from,
@@ -182,12 +200,11 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
                                                  CanvasRotationInVertical,
                                                  const SimpleFontData*);
 
-  template <typename ShapeList>
   void FillGlyphsSlow(StringView text,
-                      TextDirection direction,
-                      const ShapeList& list,
+                      base::span<const PlainTextItem> items,
                       wtf_size_t from,
-                      wtf_size_t to);
+                      wtf_size_t to,
+                      float initial_advance);
   float FillGlyphsForResult(const ShapeResult*,
                             const StringView&,
                             wtf_size_t from,
