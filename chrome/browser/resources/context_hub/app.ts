@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/icons.html.js';
+import '/strings.m.js';
 import './icons.html.js';
 import './memory_banks/memory_banks.js';
 import './record_replay/record_replay.js';
@@ -13,6 +14,7 @@ import './tab_groups/tab_groups.js';
 import './taskbox/ai_taskbox.js';
 import './topics/topics_view.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {getTrustedHTML} from '//resources/js/static_types.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -35,13 +37,16 @@ const STORAGE_KEY = 'context_hub_current_view';
 function normalizeView(view: string|null): ViewType|null {
   // Backwards compatibility for old view names.
   if (view === 'ai-taskbox') {
-    return 'launchpad';
+    view = 'launchpad';
   }
   if (view === 'smart-search') {
     return 'jumpstart';
   }
   if (view === 'memory-bank-chat') {
     return 'memory-banks';
+  }
+  if (view === 'launchpad' && !loadTimeData.getBoolean('kAutoTodos')) {
+    return null;
   }
   if (view && VALID_VIEWS.has(view as ViewType)) {
     return view as ViewType;
@@ -59,7 +64,7 @@ function getInitialView(): ViewType {
   if (storedView) {
     return storedView;
   }
-  return 'launchpad';
+  return loadTimeData.getBoolean('kAutoTodos') ? 'launchpad' : 'memory-banks';
 }
 
 export class ContextHubAppElement extends CrLitElement {
@@ -81,6 +86,8 @@ export class ContextHubAppElement extends CrLitElement {
     };
   }
 
+  protected readonly autoTodosEnabled_: boolean =
+      loadTimeData.getBoolean('kAutoTodos');
   protected accessor currentView_: ViewType = getInitialView();
 
   override connectedCallback() {
@@ -101,6 +108,9 @@ export class ContextHubAppElement extends CrLitElement {
   };
 
   protected onSelectedChanged_(e: CustomEvent<{value: ViewType}>) {
+    if (this.currentView_ === e.detail.value) {
+      return;
+    }
     this.currentView_ = e.detail.value;
     window.location.hash = this.currentView_;
     localStorage.setItem(STORAGE_KEY, this.currentView_);

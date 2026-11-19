@@ -23,11 +23,13 @@ export function getHtml(this: ContextHubAppElement) {
         selected="${this.currentView_}"
         @selected-changed="${this.onSelectedChanged_}"
         @click="${this.onSelectorClick_}">
-      <a role="menuitem" href="#launchpad" data-route="launchpad"
-          class="cr-nav-menu-item">
-        <cr-icon icon="cr:chrome-extension-filled"></cr-icon>
-        LaunchPad
-      </a>
+      ${this.autoTodosEnabled_ ? html`
+        <a role="menuitem" href="#launchpad" data-route="launchpad"
+            class="cr-nav-menu-item">
+          <cr-icon icon="cr:chrome-extension-filled"></cr-icon>
+          LaunchPad
+        </a>
+      ` : ''}
       <a role="menuitem" href="#memory-banks" data-route="memory-banks"
           class="cr-nav-menu-item">
         <cr-icon icon="cr:history"></cr-icon>
