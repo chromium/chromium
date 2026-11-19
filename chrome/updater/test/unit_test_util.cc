@@ -47,7 +47,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "base/version.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
@@ -542,92 +541,6 @@ void ExpectTagArgsEqual(const updater::tagging::TagArgs& actual,
   }
 
   EXPECT_EQ(actual.runtime_mode, expected.runtime_mode);
-}
-
-bool IsJSONSubset(
-    const base::Value& needle,
-    const base::Value& haystack,
-    base::FunctionRef<bool(const std::string&, const std::string&)>
-        string_comparator) {
-  if (needle.is_none()) {
-    return haystack.is_none();
-  }
-
-  // Compare dicts recursively. "Extra" keys are fine. Absent values match
-  // NONE type, so "null" can be used in 'needle' to explicitly forbid the
-  // presence of a key.
-  if (needle.is_dict()) {
-    if (!haystack.is_dict()) {
-      return false;
-    }
-    for (auto pair : needle.GetDict()) {
-      const base::Value* haystack_val = haystack.GetDict().Find(pair.first);
-      const base::Value& needle_val = pair.second;
-      if (needle_val.is_none()) {
-        if (haystack_val && !haystack_val->is_none()) {
-          return false;
-        }
-      } else {
-        if (!haystack_val) {
-          return false;
-        }
-        if (!IsJSONSubset(needle_val, *haystack_val, string_comparator)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  // Compare lists recursively. Look for the right elements in the right
-  // order, but nonmatching elements are skipped.
-  if (needle.is_list()) {
-    if (!haystack.is_list()) {
-      return false;
-    }
-    const base::ListValue& needle_list = needle.GetList();
-    const base::ListValue& haystack_list = haystack.GetList();
-    auto needle_it = needle_list.begin();
-    auto haystack_it = haystack_list.begin();
-    while (needle_it != needle_list.end() &&
-           haystack_it != haystack_list.end()) {
-      if (IsJSONSubset(*needle_it, *haystack_it, string_comparator)) {
-        ++needle_it;
-      }
-      ++haystack_it;
-    }
-    return needle_it == needle_list.end();
-  }
-
-  // Allow int/double conversions in both directions, comparing as double.
-  if (needle.is_int()) {
-    if (haystack.is_int()) {
-      return needle.GetInt() == haystack.GetInt();
-    }
-    if (haystack.is_double()) {
-      return static_cast<double>(needle.GetInt()) == haystack.GetDouble();
-    }
-    return false;
-  }
-  if (needle.is_double()) {
-    if (haystack.is_int()) {
-      return needle.GetDouble() == static_cast<double>(haystack.GetInt());
-    }
-    if (haystack.is_double()) {
-      return needle.GetDouble() == haystack.GetDouble();
-    }
-    return false;
-  }
-
-  if (needle.is_string()) {
-    if (!haystack.is_string()) {
-      return false;
-    }
-    return string_comparator(needle.GetString(), haystack.GetString());
-  }
-
-  // Remaining types use direct equality comparison.
-  return needle == haystack;
 }
 
 int WaitForProcess(base::Process& process) {
