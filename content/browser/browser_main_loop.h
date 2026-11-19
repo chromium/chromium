@@ -116,6 +116,13 @@ class CONTENT_EXPORT BrowserMainLoop {
 
   static media::AudioManager* GetAudioManager();
 
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
+  // Raises the soft limit on open file descriptors. Called during early
+  // initialization; public for testing.
+  static void IncreaseFdLimit();
+#endif
+
   // The ThreadPoolInstance must exist but not to be started when building
   // BrowserMainLoop.
   explicit BrowserMainLoop(

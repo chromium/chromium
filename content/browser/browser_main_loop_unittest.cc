@@ -4,6 +4,9 @@
 
 #include "content/browser/browser_main_loop.h"
 
+#include <algorithm>
+#include <limits>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
@@ -29,6 +32,10 @@
 #include "content/public/test/test_utils.h"
 #include "services/tracing/perfetto/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include <sys/resource.h>
+#endif
 
 namespace content {
 
@@ -217,5 +224,30 @@ TEST_F(BrowserMainLoopTest,
   browser_main_loop.ShutdownThreadsAndCleanUp();
   BrowserTaskExecutor::ResetForTesting();
 }
+
+#if BUILDFLAG(IS_LINUX)
+// On Linux, the soft limit on open file descriptors is raised to the hard
+// limit, so that the browser doesn't run out of descriptors with many tabs.
+// See https://crbug.com/436013925.
+TEST(BrowserMainLoopFdLimitTest, IncreaseFdLimitRaisesSoftLimitToHardLimit) {
+  struct rlimit original_limit;
+  ASSERT_EQ(0, getrlimit(RLIMIT_NOFILE, &original_limit));
+
+  struct rlimit low_limit = original_limit;
+  low_limit.rlim_cur = std::min<rlim_t>(original_limit.rlim_max, 1024);
+  ASSERT_EQ(0, setrlimit(RLIMIT_NOFILE, &low_limit));
+
+  BrowserMainLoop::IncreaseFdLimit();
+
+  struct rlimit new_limit;
+  ASSERT_EQ(0, getrlimit(RLIMIT_NOFILE, &new_limit));
+  ASSERT_EQ(0, setrlimit(RLIMIT_NOFILE, &original_limit));
+
+  EXPECT_EQ(std::min<rlim_t>(original_limit.rlim_max,
+                             std::numeric_limits<unsigned int>::max()),
+            new_limit.rlim_cur);
+  EXPECT_EQ(original_limit.rlim_max, new_limit.rlim_max);
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace content

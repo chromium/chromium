@@ -13,6 +13,10 @@
 #include <utility>
 #include <vector>
 
+#if BUILDFLAG(IS_LINUX)
+#include <sys/resource.h>
+#endif
+
 #include "base/base_switches.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
@@ -27,6 +31,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/pending_task.h"
 #include "base/power_monitor/power_monitor.h"
@@ -515,6 +520,31 @@ media::AudioManager* BrowserMainLoop::GetAudioManager() {
   return g_current_browser_main_loop->audio_manager();
 }
 
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
+// static
+void BrowserMainLoop::IncreaseFdLimit() {
+  // Quite a few file descriptors are used for IPC as well as the disk cache,
+  // and the default limit on Apple is low (256), so bump it up.
+  //
+  // Same for Linux. The default varies per distro, but it is 1024 on Fedora.
+  // Low soft limits combined with liberal use of file descriptors means power
+  // users can easily hit this limit with many open tabs. See
+  // https://crbug.com/539567. On Linux, raise the soft limit all the way to
+  // the hard limit: running out of descriptors crashes the browser, and a
+  // high soft limit costs nothing until the descriptors are actually used.
+  // See https://crbug.com/436013925.
+#if BUILDFLAG(IS_LINUX)
+  struct rlimit limit;
+  if (getrlimit(RLIMIT_NOFILE, &limit) == 0) {
+    base::IncreaseFdLimitTo(base::saturated_cast<unsigned int>(limit.rlim_max));
+    return;
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+  base::IncreaseFdLimitTo(8192);
+}
+#endif
+
 BrowserMainLoop::BrowserMainLoop(
     MainFunctionParams parameters,
     std::unique_ptr<base::ScopedThreadPoolExecutionFence>
@@ -617,14 +647,7 @@ int BrowserMainLoop::EarlyInitialization() {
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)
-  // We use quite a few file descriptors for our IPC as well as disk the disk
-  // cache, and the default limit on Apple is low (256), so bump it up.
-
-  // Same for Linux. The default various per distro, but it is 1024 on Fedora.
-  // Low soft limits combined with liberal use of file descriptors means power
-  // users can easily hit this limit with many open tabs. Bump up the limit to
-  // an arbitrarily high number. See https://crbug.com/539567
-  base::IncreaseFdLimitTo(8192);
+  IncreaseFdLimit();
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
