@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/printing/common/print.mojom.h"
@@ -160,17 +159,18 @@ class PrintCompositeClient
   // required.
   bool is_doc_concurrently_composited_ = false;
 
-  // Stores the the frame that initiated the composite request;
-  // Holds nullptr if no document is being composited.
-  raw_ptr<content::RenderFrameHost> initiator_frame_ = nullptr;
+  // Stores the frame that initiated the composite request, or a null ID if no
+  // document is being composited. Frame tracking uses GlobalRenderFrameHostId
+  // instead of RenderFrameHost* to avoid dangling pointers when non-live or
+  // inner-WebContents frames are destroyed without RenderFrameDeleted() firing
+  // here.
+  content::GlobalRenderFrameHostId initiator_frame_id_;
 
   // Stores the pending subframes for the composited document.
-  base::flat_set<raw_ptr<content::RenderFrameHost, CtnExperimental>>
-      pending_subframes_;
+  base::flat_set<content::GlobalRenderFrameHostId> pending_subframes_;
 
   // Stores the printed subframes for the composited document.
-  base::flat_set<raw_ptr<content::RenderFrameHost, CtnExperimental>>
-      printed_subframes_;
+  base::flat_set<content::GlobalRenderFrameHostId> printed_subframes_;
 
   struct RequestedSubFrame {
     RequestedSubFrame(content::GlobalRenderFrameHostId rfh_id,
@@ -190,10 +190,10 @@ class PrintCompositeClient
 
   std::string user_agent_;
 
-  // Stores a PrintRenderFrame associated remote with the RenderFrameHost used
-  // to bind it. The PrintRenderFrame is used to transmit mojo interface method
-  // calls to the associated receiver.
-  std::map<content::RenderFrameHost*,
+  // Stores a PrintRenderFrame associated remote with the RenderFrameHost ID
+  // used to bind it. The PrintRenderFrame is used to transmit mojo interface
+  // method calls to the associated receiver.
+  std::map<content::GlobalRenderFrameHostId,
            mojo::AssociatedRemote<mojom::PrintRenderFrame>>
       print_render_frames_;
 

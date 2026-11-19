@@ -81,26 +81,30 @@ PrintCompositeClient::~PrintCompositeClient() = default;
 
 void PrintCompositeClient::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
+  const content::GlobalRenderFrameHostId rfh_id =
+      render_frame_host->GetGlobalId();
   if (document_cookie_ == 0) {
-    DCHECK(!initiator_frame_);
+    DCHECK(!initiator_frame_id_);
+    pending_subframes_.erase(rfh_id);
+    printed_subframes_.erase(rfh_id);
+    print_render_frames_.erase(rfh_id);
     return;
   }
 
-  if (initiator_frame_ == render_frame_host) {
+  if (initiator_frame_id_ == rfh_id) {
     RemoveCompositeRequest(document_cookie_);
     return;
   }
 
-  auto iter = pending_subframes_.find(render_frame_host);
-  if (iter != pending_subframes_.end()) {
+  if (pending_subframes_.erase(rfh_id) > 0) {
     // When a subframe we are expecting is deleted, we should notify the print
     // compositor service.
     auto* compositor = GetCompositeRequest(document_cookie_);
     compositor->NotifyUnavailableSubframe(GenerateFrameGuid(render_frame_host));
-    pending_subframes_.erase(iter);
   }
 
-  print_render_frames_.erase(render_frame_host);
+  printed_subframes_.erase(rfh_id);
+  print_render_frames_.erase(rfh_id);
 }
 
 PrintCompositeClient::RequestedSubFrame::RequestedSubFrame(
@@ -158,8 +162,8 @@ void PrintCompositeClient::OnDidPrintFrameContent(
       ConvertContentInfoMap(render_frame_host, params->subframe_content_info));
 
   // Update our internal states about this frame.
-  pending_subframes_.erase(render_frame_host);
-  printed_subframes_.insert(render_frame_host);
+  pending_subframes_.erase(rfh_id);
+  printed_subframes_.insert(rfh_id);
 }
 
 void PrintCompositeClient::SetAccessibilityTree(
@@ -197,8 +201,10 @@ void PrintCompositeClient::PrintCrossProcessSubframe(
   }
 
   // If this frame is already printed, no need to print again.
-  if (pending_subframes_.contains(subframe_host) ||
-      printed_subframes_.contains(subframe_host)) {
+  const content::GlobalRenderFrameHostId subframe_id =
+      subframe_host->GetGlobalId();
+  if (pending_subframes_.contains(subframe_id) ||
+      printed_subframes_.contains(subframe_id)) {
     return;
   }
 
@@ -207,9 +213,8 @@ void PrintCompositeClient::PrintCrossProcessSubframe(
       ->PrintFrameContent(
           std::move(params),
           base::BindOnce(&PrintCompositeClient::OnDidPrintFrameContent,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         subframe_host->GetGlobalId()));
-  pending_subframes_.insert(subframe_host);
+                         weak_ptr_factory_.GetWeakPtr(), subframe_id));
+  pending_subframes_.insert(subframe_id);
 }
 
 void PrintCompositeClient::CompositePage(
@@ -356,7 +361,7 @@ mojom::PrintCompositor* PrintCompositeClient::CreateCompositeRequest(
   document_cookie_ = cookie;
 
   // Track which frame kicked off the composite request.
-  initiator_frame_ = &initiator_frame;
+  initiator_frame_id_ = initiator_frame.GetGlobalId();
 
   compositor_ = content::ServiceProcessHost::Launch<mojom::PrintCompositor>(
       content::ServiceProcessHost::Options()
@@ -382,7 +387,7 @@ void PrintCompositeClient::RemoveCompositeRequest(int cookie) {
   DCHECK_EQ(document_cookie_, cookie);
   compositor_.reset();
   document_cookie_ = PrintSettings::NewInvalidCookie();
-  initiator_frame_ = nullptr;
+  initiator_frame_id_ = content::GlobalRenderFrameHostId();
 
   // Reset state of the client.
   pending_subframes_.clear();
@@ -406,11 +411,12 @@ mojom::PrintCompositor* PrintCompositeClient::GetCompositeRequest(
 
 const mojo::AssociatedRemote<mojom::PrintRenderFrame>&
 PrintCompositeClient::GetPrintRenderFrame(content::RenderFrameHost* rfh) {
-  auto it = print_render_frames_.find(rfh);
+  const content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+  auto it = print_render_frames_.find(rfh_id);
   if (it == print_render_frames_.end()) {
     mojo::AssociatedRemote<mojom::PrintRenderFrame> remote;
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&remote);
-    it = print_render_frames_.emplace(rfh, std::move(remote)).first;
+    it = print_render_frames_.emplace(rfh_id, std::move(remote)).first;
   }
 
   return it->second;
