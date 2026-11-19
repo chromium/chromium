@@ -1658,7 +1658,7 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
-  protected onInputCutOrCopy_(e: ClipboardEvent, isCut: boolean) {
+  private onInputCutOrCopy_(e: ClipboardEvent, isCut: boolean) {
     const input = this.getInputElement().inputElement;
     const start = input.selectionStart || 0;
     const end = input.selectionEnd || 0;
@@ -1722,7 +1722,7 @@ export class OmniboxPopupSearchboxElement extends
     this.onInputCutOrCopy_(e, /*isCut=*/ true);
   }
 
-  protected showFullUrlOnDeselect_() {
+  private showFullUrlOnDeselect_() {
     if (this.userInputInProgress_) {
       return;
     }
@@ -2730,11 +2730,11 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
-  protected undo_(): boolean {
+  private undo_(): boolean {
     return this.undoRedoInternal_(/*isRedo=*/ false);
   }
 
-  protected redo_(): boolean {
+  private redo_(): boolean {
     return this.undoRedoInternal_(/*isRedo=*/ true);
   }
 

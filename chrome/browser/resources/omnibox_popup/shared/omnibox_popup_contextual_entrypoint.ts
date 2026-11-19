@@ -318,7 +318,7 @@ export class OmniboxPopupContextualEntrypointElement extends
     this.searchboxBrowserProxy_.handler.openLensSearch();
   }
 
-  protected async refreshCurrentTabForChip_() {
+  private async refreshCurrentTabForChip_() {
     // TODO (b/537859769) - Replace getRecentTabs with a dedicated handler for
     // current tab chip.
     const {tabs} = await this.searchboxBrowserProxy_.handler.getRecentTabs();
@@ -340,7 +340,7 @@ export class OmniboxPopupContextualEntrypointElement extends
     }
   }
 
-  protected computeShowCurrentTabChip_() {
+  private computeShowCurrentTabChip_() {
     const browserTabsAllowedByPecApi = !this.usePecApi_ ||
         (!!this.inputState &&
          this.inputState.allowedInputTypes.includes(InputType.kBrowserTab));

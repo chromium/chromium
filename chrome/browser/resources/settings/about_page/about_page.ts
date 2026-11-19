@@ -177,15 +177,15 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
   }
   // </if>
 
+  // <if expr="_google_chrome and is_macosx">
   protected getPromoteUpdaterClass_(): string {
-    // <if expr="_google_chrome and is_macosx">
     if (this.promoteUpdaterStatus_.disabled) {
       return 'cr-secondary-text';
     }
-    // </if>
 
     return '';
   }
+  // </if>
 
   // <if expr="not is_chromeos">
   private startListening_() {
@@ -220,23 +220,23 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
     }
     this.aboutBrowserProxy_.promoteUpdater();
   }
-  // </if>
 
   protected onLearnMoreClick_(event: Event) {
     // Stop the propagation of events, so that clicking on links inside
     // actionable items won't trigger action.
     event.stopPropagation();
   }
+  // </if>
 
   protected onHelpClick_() {
     this.aboutBrowserProxy_.openHelpPage();
   }
 
+  // <if expr="not is_chromeos">
   protected onRelaunchClick_() {
     this.performRestart(RestartType.RELAUNCH);
   }
 
-  // <if expr="not is_chromeos">
   private updateShowUpdateStatus_() {
     if (this.obsoleteSystemInfo_.endOfLine) {
       this.showUpdateStatus_ = false;

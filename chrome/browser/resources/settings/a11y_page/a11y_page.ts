@@ -220,6 +220,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   }
   // </if>
 
+  // <if expr="not is_chromeos">
   protected onA11yCaretBrowsingChange_(event: Event) {
     if ((event.target as SettingsToggleButtonElement).checked) {
       chrome.metricsPrivate.recordUserAction(
@@ -229,6 +230,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
           'Accessibility.CaretBrowsing.DisableWithSettings');
     }
   }
+  // </if>
 
   protected onA11yImageLabelsChange_(event: Event) {
     const a11yImageLabelsOn =

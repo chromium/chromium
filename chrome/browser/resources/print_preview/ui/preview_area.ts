@@ -495,7 +495,7 @@ export class PrintPreviewPreviewAreaElement extends
   /**
    * @return Whether margin settings are valid for the print ticket.
    */
-  protected marginsValid_(): boolean {
+  private marginsValid_(): boolean {
     const type = this.getSettingValue('margins');
     if (!Object.values(MarginsType).includes(type)) {
       // Unrecognized margins type.

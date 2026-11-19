@@ -494,7 +494,7 @@ class OnDeviceInternalsToolsElement extends CrLitElement {
     this.text_ = '';
   }
 
-  protected canEnterInput_(): boolean {
+  private canEnterInput_(): boolean {
     return !this.currentResponse_ && this.model_ !== null;
   }
 

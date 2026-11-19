@@ -91,7 +91,9 @@ export class SettingsSpellCheckPageElement extends
       // <if expr="_google_chrome or not is_macosx">
       enableSpellcheckingPref_: {type: Object},
       // </if>
+      // <if expr="_google_chrome">
       useSpellingServicePref_: {type: Object},
+      // </if>
       forcedDictionariesPref_: {type: Object},
       blockedDictionariesPref_: {type: Object},
     };
@@ -101,8 +103,10 @@ export class SettingsSpellCheckPageElement extends
   protected accessor enableSpellcheckingPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   // </if>
+  // <if expr="_google_chrome">
   private accessor useSpellingServicePref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
+  // </if>
   private accessor forcedDictionariesPref_:
       chrome.settingsPrivate.PrefObject<string[]>|undefined;
   private accessor blockedDictionariesPref_:
@@ -123,7 +127,9 @@ export class SettingsSpellCheckPageElement extends
       // <if expr="_google_chrome or not is_macosx">
       'browser.enable_spellchecking': 'enableSpellcheckingPref_',
       // </if>
+      // <if expr="_google_chrome">
       'spellcheck.use_spelling_service': 'useSpellingServicePref_',
+      // </if>
       'spellcheck.forced_dictionaries': 'forcedDictionariesPref_',
       'spellcheck.blocked_dictionaries': 'blockedDictionariesPref_',
     });
@@ -171,6 +177,7 @@ export class SettingsSpellCheckPageElement extends
             LanguageSettingsActionType.DISABLE_SPELL_CHECK_GLOBALLY);
   }
 
+  // <if expr="_google_chrome">
   protected onSelectedSpellingServiceChange_() {
     assert(this.useSpellingServicePref_);
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
@@ -178,6 +185,7 @@ export class SettingsSpellCheckPageElement extends
             LanguageSettingsActionType.SELECT_ENHANCED_SPELL_CHECK :
             LanguageSettingsActionType.SELECT_BASIC_SPELL_CHECK);
   }
+  // </if>
 
   // <if expr="not is_macosx">
   /**

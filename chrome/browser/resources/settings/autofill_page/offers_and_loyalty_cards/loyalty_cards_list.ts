@@ -98,12 +98,14 @@ export class SettingsLoyaltyCardsListElement extends CrLitElement {
         LOYALTY_CARD_COLLATOR.compare(a.loyaltyCardNumber, b.loyaltyCardNumber);
   }
 
+  // <if expr="_google_chrome">
   /**
    * Returns a srcset that scales `url` based on the screen resolution.
    */
   protected getScaledSrcSet_(url: string): string {
     return `${url} 1x, ${url}@2x 2x`;
   }
+  // </if>
 
   protected onWalletLinkClick_(e: Event) {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);

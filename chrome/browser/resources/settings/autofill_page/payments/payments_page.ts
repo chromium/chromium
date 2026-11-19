@@ -635,6 +635,7 @@ export class SettingsPaymentsPageElement extends
     }
   }
 
+  // <if expr="is_win or is_macosx or is_chromeos">
   /**
    * Checks for user auth before flipping the mandatory auth toggle.
    */
@@ -646,6 +647,7 @@ export class SettingsPaymentsPageElement extends
     mandatoryAuthToggle.checked = !mandatoryAuthToggle.checked;
     this.paymentsManager_.authenticateUserAndFlipMandatoryAuthToggle();
   }
+  // </if>
 
   /**
    * Method to handle the clicking of bulk delete all the CVCs.

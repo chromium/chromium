@@ -794,7 +794,7 @@ export class OmniboxEverywhereOmniboxElement extends
     return this.animationState;
   }
 
-  protected processFiles_(
+  private processFiles_(
       files: FileList|null,
       contextAdditionMethod: ComposeboxContextAddedMethod) {
     if (!files || files.length === 0 || !this.canAddFileContext_()) {
@@ -805,7 +805,7 @@ export class OmniboxEverywhereOmniboxElement extends
     this.openComposebox_(Array.from(files, (file) => ({file})));
   }
 
-  protected openComposebox_(
+  private openComposebox_(
       uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
       model: ModelMode = ModelMode.kUnspecified, error?: DriveUploadError) {
     this.fire<ComposeboxState>('open-composebox', {
@@ -820,7 +820,7 @@ export class OmniboxEverywhereOmniboxElement extends
     this.setInputText('');
   }
 
-  protected async openComposeboxWithMode_(mode?: ToolMode, model?: ModelMode) {
+  private async openComposeboxWithMode_(mode?: ToolMode, model?: ModelMode) {
     this.animationState = GlowAnimationState.NONE;
     await this.updateComplete;
     this.animationState = GlowAnimationState.LISTENING;

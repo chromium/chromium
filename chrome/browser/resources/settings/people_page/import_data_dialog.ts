@@ -147,7 +147,7 @@ export class SettingsImportDataDialogElement extends
     return profileName ? `${name} - ${profileName}` : name;
   }
 
-  protected updateImportDataTypesSelected_() {
+  private updateImportDataTypesSelected_() {
     const checkboxes = this.shadowRoot.querySelectorAll(
         'settings-checkbox[checked]:not([hidden])');
     this.noImportDataTypeSelected_ = checkboxes.length === 0;

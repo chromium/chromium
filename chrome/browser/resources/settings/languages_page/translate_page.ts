@@ -165,7 +165,7 @@ export class SettingsTranslatePageElement extends
    * A filter function to return true if language is not undefined and has a
    * displayName.
    */
-  protected hasDisplayName_(
+  private hasDisplayName_(
       language: chrome.languageSettingsPrivate.Language|undefined): boolean {
     return !!language && !!language.displayName;
   }

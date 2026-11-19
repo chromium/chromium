@@ -461,6 +461,7 @@ export class SettingsAutofillAiEntriesListElement extends
     return this.allowNewEntitiesAdditionPref?.value ?? true;
   }
 
+  // <if expr="_google_chrome">
   /**
    * This function returns a string that can be used in a srcset to scale
    * the provided `url` based on the user's screen resolution.
@@ -468,6 +469,7 @@ export class SettingsAutofillAiEntriesListElement extends
   protected getScaledSrcSet_(url: string): string {
     return `${url} 1x, ${url}@2x 2x`;
   }
+  // </if>
 
   protected typeNameToIconName_(name: EntityTypeName): string|undefined {
     switch (name) {

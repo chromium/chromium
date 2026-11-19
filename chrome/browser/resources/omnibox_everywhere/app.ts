@@ -33,7 +33,6 @@ import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebo
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {OmniboxEverywhereComposeboxElement} from './composebox.js';
-import {FreChinMode} from './fre_chin.js';
 import type {ShowHotkeyDropdownDetail} from './fre_chin.js';
 import type {OmniboxEverywhereOmniboxElement} from './omnibox.js';
 import {browserProxyFactory} from './omnibox_everywhere.mojom-webui.js';
@@ -475,7 +474,7 @@ export class OmniboxEverywhereAppElement extends
     return this.freStage_ === FreStage.kIntroModal && !this.isComposeboxMode_;
   }
 
-  protected isFreChin_(): boolean {
+  private isFreChin_(): boolean {
     return (this.freStage_ === FreStage.kShortcutSetupChin ||
             this.freStage_ === FreStage.kShortcutReminderChin) &&
         !this.isComposeboxMode_;
@@ -515,12 +514,6 @@ export class OmniboxEverywhereAppElement extends
   protected isFreShortcutReminderChin_(): boolean {
     return this.freStage_ === FreStage.kShortcutReminderChin &&
         !this.isComposeboxMode_;
-  }
-
-  protected getFreChinMode_(): FreChinMode {
-    return this.freStage_ === FreStage.kShortcutSetupChin ?
-        FreChinMode.SHORTCUT_SETUP :
-        FreChinMode.SHORTCUT_REMINDER;
   }
 
   protected getMaxMostVisitedTiles_(): number {

@@ -139,9 +139,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
       enableSavePrivatePassesToWallet_: {type: Boolean},
 
+      // <if expr="_google_chrome">
       isWalletPassBranding2026Enabled_: {type: Boolean},
 
       autofillEnableGradientGoogleLogos_: {type: Boolean},
+      // </if>
 
       /**
        * True while waiting for the backend to respond from Wallet API call.
@@ -173,10 +175,12 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   protected accessor footerText_: TrustedHTML = window.trustedTypes!.emptyHTML;
   private accessor enableSavePrivatePassesToWallet_: boolean =
       loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses');
+  // <if expr="_google_chrome">
   private accessor isWalletPassBranding2026Enabled_: boolean =
       loadTimeData.getBoolean('isAutofillAiWalletPassBranding2026Enabled');
   private accessor autofillEnableGradientGoogleLogos_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
+  // </if>
   protected accessor saveInProgress_: boolean = false;
   protected readonly settingsRefresh2026Enabled_: boolean =
       loadTimeData.getString('settingsRefresh2026') !== '';
@@ -589,11 +593,12 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         '';
   }
 
+  // <if expr="_google_chrome">
   /**
    * This function returns a string that can be used in a srcset to scale
    * the provided `url` based on the user's screen resolution.
    */
-  protected getScaledSrcSet_(url: string): string {
+  private getScaledSrcSet_(url: string): string {
     return `${url} 1x, ${url}@2x 2x`;
   }
 
@@ -617,6 +622,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_DARK';
     return this.getScaledSrcSet_(logoId);
   }
+  // </if>
 
   /**
    * Returns true if the date is invalid. A date is invalid either if it is
@@ -700,11 +706,13 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     return this.entityInstance.type.supportsWalletStorage;
   }
 
+  // <if expr="_google_chrome">
   protected shouldShowStandaloneWalletIcon_(): boolean {
     return this.isWalletPassBranding2026Enabled_ &&
         this.entityInstance!.type.passType ===
         chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
   }
+  // </if>
 
   /**
    * Returns true if the value is not empty and it is not made out only of

@@ -176,7 +176,7 @@ export class OnDeviceInternalsBrokerStateElement extends CrLitElement {
     }
   }
 
-  protected formatBytes(bytes: bigint): string {
+  private formatBytes_(bytes: bigint): string {
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
     let val = Number(bytes);
     let pow = 0;
@@ -203,8 +203,8 @@ export class OnDeviceInternalsBrokerStateElement extends CrLitElement {
 
   protected getProgressText(asset: BrokerAssetInfo): string {
     if (asset.bytesTotal > 0n) {
-      return `${this.formatBytes(asset.bytesDownloaded)} / ` +
-          `${this.formatBytes(asset.bytesTotal)}`;
+      return `${this.formatBytes_(asset.bytesDownloaded)} / ` +
+          `${this.formatBytes_(asset.bytesTotal)}`;
     }
     return asset.state === BrokerAssetState.kReady ? '100%' : '0%';
   }

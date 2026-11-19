@@ -51,7 +51,9 @@ export class SettingsCreditCardListEntryElement extends
 
       autofillEnableWalletBrandingEnabled_: {type: Boolean},
 
+      // <if expr="_google_chrome">
       autofillEnableGradientGoogleLogosEnabled_: {type: Boolean},
+      // </if>
     };
   }
 
@@ -70,8 +72,10 @@ export class SettingsCreditCardListEntryElement extends
   private accessor autofillEnableWalletBrandingEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableWalletBranding');
 
+  // <if expr="_google_chrome">
   private accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
+  // </if>
 
   get dotsMenu(): HTMLElement|null {
     return this.shadowRoot.getElementById('creditCardMenu');
@@ -279,6 +283,7 @@ export class SettingsCreditCardListEntryElement extends
         this.creditCard.imageSrc;
   }
 
+  // <if expr="_google_chrome">
   protected getGooglePayLightModeLogoSrcSet_(): string {
     const logoId = this.autofillEnableGradientGoogleLogosEnabled_ ?
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL' :
@@ -292,6 +297,7 @@ export class SettingsCreditCardListEntryElement extends
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL';
     return getScaledSrcSet(logoId);
   }
+  // </if>
 }
 
 declare global {

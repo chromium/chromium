@@ -213,15 +213,6 @@ export class AimEligibilityAppElement extends CrLitElement {
         '✗ Disabled';
   }
 
-  protected getForceDisclaimerText_(): string {
-    if (!this.eligibilityState_.driveStatus) {
-      return '';
-    }
-    return this.eligibilityState_.driveStatus.isForceDriveDisclaimerAccepted ?
-        '✓ Enabled' :
-        '✗ Disabled';
-  }
-
   protected getSearchSharingText_(): string {
     if (!this.eligibilityState_.driveStatus) {
       return '';

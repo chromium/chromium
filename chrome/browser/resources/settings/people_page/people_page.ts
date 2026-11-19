@@ -374,7 +374,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     this.primaryAccountEmail_ = accounts[0].email;
     this.primaryAccountIconUrl_ = accounts[0].avatarImage!;
   }
-  // </if>
 
   /**
    * Open URL for managing your Google Account.
@@ -384,6 +383,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         loadTimeData.getString('googleAccountUrl'));
     chrome.metricsPrivate.recordUserAction('ManageGoogleAccount_Clicked');
   }
+  // </if>
 
   /**
    * @return A CSS image-set for multiple scale factors.

@@ -985,7 +985,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
   }
 
-  protected onErrorDialog_() {
+  private onErrorDialog_() {
     // The error screen can only reload from a normal tab.
     if (!chrome.tabs || this.browserApi!.getStreamInfo().tabId === -1) {
       return;
@@ -1570,7 +1570,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     return Math.round((uploadedBytes / fileSizeBytes) * 100);
   }
 
-  protected isSaveToDriveUploading_(): boolean {
+  private isSaveToDriveUploading_(): boolean {
     return this.saveToDriveState_ === SaveToDriveState.UPLOADING;
   }
 

@@ -257,10 +257,12 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
     return getImage(iconUrl);
   }
 
+  // <if expr="is_chromeos">
   protected isSyncing_() {
     return !!this.syncStatus &&
         this.syncStatus.signedInState === SignedInState.SYNCING;
   }
+  // </if>
 }
 
 declare global {

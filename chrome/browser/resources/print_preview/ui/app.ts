@@ -426,7 +426,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   }
 
   // <if expr="is_macosx">
-  protected onOpenPdfInPreview_() {
+  private onOpenPdfInPreview_() {
     this.openPdfInPreview_ = true;
     this.$.previewArea.setOpeningPdfInPreview();
     this.onPrintRequested_();

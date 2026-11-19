@@ -232,7 +232,7 @@ export class SettingsSearchEngineEditDialogElement extends
         element => this.validateElement_(element));
   }
 
-  protected cancel_() {
+  private cancel_() {
     this.$.dialog.cancel();
   }
 

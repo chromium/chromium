@@ -222,7 +222,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     }
   }
 
-  protected onFocus_(e: FocusEvent) {
+  private onFocus_(e: FocusEvent) {
     if (e.relatedTarget === this ||
         e.currentTarget === this && e.relatedTarget === this.$.textbox) {
       // Focus moved from the box to the textarea (or vice versa via the
@@ -701,7 +701,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.textBoxEdited_();
   }
 
-  protected onPointerDown_(e: PointerEvent) {
+  private onPointerDown_(e: PointerEvent) {
     const target = e.composedPath()[0];
     // Ignore pointer events on the textbox itself.
     if (e.button !== 0 || !(target instanceof HTMLElement) ||

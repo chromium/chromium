@@ -108,7 +108,7 @@ export class PrintPreviewDuplexSettingsElement extends
         'duplexShortEdge', value === DuplexMode.SHORT_EDGE.toString());
   }
 
-  protected updateCollapseOpened_() {
+  private updateCollapseOpened_() {
     this.collapseOpened_ = this.getSetting('duplexShortEdge').available &&
         this.getSettingValue('duplex');
   }
@@ -121,7 +121,7 @@ export class PrintPreviewDuplexSettingsElement extends
     return managed || this.disabled;
   }
 
-  protected updateBackgroundImages_() {
+  private updateBackgroundImages_() {
     const icon = this.getSettingValue('duplexShortEdge') ? 'short-edge-custom' :
                                                            'long-edge-custom';
     const iconset = IconsetMap.getInstance().get('print-preview');

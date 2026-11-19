@@ -178,7 +178,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     this.browserProxy_.liveCaptionSectionReady();
   }
 
-  protected onSpeechRecognitionSmallExpertModelStateChanged_(
+  private onSpeechRecognitionSmallExpertModelStateChanged_(
       state: string, progress: number, speed?: string, eta?: string,
       size?: string) {
     this.speechRecognitionSmallExpertModelState_ = state;
@@ -217,8 +217,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     return '';
   }
 
-  protected computeSpeechRecognitionSmallExpertModelDownloadProgress_():
-      string {
+  private computeSpeechRecognitionSmallExpertModelDownloadProgress_(): string {
     let progressText = this.i18n(
         'speechRecognitionSmallExpertModelDownloadProgress',
         this.speechRecognitionSmallExpertModelProgress_);
@@ -247,6 +246,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         '#liveCaptionToggleButton')!;
   }
 
+  // <if expr="not is_chromeos">
   protected computeMoreButtonAriaLabel_(name: string, code: string): string {
     let label = this.i18n('moreActionsFor', name);
     if (this.isDefaultLanguage_(code)) {
@@ -254,6 +254,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     }
     return label;
   }
+  // </if>
 
   protected onLiveCaptionEnabledChange_(event: Event) {
     const liveCaptionEnabled =

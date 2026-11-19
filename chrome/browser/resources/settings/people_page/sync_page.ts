@@ -653,6 +653,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     router.navigateTo(router.getRoutes().SYNC_ADVANCED);
   }
 
+  // <if expr="not is_chromeos">
   /**
    * @param e The event passed from settings-sync-account-control.
    */
@@ -669,12 +670,13 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().BASIC);
   }
+  // </if>
 
   /**
    * Focuses the passphrase input element if it is available and the page is
    * visible.
    */
-  protected async focusPassphraseInput_() {
+  private async focusPassphraseInput_() {
     const passphraseInput = this.shadowRoot.querySelector<CrInputElement>(
         '#existingPassphraseInput');
     const router = Router.getInstance();

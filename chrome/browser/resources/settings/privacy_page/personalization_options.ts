@@ -40,7 +40,7 @@ import {ChromeSigninUserChoice, SignedInState, StatusAction, SyncBrowserProxyImp
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-// <if expr="is_chromeos">
+// <if expr="_google_chrome and is_chromeos">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
 // </if>
@@ -247,15 +247,8 @@ export class SettingsPersonalizationOptionsElement extends
     return (pageVisibility.privacy as PrivacyPageVisibility).searchPrediction;
   }
 
-  // <if expr="is_chromeos">
-  protected onMetricsReportingLinkClick_() {
-    // TODO(wesokuhara) Deep link directly to metrics toggle via settingId.
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('osSettingsPrivacyHubSubpageUrl'));
-  }
-  // </if>
-
   // <if expr="_google_chrome">
+  // <if expr="not is_chromeos">
   protected onUseSpellingServiceSettingsBooleanControlChange_(event: Event) {
     // If turning on using the spelling service, automatically turn on
     // spellcheck so that the spelling service can run.
@@ -265,7 +258,6 @@ export class SettingsPersonalizationOptionsElement extends
     }
   }
 
-  // <if expr="not is_chromeos">
   protected showSpellCheckControlToggle_(): boolean {
     return !!this.spellCheckDictionariesPref_ &&
         this.spellCheckDictionariesPref_.value.length > 0;
@@ -273,6 +265,12 @@ export class SettingsPersonalizationOptionsElement extends
   // </if><!-- not chromeos -->
 
   // <if expr="is_chromeos">
+  protected onMetricsReportingLinkClick_() {
+    // TODO(wesokuhara) Deep link directly to metrics toggle via settingId.
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('osSettingsPrivacyHubSubpageUrl'));
+  }
+
   protected showSpellCheckControlLink_(): boolean {
     return !!this.spellCheckDictionariesPref_ &&
         this.spellCheckDictionariesPref_.value.length > 0;

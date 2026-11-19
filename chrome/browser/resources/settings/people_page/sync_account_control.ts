@@ -352,11 +352,13 @@ export class SettingsSyncAccountControlElement extends
     return '';
   }
 
+  // <if expr="not is_chromeos">
   protected getAccountAwareSigninButtonLabel_(): string {
     return loadTimeData.substituteString(
         loadTimeData.getString('accountAwareSigninButtonLabel'),
         this.shownAccount_?.givenName || '');
   }
+  // </if>
 
   protected getProfileImageSrc_(image: string|null, profileAvatarURL: string):
       string {
@@ -368,12 +370,12 @@ export class SettingsSyncAccountControlElement extends
     return image || 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
   }
 
+  // <if expr="not is_chromeos">
   protected getAccountImageSrc_(image: string|null): string {
     // image can be undefined if the account has not set an avatar photo.
     return image || 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
   }
 
-  // <if expr="not is_chromeos">
   /**
    * @return The CSS class of the sync icon.
    */
@@ -831,11 +833,15 @@ export class SettingsSyncAccountControlElement extends
     this.syncBrowserProxy_.recordSigninPendingOffered();
     this.signinPausedImpressionRecorded_ = true;
   }
-  // </if>
-
   protected isSyncing_(): boolean {
     return this.syncStatus.signedInState === SignedInState.SYNCING;
   }
+  // </if>
+  // <if expr="is_chromeos">
+  private isSyncing_(): boolean {
+    return this.syncStatus.signedInState === SignedInState.SYNCING;
+  }
+  // </if>
 }
 
 declare global {

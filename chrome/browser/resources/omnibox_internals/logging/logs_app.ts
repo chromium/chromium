@@ -128,7 +128,7 @@ export class LogsAppElement extends CrLitElement {
     }
   };
 
-  protected toggleDropdown_(filterName: string) {
+  private toggleDropdown_(filterName: string) {
     if (this.openFilterDropdown_ === filterName) {
       this.openFilterDropdown_ = null;
     } else {

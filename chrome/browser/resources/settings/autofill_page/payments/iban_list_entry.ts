@@ -35,6 +35,7 @@ declare global {
   }
 }
 
+// <if expr="_google_chrome">
 /**
  * This function returns a string that can be used in a srcset to scale
  * the provided `url` based on the user's screen resolution.
@@ -42,6 +43,7 @@ declare global {
 function getScaledSrcSet(url: string): string {
   return `${url} 1x, ${url}@2x 2x`;
 }
+// </if>
 
 const SettingsIbanListEntryElementBase = I18nMixinLit(CrLitElement);
 
@@ -66,7 +68,9 @@ export class SettingsIbanListEntryElement extends
 
       autofillEnableWalletBrandingEnabled_: {type: Boolean},
 
+      // <if expr="_google_chrome">
       autofillEnableGradientGoogleLogosEnabled_: {type: Boolean},
+      // </if>
     };
   }
 
@@ -80,8 +84,10 @@ export class SettingsIbanListEntryElement extends
   private accessor autofillEnableWalletBrandingEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableWalletBranding');
 
+  // <if expr="_google_chrome">
   private accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
+  // </if>
 
   get dotsMenu(): HTMLElement|null {
     return this.shadowRoot.getElementById('ibanMenu');
@@ -156,6 +162,7 @@ export class SettingsIbanListEntryElement extends
         htmlEscape(this.iban.nickname || this.getA11yIbanDescription_()));
   }
 
+  // <if expr="_google_chrome">
   protected getGooglePayLightModeLogoSrcSet_(): string {
     const logoId = this.autofillEnableGradientGoogleLogosEnabled_ ?
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL' :
@@ -169,6 +176,7 @@ export class SettingsIbanListEntryElement extends
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL';
     return getScaledSrcSet(logoId);
   }
+  // </if>
 }
 
 declare global {

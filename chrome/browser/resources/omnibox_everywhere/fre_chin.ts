@@ -105,7 +105,7 @@ export class OmniboxEverywhereFreChinElement extends
     }
   }
 
-  protected onSettingsClick_(e: Event) {
+  private onSettingsClick_(e: Event) {
     e.preventDefault();
     this.fire('open-settings');
   }

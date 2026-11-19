@@ -331,7 +331,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
     this.$.dialog.close();
   }
 
-  protected isEmpty_(str: string|null): boolean {
+  private isEmpty_(str: string|null): boolean {
     return !str || str.length === 0;
   }
 

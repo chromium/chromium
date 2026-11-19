@@ -308,7 +308,7 @@ export class AppRefreshElement extends AppRefreshElementBase {
     this.selectedChoice_ = Number.parseInt(e.detail.value);
   }
 
-  protected onSelectedChoiceChanged_(
+  private onSelectedChoiceChanged_(
       newPrepopulatedId: number, oldPrepopulatedId: number|undefined) {
     // No search engine selected.
     if (newPrepopulatedId === -1) {

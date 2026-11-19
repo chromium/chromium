@@ -45,7 +45,9 @@ export class SettingsPayOverTimeIssuerListEntryElement extends CrLitElement {
 
       autofillEnableWalletBrandingEnabled_: {type: Boolean},
 
+      // <if expr="_google_chrome">
       autofillEnableGradientGoogleLogosEnabled_: {type: Boolean},
+      // </if>
     };
   }
 
@@ -55,8 +57,10 @@ export class SettingsPayOverTimeIssuerListEntryElement extends CrLitElement {
   private accessor autofillEnableWalletBrandingEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableWalletBranding');
 
+  // <if expr="_google_chrome">
   private accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
+  // </if>
 
   /**
    * When the provided `imageSrc` points toward an issuer's default logo art,
@@ -84,6 +88,7 @@ export class SettingsPayOverTimeIssuerListEntryElement extends CrLitElement {
         loadTimeData.getString('managePaymentMethodsUrl'));
   }
 
+  // <if expr="_google_chrome">
   protected getGooglePayLightModeLogoSrcSet_(): string {
     const logoId = this.autofillEnableGradientGoogleLogosEnabled_ ?
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL' :
@@ -97,6 +102,7 @@ export class SettingsPayOverTimeIssuerListEntryElement extends CrLitElement {
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL';
     return getScaledSrcSet(logoId);
   }
+  // </if>
 }
 
 declare global {

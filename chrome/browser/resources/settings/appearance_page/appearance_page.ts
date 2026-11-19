@@ -431,7 +431,7 @@ export class SettingsAppearancePageElement extends
   }
   // </if>
 
-  protected get isForcedTheme_(): boolean {
+  private get isForcedTheme_(): boolean {
     if (this.themePolicyColorPref_ === undefined) {
       return false;
     }
@@ -701,11 +701,13 @@ export class SettingsAppearancePageElement extends
     }
   }
 
+  // <if expr="is_macosx">
   protected onGlassFrameSettingsControlChange_(event: Event) {
     const dropdown = event.target as SettingsDropdownMenuElement;
     const enabled = dropdown.getSelectedValue() === 'true';
     this.appearanceBrowserProxy_.recordGlassFrameEnabledChanged(enabled);
   }
+  // </if>
 
   protected onHoverCardImagesSettingsBooleanControlChange_(event: Event) {
     const enabled = (event.target as SettingsToggleButtonElement).checked;
