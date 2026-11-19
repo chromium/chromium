@@ -2679,6 +2679,9 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault sContextualTasksEntryPointsAppMenu =
             sContextualTasksEntryPoints.newBooleanParam("app_menu", true);
     public static final MutableBooleanParamWithSafeDefault
+            sContextualTasksEntryPointsForceToolbarButton =
+                    sContextualTasksEntryPoints.newBooleanParam("force_toolbar_button", false);
+    public static final MutableBooleanParamWithSafeDefault
             sContextualTasksEntryPointsImageContextMenu =
                     sContextualTasksEntryPoints.newBooleanParam("image_context_menu", true);
     public static final MutableBooleanParamWithSafeDefault sContextualTasksEntryPointsOmnibox =

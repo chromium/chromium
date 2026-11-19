@@ -537,6 +537,11 @@ const base::FeatureParam<bool> kContextualTasksEntryPointsToolbarButton(
     "toolbar_button",
     true);
 
+const base::FeatureParam<bool> kContextualTasksEntryPointsForceToolbarButton(
+    &kContextualTasksEntryPoints,
+    "force_toolbar_button",
+    false);
+
 const base::FeatureParam<bool> kContextualTasksEntryPointsOmnibox(
     &kContextualTasksEntryPoints,
     "omnibox",
