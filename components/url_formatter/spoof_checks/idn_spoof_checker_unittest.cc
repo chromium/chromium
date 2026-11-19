@@ -1177,6 +1177,13 @@ const IDNTestCase kIdnCases[] = {
     {"xn--e1armc1c2gb.com", u"\u0443\u043e\u045f\u0442\u045f\u044c\u0435.com",
      kUnsafe},
     {"xn--p1a6b2a.com", u"\u045f\u0440\u0455.com", kUnsafe},
+    // Cyrillic whole-script confusables with combining diacritical marks:
+    // ѕсоре́.com (Cyrillic "ѕсоре" + U+0301)
+    {"xn--lsa92d0aid3j.com", u"\u0455\u0441\u043e\u0440\u0435\u0301.com",
+     kUnsafe},
+    // ѕсоре̦.com (Cyrillic "ѕсоре" + U+0326)
+    {"xn--nta55c0aid3j.com", u"\u0455\u0441\u043e\u0440\u0435\u0326.com",
+     kUnsafe},
 
     // New test cases go ↑↑ above.
 

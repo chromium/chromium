@@ -422,9 +422,7 @@ IDNSpoofCheckerResult IDNSpoofChecker::SafeToDisplayAsUnicode(
     return IDNSpoofCheckerResult::kSafe;
   }
 
-  if (result == USPOOF_SINGLE_SCRIPT_RESTRICTIVE &&
-      kana_letters_exceptions_.containsNone(label_string) &&
-      combining_diacritics_exceptions_.containsNone(label_string)) {
+  if (result == USPOOF_SINGLE_SCRIPT_RESTRICTIVE) {
     for (auto const& script : wholescriptconfusables_) {
       if (IsLabelWholeScriptConfusableForScript(*script, label_string) &&
           !IsWholeScriptConfusableAllowedForTLD(*script, top_level_domain,
@@ -433,13 +431,16 @@ IDNSpoofCheckerResult IDNSpoofChecker::SafeToDisplayAsUnicode(
         return IDNSpoofCheckerResult::kWholeScriptConfusable;
       }
     }
-    // Disallow domains that contain only numbers and number-spoofs.
-    // This check is reached if domain characters come from single script.
-    if (IsDigitLookalike(label_string)) {
-      return IDNSpoofCheckerResult::kDigitLookalikes;
-    }
+    if (kana_letters_exceptions_.containsNone(label_string) &&
+        combining_diacritics_exceptions_.containsNone(label_string)) {
+      // Disallow domains that contain only numbers and number-spoofs.
+      // This check is reached if domain characters come from single script.
+      if (IsDigitLookalike(label_string)) {
+        return IDNSpoofCheckerResult::kDigitLookalikes;
+      }
 
-    return IDNSpoofCheckerResult::kSafe;
+      return IDNSpoofCheckerResult::kSafe;
+    }
   }
 
   // Disallow domains that contain only numbers and number-spoofs.
