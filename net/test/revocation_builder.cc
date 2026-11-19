@@ -8,11 +8,11 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/hash/sha1.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "crypto/evp.h"
+#include "crypto/obsolete/sha1.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
@@ -27,12 +27,9 @@ namespace net {
 
 namespace {
 
-std::string Sha1() {
-  // SEQUENCE { OBJECT_IDENTIFIER { 1.3.14.3.2.26 } }
-  const uint8_t kSHA1[] = {0x30, 0x07, 0x06, 0x05, 0x2b,
-                           0x0e, 0x03, 0x02, 0x1a};
-  return std::string(std::begin(kSHA1), std::end(kSHA1));
-}
+// SEQUENCE { OBJECT_IDENTIFIER { 1.3.14.3.2.26 } }
+constexpr auto kSha1OidSequence = std::to_array<uint8_t>(
+    {0x30, 0x07, 0x06, 0x05, 0x2b, 0x0e, 0x03, 0x02, 0x1a});
 
 // Adds bytes (specified as a std::string_view) to the given CBB.
 // The argument ordering follows the boringssl CBB_* api style.
@@ -159,10 +156,11 @@ std::string EncodeOCSPResponse(
 
 // Adds a DER-encoded OCSP SingleResponse to |responses_cbb|.
 // |issuer_name_hash| and |issuer_key_hash| should be binary SHA1 hashes.
-bool AddOCSPSingleResponse(CBB* responses_cbb,
-                           const OCSPBuilderSingleResponse& response,
-                           const std::string& issuer_name_hash,
-                           const std::string& issuer_key_hash) {
+bool AddOCSPSingleResponse(
+    CBB* responses_cbb,
+    const OCSPBuilderSingleResponse& response,
+    base::span<const uint8_t, crypto::obsolete::kSha1Size> issuer_name_hash,
+    base::span<const uint8_t, crypto::obsolete::kSha1Size> issuer_key_hash) {
   // RFC 6960 section 4.2.1:
   //
   //    SingleResponse ::= SEQUENCE {
@@ -209,7 +207,7 @@ bool AddOCSPSingleResponse(CBB* responses_cbb,
   CBB single_response, issuer_name_hash_cbb, issuer_key_hash_cbb, cert_id;
   if (!CBB_add_asn1(responses_cbb, &single_response, CBS_ASN1_SEQUENCE) ||
       !CBB_add_asn1(&single_response, &cert_id, CBS_ASN1_SEQUENCE) ||
-      !CBBAddBytes(&cert_id, Sha1()) ||
+      !CBBAddBytes(&cert_id, kSha1OidSequence) ||
       !CBB_add_asn1(&cert_id, &issuer_name_hash_cbb, CBS_ASN1_OCTETSTRING) ||
       !CBBAddBytes(&issuer_name_hash_cbb, issuer_name_hash) ||
       !CBB_add_asn1(&cert_id, &issuer_key_hash_cbb, CBS_ASN1_OCTETSTRING) ||
@@ -271,9 +269,10 @@ std::string BuildOCSPResponse(
     base::Time produced_at,
     const std::vector<OCSPBuilderSingleResponse>& responses,
     std::optional<bssl::SignatureAlgorithm> signature_algorithm) {
-  std::string responder_name_hash = base::SHA1HashString(responder_subject);
-  std::string responder_key_hash =
-      base::SHA1HashString(PKeyToSPK(responder_key));
+  const auto responder_name_hash = crypto::obsolete::Sha1::HashForTesting(
+      base::as_byte_span(responder_subject));
+  const auto responder_key_hash = crypto::obsolete::Sha1::HashForTesting(
+      base::as_byte_span(PKeyToSPK(responder_key)));
 
   // RFC 6960 section 4.2.1:
   //
