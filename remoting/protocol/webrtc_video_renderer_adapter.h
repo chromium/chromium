@@ -19,6 +19,7 @@
 #include "third_party/webrtc/api/video/video_sink_interface.h"
 
 namespace base {
+class SequencedTaskRunner;
 class SingleThreadTaskRunner;
 }  // namespace base
 
@@ -83,6 +84,7 @@ class WebrtcVideoRendererAdapter
   std::unique_ptr<ClientVideoStatsDispatcher> video_stats_dispatcher_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> convert_task_runner_;
 
   std::list<std::pair<uint32_t, ClientFrameStats>> client_stats_queue_;
   std::list<std::pair<uint32_t, HostFrameStats>> host_stats_queue_;

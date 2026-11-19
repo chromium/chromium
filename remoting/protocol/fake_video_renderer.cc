@@ -44,6 +44,11 @@ void FakeFrameConsumer::set_on_frame_callback(
   on_frame_callback_ = on_frame_callback;
 }
 
+void FakeFrameConsumer::set_pixel_format(PixelFormat pixel_format) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  pixel_format_ = pixel_format;
+}
+
 std::unique_ptr<webrtc::DesktopFrame> FakeFrameConsumer::AllocateFrame(
     const webrtc::DesktopSize& size) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -64,7 +69,7 @@ void FakeFrameConsumer::DrawFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
 
 FrameConsumer::PixelFormat FakeFrameConsumer::GetPixelFormat() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return FORMAT_BGRA;
+  return pixel_format_;
 }
 
 FakeFrameStatsConsumer::FakeFrameStatsConsumer() = default;

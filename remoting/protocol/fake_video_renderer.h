@@ -49,6 +49,7 @@ class FakeFrameConsumer : public FrameConsumer {
   }
 
   void set_on_frame_callback(const base::RepeatingClosure& on_frame_callback);
+  void set_pixel_format(PixelFormat pixel_format);
 
   // FrameConsumer interface.
   std::unique_ptr<webrtc::DesktopFrame> AllocateFrame(
@@ -60,6 +61,7 @@ class FakeFrameConsumer : public FrameConsumer {
  private:
   std::list<std::unique_ptr<webrtc::DesktopFrame>> received_frames_;
   base::RepeatingClosure on_frame_callback_;
+  PixelFormat pixel_format_ = FORMAT_BGRA;
 
   THREAD_CHECKER(thread_checker_);
 };
