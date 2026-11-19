@@ -151,7 +151,7 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   CHECK(window);
 
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
@@ -220,6 +220,9 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
 TabletModeMultitaskMenu::~TabletModeMultitaskMenu() {
   views::NativeViewFocusManager::GetInstance()->RemoveFocusChangeListener(this);
+  // `this` may be destroyed from inside the widget's own event handling, so the
+  // controller closes the widget and deletes it in a later task.
+  controller_->CloseMultitaskMenuWidget(std::move(widget_));
 }
 
 void TabletModeMultitaskMenu::Animate(bool show) {

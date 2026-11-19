@@ -5,13 +5,15 @@
 #ifndef ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_H_
 #define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/focus/native_view_focus_manager.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 namespace chromeos {
 class MultitaskMenuView;
@@ -71,7 +73,7 @@ class ASH_EXPORT TabletModeMultitaskMenu
   raw_ptr<TabletModeMultitaskMenuController> controller_;
 
   // Widget implementation that is created and maintained by `this`.
-  views::UniqueWidgetPtr widget_ = std::make_unique<views::Widget>();
+  std::unique_ptr<views::Widget> widget_ = std::make_unique<views::Widget>();
 
   // The contents view of the above widget.
   raw_ptr<TabletModeMultitaskMenuView> menu_view_ = nullptr;

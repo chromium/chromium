@@ -14,12 +14,14 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/env.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
 #include "ui/events/gestures/gesture_recognizer_impl.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -66,6 +68,9 @@ TabletModeMultitaskMenuController::~TabletModeMultitaskMenuController() {
   multitask_cue_controller_.reset();
 
   Shell::Get()->RemovePreTargetHandler(this);
+
+  // Destroy the menu while `this` can still take its widget.
+  multitask_menu_.reset();
 }
 
 // static
@@ -92,6 +97,19 @@ void TabletModeMultitaskMenuController::ShowMultitaskMenu(
 
 void TabletModeMultitaskMenuController::ResetMultitaskMenu() {
   multitask_menu_.reset();
+}
+
+void TabletModeMultitaskMenuController::CloseMultitaskMenuWidget(
+    std::unique_ptr<views::Widget> widget) {
+  widget->Close();
+  // Input queued ahead of the delete task can replace a closed widget here.
+  // That is safe: it is hidden, off the stack, and its CloseNow is posted.
+  closed_multitask_menu_widget_ = std::move(widget);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &TabletModeMultitaskMenuController::DeleteClosedMultitaskMenuWidget,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TabletModeMultitaskMenuController::OnTouchEvent(ui::TouchEvent* event) {
@@ -226,6 +244,10 @@ void TabletModeMultitaskMenuController::BeginDrag(ui::GestureEvent* event,
   if (capture_window && capture_window != window) {
     capture_window->ReleaseCapture();
   }
+}
+
+void TabletModeMultitaskMenuController::DeleteClosedMultitaskMenuWidget() {
+  closed_multitask_menu_widget_.reset();
 }
 
 }  // namespace ash

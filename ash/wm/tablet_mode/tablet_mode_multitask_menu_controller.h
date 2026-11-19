@@ -5,10 +5,16 @@
 #ifndef ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_CONTROLLER_H_
 #define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_CONTROLLER_H_
 
+#include <memory>
 #include <optional>
 
+#include "base/memory/weak_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
+
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace ash {
 
@@ -40,6 +46,10 @@ class TabletModeMultitaskMenuController : public ui::EventHandler {
   // visible.
   void ResetMultitaskMenu();
 
+  // Closes the multitask menu `widget`, which the menu is giving up as it is
+  // destroyed, and deletes it in a later task.
+  void CloseMultitaskMenuWidget(std::unique_ptr<views::Widget> widget);
+
   // ui::EventHandler:
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -56,6 +66,9 @@ class TabletModeMultitaskMenuController : public ui::EventHandler {
 
   void BeginDrag(ui::GestureEvent* event, int y, bool down);
 
+  // Deletes `closed_multitask_menu_widget_`.
+  void DeleteClosedMultitaskMenuWidget();
+
   // True while a drag to open or close the menu is in progress. Needed since a
   // drag may go outside menu bounds, during which we still handle events.
   bool is_drag_active_ = false;
@@ -65,7 +78,14 @@ class TabletModeMultitaskMenuController : public ui::EventHandler {
   // Creates a draggable bar when app windows are activated.
   std::unique_ptr<TabletModeMultitaskCueController> multitask_cue_controller_;
 
+  // The multitask menu widget after the menu closed it, kept until it can be
+  // deleted outside of its own event handling.
+  std::unique_ptr<views::Widget> closed_multitask_menu_widget_;
+
   std::unique_ptr<TabletModeMultitaskMenu> multitask_menu_;
+
+  base::WeakPtrFactory<TabletModeMultitaskMenuController> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash
