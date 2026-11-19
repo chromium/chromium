@@ -71,9 +71,8 @@ views::Widget* GlicExperimentalOptInController::GetDialogWidgetForTesting() {
   return host_->GetWidgetForTesting();  // IN-TEST
 }
 
-GlicExperimentalOptInDialogView*
-GlicExperimentalOptInController::GetDialogViewForTesting() {
-  return host_->GetDialogViewForTesting();  // IN-TEST
+views::WebView* GlicExperimentalOptInController::GetDialogWebViewForTesting() {
+  return host_->GetWebViewForTesting();  // IN-TEST
 }
 #endif
 

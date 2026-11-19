@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
-#include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_dialog_view.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_page_handler.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_util.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -227,9 +226,7 @@ class GlicExperimentalOptInTest
   }
 
   views::WebView* GetDialogWebView() {
-    GlicExperimentalOptInDialogView* dialog_view =
-        service()->opt_in_controller().GetDialogViewForTesting();
-    return dialog_view ? dialog_view->GetWebViewForTesting() : nullptr;
+    return service()->opt_in_controller().GetDialogWebViewForTesting();
   }
 
   content::WebContents* GetDialogWebContents() {
@@ -1259,19 +1256,15 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
   views::Widget* widget = ShowDialogAndWait();
   ASSERT_TRUE(widget);
 
-  GlicExperimentalOptInDialogView* dialog_view =
-      service()->opt_in_controller().GetDialogViewForTesting();
-  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = GetDialogWebView();
+  ASSERT_TRUE(web_view);
 
   EXPECT_EQ(widget->widget_delegate()->GetAccessibleWindowTitle(),
             l10n_util::GetStringUTF16(IDS_GLIC_EXPERIMENTAL_OPT_IN_TITLE));
-  EXPECT_EQ(widget->widget_delegate()->GetInitiallyFocusedView(),
-            dialog_view->GetWebViewForTesting());
+  EXPECT_EQ(widget->widget_delegate()->GetInitiallyFocusedView(), web_view);
 
-  ASSERT_TRUE(content::WaitForLoadStop(
-      dialog_view->GetWebViewForTesting()->GetWebContents()));
-  EXPECT_EQ(widget->GetFocusManager()->GetFocusedView(),
-            dialog_view->GetWebViewForTesting());
+  ASSERT_TRUE(content::WaitForLoadStop(web_view->GetWebContents()));
+  EXPECT_EQ(widget->GetFocusManager()->GetFocusedView(), web_view);
 
   service()->opt_in_controller().CloseDialog(false);
 }
@@ -1289,13 +1282,11 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInA11yFixDisabledTest,
   views::Widget* widget = ShowDialogAndWait();
   ASSERT_TRUE(widget);
 
-  GlicExperimentalOptInDialogView* dialog_view =
-      service()->opt_in_controller().GetDialogViewForTesting();
-  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = GetDialogWebView();
+  ASSERT_TRUE(web_view);
 
   EXPECT_EQ(widget->widget_delegate()->GetInitiallyFocusedView(), nullptr);
-  EXPECT_NE(widget->GetFocusManager()->GetFocusedView(),
-            dialog_view->GetWebViewForTesting());
+  EXPECT_NE(widget->GetFocusManager()->GetFocusedView(), web_view);
 
   service()->opt_in_controller().CloseDialog(false);
 }

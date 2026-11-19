@@ -239,6 +239,10 @@ BASE_DECLARE_FEATURE(kGlicWebActuationDisclosureCountryVariant);
 BASE_DECLARE_FEATURE(kGlicExperimentalOptInDialogNonScrollable);
 
 #if BUILDFLAG(IS_ANDROID)
+// TODO(b/586590010): Enable by default and remove once the <600dp experimental
+// opt-in -> Glic bottom-sheet transition is finalized with UX.
+BASE_DECLARE_FEATURE(kGlicExperimentalOptInBottomSheet);
+
 // Enables the native FRE on Android.
 BASE_DECLARE_FEATURE(kGlicNativeFreAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)

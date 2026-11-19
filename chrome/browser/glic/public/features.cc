@@ -339,6 +339,11 @@ BASE_FEATURE(kGlicExperimentalOptInDialogNonScrollable,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// TODO(b/586590010): Enable by default and remove once the <600dp experimental
+// opt-in -> Glic bottom-sheet transition is finalized with UX.
+BASE_FEATURE(kGlicExperimentalOptInBottomSheet,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicNativeFreAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

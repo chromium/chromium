@@ -32,6 +32,8 @@ import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -123,6 +125,12 @@ public class GlicAndroidMojoIntegrationTest {
         return windowAndroid == null ? null : windowAndroid.getModalDialogManager();
     }
 
+    /** Must be called on the UI thread. */
+    private BottomSheetController getBottomSheetController() {
+        WindowAndroid windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
+        return windowAndroid == null ? null : BottomSheetControllerProvider.from(windowAndroid);
+    }
+
     private String getLastPrompt() throws Exception {
         WebContents guestWebContents =
                 ThreadUtils.runOnUiThreadBlocking(() -> mTestEnv.getGuestWebContents());
@@ -194,14 +202,27 @@ public class GlicAndroidMojoIntegrationTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     ModalDialogManager modalDialogManager = getModalDialogManager();
-                    return modalDialogManager != null && modalDialogManager.isShowing();
+                    BottomSheetController bottomSheetController = getBottomSheetController();
+                    return (modalDialogManager != null && modalDialogManager.isShowing())
+                            || (bottomSheetController != null
+                                    && bottomSheetController.getCurrentSheetContent() != null);
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PropertyModel model = getModalDialogManager().getCurrentDialogForTest();
-                    Assert.assertNotNull(model);
-                    View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+                    View customView = null;
+                    ModalDialogManager modalDialogManager = getModalDialogManager();
+                    if (modalDialogManager != null && modalDialogManager.isShowing()) {
+                        PropertyModel model = modalDialogManager.getCurrentDialogForTest();
+                        Assert.assertNotNull(model);
+                        customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+                    } else {
+                        BottomSheetController bottomSheetController = getBottomSheetController();
+                        Assert.assertNotNull(bottomSheetController);
+                        Assert.assertNotNull(bottomSheetController.getCurrentSheetContent());
+                        customView =
+                                bottomSheetController.getCurrentSheetContent().getContentView();
+                    }
                     Assert.assertNotNull(customView);
                     View closeButton = customView.findViewById(R.id.glic_modal_close_button);
                     Assert.assertNotNull(closeButton);
@@ -211,7 +232,13 @@ public class GlicAndroidMojoIntegrationTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     ModalDialogManager modalDialogManager = getModalDialogManager();
-                    return modalDialogManager == null || !modalDialogManager.isShowing();
+                    BottomSheetController bottomSheetController = getBottomSheetController();
+                    boolean modalShowing =
+                            modalDialogManager != null && modalDialogManager.isShowing();
+                    boolean sheetShowing =
+                            bottomSheetController != null
+                                    && bottomSheetController.getCurrentSheetContent() != null;
+                    return !modalShowing && !sheetShowing;
                 });
     }
 

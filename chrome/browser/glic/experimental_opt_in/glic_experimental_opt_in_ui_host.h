@@ -26,15 +26,12 @@ class WebContents;
 
 #if !BUILDFLAG(IS_ANDROID)
 namespace views {
+class WebView;
 class Widget;
-}
+}  // namespace views
 #endif
 
 namespace glic {
-
-#if !BUILDFLAG(IS_ANDROID)
-class GlicExperimentalOptInDialogView;
-#endif
 
 // Host interface for displaying the Glic experimental opt-in UI across
 // platforms (Views dialog vs Android container).
@@ -74,7 +71,7 @@ class GlicExperimentalOptInUIHost {
 #if !BUILDFLAG(IS_ANDROID)
   // Views-desktop specific testing accessors.
   virtual views::Widget* GetWidgetForTesting() = 0;
-  virtual GlicExperimentalOptInDialogView* GetDialogViewForTesting() = 0;
+  virtual views::WebView* GetWebViewForTesting() = 0;
 #endif
 
  protected:

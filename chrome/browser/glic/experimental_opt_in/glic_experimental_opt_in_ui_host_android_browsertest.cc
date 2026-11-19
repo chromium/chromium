@@ -4,10 +4,15 @@
 
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host.h"
 
+#include <string>
 #include <vector>
 
+#include "base/android/jni_android.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host_android.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_created_waiter.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -23,7 +29,13 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
+
+// JNI headers must be included after standard headers.
+#include "chrome/browser/glic/android/jni_headers/GlicUiCoordinator_jni.h"
 
 namespace glic {
 namespace {
@@ -33,6 +45,13 @@ class MockGlicExperimentalOptInUIHostDelegate
  public:
   MOCK_METHOD(void, OnUIClosed, (bool accepted), (override));
 };
+
+std::string GetCurrentSnackbarText(tabs::TabInterface* tab) {
+  ui::WindowAndroid* window = tab->GetContents()->GetTopLevelNativeWindow();
+  CHECK(window);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_GlicUiCoordinator_getCurrentSnackbarTextForTesting(env, window);
+}
 
 // Returns the single popup-type browser window, or null if there isn't exactly
 // one. Links opened from the opt-in dialog use
@@ -433,6 +452,164 @@ IN_PROC_BROWSER_TEST_F(
   static_cast<GlicExperimentalOptInUIHostAndroid*>(host.get())
       ->SimulateDismissingForTesting();
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
+                       SnackbarTransitionsAcrossShowAcceptRejectAndDismiss) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  const std::string preparing_text = l10n_util::GetStringUTF8(
+      IDS_ACTOR_NOTIFICATION_TITLE_PREPARING_TO_START_TASK);
+  const std::string failed_text = l10n_util::GetStringUTF8(
+      IDS_ACTOR_TASK_LIST_BUBBLE_ROW_FAILED_TASK_SUBTITLE);
+
+  EXPECT_EQ(GetCurrentSnackbarText(tab), "");
+
+  testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+  auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+
+  // 1. Showing the opt-in dialog displays the preparing snackbar, and
+  // accepting keeps the preparing snackbar without firing task failure.
+  host->Show(tab->GetContents());
+  EXPECT_EQ(GetCurrentSnackbarText(tab), preparing_text);
+
+  {
+    base::test::TestFuture<bool> closed_future;
+    EXPECT_CALL(delegate, OnUIClosed(true)).WillOnce([&closed_future]() {
+      closed_future.SetValue(true);
+    });
+    host->Close(/*accepted=*/true);
+    EXPECT_TRUE(closed_future.Get());
+  }
+  EXPECT_EQ(GetCurrentSnackbarText(tab), preparing_text);
+
+  // 2. Rejecting (`Close(false)`) flips the preparing snackbar to the failed
+  // task snackbar.
+  host->Show(tab->GetContents());
+  EXPECT_EQ(GetCurrentSnackbarText(tab), preparing_text);
+
+  {
+    base::test::TestFuture<bool> closed_future;
+    EXPECT_CALL(delegate, OnUIClosed(false)).WillOnce([&closed_future]() {
+      closed_future.SetValue(false);
+    });
+    host->Close(/*accepted=*/false);
+    EXPECT_FALSE(closed_future.Get());
+  }
+  EXPECT_EQ(GetCurrentSnackbarText(tab), failed_text);
+
+  // 3. Re-showing restores the preparing snackbar, and user dismissal replaces
+  // it with the failed task snackbar.
+  host->Show(tab->GetContents());
+  EXPECT_EQ(GetCurrentSnackbarText(tab), preparing_text);
+
+  {
+    base::test::TestFuture<bool> closed_future;
+    EXPECT_CALL(delegate, OnUIClosed(false)).WillOnce([&closed_future]() {
+      closed_future.SetValue(false);
+    });
+    static_cast<GlicExperimentalOptInUIHostAndroid*>(host.get())
+        ->SimulateDismissingForTesting();
+    EXPECT_FALSE(closed_future.Get());
+  }
+  EXPECT_EQ(GetCurrentSnackbarText(tab), failed_text);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
+                       EarlyShowFailureDoesNotShowUnsolicitedSnackbar) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  EXPECT_EQ(GetCurrentSnackbarText(tab), "");
+
+  std::unique_ptr<content::WebContents> unattached_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+
+  testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+  auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+
+  base::test::TestFuture<bool> closed_future;
+  EXPECT_CALL(delegate, OnUIClosed(false)).WillOnce([&closed_future]() {
+    closed_future.SetValue(false);
+  });
+  host->Show(unattached_contents.get());
+  EXPECT_FALSE(closed_future.Get());
+  EXPECT_EQ(GetCurrentSnackbarText(tab), "");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
+                       StaysOpenWhenAnotherTabIsForegrounded) {
+  TabListInterface* tab_list = GetTabListInterface();
+  tabs::TabInterface* tab = tab_list->GetActiveTab();
+  const std::string failed_text = l10n_util::GetStringUTF8(
+      IDS_ACTOR_TASK_LIST_BUBBLE_ROW_FAILED_TASK_SUBTITLE);
+
+  testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+  auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+  host->Show(tab->GetContents());
+
+  // Foregrounding another tab behind the dialog (e.g. via an external trigger
+  // intent) must neither close the dialog nor report it as declined. The
+  // StrictMock delegate fails the test if OnUIClosed() runs here.
+  tabs::TabInterface* other_tab = tab_list->OpenTab(
+      GURL(url::kAboutBlankURL), tab_list->GetTabCount(), /*foreground=*/true);
+  ASSERT_TRUE(other_tab);
+  ASSERT_EQ(other_tab, tab_list->GetActiveTab());
+  EXPECT_NE(GetCurrentSnackbarText(other_tab), failed_text);
+
+  // The still-showing dialog can be accepted.
+  base::test::TestFuture<bool> closed_future;
+  EXPECT_CALL(delegate, OnUIClosed(true)).WillOnce([&closed_future]() {
+    closed_future.SetValue(true);
+  });
+  host->Close(/*accepted=*/true);
+  EXPECT_TRUE(closed_future.Get());
+}
+
+// Covers the <600dp bottom-sheet presentation, which is off by default while
+// the transition into the Glic bottom sheet is finalized (b/586590010). On
+// >=600dp windows this still presents as a modal dialog.
+class GlicExperimentalOptInUIHostAndroidBottomSheetBrowserTest
+    : public GlicExperimentalOptInUIHostAndroidBrowserTest {
+ public:
+  GlicExperimentalOptInUIHostAndroidBottomSheetBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kGlicExperimentalOptInBottomSheet);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBottomSheetBrowserTest,
+                       ShowAndAccept) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+  auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+  host->Show(tab->GetContents());
+
+  base::test::TestFuture<bool> closed_future;
+  EXPECT_CALL(delegate, OnUIClosed(true)).WillOnce([&closed_future]() {
+    closed_future.SetValue(true);
+  });
+  host->Close(/*accepted=*/true);
+  EXPECT_TRUE(closed_future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBottomSheetBrowserTest,
+                       ShowAndDismiss) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  testing::StrictMock<MockGlicExperimentalOptInUIHostDelegate> delegate;
+  auto host = GlicExperimentalOptInUIHost::Create(GetProfile(), &delegate);
+  host->Show(tab->GetContents());
+
+  base::test::TestFuture<bool> closed_future;
+  EXPECT_CALL(delegate, OnUIClosed(false)).WillOnce([&closed_future]() {
+    closed_future.SetValue(false);
+  });
+  static_cast<GlicExperimentalOptInUIHostAndroid*>(host.get())
+      ->SimulateDismissingForTesting();
+  EXPECT_FALSE(closed_future.Get());
 }
 
 }  // namespace glic

@@ -98,6 +98,14 @@ class GlicModal {
     // Whether to show a native overlay close button on Android.
     bool show_android_close_button = false;
 
+    // Whether to close the modal on Android when the hosting tab becomes hidden
+    // (e.g. another tab is brought to the foreground). When false, the modal
+    // stays up over the window like any window-scoped `ModalDialogType.APP`
+    // dialog. Ignored on Desktop, where `tabs::TabDialogManager` hides the
+    // modal while its tab is in the background and reshows it when the tab is
+    // reactivated.
+    bool close_on_android_tab_hidden = true;
+
     // Optional ColorProvider color ID for the modal / bottom-sheet surface
     // background. When unset, uses the platform default dialog/WebUI surface
     // background.

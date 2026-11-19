@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host.h"
@@ -19,7 +18,13 @@ namespace content {
 class WebContents;
 }
 
+namespace ui {
+class WindowAndroid;
+}
+
 namespace glic {
+
+class GlicModal;
 
 class GlicExperimentalOptInUIHostAndroid : public GlicExperimentalOptInUIHost {
  public:
@@ -32,19 +37,18 @@ class GlicExperimentalOptInUIHostAndroid : public GlicExperimentalOptInUIHost {
   void OpenLinkInNewTab(const GURL& url) override;
   content::WebContents* GetOrCreateSuitableWebContents() override;
 
-  // Called from Java when the dialog is dismissed.
-  void OnDismissed();
-
   // Android-specific test accessor to simulate the native UI closing.
   void SimulateDismissingForTesting();
 
  private:
+  ui::WindowAndroid* GetWindowAndroid() const;
+  void OnModalClosed();
   void NotifyDelegateClosed(bool accepted);
 
   raw_ptr<Profile> profile_;
   raw_ptr<Delegate> delegate_;
-  std::unique_ptr<content::WebContents> opt_in_web_contents_;
-  base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
+  std::unique_ptr<GlicModal> modal_;
+  tabs::TabHandle modal_host_tab_;
   // The tab selected or created by GetOrCreateSuitableWebContents() for the
   // currently showing dialog, if any. Held as a handle rather than a pointer
   // so it resolves to null if the tab goes away underneath us.

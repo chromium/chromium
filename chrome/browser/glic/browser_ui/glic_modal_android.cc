@@ -103,9 +103,11 @@ bool GlicModalAndroid::ShowInternal(tabs::TabInterface& tab,
   java_coordinator_.Reset(java_obj);
   tab_will_detach_subscription_ = tab.RegisterWillDetach(base::BindRepeating(
       &GlicModalAndroid::OnTabWillDetach, base::Unretained(this)));
-  tab_will_become_hidden_subscription_ =
-      tab.RegisterWillBecomeHidden(base::BindRepeating(
-          &GlicModalAndroid::OnTabWillBecomeHidden, base::Unretained(this)));
+  if (params.close_on_android_tab_hidden) {
+    tab_will_become_hidden_subscription_ =
+        tab.RegisterWillBecomeHidden(base::BindRepeating(
+            &GlicModalAndroid::OnTabWillBecomeHidden, base::Unretained(this)));
+  }
   return true;
 }
 

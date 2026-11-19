@@ -647,6 +647,7 @@ source_set("impl") {
     "//chrome/browser/feedback",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/browser_ui",
+    "//chrome/browser/glic/browser_ui:modal",
     "//chrome/browser/glic/common",
     "//chrome/browser/glic/gemini_enterprise",
     "//chrome/browser/glic/gemini_enterprise:geic_enabling",
@@ -765,8 +766,6 @@ source_set("impl") {
     public_deps += [ "//chrome/browser/glic/selection" ]
     sources += [
       "common/view_scoped_registration_delegate_impl.cc",
-      "experimental_opt_in/glic_experimental_opt_in_dialog_view.cc",
-      "experimental_opt_in/glic_experimental_opt_in_dialog_view.h",
       "experimental_opt_in/glic_experimental_opt_in_ui_host_desktop.cc",
       "glic_selection_observer.cc",
       "glic_settings_util_desktop.cc",
@@ -1409,6 +1408,7 @@ source_set("browser_tests") {
       "browser_ui/glic_nudge_controller_android_browsertest.cc",
     ]
     deps += [
+      "//chrome/app:generated_resources",
       "//chrome/browser/glic/android",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/browser_ui:impl",
@@ -1418,6 +1418,8 @@ source_set("browser_tests") {
       "//chrome/test/data/webui/glic:generate_test_files",
       "//components/messages/android:test_support",
       "//components/page_content_annotations/content:metrics",
+      "//ui/android",
+      "//ui/base",
     ]
   }
 

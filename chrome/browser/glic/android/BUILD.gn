@@ -21,9 +21,9 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/glic/toolbar_button/ActorTaskRowData.java",
     "java/src/org/chromium/chrome/browser/glic/toolbar_button/GlicSplitButtonDelegateBridge.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicBottomSheetComponentProvider.java",
-    "java/src/org/chromium/chrome/browser/glic/ui/GlicExperimentalOptInUiCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicModalCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicSidePanelComponentProvider.java",
+    "java/src/org/chromium/chrome/browser/glic/ui/GlicUiCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicUiUtils.java",
   ]
   deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
@@ -69,7 +69,6 @@ android_resources("java_resources") {
     "java/res/layout/preference_widget_revoke.xml",
     "java/res/raw/glic_fre_header_animation.json",
     "java/res/raw/glic_spinner.json",
-    "java/res/values-land/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
     "java/res/xml/glic_actor_login_permissions.xml",
@@ -166,7 +165,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/glic/ui/GlicBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicBottomSheetFreCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicBottomSheetFreTransitionController.java",
-    "java/src/org/chromium/chrome/browser/glic/ui/GlicExperimentalOptInUiCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicFreRootView.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicLoadingPlaceholderView.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicMicPermissionDialogCoordinator.java",
@@ -316,11 +314,11 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/glic/ui/GlicBottomSheetContentUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicBottomSheetFreCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicBottomSheetFreTransitionControllerUnitTest.java",
-    "java/src/org/chromium/chrome/browser/glic/ui/GlicExperimentalOptInUiCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicLoadingPlaceholderViewUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicMicPermissionDialogCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicModalCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicPromoCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/glic/ui/GlicUiCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/ui/GlicUiHelperUnitTest.java",
   ]
   deps = [

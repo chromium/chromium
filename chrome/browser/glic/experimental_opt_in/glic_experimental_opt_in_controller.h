@@ -26,15 +26,12 @@ class WebContents;
 
 #if !BUILDFLAG(IS_ANDROID)
 namespace views {
+class WebView;
 class Widget;
-}
+}  // namespace views
 #endif
 
 namespace glic {
-
-#if !BUILDFLAG(IS_ANDROID)
-class GlicExperimentalOptInDialogView;
-#endif
 
 // Controller for the experimental triggering opt-in flow.
 class GlicExperimentalOptInController
@@ -65,7 +62,7 @@ class GlicExperimentalOptInController
 
 #if !BUILDFLAG(IS_ANDROID)
   views::Widget* GetDialogWidgetForTesting();
-  GlicExperimentalOptInDialogView* GetDialogViewForTesting();
+  views::WebView* GetDialogWebViewForTesting();
 #endif
 
   void SetTickClockForTesting(const base::TickClock* clock);

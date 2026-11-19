@@ -7,6 +7,11 @@ package org.chromium.chrome.browser.glic.ui;
 import android.app.Activity;
 import android.view.ViewStub;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -22,7 +27,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.ui.base.WindowAndroid;
@@ -31,6 +38,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Coordinator for Glic UI. It owns and manages Glic-related UI components, currently including
  * ActorOverlayCoordinator, ActorTaskHelper, and ActorExternalTriggerSnackbarController.
  */
+@JNINamespace("glic")
 @NullMarked
 public class GlicUiCoordinator implements Destroyable {
 
@@ -109,6 +117,24 @@ public class GlicUiCoordinator implements Destroyable {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
+    @CalledByNative
+    static void onPendingActorTaskTrigger(
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
+        GlicUiCoordinator coordinator = from(windowAndroid);
+        if (coordinator != null) {
+            coordinator.onPendingActorTaskTrigger();
+        }
+    }
+
+    @CalledByNative
+    static void onPendingActorTaskFailed(
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
+        GlicUiCoordinator coordinator = from(windowAndroid);
+        if (coordinator != null) {
+            coordinator.onPendingActorTaskFailed();
+        }
+    }
+
     @Override
     public void destroy() {
         KEY.detachFromHost(mWindowAndroid.getUnownedUserDataHost());
@@ -137,5 +163,16 @@ public class GlicUiCoordinator implements Destroyable {
     /** Exposes the {@link ActorOverlayCoordinator} for testing. */
     public ActorOverlayCoordinator getActorOverlayCoordinatorForTesting() {
         return mActorOverlayCoordinator;
+    }
+
+    @CalledByNativeForTesting
+    static @JniType("std::string") String getCurrentSnackbarTextForTesting(
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
+        SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
+        if (snackbarManager == null) return "";
+        Snackbar snackbar = snackbarManager.getCurrentSnackbarForTesting(); // IN-TEST
+        if (snackbar == null) return "";
+        CharSequence text = snackbar.getTextForTesting(); // IN-TEST
+        return text != null ? text.toString() : "";
     }
 }

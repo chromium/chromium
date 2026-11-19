@@ -5,15 +5,17 @@
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/android/jni_android.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
+#include "chrome/browser/glic/browser_ui/glic_modal.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host_android.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -21,19 +23,24 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 // JNI headers must be included after standard headers.
-#include "chrome/browser/glic/android/jni_headers/GlicExperimentalOptInUiCoordinator_jni.h"
+#include "chrome/browser/glic/android/jni_headers/GlicUiCoordinator_jni.h"
 
 namespace glic {
 
 namespace {
+
+constexpr int kPortraitMaxWidthDp = 380;
+constexpr int kPortraitScrollableMaxHeightDp = 567;
+constexpr int kPortraitNonScrollableMaxHeightDp = 710;
+constexpr int kLandscapeMaxWidthDp = 600;
+constexpr int kLandscapeMaxHeightDp = 310;
 
 // Returns the tab model backing the window the user is currently looking at,
 // for `profile`.
@@ -78,89 +85,101 @@ GlicExperimentalOptInUIHostAndroid::GlicExperimentalOptInUIHostAndroid(
     Delegate* delegate)
     : profile_(profile), delegate_(delegate) {}
 
-GlicExperimentalOptInUIHostAndroid::~GlicExperimentalOptInUIHostAndroid() {
-  if (java_dialog_) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_GlicExperimentalOptInUiCoordinator_onNativeDestroyed(env,
-                                                              java_dialog_);
-  }
-}
+GlicExperimentalOptInUIHostAndroid::~GlicExperimentalOptInUIHostAndroid() =
+    default;
 
 void GlicExperimentalOptInUIHostAndroid::Show(
     content::WebContents* web_contents) {
-  if (java_dialog_) {
+  if (modal_) {
     return;
   }
   is_accepted_ = false;
 
-  content::WebContents* source_contents = web_contents;
-  if (!source_contents) {
-    tabs::TabInterface* tab = GetActiveTab(profile_);
-    if (tab) {
-      source_contents = tab->GetContents();
-    }
-  }
-
-  if (!source_contents) {
-    OnDismissed();
+  tabs::TabInterface* tab =
+      web_contents ? tabs::TabInterface::MaybeGetFromContents(web_contents)
+                   : GetActiveTab(profile_);
+  if (!tab) {
+    OnModalClosed();
     return;
   }
 
-  ui::WindowAndroid* window_android =
-      source_contents->GetTopLevelNativeWindow();
-  if (!window_android) {
-    // There is no window to parent the dialog to, so nothing will ever be
-    // shown. Report the dismissal now, otherwise the caller's callback is
-    // never run.
-    OnDismissed();
+  modal_host_tab_ = tab->GetHandle();
+
+  GlicModal::Params params;
+  params.content_url = GURL(chrome::kChromeUIGlicExperimentalOptInURL);
+  const bool non_scrollable = base::FeatureList::IsEnabled(
+      features::kGlicExperimentalOptInDialogNonScrollable);
+  params.portrait_max_size_dp = gfx::Size(
+      kPortraitMaxWidthDp, non_scrollable ? kPortraitNonScrollableMaxHeightDp
+                                          : kPortraitScrollableMaxHeightDp);
+  params.landscape_max_size_dp =
+      gfx::Size(kLandscapeMaxWidthDp, kLandscapeMaxHeightDp);
+  params.show_android_close_button = true;
+  // Keep the dialog up when another tab is foregrounded behind it (e.g. by an
+  // external trigger intent), so concurrent opt-in requests coalesce onto the
+  // showing dialog instead of declining it. See
+  // GetOrCreateSuitableWebContents().
+  params.close_on_android_tab_hidden = false;
+  // TODO(b/586590010): Remove once the <600dp experimental opt-in -> Glic
+  // bottom-sheet transition is finalized with UX.
+  params.deprecated_always_use_modal_dialog = !base::FeatureList::IsEnabled(
+      features::kGlicExperimentalOptInBottomSheet);
+  params.on_closed =
+      base::BindOnce(&GlicExperimentalOptInUIHostAndroid::OnModalClosed,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  modal_ = GlicModal::Show(*tab, std::move(params));
+  if (!modal_) {
+    OnModalClosed();
     return;
   }
 
-  content::WebContents::CreateParams params(profile_);
-  opt_in_web_contents_ = content::WebContents::Create(params);
-  opt_in_web_contents_->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(
-          GURL(chrome::kChromeUIGlicExperimentalOptInURL)));
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> java_obj =
-      Java_GlicExperimentalOptInUiCoordinator_show(env, jni_zero::MakeRaw(this),
-                                                   window_android,
-                                                   opt_in_web_contents_.get());
-
-  if (!java_obj) {
-    OnDismissed();
-    return;
+  if (ui::WindowAndroid* window_android = GetWindowAndroid()) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_GlicUiCoordinator_onPendingActorTaskTrigger(env, window_android);
   }
 
-  java_dialog_.Reset(java_obj);
   OnDialogOpened();
 }
 
 void GlicExperimentalOptInUIHostAndroid::Close(bool accepted) {
   is_accepted_ = accepted;
-  if (!java_dialog_) {
-    OnDismissed();
+  if (accepted) {
+    if (ui::WindowAndroid* window_android = GetWindowAndroid()) {
+      JNIEnv* env = base::android::AttachCurrentThread();
+      Java_GlicUiCoordinator_onPendingActorTaskTrigger(env, window_android);
+    }
+  }
+  if (!modal_) {
+    OnModalClosed();
     return;
   }
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  if (accepted) {
-    Java_GlicExperimentalOptInUiCoordinator_onOptInAccepted(env, java_dialog_);
-  }
-  Java_GlicExperimentalOptInUiCoordinator_dismiss(env, java_dialog_);
+  modal_->Close();
 }
 
-void GlicExperimentalOptInUIHostAndroid::OnDismissed() {
+void GlicExperimentalOptInUIHostAndroid::OnModalClosed() {
   RecordShowDurationOnClose();
-  java_dialog_.Reset();
-  dialog_tab_ = tabs::TabHandle();
-  if (opt_in_web_contents_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(opt_in_web_contents_));
+  const bool accepted = std::exchange(is_accepted_, false);
+  if (!accepted) {
+    if (ui::WindowAndroid* window_android = GetWindowAndroid()) {
+      JNIEnv* env = base::android::AttachCurrentThread();
+      Java_GlicUiCoordinator_onPendingActorTaskFailed(env, window_android);
+    }
   }
+  modal_.reset();
+  modal_host_tab_ = tabs::TabHandle();
+  dialog_tab_ = tabs::TabHandle();
+  NotifyDelegateClosed(accepted);
+}
 
-  NotifyDelegateClosed(is_accepted_);
+ui::WindowAndroid* GlicExperimentalOptInUIHostAndroid::GetWindowAndroid()
+    const {
+  tabs::TabInterface* tab = modal_host_tab_.Get();
+  if (!tab || !tab->GetContents()) {
+    return nullptr;
+  }
+  return tab->GetContents()->GetTopLevelNativeWindow();
 }
 
 void GlicExperimentalOptInUIHostAndroid::OpenLinkInNewTab(const GURL& url) {
@@ -180,7 +199,7 @@ GlicExperimentalOptInUIHostAndroid::GetOrCreateSuitableWebContents() {
   // tab back instead of opening another one: Show() ignores the contents while
   // a dialog is up, so a second tab would be left stranded behind the dialog
   // after having pulled the user away from what they were looking at.
-  if (java_dialog_) {
+  if (modal_) {
     if (tabs::TabInterface* dialog_tab = dialog_tab_.Get()) {
       return dialog_tab->GetContents();
     }
@@ -212,16 +231,11 @@ GlicExperimentalOptInUIHostAndroid::GetOrCreateSuitableWebContents() {
 }
 
 void GlicExperimentalOptInUIHostAndroid::SimulateDismissingForTesting() {
-  if (!java_dialog_) {
-    OnDismissed();
+  if (!modal_) {
+    OnModalClosed();
     return;
   }
-  // Dismiss through Java rather than calling OnDismissed() directly. Otherwise
-  // the dialog stays on screen holding a pointer to `this`, and calls back into
-  // the destroyed host when the activity is later torn down.
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_GlicExperimentalOptInUiCoordinator_simulateDismissingForTesting(  // IN-TEST
-      env, java_dialog_);
+  modal_->SimulateDismissingForTesting();  // IN-TEST
 }
 
 void GlicExperimentalOptInUIHostAndroid::NotifyDelegateClosed(bool accepted) {
@@ -238,5 +252,3 @@ GlicExperimentalOptInUIHost::Create(Profile* profile, Delegate* delegate) {
 }
 
 }  // namespace glic
-
-DEFINE_JNI(GlicExperimentalOptInUiCoordinator)
