@@ -16,4 +16,8 @@ public interface NavigationParametersBoundaryInterface extends FeatureFlagHolder
     boolean getShouldReplaceCurrentEntry();
 
     @Nullable Map<String, String> getAdditionalHeaders();
+
+    default @Nullable String getReferrer() {
+        return null;
+    }
 }

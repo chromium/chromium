@@ -175,6 +175,7 @@ public class SupportLibWebViewChromiumFactory
                 Features.WEBGPU + Features.DEV_SUFFIX,
                 WebFeatures.WEB_CONTENT_V2,
                 Features.SERIALIZE_STATE + Features.DEV_SUFFIX,
+                Features.WEBVIEW_NAVIGATE_REFERRER,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from
