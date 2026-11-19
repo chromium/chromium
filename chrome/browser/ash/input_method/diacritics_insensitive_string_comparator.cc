@@ -12,25 +12,11 @@ namespace ash {
 namespace input_method {
 
 DiacriticsInsensitiveStringComparator::DiacriticsInsensitiveStringComparator() {
-  // Intentionally only covering Latin-script accented letters likely found in
-  // French, Spanish, Dutch, Swedish, Norwegian, Danish, and Catalan.
-  diacritics_stripper_ = base::i18n::CreateTransliteratorFromRules(
-      "DiacriticStripper",
-      "::NFC; "
-      "[ á à â ä ā å ] > a; "
-      "[ Á À Â Ä Ā Å ] > A; "
-      "[ é è ê ë ē   ] > e; "
-      "[ É È Ê Ë Ē   ] > E; "
-      "[ í ì î ï ī   ] > i; "
-      "[ Í Ì Î Ï Ī   ] > I; "
-      "[ ó ò ô ö ō ø ] > o; "
-      "[ Ó Ò Ô Ö Ō Ø ] > O; "
-      "[ ú ù û ü ū   ] > u; "
-      "[ Ú Ù Û Ü Ū   ] > U; "
-      "[ ý ỳ ŷ ÿ ȳ   ] > y; "
-      "[ Ý Ỳ Ŷ Ÿ Ȳ   ] > Y; "
-      "ç > c; ñ > n; æ > ae; œ > oe; "
-      "Ç > C; Ñ > N; Æ > AE; Œ > OE; ");
+  // Rules live in
+  // `//third_party/rust/icu4x_data/transliterators/diacritic_stripper.txt` and
+  // `//base/i18n/transliterator.cc`.
+  diacritics_stripper_ =
+      base::i18n::CreateTransliterator("und-t-und-x0-diacstr");
 }
 
 DiacriticsInsensitiveStringComparator::
