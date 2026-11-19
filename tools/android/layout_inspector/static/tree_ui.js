@@ -26,7 +26,7 @@ class TreeVis {
   }
 
   clear() {
-    // No need to call `_renderHover(false)`.
+    // No need to call `_syncHover(false)`.
     this.el.root.innerHTML = '';
     this.hoverIndex = null;
     this.expandedMap.length = 0;
@@ -170,7 +170,7 @@ class TreeVis {
    * Shows / hides hover visuals based on `hoverIndex`.
    * @param {boolean} enable
    */
-  _renderHover(enable) {
+  _syncHover(enable) {
     if (this.hoverIndex == null) return;
 
     this.viewRows[this.hoverIndex].classList.toggle('hovered-view', enable);
@@ -179,12 +179,17 @@ class TreeVis {
   /**
    * Transactional wrapper to temporarily remove hover visuals, run state
    * changes that would affect DOM and Vis states, then restore (if needed).
-   * @param {function()} fun The state mutation transaction callback.
+   * @template T
+   * @param {function(): T} fun The state mutation transaction callback.
+   * @return {T}
    */
   withTransaction(fun) {
-    this._renderHover(false);
-    fun();
-    this._renderHover(true);
+    this._syncHover(false);
+    try {
+      return fun();
+    } finally {
+      this._syncHover(true);
+    }
   }
 
   /**

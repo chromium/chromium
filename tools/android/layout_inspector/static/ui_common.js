@@ -44,6 +44,10 @@ class InfoBarVis {
 
 /******** Hint Constants ********/
 
+/**
+ * Constant to specify hint, and key for {@link HINT_STRINGS}`.
+ * @enum {number}
+ */
 const HINT = checkEnum({
   UNINITIALIZED: -1,
   IDLE: 0,
@@ -52,6 +56,10 @@ const HINT = checkEnum({
   LAYOUT_SPLITTER: 3,
 });
 
+/**
+ * List of hint strings, keyed by {@link HINT}.
+ * @type {Record<HINT, string>}
+ */
 const HINT_STRINGS = {
   [HINT.IDLE]: 'Hover over a View or control to see info.',
   [HINT.CTRL_LOAD]: 'Fetch UI hierarchy and screenshot from device.',
@@ -64,14 +72,16 @@ class HintController {
   /** @param {!InfoBarVis} infoBarVis */
   constructor(infoBarVis) {
     this.infoBarVis = infoBarVis;
+    /** @type {HINT} */
     this.currentHint = HINT.UNINITIALIZED;
     this.clear();  // Initialize default text.
   }
 
-  setHint(hintEnum) {
-    if (this.currentHint === hintEnum) return;
-    this.currentHint = hintEnum;
-    this.infoBarVis.setHintText(HINT_STRINGS[hintEnum]);
+  /** @param {HINT} hint */
+  setHint(hint) {
+    if (this.currentHint === hint) return;
+    this.currentHint = hint;
+    this.infoBarVis.setHintText(HINT_STRINGS[hint]);
   }
 
   clear() {

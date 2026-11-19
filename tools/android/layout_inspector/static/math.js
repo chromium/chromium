@@ -6,7 +6,10 @@
 
 /******** Constants ********/
 
-/** Geometric orientation axes. */
+/**
+ * Geometric orientation axes.
+ * @enum {number}
+ */
 const ORIENTATION = checkEnum({
   HORIZ: 0,
   VERT: 1,

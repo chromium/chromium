@@ -6,6 +6,7 @@
 :root {
   --bg-hover: rgba(0, 0, 255, 0.15);
   --body-padding: 5px;
+  --color-hover: #00f;
   --color-sep: #888;
   --splitter-size: 7px;
   --tree-toggle-width: 20px;
@@ -161,6 +162,16 @@ label:has(#sel-zoom) {
     height: var(--screenshot-height);
     image-rendering: pixelated;
     transition: opacity 0.15s;
+    width: var(--screenshot-width);
+  }
+
+  .svg-markup {
+    contain: strict;
+    height: var(--screenshot-height);
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
     width: var(--screenshot-width);
   }
 }

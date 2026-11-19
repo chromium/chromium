@@ -56,6 +56,7 @@ class LayoutMode {
     return (vy < 0) ? LayoutMode.TOP : LayoutMode.BOTTOM;
   }
 
+  /** @return {ORIENTATION} */
   get orientation() {
     return (this.dir.y === 0) ? ORIENTATION.HORIZ : ORIENTATION.VERT;
   }
@@ -155,6 +156,16 @@ class VisOptions {
 
   pxToDp(px) {
     return px / this.densityFactor;
+  }
+
+  /** @return {number} World to Scaled coordinate (e.g. for lengths). */
+  w2s(w) {
+    return w * this.scale;
+  }
+
+  /** @return {number} World to integer Scaled coordinate. */
+  w2sFloor(w) {
+    return Math.floor(w * this.scale);
   }
 }
 

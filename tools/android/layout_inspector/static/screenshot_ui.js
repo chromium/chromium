@@ -67,31 +67,55 @@ class ScreenshotInfoVis {
 
 /******** ScreenshotVis ********/
 /**
- * Renders the device's image into an HTML canvas.
+ * Renders the device's image into an HTML canvas and maintains the SVG overlay
+ * container synced in size via `setZoom()`.
  */
 class ScreenshotVis {
   /**
    * @param {!Element} divScreenshot Viewport element for the screenshot.
    * @param {!Element} divScreenshotInfo Info bar element.
-   * @param {!VisOptions} visOpts
+   * @param {!MainModel} model
    */
-  constructor(divScreenshot, divScreenshotInfo, visOpts) {
+  constructor(divScreenshot, divScreenshotInfo, model) {
     this.el = {
       root: divScreenshot,
       inner: divScreenshot.querySelector('.screenshot-inner'),
       canvBase: divScreenshot.querySelector('.canv-base'),
+      svgMarkup: divScreenshot.querySelector('.svg-markup'),
     };
-    this.visOpts = visOpts;
+    this.model = model;
+    this.visOpts = model.visOpts;
 
     this.ctx = this.el.canvBase.getContext('2d');
 
     this.screenshotInfoVis =
         new ScreenshotInfoVis(divScreenshotInfo, this.visOpts);
+
+    this.hoverHighlight = new ViewHighlight();
+    this.hoverHighlight.root.classList.add(MARKUP_STATUS.HOVER);
+
+    g_svg.edit(this.el.svgMarkup).append(this.hoverHighlight.root);
+
+    /** @type {?number} Nullable index of the View with hover visuals. */
+    this.hoverIndex = null;
   }
 
   clear() {
+    this.hoverIndex = null;
+    this.hoverHighlight.setVisible(false);
     this.ctx.clearRect(0, 0, this.el.canvBase.width, this.el.canvBase.height);
     this.screenshotInfoVis.clear();
+  }
+
+  /**
+   * @param {!Image} imgScreenshot
+   */
+  setScreenshot(imgScreenshot) {
+    const el = this.el;
+    const {width, height} = imgScreenshot;
+    el.canvBase.width = width;
+    el.canvBase.height = height;
+    this.ctx.drawImage(imgScreenshot, 0, 0);
   }
 
   _applyRescale() {
@@ -131,29 +155,54 @@ class ScreenshotVis {
     const [sw, sh] = this.visOpts.sDims;
     st.setProperty('--screenshot-width', `${Math.round(sw)}px`);
     st.setProperty('--screenshot-height', `${Math.round(sh)}px`);
+    g_svg.edit(this.el.svgMarkup).viewBoxDims(...this.visOpts.sDims);
   }
 
-  updateScaleAndRefresh(needToRescale) {
-    if (needToRescale) {
-      this._applyRescale();
-    }
-    this.screenshotInfoVis.update();
-  }
-
-  updateZoom() {
-    this.updateScaleAndRefresh(true);
-  }
   /**
-   * @param {!Image} imgScreenshot
+   * Shows / hides hover visuals based on `hoverIndex`.
+   * @param {boolean} enable
    */
-  setScreenshot(imgScreenshot) {
-    const el = this.el;
-    const {width, height} = imgScreenshot;
-    el.canvBase.width = width;
-    el.canvBase.height = height;
-    this.ctx.drawImage(imgScreenshot, 0, 0);
+  _syncHover(enable) {
+    if (this.hoverIndex == null) return;
 
-    this.updateZoom();
+    if (enable) {
+      const view = this.model.views[this.hoverIndex];
+      this.hoverHighlight.setRectAndRedraw(view.rect, this.visOpts);
+    }
+    this.hoverHighlight.setVisible(enable);
+  }
+
+  /**
+   * Transactional wrapper to temporarily remove hover visuals, run state
+   * changes that would affect DOM and Vis states, then restore (if needed).
+   * @template T
+   * @param {function(): T} fun The state mutation transaction callback.
+   * @return {T}
+   */
+  withTransaction(fun) {
+    this._syncHover(false);
+    try {
+      return fun();
+    } finally {
+      this._syncHover(true);
+    }
+  }
+
+  /**
+   * Assigns the stored hover index.
+   * @param {?number} index
+   */
+  setHover(index) {
+    if (this.hoverIndex === index) return;
+
+    this.withTransaction(() => {
+      this.hoverIndex = index;
+    });
+  }
+
+  updateScale() {
+    this._applyRescale();
+    this.hoverHighlight.redraw(this.visOpts);
   }
 }
 
@@ -169,8 +218,7 @@ class ScreenshotController {
    */
   constructor(model, divScreenshot, divScreenshotInfo, {onResize}) {
     this.model = model;
-    this.vis =
-        new ScreenshotVis(divScreenshot, divScreenshotInfo, this.model.visOpts);
+    this.vis = new ScreenshotVis(divScreenshot, divScreenshotInfo, this.model);
     this.el = this.vis.el;
     this.visOpts = this.model.visOpts;
     this.onResize = onResize;
@@ -182,18 +230,31 @@ class ScreenshotController {
     this.vis.clear();
   }
 
-  updateZoom() {
-    this.vis.updateZoom();
-  }
-
   initScreenshot() {
     this.vis.setScreenshot(this.model.imgScreenshot);
+    this.vis.withTransaction(() => {
+      this.vis.updateScale();
+    });
+  }
+
+  setHover(index) {
+    this.vis.setHover(index);
+  }
+
+  updateZoom() {
+    this.vis.withTransaction(() => {
+      this.vis.updateScale();
+      this.vis.screenshotInfoVis.update();
+    });
   }
 
   _bindViewportResize() {
     const observer = new ResizeObserver(() => {
       if (this.model.isLoaded) {
-        this.vis.updateScaleAndRefresh(this.visOpts.isZoomFit());
+        this.vis.withTransaction(() => {
+          if (this.visOpts.isZoomFit()) this.vis.updateScale();
+          this.vis.screenshotInfoVis.update();
+        });
       }
       this.onResize();
     });

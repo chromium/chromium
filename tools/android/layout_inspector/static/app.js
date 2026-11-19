@@ -155,6 +155,7 @@ class MainController {
     if (this.model.engaged.hover === index) return;
 
     this.model.engaged.hover = index;
+    this.screenshotCtrl.setHover(index);
     this.treeCtrl.setHover(index);
     this.vis.updateViewInfo();
   }
@@ -183,6 +184,7 @@ class MainController {
   }
 
   init() {
+    SvgMarkupTheme.injectGlobalCss();
     this.vis.populateZoomOptions();
     this.bindAll();
     this.el.btnLoad.focus();
