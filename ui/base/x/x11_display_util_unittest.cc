@@ -5,6 +5,8 @@
 #include "ui/base/x/x11_display_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/x/connection.h"
 
 namespace ui {
 
@@ -206,6 +208,25 @@ TEST(X11DisplayUtilTest, GetDisplayRefreshInterval) {
   EXPECT_EQ(
       GetDisplayRefreshInterval(displays, 0, gfx::Rect(2000, 100, 800, 600)),
       k60Hz);
+}
+
+// GtkUi folds the font scale (Xft.dpi / 96) into the primary scale, so it can
+// legitimately be less than 1. The fallback must accept such scales like the
+// XRandR path does.
+TEST(X11DisplayUtilTest, GetFallbackDisplayListScaleBelowOne) {
+  constexpr float kScale = 0.921875f;
+  size_t primary_display_index = 1;
+  std::vector<display::Display> displays =
+      GetFallbackDisplayList(kScale, &primary_display_index);
+  ASSERT_EQ(displays.size(), 1u);
+  EXPECT_EQ(primary_display_index, 0u);
+
+  const auto& screen = x11::Connection::Get()->default_screen();
+  const gfx::Rect bounds_px(screen.width_in_pixels, screen.height_in_pixels);
+  EXPECT_EQ(displays[0].device_scale_factor(), kScale);
+  EXPECT_EQ(displays[0].GetSizeInPixel(), bounds_px.size());
+  EXPECT_EQ(displays[0].bounds(),
+            gfx::ScaleToEnclosingRect(bounds_px, 1.0f / kScale));
 }
 
 }  // namespace ui

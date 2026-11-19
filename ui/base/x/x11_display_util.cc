@@ -294,9 +294,6 @@ std::vector<display::Display> GetFallbackDisplayList(
 
   if (!display::Display::HasForceDeviceScaleFactor() &&
       display::IsDisplaySizeValid(physical_size)) {
-    // TODO(crbug.com/586148927): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK_LE(1.0f, scale);
     gfx_display.set_size_in_pixels(bounds_in_pixels.size());
     gfx_display.SetScale(scale);
     auto bounds_dip = gfx::ScaleToEnclosingRect(bounds_in_pixels, 1.0f / scale);
