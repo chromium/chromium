@@ -52,6 +52,8 @@ source_set("signin") {
 
   if (enable_dice_support) {
     public += [
+      "account_switching_manager.h",
+      "account_switching_manager_factory.h",
       "cross_device_signin_promo_manager.h",
       "dice_intercepted_session_startup_helper.h",
       "dice_response_handler.h",
@@ -247,6 +249,8 @@ source_set("impl") {
 
   if (enable_dice_support) {
     sources += [
+      "account_switching_manager.cc",
+      "account_switching_manager_factory.cc",
       "cross_device_signin_promo_manager.cc",
       "dice_intercepted_session_startup_helper.cc",
       "dice_response_handler.cc",
@@ -691,6 +695,7 @@ source_set("unit_tests") {
 
   if (enable_dice_support) {
     sources += [
+      "account_switching_manager_unittest.cc",
       "cross_device_signin_promo_manager_unittest.cc",
       "dice_intercepted_session_startup_helper_unittest.cc",
       "dice_response_handler_factory_unittest.cc",

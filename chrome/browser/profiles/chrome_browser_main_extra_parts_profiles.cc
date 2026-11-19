@@ -551,6 +551,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/account_switching_manager_factory.h"
 #include "chrome/browser/signin/dice_response_handler_factory.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #endif
@@ -740,6 +741,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   AccountPreviewDataServiceFactory::GetInstance();
   AccountReconcilorFactory::GetInstance();
   AccountSettingServiceFactory::GetInstance();
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  AccountSwitchingManagerFactory::GetInstance();
+#endif
   AtMemoryQueryServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   AutoPictureInPictureHatsServiceFactory::GetInstance();

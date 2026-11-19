@@ -50,6 +50,11 @@ inline constexpr char
     kSearchAIModeSignInPromoLastImpressionTimestampPerProfile[] =
         "signin.SearchAIModeSignInPromoLastImpressionTimestamp";
 
+// Dictionary pref to store Desktop Smart Account Switching promo global
+// throttling state (ignore/dismissal cooldowns and caps).
+inline constexpr char kAccountSwitchingPromoState[] =
+    "signin.account_switching_promo_state";
+
 }  // namespace prefs
 
 #endif  // CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_PREF_NAMES_H_

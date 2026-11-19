@@ -1,0 +1,208 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/signin/account_switching_manager.h"
+
+#include <optional>
+#include <string_view>
+#include <utility>
+
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/json/values_util.h"
+#include "base/numerics/clamped_math.h"
+#include "base/time/time.h"
+#include "base/values.h"
+#include "chrome/browser/signin/chrome_signin_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/base/signin_switches.h"
+
+namespace signin {
+
+namespace {
+
+// Schema of the profile dictionary preference
+// `prefs::kAccountSwitchingPromoState`:
+//
+// {
+//   // Total number of times the promo was ignored without explicit action.
+//   "ignore_count": 2,
+//   // Timestamp of the last ignore.
+//   "last_ignored_time": "<base::Time>",
+//   // Timestamp of the last explicit dismissal ("Not now").
+//   "last_explicit_dismissal_time": "<base::Time>"
+// }
+constexpr char kGlobalIgnoreCountKey[] = "ignore_count";
+constexpr char kLastIgnoredTimeKey[] = "last_ignored_time";
+constexpr char kLastExplicitDismissalTimeKey[] = "last_explicit_dismissal_time";
+
+bool IsCooldownActive(const base::DictValue& state_dict,
+                      std::string_view timestamp_key,
+                      base::Time now,
+                      base::TimeDelta cooldown) {
+  std::optional<base::Time> timestamp =
+      base::ValueToTime(state_dict.Find(timestamp_key));
+  // Ignore null timestamps and timestamps in the future (e.g. after backward
+  // wall-clock adjustment) so promos do not wedge indefinitely.
+  return timestamp.has_value() && !timestamp->is_null() && *timestamp <= now &&
+         now - *timestamp < cooldown;
+}
+
+}  // namespace
+
+// static
+bool AccountSwitchingManager::IsFeatureEnabled() {
+  return base::FeatureList::IsEnabled(switches::kEnableAccountPreviewData) &&
+         base::FeatureList::IsEnabled(
+             switches::kEnableAccountPreviewSwitchingAccount);
+}
+
+// static
+void AccountSwitchingManager::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kAccountSwitchingPromoState);
+}
+
+AccountSwitchingManager::AccountSwitchingManager(PrefService* prefs)
+    : prefs_(CHECK_DEREF(prefs)) {}
+
+AccountSwitchingManager::~AccountSwitchingManager() = default;
+
+void AccountSwitchingManager::Shutdown() {
+  switching_in_progress_ = false;
+  on_switch_finished_callback_.Reset();
+}
+
+bool AccountSwitchingManager::CanShowPromo(const GaiaId& primary_gaia_id,
+                                           const GaiaId& target_gaia_id) const {
+  if (!CanStartSwitching(primary_gaia_id, target_gaia_id)) {
+    return false;
+  }
+
+  if (switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.Get()) {
+    return true;
+  }
+
+  const base::Time now = base::Time::Now();
+
+  // 28-day primary-account sign-in/switch grace period.
+  std::optional<base::Time> last_signin_time =
+      SigninPrefs(*prefs_).GetChromeLastSigninTime(primary_gaia_id);
+  if (!last_signin_time.has_value() || last_signin_time->is_null() ||
+      now - *last_signin_time < kPrimaryAccountSigninGracePeriod) {
+    return false;
+  }
+
+  const base::DictValue& state_dict =
+      prefs_->GetDict(prefs::kAccountSwitchingPromoState);
+
+  // Global ignore cap (5) and 7-day ignore cooldown.
+  if (state_dict.FindInt(kGlobalIgnoreCountKey).value_or(0) >=
+      kMaxGlobalIgnores) {
+    return false;
+  }
+  if (IsCooldownActive(state_dict, kLastIgnoredTimeKey, now,
+                       kGlobalIgnoreCooldown)) {
+    return false;
+  }
+
+  // Global 28-day cooldown after an explicit dismissal ("Not now").
+  if (IsCooldownActive(state_dict, kLastExplicitDismissalTimeKey, now,
+                       kGlobalExplicitDismissalCooldown)) {
+    return false;
+  }
+
+  // TODO(crbug.com/585130538): Check per-pair `(primary_gaia_id,
+  // target_gaia_id)` suppression rules (explicit dismissal cap of 2 and
+  // reverse-switch suppression) stored in `SigninPrefs`.
+
+  // TODO(crbug.com/585130538): Check profile-level post-acceptance
+  // suppression or post-new-profile-creation cooldown here once product
+  // confirms re-prompting rules.
+  return true;
+}
+
+void AccountSwitchingManager::RecordPromoIgnored() {
+  ScopedDictPrefUpdate update(*prefs_, prefs::kAccountSwitchingPromoState);
+  int new_ignore_count =
+      base::ClampAdd(update->FindInt(kGlobalIgnoreCountKey).value_or(0), 1);
+  update->Set(kGlobalIgnoreCountKey, new_ignore_count);
+  update->Set(kLastIgnoredTimeKey, base::TimeToValue(base::Time::Now()));
+}
+
+void AccountSwitchingManager::RecordPromoExplicitlyDismissed(
+    const GaiaId& primary_gaia_id,
+    const GaiaId& target_gaia_id) {
+  CHECK(!primary_gaia_id.empty());
+  CHECK(!target_gaia_id.empty());
+  CHECK_NE(primary_gaia_id, target_gaia_id);
+
+  ScopedDictPrefUpdate update(*prefs_, prefs::kAccountSwitchingPromoState);
+  update->Set(kLastExplicitDismissalTimeKey,
+              base::TimeToValue(base::Time::Now()));
+
+  // TODO(crbug.com/585130538): Increment the per-pair explicit dismissal count
+  // for `(primary_gaia_id, target_gaia_id)` in `SigninPrefs`.
+}
+
+bool AccountSwitchingManager::StartSwitching(
+    const GaiaId& primary_gaia_id,
+    const GaiaId& target_gaia_id,
+    base::OnceClosure on_switch_finished) {
+  if (!CanStartSwitching(primary_gaia_id, target_gaia_id)) {
+    return false;
+  }
+
+  switching_in_progress_ = true;
+  on_switch_finished_callback_ = std::move(on_switch_finished);
+
+  // TODO(crbug.com/585130538): Persist profile-level post-acceptance
+  // suppression or post-new-profile-creation cooldown once product confirms
+  // re-prompting rules.
+  // TODO(crbug.com/585131182, crbug.com/585132335): Execute the in-profile
+  // primary-account switch or async new-profile creation here, calling
+  // `OnSwitchFinished()` when the switch completes or aborts.
+  return true;
+}
+
+void AccountSwitchingManager::CompleteSwitchForTesting() {
+  OnSwitchFinished();
+}
+
+bool AccountSwitchingManager::CanStartSwitching(
+    const GaiaId& primary_gaia_id,
+    const GaiaId& target_gaia_id) const {
+  if (!IsFeatureEnabled()) {
+    return false;
+  }
+  if (primary_gaia_id.empty() || target_gaia_id.empty() ||
+      primary_gaia_id == target_gaia_id) {
+    return false;
+  }
+  // In-progress switch and active 7-day switch-back grace window guards prevent
+  // overlapping switches or inconsistent switch-back state and are never
+  // bypassed by `SkipCooldown`.
+  return !switching_in_progress_ && !IsSwitchBackWindowActive();
+}
+
+bool AccountSwitchingManager::IsSwitchBackWindowActive() const {
+  // TODO(crbug.com/585132769): Query the 7-day Profile Menu switch-back row
+  // pref state in `prefs_` once implemented.
+  return false;
+}
+
+void AccountSwitchingManager::OnSwitchFinished() {
+  CHECK(switching_in_progress_);
+  switching_in_progress_ = false;
+  if (base::OnceClosure callback = std::move(on_switch_finished_callback_)) {
+    std::move(callback).Run();
+  }
+}
+
+}  // namespace signin
