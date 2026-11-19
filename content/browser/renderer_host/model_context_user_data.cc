@@ -467,9 +467,10 @@ void ModelContextUserData::RegisterScriptTool(
   }
 
   // Kill the renderer if it tries to register a tool without a `tool_id`, or
-  // with a `tool_id` that is already registered in `this`. The renderer mints
-  // this ID, but the browser verifies that it is present and unique.
-  if (!tool->tool_id ||
+  // with a `tool_id` that is invalid or already registered in `this`. The
+  // renderer mints this ID, but the browser verifies that it is valid and
+  // unique.
+  if (!tool->tool_id || !blink::IsValidScriptToolToken(*tool->tool_id) ||
       std::ranges::any_of(script_tools_,
                           [&](const blink::mojom::ScriptToolPtr& t) {
                             return t->tool_id == tool->tool_id;
@@ -635,6 +636,21 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
     return;
   }
 
+  auto* existing_page_data =
+      ModelContextPageUserData::GetForPage(render_frame_host().GetPage());
+  if (!blink::IsValidScriptToolToken(invocation_id) ||
+      (existing_page_data &&
+       existing_page_data->HasPendingScriptToolExecution(invocation_id))) {
+    // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
+    bad_message::ReceivedBadMessage(
+        render_frame_host().GetProcess(),
+        bad_message::RFHI_WEBMCP_INVALID_INVOCATION_ID);
+    std::move(callback).Run(
+        std::nullopt,
+        blink::mojom::ExecuteRemoteScriptToolError::kInvalidStateError);
+    return;
+  }
+
   // Renderers mint a new `invocation_id` for each tool execution, so reusing
   // one is a bad message. Check for an existing continuation explicitly: a
   // continuation can outlive its tool execution (e.g. an unredeemed token stays
@@ -775,9 +791,21 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
 
 void ModelContextUserData::CancelRemoteScriptTool(
     const blink::ToolInvocationToken& invocation_id) {
+  if (!IsWebMCPEnabled(render_frame_host())) {
+    // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
+    bad_message::ReceivedBadMessage(render_frame_host().GetProcess(),
+                                    bad_message::RFHI_WEBMCP_NOT_ENABLED);
+    return;
+  }
+  if (!blink::IsValidScriptToolToken(invocation_id)) {
+    // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
+    bad_message::ReceivedBadMessage(
+        render_frame_host().GetProcess(),
+        bad_message::RFHI_WEBMCP_INVALID_INVOCATION_ID);
+    return;
+  }
   if (ModelContextPageUserData* page_data =
-          ModelContextPageUserData::GetOrCreateForPage(
-              render_frame_host().GetPage())) {
+          ModelContextPageUserData::GetForPage(render_frame_host().GetPage())) {
     page_data->CancelPendingScriptToolExecution(invocation_id);
   }
 }
@@ -883,6 +911,11 @@ ModelContextPageUserData::ModelContextPageUserData(Page& page)
     : PageUserData<ModelContextPageUserData>(page) {}
 
 ModelContextPageUserData::~ModelContextPageUserData() = default;
+
+bool ModelContextPageUserData::HasPendingScriptToolExecution(
+    const blink::ToolInvocationToken& invocation_id) const {
+  return pending_script_tool_executions_.contains(invocation_id);
+}
 
 void ModelContextPageUserData::AddPendingScriptToolExecution(
     const blink::ToolInvocationToken& invocation_id,

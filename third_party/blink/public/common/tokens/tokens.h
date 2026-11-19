@@ -5,10 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_TOKENS_TOKENS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_TOKENS_TOKENS_H_
 
+#include <cstdint>
+#include <limits>
 #include <string>
 
 #include "base/types/strong_alias.h"
 #include "base/types/token_type.h"
+#include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "third_party/blink/public/common/tokens/multi_token.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
@@ -187,6 +190,16 @@ using WebNNPendingConstantToken =
     base::TokenType<class WebNNPendingConstantTokenTypeMarker>;
 using WebNNTensorToken = base::TokenType<class WebNNTensorTokenTypeMarker>;
 using WebNNGraphToken = base::TokenType<class WebNNGraphTokenTypeMarker>;
+
+// Returns the all-ones `base::UnguessableToken` value reserved by
+// `blink::HashTraits<base::UnguessableToken>::DeletedValue()` for deleted hash
+// table buckets.
+inline base::UnguessableToken DeletedUnguessableTokenSentinel() {
+  return base::UnguessableToken::Deserialize(
+             std::numeric_limits<uint64_t>::max(),
+             std::numeric_limits<uint64_t>::max())
+      .value();
+}
 
 }  // namespace blink
 

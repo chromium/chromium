@@ -20,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/base_hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
@@ -1277,6 +1279,13 @@ TEST_F(ModelContextTest, fileURLAllowedForDeclarativeTool) {
   HeapVector<Member<const ToolData>> tools = model_context->ListTools();
   ASSERT_EQ(1u, tools.size());
   EXPECT_EQ("test_tool", tools[0]->Name());
+}
+
+TEST_F(ModelContextTest, DeletedUnguessableTokenSentinelMatchesHashTraits) {
+  EXPECT_TRUE(HashTraits<ScriptToolToken>::IsDeletedValue(
+      ScriptToolToken(DeletedUnguessableTokenSentinel())));
+  EXPECT_TRUE(HashTraits<ToolInvocationToken>::IsDeletedValue(
+      ToolInvocationToken(DeletedUnguessableTokenSentinel())));
 }
 
 }  // namespace blink
