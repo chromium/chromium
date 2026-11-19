@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
+#include "third_party/webrtc/api/video/video_common.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"

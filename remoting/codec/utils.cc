@@ -20,6 +20,7 @@
 #include "remoting/base/util.h"
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
+#include "third_party/webrtc/api/video/video_common.h"
 
 namespace remoting {
 

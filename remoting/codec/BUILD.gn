@@ -99,16 +99,9 @@ if (!is_component_build && (is_win || is_linux)) {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "encoder_bitrate_filter_unittest.cc",
-    "utils_unittest.cc",
-    "video_encoder_active_map_unittest.cc",
-    "webrtc_video_encoder_av1_unittest.cc",
-    "webrtc_video_encoder_unittest.cc",
-  ]
+  sources = [ "utils_unittest.cc" ]
 
   deps = [
-    ":encoder",
     ":utils",
     "//base",
     "//base/test:test_support",
@@ -116,6 +109,19 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
-    "//ui/gfx:color_space",
   ]
+
+  if (enable_remoting_host) {
+    sources += [
+      "encoder_bitrate_filter_unittest.cc",
+      "video_encoder_active_map_unittest.cc",
+      "webrtc_video_encoder_av1_unittest.cc",
+      "webrtc_video_encoder_unittest.cc",
+    ]
+
+    deps += [
+      ":encoder",
+      "//ui/gfx:color_space",
+    ]
+  }
 }

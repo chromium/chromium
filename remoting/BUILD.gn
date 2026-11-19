@@ -102,6 +102,7 @@ test("remoting_unittests") {
     "//base/test:test_support",
     "//google_apis",
     "//remoting/base:unit_tests",
+    "//remoting/codec:unit_tests",
     "//remoting/protocol:unit_tests",
     "//remoting/signaling:unit_tests",
     "//testing/gmock",
@@ -110,7 +111,6 @@ test("remoting_unittests") {
 
   if (enable_remoting_host) {
     deps += [
-      "//remoting/codec:unit_tests",
       "//remoting/host:unit_tests",
       "//remoting/host/base:unit_tests",
       "//ui/gfx",
