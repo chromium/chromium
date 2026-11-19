@@ -157,4 +157,9 @@ public interface AconfigFlaggedApiDelegate {
     default boolean isContentAccessDisabledByDefaultForWebView() {
         return false;
     }
+
+    /** Returns whether isolated gpu process is available. */
+    default boolean isIsolatedGpuProcessEnabled() {
+        return false;
+    }
 }

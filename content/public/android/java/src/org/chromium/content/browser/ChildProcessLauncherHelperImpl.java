@@ -21,6 +21,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
@@ -435,10 +436,14 @@ public final class ChildProcessLauncherHelperImpl {
         boolean reducePriorityOnBackground = false;
         if (!ContentSwitches.SWITCH_RENDERER_PROCESS.equals(processType)) {
             if (ContentSwitches.SWITCH_GPU_PROCESS.equals(processType)) {
+                AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+                boolean useSandboxedGpuProcess =
+                        delegate != null
+                                && delegate.isIsolatedGpuProcessEnabled()
+                                && ChildProcessLauncherHelperImplJni.get()
+                                        .isSandboxedGpuProcessEnabled();
                 serviceType =
-                        ChildProcessLauncherHelperImplJni.get().isSandboxedGpuProcessEnabled()
-                                ? ServiceType.SANDBOXED_GPU
-                                : ServiceType.PRIVILEGED;
+                        useSandboxedGpuProcess ? ServiceType.SANDBOXED_GPU : ServiceType.PRIVILEGED;
                 reducePriorityOnBackground =
                         ContentFeatureMap.isEnabled(
                                 ContentFeatures.REDUCE_GPU_PRIORITY_ON_BACKGROUND);
