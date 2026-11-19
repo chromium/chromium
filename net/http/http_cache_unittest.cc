@@ -10253,6 +10253,160 @@ TEST_F(HttpCacheRangeGetTest, InvalidResponse2) {
   EXPECT_FALSE(cache.OpenBackendEntry(request.CacheKey(), &entry));
 }
 
+// Tests that we reject a 206 response with Content-Length: 0 because a
+// valid Content-Range always spans at least one byte.
+TEST_F(HttpCacheRangeGetTest, InvalidResponseZeroContentLength) {
+  MockHttpCache cache;
+  std::string headers;
+
+  ScopedMockTransaction transaction(kRangeGET_TransactionOK);
+  transaction.handler = MockTransactionHandler();
+  transaction.response_headers =
+      "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
+      "ETag: \"foo\"\n"
+      "Accept-Ranges: bytes\n"
+      "Content-Range: bytes 40-49/80\n"
+      "Content-Length: 0\n";
+  transaction.data = "";
+  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+
+  std::string expected(transaction.status);
+  expected.append("\n");
+  expected.append(transaction.response_headers);
+  EXPECT_EQ(expected, headers);
+
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // Verify that we don't have a cached entry.
+  disk_cache::Entry* entry;
+  MockHttpRequest request(transaction);
+  EXPECT_FALSE(cache.OpenBackendEntry(request.CacheKey(), &entry));
+}
+
+// Tests that a 206 response with Content-Length: 0 for an uncached leading
+// range of a sparse entry is rejected and causes an unconditional retry.
+TEST_F(HttpCacheRangeGetTest, InvalidResponseZeroContentLengthCachedContent) {
+  MockHttpCache cache;
+  std::string headers;
+
+  // Write to the cache (70-79).
+  ScopedMockTransaction transaction(kRangeGET_TransactionOK);
+  transaction.request_headers = "Range: bytes = 70-79\r\n" EXTRA_HEADER;
+  transaction.data = "rg: 70-79 ";
+  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+  Verify206Response(headers, 70, 79);
+
+  // Issue a full request. The cache asks for bytes=0-69 with If-Range; return
+  // a 206 with Content-Length: 0. The cache should reject it, doom the sparse
+  // entry, and retry without Range.
+  transaction.request_headers = EXTRA_HEADER;
+  transaction.data = "Not a range";
+  int request_count = 0;
+  transaction.handler = base::BindLambdaForTesting(
+      [&](const HttpRequestInfo* request, std::string* response_status,
+          std::string* response_headers, std::string* response_data) {
+        if (++request_count == 1) {
+          EXPECT_EQ("bytes=0-69", request->extra_headers.GetHeaderView(
+                                      HttpRequestHeaders::kRange));
+          EXPECT_EQ("\"foo\"", request->extra_headers.GetHeaderView(
+                                   HttpRequestHeaders::kIfRange));
+          *response_status = "HTTP/1.1 206 Partial Content";
+          *response_headers =
+              "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
+              "ETag: \"foo\"\n"
+              "Accept-Ranges: bytes\n"
+              "Content-Range: bytes 0-69/80\n"
+              "Content-Length: 0\n";
+          *response_data = "";
+        } else {
+          EXPECT_FALSE(
+              request->extra_headers.HasHeader(HttpRequestHeaders::kRange));
+          EXPECT_FALSE(
+              request->extra_headers.HasHeader(HttpRequestHeaders::kIfRange));
+          *response_status = "HTTP/1.1 200 OK";
+          *response_headers = "Date: Wed, 28 Nov 2007 09:40:09 GMT\n";
+          *response_data = "Not a range";
+        }
+      });
+  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+
+  EXPECT_EQ(0U, headers.find("HTTP/1.1 200 OK\n"));
+  EXPECT_EQ(2, request_count);
+  EXPECT_EQ(3, cache.network_layer()->transaction_count());
+  EXPECT_EQ(1, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // The entry should have been doomed. The retry is issued with `mode_ == NONE`
+  // so doesn't get written to the cache.
+  disk_cache::Entry* entry;
+  MockHttpRequest request(transaction);
+  EXPECT_FALSE(cache.OpenBackendEntry(request.CacheKey(), &entry));
+}
+
+// Tests that a 206 response with Content-Length: 0 to the 1-byte probe for a
+// truncated 200 OK entry is rejected and causes an unconditional retry.
+TEST_F(HttpCacheRangeGetTest, InvalidResponseZeroContentLengthTruncatedEntry) {
+  MockHttpCache cache;
+  ScopedMockTransaction transaction(kRangeGET_TransactionOK);
+
+  std::string raw_headers(
+      "HTTP/1.1 200 OK\n"
+      "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
+      "ETag: \"foo\"\n"
+      "Accept-Ranges: bytes\n"
+      "Content-Length: 80\n");
+  CreateTruncatedEntry(raw_headers, &cache);
+
+  // Issue a full request. The cache sends a 1-byte probe (bytes=20-20) with
+  // If-Range; return a 206 with Content-Length: 0. The cache should reject it,
+  // doom the truncated entry, and retry without Range.
+  std::string headers;
+  transaction.request_headers = EXTRA_HEADER;
+  transaction.data = "Not a range";
+  int request_count = 0;
+  transaction.handler = base::BindLambdaForTesting(
+      [&](const HttpRequestInfo* request, std::string* response_status,
+          std::string* response_headers, std::string* response_data) {
+        if (++request_count == 1) {
+          EXPECT_EQ("bytes=20-20", request->extra_headers.GetHeaderView(
+                                       HttpRequestHeaders::kRange));
+          EXPECT_EQ("\"foo\"", request->extra_headers.GetHeaderView(
+                                   HttpRequestHeaders::kIfRange));
+          *response_status = "HTTP/1.1 206 Partial Content";
+          *response_headers =
+              "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
+              "ETag: \"foo\"\n"
+              "Accept-Ranges: bytes\n"
+              "Content-Range: bytes 20-20/80\n"
+              "Content-Length: 0\n";
+          *response_data = "";
+        } else {
+          EXPECT_FALSE(
+              request->extra_headers.HasHeader(HttpRequestHeaders::kRange));
+          EXPECT_FALSE(
+              request->extra_headers.HasHeader(HttpRequestHeaders::kIfRange));
+          *response_status = "HTTP/1.1 200 OK";
+          *response_headers = "Date: Wed, 28 Nov 2007 09:40:09 GMT\n";
+          *response_data = "Not a range";
+        }
+      });
+  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+
+  EXPECT_EQ(0U, headers.find("HTTP/1.1 200 OK\n"));
+  EXPECT_EQ(2, request_count);
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  EXPECT_EQ(1, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // The entry should have been doomed. The retry is issued with `mode_ == NONE`
+  // so doesn't get written to the cache.
+  disk_cache::Entry* entry;
+  MockHttpRequest request(transaction);
+  EXPECT_FALSE(cache.OpenBackendEntry(request.CacheKey(), &entry));
+}
+
 // Tests that if a server tells us conflicting information about a resource we
 // drop the entry.
 TEST_F(HttpCacheRangeGetTest, InvalidResponse3) {

@@ -330,7 +330,7 @@ bool PartialData::ResponseHeadersOK(const HttpResponseHeaders* headers) {
   // but relax the requirement because some servers don't do that.
   std::optional<base::ByteSize> content_length = headers->GetContentLength();
   const uint64_t expected_length = end - start + 1;
-  if (content_length && content_length->is_positive() &&
+  if (content_length.has_value() &&
       content_length->InBytes() != expected_length) {
     return false;
   }
