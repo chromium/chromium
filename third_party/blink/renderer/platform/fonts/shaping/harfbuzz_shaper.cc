@@ -485,7 +485,7 @@ CanvasRotationInVertical CanvasRotationForRun(
   }
 
   if (font_orientation == FontOrientation::kVerticalMixed) {
-    if (render_orientation == OrientationIterator::kOrientationKeep) {
+    if (render_orientation == OrientationIterator::RenderOrientation::kKeep) {
       return font_description.IsSyntheticOblique()
                  ? CanvasRotationInVertical::kRotateCanvasUprightOblique
                  : CanvasRotationInVertical::kRotateCanvasUpright;
@@ -1120,7 +1120,8 @@ ShapeResult* HarfBuzzShaper::Shape(const Font* font,
   if (text_.Is8Bit()) {
     // 8-bit text is guaranteed to be horizontal latin-1.
     RunSegmenter::RunSegmenterRange segment_range = {
-        start, end, USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        start, end, USCRIPT_LATIN,
+        OrientationIterator::RenderOrientation::kKeep,
         FontFallbackPriority::kText};
     ShapeSegment(&range_data, segment_range, result);
 

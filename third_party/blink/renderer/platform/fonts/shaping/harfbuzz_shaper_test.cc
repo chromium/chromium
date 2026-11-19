@@ -2418,7 +2418,7 @@ TEST_F(HarfBuzzShaperTest, ShapeNullAndEmptyStrings) {
     EXPECT_EQ(0u, TestInfo(result)->NumberOfRunsForTesting());
 
     RunSegmenter::RunSegmenterRange empty_range = {
-        0, 0, USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        0, 0, USCRIPT_LATIN, OrientationIterator::RenderOrientation::kKeep,
         FontFallbackPriority::kText};
     result = shaper.Shape(font, TextDirection::kLtr, 0, 0, empty_range);
     EXPECT_EQ(0u, result->NumCharacters());

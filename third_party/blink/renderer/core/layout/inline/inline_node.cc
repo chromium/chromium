@@ -1253,7 +1253,8 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
     if (data->items.size()) {
       RunSegmenter::RunSegmenterRange range = {
           0u, data->text_content.length(), USCRIPT_LATIN,
-          OrientationIterator::kOrientationKeep, FontFallbackPriority::kText};
+          OrientationIterator::RenderOrientation::kKeep,
+          FontFallbackPriority::kText};
       InlineItem::SetSegmentData(range, &data->items);
     }
     data->segments = nullptr;

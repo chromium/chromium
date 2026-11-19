@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/inline/inline_item_segment.h"
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -37,10 +39,9 @@ unsigned SetRenderOrientation(
     unsigned value,
     OrientationIterator::RenderOrientation render_orientation) {
   DCHECK_NE(render_orientation,
-            OrientationIterator::RenderOrientation::kOrientationInvalid);
+            OrientationIterator::RenderOrientation::kInvalid);
   return (value & ~kRenderOrientationMask) |
-         (render_orientation !=
-          OrientationIterator::RenderOrientation::kOrientationKeep);
+         (render_orientation != OrientationIterator::RenderOrientation::kKeep);
 }
 
 }  // namespace
@@ -59,7 +60,7 @@ unsigned InlineItemSegment::PackSegmentData(
          static_cast<unsigned>(range.script) <= kScriptMask);
   DCHECK_LE(static_cast<unsigned>(range.font_fallback_priority),
             kFontFallbackPriorityMask);
-  DCHECK_LE(static_cast<unsigned>(range.render_orientation),
+  DCHECK_LE(std::to_underlying(range.render_orientation),
             kRenderOrientationMask);
 
   unsigned value =
@@ -67,7 +68,7 @@ unsigned InlineItemSegment::PackSegmentData(
   value <<= kFontFallbackPriorityBits;
   value |= static_cast<unsigned>(range.font_fallback_priority);
   value <<= kRenderOrientationBits;
-  value |= range.render_orientation;
+  value |= std::to_underlying(range.render_orientation);
   return value;
 }
 

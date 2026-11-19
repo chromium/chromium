@@ -42,6 +42,8 @@ struct SegmenterExpectedRun {
 
 class RunSegmenterTest : public testing::Test {
  protected:
+  using RenderOrientation = OrientationIterator::RenderOrientation;
+
   void CheckRuns(const Vector<SegmenterTestRun>& runs,
                  FontOrientation orientation) {
     StringBuilder text;
@@ -87,51 +89,48 @@ class RunSegmenterTest : public testing::Test {
 
 TEST_F(RunSegmenterTest, Empty) {
   String empty(g_empty_string16_bit);
-  RunSegmenter::RunSegmenterRange segmenter_range = {
-      0, 0, USCRIPT_INVALID_CODE, OrientationIterator::kOrientationKeep};
+  RunSegmenter::RunSegmenterRange segmenter_range = {0, 0, USCRIPT_INVALID_CODE,
+                                                     RenderOrientation::kKeep};
   RunSegmenter run_segmenter(empty.Span16(), FontOrientation::kVerticalMixed);
   DCHECK(!run_segmenter.Consume(&segmenter_range));
   ASSERT_EQ(segmenter_range.start, 0u);
   ASSERT_EQ(segmenter_range.end, 0u);
   ASSERT_EQ(segmenter_range.script, USCRIPT_INVALID_CODE);
-  ASSERT_EQ(segmenter_range.render_orientation,
-            OrientationIterator::kOrientationKeep);
+  ASSERT_EQ(segmenter_range.render_orientation, RenderOrientation::kKeep);
   ASSERT_EQ(segmenter_range.font_fallback_priority,
             FontFallbackPriority::kText);
 }
 
 TEST_F(RunSegmenterTest, LatinPunctuationSideways) {
-  CheckRunsMixed({{"Abc.;?Xyz", USCRIPT_LATIN,
-                   OrientationIterator::kOrientationRotateSideways,
-                   FontFallbackPriority::kText}});
+  CheckRunsMixed(
+      {{"Abc.;?Xyz", USCRIPT_LATIN, RenderOrientation::kRotateSideways,
+        FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, OneSpace) {
-  CheckRunsMixed(
-      {{" ", USCRIPT_COMMON, OrientationIterator::kOrientationRotateSideways,
-        FontFallbackPriority::kText}});
+  CheckRunsMixed({{" ", USCRIPT_COMMON,
+                   OrientationIterator::RenderOrientation::kRotateSideways,
+                   FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, ArabicHangul) {
-  CheckRunsMixed(
-      {{"نص", USCRIPT_ARABIC, OrientationIterator::kOrientationRotateSideways,
-        FontFallbackPriority::kText},
-       {"키스의", USCRIPT_HANGUL, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText}});
+  CheckRunsMixed({{"نص", USCRIPT_ARABIC, RenderOrientation::kRotateSideways,
+                   FontFallbackPriority::kText},
+                  {"키스의", USCRIPT_HANGUL, RenderOrientation::kKeep,
+                   FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, JapaneseHindiEmojiMix) {
   CheckRunsMixed(
-      {{"百家姓", USCRIPT_HAN, OrientationIterator::kOrientationKeep,
+      {{"百家姓", USCRIPT_HAN, RenderOrientation::kKeep,
         FontFallbackPriority::kText},
-       {"ऋषियों", USCRIPT_DEVANAGARI,
-        OrientationIterator::kOrientationRotateSideways,
+       {"ऋषियों", USCRIPT_DEVANAGARI, RenderOrientation::kRotateSideways,
         FontFallbackPriority::kText},
-       {"🌱🌲🌳🌴", USCRIPT_DEVANAGARI, OrientationIterator::kOrientationKeep,
+       {"🌱🌲🌳🌴", USCRIPT_DEVANAGARI, RenderOrientation::kKeep,
         FontFallbackPriority::kEmojiEmoji},
-       {"百家姓", USCRIPT_HAN, OrientationIterator::kOrientationKeep,
+       {"百家姓", USCRIPT_HAN, RenderOrientation::kKeep,
         FontFallbackPriority::kText},
-       {"🌱🌲", USCRIPT_HAN, OrientationIterator::kOrientationKeep,
+       {"🌱🌲", USCRIPT_HAN, RenderOrientation::kKeep,
         FontFallbackPriority::kEmojiEmoji}});
 }
 
@@ -141,113 +140,103 @@ TEST_F(RunSegmenterTest, CombiningCircle) {
 #else
   const UScriptCode script = USCRIPT_COMMON;
 #endif
-  CheckRunsHorizontal({{"◌́◌̀◌̈◌̂◌̄◌̊", script, OrientationIterator::kOrientationKeep,
+  CheckRunsHorizontal({{"◌́◌̀◌̈◌̂◌̄◌̊", script, RenderOrientation::kKeep,
                         FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, HangulSpace) {
-  CheckRunsMixed(
-      {{"키스의", USCRIPT_HANGUL, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText},
-       {" ", USCRIPT_HANGUL, OrientationIterator::kOrientationRotateSideways,
-        FontFallbackPriority::kText},
-       {"고유조건은", USCRIPT_HANGUL, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText}});
+  CheckRunsMixed({{"키스의", USCRIPT_HANGUL, RenderOrientation::kKeep,
+                   FontFallbackPriority::kText},
+                  {" ", USCRIPT_HANGUL, RenderOrientation::kRotateSideways,
+                   FontFallbackPriority::kText},
+                  {"고유조건은", USCRIPT_HANGUL, RenderOrientation::kKeep,
+                   FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, TechnicalCommonUpright) {
-  CheckRunsMixed({{"⌀⌁⌂", USCRIPT_COMMON, OrientationIterator::kOrientationKeep,
+  CheckRunsMixed({{"⌀⌁⌂", USCRIPT_COMMON, RenderOrientation::kKeep,
                    FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, PunctuationCommonSideways) {
-  CheckRunsMixed(
-      {{".…¡", USCRIPT_COMMON, OrientationIterator::kOrientationRotateSideways,
-        FontFallbackPriority::kText}});
+  CheckRunsMixed({{".…¡", USCRIPT_COMMON, RenderOrientation::kRotateSideways,
+                   FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, JapanesePunctuationMixedInside) {
-  CheckRunsMixed(
-      {{"いろはに", USCRIPT_HIRAGANA, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText},
-       {".…¡", USCRIPT_HIRAGANA,
-        OrientationIterator::kOrientationRotateSideways,
-        FontFallbackPriority::kText},
-       {"ほへと", USCRIPT_HIRAGANA, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText}});
+  CheckRunsMixed({{"いろはに", USCRIPT_HIRAGANA, RenderOrientation::kKeep,
+                   FontFallbackPriority::kText},
+                  {".…¡", USCRIPT_HIRAGANA, RenderOrientation::kRotateSideways,
+                   FontFallbackPriority::kText},
+                  {"ほへと", USCRIPT_HIRAGANA, RenderOrientation::kKeep,
+                   FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, JapanesePunctuationMixedInsideHorizontal) {
   CheckRunsHorizontal(
-      {{"いろはに.…¡ほへと", USCRIPT_HIRAGANA,
-        OrientationIterator::kOrientationKeep, FontFallbackPriority::kText}});
+      {{"いろはに.…¡ほへと", USCRIPT_HIRAGANA, RenderOrientation::kKeep,
+        FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, PunctuationDevanagariCombining) {
-  CheckRunsHorizontal(
-      {{"क+े", USCRIPT_DEVANAGARI, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText}});
+  CheckRunsHorizontal({{"क+े", USCRIPT_DEVANAGARI, RenderOrientation::kKeep,
+                        FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, EmojiZwjSequences) {
   CheckRunsHorizontal(
       {{"👩‍👩‍👧‍👦👩‍❤️‍💋‍👨", USCRIPT_LATIN,
-        OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kEmojiEmoji},
-       {"abcd", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        RenderOrientation::kKeep, FontFallbackPriority::kEmojiEmoji},
+       {"abcd", USCRIPT_LATIN, RenderOrientation::kKeep,
         FontFallbackPriority::kText},
-       {"👩‍👩", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+       {"👩‍👩", USCRIPT_LATIN, RenderOrientation::kKeep,
         FontFallbackPriority::kEmojiEmoji},
-       {"\U0000200D‍efg", USCRIPT_LATIN,
-        OrientationIterator::kOrientationKeep, FontFallbackPriority::kText}});
+       {"\U0000200D‍efg", USCRIPT_LATIN, RenderOrientation::kKeep,
+        FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, EmojiZwjSequencesVerticalMixed) {
-  CheckRunsMixed({{"👩‍👩‍👧‍👦👩‍❤️‍💋‍👨",
-                   USCRIPT_COMMON, OrientationIterator::kOrientationKeep,
-                   FontFallbackPriority::kEmojiEmoji}});
+  CheckRunsMixed(
+      {{"👩‍👩‍👧‍👦👩‍❤️‍💋‍👨", USCRIPT_COMMON,
+        RenderOrientation::kKeep, FontFallbackPriority::kEmojiEmoji}});
 }
 
 TEST_F(RunSegmenterTest, JapaneseLetterlikeEnd) {
   CheckRunsMixed(
-      {{"いろは", USCRIPT_HIRAGANA, OrientationIterator::kOrientationKeep,
+      {{"いろは", USCRIPT_HIRAGANA, RenderOrientation::kKeep,
         FontFallbackPriority::kText},
-       {"ℐℒℐℒℐℒℐℒℐℒℐℒℐℒ", USCRIPT_HIRAGANA,
-        OrientationIterator::kOrientationRotateSideways,
+       {"ℐℒℐℒℐℒℐℒℐℒℐℒℐℒ", USCRIPT_HIRAGANA, RenderOrientation::kRotateSideways,
         FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, JapaneseCase) {
-  CheckRunsMixed(
-      {{"いろは", USCRIPT_HIRAGANA, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText},
-       {"aaAA", USCRIPT_LATIN, OrientationIterator::kOrientationRotateSideways,
-        FontFallbackPriority::kText},
-       {"いろは", USCRIPT_HIRAGANA, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText}});
+  CheckRunsMixed({{"いろは", USCRIPT_HIRAGANA, RenderOrientation::kKeep,
+                   FontFallbackPriority::kText},
+                  {"aaAA", USCRIPT_LATIN, RenderOrientation::kRotateSideways,
+                   FontFallbackPriority::kText},
+                  {"いろは", USCRIPT_HIRAGANA, RenderOrientation::kKeep,
+                   FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, DingbatsMiscSymbolsModifier) {
-  CheckRunsHorizontal({{"⛹🏻✍🏻✊🏼", USCRIPT_COMMON,
-                        OrientationIterator::kOrientationKeep,
+  CheckRunsHorizontal({{"⛹🏻✍🏻✊🏼", USCRIPT_COMMON, RenderOrientation::kKeep,
                         FontFallbackPriority::kEmojiEmoji}});
 }
 
 TEST_F(RunSegmenterTest, ArmenianCyrillicCase) {
-  CheckRunsHorizontal(
-      {{"աբգ", USCRIPT_ARMENIAN, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText},
-       {"αβγ", USCRIPT_GREEK, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText},
-       {"ԱԲԳ", USCRIPT_ARMENIAN, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText}});
+  CheckRunsHorizontal({{"աբգ", USCRIPT_ARMENIAN, RenderOrientation::kKeep,
+                        FontFallbackPriority::kText},
+                       {"αβγ", USCRIPT_GREEK, RenderOrientation::kKeep,
+                        FontFallbackPriority::kText},
+                       {"ԱԲԳ", USCRIPT_ARMENIAN, RenderOrientation::kKeep,
+                        FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, EmojiSubdivisionFlags) {
   CheckRunsHorizontal(
       {{"🏴󠁧󠁢󠁷󠁬󠁳󠁿🏴󠁧󠁢󠁳󠁣󠁴󠁿🏴󠁧󠁢"
         "󠁥󠁮󠁧󠁿",
-        USCRIPT_COMMON, OrientationIterator::kOrientationKeep,
+        USCRIPT_COMMON, RenderOrientation::kKeep,
         FontFallbackPriority::kEmojiEmoji}});
 }
 
@@ -256,61 +245,56 @@ TEST_F(RunSegmenterTest, NonEmojiPresentationSymbols) {
       {{"\U00002626\U0000262a\U00002638\U0000271d\U00002721\U00002627"
         "\U00002628\U00002629\U0000262b\U0000262c\U00002670"
         "\U00002671\U0000271f\U00002720",
-        USCRIPT_COMMON, OrientationIterator::kOrientationKeep,
+        USCRIPT_COMMON, RenderOrientation::kKeep,
         FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, CjkBracketsAfterLatinLetter) {
   CheckRunsHorizontal(
-      {{"A", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+      {{"A", USCRIPT_LATIN, RenderOrientation::kKeep,
         FontFallbackPriority::kText},
        {"\u300C"   // CJK LEFT CORNER BRACKET
         "\u56FD"   // CJK UNIFIED IDEOGRAPH
         "\u300D",  // CJK RIGHT CORNER BRACKET
-        USCRIPT_HAN, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText}});
+        USCRIPT_HAN, RenderOrientation::kKeep, FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, CjkBracketsAfterLatinParenthesis) {
   CheckRunsHorizontal(
-      {{"A(", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+      {{"A(", USCRIPT_LATIN, RenderOrientation::kKeep,
         FontFallbackPriority::kText},
        {"\u300C"   // CJK LEFT CORNER BRACKET
         "\u56FD"   // CJK UNIFIED IDEOGRAPH
         "\u300D",  // CJK RIGHT CORNER BRACKET
-        USCRIPT_HAN, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText},
-       {")", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        USCRIPT_HAN, RenderOrientation::kKeep, FontFallbackPriority::kText},
+       {")", USCRIPT_LATIN, RenderOrientation::kKeep,
         FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, CjkBracketsWithLatinParenthesisInside) {
   CheckRunsHorizontal(
-      {{"A", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+      {{"A", USCRIPT_LATIN, RenderOrientation::kKeep,
         FontFallbackPriority::kText},
        {"\u300C"  // CJK LEFT CORNER BRACKET
         "\u56FD"  // CJK UNIFIED IDEOGRAPH
         "(",
-        USCRIPT_HAN, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText},
-       {"A", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        USCRIPT_HAN, RenderOrientation::kKeep, FontFallbackPriority::kText},
+       {"A", USCRIPT_LATIN, RenderOrientation::kKeep,
         FontFallbackPriority::kText},
        {")"
         "\u300D",  // CJK RIGHT CORNER BRACKET
-        USCRIPT_HAN, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText}});
+        USCRIPT_HAN, RenderOrientation::kKeep, FontFallbackPriority::kText}});
 }
 
 TEST_F(RunSegmenterTest, CjkBracketsAfterUnmatchingLatinParenthesis) {
   CheckRunsHorizontal(
-      {{"A((", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+      {{"A((", USCRIPT_LATIN, RenderOrientation::kKeep,
         FontFallbackPriority::kText},
        {"\u300C"   // CJK LEFT CORNER BRACKET
         "\u56FD"   // CJK UNIFIED IDEOGRAPH
         "\u300D",  // CJK RIGHT CORNER BRACKET
-        USCRIPT_HAN, OrientationIterator::kOrientationKeep,
-        FontFallbackPriority::kText},
-       {")", USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
+        USCRIPT_HAN, RenderOrientation::kKeep, FontFallbackPriority::kText},
+       {")", USCRIPT_LATIN, RenderOrientation::kKeep,
         FontFallbackPriority::kText}});
 }
 

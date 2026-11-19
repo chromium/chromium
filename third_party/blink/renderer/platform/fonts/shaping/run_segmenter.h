@@ -34,7 +34,7 @@ class PLATFORM_EXPORT RunSegmenter {
     wtf_size_t end = 0;
     UScriptCode script = USCRIPT_INVALID_CODE;
     OrientationIterator::RenderOrientation render_orientation =
-        OrientationIterator::kOrientationKeep;
+        OrientationIterator::RenderOrientation::kKeep;
     FontFallbackPriority font_fallback_priority = FontFallbackPriority::kText;
   };
 

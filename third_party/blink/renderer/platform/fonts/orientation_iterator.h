@@ -17,14 +17,14 @@ class PLATFORM_EXPORT OrientationIterator {
   STACK_ALLOCATED();
 
  public:
-  enum RenderOrientation {
-    kOrientationKeep,
-    kOrientationRotateSideways,
-    kOrientationInvalid,
+  enum class RenderOrientation : uint32_t {
+    kKeep,
+    kRotateSideways,
+    kInvalid,
 
     // When adding values, ensure `kMaxEnumValue` is the largest value to store
     // (values that can be returned for non-empty inputs).
-    kMaxEnumValue = kOrientationRotateSideways,
+    kMaxEnumValue = kRotateSideways,
   };
 
   OrientationIterator(base::span<const UChar> buffer,

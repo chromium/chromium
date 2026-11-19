@@ -50,7 +50,7 @@ bool OrientationIterator::Consume(wtf_size_t* orientation_limit,
     return false;
   }
 
-  RenderOrientation current_render_orientation = kOrientationInvalid;
+  RenderOrientation current_render_orientation = RenderOrientation::kInvalid;
   UChar32 cluster_base = 0;
   bool after_zwj = false;
   for (; utf16_iterator_ != end; ++utf16_iterator_) {
@@ -58,17 +58,17 @@ bool OrientationIterator::Consume(wtf_size_t* orientation_limit,
     if (U_IS_SURROGATE(next_u_char32)) [[unlikely]] {
       next_u_char32 = uchar::kReplacementCharacter;
     }
-    if (current_render_orientation == kOrientationInvalid ||
+    if (current_render_orientation == RenderOrientation::kInvalid ||
         !ExtendsGraphemeCluster(next_u_char32, cluster_base, after_zwj)) {
       cluster_base = next_u_char32;
       RenderOrientation previous_render_orientation =
           current_render_orientation;
       current_render_orientation =
           unicode::IsUprightInMixedVertical(next_u_char32)
-              ? kOrientationKeep
-              : kOrientationRotateSideways;
+              ? RenderOrientation::kKeep
+              : RenderOrientation::kRotateSideways;
       if (previous_render_orientation != current_render_orientation &&
-          previous_render_orientation != kOrientationInvalid) {
+          previous_render_orientation != RenderOrientation::kInvalid) {
         *orientation_limit = utf16_iterator_.DistanceByCodeUnits(begin_);
         *render_orientation = previous_render_orientation;
         return true;

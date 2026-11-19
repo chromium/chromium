@@ -27,6 +27,8 @@ struct OrientationExpectedRun {
 
 class OrientationIteratorTest : public testing::Test {
  protected:
+  using RenderOrientation = OrientationIterator::RenderOrientation;
+
   void CheckRuns(const Vector<OrientationTestRun>& runs) {
     StringBuilder text;
     text.Ensure16Bit();
@@ -64,52 +66,48 @@ TEST_F(OrientationIteratorTest, Empty) {
   OrientationIterator orientation_iterator(empty.Span16(),
                                            FontOrientation::kVerticalMixed);
   wtf_size_t limit = 0;
-  OrientationIterator::RenderOrientation orientation =
-      OrientationIterator::kOrientationInvalid;
+  RenderOrientation orientation = RenderOrientation::kInvalid;
   DCHECK(!orientation_iterator.Consume(&limit, &orientation));
   ASSERT_EQ(limit, 0u);
-  ASSERT_EQ(orientation, OrientationIterator::kOrientationInvalid);
+  ASSERT_EQ(orientation, RenderOrientation::kInvalid);
 }
 
 TEST_F(OrientationIteratorTest, OneCharLatin) {
-  CHECK_ORIENTATION({{"A", OrientationIterator::kOrientationRotateSideways}});
+  CHECK_ORIENTATION({{"A", RenderOrientation::kRotateSideways}});
 }
 
 TEST_F(OrientationIteratorTest, OneAceOfSpades) {
-  CHECK_ORIENTATION({{"🂡", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"🂡", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, CombiningCircle) {
-  CHECK_ORIENTATION({{"◌́◌̀◌̈◌̂◌̄◌̊", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"◌́◌̀◌̈◌̂◌̄◌̊", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, OneEthiopicSyllable) {
-  CHECK_ORIENTATION({{"ጀ", OrientationIterator::kOrientationRotateSideways}});
+  CHECK_ORIENTATION({{"ጀ", RenderOrientation::kRotateSideways}});
 }
 
 TEST_F(OrientationIteratorTest, JapaneseLetterlikeEnd) {
-  CHECK_ORIENTATION(
-      {{"いろは", OrientationIterator::kOrientationKeep},
-       {"ℐℒℐℒℐℒℐℒℐℒℐℒℐℒ", OrientationIterator::kOrientationRotateSideways}});
+  CHECK_ORIENTATION({{"いろは", RenderOrientation::kKeep},
+                     {"ℐℒℐℒℐℒℐℒℐℒℐℒℐℒ", RenderOrientation::kRotateSideways}});
 }
 
 TEST_F(OrientationIteratorTest, LetterlikeJapaneseEnd) {
-  CHECK_ORIENTATION({{"ℐ", OrientationIterator::kOrientationRotateSideways},
-                     {"いろは", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"ℐ", RenderOrientation::kRotateSideways},
+                     {"いろは", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, OneCharJapanese) {
-  CHECK_ORIENTATION({{"い", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"い", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, Japanese) {
-  CHECK_ORIENTATION(
-      {{"いろはにほへと", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"いろはにほへと", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, Ivs) {
-  CHECK_ORIENTATION(
-      {{"愉\xF3\xA0\x84\x81", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"愉\xF3\xA0\x84\x81", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, MarkAtFirstCharRotated) {
@@ -119,87 +117,79 @@ TEST_F(OrientationIteratorTest, MarkAtFirstCharRotated) {
   // http://www.unicode.org/reports/tr50/#grapheme_clusters
   // https://drafts.csswg.org/css-writing-modes-3/#vertical-orientations
   // U+0300 COMBINING GRAVE ACCENT is Mn (Mark, Nonspacing) with Rotated.
-  CHECK_ORIENTATION(
-      {{"\xCC\x80", OrientationIterator::kOrientationRotateSideways}});
+  CHECK_ORIENTATION({{"\xCC\x80", RenderOrientation::kRotateSideways}});
 }
 
 TEST_F(OrientationIteratorTest, MarkAtFirstCharUpright) {
   // U+20DD COMBINING ENCLOSING CIRCLE is Me (Mark, Enclosing) with Upright.
-  CHECK_ORIENTATION({{"\xE2\x83\x9D", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"\xE2\x83\x9D", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, MarksAtFirstCharUpright) {
   // U+20DD COMBINING ENCLOSING CIRCLE is Me (Mark, Enclosing) with Upright.
   // U+0300 COMBINING GRAVE ACCENT is Mn (Mark, Nonspacing) with Rotated.
-  CHECK_ORIENTATION(
-      {{"\xE2\x83\x9D\xCC\x80", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"\xE2\x83\x9D\xCC\x80", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, MarksAtFirstCharUprightThenBase) {
   // U+20DD COMBINING ENCLOSING CIRCLE is Me (Mark, Enclosing) with Upright.
   // U+0300 COMBINING GRAVE ACCENT is Mn (Mark, Nonspacing) with Rotated.
-  CHECK_ORIENTATION(
-      {{"\xE2\x83\x9D\xCC\x80", OrientationIterator::kOrientationKeep},
-       {"ABC\xE2\x83\x9D", OrientationIterator::kOrientationRotateSideways}});
+  CHECK_ORIENTATION({{"\xE2\x83\x9D\xCC\x80", RenderOrientation::kKeep},
+                     {"ABC\xE2\x83\x9D", RenderOrientation::kRotateSideways}});
 }
 
 TEST_F(OrientationIteratorTest, JapaneseLatinMixedInside) {
-  CHECK_ORIENTATION({{"いろはに", OrientationIterator::kOrientationKeep},
-                     {"Abc", OrientationIterator::kOrientationRotateSideways},
-                     {"ほへと", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"いろはに", RenderOrientation::kKeep},
+                     {"Abc", RenderOrientation::kRotateSideways},
+                     {"ほへと", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, PunctuationJapanese) {
-  CHECK_ORIENTATION({{".…¡", OrientationIterator::kOrientationRotateSideways},
-                     {"ほへと", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{".…¡", RenderOrientation::kRotateSideways},
+                     {"ほへと", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, JapaneseLatinMixedOutside) {
-  CHECK_ORIENTATION({{"Abc", OrientationIterator::kOrientationRotateSideways},
-                     {"ほへと", OrientationIterator::kOrientationKeep},
-                     {"Xyz", OrientationIterator::kOrientationRotateSideways}});
+  CHECK_ORIENTATION({{"Abc", RenderOrientation::kRotateSideways},
+                     {"ほへと", RenderOrientation::kKeep},
+                     {"Xyz", RenderOrientation::kRotateSideways}});
 }
 
 TEST_F(OrientationIteratorTest, EmojiZwjSequence) {
   // U+200D ZERO WIDTH JOINER is Rotated in UAX #50, but it joins the
   // surrounding Extended_Pictographic characters into one grapheme cluster,
   // whose orientation is decided by the cluster's first character.
-  CHECK_ORIENTATION(
-      {{"👩‍👩‍👧‍👦", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"👩‍👩‍👧‍👦", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, EmojiZwjSequenceBetweenLatin) {
-  CHECK_ORIENTATION(
-      {{"ab", OrientationIterator::kOrientationRotateSideways},
-       {"👩‍❤️‍💋‍👨", OrientationIterator::kOrientationKeep},
-       {"cd", OrientationIterator::kOrientationRotateSideways}});
+  CHECK_ORIENTATION({{"ab", RenderOrientation::kRotateSideways},
+                     {"👩‍❤️‍💋‍👨", RenderOrientation::kKeep},
+                     {"cd", RenderOrientation::kRotateSideways}});
 }
 
 TEST_F(OrientationIteratorTest, ZeroWidthJoinerBetweenLatin) {
   // A ZWJ that does not join two Extended_Pictographic characters keeps its
   // own Rotated orientation.
-  CHECK_ORIENTATION(
-      {{"a\U0000200Db", OrientationIterator::kOrientationRotateSideways}});
+  CHECK_ORIENTATION({{"a\U0000200Db", RenderOrientation::kRotateSideways}});
 }
 
 TEST_F(OrientationIteratorTest, ZeroWidthJoinerAfterEmojiThenLatin) {
   // The ZWJ is part of the emoji's cluster, but the following "b" is not
   // Extended_Pictographic and therefore starts a new cluster.
-  CHECK_ORIENTATION({{"👩\U0000200D", OrientationIterator::kOrientationKeep},
-                     {"b", OrientationIterator::kOrientationRotateSideways}});
+  CHECK_ORIENTATION({{"👩\U0000200D", RenderOrientation::kKeep},
+                     {"b", RenderOrientation::kRotateSideways}});
 }
 
 TEST_F(OrientationIteratorTest, EmojiZwjSequenceKillSwitch) {
   ScopedEmojiZWJVerticalOrientationForTest disabled(false);
-  CHECK_ORIENTATION(
-      {{"👩", OrientationIterator::kOrientationKeep},
-       {"\U0000200D", OrientationIterator::kOrientationRotateSideways},
-       {"👦", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"👩", RenderOrientation::kKeep},
+                     {"\U0000200D", RenderOrientation::kRotateSideways},
+                     {"👦", RenderOrientation::kKeep}});
 }
 
 TEST_F(OrientationIteratorTest, JapaneseMahjonggMixed) {
-  CHECK_ORIENTATION(
-      {{"いろはに🀤ほへと", OrientationIterator::kOrientationKeep}});
+  CHECK_ORIENTATION({{"いろはに🀤ほへと", RenderOrientation::kKeep}});
 }
 
 }  // namespace blink

@@ -217,7 +217,7 @@ TEST_F(ShapeResultViewTest, PreviousSafeToBreak) {
   TextDirection direction = TextDirection::kRtl;
   HarfBuzzShaper shaper(string);
   const RunSegmenter::RunSegmenterRange range = {
-      51, 131, USCRIPT_HEBREW, blink::OrientationIterator::kOrientationKeep,
+      51, 131, USCRIPT_HEBREW, OrientationIterator::RenderOrientation::kKeep,
       blink::FontFallbackPriority::kText};
   const ShapeResult* shape_result =
       shaper.Shape(font, direction, 51, 131, range);
