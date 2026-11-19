@@ -139,7 +139,7 @@
   </message>
   <!-- kActionSidePanelShowCustomizeChrome: "Customize Chrome". -->
   <message name="IDS_ACTION_SYNONYMS_SIDE_PANEL_CUSTOMIZE_CHROME" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Customize Chrome') that users might type in the Chrome menu search bar to find the 'Customize Chrome' action, which opens a side panel for changing the browser's theme, colors, and appearance. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
-    theme, color, background, wallpaper, dark, mode, personal, styling, aesthetic
+    theme, color, background, wallpaper, light, dark, mode, light mode, dark mode, personal, styling, aesthetic
   </message>
   <!-- kActionShowReadingModeSidePanel: "Reading mode". -->
   <message name="IDS_ACTION_SYNONYMS_SHOW_READING_MODE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Reading mode') that users might type in the Chrome menu search bar to find the 'Reading mode' action, which opens a simplified, distraction-free view of the page's text in a side panel. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
