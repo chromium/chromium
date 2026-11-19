@@ -1541,4 +1541,24 @@ TEST(XkbKeyboardLayoutEngineTest, WinSpaceToggle) {
   EXPECT_EQ(VKEY_SPACE, key_code);
 }
 
+TEST(XkbKeyboardLayoutEngineTest, KeyRepeats) {
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+  EXPECT_FALSE(layout_engine.HasKeymap());
+  EXPECT_FALSE(layout_engine.KeyRepeats(38 /* <AC01> / 'a' */));
+
+  ASSERT_NO_FATAL_FAILURE(SetLayoutFromName(layout_engine, "us"));
+  EXPECT_TRUE(layout_engine.HasKeymap());
+  EXPECT_TRUE(layout_engine.KeyRepeats(38 /* <AC01> / 'a' */));
+  EXPECT_TRUE(layout_engine.KeyRepeats(22 /* <BKSP> */));
+  EXPECT_FALSE(layout_engine.KeyRepeats(50 /* <LFSH> */));
+  EXPECT_FALSE(layout_engine.KeyRepeats(66 /* <CAPS> */));
+
+  // Colemak remaps CapsLock (<CAPS>, XKB keycode 66) to BackSpace with
+  // repeat=yes.
+  ASSERT_NO_FATAL_FAILURE(SetLayoutFromName(layout_engine, "us", "colemak"));
+  EXPECT_TRUE(layout_engine.KeyRepeats(66 /* <CAPS> */));
+  EXPECT_FALSE(layout_engine.KeyRepeats(50 /* <LFSH> */));
+}
+
 }  // namespace ui

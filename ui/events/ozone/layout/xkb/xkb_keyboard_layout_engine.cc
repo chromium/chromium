@@ -1062,6 +1062,18 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
   return xkb_modifier_converter_.UiFlagsFromMask(mask);
 }
 
+bool XkbKeyboardLayoutEngine::HasKeymap() const {
+  return xkb_state_ != nullptr;
+}
+
+bool XkbKeyboardLayoutEngine::KeyRepeats(xkb_keycode_t xkb_keycode) const {
+  if (!xkb_state_) {
+    return false;
+  }
+  return xkb_keymap_key_repeats(xkb_state_get_keymap(xkb_state_.get()),
+                                xkb_keycode) != 0;
+}
+
 DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(
     uint32_t keysym,
     const std::optional<std::vector<std::string_view>>& modifiers) const {

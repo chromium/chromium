@@ -121,6 +121,8 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
                   uint32_t state,
                   KeyEventKind kind);
 
+  bool ShouldAutoRepeatKey(uint32_t key) const;
+
   // Dispatches the key event.
   void DispatchKey(unsigned int key,
                    unsigned int scan_code,

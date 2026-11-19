@@ -82,6 +82,45 @@ class WaylandKeyboardTest : public WaylandTestSimple {
     // expectations.
     SendEnter(0, 0);
   }
+
+#if BUILDFLAG(USE_XKBCOMMON)
+  void SendKeymapFromRuleNames(const xkb_rule_names& names) {
+    PostToServerAndWait([names](wl::TestWaylandServerThread* server) {
+      std::unique_ptr<xkb_context, XkbContextDeleter> xkb_context(
+          xkb_context_new(XKB_CONTEXT_NO_ENVIRONMENT_NAMES));
+      ASSERT_TRUE(xkb_context);
+      std::unique_ptr<xkb_keymap, XkbKeymapDeleter> xkb_keymap(
+          xkb_keymap_new_from_names(xkb_context.get(), &names,
+                                    XKB_KEYMAP_COMPILE_NO_FLAGS));
+      ASSERT_TRUE(xkb_keymap);
+
+      std::unique_ptr<char, base::FreeDeleter> keymap_string(
+          xkb_keymap_get_as_string(xkb_keymap.get(),
+                                   XKB_KEYMAP_FORMAT_TEXT_V1));
+      ASSERT_TRUE(keymap_string);
+
+      const std::string_view keymap(keymap_string.get());
+      size_t keymap_size = keymap.size() + 1;
+      base::UnsafeSharedMemoryRegion shared_keymap_region =
+          base::UnsafeSharedMemoryRegion::Create(keymap_size);
+      base::WritableSharedMemoryMapping shared_keymap =
+          shared_keymap_region.Map();
+      base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
+          base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+              std::move(shared_keymap_region));
+      ASSERT_TRUE(shared_keymap.IsValid());
+
+      auto keymap_span = shared_keymap.GetMemoryAsSpan<char>();
+      keymap_span.copy_prefix_from(keymap);
+      keymap_span[keymap.size()] = '\0';
+
+      wl_keyboard_send_keymap(server->seat()->keyboard()->resource(),
+                              WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+                              platform_shared_keymap.GetPlatformHandle().fd,
+                              keymap_size);
+    });
+  }
+#endif
 };
 
 ACTION_P(CloneEvent, ptr) {
@@ -524,5 +563,97 @@ TEST_F(WaylandKeyboardTest, NoEventAutoRepeatForModifiers) {
     });
   }
 }
+
+#if BUILDFLAG(USE_XKBCOMMON)
+TEST_F(WaylandKeyboardTest, EventAutoRepeatRemappedCapsLock) {
+  constexpr int32_t rate = 5;
+  constexpr int32_t delay = 60;
+
+  SendKeymapFromRuleNames({.layout = "us", .variant = "colemak"});
+  SendEnter(rate, delay);
+
+  base::RunLoop run_loop;
+  std::vector<std::unique_ptr<Event>> events;
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .WillRepeatedly(
+          AppendEventAndQuitLoop(&events, 3u, run_loop.QuitClosure()));
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 58 /* CapsLock */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+  });
+  run_loop.Run();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  ASSERT_EQ(events.size(), 3u);
+  for (size_t i = 0; i < events.size(); ++i) {
+    const auto* key_event = events[i]->AsKeyEvent();
+    ASSERT_TRUE(key_event);
+    EXPECT_EQ(EventType::kKeyPressed, key_event->type());
+    EXPECT_EQ(DomCode::CAPS_LOCK, key_event->code());
+    EXPECT_EQ(DomKey::BACKSPACE, key_event->GetDomKey());
+    EXPECT_EQ(VKEY_BACK, key_event->key_code());
+    EXPECT_EQ(i > 0, key_event->is_repeat());
+  }
+
+  std::unique_ptr<Event> release_event;
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce(CloneEvent(&release_event));
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 58 /* CapsLock */,
+                         WL_KEYBOARD_KEY_STATE_RELEASED);
+  });
+  Mock::VerifyAndClearExpectations(&delegate_);
+  ASSERT_TRUE(release_event);
+  EXPECT_EQ(EventType::kKeyReleased, release_event->type());
+
+  EXPECT_CALL(delegate_, DispatchEvent(NotNull())).Times(0);
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+  SyncDisplay();
+}
+
+TEST_F(WaylandKeyboardTest, NoEventAutoRepeatWhenKeymapDisablesRepeat) {
+  constexpr int32_t rate = 5;
+  constexpr int32_t delay = 60;
+
+  SendKeymapFromRuleNames({.layout = "us", .options = "caps:swapescape"});
+  SendEnter(rate, delay);
+
+  std::vector<std::unique_ptr<Event>> events;
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(AppendEvent(&events));
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 1 /* Escape -> CapsLock */,
+                         WL_KEYBOARD_KEY_STATE_PRESSED);
+  });
+
+  task_environment_.FastForwardBy(base::Milliseconds(delay));
+  SyncDisplay();
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+  SyncDisplay();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  ASSERT_EQ(events.size(), 1u);
+  const auto* key_event = events[0]->AsKeyEvent();
+  ASSERT_TRUE(key_event);
+  EXPECT_EQ(EventType::kKeyPressed, key_event->type());
+  EXPECT_EQ(DomCode::ESCAPE, key_event->code());
+  EXPECT_EQ(DomKey::CAPS_LOCK, key_event->GetDomKey());
+  EXPECT_EQ(VKEY_CAPITAL, key_event->key_code());
+  EXPECT_FALSE(key_event->is_repeat());
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const keyboard = server->seat()->keyboard()->resource();
+    wl_keyboard_send_key(keyboard, server->GetNextSerial(),
+                         server->GetNextTime(), 1 /* Escape -> CapsLock */,
+                         WL_KEYBOARD_KEY_STATE_RELEASED);
+  });
+}
+#endif
 
 }  // namespace ui

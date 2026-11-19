@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbKeyboardLayoutEngine
                       uint32_t locked,
                       uint32_t group);
 
+  bool HasKeymap() const;
+  bool KeyRepeats(xkb_keycode_t xkb_keycode) const;
+
   // modifiers is optional for backward compatibility purpose.
   // This should be removed when we no longer need to support older platform,
   // specifically M101 or earlier of ash-chrome.

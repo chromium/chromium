@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <limits>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -48,8 +49,16 @@ namespace ui {
 
 namespace {
 
-bool IsModifierKey(int key) {
-  auto dom_code = KeycodeConverter::EvdevCodeToDomCode(key);
+std::optional<uint32_t> EvdevCodeToXkbKeycode(uint32_t key) {
+  // wl_keyboard keycodes are evdev codes, which XKB offsets by 8.
+  constexpr uint32_t kXkbKeycodeOffset = 8;
+  if (key > std::numeric_limits<uint32_t>::max() - kXkbKeycodeOffset) {
+    return std::nullopt;
+  }
+  return key + kXkbKeycodeOffset;
+}
+
+bool IsModifierKey(DomCode dom_code) {
   switch (dom_code) {
     // Based on ui::NonPrintableCodeEntry map.
     case DomCode::ALT_LEFT:
@@ -419,7 +428,7 @@ void WaylandKeyboard::ProcessKey(uint32_t serial,
                                                serial);
   }
 
-  if (kind == KeyEventKind::kKey && !IsModifierKey(key)) {
+  if (kind == KeyEventKind::kKey && (!down || ShouldAutoRepeatKey(key))) {
     auto_repeat_handler_.UpdateKeyRepeat(
         key, 0 /*scan_code*/, down,
         /*suppress_auto_repeat=*/false, device_id(),
@@ -442,6 +451,19 @@ void WaylandKeyboard::ProcessKey(uint32_t serial,
               kind);
 }
 
+bool WaylandKeyboard::ShouldAutoRepeatKey(uint32_t key) const {
+  std::optional<uint32_t> xkb_keycode = EvdevCodeToXkbKeycode(key);
+  if (!xkb_keycode.has_value()) {
+    return false;
+  }
+#if BUILDFLAG(USE_XKBCOMMON)
+  if (layout_engine_->HasKeymap()) {
+    return layout_engine_->KeyRepeats(*xkb_keycode);
+  }
+#endif
+  return !IsModifierKey(KeycodeConverter::EvdevCodeToDomCode(key));
+}
+
 void WaylandKeyboard::DispatchKey(unsigned int key,
                                   unsigned int scan_code,
                                   bool down,
@@ -451,12 +473,10 @@ void WaylandKeyboard::DispatchKey(unsigned int key,
                                   int device_id,
                                   int flags,
                                   KeyEventKind kind) {
-  // wl_keyboard keycodes are evdev codes, which XKB offsets by 8.
-  constexpr uint32_t kXkbKeycodeOffset = 8;
-  if (key > std::numeric_limits<uint32_t>::max() - kXkbKeycodeOffset) {
+  std::optional<uint32_t> xkb_keycode = EvdevCodeToXkbKeycode(key);
+  if (!xkb_keycode.has_value()) {
     return;
   }
-  const uint32_t xkb_keycode = key + kXkbKeycodeOffset;
   // Keys without a DomCode (e.g. most evdev codes above KEY_F24) may still be
   // mapped by the keymap; the delegate then looks them up by `xkb_keycode`.
   DomCode dom_code = KeycodeConverter::EvdevCodeToDomCode(key);
@@ -465,7 +485,7 @@ void WaylandKeyboard::DispatchKey(unsigned int key,
   // and decode it when needed.
   uint32_t result = delegate_->OnKeyboardKeyEvent(
       down ? EventType::kKeyPressed : EventType::kKeyReleased, dom_code,
-      xkb_keycode, repeat, serial, timestamp, device_id, kind);
+      *xkb_keycode, repeat, serial, timestamp, device_id, kind);
 
   if (extended_keyboard_ && !(result & POST_DISPATCH_STOP_PROPAGATION) &&
       serial.has_value()) {
