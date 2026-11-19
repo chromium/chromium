@@ -170,6 +170,7 @@ class TextInputManager;
 class TouchEmulatorImpl;
 class WakeLockContextHost;
 class WebContentsDelegate;
+class WebContentsGuard;
 class WebContentsImpl;
 class WebContentsView;
 enum class PictureInPictureResult;
@@ -1732,6 +1733,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   friend class WebContentsObserver;
   friend class WebContents;  // To implement factory methods.
+  friend class WebContentsGuard;
 
   friend class RenderFrameHostImplBeforeUnloadBrowserTest;
   friend class WebContentsImplBrowserTest;

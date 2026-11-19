@@ -501,6 +501,8 @@ source_set("browser_sources") {
     "web_contents_capability_type.h",
     "web_contents_delegate.cc",
     "web_contents_delegate.h",
+    "web_contents_guard.cc",
+    "web_contents_guard.h",
     "web_contents_media_capture_id.cc",
     "web_contents_media_capture_id.h",
     "web_contents_observer.cc",

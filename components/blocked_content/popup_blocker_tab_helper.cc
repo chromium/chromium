@@ -23,6 +23,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_guard.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 
@@ -107,6 +108,11 @@ void PopupBlockerTabHelper::AddBlockedPopup(
   LogAction(Action::kBlocked);
   if (blocked_popups_.size() >= kMaximumNumberOfPopups)
     return;
+
+  // Various callbacks here could theoretically cause the tab to be closed out
+  // from under us. These calls would be errors, but could also cause UAFs up
+  // and down the stack. Therefore, guard the opener contents.
+  content::WebContentsGuard guard(*web_contents());
 
   int id = next_id_;
   next_id_++;
