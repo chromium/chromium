@@ -17,10 +17,16 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/ttc/pointer_mark.h"
 #include "chrome/browser/ui/views/ttc/ttc_view.h"
 #include "chrome/browser/ui/views/ttc/ttc_view_delegate.h"
 #include "chrome/browser/ui/views/ttc/ttc_voice_plate.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/fullscreen_util_mac.h"
@@ -77,6 +83,21 @@ void OverlayController::ApplyUiState(UiState ui_state) {
   }
 }
 
+void OverlayController::ShowPointerMarks(base::span<const gfx::Point> points) {
+  pointer_marks_.clear();
+  tabs::TabInterface* tab =
+      anchored_browser_ ? anchored_browser_->GetActiveTabInterface() : nullptr;
+  if (!tab) {
+    return;
+  }
+  content::WebContents* contents = tab->GetContents();
+  const gfx::Point origin = contents->GetContainerBounds().origin();
+  for (const gfx::Point& point : points) {
+    pointer_marks_.push_back(ShowPointerMark(
+        contents->GetNativeView(), origin + point.OffsetFromOrigin()));
+  }
+}
+
 void OverlayController::OnBrowserActivated(BrowserWindowInterface* browser) {
   // TTC follows the user's tabbed window, which supplies page context and
   // tools, so app and popup windows don't take the views.
@@ -108,6 +129,7 @@ void OverlayController::OnBrowserClosed(BrowserWindowInterface* browser) {
   anchored_browser_ = nullptr;
   voice_plate_ = nullptr;
   views_.clear();
+  pointer_marks_.clear();
 
   // No tabbed window is left to show the views in or to supply page context,
   // so end the session rather than keep listening with no UI.
@@ -133,6 +155,7 @@ void OverlayController::MoveToWindow(BrowserWindowInterface* browser) {
   // on Linux, so we recreate the views on each window move.
   voice_plate_ = nullptr;
   views_.clear();
+  pointer_marks_.clear();
   CreateViews(anchor_view);
 
   fullscreen_subscription_ =

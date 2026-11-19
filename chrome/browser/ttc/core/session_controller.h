@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ttc/app/public/audio_envelope.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -14,6 +15,10 @@
 #include "components/ttc/app/public/tool_types.h"
 
 class Profile;
+
+namespace gfx {
+class Point;
+}  // namespace gfx
 
 namespace ttc {
 
@@ -53,6 +58,11 @@ class SessionController {
     // running, so audio levels continue at zero while muted. See
     // `SessionController::OnSystemMicMuteChanged()`.
     virtual void OnSystemMicMuteChanged(bool muted, bool at_stream_start) {}
+    // The get_pointer tool told the model that the user is pointing at
+    // `points`, in DIPs relative to the top left of the voice-focused
+    // contents.
+    virtual void OnPointerLocationsReported(
+        base::span<const gfx::Point> points) {}
   };
 
   virtual ~SessionController() = default;

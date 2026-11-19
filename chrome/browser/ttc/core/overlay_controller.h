@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
@@ -19,8 +20,13 @@
 class BrowserWindowInterface;
 class Profile;
 
+namespace gfx {
+class Point;
+}  // namespace gfx
+
 namespace views {
 class View;
+class Widget;
 }  // namespace views
 
 namespace ttc {
@@ -40,9 +46,19 @@ class OverlayController : public BrowserCollectionObserver {
 
   void ApplyUiState(UiState ui_state);
 
+  // Briefly marks `points` on the page, so that the user sees where the
+  // get_pointer tool took them to be pointing. They are in DIPs relative to
+  // the top left of the active tab's contents in the window the views are in.
+  void ShowPointerMarks(base::span<const gfx::Point> points);
+
   // BrowserCollectionObserver:
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
+
+  const std::vector<std::unique_ptr<views::Widget>>& pointer_marks_for_testing()
+      const {
+    return pointer_marks_;
+  }
 
  private:
   void MoveToWindow(BrowserWindowInterface* browser);
@@ -64,6 +80,10 @@ class OverlayController : public BrowserCollectionObserver {
 
   // Owned by `views_`; null iff `views_` is empty.
   raw_ptr<TtcVoicePlate> voice_plate_ = nullptr;
+
+  // The marks of the latest ShowPointerMarks() call, in `anchored_browser_`.
+  // They may have faded out.
+  std::vector<std::unique_ptr<views::Widget>> pointer_marks_;
 
   // Fullscreen changes of `anchored_browser_`.
   base::CallbackListSubscription fullscreen_subscription_;

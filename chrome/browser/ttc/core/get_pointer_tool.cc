@@ -28,9 +28,33 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 
 namespace ttc {
+
+namespace {
+
+// Returns the points that get_pointer's `response` tells the model about.
+std::vector<gfx::Point> GetPointsInResponse(const ToolResponse& response) {
+  std::vector<gfx::Point> points;
+  const base::ListValue* list =
+      response.Ok() ? response.GetResult().FindList("points") : nullptr;
+  if (!list) {
+    return points;
+  }
+  for (const base::Value& value : *list) {
+    const base::DictValue& point = value.GetDict();
+    const std::optional<int> x = point.FindInt("x");
+    const std::optional<int> y = point.FindInt("y");
+    if (x && y) {
+      points.emplace_back(*x, *y);
+    }
+  }
+  return points;
+}
+
+}  // namespace
 
 GetPointerTool::GetPointerTool(SessionControllerImpl& session_controller)
     : session_controller_(session_controller) {
@@ -162,6 +186,10 @@ void GetPointerTool::OnResponseBuilt(base::WeakPtr<content::Page> page,
           session_controller_->GetVoiceFocusedWebContents(), page,
           /*is_url_supported=*/true)) {
     response = std::move(*error);
+  } else if (const std::vector<gfx::Point> points =
+                 GetPointsInResponse(response);
+             !points.empty()) {
+    session_controller_->NotifyPointerLocationsReported(points);
   }
   std::move(callback).Run(std::move(response));
 }

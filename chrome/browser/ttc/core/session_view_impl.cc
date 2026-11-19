@@ -9,6 +9,7 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/overlay_controller.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -85,6 +86,13 @@ void SessionViewImpl::OnSystemMicMuteChanged(bool muted, bool at_stream_start) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ShowToast(ToastId::kTtcMicrophoneMuted);
+}
+
+void SessionViewImpl::OnPointerLocationsReported(
+    base::span<const gfx::Point> points) {
+  if (kTtcGetPointerShowMark.Get()) {
+    overlay_controller_->ShowPointerMarks(points);
+  }
 }
 
 void SessionViewImpl::EndSessionAsync() {

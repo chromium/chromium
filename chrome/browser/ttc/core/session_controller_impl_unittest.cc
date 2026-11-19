@@ -46,6 +46,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -90,6 +91,10 @@ class MockSessionControllerObserver : public SessionController::Observer {
   MOCK_METHOD(void, OnSpeakerChanged, (Speaker), (override));
   MOCK_METHOD(void, OnMicCaptureChanged, (bool), (override));
   MOCK_METHOD(void, OnSystemMicMuteChanged, (bool, bool), (override));
+  MOCK_METHOD(void,
+              OnPointerLocationsReported,
+              (base::span<const gfx::Point>),
+              (override));
 };
 
 class TtcSessionControllerImplTest : public testing::Test {
@@ -166,6 +171,12 @@ TEST_F(TtcSessionControllerImplTest,
 
   EXPECT_CALL(observer, OnModelInterrupted()).Times(1);
   controller.OnModelInterrupted();
+
+  const gfx::Point points[] = {gfx::Point(3, 4), gfx::Point(5, 6)};
+  EXPECT_CALL(observer, OnPointerLocationsReported(testing::ElementsAre(
+                            gfx::Point(3, 4), gfx::Point(5, 6))))
+      .Times(1);
+  controller.NotifyPointerLocationsReported(points);
 
   EXPECT_CALL(observer, OnInputTranscription("hello")).Times(1);
   EXPECT_CALL(observer, OnTranscriptionsUpdated("hello", "")).Times(1);

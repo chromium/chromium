@@ -39,6 +39,7 @@
 #include "components/ttc/app/public/conversation.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -338,6 +339,13 @@ ToolResponse SessionControllerImpl::NotifyToolExecutionCompleted(
                                       response.Ok());
   }
   return response;
+}
+
+void SessionControllerImpl::NotifyPointerLocationsReported(
+    base::span<const gfx::Point> points) {
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnPointerLocationsReported(points);
+  }
 }
 
 void SessionControllerImpl::NotifyTranscriptsUpdated() {

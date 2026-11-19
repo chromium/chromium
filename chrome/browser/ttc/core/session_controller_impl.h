@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -33,6 +34,10 @@
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace gfx {
+class Point;
+}  // namespace gfx
 
 namespace ttc {
 
@@ -101,6 +106,10 @@ class SessionControllerImpl : public SessionController,
   // Replaces the session's actor task if it was stopped outside of the
   // session. Must be called before acting.
   void EnsureActorTaskCreated();
+
+  // Tells observers where the get_pointer tool reported the user to be
+  // pointing. See Observer::OnPointerLocationsReported().
+  void NotifyPointerLocationsReported(base::span<const gfx::Point> points);
 
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }

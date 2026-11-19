@@ -4,11 +4,18 @@
 
 #include "chrome/browser/ttc/core/session_view_impl.h"
 
+#include <memory>
 #include <string>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/overlay_controller.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "chrome/browser/ttc/core/ttc_interactive_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
@@ -31,7 +38,9 @@
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -42,7 +51,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/message_center/message_center.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -90,6 +98,22 @@ class SessionViewImplBrowserTest : public TtcInteractiveBrowserTestBase {
   views::View* GetBrowserView(ui::ElementIdentifier id) {
     return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
         id, BrowserElements::From(browser())->GetContext());
+  }
+
+  // Tells the session's observers that the get_pointer tool reported `points`,
+  // as the tool does.
+  void ReportPointerLocations(base::span<const gfx::Point> points) {
+    static_cast<SessionControllerImpl&>(session_controller())
+        .NotifyPointerLocationsReported(points);
+  }
+
+  // The marks of the points reported last.
+  const std::vector<std::unique_ptr<views::Widget>>& GetPointerMarks() {
+    auto& controller =
+        static_cast<SessionControllerImpl&>(session_controller());
+    return static_cast<SessionViewImpl&>(controller.session_view())
+        .overlay_controller_for_testing()
+        .pointer_marks_for_testing();
   }
 
   // The plate's window bounds, including its shadow.
@@ -337,6 +361,46 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ClosingWindowKeepsUIState) {
     CheckHasSession(true)
   );
   // clang-format on
+}
+
+// Where the get_pointer tool took the user to point is not marked on the page
+// unless that is turned on.
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, NoPointerMarksByDefault) {
+  RunTestSequence(StartSession(), WaitForShow(TtcVoicePlate::kViewElementId));
+
+  const gfx::Point points[] = {gfx::Point(30, 18)};
+  ReportPointerLocations(points);
+  EXPECT_TRUE(GetPointerMarks().empty());
+}
+
+class SessionViewImplPointerMarkBrowserTest
+    : public SessionViewImplBrowserTest {
+ public:
+  SessionViewImplPointerMarkBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kTtcGetPointer, {{"show_mark", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SessionViewImplPointerMarkBrowserTest,
+                       MarksReportedPointerLocations) {
+  RunTestSequence(StartSession(), WaitForShow(TtcVoicePlate::kViewElementId));
+  EXPECT_TRUE(GetPointerMarks().empty());
+
+  const gfx::Point points[] = {gfx::Point(30, 18)};
+  ReportPointerLocations(points);
+
+  ASSERT_EQ(GetPointerMarks().size(), 1u);
+  EXPECT_EQ(GetPointerMarks()[0]->GetWindowBoundsInScreen().CenterPoint(),
+            browser()
+                    ->tab_strip_model()
+                    ->GetActiveWebContents()
+                    ->GetContainerBounds()
+                    .origin() +
+                gfx::Vector2d(30, 18));
 }
 
 IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ToastShowsOnError) {

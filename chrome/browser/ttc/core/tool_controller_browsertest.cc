@@ -16,6 +16,7 @@
 #include "base/base64.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -3255,6 +3256,22 @@ class ToolControllerGetPointerBrowserTest : public ToolControllerBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Records the points that the get_pointer tool reports to the session's
+// observers.
+class PointerLocationsObserver : public SessionController::Observer {
+ public:
+  const std::vector<gfx::Point>& points() const { return points_; }
+
+  // SessionController::Observer:
+  void OnPointerLocationsReported(
+      base::span<const gfx::Point> points) override {
+    points_.assign(points.begin(), points.end());
+  }
+
+ private:
+  std::vector<gfx::Point> points_;
+};
+
 IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest,
                        ShowsAndDescribesWhereTheUserPointed) {
   SessionControllerImpl* controller = StartSessionAt(PageWithText());
@@ -3277,9 +3294,12 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest,
       "document.body.innerHTML = \"<button style='position: fixed; left: 0; "
       "top: 0; width: 100%; height: 100%'>Buy</button>\";"));
   PressAt(gfx::Point(30, 18));
+  PointerLocationsObserver observer;
+  controller->AddObserver(&observer);
   base::test::TestFuture<ToolResponse> future;
   CallGetPointer(*controller, future);
   ToolResponse response = future.Take();
+  controller->RemoveObserver(&observer);
   ASSERT_TRUE(response.Ok());
 
   const base::DictValue& result = response.GetResult();
@@ -3295,6 +3315,9 @@ IN_PROC_BROWSER_TEST_F(ToolControllerGetPointerBrowserTest,
   ASSERT_TRUE(node);
   EXPECT_THAT(node->FindString("text"), testing::Pointee(std::string("Buy")));
   EXPECT_FALSE(node->contains("dom_node_id"));
+
+  // The session's observers are told the same point, for the UI to show.
+  EXPECT_THAT(observer.points(), testing::ElementsAre(gfx::Point(30, 18)));
 
   ASSERT_TRUE(response.visual_content());
   EXPECT_EQ(response.visual_content()->mime_type, "image/jpeg");
