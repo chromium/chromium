@@ -10,15 +10,12 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_client_impl.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
-#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
+#include "third_party/blink/renderer/core/paint/timing/element_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
@@ -27,10 +24,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
-#include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
-#include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -73,28 +67,6 @@ bool ElementTiming::IsNeededForElementOrContainerTiming(Node* node) {
   }
   return IsRegisteredForElementTiming(element) ||
          ContainerTiming::ContributesToContainerTiming(element);
-}
-
-// static
-gfx::RectF ElementTiming::ComputeIntersectionRect(
-    LocalFrame* frame,
-    const gfx::Rect& int_visual_rect,
-    const PropertyTreeStateOrAlias& current_paint_chunk_properties) {
-  // Compute the visible part of the image/text rect.
-  FloatClipRect visual_rect((gfx::RectF(int_visual_rect)));
-  GeometryMapper::LocalToAncestorVisualRect(current_paint_chunk_properties,
-                                            frame->View()
-                                                ->GetLayoutView()
-                                                ->FirstFragment()
-                                                .LocalBorderBoxProperties(),
-                                            visual_rect);
-  if (!frame->Client()->IsLocalFrameClientImpl()) {
-    return gfx::RectF();
-  }
-  WebFrameWidgetImpl* widget =
-      WebLocalFrameImpl::FromFrame(frame)->LocalRootFrameWidget();
-  CHECK(widget);
-  return widget->BlinkSpaceToDIPs(visual_rect.Rect());
 }
 
 // static
@@ -238,7 +210,7 @@ void ElementTiming::QueuePerformanceEntriesForReportingIfNeeded(
   auto* element = To<Element>(&generating_node);
   CHECK(!generating_node.IsInShadowTree());
 
-  gfx::RectF intersection_rect = ComputeIntersectionRect(
+  gfx::RectF intersection_rect = element_timing_utils::ComputeIntersectionRect(
       frame, image_border, current_paint_chunk_properties);
 
   if (IsRegisteredForElementTiming(element)) {

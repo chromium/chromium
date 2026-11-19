@@ -202,6 +202,8 @@ blink_core_sources_paint = [
   "timing/container_timing_paint_attribution_tracker.h",
   "timing/element_timing.cc",
   "timing/element_timing.h",
+  "timing/element_timing_utils.cc",
+  "timing/element_timing_utils.h",
   "timing/first_meaningful_paint_detector.cc",
   "timing/first_meaningful_paint_detector.h",
   "timing/frame_paint_timing.h",

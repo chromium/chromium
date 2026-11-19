@@ -134,6 +134,7 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
     return effective_visual_size_;
   }
 
+  // See element_timing_utils::ComputeIntersectionRect().
   const gfx::RectF& ElementTimingRect() const { return element_timing_rect_; }
 
   bool WasPreviouslyReported() const { return was_previously_reported_; }

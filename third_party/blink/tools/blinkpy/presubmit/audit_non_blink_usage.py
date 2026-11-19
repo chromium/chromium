@@ -841,6 +841,7 @@ _CONFIG = [
             'cssvalue::.+',
             'date_time_format::.+',
             'element_locator::.+',
+            'element_timing_utils::.+',
             'encoding::.+',
             'encoding_enum::.+',
             'event_handling_util::.+',

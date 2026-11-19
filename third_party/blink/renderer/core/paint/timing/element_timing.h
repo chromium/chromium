@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
 class Rect;
@@ -54,11 +53,6 @@ class CORE_EXPORT ElementTiming final : public GarbageCollected<ElementTiming>,
   // for element or container timing (either marked with the 'elementtiming'
   // attribute or contributing to container timing), and false otherwise.
   static bool IsNeededForElementOrContainerTiming(Node*);
-
-  // Computes the visible portion of a rect in DIPs relative to the local root.
-  static gfx::RectF ComputeIntersectionRect(LocalFrame*,
-                                            const gfx::Rect&,
-                                            const PropertyTreeStateOrAlias&);
 
   ElementTiming(LocalDOMWindow&, const ImagePaintTimingDetector&);
 
