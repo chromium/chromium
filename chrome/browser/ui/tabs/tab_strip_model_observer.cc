@@ -360,6 +360,13 @@ void TabStripModelObserver::OnTabWillBeRemoved(tabs::TabHandle tab) {}
 
 void TabStripModelObserver::OnTabCloseCancelled(tabs::TabHandle tab) {}
 
+void TabStripModelObserver::OnTabChanged(tabs::TabHandle tab,
+                                         TabChangeType change_type) {
+  if (tabs::TabInterface* tab_ptr = tab.Get()) {
+    OnTabChangedAt(tab_ptr, change_type);
+  }
+}
+
 void TabStripModelObserver::OnTabChangedAt(tabs::TabInterface* tab,
                                            TabChangeType change_type) {}
 

@@ -553,11 +553,15 @@ class TabStripModelObserver {
   // permitted by the `TabStripModel::IsTabClosable` oracle.
   virtual void OnTabCloseCancelled(tabs::TabHandle tab);
 
-  // The specified Tab changed in some way. `tab`
-  // may be an entirely different object and the old value is no longer
-  // available by the time this message is delivered.
+  // Invoked when the UI or WebContents state of `tab` changes (such as
+  // loading state, title, favicon, attention indicator, or lifecycle state)
+  // via `NotifyTabChanged()`, `UpdateWebContentsState()`, or
+  // `SetTabNeedsAttention()`.
   //
   // See tab_change_type.h for a description of `change_type`.
+  virtual void OnTabChanged(tabs::TabHandle tab, TabChangeType change_type);
+
+  // Deprecated: prefer overriding `OnTabChanged`.
   virtual void OnTabChangedAt(tabs::TabInterface* tab,
                               TabChangeType change_type);
 

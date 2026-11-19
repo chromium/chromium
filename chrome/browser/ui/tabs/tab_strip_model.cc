@@ -1385,8 +1385,9 @@ int TabStripModel::GetIndexOfWebContents(const WebContents* contents) const {
 
 void TabStripModel::NotifyTabChanged(tabs::TabInterface* tab,
                                      TabChangeType change_type) {
+  const tabs::TabHandle handle = tab->GetHandle();
   for (auto& observer : observers_) {
-    observer.OnTabChangedAt(tab, change_type);
+    observer.OnTabChanged(handle, change_type);
   }
 }
 
@@ -1401,8 +1402,9 @@ void TabStripModel::UpdateWebContentsState(content::WebContents* contents,
   tabs::TabInterface* tab = GetTabForWebContents(contents);
   CHECK(tab);
 
+  const tabs::TabHandle handle = tab->GetHandle();
   for (auto& observer : observers_) {
-    observer.OnTabChangedAt(tab, change_type);
+    observer.OnTabChanged(handle, change_type);
   }
 }
 
