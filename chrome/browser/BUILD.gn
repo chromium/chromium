@@ -1252,6 +1252,7 @@ source_set("core") {
     "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/webui:log_web_ui_url",
+    "//chrome/browser/ui/webui:webui_url_utils",
     "//chrome/browser/ui/webui/actor_internals",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",

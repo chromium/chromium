@@ -172,6 +172,7 @@ if (!is_android) {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/webui:webui_url_utils",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/browser/ui/webui/webui_toolbar:test_support",

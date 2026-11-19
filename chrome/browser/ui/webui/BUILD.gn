@@ -348,6 +348,20 @@ source_set("webui_util") {
   ]
 }
 
+source_set("webui_url_utils") {
+  sources = [
+    "webui_url_utils.cc",
+    "webui_url_utils.h",
+  ]
+
+  deps = [
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//url",
+  ]
+}
+
 # favicon_source.cc uses IDR_DEFAULT_FAVICON_*_{32,64} resources that
 # //ui/resources only defines under "not is_android or is_desktop_android or
 # enable_webui_ntp"; gate the target to where it was compiled inside :ui.
@@ -1095,11 +1109,13 @@ source_set("unit_tests") {
     "fileicon_source_unittest.cc",
     "log_web_ui_url_unittest.cc",
     "theme_colors_source_manager_unittest.cc",
+    "webui_url_utils_unittest.cc",
   ]
   deps = [
     ":fileicon_source",
     ":log_web_ui_url",
     ":theme_colors_source_manager",
+    ":webui_url_utils",
     "//base",
     "//chrome/browser:icon_manager",
     "//chrome/browser/profiles:profile",
@@ -1109,6 +1125,7 @@ source_set("unit_tests") {
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:testing_browser_process",
     "//components/keyed_service/content",
+    "//content/public/browser",
     "//content/public/common",
     "//content/test:test_support",
     "//skia",
@@ -1139,7 +1156,6 @@ source_set("unit_tests") {
       "//components/content_settings/core/common",
       "//components/policy/core/common:test_support",
       "//components/prefs",
-      "//content/public/browser",
       "//content/test:test_support",
       "//ui/web_dialogs:test_support",
       "//ui/webui",

@@ -16,6 +16,7 @@ source_set("incognito") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui:webui_url_utils",
     "//chrome/common",
     "//components/prefs",
     "//components/strings:components_strings",

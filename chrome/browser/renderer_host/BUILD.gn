@@ -125,6 +125,7 @@ if (is_mac) {
       "//chrome/browser/devtools",
       "//chrome/browser/glic",
       "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui/webui:webui_url_utils",
       "//components/spellcheck/browser",
     ]
   }

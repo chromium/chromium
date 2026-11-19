@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/webui_url_utils.h"
+#include "chrome/browser/ui/webui/webui_url_utils.h"
 
 #include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
 bool IsTopChromeWebUIURL(const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme) &&
-         url.DomainIs(chrome::kChromeUITopChromeDomain);
+  return content::WebUIConfigMap::GetInstance().GetProcessLockHost(url) ==
+         chrome::kChromeUITopChromeDomain;
 }
 
 bool IsTopChromeUntrustedWebUIURL(const GURL& url) {

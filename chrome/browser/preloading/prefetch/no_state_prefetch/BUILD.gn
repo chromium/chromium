@@ -142,6 +142,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/webui:webui_url_utils",
       "//chrome/test:test_support",
       "//components/embedder_support",
       "//components/no_state_prefetch/browser",
