@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -511,11 +512,10 @@ static void VerifyFramesMatch(const char* file,
       if (!b->PremultiplyAlpha()) {
         color_b = PremultiplyColor(color_b, bitmap_b.colorType());
       }
-      uint8_t* pixel_a = reinterpret_cast<uint8_t*>(&color_a);
-      uint8_t* pixel_b = reinterpret_cast<uint8_t*>(&color_b);
+      auto pixel_a = base::byte_span_from_ref(color_a);
+      auto pixel_b = base::byte_span_from_ref(color_b);
       for (int channel = 0; channel < 4; ++channel) {
-        const int difference =
-            abs(UNSAFE_TODO(pixel_a[channel]) - UNSAFE_TODO(pixel_b[channel]));
+        const int difference = abs(pixel_a[channel] - pixel_b[channel]);
         if (difference > max_difference) {
           max_difference = difference;
         }
