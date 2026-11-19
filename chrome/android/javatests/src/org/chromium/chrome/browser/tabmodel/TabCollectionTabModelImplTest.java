@@ -2281,7 +2281,8 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Token newGroupId = Token.createRandom();
-                    mCollectionModel.createTabGroupForTabGroupSync(List.of(tab0, tab1), newGroupId);
+                    mCollectionModel.createTabGroupForTabGroupSync(
+                            List.of(tab0, tab1), TabGroupId.fromRawToken(newGroupId));
 
                     assertEquals(newGroupId, tab0.getTabGroupId());
                     assertEquals(newGroupId, tab1.getTabGroupId());
@@ -2303,9 +2304,11 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Token newGroupId = Token.createRandom();
-                    mCollectionModel.createTabGroupForTabGroupSync(List.of(tab1), newGroupId);
+                    mCollectionModel.createTabGroupForTabGroupSync(
+                            List.of(tab1), TabGroupId.fromRawToken(newGroupId));
 
-                    mCollectionModel.createTabGroupForTabGroupSync(List.of(tab0, tab1), newGroupId);
+                    mCollectionModel.createTabGroupForTabGroupSync(
+                            List.of(tab0, tab1), TabGroupId.fromRawToken(newGroupId));
 
                     assertEquals(newGroupId, tab0.getTabGroupId());
                     assertEquals(newGroupId, tab1.getTabGroupId());

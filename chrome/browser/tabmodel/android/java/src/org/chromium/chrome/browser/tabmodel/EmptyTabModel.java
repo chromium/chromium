@@ -409,7 +409,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void createSingleTabGroup(Tab tab) {}
 
     @Override
-    public void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId) {}
+    public void createTabGroupForTabGroupSync(List<Tab> tabs, TabGroupId tabGroupId) {}
 
     @Override
     public void mergeListOfTabsToGroup(

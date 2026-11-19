@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -141,7 +142,8 @@ public class ActorTabStateHelperIntegrationTest {
 
                     Token tabGroupId = Token.createRandom();
                     List<Tab> groupTabs = Arrays.asList(mTab, tab1, tab2);
-                    tabModel.createTabGroupForTabGroupSync(groupTabs, tabGroupId);
+                    tabModel.createTabGroupForTabGroupSync(
+                            groupTabs, TabGroupId.fromRawToken(tabGroupId));
 
                     Tab placeholder1 =
                             ActorTabStateHelper.createAndInsertPlaceholder(tab1, tabModel);

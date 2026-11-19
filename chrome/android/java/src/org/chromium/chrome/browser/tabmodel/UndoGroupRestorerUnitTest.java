@@ -121,7 +121,8 @@ public class UndoGroupRestorerUnitTest {
 
         InOrder inOrder = inOrder(mTabModel);
         inOrder.verify(mTabModel)
-                .createTabGroupForTabGroupSync(List.of(mTab3, mTab2, mTab1), GROUP_A);
+                .createTabGroupForTabGroupSync(
+                        List.of(mTab3, mTab2, mTab1), TabGroupId.fromRawToken(GROUP_A));
         inOrder.verify(mTabModel).setTabGroupTitle(GROUP_A, GROUP_TITLE);
         inOrder.verify(mTabModel).setTabGroupColor(GROUP_A, GROUP_COLOR);
         inOrder.verify(mTabModel)
@@ -152,7 +153,8 @@ public class UndoGroupRestorerUnitTest {
                 new int[] {TAB_ID_1},
                 snapshot);
 
-        verify(mTabModel).createTabGroupForTabGroupSync(List.of(mTab1), GROUP_A);
+        verify(mTabModel)
+                .createTabGroupForTabGroupSync(List.of(mTab1), TabGroupId.fromRawToken(GROUP_A));
         verify(mTabModel, never()).setTabGroupTitle(any(), anyString());
         verify(mTabModel, never()).setTabGroupColor(any(), anyInt());
         verify(mTabModel, never()).setTabGroupCollapsed(any(), anyBoolean(), anyBoolean());
@@ -292,7 +294,8 @@ public class UndoGroupRestorerUnitTest {
                 new int[] {INVALID_TAB_ID, TAB_ID_2, TAB_ID_3},
                 snapshot);
 
-        verify(mTabModel).createTabGroupForTabGroupSync(List.of(mTab3), GROUP_A);
+        verify(mTabModel)
+                .createTabGroupForTabGroupSync(List.of(mTab3), TabGroupId.fromRawToken(GROUP_A));
         verify(mTabModel, never()).getTabById(INVALID_TAB_ID);
     }
 
@@ -351,10 +354,13 @@ public class UndoGroupRestorerUnitTest {
                 snapshot);
 
         InOrder inOrder = inOrder(mTabModel);
-        inOrder.verify(mTabModel).createTabGroupForTabGroupSync(List.of(mTab2, mTab4), GROUP_B);
+        inOrder.verify(mTabModel)
+                .createTabGroupForTabGroupSync(
+                        List.of(mTab2, mTab4), TabGroupId.fromRawToken(GROUP_B));
         inOrder.verify(mTabModel)
                 .setTabGroupCollapsed(GROUP_B, /* isCollapsed= */ true, /* animate= */ false);
-        inOrder.verify(mTabModel).createTabGroupForTabGroupSync(List.of(mTab3), GROUP_A);
+        inOrder.verify(mTabModel)
+                .createTabGroupForTabGroupSync(List.of(mTab3), TabGroupId.fromRawToken(GROUP_A));
         verify(mTabModel, never()).setTabGroupCollapsed(eq(GROUP_A), anyBoolean(), anyBoolean());
         verify(mTabModel, never()).getTabById(TAB_ID_1);
     }
@@ -374,7 +380,8 @@ public class UndoGroupRestorerUnitTest {
                 new int[] {TAB_ID_1},
                 snapshot);
 
-        verify(mTabModel).createTabGroupForTabGroupSync(List.of(mTab1), GROUP_A);
+        verify(mTabModel)
+                .createTabGroupForTabGroupSync(List.of(mTab1), TabGroupId.fromRawToken(GROUP_A));
         verify(mTabModel, never()).setTabGroupTitle(any(), anyString());
         verify(mTabModel, never()).setTabGroupColor(any(), anyInt());
         verify(mTabModel, never()).setTabGroupCollapsed(any(), anyBoolean(), anyBoolean());
@@ -647,7 +654,8 @@ public class UndoGroupRestorerUnitTest {
 
         InOrder inOrder = inOrder(mUiActionHandler, mTabModel);
         inOrder.verify(mUiActionHandler).openTabGroup(SYNC_ID_A);
-        inOrder.verify(mTabModel).createTabGroupForTabGroupSync(List.of(mTab1), GROUP_A);
+        inOrder.verify(mTabModel)
+                .createTabGroupForTabGroupSync(List.of(mTab1), TabGroupId.fromRawToken(GROUP_A));
     }
 
     private SavedTabGroup stubSavedGroup(String syncId, @Nullable Token localGroupId) {

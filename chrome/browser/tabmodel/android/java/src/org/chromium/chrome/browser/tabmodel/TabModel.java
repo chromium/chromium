@@ -539,18 +539,17 @@ public interface TabModel extends TabList {
     void createSingleTabGroup(Tab tab);
 
     /**
-     * Creates a tab group with a preallocated {@link Token} for the TabGroupId.
+     * Creates a tab group with a preallocated {@link TabGroupId}.
      *
      * <p>This should only be used by the tab group sync service and related code. Ideally, this
      * would be locked down using a mechanism like {@code friend class} or some sort of access
      * token. However, for now this disclaimer will suffice.
      *
      * @param tabs The list of tabs to make a tab group from. An empty list will no-op.
-     * @param tabGroupId An externally minted tab group id token.
+     * @param tabGroupId An externally minted tab group id.
      */
-    void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId);
+    void createTabGroupForTabGroupSync(List<Tab> tabs, TabGroupId tabGroupId);
 
-    /**
     /**
      * Appends a list of {@link Tab}s to the destination group that contains the {@code
      * destinationTab}. The {@link TabModel} ordering of the tabs in the given list is not

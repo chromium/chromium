@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -611,7 +612,7 @@ public class ActorBackgroundActuationIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     model.createTabGroupForTabGroupSync(
-                            Collections.singletonList(mTab), tabGroupId);
+                            Collections.singletonList(mTab), TabGroupId.fromRawToken(tabGroupId));
                     assertEquals(tabGroupId, mTab.getTabGroupId());
                     verifyTabInForegroundModel(model, mTab);
                     assertEquals(mTab, TabModelUtils.getCurrentTab(model));

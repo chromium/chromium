@@ -349,7 +349,7 @@ final class UndoGroupRestorer {
         // Recreating the group fires the normal group-created observers, so a group that was synced
         // and deleted at close comes back as a new saved tab group with the same local Token. No
         // merge notification or undo snackbar is shown.
-        tabModel.createTabGroupForTabGroupSync(tabs, groupId);
+        tabModel.createTabGroupForTabGroupSync(tabs, TabGroupId.fromRawToken(groupId));
 
         if (groupData == null) return;
 

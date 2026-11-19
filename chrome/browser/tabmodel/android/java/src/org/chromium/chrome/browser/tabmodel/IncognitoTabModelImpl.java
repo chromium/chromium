@@ -608,7 +608,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId) {
+    public void createTabGroupForTabGroupSync(List<Tab> tabs, TabGroupId tabGroupId) {
         mDelegateModel.createTabGroupForTabGroupSync(tabs, tabGroupId);
     }
 

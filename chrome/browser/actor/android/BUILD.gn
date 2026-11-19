@@ -318,6 +318,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/notifications/android:test_support_java",
+    "//components/tab_groups:tab_groups_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_core_core_pip_java",

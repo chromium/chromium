@@ -1446,7 +1446,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId) {
+    public void createTabGroupForTabGroupSync(List<Tab> tabs, TabGroupId tabGroupId) {
         if (tabs.isEmpty()) return;
 
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
@@ -1455,7 +1455,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                     tabs.get(0),
                     /* notify= */ DONT_NOTIFY,
                     /* indexInGroup= */ null,
-                    tabGroupId);
+                    tabGroupId.getToken());
         }
     }
 

@@ -173,7 +173,7 @@ public class StubTabModel extends EmptyTabModel {
     }
 
     @Override
-    public void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId) {
+    public void createTabGroupForTabGroupSync(List<Tab> tabs, TabGroupId tabGroupId) {
         throw error();
     }
 

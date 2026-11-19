@@ -179,7 +179,7 @@ public class TabGroupUtils {
             }
         }
         if (!alreadyGrouped) {
-            tabModel.createTabGroupForTabGroupSync(tabs, tabGroupId);
+            tabModel.createTabGroupForTabGroupSync(tabs, TabGroupId.fromRawToken(tabGroupId));
         }
         tabGroupId = tabs.get(0).getTabGroupId();
         assumeNonNull(tabGroupId);

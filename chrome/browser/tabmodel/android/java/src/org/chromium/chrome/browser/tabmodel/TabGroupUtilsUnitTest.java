@@ -320,7 +320,8 @@ public class TabGroupUtilsUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
         TabGroupUtils.regroupTabs(mTabModel, tabs, tabGroupMetadata, shouldApplyCollapse);
 
-        verify(mTabModel).createTabGroupForTabGroupSync(any(), eq(TAB_GROUP_ID1));
+        verify(mTabModel)
+                .createTabGroupForTabGroupSync(any(), eq(TabGroupId.fromRawToken(TAB_GROUP_ID1)));
         verify(mTabModel).setTabGroupColor(eq(TAB_GROUP_ID1), eq(0));
         verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID1), eq(TAB_GROUP_TITLE));
         if (shouldApplyCollapse) {
