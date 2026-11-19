@@ -65,7 +65,6 @@ include_rules = [
   "+content/public/android/java/src/org/chromium/content/browser/MediaSessionImplJni.java",
   "+content/public/android/java/src/org/chromium/content/browser/navigation_transitions/BackForwardTransitionAnimationManagerImpl.java",
   "+content/public/android/java/src/org/chromium/content/browser/navigation_transitions/BackForwardTransitionAnimationManagerImplJni.java",
-  "+content/public/android/java/src/org/chromium/content/browser/selection/SelectActionMenuHelper.java",
   "+content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java",
 
   "+google_apis/gaia/android/java",

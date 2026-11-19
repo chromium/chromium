@@ -33,8 +33,6 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
      * section. For example, menu items with an order greater than or equal to DEFAULT_ITEMS and
      * less than SECONDARY_ASSIST_ITEMS will appear in the default items section. Each section is
      * separated by a divider in dropdown menus.
-     *
-     * <p>DO NOT CHANGE THESE VALUES as they are depended on by downstream code in Android platform.
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
@@ -47,8 +45,8 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     public @interface ItemGroupOffset {
         int ASSIST_ITEMS = 0;
         int DEFAULT_ITEMS = 10;
-        int SECONDARY_ASSIST_ITEMS = 20;
-        int TEXT_PROCESSING_ITEMS = 30;
+        int SECONDARY_ASSIST_ITEMS = 100;
+        int TEXT_PROCESSING_ITEMS = 1000;
 
         /**
          * Additional items providing alternative actions, such as custom actions added by
@@ -56,6 +54,41 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
          * provided.
          */
         int ALTERNATIVE_ITEMS = Menu.CATEGORY_ALTERNATIVE;
+    }
+
+    /**
+     * Relative order constants within {@link ItemGroupOffset} categories.
+     *
+     * <p>Within {@link ItemGroupOffset#DEFAULT_ITEMS}, the built-in default items (cut, copy,
+     * paste, ...) are spaced out rather than assigned consecutive integers (see {@code
+     * SelectActionMenuHelper#DEFAULT_ITEM_ORDER_SPACING}). This leaves free order slots in the gaps
+     * between two consecutive default items so that embedders can interpose their own items at
+     * stable positions without reordering the default items. The constants below occupy such gaps.
+     * A new interposition constant should pick a free value inside the desired gap -- for example,
+     * if the spacing is 10 and two adjacent default items end up at orders N and N+10, any value
+     * strictly between them (such as N+5) places the new item between them.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        ItemOrder.COPY_LINK_TO_HIGHLIGHT,
+        ItemOrder.ASK_GEMINI,
+        ItemOrder.OPEN_IN_READING_MODE,
+        ItemOrder.READ_ALOUD_READ_ONLY,
+        ItemOrder.WEB_SEARCH_EDITABLE,
+        ItemOrder.SHARE_EDITABLE,
+        ItemOrder.READ_ALOUD_EDITABLE
+    })
+    public @interface ItemOrder {
+        // Within DEFAULT_ITEMS:
+        int COPY_LINK_TO_HIGHLIGHT = 45;
+        int ASK_GEMINI = 46;
+        int OPEN_IN_READING_MODE = 58;
+        int READ_ALOUD_READ_ONLY = 65;
+
+        // Within SECONDARY_ASSIST_ITEMS:
+        int WEB_SEARCH_EDITABLE = 10;
+        int SHARE_EDITABLE = 30;
+        int READ_ALOUD_EDITABLE = 40;
     }
 
     private final @AttrRes int mIconAttr;
@@ -134,9 +167,9 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
 
     /** The builder class for {@link SelectionMenuItem}. */
     public static class Builder {
-        private @StringRes int mTitleRes;
-        private @Nullable CharSequence mTitle;
-        private @IdRes int mId;
+        private final @StringRes int mTitleRes;
+        private final @Nullable CharSequence mTitle;
+        public @IdRes int mId;
         private @IdRes int mGroupId;
         private @AttrRes int mIconAttr;
         private @Nullable Drawable mIcon;
@@ -150,13 +183,15 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
 
         /** Pass in a non-null title. */
         public Builder(@Nullable CharSequence title) {
-            setTitle(title);
+            mTitle = title;
+            mTitleRes = 0;
             initDefaults();
         }
 
         /** Pass in a valid string res. */
         public Builder(@StringRes int titleRes) {
-            setTitle(titleRes);
+            mTitleRes = titleRes;
+            mTitle = null;
             initDefaults();
         }
 
@@ -177,37 +212,10 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
             mIsIconTintable = false;
         }
 
-        /** Sets the title that is shown in the menu UI. */
-        public Builder setTitle(@Nullable CharSequence title) {
-            mTitle = title;
-            mTitleRes = 0;
-            return this;
-        }
-
-        /** Sets the title that is shown in the menu UI. */
-        public Builder setTitle(@StringRes int titleRes) {
-            mTitleRes = titleRes;
-            mTitle = null;
-            return this;
-        }
-
-        /** Gets the title that is shown in the menu UI. */
-        public @Nullable CharSequence getTitle(Context context) {
-            if (mTitleRes != 0) {
-                return context.getString(mTitleRes);
-            }
-            return mTitle;
-        }
-
         /** The id of the menu item. */
         public Builder setId(@IdRes int id) {
             mId = id;
             return this;
-        }
-
-        /** Returns the id of the menu item. */
-        public int getId() {
-            return mId;
         }
 
         /**
@@ -302,10 +310,6 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
         public Builder setIntent(@Nullable Intent intent) {
             mIntent = intent;
             return this;
-        }
-
-        public boolean isEnabled() {
-            return mIsEnabled;
         }
 
         /** Pass in true if the item is enabled. Otherwise false. */

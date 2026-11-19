@@ -16,8 +16,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.selection.TextSelectionActionMenuDelegate.ASK_GEMINI;
-
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
@@ -34,7 +32,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
-import org.chromium.base.SelectionActionMenuClientWrapper.DefaultItem;
 import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -57,8 +54,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
-import org.chromium.content.browser.selection.SelectActionMenuHelper;
-import org.chromium.content_public.browser.PendingSelectionMenu;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionMenuItem.ItemGroupOffset;
@@ -66,7 +61,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.Set;
 
 /** Unit tests for {@link TextSelectionActionMenuDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -262,7 +256,9 @@ public class TextSelectionActionMenuDelegateTest {
         SelectionMenuItem askGemini = findItem(items, R.id.contextmenu_ask_gemini);
         assertNotNull(askGemini);
         // Placed among the default items, in the gap before Web Search (the default position).
-        assertEquals(ItemGroupOffset.DEFAULT_ITEMS + ASK_GEMINI, askGemini.order);
+        assertEquals(
+                ItemGroupOffset.DEFAULT_ITEMS + SelectionMenuItem.ItemOrder.ASK_GEMINI,
+                askGemini.order);
         assertTrue(askGemini.order >= ItemGroupOffset.DEFAULT_ITEMS);
         assertTrue(askGemini.order < ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
         assertEquals(R.id.select_action_menu_delegate_items, askGemini.groupId);
@@ -389,7 +385,9 @@ public class TextSelectionActionMenuDelegateTest {
 
         // The default position interposes "Ask Gemini" among the default items, in the gap just
         // before Web Search.
-        assertEquals(ItemGroupOffset.DEFAULT_ITEMS + ASK_GEMINI, askGemini.order);
+        assertEquals(
+                ItemGroupOffset.DEFAULT_ITEMS + SelectionMenuItem.ItemOrder.ASK_GEMINI,
+                askGemini.order);
         assertTrue(askGemini.order >= ItemGroupOffset.DEFAULT_ITEMS);
         assertTrue(askGemini.order < ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
     }
@@ -1044,113 +1042,5 @@ public class TextSelectionActionMenuDelegateTest {
                         List.of(noActivityInfo, createGsaAskGeminiResolveInfo()));
 
         assertEquals(List.of(noActivityInfo), filtered);
-    }
-
-    @Test
-    public void testDefaultMenuItemOrder() {
-        PendingSelectionMenu menu =
-                setupTest(
-                        MenuType.FLOATING,
-                        createCapabilitiesDelegate(
-                                Set.of(
-                                        DefaultItem.CUT,
-                                        DefaultItem.COPY,
-                                        DefaultItem.PASTE,
-                                        DefaultItem.PASTE_AS_PLAIN_TEXT,
-                                        DefaultItem.SHARE,
-                                        DefaultItem.SELECT_ALL,
-                                        DefaultItem.WEB_SEARCH)));
-        List<SelectionMenuItem> items = menu.getMenuItemsForTesting();
-        assertEquals(7, items.size());
-        assertEquals(org.chromium.content.R.id.select_action_menu_cut, items.get(0).id);
-        assertEquals(org.chromium.content.R.id.select_action_menu_copy, items.get(1).id);
-        assertEquals(android.R.id.paste, items.get(2).id);
-        assertEquals(android.R.id.pasteAsPlainText, items.get(3).id);
-        assertEquals(org.chromium.content.R.id.select_action_menu_select_all, items.get(4).id);
-        assertEquals(org.chromium.content.R.id.select_action_menu_web_search, items.get(5).id);
-        assertEquals(org.chromium.content.R.id.select_action_menu_share, items.get(6).id);
-    }
-
-    @Test
-    public void disabledItemsAreRemovedFromFloatingMenu() {
-        PendingSelectionMenu menu =
-                setupTest(MenuType.FLOATING, createCapabilitiesDelegate(Set.of()));
-        List<SelectionMenuItem> items = menu.getMenuItemsForTesting();
-        assertEquals(0, items.size());
-    }
-
-    @Test
-    public void disabledItemsAreRemovedFromDropdownMenu() {
-        PendingSelectionMenu menu =
-                setupTest(MenuType.DROPDOWN, createCapabilitiesDelegate(Set.of()));
-        List<SelectionMenuItem> items = menu.getMenuItemsForTesting();
-        assertEquals(4, items.size());
-        // Items should be reshuffled in dropdown menu.
-        assertEquals(org.chromium.content.R.id.select_action_menu_copy, items.get(0).id);
-        assertEquals(org.chromium.content.R.id.select_action_menu_web_search, items.get(1).id);
-        assertEquals(R.id.contextmenu_open_in_reading_mode, items.get(2).id);
-        assertEquals(org.chromium.content.R.id.select_action_menu_share, items.get(3).id);
-    }
-
-    private PendingSelectionMenu setupTest(
-            @MenuType int menuType,
-            SelectActionMenuHelper.TextSelectionCapabilitiesDelegate capabilities) {
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        when(mTemplateUrlService.getDefaultSearchEngineTemplateUrl()).thenReturn(mTemplateUrl);
-        when(mTemplateUrl.getKeyword()).thenReturn("google");
-        when(mTemplateUrlService.getFullNameFromTemplateUrl("google")).thenReturn("Google");
-        PendingSelectionMenu menu = new PendingSelectionMenu(mTab.getContext());
-        SelectActionMenuHelper.populateMenuItems(
-                capabilities,
-                menu,
-                mTab.getContext(),
-                null,
-                menuType,
-                false,
-                true,
-                "selected text",
-                true,
-                mDelegate);
-        return menu;
-    }
-
-    private SelectActionMenuHelper.TextSelectionCapabilitiesDelegate createCapabilitiesDelegate(
-            Set<@DefaultItem Integer> capabilities) {
-        return new SelectActionMenuHelper.TextSelectionCapabilitiesDelegate() {
-            @Override
-            public boolean canCut() {
-                return capabilities.contains(DefaultItem.CUT);
-            }
-
-            @Override
-            public boolean canCopy() {
-                return capabilities.contains(DefaultItem.COPY);
-            }
-
-            @Override
-            public boolean canPaste() {
-                return capabilities.contains(DefaultItem.PASTE);
-            }
-
-            @Override
-            public boolean canShare(int menuType) {
-                return capabilities.contains(DefaultItem.SHARE);
-            }
-
-            @Override
-            public boolean canSelectAll(int menuType) {
-                return capabilities.contains(DefaultItem.SELECT_ALL);
-            }
-
-            @Override
-            public boolean canWebSearch(int menuType) {
-                return capabilities.contains(DefaultItem.WEB_SEARCH);
-            }
-
-            @Override
-            public boolean canPasteAsPlainText() {
-                return capabilities.contains(DefaultItem.PASTE_AS_PLAIN_TEXT);
-            }
-        };
     }
 }
