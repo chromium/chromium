@@ -46,6 +46,7 @@ BASE_FEATURE(kComposeboxUnselectMatchOnTabExit,
 BASE_FEATURE(kComposeboxPersonalizedHintText,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kComposeboxImageFileSizeLimit, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxContextMenuTooltips, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kComposeboxImageMaxSizeBytes(
     &kComposeboxImageFileSizeLimit,
@@ -66,11 +67,6 @@ const base::FeatureParam<bool>
         &kContextManagementInComposebox,
         "enable_tab_deselection",
         IS_IOS);
-
-const base::FeatureParam<bool> kContextManagementInComposeboxTooltips(
-    &kContextManagementInComposebox,
-    "enable_context_menu_tooltips",
-    true);
 
 const base::FeatureParam<bool> kContextManagementInComposeboxSingleTabMenuItem(
     &kContextManagementInComposebox,
@@ -119,8 +115,7 @@ bool IsTabDeselectionInComposeboxEnabled() {
 }
 
 bool IsContextMenuTooltipsInComposeboxEnabled() {
-  return base::FeatureList::IsEnabled(kContextManagementInComposebox) &&
-         kContextManagementInComposeboxTooltips.Get();
+  return base::FeatureList::IsEnabled(kComposeboxContextMenuTooltips);
 }
 
 bool IsSingleTabMenuItemInComposeboxEnabled() {

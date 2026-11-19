@@ -154,7 +154,7 @@ extern const base::FeatureParam<bool>
 bool IsTabDeselectionInComposeboxEnabled();
 
 // If enabled, tooltips will be shown in the composebox context menu.
-extern const base::FeatureParam<bool> kContextManagementInComposeboxTooltips;
+BASE_DECLARE_FEATURE(kComposeboxContextMenuTooltips);
 
 // Helper to check if context menu tooltips are enabled in the composebox.
 bool IsContextMenuTooltipsInComposeboxEnabled();

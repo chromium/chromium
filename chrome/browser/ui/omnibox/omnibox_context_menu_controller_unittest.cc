@@ -1205,14 +1205,13 @@ TEST_F(OmniboxContextMenuControllerTest,
   EXPECT_EQ(test_controller.menu_model()->GetItemCount(), count);
 }
 
-TEST_F(OmniboxContextMenuControllerTest, ToolAndModelTooltips_ParamEnabled) {
+TEST_F(OmniboxContextMenuControllerTest,
+       ToolAndModelTooltips_FeatureEnabledWithoutContextManagement) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kContextManagementInComposebox,
-        {{omnibox::kContextManagementInComposeboxTooltips.name, "true"}}},
-       {omnibox::kContextManagementInOmnibox, {}},
-       {omnibox::kAimUsePecApi, {}}},
-      {});
+  feature_list.InitWithFeatures(
+      {omnibox::kComposeboxContextMenuTooltips, omnibox::kAimUsePecApi},
+      {omnibox::kContextManagementInComposebox,
+       omnibox::kContextManagementInOmnibox});
 
   omnibox::InputState state;
   state.allowed_tools = {omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH};
@@ -1255,14 +1254,13 @@ TEST_F(OmniboxContextMenuControllerTest, ToolAndModelTooltips_ParamEnabled) {
   EXPECT_TRUE(found_model);
 }
 
-TEST_F(OmniboxContextMenuControllerTest, ToolAndModelTooltips_ParamDisabled) {
+TEST_F(OmniboxContextMenuControllerTest,
+       ToolAndModelTooltips_FeatureDisabledWithContextManagement) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kContextManagementInComposebox,
-        {{omnibox::kContextManagementInComposeboxTooltips.name, "false"}}},
-       {omnibox::kContextManagementInOmnibox, {}},
-       {omnibox::kAimUsePecApi, {}}},
-      {});
+  feature_list.InitWithFeatures(
+      {omnibox::kContextManagementInComposebox,
+       omnibox::kContextManagementInOmnibox, omnibox::kAimUsePecApi},
+      {omnibox::kComposeboxContextMenuTooltips});
 
   omnibox::InputState state;
   state.allowed_tools = {omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH};
@@ -1297,13 +1295,12 @@ TEST_F(OmniboxContextMenuControllerTest, ToolAndModelTooltips_ParamDisabled) {
 }
 
 TEST_F(OmniboxContextMenuControllerTest,
-       ShareTabsTooltip_TabsChecked_ParamEnabled) {
+       ShareTabsTooltip_TabsChecked_FeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kContextManagementInComposebox,
-        {{omnibox::kContextManagementInComposeboxTooltips.name, "true"}}},
-       {omnibox::kContextManagementInOmnibox, {}},
-       {omnibox::kAimUsePecApi, {}}},
+  feature_list.InitWithFeatures(
+      {omnibox::kComposeboxContextMenuTooltips,
+       omnibox::kContextManagementInComposebox,
+       omnibox::kContextManagementInOmnibox, omnibox::kAimUsePecApi},
       {});
 
   std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
@@ -1324,13 +1321,12 @@ TEST_F(OmniboxContextMenuControllerTest,
 }
 
 TEST_F(OmniboxContextMenuControllerTest,
-       ShareTabsTooltip_NoTabsChecked_ParamEnabled) {
+       ShareTabsTooltip_NoTabsChecked_FeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kContextManagementInComposebox,
-        {{omnibox::kContextManagementInComposeboxTooltips.name, "true"}}},
-       {omnibox::kContextManagementInOmnibox, {}},
-       {omnibox::kAimUsePecApi, {}}},
+  feature_list.InitWithFeatures(
+      {omnibox::kComposeboxContextMenuTooltips,
+       omnibox::kContextManagementInComposebox,
+       omnibox::kContextManagementInOmnibox, omnibox::kAimUsePecApi},
       {});
 
   std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
@@ -1352,14 +1348,12 @@ TEST_F(OmniboxContextMenuControllerTest,
       l10n_util::GetStringUTF16(IDS_COMPOSE_ADD_OPEN_TABS_TO_ASK_ANYTHING));
 }
 
-TEST_F(OmniboxContextMenuControllerTest, ShareTabsTooltip_ParamDisabled) {
+TEST_F(OmniboxContextMenuControllerTest, ShareTabsTooltip_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kContextManagementInComposebox,
-        {{omnibox::kContextManagementInComposeboxTooltips.name, "false"}}},
-       {omnibox::kContextManagementInOmnibox, {}},
-       {omnibox::kAimUsePecApi, {}}},
-      {});
+  feature_list.InitWithFeatures(
+      {omnibox::kContextManagementInComposebox,
+       omnibox::kContextManagementInOmnibox, omnibox::kAimUsePecApi},
+      {omnibox::kComposeboxContextMenuTooltips});
 
   std::vector<OmniboxContextMenuController::TabInfo> mock_tabs;
   OmniboxContextMenuController::TabInfo tab;
