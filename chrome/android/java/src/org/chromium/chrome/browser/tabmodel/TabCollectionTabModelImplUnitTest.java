@@ -204,11 +204,11 @@ public class TabCollectionTabModelImplUnitTest {
         when(mTabCollectionTabModelImplJni.getTabsInGroup(any(), any()))
                 .thenAnswer(
                         invocation -> {
-                            Token groupId = invocation.getArgument(1);
+                            TabGroupId groupId = invocation.getArgument(1);
                             if (groupId == null) return Collections.emptyList();
                             List<Tab> result = new ArrayList<>();
                             for (Tab t : mTabs) {
-                                if (groupId.equals(t.getTabGroupId())) {
+                                if (groupId.getToken().equals(t.getTabGroupId())) {
                                     result.add(t);
                                 }
                             }
@@ -507,7 +507,9 @@ public class TabCollectionTabModelImplUnitTest {
     public void testGetTabsInGroup_NativeNotInitialized() {
         mTabModel.destroy();
         mExpectNoJniCalls = true;
-        assertEquals(Collections.emptyList(), mTabModel.getTabsInGroup(new Token(1L, 2L)));
+        assertEquals(
+                Collections.emptyList(),
+                mTabModel.getTabsInGroup(TabGroupId.fromRawToken(new Token(1L, 2L))));
     }
 
     @Test

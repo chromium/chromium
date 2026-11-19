@@ -142,11 +142,11 @@ abstract class TabListDataProviderTestBase {
         when(model.getTabsInGroup(any()))
                 .thenAnswer(
                         invocation -> {
-                            Token tabGroupId = invocation.getArgument(0);
+                            TabGroupId tabGroupId = invocation.getArgument(0);
                             if (tabGroupId == null) return List.of();
                             List<Tab> groupTabs = new ArrayList<>();
                             for (Tab tab : tabs) {
-                                if (tabGroupId.equals(tab.getTabGroupId())) {
+                                if (tabGroupId.getToken().equals(tab.getTabGroupId())) {
                                     groupTabs.add(tab);
                                 }
                             }

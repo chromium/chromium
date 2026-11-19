@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -221,7 +222,8 @@ public class VerticalTabKeyboardHandlerUnitTest {
 
         focusItem(mRecyclerView, 0);
 
-        when(mTabModel.getTabsInGroup(GROUP_ID)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID)))
+                .thenReturn(List.of(mTab1));
 
         assertTrue(mHandler.reorderKeyboardFocusedItem(/* toPrevious= */ false));
         verify(mTabModel).moveGroupToIndex(GROUP_ID, 1);

@@ -101,7 +101,8 @@ public class TabGroupSyncRemoteObserverUnitTest {
         mTabModel.addTab(TAB_ID_1);
         Tab tab = mTabModel.getTabAt(0);
         tab.setTabGroupId(TOKEN_1);
-        when(mTabModel.getTabsInGroup(eq(TOKEN_1))).thenReturn(List.of(tab));
+        when(mTabModel.getTabsInGroup(eq(TabGroupId.fromOptionalToken(TOKEN_1))))
+                .thenReturn(List.of(tab));
     }
 
     @Test

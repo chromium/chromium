@@ -299,7 +299,8 @@ public class TabsDeterministicSimulationTest {
                     List<Tab> tabsToMerge =
                             sourceTabGroupId == null
                                     ? Collections.singletonList(resolvedSourceTab)
-                                    : mCollectionModel.getTabsInGroup(sourceTabGroupId);
+                                    : mCollectionModel.getTabsInGroup(
+                                            TabGroupId.fromOptionalToken(sourceTabGroupId));
                     Log.i(
                             TAG,
                             "createOrAddTabToGroup: mergeListOfTabsToGroup("
@@ -327,7 +328,8 @@ public class TabsDeterministicSimulationTest {
                     } else {
                         groupId = Token.createRandom(); // Invalid group ID
                     }
-                    List<Tab> tabsInGroup = mCollectionModel.getTabsInGroup(groupId);
+                    List<Tab> tabsInGroup =
+                            mCollectionModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
 
                     if (tabsInGroup.isEmpty()) return;
 

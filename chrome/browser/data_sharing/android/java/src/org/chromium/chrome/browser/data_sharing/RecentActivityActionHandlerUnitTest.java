@@ -36,6 +36,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.Origin;
 
@@ -73,7 +74,8 @@ public class RecentActivityActionHandlerUnitTest {
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mTab1);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.getTabsInGroup(TOKEN_1)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TOKEN_1)))
+                .thenReturn(List.of(mTab1));
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         // Setup saved tab group with a single tab.

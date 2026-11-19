@@ -4039,7 +4039,10 @@ public class StripLayoutHelper
 
         // 2. Retrieve the grouped tabs and get the tabs description.
         List<Tab> relatedTabs =
-                mModel == null ? List.of() : mModel.getTabsInGroup(groupTitle.getTabGroupId());
+                mModel == null
+                        ? List.of()
+                        : mModel.getTabsInGroup(
+                                TabGroupId.fromOptionalToken(groupTitle.getTabGroupId()));
         int relatedTabsCount = relatedTabs.size();
         String groupDetails;
         if (relatedTabsCount > 0) {
@@ -4186,7 +4189,9 @@ public class StripLayoutHelper
         if (isCollapsed && mModel != null) {
             Tab activeTab = getTabById(getActiveTabId());
             if (activeTab != null && groupTitle.getTabGroupId().equals(activeTab.getTabGroupId())) {
-                List<Tab> excludedTabs = mModel.getTabsInGroup(activeTab.getTabGroupId());
+                List<Tab> excludedTabs =
+                        mModel.getTabsInGroup(
+                                TabGroupId.fromOptionalToken(activeTab.getTabGroupId()));
                 Tab nextTab =
                         NextTabSelectionUtil.findNearbyNotClosingTab(
                                 mModel, mModel.indexOf(activeTab), excludedTabs);
@@ -6113,7 +6118,9 @@ public class StripLayoutHelper
             tab = mModel.getTabById(stripTab.getTabId());
         } else {
             List<Tab> tabsInGroup =
-                    mModel.getTabsInGroup(((StripLayoutGroupTitle) next).getTabGroupId());
+                    mModel.getTabsInGroup(
+                            TabGroupId.fromOptionalToken(
+                                    ((StripLayoutGroupTitle) next).getTabGroupId()));
             tab = tabsInGroup.isEmpty() ? null : tabsInGroup.get(0);
         }
         int index = mModel.indexOf(tab);

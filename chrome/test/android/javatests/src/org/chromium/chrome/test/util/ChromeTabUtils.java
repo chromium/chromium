@@ -48,6 +48,7 @@ import org.chromium.chrome.test.transit.page.PageUrlCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabAddedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabClosingCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabSelectedCondition;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -382,7 +383,7 @@ public class ChromeTabUtils {
         Token sourceTabGroupId = sourceTab.getTabGroupId();
         List<Tab> tabsToMerge =
                 sourceTabGroupId != null
-                        ? tabModel.getTabsInGroup(sourceTabGroupId)
+                        ? tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(sourceTabGroupId))
                         : List.of(sourceTab);
         tabModel.mergeListOfTabsToGroup(
                 tabsToMerge, destinationTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);

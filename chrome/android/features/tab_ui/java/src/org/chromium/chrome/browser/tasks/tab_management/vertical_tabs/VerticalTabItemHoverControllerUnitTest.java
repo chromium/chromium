@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -186,8 +187,10 @@ public class VerticalTabItemHoverControllerUnitTest {
         when(mTabModelSelector.getTabById(TAB_ID_2)).thenReturn(mTab2);
         when(mTabModelSelector.getTabById(PINNED_TAB_ID)).thenReturn(mPinnedTab);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModel.getTabsInGroup(GROUP_ID_1)).thenReturn(List.of(mTab1, mTab2));
-        when(mTabModel.getTabsInGroup(GROUP_ID_2)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID_1)))
+                .thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID_2)))
+                .thenReturn(List.of(mTab1));
         when(mTabModel.getTabGroupTitle(GROUP_ID_1)).thenReturn("Group 1");
         when(mTabModel.getTabGroupTitle(GROUP_ID_2)).thenReturn("Group 2");
 
@@ -657,7 +660,8 @@ public class VerticalTabItemHoverControllerUnitTest {
     @Test
     public void testTabGroup_EmptyGroup_DoesNotShowHoverCard() {
         Token emptyGroupId = new Token(99L, 99L);
-        when(mTabModel.getTabsInGroup(emptyGroupId)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(emptyGroupId)))
+                .thenReturn(List.of());
 
         TabHoverListener listener = mController.getTabHoverListener();
         assertNotNull(listener);

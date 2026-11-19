@@ -440,7 +440,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
     }
 
     private boolean areAllTabsInGroupSelected(Token groupId) {
-        List<Tab> tabsInGroup = mModel.getTabsInGroup(groupId);
+        List<Tab> tabsInGroup = mModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
         if (tabsInGroup.isEmpty()) return false;
         for (Tab tab : tabsInGroup) {
             if (!mModel.isTabMultiSelected(tab.getId())) {
@@ -488,7 +488,8 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         Token destinationGroupId = primaryTab.getTabGroupId();
         if (destinationGroupId != null && mInteractingGroupIds.isEmpty()) {
             int primaryTabIndexInGroup =
-                    mModel.getTabsInGroup(destinationGroupId).indexOf(primaryTab);
+                    mModel.getTabsInGroup(TabGroupId.fromOptionalToken(destinationGroupId))
+                            .indexOf(primaryTab);
             mModel.mergeListOfTabsToExistingGroup(
                     convertStripTabsToTabs(mUnpinnedTabs),
                     destinationGroupId,
@@ -504,7 +505,9 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             int rightEdgeIndex = leftEdgeIndex;
             if (isTabInRetainedGroup(primaryTab)) {
                 List<Tab> primaryGroupTabs =
-                        mModel.getTabsInGroup(assumeNonNull(primaryTab.getTabGroupId()));
+                        mModel.getTabsInGroup(
+                                TabGroupId.fromOptionalToken(
+                                        assumeNonNull(primaryTab.getTabGroupId())));
                 leftPartitionIndex -= primaryGroupTabs.indexOf(primaryTab);
                 rightPartitionIndex = leftPartitionIndex + primaryGroupTabs.size() - 1;
                 leftEdgeIndex = mModel.indexOf(primaryGroupTabs.get(0));

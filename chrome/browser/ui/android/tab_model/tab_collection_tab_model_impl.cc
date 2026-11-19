@@ -128,10 +128,9 @@ void TabCollectionTabModelImpl::CreateTabGroup(
 }
 
 std::vector<TabAndroid*> TabCollectionTabModelImpl::GetTabsInGroup(
-    const base::Token& tab_group_id) const {
+    const TabGroupId& tab_group_id) const {
   TabGroupTabCollection* group_collection =
-      tab_strip_collection_->GetTabGroupCollection(
-          TabGroupId::FromRawToken(tab_group_id));
+      tab_strip_collection_->GetTabGroupCollection(tab_group_id);
 
   std::vector<TabAndroid*> tabs;
   if (!group_collection) {

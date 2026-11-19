@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Arrays;
 import java.util.List;
@@ -402,7 +403,10 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
                                 view.setIdealX(view.getIdealX() + deltaFromNewPosition);
                             }
                             Token tabGroupId = invocation.getArgument(0);
-                            int id = mModel.getTabsInGroup(tabGroupId).get(0).getId();
+                            int id =
+                                    mModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))
+                                            .get(0)
+                                            .getId();
                             int index = Math.min(mStripTabs.length - 1, invocation.getArgument(1));
                             mStripTabs[index] = StripLayoutUtils.findTabById(mStripTabs, id);
                             return null;

@@ -118,6 +118,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -618,7 +619,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         syncGroup.localId = new LocalTabGroupId(groupId);
 
         when(mTabGroupSyncService.getGroup("group_id_1")).thenReturn(syncGroup);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab));
         when(mTabModel.indexOf(mTab)).thenReturn(2);
 
         Callback<String> callback = mBringTabGroupToFrontCallbackCaptor.getValue();
@@ -653,7 +655,8 @@ public class TabSearchOverlayCoordinatorUnitTest {
         when(mTabGroupSyncService.getGroup("group_id_1"))
                 .thenReturn(syncGroupBefore)
                 .thenReturn(syncGroupAfter);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab));
         when(mTabModel.indexOf(mTab)).thenReturn(2);
 
         Callback<String> callback = mBringTabGroupToFrontCallbackCaptor.getValue();

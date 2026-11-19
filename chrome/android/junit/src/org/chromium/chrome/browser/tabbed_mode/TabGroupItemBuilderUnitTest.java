@@ -168,7 +168,8 @@ public class TabGroupItemBuilderUnitTest {
         when(tab.isDestroyed()).thenReturn(false);
         when(tab.getUserDataHost()).thenReturn(new UserDataHost());
 
-        when(tabModel.getTabsInGroup(token1)).thenReturn(Arrays.asList(tab));
+        when(tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(Arrays.asList(tab));
 
         return tab;
     }
@@ -192,7 +193,8 @@ public class TabGroupItemBuilderUnitTest {
         when(tab2.getTitle()).thenReturn("Tab 2");
         when(tab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
 
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(Arrays.asList(tab1, tab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(Arrays.asList(tab1, tab2));
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -703,8 +705,9 @@ public class TabGroupItemBuilderUnitTest {
         List<Tab> tabs = List.of(tab1);
         when(tabList.iterator()).thenAnswer(invocation -> tabs.iterator());
         when(mTabModel.getComprehensiveModel()).thenReturn(tabList);
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of(tab1));
-        when(mTabModel.getTabsInGroup(token2)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(List.of(tab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token2))).thenReturn(List.of());
 
         // TabWindowManager has group2 in window 2.
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
@@ -714,7 +717,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.STANDARD);
         when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token2))).thenReturn(true);
-        when(mModelWindow2.getTabsInGroup(token2)).thenReturn(List.of(tab2));
+        when(mModelWindow2.getTabsInGroup(TabGroupId.fromOptionalToken(token2)))
+                .thenReturn(List.of(tab2));
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -767,7 +771,8 @@ public class TabGroupItemBuilderUnitTest {
         when(tab1.getId()).thenReturn(101);
         when(tab1.getTitle()).thenReturn("Incognito Tab");
         when(tab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(mIncognitoTabModel.getTabsInGroup(token1)).thenReturn(List.of(tab1));
+        when(mIncognitoTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(List.of(tab1));
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isIncognito()).thenReturn(true);
@@ -1081,7 +1086,7 @@ public class TabGroupItemBuilderUnitTest {
         when(mClosingTab.isClosing()).thenReturn(true);
 
         // Non-closing model returns empty list for closing group.
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(List.of());
 
         List<Tab> tabs = List.of(mClosingTab);
         when(mComprehensiveTabList.getCount()).thenReturn(1);
@@ -1143,7 +1148,7 @@ public class TabGroupItemBuilderUnitTest {
                 .thenReturn(new String[] {"closing_cross_window_id"});
         when(mTabGroupSyncService.getGroup("closing_cross_window_id")).thenReturn(closingGroup);
 
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(List.of());
         when(mComprehensiveTabList.iterator()).thenAnswer(invocation -> List.<Tab>of().iterator());
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
         when(mTabModel.isIncognito()).thenReturn(false);
@@ -1165,7 +1170,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mComprehensiveModelWindow2.iterator())
                 .thenAnswer(invocation -> List.of(mClosingTab).iterator());
         when(mModelWindow2.getComprehensiveModel()).thenReturn(mComprehensiveModelWindow2);
-        when(mModelWindow2.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mModelWindow2.getTabsInGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(List.of());
         when(mModelWindow2.getTabGroupTitle(token1)).thenReturn("Live Window 2 Closing Group");
         when(mModelWindow2.getTabGroupColorWithFallback(token1)).thenReturn(TabGroupColorId.BLUE);
 
@@ -1222,7 +1228,7 @@ public class TabGroupItemBuilderUnitTest {
 
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"hidden_id"});
         when(mTabGroupSyncService.getGroup("hidden_id")).thenReturn(hiddenGroup);
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(List.of());
         when(mComprehensiveTabList.iterator())
                 .thenAnswer(invocation -> Collections.emptyIterator());
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
@@ -1267,7 +1273,7 @@ public class TabGroupItemBuilderUnitTest {
 
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"hidden_id"});
         when(mTabGroupSyncService.getGroup("hidden_id")).thenReturn(hiddenGroup);
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(List.of());
         when(mComprehensiveTabList.iterator())
                 .thenAnswer(invocation -> Collections.emptyIterator());
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
@@ -1319,7 +1325,7 @@ public class TabGroupItemBuilderUnitTest {
 
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"headless_id"});
         when(mTabGroupSyncService.getGroup("headless_id")).thenReturn(headlessGroup);
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(List.of());
         when(mComprehensiveTabList.iterator())
                 .thenAnswer(invocation -> Collections.emptyIterator());
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
@@ -1364,7 +1370,7 @@ public class TabGroupItemBuilderUnitTest {
 
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"headless_id"});
         when(mTabGroupSyncService.getGroup("headless_id")).thenReturn(headlessGroup);
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(List.of());
         when(mComprehensiveTabList.iterator())
                 .thenAnswer(invocation -> Collections.emptyIterator());
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
@@ -1502,7 +1508,7 @@ public class TabGroupItemBuilderUnitTest {
 
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"headless_id"});
         when(mTabGroupSyncService.getGroup("headless_id")).thenReturn(headlessGroup);
-        when(mTabModel.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(List.of());
         when(mComprehensiveTabList.iterator())
                 .thenAnswer(invocation -> Collections.emptyIterator());
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveTabList);
@@ -1513,7 +1519,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mSelectorWindow2.getModel(false)).thenReturn(mModelWindow2);
         when(mModelWindow2.getTabModelType()).thenReturn(TabModelType.HEADLESS);
         when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
-        when(mModelWindow2.getTabsInGroup(token1)).thenReturn(List.of());
+        when(mModelWindow2.getTabsInGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(List.of());
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -1553,7 +1560,8 @@ public class TabGroupItemBuilderUnitTest {
                         JUnitTestGURLs.URL_1,
                         token1,
                         /* isOffTheRecord= */ true);
-        when(mIncognitoTabModel.getTabsInGroup(token1)).thenReturn(List.of(tab1));
+        when(mIncognitoTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token1)))
+                .thenReturn(List.of(tab1));
 
         // Even if TabGroupSyncService has sync groups, incognito must ignore it and use local
         // model.
@@ -1896,7 +1904,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mModelWindow2.isIncognito()).thenReturn(false);
         when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(tokenWindow2)))
                 .thenReturn(true);
-        when(mModelWindow2.getTabsInGroup(tokenWindow2)).thenReturn(List.of(tabWindow2));
+        when(mModelWindow2.getTabsInGroup(TabGroupId.fromOptionalToken(tokenWindow2)))
+                .thenReturn(List.of(tabWindow2));
 
         SavedTabGroup anotherGroup =
                 createLocalSavedTabGroup(
@@ -2172,7 +2181,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(tokenCurrent));
         when(mTabModel.getTabGroupTitle(tokenCurrent)).thenReturn("Current Group");
         when(mTabModel.getTabGroupColorWithFallback(tokenCurrent)).thenReturn(TabGroupColorId.BLUE);
-        when(mTabModel.getTabsInGroup(tokenCurrent)).thenReturn(List.of(tabCurrent));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tokenCurrent)))
+                .thenReturn(List.of(tabCurrent));
 
         SavedTabGroup currentGroup =
                 createLocalSavedTabGroup(
@@ -2200,7 +2210,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mModelWindow2.isIncognito()).thenReturn(false);
         when(mModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(tokenAnother)))
                 .thenReturn(true);
-        when(mModelWindow2.getTabsInGroup(tokenAnother)).thenReturn(List.of(tabWindow2));
+        when(mModelWindow2.getTabsInGroup(TabGroupId.fromOptionalToken(tokenAnother)))
+                .thenReturn(List.of(tabWindow2));
 
         SavedTabGroup anotherGroup =
                 createLocalSavedTabGroup(
@@ -2236,7 +2247,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mClosingTab.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
         when(mClosingTab.getTabGroupId()).thenReturn(tokenClosing);
         when(mClosingTab.isClosing()).thenReturn(true);
-        when(mTabModel.getTabsInGroup(tokenClosing)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tokenClosing)))
+                .thenReturn(List.of());
 
         List<Tab> comprehensiveTabs = List.of(tabCurrent, mClosingTab);
         when(mComprehensiveTabList.getCount()).thenReturn(2);

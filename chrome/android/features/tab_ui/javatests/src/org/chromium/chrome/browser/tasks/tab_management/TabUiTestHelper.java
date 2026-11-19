@@ -88,6 +88,7 @@ import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 
@@ -531,7 +532,8 @@ public class TabUiTestHelper {
                         assertEquals(isIncognito, tab.isIncognito());
                         Token groupId = tab.getTabGroupId();
                         if (groupId != null) {
-                            tabsToMerge.addAll(tabModel.getTabsInGroup(groupId));
+                            tabsToMerge.addAll(
+                                    tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)));
                         } else {
                             tabsToMerge.add(tab);
                         }

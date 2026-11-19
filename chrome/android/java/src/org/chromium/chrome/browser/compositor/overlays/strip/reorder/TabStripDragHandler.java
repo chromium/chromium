@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -232,7 +233,10 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         // Initialize drag shadow.
         initShadowView(dragSourceView);
         if (mShadowView != null) {
-            Tab firstTabInGroup = getCurrentModel().getTabsInGroup(tabGroupId).get(0);
+            Tab firstTabInGroup =
+                    getCurrentModel()
+                            .getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))
+                            .get(0);
             mShadowView.prepareForGroupDrag(firstTabInGroup, (int) (widthDp / mPxToDp));
         }
         return startDragInternal(dropData, startPoint, positionX, dragSourceView);

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
@@ -602,7 +603,8 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         List<Animator> animators = new ArrayList<>();
         if (!groupTitle.isCollapsed()) {
             // Only need to animate tabs when expanded.
-            List<Tab> tabs = mModel.getTabsInGroup(groupTitle.getTabGroupId());
+            List<Tab> tabs =
+                    mModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupTitle.getTabGroupId()));
             for (Tab tab : tabs) {
                 // Find using the IDs, since the provided stripTabs may be stale.
                 StripLayoutTab stripTab = StripLayoutUtils.findTabById(stripTabs, tab.getId());

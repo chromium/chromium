@@ -148,7 +148,7 @@ public class RemoteTabGroupMutationHelper {
             savedTabGroup.color = TabGroupColorId.GREY;
         }
 
-        List<Tab> tabs = mTabModel.getTabsInGroup(groupId.tabGroupId);
+        List<Tab> tabs = mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId.tabGroupId));
         for (int position = 0; position < tabs.size(); position++) {
             Tab tab = tabs.get(position);
             SavedTabGroupTab savedTab = new SavedTabGroupTab();
@@ -245,7 +245,8 @@ public class RemoteTabGroupMutationHelper {
         SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
         if (group == null) return;
 
-        List<Tab> tabs = mTabModel.getTabsInGroup(localGroupId.tabGroupId);
+        List<Tab> tabs =
+                mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(localGroupId.tabGroupId));
         // We just reconciled local state with sync. The tabs should match.
         assert tabs.size() == group.savedTabs.size()
                 : "Local tab count doesn't match with remote : local #"
@@ -343,7 +344,9 @@ public class RemoteTabGroupMutationHelper {
             // to its synced group.
 
             LogUtils.log(TAG, "handleTabClosureUndone: addBackToGroup");
-            List<Tab> groupTabs = mTabModel.getTabsInGroup(localTabGroupId.tabGroupId);
+            List<Tab> groupTabs =
+                    mTabModel.getTabsInGroup(
+                            TabGroupId.fromOptionalToken(localTabGroupId.tabGroupId));
             int position = groupTabs.indexOf(tab);
             addTab(localTabGroupId, tab, position);
         }
@@ -384,7 +387,9 @@ public class RemoteTabGroupMutationHelper {
                 // Case: group hidden, action undone.
                 LogUtils.log(
                         TAG, "tryUpdatePendingGroupClosure: hidden group restored posting update.");
-                assert pendingClosure.restoredTabsAre(mTabModel.getTabsInGroup(tab.getTabGroupId()))
+                assert pendingClosure.restoredTabsAre(
+                                mTabModel.getTabsInGroup(
+                                        TabGroupId.fromOptionalToken(tab.getTabGroupId())))
                         : "Unexpected tabs restored.";
 
                 // In the case the tab group was hiding it should still have a mapping. However, a

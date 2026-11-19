@@ -2422,7 +2422,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     private void mockTabsInGroup(Token tabGroupId, List<Tab> tabs) {
-        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(tabs);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenAnswer(inv -> tabs.size());
     }

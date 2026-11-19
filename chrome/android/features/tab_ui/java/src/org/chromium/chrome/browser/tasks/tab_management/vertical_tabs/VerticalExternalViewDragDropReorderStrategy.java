@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -259,7 +260,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
     private static TabGroupRange getTabGroupRange(
             TabModel tabModel, @Nullable Token groupId, int firstNonPinnedIndex) {
         if (groupId != null) {
-            List<Tab> groupTabs = tabModel.getTabsInGroup(groupId);
+            List<Tab> groupTabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
             if (!groupTabs.isEmpty()) {
                 int firstIndex = TabGroupUtils.getFirstTabModelIndexForList(tabModel, groupTabs);
                 int lastIndex = TabGroupUtils.getLastTabModelIndexForList(tabModel, groupTabs);
@@ -322,7 +323,8 @@ public class VerticalExternalViewDragDropReorderStrategy {
             PropertyModel model = mModelList.get(i).model;
             Token groupId = getGroupId(model);
             if (groupId != null) {
-                List<Tab> groupTabs = tabModel.getTabsInGroup(groupId);
+                List<Tab> groupTabs =
+                        tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
                 if (!groupTabs.isEmpty()) {
                     return TabGroupUtils.getLastTabModelIndexForList(tabModel, groupTabs) + 1;
                 }
@@ -344,7 +346,8 @@ public class VerticalExternalViewDragDropReorderStrategy {
             PropertyModel model = mModelList.get(i).model;
             Token groupId = getGroupId(model);
             if (groupId != null) {
-                List<Tab> groupTabs = tabModel.getTabsInGroup(groupId);
+                List<Tab> groupTabs =
+                        tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
                 if (!groupTabs.isEmpty()) {
                     return TabGroupUtils.getFirstTabModelIndexForList(tabModel, groupTabs);
                 }

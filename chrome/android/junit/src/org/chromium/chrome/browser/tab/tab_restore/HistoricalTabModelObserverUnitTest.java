@@ -766,7 +766,8 @@ public class HistoricalTabModelObserverUnitTest {
             MockTab[] tabList) {
         assertThat(tabList).isNotEmpty();
 
-        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(Arrays.asList(tabList));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(Arrays.asList(tabList));
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenReturn(tabList.length);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);

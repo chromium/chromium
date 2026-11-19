@@ -342,7 +342,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 @Nullable TabGroupMetadata tabGroupMetadata =
                         TabGroupMetadataExtractor.extractTabGroupMetadata(
                                 currentTabModel,
-                                currentTabModel.getTabsInGroup(tabGroupId),
+                                currentTabModel.getTabsInGroup(
+                                        TabGroupId.fromOptionalToken(tabGroupId)),
                                 TabWindowManagerSingleton.getInstance().getIdForWindow(activity),
                                 assumeNonNull(currentTabModel.getTabAt(currentTabModel.index()))
                                         .getId());
@@ -750,7 +751,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     @Override
     protected boolean canItemMoveTowardStart(Token groupId) {
         TabModel tabModel = mTabModelSupplier.get();
-        Tab firstTab = tabModel.getTabsInGroup(groupId).get(0);
+        Tab firstTab = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)).get(0);
         int idx = tabModel.indexOf(firstTab);
         return idx > tabModel.findFirstNonPinnedTabIndex();
     }
@@ -758,7 +759,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     @Override
     protected boolean canItemMoveTowardEnd(Token groupId) {
         TabModel tabModel = mTabModelSupplier.get();
-        List<Tab> tabs = tabModel.getTabsInGroup(groupId);
+        List<Tab> tabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
         for (Tab tab : tabs) {
             if (tab.getIsPinned()) return false;
         }
@@ -771,7 +772,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         TabModel tabModel = mTabModelSupplier.get();
         return TabGroupMetadataExtractor.extractTabGroupMetadata(
                 tabModel,
-                tabModel.getTabsInGroup(groupId),
+                tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)),
                 TabWindowManagerSingleton.getInstance()
                         .getIdForWindow(assumeNonNull(mWindowAndroid.getActivity().get())),
                 assumeNonNull(tabModel.getTabAt(tabModel.index())).getId());

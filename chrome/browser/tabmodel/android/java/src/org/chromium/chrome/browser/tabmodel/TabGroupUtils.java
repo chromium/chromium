@@ -25,6 +25,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class TabGroupUtils {
      */
     public static @TabId int getFirstTabIdInGroup(TabModel tabModel, @Nullable Token tabGroupId) {
         if (tabGroupId == null) return Tab.INVALID_TAB_ID;
-        List<Tab> tabsInGroup = tabModel.getTabsInGroup(tabGroupId);
+        List<Tab> tabsInGroup = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         return tabsInGroup.isEmpty() ? Tab.INVALID_TAB_ID : tabsInGroup.get(0).getId();
     }
 
@@ -142,7 +143,7 @@ public class TabGroupUtils {
             LoadUrlParams loadUrlParams,
             @Nullable Token tabGroupId,
             @TabLaunchType int type) {
-        List<Tab> tabsInGroup = tabModel.getTabsInGroup(tabGroupId);
+        List<Tab> tabsInGroup = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (tabsInGroup.isEmpty()) return;
 
         Tab lastTab = tabsInGroup.get(tabsInGroup.size() - 1);
@@ -421,7 +422,7 @@ public class TabGroupUtils {
         if (currentTab != null && tabGroupId.equals(currentTab.getTabGroupId())) {
             return currentTab;
         }
-        List<Tab> tabsInGroup = tabModel.getTabsInGroup(tabGroupId);
+        List<Tab> tabsInGroup = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         return tabsInGroup.isEmpty() ? null : tabsInGroup.get(0);
     }
 }

@@ -440,7 +440,7 @@ public interface TabModel extends TabList {
      *
      * @deprecated Do not use representative tabs to model tab groups. Iterate over {@link TabModel}
      *     directly and group tabs by {@link Tab#getTabGroupId()}, or query {@link
-     *     #getAllTabGroupIds()} and {@link #getTabsInGroup(Token)}.
+     *     #getAllTabGroupIds()} and {@link #getTabsInGroup(TabGroupId)}.
      */
     // TODO(crbug.com/517544602): Delete when removing the flag.
     @Deprecated
@@ -462,7 +462,7 @@ public interface TabModel extends TabList {
      * the group.
      *
      * @deprecated Do not index into collapsed representative tab lists. Use {@link #getTabAt(int)}
-     *     for flat tab model indices or {@link #getTabsInGroup(Token)} for tab group members.
+     *     for flat tab model indices or {@link #getTabsInGroup(TabGroupId)} for tab group members.
      */
     // TODO(crbug.com/517544602): Delete when removing the flag.
     @Deprecated
@@ -500,7 +500,7 @@ public interface TabModel extends TabList {
     List<Tab> getRelatedTabList(@TabId int tabId);
 
     /** Returns the list of tabs in a tab group or an empty list if the group does not exist. */
-    List<Tab> getTabsInGroup(@Nullable Token tabGroupId);
+    List<Tab> getTabsInGroup(@Nullable TabGroupId tabGroupId);
 
     /** Returns whether the given {@link Tab} is in a tab group. */
     boolean isTabInTabGroup(Tab tab);
@@ -513,9 +513,9 @@ public interface TabModel extends TabList {
      * tabGroupId}.
      *
      * @deprecated Do not rely on mutable last-shown representative tab state for tab groups.
-     *     Operate on {@link Token} {@code tabGroupId} and {@link #getTabsInGroup(Token)} directly,
-     *     or use {@link TabGroupUtils#getSelectedOrFirstTabInGroup(TabModel, Token)} or {@link
-     *     TabGroupUtils#getFirstTabIdInGroup(TabModel, Token)}.
+     *     Operate on {@link Token} {@code tabGroupId} and {@link #getTabsInGroup(TabGroupId)}
+     *     directly, or use {@link TabGroupUtils#getSelectedOrFirstTabInGroup(TabModel, Token)} or
+     *     {@link TabGroupUtils#getFirstTabIdInGroup(TabModel, Token)}.
      */
     // TODO(crbug.com/517544602): Delete once sAndroidTabUiRefactor launches.
     @Deprecated

@@ -33,6 +33,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -150,7 +151,8 @@ public class TabGroupHoverCardViewUnitTest {
 
     @Test
     public void testBindData_withToken() {
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Token Group");
 
         assertFalse(mHoverCardView.bindData(TAB_GROUP_ID));
@@ -200,7 +202,8 @@ public class TabGroupHoverCardViewUnitTest {
 
     @Test
     public void testDestroy() {
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1));
         mHoverCardView.initialize(mTabModelSelector);
         assertTrue(mHoverCardView.bindData(TAB_GROUP_ID));
         mHoverCardView.show(/* x= */ 10f, /* y= */ 20f);

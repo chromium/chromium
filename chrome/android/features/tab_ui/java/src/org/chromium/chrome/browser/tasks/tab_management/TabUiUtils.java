@@ -146,7 +146,9 @@ public class TabUiUtils {
         if (tabModel == null) return false;
         int newIndex =
                 getIndexPastAdjacentTabOrGroup(
-                        tabModel, tabModel.getTabsInGroup(groupId), toPrevious);
+                        tabModel,
+                        tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)),
+                        toPrevious);
         if (newIndex == TabModel.INVALID_TAB_INDEX) return false;
         tabModel.moveGroupToIndex(groupId, newIndex);
         return true;
@@ -180,7 +182,8 @@ public class TabUiUtils {
         Token adjacentGroupId = adjacentTab.getTabGroupId();
         if (adjacentGroupId == null) return adjacentIndex;
 
-        List<Tab> adjacentGroup = tabModel.getTabsInGroup(adjacentGroupId);
+        List<Tab> adjacentGroup =
+                tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(adjacentGroupId));
         if (adjacentGroup.isEmpty()) return TabModel.INVALID_TAB_INDEX;
         return toPrevious
                 ? TabGroupUtils.getFirstTabModelIndexForList(tabModel, adjacentGroup)

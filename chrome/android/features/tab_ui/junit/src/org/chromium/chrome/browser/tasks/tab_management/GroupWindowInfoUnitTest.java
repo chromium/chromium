@@ -150,7 +150,8 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.ORANGE);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Group Title");
 
         GroupWindowInfo info =
@@ -189,7 +190,8 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.GREY);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("");
 
         GroupWindowInfo info =
@@ -224,7 +226,8 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.PURPLE);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Active partially closing");
 
         GroupWindowInfo info =
@@ -253,7 +256,8 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(1);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.BLUE);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1));
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Explicit State");
 
         GroupWindowInfo info =
@@ -299,7 +303,8 @@ public class GroupWindowInfoUnitTest {
         when(mTab2.getTimestampMillis()).thenReturn(8000L);
 
         when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mTab1, mTab2).iterator());
-        when(mTabModel.getTabsInGroup(token)).thenReturn(Collections.emptyList());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token)))
+                .thenReturn(Collections.emptyList());
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
         when(mTabModel.getTabGroupTitle(token)).thenReturn("Live Local Title");
         when(mTabModel.getTabGroupColorWithFallback(token)).thenReturn(TabGroupColorId.ORANGE);
@@ -361,7 +366,8 @@ public class GroupWindowInfoUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(token);
         when(mTab1.isClosing()).thenReturn(true);
         when(mComprehensiveModel.iterator()).thenAnswer(inv -> List.of(mTab1).iterator());
-        when(mTabModel.getTabsInGroup(token)).thenReturn(Collections.emptyList());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token)))
+                .thenReturn(Collections.emptyList());
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
 
         GroupWindowInfo info =
@@ -386,7 +392,8 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Explicit");
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.BLUE);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(Collections.emptyList());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(Collections.emptyList());
 
         GroupWindowInfo info =
                 GroupWindowInfo.forLocalGroup(
@@ -414,7 +421,8 @@ public class GroupWindowInfoUnitTest {
 
         when(mTab1.getTabGroupId()).thenReturn(token);
         when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(mTabModel.getTabsInGroup(token)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token)))
+                .thenReturn(List.of(mTab1));
         when(mTabModel.getTabGroupTitle(token)).thenReturn("Active Group");
         when(mTabModel.getTabGroupColorWithFallback(token)).thenReturn(TabGroupColorId.BLUE);
 
@@ -447,7 +455,7 @@ public class GroupWindowInfoUnitTest {
         when(mTab4.getUrl()).thenReturn(JUnitTestGURLs.RED_1);
         when(mTab5.getUrl()).thenReturn(JUnitTestGURLs.RED_2);
 
-        when(mTabModel.getTabsInGroup(token))
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(token)))
                 .thenReturn(List.of(mTab1, mTab2, mTab3, mTab4, mTab5));
 
         GroupWindowInfo info =
@@ -514,7 +522,7 @@ public class GroupWindowInfoUnitTest {
         assertEquals(1, info.tabCount);
         assertEquals(List.of(JUnitTestGURLs.URL_1), info.faviconUrls);
         assertEquals(1000L, info.lastModifiedTimeMs);
-        verify(mTabModel, never()).getTabsInGroup(groupId);
+        verify(mTabModel, never()).getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
     }
 
     @Test
@@ -550,7 +558,7 @@ public class GroupWindowInfoUnitTest {
         assertEquals(1, info.tabCount);
         assertEquals(List.of(JUnitTestGURLs.URL_1), info.faviconUrls);
         assertEquals(123456789L, info.lastModifiedTimeMs);
-        verify(mTabModel, never()).getTabsInGroup(token);
+        verify(mTabModel, never()).getTabsInGroup(TabGroupId.fromOptionalToken(token));
     }
 
     @Test
@@ -571,6 +579,6 @@ public class GroupWindowInfoUnitTest {
                         mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT, preResolvedTabs);
 
         assertEquals("1 tab", info.title);
-        verify(mTabModel, never()).getTabsInGroup(groupId);
+        verify(mTabModel, never()).getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
     }
 }

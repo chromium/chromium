@@ -362,7 +362,7 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                     headerIndex + 1,
                     model.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId)));
         } else {
-            List<Tab> children = model.getTabsInGroup(tabGroupId);
+            List<Tab> children = model.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
             Tab selectedTab = TabModelUtils.getCurrentTab(model);
             List<TabItem> childItems = new ArrayList<>(children.size());
             for (Tab childTab : children) {

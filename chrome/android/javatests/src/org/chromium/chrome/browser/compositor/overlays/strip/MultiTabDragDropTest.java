@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -416,7 +417,10 @@ public class MultiTabDragDropTest extends TabStripDragDropTestBase {
                             return false;
                         }
                     }
-                    return destModel.getTabsInGroup(destGroupId[0]).size() == 3;
+                    return destModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId[0]))
+                                    .size()
+                            == 3;
                 },
                 "Dropped tabs should merge into destination group.");
 
@@ -499,7 +503,7 @@ public class MultiTabDragDropTest extends TabStripDragDropTestBase {
                             1,
                             destActivity
                                     .getCurrentTabModel()
-                                    .getTabsInGroup(destGroupId[0])
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId[0]))
                                     .size());
                 });
     }

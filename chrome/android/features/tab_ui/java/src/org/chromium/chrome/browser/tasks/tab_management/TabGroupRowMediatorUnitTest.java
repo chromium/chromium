@@ -185,7 +185,7 @@ public class TabGroupRowMediatorUnitTest {
             when(tab.getTabGroupId()).thenReturn(GROUP_ID1);
             tabList.add(tab);
         }
-        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(tabList);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(tabList);
 
         Token localId = GROUP_ID1;
         List<GURL> urlList = TabGroupFaviconCluster.buildUrlListFromSyncGroup(mSyncGroup);
@@ -370,7 +370,8 @@ public class TabGroupRowMediatorUnitTest {
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
-        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID1)))
+                .thenReturn(List.of());
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(false);
 
         propertyModel.get(OPEN_RUNNABLE).run();
@@ -421,7 +422,8 @@ public class TabGroupRowMediatorUnitTest {
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
-        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID1)))
+                .thenReturn(List.of());
 
         propertyModel.get(OPEN_RUNNABLE).run();
         verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
@@ -436,7 +438,8 @@ public class TabGroupRowMediatorUnitTest {
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
-        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID1)))
+                .thenReturn(List.of());
 
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -463,7 +466,8 @@ public class TabGroupRowMediatorUnitTest {
 
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
-        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID1)))
+                .thenReturn(List.of());
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_ID1))).thenReturn(false);
 
         HistogramWatcher histograms =
@@ -583,7 +587,8 @@ public class TabGroupRowMediatorUnitTest {
     public void testDelete_NotShared_InAnother() {
         when(mFetchGroupState.get()).thenReturn(GroupWindowState.IN_ANOTHER);
         PropertyModel propertyModel = buildTestModel(/* isShared= */ false, mUrl1);
-        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID1)))
+                .thenReturn(List.of());
 
         assertNotNull(propertyModel.get(DELETE_RUNNABLE));
         assertNull(propertyModel.get(LEAVE_RUNNABLE));

@@ -165,7 +165,7 @@ public class LocalTabGroupMutationHelper {
         assert tabGroup.localId != null;
 
         Token tabGroupId = tabGroup.localId.tabGroupId;
-        List<Tab> tabs = mTabModel.getTabsInGroup(tabGroupId);
+        List<Tab> tabs = mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         assert !tabs.isEmpty();
         if (tabs.isEmpty()) {
             LogUtils.log(TAG, "Found no tabs in the local group");
@@ -284,7 +284,7 @@ public class LocalTabGroupMutationHelper {
         boolean isCollaboration = group != null && !TextUtils.isEmpty(group.collaborationId);
 
         // Close the tabs.
-        List<Tab> tabs = mTabModel.getTabsInGroup(tabGroupId);
+        List<Tab> tabs = mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         mTabModel
                 .getTabRemover()
                 .forceCloseTabs(
@@ -360,7 +360,9 @@ public class LocalTabGroupMutationHelper {
         }
 
         List<Tab> tabsNotInSync = new ArrayList<>();
-        for (Tab localTab : mTabModel.getTabsInGroup(savedTabGroup.localId.tabGroupId)) {
+        for (Tab localTab :
+                mTabModel.getTabsInGroup(
+                        TabGroupId.fromOptionalToken(savedTabGroup.localId.tabGroupId))) {
             if (!savedTabIds.contains(localTab.getId())) {
                 tabsNotInSync.add(localTab);
             }

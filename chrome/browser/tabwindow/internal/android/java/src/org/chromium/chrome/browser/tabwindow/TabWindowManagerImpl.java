@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
@@ -554,7 +555,9 @@ public class TabWindowManagerImpl implements TabWindowManager {
         @Nullable TabModelSelector tabModelSelector = getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return null;
 
-        return tabModelSelector.getModel(isIncognito).getTabsInGroup(tabGroupId);
+        return tabModelSelector
+                .getModel(isIncognito)
+                .getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
     }
 
     private static boolean hasGroupInComprehensiveModel(TabModel tabModel, Token tabGroupId) {

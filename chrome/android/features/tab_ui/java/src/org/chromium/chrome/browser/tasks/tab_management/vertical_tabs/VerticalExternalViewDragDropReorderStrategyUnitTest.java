@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalExternalViewDragDropReorderStrategy.DropTargetResult;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -298,7 +299,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -359,7 +361,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -420,7 +423,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -479,7 +483,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -539,7 +544,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -598,7 +604,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -657,7 +664,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
         Tab tab22 = createMockTab(22, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21, tab22));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21, tab22));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.indexOf(tab22)).thenReturn(2);
@@ -741,7 +749,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -780,7 +789,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -823,7 +833,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -884,7 +895,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
         Tab tab21 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab20, tab21));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab20, tab21));
         when(mTabModel.indexOf(tab20)).thenReturn(0);
         when(mTabModel.indexOf(tab21)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -1822,7 +1834,8 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab groupTab0 = createMockTab(20, /* isPinned= */ false);
         Tab groupTab1 = createMockTab(21, /* isPinned= */ false);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(groupTab0, groupTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(groupTab0, groupTab1));
         when(mTabModel.indexOf(groupTab0)).thenReturn(0);
         when(mTabModel.indexOf(groupTab1)).thenReturn(1);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);

@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Collections;
 import java.util.List;
@@ -101,7 +102,9 @@ public class NextTabSelectionUtilUnitTest {
         for (Tab tab : tabsInGroup) {
             ((MockTab) tab).setTabGroupId(tabGroupId);
         }
-        lenient().when(model.getTabsInGroup(tabGroupId)).thenReturn(tabsInGroup);
+        lenient()
+                .when(model.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(tabsInGroup);
     }
 
     private void setCurrentTab(Tab tab) {

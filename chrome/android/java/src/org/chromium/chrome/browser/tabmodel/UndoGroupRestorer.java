@@ -116,7 +116,7 @@ final class UndoGroupRestorer {
 
             // Pair each newly created tab in the reopened group with its corresponding ClosedTab
             // slot in snapshot.tabs (both are ordered by in-group position).
-            List<Tab> groupTabs = tabModel.getTabsInGroup(newGroupId);
+            List<Tab> groupTabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(newGroupId));
             int tabIndexInGroup = 0;
             for (int j = i; j < tabCount && tabIndexInGroup < groupTabs.size(); j++) {
                 ClosedTab candidate = snapshot.tabs.get(j);
@@ -260,7 +260,7 @@ final class UndoGroupRestorer {
     private static void moveGroupToIndex(TabModel tabModel, Token groupId, int targetIndex) {
         if (targetIndex == TabList.INVALID_TAB_INDEX) return;
 
-        List<Tab> groupTabs = tabModel.getTabsInGroup(groupId);
+        List<Tab> groupTabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
         if (groupTabs.isEmpty()) return;
 
         int currentIndex = tabModel.indexOf(groupTabs.get(0));

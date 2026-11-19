@@ -2066,7 +2066,7 @@ public class TabListMediator implements TabListNotificationHandler {
      */
     int insertChildTabs(Token tabGroupId, int headerIndex) {
         TabModel tabModel = getCurrentTabModelChecked();
-        List<Tab> children = tabModel.getTabsInGroup(tabGroupId);
+        List<Tab> children = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         for (int i = 0; i < children.size(); i++) {
             Tab childTab = children.get(i);
             int childIndex = headerIndex + 1 + i;
@@ -2729,7 +2729,8 @@ public class TabListMediator implements TabListNotificationHandler {
             Token tabGroupId = tab.getTabGroupId();
             // When tab groups are supported, `tabs` only contains one entry per group.
             if (supportsTabGroups && tabGroupId != null) {
-                for (Tab groupTab : tabModel.getTabsInGroup(tabGroupId)) {
+                for (Tab groupTab :
+                        tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
                     addObserversForTab(groupTab);
                 }
             } else {
@@ -3017,7 +3018,7 @@ public class TabListMediator implements TabListNotificationHandler {
             return true;
         } else if (item instanceof TabGroupItem groupItem) {
             Token tabGroupId = groupItem.getTabGroupId();
-            List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
+            List<Tab> groupTabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
             if (groupTabs.isEmpty()) return false;
             Tab firstTab = groupTabs.get(0);
             if (updateInPlace) {
@@ -3235,7 +3236,8 @@ public class TabListMediator implements TabListNotificationHandler {
             Token tabGroupId = assumeNonNull(tab.getTabGroupId());
             if (!checkedTabGroupIds.add(tabGroupId)) continue;
 
-            if (unfilteredTabs.containsAll(tabModel.getTabsInGroup(tabGroupId))) {
+            if (unfilteredTabs.containsAll(
+                    tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))) {
                 if (TabUiFeatureUtilities.isAndroidTabUiRefactorEnabled()) {
                     // Group cards are resolved directly by group ID.
                     filteredTabs.add(tab);
@@ -3559,7 +3561,8 @@ public class TabListMediator implements TabListNotificationHandler {
                 int tabGroupColor = tabModel.getTabGroupColorWithFallback(tabGroupId);
                 List<Integer> actingTabIds = new ArrayList<>();
                 // Group headers display active indicators for all member tabs.
-                for (Tab groupTab : tabModel.getTabsInGroup(tabGroupId)) {
+                for (Tab groupTab :
+                        tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
                     if (groupTab.isClosing() || groupTab.isDestroyed() || groupTab.isNativePage()) {
                         continue;
                     }
@@ -3659,7 +3662,7 @@ public class TabListMediator implements TabListNotificationHandler {
         if (index == TabModel.INVALID_TAB_INDEX) return;
         TabModel tabModel = getCurrentTabModelChecked();
         Token tabGroupId = groupItem.getTabGroupId();
-        List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
+        List<Tab> groupTabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         // The observer manager returns a copy since removeObserversForTab() mutates the observed
         // set.
         for (Tab tab : mObserverManager.getObservedTabsInGroup(tabGroupId)) {

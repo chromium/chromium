@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconMetad
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabWebContentsFaviconDelegate;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.url.GURL;
 
@@ -246,7 +247,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             boolean hasLiveTabs = metadata.tabGroupId != null;
             List<Tab> tabsInGroup =
                     hasLiveTabs
-                            ? tabModel.getTabsInGroup(metadata.tabGroupId)
+                            ? tabModel.getTabsInGroup(
+                                    TabGroupId.fromOptionalToken(metadata.tabGroupId))
                             : Collections.emptyList();
             int totalTabCount = hasLiveTabs ? tabsInGroup.size() : metadata.urlList.size();
             boolean showPlus = totalTabCount > MAX_THUMBNAIL_COUNT;

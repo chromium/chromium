@@ -666,7 +666,8 @@ public class UndoGroupRestorerUnitTest {
                             when(mTabModel.containsTabGroup(
                                             TabGroupId.fromOptionalToken(reopenedGroupId)))
                                     .thenReturn(true);
-                            when(mTabModel.getTabsInGroup(reopenedGroupId))
+                            when(mTabModel.getTabsInGroup(
+                                            TabGroupId.fromOptionalToken(reopenedGroupId)))
                                     .thenReturn(reopenedTabs);
                             return null;
                         })

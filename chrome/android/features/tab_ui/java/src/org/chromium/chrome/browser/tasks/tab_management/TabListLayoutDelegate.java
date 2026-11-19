@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridAccessibilityHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -141,7 +142,10 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         int headerIndex = mModelList.indexFromTabGroupId(tabGroupId);
         if (headerIndex == TabModel.INVALID_TAB_INDEX) return null;
 
-        List<Tab> tabs = mMediator.getCurrentTabModelChecked().getTabsInGroup(tabGroupId);
+        List<Tab> tabs =
+                mMediator
+                        .getCurrentTabModelChecked()
+                        .getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (tabs.isEmpty()) return null;
 
         return Pair.create(headerIndex, tabs.get(0));

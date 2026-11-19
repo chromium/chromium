@@ -479,7 +479,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(List.of(mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId)))
+                .thenReturn(List.of(mTab2));
 
         // distance > 0 -> dragging downward.
         setBindingAdapterPosition(mViewHolder, 0);
@@ -508,7 +509,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         // Mock target as lowest tab.
-        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(List.of(mTab3, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId)))
+                .thenReturn(List.of(mTab3, mTab2));
 
         // distance < 0 -> dragging upward.
         setBindingAdapterPosition(mViewHolder, 2);
@@ -766,7 +768,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
         setItemViewType(mViewHolder, TabProperties.UiType.TAB_GROUP);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1));
         when(mTabModel.indexOf(mTab1)).thenReturn(2);
 
         // Mimic a drag -> cancel (ESC key).
@@ -1088,7 +1091,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         List<Tab> destinationGroup = List.of(mTab2, mTab3);
-        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(destinationGroup);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId)))
+                .thenReturn(destinationGroup);
 
         when(mTabModel.indexOf(mTab2)).thenReturn(5);
         when(mTabModel.indexOf(mTab3)).thenReturn(6);
@@ -1121,7 +1125,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
 
         List<Tab> destinationGroup = List.of(mTab2, mTab3);
-        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(destinationGroup);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId)))
+                .thenReturn(destinationGroup);
 
         when(mTabModel.indexOf(mTab2)).thenReturn(0);
         when(mTabModel.indexOf(mTab3)).thenReturn(1);
@@ -1154,7 +1159,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
 
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         // Setup mModel indices.
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
@@ -1180,7 +1186,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
 
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupCollapsed(groupId)).thenReturn(true);
 
         // Setup mModel indices.
@@ -1498,7 +1505,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         // Mock TabModel to target the lowest tab.
         when(mTab2.getId()).thenReturn(2);
-        when(mTabModel.getTabsInGroup(groupId))
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(List.of(mTab1, mTab2)); // last item is target.
 
         List<RecyclerView.ViewHolder> targets = List.of(mTargetViewHolder);
@@ -1541,7 +1548,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1));
 
         assertFalse(mCallback.hasDragEscapedBounds(mRecyclerView, mViewHolder, 0, 0, 0, 0));
     }
@@ -1558,7 +1566,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
@@ -1580,7 +1589,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
@@ -1600,7 +1610,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2)); // tab2 is last.
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2)); // tab2 is last.
 
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
@@ -1624,7 +1635,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTab3.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(2)).thenReturn(mTab2);
-        when(mTabModel.getTabsInGroup(groupId))
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(List.of(mTab1, mTab2, mTab3)); // tab2 is middle.
 
         mViewHolder.itemView.layout(0, 200, 100, 300);
@@ -1840,7 +1851,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
 
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         // Setup mModel indices.
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
@@ -2067,7 +2079,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2));
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
         mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
@@ -2109,7 +2122,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getId()).thenReturn(2);
         when(mTab2.getTabGroupId()).thenReturn(destGroupId);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId)))
+                .thenReturn(List.of(mTab1, mTab2));
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
         mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
@@ -2137,7 +2151,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabById(1)).thenReturn(mTab1);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab1, mTab2));
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
         mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
@@ -2184,7 +2199,8 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mTab2.getId()).thenReturn(2);
         when(mTab2.getTabGroupId()).thenReturn(destGroupId);
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
-        when(mTabModel.getTabsInGroup(destGroupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId)))
+                .thenReturn(List.of(mTab1, mTab2));
         mViewHolder.itemView.layout(0, 200, 100, 300);
 
         mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);

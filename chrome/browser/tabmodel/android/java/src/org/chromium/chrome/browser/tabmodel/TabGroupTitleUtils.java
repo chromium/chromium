@@ -72,7 +72,7 @@ public class TabGroupTitleUtils {
         String explicitTitle = tabModel.getTabGroupTitle(tabGroupId);
         if (isTitleUnset(explicitTitle)) {
             int tabCount = 0;
-            for (Tab tab : tabModel.getTabsInGroup(tabGroupId)) {
+            for (Tab tab : tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
                 if (!tab.isClosing()) {
                     tabCount++;
                 }

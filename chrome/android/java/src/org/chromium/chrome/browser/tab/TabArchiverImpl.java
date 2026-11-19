@@ -563,7 +563,8 @@ public class TabArchiverImpl implements TabArchiver {
             return false;
         }
 
-        List<Tab> relatedTabList = regularTabModel.getTabsInGroup(tab.getTabGroupId());
+        List<Tab> relatedTabList =
+                regularTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tab.getTabGroupId()));
         for (Tab relatedTab : relatedTabList) {
             if (!isTabEligibleForArchive(tabUrlToLastActiveTimestampMap, relatedTab)) {
                 return false;

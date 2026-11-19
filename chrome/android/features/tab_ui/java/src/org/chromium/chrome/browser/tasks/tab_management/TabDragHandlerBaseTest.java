@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.url.JUnitTestGURLs;
@@ -417,7 +418,8 @@ public class TabDragHandlerBaseTest {
 
         Token groupId = new Token(1L, 2L);
         when(tab1.getTabGroupId()).thenReturn(groupId);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(tab1, tab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(tab1, tab2));
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Group");
         ChromeTabGroupDropDataAndroid groupDropData =
                 (ChromeTabGroupDropDataAndroid) mTabDragHandler.prepareGroupDropData(groupId);

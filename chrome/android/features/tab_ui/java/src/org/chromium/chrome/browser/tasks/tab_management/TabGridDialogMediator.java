@@ -1294,7 +1294,8 @@ public class TabGridDialogMediator
     }
 
     private List<Tab> getTabsInGroup(@Nullable Token tabGroupId) {
-        return assumeNonNull(mCurrentTabModelSupplier.get()).getTabsInGroup(tabGroupId);
+        return assumeNonNull(mCurrentTabModelSupplier.get())
+                .getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
     }
 
     private int getTabCountForGroup(@Nullable Token tabGroupId) {

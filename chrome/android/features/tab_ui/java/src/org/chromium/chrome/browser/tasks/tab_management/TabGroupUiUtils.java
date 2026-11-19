@@ -185,8 +185,8 @@ public class TabGroupUiUtils {
 
     /**
      * Returns the list of local {@link Tab}s belonging to {@code groupId}. If the group is
-     * detached/pending closure (so {@link TabModel#getTabsInGroup(Token)} returns empty), falls
-     * back to filtering {@link TabModel#getComprehensiveModel()}.
+     * detached/pending closure (so {@link TabModel#getTabsInGroup(TabGroupId)} returns empty),
+     * falls back to filtering {@link TabModel#getComprehensiveModel()}.
      *
      * @param tabModel The tab model containing tabs.
      * @param groupId The target tab group ID.
@@ -196,7 +196,7 @@ public class TabGroupUiUtils {
         if (groupId == null) {
             return Collections.emptyList();
         }
-        List<Tab> tabs = tabModel.getTabsInGroup(groupId);
+        List<Tab> tabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
         if (!tabs.isEmpty() || !isRemoteGroupOperationsEnabled()) {
             return tabs;
         }
@@ -874,7 +874,7 @@ public class TabGroupUiUtils {
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
                         targetModel,
-                        targetModel.getTabsInGroup(groupId),
+                        targetModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)),
                         windowId,
                         selectedTab != null ? selectedTab.getId() : Tab.INVALID_TAB_ID);
         if (metadata == null) {

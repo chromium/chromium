@@ -28,6 +28,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -222,7 +223,7 @@ public class TabKeyEventHandlerUnitTest {
         when(tab1.getTabGroupId()).thenReturn(tabGroupId);
 
         List<Tab> tabs = List.of(tab0, tab1);
-        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(tabs);
         return tabs;
     }
 }

@@ -567,7 +567,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     private List<Tab> getTabsInGroup(Tab tab) {
-        return getCurrentModel().getTabsInGroup(tab.getTabGroupId());
+        return getCurrentModel().getTabsInGroup(TabGroupId.fromOptionalToken(tab.getTabGroupId()));
     }
 
     private TabModel getCurrentModel() {

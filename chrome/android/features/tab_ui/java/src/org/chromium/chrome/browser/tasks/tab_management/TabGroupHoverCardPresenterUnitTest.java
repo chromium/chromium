@@ -29,6 +29,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,7 @@ public class TabGroupHoverCardPresenterUnitTest {
     @Test
     public void testBindData_customTitle() {
         List<Tab> tabs = List.of(mTab1, mTab2);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Custom Group");
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
@@ -93,7 +94,7 @@ public class TabGroupHoverCardPresenterUnitTest {
     @Test
     public void testBindData_fallbackTitle() {
         List<Tab> tabs = List.of(mTab1, mTab2, mTab3);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(null);
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
@@ -105,7 +106,7 @@ public class TabGroupHoverCardPresenterUnitTest {
     @Test
     public void testBindData_childTabsLimitAndExcessCounter() {
         List<Tab> tabs = List.of(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Big Group");
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
@@ -119,7 +120,8 @@ public class TabGroupHoverCardPresenterUnitTest {
 
     @Test
     public void testBindData_emptyGroupReturnsFalse() {
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of());
 
         assertFalse(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
     }
@@ -132,7 +134,8 @@ public class TabGroupHoverCardPresenterUnitTest {
     @Test
     public void testBindData_incognito() {
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1));
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Incognito Group");
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
@@ -145,7 +148,7 @@ public class TabGroupHoverCardPresenterUnitTest {
         when(mTab2.isClosing()).thenReturn(true);
         when(mTab3.isDestroyed()).thenReturn(true);
         List<Tab> tabs = List.of(mTab1, mTab2, mTab3);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(null);
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
@@ -161,7 +164,7 @@ public class TabGroupHoverCardPresenterUnitTest {
         when(mTab1.isClosing()).thenReturn(true);
         when(mTab2.isDestroyed()).thenReturn(true);
         List<Tab> tabs = List.of(mTab1, mTab2);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
 
         assertFalse(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
     }

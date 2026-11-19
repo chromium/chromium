@@ -240,7 +240,7 @@ public abstract class ReorderStrategyTestBase {
             when(mModel.isTabInTabGroup(tab)).thenReturn(true);
             tab.setTabGroupId(groupId);
         }
-        when(mModel.getTabsInGroup(groupId)).thenReturn(tabList);
+        when(mModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(tabList);
         when(mModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(tabList.size());
     }

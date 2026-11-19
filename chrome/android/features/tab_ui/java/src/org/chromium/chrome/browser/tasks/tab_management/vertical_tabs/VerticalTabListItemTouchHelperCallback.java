@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabMultiSelectHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
@@ -376,7 +377,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                         TabModel tabModel = mCurrentTabModelSupplier.get();
                         List<Tab> tabsInGroup =
                                 tabModel != null
-                                        ? tabModel.getTabsInGroup(targetGroupId)
+                                        ? tabModel.getTabsInGroup(
+                                                TabGroupId.fromOptionalToken(targetGroupId))
                                         : List.of();
                         boolean isTargetLowestTab =
                                 !tabsInGroup.isEmpty()
@@ -571,7 +573,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
 
             Tab startTab;
             if (isGroupHeader) {
-                List<Tab> tabsInGroup = tabModel.getTabsInGroup(mDragStartGroupId);
+                List<Tab> tabsInGroup =
+                        tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(mDragStartGroupId));
                 startTab = !tabsInGroup.isEmpty() ? tabsInGroup.get(0) : null;
                 mDragStartTabId = Tab.INVALID_TAB_ID;
 
@@ -1463,7 +1466,7 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         Tab currentTab = tabModel.getTabById(currentTabId);
         if (currentTab == null) return false;
 
-        List<Tab> tabsInGroup = tabModel.getTabsInGroup(groupId);
+        List<Tab> tabsInGroup = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
         // This implicitly covers the isSolitaryChild check as well!
         if (tabsInGroup.size() <= 1) return false;
         RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
@@ -1775,7 +1778,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
         if (tabModel == null) return DragDropResult.ABORTED_NO_CHANGE;
 
         if (mDragStartTabId == Tab.INVALID_TAB_ID && mDragStartGroupId != null) {
-            List<Tab> groupTabs = tabModel.getTabsInGroup(mDragStartGroupId);
+            List<Tab> groupTabs =
+                    tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(mDragStartGroupId));
             if (groupTabs.isEmpty()) return DragDropResult.DRAGGED_OUT;
             return tabModel.indexOf(groupTabs.get(0)) != mDragStartTabModelIndex
                     ? DragDropResult.REORDERED

@@ -127,7 +127,8 @@ public class GroupedLayoutDelegateUnitTest {
     public void testGetAlertStateForGroupHeader() {
         when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
         when(mTab2.getAlertState()).thenReturn(TabAlert.MEDIA_RECORDING);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         @TabAlert int state = mDelegate.getAlertStateForGroupHeader(TAB_GROUP_ID);
         assertEquals(TabAlert.MEDIA_RECORDING, state);
@@ -136,7 +137,8 @@ public class GroupedLayoutDelegateUnitTest {
     @Test
     public void testGetAlertStateForGroupHeader_ShortCircuitsAtMaxPriority() {
         when(mTab1.getAlertState()).thenReturn(TabAlert.DESKTOP_CAPTURING);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         @TabAlert int state = mDelegate.getAlertStateForGroupHeader(TAB_GROUP_ID);
         assertEquals(TabAlert.DESKTOP_CAPTURING, state);
@@ -147,7 +149,8 @@ public class GroupedLayoutDelegateUnitTest {
     public void testGetAlertStateForGroupHeader_FirstTabHasHigherPriority() {
         when(mTab1.getAlertState()).thenReturn(TabAlert.MEDIA_RECORDING);
         when(mTab2.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         @TabAlert int state = mDelegate.getAlertStateForGroupHeader(TAB_GROUP_ID);
         assertEquals(TabAlert.MEDIA_RECORDING, state);
@@ -158,7 +161,8 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab1.getAlertState()).thenReturn(TabAlert.GLIC_SHARING);
         when(mTab2.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
 
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         PropertyModel groupModel = createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
         assertEquals(TabAlert.AUDIO_PLAYING, mDelegate.getAlertState(mTab1, groupModel));
@@ -298,7 +302,8 @@ public class GroupedLayoutDelegateUnitTest {
                         .build();
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, groupCardModel));
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         delegate.didAddTab(mTab2, TabLaunchType.FROM_RESTORE);
 
@@ -342,7 +347,8 @@ public class GroupedLayoutDelegateUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, groupCardModel));
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mMediator.isTabInTabGroup(mTab2)).thenReturn(true);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         delegate.tabClosureUndone(mTab2);
 
@@ -381,7 +387,8 @@ public class GroupedLayoutDelegateUnitTest {
         GroupedLayoutDelegate delegate =
                 new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
         createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1));
 
         Pair<Integer, Tab> result = delegate.getIndexAndTabForTabGroupId(TAB_GROUP_ID);
         assertNotNull(result);
@@ -489,7 +496,8 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
         when(mTab2.getAlertState()).thenReturn(TabAlert.MEDIA_RECORDING);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
         PropertyModel groupModel = createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
 
         mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
@@ -639,7 +647,8 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(true);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab2));
 
         PropertyModel groupCardModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
@@ -679,7 +688,8 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(true);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of());
 
         PropertyModel groupCardModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
@@ -858,7 +868,8 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTabModel.getTabCountForGroup(null)).thenReturn(1);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         setupTabsInModel(mTab2, mTab1);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab2));
 
         delegate.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
@@ -913,7 +924,8 @@ public class GroupedLayoutDelegateUnitTest {
         setupTabsInModel(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(null);
         when(mTabModel.getTabCountForGroup(null)).thenReturn(0);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of());
 
         GroupedLayoutDelegate delegate =
                 new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
@@ -964,7 +976,8 @@ public class GroupedLayoutDelegateUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, groupCardModel));
 
         when(mTab1.getTabGroupId()).thenReturn(differentGroupId);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab2));
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(differentGroupId)))
                 .thenReturn(2);
 
@@ -1065,7 +1078,8 @@ public class GroupedLayoutDelegateUnitTest {
         setupTabsInModel(mTab1, mTab2);
         setupRepresentativeTab(mTab1, mTab1, 0);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         PropertyModel model1 = createAndAddPropertyModel(TAB1_ID);
         model1.set(TabProperties.TITLE, "Tab 1");
@@ -1087,7 +1101,8 @@ public class GroupedLayoutDelegateUnitTest {
         setupRepresentativeTab(mTab2, mTab2, 0);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB2_ID);
         when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
@@ -1160,7 +1175,8 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(groupId1);
         when(mTab2.getTabGroupId()).thenReturn(groupId1);
         setupTabsInModel(mTab1, mTab2);
-        when(mTabModel.getTabsInGroup(groupId1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId1)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         GroupedLayoutDelegate delegate =
                 new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
@@ -1189,7 +1205,8 @@ public class GroupedLayoutDelegateUnitTest {
     @Test
     public void testDidMergeTabToGroup_UpdatesCards() {
         setupTabsInModel(mTab1, mTab2);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
@@ -1746,7 +1763,8 @@ public class GroupedLayoutDelegateUnitTest {
     private void setupGetIndexAndTabForTabGroupId(Token tabGroupId, int index, Tab tab) {
         int tabId = tab.getId();
         when(mTabModel.getGroupLastShownTabId(tabGroupId)).thenReturn(tabId);
-        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(List.of(tab));
         when(mMediator.getIndexForTabIdWithRelatedTabs(tabId)).thenReturn(index);
         while (mModelList.size() <= index) {
             createAndAddPropertyModel(Tab.INVALID_TAB_ID);

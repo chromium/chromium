@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDele
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
@@ -225,7 +226,8 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             tabsToMerge.add(0, mModel.getTabByIdChecked(tabId));
         }
         Token destinationTabGroupId = groupTitle.getTabGroupId();
-        List<Tab> destinationTabList = mModel.getTabsInGroup(destinationTabGroupId);
+        List<Tab> destinationTabList =
+                mModel.getTabsInGroup(TabGroupId.fromOptionalToken(destinationTabGroupId));
         int mergeIndex = dropIndex - mModel.indexOf(destinationTabList.get(0));
         mModel.mergeListOfTabsToExistingGroup(
                 tabsToMerge,

@@ -30,6 +30,7 @@ import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
 import org.chromium.components.sync.protocol.SavedTabGroupSpecifics;
 import org.chromium.components.sync.protocol.SavedTabGroupTab;
 import org.chromium.components.sync.protocol.SyncEntity;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -373,7 +374,9 @@ public class TabGroupSyncIntegrationTestHelper {
         String actualTitle = runOnUiThreadBlocking(() -> tabModel.getTabGroupTitle(tabGroupId));
         int actualColor =
                 runOnUiThreadBlocking(() -> tabModel.getTabGroupColorWithFallback(tabGroupId));
-        List<Tab> tabs = runOnUiThreadBlocking(() -> tabModel.getTabsInGroup(tabGroupId));
+        List<Tab> tabs =
+                runOnUiThreadBlocking(
+                        () -> tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)));
 
         // group details
         assertEquals(

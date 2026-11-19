@@ -86,7 +86,8 @@ public class TabUiUtilsUnitTest {
         List<Tab> tabsToClose = List.of(mTab);
 
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabsToClose);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(tabsToClose);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(true);
     }
@@ -333,7 +334,8 @@ public class TabUiUtilsUnitTest {
 
     @Test
     public void testReorderTabGroup() {
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab, mTab2));
         when(mTabModel.indexOf(mTab)).thenReturn(0);
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
         when(mTabModel.getTabAt(2)).thenReturn(mTab3);
@@ -355,8 +357,10 @@ public class TabUiUtilsUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID_2);
         when(mTab4.getTabGroupId()).thenReturn(TAB_GROUP_ID_2);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab, mTab2));
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID_2)).thenReturn(List.of(mTab3, mTab4));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID_2)))
+                .thenReturn(List.of(mTab3, mTab4));
         when(mTabModel.indexOf(mTab)).thenReturn(0);
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
         when(mTabModel.indexOf(mTab3)).thenReturn(2);

@@ -105,7 +105,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabModel.getTabById(TEST_LOCAL_ID)).thenReturn(mTab);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(mToken))).thenReturn(true);
-        when(mTabModel.getTabsInGroup(mToken)).thenReturn(List.of(mTab));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(mToken)))
+                .thenReturn(List.of(mTab));
 
         GroupWindowInfo groupInfo =
                 GroupWindowInfo.forSyncedGroup(
@@ -275,7 +276,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         TabModel destTabModel = mock(TabModel.class);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(destSelector);
         when(destSelector.getModel(false)).thenReturn(destTabModel);
-        when(destTabModel.getTabsInGroup(mToken)).thenReturn(List.of(mTab));
+        when(destTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(mToken)))
+                .thenReturn(List.of(mTab));
 
         PropertyModel model = mMediator.getModel();
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
@@ -303,7 +305,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         TabModel destTabModel = mock(TabModel.class);
         when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(destSelector);
         when(destSelector.getModel(false)).thenReturn(destTabModel);
-        when(destTabModel.getTabsInGroup(mToken)).thenReturn(List.of(mTab));
+        when(destTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(mToken)))
+                .thenReturn(List.of(mTab));
         when(mTabModel.isTabInTabGroup(mTab)).thenReturn(true);
 
         PropertyModel model = mMediator.getModel();

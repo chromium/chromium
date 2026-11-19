@@ -53,6 +53,7 @@ import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 
 import java.util.List;
@@ -327,7 +328,9 @@ public class TabSwitcherListEditorPTTest {
                                 TabModelUtils.getTabIds(
                                         tabSwitcher
                                                 .getTabModel()
-                                                .getTabsInGroup(firstTab.getTabGroupId())));
+                                                .getTabsInGroup(
+                                                        TabGroupId.fromOptionalToken(
+                                                                firstTab.getTabGroupId()))));
         assertEquals(3, tabIdsInGroup.size());
         tabSwitcher.expectGroupCard(tabIdsInGroup, "RemoteSavedGroup");
 

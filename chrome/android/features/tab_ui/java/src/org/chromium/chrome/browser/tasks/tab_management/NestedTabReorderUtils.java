@@ -84,7 +84,8 @@ public class NestedTabReorderUtils {
                 boolean isDraggingDown = distance > 0;
 
                 Tab currentTab = tabModel.getTabById(currentTabId);
-                List<Tab> destTabs = tabModel.getTabsInGroup(destGroupId);
+                List<Tab> destTabs =
+                        tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId));
                 Tab destinationTab =
                         (isDestGroupHeader && !destTabs.isEmpty())
                                 ? destTabs.get(0)
@@ -146,7 +147,8 @@ public class NestedTabReorderUtils {
         if ((isGroup || isStandaloneTab) && destGroupId != null) {
             // Tab groups should maintain the boundaries of target tab groups
             // so they do not split other groups during drags.
-            List<Tab> destinationTabGroup = tabModel.getTabsInGroup(destGroupId);
+            List<Tab> destinationTabGroup =
+                    tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId));
             if (!destinationTabGroup.isEmpty()) {
                 destinationIndex =
                         distance >= 0

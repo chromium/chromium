@@ -99,7 +99,7 @@ public class TabGroupTitleUtilsUnitTest {
             when(tab.isClosing()).thenReturn(false);
             tabs.add(tab);
         }
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
 
         String title = TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, TAB_GROUP_ID);
         assertTrue(title.contains(String.valueOf(tabCount)));
@@ -115,7 +115,7 @@ public class TabGroupTitleUtilsUnitTest {
         tabs.add(mTab2);
         when(mTab1.isClosing()).thenReturn(false);
         when(mTab2.isClosing()).thenReturn(false);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
 
         String title = TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, TAB_GROUP_ID);
 
@@ -134,7 +134,7 @@ public class TabGroupTitleUtilsUnitTest {
         when(mTab1.isClosing()).thenReturn(false);
         when(mTab2.isClosing()).thenReturn(true);
         when(mTab3.isClosing()).thenReturn(false);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
 
         String title = TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, TAB_GROUP_ID);
 
@@ -152,7 +152,7 @@ public class TabGroupTitleUtilsUnitTest {
         tabs.add(mTab2);
         when(mTab1.isClosing()).thenReturn(true);
         when(mTab2.isClosing()).thenReturn(true);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
 
         String title = TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, TAB_GROUP_ID);
 
@@ -166,7 +166,7 @@ public class TabGroupTitleUtilsUnitTest {
                 .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(UNSET_TAB_GROUP_TITLE);
         List<Tab> tabs = new ArrayList<>();
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
 
         String title = TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, TAB_GROUP_ID);
 

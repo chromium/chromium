@@ -691,7 +691,8 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     List<Tab> tabsInGroup =
-                            mCollectionModel.getTabsInGroup(parentTab.getTabGroupId());
+                            mCollectionModel.getTabsInGroup(
+                                    TabGroupId.fromOptionalToken(parentTab.getTabGroupId()));
                     assertEquals(2, tabsInGroup.size());
                     assertTrue(tabsInGroup.contains(parentTab));
                     assertTrue(tabsInGroup.contains(childTab));
@@ -712,7 +713,8 @@ public class TabCollectionTabModelImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    List<Tab> tabsInGroup = mCollectionModel.getTabsInGroup(groupId);
+                    List<Tab> tabsInGroup =
+                            mCollectionModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
                     assertEquals(3, tabsInGroup.size());
                     assertTrue(tabsInGroup.contains(childTab));
                     assertTabsInOrderAre(List.of(tab0, childTab, tab1));
@@ -751,7 +753,9 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.addTabGroupObserver(observer);
                     mCollectionModel.createSingleTabGroup(tab0);
                     assertNotNull(tab0.getTabGroupId());
-                    List<Tab> tabsInGroup = mCollectionModel.getTabsInGroup(tab0.getTabGroupId());
+                    List<Tab> tabsInGroup =
+                            mCollectionModel.getTabsInGroup(
+                                    TabGroupId.fromOptionalToken(tab0.getTabGroupId()));
                     assertEquals(1, tabsInGroup.size());
                     assertEquals(tab0, tabsInGroup.get(0));
                     mCollectionModel.removeTabGroupObserver(observer);
@@ -1121,7 +1125,11 @@ public class TabCollectionTabModelImplTest {
                     assertTrue(
                             mCollectionModel.containsTabGroup(
                                     TabGroupId.fromOptionalToken(groupId)));
-                    assertEquals(1, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            1,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
         willMoveOutOfGroup.waitForOnly();
@@ -1279,7 +1287,11 @@ public class TabCollectionTabModelImplTest {
                     assertTrue(
                             mCollectionModel.containsTabGroup(
                                     TabGroupId.fromOptionalToken(groupId)));
-                    assertEquals(1, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            1,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
         willMoveOutOfGroup.waitForOnly();
@@ -2111,7 +2123,12 @@ public class TabCollectionTabModelImplTest {
                     assertNotNull(tab0.getTabGroupId());
                     assertEquals(tab0.getTabGroupId(), tab1.getTabGroupId());
                     assertTabsInOrderAre(List.of(tab0, tab1));
-                    assertEquals(2, mCollectionModel.getTabsInGroup(tab0.getTabGroupId()).size());
+                    assertEquals(
+                            2,
+                            mCollectionModel
+                                    .getTabsInGroup(
+                                            TabGroupId.fromOptionalToken(tab0.getTabGroupId()))
+                                    .size());
                 });
 
         onTabGroupCreatedHelper.waitForOnly();
@@ -2143,7 +2160,11 @@ public class TabCollectionTabModelImplTest {
 
                     assertEquals(groupId, tab2.getTabGroupId());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
-                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            3,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                 });
     }
 
@@ -2198,7 +2219,11 @@ public class TabCollectionTabModelImplTest {
 
                     assertEquals(groupId2, tab0.getTabGroupId());
                     assertEquals(groupId2, tab1.getTabGroupId());
-                    assertEquals(4, mCollectionModel.getTabsInGroup(groupId2).size());
+                    assertEquals(
+                            4,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId2))
+                                    .size());
                     assertFalse(
                             mCollectionModel.containsTabGroup(
                                     TabGroupId.fromOptionalToken(groupId1)));
@@ -2232,7 +2257,11 @@ public class TabCollectionTabModelImplTest {
 
                     assertEquals(groupId, tab0.getTabGroupId());
                     assertEquals(groupId, tab1.getTabGroupId());
-                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            2,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
     }
@@ -2251,7 +2280,9 @@ public class TabCollectionTabModelImplTest {
 
                     assertEquals(newGroupId, tab0.getTabGroupId());
                     assertEquals(newGroupId, tab1.getTabGroupId());
-                    List<Tab> tabsInGroup = mCollectionModel.getTabsInGroup(newGroupId);
+                    List<Tab> tabsInGroup =
+                            mCollectionModel.getTabsInGroup(
+                                    TabGroupId.fromOptionalToken(newGroupId));
                     assertEquals(2, tabsInGroup.size());
                     assertTrue(tabsInGroup.containsAll(List.of(tab0, tab1)));
                 });
@@ -2273,7 +2304,9 @@ public class TabCollectionTabModelImplTest {
 
                     assertEquals(newGroupId, tab0.getTabGroupId());
                     assertEquals(newGroupId, tab1.getTabGroupId());
-                    List<Tab> tabsInGroup = mCollectionModel.getTabsInGroup(newGroupId);
+                    List<Tab> tabsInGroup =
+                            mCollectionModel.getTabsInGroup(
+                                    TabGroupId.fromOptionalToken(newGroupId));
                     assertEquals(2, tabsInGroup.size());
                     assertTrue(tabsInGroup.containsAll(List.of(tab0, tab1)));
                 });
@@ -2295,7 +2328,12 @@ public class TabCollectionTabModelImplTest {
 
                     assertNotNull(tab1.getTabGroupId());
                     assertEquals(tab1.getTabGroupId(), tab0.getTabGroupId());
-                    assertEquals(2, mCollectionModel.getTabsInGroup(tab1.getTabGroupId()).size());
+                    assertEquals(
+                            2,
+                            mCollectionModel
+                                    .getTabsInGroup(
+                                            TabGroupId.fromOptionalToken(tab1.getTabGroupId()))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab1, tab0));
                 });
     }
@@ -2321,7 +2359,11 @@ public class TabCollectionTabModelImplTest {
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
 
                     assertEquals(groupId, tab0.getTabGroupId());
-                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            3,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab1, tab2, tab0));
                 });
     }
@@ -2347,7 +2389,11 @@ public class TabCollectionTabModelImplTest {
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
 
                     assertEquals(groupId, tab2.getTabGroupId());
-                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            3,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab2, tab0, tab1));
                 });
     }
@@ -2613,7 +2659,11 @@ public class TabCollectionTabModelImplTest {
 
                     assertEquals(groupId2, tab0.getTabGroupId());
                     assertEquals(groupId2, tab1.getTabGroupId());
-                    assertEquals(4, mCollectionModel.getTabsInGroup(groupId2).size());
+                    assertEquals(
+                            4,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId2))
+                                    .size());
                     assertTrue(mCollectionModel.detachedTabGroupExists(groupId1));
                     // The group is detached, but not closed yet. The containsTabGroup check is
                     // based on number of tabs so it will be false.
@@ -2638,8 +2688,16 @@ public class TabCollectionTabModelImplTest {
                     assertNotEquals(groupId1, groupId2);
                     assertEquals(groupId1, tab1.getTabGroupId());
                     assertEquals(groupId2, tab3.getTabGroupId());
-                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId1).size());
-                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId2).size());
+                    assertEquals(
+                            2,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId1))
+                                    .size());
+                    assertEquals(
+                            2,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId2))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
 
                     // Visual data should be restored.
@@ -2695,7 +2753,11 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.removeTabGroupObserver(observer);
 
                     assertEquals(groupId, tab0.getTabGroupId());
-                    assertEquals(4, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            4,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab2, tab3, tab4, tab1, tab5));
                 });
 
@@ -2714,7 +2776,11 @@ public class TabCollectionTabModelImplTest {
                     assertNotNull(groupId);
                     assertEquals(groupId, tab3.getTabGroupId());
                     assertEquals(groupId, tab4.getTabGroupId());
-                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            3,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
                 });
     }
@@ -2761,7 +2827,11 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.removeTabGroupObserver(observer);
 
                     assertEquals(groupId, tab0.getTabGroupId());
-                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            3,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab1, tab2, tab0));
                 });
 
@@ -2777,7 +2847,11 @@ public class TabCollectionTabModelImplTest {
                     assertNull(tab0.getTabGroupId());
                     assertNotNull(groupId);
                     assertEquals(groupId, tab2.getTabGroupId());
-                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            2,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
     }
@@ -2829,7 +2903,11 @@ public class TabCollectionTabModelImplTest {
 
                     assertEquals(groupId, tab1.getTabGroupId());
                     assertEquals(groupId, tab4.getTabGroupId());
-                    assertEquals(4, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            4,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab2, tab1, tab4, tab3, tab5));
                 });
 
@@ -2849,7 +2927,11 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId, tab3.getTabGroupId());
                     assertNull(tab4.getTabGroupId());
                     assertNull(tab5.getTabGroupId());
-                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            2,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
                 });
     }
@@ -3075,7 +3157,11 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(newGroupId, tab0.getTabGroupId());
                     assertEquals(newGroupId, tab1.getTabGroupId());
                     assertNull(tab2.getTabGroupId());
-                    assertEquals(2, mCollectionModel.getTabsInGroup(newGroupId).size());
+                    assertEquals(
+                            2,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(newGroupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
     }
@@ -3100,7 +3186,11 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId, tab0.getTabGroupId());
                     assertEquals(groupId, tab1.getTabGroupId());
                     assertEquals(groupId, tab2.getTabGroupId());
-                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            3,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
     }
@@ -3130,7 +3220,11 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId1, tab0.getTabGroupId());
                     assertEquals(groupId1, tab1.getTabGroupId());
                     assertNull(tab2.getTabGroupId());
-                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId1).size());
+                    assertEquals(
+                            2,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId1))
+                                    .size());
                     assertFalse(
                             mCollectionModel.containsTabGroup(
                                     TabGroupId.fromOptionalToken(groupId2)));
@@ -3158,7 +3252,11 @@ public class TabCollectionTabModelImplTest {
                     Token returnedGroupId =
                             mCollectionModel.addTabsToGroup(groupId, Collections.emptyList());
                     assertNull(returnedGroupId);
-                    assertEquals(1, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            1,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                 });
     }
 
@@ -3182,7 +3280,11 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId, tab0.getTabGroupId());
                     assertEquals(groupId, tab1.getTabGroupId());
                     assertNull(tab2.getTabGroupId());
-                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertEquals(
+                            2,
+                            mCollectionModel
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(groupId))
+                                    .size());
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
     }

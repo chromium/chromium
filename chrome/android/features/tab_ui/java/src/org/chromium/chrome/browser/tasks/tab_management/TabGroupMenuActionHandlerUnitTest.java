@@ -257,7 +257,8 @@ public class TabGroupMenuActionHandlerUnitTest {
         UserActionTester actionTester = new UserActionTester();
         Token groupId = Token.createRandom();
         Tab destTab = mock(Tab.class);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(destTab));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(destTab));
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
 
         assertTrue(mHandler.handleAddToExistingGroupAction(mTab, groupId, /* syncGroupId= */ null));
@@ -337,7 +338,8 @@ public class TabGroupMenuActionHandlerUnitTest {
         when(groupTab.getTabGroupId()).thenReturn(groupId);
         when(groupTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(groupTab));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(groupTab));
 
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         when(tabWindowManager.findWindowIdForTabGroup(groupId)).thenReturn(0);
@@ -369,7 +371,8 @@ public class TabGroupMenuActionHandlerUnitTest {
         Tab groupTab = mock(Tab.class);
         TabRemover tabRemover = mock(TabRemover.class);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(groupTab));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(groupTab));
         when(mTabModel.getTabRemover()).thenReturn(tabRemover);
 
         assertTrue(mHandler.handleDeleteGroupAction(groupId, /* syncGroupId= */ null));

@@ -221,7 +221,8 @@ public class TabSwitcherUtilsUnitTest {
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID_1)))
                 .thenReturn(true);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID_1)).thenReturn(List.of(mTab));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID_1)))
+                .thenReturn(List.of(mTab));
         when(mTabModel.indexOf(mTab)).thenReturn(0);
 
         TabSwitcherUtils.focusTabGroup(

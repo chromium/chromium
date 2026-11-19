@@ -413,7 +413,8 @@ public class TabRemoverImplUnitTest {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID.tabGroupId)).thenReturn(List.of(tab0));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID.tabGroupId)))
+                .thenReturn(List.of(tab0));
         TabClosureParams params =
                 TabClosureParams.forCloseTabGroup(
                                 mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID.tabGroupId))
@@ -811,7 +812,8 @@ public class TabRemoverImplUnitTest {
         Tab tab0 = mTabModel.addTab(/* id= */ 0);
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
         Tab tab1 = mTabModel.addTab(/* id= */ 1);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID.tabGroupId)).thenReturn(List.of(tab0));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID.tabGroupId)))
+                .thenReturn(List.of(tab0));
         TabClosureParams params =
                 TabClosureParams.forCloseTabGroup(
                                 mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID.tabGroupId))

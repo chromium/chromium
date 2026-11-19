@@ -164,7 +164,7 @@ public class TabClosureParamsUnitTest {
     @Test
     public void testCloseTabsParams_TabGroup() {
         List<Tab> tabs = List.of(mTab1, mTab2);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
         TabClosureParams params =
                 TabClosureParams.forCloseTabGroup(mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID))
                         .build();
@@ -277,7 +277,8 @@ public class TabClosureParamsUnitTest {
 
     @Test
     public void testToBuilder_PreservesIsTabGroup() {
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
         TabClosureParams params =
                 TabClosureParams.forCloseTabGroup(mTabModel, TabGroupId.fromRawToken(TAB_GROUP_ID))
                         .build();

@@ -4452,7 +4452,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(anotherTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(true);
         when(anotherTabModel.getTabGroupTitle(groupId)).thenReturn("Group");
-        when(anotherTabModel.getTabsInGroup(groupId)).thenReturn(List.of());
+        when(anotherTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of());
 
         when(tabWindowManager.getAllTabModelSelectors())
                 .thenReturn(Arrays.asList(mTabModelSelector, anotherSelector));

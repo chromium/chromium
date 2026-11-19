@@ -32,6 +32,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class RemoteTabGroupMutationHelperUnitTest {
         tabs.add(mTab2);
 
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mTabModel.getTabsInGroup(eq(TOKEN_1))).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(eq(TabGroupId.fromOptionalToken(TOKEN_1)))).thenReturn(tabs);
         mRemoteMutationHelper =
                 new RemoteTabGroupMutationHelper(
                         mTabModel, mTabGroupSyncService, mLocalTabGroupMutationHelper);
@@ -104,6 +105,6 @@ public class RemoteTabGroupMutationHelperUnitTest {
         assertEquals(TAB_URL_1, savedTab2.url);
         assertEquals(mSavedTabGroupCaptor.getValue().syncId, savedTab2.syncGroupId);
 
-        verify(mTabModel).getTabsInGroup(eq(TOKEN_1));
+        verify(mTabModel).getTabsInGroup(eq(TabGroupId.fromOptionalToken(TOKEN_1)));
     }
 }

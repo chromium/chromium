@@ -39,6 +39,7 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.RegularWebPageAppMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -289,7 +290,10 @@ public class MultiWindowAppMenuTest {
                     assertNotEquals(initialGroupId, mergedGroupId);
                     assertEquals(
                             3,
-                            activeGroupedPage.getTabModel().getTabsInGroup(mergedGroupId).size());
+                            activeGroupedPage
+                                    .getTabModel()
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(mergedGroupId))
+                                    .size());
                 });
         TransitAsserts.assertFinalDestinations(activeGroupedPage);
     }

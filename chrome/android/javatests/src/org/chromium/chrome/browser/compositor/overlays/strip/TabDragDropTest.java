@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -395,7 +396,10 @@ public class TabDragDropTest extends TabStripDragDropTestBase {
                     assertEquals(
                             "Destination group should now have 3 tabs",
                             3,
-                            destActivity.getCurrentTabModel().getTabsInGroup(destGroupId).size());
+                            destActivity
+                                    .getCurrentTabModel()
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId))
+                                    .size());
                 });
     }
 
@@ -464,7 +468,7 @@ public class TabDragDropTest extends TabStripDragDropTestBase {
                             1,
                             destActivity
                                     .getCurrentTabModel()
-                                    .getTabsInGroup(destGroupId[0])
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId[0]))
                                     .size());
                 });
     }

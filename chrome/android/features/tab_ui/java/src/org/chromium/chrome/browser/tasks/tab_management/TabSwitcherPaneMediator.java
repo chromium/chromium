@@ -44,6 +44,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -464,7 +465,9 @@ public class TabSwitcherPaneMediator
      * @param shouldScroll Whether to scroll to the group's card before opening the dialog.
      */
     public void openTabGroupDialog(@Nullable Token tabGroupId, boolean shouldScroll) {
-        List<Tab> tabsInGroup = assumeNonNull(mTabModelSupplier.get()).getTabsInGroup(tabGroupId);
+        List<Tab> tabsInGroup =
+                assumeNonNull(mTabModelSupplier.get())
+                        .getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (tabsInGroup.isEmpty()) {
             tabsInGroup = null;
         } else if (shouldScroll) {

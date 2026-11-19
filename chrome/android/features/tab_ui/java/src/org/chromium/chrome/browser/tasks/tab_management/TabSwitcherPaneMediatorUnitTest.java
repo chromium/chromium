@@ -77,6 +77,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -162,7 +163,8 @@ public class TabSwitcherPaneMediatorUnitTest {
         mGroupedTab2.setTabGroupId(GROUP_ID);
         mTabList = List.of(mUngroupedTab, mGroupedTab1);
         when(mTabModel.getRepresentativeTabList()).thenReturn(mTabList);
-        when(mTabModel.getTabsInGroup(GROUP_ID)).thenReturn(List.of(mGroupedTab1, mGroupedTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID)))
+                .thenReturn(List.of(mGroupedTab1, mGroupedTab2));
         when(mTabModel.isTabInTabGroup(mUngroupedTab)).thenReturn(false);
         when(mTabModel.isTabInTabGroup(mGroupedTab1)).thenReturn(true);
         when(mTabModel.isTabInTabGroup(mGroupedTab2)).thenReturn(true);
@@ -402,7 +404,8 @@ public class TabSwitcherPaneMediatorUnitTest {
         Token singleTabGroupId = new Token(3L, 4L);
         mUngroupedTab.setTabGroupId(singleTabGroupId);
         when(mTabModel.isTabInTabGroup(mUngroupedTab)).thenReturn(true);
-        when(mTabModel.getTabsInGroup(singleTabGroupId)).thenReturn(List.of(mUngroupedTab));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(singleTabGroupId)))
+                .thenReturn(List.of(mUngroupedTab));
 
         TabActionListener listener = mMediator.onTabGroupClicked(mUngroupedTab);
         assertNotNull(listener);

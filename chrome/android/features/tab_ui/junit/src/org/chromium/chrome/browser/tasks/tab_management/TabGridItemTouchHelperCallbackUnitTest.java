@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -1285,7 +1286,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mModel.get(POSITION2).model.set(CARD_TYPE, ModelType.TAB_GROUP);
         mModel.get(POSITION2).model.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
         when(mTab2.getTabGroupId()).thenReturn(groupId);
-        doReturn(List.of(mTab2)).when(mTabModel).getTabsInGroup(groupId);
+        doReturn(List.of(mTab2))
+                .when(mTabModel)
+                .getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
 
         // Simulate the selection of card#1 in TabListModel.
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
@@ -1312,7 +1315,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mModel.get(POSITION1).model.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         when(mTab3.getTabGroupId()).thenReturn(groupId);
-        doReturn(List.of(mTab1, mTab3)).when(mTabModel).getTabsInGroup(groupId);
+        doReturn(List.of(mTab1, mTab3))
+                .when(mTabModel)
+                .getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
 
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
         mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
@@ -1336,7 +1341,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mModel.get(POSITION1).model.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
         when(mTab1.getTabGroupId()).thenReturn(groupId);
         when(mTab3.getTabGroupId()).thenReturn(groupId);
-        doReturn(List.of(mTab1, mTab3)).when(mTabModel).getTabsInGroup(groupId);
+        doReturn(List.of(mTab1, mTab3))
+                .when(mTabModel)
+                .getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
 
         PropertyModel draggedModel = mModel.get(POSITION1).model;
         PropertyModel hoveredModel = mModel.get(POSITION2).model;
@@ -1484,7 +1491,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         when(mTab3.getTabGroupId()).thenReturn(groupId);
         when(mTab4.getTabGroupId()).thenReturn(groupId);
 
-        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab3, mTab4));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
+                .thenReturn(List.of(mTab3, mTab4));
 
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.indexOf(mTab2)).thenReturn(1);

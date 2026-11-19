@@ -254,7 +254,8 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testGetIndexAndTabForTabGroupId_EmptyTabsInGroup() {
         addGroupHeaderToModelList(TAB1_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of());
 
         assertNull(mDelegate.getIndexAndTabForTabGroupId(TAB_GROUP_ID));
     }
@@ -262,7 +263,8 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testGetIndexAndTabForTabGroupId_Success() {
         addGroupHeaderToModelList(TAB1_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1));
 
         Pair<Integer, Tab> result = mDelegate.getIndexAndTabForTabGroupId(TAB_GROUP_ID);
         assertNotNull(result);
@@ -640,7 +642,8 @@ public class NestedLayoutDelegateUnitTest {
 
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2));
 
         mDelegate.didMergeTabToGroup(mTab1, true);
         mDelegate.didMergeTabToGroup(mTab2, false);
@@ -662,7 +665,8 @@ public class NestedLayoutDelegateUnitTest {
         PropertyModel tab1Model = addTabToModelList(TAB3_ID, null);
 
         when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2, mTab3));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2, mTab3));
 
         mDelegate.didMergeTabToGroup(mTab3, false);
 
@@ -681,7 +685,8 @@ public class NestedLayoutDelegateUnitTest {
 
         when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2, mTab3));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1, mTab2, mTab3));
 
         mDelegate.didMergeTabToGroup(mTab3, false);
 
@@ -1041,7 +1046,8 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testPerformAccessibilityAction_ReorderTabGroup() {
         setupTabsInModel(mTab1, mTab2);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(List.of(mTab1));
         PropertyModel groupHeaderModel = addGroupHeaderToModelList(TAB1_ID);
         addTabToModelList(TAB2_ID, null);
 

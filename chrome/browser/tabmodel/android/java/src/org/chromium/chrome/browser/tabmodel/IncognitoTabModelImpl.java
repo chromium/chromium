@@ -578,7 +578,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public List<Tab> getTabsInGroup(@Nullable Token tabGroupId) {
+    public List<Tab> getTabsInGroup(@Nullable TabGroupId tabGroupId) {
         return mDelegateModel.getTabsInGroup(tabGroupId);
     }
 

@@ -952,7 +952,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         when(mTabModel.getTabCountForGroup(eq(TabGroupId.fromOptionalToken(TAB_GROUP_ID))))
                 .thenReturn(1);
         List<Tab> tabsInGroup = Arrays.asList(tab);
-        when(mTabModel.getTabsInGroup(eq(TAB_GROUP_ID))).thenReturn(tabsInGroup);
+        when(mTabModel.getTabsInGroup(eq(TabGroupId.fromOptionalToken(TAB_GROUP_ID))))
+                .thenReturn(tabsInGroup);
         return tabsInGroup;
     }
 
@@ -1410,7 +1411,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     public void testMoveGroupLeft_pinnedTabExistsFurtherLeft() {
         mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
         List<Tab> tabsInGroup = setUpReorderingMocks();
-        when(mTabModel.getTabsInGroup(eq(TAB_GROUP_ID))).thenReturn(tabsInGroup);
+        when(mTabModel.getTabsInGroup(eq(TabGroupId.fromOptionalToken(TAB_GROUP_ID))))
+                .thenReturn(tabsInGroup);
 
         when(mTabModel.indexOf(tabsInGroup.get(0))).thenReturn(2);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(1);

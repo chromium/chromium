@@ -383,7 +383,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public List<Tab> getTabsInGroup(@Nullable Token tabGroupId) {
+    public List<Tab> getTabsInGroup(@Nullable TabGroupId tabGroupId) {
         return Collections.emptyList();
     }
 

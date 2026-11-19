@@ -53,6 +53,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -334,7 +335,9 @@ public class TabArchiverUnitTest {
         tab2.setLastNavigationCommittedTimestampMillis(TimeUnit.HOURS.toMillis(1));
         tab2.setTabGroupId(groupId);
 
-        doReturn(Arrays.asList(tab1, tab2)).when(regularModel).getTabsInGroup(groupId);
+        doReturn(Arrays.asList(tab1, tab2))
+                .when(regularModel)
+                .getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
 
         TabArchiverImpl spyArchiver = spy(mTabArchiver);
 

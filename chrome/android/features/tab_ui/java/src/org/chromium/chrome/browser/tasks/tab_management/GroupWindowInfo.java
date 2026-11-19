@@ -283,8 +283,8 @@ public class GroupWindowInfo {
 
     /**
      * Returns the list of local {@link Tab}s belonging to {@code groupId}. If the group is
-     * detached/pending closure (so {@link TabModel#getTabsInGroup(Token)} returns empty), falls
-     * back to filtering {@link TabModel#getComprehensiveModel()}.
+     * detached/pending closure (so {@link TabModel#getTabsInGroup(TabGroupId)} returns empty),
+     * falls back to filtering {@link TabModel#getComprehensiveModel()}.
      *
      * @param tabModel The tab model containing tabs.
      * @param groupId The target tab group ID.
@@ -295,7 +295,7 @@ public class GroupWindowInfo {
         if (tabModel == null || groupId == null) {
             return Collections.emptyList();
         }
-        List<Tab> tabs = tabModel.getTabsInGroup(groupId);
+        List<Tab> tabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
         if (tabs != null && !tabs.isEmpty()) {
             return tabs;
         }

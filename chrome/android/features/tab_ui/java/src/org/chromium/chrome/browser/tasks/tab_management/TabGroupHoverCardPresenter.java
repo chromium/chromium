@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,7 @@ class TabGroupHoverCardPresenter {
         TabModel currentModel = mTabModelSelector.getCurrentModel();
         boolean isIncognito = currentModel.isIncognitoBranded();
 
-        List<Tab> rawTabs = currentModel.getTabsInGroup(tabGroupId);
+        List<Tab> rawTabs = currentModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (rawTabs.isEmpty()) {
             return false;
         }

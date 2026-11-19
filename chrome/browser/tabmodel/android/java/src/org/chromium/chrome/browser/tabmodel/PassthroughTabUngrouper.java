@@ -83,7 +83,7 @@ public class PassthroughTabUngrouper implements TabUngrouper {
     }
 
     static List<Tab> getTabsToUngroup(TabModel tabModel, TabGroupId tabGroupId) {
-        return tabModel.getTabsInGroup(tabGroupId.getToken());
+        return tabModel.getTabsInGroup(tabGroupId);
     }
 
     private TabModelInternal getTabModelInternal() {

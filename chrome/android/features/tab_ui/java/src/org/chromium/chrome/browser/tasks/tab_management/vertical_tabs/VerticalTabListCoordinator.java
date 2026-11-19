@@ -1363,7 +1363,8 @@ public class VerticalTabListCoordinator {
                     @Nullable Tab firstGroupTab = null;
                     if (isGroupHeader) {
                         tabGroupId = assumeNonNull(model.get(TabProperties.TAB_GROUP_HEADER_ID));
-                        List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
+                        List<Tab> groupTabs =
+                                tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
                         if (groupTabs.isEmpty()) return;
                         firstGroupTab = groupTabs.get(0);
                     } else {
@@ -1715,7 +1716,8 @@ public class VerticalTabListCoordinator {
                     int indexInGroup = 0;
 
                     if (destGroupId != null) {
-                        List<Tab> groupTabs = tabModel.getTabsInGroup(destGroupId);
+                        List<Tab> groupTabs =
+                                tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId));
                         if (groupTabs.isEmpty()) {
                             destGroupId = null;
                         } else {
@@ -1801,7 +1803,8 @@ public class VerticalTabListCoordinator {
             if (TabProperties.isTabGroupHeader(model)) {
                 Token groupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
                 if (groupId != null) {
-                    draggedTabs.addAll(tabModel.getTabsInGroup(groupId));
+                    draggedTabs.addAll(
+                            tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)));
                 }
             } else {
                 int tabId = model.get(TabProperties.TAB_ID);
@@ -2148,7 +2151,8 @@ public class VerticalTabListCoordinator {
                 || !currentModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
             return false;
         }
-        List<Tab> tabsInGroup = currentModel.getTabsInGroup(tabGroupId);
+        List<Tab> tabsInGroup =
+                currentModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (tabsInGroup.isEmpty()) {
             return false;
         }

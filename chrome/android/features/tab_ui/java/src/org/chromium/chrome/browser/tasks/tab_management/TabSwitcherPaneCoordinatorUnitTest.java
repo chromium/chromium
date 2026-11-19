@@ -114,6 +114,7 @@ import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
@@ -318,7 +319,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                 tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
         Token tabGroupId = new Token(1L, 2L);
         tab.setTabGroupId(tabGroupId);
-        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(List.of(tab));
         controller.resetWithListOfTabs(Collections.singletonList(tab));
 
         return controller;
@@ -746,7 +748,9 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     public void testGetTabGridDialogAnimationSourceView_UnknownGroup_ReturnsNull() {
         Token unknownGroupId = new Token(123L, 456L);
-        doReturn(Collections.emptyList()).when(mTabModel).getTabsInGroup(unknownGroupId);
+        doReturn(Collections.emptyList())
+                .when(mTabModel)
+                .getTabsInGroup(TabGroupId.fromOptionalToken(unknownGroupId));
 
         assertNull(mCoordinator.getTabGridDialogAnimationSourceView(unknownGroupId));
     }
@@ -786,7 +790,9 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                 TabCreationState.LIVE_IN_FOREGROUND);
         tab.setTabGroupId(tabGroupId);
         doReturn(true).when(mTabModel).isTabInTabGroup(tab);
-        doReturn(List.of(tab)).when(mTabModel).getTabsInGroup(tabGroupId);
+        doReturn(List.of(tab))
+                .when(mTabModel)
+                .getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         doReturn(List.of(tab)).when(mTabModel).getRelatedTabList(1);
         mCoordinator.resetWithListOfTabs(List.of(tab));
     }

@@ -124,7 +124,8 @@ public class TabUngrouperImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
-        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(List.of(tab0));
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(1);
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
@@ -177,7 +178,8 @@ public class TabUngrouperImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
-        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(List.of(tab0));
         // Simulate a placeholder tab keeping the group alive (total count 2 != tabs to ungroup 1).
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(2);
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
@@ -202,7 +204,8 @@ public class TabUngrouperImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
-        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(List.of(tab0));
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
@@ -252,7 +255,8 @@ public class TabUngrouperImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
-        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(List.of(tab0));
         when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(

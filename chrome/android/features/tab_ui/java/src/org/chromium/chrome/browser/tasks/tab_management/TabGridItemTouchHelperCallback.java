@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManage
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
@@ -244,7 +245,8 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             Token destGroupId = destinationTab != null ? destinationTab.getTabGroupId() : null;
             int newIndex;
             if (destGroupId != null) {
-                List<Tab> destinationTabs = tabModel.getTabsInGroup(destGroupId);
+                List<Tab> destinationTabs =
+                        tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId));
                 newIndex =
                         distance >= 0
                                 ? TabGroupUtils.getLastTabModelIndexForList(
@@ -667,7 +669,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         if (!mModel.isValidIndex(cardIndex)) return List.of();
         Token tabGroupId = mModel.getTabGroupIdForIndex(cardIndex);
         if (tabGroupId != null) {
-            return tabModel.getTabsInGroup(tabGroupId);
+            return tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         }
         PropertyModel model = mModel.get(cardIndex).model;
         @TabId int tabId = TabProperties.getTabId(model);
@@ -683,7 +685,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         // expand it to the whole group.
         Token fallbackGroupId = tab.getTabGroupId();
         if (fallbackGroupId != null) {
-            return tabModel.getTabsInGroup(fallbackGroupId);
+            return tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(fallbackGroupId));
         }
         return List.of(tab);
     }

@@ -3065,7 +3065,8 @@ public class StripLayoutHelperTest {
         List<Tab> relatedTabs = new ArrayList<>();
         relatedTabs.add(mModel.getTabAt(0));
         relatedTabs.add(mModel.getTabAt(1));
-        when(mModel.getTabsInGroup(TAB_GROUP_ID_1)).thenReturn(relatedTabs);
+        when(mModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID_1)))
+                .thenReturn(relatedTabs);
         when(mModel.getTabAt(0).getTabGroupId()).thenReturn(TAB_GROUP_ID_1);
         when(mModel.getTabAt(1).getTabGroupId()).thenReturn(TAB_GROUP_ID_1);
 
@@ -4951,7 +4952,8 @@ public class StripLayoutHelperTest {
         when(mModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
         when(mModel.getTabCountForGroup(eq(TabGroupId.fromOptionalToken(tabGroupId))))
                 .thenReturn(numTabs);
-        when(mModel.getTabsInGroup(eq(tabGroupId))).thenReturn(relatedTabs);
+        when(mModel.getTabsInGroup(eq(TabGroupId.fromOptionalToken(tabGroupId))))
+                .thenReturn(relatedTabs);
 
         mStripLayoutHelper.updateGroupTextAndSharedState(tabGroupId);
         mStripLayoutHelper.rebuildStripViews();

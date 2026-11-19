@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid.ImmersivePlaybackConfirmationCallback;
 import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.ImmersivePlaybackConfirmationStatus;
 import org.chromium.content_public.browser.ImmersiveProjectionType;
 import org.chromium.content_public.browser.ImmersiveStereoMode;
@@ -365,8 +366,12 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                         /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 if (mChromeActivityNativeDelegate != null) {
                     assert Objects.equals(newTab.getTabGroupId(), sourceTab.getTabGroupId());
-                    assert tabModel.getTabsInGroup(newTab.getTabGroupId()).contains(sourceTab);
-                    assert tabModel.getTabsInGroup(sourceTab.getTabGroupId()).contains(newTab);
+                    assert tabModel.getTabsInGroup(
+                                    TabGroupId.fromOptionalToken(newTab.getTabGroupId()))
+                            .contains(sourceTab);
+                    assert tabModel.getTabsInGroup(
+                                    TabGroupId.fromOptionalToken(sourceTab.getTabGroupId()))
+                            .contains(newTab);
                 }
             }
         }

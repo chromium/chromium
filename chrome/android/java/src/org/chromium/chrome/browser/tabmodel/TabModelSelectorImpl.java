@@ -425,7 +425,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
         TabGroupMetadata tabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
                         tabModel,
-                        tabModel.getTabsInGroup(tabGroupId.getToken()),
+                        tabModel.getTabsInGroup(tabGroupId),
                         TabWindowManagerSingleton.getInstance().getIdForWindow(currentActivity),
                         currentTab.getId());
         if (tabGroupMetadata == null) return false;

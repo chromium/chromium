@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDele
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
@@ -350,7 +351,8 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
     private void movePastAdjacentGroup(
             Token interactingTabGroupId, StripLayoutGroupTitle adjTitle, boolean towardEnd) {
         // Move the interacting group to its new position.
-        List<Tab> adjTabs = mModel.getTabsInGroup(adjTitle.getTabGroupId());
+        List<Tab> adjTabs =
+                mModel.getTabsInGroup(TabGroupId.fromOptionalToken(adjTitle.getTabGroupId()));
         int indexTowardStart = TabGroupUtils.getFirstTabModelIndexForList(mModel, adjTabs);
         int indexTowardEnd = TabGroupUtils.getLastTabModelIndexForList(mModel, adjTabs);
         int destIndex = towardEnd ? indexTowardEnd : indexTowardStart;

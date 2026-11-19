@@ -395,7 +395,7 @@ public abstract class TabDragHandlerBase
      */
     protected ChromeDropDataAndroid prepareGroupDropData(Token tabGroupId) {
         TabModel tabModel = getCurrentModel();
-        List<Tab> groupedTabs = tabModel.getTabsInGroup(tabGroupId);
+        List<Tab> groupedTabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         int windowId = getWindowId();
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(

@@ -46,6 +46,7 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -372,7 +373,12 @@ public class TabGroupListBottomSheetTest {
                 () -> {
                     Token mergedGroupId = activePage.getTab().getTabGroupId();
                     assertNotNull(mergedGroupId);
-                    assertEquals(3, activePage.getTabModel().getTabsInGroup(mergedGroupId).size());
+                    assertEquals(
+                            3,
+                            activePage
+                                    .getTabModel()
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(mergedGroupId))
+                                    .size());
                 });
         assertFinalDestination(activePage);
     }

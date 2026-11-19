@@ -122,7 +122,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
-        when(mTabModel.getTabsInGroup(eq(TOKEN_1))).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(eq(TabGroupId.fromOptionalToken(TOKEN_1)))).thenReturn(tabs);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(true);
     }
 
@@ -375,7 +375,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         // Group in TabModel has only the restored tab (placeholder was already replaced).
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab2);
-        when(mTabModel.getTabsInGroup(eq(TOKEN_1))).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(eq(TabGroupId.fromOptionalToken(TOKEN_1)))).thenReturn(tabs);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(true);
 
         // SavedTabGroup from sync still refers to the old placeholder tab ID.

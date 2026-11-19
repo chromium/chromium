@@ -75,7 +75,7 @@ class TabCollectionTabModelImpl {
   // Returns the tabs in a group. If the group is not found, returns an empty
   // vector.
   std::vector<TabAndroid*> GetTabsInGroup(
-      const base::Token& tab_group_id) const;
+      const tab_groups::TabGroupId& tab_group_id) const;
 
   // Returns the number of tabs in a group. If the group is not found, returns
   // 0.

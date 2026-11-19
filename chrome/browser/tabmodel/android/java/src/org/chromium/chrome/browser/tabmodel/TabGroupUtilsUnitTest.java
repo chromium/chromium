@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -125,7 +126,8 @@ public class TabGroupUtilsUnitTest {
     @Test
     public void testGetSelectedOrFirstTabInGroup() {
         createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID1);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID2)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID2)))
+                .thenReturn(List.of());
 
         assertNull(TabGroupUtils.getSelectedOrFirstTabInGroup(mTabModel, /* tabGroupId= */ null));
         assertNull(TabGroupUtils.getSelectedOrFirstTabInGroup(mTabModel, TAB_GROUP_ID2));
@@ -153,7 +155,8 @@ public class TabGroupUtilsUnitTest {
     @Test
     public void testGetFirstTabIdInGroup() {
         createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID1);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID2)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID2)))
+                .thenReturn(List.of());
 
         assertThat(TabGroupUtils.getFirstTabIdInGroup(mTabModel, TAB_GROUP_ID1), equalTo(TAB1_ID));
         assertThat(
@@ -180,7 +183,8 @@ public class TabGroupUtilsUnitTest {
 
     @Test
     public void testOpenUrlInGroup() {
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID1)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID1)))
+                .thenReturn(List.of(mTab1));
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         @TabLaunchType int launchType = TabLaunchType.FROM_TAB_GROUP_UI;
@@ -191,7 +195,8 @@ public class TabGroupUtilsUnitTest {
         verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
 
         // Empty group should do nothing.
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID2)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID2)))
+                .thenReturn(List.of());
         TabGroupUtils.openUrlInGroup(mTabModel, url, TAB_GROUP_ID2, launchType);
         verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
 
@@ -202,7 +207,8 @@ public class TabGroupUtilsUnitTest {
 
     @Test
     public void testOpenUrlInGroup_LoadUrlParams() {
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID1)))
+                .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         @TabLaunchType int launchType = TabLaunchType.FROM_TAB_GROUP_UI;
@@ -213,7 +219,8 @@ public class TabGroupUtilsUnitTest {
         verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
 
         // Empty group should do nothing.
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID2)).thenReturn(List.of());
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID2)))
+                .thenReturn(List.of());
         TabGroupUtils.openUrlInGroup(mTabModel, loadUrlParams, TAB_GROUP_ID2, launchType);
         verify(mTabCreator, never()).createNewTab(any(), anyInt(), any());
 
@@ -325,7 +332,8 @@ public class TabGroupUtilsUnitTest {
 
     private void createTabGroup(List<Tab> tabs, Token tabGroupId) {
         for (Tab tab : tabs) {
-            when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(tabs);
+            when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
+                    .thenReturn(tabs);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
         }
     }

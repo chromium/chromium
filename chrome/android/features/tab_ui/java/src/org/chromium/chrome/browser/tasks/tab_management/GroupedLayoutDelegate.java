@@ -60,7 +60,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         @TabAlert int stateToReturn = TabAlert.NONE;
         int statePriority = TabUtils.getTabAlertPriority(stateToReturn);
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
+        List<Tab> groupTabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         for (Tab tab : groupTabs) {
             @TabAlert int currentState = getAlertStateForTab(tab);
             int currentPriority = TabUtils.getTabAlertPriority(currentState);
@@ -393,7 +393,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         if (tabGroupId == null) return;
 
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
+        List<Tab> groupTabs = tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (groupTabs.isEmpty()) return;
 
         if (mUseTabGroupCardType) {

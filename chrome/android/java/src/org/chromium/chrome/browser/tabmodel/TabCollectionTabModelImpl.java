@@ -1113,7 +1113,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     protected int[] getTabGroupTabIndices(Token tabGroupId) {
-        List<Tab> tabs = getTabsInGroup(tabGroupId);
+        List<Tab> tabs = getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (tabs.isEmpty()) return new int[] {};
 
         Tab firstTab = tabs.get(0);
@@ -1345,11 +1345,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         Tab tab = getTabById(tabId);
         if (tab == null) return Collections.emptyList();
         if (tab.getTabGroupId() == null) return Collections.singletonList(tab);
-        return getTabsInGroup(tab.getTabGroupId());
+        return getTabsInGroup(TabGroupId.fromOptionalToken(tab.getTabGroupId()));
     }
 
     @Override
-    public List<Tab> getTabsInGroup(@Nullable Token tabGroupId) {
+    public List<Tab> getTabsInGroup(@Nullable TabGroupId tabGroupId) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null || tabGroupId == null) {
             return Collections.emptyList();
@@ -1393,7 +1393,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null) return;
 
-        List<Tab> tabs = getTabsInGroup(tabGroupId);
+        List<Tab> tabs = getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (tabs.isEmpty()) return;
 
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
@@ -1833,7 +1833,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
 
         // Case 2: Add tabs to an existing group.
-        List<Tab> tabsInGroup = getTabsInGroup(tabGroupId);
+        List<Tab> tabsInGroup = getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (tabsInGroup.isEmpty()) return null;
 
         List<Tab> tabsToUngroup = new ArrayList<>();
@@ -1883,7 +1883,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             if (canHideTabGroups) {
                 Set<Tab> closingTabIds = new ArraySet<>(tabsToClose);
                 for (Token tabGroupId : getAllTabGroupIds()) {
-                    if (closingTabIds.containsAll(getTabsInGroup(tabGroupId))) {
+                    if (closingTabIds.containsAll(
+                            getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))) {
                         mHidingTabGroups.add(tabGroupId);
                     }
                 }
@@ -2107,7 +2108,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         Token oldTabGroupId = sourceTab.getTabGroupId();
         if (oldTabGroupId == null) return;
 
-        List<Tab> tabsInGroup = getTabsInGroup(oldTabGroupId);
+        List<Tab> tabsInGroup = getTabsInGroup(TabGroupId.fromOptionalToken(oldTabGroupId));
         assert tabsInGroup.size() > 0;
         final int approximateIndex;
         if (trailing) {
@@ -2398,7 +2399,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             if (adoptCandidateGroupId) {
                 // If we are using an existing group that the destination tab is not part of we need
                 // to move the group to the index of the destination tab.
-                List<Tab> tabsInAdoptedGroup = getTabsInGroup(destinationTabGroupId);
+                List<Tab> tabsInAdoptedGroup =
+                        getTabsInGroup(TabGroupId.fromOptionalToken(destinationTabGroupId));
                 adoptedTabGroupIndex = indexOf(tabsInAdoptedGroup.get(0));
                 // If the undo operation will move the adopted group to a higher index, we need to
                 // offset the restored index of the adopted group to account for its size.
@@ -2452,7 +2454,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         int destinationIndexInTabModel;
         if (!willCreateNewGroup) {
             // For existing or adopted groups, insert relative to existing tabs in that group.
-            List<Tab> tabsInDestGroup = getTabsInGroup(destinationTabGroupId);
+            List<Tab> tabsInDestGroup =
+                    getTabsInGroup(TabGroupId.fromOptionalToken(destinationTabGroupId));
             int groupSize = tabsInDestGroup.size();
             int insertionIndexInGroup =
                     (indexInGroup == null)
@@ -2692,7 +2695,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId == null || processedTabGroups.contains(tabGroupId)) continue;
 
-            if (tabsToMerge.containsAll(getTabsInGroup(tabGroupId))) {
+            if (tabsToMerge.containsAll(getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))) {
                 candidateTabGroupIds.add(tabGroupId);
             }
             processedTabGroups.add(tabGroupId);
@@ -2747,7 +2750,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     private @Nullable Tab getNextLastShownTabForGroup(Token tabGroupId, List<Tab> tabsToExclude) {
-        List<Tab> tabsInGroup = getTabsInGroup(tabGroupId);
+        List<Tab> tabsInGroup = getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (tabsInGroup.isEmpty()) return null;
 
         Tab lastShownTab = getLastShownTabForGroup(tabGroupId);
@@ -2907,7 +2910,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         @JniType("std::vector<TabAndroid*>")
         List<Tab> getTabsInGroup(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId);
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
         int getTabCountForGroup(
                 JniPtr<NativeTabCollectionTabModelImpl> self,

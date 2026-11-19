@@ -45,6 +45,7 @@ import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -144,7 +145,10 @@ public class NewTabGroupDialogFacility<
                     TabModel tabModel = mHostStation.tabModelElement.value();
                     List<Tab> tabsInGroup =
                             runOnUiThreadBlocking(
-                                    () -> tabModel.getTabsInGroup(tabGroupIdElement.value()));
+                                    () ->
+                                            tabModel.getTabsInGroup(
+                                                    TabGroupId.fromOptionalToken(
+                                                            tabGroupIdElement.value())));
                     mTabIdsToGroup = TabModelUtils.getTabIds(tabsInGroup);
                     mTitle = TabGroupUtil.getNumberOfTabsString(mTabIdsToGroup.size());
                     titleInputElement = delayedElements.declareView(createTitleViewSpec());

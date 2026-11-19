@@ -129,7 +129,7 @@ public class StartupHelperUnitTest {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
         tabs.add(mTab2);
-        when(mTabModel.getTabsInGroup(TOKEN_1)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(tabs);
 
         when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
         when(mTab2.getTabGroupId()).thenReturn(TOKEN_1);

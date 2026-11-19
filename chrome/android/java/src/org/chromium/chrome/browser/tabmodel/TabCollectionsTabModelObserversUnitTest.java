@@ -166,11 +166,11 @@ public class TabCollectionsTabModelObserversUnitTest {
         when(mTabCollectionTabModelImplJni.getTabsInGroup(any(), any()))
                 .thenAnswer(
                         invocation -> {
-                            Token groupId = invocation.getArgument(1);
+                            TabGroupId groupId = invocation.getArgument(1);
                             if (groupId == null) return Collections.emptyList();
                             List<Tab> result = new ArrayList<>();
                             for (Tab t : mTabs) {
-                                if (groupId.equals(t.getTabGroupId())) {
+                                if (groupId.getToken().equals(t.getTabGroupId())) {
                                     result.add(t);
                                 }
                             }

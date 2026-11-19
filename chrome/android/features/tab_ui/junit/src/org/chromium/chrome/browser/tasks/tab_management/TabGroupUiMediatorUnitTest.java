@@ -262,7 +262,10 @@ public class TabGroupUiMediatorUnitTest {
         assertTrue(mTabModelSupplier.hasObservers());
         // Verify strip initial reset.
         if (mTabModel.isTabInTabGroup(currentTab)) {
-            verifyResetStrip(true, mTabModel.getTabsInGroup(currentTab.getTabGroupId()));
+            verifyResetStrip(
+                    true,
+                    mTabModel.getTabsInGroup(
+                            TabGroupId.fromOptionalToken(currentTab.getTabGroupId())));
         } else {
             verifyNeverReset();
         }
@@ -307,15 +310,16 @@ public class TabGroupUiMediatorUnitTest {
                 .thenAnswer(
                         (org.mockito.invocation.InvocationOnMock invocation) -> {
                             TabGroupId groupId = invocation.getArgument(0);
-                            List<Tab> tabs =
-                                    mTabModel.getTabsInGroup(TabGroupId.toOptionalToken(groupId));
+                            List<Tab> tabs = mTabModel.getTabsInGroup(groupId);
                             return tabs == null ? 0 : tabs.size();
                         });
         when(mTabModel.getIndexOfTabInGroup(any()))
                 .thenAnswer(
                         (org.mockito.invocation.InvocationOnMock invocation) -> {
                             Tab tab = invocation.getArgument(0);
-                            List<Tab> tabs = mTabModel.getTabsInGroup(tab.getTabGroupId());
+                            List<Tab> tabs =
+                                    mTabModel.getTabsInGroup(
+                                            TabGroupId.fromOptionalToken(tab.getTabGroupId()));
                             return tabs == null ? -1 : tabs.indexOf(tab);
                         });
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
@@ -340,7 +344,8 @@ public class TabGroupUiMediatorUnitTest {
         doNothing().when(mTab3).addObserver(mTabObserverCaptor.capture());
 
         // Setup TabModel.
-        when(mTabModel.getTabsInGroup(TAB2_GROUP_ID)).thenReturn(mTabGroup2);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB2_GROUP_ID)))
+                .thenReturn(mTabGroup2);
         doReturn(false).when(mTabModel).isTabInTabGroup(mTab1);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab2);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab3);
@@ -543,7 +548,7 @@ public class TabGroupUiMediatorUnitTest {
         Token tab1GroupId = new Token(1L, 32L);
         when(mTab1.getTabGroupId()).thenReturn(tab1GroupId);
         when(newTab.getTabGroupId()).thenReturn(tab1GroupId);
-        when(mTabModel.getTabsInGroup(tab1GroupId)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tab1GroupId))).thenReturn(tabs);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab1);
         doReturn(true).when(mTabModel).isTabInTabGroup(newTab);
 
@@ -706,7 +711,7 @@ public class TabGroupUiMediatorUnitTest {
         Token tab1GroupId = new Token(3478L, 348L);
         when(mTab1.getTabGroupId()).thenReturn(tab1GroupId);
         when(newTab.getTabGroupId()).thenReturn(tab1GroupId);
-        when(mTabModel.getTabsInGroup(tab1GroupId)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tab1GroupId))).thenReturn(tabs);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab1);
         doReturn(true).when(mTabModel).isTabInTabGroup(newTab);
 
@@ -876,7 +881,7 @@ public class TabGroupUiMediatorUnitTest {
         Token tab1GroupId = new Token(1L, 3789L);
         when(mTab1.getTabGroupId()).thenReturn(tab1GroupId);
         when(newTab.getTabGroupId()).thenReturn(tab1GroupId);
-        when(mTabModel.getTabsInGroup(tab1GroupId)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tab1GroupId))).thenReturn(tabs);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab1);
         doReturn(true).when(mTabModel).isTabInTabGroup(newTab);
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
@@ -1001,7 +1006,8 @@ public class TabGroupUiMediatorUnitTest {
         initAndAssertProperties(mTab3);
 
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab3));
-        when(mTabModel.getTabsInGroup(TAB3_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB3_GROUP_ID)))
+                .thenReturn(tabs);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab3);
         doReturn(TAB3_GROUP_ID).when(mTab3).getTabGroupId();
         mTabGroupObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, TAB2_GROUP_ID);
@@ -1014,7 +1020,8 @@ public class TabGroupUiMediatorUnitTest {
         initAndAssertProperties(mTab1);
 
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        when(mTabModel.getTabsInGroup(TAB2_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB2_GROUP_ID)))
+                .thenReturn(tabs);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab1);
         doReturn(TAB2_GROUP_ID).when(mTab1).getTabGroupId();
         mTabGroupObserverArgumentCaptor

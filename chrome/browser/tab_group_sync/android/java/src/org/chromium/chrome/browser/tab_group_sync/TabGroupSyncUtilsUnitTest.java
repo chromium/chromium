@@ -172,7 +172,8 @@ public class TabGroupSyncUtilsUnitTest {
         for (Tab tab : tabs) {
             tab.setTabGroupId(tabGroupId);
         }
-        when(mTabModel.getTabsInGroup(eq(tabGroupId))).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(eq(TabGroupId.fromOptionalToken(tabGroupId))))
+                .thenReturn(tabs);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
     }
 }

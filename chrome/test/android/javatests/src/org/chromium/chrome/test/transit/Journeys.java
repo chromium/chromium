@@ -40,6 +40,7 @@ import org.chromium.chrome.test.transit.tabmodel.TabThumbnailCondition;
 import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.chrome.test.util.tabmodel.TabBinList;
 import org.chromium.chrome.test.util.tabmodel.TabBinList.TabBinPosition;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -562,7 +563,9 @@ public class Journeys {
 
     private static List<Tab> getTabsInGroupOrSelf(TabModel tabModel, Tab tab) {
         Token tabGroupId = tab.getTabGroupId();
-        return tabGroupId != null ? tabModel.getTabsInGroup(tabGroupId) : List.of(tab);
+        return tabGroupId != null
+                ? tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))
+                : List.of(tab);
     }
 
     /**

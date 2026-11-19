@@ -416,7 +416,8 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TAB_GROUP_ID));
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(1);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(Collections.singletonList(mTab1));
+        when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
+                .thenReturn(Collections.singletonList(mTab1));
         when(mTabModel.getTabGroupColor(TAB_GROUP_ID)).thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
         when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID))
                 .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
@@ -1633,7 +1634,8 @@ public class TabContextMenuCoordinatorUnitTest {
                 .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
         when(tabModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId2)))
                 .thenReturn(true);
-        when(tabModelWindow2.getTabsInGroup(tabGroupId2)).thenReturn(List.of(mTab2));
+        when(tabModelWindow2.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId2)))
+                .thenReturn(List.of(mTab2));
 
         mTabModel.addTab(
                 mTab1,

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -481,11 +482,17 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                     assertEquals(
                             "Source group should have 1 tab in destination window",
                             1,
-                            destActivity.getCurrentTabModel().getTabsInGroup(sourceGroupId).size());
+                            destActivity
+                                    .getCurrentTabModel()
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(sourceGroupId))
+                                    .size());
                     assertEquals(
                             "Existing destination group should still have 1 tab",
                             1,
-                            destActivity.getCurrentTabModel().getTabsInGroup(destGroupId).size());
+                            destActivity
+                                    .getCurrentTabModel()
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId))
+                                    .size());
                 });
     }
 
@@ -547,7 +554,10 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                     assertEquals(
                             "Destination expanded group should still have 2 tabs",
                             2,
-                            destActivity.getCurrentTabModel().getTabsInGroup(destGroupId).size());
+                            destActivity
+                                    .getCurrentTabModel()
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId))
+                                    .size());
                     // Dropped tab keeps its source group ID and did not merge into destination
                     // group.
                     assertEquals(
@@ -561,7 +571,10 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                     assertEquals(
                             "Source group should have 1 tab in destination window",
                             1,
-                            destActivity.getCurrentTabModel().getTabsInGroup(sourceGroupId).size());
+                            destActivity
+                                    .getCurrentTabModel()
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(sourceGroupId))
+                                    .size());
                 });
     }
 
@@ -634,7 +647,7 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                             1,
                             destActivity
                                     .getCurrentTabModel()
-                                    .getTabsInGroup(destGroupId[0])
+                                    .getTabsInGroup(TabGroupId.fromOptionalToken(destGroupId[0]))
                                     .size());
                 });
     }
@@ -1170,7 +1183,8 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                             sourceActivity
                                     .getMultiInstanceMangerForTesting()
                                     .getCurrentInstanceId();
-                    List<Tab> groupTabs = sourceModel.getTabsInGroup(groupId);
+                    List<Tab> groupTabs =
+                            sourceModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
                     TabGroupMetadata metadata =
                             TabGroupMetadataExtractor.extractTabGroupMetadata(
                                     sourceModel,
@@ -1245,7 +1259,8 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                             "Dropped group first tab should land at expected index",
                             expectedStartIndex,
                             destModel.indexOf(firstTab));
-                    List<Tab> destGroupTabs = destModel.getTabsInGroup(originalGroupId);
+                    List<Tab> destGroupTabs =
+                            destModel.getTabsInGroup(TabGroupId.fromOptionalToken(originalGroupId));
                     assertEquals(
                             "Destination group size should match original group size",
                             groupSize,

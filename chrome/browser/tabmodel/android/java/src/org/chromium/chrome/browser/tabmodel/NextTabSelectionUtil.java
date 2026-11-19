@@ -9,6 +9,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.url.GURL;
 
 import java.util.Collection;
@@ -243,7 +244,7 @@ public class NextTabSelectionUtil {
         Token groupId = anchorTab.getTabGroupId();
         if (groupId == null || model.getTabGroupCollapsed(groupId)) return null;
 
-        List<Tab> tabsInGroup = model.getTabsInGroup(groupId);
+        List<Tab> tabsInGroup = model.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
         int indexInGroup = tabsInGroup.indexOf(anchorTab);
         if (indexInGroup == -1) return null;
 

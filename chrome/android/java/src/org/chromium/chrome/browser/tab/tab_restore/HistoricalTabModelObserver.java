@@ -254,7 +254,8 @@ public class HistoricalTabModelObserver implements TabModelObserver {
 
         boolean groupExists = mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId));
         if (groupExists) {
-            List<Tab> tabsInGroup = mTabModel.getTabsInGroup(tabGroupId);
+            List<Tab> tabsInGroup =
+                    mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
             if (tabsInGroup.size() != entry.getTabs().size()
                     || !entry.getTabs().containsAll(tabsInGroup)) {
                 // Case: Group information not lost yet (non-undoable closure). Rely on whether all
@@ -279,7 +280,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         if (mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
             // Case: Group information not lost yet (non-undoable closure). Rely on whether the tab
             // is the only tab in its tab group.
-            List<Tab> tabs = mTabModel.getTabsInGroup(tabGroupId);
+            List<Tab> tabs = mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
             return tabs.size() == 1 && tabs.contains(tab);
         } else {
             // Case: Group information already lost (undoable closure). Rely on whether the tab
