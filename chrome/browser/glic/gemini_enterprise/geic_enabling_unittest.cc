@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,8 +14,10 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
@@ -90,13 +93,15 @@ class GeicEnablingTest : public testing::Test {
 
   GURL ResolvePolicyUrl(const std::string& url) {
     SetPolicyUrl(url);
-    return ResolveGeicGuestUrl(profile());
+    std::optional<GeicGuestUrl> resolved = ResolveGeicGuestUrl(profile());
+    return resolved ? resolved->url() : GURL();
   }
 
   // Sets the command-line switch URL and resolves the guest URL.
   GURL ResolveSwitchUrl(const std::string& url) {
     SetSwitchUrl(url);
-    return ResolveGeicGuestUrl(profile());
+    std::optional<GeicGuestUrl> resolved = ResolveGeicGuestUrl(profile());
+    return resolved ? resolved->url() : GURL();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -108,14 +113,14 @@ class GeicEnablingTest : public testing::Test {
 TEST_F(GeicEnablingTest, DefaultState) {
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(IsGeicEnabledByFeature());
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(profile()).has_value());
   EXPECT_TRUE(
       ResolvePolicyUrl("https://business.gemini.google/side-panel").is_empty());
 #else
   EXPECT_TRUE(IsGeicEnabledByFeature());
   // Without a configured guest URL, a profile is not in GEiC mode even though
   // `features::kGeic` is enabled by default.
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(profile()).has_value());
   EXPECT_EQ(ResolvePolicyUrl("https://business.gemini.google/side-panel"),
             GURL("https://business.gemini.google/side-panel"));
 #endif
@@ -127,7 +132,7 @@ TEST_F(GeicEnablingTest, FinchEnabledWithDefaults) {
 
   EXPECT_TRUE(IsGeicEnabledByFeature());
   // Without a resolved guest URL, a profile is not in GEiC mode.
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(profile()).has_value());
 }
 
 TEST_F(GeicEnablingTest, FinchEnabledWithExplicitDisabledParam) {
@@ -139,7 +144,7 @@ TEST_F(GeicEnablingTest, FinchEnabledWithExplicitDisabledParam) {
       {});
 
   EXPECT_FALSE(IsGeicEnabledByFeature());
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(profile()).has_value());
 }
 
 TEST_F(GeicEnablingTest, FinchEnabledWithCustomGuestUrlParam) {
@@ -151,8 +156,10 @@ TEST_F(GeicEnablingTest, FinchEnabledWithCustomGuestUrlParam) {
       {});
 
   EXPECT_TRUE(IsGeicEnabledByFeature());
-  EXPECT_EQ(ResolveGeicGuestUrl(profile()),
-            GURL("https://business.gemini.google/side-panel"));
+  std::optional<GeicGuestUrl> resolved = ResolveGeicGuestUrl(profile());
+  ASSERT_TRUE(resolved.has_value());
+  EXPECT_EQ(resolved->url(), GURL("https://business.gemini.google/side-panel"));
+  EXPECT_EQ(resolved->source(), GuestUrlSource::kFinch);
 }
 
 TEST_F(GeicEnablingTest, FlagExplicitlyDisabledOverridesFinch) {
@@ -163,7 +170,7 @@ TEST_F(GeicEnablingTest, FlagExplicitlyDisabledOverridesFinch) {
   SetSwitchUrl("https://business.gemini.google/cli-panel");
 
   EXPECT_FALSE(IsGeicEnabledByFeature());
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(profile()).has_value());
 }
 
 TEST_F(GeicEnablingTest, FlagExplicitlyEnabledBypassesChecks) {
@@ -178,8 +185,10 @@ TEST_F(GeicEnablingTest, CommandLineSwitchOverridesGuestUrl) {
   feature_list.InitAndEnableFeature(features::kGeic);
   SetSwitchUrl("https://business.gemini.google/cli-panel");
 
-  EXPECT_EQ(ResolveGeicGuestUrl(profile()),
-            GURL("https://business.gemini.google/cli-panel"));
+  std::optional<GeicGuestUrl> resolved = ResolveGeicGuestUrl(profile());
+  ASSERT_TRUE(resolved.has_value());
+  EXPECT_EQ(resolved->url(), GURL("https://business.gemini.google/cli-panel"));
+  EXPECT_EQ(resolved->source(), GuestUrlSource::kSwitch);
 }
 
 TEST_F(GeicEnablingTest, SwitchAcceptsAnyHttpOrHttpsUrlWithAllowAnyGuestUrl) {
@@ -232,7 +241,7 @@ TEST_F(GeicEnablingTest, PolicyAndFinchRejectNonAllowlistedHosts) {
       features::kGeic,
       {{"geic-guest-url",
         "https://localhost.corp.google.com:10443/side-panel"}});
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(profile()).has_value());
   EXPECT_TRUE(ResolvePolicyUrl("http://localhost:8080/side-panel").is_empty());
 }
 
@@ -245,18 +254,27 @@ TEST_F(GeicEnablingTest, ResolveGeicGuestUrlPrecedence) {
       {});
 
   // Without policy or switch, Finch URL is validated and canonicalized.
-  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=finch"),
-            ResolveGeicGuestUrl(profile()));
+  std::optional<GeicGuestUrl> resolved = ResolveGeicGuestUrl(profile());
+  ASSERT_TRUE(resolved.has_value());
+  EXPECT_EQ(resolved->url(),
+            GURL("https://business.gemini.google/side-panel?configId=finch"));
+  EXPECT_EQ(resolved->source(), GuestUrlSource::kFinch);
 
   // Policy outranks Finch.
   SetPolicyUrl("https://business.gemini.google/home/cid/policy");
-  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=policy"),
-            ResolveGeicGuestUrl(profile()));
+  resolved = ResolveGeicGuestUrl(profile());
+  ASSERT_TRUE(resolved.has_value());
+  EXPECT_EQ(resolved->url(),
+            GURL("https://business.gemini.google/side-panel?configId=policy"));
+  EXPECT_EQ(resolved->source(), GuestUrlSource::kPolicy);
 
   // Switch outranks policy.
   SetSwitchUrl("https://business.gemini.google/home/cid/switch");
-  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=switch"),
-            ResolveGeicGuestUrl(profile()));
+  resolved = ResolveGeicGuestUrl(profile());
+  ASSERT_TRUE(resolved.has_value());
+  EXPECT_EQ(resolved->url(),
+            GURL("https://business.gemini.google/side-panel?configId=switch"));
+  EXPECT_EQ(resolved->source(), GuestUrlSource::kSwitch);
 }
 
 TEST_F(GeicEnablingTest, DisallowedCandidateDoesNotFallThrough) {
@@ -267,15 +285,15 @@ TEST_F(GeicEnablingTest, DisallowedCandidateDoesNotFallThrough) {
          {"geic-guest-url", "https://evil.com/side-panel"}}}},
       {});
 
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(profile()).has_value());
 
   SetPolicyUrl("https://business.gemini.google/side-panel");
   SetSwitchUrl("https://evil.com/switch");
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(profile()).has_value());
 
   // An unparsable switch value doesn't fall through either.
   SetSwitchUrl("not a url");
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(profile()).has_value());
 
   // A disallowed policy URL does not fall through to a valid Finch URL.
   scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
@@ -285,7 +303,7 @@ TEST_F(GeicEnablingTest, DisallowedCandidateDoesNotFallThrough) {
       features::kGeic, {{"geic-guest-url",
                          "https://business-staging.gemini.google/side-panel"}});
   SetPolicyUrl("https://business-staging.gemini.google/side-panel");
-  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(profile()).has_value());
 }
 
 TEST_F(GeicEnablingTest, GoogleGroupsFilterEnablesOnlyMatchingProfile) {
@@ -341,18 +359,21 @@ TEST_F(GeicEnablingTest, GoogleGroupsFilterEnablesOnlyMatchingProfile) {
   // Profile in the required Google Group gets GEiC enabled with the Finch URL.
   std::unique_ptr<TestingProfile> corp_profile =
       create_profile_with_groups({kTeamfoodGroupId});
-  EXPECT_EQ(ResolveGeicGuestUrl(corp_profile.get()), GURL(kGuestUrl));
+  std::optional<GeicGuestUrl> corp_resolved =
+      ResolveGeicGuestUrl(corp_profile.get());
+  ASSERT_TRUE(corp_resolved.has_value());
+  EXPECT_EQ(corp_resolved->url(), GURL(kGuestUrl));
 
   // Personal profile not in the Google Group has GEiC disabled and falls back
   // to empty URL (so consumer GiC is used instead of the corp autopush URL).
   std::unique_ptr<TestingProfile> personal_profile =
       create_profile_with_groups({"111111111"});
-  EXPECT_TRUE(ResolveGeicGuestUrl(personal_profile.get()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(personal_profile.get()).has_value());
 
   // Unsynced profile with no groups also has the Finch guest URL ignored.
   std::unique_ptr<TestingProfile> unsynced_profile =
       create_profile_with_groups({});
-  EXPECT_TRUE(ResolveGeicGuestUrl(unsynced_profile.get()).is_empty());
+  EXPECT_FALSE(ResolveGeicGuestUrl(unsynced_profile.get()).has_value());
 
   // A profile not in the Google Group (or unsynced) that has the
   // GeminiEnterpriseUrl admin policy configured still gets GEiC enabled via
@@ -362,7 +383,10 @@ TEST_F(GeicEnablingTest, GoogleGroupsFilterEnablesOnlyMatchingProfile) {
   policy_profile->GetPrefs()->SetString(
       glic::prefs::kGlicGeminiEnterpriseUrl,
       "https://enterprise.gemini.cloud.google/side-panel");
-  EXPECT_EQ(ResolveGeicGuestUrl(policy_profile.get()),
+  std::optional<GeicGuestUrl> policy_resolved =
+      ResolveGeicGuestUrl(policy_profile.get());
+  ASSERT_TRUE(policy_resolved.has_value());
+  EXPECT_EQ(policy_resolved->url(),
             GURL("https://enterprise.gemini.cloud.google/side-panel"));
 }
 
@@ -377,7 +401,10 @@ TEST_F(GeicEnablingTest, ShouldLatchToGeminiEnterprise) {
       {});
 
   TestingProfile* p = profile();
-  const GURL kValidGuestUrl("https://business.gemini.google/side-panel");
+  base::expected<GeicGuestUrl, GuestUrlError> valid_guest_url =
+      GeicGuestUrl::FromPolicy("https://business.gemini.google/side-panel");
+  ASSERT_TRUE(valid_guest_url.has_value());
+  const GeicGuestUrl* const kValidGuestUrl = &*valid_guest_url;
 
   SetPolicyWithScope("https://business.gemini.google/home/cid/device",
                      policy::POLICY_SCOPE_MACHINE);
@@ -447,7 +474,7 @@ TEST_F(GeicEnablingTest, ShouldLatchToGeminiEnterprise) {
   EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
 
   // Empty guest URL -> Consumer regardless of selection.
-  EXPECT_FALSE(ShouldLatchToGeminiEnterprise(p, GURL()));
+  EXPECT_FALSE(ShouldLatchToGeminiEnterprise(p, nullptr));
 
   // Null BrowserContext -> Consumer.
   EXPECT_FALSE(ShouldLatchToGeminiEnterprise(nullptr, kValidGuestUrl));
@@ -532,31 +559,22 @@ TEST_F(GeicEnablingTest, GetGeicSkillsUrl) {
           "my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
           "vertexaisearch.cloud.google%2Fhome%2Fcid%2Fabc123"),
       GURL("https://vertexaisearch.cloud.google/home/cid/abc123/r/skills"));
+  EXPECT_EQ(
+      get_skills_url_for_finch_guest_url(
+          "https://gemini.cloud.google/work/cid/abc123/side-panel"),
+      GURL("https://gemini.cloud.google/work/cid/abc123/customize/skills"));
+  EXPECT_EQ(get_skills_url_for_finch_guest_url(""), GURL());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGeic, {{"enabled", "true"}}}}, {});
 
-  // Sets the guest URL via `::switches::kGlicGuestURL` rather than the
-  // `features::kGeic` guest URL param, which `IsAllowedGeminiEnterpriseHost()`
-  // filters and which does not allow Gemini at Work hosts yet.
-  auto get_skills_url_for_guest_url = [this](const std::string& guest_url) {
-    scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
-        ::switches::kGlicGuestURL);
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ::switches::kGlicGuestURL, guest_url);
-    return GetGeicSkillsUrl(profile());
-  };
-
-  // URL mapping cases live in `geic_guest_url_unittest.cc`.
-  EXPECT_EQ(get_skills_url_for_guest_url(
-                "https://gemini.google.com/work/cid/abc123/side-panel"),
-            GURL("https://gemini.google.com/work/cid/abc123/customize/skills"));
-
-  // Returns an empty GURL when the resolved guest URL is empty/invalid.
+  // Consumer-latched profiles return an empty `GURL` even when
+  // `::switches::kGlicGuestURL` is set.
   scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-      ::switches::kGlicGuestURL, "");
-  EXPECT_TRUE(GetGeicSkillsUrl(profile()).is_empty());
+      ::switches::kGlicGuestURL,
+      "https://gemini.google.com/work/cid/abc123/side-panel");
+  EXPECT_EQ(GetGeicSkillsUrl(profile()), GURL());
 }
 }  // namespace
 }  // namespace geic

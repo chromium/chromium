@@ -4,14 +4,20 @@
 
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 
+#include <memory>
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
@@ -65,6 +71,10 @@ class GlicProviderLatchTest : public testing::Test {
               GlicProvider::kGeminiEnterprise);
     EXPECT_EQ(GetGlicProviderSpec(profile).GetGuestUrl(profile),
               GetLocalizedGuestURL(GURL(kGuestUrl)));
+    const GeicSpec* geic_spec = GetGlicProviderSpec(profile).GetGeicSpec();
+    ASSERT_NE(geic_spec, nullptr);
+    ASSERT_NE(geic_spec->GetGeicGuestUrl(), nullptr);
+    EXPECT_EQ(geic_spec->GetGeicGuestUrl()->url(), GURL(kGuestUrl));
   }
 
   // Expects off-the-record `profile` to use the same provider and spec as its
@@ -90,6 +100,7 @@ class GlicProviderLatchTest : public testing::Test {
               kGeminiSettingsSectionId);
     EXPECT_NE(GetGlicProviderSpec(profile).GetGuestUrl(profile),
               GetLocalizedGuestURL(GURL(kGuestUrl)));
+    EXPECT_EQ(GetGlicProviderSpec(profile).GetGeicSpec(), nullptr);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -292,9 +303,16 @@ TEST_F(GlicProviderLatchTest, GeminiEnterpriseGuestUrlKey) {
   EXPECT_EQ(GetGlicProviderSpec(profile).GetGuestUrlKey(), kGuestUrl);
 }
 
-std::string GetGeminiEnterpriseGuestUrlKey(const char* guest_url) {
+geic::GeicGuestUrl MakeTestGeicGuestUrl(std::string_view spec) {
+  base::expected<geic::GeicGuestUrl, geic::GuestUrlError> guest_url =
+      geic::GeicGuestUrl::FromSwitch(spec, /*allow_any_http_url=*/true);
+  CHECK(guest_url.has_value());
+  return *std::move(guest_url);
+}
+
+std::string GetGeminiEnterpriseGuestUrlKey(std::string_view guest_url) {
   return CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise,
-                                {.guest_url = GURL(guest_url)})
+                                {.guest_url = MakeTestGeicGuestUrl(guest_url)})
       ->GetGuestUrlKey();
 }
 
@@ -334,7 +352,30 @@ TEST(GlicProviderSpecTest, GeminiEnterpriseGuestUrlKeyKeepsOtherParams) {
 
 // GE profiles are only latched with a valid guest URL.
 TEST(GlicProviderSpecTest, GeminiEnterpriseWithoutGuestUrlCrashes) {
-  EXPECT_CHECK_DEATH(GetGeminiEnterpriseGuestUrlKey(""));
+  EXPECT_CHECK_DEATH(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                         ->GetGuestUrlKey());
+}
+
+TEST(GlicProviderSpecTest, GetGeicSpec) {
+  geic::GeicGuestUrl guest_url = MakeTestGeicGuestUrl(kGuestUrl);
+  EXPECT_EQ(CreateGlicProviderSpec(GlicProvider::kGemini, {})->GetGeicSpec(),
+            nullptr);
+  EXPECT_EQ(
+      CreateGlicProviderSpec(GlicProvider::kGemini, {.guest_url = guest_url})
+          ->GetGeicSpec(),
+      nullptr);
+
+  std::unique_ptr<const GlicProviderSpec> unset_geic_spec =
+      CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {});
+  ASSERT_NE(unset_geic_spec->GetGeicSpec(), nullptr);
+  EXPECT_EQ(unset_geic_spec->GetGeicSpec()->GetGeicGuestUrl(), nullptr);
+  EXPECT_EQ(unset_geic_spec->GetGuestUrl(nullptr), GURL());
+
+  std::unique_ptr<const GlicProviderSpec> geic_spec = CreateGlicProviderSpec(
+      GlicProvider::kGeminiEnterprise, {.guest_url = guest_url});
+  ASSERT_NE(geic_spec->GetGeicSpec(), nullptr);
+  ASSERT_NE(geic_spec->GetGeicSpec()->GetGeicGuestUrl(), nullptr);
+  EXPECT_EQ(*geic_spec->GetGeicSpec()->GetGeicGuestUrl(), guest_url);
 }
 
 // The consumer guest URL key, for profiles and the fallback spec, is the guest
@@ -364,9 +405,10 @@ TEST(GlicProviderLatchDefaultTest, GeminiGuestUrlWithoutHostUsesFallbackKey) {
 TEST(GlicProviderSpecTest, MigratesWebviewLocalStorage) {
   EXPECT_TRUE(CreateGlicProviderSpec(GlicProvider::kGemini, {})
                   ->MigratesWebviewLocalStorage());
-  EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise,
-                                      {.guest_url = GURL(kGuestUrl)})
-                   ->MigratesWebviewLocalStorage());
+  EXPECT_FALSE(
+      CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise,
+                             {.guest_url = MakeTestGeicGuestUrl(kGuestUrl)})
+          ->MigratesWebviewLocalStorage());
 }
 
 }  // namespace

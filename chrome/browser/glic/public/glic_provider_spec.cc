@@ -28,4 +28,7 @@ GlicSelectionInlineCueFeatureParams::operator=(
 GlicSelectionInlineCueFeatureParams::~GlicSelectionInlineCueFeatureParams() =
     default;
 
+GeicSpec::GeicSpec() = default;
+GeicSpec::~GeicSpec() = default;
+
 }  // namespace glic

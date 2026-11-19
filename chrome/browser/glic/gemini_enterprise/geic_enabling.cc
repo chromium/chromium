@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_sign_in_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
@@ -104,7 +105,9 @@ base::expected<GeicGuestUrl, GuestUrlError> GetFinchGuestUrl(
   return GeicGuestUrl::FromFinch(features::kGeicGuestURL.Get());
 }
 
-std::optional<GeicGuestUrl> ResolveGuestUrlWithSource(
+}  // namespace
+
+std::optional<GeicGuestUrl> ResolveGeicGuestUrl(
     content::BrowserContext* browser_context) {
   if (!IsGeicEnabledByFeature()) {
     return std::nullopt;
@@ -122,16 +125,17 @@ std::optional<GeicGuestUrl> ResolveGuestUrlWithSource(
   };
   // The first set candidate wins, even if it is invalid, so that an invalid
   // higher-priority source doesn't silently fall through.
-  auto it = std::ranges::find_if(candidates, [](const auto& candidate) {
-    return candidate.has_value() || candidate.error() != GuestUrlError::kUnset;
-  });
+  auto it = std::ranges::find_if(
+      candidates,
+      [](const base::expected<GeicGuestUrl, GuestUrlError>& candidate) {
+        return candidate.has_value() ||
+               candidate.error() != GuestUrlError::kUnset;
+      });
   if (it == std::end(candidates) || !it->has_value()) {
     return std::nullopt;
   }
   return std::move(**it);
 }
-
-}  // namespace
 
 bool IsGeicEnabledByFeature() {
   return base::FeatureList::IsEnabled(features::kGeic) &&
@@ -140,8 +144,7 @@ bool IsGeicEnabledByFeature() {
 
 bool CanSwitchBetweenGeminiProvidersInSettings(
     content::BrowserContext* browser_context) {
-  std::optional<GeicGuestUrl> resolved =
-      ResolveGuestUrlWithSource(browser_context);
+  std::optional<GeicGuestUrl> resolved = ResolveGeicGuestUrl(browser_context);
   if (!resolved || resolved->source() != GuestUrlSource::kPolicy) {
     return false;
   }
@@ -155,16 +158,13 @@ bool CanSwitchBetweenGeminiProvidersInSettings(
   return entry && entry->scope == policy::POLICY_SCOPE_MACHINE;
 }
 
-GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context) {
-  std::optional<GeicGuestUrl> resolved =
-      ResolveGuestUrlWithSource(browser_context);
-  return resolved ? resolved->url() : GURL();
-}
-
 bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
-                                   const GURL& resolved_guest_url) {
+                                   const GeicGuestUrl* resolved_guest_url) {
+  if (!browser_context || !resolved_guest_url) {
+    return false;
+  }
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (resolved_guest_url.is_empty() || !profile || !profile->GetPrefs()) {
+  if (!profile || !profile->GetPrefs()) {
     return false;
   }
   if (!CanSwitchBetweenGeminiProvidersInSettings(browser_context)) {
@@ -179,8 +179,21 @@ bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
 }
 
 GURL GetGeicSkillsUrl(Profile* profile) {
-  return GetGeicSkillsUrlForGuestUrl(
-      glic::GetGlicProviderSpec(profile).GetGuestUrl(profile));
+  const glic::GeicSpec* geic_spec =
+      glic::GetGlicProviderSpec(profile).GetGeicSpec();
+  const GeicGuestUrl* guest_url =
+      geic_spec ? geic_spec->GetGeicGuestUrl() : nullptr;
+  if (!guest_url) {
+    return GURL();
+  }
+  GURL skills_url = guest_url->SkillsUrl();
+  // Carries the Workforce session index (`csesidx`) that the side panel uses,
+  // so Workforce Identity hosts don't redirect through the Auth Portal.
+  if (const glic::GeicSignInController* controller =
+          glic::GeicSignInController::GetIfExists(profile)) {
+    skills_url = controller->ResolveGuestUrl(std::move(skills_url));
+  }
+  return skills_url;
 }
 
 }  // namespace geic

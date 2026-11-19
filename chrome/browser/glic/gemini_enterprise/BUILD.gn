@@ -16,8 +16,10 @@ source_set("geic_enabling") {
     "geic_enabling.h",
   ]
 
+  public_deps = [ ":guest_url" ]
+
   deps = [
-    ":guest_url",
+    ":gemini_enterprise",
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic/public:features",

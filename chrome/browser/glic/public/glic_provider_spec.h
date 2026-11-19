@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_PROVIDER_SPEC_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
 #include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_change.h"
@@ -31,7 +33,7 @@ inline constexpr char kGeminiEnterpriseSettingsSectionId[] = "geminiEnterprise";
 inline constexpr char kGeminiGuestUrlKey[] = "gemini.google.com";
 
 struct GeicProviderInitOptions {
-  GURL guest_url;
+  std::optional<geic::GeicGuestUrl> guest_url;
   bool can_switch_between_gemini_providers = false;
 };
 
@@ -127,6 +129,20 @@ std::unique_ptr<const GlicProviderSpec> CreateGlicProviderSpec(
     GlicProvider provider,
     GeicProviderInitOptions geic_options);
 
+// Gemini Enterprise-specific provider configuration, exposed via
+// `GlicProviderSpec::GetGeicSpec()`.
+class GeicSpec {
+ public:
+  GeicSpec();
+  GeicSpec(const GeicSpec&) = delete;
+  GeicSpec& operator=(const GeicSpec&) = delete;
+  virtual ~GeicSpec();
+
+  // Returns the validated Gemini Enterprise guest URL, or `nullptr` if none is
+  // configured. The pointee is owned by this spec and lives as long as it does.
+  virtual const geic::GeicGuestUrl* GetGeicGuestUrl() const = 0;
+};
+
 class GlicProviderSpec {
  public:
   GlicProviderSpec() = default;
@@ -161,6 +177,10 @@ class GlicProviderSpec {
   // Returns the localized guest URL to load for `profile`, or an empty GURL
   // if none is configured.
   virtual GURL GetGuestUrl(Profile* profile) const = 0;
+  // Returns the Gemini Enterprise-specific spec, or `nullptr` for non-Gemini
+  // Enterprise providers. The pointee is owned by this `GlicProviderSpec` and
+  // lives as long as it does.
+  virtual const GeicSpec* GetGeicSpec() const = 0;
   // Whether the entry point stays visible, in an error state, for onboarded
   // profiles that fail a Glic requirement
   // (`features::kGlicAnchorEntryPointForOnboardedUsers`).

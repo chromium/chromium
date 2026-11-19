@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_ENABLING_H_
 #define CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_ENABLING_H_
 
+#include <optional>
+
+#include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
 #include "chrome/common/chrome_switches.h"
 #include "url/gurl.h"
 
@@ -53,7 +56,7 @@ bool CanSwitchBetweenGeminiProvidersInSettings(
 
 // Resolves the Gemini Enterprise guest URL for `browser_context` from the
 // current configuration on every call, without reading or writing the latch, or
-// returns an empty GURL() if GEiC is not enabled or no valid URL is configured.
+// returns `std::nullopt` if GEiC is not enabled or no valid URL is configured.
 // `GlicProviderLatchFactory` calls this when a profile's keyed services are
 // created.
 //
@@ -80,16 +83,18 @@ bool CanSwitchBetweenGeminiProvidersInSettings(
 // `--geic-guest-url` intentionally takes precedence over the enterprise policy
 // to simplify development and local testing on managed profiles. Accessing
 // GEiC still requires the user to sign in to Gemini Enterprise.
-GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context);
+std::optional<GeicGuestUrl> ResolveGeicGuestUrl(
+    content::BrowserContext* browser_context);
 
 // Returns true if `browser_context` should latch to
-// `GlicProvider::kGeminiEnterprise` at profile startup, or false to latch to
+// `GlicProvider::kGeminiEnterprise` at profile startup (`resolved_guest_url` is
+// `nullptr` when no valid guest URL was resolved), or false to latch to
 // consumer `GlicProvider::kGemini`.
 bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
-                                   const GURL& resolved_guest_url);
+                                   const GeicGuestUrl* resolved_guest_url);
 
-// Returns `GetGeicSkillsUrlForGuestUrl()` for `profile`'s latched guest URL, or
-// an empty `GURL` if none.
+// Returns `GeicGuestUrl::SkillsUrl()` for `profile`'s latched Gemini Enterprise
+// guest URL, or an empty `GURL` if none.
 GURL GetGeicSkillsUrl(Profile* profile);
 
 }  // namespace geic

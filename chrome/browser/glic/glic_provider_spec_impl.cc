@@ -14,7 +14,9 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_sign_in_controller.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_fre_store_impl.h"
@@ -178,6 +180,7 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
     GURL url = GetUnlocalizedGuestUrl(profile);
     return url.is_empty() ? url : GetLocalizedGuestURL(url);
   }
+  const GeicSpec* GetGeicSpec() const override { return nullptr; }
   bool SupportsAnchoredEntryPoint() const override { return true; }
   const GlicFreStore& GetFreStore() const override { return *fre_store_; }
   std::string GetGuestUrlKey() const override {
@@ -322,7 +325,8 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   const std::unique_ptr<GlicFreStore> fre_store_ = CreateGeminiFreStore();
 };
 
-class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
+class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec,
+                                               public GeicSpec {
  public:
   explicit GeminiEnterpriseGlicProviderSpec(GeicProviderInitOptions options)
       : guest_url_(std::move(options.guest_url)),
@@ -349,11 +353,11 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   }
   bool RequiresNoWebview() const override { return true; }
   GURL GetUnlocalizedGuestUrl(Profile* profile) const override {
-    if (guest_url_.is_empty()) {
+    if (!guest_url_) {
       VLOG(1) << "GEiC is enabled but no guest URL was provided.";
       return GURL();
     }
-    GURL url = guest_url_;
+    GURL url = guest_url_->url();
     if (const GeicSignInController* controller =
             GeicSignInController::GetIfExists(profile)) {
       url = controller->ResolveGuestUrl(std::move(url));
@@ -364,6 +368,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
     GURL url = GetUnlocalizedGuestUrl(profile);
     return url.is_empty() ? url : GetLocalizedGuestURL(url);
   }
+  const GeicSpec* GetGeicSpec() const override { return this; }
   // The anchored error state shows consumer copy and help links.
   // TODO(b/576834093): Support anchoring with GEiC error states.
   bool SupportsAnchoredEntryPoint() const override { return false; }
@@ -371,8 +376,8 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   std::string GetGuestUrlKey() const override {
     // GE profiles are only latched with a valid guest URL (see
     // `GlicProviderLatchFactory`).
-    CHECK(guest_url_.is_valid());
-    return GuestUrlToKey(guest_url_);
+    CHECK(guest_url_.has_value());
+    return GuestUrlToKey(guest_url_->url());
   }
   GlicProviderKey GetProviderKeyImpl() const override {
     return GlicProviderKey::GeminiEnterprise(GetGuestUrlKey());
@@ -444,8 +449,13 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   // as shared tab context.
   bool PinOnBindEnabled() const override { return false; }
 
+  // GeicSpec impl.
+  const geic::GeicGuestUrl* GetGeicGuestUrl() const override {
+    return base::OptionalToPtr(guest_url_);
+  }
+
  private:
-  const GURL guest_url_;
+  const std::optional<geic::GeicGuestUrl> guest_url_;
   const bool can_switch_between_gemini_providers_;
   const std::unique_ptr<GlicFreStore> fre_store_ =
       CreateGeminiEnterpriseFreStore();

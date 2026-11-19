@@ -61,6 +61,7 @@ source_set("provider") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/glic/gemini_enterprise:guest_url",
     "//url",
   ]
   deps = [

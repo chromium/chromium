@@ -244,15 +244,7 @@ GeicGuestUrl& GeicGuestUrl::operator=(GeicGuestUrl&&) noexcept = default;
 GeicGuestUrl::~GeicGuestUrl() = default;
 
 GURL GeicGuestUrl::SkillsUrl() const {
-  return GetGeicSkillsUrlForGuestUrl(url_);
-}
-
-GURL GetGeicSkillsUrlForGuestUrl(const GURL& guest_url) {
-  GURL url = guest_url;
-  if (!url.is_valid()) {
-    return GURL();
-  }
-
+  GURL url = url_;
   std::string config_id;
   net::GetValueForKeyInQuery(url, "configId", &config_id);
   url = net::AppendOrReplaceQueryParameter(url, "configId", std::nullopt);

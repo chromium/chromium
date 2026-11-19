@@ -5,13 +5,16 @@
 #include "chrome/browser/glic/public/glic_provider_latch_factory.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/types/optional_util.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_guest_url.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_change.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
@@ -21,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "url/gurl.h"
 
 namespace glic {
 
@@ -38,7 +40,7 @@ void GlicProviderLatchFactory::SetProviderForTesting(
     GeicProviderInitOptions geic_options) {
   // GE profiles are always latched with a valid guest URL.
   CHECK(provider != GlicProvider::kGeminiEnterprise ||
-        geic_options.guest_url.is_valid());
+        geic_options.guest_url.has_value());
   GetInstance()->SetTestingFactory(
       context,
       base::BindRepeating(
@@ -66,11 +68,13 @@ GlicProviderChange GlicProviderLatchFactory::GetPendingProviderChange(
       GlicProviderKeyPasskeyProvider::GetPassKey();
   GlicProviderKey latched_key = latch->GetSpec().GetProviderKey(key_pass_key);
   GlicProviderKey resolved_key = GlicProviderKey::Gemini();
-  GURL resolved_url = geic::ResolveGeicGuestUrl(context);
+  std::optional<geic::GeicGuestUrl> resolved_url =
+      geic::ResolveGeicGuestUrl(context);
   // Make the same decision as `BuildServiceInstanceForBrowserContext()`, so
   // e.g. a profile that selected consumer Gemini doesn't report a
   // `kGeminiToGeic` change that a relaunch wouldn't apply.
-  if (geic::ShouldLatchToGeminiEnterprise(context, resolved_url)) {
+  if (geic::ShouldLatchToGeminiEnterprise(context,
+                                          base::OptionalToPtr(resolved_url))) {
     // The key of a GEiC spec latched with `resolved_url`.
     resolved_key =
         CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise,
@@ -91,12 +95,14 @@ GlicProviderLatchFactory::~GlicProviderLatchFactory() = default;
 std::unique_ptr<KeyedService>
 GlicProviderLatchFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  GURL geic_guest_url = geic::ResolveGeicGuestUrl(context);
+  std::optional<geic::GeicGuestUrl> geic_guest_url =
+      geic::ResolveGeicGuestUrl(context);
   GeicProviderInitOptions geic_options;
   geic_options.can_switch_between_gemini_providers =
       geic::CanSwitchBetweenGeminiProvidersInSettings(context);
   GlicProvider provider;
-  if (geic::ShouldLatchToGeminiEnterprise(context, geic_guest_url)) {
+  if (geic::ShouldLatchToGeminiEnterprise(
+          context, base::OptionalToPtr(geic_guest_url))) {
     provider = GlicProvider::kGeminiEnterprise;
     geic_options.guest_url = std::move(geic_guest_url);
   } else {
