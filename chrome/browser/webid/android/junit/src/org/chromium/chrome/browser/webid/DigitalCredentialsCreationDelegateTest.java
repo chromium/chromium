@@ -15,7 +15,13 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Looper;
+
+import androidx.annotation.OptIn;
+import androidx.credentials.CreateDigitalCredentialResponse;
+import androidx.credentials.ExperimentalDigitalCredentialApi;
+import androidx.credentials.provider.PendingIntentHandler;
 
 import com.google.android.gms.identitycredentials.CreateCredentialHandle;
 import com.google.android.gms.identitycredentials.IdentityCredentialClient;
@@ -86,6 +92,89 @@ public class DigitalCredentialsCreationDelegateTest {
         assertTrue(promise.isPending());
 
         when(windowAndroid.isDestroyed()).thenReturn(true);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(activity, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE);
+        taskSource.setResult(new CreateCredentialHandle(pendingIntent, null));
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertTrue(promise.isRejected());
+        verify(windowAndroid, never()).showCancelableIntent(any(PendingIntent.class), any(), any());
+    }
+
+    @Test
+    @OptIn(markerClass = ExperimentalDigitalCredentialApi.class)
+    public void testCancelDismissesInFlightIntentAndSuppressesResult() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.getActivity()).thenReturn(new ImmutableWeakReference<>(activity));
+        when(windowAndroid.isDestroyed()).thenReturn(false);
+        // Use request code `0` to verify `START_INTENT_FAILURE` (-1) is used as the
+        // inactive sentinel rather than `0`.
+        when(windowAndroid.showCancelableIntent(any(PendingIntent.class), any(), any()))
+                .thenReturn(0);
+
+        IdentityCredentialClient mockClient = mock(IdentityCredentialClient.class);
+        TaskCompletionSource<CreateCredentialHandle> taskSource = new TaskCompletionSource<>();
+        when(mockClient.createCredential(any())).thenReturn(taskSource.getTask());
+
+        DigitalCredentialsCreationDelegate delegate =
+                new DigitalCredentialsCreationDelegate() {
+                    @Override
+                    IdentityCredentialClient getIdentityCredentialClient(Activity window) {
+                        return mockClient;
+                    }
+                };
+
+        Promise<DigitalCredential> promise =
+                delegate.create(windowAndroid, "https://rp.example", "{\"requests\":[]}");
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(activity, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE);
+        taskSource.setResult(new CreateCredentialHandle(pendingIntent, null));
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertTrue(promise.isPending());
+        delegate.cancel();
+        verify(windowAndroid).cancelIntent(0);
+
+        // Any late `ResultReceiver` callback arriving after `cancel()` must reject the
+        // promise rather than fulfilling a credential.
+        Bundle data = new Bundle();
+        Intent providerData = new Intent();
+        PendingIntentHandler.setCreateCredentialResponse(
+                providerData,
+                new CreateDigitalCredentialResponse(
+                        "{\"protocol\":\"openid4vci\",\"data\":{\"test_key\":\"test_value\"}}"));
+        data.putParcelable(
+                DigitalCredentialsCreationDelegate.BUNDLE_KEY_PROVIDER_DATA, providerData);
+        delegate.handleOnReceiveResult(Activity.RESULT_OK, data, promise);
+        assertTrue(promise.isRejected());
+    }
+
+    @Test
+    public void testCancelWhileTaskPendingSkipsIntentAndRejects() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.getActivity()).thenReturn(new ImmutableWeakReference<>(activity));
+        when(windowAndroid.isDestroyed()).thenReturn(false);
+
+        IdentityCredentialClient mockClient = mock(IdentityCredentialClient.class);
+        TaskCompletionSource<CreateCredentialHandle> taskSource = new TaskCompletionSource<>();
+        when(mockClient.createCredential(any())).thenReturn(taskSource.getTask());
+
+        DigitalCredentialsCreationDelegate delegate =
+                new DigitalCredentialsCreationDelegate() {
+                    @Override
+                    IdentityCredentialClient getIdentityCredentialClient(Activity window) {
+                        return mockClient;
+                    }
+                };
+
+        Promise<DigitalCredential> promise =
+                delegate.create(windowAndroid, "https://rp.example", "{\"requests\":[]}");
+        assertTrue(promise.isPending());
+
+        delegate.cancel();
+
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(activity, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE);
         taskSource.setResult(new CreateCredentialHandle(pendingIntent, null));

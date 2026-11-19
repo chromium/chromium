@@ -436,7 +436,8 @@ DigitalIdentityRequestImpl::DigitalIdentityRequestImpl(
     RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest> receiver,
     base::SelfDeletingPassKey key)
-    : DocumentService(host, std::move(receiver), key) {}
+    : DocumentService(host, std::move(receiver), key),
+      WebContentsObserver(WebContents::FromRenderFrameHost(&host)) {}
 
 DigitalIdentityRequestImpl::~DigitalIdentityRequestImpl() = default;
 
@@ -523,6 +524,7 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
 
+  CHECK(callback_);
   if (response) {
     std::move(callback_).Run(status, response->protocol,
                              std::move(response->data));
@@ -611,9 +613,11 @@ void DigitalIdentityRequestImpl::Get(
     }
   }
 
+  // Reject requests on inactive (e.g. BFCached) frames early, before virtual
+  // wallets or `--use-fake-ui-for-digital-identity` can short-circuit UI.
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
-  if (!web_contents) {
+  if (!web_contents || !render_frame_host().IsActive()) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
     return;
   }
@@ -643,6 +647,8 @@ void DigitalIdentityRequestImpl::Get(
     return;
   }
 
+  // Require both active lifecycle state and `kVisible` page visibility before
+  // showing platform credential UI.
   if (!render_frame_host().IsActive() ||
       render_frame_host().GetVisibilityState() !=
           content::PageVisibilityState::kVisible) {
@@ -709,9 +715,11 @@ void DigitalIdentityRequestImpl::Create(
     return;
   }
 
+  // Reject requests on inactive (e.g. BFCached) frames early, before virtual
+  // wallets or `--use-fake-ui-for-digital-identity` can short-circuit UI.
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
-  if (!web_contents) {
+  if (!web_contents || !render_frame_host().IsActive()) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
     return;
   }
@@ -748,6 +756,8 @@ void DigitalIdentityRequestImpl::Create(
     return;
   }
 
+  // Require both active lifecycle state and `kVisible` page visibility before
+  // showing platform credential UI.
   if (!render_frame_host().IsActive() ||
       render_frame_host().GetVisibilityState() !=
           content::PageVisibilityState::kVisible) {
@@ -767,6 +777,23 @@ void DigitalIdentityRequestImpl::Abort() {
     return;
   }
 
+  CompleteRequestWithError(RequestStatusForMetrics::kErrorAborted);
+}
+
+void DigitalIdentityRequestImpl::RenderFrameHostStateChanged(
+    RenderFrameHost* rfh,
+    RenderFrameHost::LifecycleState old_state,
+    RenderFrameHost::LifecycleState new_state) {
+  // Per the W3C Digital Credentials spec ("not fully active"), abort any
+  // pending request and reset `provider_` to dismiss platform UI as soon as the
+  // owning `render_frame_host()` (including nested subframes when an ancestor
+  // enters BFCache) is no longer active. Note that `PageVisibilityState`
+  // changes are intentionally not treated as cancellation because launching an
+  // opaque Wallet Activity on Android hides `ChromeActivity` while user
+  // mediation is in progress.
+  if (!callback_ || render_frame_host().IsActive()) {
+    return;
+  }
   CompleteRequestWithError(RequestStatusForMetrics::kErrorAborted);
 }
 

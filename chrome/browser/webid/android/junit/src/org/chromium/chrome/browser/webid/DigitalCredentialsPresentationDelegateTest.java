@@ -259,4 +259,91 @@ public class DigitalCredentialsPresentationDelegateTest {
                 sentRequestData2.getInt(
                         GetDigitalCredentialOption.BUNDLE_KEY_UI_WARNING_LEVEL_HINT, -1));
     }
+
+    @Test
+    public void testCancelDismissesInFlightIntentAndSuppressesResult() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.getActivity()).thenReturn(new ImmutableWeakReference<>(activity));
+        when(windowAndroid.isDestroyed()).thenReturn(false);
+        // Use request code `0` to verify `START_INTENT_FAILURE` (-1) is used as the
+        // inactive sentinel rather than `0`.
+        when(windowAndroid.showCancelableIntent(any(PendingIntent.class), any(), any()))
+                .thenReturn(0);
+
+        IdentityCredentialClient mockClient = mock(IdentityCredentialClient.class);
+        TaskCompletionSource<PendingGetCredentialHandle> taskSource = new TaskCompletionSource<>();
+        when(mockClient.getCredential(any())).thenReturn(taskSource.getTask());
+
+        DigitalCredentialsPresentationDelegate delegate =
+                new DigitalCredentialsPresentationDelegate() {
+                    @Override
+                    IdentityCredentialClient getIdentityCredentialClient(Activity window) {
+                        return mockClient;
+                    }
+                };
+
+        Promise<DigitalCredential> promise =
+                delegate.get(
+                        windowAndroid,
+                        "https://rp.example",
+                        "{\"requests\":[]}",
+                        DigitalIdentityUiWarningLevel.HINT_NO_ISSUES);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(activity, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE);
+        taskSource.setResult(new PendingGetCredentialHandle(pendingIntent));
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertTrue(promise.isPending());
+        delegate.cancel();
+        verify(windowAndroid).cancelIntent(0);
+
+        // Any late `ResultReceiver` callback arriving after `cancel()` must reject the
+        // promise rather than fulfilling a credential.
+        Bundle data = new Bundle();
+        Intent providerData = new Intent();
+        packageResponseJson(JSON_WITH_PROTOCOL, providerData);
+        data.putParcelable(
+                DigitalCredentialsPresentationDelegate.BUNDLE_KEY_PROVIDER_DATA, providerData);
+        delegate.handleOnReceiveResult(Activity.RESULT_OK, data, promise, Bundle.EMPTY);
+        assertTrue(promise.isRejected());
+    }
+
+    @Test
+    public void testCancelWhileTaskPendingSkipsIntentAndRejects() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.getActivity()).thenReturn(new ImmutableWeakReference<>(activity));
+        when(windowAndroid.isDestroyed()).thenReturn(false);
+
+        IdentityCredentialClient mockClient = mock(IdentityCredentialClient.class);
+        TaskCompletionSource<PendingGetCredentialHandle> taskSource = new TaskCompletionSource<>();
+        when(mockClient.getCredential(any())).thenReturn(taskSource.getTask());
+
+        DigitalCredentialsPresentationDelegate delegate =
+                new DigitalCredentialsPresentationDelegate() {
+                    @Override
+                    IdentityCredentialClient getIdentityCredentialClient(Activity window) {
+                        return mockClient;
+                    }
+                };
+
+        Promise<DigitalCredential> promise =
+                delegate.get(
+                        windowAndroid,
+                        "https://rp.example",
+                        "{\"requests\":[]}",
+                        DigitalIdentityUiWarningLevel.HINT_NO_ISSUES);
+        assertTrue(promise.isPending());
+
+        delegate.cancel();
+
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(activity, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE);
+        taskSource.setResult(new PendingGetCredentialHandle(pendingIntent));
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertTrue(promise.isRejected());
+        verify(windowAndroid, never()).showCancelableIntent(any(PendingIntent.class), any(), any());
+    }
 }

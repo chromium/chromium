@@ -29,11 +29,16 @@ class RenderFrameHost;
 //
 // In practice, it is owned and managed by a RenderFrameHost. It accomplishes
 // that via subclassing DocumentService, which observes the lifecycle of a
-// RenderFrameHost and manages its own memory.
+// RenderFrameHost and manages its own memory. Because DocumentService stays
+// alive when a document enters BackForwardCache, DigitalIdentityRequestImpl
+// also subclasses WebContentsObserver to detect transitions out of the active
+// lifecycle state and abort pending requests (dismissing platform UI) without
+// disabling BackForwardCache.
 // Create() creates a self-managed instance of DigitalIdentityRequestImpl and
 // binds it to the receiver.
 class CONTENT_EXPORT DigitalIdentityRequestImpl
-    : public DocumentService<blink::mojom::DigitalIdentityRequest> {
+    : public DocumentService<blink::mojom::DigitalIdentityRequest>,
+      public WebContentsObserver {
  public:
   // The return value is only intended to be used in tests.
   static base::WeakPtr<DigitalIdentityRequestImpl> CreateInstance(
@@ -66,6 +71,14 @@ class CONTENT_EXPORT DigitalIdentityRequestImpl
               CreateCallback) override;
 
   void Abort() override;
+
+  // WebContentsObserver:
+  // Aborts any in-flight request if the owning `render_frame_host()` becomes
+  // inactive (e.g. enters BackForwardCache).
+  void RenderFrameHostStateChanged(
+      RenderFrameHost* render_frame_host,
+      RenderFrameHost::LifecycleState old_state,
+      RenderFrameHost::LifecycleState new_state) override;
 
  private:
   ~DigitalIdentityRequestImpl() override;

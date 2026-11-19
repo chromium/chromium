@@ -10,6 +10,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/webid/DigitalAssetLinksVerifier.java",
       "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsCreationDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsDelegateBase.java",
       "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsPresentationDelegate.java",
       "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java",
       "android/java/src/org/chromium/chrome/browser/webid/IdentityCredentialsDelegate.java",
@@ -62,6 +63,7 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//base:promise_java",
       "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_credentials_credentials_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",

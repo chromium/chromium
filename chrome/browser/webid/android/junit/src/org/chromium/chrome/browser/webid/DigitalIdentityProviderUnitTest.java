@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webid;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -31,6 +32,15 @@ import org.chromium.ui.base.WindowAndroid;
 /** Tests for {@link DigitalIdentityProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DigitalIdentityProviderUnitTest {
+    private static class TestIdentityCredentialsDelegate extends IdentityCredentialsDelegate {
+        boolean mCancelled;
+
+        @Override
+        public void cancel() {
+            mCancelled = true;
+        }
+    }
+
     @Test
     public void testUserDeclined() {
         assertEquals(
@@ -112,5 +122,60 @@ public class DigitalIdentityProviderUnitTest {
                         "https://rp.example",
                         "{\"requests\":[]}",
                         DigitalIdentityUiWarningLevel.HINT_CAUTION);
+    }
+
+    @Test
+    public void testDestroyCancelsInFlightRequest() {
+        // Verifies native `destroy()` cancels any pending Credential Manager UI on the
+        // provider's delegate.
+        var testDelegate = new TestIdentityCredentialsDelegate();
+        DigitalIdentityProvider.setDelegateForTesting(testDelegate);
+        DigitalIdentityProvider provider = DigitalIdentityProvider.create(12345);
+        provider.destroy();
+        assertTrue(testDelegate.mCancelled);
+    }
+
+    @Test
+    public void testDestroyForwardsCancelToActivePresentationAndCreationDelegates() {
+        WindowAndroid window = mock(WindowAndroid.class);
+        DigitalCredentialsPresentationDelegate mockPresentationDelegate =
+                mock(DigitalCredentialsPresentationDelegate.class);
+        when(mockPresentationDelegate.get(any(), anyString(), anyString(), anyInt()))
+                .thenReturn(new Promise<>());
+
+        IdentityCredentialsDelegate credentialsDelegate =
+                new IdentityCredentialsDelegate() {
+                    @Override
+                    DigitalCredentialsPresentationDelegate createPresentationDelegate() {
+                        return mockPresentationDelegate;
+                    }
+                };
+        DigitalIdentityProvider.setDelegateForTesting(credentialsDelegate);
+        DigitalIdentityProvider provider = DigitalIdentityProvider.create(111L);
+        provider.request(
+                window,
+                "https://rp.example",
+                "{\"requests\":[]}",
+                DigitalIdentityUiWarningLevel.HINT_NO_ISSUES);
+        provider.destroy();
+        verify(mockPresentationDelegate).cancel();
+
+        DigitalCredentialsCreationDelegate mockCreationDelegate =
+                mock(DigitalCredentialsCreationDelegate.class);
+        when(mockCreationDelegate.create(any(), anyString(), anyString()))
+                .thenReturn(new Promise<>());
+
+        IdentityCredentialsDelegate creationCredentialsDelegate =
+                new IdentityCredentialsDelegate() {
+                    @Override
+                    DigitalCredentialsCreationDelegate createCreationDelegate() {
+                        return mockCreationDelegate;
+                    }
+                };
+        DigitalIdentityProvider.setDelegateForTesting(creationCredentialsDelegate);
+        DigitalIdentityProvider creationProvider = DigitalIdentityProvider.create(222L);
+        creationProvider.create(window, "https://rp.example", "{\"requests\":[]}");
+        creationProvider.destroy();
+        verify(mockCreationDelegate).cancel();
     }
 }

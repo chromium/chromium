@@ -1496,6 +1496,13 @@ class DigitalIdentityRequestImplWithCreationEnabledTest
     return digital_identity_request_impl_.get();
   }
 
+  // Exposes the bound Mojo remote so tests can send subsequent requests after
+  // `CompleteRequestWithStatus()` invalidates `digital_identity_request_impl_`
+  // (`WeakPtr`), while the `DocumentService` stays alive in BFCache.
+  mojo::Remote<blink::mojom::DigitalIdentityRequest>& request_remote() {
+    return request_remote_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kWebIdentityDigitalCredentialsCreation};
@@ -2442,6 +2449,94 @@ TEST_F(DigitalIdentityRequestImplTest, OpaqueOriginBlocked) {
   request_remote()->Get(std::move(requests), base::DoNothing());
   EXPECT_EQ("DigitalIdentityRequest is not allowed in opaque origins.",
             bad_message_observer.WaitForBadMessage());
+}
+
+// Verifies that an in-flight `Get()` request is synchronously canceled (and any
+// late provider response is ignored) when the frame enters BackForwardCache.
+TEST_F(DigitalIdentityRequestImplTest,
+       CancelsInFlightGetWhenFrameEntersBackForwardCache) {
+  const std::string kProtocol = "protocol";
+  DigitalCredentialGetRequestPtr digital_credential_request =
+      DigitalCredentialGetRequest::New();
+  digital_credential_request->protocol = kProtocol;
+  base::DictValue request_data;
+  request_data.Set("data", "request data");
+  digital_credential_request->data = base::Value(std::move(request_data));
+  std::vector<DigitalCredentialGetRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  DigitalIdentityCallback saved_callback;
+  EXPECT_CALL(*mock_digital_identity_provider(), Get)
+      .WillOnce(WithArg<4>([&saved_callback](DigitalIdentityCallback callback) {
+        saved_callback = std::move(callback);
+      }));
+
+  base::RunLoop run_loop;
+  base::MockCallback<GetCallback> callback;
+  EXPECT_CALL(callback, Run(RequestDigitalIdentityStatus::kErrorCanceled,
+                            Eq(std::nullopt), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+
+  digital_identity_request_impl()->Get(std::move(requests), callback.Get());
+  ASSERT_TRUE(saved_callback);
+
+  // Entering BackForwardCache synchronously aborts the request and destroys the
+  // provider (dismissing platform UI). Reset the raw pointer first.
+  reset_provider_pointer();
+  static_cast<RenderFrameHostImpl*>(main_rfh())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  ASSERT_FALSE(main_rfh()->IsActive());
+  run_loop.Run();
+
+  // A late provider completion after BFCache entry must be ignored.
+  base::DictValue token_data;
+  token_data.Set("token", "secret_token");
+  std::move(saved_callback)
+      .Run(DigitalCredential(kProtocol, base::Value(std::move(token_data))));
+}
+
+// Verifies that an in-flight `Create()` request is canceled on BFCache entry
+// and that new `Create()` calls over the live Mojo pipe while inactive fail.
+TEST_F(DigitalIdentityRequestImplWithCreationEnabledTest,
+       CancelsInFlightCreateWhenFrameEntersBackForwardCache) {
+  DigitalCredentialCreateRequestPtr digital_credential_request =
+      DigitalCredentialCreateRequest::New();
+  digital_credential_request->protocol = kOpenid4vpProtocol;
+  base::DictValue request_data;
+  request_data.Set("data", "request data");
+  digital_credential_request->data = base::Value(std::move(request_data));
+  std::vector<DigitalCredentialCreateRequestPtr> requests;
+  requests.push_back(std::move(digital_credential_request));
+
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> callback;
+  EXPECT_CALL(callback, Run(RequestDigitalIdentityStatus::kErrorCanceled,
+                            Eq(std::nullopt), _));
+
+  digital_identity_request_impl()->Create(std::move(requests), callback.Get());
+
+  static_cast<RenderFrameHostImpl*>(main_rfh())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  ASSERT_FALSE(main_rfh()->IsActive());
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // Subsequent Create() calls while inactive must also fail immediately even
+  // when fake UI is enabled.
+  DigitalCredentialCreateRequestPtr inactive_request =
+      DigitalCredentialCreateRequest::New();
+  inactive_request->protocol = kOpenid4vpProtocol;
+  inactive_request->data = base::Value(base::DictValue());
+  std::vector<DigitalCredentialCreateRequestPtr> inactive_requests;
+  inactive_requests.push_back(std::move(inactive_request));
+
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback>
+      inactive_callback;
+  EXPECT_CALL(inactive_callback,
+              Run(RequestDigitalIdentityStatus::kError, Eq(std::nullopt), _));
+  request_remote()->Create(std::move(inactive_requests),
+                           inactive_callback.Get());
+  request_remote().FlushForTesting();
 }
 
 }  // namespace content
