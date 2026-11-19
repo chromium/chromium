@@ -4,6 +4,8 @@
 
 #include "ash/wm/scoped_decoration_hider.h"
 
+#include <utility>
+
 #include "ash/wm/window_properties.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -11,23 +13,33 @@
 
 namespace ash {
 
-ScopedDecorationHider::ScopedDecorationHider(aura::Window* window)
-    : window_(window) {
-  CHECK(window_);
-  window_->AddObserver(this);
+ScopedDecorationHider::ScopedDecorationHider(aura::Window* window) {
+  CHECK(window);
+  window_ = window->GetWeakPtrAsWindow();
   UpdateCount(1);
 }
 
-ScopedDecorationHider::~ScopedDecorationHider() {
-  if (!window_) {
-    return;
+ScopedDecorationHider::ScopedDecorationHider(
+    ScopedDecorationHider&& other) noexcept
+    : window_(std::move(other.window_)) {}
+
+ScopedDecorationHider& ScopedDecorationHider::operator=(
+    ScopedDecorationHider&& other) noexcept {
+  if (this != &other) {
+    Reset();
+    window_ = std::move(other.window_);
   }
-  window_->RemoveObserver(this);
-  UpdateCount(-1);
+  return *this;
 }
 
-void ScopedDecorationHider::OnWindowDestroying(aura::Window* window) {
-  window_->RemoveObserver(this);
+ScopedDecorationHider::~ScopedDecorationHider() {
+  Reset();
+}
+
+void ScopedDecorationHider::Reset() {
+  if (window_ && !window_->is_destroying()) {
+    UpdateCount(-1);
+  }
   window_ = nullptr;
 }
 

@@ -16,6 +16,7 @@
 #include "ash/wm/overview/overview_session_metrics_recorder.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_window_occlusion_calculator.h"
+#include "ash/wm/scoped_decoration_hider.h"
 #include "base/auto_reset.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
@@ -28,7 +29,6 @@
 namespace ash {
 
 class OverviewSession;
-class ScopedDecorationHider;
 
 // Manages a overview session which displays an overview of all windows and
 // allows selecting a window to activate it.
@@ -121,10 +121,12 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // Post a task to update the shadow and rounded corners of overview windows.
   void DelayedUpdateRoundedCornersAndShadow();
 
-  // Keeps `decoration_hider` alive until the exit animation completes, so that
-  // the decoration of the window stays hidden during the exit animation.
-  void AddExitDecorationHider(
-      std::unique_ptr<ScopedDecorationHider> decoration_hider);
+  // Hides `window`'s decoration until the overview exit animation completes, or
+  // until `RemoveDecorationHider()` is called if `window` leaves overview while
+  // the session is still active (e.g. snapped into split view in partial
+  // overview, where its highlight border should be shown).
+  void AddDecorationHider(aura::Window* window);
+  void RemoveDecorationHider(const aura::Window* window);
 
   // OverviewDelegate:
   void AddExitAnimationObserver(
@@ -192,9 +194,9 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   std::optional<ScopedOcclusionPauser> enter_pauser_;
   std::optional<ScopedOcclusionPauser> exit_pauser_;
 
-  // Hide the decorations (e.g. shadow) of the windows that were in overview
-  // until the exit animation completes.
-  std::vector<std::unique_ptr<ScopedDecorationHider>> exit_decoration_hiders_;
+  // Hide the decorations (e.g. shadow) of the windows in overview until the
+  // exit animation completes.
+  std::vector<ScopedDecorationHider> decoration_hiders_;
 
   // The following state tracks occlusion pausing and its delayed unpausing for
   // overview mode.

@@ -21,7 +21,6 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
-#include "ash/wm/scoped_decoration_hider.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -115,8 +114,8 @@ class UndoPropertyObserver : public ui::ImplicitAnimationObserver,
 
 ScopedOverviewTransformWindow::TransientInfo::TransientInfo(
     aura::Window* transient)
-    : event_targeting_blocker(transient),
-      decoration_hider(std::make_unique<ScopedDecorationHider>(transient)) {
+    : event_targeting_blocker(transient) {
+  OverviewController::Get()->AddDecorationHider(transient);
   auto* widget = views::Widget::GetTopLevelWidgetForNativeView(transient);
   auto* bubble_dialog_delegate =
       widget && widget->widget_delegate()
@@ -129,6 +128,17 @@ ScopedOverviewTransformWindow::TransientInfo::TransientInfo(
 }
 
 ScopedOverviewTransformWindow::TransientInfo::~TransientInfo() {
+  if (aura::Window* window = event_targeting_blocker.window()) {
+    OverviewController* overview_controller = OverviewController::Get();
+    // Restore the decoration immediately if `window` leaves overview while the
+    // session stays open, e.g. when snapped into split view in partial overview
+    // so its highlight border is shown.
+    if (!overview_controller->overview_session() ||
+        !overview_controller->overview_session()->is_shutting_down()) {
+      overview_controller->RemoveDecorationHider(window);
+    }
+  }
+
   auto* widget = views::Widget::GetTopLevelWidgetForNativeView(
       event_targeting_blocker.window());
   auto* bubble_dialog_delegate =
@@ -138,11 +148,6 @@ ScopedOverviewTransformWindow::TransientInfo::~TransientInfo() {
   if (bubble_dialog_delegate) {
     bubble_dialog_delegate->set_adjust_if_offscreen(adjust_if_offscreen);
   }
-}
-
-std::unique_ptr<ScopedDecorationHider>
-ScopedOverviewTransformWindow::TransientInfo::TakeDecorationHider() {
-  return std::move(decoration_hider);
 }
 
 ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
@@ -246,8 +251,6 @@ float ScopedOverviewTransformWindow::GetItemScale(int source_height,
 void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
                                                   bool animate) {
   base::AutoReset<bool> restoring(&is_restoring_, true);
-
-  ReleaseDecorationHiders();
 
   // We will handle clipping here, no need to do anything in the destructor.
   reset_clip_on_shutdown_ = false;
@@ -686,20 +689,6 @@ void ScopedOverviewTransformWindow::RestoreWindowTree() {
   }
 
   window_tree_synchronizer_->Restore();
-}
-
-void ScopedOverviewTransformWindow::ReleaseDecorationHiders() {
-  // The overview controller may be null on shutdown.
-  OverviewController* overview_controller = OverviewController::Get();
-  const bool is_exiting_overview =
-      overview_controller && overview_controller->overview_session() &&
-      overview_controller->overview_session()->is_shutting_down();
-  for (auto& [transient, info] : transient_windows_info_map_) {
-    auto decoration_hider = info->TakeDecorationHider();
-    if (is_exiting_overview && decoration_hider) {
-      overview_controller->AddExitDecorationHider(std::move(decoration_hider));
-    }
-  }
 }
 
 }  // namespace ash

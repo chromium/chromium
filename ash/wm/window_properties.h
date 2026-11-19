@@ -25,7 +25,8 @@ class WindowState;
 
 // The number of `ScopedDecorationHider` alive for the window. The window's
 // decoration (e.g. shadow) is hidden while this is positive.
-extern const aura::WindowProperty<int>* const kDecorationHiderCountKey;
+ASH_EXPORT extern const aura::WindowProperty<int>* const
+    kDecorationHiderCountKey;
 
 // A property key to indicate whether the window shadow will be disabled when
 // resizing is available.

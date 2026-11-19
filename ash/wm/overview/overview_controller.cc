@@ -22,7 +22,6 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/scoped_decoration_hider.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -251,9 +250,17 @@ void OverviewController::DelayedUpdateRoundedCornersAndShadow() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void OverviewController::AddExitDecorationHider(
-    std::unique_ptr<ScopedDecorationHider> decoration_hider) {
-  exit_decoration_hiders_.push_back(std::move(decoration_hider));
+void OverviewController::AddDecorationHider(aura::Window* window) {
+  decoration_hiders_.emplace_back(window);
+}
+
+void OverviewController::RemoveDecorationHider(const aura::Window* window) {
+  CHECK(window);
+  auto it = std::ranges::find(decoration_hiders_, window,
+                              &ScopedDecorationHider::window);
+  if (it != decoration_hiders_.end()) {
+    decoration_hiders_.erase(it);
+  }
 }
 
 void OverviewController::AddExitAnimationObserver(
@@ -474,6 +481,12 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // animation is complete.
     enter_pauser_ = PauseOcclusionTracker(kOcclusionPauseDurationForStart);
 
+    // Keep any hiders from a canceled exit alive until `Init()` creates the new
+    // session's hiders, so windows re-entering overview keep their decorations
+    // hidden without interruption while `decoration_hiders_` only holds the new
+    // session's hiders.
+    auto previous_decoration_hiders = std::move(decoration_hiders_);
+
     overview_session_ = std::make_unique<OverviewSession>(this);
     // We may want to slide in the overview grid in some cases, even if not
     // explicitly stated.
@@ -486,12 +499,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     overview_session_->Init(
         windows, hide_windows,
         overview_window_occlusion_calculator_.GetCalculator());
-    // Clear any hiders left over from a canceled overview exit after the new
-    // session has created its own hiders, so windows re-entering overview keep
-    // their decorations hidden without interruption.
-    // TODO(crbug.com/581508679): Keep all overview decoration hiders in
-    // `OverviewController` instead of moving them upon exit.
-    exit_decoration_hiders_.clear();
+    previous_decoration_hiders.clear();
 
     overview_session_->UpdateFrameThrottling();
 
@@ -555,7 +563,7 @@ void OverviewController::OnStartingAnimationComplete(bool canceled) {
 void OverviewController::OnEndingAnimationComplete(bool canceled) {
   if (!canceled) {
     // Show the decorations of the windows that were in overview.
-    exit_decoration_hiders_.clear();
+    decoration_hiders_.clear();
   }
 
   for (auto& observer : observers_)

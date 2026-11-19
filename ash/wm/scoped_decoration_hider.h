@@ -6,8 +6,7 @@
 #define ASH_WM_SCOPED_DECORATION_HIDER_H_
 
 #include "ash/ash_export.h"
-#include "base/memory/raw_ptr.h"
-#include "ui/aura/window_observer.h"
+#include "base/memory/weak_ptr.h"
 
 namespace aura {
 class Window;
@@ -18,21 +17,22 @@ namespace ash {
 // Hides the decoration (e.g. shadow, highlight border) of a window while this
 // object is alive. The decoration stays hidden until all the objects created
 // for the window are destroyed.
-class ASH_EXPORT ScopedDecorationHider : public aura::WindowObserver {
+class ASH_EXPORT ScopedDecorationHider {
  public:
   explicit ScopedDecorationHider(aura::Window* window);
+  ScopedDecorationHider(ScopedDecorationHider&& other) noexcept;
+  ScopedDecorationHider& operator=(ScopedDecorationHider&& other) noexcept;
   ScopedDecorationHider(const ScopedDecorationHider&) = delete;
   ScopedDecorationHider& operator=(const ScopedDecorationHider&) = delete;
-  ~ScopedDecorationHider() override;
+  ~ScopedDecorationHider();
 
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override;
+  const aura::Window* window() const { return window_.get(); }
 
  private:
+  void Reset();
   void UpdateCount(int delta);
 
-  // Null if the window has been destroyed.
-  raw_ptr<aura::Window> window_;
+  base::WeakPtr<aura::Window> window_;
 };
 
 }  // namespace ash
