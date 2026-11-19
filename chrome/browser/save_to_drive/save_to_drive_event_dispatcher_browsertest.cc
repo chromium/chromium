@@ -89,7 +89,8 @@ class SaveToDriveEventDispatcherBrowserTest : public PDFExtensionTestBase {
     // disable the beforeunload dialog in the UI. The viewer applies it
     // asynchronously, so listen for the progress event before sending it.
     content::RenderFrameHost* extension_frame =
-        GetOnlyPdfExtensionHostEnsureValid();
+        pdf_extension_test_util::GetOnlyPdfExtensionHost(
+            GetActiveWebContents());
     // Don't return the promise, since `ExecJs()` would wait for it.
     EXPECT_TRUE(content::ExecJs(extension_frame, R"(
       window.saveToDriveProgressReceived = new Promise(resolve => {

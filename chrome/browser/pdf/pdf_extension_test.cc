@@ -1886,7 +1886,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
       web_contents, /*allow_multiple_frames=*/false));
 
   content::RenderFrameHost* extension_host =
-      GetOnlyPdfExtensionHostEnsureValid();
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
   ASSERT_TRUE(extension_host);
 
   // Now click on the link to example.com in the PDF. This should open up a new

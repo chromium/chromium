@@ -100,13 +100,10 @@ source_set("pdf_extension_test_utils") {
   ]
   deps = [
     "//base",
-    "//base/test:test_support",
     "//chrome/browser/ui/tabs:tab_strip",
     "//components/pdf/common:util",
     "//content/public/browser",
     "//content/test:test_support",
-    "//extensions/browser",
-    "//pdf:features",
     "//testing/gtest",
   ]
 }
@@ -146,20 +143,12 @@ source_set("pdf_extension_test_base") {
   ]
 
   deps = [
-    ":pdf",
     ":pdf_extension_test_utils",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/common:constants",
     "//chrome/test:test_support",
-    "//components/guest_view/browser",
-    "//components/guest_view/browser:test_support",
-    "//components/pdf/browser",
     "//content/public/browser",
     "//content/test:test_support",
-    "//extensions/browser",
-    "//extensions/browser/api:extensions_api_client",
-    "//pdf:features",
     "//ui/gfx/geometry",
   ]
 }

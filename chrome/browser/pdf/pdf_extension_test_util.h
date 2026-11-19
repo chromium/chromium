@@ -19,10 +19,6 @@ class ToRenderFrameHost;
 class WebContents;
 }  // namespace content
 
-namespace extensions {
-class MimeHandlerViewGuest;
-}  // namespace extensions
-
 namespace gfx {
 class Point;
 }  // namespace gfx
@@ -31,11 +27,9 @@ namespace pdf_extension_test_util {
 
 // Options for customizing behavior in `EnsurePDFHasLoadedWithOptions()`.
 struct EnsurePDFHasLoadedOptions {
-  // // Whether to wait for hit test data or not after the PDF successfully
+  // Whether to wait for hit test data or not after the PDF successfully
   // loads.
   bool wait_for_hit_test_data = true;
-  // The tag name of the PDF embedder element.
-  std::string pdf_element = "embed";
   // True if the PDF embedder frame should be allowed to have multiple
   // subframes, false otherwise. This can occur if extensions append subframes
   // to the PDF embedder.
@@ -96,11 +90,6 @@ gfx::Point ConvertPageCoordToScreenCoord(
 // top-left corner of a PDF document.
 void SetInputFocusOnPlugin(content::RenderFrameHost* extension_host,
                            content::WebContents* embedder_web_contents);
-
-// Returns the `MimeHandlerViewGuest` embedded in `embedder_contents`. If more
-// than one `MimeHandlerViewGuest` is found, the test fails.
-extensions::MimeHandlerViewGuest* GetOnlyMimeHandlerView(
-    content::WebContents* embedder_contents);
 
 }  // namespace pdf_extension_test_util
 

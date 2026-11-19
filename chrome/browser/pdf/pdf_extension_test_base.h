@@ -5,23 +5,19 @@
 #ifndef CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_BASE_H_
 #define CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_BASE_H_
 
-#include <memory>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
-#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
 class GURL;
 
 namespace content {
-class BrowserContext;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -92,16 +88,10 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   void ResetFeatureList();
 
  protected:
-  guest_view::TestGuestViewManager* GetGuestViewManager();
-  guest_view::TestGuestViewManager* GetGuestViewManagerForProfile(
-      content::BrowserContext* profile);
-
   pdf::TestMimeHandlerStreamManager* GetTestMimeHandlerStreamManager(
       content::WebContents* contents);
 
   void CreateTestMimeHandlerStreamManager(content::WebContents* contents);
-
-  content::RenderFrameHost* GetOnlyPdfExtensionHostEnsureValid();
 
   int CountPDFProcesses() const;
 
@@ -123,11 +113,6 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
                             blink::WebMouseEvent::Button button,
                             const gfx::Point& point_in_extension);
 
-  // Returns true if the test should use the OOPIF PDF viewer instead of the
-  // GuestView PDF viewer.
-  // TODO(crbug.com/40268279): Remove once only OOPIF PDF viewer is used.
-  virtual bool UseOopif() const;
-
   // Hook to register request handler for test server.
   virtual void RegisterTestServerRequestHandler();
 
@@ -138,15 +123,11 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
  private:
   // The test will fail if the frame tree does not have exactly one PDF
-  // extension host and one PDF content host. For GuestView PDF viewer, the test
-  // will also fail if there is not exactly one GuestView.
+  // extension host and one PDF content host.
   void ValidateFrameTree(content::WebContents* contents);
 
   base::test::ScopedFeatureList feature_list_;
-  std::variant<std::monostate,
-               std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
-               std::unique_ptr<pdf::TestMimeHandlerStreamManagerFactory>>
-      factory_;
+  pdf::TestMimeHandlerStreamManagerFactory factory_;
 };
 
 #endif  // CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_BASE_H_

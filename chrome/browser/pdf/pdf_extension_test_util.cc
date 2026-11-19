@@ -6,14 +6,10 @@
 
 #include <stddef.h>
 
-#include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/pdf/common/pdf_util.h"
@@ -24,8 +20,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "content/public/test/hit_test_region_observer.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
-#include "pdf/pdf_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
@@ -125,7 +119,7 @@ testing::AssertionResult EnsurePDFHasLoadedWithOptions(
   // a mock MessagePort source so `viewer.parentWindow_` is not set to the
   // extension's own `window` (which would cause outgoing viewer messages to be
   // posted back to `window` and overwrite `parentWindow_`).
-  static constexpr char kEnsureOopifPdfHasLoadedScript[] = R"(
+  static constexpr char kEnsurePdfHasLoadedScript[] = R"(
     new Promise(resolve => {
       const source = new MessageChannel().port1;
       source.postMessage = data => {
@@ -143,45 +137,14 @@ testing::AssertionResult EnsurePDFHasLoadedWithOptions(
     });
   )";
 
-  static constexpr char kEnsureGuestViewPdfHasLoadedScript[] = R"(
-    new Promise(resolve => {
-      window.addEventListener('message', event => {
-        if (event.origin !==
-                'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai') {
-          return;
-        }
-        if (event.data.type === 'documentLoaded') {
-          resolve(event.data.load_state === 'success');
-        } else if (event.data.type === 'passwordPrompted') {
-          resolve(true);
-        }
-      });
-      document.getElementsByTagName($1)[0].postMessage(
-        {type: 'initialize'});
-    });
-  )";
-
-  bool use_oopif =
-      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif);
-
-  // For OOPIF PDF viewer, the target frame should be the PDF extension frame.
-  // Otherwise, it should be whatever frame was given.
-  content::RenderFrameHost* frame_rfh = frame.render_frame_host();
-  content::RenderFrameHost* target_frame =
-      use_oopif ? GetPdfExtensionHostFromEmbedder(frame_rfh,
-                                                  options.allow_multiple_frames)
-                : frame_rfh;
-
-  if (use_oopif && !target_frame) {
+  content::RenderFrameHost* target_frame = GetPdfExtensionHostFromEmbedder(
+      frame.render_frame_host(), options.allow_multiple_frames);
+  if (!target_frame) {
     return testing::AssertionFailure() << "Failed to get PDF extension frame.";
   }
 
-  const std::string script =
-      use_oopif ? kEnsureOopifPdfHasLoadedScript
-                : content::JsReplace(kEnsureGuestViewPdfHasLoadedScript,
-                                     options.pdf_element);
-  bool load_success = content::EvalJs(target_frame, script).ExtractBool();
-
+  bool load_success =
+      content::EvalJs(target_frame, kEnsurePdfHasLoadedScript).ExtractBool();
   if (!load_success) {
     return testing::AssertionFailure() << "Load failed.";
   }
@@ -248,21 +211,6 @@ void SetInputFocusOnPlugin(content::RenderFrameHost* extension_host,
       embedder_web_contents, blink::WebInputEvent::kNoModifiers,
       blink::WebMouseEvent::Button::kLeft, point_in_root_coords);
   focus_observer.Wait();
-}
-
-extensions::MimeHandlerViewGuest* GetOnlyMimeHandlerView(
-    content::WebContents* embedder_contents) {
-  extensions::MimeHandlerViewGuest* result = nullptr;
-  embedder_contents->ForEachRenderFrameHost([&result](
-                                                content::RenderFrameHost* rfh) {
-    auto* guest = extensions::MimeHandlerViewGuest::FromRenderFrameHost(rfh);
-    if (guest && guest->GetGuestMainFrame() == rfh) {
-      // Assume exactly one MimeHandlerView.
-      EXPECT_FALSE(result);
-      result = guest;
-    }
-  });
-  return result;
 }
 
 }  // namespace pdf_extension_test_util
