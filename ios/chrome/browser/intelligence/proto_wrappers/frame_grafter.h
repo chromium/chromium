@@ -144,6 +144,10 @@ class FrameGrafter {
                      const CrossSiteIframeRecord*>& records_by_node,
       optimization_guide::proto::ScreenshotInfo* screenshot_info);
 
+  // Removes the placeholders and cross-site iframe records that point into
+  // `subtree`, so they don't dangle once `subtree` is destroyed.
+  void DropPointersInto(const optimization_guide::proto::ContentNode& subtree);
+
   // Frame content that wasn't claimed yet (unregistered).
   std::map<autofill::LocalFrameToken, FrameContent> unregistered_content_;
   // Placeholders waiting for content.

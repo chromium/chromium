@@ -134,11 +134,25 @@ void FrameGrafter::ResolveUnregisteredContent(
     if (local_token) {
       if (auto content_it = unregistered_content_.find(*local_token);
           content_it != unregistered_content_.end()) {
+        if (SubtreeContainsNode(content_it->second.content, it->second)) {
+          // Skip self-grafting (or closing a multi-frame cycle) to avoid
+          // detaching a self-owning heap cycle.
+          it = placeholders_.erase(it);
+          continue;
+        }
         // Fulfill the placeholder.
         MergeContent(it->second, std::move(content_it->second), remote_token,
                      this);
+        placeholders_.erase(it);
+        // Drop pointers into whatever `MergeContent()` left in the entry (the
+        // moved-from root, the unmoved subtree of redacted content, or the
+        // placeholder's old children swapped in by a light-extraction merge)
+        // before erasing it.
+        DropPointersInto(content_it->second.content);
         unregistered_content_.erase(content_it);
-        it = placeholders_.erase(it);
+        // Advance past `remote_token` via lookup since `DropPointersInto()` may
+        // have erased later entries in `placeholders_`.
+        it = placeholders_.upper_bound(remote_token);
         continue;
       }
     }
@@ -155,17 +169,24 @@ void FrameGrafter::ResolveUnregisteredContent(
   placeholders_.clear();
 
   // TODO(crbug.com/473796618): Add a metric for when content has to be placed.
-  // Place the remaining unregistered content using the `placer`. First remove
-  // any `cross_site_iframe_records_` pointing into `frame_content` so their
-  // `raw_ptr`s don't dangle when `placer` destroys `frame_content`.
+  // Place the remaining unregistered content using the `placer`, which
+  // destroys `frame_content`.
   for (auto& [_, frame_content] : unregistered_content_) {
-    std::erase_if(
-        cross_site_iframe_records_, [&](const CrossSiteIframeRecord& record) {
-          return SubtreeContainsNode(frame_content.content, record.node.get());
-        });
+    DropPointersInto(frame_content.content);
     placer.Run(std::move(frame_content));
   }
   unregistered_content_.clear();
+}
+
+void FrameGrafter::DropPointersInto(
+    const optimization_guide::proto::ContentNode& subtree) {
+  std::erase_if(placeholders_, [&](const auto& entry) {
+    return SubtreeContainsNode(subtree, entry.second);
+  });
+  std::erase_if(cross_site_iframe_records_,
+                [&](const CrossSiteIframeRecord& record) {
+                  return SubtreeContainsNode(subtree, record.node.get());
+                });
 }
 
 namespace {

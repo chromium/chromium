@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/frame_grafter.h"
 
 #import <map>
+#import <vector>
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -219,6 +220,262 @@ TEST_F(FrameGrafterTest, NestedPlaceholderInUnresolvedContent) {
   EXPECT_EQ(placed_count, 1);
   EXPECT_EQ(unresolved_count, 1);
   EXPECT_TRUE(grafter.GetRemoteFrames().empty());
+}
+
+// Tests that the root node of declared content is never reported as an
+// unresolved placeholder, and that later valid placeholders still resolve.
+// Grafting the content destroys that root, so the
+// `unresolved_placeholder_handler` would receive a dangling pointer
+// (crbug.com/587014421).
+TEST_F(FrameGrafterTest, RootOfDeclaredContentIsNotReportedAsUnresolved) {
+  FrameGrafter grafter;
+  // Ordered `child < crafted < sibling` so resolving `child` purges the
+  // upcoming `crafted` entry and `upper_bound()` still advances to `sibling`.
+  autofill::RemoteFrameToken child_remote_token(
+      base::UnguessableToken::CreateForTesting(0, 1));
+  autofill::RemoteFrameToken crafted_remote_token(
+      base::UnguessableToken::CreateForTesting(0, 2));
+  autofill::RemoteFrameToken sibling_remote_token(
+      base::UnguessableToken::CreateForTesting(0, 3));
+  autofill::LocalFrameToken child_local_token = CreateLocalToken();
+  autofill::LocalFrameToken sibling_local_token = CreateLocalToken();
+
+  optimization_guide::proto::ContentNode main_frame_root;
+  optimization_guide::proto::ContentNode* child_placeholder =
+      AddIframePlaceholder(&main_frame_root, 0, 0, 100, 100);
+  optimization_guide::proto::ContentNode* sibling_placeholder =
+      AddIframePlaceholder(&main_frame_root, 0, 100, 100, 100);
+  grafter.RegisterPlaceholder(child_remote_token, child_placeholder);
+  grafter.RegisterPlaceholder(sibling_remote_token, sibling_placeholder);
+
+  // Only a compromised renderer can return a frame root that is an iframe
+  // placeholder. `crafted_remote_token` maps to no content.
+  FrameGrafter::FrameContent* child = grafter.DeclareContent(child_local_token);
+  child->content.mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  grafter.RegisterPlaceholder(crafted_remote_token, &child->content);
+
+  FrameGrafter::FrameContent* sibling =
+      grafter.DeclareContent(sibling_local_token);
+  sibling->content.mutable_content_attributes()
+      ->mutable_text_data()
+      ->set_text_content("Sibling Content");
+
+  std::map<autofill::RemoteFrameToken, autofill::LocalFrameToken> mappings = {
+      {child_remote_token, child_local_token},
+      {sibling_remote_token, sibling_local_token},
+  };
+  auto mapping_lookup = base::BindRepeating(
+      [](const std::map<autofill::RemoteFrameToken, autofill::LocalFrameToken>&
+             map,
+         autofill::RemoteFrameToken requested_remote)
+          -> std::optional<autofill::LocalFrameToken> {
+        auto it = map.find(requested_remote);
+        return it != map.end() ? std::make_optional(it->second) : std::nullopt;
+      },
+      mappings);
+  // Ignores `unresolved` so a regression fails the expectation below rather
+  // than dereferencing freed memory.
+  std::vector<autofill::RemoteFrameToken> unresolved_tokens;
+  auto unresolved_handler = base::BindRepeating(
+      [](std::vector<autofill::RemoteFrameToken>* tokens,
+         const autofill::RemoteFrameToken& remote_token,
+         optimization_guide::proto::ContentNode* unresolved) {
+        tokens->push_back(remote_token);
+      },
+      &unresolved_tokens);
+
+  grafter.ResolveUnregisteredContent(mapping_lookup, base::DoNothing(),
+                                     unresolved_handler);
+
+  EXPECT_TRUE(unresolved_tokens.empty());
+  ASSERT_EQ(child_placeholder->children_nodes_size(), 1);
+  EXPECT_EQ(child_placeholder->children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  ASSERT_EQ(sibling_placeholder->children_nodes_size(), 1);
+  EXPECT_EQ(sibling_placeholder->children_nodes(0)
+                .content_attributes()
+                .text_data()
+                .text_content(),
+            "Sibling Content");
+}
+
+// Tests that a placeholder inside redacted content is never reported as an
+// unresolved placeholder, and its cross-site record is purged when the
+// redacted subtree is destroyed (crbug.com/587014421).
+TEST_F(FrameGrafterTest,
+       PlaceholderInRedactedContentIsNotReportedAsUnresolved) {
+  FrameGrafter grafter;
+  // Ordered `earlier_nested < child < nested_unresolved` so `earlier_nested`
+  // records into `cross_site_iframe_records_` before `child` destroys the
+  // subtree, while `nested_unresolved` tests purging an upcoming entry.
+  autofill::RemoteFrameToken earlier_nested_token(
+      base::UnguessableToken::CreateForTesting(0, 1));
+  autofill::RemoteFrameToken child_remote_token(
+      base::UnguessableToken::CreateForTesting(0, 2));
+  autofill::RemoteFrameToken nested_remote_token(
+      base::UnguessableToken::CreateForTesting(0, 3));
+  autofill::LocalFrameToken child_local_token = CreateLocalToken();
+  autofill::LocalFrameToken earlier_nested_local_token = CreateLocalToken();
+
+  optimization_guide::proto::AnnotatedPageContent apc;
+  // Omit `visible_bounding_box` on `child_placeholder` so only
+  // `earlier_nested_placeholder` records into `cross_site_iframe_records_`.
+  optimization_guide::proto::ContentNode* child_placeholder =
+      apc.mutable_root_node()->add_children_nodes();
+  child_placeholder->mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  grafter.RegisterPlaceholder(child_remote_token, child_placeholder);
+
+  // Only a compromised renderer can return a redacted frame root with
+  // children. `nested_remote_token` maps to no content.
+  FrameGrafter::FrameContent* child = grafter.DeclareContent(child_local_token);
+  child->content.mutable_content_attributes()->set_attribute_type(
+      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  child->content.mutable_content_attributes()
+      ->mutable_iframe_data()
+      ->mutable_redacted_frame_metadata()
+      ->set_reason(
+          optimization_guide::proto::
+              IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
+  optimization_guide::proto::ContentNode* earlier_nested_placeholder =
+      AddIframePlaceholder(&child->content, 0, 0, 10, 10);
+  grafter.RegisterPlaceholder(earlier_nested_token, earlier_nested_placeholder);
+  optimization_guide::proto::ContentNode* nested_placeholder =
+      AddIframePlaceholder(&child->content, 10, 0, 10, 10);
+  grafter.RegisterPlaceholder(nested_remote_token, nested_placeholder);
+
+  FrameGrafter::FrameContent* earlier_nested =
+      grafter.DeclareContent(earlier_nested_local_token);
+  earlier_nested->content.mutable_content_attributes()
+      ->mutable_iframe_data()
+      ->mutable_redacted_frame_metadata()
+      ->set_reason(
+          optimization_guide::proto::
+              IframeData_RedactedFrameMetadata_Reason_REASON_CROSS_SITE);
+
+  std::map<autofill::RemoteFrameToken, autofill::LocalFrameToken> mappings = {
+      {child_remote_token, child_local_token},
+      {earlier_nested_token, earlier_nested_local_token},
+  };
+  auto mapping_lookup = base::BindRepeating(
+      [](const std::map<autofill::RemoteFrameToken, autofill::LocalFrameToken>&
+             map,
+         autofill::RemoteFrameToken requested_remote)
+          -> std::optional<autofill::LocalFrameToken> {
+        auto it = map.find(requested_remote);
+        return it != map.end() ? std::make_optional(it->second) : std::nullopt;
+      },
+      mappings);
+  // Ignores `unresolved` so a regression fails the expectation below rather
+  // than dereferencing freed memory.
+  std::vector<autofill::RemoteFrameToken> unresolved_tokens;
+  auto unresolved_handler = base::BindRepeating(
+      [](std::vector<autofill::RemoteFrameToken>* tokens,
+         const autofill::RemoteFrameToken& remote_token,
+         optimization_guide::proto::ContentNode* unresolved) {
+        tokens->push_back(remote_token);
+      },
+      &unresolved_tokens);
+
+  grafter.ResolveUnregisteredContent(mapping_lookup, base::DoNothing(),
+                                     unresolved_handler);
+  grafter.PopulateScreenshotInfo(&apc);
+
+  EXPECT_TRUE(unresolved_tokens.empty());
+  EXPECT_FALSE(apc.gemini_in_chrome_page_metadata().has_screenshot_info());
+  EXPECT_TRUE(child_placeholder->content_attributes()
+                  .iframe_data()
+                  .has_redacted_frame_metadata());
+  EXPECT_EQ(child_placeholder->children_nodes_size(), 0);
+}
+
+// Tests that self-grafting and multi-frame cycle placeholders are skipped
+// instead of detaching `FrameContent` into a self-owning heap cycle, preserving
+// the content for its legitimate parent placeholder or for `placer` cleanup.
+TEST_F(FrameGrafterTest, SelfGraftAndCyclePlaceholdersAreSkipped) {
+  FrameGrafter grafter;
+  // `self_remote_token` sorts before `parent_remote_token` so a compromised
+  // child frame mapping a descendant placeholder back to itself runs before the
+  // legitimate parent placeholder.
+  autofill::RemoteFrameToken self_remote_token(
+      base::UnguessableToken::CreateForTesting(0, 1));
+  autofill::RemoteFrameToken parent_remote_token(
+      base::UnguessableToken::CreateForTesting(0, 2));
+  autofill::RemoteFrameToken cycle_a_to_b_token(
+      base::UnguessableToken::CreateForTesting(0, 3));
+  autofill::RemoteFrameToken cycle_b_to_a_token(
+      base::UnguessableToken::CreateForTesting(0, 4));
+  autofill::LocalFrameToken child_local_token = CreateLocalToken();
+  autofill::LocalFrameToken cycle_a_local_token = CreateLocalToken();
+  autofill::LocalFrameToken cycle_b_local_token = CreateLocalToken();
+
+  optimization_guide::proto::ContentNode main_frame_root;
+  optimization_guide::proto::ContentNode* parent_placeholder =
+      AddIframePlaceholder(&main_frame_root, 0, 0, 100, 100);
+  grafter.RegisterPlaceholder(parent_remote_token, parent_placeholder);
+
+  FrameGrafter::FrameContent* child = grafter.DeclareContent(child_local_token);
+  child->frame_data.set_title("Legitimate Child");
+  optimization_guide::proto::ContentNode* self_placeholder =
+      AddIframePlaceholder(&child->content, 0, 0, 10, 10);
+  grafter.RegisterPlaceholder(self_remote_token, self_placeholder);
+
+  // Two-frame cycle (`cycle_a` <-> `cycle_b`) with no parent in the main frame.
+  FrameGrafter::FrameContent* cycle_a =
+      grafter.DeclareContent(cycle_a_local_token);
+  optimization_guide::proto::ContentNode* a_to_b_placeholder =
+      AddIframePlaceholder(&cycle_a->content, 0, 0, 10, 10);
+  grafter.RegisterPlaceholder(cycle_a_to_b_token, a_to_b_placeholder);
+
+  FrameGrafter::FrameContent* cycle_b =
+      grafter.DeclareContent(cycle_b_local_token);
+  optimization_guide::proto::ContentNode* b_to_a_placeholder =
+      AddIframePlaceholder(&cycle_b->content, 0, 0, 10, 10);
+  grafter.RegisterPlaceholder(cycle_b_to_a_token, b_to_a_placeholder);
+
+  std::map<autofill::RemoteFrameToken, autofill::LocalFrameToken> mappings = {
+      {self_remote_token, child_local_token},
+      {parent_remote_token, child_local_token},
+      {cycle_a_to_b_token, cycle_b_local_token},
+      {cycle_b_to_a_token, cycle_a_local_token},
+  };
+  auto mapping_lookup = base::BindRepeating(
+      [](const std::map<autofill::RemoteFrameToken, autofill::LocalFrameToken>&
+             map,
+         autofill::RemoteFrameToken requested_remote)
+          -> std::optional<autofill::LocalFrameToken> {
+        auto it = map.find(requested_remote);
+        return it != map.end() ? std::make_optional(it->second) : std::nullopt;
+      },
+      mappings);
+
+  int placed_count = 0;
+  auto placer = base::BindRepeating(
+      [](int* count, FrameGrafter::FrameContent unregistered) { (*count)++; },
+      &placed_count);
+  std::vector<autofill::RemoteFrameToken> unresolved_tokens;
+  auto unresolved_handler = base::BindRepeating(
+      [](std::vector<autofill::RemoteFrameToken>* tokens,
+         const autofill::RemoteFrameToken& remote_token,
+         optimization_guide::proto::ContentNode* unresolved) {
+        tokens->push_back(remote_token);
+      },
+      &unresolved_tokens);
+
+  grafter.ResolveUnregisteredContent(mapping_lookup, placer,
+                                     unresolved_handler);
+
+  EXPECT_TRUE(unresolved_tokens.empty());
+  ASSERT_EQ(parent_placeholder->children_nodes_size(), 1);
+  EXPECT_EQ(parent_placeholder->content_attributes()
+                .iframe_data()
+                .frame_data()
+                .title(),
+            "Legitimate Child");
+  EXPECT_EQ(placed_count, 1);
 }
 
 // Tests that cross-site iframe placeholders recorded within content that
