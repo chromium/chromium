@@ -4710,24 +4710,12 @@ const FeatureEntry::FeatureVariation
         {"with submenu", kContextualTasksUpdatedEntryPointsSubmenu, nullptr}};
 
 const FeatureEntry::FeatureParam
-    kContextualTasksEntryPointsWithOmniboxContextualSuggestions[] = {
-        {"omnibox_contextual_suggestions", "true"}};
-const FeatureEntry::FeatureParam
     kContextualTasksEntryPointsWithForcedToolbarButton[] = {
         {"force_toolbar_button", "true"}};
-const FeatureEntry::FeatureParam
-    kContextualTasksEntryPointsWithForcedToolbarAndOmniboxSuggestions[] = {
-        {"force_toolbar_button", "true"},
-        {"omnibox_contextual_suggestions", "true"}};
 
 const FeatureEntry::FeatureVariation kContextualTasksEntryPointsVariations[] = {
-    {"with omnibox contextual suggestions",
-     kContextualTasksEntryPointsWithOmniboxContextualSuggestions, nullptr},
     {"with forced toolbar button",
-     kContextualTasksEntryPointsWithForcedToolbarButton, nullptr},
-    {"with forced toolbar button and omnibox contextual suggestions",
-     kContextualTasksEntryPointsWithForcedToolbarAndOmniboxSuggestions,
-     nullptr}};
+     kContextualTasksEntryPointsWithForcedToolbarButton, nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAnimatedProgressBar30FpsCap[] = {
