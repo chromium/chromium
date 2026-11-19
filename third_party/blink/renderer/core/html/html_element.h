@@ -53,6 +53,7 @@ class UIEvent;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;
 class V8UnionBooleanOrTogglePopoverOptions;
 class ShowPopoverOptions;
+class ShowUnboundedElementOptions;
 class UnboundedEventData;
 enum class PopoverInvokedVia;
 
@@ -418,12 +419,18 @@ class CORE_EXPORT HTMLElement : public Element {
   bool IsRenderedInTopLayer() const override;
 
   // The Unbounded Element API. See crbug.com/508672616.
-  ScriptPromise<IDLUndefined> showUnboundedElement(ScriptState*);
+  ScriptPromise<IDLUndefined> showUnboundedElement(
+      ScriptState*,
+      ShowUnboundedElementOptions* options);
   ScriptPromise<IDLUndefined> hideUnboundedElement(ScriptState*);
   bool IsUnboundedElementActive() const;
   // Returns true if the state change proceeded, and false if the beforetoggle
-  // event was canceled by the author.
-  bool SetUnboundedElementActive(bool active, UnboundedEvents fire_events);
+  // event was canceled by the author or if the element lost eligibility (e.g.
+  // had its `unbounded` attribute removed, was disconnected, or its document
+  // became inactive) during `beforetoggle`.
+  bool SetUnboundedElementActive(bool active,
+                                 UnboundedEvents fire_events,
+                                 Element* source);
   void AttachLayoutTree(AttachContext& context) override;
   gfx::Rect LastSentUnboundedBounds() const;
   void SetLastSentUnboundedBounds(const gfx::Rect& bounds);

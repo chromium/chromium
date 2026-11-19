@@ -840,6 +840,24 @@ Element* NodeRareData::GetOverscrollContainer() const {
   return nullptr;
 }
 
+RareDataUpdate<void> NodeRareData::SetImplicitAnchor(Element* element) {
+  if (!element) {
+    SetFieldToNullIfExists(FieldId::kImplicitAnchor);
+    return RareDataUpdate<void>(this);
+  }
+  element->SetMayBeImplicitAnchor();
+  return SetWrappedField<WeakMember<Element>>(FieldId::kImplicitAnchor,
+                                              element);
+}
+
+Element* NodeRareData::GetImplicitAnchor() const {
+  if (auto* value =
+          GetWrappedField<WeakMember<Element>>(FieldId::kImplicitAnchor)) {
+    return value->Get();
+  }
+  return nullptr;
+}
+
 RareDataUpdate<OverscrollAreaTracker> NodeRareData::EnsureOverscrollAreaTracker(
     Element* element) {
   return EnsureField<class OverscrollAreaTracker>(

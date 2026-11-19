@@ -92,6 +92,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/policy_container_utils.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -187,6 +188,8 @@ cc::LayerTreeSettings GetSynchronousSingleThreadLayerTreeSettings() {
   // test makes progress.
   settings.single_thread_proxy_scheduler = false;
   settings.use_layer_lists = true;
+  settings.enable_unbounded_element =
+      RuntimeEnabledFeatures::UnboundedElementEnabled();
 // TODO(crbug.com/434513378) Cannot enable smooth scrolling on Fuchsia as it
 // causes test failures in BasicScroll test.
 #if !BUILDFLAG(IS_FUCHSIA)

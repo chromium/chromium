@@ -424,6 +424,8 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   }
   bool MayBeImplicitAnchor() const { return flags_.may_be_implicit_anchor; }
   void SetMayBeImplicitAnchor() { flags_.may_be_implicit_anchor = true; }
+  [[nodiscard]] RareDataUpdate<void> SetImplicitAnchor(Element* element);
+  Element* GetImplicitAnchor() const;
 
   FocusgroupData GetFocusgroupData() const;
   [[nodiscard]] RareDataUpdate<void> SetFocusgroupData(FocusgroupData data);
@@ -583,7 +585,7 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
     kIsValue = 21,
     kSavedLayerScrollOffset = 22,
     kAnchorPositionScrollData = 23,
-    kMayBeImplicitAnchor = 24,
+    kImplicitAnchor = 24,
     kLastRememberedBlockSize = 25,
     kLastRememberedInlineSize = 26,
     kRestrictionTargetId = 27,

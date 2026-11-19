@@ -820,7 +820,8 @@ TEST_P(CompositingReasonFinderTest, UnboundedElementCompositingReason) {
 
   // 3. With attribute AND active: kUnboundedElement
   html_element->SetUnboundedElementActive(true,
-                                          UnboundedEvents::kFireNonCancelable);
+                                          UnboundedEvents::kFireNonCancelable,
+                                          /*source=*/nullptr);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(CompositingReasons{CompositingReason::kUnboundedElement},
             CompositingReasonFinder::DirectReasonsForPaintProperties(

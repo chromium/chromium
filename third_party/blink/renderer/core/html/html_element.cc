@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_attach_internals_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_show_popover_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_show_unbounded_element_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_toggle_popover_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_togglepopoveroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.h"
@@ -140,6 +141,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
@@ -940,7 +942,8 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
              RuntimeEnabledFeatures::UnboundedElementEnabled()) {
     if (params.new_value.IsNull() &&
         HasElementFlag(ElementFlags::kIsUnboundedElementActive)) {
-      SetUnboundedElementActive(false, UnboundedEvents::kFireNonCancelable);
+      SetUnboundedElementActive(false, UnboundedEvents::kFireNonCancelable,
+                                /*source=*/nullptr);
     }
   }
 }
@@ -1621,7 +1624,8 @@ void MarkPopoverInvokersDirty(const HTMLElement& popover) {
 }  // namespace
 
 ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ShowUnboundedElementOptions* options) {
   DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
@@ -1677,28 +1681,12 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
   WebFrameWidgetImpl* widget =
       web_frame ? web_frame->FrameWidgetImpl() : nullptr;
   auto* view = GetDocument().View();
-  if (!widget || !view ||
-      !view->UpdateAllLifecyclePhasesExceptPaint(
-          DocumentUpdateReason::kJavaScript)) {
+  if (!widget || !view || !GetDocument().IsActive()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "The element is not in an active document."));
     return promise;
   }
-  gfx::Rect bounds;
-  if (auto* layout_object = GetLayoutObject()) {
-    bounds = layout_object->AbsoluteBoundingBoxRectForUnboundedElement();
-    bounds = view->FrameToViewport(bounds);
-    if (auto* local_root_widget = frame->GetWidgetForLocalRoot()) {
-      bounds = gfx::ToRoundedRect(
-          local_root_widget->BlinkSpaceToDIPs(gfx::RectF(bounds)));
-    }
-  }
-  // Unbounded elements must have a minimum size of 1x1 to prevent empty-bounds
-  // compositor and platform window issues.
-  bounds.set_width(std::max(1, bounds.width()));
-  bounds.set_height(std::max(1, bounds.height()));
-  SetLastSentUnboundedBounds(bounds);
 
 #if BUILDFLAG(IS_ANDROID)
   // Unbounded elements rely on
@@ -1730,7 +1718,64 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
         WebFrameWidgetImpl::UnboundedDismissReason::kProgrammatic);
   }
 
-  SetUnboundedElementActive(true, UnboundedEvents::kFireNonCancelable);
+  if (!FastHasAttribute(html_names::kUnboundedAttr) || !isConnected() ||
+      GetDocument().GetFrame() != frame || !GetDocument().IsActive()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The element is no longer eligible to be shown as unbounded."));
+    return promise;
+  }
+
+  Element* source =
+      options && options->hasSource() ? options->source() : nullptr;
+  SetUnboundedElementActive(true, UnboundedEvents::kFireNonCancelable, source);
+  if (!IsUnboundedElementActive() || !isConnected() ||
+      GetDocument().GetFrame() != frame) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The element was deactivated or detached during beforetoggle."));
+    return promise;
+  }
+
+  // Run style and layout now to recalculate CSS anchor positioning against the
+  // monitor DIPs-to-CSS-px bounds (`UnboundedAnchorConstrainingBounds`) before
+  // reading the final element bounds below.
+  view = GetDocument().View();
+  if (!view || !view->UpdateAllLifecyclePhasesExceptPaint(
+                   DocumentUpdateReason::kJavaScript)) {
+    // Layout update only fails if the document became inactive after the
+    // opening `beforetoggle`; silently reset the active flag without firing a
+    // closing `beforetoggle` on an inactive document.
+    SetUnboundedElementActive(false, UnboundedEvents::kSuppress,
+                              /*source=*/nullptr);
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The element is not in an active document."));
+    return promise;
+  }
+  if (!IsUnboundedElementActive() || !isConnected() ||
+      GetDocument().GetFrame() != frame) {
+    SetUnboundedElementActive(false, UnboundedEvents::kSuppress,
+                              /*source=*/nullptr);
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The element was deactivated or detached during layout."));
+    return promise;
+  }
+  gfx::Rect bounds;
+  if (auto* layout_object = GetLayoutObject()) {
+    bounds = layout_object->AbsoluteBoundingBoxRectForUnboundedElement();
+    bounds = view->FrameToViewport(bounds);
+    if (auto* local_root_widget = frame->GetWidgetForLocalRoot()) {
+      bounds = gfx::ToRoundedRect(
+          local_root_widget->BlinkSpaceToDIPs(gfx::RectF(bounds)));
+    }
+  }
+  // Unbounded elements must have a minimum size of 1x1 to prevent empty-bounds
+  // compositor and platform window issues.
+  bounds.set_width(std::max(1, bounds.width()));
+  bounds.set_height(std::max(1, bounds.height()));
+  SetLastSentUnboundedBounds(bounds);
 
   mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost> host_remote;
   auto host_receiver = host_remote.InitWithNewEndpointAndPassReceiver();
@@ -1783,7 +1828,8 @@ bool HTMLElement::IsUnboundedElementActive() const {
   return HasElementFlag(ElementFlags::kIsUnboundedElementActive);
 }
 bool HTMLElement::SetUnboundedElementActive(bool active,
-                                            UnboundedEvents fire_events) {
+                                            UnboundedEvents fire_events,
+                                            Element* source) {
   DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
   DCHECK(!active || FastHasAttribute(html_names::kUnboundedAttr));
   if (HasElementFlag(ElementFlags::kIsUnboundedElementActive) == active) {
@@ -1791,6 +1837,9 @@ bool HTMLElement::SetUnboundedElementActive(bool active,
     return true;
   }
 
+  // Unlike Popover, no HTML invoker button closes an unbounded element, so
+  // `source` is always null on close.
+  Element* event_source = active ? source : nullptr;
   if (fire_events != UnboundedEvents::kSuppress) {
     class ScopedTransitioning {
       STACK_ALLOCATED();
@@ -1826,7 +1875,7 @@ bool HTMLElement::SetUnboundedElementActive(bool active,
             : Event::Cancelable::kNo;
     ToggleEvent* before_event =
         ToggleEvent::Create(event_type_names::kBeforetoggle, cancelable,
-                            old_state, new_state, nullptr);
+                            old_state, new_state, event_source);
     if (DispatchEvent(*before_event) != DispatchEventResult::kNotCanceled) {
       return false;
     }
@@ -1834,8 +1883,18 @@ bool HTMLElement::SetUnboundedElementActive(bool active,
       // The event handler changed the state.
       return true;
     }
+    if (active && (!FastHasAttribute(html_names::kUnboundedAttr) ||
+                   !isConnected() || !GetDocument().IsActive())) {
+      return false;
+    }
   }
   SetElementFlag(ElementFlags::kIsUnboundedElementActive, active);
+  SetImplicitAnchor(active ? source : nullptr);
+  if (active) {
+    EnsureUnboundedEventData().EnsureConstrainingBoundsSnapshot(*this);
+  } else if (UnboundedEventData* event_data = GetUnboundedEventData()) {
+    event_data->ClearConstrainingBoundsSnapshot();
+  }
   WebFrameWidgetImpl* widget = nullptr;
   if (auto* frame = GetDocument().GetFrame()) {
     if (auto* web_frame =
@@ -1865,6 +1924,8 @@ bool HTMLElement::SetUnboundedElementActive(bool active,
         kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
     if (auto* layout_object = GetLayoutObject()) {
+      layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+          layout_invalidation_reason::kAnchorPositioning);
       layout_object->AddSubtreePaintPropertyUpdateReason(
           SubtreePaintPropertyUpdateReason::kContainerChainMayChange);
     }
@@ -1881,7 +1942,7 @@ bool HTMLElement::SetUnboundedElementActive(bool active,
     }
     ToggleEvent* event = ToggleEvent::Create(
         event_type_names::kToggle, Event::Cancelable::kNo, old_state,
-        active ? keywords::kOpen : keywords::kClosed, nullptr);
+        active ? keywords::kOpen : keywords::kClosed, event_source);
     event->SetTarget(this);
 
     event_data.setPendingEventTask(PostCancellableTask(
@@ -1918,6 +1979,52 @@ void HTMLElement::AttachLayoutTree(AttachContext& context) {
       }
     }
   }
+}
+
+UnboundedConstrainingBoundsSnapshot::UnboundedConstrainingBoundsSnapshot(
+    HTMLElement& element)
+    : PostLayoutSnapshotClient(element.GetDocument().GetFrame()),
+      element_(&element) {}
+
+bool UnboundedConstrainingBoundsSnapshot::IsActive() const {
+  return active_ && element_->IsUnboundedElementActive();
+}
+
+std::optional<gfx::Rect>
+UnboundedConstrainingBoundsSnapshot::ComputeConstrainingBounds() const {
+  const LayoutObject* layout_object = element_->GetLayoutObject();
+  if (!layout_object ||
+      layout_object->Style().GetPosition() != EPosition::kFixed) {
+    return std::nullopt;
+  }
+  return layout_object->UnboundedAnchorConstrainingBounds();
+}
+
+bool UnboundedConstrainingBoundsSnapshot::UpdateSnapshot() {
+  if (!IsActive()) {
+    return false;
+  }
+  std::optional<gfx::Rect> new_bounds = ComputeConstrainingBounds();
+  if (constraining_bounds_ == new_bounds) {
+    return false;
+  }
+  constraining_bounds_ = new_bounds;
+  if (LayoutObject* layout_object = element_->GetLayoutObject()) {
+    layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+        layout_invalidation_reason::kAnchorPositioning);
+    layout_object->SetNeedsPaintPropertyUpdate();
+    return true;
+  }
+  return false;
+}
+
+bool UnboundedConstrainingBoundsSnapshot::ShouldScheduleNextService() {
+  return IsActive() && constraining_bounds_ != ComputeConstrainingBounds();
+}
+
+void UnboundedConstrainingBoundsSnapshot::Trace(Visitor* visitor) const {
+  visitor->Trace(element_);
+  PostLayoutSnapshotClient::Trace(visitor);
 }
 
 UnboundedEventData* HTMLElement::GetUnboundedEventData() const {
@@ -3305,15 +3412,21 @@ void HTMLElement::InvokePopover(Element& invoker,
 }
 
 void HTMLElement::SetImplicitAnchor(Element* element) {
-  CHECK(IsPopover());
-  GetPopoverData()->setImplicitAnchor(element);
-  if (element) {
-    element->SetMayBeImplicitAnchor();
+  CHECK(IsPopover() || RuntimeEnabledFeatures::UnboundedElementEnabled());
+  if (!element) {
+    if (NodeRareData* data = RareData()) {
+      data->SetImplicitAnchor(nullptr).RefreshNode(*this);
+    }
+    return;
   }
+  EnsureRareData().SetImplicitAnchor(element).RefreshNode(*this);
 }
 
 Element* HTMLElement::implicitAnchor() const {
-  return GetPopoverData() ? GetPopoverData()->implicitAnchor() : nullptr;
+  if (const NodeRareData* data = RareData()) {
+    return data->GetImplicitAnchor();
+  }
+  return nullptr;
 }
 
 bool HTMLElement::DispatchFocusEvent(
@@ -4097,7 +4210,8 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
   if (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
       IsUnboundedElementActive() &&
       !GetDocument().StatePreservingAtomicMoveInProgress()) {
-    SetUnboundedElementActive(false, UnboundedEvents::kSuppress);
+    SetUnboundedElementActive(false, UnboundedEvents::kSuppress,
+                              /*source=*/nullptr);
   }
 
   // Drop the container timing record when a container root is disconnected,

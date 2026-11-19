@@ -4,6 +4,8 @@
 <link rel="help" href="https://crbug.com/508672616">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 
 <div id="target"></div>
 
@@ -36,4 +38,250 @@ promise_test(async t => {
   const element = document.getElementById('target');
   await promise_rejects_dom(t, 'NotAllowedError', element.showUnboundedElement());
 }, 'Verify showUnboundedElement() throws DOMException without user activation.');
+
+promise_test(async t => {
+  const anchor = document.createElement('button');
+  anchor.style.cssText =
+      'position: fixed; left: 40px; top: 60px; width: 50px; height: 30px;';
+  const menu = document.createElement('div');
+  menu.unbounded = true;
+  menu.style.cssText =
+      'position: fixed; position-anchor: auto; left: anchor(left, 0px); ' +
+      'top: anchor(bottom, 0px); width: 80px; height: 40px;';
+  document.body.append(anchor, menu);
+  t.add_cleanup(() => {
+    anchor.remove();
+    menu.remove();
+  });
+
+  let beforeToggleSource = null;
+  menu.addEventListener('beforetoggle', e => {
+    beforeToggleSource = e.source;
+  }, {once: true});
+
+  await test_driver.bless('show anchored unbounded');
+  await menu.showUnboundedElement({source: anchor});
+  assert_equals(beforeToggleSource, anchor, 'beforetoggle event.source matches options.source');
+  const openRect = menu.getBoundingClientRect();
+  assert_approx_equals(openRect.left, 40, 1, 'Anchored to source left');
+  assert_approx_equals(openRect.top, 90, 1, 'Anchored to source bottom');
+
+  await menu.hideUnboundedElement();
+  const closedRect = menu.getBoundingClientRect();
+  assert_equals(closedRect.top, 0, 'Implicit anchor is cleared after hideUnboundedElement()');
+
+  await test_driver.bless('reject null source');
+  await promise_rejects_js(
+      t, TypeError, menu.showUnboundedElement({source: null}),
+      'options.source is non-nullable');
+}, 'Verify showUnboundedElement({source}) sets and clears the implicit anchor.');
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  iframe.allow = 'unbounded-element';
+  iframe.style.cssText =
+      'position: fixed; left: 450px; top: 20px; width: 100px; height: 100px; border: 0;';
+  iframe.srcdoc = `<!DOCTYPE html>
+    <style>
+      body { margin: 0; }
+      #btn {
+        anchor-name: --btn;
+        position: fixed;
+        left: 60px;
+        top: 60px;
+        width: 30px;
+        height: 20px;
+      }
+      #popup {
+        position: fixed;
+        position-anchor: auto;
+        left: anchor(left);
+        top: anchor(bottom);
+        width: 70px;
+        height: 50px;
+        position-try-fallbacks: flip-inline, flip-block, flip-inline flip-block;
+      }
+    </style>
+    <button id="btn"></button>
+    <div id="popup" unbounded></div>`;
+  const loaded = new Promise(resolve => iframe.addEventListener('load', resolve, {once: true}));
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await loaded;
+
+  const childDoc = iframe.contentDocument;
+  const btn = childDoc.getElementById('btn');
+  const popup = childDoc.getElementById('popup');
+
+  // While inactive (not unbounded), anchoring to #btn inside the 100x100 iframe
+  // overflows at the base position (60 + 70 = 130 > 100, 80 + 50 = 130 > 100),
+  // while `flip-inline flip-block` ([20..90] x [10..60]) fits inside 100x100.
+  popup.style.positionAnchor = '--btn';
+  const inactiveRect = popup.getBoundingClientRect();
+  assert_approx_equals(
+      inactiveRect.left, 20, 1,
+      'Flips inline to fit 100x100 iframe when not active unbounded');
+  assert_approx_equals(
+      inactiveRect.top, 10, 1,
+      'Flips block to fit 100x100 iframe when not active unbounded');
+  popup.style.positionAnchor = '';
+
+  await test_driver.bless('show iframe unbounded');
+  await popup.showUnboundedElement({source: btn});
+
+  // Once active unbounded, the iframe permits escape into the larger main
+  // frame/screen, so [60..130] x [80..130] fits without flipping.
+  const rect = popup.getBoundingClientRect();
+  assert_approx_equals(rect.left, 60, 1, 'Does not flip inline against escaped iframe');
+  assert_approx_equals(rect.top, 80, 1, 'Does not flip block against escaped iframe');
+  await popup.hideUnboundedElement();
+
+  // Also verify explicit named anchor(--btn ...) without a default anchor or
+  // position-area evaluates position-try-fallbacks against escaped bounds.
+  await test_driver.bless('show named-anchor iframe unbounded');
+  popup.style.positionAnchor = 'none';
+  popup.style.left = 'anchor(--btn left)';
+  popup.style.top = 'anchor(--btn bottom)';
+  await popup.showUnboundedElement();
+  const namedRect = popup.getBoundingClientRect();
+  assert_approx_equals(
+      namedRect.left, 60, 1,
+      'Named anchor without position-anchor does not flip inline against escaped iframe');
+  assert_approx_equals(
+      namedRect.top, 80, 1,
+      'Named anchor without position-anchor does not flip block against escaped iframe');
+  await popup.hideUnboundedElement();
+}, 'Verify active unbounded element evaluates position-try-fallbacks against escaped bounds rather than local iframe viewport.');
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  iframe.allow = 'unbounded-element';
+  iframe.style.cssText =
+      'position: fixed; left: 450px; top: 20px; width: 100px; height: 120px; border: 0;';
+  iframe.srcdoc = `<!DOCTYPE html>
+    <style>
+      body { margin: 0; height: 1000px; }
+      #btn {
+        position: absolute;
+        left: 10px;
+        top: 90px;
+        width: 30px;
+        height: 20px;
+      }
+      #popup {
+        position: fixed;
+        position-anchor: auto;
+        left: anchor(left);
+        bottom: anchor(top);
+        width: 60px;
+        height: 80px;
+        position-try-fallbacks: flip-block;
+      }
+    </style>
+    <button id="btn"></button>
+    <div id="popup" unbounded></div>`;
+  const loaded = new Promise(resolve => iframe.addEventListener('load', resolve, {once: true}));
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await loaded;
+
+  const childWin = iframe.contentWindow;
+  const childDoc = iframe.contentDocument;
+  const btn = childDoc.getElementById('btn');
+  const popup = childDoc.getElementById('popup');
+
+  // At scrollY = 0, #btn is at y = 90 in the iframe (110 in the outer window),
+  // so #popup [10..90] fits above #btn. Call test_driver.bless on the top-level
+  // window (with the top-left area kept unobstructed) so Content Shell clicks
+  // in main-frame coordinates while propagating activation to the same-origin
+  // srcdoc frame.
+  await test_driver.bless('show same-frame scroll unbounded');
+  await popup.showUnboundedElement({source: btn});
+  assert_approx_equals(
+      popup.getBoundingClientRect().top, 10, 1,
+      'Opens above anchor against escaped bounds');
+
+  // Scroll down inside the same frame so #btn moves up to y = 10 in the iframe
+  // (30 in the outer window): above #btn [-70..10] would overflow the top of
+  // the outer window, so NonOverflowingScrollRange flips #popup below #btn
+  // (10 + 20 = 30).
+  childWin.scrollTo(0, 80);
+  // Wait two animation frames so at least one post-layout AnchorPositionScrollData
+  // snapshot update has run (the first rAF fires before post-layout snapshots).
+  await new Promise(resolve => {
+    childWin.requestAnimationFrame(() => childWin.requestAnimationFrame(resolve));
+  });
+  assert_approx_equals(
+      popup.getBoundingClientRect().top, 30, 1,
+      'Flips below anchor when same-frame scroll crosses escaped boundary');
+
+  await popup.hideUnboundedElement();
+}, 'Verify active unbounded element updates position-try-fallbacks on same-frame scroll.');
+
+promise_test(async t => {
+  const spacer = document.createElement('div');
+  spacer.style.cssText =
+      'position: absolute; left: 0; top: 0; width: 1px; height: 3000px; pointer-events: none;';
+  const iframe = document.createElement('iframe');
+  iframe.allow = 'unbounded-element';
+  iframe.style.cssText =
+      'position: absolute; left: 450px; top: 250px; width: 100px; height: 100px; border: 0;';
+  iframe.srcdoc = `<!DOCTYPE html>
+    <style>
+      body { margin: 0; }
+      #btn {
+        position: fixed;
+        left: 10px;
+        top: 40px;
+        width: 30px;
+        height: 20px;
+      }
+      #popup {
+        position: fixed;
+        position-anchor: auto;
+        left: anchor(left);
+        bottom: anchor(top);
+        width: 60px;
+        height: 80px;
+        position-try-fallbacks: flip-block;
+      }
+    </style>
+    <button id="btn"></button>
+    <div id="popup" unbounded></div>`;
+  const loaded = new Promise(resolve => iframe.addEventListener('load', resolve, {once: true}));
+  document.body.append(spacer, iframe);
+  t.add_cleanup(() => {
+    window.scrollTo(0, 0);
+    iframe.remove();
+    spacer.remove();
+  });
+  await loaded;
+
+  const childWin = iframe.contentWindow;
+  const childDoc = iframe.contentDocument;
+  const btn = childDoc.getElementById('btn');
+  const popup = childDoc.getElementById('popup');
+
+  // At scrollY = 0, the iframe sits at y = 250 in the outer window, so #popup
+  // [-40..40] in the iframe ([210..290] in the outer window) escapes the top of
+  // the iframe without flipping.
+  await test_driver.bless('show parent-scroll unbounded');
+  await popup.showUnboundedElement({source: btn});
+  assert_approx_equals(
+      popup.getBoundingClientRect().top, -40, 1,
+      'Opens above anchor when plenty of room above iframe in parent viewport');
+
+  // Scroll parent down by 230px so the iframe moves up to y = 20 in the outer
+  // window: above #btn [-40..40] in the iframe ([-20..60] in the outer window)
+  // now overflows the top of the outer window, so #popup flips below #btn (60).
+  window.scrollTo(0, 230);
+  await new Promise(resolve => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  });
+  assert_approx_equals(
+      popup.getBoundingClientRect().top, 60, 1,
+      'Flips below anchor when parent scroll moves iframe near top edge');
+
+  await popup.hideUnboundedElement();
+}, 'Verify active unbounded element inside an iframe updates position-try-fallbacks on parent-frame scroll.');
 </script>

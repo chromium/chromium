@@ -572,12 +572,14 @@ TEST_F(StyleAdjusterTest, UnboundedElementForcesStackingContext) {
   EXPECT_FALSE(GetLayoutObjectByElementId("target")->IsStackingContext());
 
   html_element->SetUnboundedElementActive(true,
-                                          UnboundedEvents::kFireNonCancelable);
+                                          UnboundedEvents::kFireNonCancelable,
+                                          /*source=*/nullptr);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(GetLayoutObjectByElementId("target")->IsStackingContext());
 
   html_element->SetUnboundedElementActive(false,
-                                          UnboundedEvents::kFireNonCancelable);
+                                          UnboundedEvents::kFireNonCancelable,
+                                          /*source=*/nullptr);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetLayoutObjectByElementId("target")->IsStackingContext());
 }

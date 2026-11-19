@@ -2499,6 +2499,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // boundaries.
   gfx::Rect AbsoluteBoundingBoxRectForUnboundedElement() const;
 
+  // Returns the frame-coordinate bounds constraining an unbounded element due
+  // to ancestor frame Permissions Policy, fenced frames, or unprivileged top
+  // frame viewport clamping, or std::nullopt if unconstrained.
+  std::optional<gfx::Rect> UnboundedFrameConstrainingBounds() const;
+
+  // Returns the frame-coordinate bounds used for CSS anchor positioning
+  // fallbacks and overflow clamping of an active unbounded element, combining
+  // `UnboundedFrameConstrainingBounds()` with the display's available work
+  // area.
+  std::optional<gfx::Rect> UnboundedAnchorConstrainingBounds() const;
+
   // These two functions also handle inlines without content for which the
   // location of the result rect (which may be empty) should be the absolute
   // location of the inline. This is especially useful to get the bounding

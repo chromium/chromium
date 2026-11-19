@@ -80,7 +80,7 @@
 
     // Unbounded Element API
     [ContextEnabled=UnboundedElement,CEReactions,Reflect] attribute boolean unbounded;
-    [ContextEnabled=UnboundedElement,CallWith=ScriptState] Promise<undefined> showUnboundedElement();
+    [ContextEnabled=UnboundedElement,CallWith=ScriptState] Promise<undefined> showUnboundedElement(optional ShowUnboundedElementOptions options = {});
     [ContextEnabled=UnboundedElement,CallWith=ScriptState] Promise<undefined> hideUnboundedElement();
 
     // Container Timing
@@ -93,6 +93,10 @@
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [LegacyNullToEmptyString] DOMString outerText;
 
     [CEReactions] attribute DOMString writingSuggestions;
+};
+
+dictionary ShowUnboundedElementOptions {
+    Element source;
 };
 
 HTMLElement includes GlobalEventHandlers;

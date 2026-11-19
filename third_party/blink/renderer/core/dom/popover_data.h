@@ -97,9 +97,6 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     hover_hide_task_ = std::move(task);
   }
 
-  Element* implicitAnchor() const { return implicit_anchor_.Get(); }
-  void setImplicitAnchor(Element* element) { implicit_anchor_ = element; }
-
   CloseWatcher* closeWatcher() { return close_watcher_.Get(); }
   void setCloseWatcher(CloseWatcher* close_watcher) {
     close_watcher_ = close_watcher;
@@ -112,7 +109,6 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     visitor->Trace(invoker_);
     visitor->Trace(previously_focused_element_);
     visitor->Trace(hover_show_tasks_);
-    visitor->Trace(implicit_anchor_);
     visitor->Trace(close_watcher_);
     NodeRareDataField::Trace(visitor);
   }
@@ -138,10 +134,6 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   PopoverHoverShowMap hover_show_tasks_;
   // A task that hides the popover after a delay.
   TaskHandle hover_hide_task_;
-
-  // Used to set up an anchor relationship separately from CSS `anchor`
-  // references.
-  WeakMember<Element> implicit_anchor_;
 
   Member<CloseWatcher> close_watcher_;
 };

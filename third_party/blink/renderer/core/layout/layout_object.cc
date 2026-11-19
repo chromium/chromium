@@ -160,6 +160,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
@@ -168,6 +169,7 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -2278,13 +2280,40 @@ gfx::Rect LayoutObject::AbsoluteBoundingBoxRectForUnboundedElement() const {
     result = AbsoluteBoundingBoxRect();
   }
 
+  std::optional<gfx::Rect> constraining_bounds =
+      UnboundedFrameConstrainingBounds();
+  if (constraining_bounds.has_value()) {
+    gfx::Rect unconstrained = result;
+    result.Intersect(*constraining_bounds);
+    if (result.IsEmpty()) {
+      // Intersect() resets to (0, 0, 0, 0) when completely out of bounds. Pin a
+      // 1x1 rect to the nearest allowed edge instead so the surface stays
+      // non-empty.
+      int max_x =
+          std::max(constraining_bounds->x(), constraining_bounds->right() - 1);
+      int max_y =
+          std::max(constraining_bounds->y(), constraining_bounds->bottom() - 1);
+      int clamped_x =
+          std::clamp(unconstrained.x(), constraining_bounds->x(), max_x);
+      int clamped_y =
+          std::clamp(unconstrained.y(), constraining_bounds->y(), max_y);
+      result = gfx::Rect(clamped_x, clamped_y, 1, 1);
+    }
+  }
+  return result;
+}
+
+std::optional<gfx::Rect> LayoutObject::UnboundedFrameConstrainingBounds()
+    const {
+  NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
   LocalFrame* target_frame = GetFrame();
   if (!target_frame) {
-    return result;
+    return std::nullopt;
   }
   LocalFrameView* target_view = target_frame->View();
   if (!target_view) {
-    return result;
+    return std::nullopt;
   }
 
   // An unbounded element inside an iframe is only permitted to escape
@@ -2352,22 +2381,46 @@ gfx::Rect LayoutObject::AbsoluteBoundingBoxRectForUnboundedElement() const {
       }
     }
   }
-  if (constraining_bounds.has_value()) {
-    gfx::Rect unconstrained = result;
-    result.Intersect(*constraining_bounds);
-    if (result.IsEmpty()) {
-      int max_x =
-          std::max(constraining_bounds->x(), constraining_bounds->right() - 1);
-      int max_y =
-          std::max(constraining_bounds->y(), constraining_bounds->bottom() - 1);
-      int clamped_x =
-          std::clamp(unconstrained.x(), constraining_bounds->x(), max_x);
-      int clamped_y =
-          std::clamp(unconstrained.y(), constraining_bounds->y(), max_y);
-      result = gfx::Rect(clamped_x, clamped_y, 1, 1);
+  return constraining_bounds;
+}
+
+std::optional<gfx::Rect> LayoutObject::UnboundedAnchorConstrainingBounds()
+    const {
+  NOT_DESTROYED();
+  DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+  LocalFrame* target_frame = GetFrame();
+  if (!target_frame || !target_frame->GetPage()) {
+    return std::nullopt;
+  }
+  LocalFrameView* target_view = target_frame->View();
+  if (!target_view) {
+    return std::nullopt;
+  }
+
+  // Re-layout is triggered when these screen or ancestor-frame inputs change
+  // (via `WebFrameWidgetImpl` and `UnboundedConstrainingBoundsSnapshot`).
+  std::optional<gfx::Rect> constraining_bounds =
+      UnboundedFrameConstrainingBounds();
+  if (FrameWidget* local_root_widget = target_frame->GetWidgetForLocalRoot()) {
+    gfx::Rect available_rect_dips =
+        local_root_widget->GetScreenInfo().available_rect;
+    if (!available_rect_dips.IsEmpty()) {
+      gfx::Rect view_rect_dips = local_root_widget->ViewRect();
+      gfx::Rect available_in_widget_dips = available_rect_dips;
+      available_in_widget_dips.Offset(-view_rect_dips.OffsetFromOrigin());
+      gfx::Rect screen_bounds_in_viewport =
+          gfx::ToRoundedRect(local_root_widget->DIPsToBlinkSpace(
+              gfx::RectF(available_in_widget_dips)));
+      gfx::Rect screen_bounds_in_frame =
+          target_view->ViewportToFrame(screen_bounds_in_viewport);
+      if (constraining_bounds.has_value()) {
+        constraining_bounds->Intersect(screen_bounds_in_frame);
+      } else {
+        constraining_bounds = screen_bounds_in_frame;
+      }
     }
   }
-  return result;
+  return constraining_bounds;
 }
 
 PhysicalRect LayoutObject::AbsoluteBoundingBoxRectHandlingEmptyInline(

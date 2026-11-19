@@ -339,6 +339,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
  private:
   const ContainingBlockInfo GetContainingBlockInfo(
       const LogicalOofPositionedNode&);
+  ContainingBlockInfo GetUnboundedViewportContainingBlockInfo(
+      const LogicalOofPositionedNode&) const;
 
   const BlockNode& Node() const { return container_builder_.Node(); }
   FragmentationType GetFragmentainerType() const {

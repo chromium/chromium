@@ -942,10 +942,32 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
 
   if (candidate.Node().Style().GetPosition() == EPosition::kFixed &&
       viewport_containing_block_) {
+    if (candidate.Node().Style().IsUnboundedElementActive()) {
+      return GetUnboundedViewportContainingBlockInfo(candidate);
+    }
     return *viewport_containing_block_;
   }
 
   return with_new_post_layout_offset_if_resuming(default_containing_block_);
+}
+
+OutOfFlowLayoutPart::ContainingBlockInfo
+OutOfFlowLayoutPart::GetUnboundedViewportContainingBlockInfo(
+    const LogicalOofPositionedNode& candidate) const {
+  DCHECK(viewport_containing_block_);
+  ContainingBlockInfo info = *viewport_containing_block_;
+  const LayoutBox* layout_box = candidate.Node().GetLayoutBox();
+  CHECK(layout_box);
+  std::optional<gfx::Rect> constraining_bounds =
+      layout_box->UnboundedAnchorConstrainingBounds();
+  if (!constraining_bounds) {
+    return info;
+  }
+  const WritingModeConverter converter(
+      info.writing_direction, container_builder_.SizeForAnchorQueries());
+  info.rect = converter.ToLogical(PhysicalRect(*constraining_bounds));
+  info.scroll_limit_rect = std::nullopt;
+  return info;
 }
 
 void OutOfFlowLayoutPart::ComputeInlineContainingBlocks(

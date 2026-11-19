@@ -147,6 +147,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -2264,8 +2265,21 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
       unbounded_surface_state_->host_.is_bound()) {
     CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
     if (auto* active_element = GetActiveUnboundedElement()) {
+      // Monitor work area, zoom, or scale can change without resizing the page.
+      // Force re-layout and paint so the unbounded element re-checks screen
+      // bounds.
+      if (auto* layout_object = active_element->GetLayoutObject()) {
+        layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+            layout_invalidation_reason::kAnchorPositioning);
+        layout_object->SetNeedsPaintPropertyUpdate();
+      }
       active_element->GetDocument().UpdateStyleAndLayoutForNode(
           active_element, DocumentUpdateReason::kJavaScript);
+      if (!unbounded_surface_state_ ||
+          !unbounded_surface_state_->host_.is_bound() ||
+          GetActiveUnboundedElement() != active_element) {
+        return;
+      }
       gfx::Rect bounds;
       if (auto* layout_object = active_element->GetLayoutObject()) {
         bounds = layout_object->AbsoluteBoundingBoxRectForUnboundedElement();
@@ -3071,12 +3085,14 @@ void WebFrameWidgetImpl::DismissUnboundedSurfaceState(
             : ((reason == UnboundedDismissReason::kInteractive)
                    ? UnboundedEvents::kFireCancelable
                    : UnboundedEvents::kFireNonCancelable);
-    if (!active_element->SetUnboundedElementActive(false, events)) {
+    if (!active_element->SetUnboundedElementActive(false, events,
+                                                   /*source=*/nullptr)) {
       if (unbounded_surface_state_ != state) {
         // Another element became active during beforetoggle; finish
         // deactivating this element without firing events.
         active_element->SetUnboundedElementActive(false,
-                                                  UnboundedEvents::kSuppress);
+                                                  UnboundedEvents::kSuppress,
+                                                  /*source=*/nullptr);
         cleanup_displaced_state_resources(state.Get(), reason);
         return;
       }
@@ -5845,6 +5861,23 @@ bool WebFrameWidgetImpl::UpdateScreenRects(
   if (device_emulator_ && widget_base_ && !widget_base_->WillBeDestroyed()) {
     device_emulator_->OnUpdateScreenRects(widget_screen_rect,
                                           window_screen_rect);
+  }
+
+  if (unbounded_surface_state_ && widget_base_ &&
+      widget_base_->WidgetScreenRect() != widget_screen_rect) {
+    // Handles both top-level window moves on screen and cross-process OOPIFs
+    // moved or scrolled by their embedder (since an OOPIF is the root widget of
+    // its process, the browser sends `UpdateScreenRects` to it in both cases).
+    // Neither resizes the page viewport, so Blink will not re-layout on its
+    // own; force re-layout and paint so the unbounded element flips if it
+    // approaches a monitor edge.
+    if (HTMLElement* active_element = GetActiveUnboundedElement()) {
+      if (LayoutObject* layout_object = active_element->GetLayoutObject()) {
+        layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+            layout_invalidation_reason::kAnchorPositioning);
+        layout_object->SetNeedsPaintPropertyUpdate();
+      }
+    }
   }
 
   // Check movement from the committed `WindowScreenRect()`, not `WindowRect()`,

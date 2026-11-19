@@ -25,6 +25,9 @@
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_show_unbounded_element_options.h"
+#include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -3703,6 +3706,401 @@ TEST_F(WebFrameWidgetAdditionalWindowingControlsTest, SetResizableTimeout) {
       /*resizable=*/true, set_resizable_callback.Get());
   FastForwardBy(kWindowShowStateChangeTimeout + base::Seconds(1));
   WebView().MainFrameViewWidget()->OnResizableChanged(/*new_resizable=*/true);
+}
+
+class WebFrameWidgetUnboundedSimTest : public SimTest {
+ public:
+  void SetUp() override {
+    SimTest::SetUp();
+    ASSERT_TRUE(
+        Compositor().LayerTreeHost()->GetSettings().enable_unbounded_element);
+  }
+
+ private:
+  ScopedUnboundedElementForTest scoped_unbounded_{true};
+};
+
+TEST_F(WebFrameWidgetUnboundedSimTest,
+       UnboundedAnchorPositioningUsesScreenBoundsAndSourceOption) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { margin: 0; }
+      #anchor {
+        position: fixed;
+        left: 350px;
+        top: 50px;
+        width: 40px;
+        height: 20px;
+      }
+      #menu {
+        position: fixed;
+        position-anchor: auto;
+        left: anchor(left);
+        top: anchor(bottom);
+        width: 200px;
+        height: 100px;
+        position-try-fallbacks: flip-inline, flip-block, flip-inline flip-block;
+      }
+    </style>
+    <button id="anchor"></button>
+    <div id="menu" unbounded></div>
+  )HTML");
+
+  ContextFeatureSettings::From(
+      GetDocument().GetExecutionContext(),
+      ContextFeatureSettings::CreationMode::kCreateIfNotExists)
+      ->EnableUnboundedElement(
+          WebV8Features::UnboundedElementPrivilege::kPrivileged);
+
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  visual_properties.screen_infos.mutable_current().rect =
+      gfx::Rect(0, 0, 1000, 800);
+  visual_properties.screen_infos.mutable_current().available_rect =
+      gfx::Rect(0, 0, 1000, 800);
+  visual_properties.new_size_device_px = gfx::Size(400, 300);
+  visual_properties.compositor_viewport_pixel_rect = gfx::Rect(400, 300);
+  GetWebFrameWidget().ApplyVisualProperties(visual_properties);
+  GetWebFrameWidget().widget_base_for_testing()->UpdateScreenRects(
+      gfx::Rect(100, 100, 400, 300), gfx::Rect(100, 100, 400, 300),
+      base::DoNothing());
+  Compositor().BeginFrame();
+
+  auto* anchor =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("anchor")));
+  auto* menu =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("menu")));
+  ASSERT_TRUE(anchor);
+  ASSERT_TRUE(menu);
+
+  auto* options = ShowUnboundedElementOptions::Create();
+  options->setSource(anchor);
+  ScriptState* script_state = ToScriptStateForMainWorld(MainFrame().GetFrame());
+  ScriptState::Scope scope(script_state);
+  menu->showUnboundedElement(script_state, options);
+
+  EXPECT_TRUE(menu->IsUnboundedElementActive());
+  EXPECT_EQ(menu->implicitAnchor(), anchor);
+  // Although 350 + 200 = 550 overflows the 400px widget viewport, on screen
+  // 100 + 350 + 200 = 650 <= 1000, so the menu must NOT flip inline.
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(350, 70, 200, 100));
+
+  // Move the widget near the bottom-right corner of the monitor so that both
+  // inline (550 + 350 + 200 = 1100 > 1000) and block (680 + 70 + 100 = 850 >
+  // 800) overflow the screen work area.
+  GetWebFrameWidget().widget_base_for_testing()->UpdateScreenRects(
+      gfx::Rect(550, 680, 400, 300), gfx::Rect(550, 680, 400, 300),
+      base::DoNothing());
+  Compositor().BeginFrame();
+
+  // Flipped inline (`right: anchor(right)` -> x = 350 + 40 - 200 = 190) and
+  // block (`bottom: anchor(top)` -> y = 50 - 100 = -50).
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(190, -50, 200, 100));
+
+  menu->hideUnboundedElement(script_state);
+  EXPECT_FALSE(menu->IsUnboundedElementActive());
+  EXPECT_EQ(menu->implicitAnchor(), nullptr);
+
+  // Non-anchored `position: fixed` unbounded elements also use the monitor
+  // work area (`(-550, -680, 1000, 800)` in widget DIPs) as their containing
+  // block rect.
+  menu->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("position: fixed; left: 0px; top: 0px; width: 200px; "
+                   "height: 100px; position-anchor: none; "
+                   "position-try-fallbacks: none;"));
+  menu->showUnboundedElement(script_state,
+                             ShowUnboundedElementOptions::Create());
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(-550, -680, 200, 100));
+  menu->hideUnboundedElement(script_state);
+}
+
+TEST_F(WebFrameWidgetUnboundedSimTest,
+       UnboundedAnchorPositioningWithBrowserZoomAndDSF) {
+  SimRequest request("https://example.com/zoom.html", "text/html");
+  LoadURL("https://example.com/zoom.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { margin: 0; }
+      #anchor {
+        position: fixed;
+        left: 220px;
+        top: 40px;
+        width: 40px;
+        height: 20px;
+      }
+      #menu {
+        position: fixed;
+        position-anchor: auto;
+        left: anchor(left);
+        top: anchor(bottom);
+        width: 200px;
+        height: 100px;
+        position-try-fallbacks: flip-inline;
+      }
+    </style>
+    <button id="anchor"></button>
+    <div id="menu" unbounded></div>
+  )HTML");
+
+  ContextFeatureSettings::From(
+      GetDocument().GetExecutionContext(),
+      ContextFeatureSettings::CreationMode::kCreateIfNotExists)
+      ->EnableUnboundedElement(
+          WebV8Features::UnboundedElementPrivilege::kPrivileged);
+
+  // DSF = 2.0, browser zoom = 1.5 (LayoutZoomFactor = 3.0).
+  // CSS anchor rect (220, 40, 40, 20) -> (330, 60, 60, 30) DIPs.
+  // CSS menu size (200, 100) -> (300, 150) DIPs.
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  visual_properties.screen_infos.mutable_current().device_scale_factor = 2.0f;
+  visual_properties.screen_infos.mutable_current().rect =
+      gfx::Rect(0, 0, 1000, 800);
+  visual_properties.screen_infos.mutable_current().available_rect =
+      gfx::Rect(0, 0, 1000, 800);
+  visual_properties.css_zoom_factor = 1.5f;
+  visual_properties.new_size_device_px = gfx::Size(800, 600);
+  visual_properties.compositor_viewport_pixel_rect = gfx::Rect(800, 600);
+  GetWebFrameWidget().ApplyVisualProperties(visual_properties);
+  GetWebFrameWidget().widget_base_for_testing()->UpdateScreenRects(
+      gfx::Rect(200, 100, 400, 300), gfx::Rect(200, 100, 400, 300),
+      base::DoNothing());
+  Compositor().BeginFrame();
+
+  auto* anchor =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("anchor")));
+  auto* menu =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("menu")));
+  ASSERT_TRUE(anchor);
+  ASSERT_TRUE(menu);
+
+  auto* options = ShowUnboundedElementOptions::Create();
+  options->setSource(anchor);
+  ScriptState* script_state = ToScriptStateForMainWorld(MainFrame().GetFrame());
+  ScriptState::Scope scope(script_state);
+  menu->showUnboundedElement(script_state, options);
+
+  // Screen X right edge = 200 + 330 + 300 = 830 <= 1000 DIPs: no flip.
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(330, 90, 300, 150));
+
+  // Shrink display available width to 800 DIPs so 830 > 800 triggers flip.
+  visual_properties.screen_infos.mutable_current().available_rect =
+      gfx::Rect(0, 0, 800, 800);
+  GetWebFrameWidget().ApplyVisualProperties(visual_properties);
+  Compositor().BeginFrame();
+
+  // Flipped inline in DIPs: 330 + 60 - 300 = 90.
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(90, 90, 300, 150));
+}
+
+TEST_F(WebFrameWidgetUnboundedSimTest,
+       UnboundedAnchorPositioningUpdatesOnSameFrameScroll) {
+  SimRequest request("https://example.com/scroll.html", "text/html");
+  LoadURL("https://example.com/scroll.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { margin: 0; height: 2000px; }
+      #anchor {
+        position: absolute;
+        left: 20px;
+        top: 600px;
+        width: 30px;
+        height: 20px;
+      }
+      #menu {
+        position: fixed;
+        position-anchor: auto;
+        left: anchor(left);
+        top: anchor(bottom);
+        width: 80px;
+        height: 120px;
+        position-try-fallbacks: flip-block;
+      }
+    </style>
+    <button id="anchor"></button>
+    <div id="menu" unbounded></div>
+  )HTML");
+
+  ContextFeatureSettings::From(
+      GetDocument().GetExecutionContext(),
+      ContextFeatureSettings::CreationMode::kCreateIfNotExists)
+      ->EnableUnboundedElement(
+          WebV8Features::UnboundedElementPrivilege::kPrivileged);
+
+  // Screen work area is 1000x800; widget sits at (0, 100) with size 400x500.
+  // Scroll to y = 250 first so #anchor is at y = 350 in the widget (450 on
+  // screen): below #anchor is 470..590 <= 800 on screen, so no flip yet
+  // (even though 370 + 120 = 490 <= 500 also fits, scrolling up to y = 50 will
+  // move #anchor to y = 550 in the widget -> 650 on screen, where 670 + 120 =
+  // 790 <= 800 still fits, and scrolling to y = 0 moves #anchor to 700 on
+  // screen where 720 + 120 = 840 > 800 flips above #anchor!).
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  visual_properties.screen_infos.mutable_current().rect =
+      gfx::Rect(0, 0, 1000, 800);
+  visual_properties.screen_infos.mutable_current().available_rect =
+      gfx::Rect(0, 0, 1000, 800);
+  visual_properties.new_size_device_px = gfx::Size(400, 500);
+  visual_properties.compositor_viewport_pixel_rect = gfx::Rect(400, 500);
+  GetWebFrameWidget().ApplyVisualProperties(visual_properties);
+  GetWebFrameWidget().widget_base_for_testing()->UpdateScreenRects(
+      gfx::Rect(0, 100, 400, 500), gfx::Rect(0, 100, 400, 500),
+      base::DoNothing());
+  Compositor().BeginFrame();
+
+  GetDocument().domWindow()->scrollToForTesting(0, 250);
+  Compositor().BeginFrame();
+
+  auto* anchor =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("anchor")));
+  auto* menu =
+      To<HTMLElement>(GetDocument().getElementById(AtomicString("menu")));
+  ASSERT_TRUE(anchor);
+  ASSERT_TRUE(menu);
+
+  auto* options = ShowUnboundedElementOptions::Create();
+  options->setSource(anchor);
+  ScriptState* script_state = ToScriptStateForMainWorld(MainFrame().GetFrame());
+  ScriptState::Scope scope(script_state);
+  menu->showUnboundedElement(script_state, options);
+
+  // At scrollY = 250: #anchor is at y = 350 in widget; menu opens below at 370.
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(20, 370, 80, 120));
+
+  // Scroll to y = 50: #anchor moves to y = 550 in widget (outside the 500px
+  // widget viewport, at 650 on screen), and below #anchor is 670..790 <= 800 on
+  // screen so it stays unflipped outside the widget!
+  GetDocument().domWindow()->scrollToForTesting(0, 50);
+  Compositor().BeginFrame();
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(20, 570, 80, 120));
+
+  // Scroll to y = 0: #anchor moves to y = 600 in widget (700 on screen), so
+  // below #anchor would be 720..840 > 800 on screen;
+  // `NonOverflowingScrollRange` flips #menu above #anchor (y = 600 - 120 = 480
+  // in widget).
+  GetDocument().domWindow()->scrollToForTesting(0, 0);
+  Compositor().BeginFrame();
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(20, 480, 80, 120));
+}
+
+TEST_F(WebFrameWidgetUnboundedSimTest,
+       UnboundedAnchorPositioningUpdatesOnParentFrameScroll) {
+  SimRequest main_request("https://example.com/main.html", "text/html");
+  SimRequest child_request("https://example.com/child.html", "text/html");
+  LoadURL("https://example.com/main.html");
+  main_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { margin: 0; height: 2000px; }
+      #child {
+        position: absolute;
+        left: 20px;
+        top: 800px;
+        width: 100px;
+        height: 100px;
+        border: 0;
+      }
+    </style>
+    <iframe id="child" allow="unbounded-element"
+            src="https://example.com/child.html"></iframe>
+  )HTML");
+  child_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { margin: 0; }
+      #anchor {
+        position: fixed;
+        left: 10px;
+        top: 40px;
+        width: 30px;
+        height: 20px;
+      }
+      #menu {
+        position: fixed;
+        position-anchor: auto;
+        left: anchor(left);
+        top: anchor(bottom);
+        width: 80px;
+        height: 120px;
+        position-try-fallbacks: flip-block;
+      }
+    </style>
+    <button id="anchor"></button>
+    <div id="menu" unbounded></div>
+  )HTML");
+
+  auto* child_frame =
+      To<LocalFrame>(MainFrame().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+  ContextFeatureSettings::From(
+      GetDocument().GetExecutionContext(),
+      ContextFeatureSettings::CreationMode::kCreateIfNotExists)
+      ->EnableUnboundedElement(
+          WebV8Features::UnboundedElementPrivilege::kPrivileged);
+  ContextFeatureSettings::From(
+      child_frame->GetDocument()->GetExecutionContext(),
+      ContextFeatureSettings::CreationMode::kCreateIfNotExists)
+      ->EnableUnboundedElement(
+          WebV8Features::UnboundedElementPrivilege::kPrivileged);
+
+  // Screen available work area is 1000x800; widget sits at (0, 100) with size
+  // 400x600. Scroll parent to y = 400 first so #child is at y = 400 in the
+  // widget (500 on screen): below #anchor is 560..680 <= 800 on screen, so
+  // #menu opens below #anchor without flipping.
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  visual_properties.screen_infos.mutable_current().rect =
+      gfx::Rect(0, 0, 1000, 800);
+  visual_properties.screen_infos.mutable_current().available_rect =
+      gfx::Rect(0, 0, 1000, 800);
+  visual_properties.new_size_device_px = gfx::Size(400, 600);
+  visual_properties.compositor_viewport_pixel_rect = gfx::Rect(400, 600);
+  GetWebFrameWidget().ApplyVisualProperties(visual_properties);
+  GetWebFrameWidget().widget_base_for_testing()->UpdateScreenRects(
+      gfx::Rect(0, 100, 400, 600), gfx::Rect(0, 100, 400, 600),
+      base::DoNothing());
+  Compositor().BeginFrame();
+
+  GetDocument().domWindow()->scrollToForTesting(0, 400);
+  Compositor().BeginFrame();
+
+  Document* child_doc = child_frame->GetDocument();
+  auto* anchor =
+      To<HTMLElement>(child_doc->getElementById(AtomicString("anchor")));
+  auto* menu = To<HTMLElement>(child_doc->getElementById(AtomicString("menu")));
+  ASSERT_TRUE(anchor);
+  ASSERT_TRUE(menu);
+
+  auto* options = ShowUnboundedElementOptions::Create();
+  options->setSource(anchor);
+  ScriptState* script_state = ToScriptStateForMainWorld(child_frame);
+  ScriptState::Scope scope(script_state);
+  menu->showUnboundedElement(script_state, options);
+
+  // In widget DIPs: x = 20 + 10 = 30, y = 400 + 60 = 460 (560..680 on screen).
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(30, 460, 80, 120));
+
+  // Scroll parent up to y = 200 without touching child_doc. #child moves down
+  // to y = 600 in the widget (700 on screen), so below #anchor would be
+  // 760..880 > 800 on screen and must flip above #anchor (y = 600 - 80 = 520).
+  GetDocument().domWindow()->scrollToForTesting(0, 200);
+  ASSERT_TRUE(Compositor().NeedsBeginFrame());
+  Compositor().BeginFrame();
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(30, 520, 80, 120));
+
+  // Scroll parent down to y = 850 so #child moves up to y = -50 in the widget
+  // (50 on screen): above #anchor would be -30..90 < 0 on screen (overflowing
+  // the top of the monitor), so #menu must un-flip back below (-50 + 60 = 10).
+  GetDocument().domWindow()->scrollToForTesting(0, 850);
+  ASSERT_TRUE(Compositor().NeedsBeginFrame());
+  Compositor().BeginFrame();
+  EXPECT_EQ(menu->LastSentUnboundedBounds(), gfx::Rect(30, 10, 80, 120));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
