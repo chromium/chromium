@@ -132,10 +132,6 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                           const Occlusion& scaled_occlusion,
                           Functor functor) const;
 
-  // Invoked when a tile is determined to be ready to draw, allowing subclasses
-  virtual void WillProcessReadyToDrawTile(
-      const TilingSetCoverageIterator<Tiling>& iter) {}
-
   // Returns true if the subclass wants to track the approximated visible
   // content area for the given resolution.
   virtual bool ShouldUpdateApproximatedVisibleContentArea(
@@ -581,8 +577,6 @@ bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
   auto* tile = *iter;
   bool has_draw_quad = false;
   if (tile && tile->IsReadyToDraw()) {
-    WillProcessReadyToDrawTile(iter);
-
     if (auto resource_id = tile->GetResourceId()) {
       auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
       quad->SetNew(shared_quad_state, offset_geometry_rect,

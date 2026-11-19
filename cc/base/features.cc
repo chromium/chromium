@@ -64,14 +64,6 @@ BASE_FEATURE_PARAM(int,
                    "size_in_pixels",
                    kDefaultInterestAreaSizeInPixels);
 
-BASE_FEATURE(kReclaimOldPrepaintTiles, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(int,
-                   kReclaimDelayInSeconds,
-                   &kReclaimOldPrepaintTiles,
-                   "reclaim_delay_s",
-                   30);
-
 BASE_FEATURE(kTileOOMFreezeMitigation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStopDeferringCommitsInCompositeForTest,

@@ -410,8 +410,6 @@ class CC_EXPORT PictureLayerImpl
       const gfx::Rect& coverage_rect,
       float coverage_scale,
       float ideal_contents_scale) const override;
-  void WillProcessReadyToDrawTile(
-      const TilingSetCoverageIterator<PictureLayerTiling>& iter) override;
   bool ShouldUpdateApproximatedVisibleContentArea(
       TileResolution resolution) const override;
   bool ShouldReportTileAsMissing(

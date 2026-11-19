@@ -39,11 +39,6 @@ constexpr static int kDefaultInterestAreaSizeInPixels = 3000;
 constexpr static int kDefaultInterestAreaSizeInPixelsWhenEnabled = 500;
 CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kInterestAreaSizeInPixels);
 
-// When enabled, old prepaint tiles in the "eventually" region get reclaimed
-// after some time.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimOldPrepaintTiles);
-CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kReclaimDelayInSeconds);
-
 // When enabled, TileManager running into OOM will forcibly mark tiles as OOM so
 // that it doesn't wait for resource releases that will never come.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kTileOOMFreezeMitigation);

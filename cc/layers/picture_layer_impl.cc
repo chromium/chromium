@@ -282,15 +282,6 @@ void PictureLayerImpl::DidAppendQuad(
   ValidateQuadResources(quad);
 }
 
-void PictureLayerImpl::WillProcessReadyToDrawTile(
-    const TilingSetCoverageIterator<PictureLayerTiling>& iter) {
-  // Mark the tile used for raster. This is used to reclaim old prepaint
-  // tiles in TileManager.
-  if (*iter) {
-    (*iter)->mark_used();
-  }
-}
-
 bool PictureLayerImpl::ComputeCheckerboardedNeedsRecord() {
   if (is_backdrop_filter_mask()) {
     return false;

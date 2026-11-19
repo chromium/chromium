@@ -308,9 +308,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
 
   // If we haven't produced a frame in a while, drop the "nice to have" tiles.
   void ScheduleReduceTileMemoryWhenIdle(base::TimeDelta time_since_last_active);
-  void ScheduleTrimPrepaintTiles();
   void ReduceTileMemoryWhenIdle();
-  void TrimPrepaintTiles();
 
   // True if tile resources are present and freed.
   void FreeResourcesForTile(Tile* tile);
@@ -384,7 +382,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   base::TaskRunner* TaskRunnerWithOverride() const;
 
  public:
-  static base::TimeDelta GetTrimPrepaintTilesDelay();
   static constexpr base::TimeDelta kDelayBeforeTimeReclaim = base::Minutes(5);
 
  private:
@@ -453,7 +450,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
 
   base::TimeTicks last_active_time_;
   bool has_pending_idle_task_ = false;
-  bool has_pending_tile_trimming_task_ = false;
   scoped_refptr<base::TaskRunner> task_runner_for_testing_ = nullptr;
   raw_ptr<const base::TickClock> tick_clock_for_testing_ = nullptr;
 
