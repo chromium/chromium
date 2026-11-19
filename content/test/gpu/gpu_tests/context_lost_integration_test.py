@@ -421,8 +421,13 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _ContextLost_WebGLContextNotLostFromFullscreenChange(
     self, test_path: str
   ) -> None:
+    # TODO(b/553443522): Entering fullscreen requires tab focus, which is held
+    # by the WebUI omnibox popup on startup.
     self.RestartBrowserIfNecessaryWithArgs(
-      [cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS]
+      [
+        cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS,
+        '--disable-features=WebUIOmniboxFullPopup',
+      ]
     )
     self._NavigateAndWaitForLoad(test_path)
     # Entering fullscreen requires focus and user activation, so focus the tab,
