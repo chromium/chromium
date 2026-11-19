@@ -268,11 +268,12 @@ bool WebUIAvatarToolbarButton::IsButtonEnabled() const {
   if (!state_manager_) {
     return false;
   }
-  bool is_enabled = true;
-#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = delegate_->GetBrowser()->GetProfile();
-  is_enabled = profile->IsOffTheRecord() && !profile->IsGuestSession() &&
-               !profile->GetOTRProfileID().IsCaptivePortal();
+  bool is_enabled = AvatarToolbarButtonInterface::CanShowForProfile(profile);
+#if BUILDFLAG(IS_CHROMEOS)
+  is_enabled = is_enabled && !profile->IsGuestSession() &&
+               !(profile->IsOffTheRecord() &&
+                 profile->GetOTRProfileID().IsCaptivePortal());
 #endif
   return is_enabled;
 }

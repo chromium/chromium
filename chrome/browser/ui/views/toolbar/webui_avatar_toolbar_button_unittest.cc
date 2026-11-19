@@ -166,6 +166,34 @@ TEST_F(WebUIAvatarToolbarButtonTest, ButtonPressedExecutesBeforeInitialize) {
   button.RemoveObserver(&observer);
 }
 
+TEST_F(WebUIAvatarToolbarButtonTest, DisabledWhenCannotShowForProfile) {
+  TestingProfile* normal_profile = CreateTestingProfile("normal");
+  TestingProfile::Builder devtools_builder;
+  devtools_builder.SetPath(normal_profile->GetPath());
+  TestingProfile* devtools_profile = devtools_builder.BuildOffTheRecord(
+      normal_profile, Profile::OTRProfileID::CreateUniqueForDevTools());
+  ASSERT_FALSE(
+      AvatarToolbarButtonInterface::CanShowForProfile(devtools_profile));
+
+  TestBrowserEnvironment devtools_env(devtools_profile, widget_.get(), view_);
+  WebUIAvatarToolbarButton devtools_button(&devtools_env.delegate);
+  NiceMock<MockAvatarObserver> observer;
+  devtools_button.AddObserver(&observer);
+
+  EXPECT_CALL(
+      devtools_env.delegate,
+      OnAvatarControlStateChanged(Pointee(
+          Field(&toolbar_ui_api::mojom::AvatarControlState::enabled, false))));
+  devtools_button.Initialize();
+  EXPECT_FALSE(devtools_button.IsButtonEnabled());
+
+  EXPECT_CALL(observer, OnButtonPressed()).Times(0);
+  devtools_button.ButtonPressed(/*is_source_accelerator=*/false);
+  devtools_button.ButtonPressed(/*is_source_accelerator=*/true);
+
+  devtools_button.RemoveObserver(&observer);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebUIAvatarToolbarButtonTest, IsButtonEnabled_ChromeOSProfiles) {
   // Regular profile is disabled on ChromeOS.
