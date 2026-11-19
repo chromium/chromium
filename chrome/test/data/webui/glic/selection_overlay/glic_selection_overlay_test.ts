@@ -1104,18 +1104,69 @@ suite('GlicSelectionOverlayLayout', () => {
     assertNear(selection.left, promptRect().left, 'left stays aligned');
     assertNear(window.innerWidth - MARGIN, promptRect().right, 'right margin');
 
-    // When right-aligned below the selection near the right edge, both the
-    // pill and the 380px inline fulfillment host stay aligned to
-    // selection.right.
+    // When right-aligned below the selection near the right edge, the 380px
+    // inline fulfillment host stays aligned to selection.right and the prompt
+    // box is hidden.
     region = regionFromPx(window.innerWidth - 120, 100, 80, 60);
     await select(region, [cardChip()]);
     await clickCardChip(fakeCard(100));
     hostRect = query('#inlineFulfillmentHost').getBoundingClientRect();
-    const pillRect = query('.searchbox-pill').getBoundingClientRect();
     selection = toViewport(region);
     assertNear(380, hostRect.width, 'right-aligned preferred width');
     assertNear(selection.right, hostRect.right, 'host right-aligned');
-    assertNear(selection.right, pillRect.right, 'pill right-aligned');
+    assertEquals('none', getComputedStyle(query('.searchbox-row')).display);
+  });
+
+  test('PromptBoxHiddenWhenInlineFulfillmentShows', async () => {
+    await showOverlay({promptBox: true, dogfoodFeedback: true});
+    const region = regionFromPx(100, 100, 80, 60);
+    await select(region, [cardChip()]);
+
+    const searchboxRow = query('.searchbox-row');
+    const chipsRow = query('.action-chips-row');
+    const host =
+        query('#inlineFulfillmentHost') as InlineFulfillmentHostElement;
+    assertNotEquals('none', getComputedStyle(searchboxRow).display);
+    assertNotEquals('none', getComputedStyle(chipsRow).display);
+    assertEquals('none', getComputedStyle(host).display);
+
+    // If consent is declined, the card does not show and the prompt box stays
+    // visible.
+    host.loaders = new Map([[
+      FAKE_CARD,
+      () => Promise.resolve({
+        create: () => ({
+          element: fakeCard(100),
+          interfaceName: GenericAssociatedInterface.$interfaceName,
+          remote: new GenericAssociatedInterfaceRemote(),
+          consent: () => Promise.resolve(false),
+        }),
+      }),
+    ]]);
+    handler.resetResolver('executeSuggestedAction');
+    chips()[0]!.click();
+    await handler.whenCalled('executeSuggestedAction');
+    await flushTasks();
+    assertEquals(null, host.firstElementChild);
+    assertNotEquals('none', getComputedStyle(searchboxRow).display);
+    assertNotEquals('none', getComputedStyle(chipsRow).display);
+
+    // Once the inline fulfillment card shows, the prompt box and chips are
+    // hidden and the card takes their place.
+    await clickCardChip(fakeCard(100));
+    assertEquals('none', getComputedStyle(searchboxRow).display);
+    assertEquals('none', getComputedStyle(chipsRow).display);
+    assertNotEquals('none', getComputedStyle(host).display);
+    const hostRect = host.getBoundingClientRect();
+    const selection = toViewport(region);
+    assertNear(selection.left, hostRect.left, 'card left');
+    assertNear(selection.bottom + MARGIN, hostRect.top, 'card top');
+
+    // Selecting a new region clears the card and shows the prompt box again.
+    await select(regionFromPx(200, 100, 80, 60), [cardChip()]);
+    assertNotEquals('none', getComputedStyle(searchboxRow).display);
+    assertNotEquals('none', getComputedStyle(chipsRow).display);
+    assertEquals('none', getComputedStyle(host).display);
   });
 
   test('HandlesStayHiddenWithCard', async () => {

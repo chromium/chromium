@@ -568,7 +568,8 @@
   display: none;
 }
 
-/* The card takes the chips' place. */
+/* The card takes the prompt box and chips' place. */
+.searchbox-row:has(~ #inlineFulfillmentHost > *),
 .action-chips-row:has(~ #inlineFulfillmentHost > *) {
   display: none;
 }
