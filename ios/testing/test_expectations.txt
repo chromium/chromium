@@ -516,8 +516,6 @@ crbug.com/533075931 [ iOS18 iOS26 iPad Simulator ] GeminiCopresenceTestCase/test
 crbug.com/536840723 [ iPad Simulator ] TabGridTestCase/testEmptyStateAfterNoResultsSearchForIncognitoTabGrid [ Pass Failure ]
 
 # Gardening suppression 2026-07-30
-crbug.com/540811503 DeeplinkSigninTestCase/testCrossDeviceSigninSignedInTargetAccountNotOnDevice [Pass Failure]
-crbug.com/540829196 DeeplinkSigninTestCase/testCrossDeviceSigninSignedInTargetAccountOnDevice [ Pass Failure ]
 crbug.com/540481922 [iOS18 iPhone] SnapshotTestCase/testSnapshotWithScrollDown [Pass Failure]
 
 # Multi-window iPad iOS 27 issues
