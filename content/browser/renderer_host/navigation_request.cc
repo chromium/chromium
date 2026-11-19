@@ -250,6 +250,7 @@
 #include "ui/compositor/compositor_lock.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
+#include "url/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
@@ -917,6 +918,27 @@ ukm::SourceId GetPageUkmSourceId(FrameTreeNode* frame_tree_node) {
 bool IsMhtmlMimeType(const std::string& mime_type) {
   return base::EqualsCaseInsensitiveASCII(mime_type, "multipart/related") ||
          base::EqualsCaseInsensitiveASCII(mime_type, "message/rfc822");
+}
+
+// Returns whether an MHTML archive may be loaded from `url`. This matches the
+// schemes allowed by blink::MHTMLArchive::CanLoadArchive(): the schemes in
+// url::GetLocalSchemes() (file: plus embedder-registered ones, such as
+// externalfile: on ChromeOS), http(s), and content: on Android.
+// TODO(crbug.com/587464221): Share this with
+// blink::MHTMLArchive::CanLoadArchive().
+bool CanLoadMhtmlArchiveFromURL(const GURL& url) {
+  if (std::ranges::contains(url::GetLocalSchemes(), url.scheme())) {
+    return true;
+  }
+  if (url.SchemeIsHTTPOrHTTPS()) {
+    return true;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (url.SchemeIs(url::kContentScheme)) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return false;
 }
 
 std::optional<base::SafeRef<RenderFrameHostImpl>>
@@ -5327,7 +5349,9 @@ void NavigationRequest::OnResponseStarted(
   RecordAddressSpaceFeature();
 
   const bool is_mhtml_archive = IsMhtmlMimeType(response_head_->mime_type);
-  if (is_mhtml_archive) {
+  const bool can_load_mhtml_archive =
+      is_mhtml_archive && CanLoadMhtmlArchiveFromURL(GetURL());
+  if (can_load_mhtml_archive) {
     is_mhtml_or_subframe_ = true;
   }
 
@@ -5502,6 +5526,24 @@ void NavigationRequest::OnResponseStarted(
   // MHTML document can't be framed into non-MHTML document (and vice versa).
   // The full page must load from the MHTML archive or none of it.
   if (is_mhtml_archive && !IsInMainFrame()) {
+    OnRequestFailedInternal(
+        network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_RESPONSE),
+        false /* skip_throttles */, std::nullopt /* error_page_content */,
+        false /* collapse_frame */);
+    // DO NOT ADD CODE after this. The previous call to
+    // OnRequestFailedInternal has destroyed the NavigationRequest.
+    return;
+  }
+
+  // MHTML archives may only be rendered from the schemes that Blink can load
+  // them from. Subframes of an MHTML document are loaded from the archive and
+  // get special treatment in the browser (e.g., they stay in the main frame's
+  // SiteInstance), so the browser must not treat a document from any other
+  // scheme as MHTML. download_utils::MustDownload() usually turns such
+  // responses into downloads, and then we've already returned above because
+  // `response_should_be_rendered_` is false. But it doesn't cover all of them
+  // (e.g., responses without HttpResponseHeaders), so check this here too.
+  if (is_mhtml_archive && !can_load_mhtml_archive) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_RESPONSE),
         false /* skip_throttles */, std::nullopt /* error_page_content */,
