@@ -290,7 +290,7 @@ export class LeftHandSideElement extends CrLitElement {
   // it is the primary view. Opacity and visibility for the cross-fade between
   // views, including hiding the folded rail while the ghost loader replaces
   // it, are handled in left_hand_side.css.
-  protected getVisibleView_(): LhsView {
+  private getVisibleView_(): LhsView {
     if (!this.isExpanded_) {
       return LhsView.FOLDED;
     }

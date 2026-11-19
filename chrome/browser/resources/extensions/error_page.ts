@@ -386,7 +386,7 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     this.onErrorItemAction_(e);
   }
 
-  protected onErrorItemAction_(e: Event) {
+  private onErrorItemAction_(e: Event) {
     if (e.type === 'keydown' &&
         !((e as KeyboardEvent).code === 'Space' ||
           (e as KeyboardEvent).code === 'Enter')) {

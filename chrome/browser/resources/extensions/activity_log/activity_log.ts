@@ -176,7 +176,7 @@ export class ExtensionsActivityLogElement extends
     this.selectedSubpage_ = e.detail.value;
   }
 
-  protected onSelectedSubpageChanged_(
+  private onSelectedSubpageChanged_(
       newTab: MaybeActivityLogSubpage, oldTab: MaybeActivityLogSubpage) {
     const activityLogStream =
         this.shadowRoot.querySelector('activity-log-stream');

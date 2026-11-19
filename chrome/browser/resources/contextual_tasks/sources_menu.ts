@@ -10,7 +10,6 @@ import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -96,10 +95,6 @@ export class SourcesMenuElement extends CrLitElement {
     const contextInfo = this.getContextInfoFromEvent_(e);
     this.toolbarBrowserProxy_.handler.onImageClickedFromSourcesMenu(
         contextInfo.image!.url);
-  }
-
-  protected faviconUrl_(url: string): string {
-    return getFaviconForPageURL(url, false);
   }
 
   protected getHostname_(url: string): string {

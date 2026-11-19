@@ -338,16 +338,16 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     return this.smartTabSharingVisible && this.smartTabSharingActive;
   }
 
-  protected isUnboundedMenuEnabled_(): boolean {
+  private isUnboundedMenuEnabled_(): boolean {
     return this.useUnbounded;
   }
 
-  protected isDarkModeEnabled_(): boolean {
+  private isDarkModeEnabled_(): boolean {
     const params = new URLSearchParams(window.location.search);
     return params.get('cs') === '1';
   }
 
-  protected get hasTabSuggestions_(): boolean {
+  private get hasTabSuggestions_(): boolean {
     return this.tabSuggestions.length > 0;
   }
 

@@ -1057,7 +1057,7 @@ export class AppElement extends AppElementBase {
     this.pageHandler_.onContextualSearchIPHEngaged();
   }
 
-  protected async openComposebox_(state: ComposeboxState|null = null) {
+  private async openComposebox_(state: ComposeboxState|null = null) {
     const nextState: ComposeboxState = state ?? {
       text: '',
       files: [],
@@ -1099,7 +1099,7 @@ export class AppElement extends AppElementBase {
     await this.updateComplete;
   }
 
-  protected closeComposebox_() {
+  private closeComposebox_() {
     this.showComposebox_ = false;
   }
 
@@ -1120,7 +1120,7 @@ export class AppElement extends AppElementBase {
     this.containerFocused_ = false;
   }
 
-  protected onComposeboxOutsideClick_() {
+  private onComposeboxOutsideClick_() {
     if (this.composeboxOutsideClickEnabled_) {
       this.composeboxFocused_ = false;
     } else {
@@ -1221,7 +1221,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  protected computeShowWallpaperSearchButton_() {
+  private computeShowWallpaperSearchButton_() {
     if (!this.wallpaperSearchButtonEnabled_) {
       return false;
     }
@@ -1596,7 +1596,7 @@ export class AppElement extends AppElementBase {
         ModuleLoadStatus.MODULE_LOAD_NOT_ATTEMPTED;
   }
 
-  protected computeShowBrowserPromo_(): boolean {
+  private computeShowBrowserPromo_(): boolean {
     return !this.modulesEnabled_ ||
         (this.modulesLoadedStatus_ !==
              ModuleLoadStatus.MODULE_LOAD_IN_PROGRESS &&
@@ -1617,7 +1617,7 @@ export class AppElement extends AppElementBase {
     this.browserPromoType_ = type;
   }
 
-  protected async recordBrowserPromoMetrics_() {
+  private async recordBrowserPromoMetrics_() {
     if (!this.showBrowserPromo_) {
       recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownDueToPolicy);
       return;
@@ -1899,7 +1899,7 @@ export class AppElement extends AppElementBase {
     this.showUndoToast_(undoToastContext);
   }
 
-  protected showUndoToast_(
+  private showUndoToast_(
       undoToastContext: CustomEvent<{message: string, undo: () => void}>) {
     this.pendingUndoToasts_.push(undoToastContext.detail);
     this.processPendingUndoToasts_();

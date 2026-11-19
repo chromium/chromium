@@ -349,7 +349,7 @@ export class MemoryBanksElement extends CrLitElement {
     }
   }
 
-  protected onViewModeChange_(mode: 'card'|'table') {
+  private onViewModeChange_(mode: 'card'|'table') {
     this.viewMode_ = mode;
   }
 
@@ -510,7 +510,7 @@ export class MemoryBanksElement extends CrLitElement {
         null;
   }
 
-  protected updateSuggestions_(input: string = this.searchQuery) {
+  private updateSuggestions_(input: string = this.searchQuery) {
     this.searchSuggestions_ = computeSuggestions(
         input, this.availableTags_.filter(Boolean),
         this.availableCollections_.filter(Boolean));
@@ -578,7 +578,7 @@ export class MemoryBanksElement extends CrLitElement {
     }
   }
 
-  protected async applySuggestion_(suggestion: SearchSuggestion) {
+  private async applySuggestion_(suggestion: SearchSuggestion) {
     this.setSearchQuery_(suggestion.query);
     if (suggestion.query.trim().endsWith(':')) {
       this.updateSuggestions_(suggestion.query);

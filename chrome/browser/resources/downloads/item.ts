@@ -841,15 +841,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return !hideRemove;
   }
 
-  protected computeRemoveStyle_(): string {
-    return this.computeShowRemove_() ? '' : 'visibility: hidden';
-  }
-
   protected computeShowControlsForDangerous_(): boolean {
     return !this.isReviewable_ && this.isDangerous_;
   }
 
-  protected computeShowCancel_(): boolean {
+  private computeShowCancel_(): boolean {
     if (!this.data) {
       return false;
     }
@@ -1172,14 +1168,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   protected onFileLinkClick_(e: Event) {
     e.preventDefault();
     this.browserProxy_.handler.openFileRequiringGesture(this.dataId_());
-  }
-
-  protected onUrlClick_() {
-    if (!this.data || !this.data.url) {
-      return;
-    }
-    chrome.send(
-        'metricsHandler:recordAction', ['Downloads_OpenUrlOfDownloadedItem']);
   }
 
   private doPause_() {

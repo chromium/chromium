@@ -113,7 +113,7 @@ export class CertificateListElement extends CertificateListElementBase {
     }
   }
 
-  protected refreshCertificates_() {
+  private refreshCertificates_() {
     browserProxyFactory.getInstance()
         .handler.getCertificates(this.certSource)
         .then((results: {certs: SummaryCertInfo[]}) => {

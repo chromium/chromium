@@ -468,7 +468,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.updateBackgroundColor_();
     this.updateCommonSearchParams();
   }
-  protected get composebox_(): ContextualTasksComposeboxElement|null {
+  private get composebox_(): ContextualTasksComposeboxElement|null {
     // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
     return this.$.composebox || null;
     // </if>
@@ -951,7 +951,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     const composeboxContainer = this.composebox_;
     const crComposebox = composeboxContainer?.getComposebox() || null;
 
-    const isComposeboxHidden = this.isComposeboxHidden_() ||
+    const isComposeboxHidden = this.checkComposeboxHidden_() ||
         (this.enableBasicMode_ && this.isInBasicMode_);
 
     const isComposeboxAvailable =
@@ -998,10 +998,12 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   }
   // LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_onboarding_tooltip_controller.cc:ContextualTasksTooltipLogic)
 
+  // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
   protected onOnboardingTooltipDismissed_() {
     this.onboardingTooltipShowing_ = false;
     this.updateTooltipVisibility_();
   }
+  // </if>
 
   // <if expr="not is_android">
   private updateInfoTooltip_(
@@ -1035,7 +1037,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.composebox_?.classList.remove('play-zero-state');
   }
 
-  protected onComposeboxContextMenuOpened_() {
+  private onComposeboxContextMenuOpened_() {
     // <if expr="not is_android">
     setTimeout(() => {
       const menu = this.getContextualActionMenu();
@@ -1328,7 +1330,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       // Since the height is controlled client side and the composebox grows
       // updwards, set the top of the rect to match the current height to avoid
       // miscalculations in the clip path.
-      const wasHidden = this.isComposeboxHidden_();
+      const wasHidden = this.checkComposeboxHidden_();
       if (this.shouldSetForceComposeboxBounds_()) {
         this.forcedComposeboxBounds_ = {
           ...inputRect,
@@ -1338,7 +1340,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         // Only focus the input if the composebox transitions from hidden to
         // visible. This prevents focus-stealing on subsequent bounds updates
         // (e.g., when the composebox changes height).
-        if (wasHidden && !this.isComposeboxHidden_()) {
+        if (wasHidden && !this.checkComposeboxHidden_()) {
           this.updateComplete.then(() => {
             this.composebox_?.tryFocus();
           });
@@ -1370,7 +1372,15 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         });
   }
 
+  // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
+  // Template wrapper only compiled when `<contextual-tasks-composebox>` is in
+  // the template; TS callers on all platforms use `checkComposeboxHidden_()`.
   protected isComposeboxHidden_(): boolean {
+    return this.checkComposeboxHidden_();
+  }
+  // </if>
+
+  private checkComposeboxHidden_(): boolean {
     if (!this.isAimEligible_) {
       return true;
     }
@@ -1426,7 +1436,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   }
 
   protected isComposeboxHeaderWrapperHidden_(): boolean {
-    if (this.isComposeboxHidden_()) {
+    if (this.checkComposeboxHidden_()) {
       return true;
     }
     return (this.enableBasicMode_ && this.isInBasicMode_ &&
@@ -1490,6 +1500,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     return style.join(' ');
   }
 
+  // <if expr="not is_android">
   protected getBannerPromoBoundsStyles_() {
     if ((this.isZeroState_ && !this.inNlm_) || !this.forcedComposeboxBounds_) {
       return '';
@@ -1510,6 +1521,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       `min-width: 0;`,
     ].join(' ');
   }
+  // </if>
 
   getThreadFrameStyles(): string {
     if (this.occluders_ == null) {
@@ -1569,7 +1581,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     return result;
   }
 
-  protected getComposeboxBoundsRelativeToThreadFrame_() {
+  private getComposeboxBoundsRelativeToThreadFrame_() {
     const composebox = this.composebox_;
     if (!composebox) {
       return null;
@@ -1822,10 +1834,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   getThreadUrlForTesting() {
     return this.$.threadFrame.src;
-  }
-
-  protected onErrorDialogClose_() {
-    this.isErrorDialogVisible_ = false;
   }
 
   updateTooltipVisibilityForTesting() {

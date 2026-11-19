@@ -123,7 +123,7 @@ export class ComposeResultTextElement extends CrLitElement {
     }
   }
 
-  protected updateInputs_() {
+  private updateInputs_() {
     if (this.textInput.streamingEnabled) {
       this.isOutputComplete = false;
       this.wordStreamer_.setText(

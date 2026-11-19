@@ -706,7 +706,7 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.refreshOpenTabs_();
   }
 
-  protected getChromeVersion_(): string {
+  private getChromeVersion_(): string {
     if (loadTimeData.isInitialized()) {
       try {
         const browserVersion = loadTimeData.getString('browserVersion');
@@ -731,7 +731,7 @@ export class GlicInternalsAppElement extends CrLitElement {
     return match?.[1] ?? 'Unknown';
   }
 
-  protected getDiagnosticsMarkdown_(): string {
+  private getDiagnosticsMarkdown_(): string {
     if (!this.data_) {
       return '# Glic Internals Diagnostics\n\nNo diagnostics data available.';
     }
@@ -991,7 +991,7 @@ export class GlicInternalsAppElement extends CrLitElement {
     }
   }
 
-  protected async refreshOpenTabs_() {
+  private async refreshOpenTabs_() {
     const {tabTitles} = await this.browserProxy_.handler.getOpenTabs();
     this.availableTabs_ = tabTitles;
     this.invokeSpecificTabIndex_ = 0;

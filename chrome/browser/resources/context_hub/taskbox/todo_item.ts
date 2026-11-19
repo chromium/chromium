@@ -103,7 +103,7 @@ export class TodoItemElement extends CrLitElement {
     await this.onThumbClick_(e, false);
   }
 
-  protected async onThumbClick_(e: Event, like: boolean) {
+  private async onThumbClick_(e: Event, like: boolean) {
     e.stopPropagation();
     // If the thumb is already clicked, unselect it.
     if (this.liked === like) {

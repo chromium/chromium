@@ -752,18 +752,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return !this.hasOutput_ && this.feedbackEnabled_;
   }
 
-  protected hasSuccessfulResponse_(): boolean {
-    return this.response_?.status === ComposeStatus.kOk;
-  }
-
-  protected hasPartialResponse_(): boolean {
-    return Boolean(this.partialResponse_);
-  }
-
-  protected hasPartialOrCompleteResponse_(): boolean {
-    return Boolean(this.partialResponse_) || this.hasSuccessfulResponse_();
-  }
-
   protected hasFailedResponse_(): boolean {
     if (!this.response_) {
       return false;
@@ -791,10 +779,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
 
     return this.response_.status === ComposeStatus.kPermissionDenied;
-  }
-
-  protected onDeviceEvaluationUsed_(): boolean {
-    return Boolean(this.response_?.onDeviceEvaluationUsed);
   }
 
   protected showOnDeviceDogfoodFooter_(): boolean {

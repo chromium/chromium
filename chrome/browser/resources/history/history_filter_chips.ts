@@ -84,7 +84,7 @@ export class HistoryFilterChipsElement extends CrLitElement {
     return option.id === this.selectedTimePeriodOptionId;
   }
 
-  protected hasActiveTimePeriodFilter_(): boolean {
+  private hasActiveTimePeriodFilter_(): boolean {
     return this.selectedTimePeriodOptionId !== TimePeriodOptionId.kAllTime;
   }
 
@@ -189,7 +189,7 @@ export class HistoryFilterChipsElement extends CrLitElement {
     this.fireChange_(this.userVisits, this.actorVisits);
   }
 
-  protected recordMetrics_(newUserState: boolean, newActorState: boolean) {
+  private recordMetrics_(newUserState: boolean, newActorState: boolean) {
     let action = '';
     if (newUserState && newActorState) {
       action = 'HistoryPage_ShowAllEnabled';

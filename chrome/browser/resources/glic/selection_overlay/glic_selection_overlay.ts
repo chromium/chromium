@@ -896,7 +896,7 @@ export class GlicSelectionOverlayElement extends
         .dismissOverlay(DismissOverlayReason.kBackgroundClick);
   }
 
-  protected submitPrompt(prompt: string) {
+  private submitPrompt(prompt: string) {
     (this.baseHandler as SelectionOverlayBaseHandlerImpl).submitPrompt(prompt);
   }
 

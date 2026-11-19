@@ -211,7 +211,7 @@ export class AppItemElement extends CrLitElement {
     return !this.appInfo.isLocallyInstalled;
   }
 
-  protected isLocallyInstalled_() {
+  private isLocallyInstalled_() {
     return this.appInfo.isLocallyInstalled;
   }
 

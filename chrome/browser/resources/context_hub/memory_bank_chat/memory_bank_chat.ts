@@ -408,7 +408,7 @@ export class MemoryBankChatElement extends CrLitElement {
     this.attachedChips_ = updated;
   }
 
-  protected selectMentionSuggestion_(item: MentionSuggestionItem) {
+  private selectMentionSuggestion_(item: MentionSuggestionItem) {
     this.replaceActiveMention_(item.mentionText);
 
     // A bare qualifier completes the prefix only and keeps the menu open so a

@@ -300,7 +300,7 @@ export class ActionChipsElement extends ActionChipsElementBase {
 
   // Returns a chrome://favicon2 URL, or, if the element is hosted in an
   // extension page, the extension's /_favicon/ URL.
-  protected getFaviconUrl_(url: string): string {
+  private getFaviconUrl_(url: string): string {
     const faviconUrl =
         new URL(getFaviconUrl(url, {size: 24, scaleFactor: '1x'}));
     faviconUrl.searchParams.set('showFallbackMonogram', '');
@@ -342,16 +342,6 @@ export class ActionChipsElement extends ActionChipsElementBase {
       fuseboxAction: chip.suggestTemplateInfo.fuseboxAction ?? undefined,
     });
   }
-
-  protected recentTabChipTitle_(chip: ActionChip) {
-    if (!chip.tab) {
-      return '';
-    }
-    const url = new URL(chip.tab.url);
-    const domain = url.hostname.replace(/^www\./, '');
-    return `${chip.suggestTemplateInfo.secondaryText?.text ?? ''} - ${domain}`;
-  }
-
 
   protected getChipSubtitle_(chip: ActionChip): string {
     return chip.suggestTemplateInfo.secondaryText?.text ?? '';

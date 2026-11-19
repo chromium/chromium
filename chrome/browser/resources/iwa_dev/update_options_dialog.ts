@@ -125,11 +125,11 @@ export class IwaDevUpdateOptionsDialogElement extends CrLitElement {
     this.selectedAllowDowngrades_ = e.detail;
   }
 
-  protected getCurrentChannel_(): string {
+  private getCurrentChannel_(): string {
     return this.app.source.updateInfo?.updateChannel || 'default';
   }
 
-  protected getCurrentPinnedVersion_(): string|null {
+  private getCurrentPinnedVersion_(): string|null {
     return this.currentPinnedVersion;
   }
 

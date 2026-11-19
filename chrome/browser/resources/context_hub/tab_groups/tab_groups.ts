@@ -369,7 +369,7 @@ export class TabGroupsElement extends CrLitElement {
     }
   }
 
-  protected async onConfirmAllGroupsClick_() {
+  private async onConfirmAllGroupsClick_() {
     if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
       return;
     }
@@ -725,7 +725,7 @@ export class TabGroupsElement extends CrLitElement {
                                                  'cr:thumb-down';
   }
 
-  protected cleanUrl_(urlStr: string): string {
+  private cleanUrl_(urlStr: string): string {
     if (!urlStr) {
       return '';
     }
@@ -750,7 +750,7 @@ export class TabGroupsElement extends CrLitElement {
         (!!this.feedbackDefect_ && this.feedbackDefect_ !== 'All good');
   }
 
-  protected escapeTsvField_(value: string|number): string {
+  private escapeTsvField_(value: string|number): string {
     const str = String(value ?? '');
     const normalized = str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
     if (normalized.includes('\t') || normalized.includes('\n') ||
@@ -760,14 +760,14 @@ export class TabGroupsElement extends CrLitElement {
     return normalized;
   }
 
-  protected formatTimestamp_(date: Date = new Date()): string {
+  private formatTimestamp_(date: Date = new Date()): string {
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${
         pad(date.getDate())} ${pad(date.getHours())}:${
         pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
 
-  protected getRatingBucket_(rating: number): string {
+  private getRatingBucket_(rating: number): string {
     return rating >= 9 ? 'Very Good (9-10)' :
         rating >= 7    ? 'Good (7-8)' :
         rating >= 4    ? 'Bad (4-6)' :
@@ -802,7 +802,7 @@ export class TabGroupsElement extends CrLitElement {
     this.feedbackComments_ = e.detail.value;
   }
 
-  protected openFeedbackDialog_(liked: boolean) {
+  private openFeedbackDialog_(liked: boolean) {
     this.feedbackLiked_ = liked;
     this.feedbackComments_ = '';
     this.copiedRowSuccess_ = false;

@@ -345,7 +345,7 @@ export class TopicFeedbackExportDialogElement extends CrLitElement {
     return rating !== undefined && rating !== TopicRating.kUnrated;
   }
 
-  protected getRatedTopicCount_(): number {
+  private getRatedTopicCount_(): number {
     return this.topics.filter(topic => this.isTopicRated_(topic)).length;
   }
 
@@ -444,7 +444,7 @@ export class TopicFeedbackExportDialogElement extends CrLitElement {
     return !this.isDomainExcluded_(domain) && !this.excludedUrls_.has(url.url);
   }
 
-  protected getExcludedUrlCount_(domain: TopicsFeedbackExportDomain): number {
+  private getExcludedUrlCount_(domain: TopicsFeedbackExportDomain): number {
     return domain.urls.filter(url => this.excludedUrls_.has(url.url)).length;
   }
 

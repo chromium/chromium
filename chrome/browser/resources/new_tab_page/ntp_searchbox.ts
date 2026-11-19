@@ -614,7 +614,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     this.openComposebox_([attachment]);
   }
 
-  protected async refreshTabSuggestions_(forceRefresh: boolean = false) {
+  private async refreshTabSuggestions_(forceRefresh: boolean = false) {
     // Only refresh tab suggestions if the context menu is opened.
     const requiresRefresh = forceRefresh || this.contextMenuOpened_;
     if (!requiresRefresh ||
@@ -817,7 +817,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     return this.searchboxLayoutMode === 'Compact';
   }
 
-  protected openComposebox_(
+  private openComposebox_(
       uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
       model: ModelMode = ModelMode.kUnspecified, error?: DriveUploadError,
       // Whether to force AI Mode. Ignored without dynamic AIM fulfillment
@@ -864,7 +864,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     this.processFiles_(e.detail.files, ComposeboxContextAddedMethod.COPY_PASTE);
   }
 
-  protected processFiles_(
+  private processFiles_(
       files: FileList|null,
       contextAdditionMethod: ComposeboxContextAddedMethod) {
     if (!files || files.length === 0) {
@@ -934,7 +934,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     return placeholderText || '';
   }
 
-  protected async openTabPicker() {
+  private async openTabPicker() {
     this.shareTabsFlyoutOpen = true;
     await this.refreshTabSuggestions_(/*forceRefresh=*/ true);
     await this.updateComplete;

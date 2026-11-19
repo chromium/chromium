@@ -161,7 +161,7 @@ export class ContextLibraryElement extends CrLitElement {
     }
   }
 
-  protected isDarkModeEnabled_(): boolean {
+  private isDarkModeEnabled_(): boolean {
     const params = new URLSearchParams(window.location.search);
     return params.get('cs') === '1';
   }

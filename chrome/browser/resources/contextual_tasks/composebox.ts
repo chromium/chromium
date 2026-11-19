@@ -403,11 +403,11 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected startVoiceSearch() {
+  private startVoiceSearch() {
     this.inVoiceSearchMode_ = true;
   }
 
-  protected endVoiceSearch() {
+  private endVoiceSearch() {
     this.inVoiceSearchMode_ = false;
   }
 

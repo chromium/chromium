@@ -172,7 +172,7 @@ export class CalendarElement extends CalendarElementBase {
 
   // Sort events to move expanded events before any of its double booked
   // events.
-  protected sortEvents_() {
+  private sortEvents_() {
     const expandedEvent = this.events[this.expandedEventIndex_];
     assert(expandedEvent);
     const firstDoubleBookedEventIndex =

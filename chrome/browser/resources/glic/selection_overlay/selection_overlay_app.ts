@@ -4,14 +4,13 @@
 
 import '/strings.m.js';
 import './glic_selection_overlay.js';
-import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 import {SelectionOverlayBaseHandler} from '/lens/selection_overlay_base_handler.js';
 
-import {browserProxyFactory, DismissOverlayReason} from './selection_overlay.mojom-webui.js';
+import {browserProxyFactory} from './selection_overlay.mojom-webui.js';
 import type {BrowserProxy} from './selection_overlay.mojom-webui.js';
 import {getCss} from './selection_overlay_app.css.js';
 import {getHtml} from './selection_overlay_app.html.js';
@@ -60,11 +59,6 @@ export class SelectionOverlayAppElement extends CrLitElement {
 
   getScreenshotForTesting(): BitmapMappedFromTrustedProcess|null {
     return this.screenshot_;
-  }
-
-  protected onCloseClick_() {
-    this.browserProxy_.handler.dismissOverlay(
-        DismissOverlayReason.kCloseButton);
   }
 }
 

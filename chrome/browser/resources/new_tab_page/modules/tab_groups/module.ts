@@ -115,7 +115,7 @@ export class TabGroupsModuleElement extends TabGroupsModuleElementBase {
         COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX, color);
   }
 
-  protected async computeTabGroupButtonAriaLabel_(group: TabGroup):
+  private async computeTabGroupButtonAriaLabel_(group: TabGroup):
       Promise<string> {
     const totalTabsStr =
         await MojoPluralStringProxy.getInstance().getPluralString(

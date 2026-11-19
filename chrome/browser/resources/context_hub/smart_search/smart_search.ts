@@ -162,7 +162,7 @@ export class SmartSearchElement extends CrLitElement {
   // Only web pages are openable, matching the browser-side filter in
   // `PageHandler::OpenUrlsInTabGroup()`. This also covers the `window.open`
   // fallback, which would otherwise bypass that filter.
-  protected isValidUrl_(urlStr: string): boolean {
+  private isValidUrl_(urlStr: string): boolean {
     if (!urlStr) {
       return false;
     }

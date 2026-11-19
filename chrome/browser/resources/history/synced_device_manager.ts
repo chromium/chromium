@@ -339,24 +339,33 @@ export class HistorySyncedDeviceManagerElement extends
   }
 
 
+  // <if expr="not is_chromeos">
   protected isSignInState_(state: HistorySignInState): boolean {
     return this.historyIdentityState_.signIn === state;
   }
 
-  // <if expr="not is_chromeos">
   protected shouldShowHistorySyncOptIn_(): boolean {
     return !this.guestSession_ && this.signInAllowed_ &&
         !this.isTabsSyncDisabled_() &&
         !(this.isSignInState_(HistorySignInState.SIGNED_IN) &&
           this.isTabsSyncTurnedOn_());
   }
-  // </if>
 
   protected isTabsSyncTurnedOn_(): boolean {
     return this.historyIdentityState_.tabsSync === SyncState.TURNED_ON;
   }
+  // </if>
+  // <if expr="is_chromeos">
+  private isSignInState_(state: HistorySignInState): boolean {
+    return this.historyIdentityState_.signIn === state;
+  }
 
-  protected isTabsSyncDisabled_(): boolean {
+  private isTabsSyncTurnedOn_(): boolean {
+    return this.historyIdentityState_.tabsSync === SyncState.TURNED_ON;
+  }
+  // </if>
+
+  private isTabsSyncDisabled_(): boolean {
     return this.historyIdentityState_.tabsSync === SyncState.DISABLED;
   }
 

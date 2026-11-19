@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './icons.html.js';
-import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './page_favicon.js';
 import '../icons.html.js';
@@ -17,7 +15,7 @@ import {I18nMixinLit, loadTimeData} from '../../i18n_setup.js';
 import {recordEnumeration, recordLogValue, recordOccurrence, recordSmallCount} from '../../metrics_utils.js';
 import {ScoredURLUserAction} from '../../most_relevant_tab_resumption.mojom-webui.js';
 import type {URLVisit} from '../../url_visit_types.mojom-webui.js';
-import {FormFactor, VisitSource} from '../../url_visit_types.mojom-webui.js';
+import {VisitSource} from '../../url_visit_types.mojom-webui.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
@@ -184,31 +182,6 @@ export class MostRelevantTabResumptionModuleElement extends I18nMixinLit
     let domain = (new URL(urlVisit.url)).hostname;
     domain = domain.replace('www.', '');
     return domain;
-  }
-
-  protected computeIcon_(urlVisit: URLVisit): string {
-    switch (urlVisit.formFactor) {
-      case FormFactor.kDesktop:
-        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'tab_resumption:desktop-windows' :
-            'tab_resumption:computer-old';
-      case FormFactor.kPhone:
-        return 'tab_resumption:phone-custom';
-      case FormFactor.kTablet:
-        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'tab_resumption:tablet-android' :
-            'tab_resumption:tablet-old';
-      case FormFactor.kAutomotive:
-        return 'tab_resumption:automotive-custom';
-      case FormFactor.kWearable:
-        return 'tab_resumption:wearable-custom';
-      case FormFactor.kTv:
-        return 'tab_resumption:tv';
-      default:
-        return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
-            'tab_resumption:public' :
-            'tab_resumption:globe-old';
-    }
   }
 
   protected computeDeviceName_(urlVisit: URLVisit): string|null {

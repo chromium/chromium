@@ -213,7 +213,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
     return !!this.event.location;
   }
 
-  protected updateAttachmentListClass_() {
+  private updateAttachmentListClass_() {
     const attachmentList = this.renderRoot.querySelector('#attachmentList');
     if (!attachmentList) {
       this.attachmentListClass_ = '';

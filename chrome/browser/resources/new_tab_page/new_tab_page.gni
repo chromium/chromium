@@ -68,7 +68,6 @@ all_css_files =
 
 ntp_icons_html_files = [
   "modules/icons.html",
-  "modules/most_relevant_tab_resumption/icons.html",
   "modules/tab_groups/icons.html",
   "ntp_promo/ntp_promo_icons.html",
 ]

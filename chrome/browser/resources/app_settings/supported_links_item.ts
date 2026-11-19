@@ -148,7 +148,7 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
     return this.i18n('appManagementIntentSharingOpenBrowserLabel');
   }
 
-  protected isBrowserTabAppSupportingExistingClient_(): boolean {
+  private isBrowserTabAppSupportingExistingClient_(): boolean {
     return loadTimeData.getBoolean('updateAppStringsOnSettingsEnabled') &&
         this.app.windowMode === WindowMode.kBrowser &&
         !this.app.disableUserChoiceNavigationCapturing;
