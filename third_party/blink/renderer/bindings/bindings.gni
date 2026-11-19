@@ -146,7 +146,6 @@ blink_core_sources_bindings =
                     "core/v8/v8_compile_hints_for_streaming.h",
                     "core/v8/v8_context_snapshot.cc",
                     "core/v8/v8_context_snapshot.h",
-                    "core/v8/v8_ctype_traits.h",
                     "core/v8/v8_custom_element_constructor_hash.h",
                     "core/v8/v8_event_listener_info.h",
                     "core/v8/v8_gc_controller.cc",
