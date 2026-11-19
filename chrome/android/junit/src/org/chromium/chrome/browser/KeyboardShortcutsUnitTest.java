@@ -320,7 +320,6 @@ public class KeyboardShortcutsUnitTest {
     @EnableFeatures(UiAndroidFeatures.ANDROID_UNIFIED_KEYBOARD_SHORTCUTS)
     public void testUnifiedShortcutsEnabled_DefersKeyboardShortcuts() {
         assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_ESCAPE));
-        assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_F6));
         assertNull(
                 KeyboardShortcuts.dispatchKeyEvent(
                         createKeyEvent(KeyEvent.KEYCODE_TAB, KeyEvent.META_CTRL_ON),
@@ -330,6 +329,7 @@ public class KeyboardShortcutsUnitTest {
                         ApplicationProvider.getApplicationContext()));
         assertFalse(onKeyDown(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON));
         assertFalse(onKeyDown(KeyEvent.KEYCODE_F5));
+        assertFalse(onKeyDown(KeyEvent.KEYCODE_F6));
         verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
     }
 

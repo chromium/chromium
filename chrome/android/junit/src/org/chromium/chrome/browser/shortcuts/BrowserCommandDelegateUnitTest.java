@@ -240,12 +240,26 @@ public class BrowserCommandDelegateUnitTest {
     }
 
     @Test
-    public void testFocusWebContentsPane() {
+    public void testFocusPaneCommands() {
+        assertTrue(mTabbedDelegate.executeCommand(ChromeCommandIds.FOCUS_NEXT_PANE));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.switch_keyboard_focus_row), eq(false));
+        assertTrue(mTabbedDelegate.executeCommand(ChromeCommandIds.FOCUS_PREVIOUS_PANE));
+        verify(mController)
+                .onMenuOrKeyboardAction(eq(R.id.switch_keyboard_focus_row_reverse), eq(false));
         assertTrue(mTabbedDelegate.executeCommand(ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE));
         verify(mController).onMenuOrKeyboardAction(eq(R.id.focus_web_contents_pane), eq(false));
 
-        assertFalse(mCustomTabDelegate.isCommandEnabled(ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE));
+        int[] paneCommands = {
+            ChromeCommandIds.FOCUS_NEXT_PANE,
+            ChromeCommandIds.FOCUS_PREVIOUS_PANE,
+            ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE
+        };
+        for (int command : paneCommands) {
+            assertFalse(mCustomTabDelegate.isCommandEnabled(command));
+        }
         mIsCurrentTabVisible = false;
-        assertFalse(mTabbedDelegate.isCommandEnabled(ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE));
+        for (int command : paneCommands) {
+            assertFalse(mTabbedDelegate.isCommandEnabled(command));
+        }
     }
 }

@@ -145,8 +145,6 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.CYCLE_TO_NEXT_TAB:
             case ChromeCommandIds.CYCLE_TO_PREV_TAB:
             case ChromeCommandIds.RESTORE_TAB:
-            case ChromeCommandIds.FOCUS_NEXT_PANE:
-            case ChromeCommandIds.FOCUS_PREVIOUS_PANE:
             case ChromeCommandIds.SHOW_BOOKMARK_BAR:
                 return mTabbedBrowserCommandsSupported;
 
@@ -171,6 +169,8 @@ public class BrowserCommandDelegate {
             case ChromeCommandIds.FOCUS_LOCATION:
             case ChromeCommandIds.FOCUS_SEARCH:
             case ChromeCommandIds.FOCUS_BOOKMARKS:
+            case ChromeCommandIds.FOCUS_NEXT_PANE:
+            case ChromeCommandIds.FOCUS_PREVIOUS_PANE:
             case ChromeCommandIds.FOCUS_WEB_CONTENTS_PANE:
             case ChromeCommandIds.SHOW_BOOKMARK_MANAGER:
             case ChromeCommandIds.SHOW_DOWNLOADS:
