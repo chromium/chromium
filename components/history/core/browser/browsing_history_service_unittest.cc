@@ -4,6 +4,9 @@
 
 #include "components/history/core/browser/browsing_history_service.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -1760,6 +1763,13 @@ class BrowsingHistoryServiceCriticalActionsTest
     return critical_action_service_.get();
   }
 
+  bool HasCriticalAction(std::string_view id) {
+    base::test::TestFuture<std::optional<critical_actions::CriticalActionEntry>>
+        future;
+    critical_action_service()->GetCriticalAction(id, future.GetCallback());
+    return future.Get().has_value();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir critical_actions_dir_;
@@ -2036,6 +2046,126 @@ TEST_F(BrowsingHistoryServiceCriticalActionsTest,
   TestBrowsingHistoryDriver::QueryResult result = QueryHistoryAndWait();
   ASSERT_EQ(1u, result.first.size());
   EXPECT_TRUE(result.first[0].critical_actions.empty());
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       RemoveVisitsDeletesAssociatedCriticalActions) {
+  base::test::ScopedFeatureList disable_grouping;
+  disable_grouping.InitAndDisableFeature(kBrowsingHistorySimilarVisitsGrouping);
+
+  const Time day1_t1 = baseline_time_ + base::Hours(1);
+  const Time day1_t2 = baseline_time_ + base::Hours(2);
+  const Time day1_other_url_time = baseline_time_ + base::Hours(3);
+  const Time day2_t1 = baseline_time_ + base::Hours(26);
+  const VisitID day1_visit1 = AddVisitAndGetId(GURL(kUrl1), day1_t1);
+  const VisitID day1_visit2 = AddVisitAndGetId(GURL(kUrl1), day1_t2);
+  const VisitID day1_other_url_visit =
+      AddVisitAndGetId(GURL(kUrl2), day1_other_url_time);
+  const VisitID day2_visit = AddVisitAndGetId(GURL(kUrl1), day2_t1);
+
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-day1-visit1", day1_t1 + base::Seconds(5), day1_visit1));
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-day1-visit2", day1_t2 + base::Seconds(5), day1_visit2));
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-day1-other-url", day1_other_url_time + base::Seconds(5),
+      day1_other_url_visit));
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-day2-visit", day2_t1 + base::Seconds(5), day2_visit));
+
+  QueryOptions options = ActorAndUserOptions();
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  TestBrowsingHistoryDriver::QueryResult initial_result =
+      QueryHistoryAndWait(options);
+  ASSERT_EQ(3u, initial_result.first.size());
+  ASSERT_EQ(GURL(kUrl1), initial_result.first[0].url);  // Day 2 kUrl1
+  ASSERT_EQ(GURL(kUrl2), initial_result.first[1].url);  // Day 1 kUrl2
+  ASSERT_EQ(GURL(kUrl1), initial_result.first[2].url);  // Day 1 kUrl1 (merged)
+
+  // Remove the Day 1 `kUrl1` entry; its critical actions must be deleted while
+  // same-day `kUrl2` and Day 2 `kUrl1` critical actions are preserved.
+  service()->RemoveVisits({initial_result.first[2]});
+  BlockUntilHistoryProcessesPendingRequests();
+
+  EXPECT_FALSE(HasCriticalAction("action-day1-visit1"));
+  EXPECT_FALSE(HasCriticalAction("action-day1-visit2"));
+  EXPECT_TRUE(HasCriticalAction("action-day1-other-url"));
+  EXPECT_TRUE(HasCriticalAction("action-day2-visit"));
+
+  TestBrowsingHistoryDriver::QueryResult after_removal =
+      QueryHistoryAndWait(options);
+  ASSERT_EQ(2u, after_removal.first.size());
+  EXPECT_THAT(GetCriticalActionIds(after_removal.first[0]),
+              ElementsAre("action-day2-visit"));
+  EXPECT_THAT(GetCriticalActionIds(after_removal.first[1]),
+              ElementsAre("action-day1-other-url"));
+}
+
+TEST_F(BrowsingHistoryServiceCriticalActionsTest,
+       RemoveVisitsDeletesCriticalActionsForGroupedSimilarVisits) {
+  base::test::ScopedFeatureList enable_grouping;
+  enable_grouping.InitAndEnableFeature(kBrowsingHistorySimilarVisitsGrouping);
+
+  const GURL kGroupedUrl1("http://www.a.com/1");
+  const GURL kGroupedUrl2("http://www.a.com/2");
+  const GURL kUngroupedSameHostUrl("http://www.a.com/3");
+
+  const Time day1_t1 = baseline_time_ + base::Hours(1);
+  const Time day1_t2 = baseline_time_ + base::Hours(2);
+  const Time day1_t3 = baseline_time_ + base::Hours(3);
+  const Time day2_t1 = baseline_time_ + base::Hours(26);
+
+  const VisitID day1_grouped_visit1 = AddVisitAndGetId(
+      kGroupedUrl1, day1_t1, /*is_actor_visit=*/true, u"Shared Title");
+  const VisitID day1_grouped_visit2 = AddVisitAndGetId(
+      kGroupedUrl2, day1_t2, /*is_actor_visit=*/true, u"Shared Title");
+  const VisitID day1_ungrouped_visit =
+      AddVisitAndGetId(kUngroupedSameHostUrl, day1_t3, /*is_actor_visit=*/true,
+                       u"Distinct Title");
+  const VisitID day2_visit = AddVisitAndGetId(
+      kGroupedUrl1, day2_t1, /*is_actor_visit=*/true, u"Shared Title");
+
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-day1-grouped-1", day1_t1 + base::Seconds(5),
+      day1_grouped_visit1));
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-day1-grouped-2", day1_t2 + base::Seconds(5),
+      day1_grouped_visit2));
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-day1-ungrouped", day1_t3 + base::Seconds(5),
+      day1_ungrouped_visit));
+  critical_action_service()->AddCriticalAction(CreateCriticalActionEntry(
+      "action-day2-visit", day2_t1 + base::Seconds(5), day2_visit));
+
+  QueryOptions options = ActorAndUserOptions();
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  TestBrowsingHistoryDriver::QueryResult initial_result =
+      QueryHistoryAndWait(options);
+  ASSERT_EQ(3u, initial_result.first.size());
+  ASSERT_EQ(kGroupedUrl1, initial_result.first[0].url);           // Day 2
+  ASSERT_EQ(kUngroupedSameHostUrl, initial_result.first[1].url);  // Day 1 (/3)
+  ASSERT_EQ(kGroupedUrl2, initial_result.first[2].url);  // Day 1 (/2 + /1)
+  ASSERT_THAT(GetCriticalActionIds(initial_result.first[2]),
+              ElementsAre("action-day1-grouped-2", "action-day1-grouped-1"));
+
+  // Remove the grouped Day 1 entry; critical actions across all grouped URLs in
+  // `entry.all_timestamps` must be deleted while same-day ungrouped and Day 2
+  // critical actions are preserved.
+  service()->RemoveVisits({initial_result.first[2]});
+  BlockUntilHistoryProcessesPendingRequests();
+
+  EXPECT_FALSE(HasCriticalAction("action-day1-grouped-1"));
+  EXPECT_FALSE(HasCriticalAction("action-day1-grouped-2"));
+  EXPECT_TRUE(HasCriticalAction("action-day1-ungrouped"));
+  EXPECT_TRUE(HasCriticalAction("action-day2-visit"));
+
+  TestBrowsingHistoryDriver::QueryResult after_removal =
+      QueryHistoryAndWait(options);
+  ASSERT_EQ(2u, after_removal.first.size());
+  EXPECT_THAT(GetCriticalActionIds(after_removal.first[0]),
+              ElementsAre("action-day2-visit"));
+  EXPECT_THAT(GetCriticalActionIds(after_removal.first[1]),
+              ElementsAre("action-day1-ungrouped"));
 }
 
 }  // namespace

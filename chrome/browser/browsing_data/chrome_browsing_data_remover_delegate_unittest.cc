@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -29,6 +30,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -138,6 +140,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/critical_actions/core/browser/features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -146,6 +149,7 @@
 #include "components/domain_reliability/monitor.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/media_device_salt/media_device_salt_service.h"
@@ -299,8 +303,6 @@
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(ENABLE_REPORTING)
-#include <optional>
-
 #include "base/containers/flat_map.h"
 #include "base/unguessable_token.h"
 #include "net/network_error_logging/network_error_logging_service.h"
@@ -544,6 +546,19 @@ class RemoveHistoryTester {
                               ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
                               history::VisitResponseCodeCategory::kNot404,
                               false);
+  }
+
+  history::VisitID AddHistoryAndGetVisitId(const GURL& url, base::Time time) {
+    AddHistory(url, time);
+    base::test::TestFuture<history::QueryURLAndVisitsResult> future;
+    base::CancelableTaskTracker tracker;
+    history_service_->QueryURLAndVisits(
+        url, history::VisitQuery404sPolicy::kInclude404s, future.GetCallback(),
+        &tracker);
+    const history::QueryURLAndVisitsResult& result = future.Get();
+    EXPECT_TRUE(result.success);
+    EXPECT_FALSE(result.visits.empty());
+    return result.visits.back().visit_id;
   }
 
  private:
@@ -1843,43 +1858,113 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveHistoryForever) {
   EXPECT_FALSE(tester.HistoryContainsURL(kOrigin1));
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearCriticalActionsHistory) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      critical_actions::features::kCriticalActionHistory);
+class ChromeBrowsingDataRemoverDelegateCriticalActionsTest
+    : public ChromeBrowsingDataRemoverDelegateTest {
+ public:
+  ChromeBrowsingDataRemoverDelegateCriticalActionsTest() {
+    feature_list_.InitAndEnableFeature(
+        critical_actions::features::kCriticalActionHistory);
+  }
 
-  critical_actions::CriticalActionService* critical_action_service =
-      critical_actions::CriticalActionFactory::GetForProfile(GetProfile());
-  ASSERT_NE(critical_action_service, nullptr);
+ protected:
+  std::string AddCriticalAction(
+      base::Time timestamp,
+      history::VisitID visit_id = history::kInvalidVisitID) {
+    critical_actions::CriticalActionService& service = CHECK_DEREF(
+        critical_actions::CriticalActionFactory::GetForProfile(GetProfile()));
+    critical_actions::CriticalActionEntry entry;
+    entry.critical_action_id =
+        base::Uuid::GenerateRandomV4().AsLowercaseString();
+    entry.timestamp = timestamp;
+    entry.visit_id = visit_id;
+    entry.action_type = critical_actions::ActionType::kFormFill;
+    service.AddCriticalAction(entry);
+    return entry.critical_action_id;
+  }
 
-  base::Time time = base::Time::Now() - base::Hours(1);
-  critical_actions::CriticalActionEntry entry;
-  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  entry.timestamp = time;
-  entry.action_type = critical_actions::ActionType::kFormFill;
-  critical_action_service->AddCriticalAction(entry);
-
-  // Verify the entry has been successfully added to the database.
-  {
+  bool HasCriticalAction(std::string_view id) {
+    critical_actions::CriticalActionService& service = CHECK_DEREF(
+        critical_actions::CriticalActionFactory::GetForProfile(GetProfile()));
     base::test::TestFuture<std::optional<critical_actions::CriticalActionEntry>>
         get_future;
-    critical_action_service->GetCriticalAction(entry.critical_action_id,
-                                               get_future.GetCallback());
-    ASSERT_TRUE(get_future.Get().has_value());
+    service.GetCriticalAction(id, get_future.GetCallback());
+    return get_future.Get().has_value();
   }
+};
+
+TEST_F(ChromeBrowsingDataRemoverDelegateCriticalActionsTest,
+       ClearCriticalActionsHistory) {
+  const std::string action_id =
+      AddCriticalAction(base::Time::Now() - base::Hours(1));
+  ASSERT_TRUE(HasCriticalAction(action_id));
 
   // Trigger browsing data removal for history.
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_HISTORY, false);
 
-  // Verify the entry has been deleted from the database.
-  {
-    base::test::TestFuture<std::optional<critical_actions::CriticalActionEntry>>
-        get_future;
-    critical_action_service->GetCriticalAction(entry.critical_action_id,
-                                               get_future.GetCallback());
-    EXPECT_FALSE(get_future.Get().has_value());
-  }
+  EXPECT_FALSE(HasCriticalAction(action_id));
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateCriticalActionsTest,
+       ClearCriticalActionsHistoryPartialTimeRange) {
+  RemoveHistoryTester tester;
+  ASSERT_TRUE(tester.Init(GetProfile()));
+
+  const base::Time now = base::Time::Now();
+  const base::Time delete_begin = now - base::Hours(1);
+  const base::Time delete_end = now - base::Minutes(10);
+  const base::Time time_before_range = now - base::Hours(2);
+  const base::Time time_in_range = now - base::Minutes(30);
+  const base::Time time_after_range = now - base::Minutes(5);
+
+  const GURL kKeptUrl("http://host1.com:1");
+  const GURL kDeletedUrl("http://host2.com:1");
+  const history::VisitID kept_visit_id =
+      tester.AddHistoryAndGetVisitId(kKeptUrl, time_before_range);
+  const history::VisitID deleted_visit_id =
+      tester.AddHistoryAndGetVisitId(kDeletedUrl, time_in_range);
+
+  // 1. Exactly at delete_begin on an unremoved visit: deleted by time range
+  //    (delete_begin is inclusive).
+  const std::string action_at_delete_begin =
+      AddCriticalAction(delete_begin, kept_visit_id);
+  // 2. Inside (delete_begin, delete_end) on an unremoved visit: deleted by
+  //    time range.
+  const std::string action_in_range =
+      AddCriticalAction(time_in_range, kept_visit_id);
+  // 3. Timestamp after delete_end, but linked to a visit inside
+  //    [delete_begin, delete_end): deleted via deleted_visit_ids.
+  const std::string action_deleted_visit_after_range =
+      AddCriticalAction(time_after_range, deleted_visit_id);
+  // 4. Before delete_begin on an unremoved visit: preserved.
+  const std::string action_kept_before_range =
+      AddCriticalAction(time_before_range, kept_visit_id);
+  // 5. Exactly at delete_end on an unremoved visit: preserved (delete_end is
+  //    exclusive).
+  const std::string action_kept_at_delete_end =
+      AddCriticalAction(delete_end, kept_visit_id);
+  // 6. After delete_end on an unremoved visit: preserved.
+  const std::string action_kept_after_range =
+      AddCriticalAction(time_after_range, kept_visit_id);
+
+  ASSERT_TRUE(HasCriticalAction(action_at_delete_begin));
+  ASSERT_TRUE(HasCriticalAction(action_in_range));
+  ASSERT_TRUE(HasCriticalAction(action_deleted_visit_after_range));
+  ASSERT_TRUE(HasCriticalAction(action_kept_before_range));
+  ASSERT_TRUE(HasCriticalAction(action_kept_at_delete_end));
+  ASSERT_TRUE(HasCriticalAction(action_kept_after_range));
+
+  BlockUntilBrowsingDataRemoved(delete_begin, delete_end,
+                                constants::DATA_TYPE_HISTORY, false);
+
+  EXPECT_FALSE(tester.HistoryContainsURL(kDeletedUrl));
+  EXPECT_TRUE(tester.HistoryContainsURL(kKeptUrl));
+  EXPECT_FALSE(HasCriticalAction(action_at_delete_begin));
+  EXPECT_FALSE(HasCriticalAction(action_in_range));
+  EXPECT_FALSE(HasCriticalAction(action_deleted_visit_after_range));
+  EXPECT_TRUE(HasCriticalAction(action_kept_before_range));
+  EXPECT_TRUE(HasCriticalAction(action_kept_at_delete_end));
+  EXPECT_TRUE(HasCriticalAction(action_kept_after_range));
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearFindBarLastSearchText) {
