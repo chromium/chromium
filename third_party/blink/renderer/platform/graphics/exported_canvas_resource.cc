@@ -125,8 +125,12 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
         return nullptr;
       }
 
-      auto image = UnacceleratedStaticBitmapImage::Create(
-          sk_image, ImageOrientationEnum::kDefault, hdr_metadata_);
+      auto orientation =
+          shared_image_->surface_origin() == kTopLeft_GrSurfaceOrigin
+              ? ImageOrientationEnum::kOriginTopLeft
+              : ImageOrientationEnum::kOriginBottomLeft;
+      auto image = UnacceleratedStaticBitmapImage::Create(sk_image, orientation,
+                                                          hdr_metadata_);
       image->SetOriginClean(OriginClean());
       return image;
     }
