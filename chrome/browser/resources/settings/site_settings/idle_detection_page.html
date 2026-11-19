@@ -1,22 +1,25 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsIdleDetection}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsDeviceUseDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
+      .category="${ContentSettingsTypes.IDLE_DETECTION}"
       ask-option-label="$i18n{siteSettingsDeviceUseAsk}"
       ask-option-icon="settings:devices"
       block-option-label="$i18n{siteSettingsDeviceUseBlocked}"
       block-option-icon="privacy:devices-off">
   </settings-category-default-radio-group>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
+      .category="${ContentSettingsTypes.IDLE_DETECTION}"
       allow-header="$i18n{siteSettingsDeviceUseAllowedExceptions}"
       block-header="$i18n{siteSettingsDeviceUseBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>

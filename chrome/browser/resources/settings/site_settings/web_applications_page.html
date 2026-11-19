@@ -1,23 +1,26 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsWebAppInstallation}"
     search-label="$i18n{siteSettingsAllSitesSearch}"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsWebAppInstallationDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.WEB_APP_INSTALLATION]]"
+      .category="${ContentSettingsTypes.WEB_APP_INSTALLATION}"
       ask-option-label="$i18n{siteSettingsWebAppInstallationAsk}"
       ask-option-icon="settings:install-desktop"
       block-option-label="$i18n{siteSettingsWebAppInstallationBlock}"
       block-option-icon="settings:install-desktop-off-custom">
   </settings-category-default-radio-group>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.WEB_APP_INSTALLATION]]"
+      .category="${ContentSettingsTypes.WEB_APP_INSTALLATION}"
       block-header=
           "$i18n{siteSettingsWebAppInstallationBlockedExceptions}"
       allow-header=
           "$i18n{siteSettingsWebAppInstallationAllowedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>

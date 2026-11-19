@@ -1,22 +1,25 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsClipboard}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsClipboardDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.CLIPBOARD]]"
+      .category="${ContentSettingsTypes.CLIPBOARD}"
       ask-option-label="$i18n{siteSettingsClipboardAsk}"
       ask-option-icon="privacy:content-paste"
       block-option-label="$i18n{siteSettingsClipboardBlocked}"
       block-option-icon="privacy:content-paste-off">
   </settings-category-default-radio-group>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.CLIPBOARD]]"
+      .category="${ContentSettingsTypes.CLIPBOARD}"
       allow-header="$i18n{siteSettingsClipboardAllowedExceptions}"
       block-header="$i18n{siteSettingsClipboardBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>

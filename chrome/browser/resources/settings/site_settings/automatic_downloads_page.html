@@ -1,22 +1,25 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsAutomaticDownloads}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
       $i18n{siteSettingsAutomaticDownloadsDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.AUTOMATIC_DOWNLOADS]]"
+      .category="${ContentSettingsTypes.AUTOMATIC_DOWNLOADS}"
       ask-option-label="$i18n{siteSettingsAutomaticDownloadsAsk}"
       ask-option-icon="cr:download"
       block-option-label="$i18n{siteSettingsAutomaticDownloadsBlocked}"
       block-option-icon="privacy:file-download-off">
   </settings-category-default-radio-group>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.AUTOMATIC_DOWNLOADS]]"
+      .category="${ContentSettingsTypes.AUTOMATIC_DOWNLOADS}"
       allow-header="$i18n{siteSettingsAutomaticDownloadsAllowedExceptions}"
       block-header="$i18n{siteSettingsAutomaticDownloadsBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>

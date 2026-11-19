@@ -1,14 +1,17 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsAutoPictureInPicture}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
    <div class="content-settings-header secondary">
      $i18n{siteSettingsAutoPictureInPictureDescription}
    </div>
    <!-- This options uses "allowed" language but is implemented as "ask". -->
    <settings-category-default-radio-group
-       category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
+       .category="${ContentSettingsTypes.AUTO_PICTURE_IN_PICTURE}"
        ask-option-label=
            "$i18n{siteSettingsAutoPictureInPictureAllowed}"
        ask-option-icon="settings:picture-in-picture"
@@ -16,11 +19,11 @@
        block-option-icon="settings:picture-in-picture-off">
    </settings-category-default-radio-group>
    <category-setting-exceptions
-       category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
+       .category="${ContentSettingsTypes.AUTO_PICTURE_IN_PICTURE}"
        allow-header=
            "$i18n{siteSettingsAutoPictureInPictureAllowedExceptions}"
        block-header=
            "$i18n{siteSettingsAutoPictureInPictureBlockedExceptions}"
-       search-filter="[[searchTerm]]">
+       .searchFilter="${this.searchTerm_}">
    </category-setting-exceptions>
 </settings-subpage>
