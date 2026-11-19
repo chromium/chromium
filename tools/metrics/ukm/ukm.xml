@@ -10070,7 +10070,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Fullscreen.Exit">
-  <owner>muyaoxu@google.com</owner>
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>liberato@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     The browser exits the fullscreen mode.
@@ -13729,7 +13730,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.EME.Usage">
-  <owner>jrummell@chromium.org</owner>
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Event recorded when an Encrypted Media Extensions (EME) API is called.
@@ -13786,7 +13788,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.Engagement.SessionFinished">
-  <owner>beccahughes@chromium.org</owner>
+  <owner>evliu@google.com</owner>
+  <owner>liberato@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     The Media Engagement index stores the number of significant media playbacks
@@ -13838,7 +13841,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.Engagement.ShortPlaybackIgnored">
-  <owner>beccahughes@chromium.org</owner>
+  <owner>evliu@google.com</owner>
+  <owner>liberato@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     The Media Engagement index stores the number of significant media playbacks
@@ -13955,7 +13959,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.VideoDecodePerfRecord">
-  <owner>chcunningham@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     A record of decoding performance metrics from a video playback with the
