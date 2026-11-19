@@ -47,7 +47,7 @@ class MockSharingMessageSender : public SharingMessageSender {
                                  sync_pb::UnencryptedSharingMessage,
                                  ResponseCallback));
 
-  MOCK_METHOD0(ClearPendingMessages, void());
+  MOCK_METHOD0(FailPendingMessages, void());
 };
 
 #endif  // COMPONENTS_SHARING_MESSAGE_MOCK_SHARING_MESSAGE_SENDER_H_

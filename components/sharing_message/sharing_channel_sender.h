@@ -98,9 +98,10 @@ class SharingChannelSender : public syncer::SyncServiceObserver {
       SharingMessage message,
       SendMessageCallback callback);
 
-  // Removes any pending messages that are waiting for the sync service to
-  // initialize. This must be called if the device is unregistered.
-  void ClearPendingMessages();
+  // Fails any pending messages waiting for the sync service to initialize with
+  // `SharingSendMessageResult::kInternalError` and removes them from the queue.
+  // This must be called if the device is unregistered.
+  virtual void FailPendingMessages();
 
   // syncer::SyncServiceObserver overrides.
   void OnStateChanged(syncer::SyncService* sync_service) override;

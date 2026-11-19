@@ -75,8 +75,8 @@ class SharingMessageSender {
       const std::string& message_id,
       std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
-  // Clears all pending messages.
-  virtual void ClearPendingMessages();
+  // Fails all pending messages with `SharingSendMessageResult::kInternalError`.
+  virtual void FailPendingMessages();
 
   // Returns SharingChannelSender for testing.
   SharingChannelSender* GetChannelSenderForTesting() const;

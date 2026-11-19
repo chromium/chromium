@@ -4,6 +4,11 @@
 
 #include "components/sharing_message/sharing_channel_sender.h"
 
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -139,6 +144,8 @@ void SharingChannelSender::SendIosPushMessageToDevice(
   chime_configuration->set_type_id(type_id);
   specifics->mutable_unencrypted_payload()->CopyFrom(message);
 
+  // TODO(crbug.com/585389233): Consider postponing iOS push messages when Sync
+  // is initializing.
   sharing_message_bridge_->SendSharingMessage(
       std::move(specifics),
       base::BindOnce(&SharingChannelSender::OnMessageSentViaSync,
@@ -192,20 +199,33 @@ void SharingChannelSender::SendMessageToServerTarget(
                  SharingChannelType::kServer, std::move(callback));
 }
 
-void SharingChannelSender::ClearPendingMessages() {
-  pending_messages_.clear();
+void SharingChannelSender::FailPendingMessages() {
+  std::vector<PendingMessage> pending_messages =
+      std::exchange(pending_messages_, {});
+  for (PendingMessage& pending_message : pending_messages) {
+    std::move(pending_message.callback)
+        .Run(SharingSendMessageResult::kInternalError,
+             /*message_id=*/std::nullopt, pending_message.channel_type);
+  }
 }
 
 void SharingChannelSender::OnStateChanged(syncer::SyncService* sync_service) {
-  // Replay pending messages once SHARING_MESSAGE is active.
-  if (pending_messages_.empty() ||
-      !sync_service->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
+  if (pending_messages_.empty()) {
     return;
   }
 
-  std::vector<PendingMessage> pending_messages = std::move(pending_messages_);
-  pending_messages_.clear();
+  if (IsSyncDisabledForSharing(sync_service)) {
+    FailPendingMessages();
+    return;
+  }
 
+  // Replay pending messages once `SHARING_MESSAGE` is active.
+  if (!sync_service->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
+    return;
+  }
+
+  std::vector<PendingMessage> pending_messages =
+      std::exchange(pending_messages_, {});
   for (PendingMessage& pending_message : pending_messages) {
     SendMessageViaSync(std::move(pending_message.channel_configuration),
                        pending_message.channel_type,
@@ -216,6 +236,8 @@ void SharingChannelSender::OnStateChanged(syncer::SyncService* sync_service) {
 }
 
 void SharingChannelSender::OnSyncShutdown(syncer::SyncService* sync_service) {
+  // TODO(crbug.com/585389233): Fail pending messages and reset `sync_service_`
+  // on shutdown.
   sync_service_observation_.Reset();
 }
 
@@ -227,6 +249,12 @@ void SharingChannelSender::EncryptMessage(
     SharingMessage message,
     SharingChannelType channel_type,
     SendMessageCallback callback) {
+  if (IsSyncDisabledForSharing(sync_service_)) {
+    std::move(callback).Run(SharingSendMessageResult::kInternalError,
+                            /*message_id=*/std::nullopt, channel_type);
+    return;
+  }
+
   std::string message_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   message.set_message_id(message_id);
   std::string payload;
@@ -266,7 +294,18 @@ void SharingChannelSender::SendMessageViaSync(
     std::string message_id,
     std::string payload,
     SendMessageCallback callback) {
-  // Postpone sending the message if SHARING_MESSAGE is not active yet.
+  CHECK(sync_service_);
+
+  // Fail immediately if Sync is disabled for Sharing (e.g. if Sync was paused
+  // or disabled before an async reply or in-flight encryption completed).
+  if (IsSyncDisabledForSharing(sync_service_)) {
+    std::move(callback).Run(SharingSendMessageResult::kInternalError,
+                            /*message_id=*/std::nullopt, channel_type);
+    return;
+  }
+
+  // Postpone sending the message if `SHARING_MESSAGE` is not active yet (e.g.
+  // while Sync is initializing or configuring).
   if (!sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
     pending_messages_.emplace_back(std::move(channel_configuration),
                                    channel_type, std::move(message_id),

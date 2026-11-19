@@ -74,6 +74,7 @@ class MockSharingChannelSender : public SharingChannelSender {
                server_channel,
            SharingMessage message,
            SendMessageCallback callback));
+  MOCK_METHOD0(FailPendingMessages, void());
 };
 
 syncer::DeviceInfo::SharingInfo CreateLocalSharingInfo() {
@@ -535,8 +536,10 @@ TEST_F(SharingMessageSenderTest,
       mock_callback.Get());
 }
 
+// Tests that `FailPendingMessages()` fails outgoing messages waiting for
+// `LocalDeviceInfo` and delegates to `SharingChannelSender`.
 TEST_F(SharingMessageSenderTest,
-       ClearPendingMessages_FailsMessagesWaitingForLocalDeviceInfo) {
+       FailPendingMessages_FailsMessagesWaitingForLocalDeviceInfo) {
   fake_device_info_sync_service_.GetLocalDeviceInfoProvider()->SetReady(false);
   SharingTargetDeviceInfo device_info = SetupReceiverDevice();
 
@@ -551,7 +554,8 @@ TEST_F(SharingMessageSenderTest,
 
   EXPECT_CALL(mock_callback,
               Run(SharingSendMessageResult::kInternalError, IsNull()));
-  sharing_message_sender_->ClearPendingMessages();
+  EXPECT_CALL(*mock_sharing_channel_sender_, FailPendingMessages());
+  sharing_message_sender_->FailPendingMessages();
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
   EXPECT_CALL(mock_callback, Run).Times(0);

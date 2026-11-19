@@ -259,7 +259,10 @@ void SharingService::UnregisterDevice() {
   should_unregister_previous_session_ = false;
   sharing_device_registration_->UnregisterDevice(base::BindOnce(
       &SharingService::OnDeviceUnregistered, weak_ptr_factory_.GetWeakPtr()));
-  message_sender_->ClearPendingMessages();
+  // TODO(crbug.com/585389233): Consolidate pending message queues in
+  // `SharingMessageSender` so Sync disabled states also fail messages waiting
+  // for `LocalDeviceInfo` when `UnregisterDevice()` is not called.
+  message_sender_->FailPendingMessages();
 }
 
 void SharingService::OnDeviceRegistered(

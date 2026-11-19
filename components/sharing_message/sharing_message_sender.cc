@@ -168,7 +168,7 @@ void SharingMessageSender::OnAckReceived(
   message_metadata_.erase(metadata_iter);
 }
 
-void SharingMessageSender::ClearPendingMessages() {
+void SharingMessageSender::FailPendingMessages() {
   local_device_info_ready_subscription_ = {};
   std::vector<PendingOutgoingMessage> pending_messages =
       std::exchange(pending_outgoing_messages_, {});
@@ -179,7 +179,7 @@ void SharingMessageSender::ClearPendingMessages() {
   }
   // `channel_sender_` may be null in tests using MockSharingMessageSender.
   if (channel_sender_) {
-    channel_sender_->ClearPendingMessages();
+    channel_sender_->FailPendingMessages();
   }
 }
 

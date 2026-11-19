@@ -623,7 +623,7 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
   // Sign out and un-registration should happen.
   test_sync_service_.SetSignedOut();
   EXPECT_CALL(*fcm_handler_, StopListening());
-  EXPECT_CALL(*sharing_message_sender_, ClearPendingMessages());
+  EXPECT_CALL(*sharing_message_sender_, FailPendingMessages());
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(1, sharing_device_registration_->registration_attempts());
   EXPECT_EQ(1, sharing_device_registration_->unregistration_attempts());
@@ -632,7 +632,7 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
 
   // Further state changes do nothing.
   EXPECT_CALL(*fcm_handler_, StopListening()).Times(0);
-  EXPECT_CALL(*sharing_message_sender_, ClearPendingMessages()).Times(0);
+  EXPECT_CALL(*sharing_message_sender_, FailPendingMessages()).Times(0);
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(1, sharing_device_registration_->registration_attempts());
   EXPECT_EQ(1, sharing_device_registration_->unregistration_attempts());
@@ -656,7 +656,7 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
       /*types=*/syncer::UserSelectableTypeSet());
   test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
   EXPECT_CALL(*fcm_handler_, StopListening());
-  EXPECT_CALL(*sharing_message_sender_, ClearPendingMessages());
+  EXPECT_CALL(*sharing_message_sender_, FailPendingMessages());
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(2, sharing_device_registration_->registration_attempts());
   EXPECT_EQ(2, sharing_device_registration_->unregistration_attempts());
@@ -681,7 +681,7 @@ TEST_F(SharingServiceTest, DeviceUnregistrationSyncPaused) {
   // messages.
   test_sync_service_.SetPersistentAuthError();
   EXPECT_CALL(*fcm_handler_, StopListening());
-  EXPECT_CALL(*sharing_message_sender_, ClearPendingMessages());
+  EXPECT_CALL(*sharing_message_sender_, FailPendingMessages());
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(1, sharing_device_registration_->registration_attempts());
   EXPECT_EQ(1, sharing_device_registration_->unregistration_attempts());
@@ -737,7 +737,7 @@ TEST_F(SharingServiceTest, DeviceUnregistrationWhenAlreadyRegisteredAtStartup) {
   // FCM.
   test_sync_service_.SetSignedOut();
   EXPECT_CALL(*fcm_handler_, StopListening());
-  EXPECT_CALL(*sharing_message_sender_, ClearPendingMessages());
+  EXPECT_CALL(*sharing_message_sender_, FailPendingMessages());
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(1, sharing_device_registration_->unregistration_attempts());
   EXPECT_EQ(SharingService::State::DISABLED,
@@ -746,7 +746,7 @@ TEST_F(SharingServiceTest, DeviceUnregistrationWhenAlreadyRegisteredAtStartup) {
   // Subsequent `OnStateChanged()` calls should not unregister or clear pending
   // messages again.
   EXPECT_CALL(*fcm_handler_, StopListening()).Times(0);
-  EXPECT_CALL(*sharing_message_sender_, ClearPendingMessages()).Times(0);
+  EXPECT_CALL(*sharing_message_sender_, FailPendingMessages()).Times(0);
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(1, sharing_device_registration_->unregistration_attempts());
 }
