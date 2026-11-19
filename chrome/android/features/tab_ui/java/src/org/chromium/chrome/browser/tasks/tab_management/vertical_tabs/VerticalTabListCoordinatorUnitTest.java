@@ -1152,15 +1152,16 @@ public class VerticalTabListCoordinatorUnitTest {
                 .getTabGroupCollapsed(any(TabGroupId.class));
         doAnswer(
                         invocation -> {
+                            TabGroupId tabGroupId = invocation.getArgument(0);
                             collapsedState[0] = invocation.getArgument(1);
                             for (TabGroupObserver observer : mTabGroupObservers) {
                                 observer.didChangeTabGroupCollapsed(
-                                        invocation.getArgument(0), collapsedState[0], false);
+                                        tabGroupId.getToken(), collapsedState[0], false);
                             }
                             return null;
                         })
                 .when(mTabModel)
-                .setTabGroupCollapsed(any(Token.class), anyBoolean(), anyBoolean());
+                .setTabGroupCollapsed(any(TabGroupId.class), anyBoolean(), anyBoolean());
 
         createCoordinator();
         TabListRecyclerView recycler =
@@ -1275,15 +1276,16 @@ public class VerticalTabListCoordinatorUnitTest {
                 .getTabGroupCollapsed(any(TabGroupId.class));
         doAnswer(
                         invocation -> {
+                            TabGroupId tabGroupId = invocation.getArgument(0);
                             collapsedState[0] = invocation.getArgument(1);
                             for (TabGroupObserver observer : mTabGroupObservers) {
                                 observer.didChangeTabGroupCollapsed(
-                                        invocation.getArgument(0), collapsedState[0], false);
+                                        tabGroupId.getToken(), collapsedState[0], false);
                             }
                             return null;
                         })
                 .when(mTabModel)
-                .setTabGroupCollapsed(any(Token.class), anyBoolean(), anyBoolean());
+                .setTabGroupCollapsed(any(TabGroupId.class), anyBoolean(), anyBoolean());
 
         createCoordinator();
         TabListRecyclerView recycler =
@@ -1322,7 +1324,7 @@ public class VerticalTabListCoordinatorUnitTest {
         tabModel.get(TabProperties.TAB_CLICK_LISTENER)
                 .run(mMockChildView, TAB_ID_1, /* triggeringMotion= */ null);
         verify(mTabModel, never())
-                .setTabGroupCollapsed(any(Token.class), anyBoolean(), anyBoolean());
+                .setTabGroupCollapsed(any(TabGroupId.class), anyBoolean(), anyBoolean());
         assertFalse(tabModel.get(TabProperties.IS_COLLAPSED));
     }
 
@@ -1340,7 +1342,7 @@ public class VerticalTabListCoordinatorUnitTest {
                 .get(TabProperties.TAB_CLICK_LISTENER)
                 .run(mMockChildView, "sync_id_123", /* triggeringMotion= */ null);
         verify(mTabModel, never())
-                .setTabGroupCollapsed(any(Token.class), anyBoolean(), anyBoolean());
+                .setTabGroupCollapsed(any(TabGroupId.class), anyBoolean(), anyBoolean());
     }
 
     @Test
@@ -1785,16 +1787,17 @@ public class VerticalTabListCoordinatorUnitTest {
 
         doAnswer(
                         invocation -> {
-                            Token token = invocation.getArgument(0);
+                            TabGroupId tabGroupId = invocation.getArgument(0);
                             boolean collapsed = invocation.getArgument(1);
                             for (TabGroupObserver observer : mTabGroupObservers) {
                                 observer.didChangeTabGroupCollapsed(
-                                        token, collapsed, /* animate= */ false);
+                                        tabGroupId.getToken(), collapsed, /* animate= */ false);
                             }
                             return null;
                         })
                 .when(mTabModel)
-                .setTabGroupCollapsed(eq(groupId), anyBoolean(), anyBoolean());
+                .setTabGroupCollapsed(
+                        eq(TabGroupId.fromRawToken(groupId)), anyBoolean(), anyBoolean());
         when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId))).thenReturn(true);
 
         mIsVerticalTabsActiveSupplier.set(true);
@@ -1822,7 +1825,9 @@ public class VerticalTabListCoordinatorUnitTest {
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabModel).setTabGroupCollapsed(eq(groupId), eq(false), anyBoolean());
+        verify(mTabModel)
+                .setTabGroupCollapsed(
+                        eq(TabGroupId.fromRawToken(groupId)), eq(false), anyBoolean());
         verify(spyLayoutManager, never()).scrollToPositionWithOffset(anyInt(), anyInt());
         verify(spyLayoutManager, never()).scrollToPosition(anyInt());
     }

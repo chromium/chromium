@@ -5409,7 +5409,10 @@ public class StripLayoutHelperTest {
 
         // Verify the proper event was sent to the TabModel.
         verify(mModel)
-                .setTabGroupCollapsed(TAB_GROUP_ID_1, /* isCollapsed= */ true, /* animate= */ true);
+                .setTabGroupCollapsed(
+                        TabGroupId.fromRawToken(TAB_GROUP_ID_1),
+                        /* isCollapsed= */ true,
+                        /* animate= */ true);
     }
 
     @Test
@@ -5429,7 +5432,9 @@ public class StripLayoutHelperTest {
         // Verify the proper event was sent to the TabModel.
         verify(mModel)
                 .setTabGroupCollapsed(
-                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ true);
+                        TabGroupId.fromRawToken(TAB_GROUP_ID_1),
+                        /* isCollapsed= */ false,
+                        /* animate= */ true);
     }
 
     @Test
@@ -5645,7 +5650,9 @@ public class StripLayoutHelperTest {
                         })
                 .when(mModel)
                 .setTabGroupCollapsed(
-                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ false);
+                        TabGroupId.fromRawToken(TAB_GROUP_ID_1),
+                        /* isCollapsed= */ false,
+                        /* animate= */ false);
 
         // Create a tab in the collapsed group.
         int tabId = 5;
@@ -5658,7 +5665,9 @@ public class StripLayoutHelperTest {
         // Verify we only auto-expand if selected.
         verify(mModel, times(selected ? 1 : 0))
                 .setTabGroupCollapsed(
-                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ false);
+                        TabGroupId.fromRawToken(TAB_GROUP_ID_1),
+                        /* isCollapsed= */ false,
+                        /* animate= */ false);
     }
 
     @Test
@@ -5696,7 +5705,9 @@ public class StripLayoutHelperTest {
                         })
                 .when(mModel)
                 .setTabGroupCollapsed(
-                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ false);
+                        TabGroupId.fromRawToken(TAB_GROUP_ID_1),
+                        /* isCollapsed= */ false,
+                        /* animate= */ false);
 
         // Scroll strip to start so the collapsed group is towards or past the right edge.
         mStripLayoutHelper.setScrollOffsetForTesting(0f);
@@ -6750,7 +6761,9 @@ public class StripLayoutHelperTest {
                 MotionEvent.BUTTON_PRIMARY,
                 KeyEvent.META_SHIFT_ON);
 
-        verify(mModel).setTabGroupCollapsed(eq(TAB_GROUP_ID_1), eq(false), anyBoolean());
+        verify(mModel)
+                .setTabGroupCollapsed(
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID_1)), eq(false), anyBoolean());
     }
 
     @Test

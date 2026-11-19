@@ -484,7 +484,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate) {}
+    public void setTabGroupCollapsed(TabGroupId tabGroupId, boolean isCollapsed, boolean animate) {}
 
     @Override
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {}

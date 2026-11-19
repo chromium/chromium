@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -167,7 +168,9 @@ public class TabMultiSelectHelper {
                 Token tabGroupId = tab.getTabGroupId();
                 if (tabGroupId != null && !tabGroupIds.contains(tabGroupId)) {
                     tabModel.setTabGroupCollapsed(
-                            tabGroupId, /* isCollapsed= */ false, /* animate= */ true);
+                            TabGroupId.fromRawToken(tabGroupId),
+                            /* isCollapsed= */ false,
+                            /* animate= */ true);
                     tabGroupIds.add(tabGroupId);
                 }
             }

@@ -400,7 +400,8 @@ public class TabsDeterministicSimulationTest {
                                         + ", "
                                         + collapsed
                                         + ")");
-                        mCollectionModel.setTabGroupCollapsed(groupId, collapsed, false);
+                        mCollectionModel.setTabGroupCollapsed(
+                                TabGroupId.fromRawToken(groupId), collapsed, false);
                     }
                 });
     }

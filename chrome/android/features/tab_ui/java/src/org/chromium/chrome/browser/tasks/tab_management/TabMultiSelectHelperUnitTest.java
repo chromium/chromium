@@ -184,7 +184,10 @@ public class TabMultiSelectHelperUnitTest {
 
         verify(mSelectTabCallback).onResult(TAB3_ID);
         verify(mTabModel)
-                .setTabGroupCollapsed(GROUP_ID, /* isCollapsed= */ false, /* animate= */ true);
+                .setTabGroupCollapsed(
+                        TabGroupId.fromRawToken(GROUP_ID),
+                        /* isCollapsed= */ false,
+                        /* animate= */ true);
         verify(mTabModel).clearMultiSelection(/* notifyObservers= */ false);
         verify(mTabModel)
                 .setTabsMultiSelected(Set.of(TAB1_ID, TAB2_ID, TAB3_ID), /* isSelected= */ true);
@@ -200,7 +203,10 @@ public class TabMultiSelectHelperUnitTest {
 
         verify(mSelectTabCallback).onResult(TAB3_ID);
         verify(mTabModel)
-                .setTabGroupCollapsed(GROUP_ID, /* isCollapsed= */ false, /* animate= */ true);
+                .setTabGroupCollapsed(
+                        TabGroupId.fromRawToken(GROUP_ID),
+                        /* isCollapsed= */ false,
+                        /* animate= */ true);
         verify(mTabModel).clearMultiSelection(/* notifyObservers= */ false);
         verify(mTabModel)
                 .setTabsMultiSelected(Set.of(TAB1_ID, TAB2_ID, TAB3_ID), /* isSelected= */ true);

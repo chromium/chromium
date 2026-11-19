@@ -114,7 +114,7 @@ public class LocalTabGroupMutationHelper {
         assert tabGroupId != null;
         updateTabGroupVisuals(tabGroup, tabGroupId);
         // Remote group should start collapsed. Do this after the merge to avoid auto expand.
-        mTabModel.setTabGroupCollapsed(tabGroupId, true);
+        mTabModel.setTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId), true);
 
         // Notify sync backend about IDs of the newly created group and tabs.
         LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(rootTab);
@@ -238,7 +238,7 @@ public class LocalTabGroupMutationHelper {
         updateTabGroupVisuals(tabGroup, tabGroupId);
         // TODO(crbug.com/346406221): This currently causes the layout strip to flicker as events
         // still escape the filter and kick off animations. Rework somehow to avoid.
-        mTabModel.setTabGroupCollapsed(tabGroupId, wasCollapsed);
+        mTabModel.setTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId), wasCollapsed);
     }
 
     /** Helper method to create a tab with a given URL and add it to the tab group. */

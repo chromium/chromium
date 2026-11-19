@@ -129,7 +129,8 @@ final class UndoGroupRestorer {
             // insertion indices for any remaining tabs.
             int targetIndex = findTargetGroupModelIndex(groupId, restoredIds, snapshot);
             moveGroupToIndex(tabModel, newGroupId, targetIndex);
-            tabModel.setTabGroupCollapsed(newGroupId, groupData.collapsed, /* animate= */ false);
+            tabModel.setTabGroupCollapsed(
+                    TabGroupId.fromRawToken(newGroupId), groupData.collapsed, /* animate= */ false);
         }
         return restoredIds;
     }
@@ -336,7 +337,8 @@ final class UndoGroupRestorer {
                     TabGroupMergeNotificationType.DONT_NOTIFY);
         }
         if (tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId)) != shouldCollapse) {
-            tabModel.setTabGroupCollapsed(groupId, shouldCollapse, /* animate= */ false);
+            tabModel.setTabGroupCollapsed(
+                    TabGroupId.fromRawToken(groupId), shouldCollapse, /* animate= */ false);
         }
     }
 
@@ -364,7 +366,10 @@ final class UndoGroupRestorer {
             tabModel.setTabGroupColor(TabGroupId.fromRawToken(groupId), groupData.color);
         }
         if (groupData.collapsed) {
-            tabModel.setTabGroupCollapsed(groupId, /* isCollapsed= */ true, /* animate= */ false);
+            tabModel.setTabGroupCollapsed(
+                    TabGroupId.fromRawToken(groupId),
+                    /* isCollapsed= */ true,
+                    /* animate= */ false);
         }
     }
 

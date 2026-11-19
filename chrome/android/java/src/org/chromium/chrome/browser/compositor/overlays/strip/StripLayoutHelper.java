@@ -2087,7 +2087,8 @@ public class StripLayoutHelper
                     && mModel != null
                     && mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId))) {
                 if (selected) {
-                    mModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
+                    mModel.setTabGroupCollapsed(
+                            TabGroupId.fromRawToken(tabGroupId), /* isCollapsed= */ false);
                 } else {
                     collapsed = true;
                 }
@@ -3640,7 +3641,8 @@ public class StripLayoutHelper
         boolean isCollapsed = mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId));
         assert isCollapsed == groupTitle.isCollapsed();
 
-        mModel.setTabGroupCollapsed(tabGroupId, !isCollapsed, /* animate= */ true);
+        mModel.setTabGroupCollapsed(
+                TabGroupId.fromRawToken(tabGroupId), !isCollapsed, /* animate= */ true);
     }
 
     @Nullable Long takeLastNtbInteractionTimeMs() {
@@ -4230,7 +4232,8 @@ public class StripLayoutHelper
         Token tabGroupId = tab != null ? tab.getTabGroupId() : null;
         if (tabGroupId != null
                 && mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId))) {
-            mModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
+            mModel.setTabGroupCollapsed(
+                    TabGroupId.fromRawToken(tabGroupId), /* isCollapsed= */ false);
             bringActiveTabToVisibleArea(LayoutManagerImpl.time(), /* animate= */ true);
         }
     }

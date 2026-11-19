@@ -1638,14 +1638,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate) {
+    public void setTabGroupCollapsed(TabGroupId tabGroupId, boolean isCollapsed, boolean animate) {
         assertOnUiThread();
         updateTabGroupVisualData(
-                TabGroupId.fromRawToken(tabGroupId),
-                /* title= */ null,
-                /* colorId= */ null,
-                isCollapsed,
-                animate);
+                tabGroupId, /* title= */ null, /* colorId= */ null, isCollapsed, animate);
     }
 
     @Override
@@ -1829,7 +1825,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (undoGroupMetadata.didCreateNewGroup) {
             closeDetachedTabGroup(tabGroupId);
         } else if (undoGroupMetadata.wasDestinationTabGroupCollapsed) {
-            setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ true);
+            setTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId), /* isCollapsed= */ true);
         }
     }
 
@@ -2054,7 +2050,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                     assumeNonNull(tabGroupId);
                     setLastShownTabForGroup(tabGroupId, newSelectedTab);
                     if (getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId))) {
-                        setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
+                        setTabGroupCollapsed(
+                                TabGroupId.fromRawToken(tabGroupId), /* isCollapsed= */ false);
                     }
                 }
                 RecordHistogram.recordBooleanHistogram(
@@ -2464,7 +2461,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         boolean wasDestinationTabGroupCollapsed =
                 getTabGroupCollapsed(TabGroupId.fromRawToken(destinationTabGroupId));
         if (wasDestinationTabGroupCollapsed) {
-            setTabGroupCollapsed(destinationTabGroupId, /* isCollapsed= */ false);
+            setTabGroupCollapsed(
+                    TabGroupId.fromRawToken(destinationTabGroupId), /* isCollapsed= */ false);
         }
 
         // Calculate the initial insertion point in the tab model.
@@ -2872,7 +2870,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         setTabGroupColor(
                 TabGroupId.fromRawToken(tabGroupId),
                 getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
-        setTabGroupCollapsed(tabGroupId, getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId)));
+        setTabGroupCollapsed(
+                TabGroupId.fromRawToken(tabGroupId),
+                getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId)));
     }
 
     @VisibleForTesting

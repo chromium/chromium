@@ -326,7 +326,9 @@ public class TabGroupUtilsUnitTest {
         verify(mTabModel)
                 .setTabGroupTitle(eq(TabGroupId.fromRawToken(TAB_GROUP_ID1)), eq(TAB_GROUP_TITLE));
         if (shouldApplyCollapse) {
-            verify(mTabModel).setTabGroupCollapsed(eq(TAB_GROUP_ID1), eq(true), eq(false));
+            verify(mTabModel)
+                    .setTabGroupCollapsed(
+                            eq(TabGroupId.fromRawToken(TAB_GROUP_ID1)), eq(true), eq(false));
         } else {
             verify(mTabModel, never()).setTabGroupCollapsed(any(), anyBoolean(), anyBoolean());
         }

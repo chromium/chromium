@@ -189,7 +189,8 @@ public class TabGroupUtils {
         tabModel.setTabGroupColor(TabGroupId.fromRawToken(tabGroupId), tabGroupColor);
         tabModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), tabGroupTitle);
         if (shouldApplyCollapse) {
-            tabModel.setTabGroupCollapsed(tabGroupId, tabGroupCollapsed, /* animate= */ false);
+            tabModel.setTabGroupCollapsed(
+                    TabGroupId.fromRawToken(tabGroupId), tabGroupCollapsed, /* animate= */ false);
         }
     }
 

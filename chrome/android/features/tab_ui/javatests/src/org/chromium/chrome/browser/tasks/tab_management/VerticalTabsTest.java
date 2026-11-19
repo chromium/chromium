@@ -1107,7 +1107,9 @@ public class VerticalTabsTest {
         // (index 3).
         Journeys.mergeTabsToGroupProgrammatically(mPage, tab2, tab3);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> model.setTabGroupCollapsed(tab2.getTabGroupId(), true));
+                () ->
+                        model.setTabGroupCollapsed(
+                                TabGroupId.fromRawToken(tab2.getTabGroupId()), true));
 
         CriteriaHelper.pollUiThread(
                 () -> model.getTabGroupCollapsed(TabGroupId.fromRawToken(tab2.getTabGroupId())),

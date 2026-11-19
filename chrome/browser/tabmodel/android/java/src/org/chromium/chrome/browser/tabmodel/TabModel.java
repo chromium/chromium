@@ -681,10 +681,10 @@ public interface TabModel extends TabList {
     boolean getTabGroupCollapsed(TabGroupId tabGroupId);
 
     /** Sets whether the tab group is expanded or collapsed. */
-    default void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed) {
+    default void setTabGroupCollapsed(TabGroupId tabGroupId, boolean isCollapsed) {
         setTabGroupCollapsed(tabGroupId, isCollapsed, /* animate= */ false);
     }
 
     /** Sets whether the tab group is expanded or collapsed, with optional animation. */
-    void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate);
+    void setTabGroupCollapsed(TabGroupId tabGroupId, boolean isCollapsed, boolean animate);
 }

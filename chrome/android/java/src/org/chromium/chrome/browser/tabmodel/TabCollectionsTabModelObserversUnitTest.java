@@ -973,7 +973,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                         any(), eq(TabGroupId.fromRawToken(groupId))))
                 .thenReturn(false);
 
-        mTabModel.setTabGroupCollapsed(groupId, true);
+        mTabModel.setTabGroupCollapsed(TabGroupId.fromRawToken(groupId), true);
         verify(mTabGroupObserver).onTabGroupVisualsChanged(eq(groupId));
     }
 

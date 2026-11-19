@@ -1400,7 +1400,9 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mCollectionModel.addTabGroupObserver(collapsedObserver);
                     mCollectionModel.setTabGroupCollapsed(
-                            tabGroupId, /* isCollapsed= */ true, /* animate= */ false);
+                            TabGroupId.fromRawToken(tabGroupId),
+                            /* isCollapsed= */ true,
+                            /* animate= */ false);
                     assertTrue(
                             mCollectionModel.getTabGroupCollapsed(
                                     TabGroupId.fromRawToken(tabGroupId)));
@@ -1423,7 +1425,8 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addTabGroupObserver(collapsedDeleteObserver);
-                    mCollectionModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
+                    mCollectionModel.setTabGroupCollapsed(
+                            TabGroupId.fromRawToken(tabGroupId), /* isCollapsed= */ false);
                     assertFalse(
                             mCollectionModel.getTabGroupCollapsed(
                                     TabGroupId.fromRawToken(tabGroupId)));
@@ -1446,7 +1449,8 @@ public class TabCollectionTabModelImplTest {
                     assertNotNull(tabGroupId);
                     mCollectionModel.setIndex(
                             mCollectionModel.indexOf(tab0), TabSelectionType.FROM_USER);
-                    mCollectionModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ true);
+                    mCollectionModel.setTabGroupCollapsed(
+                            TabGroupId.fromRawToken(tabGroupId), /* isCollapsed= */ true);
                     assertTrue(
                             mCollectionModel.getTabGroupCollapsed(
                                     TabGroupId.fromRawToken(tabGroupId)));
@@ -1479,7 +1483,8 @@ public class TabCollectionTabModelImplTest {
                     assertNotNull(groupB);
                     mCollectionModel.setIndex(
                             mCollectionModel.indexOf(tab0), TabSelectionType.FROM_USER);
-                    mCollectionModel.setTabGroupCollapsed(groupA, /* isCollapsed= */ true);
+                    mCollectionModel.setTabGroupCollapsed(
+                            TabGroupId.fromRawToken(groupA), /* isCollapsed= */ true);
 
                     // Select the last tab in the collapsed group, then close it.
                     mCollectionModel.setIndex(
@@ -1616,7 +1621,8 @@ public class TabCollectionTabModelImplTest {
             mCollectionModel.setTabGroupColor(TabGroupId.fromRawToken(tabGroupId), color);
             assertEquals(0, callbackHelper.getCallCount());
 
-            mCollectionModel.setTabGroupCollapsed(tabGroupId, collapsed, /* animate= */ false);
+            mCollectionModel.setTabGroupCollapsed(
+                    TabGroupId.fromRawToken(tabGroupId), collapsed, /* animate= */ false);
             assertEquals(0, callbackHelper.getCallCount());
 
             mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), "New Title");
@@ -1931,7 +1937,9 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.setTabGroupColor(
                             TabGroupId.fromRawToken(groupId), TabGroupColorId.BLUE);
                     mCollectionModel.setTabGroupCollapsed(
-                            groupId, /* isCollapsed= */ true, /* animate= */ false);
+                            TabGroupId.fromRawToken(groupId),
+                            /* isCollapsed= */ true,
+                            /* animate= */ false);
 
                     assertEquals(title, TabGroupVisualDataStore.getTabGroupTitle(groupId));
                     assertEquals(
@@ -4647,7 +4655,8 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mCollectionModel.setTabGroupCollapsed(
-                                tabGroupId.get(), /* isCollapsed= */ true));
+                                TabGroupId.fromRawToken(tabGroupId.get()),
+                                /* isCollapsed= */ true));
 
         // The callback is called.
         onTabGroupVisualsChanged.waitForNext();

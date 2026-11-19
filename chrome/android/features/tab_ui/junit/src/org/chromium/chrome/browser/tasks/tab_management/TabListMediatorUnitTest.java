@@ -7402,7 +7402,10 @@ public class TabListMediatorUnitTest {
         mMediator.toggleTabGroupExpansion(TAB_GROUP_ID);
 
         verify(mTabModel)
-                .setTabGroupCollapsed(TAB_GROUP_ID, /* isCollapsed= */ true, /* animate= */ false);
+                .setTabGroupCollapsed(
+                        TabGroupId.fromRawToken(TAB_GROUP_ID),
+                        /* isCollapsed= */ true,
+                        /* animate= */ false);
 
         histogramWatcher.assertExpected();
 
@@ -7417,7 +7420,10 @@ public class TabListMediatorUnitTest {
         mMediator.toggleTabGroupExpansion(TAB_GROUP_ID);
 
         verify(mTabModel)
-                .setTabGroupCollapsed(TAB_GROUP_ID, /* isCollapsed= */ false, /* animate= */ false);
+                .setTabGroupCollapsed(
+                        TabGroupId.fromRawToken(TAB_GROUP_ID),
+                        /* isCollapsed= */ false,
+                        /* animate= */ false);
 
         histogramWatcher.assertExpected();
     }

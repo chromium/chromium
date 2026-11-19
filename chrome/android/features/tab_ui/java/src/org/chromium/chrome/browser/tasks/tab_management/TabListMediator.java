@@ -1322,7 +1322,8 @@ public class TabListMediator implements TabListNotificationHandler {
         boolean isCollapsed = tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId));
         boolean newCollapsedState = !isCollapsed;
 
-        tabModel.setTabGroupCollapsed(tabGroupId, newCollapsedState, /* animate= */ false);
+        tabModel.setTabGroupCollapsed(
+                TabGroupId.fromRawToken(tabGroupId), newCollapsedState, /* animate= */ false);
 
         if (mComponentId == TabComponentId.VERTICAL_TABS) {
             RecordHistogram.recordBooleanHistogram(

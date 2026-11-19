@@ -287,7 +287,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
         inOrder.verify(mTabRemover).forceCloseTabs(argThat(params -> params.tabs.size() == 1));
-        inOrder.verify(mTabModel).setTabGroupCollapsed(TOKEN_1, true);
+        inOrder.verify(mTabModel).setTabGroupCollapsed(TabGroupId.fromRawToken(TOKEN_1), true);
     }
 
     @Test

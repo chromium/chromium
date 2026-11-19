@@ -418,7 +418,8 @@ public class TabDragDropTest extends TabStripDragDropTestBase {
                     TabModel destModel = destActivity.getCurrentTabModel();
                     destModel.createSingleTabGroup(destModel.getTabAt(0));
                     destGroupId[0] = destModel.getTabAt(0).getTabGroupId();
-                    destModel.setTabGroupCollapsed(destGroupId[0], /* isCollapsed= */ true);
+                    destModel.setTabGroupCollapsed(
+                            TabGroupId.fromRawToken(destGroupId[0]), /* isCollapsed= */ true);
                 });
         TabStripUtils.settleDownCompositor(destHelper);
 

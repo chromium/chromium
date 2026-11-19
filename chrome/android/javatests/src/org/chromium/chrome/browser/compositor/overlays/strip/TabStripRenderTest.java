@@ -56,6 +56,7 @@ import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
@@ -363,7 +364,7 @@ public class TabStripRenderTest {
                     TabModelUtils.setIndex(tabModel, 2);
                     StripLayoutGroupTitle firstGroupTitle = getFirstGroupTitle(stripLayoutHelper);
                     tabModel.setTabGroupCollapsed(
-                            firstGroupTitle.getTabGroupId(),
+                            TabGroupId.fromRawToken(firstGroupTitle.getTabGroupId()),
                             /* isCollapsed= */ true,
                             /* animate= */ false);
                 });

@@ -596,7 +596,8 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                     TabModel destModel = destActivity.getCurrentTabModel();
                     destModel.createSingleTabGroup(destModel.getTabAt(0));
                     destGroupId[0] = destModel.getTabAt(0).getTabGroupId();
-                    destModel.setTabGroupCollapsed(destGroupId[0], /* isCollapsed= */ true);
+                    destModel.setTabGroupCollapsed(
+                            TabGroupId.fromRawToken(destGroupId[0]), /* isCollapsed= */ true);
                 });
         TabStripUtils.settleDownCompositor(destHelper);
 
@@ -994,7 +995,8 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                     TabModel sourceModel = sourceActivity.getCurrentTabModel();
                     sourceModel.createSingleTabGroup(sourceModel.getTabAt(0));
                     sourceGroupId[0] = sourceModel.getTabAt(0).getTabGroupId();
-                    sourceModel.setTabGroupCollapsed(sourceGroupId[0], /* isCollapsed= */ true);
+                    sourceModel.setTabGroupCollapsed(
+                            TabGroupId.fromRawToken(sourceGroupId[0]), /* isCollapsed= */ true);
                 });
         TabStripUtils.settleDownCompositor(mStripLayoutHelper);
 
@@ -1053,7 +1055,8 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                     TabModel sourceModel = sourceActivity.getCurrentTabModel();
                     sourceModel.createSingleTabGroup(sourceModel.getTabAt(0));
                     sourceGroupId[0] = sourceModel.getTabAt(0).getTabGroupId();
-                    sourceModel.setTabGroupCollapsed(sourceGroupId[0], /* isCollapsed= */ true);
+                    sourceModel.setTabGroupCollapsed(
+                            TabGroupId.fromRawToken(sourceGroupId[0]), /* isCollapsed= */ true);
                 });
         TabStripUtils.settleDownCompositor(mStripLayoutHelper);
 

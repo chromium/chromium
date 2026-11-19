@@ -469,7 +469,7 @@ public class TabbedModeTabModelStoreTest {
                                     mTabModel.getTabByIdChecked(tabId1),
                                     TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
                             Token id = mTabModel.getTabById(tabId1).getTabGroupId();
-                            mTabModel.setTabGroupCollapsed(id, true);
+                            mTabModel.setTabGroupCollapsed(TabGroupId.fromRawToken(id), true);
                             return id;
                         });
 

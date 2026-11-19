@@ -126,7 +126,10 @@ public class UndoGroupRestorerUnitTest {
         inOrder.verify(mTabModel).setTabGroupTitle(TabGroupId.fromRawToken(GROUP_A), GROUP_TITLE);
         inOrder.verify(mTabModel).setTabGroupColor(TabGroupId.fromRawToken(GROUP_A), GROUP_COLOR);
         inOrder.verify(mTabModel)
-                .setTabGroupCollapsed(GROUP_A, /* isCollapsed= */ true, /* animate= */ false);
+                .setTabGroupCollapsed(
+                        TabGroupId.fromRawToken(GROUP_A),
+                        /* isCollapsed= */ true,
+                        /* animate= */ false);
         verify(mTabModel, never()).mergeListOfTabsToExistingGroup(any(), any(), any(), anyInt());
     }
 
@@ -200,7 +203,10 @@ public class UndoGroupRestorerUnitTest {
                         /* indexInGroup= */ 2,
                         DONT_NOTIFY);
         inOrder.verify(mTabModel)
-                .setTabGroupCollapsed(GROUP_A, /* isCollapsed= */ true, /* animate= */ false);
+                .setTabGroupCollapsed(
+                        TabGroupId.fromRawToken(GROUP_A),
+                        /* isCollapsed= */ true,
+                        /* animate= */ false);
         verify(mTabModel, never()).createTabGroupForTabGroupSync(any(), any());
         verify(mTabModel, never()).setTabGroupTitle(any(), anyString());
         verify(mTabModel, never()).setTabGroupColor(any(), anyInt());
@@ -359,10 +365,15 @@ public class UndoGroupRestorerUnitTest {
                 .createTabGroupForTabGroupSync(
                         List.of(mTab2, mTab4), TabGroupId.fromRawToken(GROUP_B));
         inOrder.verify(mTabModel)
-                .setTabGroupCollapsed(GROUP_B, /* isCollapsed= */ true, /* animate= */ false);
+                .setTabGroupCollapsed(
+                        TabGroupId.fromRawToken(GROUP_B),
+                        /* isCollapsed= */ true,
+                        /* animate= */ false);
         inOrder.verify(mTabModel)
                 .createTabGroupForTabGroupSync(List.of(mTab3), TabGroupId.fromRawToken(GROUP_A));
-        verify(mTabModel, never()).setTabGroupCollapsed(eq(GROUP_A), anyBoolean(), anyBoolean());
+        verify(mTabModel, never())
+                .setTabGroupCollapsed(
+                        eq(TabGroupId.fromRawToken(GROUP_A)), anyBoolean(), anyBoolean());
         verify(mTabModel, never()).getTabById(TAB_ID_1);
     }
 
@@ -469,7 +480,9 @@ public class UndoGroupRestorerUnitTest {
         inOrder.verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_REOPENED), 2);
         inOrder.verify(mTabModel)
                 .setTabGroupCollapsed(
-                        GROUP_REOPENED, /* isCollapsed= */ true, /* animate= */ false);
+                        TabGroupId.fromRawToken(GROUP_REOPENED),
+                        /* isCollapsed= */ true,
+                        /* animate= */ false);
         inOrder.verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_REOPENED), 4);
         inOrder.verify(mTabModel, never()).moveGroupToIndex(any(), anyInt());
         verify(mTabModel, never()).createTabGroupForTabGroupSync(any(), any());
@@ -497,7 +510,9 @@ public class UndoGroupRestorerUnitTest {
         verify(mTabModel, never()).moveGroupToIndex(any(), anyInt());
         verify(mTabModel)
                 .setTabGroupCollapsed(
-                        GROUP_REOPENED, /* isCollapsed= */ true, /* animate= */ false);
+                        TabGroupId.fromRawToken(GROUP_REOPENED),
+                        /* isCollapsed= */ true,
+                        /* animate= */ false);
     }
 
     @Test
@@ -579,7 +594,9 @@ public class UndoGroupRestorerUnitTest {
                         DONT_NOTIFY);
         inOrder.verify(mTabModel)
                 .setTabGroupCollapsed(
-                        GROUP_REOPENED, /* isCollapsed= */ true, /* animate= */ false);
+                        TabGroupId.fromRawToken(GROUP_REOPENED),
+                        /* isCollapsed= */ true,
+                        /* animate= */ false);
         verify(mTabModel, never()).createTabGroupForTabGroupSync(any(), any());
     }
 
@@ -637,7 +654,9 @@ public class UndoGroupRestorerUnitTest {
                         DONT_NOTIFY);
         inOrder.verify(mTabModel)
                 .setTabGroupCollapsed(
-                        GROUP_REOPENED, /* isCollapsed= */ true, /* animate= */ false);
+                        TabGroupId.fromRawToken(GROUP_REOPENED),
+                        /* isCollapsed= */ true,
+                        /* animate= */ false);
         verify(mTabModel, never()).createTabGroupForTabGroupSync(any(), any());
     }
 

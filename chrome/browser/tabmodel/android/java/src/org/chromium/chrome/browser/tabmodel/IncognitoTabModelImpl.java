@@ -720,7 +720,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate) {
+    public void setTabGroupCollapsed(TabGroupId tabGroupId, boolean isCollapsed, boolean animate) {
         mDelegateModel.setTabGroupCollapsed(tabGroupId, isCollapsed, animate);
     }
 
