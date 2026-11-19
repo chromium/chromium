@@ -61,6 +61,13 @@ void KeyedServiceTemplatedFactory<ServiceType>::SetTestingFactory(
   auto iterator = FindOrCreateMapping(context);
   CHECK(iterator != mapping_.end());
 
+#if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_INITIALIZATION)
+  // Only allow registering TestingFactory between the call to ContextCreated()
+  // and ContextInitialized(). This ensures that the TestingFactory are added
+  // as part of the test context creation (which is enforced on platforms that
+  // have tight initialization).
+  CHECK_EQ(iterator->second.stage, MappingStage::kContextCreated);
+#else
   // We may have to go through the shutdown and destroy mechanisms because
   // there are unit tests that create a service on a context and then change
   // the testing service mid-test.
@@ -80,6 +87,7 @@ void KeyedServiceTemplatedFactory<ServiceType>::SetTestingFactory(
     // recreated thus invalidating the iterator.
     iterator = mapping_.find(context);
   }
+#endif
 
   // If the factory is null, install a factory returning a null service.
   if (!testing_factory) {
