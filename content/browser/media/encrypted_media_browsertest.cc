@@ -224,26 +224,32 @@ INSTANTIATE_TEST_SUITE_P(MSE_ExternalClearKey,
                          Values(media::kExternalClearKeyKeySystem));
 #endif
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioOnly_WebM) {
-  TestSimplePlayback("bear-a_enc-a.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioClearVideo_WebM) {
-  TestSimplePlayback("bear-320x240-av_enc-a.webm");
-}
-
-// TODO(crbug.com/40784898): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Playback_VideoAudio_WebM DISABLED_Playback_VideoAudio_WebM
-#else
-#define MAYBE_Playback_VideoAudio_WebM Playback_VideoAudio_WebM
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, MAYBE_Playback_VideoAudio_WebM) {
-  TestSimplePlayback("bear-320x240-av_enc-av.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM) {
-  TestSimplePlayback("bear-320x240-v_enc-v.webm");
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_WebM) {
+  static constexpr const char* kMediaFiles[] = {
+      "bear-a_enc-a.webm",
+      "bear-320x240-av_enc-a.webm",
+#if !BUILDFLAG(IS_ANDROID)
+      // TODO(crbug.com/40784898): Flaky on Android.
+      "bear-320x240-av_enc-av.webm",
+      "bear-320x240-opus-a_enc-a.webm",
+#endif  // !BUILDFLAG(IS_ANDROID)
+      "bear-320x240-v_enc-v.webm",
+      "bear-320x240-v-vp9_subsample_enc-v.webm",
+      "bear-320x240-av_enc-v.webm",
+      "bear-320x240-opus-av_enc-av.webm",
+      "bear-320x240-opus-av_enc-v.webm",
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+      "bear-av1-cenc.webm",
+#if !BUILDFLAG(IS_ANDROID)
+      // TODO(crbug.com/40863206): Flaky on Android.
+      "bear-av1-320x180-10bit-cenc.webm",
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+  };
+  for (const char* media_file : kMediaFiles) {
+    SCOPED_TRACE(media_file);
+    TestSimplePlayback(media_file);
+  }
 }
 
 // TODO(crbug.com/40116008): Flaky on multiple platforms.
@@ -252,44 +258,27 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v-vp9_fullsample_enc-v.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_Subsample) {
-  TestSimplePlayback("bear-320x240-v-vp9_subsample_enc-v.webm");
-}
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_MP4) {
+  static constexpr const char* kAudioOnlyMediaFiles[] = {
+      "bear-flac-cenc.mp4",
+      "bear-opus-cenc.mp4",
+  };
+  for (const char* media_file : kAudioOnlyMediaFiles) {
+    SCOPED_TRACE(media_file);
+    RunMultipleFileTest(std::string(), media_file, media::kEndedTitle);
+  }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM) {
-  TestSimplePlayback("bear-320x240-av_enc-v.webm");
-}
-
-// TODO(crbug.com/40784898): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Playback_VideoAudio_WebM_Opus \
-  DISABLED_Playback_VideoAudio_WebM_Opus
-#else
-#define MAYBE_Playback_VideoAudio_WebM_Opus Playback_AudioOnly_WebM_Opus
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VideoAudio_WebM_Opus) {
-  TestSimplePlayback("bear-320x240-opus-a_enc-a.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM_Opus) {
-  TestSimplePlayback("bear-320x240-opus-av_enc-av.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
-  TestSimplePlayback("bear-320x240-opus-av_enc-v.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_AudioOnly_MP4_FLAC) {
-  RunMultipleFileTest(std::string(), "bear-flac-cenc.mp4", media::kEndedTitle);
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
-  RunMultipleFileTest(std::string(), "bear-opus-cenc.mp4", media::kEndedTitle);
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4_VP9) {
-  TestSimplePlayback("bear-320x240-v_frag-vp9-cenc.mp4");
+  static constexpr const char* kMediaFiles[] = {
+      "bear-320x240-v_frag-vp9-cenc.mp4",
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+      "bear-av1-cenc.mp4",
+      "bear-av1-320x180-10bit-cenc.mp4",
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+  };
+  for (const char* media_file : kMediaFiles) {
+    SCOPED_TRACE(media_file);
+    TestSimplePlayback(media_file);
+  }
 }
 
 // TODO(crbug.com/40513452): Decide when it's supported on Android.
@@ -324,34 +313,6 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID) &&
         // !(BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
-
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1) {
-  TestSimplePlayback("bear-av1-cenc.webm");
-}
-
-// TODO(crbug.com/40863206): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Playback_VideoOnly_WebM_AV1_10bit \
-  DISABLED_Playback_VideoOnly_WebM_AV1_10bit
-#else
-#define MAYBE_Playback_VideoOnly_WebM_AV1_10bit \
-  Playback_VideoOnly_WebM_AV1_10bit
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VideoOnly_WebM_AV1_10bit) {
-  TestSimplePlayback("bear-av1-320x180-10bit-cenc.webm");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4_AV1) {
-  TestSimplePlayback("bear-av1-cenc.mp4");
-}
-
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       Playback_VideoOnly_MP4_AV1_10bit) {
-  TestSimplePlayback("bear-av1-320x180-10bit-cenc.mp4");
-}
-#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
 // Strictly speaking this is not an "encrypted" media test. Keep it here for
 // completeness.
