@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/component_export.h"
@@ -50,6 +51,11 @@ class COMPONENT_EXPORT(GFX) StringSlicer {
 
   StringSlicer(const StringSlicer&) = delete;
   StringSlicer& operator=(const StringSlicer&) = delete;
+
+  // Returns `{prefix_length, suffix_start}` in `text_` retained for `length`,
+  // after snapping to valid codepoint boundaries and trimming whitespace around
+  // the cut if enabled.
+  std::pair<size_t, size_t> GetCutBoundaries(size_t length) const;
 
   // Cuts |text_| to be at most |length| UTF-16 code units long. If
   // |elide_in_middle_| is true, the middle of the string is removed to leave

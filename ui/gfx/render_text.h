@@ -58,6 +58,7 @@ class Canvas;
 struct DecoratedText;
 class Font;
 class PointF;
+class StringSlicer;
 
 namespace internal {
 
@@ -901,6 +902,23 @@ class COMPONENT_EXPORT(GFX) RenderText {
   // Prevents breaking glyphs based on font support. This should only be set in
   // test environments.
   bool ignore_missing_glyph_breaks_for_test_ = false;
+
+  // Builds a candidate elided string from `text` by slicing via `slicer` to at
+  // most `max_retained_length` UTF-16 code units (excluding the ellipsis), then
+  // appending the ellipsis and any required BiDi directional mark for
+  // `ELIDE_TAIL`.
+  static std::u16string BuildElidedText(
+      std::u16string_view text,
+      const StringSlicer& slicer,
+      size_t max_retained_length,
+      ElideBehavior behavior,
+      base::i18n::TextDirection text_direction);
+
+  // Shapes and measures `candidate_text` on `candidate_render_text` while
+  // preserving this instance's styles without breaking multi-codepoint
+  // graphemes.
+  float MeasureElidedCandidate(RenderText* candidate_render_text,
+                               std::u16string_view candidate_text) const;
 
  private:
   friend class test::RenderTextTestApi;

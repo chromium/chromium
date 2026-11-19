@@ -2176,6 +2176,82 @@ void RenderText::OnTextAttributeChanged() {
   OnLayoutTextAttributeChanged();
 }
 
+// static
+std::u16string RenderText::BuildElidedText(
+    std::u16string_view text,
+    const StringSlicer& slicer,
+    size_t max_retained_length,
+    ElideBehavior behavior,
+    base::i18n::TextDirection text_direction) {
+  const std::u16string_view ellipsis = kEllipsisUTF16;
+  const bool insert_ellipsis = (behavior != TRUNCATE);
+  std::u16string new_text = slicer.CutString(
+      max_retained_length, insert_ellipsis && behavior != ELIDE_TAIL);
+
+  // This has to be an additional step so that the ellipsis is rendered with
+  // same style as trailing part of the text.
+  if (insert_ellipsis && behavior == ELIDE_TAIL) {
+    // When ellipsis follows text whose directionality is not the same as that
+    // of the whole text, it will be rendered with the directionality of the
+    // whole text. Since we want ellipsis to indicate continuation of the
+    // preceding text, we force the directionality of ellipsis to be same as
+    // the preceding text using LTR or RTL markers.
+    base::i18n::TextDirection trailing_text_direction =
+        base::i18n::GetLastStrongCharacterDirection(new_text);
+
+    // Ensures that the |new_text| will always be smaller or equal to the
+    // original text. There is a corner case when only one character is elided
+    // and two characters are added back (ellipsis and directional marker).
+    if (trailing_text_direction != text_direction &&
+        new_text.length() + 2 > text.length() && max_retained_length >= 1) {
+      new_text = slicer.CutString(max_retained_length - 1, false);
+      trailing_text_direction =
+          base::i18n::GetLastStrongCharacterDirection(new_text);
+    }
+
+    // Append the ellipsis and the optional directional marker characters.
+    // Do not append the BiDi marker if the only codepoint in the text is
+    // an ellipsis.
+    new_text.append(ellipsis);
+    if (new_text.size() != 1 && trailing_text_direction != text_direction) {
+      if (trailing_text_direction == base::i18n::LEFT_TO_RIGHT) {
+        new_text += base::i18n::kLeftToRightMark;
+      } else {
+        new_text += base::i18n::kRightToLeftMark;
+      }
+    }
+  }
+  return new_text;
+}
+
+float RenderText::MeasureElidedCandidate(
+    RenderText* candidate_render_text,
+    std::u16string_view candidate_text) const {
+  // Restore colors. They will be truncated to size by SetText.
+  candidate_render_text->colors_ = colors_;
+  candidate_render_text->SetText(candidate_text);
+
+  // Restore styles and baselines without breaking multi-codepoint graphemes.
+  candidate_render_text->styles_ = styles_;
+  for (auto& style : candidate_render_text->styles_) {
+    RestoreBreakList(candidate_render_text, &style);
+  }
+  RestoreBreakList(candidate_render_text, &candidate_render_text->baselines_);
+  RestoreBreakList(candidate_render_text,
+                   &candidate_render_text->font_size_overrides_);
+  candidate_render_text->weights_ = weights_;
+  RestoreBreakList(candidate_render_text, &candidate_render_text->weights_);
+  RestoreBreakList(candidate_render_text,
+                   &candidate_render_text->resolved_typefaces_);
+  RestoreBreakList(candidate_render_text, &candidate_render_text->fill_styles_);
+  RestoreBreakList(candidate_render_text,
+                   &candidate_render_text->stroke_widths_);
+
+  // We check the width of the whole desired string at once to ensure we
+  // handle kerning/ligatures/etc. correctly.
+  return candidate_render_text->GetContentWidthF();
+}
+
 std::u16string RenderText::Elide(std::u16string_view text,
                                  float text_width,
                                  float available_width,
@@ -2243,64 +2319,15 @@ std::u16string RenderText::Elide(std::u16string_view text,
     guess = std::clamp(guess, lo, hi);
     DCHECK_NE(last_guess, guess);
 
-    // Restore colors. They will be truncated to size by SetText.
-    render_text->colors_ = colors_;
     std::u16string new_text =
-        slicer.CutString(guess, insert_ellipsis && behavior != ELIDE_TAIL);
-
-    // This has to be an additional step so that the ellipsis is rendered with
-    // same style as trailing part of the text.
-    if (insert_ellipsis && behavior == ELIDE_TAIL) {
-      // When ellipsis follows text whose directionality is not the same as that
-      // of the whole text, it will be rendered with the directionality of the
-      // whole text. Since we want ellipsis to indicate continuation of the
-      // preceding text, we force the directionality of ellipsis to be same as
-      // the preceding text using LTR or RTL markers.
-      base::i18n::TextDirection trailing_text_direction =
-          base::i18n::GetLastStrongCharacterDirection(new_text);
-
-      // Ensures that the |new_text| will always be smaller or equal to the
-      // original text. There is a corner case when only one character is elided
-      // and two characters are added back (ellipsis and directional marker).
-      if (trailing_text_direction != text_direction &&
-          new_text.length() + 2 > text.length() && guess >= 1) {
-        new_text = slicer.CutString(guess - 1, false);
-        trailing_text_direction =
-            base::i18n::GetLastStrongCharacterDirection(new_text);
-      }
-
-      // Append the ellipsis and the optional directional marker characters.
-      // Do not append the BiDi marker if the only codepoint in the text is
-      // an ellipsis.
-      new_text.append(ellipsis);
-      if (new_text.size() != 1 && trailing_text_direction != text_direction) {
-        if (trailing_text_direction == base::i18n::LEFT_TO_RIGHT)
-          new_text += base::i18n::kLeftToRightMark;
-        else
-          new_text += base::i18n::kRightToLeftMark;
-      }
-    }
+        BuildElidedText(text, slicer, guess, behavior, text_direction);
 
     // The elided text must be smaller in bytes. Otherwise, break-lists are not
     // consistent and the characters after the last range are not styled.
     DCHECK_LE(new_text.size(), text.size());
-    render_text->SetText(new_text);
 
-    // Restore styles and baselines without breaking multi-character graphemes.
-    render_text->styles_ = styles_;
-    for (auto& style : render_text->styles_)
-      RestoreBreakList(render_text.get(), &style);
-    RestoreBreakList(render_text.get(), &render_text->baselines_);
-    RestoreBreakList(render_text.get(), &render_text->font_size_overrides_);
-    render_text->weights_ = weights_;
-    RestoreBreakList(render_text.get(), &render_text->weights_);
-    RestoreBreakList(render_text.get(), &render_text->resolved_typefaces_);
-    RestoreBreakList(render_text.get(), &render_text->fill_styles_);
-    RestoreBreakList(render_text.get(), &render_text->stroke_widths_);
-
-    // We check the width of the whole desired string at once to ensure we
-    // handle kerning/ligatures/etc. correctly.
-    const float guess_width = render_text->GetContentWidthF();
+    const float guess_width =
+        MeasureElidedCandidate(render_text.get(), new_text);
     if (guess_width == available_width)
       break;
     if (guess_width > available_width) {

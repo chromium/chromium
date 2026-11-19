@@ -144,25 +144,19 @@ StringSlicer::StringSlicer(std::u16string_view text,
                                                           elide_at_beginning)) {
 }
 
-std::u16string StringSlicer::CutString(size_t length,
-                                       bool insert_ellipsis) const {
-  const std::u16string_view ellipsis_text =
-      insert_ellipsis ? ellipsis_ : std::u16string_view();
-
+std::pair<size_t, size_t> StringSlicer::GetCutBoundaries(size_t length) const {
   // For visual consistency, when eliding at either end of the string, excess
   // space should be trimmed from the text to return "Foo bar..." instead of
   // "Foo bar ...".
 
   if (elide_at_beginning_) {
-    return base::StrCat({ellipsis_text, text_.substr(FindValidBoundaryAfter(
-                                            text_, text_.length() - length,
-                                            elide_whitespace_))});
+    return {0, FindValidBoundaryAfter(text_, text_.length() - length,
+                                      elide_whitespace_)};
   }
 
   if (!elide_in_middle_) {
-    return base::StrCat({text_.substr(0, FindValidBoundaryBefore(
-                                             text_, length, elide_whitespace_)),
-                         ellipsis_text});
+    return {FindValidBoundaryBefore(text_, length, elide_whitespace_),
+            text_.length()};
   }
 
   // Put the extra character, if any, before the cut.
@@ -176,6 +170,14 @@ std::u16string StringSlicer::CutString(size_t length,
       FindValidBoundaryBefore(text_, length - half_length, elide_whitespace_);
   const size_t suffix_start = FindValidBoundaryAfter(
       text_, text_.length() - half_length, elide_whitespace_);
+  return {prefix_length, suffix_start};
+}
+
+std::u16string StringSlicer::CutString(size_t length,
+                                       bool insert_ellipsis) const {
+  const std::u16string_view ellipsis_text =
+      insert_ellipsis ? ellipsis_ : std::u16string_view();
+  const auto [prefix_length, suffix_start] = GetCutBoundaries(length);
   return base::StrCat({text_.substr(0, prefix_length), ellipsis_text,
                        text_.substr(suffix_start)});
 }
