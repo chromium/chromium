@@ -138,6 +138,14 @@ class PageSettledMonitorDelegate
     return kActorObservationDelayTimeout.Get();
   }
 
+  base::TimeDelta GetStartDelay() const override {
+    if (controller_->start_delay_override_.has_value()) {
+      return *controller_->start_delay_override_;
+    }
+    return page_content_annotations::PageSettledMonitor::Delegate::
+        GetStartDelay();
+  }
+
  private:
   base::raw_ref<ObservationDelayController> controller_;
   TaskId task_id_;
@@ -151,7 +159,8 @@ ObservationDelayController::ObservationDelayController(
     : content::WebContentsObserver(
           WebContents::FromRenderFrameHost(&target_frame)),
       journal_(journal),
-      task_id_(task_id) {
+      task_id_(task_id),
+      target_document_(target_frame.GetWeakDocumentPtr()) {
   CHECK(web_contents());
   journal.Log(
       GURL::EmptyGURL(), task_id, "ObservationDelay: Created",
@@ -608,8 +617,18 @@ void ObservationDelayController::DCheckStateTransition(State old_state,
 
 void ObservationDelayController::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsSameDocument() ||
-      !navigation_handle->IsInPrimaryMainFrame() || state_ == State::kInitial) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  if (state_ == State::kInitial) {
+    if (!navigation_handle->IsSameDocument()) {
+      pre_wait_navigation_type_ = PreWaitNavigationType::kCrossDocument;
+    } else if (pre_wait_navigation_type_ == PreWaitNavigationType::kNone) {
+      pre_wait_navigation_type_ = PreWaitNavigationType::kSameDocument;
+    }
+    return;
+  }
+  if (navigation_handle->IsSameDocument()) {
     return;
   }
   if (!base::FeatureList::IsEnabled(
@@ -685,6 +704,25 @@ size_t ObservationDelayController::NavigationCount() const {
 
 void ObservationDelayController::SetNavigationCount(size_t count) {
   navigation_count_ = count;
+}
+
+ObservationDelayController::PreWaitNavigationType
+ObservationDelayController::GetPreWaitNavigationType() const {
+  return pre_wait_navigation_type_;
+}
+
+bool ObservationDelayController::DidPrimaryMainFrameNavigateBeforeWait() const {
+  return pre_wait_navigation_type_ != PreWaitNavigationType::kNone;
+}
+
+void ObservationDelayController::SetStartDelay(base::TimeDelta start_delay) {
+  CHECK_EQ(state_, State::kInitial);
+  start_delay_override_ = start_delay;
+}
+
+bool ObservationDelayController::IsMonitoringDocumentOf(
+    const content::RenderFrameHost& frame) const {
+  return target_document_.AsRenderFrameHostIfValid() == &frame;
 }
 
 }  // namespace actor

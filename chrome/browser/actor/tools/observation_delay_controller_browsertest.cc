@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/buildflag.h"
 #include "chrome/browser/actor/tools/observation_delay_test_util.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -301,6 +302,100 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, PdfFlow) {
   ASSERT_TRUE(controller.WaitForState(State::kDone));
 
   ASSERT_TRUE(result.Wait());
+  ASSERT_EQ(result.Get(), ObservationDelayController::Result::kOk);
+}
+
+IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
+                       RecordsSameDocumentNavigationBeforeWait) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+  EXPECT_TRUE(controller.IsMonitoringDocumentOf(*main_frame()));
+  EXPECT_FALSE(controller.DidPrimaryMainFrameNavigateBeforeWait());
+  EXPECT_EQ(controller.GetPreWaitNavigationType(),
+            ObservationDelayController::PreWaitNavigationType::kNone);
+
+  ASSERT_TRUE(InitiateFetchRequest());
+  EXPECT_TRUE(controller.DidPrimaryMainFrameNavigateBeforeWait());
+  EXPECT_EQ(controller.GetPreWaitNavigationType(),
+            ObservationDelayController::PreWaitNavigationType::kSameDocument);
+  EXPECT_TRUE(controller.IsMonitoringDocumentOf(*main_frame()));
+
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(active_surface(), result.GetCallback());
+  ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
+  EXPECT_FALSE(result.IsReady());
+
+  Respond("TEST COMPLETE");
+  ASSERT_EQ(result.Get(), ObservationDelayController::Result::kOk);
+}
+
+IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
+                       RecordsCrossDocumentNavigationBeforeWait) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+  EXPECT_FALSE(controller.DidPrimaryMainFrameNavigateBeforeWait());
+  EXPECT_EQ(controller.GetPreWaitNavigationType(),
+            ObservationDelayController::PreWaitNavigationType::kNone);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/actor/blank.html")));
+  EXPECT_TRUE(controller.DidPrimaryMainFrameNavigateBeforeWait());
+  EXPECT_EQ(controller.GetPreWaitNavigationType(),
+            ObservationDelayController::PreWaitNavigationType::kCrossDocument);
+  EXPECT_FALSE(controller.IsMonitoringDocumentOf(*main_frame()));
+}
+
+class ObservationDelayControllerStartDelayTest : public ObservationDelayTest {
+ public:
+  ObservationDelayControllerStartDelayTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kActorPageStability,
+          {{kActorPageStabilityTimeout.name, "30000ms"},
+           {kActorPageStabilityMinWait.name, "0ms"}}}},
+        {});
+  }
+  ~ObservationDelayControllerStartDelayTest() override = default;
+
+ private:
+  ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ObservationDelayControllerStartDelayTest,
+                       OverrideWithLongerStartDelay) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
+
+  TestObservationDelayController controller(
+      *main_frame(), actor::TaskId(), journal(),
+      ObservationDelayController::PageStabilityConfig());
+  controller.SetStartDelay(base::Seconds(30));
+
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(active_surface(), result.GetCallback());
+  EXPECT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
+  EXPECT_FALSE(result.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(ObservationDelayControllerStartDelayTest,
+                       OverrideWithShorterStartDelay) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetPageStabilityTestURL()));
+
+  TestObservationDelayController controller(
+      *main_frame(), actor::TaskId(), journal(),
+      ObservationDelayController::PageStabilityConfig{.start_delay =
+                                                          base::Seconds(30)});
+  controller.SetStartDelay(base::TimeDelta());
+
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(active_surface(), result.GetCallback());
+  ASSERT_TRUE(controller.WaitForState(State::kWaitForLoadCompletion));
   ASSERT_EQ(result.Get(), ObservationDelayController::Result::kOk);
 }
 
