@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/account_id/account_id.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
@@ -59,6 +60,7 @@
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -251,6 +253,10 @@ class FakeUserPolicyOidcSigninService
           ->set_policy_data_for_testing(std::move(policy_data));
       std::move(captured_callback_).Run(will_policy_fetch_succeed_);
     }
+  }
+
+  void SetWillPolicyFetchSucceed(bool will_policy_fetch_succeed) {
+    will_policy_fetch_succeed_ = will_policy_fetch_succeed;
   }
 
   raw_ptr<Profile> test_profile_ = nullptr;
@@ -630,6 +636,22 @@ class OidcAuthenticationSigninInterceptorTest
       EXPECT_TRUE(added_profile_->GetPrefs()->GetBoolean(
           device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
 
+      if (is_3p_identity_synced()) {
+        const AccountId& store_account_id =
+            added_profile_->GetUserCloudPolicyManager()->core()->store()
+                ? static_cast<UserCloudPolicyStore*>(
+                      added_profile_->GetUserCloudPolicyManager()
+                          ->core()
+                          ->store())
+                      ->signin_account_id()
+                : AccountId();
+        EXPECT_TRUE(store_account_id.is_valid());
+        EXPECT_EQ(store_account_id.GetUserEmail(), kExampleUserEmail);
+        if (will_policy_fetch_succeed_) {
+          EXPECT_EQ(store_account_id.GetGaiaId(), kExampleGaiaId);
+        }
+      }
+
       if (will_policy_fetch_succeed_) {
         CoreAccountId account_id =
             IdentityManagerFactory::GetForProfile(added_profile_)
@@ -761,7 +783,7 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
   TestProfileCreationOrSwitch(
       kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/true,
-      /*expected_number_of_windows=*/2, GetLastFunnelStepForSuccess());
+      /*expected_number_of_windows=*/3, GetLastFunnelStepForSuccess());
 
   // Clear permanent device signals consent before switching to verify that
   // switching to an existing profile does not silently re-grant consent.
@@ -784,6 +806,41 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 
   EXPECT_FALSE(added_profile_->GetPrefs()->GetBoolean(
       device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+  EXPECT_TRUE(GetCloudPolicyStore(added_profile_)->has_policy());
+
+  // If the policy refresh fails during a subsequent profile switch, the already
+  // cached policy and account binding must remain intact rather than being
+  // wiped.
+  auto* fake_oidc_service = static_cast<FakeUserPolicyOidcSigninService*>(
+      policy::UserPolicyOidcSigninServiceFactory::GetForProfile(
+          added_profile_));
+  fake_oidc_service->SetWillPolicyFetchSucceed(false);
+  will_policy_fetch_succeed_ = false;
+  EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _)).Times(0);
+  ExpectProfileSwitchBubble(SigninInterceptionResult::kAccepted);
+  AddTabToCurrentBrowser(GURL("about:blank"));
+  bool failed_switch_callback_called = false;
+  ASSERT_TRUE(interceptor_->MaybeInterceptOidcAuthentication(
+      web_contents(), kExampleOidcTokens, kExampleIssuerIdentifier,
+      kExampleSubjectIdentifier, std::string(),
+      base::BindLambdaForTesting([&failed_switch_callback_called]() {
+        failed_switch_callback_called = true;
+      })));
+  CheckFunnelAndResultHistogram(
+      OidcProfileCreationFunnelStep::kPolicyFetchStarted,
+      OidcProfileCreationResult::kFailedToFetchPolicy,
+      RegistrationResult::kNoRegistrationExpected);
+  EXPECT_FALSE(failed_switch_callback_called);
+  EXPECT_TRUE(GetCloudPolicyStore(added_profile_)->has_policy());
+  if (is_3p_identity_synced()) {
+    EXPECT_EQ(
+        static_cast<UserCloudPolicyStore*>(
+            added_profile_->GetUserCloudPolicyManager()->core()->store())
+            ->signin_account_id(),
+        AccountId::FromUserEmailGaiaId(kExampleUserEmail, kExampleGaiaId));
+  }
+  fake_oidc_service->SetWillPolicyFetchSucceed(true);
+  will_policy_fetch_succeed_ = true;
 
   // If the recovery token is missing on a subsequent switch, the switch must
   // abort without clearing cached policies or granting device signals consent.
@@ -917,6 +974,13 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
 
   ASSERT_TRUE(base::test::RunUntil(
       [this]() { return GetCloudPolicyStore(added_profile_)->has_policy(); }));
+  if (is_3p_identity_synced()) {
+    EXPECT_EQ(
+        static_cast<UserCloudPolicyStore*>(
+            added_profile_->GetUserCloudPolicyManager()->core()->store())
+            ->signin_account_id(),
+        AccountId::FromUserEmailGaiaId(kExampleUserEmail, kExampleGaiaId));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

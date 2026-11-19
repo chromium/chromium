@@ -39,6 +39,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -547,12 +548,15 @@ class UserPolicyOidcSigninServiceTest
       DeviceManagementService::JobConfiguration::JobType* job_type_1,
       DeviceManagementService::JobConfiguration::JobType* job_type_2,
       DeviceManagementService::JobForTesting* job,
-      base::RunLoop* run_loop) {
+      base::RunLoop* run_loop,
+      AccountId* fetch_time_account_id) {
     if (is_3p_identity_synced()) {
       EXPECT_CALL(*job_creation_handler_, OnJobCreation)
           .WillOnce(DoAll(
               device_management_service_->CaptureJobType(job_type_1),
-              [this](auto&&...) {
+              [this, fetch_time_account_id](auto&&...) {
+                *fetch_time_account_id =
+                    mock_user_cloud_policy_store_->signin_account_id();
                 SetPolicyData();
                 mock_user_cloud_policy_store_->NotifyStoreLoaded();
               },
@@ -670,7 +674,9 @@ IN_PROC_BROWSER_TEST_P(UserPolicyOidcSigninServiceTest,
 
   base::RunLoop run_loop;
 
-  SetupPolicyRecoveryExpectations(&job_type_1, &job_type_2, &job, &run_loop);
+  AccountId fetch_time_account_id;
+  SetupPolicyRecoveryExpectations(&job_type_1, &job_type_2, &job, &run_loop,
+                                  &fetch_time_account_id);
 
   CreateProfileAndInitializeSigninService(
       /*user_email_missing=*/false,
@@ -687,6 +693,13 @@ IN_PROC_BROWSER_TEST_P(UserPolicyOidcSigninServiceTest,
   VerifyPolicyRecoveryJobTypes(job_type_1, job_type_2);
 
   ConfirmHasPolicy();
+  if (is_3p_identity_synced()) {
+    EXPECT_EQ(fetch_time_account_id,
+              AccountId::FromUserEmail(kExampleUserEmail));
+    EXPECT_TRUE(mock_user_cloud_policy_store_->signin_account_id().is_valid());
+    EXPECT_EQ(mock_user_cloud_policy_store_->signin_account_id().GetGaiaId(),
+              kExampleGaiaId);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(UserPolicyOidcSigninServiceTest,
@@ -698,8 +711,10 @@ IN_PROC_BROWSER_TEST_P(UserPolicyOidcSigninServiceTest,
   DeviceManagementService::JobForTesting job;
 
   base::RunLoop run_loop;
+  AccountId fetch_time_account_id;
 
-  SetupPolicyRecoveryExpectations(&job_type_1, &job_type_2, &job, &run_loop);
+  SetupPolicyRecoveryExpectations(&job_type_1, &job_type_2, &job, &run_loop,
+                                  &fetch_time_account_id);
 
   CreateProfileAndInitializeSigninService(
       /*user_email_missing=*/false,
@@ -711,6 +726,13 @@ IN_PROC_BROWSER_TEST_P(UserPolicyOidcSigninServiceTest,
   VerifyPolicyRecoveryJobTypes(job_type_1, job_type_2);
 
   ConfirmHasPolicy();
+  if (is_3p_identity_synced()) {
+    EXPECT_EQ(fetch_time_account_id,
+              AccountId::FromUserEmail(kExampleUserEmail));
+    EXPECT_TRUE(mock_user_cloud_policy_store_->signin_account_id().is_valid());
+    EXPECT_EQ(mock_user_cloud_policy_store_->signin_account_id().GetGaiaId(),
+              kExampleGaiaId);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(UserPolicyOidcSigninServiceTest,
@@ -864,6 +886,16 @@ IN_PROC_BROWSER_TEST_P(UserPolicySigninServicesInteractionTest,
   }
 
   ConfirmHasPolicy();
+  if (!is_managed() || !has_policy()) {
+    EXPECT_TRUE(mock_user_cloud_policy_store_->signin_account_id().is_valid());
+    EXPECT_EQ(mock_user_cloud_policy_store_->signin_account_id().GetUserEmail(),
+              kExampleUserEmail);
+    if (is_managed()) {
+      EXPECT_FALSE(mock_user_cloud_policy_store_->signin_account_id()
+                       .GetGaiaId()
+                       .empty());
+    }
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
