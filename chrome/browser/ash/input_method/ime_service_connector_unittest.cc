@@ -4,15 +4,22 @@
 
 #include "chrome/browser/ash/input_method/ime_service_connector.h"
 
+#include <string>
+
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/services/ime/constants.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/net_errors.h"
+#include "net/base/request_priority.h"
+#include "net/http/http_status_code.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -98,6 +105,24 @@ TEST_F(ImeServiceConnectorTest, DownloadInvalidPath) {
                                 base::FilePath("wrong_dir/test.dict"),
                                 future.GetCallback<const base::FilePath&>());
   EXPECT_TRUE(future.Get().empty());
+
+  // Current directory reference not allowed
+  future.Clear();
+  connector_->DownloadImeFileTo(valid_url,
+                                base::FilePath(ime::kInputMethodsDirName)
+                                    .Append(ime::kLanguageDataDirName)
+                                    .Append("."),
+                                future.GetCallback<const base::FilePath&>());
+  EXPECT_TRUE(future.Get().empty());
+
+  // Trailing path separator not allowed
+  future.Clear();
+  connector_->DownloadImeFileTo(valid_url,
+                                base::FilePath(ime::kInputMethodsDirName)
+                                    .Append(ime::kLanguageDataDirName)
+                                    .Append("test.dict/"),
+                                future.GetCallback<const base::FilePath&>());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 TEST_F(ImeServiceConnectorTest, DownloadValidRequest) {
@@ -120,12 +145,16 @@ TEST_F(ImeServiceConnectorTest, DownloadValidRequest) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       &test_url_loader_factory_.pending_requests()->back();
   EXPECT_EQ(pending_request->request.url, valid_url);
+  EXPECT_EQ(pending_request->request.priority, net::LOW);
 
   // Mock successful download
   test_url_loader_factory_.SimulateResponseForPendingRequest(valid_url.spec(),
                                                              "test contents");
 
   EXPECT_EQ(future.Get(), expected_full_path);
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(expected_full_path, &contents));
+  EXPECT_EQ(contents, "test contents");
 }
 
 TEST_F(ImeServiceConnectorTest, SimultaneousRequestsSameURL) {
@@ -322,6 +351,243 @@ TEST_F(ImeServiceConnectorTest, DownloadAllowsAllowlistedRedirect) {
 
   // Should succeed because redirected_valid_url is allowlisted.
   EXPECT_EQ(future.Get(), expected_full_path);
+}
+
+TEST_F(ImeServiceConnectorTest, DownloadRetriesOn5xxAndSucceeds) {
+  base::test::TestFuture<base::FilePath> future;
+  GURL url("https://dl.google.com/test.dict");
+  base::FilePath relative_path = base::FilePath(ime::kInputMethodsDirName)
+                                     .Append(ime::kLanguageDataDirName)
+                                     .Append("test.dict");
+  base::FilePath expected_full_path = profile_->GetPath().Append(relative_path);
+  ASSERT_TRUE(base::CreateDirectory(expected_full_path.DirName()));
+
+  connector_->DownloadImeFileTo(url, relative_path,
+                                future.GetCallback<const base::FilePath&>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), "", net::HTTP_SERVICE_UNAVAILABLE);
+  EXPECT_FALSE(future.IsReady());
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), "recovered contents");
+
+  EXPECT_EQ(future.Get(), expected_full_path);
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(expected_full_path, &contents));
+  EXPECT_EQ(contents, "recovered contents");
+
+  base::FileEnumerator enumerator(expected_full_path.DirName(),
+                                  /*recursive=*/false,
+                                  base::FileEnumerator::FILES, "*.tmp.*");
+  EXPECT_TRUE(enumerator.Next().empty());
+}
+
+TEST_F(ImeServiceConnectorTest, DownloadRetriesOnTransientNetworkErrors) {
+  base::test::TestFuture<base::FilePath> future;
+  GURL url("https://dl.google.com/test.dict");
+  base::FilePath relative_path = base::FilePath(ime::kInputMethodsDirName)
+                                     .Append(ime::kLanguageDataDirName)
+                                     .Append("test.dict");
+  base::FilePath expected_full_path = profile_->GetPath().Append(relative_path);
+  ASSERT_TRUE(base::CreateDirectory(expected_full_path.DirName()));
+
+  connector_->DownloadImeFileTo(url, relative_path,
+                                future.GetCallback<const base::FilePath&>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+
+  // Retry 1: DNS resolution failure.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      url, network::URLLoaderCompletionStatus(net::ERR_NAME_NOT_RESOLVED),
+      /*response_head=*/nullptr, "");
+  EXPECT_FALSE(future.IsReady());
+
+  // Retry 2: Network change failure.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      url, network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
+      /*response_head=*/nullptr, "");
+  EXPECT_FALSE(future.IsReady());
+
+  // Attempt 3: Succeeds within the 2-retry budget.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), "recovered after network errors");
+
+  EXPECT_EQ(future.Get(), expected_full_path);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 3u);
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(expected_full_path, &contents));
+  EXPECT_EQ(contents, "recovered after network errors");
+}
+
+TEST_F(ImeServiceConnectorTest, DownloadFailsAfterExhaustingMaxRetries) {
+  GURL url("https://dl.google.com/test.dict");
+  base::FilePath relative_path = base::FilePath(ime::kInputMethodsDirName)
+                                     .Append(ime::kLanguageDataDirName)
+                                     .Append("test.dict");
+  base::FilePath expected_full_path = profile_->GetPath().Append(relative_path);
+  ASSERT_TRUE(base::CreateDirectory(expected_full_path.DirName()));
+
+  base::test::TestFuture<base::FilePath> future;
+  connector_->DownloadImeFileTo(url, relative_path,
+                                future.GetCallback<const base::FilePath&>());
+
+  for (int attempt = 0; attempt < 3; ++attempt) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        url, network::URLLoaderCompletionStatus(net::ERR_NAME_NOT_RESOLVED),
+        /*response_head=*/nullptr, "");
+  }
+
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 3u);
+  EXPECT_FALSE(base::PathExists(expected_full_path));
+  EXPECT_TRUE(base::IsDirectoryEmpty(expected_full_path.DirName()));
+
+  // A subsequent request should proceed cleanly after failure resets state.
+  base::test::TestFuture<base::FilePath> retry_future;
+  connector_->DownloadImeFileTo(
+      url, relative_path, retry_future.GetCallback<const base::FilePath&>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(url.spec(),
+                                                             "fresh contents");
+  EXPECT_EQ(retry_future.Get(), expected_full_path);
+}
+
+TEST_F(ImeServiceConnectorTest, DownloadDoesNotRetryOn4xx) {
+  base::test::TestFuture<base::FilePath> future;
+  GURL url("https://dl.google.com/test.dict");
+  base::FilePath relative_path = base::FilePath(ime::kInputMethodsDirName)
+                                     .Append(ime::kLanguageDataDirName)
+                                     .Append("test.dict");
+  base::FilePath expected_full_path = profile_->GetPath().Append(relative_path);
+  ASSERT_TRUE(base::CreateDirectory(expected_full_path.DirName()));
+
+  connector_->DownloadImeFileTo(url, relative_path,
+                                future.GetCallback<const base::FilePath&>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), "", net::HTTP_NOT_FOUND);
+
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
+  EXPECT_FALSE(base::PathExists(expected_full_path));
+  EXPECT_TRUE(base::IsDirectoryEmpty(expected_full_path.DirName()));
+}
+
+TEST_F(ImeServiceConnectorTest, DownloadOverwritesExistingFileAtomically) {
+  GURL url("https://dl.google.com/test.dict");
+  base::FilePath relative_path = base::FilePath(ime::kInputMethodsDirName)
+                                     .Append(ime::kLanguageDataDirName)
+                                     .Append("test.dict");
+  base::FilePath expected_full_path = profile_->GetPath().Append(relative_path);
+  ASSERT_TRUE(base::CreateDirectory(expected_full_path.DirName()));
+  ASSERT_TRUE(base::WriteFile(expected_full_path, "old contents"));
+
+  base::test::TestFuture<base::FilePath> future;
+  connector_->DownloadImeFileTo(url, relative_path,
+                                future.GetCallback<const base::FilePath&>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+
+  // Existing file remains intact while the download is in flight.
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(expected_full_path, &contents));
+  EXPECT_EQ(contents, "old contents");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(url.spec(),
+                                                             "new contents");
+  EXPECT_EQ(future.Get(), expected_full_path);
+  ASSERT_TRUE(base::ReadFileToString(expected_full_path, &contents));
+  EXPECT_EQ(contents, "new contents");
+
+  base::FileEnumerator enumerator(expected_full_path.DirName(),
+                                  /*recursive=*/false,
+                                  base::FileEnumerator::FILES, "*.tmp.*");
+  EXPECT_TRUE(enumerator.Next().empty());
+}
+
+TEST_F(ImeServiceConnectorTest, DownloadFailsCleanlyWhenReplaceFileFails) {
+  GURL url("https://dl.google.com/test.dict");
+  base::FilePath relative_path = base::FilePath(ime::kInputMethodsDirName)
+                                     .Append(ime::kLanguageDataDirName)
+                                     .Append("test.dict");
+  base::FilePath expected_full_path = profile_->GetPath().Append(relative_path);
+  // Creating a directory at `expected_full_path` makes `base::ReplaceFile` fail
+  // with EISDIR while downloading to `expected_full_path.tmp.1` succeeds.
+  ASSERT_TRUE(base::CreateDirectory(expected_full_path));
+
+  base::test::TestFuture<base::FilePath> failed_future;
+  connector_->DownloadImeFileTo(
+      url, relative_path, failed_future.GetCallback<const base::FilePath&>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(url.spec(),
+                                                             "test contents");
+
+  EXPECT_TRUE(failed_future.Get().empty());
+  base::FileEnumerator enumerator(expected_full_path.DirName(),
+                                  /*recursive=*/false,
+                                  base::FileEnumerator::FILES, "*.tmp.*");
+  EXPECT_TRUE(enumerator.Next().empty());
+
+  // Removing the blocking directory allows a subsequent download to succeed.
+  ASSERT_TRUE(base::DeletePathRecursively(expected_full_path));
+  base::test::TestFuture<base::FilePath> retry_future;
+  connector_->DownloadImeFileTo(
+      url, relative_path, retry_future.GetCallback<const base::FilePath&>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(url.spec(),
+                                                             "test contents");
+  EXPECT_EQ(retry_future.Get(), expected_full_path);
+}
+
+TEST_F(ImeServiceConnectorTest,
+       ProfileDestroyedCancelsInFlightAndRejectsSubsequentDownloads) {
+  GURL url1("https://dl.google.com/test1.dict");
+  GURL url2("https://dl.google.com/test2.dict");
+  base::FilePath relative_path = base::FilePath(ime::kInputMethodsDirName)
+                                     .Append(ime::kLanguageDataDirName)
+                                     .Append("test.dict");
+
+  base::test::TestFuture<base::FilePath> in_flight_future;
+  base::test::TestFuture<base::FilePath> queued_future;
+  base::test::TestFuture<base::FilePath> after_destroy_future;
+
+  connector_->DownloadImeFileTo(
+      url1, relative_path,
+      in_flight_future.GetCallback<const base::FilePath&>());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return test_url_loader_factory_.IsPending(url1.spec()); }));
+
+  // Queue `MaybeTriggerDownload` on the sequence immediately before profile
+  // teardown so it runs after `profile_` becomes null.
+  connector_->DownloadImeFileTo(
+      url2, relative_path, queued_future.GetCallback<const base::FilePath&>());
+  profile_.reset();
+  connector_->DownloadImeFileTo(
+      url2, relative_path,
+      after_destroy_future.GetCallback<const base::FilePath&>());
+
+  EXPECT_TRUE(in_flight_future.Get().empty());
+  EXPECT_TRUE(queued_future.Get().empty());
+  EXPECT_TRUE(after_destroy_future.Get().empty());
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(url1.spec()));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
 }
 
 }  // namespace

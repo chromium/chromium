@@ -5,11 +5,19 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_IME_SERVICE_CONNECTOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_IME_SERVICE_CONNECTOR_H_
 
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
@@ -57,11 +65,26 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider,
       mojo::PendingReceiver<ime::mojom::InputMethodUserDataService> receiver);
 
  private:
+  struct ActiveDownloadRequest {
+    ActiveDownloadRequest(uint64_t id, GURL url, base::FilePath target_path);
+    ActiveDownloadRequest(const ActiveDownloadRequest&) = delete;
+    ActiveDownloadRequest& operator=(const ActiveDownloadRequest&) = delete;
+    ~ActiveDownloadRequest();
+
+    uint64_t id;
+    GURL url;
+    base::FilePath target_path;
+    std::unique_ptr<network::SimpleURLLoader> url_loader;
+    std::vector<DownloadImeFileToCallback> callbacks;
+  };
+
   void MaybeTriggerDownload(GURL url,
                             base::FilePath file_path,
                             DownloadImeFileToCallback callback);
 
-  void HandleDownloadResponse(base::FilePath file_path);
+  void HandleDownloadResponse(uint64_t request_id,
+                              base::FilePath downloaded_path);
+  void OnFileFinalized(uint64_t request_id, bool success);
   void NotifyAllDownloadListeners(base::FilePath file_path);
 
   void OnRedirect(const GURL& url_before_redirect,
@@ -72,15 +95,13 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider,
   raw_ptr<Profile> profile_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
-  // The current request in progress, or NULL.
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  uint64_t next_request_id_ = 0;
 
-  // The url of the current in progress request.
-  std::optional<std::string> active_request_url_;
-
-  // Callbacks collected for simultaneous requests for the same download url.
-  std::vector<DownloadImeFileToCallback> download_callbacks_;
+  // Declared before `platform_access_receiver_` so destroying `this` closes
+  // the Mojo receiver before dropping any uninvoked callbacks.
+  std::optional<ActiveDownloadRequest> active_request_;
 
   // Persistent connection to the IME service process.
   mojo::Remote<ime::mojom::ImeService> remote_service_;

@@ -8,19 +8,30 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
+#include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/service_process_host.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
+#include "net/base/request_priority.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace ash {
 namespace input_method {
@@ -46,9 +57,11 @@ constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
     })");
 
 bool IsDownloadPathValid(const base::FilePath& file_path) {
-  // Only non-empty, relative path which doesn't reference a parent is allowed.
+  // Only non-empty, relative file paths that do not reference a parent or
+  // current directory or end with a separator are allowed.
   if (file_path.empty() || file_path.IsAbsolute() ||
-      file_path.ReferencesParent()) {
+      file_path.ReferencesParent() || file_path.EndsWithSeparator() ||
+      file_path.BaseName().value() == base::FilePath::kCurrentDirectory) {
     return false;
   }
 
@@ -70,18 +83,49 @@ std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(const GURL& url) {
       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
   // Disable cookies for this request.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  // Raise from the default net::IDLE so SimpleURLLoader's FileWriter runs at
+  // USER_VISIBLE rather than BEST_EFFORT during heavy startup/page-load work.
+  resource_request->priority = net::LOW;
 
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
+  url_loader->SetRetryOptions(
+      /*max_retries=*/2,
+      network::SimpleURLLoader::RETRY_ON_5XX |
+          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+          network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
   // TODO(https://crbug.com/162559903): Allow the client to specify the timeout.
   url_loader->SetTimeoutDuration(base::Minutes(10));
   return url_loader;
 }
 
+bool FinalizeDownloadedFile(const base::FilePath& temp_path,
+                            const base::FilePath& target_path) {
+  base::File::Error replace_error = base::File::FILE_OK;
+  if (!base::ReplaceFile(temp_path, target_path, &replace_error)) {
+    LOG(WARNING) << "Failed to replace IME file " << target_path << ": "
+                 << base::File::ErrorToString(replace_error);
+    base::DeleteFile(temp_path);
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
+ImeServiceConnector::ActiveDownloadRequest::ActiveDownloadRequest(
+    uint64_t id,
+    GURL url,
+    base::FilePath target_path)
+    : id(id), url(std::move(url)), target_path(std::move(target_path)) {}
+
+ImeServiceConnector::ActiveDownloadRequest::~ActiveDownloadRequest() = default;
+
 ImeServiceConnector::ImeServiceConnector(Profile* profile)
-    : profile_(profile), url_loader_factory_(profile->GetURLLoaderFactory()) {
+    : profile_(profile),
+      url_loader_factory_(profile->GetURLLoaderFactory()),
+      file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
   profile_observation_.Observe(profile);
 }
 
@@ -91,10 +135,11 @@ void ImeServiceConnector::DownloadImeFileTo(
     const GURL& url,
     const base::FilePath& file_path,
     DownloadImeFileToCallback callback) {
-  // Validate url and file_path, return an empty file path if not.
-  if (!IsDownloadURLValid(url) || !IsDownloadPathValid(file_path)) {
-    base::FilePath empty_path;
-    std::move(callback).Run(empty_path);
+  // Validate `profile_`, `url`, and `file_path`, returning an empty file path
+  // if any are invalid.
+  if (!profile_ || !IsDownloadURLValid(url) ||
+      !IsDownloadPathValid(file_path)) {
+    std::move(callback).Run(base::FilePath());
     return;
   }
 
@@ -106,6 +151,10 @@ void ImeServiceConnector::DownloadImeFileTo(
 }
 
 void ImeServiceConnector::OnProfileWillBeDestroyed(Profile* profile) {
+  // Resolve any in-flight Mojo callbacks before `profile_` is torn down while
+  // `platform_access_receiver_` is still bound.
+  NotifyAllDownloadListeners(base::FilePath());
+  url_loader_factory_.reset();
   profile_observation_.Reset();
   profile_ = nullptr;
 }
@@ -150,51 +199,102 @@ void ImeServiceConnector::MaybeTriggerDownload(
     GURL url,
     base::FilePath file_path,
     DownloadImeFileToCallback callback) {
-  // Do not trigger a new download if one is already in progress for the same
-  // url. Store the callback given and run it when the current download
-  // finishes.
-  if (url_loader_ && active_request_url_ && active_request_url_ == url.spec()) {
-    download_callbacks_.emplace_back(std::move(callback));
+  if (!profile_ || !url_loader_factory_) {
+    std::move(callback).Run(base::FilePath());
+    return;
+  }
+
+  // Do not trigger a new download if one is already in progress (including
+  // final file replacement) for the same URL. Store the callback given and run
+  // it when the current download finishes.
+  if (active_request_ && active_request_->url == url) {
+    active_request_->callbacks.emplace_back(std::move(callback));
     return;
   }
 
   // Switching input methods tears down the previous decoder instance and its
-  // pending download in the IME service while leaving `url_loader_` running in
-  // the browser process (e.g. a background download of `en-840` started at
-  // login). Abort the superseded download and notify its listeners before
-  // starting the new request so the newly activated input method's language
-  // pack download is not rejected.
-  if (url_loader_) {
+  // pending download in the IME service while leaving an active download in the
+  // browser process (e.g. a background download of `en-840` started at login).
+  // Abort the superseded download and notify its listeners before starting the
+  // new request so the newly activated input method's language pack download is
+  // not rejected.
+  if (active_request_) {
     NotifyAllDownloadListeners(base::FilePath());
   }
 
-  // Start the new download request.
-  active_request_url_ = url.spec();
-  download_callbacks_.emplace_back(std::move(callback));
-  url_loader_ = CreateUrlLoader(url);
-  url_loader_->SetOnRedirectCallback(base::BindRepeating(
+  // Download to a per-attempt temporary path in the target directory and
+  // atomically rename on completion so partial archives are never visible at
+  // `file_path` and delayed cleanup of a superseded `SimpleURLLoader` cannot
+  // delete a newer attempt's file.
+  const uint64_t request_id = ++next_request_id_;
+  const base::FilePath temp_path = file_path.AddExtensionASCII(
+      base::StrCat({"tmp.", base::NumberToString(request_id)}));
+  CHECK(!temp_path.empty());
+
+  active_request_.emplace(request_id, std::move(url), std::move(file_path));
+  active_request_->callbacks.emplace_back(std::move(callback));
+  active_request_->url_loader = CreateUrlLoader(active_request_->url);
+  active_request_->url_loader->SetOnRedirectCallback(base::BindRepeating(
       &ImeServiceConnector::OnRedirect, weak_ptr_factory_.GetWeakPtr()));
-  url_loader_->DownloadToFile(
+  active_request_->url_loader->DownloadToFile(
       url_loader_factory_.get(),
       base::BindOnce(&ImeServiceConnector::HandleDownloadResponse,
-                     weak_ptr_factory_.GetWeakPtr()),
-      file_path);
+                     weak_ptr_factory_.GetWeakPtr(), request_id),
+      temp_path);
 }
 
-void ImeServiceConnector::HandleDownloadResponse(base::FilePath file_path) {
-  // Notify listeners and reset `url_loader_` synchronously rather than via
-  // PostTask so a `MaybeTriggerDownload` task already queued on the sequence
-  // does not see a stale `url_loader_` or get clobbered by a trailing task.
-  NotifyAllDownloadListeners(std::move(file_path));
+void ImeServiceConnector::HandleDownloadResponse(
+    uint64_t request_id,
+    base::FilePath downloaded_path) {
+  if (!active_request_ || active_request_->id != request_id) {
+    return;
+  }
+
+  if (downloaded_path.empty()) {
+    const int net_error = active_request_->url_loader->NetError();
+    const network::mojom::URLResponseHead* response_info =
+        active_request_->url_loader->ResponseInfo();
+    if (response_info && response_info->headers) {
+      LOG(WARNING) << "Failed to download IME file from "
+                   << active_request_->url << ": "
+                   << net::ErrorToString(net_error) << " (HTTP "
+                   << response_info->headers->response_code() << ")";
+    } else {
+      LOG(WARNING) << "Failed to download IME file from "
+                   << active_request_->url << ": "
+                   << net::ErrorToString(net_error);
+    }
+    NotifyAllDownloadListeners(base::FilePath());
+    return;
+  }
+
+  active_request_->url_loader.reset();
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FinalizeDownloadedFile, std::move(downloaded_path),
+                     active_request_->target_path),
+      base::BindOnce(&ImeServiceConnector::OnFileFinalized,
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
+}
+
+void ImeServiceConnector::OnFileFinalized(uint64_t request_id, bool success) {
+  if (!active_request_ || active_request_->id != request_id) {
+    return;
+  }
+  NotifyAllDownloadListeners(success ? std::move(active_request_->target_path)
+                                     : base::FilePath());
 }
 
 void ImeServiceConnector::NotifyAllDownloadListeners(base::FilePath file_path) {
-  // Clear the currently active request info before running callbacks in case a
-  // listener synchronously triggers a new download request.
-  url_loader_.reset();
-  active_request_url_ = std::nullopt;
+  if (!active_request_) {
+    return;
+  }
+
+  // Clear the currently active request (resetting `url_loader`) before running
+  // callbacks in case a listener synchronously triggers a new download request.
   std::vector<DownloadImeFileToCallback> callbacks =
-      std::exchange(download_callbacks_, {});
+      std::move(active_request_->callbacks);
+  active_request_.reset();
 
   for (auto& callback : callbacks) {
     std::move(callback).Run(file_path);
