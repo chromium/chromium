@@ -86,6 +86,43 @@ enum class HeaderFooterRepetition {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PdfAccessibilityHeaderFooterRepetition)
 
+// LINT.IfChange(PdfAccessibilityTableCandidateOutcome)
+// Whether a candidate table in an untagged PDF was kept, or the first check
+// that rejected it. Each table type is recorded in its own histogram, and some
+// values apply only to some table types.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TableCandidateOutcome {
+  kAccepted = 0,
+
+  // Rejection reasons.
+
+  // Grid only: a ruling line extends well past the grid, e.g. a chart axis.
+  kOvershootingLines = 1,
+  // No text in the candidate, e.g. a drawing.
+  kEmpty = 2,
+  // Text in the candidate is covered by a link, highlight, or form graphic.
+  kHasAnnotation = 3,
+  // Text in the candidate is right-to-left, e.g. Arabic or Hebrew. Cells are
+  // ordered left to right, so they'd be read in the wrong order.
+  // TODO(crbug.com/574033561): Accept these once right-to-left tables are
+  // supported.
+  kRightToLeftText = 4,
+  // Grid only: too many text runs cross a column line, e.g. chart gridlines.
+  kRunsCrossingColumns = 5,
+  // Mostly vertical text, e.g. a sideways table.
+  kVerticalText = 6,
+  // Grid only: smaller than 2x2 after trimming empty outer rows and columns.
+  kTooSmallAfterTrimming = 7,
+  // Too few cells with text.
+  kTooSparse = 8,
+  // Shares text with another table that was kept, e.g. a nested grid.
+  kOverlappingTable = 9,
+
+  kMaxValue = kOverlappingTable,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PdfAccessibilityTableCandidateOutcome)
+
 }  // namespace pdf
 
 #endif  // COMPONENTS_PDF_RENDERER_PDF_ACCESSIBILITY_METRICS_H_

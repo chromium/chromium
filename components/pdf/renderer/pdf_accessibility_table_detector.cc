@@ -17,7 +17,9 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/function_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/pdf/renderer/pdf_accessibility_metrics.h"
 #include "components/pdf/renderer/pdf_accessibility_text_utils.h"
 #include "pdf/accessibility_structs.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -862,6 +864,11 @@ std::vector<HeuristicTable> RemoveOverlappingTables(
   return kept_tables;
 }
 
+void RecordGridCandidateOutcome(TableCandidateOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Accessibility.PdfHeuristics.GridTableCandidateOutcome", outcome);
+}
+
 }  // namespace
 
 std::vector<RulingLine> ExtractRulingLines(
@@ -962,7 +969,8 @@ std::vector<RulingGrid> DetectRulingGrids(
   }
 
   // For each group of connected lines, compute the row and column boundaries.
-  // Collect groups with at least 2x2 cells into `grids`.
+  // Collect groups with at least 2x2 cells into `grids`. Smaller groups, such
+  // as single boxes, aren't candidate grids, so they aren't recorded.
   std::vector<RulingGrid> grids;
   for (const LineGroup& group : GroupConnectedLines(h_lines, v_lines)) {
     std::vector<float> row_boundaries =
@@ -978,6 +986,7 @@ std::vector<RulingGrid> DetectRulingGrids(
     }
     if (HasOvershootingLines(group, h_lines, v_lines, column_boundaries,
                              row_boundaries)) {
+      RecordGridCandidateOutcome(TableCandidateOutcome::kOvershootingLines);
       continue;
     }
 
@@ -999,18 +1008,21 @@ std::vector<HeuristicTable> DetectGridTables(
     const size_t total_assigned_runs = CountAssignedRuns(cells);
     // Skip grids with no text runs (e.g., a drawing).
     if (total_assigned_runs == 0) {
+      RecordGridCandidateOutcome(TableCandidateOutcome::kEmpty);
       continue;
     }
 
     // Skip grids with excluded runs. Checked before removing overlapping
     // tables, so a skipped grid doesn't displace a grid nested in it.
     if (HasExcludedRun(cells, excluded_run_indices)) {
+      RecordGridCandidateOutcome(TableCandidateOutcome::kHasAnnotation);
       continue;
     }
 
     // Skip grids with right-to-left text, since cells are ordered left to
     // right.
     if (HasRightToLeftRun(cells, text_runs)) {
+      RecordGridCandidateOutcome(TableCandidateOutcome::kRightToLeftText);
       continue;
     }
 
@@ -1018,6 +1030,7 @@ std::vector<HeuristicTable> DetectGridTables(
     // drawn behind or across labels).
     if (CountRunsCrossingColumns(cells, text_runs, grid.column_boundaries) >
         kMaxColumnCrossingRunFraction * total_assigned_runs) {
+      RecordGridCandidateOutcome(TableCandidateOutcome::kRunsCrossingColumns);
       continue;
     }
 
@@ -1025,6 +1038,7 @@ std::vector<HeuristicTable> DetectGridTables(
     // sideways tables, which need separate rotation handling).
     if (CountVerticalRuns(cells, text_runs) >
         kMaxVerticalRunFraction * total_assigned_runs) {
+      RecordGridCandidateOutcome(TableCandidateOutcome::kVerticalText);
       continue;
     }
 
@@ -1033,6 +1047,7 @@ std::vector<HeuristicTable> DetectGridTables(
     const PopulatedRange populated = FindPopulatedRange(cells);
     if (populated.rows.length() < kMinTableRowsAndColumns ||
         populated.cols.length() < kMinTableRowsAndColumns) {
+      RecordGridCandidateOutcome(TableCandidateOutcome::kTooSmallAfterTrimming);
       continue;
     }
 
@@ -1040,6 +1055,7 @@ std::vector<HeuristicTable> DetectGridTables(
     const size_t cell_count = populated.rows.length() * populated.cols.length();
     if (populated.populated_cell_count <
         kMinPopulatedCellFraction * cell_count) {
+      RecordGridCandidateOutcome(TableCandidateOutcome::kTooSparse);
       continue;
     }
 
@@ -1047,7 +1063,16 @@ std::vector<HeuristicTable> DetectGridTables(
         BuildTable(std::move(cells), grid, populated.rows, populated.cols));
   }
 
-  return RemoveOverlappingTables(std::move(tables), text_runs.size());
+  const size_t candidate_count = tables.size();
+  std::vector<HeuristicTable> kept_tables =
+      RemoveOverlappingTables(std::move(tables), text_runs.size());
+  for (size_t i = kept_tables.size(); i < candidate_count; ++i) {
+    RecordGridCandidateOutcome(TableCandidateOutcome::kOverlappingTable);
+  }
+  for (size_t i = 0; i < kept_tables.size(); ++i) {
+    RecordGridCandidateOutcome(TableCandidateOutcome::kAccepted);
+  }
+  return kept_tables;
 }
 
 std::vector<size_t> GetTableTextRunIndices(const HeuristicTable& table) {

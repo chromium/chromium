@@ -24290,6 +24290,23 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_metrics.h:PdfAccessibilityListStartReason) -->
 
+<!-- LINT.IfChange(PdfAccessibilityTableCandidateOutcome) -->
+
+<enum name="PdfAccessibilityTableCandidateOutcome">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Overshooting lines"/>
+  <int value="2" label="Empty"/>
+  <int value="3" label="Has link, highlight, or form graphic"/>
+  <int value="4" label="Right-to-left text"/>
+  <int value="5" label="Runs crossing columns"/>
+  <int value="6" label="Vertical text"/>
+  <int value="7" label="Too small after trimming"/>
+  <int value="8" label="Too sparse"/>
+  <int value="9" label="Overlapping table"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_metrics.h:PdfAccessibilityTableCandidateOutcome) -->
+
 <enum name="PerformanceMonitor.UsageScenario.LongInterval">
   <int value="1" label="All Tabs Hidden Audio"/>
   <int value="2" label="All Tabs Hidden No Video Capture or Audio"/>

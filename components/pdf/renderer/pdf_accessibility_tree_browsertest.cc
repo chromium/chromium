@@ -9549,6 +9549,7 @@ TEST_F(PdfAccessibilityTreeTest,
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableRejectsTableWithLink) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -9580,9 +9581,13 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableRejectsTableWithLink) {
   for (size_t i = 0; i < page->GetChildCount(); ++i) {
     EXPECT_NE(ax::mojom::Role::kTable, page->GetChildAtIndex(i)->GetRole());
   }
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.GridTableCandidateOutcome",
+      TableCandidateOutcome::kHasAnnotation, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableRejectsTableWithHighlight) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -9612,10 +9617,14 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicGridTableRejectsTableWithHighlight) {
   for (size_t i = 0; i < page->GetChildCount(); ++i) {
     EXPECT_NE(ax::mojom::Role::kTable, page->GetChildAtIndex(i)->GetRole());
   }
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.GridTableCandidateOutcome",
+      TableCandidateOutcome::kHasAnnotation, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest,
        HeuristicGridTableRejectsTableWithFormGraphic) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -9647,6 +9656,9 @@ TEST_F(PdfAccessibilityTreeTest,
   for (size_t i = 0; i < page->GetChildCount(); ++i) {
     EXPECT_NE(ax::mojom::Role::kTable, page->GetChildAtIndex(i)->GetRole());
   }
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.GridTableCandidateOutcome",
+      TableCandidateOutcome::kHasAnnotation, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest,

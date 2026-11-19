@@ -13,6 +13,8 @@
 #include "base/check.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "components/pdf/renderer/pdf_accessibility_metrics.h"
 #include "pdf/accessibility_structs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +24,9 @@
 namespace pdf {
 
 namespace {
+
+constexpr char kGridTableCandidateOutcomeHistogram[] =
+    "Accessibility.PdfHeuristics.GridTableCandidateOutcome";
 
 // Returns a line segment from (`x0`, `y0`) to (`x1`, `y1`).
 chrome_pdf::AccessibilityLineSegment CreateSegment(float x0,
@@ -554,6 +559,7 @@ TEST(PdfAccessibilityTableDetectorTest, MergedCellKeepsAllBoundaries) {
 }
 
 TEST(PdfAccessibilityTableDetectorTest, RejectsSingleBox) {
+  base::HistogramTester histogram_tester;
   // 1x1 box: R = 1, C = 1.
   std::vector<RulingLine> ruling_lines = {
       CreateHLine(0, 0, 100),
@@ -563,6 +569,8 @@ TEST(PdfAccessibilityTableDetectorTest, RejectsSingleBox) {
   };
 
   EXPECT_TRUE(DetectRulingGrids(ruling_lines).empty());
+  // A single box isn't a candidate grid, so no outcome is recorded.
+  histogram_tester.ExpectTotalCount(kGridTableCandidateOutcomeHistogram, 0);
 }
 
 TEST(PdfAccessibilityTableDetectorTest, RejectsExcessiveLinesGuardrail) {
@@ -638,6 +646,7 @@ TEST(PdfAccessibilityTableDetectorTest, SeparatesDisconnectedGrids) {
 }
 
 TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithOvershootingLines) {
+  base::HistogramTester histogram_tester;
   // 2x2 grid where an interior vertical line extends 35 px past the bottom
   // border:
   //   +----+----+
@@ -653,9 +662,13 @@ TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithOvershootingLines) {
   ruling_lines[4] = CreateVLine(30, 0, 95);
 
   EXPECT_TRUE(DetectRulingGrids(ruling_lines).empty());
+  histogram_tester.ExpectUniqueSample(kGridTableCandidateOutcomeHistogram,
+                                      TableCandidateOutcome::kOvershootingLines,
+                                      1);
 }
 
 TEST(PdfAccessibilityTableDetectorTest, Grid3x3WithOneRunPerCell) {
+  base::HistogramTester histogram_tester;
   // 3x3 grid: horizontal lines at y = 0, 30, 60, 90; vertical lines at x = 0,
   // 30, 60, 90.
   const auto [ruling_lines, text_runs] =
@@ -664,6 +677,8 @@ TEST(PdfAccessibilityTableDetectorTest, Grid3x3WithOneRunPerCell) {
   std::vector<HeuristicTable> tables =
       DetectGridTables(text_runs, ruling_lines);
   ASSERT_EQ(tables.size(), 1u);
+  histogram_tester.ExpectUniqueSample(kGridTableCandidateOutcomeHistogram,
+                                      TableCandidateOutcome::kAccepted, 1);
 
   const HeuristicTable& table = tables[0];
   EXPECT_EQ(table.bounds, gfx::RectF(0, 0, 90, 90));
@@ -777,14 +792,18 @@ TEST(PdfAccessibilityTableDetectorTest, CellWithTwoRunsAscendingOrder) {
 }
 
 TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithNoText) {
+  base::HistogramTester histogram_tester;
   std::vector<RulingLine> ruling_lines =
       CreateGridLines(kThreeCellBoundaries, kThreeCellBoundaries);
 
   std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   EXPECT_TRUE(DetectGridTables(text_runs, ruling_lines).empty());
+  histogram_tester.ExpectUniqueSample(kGridTableCandidateOutcomeHistogram,
+                                      TableCandidateOutcome::kEmpty, 1);
 }
 
 TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithRunsCrossingColumns) {
+  base::HistogramTester histogram_tester;
   // 3x3 grid. Two runs (`=`) cross the column line at x = 30, and 8 runs sit
   // in the center cell:
   //   +-----+-----+-----+
@@ -811,10 +830,14 @@ TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithRunsCrossingColumns) {
   text_runs.push_back(CreateTextRun(gfx::RectF(20, 65, 20, 10)));
 
   EXPECT_TRUE(DetectGridTables(text_runs, ruling_lines).empty());
+  histogram_tester.ExpectUniqueSample(
+      kGridTableCandidateOutcomeHistogram,
+      TableCandidateOutcome::kRunsCrossingColumns, 1);
 }
 
 TEST(PdfAccessibilityTableDetectorTest,
      RejectsGridWithPredominantlyVerticalRuns) {
+  base::HistogramTester histogram_tester;
   // 2x2 grid where all 4 cells have vertical text runs (e.g. sideways table).
   auto [ruling_lines, text_runs] = CreateGridWithRunsInCells(
       kTwoCellBoundaries, kTwoCellBoundaries, {{0, 0}, {0, 1}},
@@ -825,6 +848,8 @@ TEST(PdfAccessibilityTableDetectorTest,
                    chrome_pdf::AccessibilityTextDirection::kBottomToTop));
 
   EXPECT_TRUE(DetectGridTables(text_runs, ruling_lines).empty());
+  histogram_tester.ExpectUniqueSample(kGridTableCandidateOutcomeHistogram,
+                                      TableCandidateOutcome::kVerticalText, 1);
 }
 
 TEST(PdfAccessibilityTableDetectorTest, AcceptsGridWithRotatedHeaders) {
@@ -922,6 +947,7 @@ TEST(PdfAccessibilityTableDetectorTest, AcceptsGridAtMinPopulatedFraction) {
 }
 
 TEST(PdfAccessibilityTableDetectorTest, RejectsSingleRowAfterPruning) {
+  base::HistogramTester histogram_tester;
   // 3 rows x 5 columns. Only two cells in the middle row have text, which trims
   // to 1x2:
   //   . . . . .
@@ -931,6 +957,9 @@ TEST(PdfAccessibilityTableDetectorTest, RejectsSingleRowAfterPruning) {
       kFiveCellBoundaries, kThreeCellBoundaries, {{1, 2}, {1, 3}});
 
   EXPECT_TRUE(DetectGridTables(text_runs, ruling_lines).empty());
+  histogram_tester.ExpectUniqueSample(
+      kGridTableCandidateOutcomeHistogram,
+      TableCandidateOutcome::kTooSmallAfterTrimming, 1);
 }
 
 TEST(PdfAccessibilityTableDetectorTest, RejectsSingleColumnAfterPruning) {
@@ -947,6 +976,7 @@ TEST(PdfAccessibilityTableDetectorTest, RejectsSingleColumnAfterPruning) {
 }
 
 TEST(PdfAccessibilityTableDetectorTest, RejectsSparselyPopulatedGrid) {
+  base::HistogramTester histogram_tester;
   // 3x3 grid. The corner cells keep the full grid after trimming, but only 2 of
   // 9 cells (22%) are populated:
   //   X . .
@@ -956,6 +986,8 @@ TEST(PdfAccessibilityTableDetectorTest, RejectsSparselyPopulatedGrid) {
       kThreeCellBoundaries, kThreeCellBoundaries, {{0, 0}, {2, 2}});
 
   EXPECT_TRUE(DetectGridTables(text_runs, ruling_lines).empty());
+  histogram_tester.ExpectUniqueSample(kGridTableCandidateOutcomeHistogram,
+                                      TableCandidateOutcome::kTooSparse, 1);
 }
 
 TEST(PdfAccessibilityTableDetectorTest,
@@ -1006,6 +1038,7 @@ TEST(PdfAccessibilityTableDetectorTest, TwoSeparateGridsSortedByAnchor) {
 }
 
 TEST(PdfAccessibilityTableDetectorTest, NestedGridWithSameAnchorKeepsOuter) {
+  base::HistogramTester histogram_tester;
   // The nested grid's runs come first, so both grids have anchor 0.
   std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs =
       CreateRunsInAllCells(kNestedGridXs, kNestedGridYs);
@@ -1016,6 +1049,12 @@ TEST(PdfAccessibilityTableDetectorTest, NestedGridWithSameAnchorKeepsOuter) {
   std::vector<HeuristicTable> tables =
       DetectGridTables(text_runs, CreateNestedGridLines());
   ASSERT_EQ(tables.size(), 1u);
+  histogram_tester.ExpectBucketCount(kGridTableCandidateOutcomeHistogram,
+                                     TableCandidateOutcome::kAccepted, 1);
+  histogram_tester.ExpectBucketCount(kGridTableCandidateOutcomeHistogram,
+                                     TableCandidateOutcome::kOverlappingTable,
+                                     1);
+  histogram_tester.ExpectTotalCount(kGridTableCandidateOutcomeHistogram, 2);
   EXPECT_EQ(tables[0].bounds, gfx::RectF(0, 0, 360, 240));
   EXPECT_EQ(tables[0].anchor_text_run_index, 0u);
   ASSERT_EQ(tables[0].rows.size(), 2u);
@@ -1068,6 +1107,7 @@ TEST(PdfAccessibilityTableDetectorTest,
 }
 
 TEST(PdfAccessibilityTableDetectorTest, ExcludedRunInOuterGridKeepsNestedGrid) {
+  base::HistogramTester histogram_tester;
   // Same layout as `NestedGridWithLaterAnchorKeepsOuter`, but excluding the
   // outer grid's top-middle run rejects the outer grid before overlapping
   // tables are removed, so the nested grid is kept.
@@ -1083,9 +1123,15 @@ TEST(PdfAccessibilityTableDetectorTest, ExcludedRunInOuterGridKeepsNestedGrid) {
   ASSERT_EQ(tables.size(), 1u);
   EXPECT_EQ(tables[0].bounds, gfx::RectF(10, 10, 100, 100));
   EXPECT_EQ(tables[0].anchor_text_run_index, 1u);
+  histogram_tester.ExpectBucketCount(kGridTableCandidateOutcomeHistogram,
+                                     TableCandidateOutcome::kHasAnnotation, 1);
+  histogram_tester.ExpectBucketCount(kGridTableCandidateOutcomeHistogram,
+                                     TableCandidateOutcome::kAccepted, 1);
+  histogram_tester.ExpectTotalCount(kGridTableCandidateOutcomeHistogram, 2);
 }
 
 TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithRightToLeftRun) {
+  base::HistogramTester histogram_tester;
   std::vector<RulingLine> ruling_lines =
       CreateGridLines(kTwoCellBoundaries, kTwoCellBoundaries);
   std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs =
@@ -1097,6 +1143,9 @@ TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithRightToLeftRun) {
                         chrome_pdf::AccessibilityTextDirection::kRightToLeft));
 
   EXPECT_TRUE(DetectGridTables(text_runs, ruling_lines).empty());
+  histogram_tester.ExpectUniqueSample(kGridTableCandidateOutcomeHistogram,
+                                      TableCandidateOutcome::kRightToLeftText,
+                                      1);
 }
 
 TEST(PdfAccessibilityTableDetectorTest,

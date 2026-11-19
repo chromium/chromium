@@ -2707,6 +2707,23 @@ recorded in the same way, even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.PdfHeuristics.{TableType}TableCandidateOutcome"
+    enum="PdfAccessibilityTableCandidateOutcome" expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether a candidate {TableType} in an untagged PDF was kept as a
+    table, or else the first check that rejected it. Recorded once per candidate
+    when the page's accessibility tree is built.
+  </summary>
+  <token key="TableType">
+    <variant name="Grid"
+        summary="grid table (connected horizontal and vertical ruling lines
+                 forming at least 2x2 cells)"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.CrosSelectToSpeak.PagesOcred"
     units="count" expires_after="2027-06-01">
   <owner>kyungjunlee@google.com</owner>

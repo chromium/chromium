@@ -122,6 +122,9 @@ struct HeuristicTable {
 // Finds grids formed by horizontal and vertical ruling lines that touch or
 // cross. Doesn't look at text. `ruling_lines` must be ordered as returned by
 // `ExtractRulingLines()`. Returns grids in no particular order.
+//
+// Records Accessibility.PdfHeuristics.GridTableCandidateOutcome for grids
+// rejected for overshooting lines. `DetectGridTables()` records the rest.
 std::vector<RulingGrid> DetectRulingGrids(
     base::span<const RulingLine> ruling_lines);
 
@@ -131,6 +134,9 @@ std::vector<RulingGrid> DetectRulingGrids(
 // run in `excluded_run_indices`. Tables share no text runs: when two would,
 // such as a grid nested in another grid's cell, keeps the one with the earlier
 // anchor, or the larger one if the anchors are equal.
+//
+// Records Accessibility.PdfHeuristics.GridTableCandidateOutcome once per
+// candidate grid.
 std::vector<HeuristicTable> DetectGridTables(
     base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
     base::span<const RulingLine> ruling_lines,
