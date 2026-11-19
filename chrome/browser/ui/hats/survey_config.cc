@@ -401,6 +401,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 
   constexpr double kIdentitySurveyMediumProbability = 0.08;
   constexpr double kIdentitySurveyLowProbability = 0.008;
+  constexpr double kIdentitySurveyVeryLowProbability = 0.001;
   auto add_identity_survey =
       [&](const base::Feature* feature, const std::string& trigger,
           const std::string& trigger_id, double default_probability,
@@ -472,10 +473,13 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       "LSwnpVNg60ugnJ3q1cK0Uj5JGisJ", kIdentitySurveyMediumProbability,
       hats::SurveyConfig::ProfileAgeRequirement::kOneMonthOrOlder,
       /*extra_string_psd_fields=*/{"Data type Sign-in Bubble Dismissed"});
+  // Profile switching from the profile menu is much more frequent than other
+  // Identity triggers; use a lower probability to avoid over-sampling and
+  // exhausting 180-day per-profile survey cooldowns.
   add_identity_survey(
       &switches::kChromeIdentitySurveySwitchProfileFromProfileMenu,
       kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
-      "buPSkStWM0ugnJ3q1cK0RmiQgzK1", kIdentitySurveyLowProbability);
+      "buPSkStWM0ugnJ3q1cK0RmiQgzK1", kIdentitySurveyVeryLowProbability);
   add_identity_survey(
       &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker,
       kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
