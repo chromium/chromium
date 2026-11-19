@@ -1067,6 +1067,17 @@ void GuestViewBase::ContentsZoomChange(bool zoom_in) {
   embedder_web_contents()->GetDelegate()->ContentsZoomChange(zoom_in);
 }
 
+void GuestViewBase::DidChangeCloseSignalInterceptStatus() {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
+  if (!attached() || !embedder_web_contents()->GetDelegate()) {
+    return;
+  }
+  // Let the embedder handle the close signal (e.g. the Android back gesture)
+  // for a CloseWatcher in the guest.
+  embedder_web_contents()->GetDelegate()->DidChangeCloseSignalInterceptStatus();
+}
+
 content::KeyboardEventProcessingResult GuestViewBase::PreHandleKeyboardEvent(
     WebContents* source,
     const input::NativeWebKeyboardEvent& event) {

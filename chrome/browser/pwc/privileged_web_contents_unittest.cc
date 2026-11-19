@@ -169,6 +169,10 @@ class TestEmbedderDelegate : public PrivilegedWebContents::EmbedderDelegate {
     zoom_change_count_++;
   }
 
+  void DidChangeCloseSignalInterceptStatus() override {
+    close_signal_intercept_status_change_count_++;
+  }
+
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
@@ -254,6 +258,7 @@ class TestEmbedderDelegate : public PrivilegedWebContents::EmbedderDelegate {
   bool handle_keyboard_return_value_ = true;
   std::optional<bool> last_zoom_in_;
   int zoom_change_count_ = 0;
+  int close_signal_intercept_status_change_count_ = 0;
 
   raw_ptr<content::WebContents> last_media_request_source_ = nullptr;
   std::optional<content::MediaStreamRequest> last_media_request_;
@@ -455,6 +460,25 @@ TEST_F(PrivilegedWebContentsTest,
   pwc->SetEmbedderDelegate(nullptr);
   pwc->web_contents()->GetDelegate()->ContentsZoomChange(/*zoom_in=*/true);
   EXPECT_EQ(delegate.zoom_change_count_, 2);
+}
+
+TEST_F(PrivilegedWebContentsTest,
+       ForwardsDidChangeCloseSignalInterceptStatusToEmbedderDelegate) {
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  TestEmbedderDelegate delegate;
+
+  // Does not crash when no embedder delegate is set.
+  pwc->web_contents()->GetDelegate()->DidChangeCloseSignalInterceptStatus();
+
+  pwc->SetEmbedderDelegate(&delegate);
+  pwc->web_contents()->GetDelegate()->DidChangeCloseSignalInterceptStatus();
+  EXPECT_EQ(delegate.close_signal_intercept_status_change_count_, 1);
+
+  // Clearing the delegate stops forwarding.
+  pwc->SetEmbedderDelegate(nullptr);
+  pwc->web_contents()->GetDelegate()->DidChangeCloseSignalInterceptStatus();
+  EXPECT_EQ(delegate.close_signal_intercept_status_change_count_, 1);
 }
 
 TEST_F(PrivilegedWebContentsTest,
@@ -822,6 +846,9 @@ TEST_F(PrivilegedWebContentsTest, DefaultEmbedderDelegateMethods) {
   // Default ContentsZoomChange is a no-op that does not crash.
   default_delegate.ContentsZoomChange(/*zoom_in=*/true);
   default_delegate.ContentsZoomChange(/*zoom_in=*/false);
+
+  // Default DidChangeCloseSignalInterceptStatus is a no-op that does not crash.
+  default_delegate.DidChangeCloseSignalInterceptStatus();
 
   // Default RequestMediaAccessPermission invokes callback with NOT_SUPPORTED.
   content::MediaStreamRequest request(

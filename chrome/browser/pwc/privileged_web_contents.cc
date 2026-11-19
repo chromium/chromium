@@ -238,6 +238,9 @@ bool PrivilegedWebContents::EmbedderDelegate::HandleKeyboardEvent(
 void PrivilegedWebContents::EmbedderDelegate::ContentsZoomChange(bool zoom_in) {
 }
 
+void PrivilegedWebContents::EmbedderDelegate::
+    DidChangeCloseSignalInterceptStatus() {}
+
 void PrivilegedWebContents::EmbedderDelegate::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
@@ -371,6 +374,12 @@ std::optional<double> PrivilegedWebContents::GetOverrideZoomLevel(
     return std::nullopt;
   }
   return override_zoom_level_;
+}
+
+void PrivilegedWebContents::DidChangeCloseSignalInterceptStatus() {
+  if (embedder_delegate_) {
+    embedder_delegate_->DidChangeCloseSignalInterceptStatus();
+  }
 }
 
 void PrivilegedWebContents::RequestMediaAccessPermission(

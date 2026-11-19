@@ -519,6 +519,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   void ContentsMouseEvent(content::WebContents* source,
                           const ui::Event& event) final;
   void ContentsZoomChange(bool zoom_in) final;
+  void DidChangeCloseSignalInterceptStatus() final;
   void ResizeDueToAutoResize(content::WebContents* web_contents,
                              const gfx::Size& new_size) final;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,

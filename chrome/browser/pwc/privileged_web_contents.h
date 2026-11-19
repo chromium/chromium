@@ -128,6 +128,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
         content::WebContents* source,
         const input::NativeWebKeyboardEvent& event);
     virtual void ContentsZoomChange(bool zoom_in);
+    virtual void DidChangeCloseSignalInterceptStatus();
     virtual void RequestMediaAccessPermission(
         content::WebContents* web_contents,
         const content::MediaStreamRequest& request,
@@ -231,6 +232,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   void ContentsZoomChange(bool zoom_in) override;
   std::optional<double> GetOverrideZoomLevel(
       content::WebContents* source) override;
+  void DidChangeCloseSignalInterceptStatus() override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
