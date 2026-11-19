@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/oauth2/signin_dialog.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -68,13 +69,14 @@ gfx::NativeView SigninDialog::GetHostView() const {
 }
 
 gfx::Point SigninDialog::GetDialogPosition(const gfx::Size& size) {
-  gfx::Size widget_size = GetWidget()->GetWindowBoundsInScreen().size();
-  return gfx::Point(std::max(0, (widget_size.width() - size.width()) / 2),
-                    std::max(0, (widget_size.height() - size.height()) / 2));
+  gfx::Point position(std::max(0, (width() - size.width()) / 2),
+                      std::max(0, (height() - size.height()) / 2));
+  views::View::ConvertPointToWidget(this, &position);
+  return position;
 }
 
 gfx::Size SigninDialog::GetMaximumDialogSize() {
-  return GetWidget()->GetWindowBoundsInScreen().size();
+  return size();
 }
 
 void SigninDialog::AddObserver(web_modal::ModalDialogHostObserver* observer) {}
