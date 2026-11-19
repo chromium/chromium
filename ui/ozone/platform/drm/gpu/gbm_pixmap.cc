@@ -18,11 +18,17 @@
 namespace ui {
 
 GbmPixmap::GbmPixmap(GbmSurfaceFactory* surface_manager,
+                     scoped_refptr<DrmDevice> drm_device,
                      std::unique_ptr<GbmBuffer> buffer,
                      scoped_refptr<DrmFramebuffer> framebuffer)
     : surface_manager_(surface_manager),
+      drm_device_(std::move(drm_device)),
       buffer_(std::move(buffer)),
-      framebuffer_(std::move(framebuffer)) {}
+      framebuffer_(std::move(framebuffer)) {
+  CHECK(drm_device_);
+  CHECK(buffer_);
+  CHECK(!framebuffer_ || framebuffer_->drm_device() == drm_device_);
+}
 
 gfx::NativePixmapHandle GbmPixmap::ExportHandle() const {
   return buffer_->ExportHandle();

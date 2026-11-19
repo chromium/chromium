@@ -283,17 +283,17 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
     VkDevice vk_device,
     VkDeviceMemory* vk_device_memory,
     VkImage* vk_image) {
-  std::unique_ptr<GbmBuffer> buffer;
-  scoped_refptr<DrmFramebuffer> framebuffer;
+  DrmBufferAllocation allocation;
 
   NativePixmapUsageSet native_pixmap_usage =
       BufferUsageToNativePixmapUsage(usage);
-  drm_thread_proxy_->CreateBuffer(
-      widget, size, /*framebuffer_size=*/size,
-      viz::SinglePlaneFormat::kBGRA_8888, native_pixmap_usage,
-      GbmPixmap::kFlagNoModifiers, &buffer, &framebuffer);
-  if (!buffer)
+  drm_thread_proxy_->CreateBuffer(widget, size, /*framebuffer_size=*/size,
+                                  viz::SinglePlaneFormat::kBGRA_8888,
+                                  native_pixmap_usage,
+                                  GbmPixmap::kFlagNoModifiers, &allocation);
+  if (!allocation.buffer) {
     return nullptr;
+  }
 
   PFN_vkCreateDmaBufImageINTEL create_dma_buf_image_intel =
       reinterpret_cast<PFN_vkCreateDmaBufImageINTEL>(
@@ -304,10 +304,10 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
     return nullptr;
   }
 
-  CHECK(buffer->AreFdsValid(), base::NotFatalUntil::M163);
-  CHECK_EQ(buffer->GetNumPlanes(), 1U, base::NotFatalUntil::M163);
+  CHECK(allocation.buffer->AreFdsValid(), base::NotFatalUntil::M163);
+  CHECK_EQ(allocation.buffer->GetNumPlanes(), 1U, base::NotFatalUntil::M163);
 
-  base::ScopedFD vk_image_fd(dup(buffer->GetPlaneFd(0)));
+  base::ScopedFD vk_image_fd(dup(allocation.buffer->GetPlaneFd(0)));
   CHECK(vk_image_fd.is_valid(), base::NotFatalUntil::M163);
 
   // TODO(spang): Fix this for formats other than
@@ -329,7 +329,7 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
           /* .height = */ static_cast<uint32_t>(size.height()),
           /* .depth = */ 1,
       },
-      /* .strideInBytes = */ buffer->GetPlaneStride(0),
+      /* .strideInBytes = */ allocation.buffer->GetPlaneStride(0),
   };
 
   VkResult result =
@@ -340,8 +340,9 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
     return nullptr;
   }
 
-  return base::MakeRefCounted<GbmPixmap>(this, std::move(buffer),
-                                         std::move(framebuffer));
+  return base::MakeRefCounted<GbmPixmap>(this, std::move(allocation.drm_device),
+                                         std::move(allocation.buffer),
+                                         std::move(allocation.framebuffer));
 }
 #endif
 
@@ -371,16 +372,17 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmap(
   }
   NativePixmapUsageSet native_pixmap_usage =
       BufferUsageToNativePixmapUsage(usage);
-  std::unique_ptr<GbmBuffer> buffer;
-  scoped_refptr<DrmFramebuffer> framebuffer;
+  DrmBufferAllocation allocation;
   drm_thread_proxy_->CreateBuffer(widget, size,
                                   framebuffer_size ? *framebuffer_size : size,
                                   format, native_pixmap_usage,
-                                  /*flags=*/0, &buffer, &framebuffer);
-  if (!buffer)
+                                  /*flags=*/0, &allocation);
+  if (!allocation.buffer) {
     return nullptr;
-  return base::MakeRefCounted<GbmPixmap>(this, std::move(buffer),
-                                         std::move(framebuffer));
+  }
+  return base::MakeRefCounted<GbmPixmap>(this, std::move(allocation.drm_device),
+                                         std::move(allocation.buffer),
+                                         std::move(allocation.framebuffer));
 }
 
 scoped_refptr<gfx::NativePixmap>
@@ -393,14 +395,15 @@ GbmSurfaceFactory::CreateNativePixmapFromHandleInternal(
     return nullptr;
   }
 
-  std::unique_ptr<GbmBuffer> buffer;
-  scoped_refptr<DrmFramebuffer> framebuffer;
-  drm_thread_proxy_->CreateBufferFromHandle(
-      widget, size, format, std::move(handle), &buffer, &framebuffer);
-  if (!buffer)
+  DrmBufferAllocation allocation;
+  drm_thread_proxy_->CreateBufferFromHandle(widget, size, format,
+                                            std::move(handle), &allocation);
+  if (!allocation.buffer) {
     return nullptr;
-  return base::MakeRefCounted<GbmPixmap>(this, std::move(buffer),
-                                         std::move(framebuffer));
+  }
+  return base::MakeRefCounted<GbmPixmap>(this, std::move(allocation.drm_device),
+                                         std::move(allocation.buffer),
+                                         std::move(allocation.framebuffer));
 }
 
 scoped_refptr<gfx::NativePixmap>

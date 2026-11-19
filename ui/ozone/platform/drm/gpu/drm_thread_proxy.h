@@ -49,15 +49,13 @@ class DrmThreadProxy {
                     viz::SharedImageFormat format,
                     NativePixmapUsageSet usage,
                     uint32_t flags,
-                    std::unique_ptr<GbmBuffer>* buffer,
-                    scoped_refptr<DrmFramebuffer>* framebuffer);
+                    DrmBufferAllocation* allocation);
 
   void CreateBufferFromHandle(gfx::AcceleratedWidget widget,
                               const gfx::Size& size,
                               viz::SharedImageFormat format,
                               gfx::NativePixmapHandle handle,
-                              std::unique_ptr<GbmBuffer>* buffer,
-                              scoped_refptr<DrmFramebuffer>* framebuffer);
+                              DrmBufferAllocation* allocation);
 
   // Sets a callback that will be notified when display configuration may have
   // changed, so we should update state for managing overlays.

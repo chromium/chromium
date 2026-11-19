@@ -13,6 +13,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -49,6 +50,7 @@ class Rect;
 
 namespace ui {
 
+class DrmDevice;
 class DrmDeviceManager;
 class DrmFramebuffer;
 class DrmGpuDisplayManager;
@@ -56,6 +58,21 @@ class GbmBuffer;
 class ScreenManager;
 
 struct DrmOverlayPlane;
+
+// A buffer allocated on the DRM thread, together with the objects it depends
+// on. Members are destroyed in reverse declaration order: `framebuffer`, then
+// `buffer` (gbm_bo_destroy()), then `drm_device`, whose GBM device allocated
+// `buffer`. `drm_device` must stay declared first.
+struct DrmBufferAllocation {
+  DrmBufferAllocation();
+  DrmBufferAllocation(const DrmBufferAllocation&) = delete;
+  DrmBufferAllocation& operator=(const DrmBufferAllocation&) = delete;
+  ~DrmBufferAllocation();
+
+  scoped_refptr<DrmDevice> drm_device;
+  std::unique_ptr<GbmBuffer> buffer;
+  scoped_refptr<DrmFramebuffer> framebuffer;
+};
 
 // Holds all the DRM related state and performs all DRM related operations.
 //
@@ -96,14 +113,12 @@ class DrmThread : public base::Thread,
                     viz::SharedImageFormat format,
                     NativePixmapUsageSet usage,
                     uint32_t flags,
-                    std::unique_ptr<GbmBuffer>* buffer,
-                    scoped_refptr<DrmFramebuffer>* framebuffer);
+                    DrmBufferAllocation* allocation);
   void CreateBufferFromHandle(gfx::AcceleratedWidget widget,
                               const gfx::Size& size,
                               viz::SharedImageFormat format,
                               gfx::NativePixmapHandle handle,
-                              std::unique_ptr<GbmBuffer>* buffer,
-                              scoped_refptr<DrmFramebuffer>* framebuffer);
+                              DrmBufferAllocation* allocation);
   void SetDisplaysConfiguredCallback(base::RepeatingClosure callback);
   void AddDrmDeviceReceiver(
       mojo::PendingReceiver<ozone::mojom::DrmDevice> receiver);

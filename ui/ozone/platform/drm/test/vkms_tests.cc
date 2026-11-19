@@ -132,19 +132,18 @@ TEST_F(VKMSTest, SinglePlanePageFlip) {
   // the SharedImageFormat order is flipped from DRM. See here for our
   // conversions:
   // ui/gfx/linux/drm_util_linux.cc
-  std::unique_ptr<ui::GbmBuffer> buffer;
-  scoped_refptr<ui::DrmFramebuffer> framebuffer;
+  ui::DrmBufferAllocation allocation;
   ui::NativePixmapUsageSet scanout_cpu_usage = {
       ui::NativePixmapUsage::kScanout, ui::NativePixmapUsage::kTexturing,
       ui::NativePixmapUsage::kCpuRead};
   drm_thread_proxy_->CreateBuffer(
       kWidget, kWindowRect.size(), kWindowRect.size(),
       viz::SinglePlaneFormat::kBGRX_8888, scanout_cpu_usage,
-      /*flags=*/0, &buffer, &framebuffer);
+      /*flags=*/0, &allocation);
 
   auto planes = std::vector<ui::DrmOverlayPlane>();
   planes.push_back(ui::DrmOverlayPlane::TestPlane(
-      framebuffer, gfx::ColorSpace::CreateSRGB(),
+      allocation.framebuffer, gfx::ColorSpace::CreateSRGB(),
       std::make_unique<gfx::GpuFence>(gfx::GpuFenceHandle())));
 
   base::RunLoop run_loop;

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 
 namespace ui {
@@ -22,6 +23,7 @@ class GbmPixmap : public gfx::NativePixmap {
   static constexpr uint32_t kFlagNoModifiers = 1U << 0;
 
   GbmPixmap(GbmSurfaceFactory* surface_manager,
+            scoped_refptr<DrmDevice> drm_device,
             std::unique_ptr<GbmBuffer> buffer,
             scoped_refptr<DrmFramebuffer> framebuffer);
 
@@ -54,6 +56,12 @@ class GbmPixmap : public gfx::NativePixmap {
   ~GbmPixmap() override;
 
   const raw_ptr<GbmSurfaceFactory> surface_manager_;
+  // Keeps the GBM device that allocated `buffer_` alive until `buffer_` is
+  // destroyed. `framebuffer_` also holds the device, but is null for buffers
+  // without scanout usage and is destroyed before `buffer_`. `drm_device_` must
+  // remain declared before `buffer_`, so that `buffer_` (gbm_bo_destroy()) is
+  // destroyed before `drm_device_` is released.
+  const scoped_refptr<DrmDevice> drm_device_;
   const std::unique_ptr<GbmBuffer> buffer_;
   const scoped_refptr<DrmFramebuffer> framebuffer_;
 };
