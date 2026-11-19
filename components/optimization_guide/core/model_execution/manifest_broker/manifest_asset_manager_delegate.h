@@ -17,6 +17,8 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/model_execution/manifest_provider.h"
+#include "components/update_client/update_client.h"
+#include "components/update_client/update_client_errors.h"
 
 namespace optimization_guide {
 
@@ -72,6 +74,12 @@ class ManifestAssetManagerDelegate : public ManifestMonitorDelegate {
     // Called when the network connection transitions between metered and
     // unmetered, or reconnects to an unmetered network after being offline.
     virtual void OnMeteredConnectionChanged() = 0;
+
+    // Called when a registered component reaches a terminal update state.
+    virtual void OnAssetUpdateEvent(const std::string& public_key,
+                                    update_client::ComponentState state,
+                                    update_client::ErrorCategory error_category,
+                                    int error_code) = 0;
   };
 
   ~ManifestAssetManagerDelegate() override = default;

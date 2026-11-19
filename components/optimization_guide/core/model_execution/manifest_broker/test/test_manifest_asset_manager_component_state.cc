@@ -514,6 +514,16 @@ bool TestManifestAssetManagerComponentState::IsUninstalled(
   return !installed_components_.contains(public_key);
 }
 
+void TestManifestAssetManagerComponentState::SendUpdateEvent(
+    const std::string& public_key,
+    update_client::ComponentState state,
+    update_client::ErrorCategory error_category,
+    int error_code) {
+  if (manager_) {
+    manager_->OnAssetUpdateEvent(public_key, state, error_category, error_code);
+  }
+}
+
 void TestManifestAssetManagerComponentState::UpdateDownloadProgress(
     const std::string& public_key,
     uint64_t downloaded_bytes,

@@ -62,6 +62,26 @@ class UsageTracker;
 class ManifestAssetManager : public UsageTracker::Observer,
                              public ManifestAssetManagerDelegate::AssetManager {
  public:
+  // Outcome of a component update attempt for an on-device model asset.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(OnDeviceModelUpdateAttemptOutcome)
+  enum class UpdateAttemptOutcome {
+    kSucceeded = 0,
+    kUpToDate = 1,
+    kDiskFull = 2,
+    kCancelled = 3,
+    kPolicyOrMeteredSkipped = 4,
+    kCleanInstallDirFailed = 5,
+    kDownloadError = 6,
+    kUnpackError = 7,
+    kInstallError = 8,
+    kUpdateCheckError = 9,
+    kServiceError = 10,
+    kMaxValue = kServiceError,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:OnDeviceModelUpdateAttemptOutcome)
+
   // Constructs a ManifestAssetManager, and begins provide assets to the given
   // `factory`. `model_observers` (and other referenced objects) are retained
   // and must outlive `ManifestAssetManager`.
@@ -127,6 +147,10 @@ class ManifestAssetManager : public UsageTracker::Observer,
                            bool is_already_installed) override;
   void OnUpdateRequestComplete(const std::string& public_key) override;
   void OnMeteredConnectionChanged() override;
+  void OnAssetUpdateEvent(const std::string& public_key,
+                          update_client::ComponentState state,
+                          update_client::ErrorCategory error_category,
+                          int error_code) override;
 
   // Recomputes asset priorities from the current manifest and usage tracker,
   // then updates component registrations.

@@ -5,6 +5,7 @@
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -25,6 +26,8 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/update_client/crx_update_item.h"
+#include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -72,6 +75,13 @@ class MockAssetManager : public AssetManager {
               (const std::string& public_key),
               (override));
   MOCK_METHOD(void, OnMeteredConnectionChanged, (), (override));
+  MOCK_METHOD(void,
+              OnAssetUpdateEvent,
+              (const std::string& public_key,
+               update_client::ComponentState state,
+               update_client::ErrorCategory error_category,
+               int error_code),
+              (override));
 
   base::WeakPtr<AssetManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -108,8 +118,6 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest, GetInstalledAssets) {
   base::FilePath install_dir;
   ASSERT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &install_dir));
 
-  const std::string kManifestModelKey =
-      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
   const std::string kAmbiguousManifestModelKey =
       "1111111111111111111111111111111111111111111111111111111111111111";
   const std::string kEmptyManifestModelKey =
@@ -122,7 +130,7 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest, GetInstalledAssets) {
           .AppendASCII("2025.8.8.1141")));
   ASSERT_TRUE(base::CreateDirectory(
       install_dir.Append(FILE_PATH_LITERAL("OptGuideManifestModel"))
-          .AppendASCII(kManifestModelKey)
+          .AppendASCII(kValidPublicKeyHex)
           .AppendASCII("1.0.0.0")));
   ASSERT_TRUE(base::CreateDirectory(
       install_dir.Append(FILE_PATH_LITERAL("OptGuideManifestModel"))
@@ -147,7 +155,7 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest, GetInstalledAssets) {
       future.Get(),
       testing::UnorderedElementsAre(
           InstalledAsset{kLegacyBaseModelKey, base::Version("2025.8.8.1141")},
-          InstalledAsset{kManifestModelKey, base::Version("1.0.0.0")},
+          InstalledAsset{kValidPublicKeyHex, base::Version("1.0.0.0")},
           InstalledAsset{kAmbiguousManifestModelKey, std::nullopt},
           InstalledAsset{kEmptyManifestModelKey, std::nullopt}));
 }
@@ -348,6 +356,150 @@ TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
 
   EXPECT_CALL(asset_manager, OnUpdateRequestComplete(_)).Times(0);
   std::move(third_callback).Run(update_client::Error::NONE);
+}
+
+TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
+       ForwardsTerminalEventsForRegisteredModelsAndFiltersNonModels) {
+  base::ScopedPathOverride path_override(DIR_COMPONENT_USER);
+
+  auto cus = std::make_unique<testing::NiceMock<MockComponentUpdateService>>();
+  ServiceObserver* registered_observer = nullptr;
+  EXPECT_CALL(*cus, AddObserver(_)).WillOnce([&](ServiceObserver* observer) {
+    registered_observer = observer;
+  });
+  EXPECT_CALL(*cus, RemoveObserver(_)).WillOnce([&](ServiceObserver* observer) {
+    EXPECT_EQ(observer, registered_observer);
+    registered_observer = nullptr;
+  });
+  TestingBrowserProcess::GetGlobal()->SetComponentUpdater(std::move(cus));
+
+  const std::string kManifestModelCrxId =
+      *optimization_guide::GetCrxIdFromPublicKeyHex(kValidPublicKeyHex);
+
+  testing::StrictMock<MockAssetManager> asset_manager;
+  {
+    auto delegate = CreateManifestAssetManagerDelegate();
+    delegate->SetAssetManager(asset_manager.GetWeakPtr());
+    base::test::TestFuture<void> registration_future;
+    EXPECT_CALL(asset_manager,
+                InstallerRegistered(kValidPublicKeyHex, "1.0.0.0", false))
+        .WillOnce([&]() { registration_future.SetValue(); });
+    delegate->RegisterOnDemandComponent(kValidPublicKeyHex, "1.0.0.0",
+                                        "gemma4_component");
+    ASSERT_TRUE(registration_future.Wait());
+    ASSERT_NE(registered_observer, nullptr);
+
+    // Non-terminal event for the registered model must be ignored.
+    EXPECT_CALL(asset_manager, OnAssetUpdateEvent).Times(0);
+    CrxUpdateItem downloading_item;
+    downloading_item.id = kManifestModelCrxId;
+    downloading_item.state = update_client::ComponentState::kDownloading;
+    registered_observer->OnEvent(downloading_item);
+    testing::Mock::VerifyAndClearExpectations(&asset_manager);
+
+    // Terminal events for unrelated components must be ignored.
+    EXPECT_CALL(asset_manager, OnAssetUpdateEvent).Times(0);
+    std::string non_model_crx_id = std::string(32, 'a');
+    CrxUpdateItem non_model_item;
+    non_model_item.id = non_model_crx_id;
+    non_model_item.state = update_client::ComponentState::kUpdateError;
+    non_model_item.error_category = update_client::ErrorCategory::kDownload;
+    non_model_item.error_code =
+        static_cast<int>(update_client::CrxDownloaderError::DISK_FULL);
+    registered_observer->OnEvent(non_model_item);
+    testing::Mock::VerifyAndClearExpectations(&asset_manager);
+
+    // Terminal error event for the registered model must be forwarded with its
+    // unmodified 32-bit error_code.
+    EXPECT_CALL(asset_manager,
+                OnAssetUpdateEvent(kValidPublicKeyHex,
+                                   update_client::ComponentState::kUpdateError,
+                                   update_client::ErrorCategory::kDownload,
+                                   static_cast<int>(0x80070070)));
+    CrxUpdateItem error_item;
+    error_item.id = kManifestModelCrxId;
+    error_item.state = update_client::ComponentState::kUpdateError;
+    error_item.error_category = update_client::ErrorCategory::kDownload;
+    error_item.error_code = static_cast<int>(0x80070070);
+    registered_observer->OnEvent(error_item);
+    testing::Mock::VerifyAndClearExpectations(&asset_manager);
+
+    // Terminal success event for the registered model must also be forwarded.
+    EXPECT_CALL(asset_manager,
+                OnAssetUpdateEvent(kValidPublicKeyHex,
+                                   update_client::ComponentState::kUpdated,
+                                   update_client::ErrorCategory::kNone, 0));
+    CrxUpdateItem updated_item;
+    updated_item.id = kManifestModelCrxId;
+    updated_item.state = update_client::ComponentState::kUpdated;
+    registered_observer->OnEvent(updated_item);
+    testing::Mock::VerifyAndClearExpectations(&asset_manager);
+  }
+
+  EXPECT_EQ(registered_observer, nullptr);
+}
+
+TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
+       HandlesComponentUpdaterTeardownBeforeDelegateDestruction) {
+  base::ScopedPathOverride path_override(DIR_COMPONENT_USER);
+
+  auto cus = std::make_unique<testing::NiceMock<MockComponentUpdateService>>();
+  EXPECT_CALL(*cus, AddObserver(_)).Times(1);
+  // ComponentUpdateService is torn down before `delegate` is destroyed, so
+  // `~ManifestAssetManagerDelegateImpl()` must not dereference a dangling
+  // pointer or call `RemoveObserver`.
+  EXPECT_CALL(*cus, RemoveObserver(_)).Times(0);
+  TestingBrowserProcess::GetGlobal()->SetComponentUpdater(std::move(cus));
+
+  testing::StrictMock<MockAssetManager> asset_manager;
+  auto delegate = CreateManifestAssetManagerDelegate();
+  delegate->SetAssetManager(asset_manager.GetWeakPtr());
+  base::test::TestFuture<void> registration_future;
+  EXPECT_CALL(asset_manager,
+              InstallerRegistered(kValidPublicKeyHex, "1.0.0.0", false))
+      .WillOnce([&]() { registration_future.SetValue(); });
+  delegate->RegisterOnDemandComponent(kValidPublicKeyHex, "1.0.0.0",
+                                      "gemma4_component");
+  ASSERT_TRUE(registration_future.Wait());
+
+  // Tear down ComponentUpdateService while the delegate is still alive.
+  TestingBrowserProcess::GetGlobal()->SetComponentUpdater(nullptr);
+  delegate.reset();
+}
+
+TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
+       UninstallDetachesObserverWhenLastComponentUninstalled) {
+  base::ScopedPathOverride path_override(DIR_COMPONENT_USER);
+
+  auto cus = std::make_unique<testing::NiceMock<MockComponentUpdateService>>();
+  ServiceObserver* registered_observer = nullptr;
+  EXPECT_CALL(*cus, AddObserver(_)).WillOnce([&](ServiceObserver* observer) {
+    registered_observer = observer;
+  });
+  EXPECT_CALL(*cus, RemoveObserver(_)).WillOnce([&](ServiceObserver* observer) {
+    EXPECT_EQ(observer, registered_observer);
+    registered_observer = nullptr;
+  });
+  const std::string kManifestModelCrxId =
+      *optimization_guide::GetCrxIdFromPublicKeyHex(kValidPublicKeyHex);
+  EXPECT_CALL(*cus, UnregisterComponent(kManifestModelCrxId))
+      .WillOnce(Return(true));
+  TestingBrowserProcess::GetGlobal()->SetComponentUpdater(std::move(cus));
+
+  testing::StrictMock<MockAssetManager> asset_manager;
+  auto delegate = CreateManifestAssetManagerDelegate();
+  delegate->SetAssetManager(asset_manager.GetWeakPtr());
+  base::test::TestFuture<void> registration_future;
+  EXPECT_CALL(asset_manager,
+              InstallerRegistered(kValidPublicKeyHex, "1.0.0.0", false))
+      .WillOnce([&]() { registration_future.SetValue(); });
+  delegate->RegisterOnDemandComponent(kValidPublicKeyHex, "1.0.0.0",
+                                      "gemma4_component");
+  ASSERT_TRUE(registration_future.Wait());
+  ASSERT_NE(registered_observer, nullptr);
+
+  delegate->Uninstall(kValidPublicKeyHex);
+  EXPECT_EQ(registered_observer, nullptr);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

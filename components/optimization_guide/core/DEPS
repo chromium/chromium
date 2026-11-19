@@ -1,6 +1,8 @@
 include_rules = [
   "+components/autofill/core/common",
   "+components/update_client/crx_update_item.h",
+  "+components/update_client/update_client.h",
+  "+components/update_client/update_client_errors.h",
   "+components/component_updater/component_updater_service.h",
   "+components/component_updater/mock_component_updater_service.h",
   "+components/component_updater/pref_names.h",

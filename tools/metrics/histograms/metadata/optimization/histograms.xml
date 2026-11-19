@@ -1505,6 +1505,48 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelUpdateAttemptOutcome.{BaseModel}"
+    enum="OnDeviceModelUpdateAttemptOutcome" expires_after="2027-04-18">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the outcome of a component update attempt for {BaseModel}. Recorded
+    each time a base model component registered by ManifestAssetManager reaches
+    a terminal state (updated, already-up-to-date, or update error).
+  </summary>
+  <token key="BaseModel" variants="BaseModel"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelUpdateErrorCode.{ErrorCategory}.{BaseModel}"
+    units="error_code" expires_after="2027-04-18">
+  <owner>zekunjiang@google.com</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Records the error_code from component updater when an on-device base model
+    component update attempt fails for {BaseModel} in category {ErrorCategory}.
+    Recorded each time a base model component registered by ManifestAssetManager
+    reaches an error state during update. Values correspond to the
+    category-specific enums in components/update_client/update_client_errors.h
+    (plus negative net::Error and HTTP status codes for Download and
+    UpdateCheck, and Windows HRESULT codes for Download).
+  </summary>
+<!-- LINT.IfChange(OnDeviceModelUpdateErrorCategory) -->
+
+  <token key="ErrorCategory">
+    <variant name="Download" summary="Download error"/>
+    <variant name="Install" summary="Install error"/>
+    <variant name="Installer" summary="Installer error"/>
+    <variant name="Service" summary="Service error"/>
+    <variant name="Unpack" summary="Unpack error"/>
+    <variant name="UpdateCheck" summary="Update check error"/>
+  </token>
+<!-- LINT.ThenChange(//components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.cc:OnDeviceModelUpdateErrorCategory) -->
+
+  <token key="BaseModel" variants="BaseModel"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelValidationResultOnValidationStarted"
     enum="OnDeviceModelValidationResult" expires_after="2027-04-14">
   <owner>cduvall@chromium.org</owner>

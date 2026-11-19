@@ -679,7 +679,8 @@ class OnDemandUpdateTracker {
 };
 
 class ManifestAssetManagerDelegateImpl final
-    : public optimization_guide::ManifestAssetManagerDelegate {
+    : public optimization_guide::ManifestAssetManagerDelegate,
+      public ServiceObserver {
  public:
   ManifestAssetManagerDelegateImpl()
       : manifest_provider_(
@@ -691,6 +692,10 @@ class ManifestAssetManagerDelegateImpl final
 
   ~ManifestAssetManagerDelegateImpl() override {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (!registered_components_.empty() && g_browser_process &&
+        g_browser_process->component_updater()) {
+      g_browser_process->component_updater()->RemoveObserver(this);
+    }
   }
 
   void SetAssetManager(base::WeakPtr<AssetManager> manager) override {
@@ -715,9 +720,8 @@ class ManifestAssetManagerDelegateImpl final
                               std::move(callback));
   }
 
-  void GetInstalledAssets(
-      base::OnceCallback<void(std::vector<InstalledAsset>)> callback)
-      const override {
+  void GetInstalledAssets(base::OnceCallback<void(std::vector<InstalledAsset>)>
+                              callback) const override {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -736,6 +740,17 @@ class ManifestAssetManagerDelegateImpl final
     }
 
     ComponentUpdateService* cus = g_browser_process->component_updater();
+    if (!cus) {
+      return;
+    }
+
+    std::string crx_id = GenerateIdFromPublicKeyHex(public_key_hex);
+    if (!crx_id.empty()) {
+      if (registered_components_.empty()) {
+        cus->AddObserver(this);
+      }
+      registered_components_[crx_id] = public_key_hex;
+    }
 
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<ManifestAssetInstallerPolicy>(
@@ -762,10 +777,16 @@ class ManifestAssetManagerDelegateImpl final
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     update_tracker_.InvalidatePendingUpdate(public_key_hex);
     std::string crx_id = GenerateIdFromPublicKeyHex(public_key_hex);
-    if (!crx_id.empty() && g_browser_process &&
-        g_browser_process->component_updater() &&
-        g_browser_process->component_updater()->UnregisterComponent(crx_id)) {
-      return;
+    if (!crx_id.empty()) {
+      ComponentUpdateService* cus =
+          g_browser_process ? g_browser_process->component_updater() : nullptr;
+      if (registered_components_.erase(crx_id) > 0 &&
+          registered_components_.empty() && cus) {
+        cus->RemoveObserver(this);
+      }
+      if (cus && cus->UnregisterComponent(crx_id)) {
+        return;
+      }
     }
 
     base::MakeRefCounted<ComponentInstaller>(
@@ -780,11 +801,43 @@ class ManifestAssetManagerDelegateImpl final
     update_tracker_.RequestUpdate(public_key_hex, is_background);
   }
 
+  // ServiceObserver:
+  void OnEvent(const CrxUpdateItem& item) override {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    switch (item.state) {
+      case update_client::ComponentState::kUpdated:
+      case update_client::ComponentState::kUpToDate:
+      case update_client::ComponentState::kUpdateError:
+        break;
+      case update_client::ComponentState::kNew:
+      case update_client::ComponentState::kChecking:
+      case update_client::ComponentState::kCanUpdate:
+      case update_client::ComponentState::kDownloading:
+      case update_client::ComponentState::kDecompressing:
+      case update_client::ComponentState::kPatching:
+      case update_client::ComponentState::kUpdating:
+      case update_client::ComponentState::kRun:
+        return;
+    }
+
+    auto it = registered_components_.find(item.id);
+    if (it == registered_components_.end() || !asset_manager_) {
+      return;
+    }
+
+    asset_manager_->OnAssetUpdateEvent(it->second, item.state,
+                                       item.error_category, item.error_code);
+  }
+
  private:
   ManifestProviderImpl manifest_provider_;
   base::WeakPtr<AssetManager> asset_manager_;
   MeteredConnectionMonitor metered_connection_monitor_;
   OnDemandUpdateTracker update_tracker_;
+
+  // Maps component IDs to public key hex strings. When non-empty, `this`
+  // monitors updates for the mapped components for logging.
+  base::flat_map<std::string, std::string> registered_components_;
 };
 
 }  // namespace

@@ -4,8 +4,10 @@
 
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,8 +21,10 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
@@ -38,6 +42,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/update_client/crx_update_item.h"
+#include "components/update_client/update_client.h"
+#include "components/update_client/update_client_errors.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace optimization_guide {
@@ -97,6 +103,99 @@ bool IsComponentUpdateInProgress(
     case update_client::ComponentState::kUpdateError:
     case update_client::ComponentState::kRun:
       return false;
+  }
+}
+
+bool IsBaseModelAsset(const Manifest& manifest, std::string_view asset_id) {
+  return std::ranges::any_of(
+      manifest.GetRecipes().base_models(), [&](const auto& entry) {
+        return entry.second.weights_file().asset_id() == asset_id;
+      });
+}
+
+// LINT.IfChange(OnDeviceModelUpdateErrorCategory)
+std::string_view ErrorCategoryToHistogramVariant(
+    update_client::ErrorCategory category) {
+  switch (category) {
+    case update_client::ErrorCategory::kNone:
+      NOTREACHED();
+    case update_client::ErrorCategory::kDownload:
+      return "Download";
+    case update_client::ErrorCategory::kUnpack:
+      return "Unpack";
+    case update_client::ErrorCategory::kInstall:
+      return "Install";
+    case update_client::ErrorCategory::kService:
+      return "Service";
+    case update_client::ErrorCategory::kUpdateCheck:
+      return "UpdateCheck";
+    case update_client::ErrorCategory::kInstaller:
+      return "Installer";
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/histograms.xml:OnDeviceModelUpdateErrorCategory)
+
+std::optional<ManifestAssetManager::UpdateAttemptOutcome>
+ClassifyUpdateAttemptOutcome(update_client::ComponentState state,
+                             update_client::ErrorCategory error_category,
+                             int error_code) {
+  switch (state) {
+    case update_client::ComponentState::kUpdated:
+      return ManifestAssetManager::UpdateAttemptOutcome::kSucceeded;
+    case update_client::ComponentState::kUpToDate:
+      return ManifestAssetManager::UpdateAttemptOutcome::kUpToDate;
+    case update_client::ComponentState::kUpdateError:
+      break;
+    case update_client::ComponentState::kNew:
+    case update_client::ComponentState::kChecking:
+    case update_client::ComponentState::kCanUpdate:
+    case update_client::ComponentState::kDownloading:
+    case update_client::ComponentState::kDecompressing:
+    case update_client::ComponentState::kPatching:
+    case update_client::ComponentState::kUpdating:
+    case update_client::ComponentState::kRun:
+      return std::nullopt;
+  }
+
+  if (error_category == update_client::ErrorCategory::kDownload &&
+      error_code ==
+          static_cast<int>(update_client::CrxDownloaderError::DISK_FULL)) {
+    return ManifestAssetManager::UpdateAttemptOutcome::kDiskFull;
+  }
+  if ((error_category == update_client::ErrorCategory::kDownload &&
+       error_code ==
+           static_cast<int>(update_client::CrxDownloaderError::CANCELLED)) ||
+      (error_category == update_client::ErrorCategory::kService &&
+       error_code ==
+           static_cast<int>(update_client::ServiceError::CANCELLED))) {
+    return ManifestAssetManager::UpdateAttemptOutcome::kCancelled;
+  }
+  if (error_category == update_client::ErrorCategory::kService &&
+      error_code ==
+          static_cast<int>(update_client::ServiceError::UPDATE_DISABLED)) {
+    return ManifestAssetManager::UpdateAttemptOutcome::kPolicyOrMeteredSkipped;
+  }
+  if (error_category == update_client::ErrorCategory::kInstall &&
+      error_code ==
+          static_cast<int>(
+              update_client::InstallError::CLEAN_INSTALL_DIR_FAILED)) {
+    return ManifestAssetManager::UpdateAttemptOutcome::kCleanInstallDirFailed;
+  }
+
+  switch (error_category) {
+    case update_client::ErrorCategory::kDownload:
+      return ManifestAssetManager::UpdateAttemptOutcome::kDownloadError;
+    case update_client::ErrorCategory::kUnpack:
+      return ManifestAssetManager::UpdateAttemptOutcome::kUnpackError;
+    case update_client::ErrorCategory::kInstall:
+    case update_client::ErrorCategory::kInstaller:
+      return ManifestAssetManager::UpdateAttemptOutcome::kInstallError;
+    case update_client::ErrorCategory::kUpdateCheck:
+      return ManifestAssetManager::UpdateAttemptOutcome::kUpdateCheckError;
+    case update_client::ErrorCategory::kService:
+      return ManifestAssetManager::UpdateAttemptOutcome::kServiceError;
+    case update_client::ErrorCategory::kNone:
+      NOTREACHED();
   }
 }
 
@@ -421,6 +520,40 @@ ManifestAssetManager::~ManifestAssetManager() {
   TRACE_EVENT("optimization_guide",
               "ManifestAssetManager::~ManifestAssetManager",
               perfetto::TerminatingFlow::FromPointer(this));
+}
+
+void ManifestAssetManager::OnAssetUpdateEvent(
+    const std::string& public_key,
+    update_client::ComponentState state,
+    update_client::ErrorCategory error_category,
+    int error_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::optional<UpdateAttemptOutcome> outcome =
+      ClassifyUpdateAttemptOutcome(state, error_category, error_code);
+  if (!outcome) {
+    return;
+  }
+  const ComponentContext* context = ledger_.GetContext(public_key);
+  if (!context || context->state() == ComponentState::kNotRegistered ||
+      context->state() == ComponentState::kUninstalling ||
+      !IsBaseModelAsset(factory_->manifest(), context->asset_id())) {
+    return;
+  }
+  std::string model_name =
+      ConvertComponentKeyToUmaModelName(context->asset_id());
+  base::UmaHistogramEnumeration(
+      base::StrCat({"OptimizationGuide.ModelExecution."
+                    "OnDeviceModelUpdateAttemptOutcome.",
+                    model_name}),
+      *outcome);
+  if (state == update_client::ComponentState::kUpdateError) {
+    base::UmaHistogramSparse(
+        base::StrCat({"OptimizationGuide.ModelExecution."
+                      "OnDeviceModelUpdateErrorCode.",
+                      ErrorCategoryToHistogramVariant(error_category), ".",
+                      model_name}),
+        error_code);
+  }
 }
 
 std::optional<std::string> ManifestAssetManager::GetCrxIdForAsset(

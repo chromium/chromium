@@ -21,6 +21,8 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_component_directory.h"
 #include "components/optimization_guide/core/model_execution/test/fake_component_update_service.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
+#include "components/update_client/update_client.h"
+#include "components/update_client/update_client_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -186,6 +188,12 @@ class TestManifestAssetManagerComponentState final {
   component_updater::ComponentUpdateService& component_update_service() {
     return component_update_service_;
   }
+
+  void SendUpdateEvent(const std::string& public_key,
+                       update_client::ComponentState state,
+                       update_client::ErrorCategory error_category =
+                           update_client::ErrorCategory::kNone,
+                       int error_code = 0);
 
   bool WaitForDownloadObserver() const {
     return base::test::RunUntil(

@@ -439,6 +439,7 @@ if (build_with_model_execution) {
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/optimization_guide/public/mojom",
       "//components/prefs:test_support",
+      "//components/update_client",
       "//services/on_device_model/public/cpp/test_support",
       "//testing/gmock",
     ]
@@ -881,6 +882,7 @@ if (build_with_model_execution && !is_chrome_for_testing) {
       "//components/optimization_guide/public/mojom",
       "//components/prefs:test_support",
       "//components/sync_preferences:test_support",
+      "//components/update_client",
       "//components/version_info",
       "//services/on_device_model/public/cpp",
       "//services/on_device_model/public/cpp/test_support",

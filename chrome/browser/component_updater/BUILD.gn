@@ -360,6 +360,7 @@ source_set("unit_tests") {
     "//components/component_updater",
     "//components/component_updater:test_support",
     "//components/optimization_guide/core",
+    "//components/update_client",
     "//content/test:test_support",
     "//services/cert_verifier:lib",
     "//testing/gmock",

@@ -13,6 +13,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
@@ -35,6 +36,8 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/update_client/update_client.h"
+#include "components/update_client/update_client_errors.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -106,6 +109,13 @@ class DummyManifest {
     return *this;
   }
 
+  DummyManifest& AddAdaptation(DummyAsset adaptation_asset,
+                               std::string base_asset_id) {
+    adaptations_.emplace_back(std::move(adaptation_asset),
+                              std::move(base_asset_id));
+    return *this;
+  }
+
   std::unique_ptr<ManifestComponentDirectory> BuildAsset() const {
     ManifestBuilder builder;
     for (const auto& asset : assets_) {
@@ -124,6 +134,21 @@ class DummyManifest {
       builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier, asset.use_case},
                   asset.asset_id + "_solution");
     }
+    for (const auto& [adaptation_asset, base_asset_id] : adaptations_) {
+      builder.Add(adaptation_asset.asset_id,
+                  OnDemandComponent(adaptation_asset.public_key,
+                                    adaptation_asset.version));
+      builder.Add(adaptation_asset.asset_id + "_adaptation",
+                  AdaptationRecipe(
+                      base_asset_id + "_base_model",
+                      FileReference(adaptation_asset.asset_id, "weights.bin")));
+      builder.Add(adaptation_asset.asset_id + "_solution",
+                  SolutionRecipe(adaptation_asset.asset_id + "_adaptation",
+                                 FileReference("manifest", "config.pb")));
+      builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier,
+                                adaptation_asset.use_case},
+                  adaptation_asset.asset_id + "_solution");
+    }
 
     proto::Manifest manifest = builder.Build();
     auto component =
@@ -136,6 +161,7 @@ class DummyManifest {
 
  private:
   std::vector<DummyAsset> assets_;
+  std::vector<std::pair<DummyAsset, std::string>> adaptations_;
 };
 
 class ManifestAssetManagerTest : public testing::Test {
@@ -2157,6 +2183,197 @@ TEST_F(ManifestAssetManagerTest, ModelInstallStateFromExistingPrefs) {
   EXPECT_EQ(ModelInstallState::kNeverInstalled,
             ManifestAssetManager::GetModelInstallState(
                 prefs, OnDeviceBaseModel::kUnknown));
+}
+
+TEST_F(ManifestAssetManagerTest, UpdateAttemptOutcomeNonErrorStates) {
+  DummyAsset asset =
+      DummyAsset::For("compose").WithAssetId("nano_v3_gpu_component");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  component_state_.SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kOffline);
+  UpdateManifest(DummyManifest().Add(asset));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  // Non-terminal states must not emit outcome or error code histograms.
+  {
+    base::HistogramTester histogram_tester;
+    for (auto state : {update_client::ComponentState::kChecking,
+                       update_client::ComponentState::kCanUpdate,
+                       update_client::ComponentState::kDownloading,
+                       update_client::ComponentState::kDecompressing,
+                       update_client::ComponentState::kUpdating}) {
+      component_state_.SendUpdateEvent(asset.public_key, state);
+    }
+    EXPECT_TRUE(histogram_tester
+                    .GetTotalCountsForPrefix(
+                        "OptimizationGuide.ModelExecution.OnDeviceModelUpdate")
+                    .empty());
+  }
+
+  // Terminal success and up-to-date states emit outcomes without error codes.
+  {
+    base::HistogramTester histogram_tester;
+    component_state_.SendUpdateEvent(asset.public_key,
+                                     update_client::ComponentState::kUpdated);
+    component_state_.SendUpdateEvent(asset.public_key,
+                                     update_client::ComponentState::kUpToDate);
+    histogram_tester.ExpectBucketCount(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceModelUpdateAttemptOutcome.V3NanoGpu",
+        ManifestAssetManager::UpdateAttemptOutcome::kSucceeded, 1);
+    histogram_tester.ExpectBucketCount(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceModelUpdateAttemptOutcome.V3NanoGpu",
+        ManifestAssetManager::UpdateAttemptOutcome::kUpToDate, 1);
+    EXPECT_TRUE(
+        histogram_tester
+            .GetTotalCountsForPrefix(
+                "OptimizationGuide.ModelExecution.OnDeviceModelUpdateErrorCode")
+            .empty());
+  }
+}
+
+TEST_F(ManifestAssetManagerTest, UpdateAttemptOutcomeAndErrorCodePrecedence) {
+  DummyAsset asset =
+      DummyAsset::For("compose").WithAssetId("nano_v3_gpu_component");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  component_state_.SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kOffline);
+  UpdateManifest(DummyManifest().Add(asset));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  // Specific error codes take precedence over generic category buckets, and
+  // negative net::Error values / signed HRESULTs are preserved intact.
+  constexpr int kNetErrorInternetDisconnected = -106;
+  constexpr int kHresultErrorDiskFull = static_cast<int>(0x80070070);
+  struct ErrorCase {
+    update_client::ErrorCategory category;
+    int error_code;
+    ManifestAssetManager::UpdateAttemptOutcome expected_outcome;
+    const char* category_variant;
+  };
+  const ErrorCase kErrorCases[] = {
+      {update_client::ErrorCategory::kDownload,
+       static_cast<int>(update_client::CrxDownloaderError::DISK_FULL),
+       ManifestAssetManager::UpdateAttemptOutcome::kDiskFull, "Download"},
+      {update_client::ErrorCategory::kDownload,
+       static_cast<int>(update_client::CrxDownloaderError::CANCELLED),
+       ManifestAssetManager::UpdateAttemptOutcome::kCancelled, "Download"},
+      {update_client::ErrorCategory::kService,
+       static_cast<int>(update_client::ServiceError::CANCELLED),
+       ManifestAssetManager::UpdateAttemptOutcome::kCancelled, "Service"},
+      {update_client::ErrorCategory::kService,
+       static_cast<int>(update_client::ServiceError::UPDATE_DISABLED),
+       ManifestAssetManager::UpdateAttemptOutcome::kPolicyOrMeteredSkipped,
+       "Service"},
+      {update_client::ErrorCategory::kInstall,
+       static_cast<int>(update_client::InstallError::CLEAN_INSTALL_DIR_FAILED),
+       ManifestAssetManager::UpdateAttemptOutcome::kCleanInstallDirFailed,
+       "Install"},
+      {update_client::ErrorCategory::kDownload,
+       static_cast<int>(update_client::CrxDownloaderError::BAD_HASH),
+       ManifestAssetManager::UpdateAttemptOutcome::kDownloadError, "Download"},
+      {update_client::ErrorCategory::kDownload, kNetErrorInternetDisconnected,
+       ManifestAssetManager::UpdateAttemptOutcome::kDownloadError, "Download"},
+      {update_client::ErrorCategory::kDownload, kHresultErrorDiskFull,
+       ManifestAssetManager::UpdateAttemptOutcome::kDownloadError, "Download"},
+      {update_client::ErrorCategory::kUnpack,
+       static_cast<int>(update_client::UnpackerError::kUnzipFailed),
+       ManifestAssetManager::UpdateAttemptOutcome::kUnpackError, "Unpack"},
+      {update_client::ErrorCategory::kInstall,
+       static_cast<int>(update_client::InstallError::GENERIC_ERROR),
+       ManifestAssetManager::UpdateAttemptOutcome::kInstallError, "Install"},
+      {update_client::ErrorCategory::kInstaller, 42,
+       ManifestAssetManager::UpdateAttemptOutcome::kInstallError, "Installer"},
+      {update_client::ErrorCategory::kUpdateCheck, -100,
+       ManifestAssetManager::UpdateAttemptOutcome::kUpdateCheckError,
+       "UpdateCheck"},
+      {update_client::ErrorCategory::kService,
+       static_cast<int>(update_client::ServiceError::SERVICE_WAIT_FAILED),
+       ManifestAssetManager::UpdateAttemptOutcome::kServiceError, "Service"},
+  };
+  for (const auto& error_case : kErrorCases) {
+    base::HistogramTester histogram_tester;
+    component_state_.SendUpdateEvent(
+        asset.public_key, update_client::ComponentState::kUpdateError,
+        error_case.category, error_case.error_code);
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution."
+        "OnDeviceModelUpdateAttemptOutcome.V3NanoGpu",
+        error_case.expected_outcome, 1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({"OptimizationGuide.ModelExecution."
+                      "OnDeviceModelUpdateErrorCode.",
+                      error_case.category_variant, ".V3NanoGpu"}),
+        error_case.error_code, 1);
+  }
+}
+
+TEST_F(ManifestAssetManagerTest,
+       IgnoresUpdateEventsForUnregisteredOrUninstallingAssets) {
+  DummyAsset unregistered_asset =
+      DummyAsset::For("prompt_api").WithAssetId("gemma4_component");
+  DummyAsset uninstalling_asset =
+      DummyAsset::For("compose").WithAssetId("nano_v3_gpu_component");
+  DummyAsset adaptation_asset =
+      DummyAsset::For("proofreader").WithAssetId("proofreader_lora_component");
+
+  // Only raise priority for `uninstalling_asset` and `adaptation_asset` so
+  // `unregistered_asset` remains in `ledger_` with
+  // `ComponentState::kNotRegistered`.
+  usage_tracker_.RaisePriority(uninstalling_asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  usage_tracker_.RaisePriority(adaptation_asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  component_state_.SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kOffline);
+  UpdateManifest(
+      DummyManifest()
+          .Add(unregistered_asset)
+          .Add(uninstalling_asset)
+          .AddAdaptation(adaptation_asset, uninstalling_asset.asset_id));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(
+      uninstalling_asset.ToInstallTarget()));
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(adaptation_asset.ToInstallTarget()));
+  EXPECT_FALSE(component_state_.IsRegistered(unregistered_asset.public_key));
+
+  base::HistogramTester histogram_tester;
+  // Events for actively registered LoRA adaptations, unregistered base models
+  // (`kNotRegistered`), and unknown public keys must be ignored.
+  for (const std::string& ignored_public_key :
+       {adaptation_asset.public_key, unregistered_asset.public_key,
+        std::string(64, 'a')}) {
+    component_state_.SendUpdateEvent(
+        ignored_public_key, update_client::ComponentState::kUpdateError,
+        update_client::ErrorCategory::kDownload,
+        static_cast<int>(update_client::CrxDownloaderError::DISK_FULL));
+    component_state_.SendUpdateEvent(ignored_public_key,
+                                     update_client::ComponentState::kUpdated);
+  }
+
+  // Transition `uninstalling_asset` to `ComponentState::kUninstalling` and hold
+  // it there before `OnAssetUninstalled` completes.
+  component_state_.SetDeferRegistrationCallbacks(true);
+  manifest_broker_state_->UninstallModels();
+  EXPECT_TRUE(component_state_.WaitForUninstall(uninstalling_asset.public_key));
+  component_state_.SendUpdateEvent(
+      uninstalling_asset.public_key,
+      update_client::ComponentState::kUpdateError,
+      update_client::ErrorCategory::kDownload,
+      static_cast<int>(update_client::CrxDownloaderError::DISK_FULL));
+  component_state_.SendUpdateEvent(uninstalling_asset.public_key,
+                                   update_client::ComponentState::kUpdated);
+
+  EXPECT_TRUE(histogram_tester
+                  .GetTotalCountsForPrefix(
+                      "OptimizationGuide.ModelExecution.OnDeviceModelUpdate")
+                  .empty());
 }
 
 }  // namespace
