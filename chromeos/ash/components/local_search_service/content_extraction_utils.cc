@@ -33,10 +33,10 @@ using string_matching::TokenizedString;
 
 std::unique_ptr<base::i18n::Transliterator> CreateDiacriticRemover() {
   // Adds a rule to remove diacritic from text. Adds a few characters that are
-  // not handled by ICU (ł > l; ø > o; đ > d).
-  return base::i18n::CreateTransliteratorFromRules(
-      "RemoveDiacritic",
-      "::NFD; ::[:Nonspacing Mark:] Remove;::NFC; ł > l; ø > o; đ > d;");
+  // not handled by ICU (ł > l; ø > o; đ > d). Defined in
+  // `//tools/crates/icu4x_datagen/config.toml` and
+  // `//base/i18n/transliterator.cc`.
+  return base::i18n::CreateTransliterator("und-t-und-x0-dropacc");
 }
 
 std::unique_ptr<base::i18n::Transliterator> CreateHyphenRemover() {
@@ -45,8 +45,9 @@ std::unique_ptr<base::i18n::Transliterator> CreateHyphenRemover() {
   // U+2011(‑), U+2012(‒), U+2013(–), U+2014(—), U+2015(―), U+2053(⁓),
   // U+207B(⁻), U+208B(₋), U+2212(−), U+2E3A(⸺ ), U+2E3B(⸻  ), U+301C(〜),
   // U+3030(〰), U+30A0(゠), U+FE58(﹘), U+FE63(﹣), U+FF0D(－).
-  return base::i18n::CreateTransliteratorFromRules(
-      "RemoveHyphen", "::[-~֊־᠆‐‑‒–—―⁓⁻₋−⸺⸻〜〰゠﹘﹣－] Remove;");
+  // Defined in `//tools/crates/icu4x_datagen/config.toml` and
+  // `//base/i18n/transliterator.cc`.
+  return base::i18n::CreateTransliterator("und-t-und-x0-rmhyph");
 }
 
 }  // namespace
