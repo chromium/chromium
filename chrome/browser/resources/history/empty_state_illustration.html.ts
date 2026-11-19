@@ -4,8 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-// The Android empty state illustration. The paths come verbatim from the UX
-// Figma export, with the viewBox cropped to the artwork.
+// The Android empty state illustration. The path geometry comes verbatim from
+// the UX Figma export, with the viewBox cropped to the artwork and static
+// colors mapped to --color-sys-illo-* tokens.
 // clang-format off
 export function getHtml() {
   return html`<!--_html_template_start_-->
@@ -51,23 +52,27 @@ export function getHtml() {
       78.5018 59.0133C78.8127 59.0095 78.9682 59.0075 79.1196
       59.0028C82.5908 58.8949 85.936 57.677 88.6644 55.5279C88.7834 55.4342
       88.9037 55.3357 89.1444 55.1388Z"
-      fill="var(--color-sys-primary-container,
+      fill="var(--color-sys-illo-primary-min,
           var(--cr-fallback-color-primary-container))">
   </path>
   <path d="M87.8571 71H79C74.5817 71 71 74.5817 71 79V87.8571"
-      stroke="var(--color-sys-primary, var(--cr-fallback-color-primary))"
+      stroke="var(--color-sys-illo-primary-max,
+          var(--cr-fallback-color-primary))"
       stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
   </path>
   <path d="M113.143 71H122C126.418 71 130 74.5817 130 79V87.8571"
-      stroke="var(--color-sys-primary, var(--cr-fallback-color-primary))"
+      stroke="var(--color-sys-illo-primary-max,
+          var(--cr-fallback-color-primary))"
       stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
   </path>
   <path d="M87.8571 130H79C74.5817 130 71 126.418 71 122V113.143"
-      stroke="var(--color-sys-primary, var(--cr-fallback-color-primary))"
+      stroke="var(--color-sys-illo-primary-max,
+          var(--cr-fallback-color-primary))"
       stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
   </path>
   <path d="M113.143 130H122C126.418 130 130 126.418 130 122V113.143"
-      stroke="var(--color-sys-primary, var(--cr-fallback-color-primary))"
+      stroke="var(--color-sys-illo-primary-max,
+          var(--cr-fallback-color-primary))"
       stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
   </path>
   <path
@@ -98,8 +103,10 @@ export function getHtml() {
       88.668L89.7588 88.6592V88.6514C89.7024 87.8214 89.9279 87.0733 90.4326
       86.4189L90.667 86.0859C91.856 84.4464 93.3066 83.174 95.0186
       82.2734C96.9002 81.2559 99.0201 80.75 101.372 80.75Z"
-      fill="var(--color-sys-secondary, var(--cr-fallback-color-primary))"
-      stroke="var(--color-sys-secondary, var(--cr-fallback-color-primary))"
+      fill="var(--color-sys-illo-secondary-high,
+          var(--cr-fallback-color-primary))"
+      stroke="var(--color-sys-illo-secondary-high,
+          var(--cr-fallback-color-primary))"
       stroke-width="0.5">
   </path>
 </svg>
