@@ -9,11 +9,15 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/omnibox/browser/on_device_tail_model_executor.h"
 #include "components/omnibox/browser/on_device_tail_model_executor_constants.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
@@ -31,6 +35,8 @@ static const char kVocabFilename[] = "vocab_test.txt";
 constexpr int kNumLayer = 1;
 constexpr int kStateSize = 512;
 constexpr int kEmbeddingDim = 64;
+
+using Predictions = std::vector<OnDeviceTailModelExecutor::Prediction>;
 
 }  // namespace
 
@@ -83,6 +89,18 @@ class OnDeviceTailModelServiceTest : public ::testing::Test {
     return service_->tail_model_executor_->IsReady();
   }
 
+  // Delivers the model and runs it once, which loads it.
+  void UpdateAndLoadModel() {
+    service_->OnModelUpdated(
+        optimization_guide::proto::OptimizationTarget::
+            OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
+        model_info_);
+    service_->GetPredictionsForInput(
+        OnDeviceTailModelExecutor::ModelInput("faceb", "", 5),
+        base::DoNothing());
+    task_environment_.RunUntilIdle();
+  }
+
   base::TestMemoryConsumerRegistry memory_consumer_registry_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<OnDeviceTailModelService> service_;
@@ -91,7 +109,26 @@ class OnDeviceTailModelServiceTest : public ::testing::Test {
   std::optional<optimization_guide::ModelInfo> model_info_;
 };
 
-TEST_F(OnDeviceTailModelServiceTest, OnModelUpdated) {
+TEST_F(OnDeviceTailModelServiceTest, ModelIsLoadedOnFirstUse) {
+  service_->OnModelUpdated(
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
+      model_info_);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(IsExecutorReady());
+
+  service_->GetPredictionsForInput(
+      OnDeviceTailModelExecutor::ModelInput("faceb", "", 5), base::DoNothing());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(IsExecutorReady());
+}
+
+TEST_F(OnDeviceTailModelServiceTest, ValidationSwitchLoadsModelAtDelivery) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      "omnibox-on-device-tail-model-validation");
+  base::HistogramTester histogram_tester;
+
   service_->OnModelUpdated(
       optimization_guide::proto::OptimizationTarget::
           OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
@@ -99,6 +136,55 @@ TEST_F(OnDeviceTailModelServiceTest, OnModelUpdated) {
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(IsExecutorReady());
+  histogram_tester.ExpectUniqueSample("Omnibox.OnDeviceTailModel.InitExecutor",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.OnDeviceTailModel.HasResultForTestPrefix", true, 1);
+}
+
+TEST_F(OnDeviceTailModelServiceTest, ModelUpdateIsUsedByNextRequest) {
+  OnDeviceTailModelExecutor::ModelInput input("logi", "", 5);
+  service_->OnModelUpdated(
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
+      model_info_);
+  base::test::TestFuture<Predictions> before;
+  service_->GetPredictionsForInput(input, before.GetCallback());
+  EXPECT_FALSE(before.Take().empty());
+  EXPECT_TRUE(IsExecutorReady());
+
+  // The denylist bans "ogi", so the updated files give no result for "logi".
+  model_info_->additional_files.push_back(
+      model_info_->model_file_path.DirName().AppendASCII("denylist_test.txt"));
+  service_->OnModelUpdated(
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
+      model_info_);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(IsExecutorReady());
+
+  base::test::TestFuture<Predictions> after;
+  service_->GetPredictionsForInput(input, after.GetCallback());
+  EXPECT_TRUE(after.Take().empty());
+  EXPECT_TRUE(IsExecutorReady());
+}
+
+TEST_F(OnDeviceTailModelServiceTest, LoadFailureOnFirstUse) {
+  model_info_->model_file_path =
+      model_info_->model_file_path.DirName().AppendASCII("no_such.tflite");
+  service_->OnModelUpdated(
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
+      model_info_);
+
+  OnDeviceTailModelExecutor::ModelInput input("faceb", "", 5);
+  // The second request checks that requests after a failed load still reply.
+  for (int i = 0; i < 2; ++i) {
+    base::test::TestFuture<Predictions> future;
+    service_->GetPredictionsForInput(input, future.GetCallback());
+    EXPECT_TRUE(future.Take().empty());
+    EXPECT_FALSE(IsExecutorReady());
+  }
 }
 
 TEST_F(OnDeviceTailModelServiceTest, GetPredictionsForInput) {
@@ -126,11 +212,7 @@ TEST_F(OnDeviceTailModelServiceTest, GetPredictionsForInput) {
 }
 
 TEST_F(OnDeviceTailModelServiceTest, NullModelUpdate) {
-  service_->OnModelUpdated(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
-      model_info_);
-  task_environment_.RunUntilIdle();
+  UpdateAndLoadModel();
   EXPECT_TRUE(IsExecutorReady());
 
   // Null model update should disable the executor.
@@ -143,11 +225,7 @@ TEST_F(OnDeviceTailModelServiceTest, NullModelUpdate) {
 }
 
 TEST_F(OnDeviceTailModelServiceTest, MemoryPressureLevel) {
-  service_->OnModelUpdated(
-      optimization_guide::proto::OptimizationTarget::
-          OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST,
-      model_info_);
-  task_environment_.RunUntilIdle();
+  UpdateAndLoadModel();
   EXPECT_TRUE(IsExecutorReady());
 
   OnDeviceTailModelExecutor::ModelInput input("faceb", "", 5);

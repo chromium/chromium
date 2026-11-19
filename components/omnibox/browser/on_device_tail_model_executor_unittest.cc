@@ -118,8 +118,10 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
       additional_files.push_back(GetTestFilePath(filename));
     }
 
-    EXPECT_TRUE(executor_->Init(GetTestFilePath("test_tail_model.tflite"),
-                                additional_files, metadata));
+    EXPECT_TRUE(executor_->SetModelFiles(
+        GetTestFilePath("test_tail_model.tflite"), additional_files, metadata));
+    EXPECT_FALSE(executor_->IsReady());
+    EXPECT_TRUE(executor_->Init());
   }
 
   std::unique_ptr<OnDeviceTailModelExecutorPublic> executor_;

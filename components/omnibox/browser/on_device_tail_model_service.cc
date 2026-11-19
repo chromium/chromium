@@ -48,7 +48,7 @@ constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
     // Stateless, as it unloads completely under pressure.
     base::MemoryConsumerTraits::IsStateful::kNo);
 
-void InitializeTailModelExecutor(
+void SetTailModelFiles(
     OnDeviceTailModelExecutor* executor,
     const base::FilePath& model_file,
     const std::vector<base::FilePath>& additional_files,
@@ -60,13 +60,16 @@ void InitializeTailModelExecutor(
   if (model_file.empty() || additional_files.empty()) {
     return;
   }
-  bool init_success = executor->Init(model_file, additional_files, metadata);
+  // The model is loaded on first use, see `RunTailModelExecutor()`.
+  bool files_set =
+      executor->SetModelFiles(model_file, additional_files, metadata);
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           kModelValidationSwitchName)) {
     return;
   }
-  // Histograms only for model validation.
+  // Model validation only: load the model now and record local histograms.
+  bool init_success = files_set && executor->Init();
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.OnDeviceTailModel.InitExecutor",
                           init_success);
   if (init_success) {
@@ -188,7 +191,7 @@ void OnDeviceTailModelService::OnModelUpdated(
   }
   model_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&InitializeTailModelExecutor, tail_model_executor_.get(),
+      base::BindOnce(&SetTailModelFiles, tail_model_executor_.get(),
                      model_info->model_file_path, model_info->additional_files,
                      tail_model_metadata.value()));
 }

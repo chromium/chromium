@@ -215,7 +215,7 @@ bool OnDeviceTailModelExecutor::Init() {
   return true;
 }
 
-bool OnDeviceTailModelExecutor::Init(
+bool OnDeviceTailModelExecutor::SetModelFiles(
     const base::FilePath& model_filepath,
     const std::vector<base::FilePath>& additional_files,
     const ModelMetadata& metadata) {
@@ -244,16 +244,8 @@ bool OnDeviceTailModelExecutor::Init(
   badword_hashes_filepath_ = badword_hashes_filepath;
   bad_substrings_filepath_ = bad_substrings_filepath;
   metadata_ = metadata;
-
-  if (Init()) {
-    return true;
-  }
-
-  model_filepath_.clear();
-  vocab_filepath_.clear();
-  badword_hashes_filepath_.clear();
-  bad_substrings_filepath_.clear();
-  return false;
+  Reset();
+  return true;
 }
 
 bool OnDeviceTailModelExecutor::InitModelInterpreter(
