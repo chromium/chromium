@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/browser/user_delegate.h"
@@ -171,6 +172,15 @@ UserPermission UserPermissionServiceImpl::CanCollectReportSignals() const {
       user_delegate_->IsAffiliated()) {
     return UserPermission::kGranted;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, users can consent to sharing device signals with their
+  // organization via the enterprise signals disclaimer, which also covers PII
+  // signals in reports.
+  if (HasUserConsented()) {
+    return UserPermission::kGranted;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return UserPermission::kMissingConsent;
 }

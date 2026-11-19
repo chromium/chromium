@@ -73,7 +73,8 @@ class UserPermissionService : public KeyedService {
   // Variant of `CanCollectSignals` function but checks if context-aware signals
   // can be collected for signals reporting. With current privacy requirements,
   // PII signals collection can only happen when the device is managed and
-  // affiliated. Note: `kGranted` means all signals can be collected,
+  // affiliated, or on Android when the user has consented via the enterprise
+  // signals disclaimer. Note: `kGranted` means all signals can be collected,
   // `kMissingConsent` means only non-PII signals can be collected.
   virtual UserPermission CanCollectReportSignals() const = 0;
 
