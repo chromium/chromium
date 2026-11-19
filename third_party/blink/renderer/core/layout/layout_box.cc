@@ -1334,12 +1334,6 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize(
   return kIndefiniteSize;
 }
 
-LogicalRect LayoutBox::LogicalRectInContainer() const {
-  NOT_DESTROYED();
-  return LocationContainer()->CreateWritingModeConverter().ToLogical(
-      PhysicalRect(PhysicalLocation(), StitchedSize()));
-}
-
 gfx::QuadF LayoutBox::AbsoluteContentQuad(MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
   PhysicalRect rect = PhysicalContentBoxRect();

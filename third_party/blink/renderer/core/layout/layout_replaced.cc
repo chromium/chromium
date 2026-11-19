@@ -508,12 +508,15 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
 
-  LogicalRect logical_rect = LogicalRectInContainer();
+  const PhysicalRect rect_in_container(PhysicalLocation(), StitchedSize());
+
+  WritingModeConverter converter =
+      LocationContainer()->CreateWritingModeConverter();
+  LogicalRect logical_rect = converter.ToLogical(rect_in_container);
   auto [top, bottom] = SelectionTopAndBottom(*this, logical_rect);
 
   LogicalOffset logical_point =
-      LocationContainer()->CreateWritingModeConverter().ToLogical(
-          point + PhysicalLocation(), {});
+      converter.ToLogical(point + rect_in_container.offset, {});
   LayoutUnit block_direction_position = logical_point.block_offset;
   LayoutUnit line_direction_position = logical_point.inline_offset;
 

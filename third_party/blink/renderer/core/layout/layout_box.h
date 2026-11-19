@@ -208,11 +208,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // affect anything that is anchored to it.
   bool TransformsChangeMayRequireLayout() const;
 
-  // Returns the LogicalRect of this box for LocationContainer()'s writing-mode.
-  // The coordinate origin is the border corner of the LocationContainer().
-  // This function doesn't take into account of TextDirection.
-  LogicalRect LogicalRectInContainer() const;
-
   // Returns the inline-size for this box's writing-mode.  It might be
   // different from container's writing-mode.
   LayoutUnit LogicalWidth() const {

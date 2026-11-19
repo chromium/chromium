@@ -1945,55 +1945,6 @@ TEST_F(LayoutBoxTest, IsUserScrollableLayoutView) {
   EXPECT_FALSE(GetLayoutView().IsUserScrollable());
 }
 
-TEST_F(LayoutBoxTest, LogicalRectInContainer) {
-  SetBodyInnerHTML(R"HTML("
-    <style>
-    .c { contain: layout; }
-    .t { width: 1px; height:1px; margin: 3px 5px 7px 11px; }
-    .htb { writing-mode: horizontal-tb; }
-    .vlr { writing-mode: vertical-lr; }
-    .vrl { writing-mode: vertical-rl; }
-    </style>
-    <div class="c htb"><div id="htb-htb" class="t htb"></div></div>
-    <div class="c htb"><div id="htb-vrl" class="t vrl"></div></div>
-    <div class="c htb"><div id="htb-vlr" class="t vlr"></div></div>
-    <div class="c vlr"><div id="vlr-htb" class="t htb"></div></div>
-    <div class="c vlr"><div id="vlr-vrl" class="t vrl"></div></div>
-    <div class="c vlr"><div id="vlr-vlr" class="t vlr"></div></div>
-    <div class="c vrl"><div id="vrl-htb" class="t htb"></div></div>
-    <div class="c vrl"><div id="vrl-vrl" class="t vrl"></div></div>
-    <div class="c vrl"><div id="vrl-vlr" class="t vlr"></div></div>
-  )HTML");
-  constexpr LayoutUnit kTopMargin(3);
-  constexpr LayoutUnit kRightMargin(5);
-  constexpr LayoutUnit kLeftMargin(11);
-  constexpr LayoutUnit kSize(1);
-
-  // Target DIVs are placed at (3, 11) from its container top-left.
-  EXPECT_EQ(LogicalRect(kLeftMargin, kTopMargin, kSize, kSize),
-            GetLayoutBoxByElementId("htb-htb")->LogicalRectInContainer());
-  EXPECT_EQ(LogicalRect(kLeftMargin, kTopMargin, kSize, kSize),
-            GetLayoutBoxByElementId("htb-vrl")->LogicalRectInContainer());
-  EXPECT_EQ(LogicalRect(kLeftMargin, kTopMargin, kSize, kSize),
-            GetLayoutBoxByElementId("htb-vlr")->LogicalRectInContainer());
-
-  // Target DIVs are placed at (3, 11) in the vertical-lr container too.
-  EXPECT_EQ(LogicalRect(kTopMargin, kLeftMargin, kSize, kSize),
-            GetLayoutBoxByElementId("vlr-htb")->LogicalRectInContainer());
-  EXPECT_EQ(LogicalRect(kTopMargin, kLeftMargin, kSize, kSize),
-            GetLayoutBoxByElementId("vlr-vrl")->LogicalRectInContainer());
-  EXPECT_EQ(LogicalRect(kTopMargin, kLeftMargin, kSize, kSize),
-            GetLayoutBoxByElementId("vlr-vlr")->LogicalRectInContainer());
-
-  // In the vertical-rl container.
-  EXPECT_EQ(LogicalRect(kTopMargin, kRightMargin, kSize, kSize),
-            GetLayoutBoxByElementId("vrl-htb")->LogicalRectInContainer());
-  EXPECT_EQ(LogicalRect(kTopMargin, kRightMargin, kSize, kSize),
-            GetLayoutBoxByElementId("vrl-vrl")->LogicalRectInContainer());
-  EXPECT_EQ(LogicalRect(kTopMargin, kRightMargin, kSize, kSize),
-            GetLayoutBoxByElementId("vrl-vlr")->LogicalRectInContainer());
-}
-
 TEST_F(LayoutBoxTest,
        VisualOverflowRectWithEmptyInlineChildAndReflectAndOutline) {
   SetBodyInnerHTML(R"HTML(
