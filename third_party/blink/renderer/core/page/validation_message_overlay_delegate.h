@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VALIDATION_MESSAGE_OVERLAY_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VALIDATION_MESSAGE_OVERLAY_DELEGATE_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/frame_overlay.h"
@@ -42,7 +42,15 @@ class CORE_EXPORT ValidationMessageOverlayDelegate
                                    TextDirection sub_message_dir);
   ~ValidationMessageOverlayDelegate() override;
 
-  void CreatePage(const FrameOverlay&);
+  // static: can delete `this` (see implementation) mid-function, so
+  // `this` is passed as a `WeakPtr`.
+  static void CreatePage(
+      base::WeakPtr<ValidationMessageOverlayDelegate> delegate,
+      const FrameOverlay& overlay);
+
+  base::WeakPtr<ValidationMessageOverlayDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   // FrameOverlay::Delegate implementation.
   void PaintFrameOverlay(const FrameOverlay&,
@@ -76,10 +84,8 @@ class CORE_EXPORT ValidationMessageOverlayDelegate
   TextDirection message_dir_;
   TextDirection sub_message_dir_;
 
-  // Used by CreatePage() to determine if this has been deleted in the middle of
-  // the function.
-  raw_ptr<bool, UnprotectedInRelease | DanglingUntriaged> destroyed_ptr_ =
-      nullptr;
+  base::WeakPtrFactory<ValidationMessageOverlayDelegate> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace blink

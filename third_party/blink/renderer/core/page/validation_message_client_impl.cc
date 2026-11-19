@@ -96,7 +96,8 @@ void ValidationMessageClientImpl::ShowValidationMessage(
   DCHECK(!overlay_);
   overlay_ =
       MakeGarbageCollected<FrameOverlay>(target_frame, std::move(delegate));
-  overlay_delegate_->CreatePage(*overlay_);
+  ValidationMessageOverlayDelegate::CreatePage(overlay_delegate_->GetWeakPtr(),
+                                               *overlay_);
   ValidationMessageVisibilityChanged(anchor);
 }
 

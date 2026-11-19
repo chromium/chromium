@@ -83,6 +83,7 @@ ValidationMessageOverlayDelegate::ValidationMessageOverlayDelegate(
       sub_message_dir_(sub_message_dir) {}
 
 ValidationMessageOverlayDelegate::~ValidationMessageOverlayDelegate() {
+  weak_ptr_factory_.InvalidateWeakPtrsAndDoom();
   if (page_) {
     // This function can be called in EventDispatchForbiddenScope for the main
     // document, and the following operations dispatch some events. It's safe
@@ -90,8 +91,6 @@ ValidationMessageOverlayDelegate::~ValidationMessageOverlayDelegate() {
     EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
     page_->WillBeDestroyed();
   }
-  if (destroyed_ptr_)
-    *destroyed_ptr_ = true;
 }
 
 LocalFrameView& ValidationMessageOverlayDelegate::FrameView() const {
@@ -139,26 +138,34 @@ void ValidationMessageOverlayDelegate::UpdateFrameViewState(
   FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
 }
 
-void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
-  DCHECK(!page_);
+// static
+void ValidationMessageOverlayDelegate::CreatePage(
+    base::WeakPtr<ValidationMessageOverlayDelegate> delegate,
+    const FrameOverlay& overlay) {
+  CHECK(delegate);
+  CHECK(!delegate->page_);
 
   // TODO(tkent): Can we share code with WebPagePopupImpl and
   // InspectorOverlayAgent?
   gfx::Size view_size = overlay.Size();
-  chrome_client_ = MakeGarbageCollected<ValidationMessageChromeClient>(
-      main_page_->GetChromeClient(), anchor_->GetDocument().View());
-  Settings& main_settings = main_page_->GetSettings();
-  page_ = Page::CreateNonOrdinary(
-      *chrome_client_, main_page_->GetPageScheduler()->GetAgentGroupScheduler(),
-      &main_page_->GetColorProviderColorMaps());
-  page_->GetSettings().SetMinimumFontSize(main_settings.GetMinimumFontSize());
-  page_->GetSettings().SetMinimumLogicalFontSize(
+  delegate->chrome_client_ =
+      MakeGarbageCollected<ValidationMessageChromeClient>(
+          delegate->main_page_->GetChromeClient(),
+          delegate->anchor_->GetDocument().View());
+  Settings& main_settings = delegate->main_page_->GetSettings();
+  delegate->page_ = Page::CreateNonOrdinary(
+      *delegate->chrome_client_,
+      delegate->main_page_->GetPageScheduler()->GetAgentGroupScheduler(),
+      &delegate->main_page_->GetColorProviderColorMaps());
+  delegate->page_->GetSettings().SetMinimumFontSize(
+      main_settings.GetMinimumFontSize());
+  delegate->page_->GetSettings().SetMinimumLogicalFontSize(
       main_settings.GetMinimumLogicalFontSize());
 
   auto* frame = MakeGarbageCollected<LocalFrame>(
-      MakeGarbageCollected<EmptyLocalFrameClient>(), *page_, nullptr, nullptr,
-      nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
-      nullptr, nullptr, mojo::NullRemote());
+      MakeGarbageCollected<EmptyLocalFrameClient>(), *delegate->page_, nullptr,
+      nullptr, nullptr, FrameInsertType::kInsertInConstructor,
+      LocalFrameToken(), nullptr, nullptr, mojo::NullRemote());
   frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame, view_size));
   frame->Init(/*opener=*/nullptr, DocumentToken(),
               /*initiator_state_token=*/InitiatorStateToken(),
@@ -167,15 +174,16 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
               /*creator_base_url=*/NullUrl());
   frame->View()->SetCanHaveScrollbars(false);
   frame->View()->SetBaseBackgroundColor(Color::kTransparent);
-  page_->GetVisualViewport().SetSize(view_size);
+  delegate->page_->GetVisualViewport().SetSize(view_size);
 
   // Propagate dark mode settings from anchor document to allow CSS of
   // overlay bubble to detect dark mode. See the comments in
   // PagePopupClient::AdjustSettingsFromOwnerColorScheme for more information.
-  page_->GetSettings().SetForceDarkModeEnabled(false);
-  bool in_forced_colors_mode = anchor_->GetDocument().InForcedColorsMode();
-  LayoutObject* anchor_layout = anchor_->GetLayoutObject();
-  page_->GetSettings().SetPreferredColorScheme(
+  delegate->page_->GetSettings().SetForceDarkModeEnabled(false);
+  bool in_forced_colors_mode =
+      delegate->anchor_->GetDocument().InForcedColorsMode();
+  LayoutObject* anchor_layout = delegate->anchor_->GetLayoutObject();
+  delegate->page_->GetSettings().SetPreferredColorScheme(
       !in_forced_colors_mode && anchor_layout &&
               anchor_layout->Style().UsedColorScheme() ==
                   mojom::blink::ColorScheme::kDark
@@ -183,32 +191,30 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
           : mojom::blink::PreferredColorScheme::kLight);
 
   SegmentedBuffer data;
-  WriteDocument(data);
-  float zoom_factor = anchor_->GetDocument().GetFrame()->LayoutZoomFactor();
+  delegate->WriteDocument(data);
+  float zoom_factor =
+      delegate->anchor_->GetDocument().GetFrame()->LayoutZoomFactor();
   frame->SetLayoutZoomFactor(zoom_factor);
 
   // ForceSynchronousDocumentInstall can cause another call to
   // ValidationMessageClientImpl::ShowValidationMessage, which will hide this
-  // validation message and may even delete this. In order to avoid continuing
-  // when this is destroyed, |destroyed| will be set to true in the destructor.
-  bool destroyed = false;
-  DCHECK(!destroyed_ptr_);
-  destroyed_ptr_ = &destroyed;
+  // validation message and may even delete `delegate`.
   frame->ForceSynchronousDocumentInstall(AtomicString("text/html"),
                                          std::move(data));
-  if (destroyed)
+  if (!delegate) {
     return;
-  destroyed_ptr_ = nullptr;
+  }
 
-  Element& main_message = GetElementById(AtomicString("main-message"));
-  main_message.setTextContent(message_);
-  Element& sub_message = GetElementById(AtomicString("sub-message"));
-  sub_message.setTextContent(sub_message_);
+  Element& main_message =
+      delegate->GetElementById(AtomicString("main-message"));
+  main_message.setTextContent(delegate->message_);
+  Element& sub_message = delegate->GetElementById(AtomicString("sub-message"));
+  sub_message.setTextContent(delegate->sub_message_);
 
-  Element& container = GetElementById(AtomicString("container"));
+  Element& container = delegate->GetElementById(AtomicString("container"));
   if (WebTestSupport::IsRunningWebTest()) {
     container.SetInlineStyleProperty(CSSPropertyID::kTransition, "none");
-    GetElementById(AtomicString("icon"))
+    delegate->GetElementById(AtomicString("icon"))
         .SetInlineStyleProperty(CSSPropertyID::kTransition, "none");
     main_message.SetInlineStyleProperty(CSSPropertyID::kTransition, "none");
     sub_message.SetInlineStyleProperty(CSSPropertyID::kTransition, "none");

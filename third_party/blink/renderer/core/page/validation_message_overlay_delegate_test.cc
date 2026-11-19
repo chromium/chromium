@@ -70,7 +70,8 @@ TEST_P(ValidationMessageOverlayDelegateTest,
 
   auto* overlay =
       MakeGarbageCollected<FrameOverlay>(&GetFrame(), std::move(delegate));
-  delegate_ptr->CreatePage(*overlay);
+  ValidationMessageOverlayDelegate::CreatePage(delegate_ptr->GetWeakPtr(),
+                                               *overlay);
   ASSERT_TRUE(GetFrame().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest));
 
