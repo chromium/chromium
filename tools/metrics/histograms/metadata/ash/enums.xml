@@ -261,6 +261,18 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="11" label="Coral"/>
 </enum>
 
+<!-- LINT.IfChange(BocaFastPollingResult) -->
+
+<enum name="BocaFastPollingResult">
+  <int value="0" label="Connection code received"/>
+  <int value="1" label="Timed out"/>
+  <int value="2" label="Session ended"/>
+  <int value="3" label="Canceled"/>
+  <int value="4" label="Superseded by a new request"/>
+</enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/boca/boca_metrics_util.h:BocaFastPollingResult) -->
+
 <enum name="BocaPollingResult">
   <int value="0" label="No Update"/>
   <int value="1" label="Polling causes session to start"/>

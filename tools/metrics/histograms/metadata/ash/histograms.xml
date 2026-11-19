@@ -1217,6 +1217,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Boca.Spotlight.FastPollingResult"
+    enum="BocaFastPollingResult" expires_after="2027-07-20">
+  <owner>dorianbrandon@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records how session fast polling ended after a teacher requested to view a
+    student's screen in a Class Tools session. Recorded once per fast polling
+    run.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Boca.Spotlight.{Request}.ErrorCode" enum="ApiErrorCode"
     expires_after="2027-07-20">
   <owner>caott@google.com</owner>

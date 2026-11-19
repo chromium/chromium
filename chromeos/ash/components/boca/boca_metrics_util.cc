@@ -219,6 +219,10 @@ void RecordPollingResult(const ::boca::Session* previous_session,
   base::UmaHistogramEnumeration(kPollingResult, polling_result);
 }
 
+void RecordSpotlightFastPollingResult(BocaFastPollingResult result) {
+  base::UmaHistogramEnumeration(kBocaSpotlightFastPollingResult, result);
+}
+
 void RecordTokenRetrievalIsValidation(const bool is_validation) {
   base::UmaHistogramBoolean(kBocaTokenRetrievalIsValidation, is_validation);
 }

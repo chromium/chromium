@@ -331,6 +331,7 @@ class MockSessionManager : public BocaSessionManager {
               (override));
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
   MOCK_METHOD(void, LoadCurrentSession, (bool), (override));
+  MOCK_METHOD(void, StartFastPolling, (std::string), (override));
   MOCK_METHOD(void, OnAppWindowOpened, (), (override));
   MOCK_METHOD(void, NotifyAppReload, (), (override));
   MOCK_METHOD(void,
@@ -2837,6 +2838,7 @@ TEST_F(BocaAppPageHandlerProducerTest, ViewScreenSucceeded) {
   EXPECT_CALL(*spotlight_service(), ViewScreen(student_id, kTestUrlBase, _))
       .WillOnce(WithArg<2>(
           [&](auto request) { std::move(request).Run(base::ok(true)); }));
+  EXPECT_CALL(*session_manager(), StartFastPolling(student_id)).Times(1);
 
   base::test::TestFuture<std::optional<mojom::ViewStudentScreenError>> future;
 
@@ -2854,6 +2856,7 @@ TEST_F(BocaAppPageHandlerProducerTest, ViewScreenFailed) {
         std::move(request).Run(
             base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
       }));
+  EXPECT_CALL(*session_manager(), StartFastPolling(_)).Times(0);
 
   base::test::TestFuture<std::optional<mojom::ViewStudentScreenError>> future;
 

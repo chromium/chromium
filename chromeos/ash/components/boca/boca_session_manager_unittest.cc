@@ -151,6 +151,9 @@ constexpr GaiaId::Literal kTestGaiaId2("dog123");
 constexpr char kInitialSessionId[] = "0";
 constexpr int kInitialSessionDurationInSecs = 600;
 constexpr char kDeviceId[] = "myDevice";
+constexpr char kStudentId[] = "student1";
+constexpr char kConnectionCode[] = "123456789012";
+constexpr char kStaleConnectionCode[] = "210987654321";
 constexpr char kTestDefaultUrl[] = "https://test";
 constexpr char kDefaultLanguage[] = "en-US";
 constexpr char kBadLanguage[] = "unknown language";
@@ -169,6 +172,23 @@ constexpr char kBocaUploadTokenErrorCodeUmaPath[] =
   session_1.mutable_start_time()->set_seconds(
       inital_time.InMillisecondsSinceUnixEpoch() / 1000);
   return session_1;
+}
+
+::boca::Session GetSessionWithViewScreenCode(
+    base::Time initial_time,
+    const std::string& student_id,
+    const std::string& connection_code) {
+  ::boca::Session session = GetInitialSession(initial_time);
+  ::boca::StudentDevice device;
+  device.mutable_view_screen_config()->set_view_screen_state(
+      ::boca::ViewScreenConfig::AVAILABLE);
+  device.mutable_view_screen_config()
+      ->mutable_connection_param()
+      ->set_connection_code(connection_code);
+  ::boca::StudentStatus status;
+  (*status.mutable_devices())["device1"] = std::move(device);
+  (*session.mutable_student_statuses())[student_id] = std::move(status);
+  return session;
 }
 
 class MockScreenPresenterFactory : public ScreenPresenterFactory {
@@ -1815,6 +1835,183 @@ TEST_F(BocaSessionManagerTest,
       base::Seconds(1));
 }
 
+TEST_F(BocaSessionManagerTest, FastPollingPollsEveryIntervalUntilTimeout) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(static_cast<int>(BocaSessionManager::kFastPollingTimeout /
+                              BocaSessionManager::kFastPollingInterval) -
+             1)
+      .WillRepeatedly(
+          WithArg<0>([&](std::unique_ptr<GetSessionRequest> request) {
+            request->callback().Run(std::make_unique<::boca::Session>(
+                GetInitialSession(session_start_time_)));
+          }));
+
+  boca_session_manager()->StartFastPolling(kStudentId);
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingTimeout -
+                                    base::Milliseconds(1));
+  histogram_tester.ExpectTotalCount(kBocaSpotlightFastPollingResult, 0);
+  task_environment()->FastForwardBy(base::Milliseconds(1));
+  histogram_tester.ExpectUniqueSample(kBocaSpotlightFastPollingResult,
+                                      BocaFastPollingResult::kTimedOut, 1);
+  testing::Mock::VerifyAndClearExpectations(session_client_impl());
+
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(0);
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingInterval *
+                                    5);
+  histogram_tester.ExpectTotalCount(kPollingResult, 0);
+}
+
+TEST_F(BocaSessionManagerTest, FastPollingDoesNotWaitForResponses) {
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(3);
+
+  boca_session_manager()->StartFastPolling(kStudentId);
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingInterval *
+                                    3);
+}
+
+TEST_F(BocaSessionManagerTest, FastPollingContinuesAfterGetSessionError) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .WillOnce(WithArg<0>([](std::unique_ptr<GetSessionRequest> request) {
+        request->callback().Run(base::unexpected<google_apis::ApiErrorCode>(
+            google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR));
+      }))
+      .WillOnce(WithArg<0>([&](std::unique_ptr<GetSessionRequest> request) {
+        request->callback().Run(
+            std::make_unique<::boca::Session>(GetSessionWithViewScreenCode(
+                session_start_time_, kStudentId, kConnectionCode)));
+      }));
+
+  boca_session_manager()->StartFastPolling(kStudentId);
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingTimeout);
+
+  histogram_tester.ExpectUniqueSample(kBocaSpotlightFastPollingResult,
+                                      BocaFastPollingResult::kCodeReceived, 1);
+}
+
+TEST_F(BocaSessionManagerTest,
+       FastPollingStopsWhenRequestedStudentCodeIsAvailable) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .WillOnce(WithArg<0>([&](std::unique_ptr<GetSessionRequest> request) {
+        request->callback().Run(
+            std::make_unique<::boca::Session>(GetSessionWithViewScreenCode(
+                session_start_time_, kStudentId, kConnectionCode)));
+      }));
+
+  boca_session_manager()->StartFastPolling(kStudentId);
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingTimeout);
+  histogram_tester.ExpectUniqueSample(kBocaSpotlightFastPollingResult,
+                                      BocaFastPollingResult::kCodeReceived, 1);
+}
+
+TEST_F(BocaSessionManagerTest, FastPollingIgnoresStaleViewScreenCode) {
+  base::HistogramTester histogram_tester;
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(GetSessionWithViewScreenCode(
+          session_start_time_, kStudentId, kStaleConnectionCode)),
+      /*dispatch_event=*/true);
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .WillOnce(WithArg<0>([&](std::unique_ptr<GetSessionRequest> request) {
+        request->callback().Run(
+            std::make_unique<::boca::Session>(GetSessionWithViewScreenCode(
+                session_start_time_, kStudentId, kStaleConnectionCode)));
+      }))
+      .WillOnce(WithArg<0>([&](std::unique_ptr<GetSessionRequest> request) {
+        request->callback().Run(
+            std::make_unique<::boca::Session>(GetSessionWithViewScreenCode(
+                session_start_time_, kStudentId, kConnectionCode)));
+      }));
+
+  boca_session_manager()->StartFastPolling(kStudentId);
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingInterval);
+  histogram_tester.ExpectTotalCount(kBocaSpotlightFastPollingResult, 0);
+
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingTimeout);
+  histogram_tester.ExpectUniqueSample(kBocaSpotlightFastPollingResult,
+                                      BocaFastPollingResult::kCodeReceived, 1);
+}
+
+TEST_F(BocaSessionManagerTest, FastPollingIgnoresCodeForOtherStudent) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .WillOnce(WithArg<0>([&](std::unique_ptr<GetSessionRequest> request) {
+        request->callback().Run(
+            std::make_unique<::boca::Session>(GetSessionWithViewScreenCode(
+                session_start_time_, "other_student", kConnectionCode)));
+      }))
+      .WillOnce(WithArg<0>([&](std::unique_ptr<GetSessionRequest> request) {
+        request->callback().Run(
+            std::make_unique<::boca::Session>(GetSessionWithViewScreenCode(
+                session_start_time_, kStudentId, kConnectionCode)));
+      }));
+
+  boca_session_manager()->StartFastPolling(kStudentId);
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingTimeout);
+  histogram_tester.ExpectUniqueSample(kBocaSpotlightFastPollingResult,
+                                      BocaFastPollingResult::kCodeReceived, 1);
+}
+
+TEST_F(BocaSessionManagerTest, FastPollingStopsWhenSessionEnds) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .WillOnce(WithArg<0>([&](std::unique_ptr<GetSessionRequest> request) {
+        request->callback().Run(base::ok(nullptr));
+      }));
+  EXPECT_CALL(*observer(), OnSessionEnded(kInitialSessionId)).Times(1);
+
+  boca_session_manager()->StartFastPolling(kStudentId);
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingTimeout);
+  testing::Mock::VerifyAndClearExpectations(session_client_impl());
+
+  // Restarting without an active session is a no-op.
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(0);
+  boca_session_manager()->StartFastPolling(kStudentId);
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingInterval *
+                                    3);
+  histogram_tester.ExpectUniqueSample(kBocaSpotlightFastPollingResult,
+                                      BocaFastPollingResult::kSessionEnded, 1);
+}
+
+TEST_F(BocaSessionManagerTest, EndSpotlightSessionStopsFastPolling) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ash::features::kBocaSpotlightRobotRequester);
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(0);
+
+  boca_session_manager()->StartFastPolling(kStudentId);
+  base::test::TestFuture<void> stopped_future;
+  boca_session_manager()->EndSpotlightSession(stopped_future.GetCallback());
+  EXPECT_TRUE(stopped_future.Wait());
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingTimeout);
+  histogram_tester.ExpectUniqueSample(kBocaSpotlightFastPollingResult,
+                                      BocaFastPollingResult::kCanceled, 1);
+}
+
+TEST_F(BocaSessionManagerTest, RestartingFastPollingRecordsSuperseded) {
+  base::HistogramTester histogram_tester;
+
+  boca_session_manager()->StartFastPolling(kStudentId);
+  boca_session_manager()->StartFastPolling(kStudentId);
+  histogram_tester.ExpectUniqueSample(kBocaSpotlightFastPollingResult,
+                                      BocaFastPollingResult::kSuperseded, 1);
+}
+
 TEST_F(BocaSessionManagerTest, StudentHeartbeatNotCalledWithProducer) {
   ::boca::Session session = GetInitialSession(session_start_time_);
 
@@ -2751,6 +2948,17 @@ TEST_F(BocaSessionManagerConsumerTest,
   EXPECT_CALL(*observer(), OnSessionCaptionClosed).Times(0);
   EXPECT_CALL(*observer(), OnLocalCaptionClosed).Times(1);
   session_manager::SessionManager::Get()->SwitchActiveSession(account_id);
+}
+
+TEST_F(BocaSessionManagerConsumerTest, FastPollingIsNoOpForConsumer) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_client_impl(),
+              GetSession(_, /*can_skip_duplicate_request=*/true))
+      .Times(0);
+
+  boca_session_manager()->StartFastPolling(kStudentId);
+  task_environment()->FastForwardBy(BocaSessionManager::kFastPollingTimeout);
+  histogram_tester.ExpectTotalCount(kBocaSpotlightFastPollingResult, 0);
 }
 
 }  // namespace

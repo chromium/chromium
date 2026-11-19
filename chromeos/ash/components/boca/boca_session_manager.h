@@ -59,6 +59,7 @@ class SessionManager;
 namespace ash::boca {
 
 class BocaAppHandler;
+enum class BocaFastPollingResult;
 class ScreenPresenterFactory;
 class StudentScreenPresenter;
 class TeacherScreenPresenter;
@@ -80,6 +81,10 @@ class BocaSessionManager
   inline static constexpr int kLocalSessionTrackerBufferInSeconds = 60;
   inline static constexpr int kDefaultStudentHeartbeatIntervalInSeconds = 30;
   inline static constexpr int kSkipPollingBufferInSeconds = 2;
+  inline static constexpr base::TimeDelta kFastPollingInterval =
+      base::Seconds(3);
+  inline static constexpr base::TimeDelta kFastPollingTimeout =
+      base::Seconds(30);
 
   enum class BocaAction {
     kDefault = 0,
@@ -203,6 +208,10 @@ class BocaSessionManager
   void RemoveObserver(Observer* observer);
 
   void StartSessionPolling(bool in_session);
+  // Polls the session every `kFastPollingInterval` until `student_id` has a
+  // new view screen connection code available, the session ends, or
+  // `kFastPollingTimeout` elapses.
+  virtual void StartFastPolling(std::string student_id);
   void MaybeLoadCurrentSession();
   virtual void LoadCurrentSession(bool from_polling);
   void ParseSessionResponse(bool from_polling,
@@ -338,6 +347,8 @@ class BocaSessionManager
                            std::unique_ptr<::boca::Session> current_session,
                            bool dispatch_event);
   void UpdateLocalSessionDurationTracker();
+  void StopFastPolling(BocaFastPollingResult result);
+  void OnFastPollingTimerFired();
   void StartSendingStudentHeartbeatRequests();
   void StopSendingStudentHeartbeatRequests();
   void SendStudentHeartbeatRequest();
@@ -360,6 +371,13 @@ class BocaSessionManager
   base::RepeatingTimer in_session_timer_;
   // Timer used for indefinite session polling.
   base::RepeatingTimer indefinite_timer_;
+  // Timer used for quicker polling during Spotlight requests.
+  base::RepeatingTimer fast_polling_timer_;
+  // Null while fast polling is inactive.
+  base::TimeTicks fast_polling_deadline_;
+  std::string fast_polling_student_id_;
+  // Code already cached when fast polling started, which may be stale.
+  std::string fast_polling_stale_code_;
   // Timer used for tracking session duration on client. This is to make sure we
   // still end the session in time if device lose network access.
   base::OneShotTimer session_duration_timer_;

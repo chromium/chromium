@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_constants.h"
@@ -69,6 +70,22 @@ const net::BackoffEntry::Policy kStudentHeartbeatBackoffPolicy = {
 bool IsScreenSharingEnabled() {
   return features::IsBocaScreenSharingStudentEnabled() ||
          features::IsBocaScreenSharingTeacherEnabled();
+}
+
+std::string GetAvailableViewScreenCode(const ::boca::Session& session,
+                                       std::string_view student_id) {
+  auto it = session.student_statuses().find(student_id);
+  if (it == session.student_statuses().end()) {
+    return std::string();
+  }
+  for (const auto& [device_id, device] : it->second.devices()) {
+    const ::boca::ViewScreenConfig& config = device.view_screen_config();
+    if (config.view_screen_state() == ::boca::ViewScreenConfig::AVAILABLE &&
+        !config.connection_param().connection_code().empty()) {
+      return config.connection_param().connection_code();
+    }
+  }
+  return std::string();
 }
 }  // namespace
 
@@ -198,6 +215,41 @@ void BocaSessionManager::StartSessionPolling(bool in_session) {
                               &BocaSessionManager::MaybeLoadCurrentSession);
     }
   }
+}
+
+void BocaSessionManager::StartFastPolling(std::string student_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StopFastPolling(BocaFastPollingResult::kSuperseded);
+  if (!is_producer_ || !IsSessionActive(current_session_.get())) {
+    return;
+  }
+  fast_polling_stale_code_ =
+      GetAvailableViewScreenCode(*current_session_, student_id);
+  fast_polling_student_id_ = std::move(student_id);
+  fast_polling_deadline_ = base::TimeTicks::Now() + kFastPollingTimeout;
+  fast_polling_timer_.Start(FROM_HERE, kFastPollingInterval, this,
+                            &BocaSessionManager::OnFastPollingTimerFired);
+}
+
+void BocaSessionManager::StopFastPolling(BocaFastPollingResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (fast_polling_deadline_.is_null()) {
+    return;
+  }
+  boca::RecordSpotlightFastPollingResult(result);
+  fast_polling_timer_.Stop();
+  fast_polling_deadline_ = base::TimeTicks();
+  fast_polling_student_id_.clear();
+  fast_polling_stale_code_.clear();
+}
+
+void BocaSessionManager::OnFastPollingTimerFired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (base::TimeTicks::Now() >= fast_polling_deadline_) {
+    StopFastPolling(BocaFastPollingResult::kTimedOut);
+    return;
+  }
+  LoadCurrentSession(/*from_polling=*/false);
 }
 
 void BocaSessionManager::MaybeLoadCurrentSession() {
@@ -422,6 +474,11 @@ void BocaSessionManager::StartCrdClient(
 void BocaSessionManager::EndSpotlightSession(
     base::OnceClosure on_stopped_callback) {
   CHECK(ash::features::IsBocaSpotlightRobotRequesterEnabled());
+  StopFastPolling(BocaFastPollingResult::kCanceled);
+  if (!remoting_client_manager_) {
+    std::move(on_stopped_callback).Run();
+    return;
+  }
   remoting_client_manager_->StopCrdClient(std::move(on_stopped_callback));
 }
 
@@ -689,8 +746,14 @@ void BocaSessionManager::NotifySessionUpdate() {
 
   if (IsSessionActive(current_session_.get())) {
     StartSendingStudentHeartbeatRequests();
+    const std::string code =
+        GetAvailableViewScreenCode(*current_session_, fast_polling_student_id_);
+    if (!code.empty() && code != fast_polling_stale_code_) {
+      StopFastPolling(BocaFastPollingResult::kCodeReceived);
+    }
   } else {
     StopSendingStudentHeartbeatRequests();
+    StopFastPolling(BocaFastPollingResult::kSessionEnded);
   }
 }
 

@@ -90,6 +90,8 @@ inline constexpr char kBocaTeacherGetGeminiStatusEnabled[] =
     "Ash.Boca.TeacherGetGeminiStatus.Enabled";
 inline constexpr char kBocaStudentGeminiStatusEnabled[] =
     "Ash.Boca.StudentGeminiStatus.Enabled";
+inline constexpr char kBocaSpotlightFastPollingResult[] =
+    "Ash.Boca.Spotlight.FastPollingResult";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -121,6 +123,20 @@ enum class BocaPresentStudentScreenFailureReason {
   // above this line.
   kMaxValue = kNoSession,
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(BocaFastPollingResult)
+enum class BocaFastPollingResult {
+  kCodeReceived = 0,
+  kTimedOut = 1,
+  kSessionEnded = 2,
+  kCanceled = 3,
+  kSuperseded = 4,
+  kMaxValue = kSuperseded,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:BocaFastPollingResult)
 
 // Records the percentage of the duration that a session was in a particular
 // locked or unlocked state.
@@ -244,6 +260,9 @@ void RecordGoogleApiErrorCode(const std::string& name,
 // Records the session polling result.
 void RecordPollingResult(const ::boca::Session* previous_session,
                          const ::boca::Session* current_session);
+
+// Records how a Spotlight fast polling run ended.
+void RecordSpotlightFastPollingResult(BocaFastPollingResult result);
 
 // Records the token retrieval is validation status.
 void RecordTokenRetrievalIsValidation(const bool is_validation);

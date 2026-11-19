@@ -279,6 +279,11 @@ class BocaAppHandler : public mojom::PageHandler,
   // inheritance from `mojom::Page` is removed.
   void OnPresentOwnScreenEnded() override;
 
+  void OnViewStudentScreenSubmitted(
+      const std::string& student_id,
+      ViewStudentScreenCallback callback,
+      base::expected<bool, google_apis::ApiErrorCode> result);
+
   void EndViewScreenSessionInternal(const std::string& id,
                                     EndViewScreenSessionCallback callback);
 

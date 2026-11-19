@@ -732,21 +732,8 @@ void BocaAppHandler::ViewStudentScreen(const std::string& id,
   CHECK(spotlight_service_);
   spotlight_service_->ViewScreen(
       id, base_url_,
-      base::BindOnce(
-          [](ViewStudentScreenCallback callback,
-             base::expected<bool, google_apis::ApiErrorCode> result) {
-            if (!result.has_value()) {
-              boca::RecordViewStudentScreenErrorCode(result.error());
-              LOG(WARNING) << "[Boca] Error requesting to view student screen: "
-                           << result.error();
-              std::move(callback).Run(
-                  mojom::ViewStudentScreenError::kHTTPError);
-              return;
-            } else {
-              std::move(callback).Run(std::nullopt);
-            }
-          },
-          std::move(callback)));
+      base::BindOnce(&BocaAppHandler::OnViewStudentScreenSubmitted,
+                     weak_ptr_factory_.GetWeakPtr(), id, std::move(callback)));
 }
 
 void BocaAppHandler::EndViewScreenSession(
@@ -1548,6 +1535,22 @@ BocaSessionManager& BocaAppHandler::GetBocaSessionManager() {
 
 void BocaAppHandler::OnPresentOwnScreenEnded() {
   remote_->OnPresentOwnScreenEnded();
+}
+
+void BocaAppHandler::OnViewStudentScreenSubmitted(
+    const std::string& student_id,
+    ViewStudentScreenCallback callback,
+    base::expected<bool, google_apis::ApiErrorCode> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!result.has_value()) {
+    boca::RecordViewStudentScreenErrorCode(result.error());
+    LOG(WARNING) << "[Boca] Error requesting to view student screen: "
+                 << result.error();
+    std::move(callback).Run(mojom::ViewStudentScreenError::kHTTPError);
+    return;
+  }
+  boca_session_manager_->StartFastPolling(student_id);
+  std::move(callback).Run(std::nullopt);
 }
 
 void BocaAppHandler::EndViewScreenSessionInternal(
