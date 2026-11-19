@@ -344,6 +344,13 @@ constexpr base::MemoryConsumerTraits kSpareRenderProcessHostManagerTraits(
 constexpr std::string_view kMemoryConsumerName =
     "SpareRenderProcessHostManagerImpl";
 
+// Granular pool scaling requires both stateful memory pressure and killing on
+// pressure; otherwise creation gates use discrete threshold checks.
+bool ShouldScaleSparesWithMemoryLimit() {
+  return base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName) &&
+         base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure);
+}
+
 }  // namespace
 
 SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
@@ -525,7 +532,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
   // Don't create a spare renderer when the system is under load.  This is
   // currently approximated by only looking at the memory pressure.  See also
   // https://crbug.com/852905.
-  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
+  if (ShouldScaleSparesWithMemoryLimit()) {
     if (GetTargetSpareRPHCount() == 0) {
       no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
       return nullptr;
@@ -916,12 +923,7 @@ void SpareRenderProcessHostManagerImpl::TrimSpares(
 size_t SpareRenderProcessHostManagerImpl::GetTargetSpareRPHCount() const {
   const size_t baseline = GetSpareRPHCount();
 
-  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
-    return baseline;
-  }
-
-  // If killing on memory pressure is disabled, keep full baseline.
-  if (!base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
+  if (!ShouldScaleSparesWithMemoryLimit()) {
     return baseline;
   }
 
@@ -1034,7 +1036,7 @@ void SpareRenderProcessHostManagerImpl::SetIsBrowserIdle(bool is_browser_idle) {
 }
 
 void SpareRenderProcessHostManagerImpl::OnUpdateMemoryLimit() {
-  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
+  if (ShouldScaleSparesWithMemoryLimit()) {
     // If memory limit improved and we have headroom, sequentially warm up extra
     // spares:
     if (spare_rphs_.size() < GetTargetSpareRPHCount()) {
@@ -1051,10 +1053,7 @@ void SpareRenderProcessHostManagerImpl::OnUpdateMemoryLimit() {
 }
 
 void SpareRenderProcessHostManagerImpl::OnReleaseMemory() {
-  if (base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
-    if (!base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
-      return;
-    }
+  if (ShouldScaleSparesWithMemoryLimit()) {
     TrimSpares(GetTargetSpareRPHCount(),
                SpareRendererDispatchResult::kMemoryPressure);
     return;
@@ -1109,7 +1108,7 @@ bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
     return false;
   }
 
-  if (!base::ShouldUseStatefulMemoryPressure(kMemoryConsumerName)) {
+  if (!ShouldScaleSparesWithMemoryLimit()) {
     // Don't create spares when under memory pressure.
     if (memory_limit() < base::MemoryLimit::NoPressureThreshold()) {
       return false;

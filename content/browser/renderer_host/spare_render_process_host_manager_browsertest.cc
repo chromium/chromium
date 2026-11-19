@@ -1705,4 +1705,69 @@ INSTANTIATE_TEST_SUITE_P(
             /*memory_limit=*/base::MemoryLimit::FromPercent(50),
             /*expected_spares_after_pressure=*/0u}));
 
+class SpareRenderProcessHostManagerStatefulKillDisabledTest
+    : public ExtraSpareRenderProcessHostManagerTest {
+ public:
+  SpareRenderProcessHostManagerStatefulKillDisabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{base::kStatefulMemoryPressure},
+        /*disabled_features=*/{kKillSpareRenderOnMemoryPressure,
+                               kSpareRPHKeepOneAliveOnMemoryPressure,
+                               kSpareRPHUseCriticalMemoryPressure});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that when kStatefulMemoryPressure is enabled and
+// kKillSpareRenderOnMemoryPressure is disabled, memory pressure still prevents
+// creating new spares.
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerStatefulKillDisabledTest,
+                       CreationGatedUnderMemoryPressure) {
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  ASSERT_TRUE(spare_manager.GetSpares().empty());
+
+  scoped_refptr<SiteInstance> test_site_instance =
+      SiteInstance::CreateForURL(browser_context(), GURL("http://example.com"));
+  content::test::ScopedMemoryLimitOverride memory_override(
+      "SpareRenderProcessHostManagerImpl");
+
+  // At 50% (moderate) and 0% (critical), WarmupSpare() is blocked and records
+  // NoSpareRendererReason::kMemoryPressure when a spare is requested.
+  for (base::MemoryLimit limit :
+       {base::MemoryLimit::ModeratePressureThreshold(),
+        base::MemoryLimit::CriticalPressureThreshold()}) {
+    base::HistogramTester histogram_tester;
+    memory_override.SetLimit(limit);
+
+    EXPECT_EQ(spare_manager.WarmupSpare(browser_context()), nullptr);
+    EXPECT_TRUE(spare_manager.GetSpares().empty());
+
+    EXPECT_EQ(spare_manager.MaybeTakeSpare(
+                  browser_context(),
+                  static_cast<SiteInstanceImpl*>(test_site_instance.get()),
+                  ProcessAllocationContext{
+                      ProcessAllocationSource::kServiceWorkerProcessManager}),
+              nullptr);
+    histogram_tester.ExpectUniqueSample(
+        "BrowserRenderProcessHost.NoSparePresentReason2",
+        NoSpareRendererReason::kMemoryPressure, 1);
+  }
+
+  // At 75% (above moderate threshold, below no-pressure threshold), the first
+  // spare is created, but extra spares are not created.
+  memory_override.SetLimit(base::MemoryLimit::FromPercent(75));
+  EXPECT_NE(spare_manager.WarmupSpare(browser_context()), nullptr);
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  WaitForNextSpareReady();
+  EXPECT_EQ(spare_manager.GetSpares().size(), 1u);
+
+  // Restoring the limit to 100% allows the extra spare to be created.
+  memory_override.SetLimit(base::MemoryLimit::Default());
+  ASSERT_EQ(spare_manager.GetSpares().size(), 2u);
+  WaitForNextSpareReady();
+  EXPECT_EQ(spare_manager.GetSpares().size(), 2u);
+}
+
 }  // namespace content
