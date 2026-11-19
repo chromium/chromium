@@ -3297,18 +3297,20 @@ const CSSValue* StyleResolver::ComputeValue(
     CSSToLengthConversionData::Flags& flags,
     bool& has_random,
     bool& has_attr) {
-  if (!element || !element->GetComputedStyle()) {
+  if (!element) {
     return nullptr;
   }
-  Document& document = element->GetDocument();
-  document.GetStyleEngine().UpdateViewportSize();
-  StyleResolverState state(document, *element);
-  // Constructing StyleResolverState resolves flat tree ancestors and may
-  // recalculate slot assignments, detaching unslotted elements.
   const ComputedStyle* base_style = element->GetComputedStyle();
   if (!base_style) {
     return nullptr;
   }
+  Document& document = element->GetDocument();
+  document.GetStyleEngine().UpdateViewportSize();
+  // Doing style resolution on a dirty tree is dangerous.
+  // Slot re-assignments may cause UAF.
+  CHECK(!RuntimeEnabledFeatures::CSSComputeValueCHECKEnabled() ||
+        document.InStyleRecalc() || !document.NeedsLayoutTreeUpdate());
+  StyleResolverState state(document, *element);
   state.EnsureParentStyle();
   STACK_UNINITIALIZED StyleCascade cascade(state);
   state.CreateNewClonedStyle(*base_style);

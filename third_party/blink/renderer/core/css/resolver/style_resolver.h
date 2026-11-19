@@ -225,8 +225,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   // Return a computed value for the passed-in property:value pair in the
   // context of the current ComputedStyle of the 'element'.
-  // Returns nullptr if 'element' has no ComputedStyle or for custom property
-  // values that are IACVT.
+  // Returns nullptr if 'element' is null, has no ComputedStyle, or for custom
+  // property values that are IACVT.
+  // The style/layout tree must be clean before calling this function.
   static const CSSValue* ComputeValue(Element*,
                                       const CSSPropertyName&,
                                       const CSSValue&,

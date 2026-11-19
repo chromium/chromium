@@ -1783,6 +1783,14 @@
       name: "CSSColorTypedOM",
       status: "experimental",
     },
+    {
+      // Kill switch for the CHECK() for a clean tree in
+      // StyleResolver::ComputeValue().
+      // NOTE: turning this flag off will introduce use-after-free issues with
+      // potential security impact.
+      name: "CSSComputeValueCHECK",
+      status: "stable",
+    },
     // https://drafts.csswg.org/css-values-5/#progress
     // container-progress()
     {
