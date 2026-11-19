@@ -35,6 +35,7 @@ static_library("media_app") {
     "//chrome/browser/accessibility/media_app",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/mahi/media_app",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
