@@ -86,3 +86,7 @@
 
 # Fail on try bot due to DCHECKs being enabled there
 -AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/*
+
+# TODO(crbug.com/587583567): Wayland does not support programmatic window
+# activation via BringBrowserWindowToFront() after opening the incognito window.
+-CommandsApiTest.IncognitoShortcutsIgnoredWhenNotAllowed
