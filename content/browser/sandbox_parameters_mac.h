@@ -22,6 +22,7 @@ enum class Sandbox;
 
 namespace content {
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacSandboxAllowNetworkSymlinkCreation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacSandboxRestrictGpuDarwinUserDirs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMacSandboxAllowRendererPidinfo);
 

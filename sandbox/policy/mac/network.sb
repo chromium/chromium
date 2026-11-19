@@ -9,6 +9,9 @@
 (define network-service-storage-path-n "NETWORK_SERVICE_STORAGE_PATH_")
 (define network-service-test-certs-dir "NETWORK_SERVICE_TEST_CERTS_DIR")
 
+; Allows the network process to create symlinks.
+(define allow-network-symlink-creation "ALLOW_NETWORK_SYMLINK_CREATION")
+
 ; Allow access to the [0,N) storage location paths.
 (let ((count (string->number (param network-service-storage-paths-count))))
   (let loop ((i 0))
@@ -17,6 +20,10 @@
         (allow file* (subpath
           (param (string-append network-service-storage-path-n (number->string i)))))
         (loop (+ i 1))))))
+
+; Disallow creating symbolic links.
+(unless (param-true? allow-network-symlink-creation)
+  (deny file-write-create (vnode-type SYMLINK)))
 
 ; DNS configuration watcher entries. This is a nesty mess of symlinks.
 (allow file-read*

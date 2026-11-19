@@ -37,6 +37,10 @@
 
 namespace content {
 
+// If enabled, allows the network process to create symlinks.
+BASE_FEATURE(kMacSandboxAllowNetworkSymlinkCreation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, restricts the GPU process's access to the Darwin user cache
 // directory (/var/folders/.../C/) to a set of known file names used by Metal
 // ([functions|libraries].[data|list]) as well as providing limited permissions
@@ -189,6 +193,10 @@ void SetupNetworkSandboxParameters(sandbox::SandboxSerializer* serializer,
         sandbox::policy::GetCanonicalPath(*GetNetworkTestCertsDirectory())
             .value()));
   }
+
+  CHECK(serializer->SetBooleanParameter(
+      sandbox::policy::kParamAllowNetworkSymlinkCreation,
+      base::FeatureList::IsEnabled(kMacSandboxAllowNetworkSymlinkCreation)));
 }
 
 bool SetupGpuSandboxParameters(sandbox::SandboxSerializer* serializer,
