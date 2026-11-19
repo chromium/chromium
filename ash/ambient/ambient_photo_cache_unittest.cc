@@ -76,8 +76,6 @@ class AmbientPhotoCacheTest : public testing::Test {
         /*is_empty=*/false);
   }
 
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
-
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
@@ -160,7 +158,6 @@ TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadRequest) {
 
   ambient_photo_cache::DownloadPhoto(fake_url, access_token_controller(),
                                      base::BindOnce([](std::string&&) {}));
-  RunUntilIdle();
   EXPECT_TRUE(IsAccessTokenRequestPending());
   IssueAccessToken();
   EXPECT_FALSE(IsAccessTokenRequestPending());
@@ -180,7 +177,6 @@ TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadToTempFileRequest) {
       fake_url, access_token_controller(),
       base::BindOnce([](base::FilePath) {}));
 
-  RunUntilIdle();
   EXPECT_TRUE(IsAccessTokenRequestPending());
   IssueAccessToken();
   EXPECT_FALSE(IsAccessTokenRequestPending());
