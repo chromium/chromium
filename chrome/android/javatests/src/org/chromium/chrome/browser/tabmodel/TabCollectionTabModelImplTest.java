@@ -2086,15 +2086,15 @@ public class TabCollectionTabModelImplTest {
                     assertNotNull(groupId2);
 
                     // Case 1: No exclusions, no pending closures. (Fast path)
-                    Set<Token> allGroupIds =
+                    Set<TabGroupId> allGroupIds =
                             mCollectionModel
                                     .getLazyAllTabGroupIds(
                                             Collections.emptyList(),
                                             /* includePendingClosures= */ false)
                                     .get();
                     assertEquals(2, allGroupIds.size());
-                    assertTrue(allGroupIds.contains(groupId1));
-                    assertTrue(allGroupIds.contains(groupId2));
+                    assertTrue(allGroupIds.contains(TabGroupId.fromRawToken(groupId1)));
+                    assertTrue(allGroupIds.contains(TabGroupId.fromRawToken(groupId2)));
 
                     // Case 2: No exclusions, with pending closures. (Slow path, but same result)
                     allGroupIds =
@@ -2104,18 +2104,18 @@ public class TabCollectionTabModelImplTest {
                                             /* includePendingClosures= */ true)
                                     .get();
                     assertEquals(2, allGroupIds.size());
-                    assertTrue(allGroupIds.contains(groupId1));
-                    assertTrue(allGroupIds.contains(groupId2));
+                    assertTrue(allGroupIds.contains(TabGroupId.fromRawToken(groupId1)));
+                    assertTrue(allGroupIds.contains(TabGroupId.fromRawToken(groupId2)));
 
                     // Case 3: Exclude one tab from a group.
-                    Set<Token> groupIdsWithExclusion =
+                    Set<TabGroupId> groupIdsWithExclusion =
                             mCollectionModel
                                     .getLazyAllTabGroupIds(
                                             List.of(tab0), /* includePendingClosures= */ false)
                                     .get();
                     assertEquals(2, groupIdsWithExclusion.size());
-                    assertTrue(groupIdsWithExclusion.contains(groupId1));
-                    assertTrue(groupIdsWithExclusion.contains(groupId2));
+                    assertTrue(groupIdsWithExclusion.contains(TabGroupId.fromRawToken(groupId1)));
+                    assertTrue(groupIdsWithExclusion.contains(TabGroupId.fromRawToken(groupId2)));
 
                     // Case 4: Exclude all tabs from a group.
                     groupIdsWithExclusion =
@@ -2125,8 +2125,8 @@ public class TabCollectionTabModelImplTest {
                                             /* includePendingClosures= */ false)
                                     .get();
                     assertEquals(1, groupIdsWithExclusion.size());
-                    assertFalse(groupIdsWithExclusion.contains(groupId1));
-                    assertTrue(groupIdsWithExclusion.contains(groupId2));
+                    assertFalse(groupIdsWithExclusion.contains(TabGroupId.fromRawToken(groupId1)));
+                    assertTrue(groupIdsWithExclusion.contains(TabGroupId.fromRawToken(groupId2)));
 
                     // Case 5: Exclude all tabs from a group, with pending closures.
                     groupIdsWithExclusion =
@@ -2135,8 +2135,8 @@ public class TabCollectionTabModelImplTest {
                                             List.of(tab0, tab1), /* includePendingClosures= */ true)
                                     .get();
                     assertEquals(1, groupIdsWithExclusion.size());
-                    assertFalse(groupIdsWithExclusion.contains(groupId1));
-                    assertTrue(groupIdsWithExclusion.contains(groupId2));
+                    assertFalse(groupIdsWithExclusion.contains(TabGroupId.fromRawToken(groupId1)));
+                    assertTrue(groupIdsWithExclusion.contains(TabGroupId.fromRawToken(groupId2)));
 
                     // Case 6: Exclude an ungrouped tab.
                     groupIdsWithExclusion =
@@ -2145,8 +2145,8 @@ public class TabCollectionTabModelImplTest {
                                             List.of(tab4), /* includePendingClosures= */ false)
                                     .get();
                     assertEquals(2, groupIdsWithExclusion.size());
-                    assertTrue(groupIdsWithExclusion.contains(groupId1));
-                    assertTrue(groupIdsWithExclusion.contains(groupId2));
+                    assertTrue(groupIdsWithExclusion.contains(TabGroupId.fromRawToken(groupId1)));
+                    assertTrue(groupIdsWithExclusion.contains(TabGroupId.fromRawToken(groupId2)));
                 });
     }
 

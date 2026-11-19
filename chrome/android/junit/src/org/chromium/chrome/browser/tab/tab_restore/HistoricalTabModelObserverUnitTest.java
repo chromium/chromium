@@ -306,7 +306,8 @@ public class HistoricalTabModelObserverUnitTest {
         Token tabGroupId = new Token(3L, 4L);
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab0, mockTab1, mockTab2});
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
-                .thenReturn(LazyOneshotSupplier.fromValue(Set.of(tabGroupId)));
+                .thenReturn(
+                        LazyOneshotSupplier.fromValue(Set.of(TabGroupId.fromRawToken(tabGroupId))));
 
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
 
@@ -334,7 +335,8 @@ public class HistoricalTabModelObserverUnitTest {
         Token tabGroupId = new Token(3L, 4L);
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab0, mockTab1});
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
-                .thenReturn(LazyOneshotSupplier.fromValue(Set.of(tabGroupId)));
+                .thenReturn(
+                        LazyOneshotSupplier.fromValue(Set.of(TabGroupId.fromRawToken(tabGroupId))));
 
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
 
@@ -429,7 +431,8 @@ public class HistoricalTabModelObserverUnitTest {
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab0, mockTab1});
         when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
-                .thenReturn(LazyOneshotSupplier.fromValue(Set.of(tabGroupId)));
+                .thenReturn(
+                        LazyOneshotSupplier.fromValue(Set.of(TabGroupId.fromRawToken(tabGroupId))));
 
         MockTab[] tabList = new MockTab[] {mockTab0};
         mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), /* canRestore= */ true);
@@ -463,7 +466,8 @@ public class HistoricalTabModelObserverUnitTest {
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab0, mockTab1, mockTab2});
         when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
-                .thenReturn(LazyOneshotSupplier.fromValue(Set.of(tabGroupId)));
+                .thenReturn(
+                        LazyOneshotSupplier.fromValue(Set.of(TabGroupId.fromRawToken(tabGroupId))));
 
         MockTab[] tabList = new MockTab[] {mockTab0};
         mObserver.onFinishingMultipleTabClosure(Arrays.asList(tabList), /* canRestore= */ true);

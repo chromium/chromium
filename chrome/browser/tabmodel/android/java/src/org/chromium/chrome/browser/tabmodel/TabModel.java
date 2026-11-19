@@ -8,7 +8,6 @@ import androidx.annotation.IntDef;
 
 import org.jni_zero.JniPtr;
 
-import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -640,7 +639,7 @@ public interface TabModel extends TabList {
      * @param includePendingClosures Whether to include pending tab closures.
      * @return A lazy oneshot supplier containing all the tab group IDs.
      */
-    LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIds(
+    LazyOneshotSupplier<Set<TabGroupId>> getLazyAllTabGroupIds(
             List<Tab> tabsToExclude, boolean includePendingClosures);
 
     /**

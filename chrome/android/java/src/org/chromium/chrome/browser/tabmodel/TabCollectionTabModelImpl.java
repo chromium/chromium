@@ -1553,7 +1553,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIds(
+    public LazyOneshotSupplier<Set<TabGroupId>> getLazyAllTabGroupIds(
             List<Tab> tabsToExclude, boolean includePendingClosures) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null) {
@@ -1561,27 +1561,20 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
 
         if (!includePendingClosures && tabsToExclude.isEmpty()) {
-            return LazyOneshotSupplier.fromSupplier(
-                    () -> {
-                        Set<Token> tokens = new ArraySet<>();
-                        for (TabGroupId id : getAllTabGroupIds()) {
-                            tokens.add(id.getToken());
-                        }
-                        return tokens;
-                    });
+            return LazyOneshotSupplier.fromSupplier(() -> getAllTabGroupIds());
         }
 
         // TODO(crbug.com/428692223): A dedicated JNI method for the !includePendingClosures case
         // would likely perform better as the tabs could be iterated over only a single time.
-        Supplier<Set<Token>> supplier =
+        Supplier<Set<TabGroupId>> supplier =
                 () -> {
-                    Set<Token> tabGroupIds = new ArraySet<>();
+                    Set<TabGroupId> tabGroupIds = new ArraySet<>();
                     TabList tabList = includePendingClosures ? getComprehensiveModel() : this;
                     for (Tab tab : tabList) {
                         if (tabsToExclude.contains(tab)) continue;
                         Token tabGroupId = tab.getTabGroupId();
                         if (tabGroupId != null) {
-                            tabGroupIds.add(tabGroupId);
+                            tabGroupIds.add(TabGroupId.fromRawToken(tabGroupId));
                         }
                     }
                     return tabGroupIds;
@@ -2834,7 +2827,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     private List<Token> maybeSendCloseTabGroupEvent(
             List<Tab> tabs, boolean committing, boolean removeHidingGroups) {
-        LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
+        LazyOneshotSupplier<Set<TabGroupId>> tabGroupIdsInComprehensiveModel =
                 getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ committing);
         Set<Token> processedTabGroups = new ArraySet<>();
         List<Token> closingTabGroupIds = new ArrayList<>();
@@ -2847,7 +2840,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
             // If the tab group still exists in the comprehensive tab model we should not send an
             // event.
-            if (assumeNonNull(tabGroupIdsInComprehensiveModel.get()).contains(tabGroupId)) continue;
+            if (assumeNonNull(tabGroupIdsInComprehensiveModel.get())
+                    .contains(TabGroupId.fromRawToken(tabGroupId))) {
+                continue;
+            }
 
             closingTabGroupIds.add(tabGroupId);
 

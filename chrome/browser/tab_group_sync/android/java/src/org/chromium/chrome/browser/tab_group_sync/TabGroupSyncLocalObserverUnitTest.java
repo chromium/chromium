@@ -354,7 +354,8 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testWillCloseTabs_IncompleteGroupHiding() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1));
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
-                .thenReturn(LazyOneshotSupplier.fromValue(Set.of(TOKEN_1)));
+                .thenReturn(
+                        LazyOneshotSupplier.fromValue(Set.of(TabGroupId.fromRawToken(TOKEN_1))));
         when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(true);
         mTabModelObserverCaptor
                 .getValue()

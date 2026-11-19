@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JniPtr;
 
-import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -449,7 +448,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIds(
+    public LazyOneshotSupplier<Set<TabGroupId>> getLazyAllTabGroupIds(
             List<Tab> tabsToExclude, boolean includePendingClosures) {
         return LazyOneshotSupplier.fromValue(Collections.emptySet());
     }

@@ -290,7 +290,7 @@ public class RemoteTabGroupMutationHelper {
      * @param tabs The list of tabs that are starting to close.
      */
     public void handleWillCloseTabs(List<Tab> tabs) {
-        LazyOneshotSupplier<Set<Token>> tabGroupIds =
+        LazyOneshotSupplier<Set<TabGroupId>> tabGroupIds =
                 mTabModel.getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ false);
         for (Tab tab : tabs) {
             LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
@@ -302,7 +302,8 @@ public class RemoteTabGroupMutationHelper {
             // not still contain any tabs for the tab group as that would indicate only a subset of
             // the group is being closed.
             if (mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(localTabGroupId.tabGroupId))
-                    && !assumeNonNull(tabGroupIds.get()).contains(localTabGroupId.tabGroupId)) {
+                    && !assumeNonNull(tabGroupIds.get())
+                            .contains(TabGroupId.fromRawToken(localTabGroupId.tabGroupId))) {
                 continue;
             }
 

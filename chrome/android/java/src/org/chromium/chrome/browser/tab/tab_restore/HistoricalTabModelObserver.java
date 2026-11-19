@@ -181,7 +181,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         @Nullable TabGroupSyncService tabGroupSyncService =
                 TabGroupSyncServiceFactory.getForProfile(profile);
 
-        LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
+        LazyOneshotSupplier<Set<TabGroupId>> tabGroupIdsInComprehensiveModel =
                 mTabModel.getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ true);
         for (Tab tab : tabs) {
             @Nullable Token tabGroupId = tab.getTabGroupId();
@@ -202,7 +202,8 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             // tabs.
             if ((mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(tabGroupId))
                             || isCollaborationTabGroup(tabGroupSyncService, tabGroupId))
-                    && !assumeNonNull(tabGroupIdsInComprehensiveModel.get()).contains(tabGroupId)) {
+                    && !assumeNonNull(tabGroupIdsInComprehensiveModel.get())
+                            .contains(TabGroupId.fromRawToken(tabGroupId))) {
                 continue;
             }
 

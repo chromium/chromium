@@ -64,7 +64,7 @@ public final class UndoClosureSnapshotFactory {
         List<ClosedTab> closedTabs = new ArrayList<>(tabs.size());
         Map<Token, GroupData> groups = new HashMap<>();
 
-        LazyOneshotSupplier<Set<Token>> lazyGroupIds =
+        LazyOneshotSupplier<Set<TabGroupId>> lazyGroupIds =
                 tabModel.getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ true);
 
         int selectedIndex = tabModel.index();
@@ -99,9 +99,9 @@ public final class UndoClosureSnapshotFactory {
                         tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(groupId));
 
                 boolean survivesInModel = false;
-                Set<Token> lazySet = lazyGroupIds.get();
+                Set<TabGroupId> lazySet = lazyGroupIds.get();
                 if (lazySet != null) {
-                    survivesInModel = lazySet.contains(groupId);
+                    survivesInModel = lazySet.contains(TabGroupId.fromRawToken(groupId));
                 }
 
                 SavedTabGroup savedGroup =

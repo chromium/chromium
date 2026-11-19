@@ -56,7 +56,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
     private static final Token GROUP_1 = new Token(1, 1);
     private static final Token GROUP_2 = new Token(2, 2);
 
-    @Mock private LazyOneshotSupplier<Set<Token>> mLazySupplier;
+    @Mock private LazyOneshotSupplier<Set<TabGroupId>> mLazySupplier;
 
     @Test
     public void testNullLazyGroupIdSet() {
@@ -180,7 +180,9 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(tab2.getTitle()).thenReturn("Tab 2");
         when(tab2.getTabGroupId()).thenReturn(GROUP_2);
 
-        when(mLazySupplier.get()).thenReturn(Set.of(GROUP_1, GROUP_2));
+        when(mLazySupplier.get())
+                .thenReturn(
+                        Set.of(TabGroupId.fromRawToken(GROUP_1), TabGroupId.fromRawToken(GROUP_2)));
         when(tabModel.getLazyAllTabGroupIds(any(), eq(true))).thenReturn(mLazySupplier);
 
         UndoClosureSnapshot snapshot =
@@ -296,7 +298,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(GROUP_1))).thenReturn(5);
         when(tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(GROUP_1))).thenReturn(true);
         when(tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(GROUP_1))).thenReturn(false);
-        when(mLazySupplier.get()).thenReturn(Set.of(GROUP_1));
+        when(mLazySupplier.get()).thenReturn(Set.of(TabGroupId.fromRawToken(GROUP_1)));
         when(tabModel.getLazyAllTabGroupIds(any(), eq(true))).thenReturn(mLazySupplier);
 
         Runnable undoRunnable = mock(Runnable.class);
