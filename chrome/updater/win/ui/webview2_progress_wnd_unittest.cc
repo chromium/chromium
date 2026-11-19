@@ -337,10 +337,8 @@ TEST_F(WebView2ProgressWndTest, CloseOnlyAfterCompletion) {
         EXPECT_FALSE(
             ::PeekMessage(&msg, wnd.hwnd(), WM_CLOSE, WM_CLOSE, PM_NOREMOVE));
 
-        ObserverCompletionInfo info;
-        info.completion_code = code;
-        info.completion_text = u"Completion details";
-        wnd.OnComplete(info);
+        wnd.OnComplete({.completion_code = code,
+                        .completion_text = u"Completion details"});
         // A queued Cancel arriving after completion also closes without
         // cancelling.
         wnd.OnWebMessageReceived(command);

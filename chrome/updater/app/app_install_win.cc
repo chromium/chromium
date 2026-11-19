@@ -1263,6 +1263,58 @@ std::wstring GetTextForStartupError(int error_code, const std::wstring& lang) {
   }
 }
 
+// Returns the completion code for an install that ended with `error_code`,
+// where `launch_command_line` is the command that the installer asked to run.
+CompletionCodes GetAppCompletionCode(int error_code,
+                                     const std::string& launch_command_line) {
+  switch (error_code) {
+    case 0:
+      // A launch command makes the interactive UI run the command and exit.
+      return launch_command_line.empty()
+                 ? CompletionCodes::COMPLETION_CODE_SUCCESS
+                 : CompletionCodes::
+                       COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND;
+    case ERROR_SUCCESS_REBOOT_INITIATED:
+    case ERROR_SUCCESS_REBOOT_REQUIRED:
+    case ERROR_SUCCESS_RESTART_REQUIRED:
+      return CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY;
+    default:
+      return CompletionCodes::COMPLETION_CODE_ERROR;
+  }
+}
+
+// Returns the `ObserverCompletionInfo::apps_info` entry for `update_state`.
+// The entry is for the updater if the install didn't start, and empty if there
+// was no update.
+AppCompletionInfo MakeAppCompletionInfo(
+    const UpdateService::UpdateState& update_state) {
+  switch (update_state.state) {
+    case UpdateService::UpdateState::State::kNotStarted:
+      return {.app_id = kUpdaterAppId};
+    case UpdateService::UpdateState::State::kNoUpdate:
+      return {};
+    default: {
+      AppCompletionInfo app_info = {
+          .app_id = update_state.app_id,
+          .completion_message = base::UTF8ToUTF16(update_state.installer_text),
+          .completion_code = GetAppCompletionCode(
+              update_state.error_code, update_state.installer_cmd_line),
+          .error_code = update_state.error_code,
+          .extra_code1 = update_state.extra_code1,
+          .post_install_launch_command_line = update_state.installer_cmd_line,
+      };
+      VLOG(1) << app_info.app_id << " installation completed: error category["
+              << update_state.error_category << "], error_code["
+              << app_info.error_code << "], extra_code1["
+              << app_info.extra_code1 << "], completion_message["
+              << app_info.completion_message
+              << "], post_install_launch_command_line["
+              << app_info.post_install_launch_command_line << "]";
+      return app_info;
+    }
+  }
+}
+
 }  // namespace
 
 AppInstallProgressForwarder::AppInstallProgressForwarder() = default;
@@ -1412,51 +1464,13 @@ void AppInstallProgressForwarder::Forward(
       NOTREACHED();
   }
 
-  AppCompletionInfo app_info;
-  if (update_state.state == UpdateService::UpdateState::State::kNotStarted) {
-    app_info.app_id = kUpdaterAppId;
-  } else if (update_state.state !=
-             UpdateService::UpdateState::State::kNoUpdate) {
-    app_info.app_id = update_state.app_id;
-    app_info.error_code = update_state.error_code;
-    app_info.completion_message =
-        base::UTF8ToUTF16(update_state.installer_text);
-    app_info.extra_code1 = update_state.extra_code1;
-    app_info.post_install_launch_command_line = update_state.installer_cmd_line;
-    VLOG(1) << app_info.app_id << " installation completed: error category["
-            << update_state.error_category << "], error_code["
-            << app_info.error_code << "], extra_code1[" << app_info.extra_code1
-            << "], completion_message[" << app_info.completion_message
-            << "], post_install_launch_command_line["
-            << app_info.post_install_launch_command_line << "]";
-
-    // If the installer provides a launch command,
-    // `COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND` will cause the UI
-    // client to run the launch command and exit in the interactive install
-    // case.
-    if (app_info.error_code == 0) {
-      app_info.completion_code =
-          app_info.post_install_launch_command_line.empty()
-              ? CompletionCodes::COMPLETION_CODE_SUCCESS
-              : CompletionCodes::
-                    COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND;
-    } else if (app_info.error_code == ERROR_SUCCESS_REBOOT_INITIATED ||
-               app_info.error_code == ERROR_SUCCESS_REBOOT_REQUIRED ||
-               app_info.error_code == ERROR_SUCCESS_RESTART_REQUIRED) {
-      app_info.completion_code =
-          CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY;
-    } else {
-      app_info.completion_code = CompletionCodes::COMPLETION_CODE_ERROR;
-    }
-  }
-
   return {.completion_code = completion_code,
           .completion_text = base::WideToUTF16(completion_text),
           .help_url = GURL(absl::StrFormat(
               "%s?product=%s&error=%d", HELP_CENTER_URL,
               base::EscapeUrlEncodedData(update_state.app_id, false),
               update_state.error_code)),
-          .apps_info = {app_info}};
+          .apps_info = {MakeAppCompletionInfo(update_state)}};
 }
 
 scoped_refptr<App> MakeAppInstall(bool is_silent_install) {

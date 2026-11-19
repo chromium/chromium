@@ -175,13 +175,18 @@ TEST_F(AppInstallProgressForwarderTest, NullTargetDropsCalls) {
 }
 
 struct AppInstallWinHandleInstallResultTestCase {
+  const std::string name;
   const UpdateService::UpdateState::State state;
-  const UpdateService::ErrorCategory error_category;
-  const int error_code;
+  const UpdateService::ErrorCategory error_category =
+      UpdateService::ErrorCategory::kNone;
+  const int error_code = 0;
+  const int extra_code1 = 0;
+  const std::string installer_text;
+  const std::string installer_cmd_line;
   const std::wstring lang;
   const CompletionCodes expected_completion_code;
   const std::u16string expected_completion_text;
-  const std::u16string expected_completion_message;
+  const AppCompletionInfo expected_app_info;
 };
 
 class AppInstallWinHandleInstallResultTest
@@ -192,71 +197,141 @@ INSTANTIATE_TEST_SUITE_P(
     AppInstallWinHandleInstallResultTestCases,
     AppInstallWinHandleInstallResultTest,
     ::testing::ValuesIn(std::vector<AppInstallWinHandleInstallResultTestCase>{
-        {UpdateService::UpdateState::State::kUpdated,
-         UpdateService::ErrorCategory::kNone,
-         0,
-         {},
-         CompletionCodes::COMPLETION_CODE_SUCCESS,
-         base::WideToUTF16(
+        {.name = "Updated",
+         .state = UpdateService::UpdateState::State::kUpdated,
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS,
+         .expected_completion_text = base::WideToUTF16(
              GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE)),
-         {}},
-        {UpdateService::UpdateState::State::kNoUpdate,
-         UpdateService::ErrorCategory::kNone,
-         0,
-         {},
-         CompletionCodes::COMPLETION_CODE_ERROR,
-         base::WideToUTF16(GetLocalizedString(IDS_NO_UPDATE_RESPONSE_BASE)),
-         {}},
-        {UpdateService::UpdateState::State::kUpdateError,
-         UpdateService::ErrorCategory::kNone,
-         0,
-         {},
-         CompletionCodes::COMPLETION_CODE_ERROR,
-         base::WideToUTF16(GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE)),
-         {}},
-        {UpdateService::UpdateState::State::kNotStarted,
-         UpdateService::ErrorCategory::kNone,
-         kErrorWrongUser,
-         L"de",
-         CompletionCodes::COMPLETION_CODE_ERROR,
-         base::WideToUTF16(GetLocalizedString(
+         .expected_app_info = {.app_id = "test1"}},
+        {.name = "UpdatedWithLaunchCommand",
+         .state = UpdateService::UpdateState::State::kUpdated,
+         .installer_cmd_line = "launch.exe",
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS,
+         .expected_completion_text = base::WideToUTF16(
+             GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE)),
+         .expected_app_info =
+             {.app_id = "test1",
+              .completion_code = CompletionCodes::
+                  COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND,
+              .post_install_launch_command_line = "launch.exe"}},
+        {.name = "NoUpdate",
+         .state = UpdateService::UpdateState::State::kNoUpdate,
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_ERROR,
+         .expected_completion_text =
+             base::WideToUTF16(GetLocalizedString(IDS_NO_UPDATE_RESPONSE_BASE)),
+         .expected_app_info = {}},
+        {.name = "UpdateError",
+         .state = UpdateService::UpdateState::State::kUpdateError,
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_ERROR,
+         .expected_completion_text = base::WideToUTF16(
+             GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE)),
+         .expected_app_info = {.app_id = "test1"}},
+        {.name = "InstallerError",
+         .state = UpdateService::UpdateState::State::kUpdateError,
+         .error_category = UpdateService::ErrorCategory::kInstaller,
+         .error_code = 1603,
+         .extra_code1 = 5,
+         .installer_text = "Installer error",
+         .installer_cmd_line = "launch.exe",
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_ERROR,
+         .expected_completion_text = base::WideToUTF16(
+             GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE)),
+         .expected_app_info =
+             {.app_id = "test1",
+              .completion_message = u"Installer error",
+              .completion_code = CompletionCodes::COMPLETION_CODE_ERROR,
+              .error_code = 1603,
+              .extra_code1 = 5,
+              .post_install_launch_command_line = "launch.exe"}},
+        // An install that needs a reboot succeeds and reports the reboot code.
+        {.name = "RebootInitiated",
+         .state = UpdateService::UpdateState::State::kUpdated,
+         .error_code = ERROR_SUCCESS_REBOOT_INITIATED,
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS,
+         .expected_completion_text = base::WideToUTF16(
+             GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE)),
+         .expected_app_info =
+             {.app_id = "test1",
+              .completion_code =
+                  CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY,
+              .error_code = ERROR_SUCCESS_REBOOT_INITIATED}},
+        {.name = "RebootRequired",
+         .state = UpdateService::UpdateState::State::kUpdated,
+         .error_code = ERROR_SUCCESS_REBOOT_REQUIRED,
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS,
+         .expected_completion_text = base::WideToUTF16(
+             GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE)),
+         .expected_app_info =
+             {.app_id = "test1",
+              .completion_code =
+                  CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY,
+              .error_code = ERROR_SUCCESS_REBOOT_REQUIRED}},
+        {.name = "RestartRequired",
+         .state = UpdateService::UpdateState::State::kUpdated,
+         .error_code = ERROR_SUCCESS_RESTART_REQUIRED,
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_SUCCESS,
+         .expected_completion_text = base::WideToUTF16(
+             GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE)),
+         .expected_app_info =
+             {.app_id = "test1",
+              .completion_code =
+                  CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY,
+              .error_code = ERROR_SUCCESS_RESTART_REQUIRED}},
+        {.name = "WrongUser",
+         .state = UpdateService::UpdateState::State::kNotStarted,
+         .error_code = kErrorWrongUser,
+         .lang = L"de",
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_ERROR,
+         .expected_completion_text = base::WideToUTF16(GetLocalizedString(
              ::IsUserAnAdmin() ? IDS_WRONG_USER_DEELEVATION_REQUIRED_ERROR_BASE
                                : IDS_WRONG_USER_ELEVATION_REQUIRED_ERROR_BASE,
              L"de")),
-         {}},
-        {UpdateService::UpdateState::State::kNotStarted,
-         UpdateService::ErrorCategory::kNone,
-         kErrorFailedToLockSetupMutex,
-         L"hi",
-         CompletionCodes::COMPLETION_CODE_ERROR,
-         base::WideToUTF16(GetLocalizedString(IDS_UNABLE_TO_GET_SETUP_LOCK_BASE,
-                                              L"hi")),
-         {}},
-        {UpdateService::UpdateState::State::kNotStarted,
-         UpdateService::ErrorCategory::kNone,
-         kErrorFailedToLockPrefsMutex,
-         L"ar",
-         CompletionCodes::COMPLETION_CODE_ERROR,
-         base::WideToUTF16(GetLocalizedStringF(
+         .expected_app_info = {.app_id = kUpdaterAppId}},
+        {.name = "SetupLockFailed",
+         .state = UpdateService::UpdateState::State::kNotStarted,
+         .error_code = kErrorFailedToLockSetupMutex,
+         .lang = L"hi",
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_ERROR,
+         .expected_completion_text = base::WideToUTF16(
+             GetLocalizedString(IDS_UNABLE_TO_GET_SETUP_LOCK_BASE, L"hi")),
+         .expected_app_info = {.app_id = kUpdaterAppId}},
+        {.name = "StartupError",
+         .state = UpdateService::UpdateState::State::kNotStarted,
+         .error_code = kErrorFailedToLockPrefsMutex,
+         .lang = L"ar",
+         .expected_completion_code = CompletionCodes::COMPLETION_CODE_ERROR,
+         .expected_completion_text = base::WideToUTF16(GetLocalizedStringF(
              IDS_GENERIC_STARTUP_ERROR_BASE,
              GetTextForSystemError(kErrorFailedToLockPrefsMutex),
              L"ar")),
-         {}},
-    }));
+         .expected_app_info = {.app_id = kUpdaterAppId}},
+    }),
+    [](const ::testing::TestParamInfo<AppInstallWinHandleInstallResultTestCase>&
+           info) { return info.param.name; });
 
 TEST_P(AppInstallWinHandleInstallResultTest, TestCases) {
   UpdateService::UpdateState update_state;
+  update_state.app_id = "test1";
   update_state.state = GetParam().state;
   update_state.error_category = GetParam().error_category;
   update_state.error_code = GetParam().error_code;
-  update_state.app_id = "test1";
+  update_state.extra_code1 = GetParam().extra_code1;
+  update_state.installer_text = GetParam().installer_text;
+  update_state.installer_cmd_line = GetParam().installer_cmd_line;
   const ObserverCompletionInfo info =
       HandleInstallResult(update_state, GetParam().lang);
+  EXPECT_EQ(info.completion_code, GetParam().expected_completion_code);
+  EXPECT_EQ(info.completion_text, GetParam().expected_completion_text);
   ASSERT_EQ(info.apps_info.size(), 1u);
-  ASSERT_EQ(info.completion_code, GetParam().expected_completion_code);
-  ASSERT_EQ(info.completion_text, GetParam().expected_completion_text);
-  ASSERT_EQ(info.apps_info[0].completion_message,
-            GetParam().expected_completion_message);
+  const AppCompletionInfo& app_info = info.apps_info[0];
+  const AppCompletionInfo& expected_app_info = GetParam().expected_app_info;
+  EXPECT_EQ(app_info.app_id, expected_app_info.app_id);
+  EXPECT_EQ(app_info.completion_message, expected_app_info.completion_message);
+  EXPECT_EQ(app_info.completion_code, expected_app_info.completion_code);
+  EXPECT_EQ(app_info.error_code, expected_app_info.error_code);
+  EXPECT_EQ(app_info.extra_code1, expected_app_info.extra_code1);
+  EXPECT_EQ(app_info.post_install_launch_command_line,
+            expected_app_info.post_install_launch_command_line);
 }
 
 }  // namespace updater
