@@ -37,6 +37,8 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -103,6 +105,17 @@ void SetFocusState(content::WebContents* contents,
   }
 }
 
+// Drops pre-existing main-frame navigations so they cannot commit ungated once
+// the tab enters actor control or transient observation.
+void StopPendingMainFrameNavigation(content::WebContents* contents) {
+  if (contents && contents->HasUncommittedNavigationInPrimaryMainFrame()) {
+    content::NavigationEntry* pending_entry =
+        contents->GetController().GetPendingEntry();
+    if (!pending_entry || !pending_entry->GetURL().IsAboutBlank()) {
+      contents->Stop();
+    }
+  }
+}
 }  // namespace
 
 ActorTask::ActorControlledTabState::ActorControlledTabState(
@@ -660,6 +673,7 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle,
       std::make_unique<ActorControlledTabState>(this, stop_task_on_detach));
   last_actuated_tab_ = tab_handle;
 
+  StopPendingMainFrameNavigation(tab->GetContents());
   DidTabEnterActorControl(tab_handle);
 
   // Notify the UI of the new tab.
@@ -739,7 +753,9 @@ void ActorTask::ObserveTabOnce(tabs::TabHandle tab_handle) {
                  .first;
   ActorControlledTabState* state = itr->second.get();
 
-  DidContentsEnterActorControl(state, tab->GetContents());
+  content::WebContents* contents = tab->GetContents();
+  StopPendingMainFrameNavigation(contents);
+  DidContentsEnterActorControl(state, contents);
 }
 
 void ActorTask::OnTabWillDetach(tabs::TabHandle handle) {
