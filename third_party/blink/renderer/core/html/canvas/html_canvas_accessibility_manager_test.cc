@@ -6,9 +6,9 @@
 
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "cc/paint/paint_canvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_node.h"
@@ -25,13 +25,11 @@
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -432,7 +430,6 @@ class HTMLCanvasAccessibilityManagerOCRTest
   }
 
   void TearDown() override {
-    resource_provider_.reset();
     sii_provider_.reset();
     if (canvas_element_) {
       canvas_element_->UnregisterPlaceholderCanvas();
@@ -444,23 +441,25 @@ class HTMLCanvasAccessibilityManagerOCRTest
   // Lazily registers `canvas_element_` as an OffscreenCanvas placeholder and
   // delivers a software-composited frame with the given `origin_clean` flag.
   void DeliverOffscreenFrame(bool origin_clean) {
-    if (!resource_provider_) {
+    if (!sii_provider_) {
       canvas_element_->RegisterPlaceholderCanvas(
           canvas_element_->GetDomNodeId());
       sii_provider_ = TestWebGraphicsSharedImageInterfaceProvider::Create();
-      resource_provider_ =
-          CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
-              gfx::Size(300, 200), GetN32FormatForCanvas(), kPremul_SkAlphaType,
-              PredefinedColorSpaceToGfxColorSpace(PredefinedColorSpace::kSRGB),
-              gfx::HDRMetadata(), sii_provider_.get());
-      CHECK_NE(resource_provider_, nullptr);
     }
-    scoped_refptr<ExportedCanvasResource> frame =
-        resource_provider_->DoExternalOverdrawAndProduceResource(
-            [](cc::PaintCanvas& paint_canvas) {
-              paint_canvas.clear(SkColors::kWhite);
-            });
-    CHECK_NE(frame, nullptr);
+    auto shared_image =
+        sii_provider_->SharedImageInterface()
+            ->CreateSharedImageForSoftwareCompositor(
+                {GetN32FormatForCanvas(), gfx::Size(300, 200),
+                 PredefinedColorSpaceToGfxColorSpace(
+                     PredefinedColorSpace::kSRGB),
+                 gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "test"});
+    CHECK_NE(shared_image, nullptr);
+    auto frame = base::MakeRefCounted<ExportedCanvasResource>(
+        std::move(shared_image), gpu::SyncToken(),
+        viz::TransferableResource::ResourceSource::kCanvas, gfx::HDRMetadata(),
+        /*context_provider_wrapper=*/nullptr, /*accelerated_raster=*/false,
+        base::NullCallback(), base::NullCallback(),
+        /*use_legacy_external_canvas_resource_bitmap_path=*/false);
     frame->SetOriginClean(origin_clean);
     canvas_element_->SetOffscreenCanvasResource(std::move(frame));
   }
@@ -470,7 +469,6 @@ class HTMLCanvasAccessibilityManagerOCRTest
   std::unique_ptr<AXContext> ax_context_;
   Persistent<HTMLCanvasAccessibilityManager> manager_;
   std::unique_ptr<TestWebGraphicsSharedImageInterfaceProvider> sii_provider_;
-  std::unique_ptr<CanvasNon2DResourceProvider> resource_provider_;
 };
 
 TEST_F(HTMLCanvasAccessibilityManagerOCRTest, OCRTriggerFromEmptyTextRuns) {

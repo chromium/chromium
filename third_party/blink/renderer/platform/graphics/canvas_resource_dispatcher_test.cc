@@ -18,7 +18,6 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/begin_frame_provider.h"
 #include "third_party/blink/renderer/platform/graphics/begin_frame_provider_params.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -70,8 +69,18 @@ class CanvasResourceDispatcherTest
       public ::testing::WithParamInterface<TestParams> {
  public:
   void DispatchOneFrame() {
-    scoped_refptr<ExportedCanvasResource> exported_resource =
-        resource_provider_->ProduceCanvasResource();
+    auto shared_image =
+        test_web_shared_image_interface_provider_->SharedImageInterface()
+            ->CreateSharedImageForSoftwareCompositor(
+                {GetN32FormatForCanvas(), gfx::Size(kWidth, kHeight),
+                 gfx::ColorSpace::CreateSRGB(),
+                 gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "test"});
+    auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
+        std::move(shared_image), gpu::SyncToken(),
+        viz::TransferableResource::ResourceSource::kCanvas, gfx::HDRMetadata(),
+        /*context_provider_wrapper=*/nullptr, /*accelerated_raster=*/false,
+        base::NullCallback(), base::NullCallback(),
+        /*use_legacy_external_canvas_resource_bitmap_path=*/false);
     dispatcher_->DispatchFrame(std::move(exported_resource), gfx::Rect(),
                                /*is_opaque=*/false);
   }
@@ -96,12 +105,6 @@ class CanvasResourceDispatcherTest
         /*task_runner=*/scheduler::GetSingleThreadTaskRunnerForTesting(),
         kClientId, kSinkId,
         /*canvas_size=*/gfx::Size(kWidth, kHeight));
-    resource_provider_ =
-        CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
-            gfx::Size(kWidth, kHeight), GetN32FormatForCanvas(),
-            kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-            gfx::HDRMetadata(),
-            test_web_shared_image_interface_provider_.get());
   }
 
   CanvasResourceDispatcher* dispatcher() { return dispatcher_.get(); }
@@ -114,7 +117,6 @@ class CanvasResourceDispatcherTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   Persistent<MockCanvasResourceDispatcherClient> client_;
   std::unique_ptr<CanvasResourceDispatcher> dispatcher_;
-  std::unique_ptr<CanvasNon2DResourceProvider> resource_provider_;
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider_;
 };
