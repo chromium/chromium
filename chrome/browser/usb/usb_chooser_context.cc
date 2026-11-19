@@ -568,7 +568,9 @@ void UsbChooserContext::GetDevice(
 
 const device::mojom::UsbDeviceInfo* UsbChooserContext::GetDeviceInfo(
     const std::string& guid) {
-  DCHECK(is_initialized_);
+  if (!is_initialized_) {
+    return nullptr;
+  }
   auto it = devices_.find(guid);
   return it == devices_.end() ? nullptr : it->second.get();
 }

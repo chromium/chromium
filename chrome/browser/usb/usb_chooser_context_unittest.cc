@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -39,6 +40,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #endif
 
+using ::base::test::RunClosure;
 using ::base::test::TestFuture;
 using ::content_settings::SettingSource;
 using ::device::mojom::UsbDeviceInfoPtr;
@@ -1444,4 +1446,45 @@ TEST_F(UsbChooserContextTest, ClearBrowsingDataEphemeralDevice) {
 
   // Check if the permission is still returned.
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
+}
+
+TEST_F(UsbChooserContextTest, GetDeviceInfoBeforeInitialization) {
+  UsbChooserContext* store = UsbChooserContextFactory::GetForProfile(profile());
+
+  // Before UsbDeviceManager initialization, GetDeviceInfo() returns nullptr.
+  EXPECT_FALSE(store->is_initialized_for_testing());
+  EXPECT_EQ(nullptr, store->GetDeviceInfo("non-existent-guid"));
+
+  // Also check while EnumerateDevicesAndSetClient() is in flight.
+  mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
+  device_manager_.AddReceiver(device_manager.InitWithNewPipeAndPassReceiver());
+  store->SetDeviceManagerForTesting(std::move(device_manager));
+  EXPECT_FALSE(store->is_initialized_for_testing());
+  EXPECT_EQ(nullptr, store->GetDeviceInfo("non-existent-guid"));
+
+  TestFuture<std::vector<device::mojom::UsbDeviceInfoPtr>> devices_future;
+  store->GetDevices(devices_future.GetCallback());
+  EXPECT_TRUE(devices_future.Wait());
+  EXPECT_TRUE(store->is_initialized_for_testing());
+  EXPECT_EQ(nullptr, store->GetDeviceInfo("non-existent-guid"));
+}
+
+TEST_F(UsbChooserContextTest, ConnectionErrorResetsInitializedState) {
+  UsbDeviceInfoPtr device_info = device_manager_.CreateAndAddDevice(
+      /*vendor_id=*/0, /*product_id=*/0, "manufacturer-string",
+      "product-string", "serial-number");
+
+  UsbChooserContext* store = GetChooserContext(profile());
+  EXPECT_TRUE(store->is_initialized_for_testing());
+  ASSERT_TRUE(store->GetDeviceInfo(device_info->guid));
+
+  base::RunLoop loop;
+  EXPECT_CALL(*mock_device_observers_[profile()],
+              OnDeviceManagerConnectionError())
+      .WillOnce(RunClosure(loop.QuitClosure()));
+  device_manager_.CloseAllBindings();
+  loop.Run();
+
+  EXPECT_FALSE(store->is_initialized_for_testing());
+  EXPECT_EQ(nullptr, store->GetDeviceInfo(device_info->guid));
 }
