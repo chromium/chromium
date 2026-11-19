@@ -609,6 +609,29 @@ TEST_F(IconTableTest, SearchJourneyCueIconsAreMapped) {
                   MatchesIconUpdate(std::ref(expected_old))));
 }
 
+TEST_F(IconTableTest, InfoIconsAreMapped) {
+  toolbar_ui_api::IconHandle info_handle =
+      icon_table_.RegisterImageModel(ui::ImageModel::FromVectorIcon(
+          vector_icons::kInfoIcon, ui::kColorSysPrimary, 16));
+  ASSERT_FALSE(info_handle.is_null());
+
+  toolbar_ui_api::IconHandle old_info_handle =
+      icon_table_.RegisterImageModel(ui::ImageModel::FromVectorIcon(
+          vector_icons::kInfoRefreshOldIcon, ui::kColorSysPrimary, 16));
+  ASSERT_FALSE(old_info_handle.is_null());
+
+  auto expected_info = toolbar_ui_api::mojom::IconUpdate::New(
+      /*handle_id=*/1u, "webui-toolbar:info", IconType::kIconSet,
+      /*color=*/SK_ColorCYAN);
+  auto expected_old_info = toolbar_ui_api::mojom::IconUpdate::New(
+      /*handle_id=*/2u, "webui-toolbar:info", IconType::kIconSet,
+      /*color=*/SK_ColorCYAN);
+  EXPECT_THAT(icon_table_.GetFullState(),
+              testing::UnorderedElementsAre(
+                  MatchesIconUpdate(std::ref(expected_info)),
+                  MatchesIconUpdate(std::ref(expected_old_info))));
+}
+
 TEST_F(IconTableTest, HasPendingUpdates) {
   EXPECT_FALSE(icon_table_.HasPendingUpdates());
 
