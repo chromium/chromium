@@ -120,25 +120,21 @@ public class BrowserControlsPTTest {
     public void topControlsScroll() {
         BrowserControlsFacility.waitForBrowserControlsToBeMoveable(mPage);
 
-        mPage.scrollToBottom(BrowserControlsFacility.scrolledOff(mPage));
-        mPage.scrollToTop(BrowserControlsFacility.shown(mPage));
+        mPage.scrollToBottom(BrowserControlsFacility.scrolledOff());
+        mPage.scrollToTop(BrowserControlsFacility.shown());
     }
 
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.DESKTOP)
     @EnableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
-    @DisabledTest(message = "https://crbug.com/471837396")
     public void topControlsScrollingDisabled() {
-        mPage.noopTo()
-                .waitFor(
-                        BrowserControlsOffsetCondition.showAndHeightSynced(
-                                mPage.getActivityElement()));
+        var lockedControls =
+                mPage.noopTo().enterFacility(BrowserControlsFacility.shownAndHeightSynced());
         mPage.scrollToBottom(null);
         mPage.noopTo()
-                .waitFor(
-                        BrowserControlsOffsetCondition.showAndHeightSynced(
-                                mPage.getActivityElement()));
+                .exitFacilityAnd(lockedControls)
+                .enterFacility(BrowserControlsFacility.shownAndHeightSynced());
     }
 
     @Test
@@ -152,7 +148,7 @@ public class BrowserControlsPTTest {
         var bottomFacility = new TopBottomLinksPageStation.BottomFacility();
         mPage.scrollPageDownWithGestureTo()
                 .withRetry()
-                .enterFacilities(BrowserControlsFacility.scrolledOff(mPage), bottomFacility);
+                .enterFacilities(BrowserControlsFacility.scrolledOff(), bottomFacility);
 
         // Same-origin link navigation keeps top controls scrolled off on the new page (scrollY==0).
         String destinationUrl =
@@ -170,7 +166,7 @@ public class BrowserControlsPTTest {
                     WebPageStation.newBuilder().initFrom(destination).build();
             destination
                     .dragDownFromPageTopTo()
-                    .arriveAt(revealedStation, BrowserControlsFacility.shown(revealedStation));
+                    .arriveAt(revealedStation, BrowserControlsFacility.shown());
             assertEquals(0, userActionTester.getActionCount("MobilePullGestureReload"));
 
             // Pull 2 with the Omnibox fully visible triggers pull-to-refresh and reloads the page.
@@ -179,7 +175,7 @@ public class BrowserControlsPTTest {
             revealedStation
                     .scrollPageUpWithGestureTo()
                     .waitForAnd(new PageLoadCallbackCondition(revealedStation.getTab()))
-                    .arriveAt(reloadedStation, BrowserControlsFacility.shown(reloadedStation));
+                    .arriveAt(reloadedStation, BrowserControlsFacility.shown());
             assertEquals(1, userActionTester.getActionCount("MobilePullGestureReload"));
         } finally {
             userActionTester.tearDown();

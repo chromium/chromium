@@ -4,26 +4,85 @@
 
 package org.chromium.chrome.test.transit.browser_controls;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.TravelException;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 /**
- * Facility representing the Browser Controls (Top Controls).
+ * The top browser controls in one state: their constraints and their physical offset.
  *
- * <p>It can be used to assert that the browser controls are in a specific state and/or visibility.
+ * <p>Each state is a separate Facility; exit one and enter another when the controls move.
  */
+@NullMarked
 public class BrowserControlsFacility<HostStationT extends WebPageStation>
         extends Facility<HostStationT> {
-    public final @BrowserControlsState int expectedConstraints;
+    private final @Nullable @BrowserControlsState Integer mExpectedConstraints;
+    private final Function<Supplier<@Nullable ChromeTabbedActivity>, Condition>
+            mOffsetConditionFactory;
 
-    public BrowserControlsFacility(@BrowserControlsState int expectedConstraints) {
-        this.expectedConstraints = expectedConstraints;
+    private BrowserControlsFacility(
+            String name,
+            @Nullable @BrowserControlsState Integer expectedConstraints,
+            Function<Supplier<@Nullable ChromeTabbedActivity>, Condition> offsetConditionFactory) {
+        super(name);
+        mExpectedConstraints = expectedConstraints;
+        mOffsetConditionFactory = offsetConditionFactory;
+    }
+
+    /** The controls can be scrolled and are fully shown. */
+    public static <T extends WebPageStation> BrowserControlsFacility<T> shown() {
+        return new BrowserControlsFacility<>(
+                "BrowserControlsShown",
+                BrowserControlsState.BOTH,
+                BrowserControlsOffsetCondition::shown);
+    }
+
+    /** The controls can be scrolled and are scrolled off. */
+    public static <T extends WebPageStation> BrowserControlsFacility<T> scrolledOff() {
+        return new BrowserControlsFacility<>(
+                "BrowserControlsScrolledOff",
+                BrowserControlsState.BOTH,
+                BrowserControlsOffsetCondition::scrolledOff);
+    }
+
+    /**
+     * The controls are fully shown and can't scroll off (min height equals height).
+     *
+     * <p>Constraints aren't checked: they are SHOWN in a desktop window, where AppHeaderCoordinator
+     * locks the controls, and BOTH otherwise.
+     */
+    public static <T extends WebPageStation> BrowserControlsFacility<T> shownAndHeightSynced() {
+        return new BrowserControlsFacility<>(
+                "BrowserControlsShownAndHeightSynced",
+                /* expectedConstraints= */ null,
+                BrowserControlsOffsetCondition::shownAndHeightSynced);
+    }
+
+    @Override
+    public void declareExtraElements() {
+        Supplier<@Nullable ChromeTabbedActivity> activitySupplier =
+                assumeNonNull(mHostStation.getActivityElement());
+        if (mExpectedConstraints != null) {
+            declareEnterCondition(
+                    new BrowserControlsStateCondition<>(
+                            activitySupplier,
+                            mHostStation.activityTabElement,
+                            mExpectedConstraints));
+        }
+        declareEnterCondition(mOffsetConditionFactory.apply(activitySupplier));
     }
 
     /**
@@ -33,7 +92,7 @@ public class BrowserControlsFacility<HostStationT extends WebPageStation>
      * at some point the controls can be moved by user gesture. It will then fully cycle the top
      * controls to entirely hidden and back to fully shown.
      *
-     * @param activity The ChromeActivity.
+     * @param webPageStation The active {@link WebPageStation} to scroll.
      */
     public static void waitForBrowserControlsToBeMoveable(WebPageStation webPageStation) {
         ChromeActivity activity = webPageStation.getActivity();
@@ -78,50 +137,5 @@ public class BrowserControlsFacility<HostStationT extends WebPageStation>
                                     int offset = browserControlsStateProvider.getTopControlOffset();
                                     return Condition.whetherEquals(0, offset);
                                 }));
-    }
-
-    /** Assert top controls are scrollable and physically shown. */
-    public static <T extends WebPageStation> BrowserControlsFacility<T> shown(T station) {
-        BrowserControlsFacility<T> facility =
-                new BrowserControlsFacility<>(BrowserControlsState.BOTH);
-        facility.declareEnterCondition(
-                BrowserControlsOffsetCondition.showAndScrollable(station.getActivityElement()));
-        return facility;
-    }
-
-    public static <T extends WebPageStation> BrowserControlsFacility<T> scrolledOff(T station) {
-        BrowserControlsFacility<T> facility =
-                new BrowserControlsFacility<>(BrowserControlsState.BOTH);
-        facility.declareEnterCondition(
-                BrowserControlsOffsetCondition.scrolledOff(station.getActivityElement()));
-        return facility;
-    }
-
-    public static <T extends WebPageStation> BrowserControlsFacility<T> shownAndHeightSynced(
-            T station) {
-        BrowserControlsFacility<T> facility =
-                new BrowserControlsFacility<>(BrowserControlsState.BOTH);
-        facility.declareEnterCondition(
-                BrowserControlsOffsetCondition.showAndHeightSynced(station.getActivityElement()));
-        return facility;
-    }
-
-    /** Assert top controls are locked to shown. */
-    public static <T extends WebPageStation> BrowserControlsFacility<T> forceShown() {
-        return new BrowserControlsFacility<>(BrowserControlsState.SHOWN);
-    }
-
-    /** Assert top controls are locked to hidden. */
-    public static <T extends WebPageStation> BrowserControlsFacility<T> forceHidden() {
-        return new BrowserControlsFacility<>(BrowserControlsState.HIDDEN);
-    }
-
-    @Override
-    public void declareExtraElements() {
-        declareEnterCondition(
-                new BrowserControlsStateCondition<>(
-                        mHostStation.getActivityElement(),
-                        mHostStation.activityTabElement,
-                        expectedConstraints));
     }
 }

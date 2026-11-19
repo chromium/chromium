@@ -4,21 +4,26 @@
 
 package org.chromium.chrome.test.transit.browser_controls;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 
 import java.util.function.Supplier;
 
 /** Condition to check the physical offset of browser controls (shown or hidden). */
+@NullMarked
 public class BrowserControlsOffsetCondition<ActivityT extends ChromeActivity> extends Condition {
-    private final Supplier<ActivityT> mActivitySupplier;
+    private final Supplier<@Nullable ActivityT> mActivitySupplier;
     private final boolean mExpectPhysicallyShown;
     private final boolean mHeightSynced;
 
     BrowserControlsOffsetCondition(
-            Supplier<ActivityT> activitySupplier,
+            Supplier<@Nullable ActivityT> activitySupplier,
             boolean expectPhysicallyShown,
             boolean heightSynced) {
         super(/* isRunOnUiThread= */ true);
@@ -27,27 +32,31 @@ public class BrowserControlsOffsetCondition<ActivityT extends ChromeActivity> ex
         mHeightSynced = heightSynced;
     }
 
+    /** The controls are fully shown. */
     public static <ActivityT extends ChromeActivity>
-            BrowserControlsOffsetCondition<ActivityT> showAndScrollable(
-                    Supplier<ActivityT> activitySupplier) {
+            BrowserControlsOffsetCondition<ActivityT> shown(
+                    Supplier<@Nullable ActivityT> activitySupplier) {
         return new BrowserControlsOffsetCondition<>(activitySupplier, true, false);
     }
 
+    /** The controls are fully shown and can't scroll off (min height equals height). */
     public static <ActivityT extends ChromeActivity>
-            BrowserControlsOffsetCondition<ActivityT> showAndHeightSynced(
-                    Supplier<ActivityT> activitySupplier) {
+            BrowserControlsOffsetCondition<ActivityT> shownAndHeightSynced(
+                    Supplier<@Nullable ActivityT> activitySupplier) {
         return new BrowserControlsOffsetCondition<>(activitySupplier, true, true);
     }
 
+    /** The controls are scrolled off down to their min height. */
     public static <ActivityT extends ChromeActivity>
             BrowserControlsOffsetCondition<ActivityT> scrolledOff(
-                    Supplier<ActivityT> activitySupplier) {
+                    Supplier<@Nullable ActivityT> activitySupplier) {
         return new BrowserControlsOffsetCondition<>(activitySupplier, false, false);
     }
 
     @Override
     protected ConditionStatus checkWithSuppliers() {
-        BrowserControlsStateProvider provider = mActivitySupplier.get().getBrowserControlsManager();
+        BrowserControlsStateProvider provider =
+                assumeNonNull(mActivitySupplier.get()).getBrowserControlsManager();
         int topControlsHeight = provider.getTopControlsHeight();
         int topControlsMinHeight = provider.getTopControlsMinHeight();
         int contentOffset = provider.getContentOffset();
@@ -84,6 +93,8 @@ public class BrowserControlsOffsetCondition<ActivityT extends ChromeActivity> ex
 
     @Override
     public String buildDescription() {
-        return "Browser controls physically " + (mExpectPhysicallyShown ? "shown" : "hidden");
+        return "Browser controls physically "
+                + (mExpectPhysicallyShown ? "shown" : "hidden")
+                + (mHeightSynced ? ", height synced" : "");
     }
 }
