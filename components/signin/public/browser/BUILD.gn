@@ -22,12 +22,15 @@ source_set("browser") {
 
   if (is_ios) {
     sources += [
+      "account_switching_promo_logger.cc",
+      "account_switching_promo_logger.h",
       "account_switching_promo_metrics.h",
       "account_switching_promo_prefs.cc",
       "account_switching_promo_prefs.h",
     ]
     deps += [
       "//base",
+      "//components/feature_engagement/public",
       "//components/prefs",
     ]
   }
@@ -64,8 +67,13 @@ source_set("unit_tests") {
   }
 
   if (is_ios) {
-    sources += [ "account_switching_promo_prefs_unittest.cc" ]
+    sources += [
+      "account_switching_promo_logger_unittest.cc",
+      "account_switching_promo_prefs_unittest.cc",
+    ]
     deps += [
+      "//components/feature_engagement/public",
+      "//components/feature_engagement/test:test_support",
       "//components/prefs",
       "//components/prefs:test_support",
     ]

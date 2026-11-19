@@ -333,6 +333,10 @@ chromium-metrics-reviews@google.com.
 
 <enum name="AccountSwitchingPromoEvent">
   <int value="0" label="Eligible on startup"/>
+  <int value="1" label="Promo triggered"/>
+  <int value="2" label="Accepted"/>
+  <int value="3" label="Explicitly dismissed"/>
+  <int value="4" label="Ignored"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/browser/account_switching_promo_metrics.h:AccountSwitchingPromoEvent) -->

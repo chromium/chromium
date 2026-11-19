@@ -907,10 +907,12 @@ to monitor/debug fetching OAuth2 Token issues. -->
   <owner>arthurmilchior@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
-    Records lifecycle events for the smart account switching full-screen startup
-    promo. Emitted at startup when eligible for display (reflecting account and
-    pair eligibility prior to Feature Engagement throttling; on iOS, when
-    registering with PromosManager).
+    Records lifecycle events and user outcomes for the smart account switching
+    full-screen startup promo. Emitted at startup when eligible for display
+    (reflecting account and pair eligibility prior to Feature Engagement
+    throttling; on iOS, when registering with PromosManager), when the promo
+    display is triggered, and upon user outcome (accepted, explicitly dismissed
+    via 'Not now' or swipe-to-dismiss, or ignored).
   </summary>
 </histogram>
 

@@ -1,5 +1,12 @@
 include_rules = [
+  "+components/feature_engagement/public",
   "+components/signin/public",
   # Remove this after moving AccountReconcilor from core/browser.
   "+components/signin/core/browser",
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+components/feature_engagement/test",
+  ],
+}

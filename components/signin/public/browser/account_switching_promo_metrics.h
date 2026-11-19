@@ -20,8 +20,21 @@ enum class AccountSwitchingPromoEvent {
   // Emitted at startup when the promo is eligible for display (on iOS, when
   // registered with `PromosManager`).
   kEligibleOnStartup = 0,
+  // Emitted by `AccountSwitchingPromoLogger` when presentation of the account
+  // switching promo is triggered.
+  kPromoTriggered = 1,
+  // Emitted by `AccountSwitchingPromoLogger` when the user accepts the
+  // promo and completes switching to a different primary account.
+  kAccepted = 2,
+  // Emitted by `AccountSwitchingPromoLogger` when the user explicitly
+  // dismisses the promo ("Not now" button or swipe-to-dismiss).
+  kExplicitlyDismissed = 3,
+  // Emitted by `AccountSwitchingPromoLogger` when the promo is
+  // dismissed without an explicit accept or cancel action (e.g., interrupted by
+  // external navigation, profile switch, or app dismissal).
+  kIgnored = 4,
 
-  kMaxValue = kEligibleOnStartup,
+  kMaxValue = kIgnored,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountSwitchingPromoEvent)
 
