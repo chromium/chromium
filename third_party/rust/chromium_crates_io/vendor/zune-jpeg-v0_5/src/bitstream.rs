@@ -88,7 +88,15 @@ macro_rules! decode_huff {
                 if $stream.strict {
                     return Err(DecodeErrors::FormatStatic("Bad Huffman Code Corrupt JPEG"));
                 }
-                warn!("Bad Huffman code in JPEG entropy");
+                if $stream.baseline && $stream.bits_left < 17
+                    && ($stream.marker.is_some() || $stream.seen_eoi)
+                {
+                    $stream.fill_marker_zeros();
+                }
+                if !$stream.warned_bad_code {
+                    warn!("Invalid Huffman code recovered as a zero symbol");
+                    $stream.warned_bad_code = true;
+                }
                 // The sequential recovery rule consumes the invalid 17-bit
                 // code and substitutes a zero symbol, not the rest of the scan.
                 $symbol = 0;
@@ -114,6 +122,7 @@ macro_rules! decode_huff {
 /// resume decoding from a previously-completed MCU without re-reading earlier
 /// entropy data.
 #[derive(Clone, Copy)]
+#[allow(clippy::struct_excessive_bools)]
 pub(crate) struct HuffmanBitstreamState {
     pub(crate) buffer:            u64,
     pub(crate) aligned_buffer:    u64,
@@ -127,7 +136,8 @@ pub(crate) struct HuffmanBitstreamState {
     pub(crate) eob_run:           i32,
     pub(crate) marker_bits:       Option<u8>,
     pub(crate) insufficient_data: bool,
-    pub(crate) corrupt_data:      bool
+    pub(crate) corrupt_data:      bool,
+    pub(crate) skip_mcu:          bool
 }
 
 /// Type-erased bitstream state snapshot stored in `ScanCheckpoint`.
@@ -160,6 +170,10 @@ pub(crate) trait BitStream {
     }
 
     fn clear_huffman_code_warning(&mut self) {}
+
+    fn remaining_mcus_are_neutral(&self) -> bool {
+        false
+    }
 
     /// Create a new Bitstream for progressive decoding
     fn new_progressive(al: u8, spec_start: u8, spec_end: u8) -> Self;
@@ -317,6 +331,8 @@ pub(crate) struct BitStreamHuffman {
     seen_eoi:            bool,
     /// Strict mode, see [`BitStream::set_strict`].
     strict:              bool,
+    baseline:            bool,
+    warned_bad_code:     bool,
     // Real entropy bits remaining before the latched marker. Lookahead may
     // include zero padding, but consuming it marks subsequent MCUs as missing.
     marker_bits:         Option<u8>,
@@ -363,6 +379,9 @@ impl BitStreamHuffman {
     /// Discard the next `N` bits without checking
     #[inline]
     fn drop_bits(&mut self, n: u8) {
+        if self.baseline && self.bits_left < n && (self.marker.is_some() || self.seen_eoi) {
+            self.fill_marker_zeros();
+        }
         self.consume_marker_bits(n);
         // PS: Its a good check, but triggers fuzzer and a lot of false positives
         //debug_assert!(self.bits_left >= n);
@@ -375,13 +394,16 @@ impl BitStreamHuffman {
     #[inline(always)]
     #[allow(clippy::cast_possible_truncation)]
     fn get_bits(&mut self, n_bits: u8) -> i32 {
+        if self.baseline && self.bits_left < n_bits && (self.marker.is_some() || self.seen_eoi) {
+            self.fill_marker_zeros();
+        }
         self.consume_marker_bits(n_bits);
         let mask = (1_u64 << n_bits) - 1;
 
         self.aligned_buffer = self.aligned_buffer.rotate_left(u32::from(n_bits));
         let bits = (self.aligned_buffer & mask) as i32;
         let (left, exhausted) = self.bits_left.overflowing_sub(n_bits);
-        self.bits_left = left;
+        self.bits_left = if exhausted { 0 } else { left };
         self.exhausted |= exhausted;
         bits
     }
@@ -391,6 +413,17 @@ impl BitStreamHuffman {
             self.insufficient_data |= bits > *remaining;
             *remaining = remaining.saturating_sub(bits);
         }
+
+    }
+
+    fn fill_marker_zeros(&mut self) {
+        debug_assert!(self.bits_left < 32);
+        self.buffer <<= 32;
+        self.bits_left += 32;
+        if self.overread_by > 0 {
+            self.zeros_past_end += 32;
+        }
+        self.aligned_buffer = self.buffer << (64 - self.bits_left);
     }
 
     /// Decode the DC coefficient in a MCU block.
@@ -495,6 +528,9 @@ impl BitStreamHuffman {
                 let marker = Marker::from_u8(next_byte as u8);
                 self.marker = marker;
                 self.marker_bits = Some(self.bits_left);
+                if self.baseline && matches!(marker, Some(Marker::RST(_))) && self.bits_left < 32 {
+                    self.fill_marker_zeros();
+                }
                 if let Some(Marker::UNKNOWN(_)) = marker {
                     return Err(DecodeErrors::Format(
                         "Unknown marker in bit stream".to_string()
@@ -686,6 +722,8 @@ impl BitStream for BitStreamHuffman {
             stuffed_past_end:    false,
             seen_eoi:            false,
             strict:              false,
+            baseline:            true,
+            warned_bad_code:     false,
             marker_bits:         None,
             insufficient_data:   false,
             skip_mcu:            false,
@@ -713,6 +751,8 @@ impl BitStream for BitStreamHuffman {
             stuffed_past_end:    false,
             seen_eoi:            false,
             strict:              false,
+            baseline:            false,
+            warned_bad_code:     false,
             marker_bits:         None,
             insufficient_data:   false,
             skip_mcu:            false,
@@ -725,7 +765,7 @@ impl BitStream for BitStreamHuffman {
     }
 
     fn begin_mcu(&mut self) {
-        self.skip_mcu = self.insufficient_data && !self.strict;
+        self.skip_mcu = self.baseline && self.insufficient_data && !self.strict;
     }
 
     fn has_corrupt_data(&self) -> bool {
@@ -734,6 +774,13 @@ impl BitStream for BitStreamHuffman {
 
     fn clear_huffman_code_warning(&mut self) {
         self.corrupt_data = false;
+    }
+
+    fn remaining_mcus_are_neutral(&self) -> bool {
+        self.baseline
+            && self.insufficient_data
+            && !self.strict
+            && (self.seen_eoi || matches!(self.marker, Some(Marker::EOI)))
     }
 
     #[inline(always)]
@@ -789,7 +836,8 @@ impl BitStream for BitStreamHuffman {
             eob_run:        self.eob_run,
             marker_bits:    self.marker_bits,
             insufficient_data: self.insufficient_data,
-            corrupt_data: self.corrupt_data
+            corrupt_data: self.corrupt_data,
+            skip_mcu: self.skip_mcu
         }
     }
 
@@ -808,6 +856,7 @@ impl BitStream for BitStreamHuffman {
         self.marker_bits = state.marker_bits;
         self.insufficient_data = state.insufficient_data;
         self.corrupt_data = state.corrupt_data;
+        self.skip_mcu = state.skip_mcu;
     }
 
     #[inline(always)]
@@ -844,12 +893,7 @@ impl BitStream for BitStreamHuffman {
                 // also we are in over-reading mode, where we fill it with zeroes
 
                 // fill with zeroes
-                self.buffer <<= 32;
-                self.bits_left += 32;
-                if self.overread_by > 0 {
-                    self.zeros_past_end += 32;
-                }
-                self.aligned_buffer = self.buffer << (64 - self.bits_left);
+                self.fill_marker_zeros();
                 return Ok(true);
             }
 
@@ -1008,6 +1052,9 @@ impl BitStream for BitStreamHuffman {
             return Ok(0);
         }
 
+        if self.skip_mcu {
+            return Ok(0);
+        }
         // decode DC, dc prediction will contain the value
         self.discard_dc(reader, dc_table)?;
 
@@ -1307,6 +1354,9 @@ impl BitStream for BitStreamHuffman {
     /// everything
     #[cold]
     fn reset(&mut self) {
+        self.marker_bits = None;
+        self.insufficient_data = false;
+        self.skip_mcu = false;
         self.bits_left = 0;
         self.marker = None;
         self.buffer = 0;

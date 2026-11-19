@@ -357,6 +357,8 @@ pub struct JpegDecoder<T> {
     /// **The callee must uphold a contract**. See [`choose_idct_4x4_func`].
     pub(crate) idct_4x4_func:    IDCTPtr,
     pub(crate) idct_1x1_func:    IDCTPtr,
+    #[cfg(test)]
+    pub(crate) idct_blocks_for_test: usize,
     // Color convert function which acts on 16 YCbCr values
     pub(crate) color_convert_16: ColorConvert16,
     pub(crate) z_order:          [usize; MAX_COMPONENTS],
@@ -1232,9 +1234,10 @@ where
         self.decoder.raw_pull_state.input_complete = true;
     }
 
-    /// Number of components in SOF declaration order.
+    /// Number of components available to raw output, in SOF declaration order.
     ///
-    /// Returns `None` when headers have not been decoded yet.
+    /// Returns `None` before headers are decoded or for lossless JPEG, whose
+    /// raw sample output is unsupported.
     #[must_use]
     pub fn num_components(&self) -> Option<usize> {
         self.decoder.raw_num_components()
@@ -1246,8 +1249,8 @@ where
     /// `[b'R', b'G', b'B']`. Selectors are returned exactly as encoded so
     /// callers can identify nonstandard component layouts.
     ///
-    /// Returns `None` when headers have not been decoded yet or contain no
-    /// components.
+    /// Returns `None` before headers are decoded, when there are no components,
+    /// or for lossless JPEG, whose raw sample output is unsupported.
     #[must_use]
     pub fn component_ids(&self) -> Option<Vec<u8>> {
         self.decoder.raw_component_ids()
@@ -1255,8 +1258,9 @@ where
 
     /// Per-component raw plane geometry and sampling metadata.
     ///
-    /// Indices `0..num_components()` are populated in SOF declaration order;
-    /// trailing entries are [`PlaneInfo::default`]. The sampling-factor fields
+    /// Encoded components are populated in SOF declaration order; trailing
+    /// entries are [`PlaneInfo::default`]. Geometry remains available even when
+    /// raw sample output is unsupported. The sampling-factor fields
     /// preserve the exact SOF values, so callers can identify subsampling
     /// without inferring it from rounded dimensions.
     ///
@@ -2217,6 +2221,8 @@ where
             idct_func:                   choose_idct_func(&options),
             idct_4x4_func:               choose_idct_4x4_func(&options),
             idct_1x1_func:               choose_idct_1x1_func(&options),
+            #[cfg(test)]
+            idct_blocks_for_test:        0,
             color_convert_16:            color_convert,
             input_colorspace:            ColorSpace::YCbCr,
             adobe_transform:             None,
@@ -2627,10 +2633,10 @@ where
     ///
     /// # Returns
     /// - `Some(n)`: number of components in the input scan
-    /// - `None`: headers have not been decoded yet
+    /// - `None`: headers have not been decoded or lossless raw output is unsupported
     #[must_use]
     fn raw_num_components(&self) -> Option<usize> {
-        if self.headers_decoded {
+        if self.headers_decoded && !self.info.sof.is_lossless() {
             Some(self.components.len())
         } else {
             None
@@ -2641,7 +2647,7 @@ where
     ///
     /// Returns one [`PlaneInfo`] per component in declaration order
     /// (Y, Cb, Cr for YCbCr; Y for grayscale; C, M, Y, K for CMYK; etc.).
-    /// Indices `0..num_components()` are populated; trailing entries are
+    /// Encoded components are populated; trailing entries are
     /// the default zero-sized [`PlaneInfo`].
     /// [`PlaneInfo::horizontal_sampling_factor`] and
     /// [`PlaneInfo::vertical_sampling_factor`] expose each component's exact
@@ -3437,8 +3443,19 @@ where
 
     fn ensure_supported_encoding(&self) -> Result<(), DecodeErrors> {
         let unsupported = match self.info.sof {
-            SOFMarkers::LosslessHuffman => Some(UnsupportedSchemes::LosslessHuffman),
-            SOFMarkers::LosslessArithmetic => Some(UnsupportedSchemes::LosslessArithmetic),
+            SOFMarkers::LosslessHuffman => {
+                self.validate_lossless_encoding()?;
+                None
+            }
+            SOFMarkers::LosslessArithmetic => {
+                #[cfg(feature = "arith")]
+                {
+                    self.validate_lossless_encoding()?;
+                    None
+                }
+                #[cfg(not(feature = "arith"))]
+                Some(UnsupportedSchemes::LosslessArithmetic)
+            }
             _ => None
         };
         if let Some(unsupported) = unsupported {
@@ -3840,6 +3857,18 @@ where
     fn decode_mcu_output(
         &mut self, output: &mut McuDecodeOutput<'_, '_>
     ) -> Result<(), DecodeErrors> {
+        if self.info.sof.is_lossless() {
+            return match output {
+                McuDecodeOutput::Pixels(pixels) => self.decode_lossless(pixels),
+                McuDecodeOutput::RawPlanes(_)
+                | McuDecodeOutput::Scanlines(_)
+                | McuDecodeOutput::Scaled(_) => {
+                    Err(DecodeErrors::FormatStatic(
+                        "Lossless JPEG supports decode and decode_into, not raw, scanline or scaled output"
+                    ))
+                }
+            };
+        }
         if self.is_arithmetic {
             #[cfg(feature = "arith")]
             {
@@ -3937,7 +3966,7 @@ where
     }
 
     fn raw_component_ids(&self) -> Option<Vec<u8>> {
-        if !self.headers_decoded || self.components.is_empty() {
+        if !self.headers_decoded || self.components.is_empty() || self.info.sof.is_lossless() {
             return None;
         }
         Some(
@@ -4096,13 +4125,16 @@ where
         for comp in &mut self.components {
             let hs = self.h_max / comp.horizontal_sample;
             let vs = self.v_max / comp.vertical_sample;
+            // Native fancy H/HV needs three visible samples, not three padded samples.
+            let visible_width =
+                (usize::from(self.info.width) * comp.horizontal_sample).div_ceil(self.h_max);
 
             let samp_factor = match (hs, vs) {
                 (1, 1) => {
                     comp.sample_ratio = SampleRatios::None;
                     upsample_no_op
                 }
-                (2, 1) => {
+                (2, 1) if visible_width > 2 => {
                     comp.sample_ratio = SampleRatios::H;
                     choose_horizontal_samp_function(&self.options)
                 }
@@ -4110,7 +4142,7 @@ where
                     comp.sample_ratio = SampleRatios::V;
                     choose_v_samp_function(&self.options)
                 }
-                (2, 2) => {
+                (2, 2) if visible_width > 2 => {
                     comp.sample_ratio = SampleRatios::HV;
                     choose_hv_samp_function(&self.options)
                 }
@@ -4367,6 +4399,38 @@ mod planar_layout_helpers {
     use super::{round_up_pow2, JpegDecoder, RawImcuRowStatus, ScanlineReadStatus, ScanlineStatus};
     use crate::color_convert::choose_ycbcr_to_rgb_convert_func;
     use crate::idct::{choose_idct_1x1_func, choose_idct_4x4_func, choose_idct_func};
+
+    #[test]
+    fn narrow_chroma_dispatch_uses_visible_width_and_ceiling() {
+        use crate::components::{Components, SampleRatios};
+
+        for width in 1..=6 {
+            for h_max in [2_u8, 4] {
+                for v_max in [1, 2] {
+                    let mut decoder = JpegDecoder::new(ZCursor::new(&[][..]));
+                    decoder.info.width = width;
+                    decoder.h_max = usize::from(h_max);
+                    decoder.v_max = v_max;
+                    let mut component =
+                        Components::from([2, ((h_max / 2) << 4) | 1, 0], 1).unwrap();
+                    component.width_stride = 8;
+                    decoder.components.push(component);
+                    decoder.set_upsampling();
+                    let expected = if width <= 4 {
+                        SampleRatios::Generic(2, v_max)
+                    } else if v_max == 1 {
+                        SampleRatios::H
+                    } else {
+                        SampleRatios::HV
+                    };
+                    assert_eq!(
+                        decoder.components[0].sample_ratio, expected,
+                        "width={width}, h_max={h_max}, v_max={v_max}"
+                    );
+                }
+            }
+        }
+    }
 
     fn dc_only_progressive_jpeg(with_eoi: bool) -> Vec<u8> {
         let mut data = vec![0xFF, 0xD8, 0xFF, 0xDB, 0, 67, 0];

@@ -67,6 +67,25 @@ class SnapshotCountingReader final : public SegmentReader {
   mutable unsigned snapshot_count_ = 0;
 };
 
+struct LosslessTestCase {
+  const char* path;
+  wtf_size_t components;
+};
+
+constexpr std::array<LosslessTestCase, 6> kLosslessTestCases = {{
+    {"/images/jpeg-suite/lossless_huffman/32x32x8_grayscale.jpg", 1},
+    {"/images/jpeg-suite/lossless_huffman/32x32x8_grayscale_predictor1.jpg", 1},
+    {"/images/jpeg-suite/lossless_huffman/32x32x8_grayscale_predictor7.jpg", 1},
+    {"/images/jpeg-suite/lossless_huffman/32x32x8_ycbcr_interleaved.jpg", 3},
+    {"/images/jpeg-suite/lossless_arithmetic/32x32x8_grayscale.jpg", 1},
+    {"/images/jpeg-suite/lossless_arithmetic/32x32x8_ycbcr_interleaved.jpg", 3},
+}};
+
+constexpr std::array<const char*, 5> kHuffmanRecoveryFiles = {
+    "huffman-invalid-dc.jpg", "huffman-invalid-ac.jpg",
+    "huffman-premature-eoi-444.jpg", "huffman-empty-restart.jpg",
+    "huffman-short-restart.jpg"};
+
 std::unique_ptr<JPEGImageDecoder> CreateJPEGDecoder(
     wtf_size_t max_decoded_bytes,
     const gfx::Size& desired_size = gfx::Size()) {
@@ -114,6 +133,7 @@ enum class JPEGExpectedDifference {
   kNone,
   kSizeAvailability,
   kLibjpegTurboDecodeFailure,
+  kRustDecodeSuccess,
 };
 
 struct JPEGComparisonTestCase {
@@ -170,6 +190,14 @@ JPEGComparisonTestCase ArithmeticDecodeDifference(const char* path) {
       path,
       "The libjpeg-turbo build omits arithmetic decoding while zune-jpeg "
       "decodes this image.");
+}
+
+JPEGComparisonTestCase LosslessDecodeSuccess(const char* path) {
+  return JPEGComparisonTestCase{
+      path, JPEGExpectedDifference::kRustDecodeSuccess, 0, 0,
+      "Native Blink rejects lossless component-to-RGB conversion and its "
+      "libjpeg-turbo build omits arithmetic decoding. Rust must decode the "
+      "image successfully."};
 }
 
 int ChannelDelta(uint8_t a, uint8_t b) {
@@ -556,6 +584,292 @@ TEST(JPEGImageDecoderTest, RustMemoryBoundByteByByteBaselineAndProgressive) {
   }
 }
 
+TEST(JPEGImageDecoderTest, LosslessExactSamples) {
+  // CC0 raw 32x32 grayscale samples, independently decoded with libjpeg-turbo.
+  // https://github.com/etemesi254/zune-image/pull/516
+  // Upstream revision: ba66f0396fff6e68181ace64f4e8c5a901254002
+  const Vector<char> grayscale =
+      ReadFile(kDecodersTestingDir, "lossless-grayscale.gray");
+  ASSERT_EQ(grayscale.size(), 32u * 32u);
+  // RGB is PR516's explicit fixed-point conversion of independently verified
+  // component samples, not libjpeg-turbo's rejected lossless RGB output.
+  const Vector<char> rgb = ReadFile(kDecodersTestingDir, "lossless-ycbcr.rgb");
+  ASSERT_EQ(rgb.size(), 32u * 32u * 3u);
+
+  for (const auto& test_case : kLosslessTestCases) {
+    SCOPED_TRACE(test_case.path);
+    const Vector<char>& expected = test_case.components == 1 ? grayscale : rgb;
+    auto data = ReadFileToSharedBuffer(test_case.path);
+    ASSERT_TRUE(data);
+    for (bool use_rust : {false, true}) {
+      SCOPED_TRACE(use_rust);
+      base::test::ScopedFeatureList features;
+      features.InitWithFeatureState(skia::kRustyJpegFeature, use_rust);
+      for (bool use_factory : {false, true}) {
+        SCOPED_TRACE(use_factory);
+        auto decoder = use_factory ? CreateFactoryJPEGDecoder()
+                       : use_rust  ? CreateRustJPEGDecoder()
+                                   : CreateCppJPEGDecoder();
+        decoder->SetData(data.get(), true);
+        if (!use_rust) {
+          ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+          EXPECT_TRUE(decoder->Failed());
+          EXPECT_FALSE(frame &&
+                       frame->GetStatus() == ImageFrame::kFrameComplete);
+          continue;
+        }
+        ASSERT_TRUE(decoder->IsSizeAvailable());
+        EXPECT_EQ(decoder->Size(), gfx::Size(32, 32));
+        ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+        ASSERT_TRUE(frame);
+        ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+        ASSERT_FALSE(decoder->Failed());
+        EXPECT_EQ(decoder->DecodedSize(), gfx::Size(32, 32));
+        ASSERT_EQ(frame->Bitmap().dimensions(), SkISize::Make(32, 32));
+        EXPECT_FALSE(decoder->CanDecodeToYUV());
+        for (int y = 0; y < 32; ++y) {
+          for (int x = 0; x < 32; ++x) {
+            const wtf_size_t offset = (y * 32 + x) * test_case.components;
+            const uint8_t red = static_cast<uint8_t>(expected[offset]);
+            const uint8_t green =
+                test_case.components == 1
+                    ? red
+                    : static_cast<uint8_t>(expected[offset + 1]);
+            const uint8_t blue =
+                test_case.components == 1
+                    ? red
+                    : static_cast<uint8_t>(expected[offset + 2]);
+            EXPECT_EQ(frame->Bitmap().getColor(x, y),
+                      SkColorSetARGB(255, red, green, blue))
+                << "pixel " << x << ", " << y;
+          }
+        }
+      }
+    }
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustLosslessRGBExactSamples) {
+  // PR516's independently verified components, reinterpreted as RGB by APP14.
+  // https://github.com/etemesi254/zune-image/pull/516
+  // Upstream revision: f7d10ff8e5e80dd23b2d43f14f49b21a3982bd17
+  const Vector<char> expected =
+      ReadFile(kDecodersTestingDir, "lossless-rgb.rgb");
+  ASSERT_EQ(expected.size(), 32u * 32u * 3u);
+  constexpr uint8_t kAdobeRgb[] = {0xff, 0xee, 0,   14, 'A', 'd', 'o', 'b',
+                                   'e',  0,    100, 0,  0,   0,   0,   0};
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  for (const char* path : {
+           "/images/jpeg-suite/lossless_huffman/32x32x8_ycbcr_interleaved.jpg",
+           "/images/jpeg-suite/lossless_arithmetic/"
+           "32x32x8_ycbcr_interleaved.jpg",
+       }) {
+    SCOPED_TRACE(path);
+    auto original = ReadFileToSharedBuffer(path);
+    ASSERT_TRUE(original);
+    const Vector<char> bytes = original->CopyAs<Vector<char>>();
+    auto data = SharedBuffer::Create(base::span(bytes).first<2>());
+    data->Append(base::as_chars(base::span(kAdobeRgb)));
+    data->Append(base::span(bytes).subspan<2>());
+    for (bool use_factory : {false, true}) {
+      SCOPED_TRACE(use_factory);
+      auto decoder =
+          use_factory ? CreateFactoryJPEGDecoder() : CreateRustJPEGDecoder();
+      decoder->SetData(data.get(), true);
+      auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+      ASSERT_TRUE(frame);
+      ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+      ASSERT_FALSE(decoder->Failed());
+      ASSERT_EQ(frame->Bitmap().dimensions(), SkISize::Make(32, 32));
+      EXPECT_FALSE(decoder->CanDecodeToYUV());
+      for (int y = 0; y < 32; ++y) {
+        for (int x = 0; x < 32; ++x) {
+          const wtf_size_t offset = (y * 32 + x) * 3;
+          EXPECT_EQ(frame->Bitmap().getColor(x, y),
+                    SkColorSetARGB(255, static_cast<uint8_t>(expected[offset]),
+                                   static_cast<uint8_t>(expected[offset + 1]),
+                                   static_cast<uint8_t>(expected[offset + 2])));
+        }
+      }
+    }
+    TestByteByByteDecode(&CreateRustJPEGDecoder, data.get(), 1u,
+                         kAnimationNone);
+    TestByteByByteDecode(&CreateFactoryJPEGDecoder, data.get(), 1u,
+                         kAnimationNone);
+  }
+}
+
+TEST(JPEGImageDecoderTest, LosslessByteByByteRetries) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  for (const auto& test_case : kLosslessTestCases) {
+    SCOPED_TRACE(test_case.path);
+    TestByteByByteDecode(&CreateRustJPEGDecoder, test_case.path, 1u,
+                         kAnimationNone);
+    TestByteByByteDecode(&CreateFactoryJPEGDecoder, test_case.path, 1u,
+                         kAnimationNone);
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustLosslessRejectsUnsupportedModes) {
+  for (const char* path :
+       {"/images/jpeg-suite/lossless_huffman/32x32x16_grayscale.jpg",
+        "/images/jpeg-suite/lossless_huffman/32x32x8_ycbcr.jpg",
+        "/images/jpeg-suite/lossless_arithmetic/32x32x8_ycbcr.jpg"}) {
+    SCOPED_TRACE(path);
+    auto data = ReadFileToSharedBuffer(path);
+    ASSERT_TRUE(data);
+    auto decoder = CreateRustJPEGDecoder();
+    decoder->SetData(data.get(), true);
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+    EXPECT_TRUE(decoder->Failed());
+    EXPECT_FALSE(frame && frame->GetStatus() == ImageFrame::kFrameComplete);
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustHuffmanRecoveryMatchesNativePixels) {
+  // Authored DC/AC and premature-EOI controls from zune-image PR518.
+  // https://github.com/etemesi254/zune-image/pull/518
+  // Upstream revision: 15fbe652fac79431607ac4f441b13f3aed1c0102
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  for (const char* file : kHuffmanRecoveryFiles) {
+    SCOPED_TRACE(file);
+    auto data = ReadFileToSharedBuffer(kDecodersTestingDir, file);
+    ASSERT_TRUE(data);
+    auto reference = CreateCppJPEGDecoder();
+    reference->SetData(data.get(), true);
+    auto* expected = reference->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(expected);
+    ASSERT_EQ(expected->GetStatus(), ImageFrame::kFrameComplete);
+    ASSERT_FALSE(reference->Failed());
+    auto rust = CreateRustJPEGDecoder();
+    auto factory = CreateFactoryJPEGDecoder();
+    for (ImageDecoder* decoder : {rust.get(), factory.get()}) {
+      decoder->SetData(data.get(), true);
+      auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+      ASSERT_TRUE(frame);
+      ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+      EXPECT_FALSE(decoder->Failed());
+      EXPECT_EQ(decoder->DecodedSize(), reference->DecodedSize());
+      ASSERT_EQ(frame->Bitmap().dimensions(), expected->Bitmap().dimensions());
+      for (int y = 0; y < frame->Bitmap().height(); ++y) {
+        for (int x = 0; x < frame->Bitmap().width(); ++x) {
+          ASSERT_EQ(frame->Bitmap().getColor(x, y),
+                    expected->Bitmap().getColor(x, y))
+              << "pixel " << x << ", " << y;
+        }
+      }
+    }
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustHuffmanUnknownMarkerIsFatal) {
+  // PR518's authored grayscale control with an unknown marker in its entropy.
+  // https://github.com/etemesi254/zune-image/pull/518
+  // Upstream revision: 1cf270bddd90767836960073e587d8fd06fa8ba4
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  auto data =
+      ReadFileToSharedBuffer(kDecodersTestingDir, "huffman-unknown-marker.jpg");
+  ASSERT_TRUE(data);
+  const Vector<char> bytes = data->CopyAs<Vector<char>>();
+  ASSERT_FALSE(bytes.empty());
+  for (bool use_factory : {false, true}) {
+    for (bool incremental : {false, true}) {
+      SCOPED_TRACE(use_factory);
+      SCOPED_TRACE(incremental);
+      auto decoder =
+          use_factory ? CreateFactoryJPEGDecoder() : CreateRustJPEGDecoder();
+      const wtf_size_t step = incremental ? 1 : bytes.size();
+      for (wtf_size_t length = step; length <= bytes.size(); length += step) {
+        decoder->SetData(SharedBuffer::Create(base::span(bytes).first(length)),
+                         length == bytes.size());
+        ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+        EXPECT_FALSE(frame && frame->GetStatus() == ImageFrame::kFrameComplete);
+        if (decoder->Failed()) {
+          break;
+        }
+      }
+      EXPECT_TRUE(decoder->Failed());
+    }
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustHuffmanRecoveryFillsNeutralTail) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  auto data = ReadFileToSharedBuffer(kDecodersTestingDir,
+                                     "huffman-premature-eoi-444.jpg");
+  ASSERT_TRUE(data);
+  auto rust = CreateRustJPEGDecoder();
+  auto factory = CreateFactoryJPEGDecoder();
+  for (ImageDecoder* decoder : {rust.get(), factory.get()}) {
+    decoder->SetData(data.get(), true);
+    auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(frame);
+    ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+    ASSERT_EQ(frame->Bitmap().dimensions(), SkISize::Make(32, 24));
+    EXPECT_FALSE(decoder->Failed());
+    for (int y = 0; y < 24; ++y) {
+      for (int x = 0; x < 32; ++x) {
+        const SkColor expected =
+            y < 8 && x < 8    ? SkColorSetARGB(255, 138, 128, 139)
+            : y < 8 && x < 16 ? SkColorSetARGB(255, 142, 132, 143)
+                              : SkColorSetARGB(255, 128, 128, 128);
+        ASSERT_EQ(frame->Bitmap().getColor(x, y), expected)
+            << "pixel " << x << ", " << y;
+      }
+    }
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustHuffmanRecoveryByteByByteRetries) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  for (const char* file : kHuffmanRecoveryFiles) {
+    SCOPED_TRACE(file);
+    TestByteByByteDecode(&CreateRustJPEGDecoder, kDecodersTestingDir, file, 1u,
+                         kAnimationNone);
+    TestByteByByteDecode(&CreateFactoryJPEGDecoder, kDecodersTestingDir, file,
+                         1u, kAnimationNone);
+  }
+}
+
+TEST(JPEGImageDecoderTest, RustHuffmanRecoveryResumesAfterRestart) {
+  struct RestartTestCase {
+    const char* file;
+    int height;
+    std::array<uint8_t, 8> samples;
+  };
+  constexpr std::array<RestartTestCase, 2> kCases = {{
+      {"huffman-empty-restart.jpg", 16, {128, 128, 132, 136}},
+      {"huffman-short-restart.jpg",
+       32,
+       {132, 136, 136, 128, 132, 136, 140, 144}},
+  }};
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.file);
+    auto data = ReadFileToSharedBuffer(kDecodersTestingDir, test_case.file);
+    ASSERT_TRUE(data);
+    auto rust = CreateRustJPEGDecoder();
+    auto factory = CreateFactoryJPEGDecoder();
+    for (ImageDecoder* decoder : {rust.get(), factory.get()}) {
+      decoder->SetData(data.get(), true);
+      auto* frame = decoder->DecodeFrameBufferAtIndex(0);
+      ASSERT_TRUE(frame);
+      ASSERT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
+      ASSERT_EQ(frame->Bitmap().dimensions(),
+                SkISize::Make(16, test_case.height));
+      EXPECT_FALSE(decoder->Failed());
+      for (int y = 0; y < test_case.height; ++y) {
+        for (int x = 0; x < 16; ++x) {
+          const uint8_t sample = test_case.samples[(y / 8) * 2 + x / 8];
+          ASSERT_EQ(frame->Bitmap().getColor(x, y),
+                    SkColorSetARGB(255, sample, sample, sample))
+              << "pixel " << x << ", " << y;
+        }
+      }
+    }
+  }
+}
+
 TEST(JPEGImageDecoderTest, byteByByteRGBJPEGWithAdobeMarkers) {
   TestByteByByteDecode(&CreateJPEGDecoder,
                        "/images/resources/rgb-jpeg-with-adobe-marker-only.jpg",
@@ -581,6 +895,21 @@ TEST_P(JPEGDecoderComparisonTest, CompareDecoders) {
 
   cpp_decoder->SetData(data.get(), true);
   rust_decoder->SetData(data.get(), true);
+
+  if (test_case.expected_difference ==
+      JPEGExpectedDifference::kRustDecodeSuccess) {
+    ImageFrame* cpp_frame = cpp_decoder->DecodeFrameBufferAtIndex(0);
+    EXPECT_TRUE(cpp_decoder->Failed()) << jpeg_path;
+    EXPECT_FALSE(cpp_frame &&
+                 cpp_frame->GetStatus() == ImageFrame::kFrameComplete)
+        << jpeg_path;
+    ASSERT_TRUE(rust_decoder->IsSizeAvailable()) << jpeg_path;
+    ImageFrame* rust_frame = rust_decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(rust_frame) << jpeg_path;
+    EXPECT_FALSE(rust_decoder->Failed()) << jpeg_path;
+    EXPECT_EQ(rust_frame->GetStatus(), ImageFrame::kFrameComplete) << jpeg_path;
+    return;
+  }
 
   bool cpp_size_available = cpp_decoder->IsSizeAvailable();
   bool rust_size_available = rust_decoder->IsSizeAvailable();
@@ -768,23 +1097,23 @@ INSTANTIATE_TEST_SUITE_P(
                      "32x32x8_ycbcr_interleaved.jpg"),
         NoDifference("/images/jpeg-suite/extended_huffman/"
                      "32x32x8_ycbcr_quantization.jpg"),
-        NoDifference(
+        LosslessDecodeSuccess(
             "/images/jpeg-suite/lossless_arithmetic/32x32x8_grayscale.jpg"),
         NoDifference(
             "/images/jpeg-suite/lossless_arithmetic/32x32x8_ycbcr.jpg"),
-        NoDifference("/images/jpeg-suite/lossless_arithmetic/"
-                     "32x32x8_ycbcr_interleaved.jpg"),
+        LosslessDecodeSuccess("/images/jpeg-suite/lossless_arithmetic/"
+                              "32x32x8_ycbcr_interleaved.jpg"),
         NoDifference(
             "/images/jpeg-suite/lossless_huffman/32x32x16_grayscale.jpg"),
-        NoDifference(
+        LosslessDecodeSuccess(
             "/images/jpeg-suite/lossless_huffman/32x32x8_grayscale.jpg"),
-        NoDifference("/images/jpeg-suite/lossless_huffman/"
-                     "32x32x8_grayscale_predictor1.jpg"),
-        NoDifference("/images/jpeg-suite/lossless_huffman/"
-                     "32x32x8_grayscale_predictor7.jpg"),
+        LosslessDecodeSuccess("/images/jpeg-suite/lossless_huffman/"
+                              "32x32x8_grayscale_predictor1.jpg"),
+        LosslessDecodeSuccess("/images/jpeg-suite/lossless_huffman/"
+                              "32x32x8_grayscale_predictor7.jpg"),
         NoDifference("/images/jpeg-suite/lossless_huffman/32x32x8_ycbcr.jpg"),
-        NoDifference("/images/jpeg-suite/lossless_huffman/"
-                     "32x32x8_ycbcr_interleaved.jpg"),
+        LosslessDecodeSuccess("/images/jpeg-suite/lossless_huffman/"
+                              "32x32x8_ycbcr_interleaved.jpg"),
         ArithmeticDecodeDifference(
             "/images/jpeg-suite/progressive_arithmetic/32x32x8_grayscale.jpg"),
         ArithmeticDecodeDifference("/images/jpeg-suite/progressive_arithmetic/"
@@ -2396,10 +2725,10 @@ TEST_P(JPEGImageDecoderSuiteTest, VerifyJPEGSuiteImage) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
-// The ExpectedResult is determined empirically. Files using arithmetic
-// coding, lossless encoding, or 12-bit precision are not supported by
-// libjpeg-turbo as built in Chromium. The expected result should be updated
-// if decoder support changes.
+// ExpectedResult describes Blink's output pipeline, not all capabilities of
+// libjpeg-turbo. The library can decode Huffman lossless component samples, but
+// Blink requests RGB-family output, a conversion it rejects in lossless mode.
+// The bundled native build also omits arithmetic decoding.
 INSTANTIATE_TEST_SUITE_P(
     JPEGSuite,
     JPEGImageDecoderSuiteTest,

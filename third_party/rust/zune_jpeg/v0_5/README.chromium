@@ -29,6 +29,8 @@ Local Modifications:
   https://github.com/etemesi254/zune-image/pull/525
   https://github.com/etemesi254/zune-image/pull/526
   https://github.com/etemesi254/zune-image/pull/534
+  https://github.com/etemesi254/zune-image/pull/516
+  https://github.com/etemesi254/zune-image/pull/518
   Each patch records its published PR head and source-stage provenance.
   PR498 includes its eighth-step extension; subsequent patches are rebased
   onto that revision rather than carrying a second patch for the same PR.
@@ -53,6 +55,17 @@ Local Modifications:
   2ace9c7facb843e92edb1251945075e346f294d4 for opt-in final-input
   recovery in converted scanlines. Preserve growing/strict behavior and
   the preceding scaled-output, dispatch and component-scan fixes.
+- Patch 0014 backports PR516 at
+  f7d10ff8e5e80dd23b2d43f14f49b21a3982bd17 for 8-bit predictive lossless
+  Huffman and arithmetic JPEG, including sample-preserving RGB output.
+  Keep lossless raw/scaled output unsupported and withhold raw component
+  metadata so Blink does not advertise YUV.
+- Patch 0015 backports PR518 at
+  52376a5ae851b0bff9b7934a1e4ceb8ed5329b0c for permissive baseline Huffman
+  recovery with bounded neutral reconstruction and fatal unknown markers.
+  Use box reconstruction for one- or two-sample visible chroma widths.
+  Apply both patches after PR534 without replacing it or the preceding
+  PR525/PR526 optimizations.
 - Track upstream acceptance and release availability in:
   https://github.com/etemesi254/zune-image/issues/503
   Remove maintained patches only after verifying their complete behavior is

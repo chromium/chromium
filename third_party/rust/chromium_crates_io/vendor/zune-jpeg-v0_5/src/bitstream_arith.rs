@@ -152,7 +152,7 @@ static STATE_MACHINE: [(u16, u8, u8, u8); 113] = [
 
 /// A statistics entry; used to dynamically estimate the local probability of a decision
 #[derive(Clone, Copy, Default, Debug)]
-struct StatisticsEntry {
+pub(crate) struct StatisticsEntry {
     qe_index: u8,
     /// MPS (more probable symbol) register, either false=0 or true=1
     mps: bool,
@@ -293,7 +293,10 @@ impl BitStreamArithmetic {
         };
 
         if b == 0xFF {
-            let b2 = reader.read_u8_err()?;
+            let mut b2 = reader.read_u8_err()?;
+            while b2 == 0xff {
+                b2 = reader.read_u8_err()?;
+            }
             if b2 == 0 {
                 self.c |= 0xFF00;
             } else {
@@ -362,7 +365,7 @@ impl BitStreamArithmetic {
     }
 
     /// Decode the next bit, using the provided context index
-    fn decode_bit<T>(
+    pub(crate) fn decode_bit<T>(
         &mut self, context: &mut StatisticsEntry, reader: &mut ZReader<T>,
     ) -> Result<u8, DecodeErrors>
     where

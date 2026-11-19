@@ -1,0 +1,671 @@
+From 2b59bd1a8b6b24d6046201107b9bbd48702061f8 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Wed, 18 Nov 2026 22:26:27 +0000
+Subject: [PATCH] Recover malformed baseline Huffman scans
+
+Backport the remaining Rust-source delta from zune-image PR518:
+https://github.com/etemesi254/zune-image/pull/518
+Upstream head: 52376a5ae851b0bff9b7934a1e4ceb8ed5329b0c
+Upstream base: 2cdbbf554e7da373d3418ab327a0db7c4abb50cd
+Apply after PR516 and PR534, preserving PR525/PR526 optimizations.
+
+Recover invalid baseline Huffman codes in permissive mode by consuming
+17 bits and substituting zero. Preserve predictors and decoded AC values,
+finish partial MCUs and reconstruct missing MCUs as neutral coefficients.
+Keep real buffered entropy distinct from a prefetched EOI marker and
+bound reconstruction work for the remaining image.
+
+Keep unknown entropy markers fatal before EOF conversion or permissive
+partial-success recovery, including incremental decoding. Preserve the
+malformed smoke fixture as a fatal-error regression.
+
+Use the existing generic box reconstruction when visible chroma width
+is one or two samples. Calculate visible width with ceiling division,
+not the padded MCU stride, and retain configured row dispatch.
+
+Retain progressive error/publication policy, corruption tracking,
+suspending refill, widened coefficients and scaled output. Integrate
+empty-restart lookahead in the existing refill helper. Embed authored
+controls so the recovery unit tests are self-contained. Count reconstructed
+IDCT blocks, including PR526's inline DC-only path, without replacing
+configured dispatch.
+
+PR518's color precision changes are already covered by PR499.
+Do not duplicate them or import unrelated upstream-base changes.
+---
+ .../vendor/zune-jpeg-v0_5/src/bitstream.rs    |  72 ++++++++--
+ .../vendor/zune-jpeg-v0_5/src/decoder.rs      |  43 +++++-
+ .../src/huffman_recovery_tests.rs             |  87 ++++++++++++
+ .../vendor/zune-jpeg-v0_5/src/lib.rs          |   2 +
+ .../vendor/zune-jpeg-v0_5/src/mcu.rs          | 125 +++++++++++++++---
+ .../vendor/zune-jpeg-v0_5/src/mcu_prog.rs     |   9 +-
+ 6 files changed, 304 insertions(+), 34 deletions(-)
+ create mode 100644 third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/huffman_recovery_tests.rs
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
+index 9abe0be522e37..c0736f507b760 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
+@@ -88,7 +88,15 @@ macro_rules! decode_huff {
+                 if $stream.strict {
+                     return Err(DecodeErrors::FormatStatic("Bad Huffman Code Corrupt JPEG"));
+                 }
+-                warn!("Bad Huffman code in JPEG entropy");
++                if $stream.baseline && $stream.bits_left < 17
++                    && ($stream.marker.is_some() || $stream.seen_eoi)
++                {
++                    $stream.fill_marker_zeros();
++                }
++                if !$stream.warned_bad_code {
++                    warn!("Invalid Huffman code recovered as a zero symbol");
++                    $stream.warned_bad_code = true;
++                }
+                 // The sequential recovery rule consumes the invalid 17-bit
+                 // code and substitutes a zero symbol, not the rest of the scan.
+                 $symbol = 0;
+@@ -114,6 +122,7 @@ macro_rules! decode_huff {
+ /// resume decoding from a previously-completed MCU without re-reading earlier
+ /// entropy data.
+ #[derive(Clone, Copy)]
++#[allow(clippy::struct_excessive_bools)]
+ pub(crate) struct HuffmanBitstreamState {
+     pub(crate) buffer:            u64,
+     pub(crate) aligned_buffer:    u64,
+@@ -127,7 +136,8 @@ pub(crate) struct HuffmanBitstreamState {
+     pub(crate) eob_run:           i32,
+     pub(crate) marker_bits:       Option<u8>,
+     pub(crate) insufficient_data: bool,
+-    pub(crate) corrupt_data:      bool
++    pub(crate) corrupt_data:      bool,
++    pub(crate) skip_mcu:          bool
+ }
+
+ /// Type-erased bitstream state snapshot stored in `ScanCheckpoint`.
+@@ -161,6 +171,10 @@ pub(crate) trait BitStream {
+
+     fn clear_huffman_code_warning(&mut self) {}
+
++    fn remaining_mcus_are_neutral(&self) -> bool {
++        false
++    }
++
+     /// Create a new Bitstream for progressive decoding
+     fn new_progressive(al: u8, spec_start: u8, spec_end: u8) -> Self;
+
+@@ -317,6 +331,8 @@ pub(crate) struct BitStreamHuffman {
+     seen_eoi:            bool,
+     /// Strict mode, see [`BitStream::set_strict`].
+     strict:              bool,
++    baseline:            bool,
++    warned_bad_code:     bool,
+     // Real entropy bits remaining before the latched marker. Lookahead may
+     // include zero padding, but consuming it marks subsequent MCUs as missing.
+     marker_bits:         Option<u8>,
+@@ -363,6 +379,9 @@ impl BitStreamHuffman {
+     /// Discard the next `N` bits without checking
+     #[inline]
+     fn drop_bits(&mut self, n: u8) {
++        if self.baseline && self.bits_left < n && (self.marker.is_some() || self.seen_eoi) {
++            self.fill_marker_zeros();
++        }
+         self.consume_marker_bits(n);
+         // PS: Its a good check, but triggers fuzzer and a lot of false positives
+         //debug_assert!(self.bits_left >= n);
+@@ -375,13 +394,16 @@ impl BitStreamHuffman {
+     #[inline(always)]
+     #[allow(clippy::cast_possible_truncation)]
+     fn get_bits(&mut self, n_bits: u8) -> i32 {
++        if self.baseline && self.bits_left < n_bits && (self.marker.is_some() || self.seen_eoi) {
++            self.fill_marker_zeros();
++        }
+         self.consume_marker_bits(n_bits);
+         let mask = (1_u64 << n_bits) - 1;
+
+         self.aligned_buffer = self.aligned_buffer.rotate_left(u32::from(n_bits));
+         let bits = (self.aligned_buffer & mask) as i32;
+         let (left, exhausted) = self.bits_left.overflowing_sub(n_bits);
+-        self.bits_left = left;
++        self.bits_left = if exhausted { 0 } else { left };
+         self.exhausted |= exhausted;
+         bits
+     }
+@@ -391,6 +413,17 @@ impl BitStreamHuffman {
+             self.insufficient_data |= bits > *remaining;
+             *remaining = remaining.saturating_sub(bits);
+         }
++
++    }
++
++    fn fill_marker_zeros(&mut self) {
++        debug_assert!(self.bits_left < 32);
++        self.buffer <<= 32;
++        self.bits_left += 32;
++        if self.overread_by > 0 {
++            self.zeros_past_end += 32;
++        }
++        self.aligned_buffer = self.buffer << (64 - self.bits_left);
+     }
+
+     /// Decode the DC coefficient in a MCU block.
+@@ -495,6 +528,9 @@ impl BitStreamHuffman {
+                 let marker = Marker::from_u8(next_byte as u8);
+                 self.marker = marker;
+                 self.marker_bits = Some(self.bits_left);
++                if self.baseline && matches!(marker, Some(Marker::RST(_))) && self.bits_left < 32 {
++                    self.fill_marker_zeros();
++                }
+                 if let Some(Marker::UNKNOWN(_)) = marker {
+                     return Err(DecodeErrors::Format(
+                         "Unknown marker in bit stream".to_string()
+@@ -686,6 +722,8 @@ impl BitStream for BitStreamHuffman {
+             stuffed_past_end:    false,
+             seen_eoi:            false,
+             strict:              false,
++            baseline:            true,
++            warned_bad_code:     false,
+             marker_bits:         None,
+             insufficient_data:   false,
+             skip_mcu:            false,
+@@ -713,6 +751,8 @@ impl BitStream for BitStreamHuffman {
+             stuffed_past_end:    false,
+             seen_eoi:            false,
+             strict:              false,
++            baseline:            false,
++            warned_bad_code:     false,
+             marker_bits:         None,
+             insufficient_data:   false,
+             skip_mcu:            false,
+@@ -725,7 +765,7 @@ impl BitStream for BitStreamHuffman {
+     }
+
+     fn begin_mcu(&mut self) {
+-        self.skip_mcu = self.insufficient_data && !self.strict;
++        self.skip_mcu = self.baseline && self.insufficient_data && !self.strict;
+     }
+
+     fn has_corrupt_data(&self) -> bool {
+@@ -736,6 +776,13 @@ impl BitStream for BitStreamHuffman {
+         self.corrupt_data = false;
+     }
+
++    fn remaining_mcus_are_neutral(&self) -> bool {
++        self.baseline
++            && self.insufficient_data
++            && !self.strict
++            && (self.seen_eoi || matches!(self.marker, Some(Marker::EOI)))
++    }
++
+     #[inline(always)]
+     fn overread_by(&self) -> usize {
+         self.overread_by
+@@ -789,7 +836,8 @@ impl BitStream for BitStreamHuffman {
+             eob_run:        self.eob_run,
+             marker_bits:    self.marker_bits,
+             insufficient_data: self.insufficient_data,
+-            corrupt_data: self.corrupt_data
++            corrupt_data: self.corrupt_data,
++            skip_mcu: self.skip_mcu
+         }
+     }
+
+@@ -808,6 +856,7 @@ impl BitStream for BitStreamHuffman {
+         self.marker_bits = state.marker_bits;
+         self.insufficient_data = state.insufficient_data;
+         self.corrupt_data = state.corrupt_data;
++        self.skip_mcu = state.skip_mcu;
+     }
+
+     #[inline(always)]
+@@ -844,12 +893,7 @@ impl BitStream for BitStreamHuffman {
+                 // also we are in over-reading mode, where we fill it with zeroes
+
+                 // fill with zeroes
+-                self.buffer <<= 32;
+-                self.bits_left += 32;
+-                if self.overread_by > 0 {
+-                    self.zeros_past_end += 32;
+-                }
+-                self.aligned_buffer = self.buffer << (64 - self.bits_left);
++                self.fill_marker_zeros();
+                 return Ok(true);
+             }
+
+@@ -1008,6 +1052,9 @@ impl BitStream for BitStreamHuffman {
+             return Ok(0);
+         }
+
++        if self.skip_mcu {
++            return Ok(0);
++        }
+         // decode DC, dc prediction will contain the value
+         self.discard_dc(reader, dc_table)?;
+
+@@ -1307,6 +1354,9 @@ impl BitStream for BitStreamHuffman {
+     /// everything
+     #[cold]
+     fn reset(&mut self) {
++        self.marker_bits = None;
++        self.insufficient_data = false;
++        self.skip_mcu = false;
+         self.bits_left = 0;
+         self.marker = None;
+         self.buffer = 0;
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+index 72c5d005e2b78..3681433cbee68 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+@@ -357,6 +357,8 @@ pub struct JpegDecoder<T> {
+     /// **The callee must uphold a contract**. See [`choose_idct_4x4_func`].
+     pub(crate) idct_4x4_func:    IDCTPtr,
+     pub(crate) idct_1x1_func:    IDCTPtr,
++    #[cfg(test)]
++    pub(crate) idct_blocks_for_test: usize,
+     // Color convert function which acts on 16 YCbCr values
+     pub(crate) color_convert_16: ColorConvert16,
+     pub(crate) z_order:          [usize; MAX_COMPONENTS],
+@@ -2219,6 +2221,8 @@ where
+             idct_func:                   choose_idct_func(&options),
+             idct_4x4_func:               choose_idct_4x4_func(&options),
+             idct_1x1_func:               choose_idct_1x1_func(&options),
++            #[cfg(test)]
++            idct_blocks_for_test:        0,
+             color_convert_16:            color_convert,
+             input_colorspace:            ColorSpace::YCbCr,
+             adobe_transform:             None,
+@@ -4121,13 +4125,16 @@ where
+         for comp in &mut self.components {
+             let hs = self.h_max / comp.horizontal_sample;
+             let vs = self.v_max / comp.vertical_sample;
++            // Native fancy H/HV needs three visible samples, not three padded samples.
++            let visible_width =
++                (usize::from(self.info.width) * comp.horizontal_sample).div_ceil(self.h_max);
+
+             let samp_factor = match (hs, vs) {
+                 (1, 1) => {
+                     comp.sample_ratio = SampleRatios::None;
+                     upsample_no_op
+                 }
+-                (2, 1) => {
++                (2, 1) if visible_width > 2 => {
+                     comp.sample_ratio = SampleRatios::H;
+                     choose_horizontal_samp_function(&self.options)
+                 }
+@@ -4135,7 +4142,7 @@ where
+                     comp.sample_ratio = SampleRatios::V;
+                     choose_v_samp_function(&self.options)
+                 }
+-                (2, 2) => {
++                (2, 2) if visible_width > 2 => {
+                     comp.sample_ratio = SampleRatios::HV;
+                     choose_hv_samp_function(&self.options)
+                 }
+@@ -4393,6 +4400,38 @@ mod planar_layout_helpers {
+     use crate::color_convert::choose_ycbcr_to_rgb_convert_func;
+     use crate::idct::{choose_idct_1x1_func, choose_idct_4x4_func, choose_idct_func};
+
++    #[test]
++    fn narrow_chroma_dispatch_uses_visible_width_and_ceiling() {
++        use crate::components::{Components, SampleRatios};
++
++        for width in 1..=6 {
++            for h_max in [2_u8, 4] {
++                for v_max in [1, 2] {
++                    let mut decoder = JpegDecoder::new(ZCursor::new(&[][..]));
++                    decoder.info.width = width;
++                    decoder.h_max = usize::from(h_max);
++                    decoder.v_max = v_max;
++                    let mut component =
++                        Components::from([2, ((h_max / 2) << 4) | 1, 0], 1).unwrap();
++                    component.width_stride = 8;
++                    decoder.components.push(component);
++                    decoder.set_upsampling();
++                    let expected = if width <= 4 {
++                        SampleRatios::Generic(2, v_max)
++                    } else if v_max == 1 {
++                        SampleRatios::H
++                    } else {
++                        SampleRatios::HV
++                    };
++                    assert_eq!(
++                        decoder.components[0].sample_ratio, expected,
++                        "width={width}, h_max={h_max}, v_max={v_max}"
++                    );
++                }
++            }
++        }
++    }
++
+     fn dc_only_progressive_jpeg(with_eoi: bool) -> Vec<u8> {
+         let mut data = vec![0xFF, 0xD8, 0xFF, 0xDB, 0, 67, 0];
+         data.extend_from_slice(&[1; 64]);
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/huffman_recovery_tests.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/huffman_recovery_tests.rs
+new file mode 100644
+index 0000000000000..1b1b92a707a79
+--- /dev/null
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/huffman_recovery_tests.rs
+@@ -0,0 +1,87 @@
++use zune_core::bytestream::ZCursor;
++use zune_core::colorspace::ColorSpace;
++use zune_core::options::DecoderOptions;
++
++use crate::JpegDecoder;
++
++#[test]
++fn missing_mcus_do_not_execute_idct() {
++    // Embed the authored upstream control so this test is self-contained.
++    let mut data = vec![
++        0xff, 0xd8, 0xff, 0xee, 0x00, 0x0e, 0x41, 0x64, 0x6f, 0x62, 0x65, 0x00, 0x64, 0x00, 0x00,
++        0x00, 0x00, 0x01, 0xff, 0xdb, 0x00, 0x43, 0x00, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
++        0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
++        0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
++        0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
++        0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0xff, 0xc4, 0x00,
++        0x15, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++        0x00, 0x00, 0x00, 0x00, 0x03, 0xff, 0xc4, 0x00, 0x15, 0x11, 0x01, 0x01, 0x00, 0x00, 0x00,
++        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0xff, 0xc0,
++        0x00, 0x11, 0x08, 0x00, 0x18, 0x00, 0x20, 0x03, 0x01, 0x11, 0x00, 0x02, 0x11, 0x00, 0x03,
++        0x11, 0x00, 0xff, 0xda, 0x00, 0x0c, 0x03, 0x01, 0x01, 0x02, 0x01, 0x03, 0x01, 0x00, 0x3f,
++        0x00, 0xa2, 0x8a, 0x28, 0xff, 0xd9,
++    ];
++    let sof = data
++        .windows(2)
++        .position(|bytes| bytes == [255, 192])
++        .unwrap();
++    data[sof + 5..sof + 7].copy_from_slice(&60_000u16.to_be_bytes());
++    let options = DecoderOptions::default()
++        .set_max_height(65_535)
++        .set_strict_mode(false)
++        .jpeg_set_out_colorspace(ColorSpace::RGBA);
++    let mut decoder = JpegDecoder::new_with_options(ZCursor::new(data), options);
++    decoder.decode_headers().unwrap();
++    let output = decoder.decode().unwrap();
++    assert_eq!(output.len(), 32 * 60_000 * 4);
++    assert_eq!(decoder.idct_blocks_for_test, 6);
++    assert!(output[32 * 8 * 4..]
++        .chunks_exact(4)
++        .all(|pixel| pixel == [128, 128, 128, 255]));
++}
++
++#[test]
++fn unknown_entropy_markers_remain_fatal() {
++    // PR518's authored 9x11-block grayscale control, with 99 valid DC/EOB pairs.
++    let mut valid = vec![255, 216, 255, 219, 0, 67, 0];
++    valid.extend([8; 64]);
++    for (selector, values) in [(0, [0, 3]), (0x11, [0, 1])] {
++        valid.extend([255, 196, 0, 21, selector, 1, 1]);
++        valid.extend([0; 14]);
++        valid.extend(values);
++    }
++    valid.extend([
++        255, 192, 0, 11, 8, 0, 88, 0, 72, 1, 1, 0x11, 0, 255, 218, 0, 8, 1, 1, 1, 0, 63, 0
++    ]);
++    let entropy = valid.len();
++    for _ in 0..24 {
++        valid.extend([0xa2, 0x8a, 0x28]);
++    }
++    valid.extend([0xa2, 0x8a, 0x3f, 255, 217]);
++    let options = DecoderOptions::default()
++        .set_strict_mode(false)
++        .jpeg_set_out_colorspace(ColorSpace::Luma);
++    assert_eq!(
++        JpegDecoder::new_with_options(ZCursor::new(&valid), options)
++            .decode()
++            .unwrap()
++            .len(),
++        72 * 88
++    );
++    for offset in [0, 3, 12] {
++        let mut malformed = valid[..entropy + offset].to_vec();
++        malformed.extend([255, 0x4b, 0, 2, 255, 217]);
++        for simd in [false, true] {
++            for incremental in [false, true] {
++                let mut decoder = JpegDecoder::new_with_options(
++                    ZCursor::new(&malformed),
++                    options.set_use_unsafe(simd)
++                );
++                decoder.set_incremental_mode(incremental);
++                let error = decoder.decode().unwrap_err();
++                assert!(matches!(error, crate::errors::DecodeErrors::Format(_)));
++                assert!(!error.is_recoverable_eof());
++            }
++        }
++    }
++}
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
+index 05b060113cecf..c23a8a0f42f8b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
+@@ -349,6 +349,8 @@ mod decoder;
+ pub mod errors;
+ mod headers;
+ mod huffman;
++#[cfg(test)]
++mod huffman_recovery_tests;
+ #[cfg(not(fuzzing))]
+ mod idct;
+ #[cfg(fuzzing)]
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
+index ea9b01db7beb0..dc3252ddc5b50 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
+@@ -836,7 +836,19 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 }
+
+                 match terminate {
+-                    McuContinuation::Ok => {}
++                    McuContinuation::Ok => {
++                        if all_components_in_first_scan && !self.is_interleaved
++                            && !self.dnl_image && stream.remaining_mcus_are_neutral()
++                        {
++                            if let McuDecodeOutput::Pixels(pixels) = output {
++                                self.fill_neutral_tail(pixels, &mut pixels_written, &mut cancel)?;
++                                self.mark_baseline_scan_components_complete(
++                                    &scan_components[..scan_component_count],
++                                );
++                                return Ok(());
++                            }
++                        }
++                    }
+                     McuContinuation::AnotherSos if self.dnl_image => {
+                         return Err(DecodeErrors::FormatStatic(
+                             "JPEG with DNL cannot contain multiple scans",
+@@ -1344,6 +1356,21 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 && self.restart_interval == 0 && stream.marker().is_none()
+                 && self.native_fast_huffman_window(blocks_in_mcu)?;
+             stream.begin_mcu();
++            if !PROGRESSIVE && !self.dnl_image && stream.remaining_mcus_are_neutral() {
++                for &component in z_scans {
++                    let component = &mut self.components[component];
++                    if !component.needed {
++                        continue;
++                    }
++                    let first = j.checked_mul(component.horizontal_sample)
++                        .and_then(|column| column.checked_mul(8))
++                        .ok_or(DecodeErrors::FormatStatic("Missing MCU position overflow"))?;
++                    for row in component.raw_coeff.chunks_exact_mut(component.width_stride) {
++                        row.get_mut(first..).ok_or(DecodeErrors::FormatStatic("Invalid missing MCU geometry"))?.fill(128);
++                    }
++                }
++                break;
++            }
+             // iterate over components
+             for &k in z_scans {
+                 // we made this loop body massive due to several different paths that depend on
+@@ -1453,6 +1480,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                             if err.is_recoverable_eof() {
+                                 return Err(err);
+                             }
++                            if matches!(stream.marker(), Some(Marker::UNKNOWN(_))) {
++                                return Err(err);
++                            }
+                             if self.stream.eof()? {
+                                 return Err(DecodeErrors::ExhaustedData);
+                             }
+@@ -1497,6 +1527,10 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                             let idct_pos = component.raw_coeff.get_mut(idct_position..).unwrap();
+                             let stride = component.width_stride;
+
++                            #[cfg(test)]
++                            {
++                                self.idct_blocks_for_test += 1;
++                            }
+                             if len <= 1 {
+                                 let coeff = ((tmp[0].wrapping_add(1028)) >> 3).clamp(0, 255) as i16;
+                                 let row_val = [coeff; 8];
+@@ -1539,18 +1573,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 }
+             }
+
+-            if self.pending_dnl_height.is_some() {
+-                let stream_moved = if let Some(position) = self.pending_dnl_stream_position {
+-                    self.stream.position()? != position
+-                } else {
+-                    false
+-                };
+-                if stream_moved || stream.marker().is_some() || stream.overread_by() > 0 {
+-                    return Err(DecodeErrors::FormatStatic(
+-                        "Entropy data ended before the height declared by DNL",
+-                    ));
+-                }
+-            }
++            self.check_pending_dnl_entropy(stream)?;
+
+             if native_fast_window && stream.marker().is_none() {
+                 stream.clear_huffman_code_warning();
+@@ -1575,8 +1598,8 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                     });
+                     self.checkpoint_scan(mcu_row, j + 1, ctx_pixels_written, dc_predictions)?;
+                 }
+-                if !handled_restart && stream.marker().is_some() {
+-                    if matches!(stream.marker(), Some(Marker::DNL)) && j + 1 < mcu_width {
++                if !handled_restart && matches!(stream.marker(), Some(Marker::DNL)) {
++                    if j + 1 < mcu_width {
+                         return Err(DecodeErrors::FormatStatic(
+                             "DNL marker found before the end of an MCU row",
+                         ));
+@@ -1595,8 +1618,8 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 break;
+             }
+
+-            if B::marker_ends_data() && stream.marker().is_some() && stream.bits_left() == 0 {
+-                if matches!(stream.marker(), Some(Marker::DNL)) && j + 1 < mcu_width {
++            if B::marker_ends_data() && matches!(stream.marker(), Some(Marker::DNL)) && stream.bits_left() == 0 {
++                if j + 1 < mcu_width {
+                     return Err(DecodeErrors::FormatStatic(
+                         "DNL marker found before the end of an MCU row",
+                     ));
+@@ -1608,6 +1631,24 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         self.check_stream_marker_after_mcu_width(stream, is_last_row, mcu_row)
+     }
+
++    fn check_pending_dnl_entropy<B: BitStream>(
++        &mut self, stream: &mut B
++    ) -> Result<(), DecodeErrors> {
++        if self.pending_dnl_height.is_some() {
++            let moved = if let Some(position) = self.pending_dnl_stream_position {
++                self.stream.position()? != position
++            } else {
++                false
++            };
++            if moved || stream.marker().is_some() || stream.overread_by() > 0 {
++                return Err(DecodeErrors::FormatStatic(
++                    "Entropy data ended before the height declared by DNL"
++                ));
++            }
++        }
++        Ok(())
++    }
++
+     fn dnl_scan_rows(
+         &self, height: u16, all_components_in_scan: bool,
+     ) -> Result<usize, DecodeErrors> {
+@@ -1721,8 +1762,10 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                 // https://github.com/google/libultrahdr
+                 *stream.seen_eoi() = true;
+             } else if let Marker::RST(_) = m {
+-                // A latched RST means the entropy segment is already exhausted.
+-                self.handle_rst(stream)?;
++                // Lookahead may see RST before all MCUs of its interval are consumed.
++                if self.todo == 0 {
++                    self.handle_rst(stream)?;
++                }
+             } else if let Marker::SOS = m {
+                 self.parse_marker_inner(Marker::SOS)?;
+                 self.invalidate_scan_checkpoint();
+@@ -1968,6 +2011,50 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+         }
+         Ok(())
+     }
++    fn fill_neutral_tail(
++        &mut self, pixels: &mut [u8], pixels_written: &mut usize,
++        cancel: &mut crate::cancel::Debounced
++    ) -> Result<(), DecodeErrors> {
++        let channels = self.options.jpeg_get_out_colorspace().num_components();
++        if channels == 0 || channels > MAX_COMPONENTS {
++            return Err(DecodeErrors::FormatStatic(
++                "Unsupported neutral output colorspace"
++            ));
++        }
++        let samples = [128i16; 16];
++        let mut converted = [0u8; 64];
++        color_convert(
++            &[&samples; MAX_COMPONENTS],
++            self.color_convert_16,
++            self.input_colorspace,
++            self.options.jpeg_get_out_colorspace(),
++            &mut converted[..16 * channels],
++            16,
++            16
++        )?;
++        let pixel = &converted[..channels];
++        let uniform = pixel.iter().all(|&sample| sample == pixel[0]);
++        let stripe_bytes = usize::from(self.width())
++            .checked_mul(channels)
++            .and_then(|row| row.checked_mul(8))
++            .ok_or(DecodeErrors::FormatStatic("Neutral output stripe overflow"))?;
++        for stripe in pixels[*pixels_written..].chunks_mut(stripe_bytes) {
++            if cancel.is_cancelled() {
++                return Err(DecodeErrors::Cancelled);
++            }
++            if uniform {
++                stripe.fill(pixel[0]);
++            } else {
++                for destination in stripe.chunks_exact_mut(channels) {
++                    destination.copy_from_slice(pixel);
++                }
++            }
++            *pixels_written += stripe.len();
++            self.pixels_decoded = *pixels_written;
++        }
++        Ok(())
++    }
++
+     #[allow(clippy::too_many_lines, clippy::too_many_arguments)]
+     pub(crate) fn post_process(
+         &mut self, pixels: &mut [u8], output_stride: usize, i: usize, mcu_height: usize,
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
+index 5c546077f1b92..ee832f6357d78 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
+@@ -2205,7 +2205,7 @@ mod tests {
+     }
+
+     #[test]
+-    fn make_test() {
++    fn unknown_entropy_marker_is_not_successful_partial_output() {
+         let data = ZCursor::new([
+             255, 216, 255, 224, 0, 16, 74, 70, 73, 70, 0, 1, 0, 2, 0, 28, 0, 28, 0, 0, 255, 219, 0,
+             67, 0, 40, 28, 30, 20, 30, 25, 40, 35, 33, 35, 45, 43, 40, 48, 60, 100, 65, 60, 55, 55,
+@@ -2235,6 +2235,11 @@ mod tests {
+             2, 0, 126, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 198,
+         ]);
+         let mut decoder = JpegDecoder::new(data);
+-        decoder.decode().unwrap();
++        let error = match decoder.decode() {
++            Ok(_) => panic!("unknown entropy markers must not publish success"),
++            Err(error) => error
++        };
++        assert!(matches!(error, crate::errors::DecodeErrors::Format(_)));
++        assert!(!error.is_recoverable_eof());
+     }
+ }

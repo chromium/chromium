@@ -836,7 +836,19 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 }
 
                 match terminate {
-                    McuContinuation::Ok => {}
+                    McuContinuation::Ok => {
+                        if all_components_in_first_scan && !self.is_interleaved
+                            && !self.dnl_image && stream.remaining_mcus_are_neutral()
+                        {
+                            if let McuDecodeOutput::Pixels(pixels) = output {
+                                self.fill_neutral_tail(pixels, &mut pixels_written, &mut cancel)?;
+                                self.mark_baseline_scan_components_complete(
+                                    &scan_components[..scan_component_count],
+                                );
+                                return Ok(());
+                            }
+                        }
+                    }
                     McuContinuation::AnotherSos if self.dnl_image => {
                         return Err(DecodeErrors::FormatStatic(
                             "JPEG with DNL cannot contain multiple scans",
@@ -1344,6 +1356,21 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 && self.restart_interval == 0 && stream.marker().is_none()
                 && self.native_fast_huffman_window(blocks_in_mcu)?;
             stream.begin_mcu();
+            if !PROGRESSIVE && !self.dnl_image && stream.remaining_mcus_are_neutral() {
+                for &component in z_scans {
+                    let component = &mut self.components[component];
+                    if !component.needed {
+                        continue;
+                    }
+                    let first = j.checked_mul(component.horizontal_sample)
+                        .and_then(|column| column.checked_mul(8))
+                        .ok_or(DecodeErrors::FormatStatic("Missing MCU position overflow"))?;
+                    for row in component.raw_coeff.chunks_exact_mut(component.width_stride) {
+                        row.get_mut(first..).ok_or(DecodeErrors::FormatStatic("Invalid missing MCU geometry"))?.fill(128);
+                    }
+                }
+                break;
+            }
             // iterate over components
             for &k in z_scans {
                 // we made this loop body massive due to several different paths that depend on
@@ -1453,6 +1480,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                             if err.is_recoverable_eof() {
                                 return Err(err);
                             }
+                            if matches!(stream.marker(), Some(Marker::UNKNOWN(_))) {
+                                return Err(err);
+                            }
                             if self.stream.eof()? {
                                 return Err(DecodeErrors::ExhaustedData);
                             }
@@ -1497,6 +1527,10 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                             let idct_pos = component.raw_coeff.get_mut(idct_position..).unwrap();
                             let stride = component.width_stride;
 
+                            #[cfg(test)]
+                            {
+                                self.idct_blocks_for_test += 1;
+                            }
                             if len <= 1 {
                                 let coeff = ((tmp[0].wrapping_add(1028)) >> 3).clamp(0, 255) as i16;
                                 let row_val = [coeff; 8];
@@ -1539,18 +1573,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 }
             }
 
-            if self.pending_dnl_height.is_some() {
-                let stream_moved = if let Some(position) = self.pending_dnl_stream_position {
-                    self.stream.position()? != position
-                } else {
-                    false
-                };
-                if stream_moved || stream.marker().is_some() || stream.overread_by() > 0 {
-                    return Err(DecodeErrors::FormatStatic(
-                        "Entropy data ended before the height declared by DNL",
-                    ));
-                }
-            }
+            self.check_pending_dnl_entropy(stream)?;
 
             if native_fast_window && stream.marker().is_none() {
                 stream.clear_huffman_code_warning();
@@ -1575,8 +1598,8 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                     });
                     self.checkpoint_scan(mcu_row, j + 1, ctx_pixels_written, dc_predictions)?;
                 }
-                if !handled_restart && stream.marker().is_some() {
-                    if matches!(stream.marker(), Some(Marker::DNL)) && j + 1 < mcu_width {
+                if !handled_restart && matches!(stream.marker(), Some(Marker::DNL)) {
+                    if j + 1 < mcu_width {
                         return Err(DecodeErrors::FormatStatic(
                             "DNL marker found before the end of an MCU row",
                         ));
@@ -1595,8 +1618,8 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 break;
             }
 
-            if B::marker_ends_data() && stream.marker().is_some() && stream.bits_left() == 0 {
-                if matches!(stream.marker(), Some(Marker::DNL)) && j + 1 < mcu_width {
+            if B::marker_ends_data() && matches!(stream.marker(), Some(Marker::DNL)) && stream.bits_left() == 0 {
+                if j + 1 < mcu_width {
                     return Err(DecodeErrors::FormatStatic(
                         "DNL marker found before the end of an MCU row",
                     ));
@@ -1606,6 +1629,24 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         }
 
         self.check_stream_marker_after_mcu_width(stream, is_last_row, mcu_row)
+    }
+
+    fn check_pending_dnl_entropy<B: BitStream>(
+        &mut self, stream: &mut B
+    ) -> Result<(), DecodeErrors> {
+        if self.pending_dnl_height.is_some() {
+            let moved = if let Some(position) = self.pending_dnl_stream_position {
+                self.stream.position()? != position
+            } else {
+                false
+            };
+            if moved || stream.marker().is_some() || stream.overread_by() > 0 {
+                return Err(DecodeErrors::FormatStatic(
+                    "Entropy data ended before the height declared by DNL"
+                ));
+            }
+        }
+        Ok(())
     }
 
     fn dnl_scan_rows(
@@ -1721,8 +1762,10 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 // https://github.com/google/libultrahdr
                 *stream.seen_eoi() = true;
             } else if let Marker::RST(_) = m {
-                // A latched RST means the entropy segment is already exhausted.
-                self.handle_rst(stream)?;
+                // Lookahead may see RST before all MCUs of its interval are consumed.
+                if self.todo == 0 {
+                    self.handle_rst(stream)?;
+                }
             } else if let Marker::SOS = m {
                 self.parse_marker_inner(Marker::SOS)?;
                 self.invalidate_scan_checkpoint();
@@ -1968,6 +2011,50 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         }
         Ok(())
     }
+    fn fill_neutral_tail(
+        &mut self, pixels: &mut [u8], pixels_written: &mut usize,
+        cancel: &mut crate::cancel::Debounced
+    ) -> Result<(), DecodeErrors> {
+        let channels = self.options.jpeg_get_out_colorspace().num_components();
+        if channels == 0 || channels > MAX_COMPONENTS {
+            return Err(DecodeErrors::FormatStatic(
+                "Unsupported neutral output colorspace"
+            ));
+        }
+        let samples = [128i16; 16];
+        let mut converted = [0u8; 64];
+        color_convert(
+            &[&samples; MAX_COMPONENTS],
+            self.color_convert_16,
+            self.input_colorspace,
+            self.options.jpeg_get_out_colorspace(),
+            &mut converted[..16 * channels],
+            16,
+            16
+        )?;
+        let pixel = &converted[..channels];
+        let uniform = pixel.iter().all(|&sample| sample == pixel[0]);
+        let stripe_bytes = usize::from(self.width())
+            .checked_mul(channels)
+            .and_then(|row| row.checked_mul(8))
+            .ok_or(DecodeErrors::FormatStatic("Neutral output stripe overflow"))?;
+        for stripe in pixels[*pixels_written..].chunks_mut(stripe_bytes) {
+            if cancel.is_cancelled() {
+                return Err(DecodeErrors::Cancelled);
+            }
+            if uniform {
+                stripe.fill(pixel[0]);
+            } else {
+                for destination in stripe.chunks_exact_mut(channels) {
+                    destination.copy_from_slice(pixel);
+                }
+            }
+            *pixels_written += stripe.len();
+            self.pixels_decoded = *pixels_written;
+        }
+        Ok(())
+    }
+
     #[allow(clippy::too_many_lines, clippy::too_many_arguments)]
     pub(crate) fn post_process(
         &mut self, pixels: &mut [u8], output_stride: usize, i: usize, mcu_height: usize,

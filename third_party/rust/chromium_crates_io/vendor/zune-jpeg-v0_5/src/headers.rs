@@ -230,7 +230,9 @@ where
                 )));
             }
 
-            // todo: value 1 is also forbidden in lossless mode
+            if decoder.seen_sof && decoder.info.sof.is_lossless() && dc_or_ac != 0 {
+                return Err(DecodeErrors::FormatStatic("Lossless JPEG only permits DC arithmetic conditioning"));
+            }
             match dc_or_ac {
                 0 => {
                     /* DC */

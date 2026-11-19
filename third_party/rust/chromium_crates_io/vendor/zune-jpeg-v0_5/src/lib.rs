@@ -349,10 +349,15 @@ mod decoder;
 pub mod errors;
 mod headers;
 mod huffman;
+#[cfg(test)]
+mod huffman_recovery_tests;
 #[cfg(not(fuzzing))]
 mod idct;
 #[cfg(fuzzing)]
 pub mod idct;
+mod lossless;
+#[cfg(feature = "arith")]
+mod lossless_arith;
 mod marker;
 mod mcu;
 mod mcu_prog;

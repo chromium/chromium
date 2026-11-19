@@ -2205,7 +2205,7 @@ mod tests {
     }
 
     #[test]
-    fn make_test() {
+    fn unknown_entropy_marker_is_not_successful_partial_output() {
         let data = ZCursor::new([
             255, 216, 255, 224, 0, 16, 74, 70, 73, 70, 0, 1, 0, 2, 0, 28, 0, 28, 0, 0, 255, 219, 0,
             67, 0, 40, 28, 30, 20, 30, 25, 40, 35, 33, 35, 45, 43, 40, 48, 60, 100, 65, 60, 55, 55,
@@ -2235,6 +2235,11 @@ mod tests {
             2, 0, 126, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 198,
         ]);
         let mut decoder = JpegDecoder::new(data);
-        decoder.decode().unwrap();
+        let error = match decoder.decode() {
+            Ok(_) => panic!("unknown entropy markers must not publish success"),
+            Err(error) => error
+        };
+        assert!(matches!(error, crate::errors::DecodeErrors::Format(_)));
+        assert!(!error.is_recoverable_eof());
     }
 }
