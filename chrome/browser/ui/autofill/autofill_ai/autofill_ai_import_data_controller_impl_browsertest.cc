@@ -14,12 +14,12 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
@@ -310,9 +310,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
 // in the prompt.
 IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
                        ShowEntityImportBubble_ForwardsPublicPassesNotice) {
-  ChromeAutofillClient* client =
-      ChromeAutofillClient::FromWebContentsForTesting(
-          browser()->tab_strip_model()->GetActiveWebContents());
+  ContentAutofillClient* client = ContentAutofillClient::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(client);
 
   client->ShowEntityImportBubble(

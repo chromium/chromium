@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/one_time_tokens/gmail_otp_opt_in_bubble_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -78,8 +78,8 @@ class GmailOtpOptInBubbleInteractiveUiTest : public InteractiveBrowserTest {
   GmailOtpOptInBubbleInteractiveUiTest() = default;
 
  protected:
-  ChromeAutofillClient* autofill_client() const {
-    return ChromeAutofillClient::FromWebContentsForTesting(
+  ContentAutofillClient* autofill_client() const {
+    return ContentAutofillClient::FromWebContents(
         browser()->GetActiveTabInterface()->GetContents());
   }
 

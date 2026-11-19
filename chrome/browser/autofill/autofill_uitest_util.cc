@@ -10,6 +10,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client_test_api.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -90,7 +91,7 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
   // function. Not keeping the popup open for testing can result in the popup
   // being randomly hidden and in breaking this assumption. This causes
   // flakiness.
-  client.SetKeepPopupOpenForTesting(true);
+  test_api(client).SetKeepPopupOpen(true);
 
   FormFieldData field = test::CreateTestFormField(
       "Full name", "name", "", FormControlType::kInputText, "name");
@@ -168,7 +169,7 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
 
   // Allow the popup to be hidden. Tests sometimes use this function to create a
   // popup, and then the tests try to hide it.
-  client.SetKeepPopupOpenForTesting(false);
+  test_api(client).SetKeepPopupOpen(false);
   return testing::AssertionSuccess();
 }
 

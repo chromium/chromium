@@ -5,11 +5,11 @@
 #include <optional>
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -63,7 +63,7 @@ class OfferNotificationIconViewBrowserTest
     AutofillOfferData offer = CreateTestOffer(
         /*merchant_origins=*/{GURL(kTestURL)}, kTestPromoCode);
     auto* autofill_client =
-        ChromeAutofillClient::FromWebContentsForTesting(GetWebContents());
+        ContentAutofillClient::FromWebContents(GetWebContents());
 
     if (name.find("show_offer_notification_icon_only") != std::string::npos) {
       autofill_client->GetPaymentsAutofillClient()->UpdateOfferNotification(
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationIconViewBrowserTest,
   ASSERT_TRUE(background_contents);
   ASSERT_TRUE(accessor.GetVisible());
 
-  ChromeAutofillClient::FromWebContentsForTesting(background_contents)
+  ContentAutofillClient::FromWebContents(background_contents)
       ->GetPaymentsAutofillClient()
       ->DismissOfferNotification();
 

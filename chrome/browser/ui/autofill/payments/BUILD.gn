@@ -239,7 +239,10 @@ if (!is_android) {
       "//testing/gtest",
     ]
 
-    deps = [ "//base/test:test_support" ]
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser/ui/autofill:test_support",
+    ]
   }
 
   source_set("browser_tests") {

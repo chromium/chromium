@@ -418,6 +418,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "chrome_autofill_client_test_api.cc",
+    "chrome_autofill_client_test_api.h",
     "test/test_autofill_bubble_handler.cc",
     "test/test_autofill_bubble_handler.h",
   ]
@@ -429,7 +431,9 @@ source_set("test_support") {
     "//testing/gmock",
   ]
 
-  if (!is_android) {
+  if (is_android) {
+    deps = [ "//chrome/browser/ui/android/autofill" ]
+  } else {
     sources += [
       "autofill_ai/mock_autofill_ai_import_data_controller.cc",
       "autofill_ai/mock_autofill_ai_import_data_controller.h",
@@ -457,6 +461,7 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":autofill",
+      ":test_support",
       "//base",
       "//base:i18n",
       "//base/test:test_support",

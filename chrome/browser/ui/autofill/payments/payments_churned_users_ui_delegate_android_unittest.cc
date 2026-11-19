@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_snackbar_type.h"
 #include "chrome/browser/ui/android/autofill/mock_autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -76,8 +77,10 @@ class PaymentsChurnedUsersUiDelegateAndroidTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     ChromeAutofillClient::CreateForWebContents(web_contents());
-    autofill_client()->SetAutofillSnackbarControllerImplForTesting(
-        std::make_unique<MockAutofillSnackbarControllerImpl>(web_contents()));
+    test_api(*autofill_client())
+        .set_autofill_snackbar_controller(
+            std::make_unique<MockAutofillSnackbarControllerImpl>(
+                web_contents()));
     delegate_ = std::make_unique<PaymentsChurnedUsersUiDelegateAndroid>(
         autofill_client());
     auto mock_message_controller =
@@ -115,7 +118,7 @@ class PaymentsChurnedUsersUiDelegateAndroidTest
   }
 
   ChromeAutofillClient* autofill_client() {
-    return ChromeAutofillClient::FromWebContentsForTesting(web_contents());
+    return ChromeAutofillClientTestApi::FromWebContents(web_contents());
   }
 
   MockAutofillMessageController* mock_message_controller() {

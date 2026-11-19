@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_page_action_controller.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -61,8 +62,8 @@ class ChromePaymentsAutofillClientDesktopTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  ChromeAutofillClient* client() {
-    return ChromeAutofillClient::FromWebContentsForTesting(web_contents());
+  ContentAutofillClient* client() {
+    return ContentAutofillClient::FromWebContents(web_contents());
   }
 
   ChromePaymentsAutofillClientDesktop* chrome_payments_client_desktop() {

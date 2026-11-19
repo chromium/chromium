@@ -75,7 +75,6 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -174,6 +173,8 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client_test_api.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -2756,9 +2757,9 @@ class BrowserAutofillManagerTestDelegateDevtoolsImpl
     // Set an override for the minimum 500 ms threshold before enter key strokes
     // are accepted.
     if (base::WeakPtr<autofill::AutofillSuggestionController> controller =
-            autofill::ChromeAutofillClient::FromWebContentsForTesting(
-                inspected_contents_.get())
-                ->suggestion_controller_for_testing()) {
+            test_api(*autofill::ChromeAutofillClientTestApi::FromWebContents(
+                         inspected_contents_.get()))
+                .suggestion_controller()) {
       test_api(static_cast<autofill::AutofillPopupControllerImpl&>(*controller))
           .DisableThreshold(true);
     }

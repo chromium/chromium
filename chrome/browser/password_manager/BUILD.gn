@@ -667,6 +667,7 @@ if (!is_android) {
         "//chrome/browser/sync:factories",
         "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/autofill",
+        "//chrome/browser/ui/autofill:test_support",
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/passwords",
         "//chrome/browser/ui/passwords:impl",

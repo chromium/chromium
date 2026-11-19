@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client_android_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,8 +40,8 @@ class ChromePaymentsAutofillClientAndroidTest
     ChromeAutofillClient::CreateForWebContents(web_contents());
   }
 
-  ChromeAutofillClient* client() {
-    return ChromeAutofillClient::FromWebContentsForTesting(web_contents());
+  ContentAutofillClient* client() {
+    return ContentAutofillClient::FromWebContents(web_contents());
   }
 
   ChromePaymentsAutofillClientAndroid* chrome_payments_client_android() {

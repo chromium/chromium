@@ -6,13 +6,13 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
@@ -75,8 +75,7 @@ class AutofillProgressDialogViewsBrowserTest
   }
 
   payments::ChromePaymentsAutofillClient* client() const {
-    auto* client =
-        ChromeAutofillClient::FromWebContentsForTesting(web_contents());
+    auto* client = ContentAutofillClient::FromWebContents(web_contents());
     // On Desktop and Clank, the PaymentsAutofillClient can only be a
     // ChromePaymentsAutofillClient.
     return static_cast<payments::ChromePaymentsAutofillClient*>(

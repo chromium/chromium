@@ -28,6 +28,7 @@
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client_test_api.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -229,12 +230,6 @@ class TestChromeAutofillClient : public ChromeAutofillClient {
   explicit TestChromeAutofillClient(content::WebContents* web_contents)
       : ChromeAutofillClient(web_contents) {}
   ~TestChromeAutofillClient() override = default;
-
-  using ChromeAutofillClient::GetEmailVerificationController;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  using ChromeAutofillClient::at_memory_copy_paste_observer;
-#endif
 };
 
 class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
@@ -280,7 +275,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(Return(false));
     ON_CALL(*autofill_field_promo_controller_, GetFeaturePromo)
         .WillByDefault(ReturnRef(feature_promo));
-    client()->SetAutofillFieldPromoTesting(
+    test_api(*client()).set_autofill_field_promo_controller(
         std::move(autofill_field_promo_controller));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1075,10 +1070,13 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
       sessions::SessionTabHelper::DelegateLookup());
 
   // Copy on the first tab, and paste on the second tab.
-  incognito_main_client->at_memory_copy_paste_observer()
+  test_api(*incognito_main_client)
+      .at_memory_copy_paste_observer()
       .OnTextCopiedToClipboard(
           incognito_main_web_contents->GetPrimaryMainFrame(), u"some text");
-  incognito_secondary_client->at_memory_copy_paste_observer().OnPaste();
+  test_api(*incognito_secondary_client)
+      .at_memory_copy_paste_observer()
+      .OnPaste();
 }
 
 // Tests that `AtMemoryCopyPasteObserver` tracks copy/paste signals and
@@ -1131,9 +1129,9 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
       sessions::SessionTabHelper::DelegateLookup());
 
   // Copy on the first tab, and paste on the second tab.
-  client()->at_memory_copy_paste_observer().OnTextCopiedToClipboard(
+  test_api(*client()).at_memory_copy_paste_observer().OnTextCopiedToClipboard(
       web_contents()->GetPrimaryMainFrame(), u"some text");
-  secondary_client->at_memory_copy_paste_observer().OnPaste();
+  test_api(*secondary_client).at_memory_copy_paste_observer().OnPaste();
 }
 
 // Tests that `AtMemoryCopyPasteObserver` detects hotkey paste events via
@@ -1175,7 +1173,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
       sessions::SessionTabHelper::DelegateLookup());
 
   // Copy on the first tab.
-  client()->at_memory_copy_paste_observer().OnTextCopiedToClipboard(
+  test_api(*client()).at_memory_copy_paste_observer().OnTextCopiedToClipboard(
       web_contents()->GetPrimaryMainFrame(), u"some text");
 
   // Simulate Ctrl+V / Cmd+V via `DidGetUserInteraction` on the second tab.
@@ -1197,8 +1195,9 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
       ->SimulateFocusedElementChanged(/*is_editable_element=*/true,
                                       /*is_richly_editable_element=*/false);
 
-  secondary_client->at_memory_copy_paste_observer().DidGetUserInteraction(
-      paste_event);
+  test_api(*secondary_client)
+      .at_memory_copy_paste_observer()
+      .DidGetUserInteraction(paste_event);
 }
 
 // Tests that `AtMemoryCopyPasteObserver` does not trigger the promo when a
@@ -1233,7 +1232,7 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
       sessions::SessionTabHelper::DelegateLookup());
 
   // Copy on the first tab.
-  client()->at_memory_copy_paste_observer().OnTextCopiedToClipboard(
+  test_api(*client()).at_memory_copy_paste_observer().OnTextCopiedToClipboard(
       web_contents()->GetPrimaryMainFrame(), u"some text");
 
   // Simulate Ctrl+V / Cmd+V via `DidGetUserInteraction` on the second tab.
@@ -1248,8 +1247,9 @@ TEST_F(ChromeAutofillClientTestWithMockWindow,
 
   // No content editable is focused by default.
 
-  secondary_client->at_memory_copy_paste_observer().DidGetUserInteraction(
-      paste_event);
+  test_api(*secondary_client)
+      .at_memory_copy_paste_observer()
+      .DidGetUserInteraction(paste_event);
 }
 
 #endif  // (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -1279,7 +1279,7 @@ TEST_F(ChromeAutofillClientTest, HideSuggestions_ProductFilter) {
   testing::NiceMock<MockAutofillPopupController> mock_controller;
   ON_CALL(mock_controller, GetMainFillingProduct)
       .WillByDefault(Return(FillingProduct::kAddress));
-  client()->set_suggestion_controller_for_testing(mock_controller.GetWeakPtr());
+  test_api(*client()).set_suggestion_controller(mock_controller.GetWeakPtr());
 
   // Attempt to hide with a non-matching product filter should be ignored.
   EXPECT_CALL(mock_controller, Hide).Times(0);
@@ -1301,7 +1301,7 @@ TEST_F(ChromeAutofillClientTest,
   testing::NiceMock<MockAutofillPopupController> mock_controller;
   mock_controller.set_anchor_frame_token(token1);
 
-  client()->set_suggestion_controller_for_testing(mock_controller.GetWeakPtr());
+  test_api(*client()).set_suggestion_controller(mock_controller.GetWeakPtr());
 
   std::vector<SelectOption> options = {{.value = u"val", .text = u"txt"}};
 
@@ -1437,7 +1437,7 @@ TEST_F(ChromeAutofillClientTest, ShowTapjackingProtector) {
       *mock_protector,
       Show(AutofillTapjackingProtector::AuthorizationType::kPayments, _));
 
-  client()->SetAutofillTapjackingProtectorImplForTesting(
+  test_api(*client()).set_autofill_tapjacking_protector(
       std::move(mock_protector));
 
   base::MockCallback<AutofillTapjackingProtector::AuthorizationCallback>
@@ -1470,7 +1470,7 @@ TEST_F(ChromeAutofillClientTest,
   auto mock_bridge =
       std::make_unique<MockEmailVerificationBottomSheetBridge>(web_contents());
   MockEmailVerificationBottomSheetBridge* bridge_ptr = mock_bridge.get();
-  test_api(*client()->GetEmailVerificationController())
+  test_api(*test_api(*client()).email_verification_controller())
       .set_bottom_sheet_bridge(std::move(mock_bridge));
 
   EXPECT_CALL(*bridge_ptr, ShowJavaBottomSheet);
@@ -1554,7 +1554,7 @@ TEST_F(ChromeAutofillClientTest, GetOtpCoordinator_FeatureDisabled) {
 class ChromeAutofillClientReauthAvailabilityTest : public testing::Test {
  protected:
   using CheckerFactory =
-      ChromeAutofillClient::DeviceAuthAvailabilityCheckerFactoryForTesting;
+      ChromeAutofillClientTestApi::DeviceAuthAvailabilityCheckerFactory;
 
   std::unique_ptr<TestingProfile> BuildProfileWithEntityDataManager() {
     return TestingProfile::Builder()
@@ -1611,9 +1611,8 @@ class ChromeAutofillClientReauthAvailabilityTest : public testing::Test {
        password_manager::features::kDeviceReauthRefactor},
       {}};
   base::MockCallback<CheckerFactory> checker_factory_;
-  base::AutoReset<CheckerFactory> reset_checker_factory_{
-      ChromeAutofillClient::SetDeviceAuthAvailabilityCheckerFactoryForTesting(
-          checker_factory_.Get())};
+  ChromeAutofillClientTestApi::ScopedDeviceAuthAvailabilityCheckerFactory
+      scoped_checker_factory_{checker_factory_.Get()};
 };
 
 TEST_F(ChromeAutofillClientReauthAvailabilityTest,

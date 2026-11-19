@@ -27,7 +27,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -36,6 +35,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -492,8 +492,8 @@ IN_PROC_BROWSER_TEST_F(ChromeComposeClientBrowserTest,
 
   // Instead of using an Autofill test environment to mock forms,
   // we trigger the autofill client popup natively from the WebContents.
-  autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents());
+  autofill::ContentAutofillClient* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(web_contents());
 
   autofill::AutofillClient::PopupOpenArgs args;
   args.suggestions = {

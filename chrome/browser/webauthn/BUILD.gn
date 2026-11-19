@@ -649,6 +649,7 @@ if (!is_android) {
         "//chrome/browser/sync",
         "//chrome/browser/ui:browser_commands",
         "//chrome/browser/ui/autofill",
+        "//chrome/browser/ui/autofill:test_support",
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/views/webauthn",
         "//chrome/test:test_support",

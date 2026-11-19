@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client_test_api.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -214,7 +215,7 @@ class ChromePaymentsAutofillClientTest
   }
 
   ChromeAutofillClient* client() {
-    return ChromeAutofillClient::FromWebContentsForTesting(web_contents());
+    return ChromeAutofillClientTestApi::FromWebContents(web_contents());
   }
 
   payments::ChromePaymentsAutofillClient* chrome_payments_client() {
@@ -254,7 +255,7 @@ class ChromePaymentsAutofillClientTest
     std::unique_ptr<MockAutofillSnackbarControllerImpl> mock =
         std::make_unique<MockAutofillSnackbarControllerImpl>(web_contents());
     MockAutofillSnackbarControllerImpl* pointer = mock.get();
-    client()->SetAutofillSnackbarControllerImplForTesting(std::move(mock));
+    test_api(*client()).set_autofill_snackbar_controller(std::move(mock));
     return pointer;
   }
 

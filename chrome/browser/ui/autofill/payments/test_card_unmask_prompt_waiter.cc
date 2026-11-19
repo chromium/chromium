@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client_test_api.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_prompt_view_tester.h"
 
 namespace autofill {
@@ -55,7 +56,7 @@ class TestCardUnmaskPromptControllerImpl
 
 TestCardUnmaskPromptWaiter::TestCardUnmaskPromptWaiter(
     content::WebContents* web_contents)
-    : client_(ChromeAutofillClient::FromWebContentsForTesting(web_contents)
+    : client_(ChromeAutofillClientTestApi::FromWebContents(web_contents)
                   ->GetPaymentsAutofillClient()) {
   old_controller_ = client_->ExtractCardUnmaskControllerForTesting();
   auto injected_controller =

@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -31,6 +30,7 @@
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
@@ -75,8 +75,8 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
     AccountInfo account_info = signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
         "user@example.com", signin::ConsentLevel::kSignin);
-    autofill::ChromeAutofillClient* autofill_client =
-        autofill::ChromeAutofillClient::FromWebContentsForTesting(
+    autofill::ContentAutofillClient* autofill_client =
+        autofill::ContentAutofillClient::FromWebContents(
             browser()->GetTabStripModel()->GetActiveWebContents());
     ASSERT_TRUE(autofill_client);
     autofill_client->GetPaymentsAutofillClient()

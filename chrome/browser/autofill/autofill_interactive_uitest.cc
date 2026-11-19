@@ -41,6 +41,7 @@
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client_test_api.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -519,8 +520,9 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
       delete;
 
   bool IsPopupShown() {
-    return !!ChromeAutofillClient::FromWebContentsForTesting(GetWebContents())
-                 ->suggestion_controller_for_testing();
+    return !!test_api(*ChromeAutofillClientTestApi::FromWebContents(
+                          GetWebContents()))
+                 .suggestion_controller();
   }
 
   std::vector<FieldValue> GetFormValues(

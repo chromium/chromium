@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client_test_api.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
@@ -108,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
-  autofill_client->SetKeepPopupOpenForTesting(true);
+      autofill::ChromeAutofillClientTestApi::FromWebContents(web_contents);
+  test_api(*autofill_client).SetKeepPopupOpen(true);
 
   // Execute the Conditional UI request.
   content::DOMMessageQueue message_queue(web_contents);
@@ -129,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
       FAIL() << "Timed out waiting for WebAuthn suggestion in popup.";
     }
     content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-    controller = autofill_client->suggestion_controller_for_testing();
+    controller = test_api(*autofill_client).suggestion_controller();
   }
 
   std::vector<autofill::Suggestion> suggestions = controller->GetSuggestions();

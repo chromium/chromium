@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -125,17 +124,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // ContentAutofillClient is associated with the `web_contents` yet. Otherwise,
   // it's a no-op.
   static void CreateForWebContents(content::WebContents* web_contents);
-
-  // Only tests that require ChromeAutofillClient's `*ForTesting()` functions
-  // may use this function.
-  //
-  // Generally, code should use ContentAutofillClient::FromWebContents() if
-  // possible. This is because many tests inject clients that do not inherit
-  // from ChromeAutofillClient.
-  static ChromeAutofillClient* FromWebContentsForTesting(
-      content::WebContents* web_contents) {
-    return static_cast<ChromeAutofillClient*>(FromWebContents(web_contents));
-  }
 
   ChromeAutofillClient(const ChromeAutofillClient&) = delete;
   ChromeAutofillClient& operator=(const ChromeAutofillClient&) = delete;
@@ -297,10 +285,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
 
   // The AutofillDialogController is used to show Android modal dialogs.
   AutofillDialogController* GetAutofillDialogController();
-
-  void SetTouchToFillAutofillControllerForTesting(
-      std::unique_ptr<TouchToFillAutofillController>
-          touch_to_fill_autofill_controller);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
@@ -357,56 +341,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
       const std::u16string& account_email,
       base::OnceCallback<void(GmailOtpOptInResult)> callback) final;
 
-  // TODO(crbug.com/407666146): Create a test API.
-  base::WeakPtr<AutofillSuggestionController>
-  suggestion_controller_for_testing() {
-    return suggestion_controller_;
-  }
-#if defined(UNIT_TEST)
-  void set_suggestion_controller_for_testing(
-      base::WeakPtr<AutofillSuggestionController> controller) {
-    suggestion_controller_ = controller;
-  }
-  void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) {
-    keep_popup_open_for_testing_ = keep_popup_open_for_testing;
-    if (suggestion_controller_) {
-      suggestion_controller_->SetKeepPopupOpenForTesting(
-          keep_popup_open_for_testing);
-    }
-  }
-#if !BUILDFLAG(IS_ANDROID)
-  void SetAutofillFieldPromoTesting(
-      std::unique_ptr<AutofillFieldPromoController> test_controller) {
-    autofill_field_promo_controller_ = std::move(test_controller);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_ANDROID)
-  void SetAutofillTapjackingProtectorImplForTesting(
-      std::unique_ptr<AutofillTapjackingProtector>
-          autofill_tapjacking_protector_impl) {
-    autofill_tapjacking_protector_impl_ =
-        std::move(autofill_tapjacking_protector_impl);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-#endif  // defined(UNIT_TEST)
-
-#if BUILDFLAG(IS_ANDROID)
-  void SetAutofillSnackbarControllerImplForTesting(
-      std::unique_ptr<AutofillSnackbarControllerImpl>
-          autofill_snackbar_controller_impl);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  // Test override factory invoked on each `GetDeviceAuthAvailabilityChecker()`
-  // call instead of querying the OS. Pass a non-null callback to
-  // `SetDeviceAuthAvailabilityCheckerFactoryForTesting()` and keep the
-  // returned `base::AutoReset` alive for the duration of the test.
-  using DeviceAuthAvailabilityCheckerFactoryForTesting =
-      base::RepeatingCallback<
-          std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>()>;
-  static base::AutoReset<DeviceAuthAvailabilityCheckerFactoryForTesting>
-  SetDeviceAuthAvailabilityCheckerFactoryForTesting(
-      DeviceAuthAvailabilityCheckerFactoryForTesting factory);
-
   // ContentAutofillClient:
   std::unique_ptr<AutofillManager> CreateManager(
       base::PassKey<ContentAutofillDriver> pass_key,
@@ -428,6 +362,15 @@ class ChromeAutofillClient : public ContentAutofillClient {
   one_time_tokens::GmailOtpBackend* GetGmailOtpBackend() const final;
 
  protected:
+  explicit ChromeAutofillClient(content::WebContents* web_contents);
+
+ private:
+  friend class ChromeAutofillClientTestApi;
+
+  using DeviceAuthAvailabilityCheckerFactoryForTesting =
+      base::RepeatingCallback<
+          std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>()>;
+
   class AtMemoryCopyPasteObserver : public content::WebContentsObserver {
    public:
     explicit AtMemoryCopyPasteObserver(ChromeAutofillClient* client);
@@ -443,16 +386,6 @@ class ChromeAutofillClient : public ContentAutofillClient {
     const base::raw_ref<ChromeAutofillClient> client_;
   };
 
-  AtMemoryCopyPasteObserver& at_memory_copy_paste_observer();
-
-  // The EmailVerificationController coordinates Email Verification Protocol
-  // (EVP) UI flows (first-run prompt, loading UI, and completion
-  // notifications).
-  EmailVerificationController* GetEmailVerificationController();
-
-  explicit ChromeAutofillClient(content::WebContents* web_contents);
-
- private:
   Profile* GetProfile() const;
   tabs::TabInterface* GetTabInterface();
 
@@ -470,6 +403,12 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // may be called for actors unrelated to the current tab. If an update is
   // related to the current tab.
   void OnActorTaskStateChange(actor::ActorTask& task);
+
+  // If non-null, overrides the OS check in `GetDeviceAuthAvailabilityChecker()`
+  // for tests. Always points to a non-null callback owned by a
+  // `ChromeAutofillClientTestApi::ScopedDeviceAuthAvailabilityCheckerFactory`.
+  static const DeviceAuthAvailabilityCheckerFactoryForTesting*
+      device_auth_availability_checker_factory_for_testing_;
 
   const raw_ptr<LogRouter> log_router_ =
       AutofillLogRouterFactory::GetForBrowserContext(
@@ -527,6 +466,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
   std::unique_ptr<OtpFieldDetector> otp_field_detector_;
   std::unique_ptr<GmailOtpOptInCoordinator> gmail_otp_opt_in_coordinator_;
   std::unique_ptr<OtpMetricsTracker> otp_metrics_tracker_;
+  // Coordinates Email Verification Protocol (EVP) UI flows (first-run prompt,
+  // loading UI, and completion notifications).
   std::unique_ptr<EmailVerificationController> email_verification_controller_;
   std::unique_ptr<EmailVerifierDelegate> email_verifier_delegate_;
   std::unique_ptr<ChromeOtpPhishGuardDelegate> otp_phish_guard_delegate_;

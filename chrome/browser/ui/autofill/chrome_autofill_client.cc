@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
@@ -20,7 +19,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -268,14 +266,6 @@ namespace autofill {
 
 namespace {
 
-ChromeAutofillClient::DeviceAuthAvailabilityCheckerFactoryForTesting&
-GetDeviceAuthAvailabilityCheckerFactoryForTesting() {
-  static base::NoDestructor<
-      ChromeAutofillClient::DeviceAuthAvailabilityCheckerFactoryForTesting>
-      factory;
-  return *factory;
-}
-
 AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
     AutofillSuggestionTriggerSource source) {
   return AutoselectFirstSuggestion(
@@ -430,11 +420,6 @@ void ChromeAutofillClient::ShowAutofillAtMemoryPromo() {
   }
 }
 #endif
-
-ChromeAutofillClient::AtMemoryCopyPasteObserver&
-ChromeAutofillClient::at_memory_copy_paste_observer() {
-  return at_memory_copy_paste_observer_;
-}
 
 base::WeakPtr<AutofillClient> ChromeAutofillClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -1230,13 +1215,6 @@ ChromeAutofillClient::GetAutofillSnackbarController() {
   return autofill_snackbar_controller_impl_.get();
 }
 
-void ChromeAutofillClient::SetAutofillSnackbarControllerImplForTesting(
-    std::unique_ptr<AutofillSnackbarControllerImpl>
-        autofill_snackbar_controller_impl) {
-  autofill_snackbar_controller_impl_ =
-      std::move(autofill_snackbar_controller_impl);
-}
-
 void ChromeAutofillClient::ShowAutofillAiLoadingDialog() {
   GetAutofillDialogController()->ShowLoadingDialog(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_LOADING_DIALOG_LABEL),
@@ -1278,13 +1256,6 @@ ChromeAutofillClient::GetAutofillMessageController() {
   return autofill_message_controller_.get();
 }
 
-void ChromeAutofillClient::SetTouchToFillAutofillControllerForTesting(
-    std::unique_ptr<TouchToFillAutofillController>
-        touch_to_fill_autofill_controller) {
-  touch_to_fill_autofill_controller_ =
-      std::move(touch_to_fill_autofill_controller);
-}
-
 bool ChromeAutofillClient::ShowAmbientAutofillNotice(
     base::WeakPtr<TouchToFillAutofillDelegate> delegate) {
   if (!touch_to_fill_autofill_controller_) {
@@ -1313,14 +1284,9 @@ void ChromeAutofillClient::HideTouchToFillAutofillNotice() {
 #endif
 
 // static
-base::AutoReset<
-    ChromeAutofillClient::DeviceAuthAvailabilityCheckerFactoryForTesting>
-ChromeAutofillClient::SetDeviceAuthAvailabilityCheckerFactoryForTesting(
-    DeviceAuthAvailabilityCheckerFactoryForTesting factory) {
-  CHECK_IS_TEST();
-  return base::AutoReset<DeviceAuthAvailabilityCheckerFactoryForTesting>(
-      &GetDeviceAuthAvailabilityCheckerFactoryForTesting(), std::move(factory));
-}
+constinit const ChromeAutofillClient::
+    DeviceAuthAvailabilityCheckerFactoryForTesting* ChromeAutofillClient::
+        device_auth_availability_checker_factory_for_testing_ = nullptr;
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromeAutofillClient::GetDeviceAuthenticator(std::string histogram) const {
@@ -1339,9 +1305,8 @@ ChromeAutofillClient::GetDeviceAuthenticator(std::string histogram) const {
 
 std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
 ChromeAutofillClient::GetDeviceAuthAvailabilityChecker() const {
-  if (const DeviceAuthAvailabilityCheckerFactoryForTesting& factory =
-          GetDeviceAuthAvailabilityCheckerFactoryForTesting()) {
-    return factory.Run();
+  if (device_auth_availability_checker_factory_for_testing_) {
+    return device_auth_availability_checker_factory_for_testing_->Run();
   }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -1519,13 +1484,8 @@ tabs::TabInterface* ChromeAutofillClient::GetTabInterface() {
   return tabs::TabInterface::MaybeGetFromContents(web_contents());
 }
 
-EmailVerificationController*
-ChromeAutofillClient::GetEmailVerificationController() {
-  return email_verification_controller_.get();
-}
-
 void ChromeAutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
-  GetEmailVerificationController()->HidePopup(
+  email_verification_controller_->HidePopup(
       EmailVerificationController::CompletionStatus::kVerified, issuer);
 }
 
@@ -1535,22 +1495,21 @@ void ChromeAutofillClient::ShowEmailVerificationPopup(
     const gfx::Image& issuer_logo,
     const std::u16string& email,
     base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback) {
-  GetEmailVerificationController()->ShowPopup(
+  email_verification_controller_->ShowPopup(
       element_bounds, issuer_origin, issuer_logo, email, std::move(callback));
 }
 
 void ChromeAutofillClient::HideEmailVerificationPopup() {
-  GetEmailVerificationController()->HidePopup();
+  email_verification_controller_->HidePopup();
 }
 
 void ChromeAutofillClient::ShowEmailVerificationLoadingToast(
     base::OnceClosure cancel_callback) {
-  GetEmailVerificationController()->ShowLoadingToast(
-      std::move(cancel_callback));
+  email_verification_controller_->ShowLoadingToast(std::move(cancel_callback));
 }
 
 void ChromeAutofillClient::ShowEmailVerificationErrorToast() {
-  GetEmailVerificationController()->HidePopup(
+  email_verification_controller_->HidePopup(
       EmailVerificationController::CompletionStatus::kError);
 }
 

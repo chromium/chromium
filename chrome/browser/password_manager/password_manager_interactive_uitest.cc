@@ -20,6 +20,7 @@
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client_test_api.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -359,20 +360,20 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   NavigateToFile("/password/password_form.html");
 
   autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContentsForTesting(WebContents());
+      autofill::ChromeAutofillClientTestApi::FromWebContents(WebContents());
   // The test page contains multiple password forms. All of them will be
   // autofilled again every time the logins from the password store are changed.
   // Updating every field takes time and triggers every time hiding the Autofill
   // Popup with the reason `SuggestionHidingReason::kEndEditing` (because each
   // field gains focus while it is autofilled). Therefore, we use
-  // `ChromeAutofillClient::SetKeepPopupOpenForTesting()` to keep the autofill
+  // `ChromeAutofillClientTestApi::SetKeepPopupOpen()` to keep the autofill
   // popup open (and prevent the controller from being deleted).
-  // Note that `ChromeAutofillClient::SetKeepPopupOpenForTesting()` only ignores
+  // Note that `ChromeAutofillClientTestApi::SetKeepPopupOpen()` only ignores
   // a specific very small set of hiding reasons, so the popup can still be
   // hidden by almost all of the reasons (such as
   // `SuggestionHidingReason::kStaleData`, which occurs only once when the test
   // removes logins from the password store).
-  autofill_client->SetKeepPopupOpenForTesting(true);
+  test_api(*autofill_client).SetKeepPopupOpen(true);
 
   autofill::ContentAutofillDriver* autofill_driver =
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
@@ -404,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // Showing the Autofill Popup is an asynchronous task.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return controller =
-               autofill_client->suggestion_controller_for_testing().get();
+               test_api(*autofill_client).suggestion_controller().get();
   })) << "Creating `AutofillPopupController` timed out.";
   // Two credentials, a separator line and "Manage passwords" should be
   // displayed.
@@ -421,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForPasswordStore();
 
   // Wait for the refetch to finish.
-  EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
+  EXPECT_FALSE(test_api(*autofill_client).suggestion_controller());
   WaitForPasswordStore();
 
   // Reshow the dropdown.
@@ -430,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // Showing the Autofill Popup is an asynchronous task.
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return controller =
-               autofill_client->suggestion_controller_for_testing().get();
+               test_api(*autofill_client).suggestion_controller().get();
   })) << "Creating `AutofillPopupController` timed out.";
   EXPECT_EQ(3, controller->GetLineCount());
   EXPECT_EQ(u"user", controller->GetSuggestionAt(0).main_text.value);
@@ -445,13 +446,13 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForPasswordStore();
 
   // Wait for the refetch to finish.
-  EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
+  EXPECT_FALSE(test_api(*autofill_client).suggestion_controller());
   WaitForPasswordStore();
 
   // Reshow the dropdown won't work because there is nothing to suggest.
   TriggerPasswordSuggestionsAndWait(autofill_driver, form, element_bounds);
 
-  EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
+  EXPECT_FALSE(test_api(*autofill_client).suggestion_controller());
 
   WaitForElementValue("username_field", "");
 }
