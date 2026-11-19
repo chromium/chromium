@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -334,6 +335,74 @@ TEST_F(InlineCursorTest, CulledInlineWithoutRoot) {
   cursor.MoveToIncludingCulledInline(*layout_inline_a);
   EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
               ElementsAre("abc", "", "xyz"));
+}
+
+// A descendants cursor must not scan all items in its range to find a culled
+// inline with few descendants. Scanning is O(range) per culled inline, which
+// is quadratic when hit-testing a line with many culled inlines.
+// crbug.com/454861482
+TEST_F(InlineCursorTest, CulledInlineDescendantsCursorSmallCulledInline) {
+  InlineCursor cursor = SetupCursor(R"HTML(
+    <div id="root">ab <b id="culled">cd</b> ef</div>
+  )HTML");
+  ASSERT_TRUE(cursor.Current().IsLineBox());
+  InlineCursor descendants = cursor.CursorForDescendants();
+  descendants.MoveToIncludingCulledInline(
+      *GetLayoutObjectByElementId("culled"));
+  EXPECT_FALSE(descendants.UsesFragmentTreeForCulledInlineForTesting());
+  EXPECT_THAT(LayoutObjectToDebugStringList(descendants), ElementsAre("cd"));
+}
+
+TEST_F(InlineCursorTest, CulledInlineDescendantsTraversalDisabled) {
+  ScopedCulledInlineDescendantsTraversalForTest disabled(false);
+  InlineCursor cursor = SetupCursor(R"HTML(
+    <div id="root">ab
+      <b id="culled">cd <i id="i"><img></i> ef</b>
+    gh</div>
+  )HTML");
+  const auto& culled = *To<LayoutInline>(GetLayoutObjectByElementId("culled"));
+  ASSERT_FALSE(culled.ShouldCreateBoxFragment());
+  ASSERT_TRUE(cursor.Current().IsLineBox());
+  InlineCursor descendants = cursor.CursorForDescendants();
+  descendants.MoveToIncludingCulledInline(culled);
+  EXPECT_TRUE(descendants.UsesFragmentTreeForCulledInlineForTesting());
+  EXPECT_THAT(LayoutObjectToDebugStringList(descendants),
+              ElementsAre("cd", "#i", "ef"));
+}
+
+// A culled inline with many descendants must keep scanning fragment items:
+// walking all |LayoutObject| descendants per query is expensive when the
+// cursor is restricted to a small subset of them. crbug.com/1008523
+TEST_F(InlineCursorTest, CulledInlineDescendantsCursorLargeCulledInline) {
+  InlineCursor cursor = SetupCursor(
+      "<div id=\"root\">ab "
+      "<b id=\"culled\"><i>c</i><i>d</i><i>e</i><i>f</i><i>g</i><i>h</i>"
+      "<i>i</i><i>j</i><i>k</i></b>"
+      " ef</div>");
+  ASSERT_TRUE(cursor.Current().IsLineBox());
+  InlineCursor descendants = cursor.CursorForDescendants();
+  descendants.MoveToIncludingCulledInline(
+      *GetLayoutObjectByElementId("culled"));
+  EXPECT_TRUE(descendants.UsesFragmentTreeForCulledInlineForTesting());
+  EXPECT_THAT(LayoutObjectToDebugStringList(descendants),
+              ElementsAre("c", "d", "e", "f", "g", "h", "i", "j", "k"));
+}
+
+// Descendants of non-culled inline box children are not part of a culled
+// inline box for a descendants cursor, regardless of the traversal strategy.
+TEST_F(InlineCursorTest, CulledInlineDescendantsCursorWithAtomicInline) {
+  InlineCursor cursor = SetupCursor(R"HTML(
+    <div id="root">ab
+      <b id="culled">cd <i id="i"><img id="img"></i> ef</b>
+    gh</div>
+  )HTML");
+  const auto& culled = *To<LayoutInline>(GetLayoutObjectByElementId("culled"));
+  ASSERT_FALSE(culled.ShouldCreateBoxFragment());
+  ASSERT_TRUE(cursor.Current().IsLineBox());
+  InlineCursor descendants = cursor.CursorForDescendants();
+  descendants.MoveToIncludingCulledInline(culled);
+  EXPECT_THAT(LayoutObjectToDebugStringList(descendants),
+              ElementsAre("cd", "#i", "ef"));
 }
 
 TEST_F(InlineCursorTest, CursorForMovingAcrossFragmentainer) {

@@ -542,6 +542,12 @@ class CORE_EXPORT InlineCursor {
   // method is a no-op.
   void MoveToVisualFirstForSameLayoutObject();
 
+  // True if culled-inline traversal scans fragment items rather than walking
+  // |LayoutObject| descendants. See |MoveToFirstForCulledInline|.
+  bool UsesFragmentTreeForCulledInlineForTesting() const {
+    return culled_inline_.UseFragmentTree();
+  }
+
 #if DCHECK_IS_ON()
   void CheckValid(const InlineCursorPosition& position) const;
 #else

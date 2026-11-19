@@ -143,6 +143,22 @@ bool ShouldIgnoreForPositionForPoint(const InlineCursor& line) {
   return true;
 }
 
+// Bounds the cost of |LayoutObject| descendant traversals for culled inlines
+// in |InlineCursor::MoveToFirstForCulledInline|. A culled inline may have a
+// huge number of descendants (crbug.com/1008523).
+constexpr unsigned kCulledInlineDescendantsLimit = 8;
+
+bool HasFewDescendants(const LayoutInline& layout_inline) {
+  unsigned count = 0;
+  for (const LayoutObject* descendant = layout_inline.FirstChild(); descendant;
+       descendant = descendant->NextInPreOrder(&layout_inline)) {
+    if (++count > kCulledInlineDescendantsLimit) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 void InlineCursor::SetRoot(const PhysicalBoxFragment& box_fragment,
@@ -1619,8 +1635,14 @@ void InlineCursor::MoveToFirstForCulledInline(
   // When |this| is a descendant cursor, |this| may be limited to a very small
   // subset of the |LayoutObject| descendants, and that traversing
   // |LayoutObject| descendants is much more expensive. Prefer checking every
-  // fragment in that case.
-  if (IsDescendantsCursor()) {
+  // fragment in that case, unless the culled inline has only a few
+  // descendants: scanning fragments is O(size of the cursor range) per culled
+  // inline, which is quadratic when hit-testing a line with many culled
+  // inlines (crbug.com/454861482), while a small |LayoutObject| traversal is
+  // O(1).
+  if (IsDescendantsCursor() &&
+      (!RuntimeEnabledFeatures::CulledInlineDescendantsTraversalEnabled() ||
+       !HasFewDescendants(layout_inline))) {
     culled_inline_.SetUseFragmentTree(layout_inline);
     DCHECK(!CanMoveAcrossFragmentainer());
     MoveToFirst();
@@ -1658,13 +1680,36 @@ void InlineCursor::MoveToNextForCulledInline() {
 
 void InlineCursor::MoveToNextCulledInlineDescendantIfNeeded() {
   DCHECK(culled_inline_);
-  if (Current())
-    return;
-
-  while (const LayoutObject* layout_object = culled_inline_.MoveToNext()) {
-    MoveTo(*layout_object);
-    if (Current())
+  if (!IsDescendantsCursor() ||
+      !RuntimeEnabledFeatures::CulledInlineDescendantsTraversalEnabled()) {
+    if (Current()) {
       return;
+    }
+    while (const LayoutObject* layout_object = culled_inline_.MoveToNext()) {
+      MoveTo(*layout_object);
+      if (Current()) {
+        return;
+      }
+    }
+    return;
+  }
+
+  // Find() skips descendants of non-culled inline boxes. A descendants
+  // cursor also excludes atomic inlines and objects outside inline layout.
+  for (;;) {
+    if (Current()) {
+      const LayoutObject* layout_object = Current().GetLayoutObject();
+      if (layout_object && !layout_object->IsAtomicInline() &&
+          (layout_object->IsInline() || layout_object->IsBlockInInline())) {
+        return;
+      }
+    }
+    const LayoutObject* layout_object = culled_inline_.MoveToNext();
+    if (!layout_object) {
+      MakeNull();
+      return;
+    }
+    MoveTo(*layout_object);
   }
 }
 

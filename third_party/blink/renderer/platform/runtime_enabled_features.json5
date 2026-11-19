@@ -2400,6 +2400,12 @@
       status: "stable",
     },
     {
+      // Switches descendants cursors to LayoutObject traversal for culled
+      // inlines with few descendants.
+      name: "CulledInlineDescendantsTraversal",
+      status: "stable",
+    },
+    {
       // Shipping in M148 (or backported earlier), can be removed in M150.
       name: "CustomElementsDisableFormattingFixups",
       status: "stable",

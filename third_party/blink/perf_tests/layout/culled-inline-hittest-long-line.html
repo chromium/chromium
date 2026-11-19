@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>Hit-testing a long line with many culled inlines</title>
+<script src="../resources/runner.js"></script>
+<body>
+<div id="container" style="white-space: pre; width: 800px; overflow: hidden;"></div>
+<script>
+const span_count = 2000;
+
+function setup() {
+  let html = '';
+  for (let i = 0; i < span_count; ++i)
+    html += '<span>1234567</span> ';
+  container.innerHTML = html;
+}
+
+function test() {
+  const bounds = container.getBoundingClientRect();
+  for (let x = 5; x < 800; x += 80)
+    document.elementFromPoint(bounds.x + x, bounds.y + 5);
+}
+
+function run() {
+  PerfTestRunner.measureTime({
+    description: `Measures performance of hit-testing a single long line with ${span_count} culled inlines.`,
+    run: test
+  });
+}
+
+setup();
+run();
+</script>
+</body>
