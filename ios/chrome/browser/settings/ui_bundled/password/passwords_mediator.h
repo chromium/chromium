@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string_view>
+
 #import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
@@ -34,6 +36,7 @@ class Tracker;
                                faviconLoader:(FaviconLoader*)faviconLoader
                                  syncService:(syncer::SyncService*)syncService
                                  prefService:(PrefService*)prefService
+                           applicationLocale:(std::string_view)applicationLocale
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

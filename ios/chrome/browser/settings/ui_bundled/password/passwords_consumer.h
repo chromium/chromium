@@ -12,6 +12,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 
+@class CrURL;
+
 namespace password_manager {
 struct CredentialUIEntry;
 class AffiliatedGroup;
@@ -52,6 +54,9 @@ class AffiliatedGroup;
 // Stores an email of a user (the email is being displayed as a part of the
 // TrustedVault widget promo message).
 - (void)setUserEmail:(const std::u16string&)userEmail;
+
+// Sets the localized Password Manager Help Center URL.
+- (void)setHelpCenterURL:(CrURL*)helpCenterURL;
 
 @end
 

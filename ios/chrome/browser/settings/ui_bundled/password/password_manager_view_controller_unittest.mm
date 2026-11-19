@@ -115,7 +115,11 @@ class PasswordManagerViewControllerTest
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForProfile(profile)
                          syncService:SyncServiceFactory::GetForProfile(profile)
-                         prefService:profile->GetPrefs()];
+                         prefService:profile->GetPrefs()
+                   applicationLocale:GetApplicationContext()
+                                         ->GetApplicationLocaleStorage()
+                                         ->GetTag()
+                                         .tag_string()];
 
     // Inject some fake passwords to pass the loading state.
     PasswordManagerViewController* passwords_controller =

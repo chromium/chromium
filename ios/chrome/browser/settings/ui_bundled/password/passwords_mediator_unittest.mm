@@ -13,7 +13,9 @@
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -26,6 +28,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -44,6 +47,8 @@
 #import "testing/gtest_mac.h"
 
 namespace {
+
+constexpr char kApplicationLocale[] = "en-US";
 
 using ::password_manager::InsecureType;
 using ::password_manager::PasswordForm;
@@ -78,6 +83,7 @@ password_manager::StoredCredential CreateStoredCredential() {
 @property(nonatomic, assign) BOOL shouldShowPasswordManagerWidgetPromoCalled;
 @property(nonatomic, assign) BOOL shouldShowTrustedVaultWidgetPromoCalled;
 @property(nonatomic, assign) BOOL allowsAddPassword;
+@property(nonatomic, strong) CrURL* helpCenterURL;
 
 @end
 
@@ -129,6 +135,10 @@ password_manager::StoredCredential CreateStoredCredential() {
 - (void)setUserEmail:(const std::u16string&)userEmail {
 }
 
+- (void)setHelpCenterURL:(CrURL*)helpCenterURL {
+  _helpCenterURL = helpCenterURL;
+}
+
 @end
 
 // Tests for Passwords mediator.
@@ -166,7 +176,8 @@ class PasswordsMediatorTest : public BlockCleanupTest {
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForProfile(profile_.get())
                          syncService:&sync_service_
-                         prefService:profile_->GetPrefs()];
+                         prefService:profile_->GetPrefs()
+                   applicationLocale:kApplicationLocale];
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile()));
@@ -313,11 +324,20 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerAllowsAddPassword) {
                      faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
                                        profile())
                        syncService:syncService()
-                       prefService:profile()->GetPrefs()];
+                       prefService:profile()->GetPrefs()
+                 applicationLocale:kApplicationLocale];
   FakePasswordsConsumer* restricted_consumer =
       [[FakePasswordsConsumer alloc] init];
   restricted_mediator.consumer = restricted_consumer;
 
   EXPECT_FALSE(restricted_consumer.allowsAddPassword);
   [restricted_mediator disconnect];
+}
+
+// Tests that the localized Help Center URL is pushed to the consumer.
+TEST_F(PasswordsMediatorTest, NotifiesConsumerHelpCenterURL) {
+  GURL expected_url = google_util::AppendGoogleLocaleParam(
+      GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
+      kApplicationLocale);
+  EXPECT_EQ(expected_url, consumer().helpCenterURL.gurl);
 }

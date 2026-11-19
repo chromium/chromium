@@ -18,10 +18,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/application_locale_storage/application_locale_storage.h"
-#import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -50,7 +47,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller+toolbar_add.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller+toolbar_settings.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/shared/ui/image/image_names.h"
@@ -75,11 +71,9 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "net/base/apple/url_conversions.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-#import "url/gurl.h"
 
 using base::UmaHistogramEnumeration;
 
@@ -258,6 +252,8 @@ void AppendSectionToModel(TableViewModel* model,
   std::optional<password_manager::CredentialUIEntry> _mostRecentlyUpdatedCred;
   // Stores an email address of a user.
   std::u16string _userEmail;
+  // Localized Password Manager Help Center URL.
+  CrURL* _helpCenterURL;
   // Whether the VC is currently reloading data. Used to avoid modifying the
   // content while it is reloading.
   BOOL _isReloadingData;
@@ -997,6 +993,15 @@ void AppendSectionToModel(TableViewModel* model,
   }
 }
 
+- (void)setHelpCenterURL:(CrURL*)helpCenterURL {
+  if (_helpCenterURL == helpCenterURL ||
+      [_helpCenterURL isEqual:helpCenterURL]) {
+    return;
+  }
+  _helpCenterURL = helpCenterURL;
+  [self populateManageAccountLinkItemContent];
+}
+
 #pragma mark - UISearchControllerDelegate
 
 - (void)willPresentSearchController:(UISearchController*)searchController {
@@ -1153,14 +1158,7 @@ void AppendSectionToModel(TableViewModel* model,
   if (_savingPasswordsToAccount) {
     _manageAccountLinkItem.text = l10n_util::GetNSString(
         IDS_IOS_SAVE_PASSWORDS_PASSKEYS_MANAGE_ACCOUNT_HEADER);
-    _manageAccountLinkItem.urls = @[ [[CrURL alloc]
-        initWithGURL:
-            google_util::AppendGoogleLocaleParam(
-                GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-                std::string(GetApplicationContext()
-                                ->GetApplicationLocaleStorage()
-                                ->GetTag()
-                                .tag_string()))] ];
+    _manageAccountLinkItem.urls = _helpCenterURL ? @[ _helpCenterURL ] : @[];
   } else {
     _manageAccountLinkItem.text =
         l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_HEADER_NOT_SYNCING);
@@ -1829,16 +1827,13 @@ void AppendSectionToModel(TableViewModel* model,
 
       NSDictionary* textAttributes =
           [TableViewIllustratedEmptyView defaultTextAttributesForSubtitle];
-      NSURL* linkURL = net::NSURLWithGURL(google_util::AppendGoogleLocaleParam(
-          GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
-          std::string(GetApplicationContext()
-                          ->GetApplicationLocaleStorage()
-                          ->GetTag()
-                          .tag_string())));
-      NSDictionary* linkAttributes = @{
-        NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
-        NSLinkAttributeName : linkURL,
-      };
+      NSMutableDictionary* linkAttributes =
+          [NSMutableDictionary dictionaryWithDictionary:@{
+            NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+          }];
+      if (_helpCenterURL.nsurl) {
+        linkAttributes[NSLinkAttributeName] = _helpCenterURL.nsurl;
+      }
       NSAttributedString* subtitle = AttributedStringFromStringWithLink(
           l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER),
           textAttributes, linkAttributes);

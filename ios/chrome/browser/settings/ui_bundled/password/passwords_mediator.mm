@@ -4,13 +4,17 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.h"
 
+#import <string>
+
 #import "base/memory/raw_ptr.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -108,20 +112,29 @@ bool AllowsAddPassword(PrefService* pref_service) {
 
   // Profile pref service.
   raw_ptr<PrefService> _prefService;
+
+  // Localized Password Manager Help Center URL.
+  CrURL* _helpCenterURL;
 }
 
-- (instancetype)initWithPasswordCheckManager:
-                    (scoped_refptr<IOSChromePasswordCheckManager>)
-                        passwordCheckManager
-                               faviconLoader:(FaviconLoader*)faviconLoader
-                                 syncService:(syncer::SyncService*)syncService
-                                 prefService:(PrefService*)prefService {
+- (instancetype)
+    initWithPasswordCheckManager:
+        (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager
+                   faviconLoader:(FaviconLoader*)faviconLoader
+                     syncService:(syncer::SyncService*)syncService
+                     prefService:(PrefService*)prefService
+               applicationLocale:(std::string_view)applicationLocale {
   self = [super init];
   if (self) {
     CHECK(prefService);
     _syncService = syncService;
     _faviconLoader = faviconLoader;
     _prefService = prefService;
+    _helpCenterURL = [[CrURL alloc]
+        initWithGURL:
+            google_util::AppendGoogleLocaleParam(
+                GURL(password_manager::kPasswordManagerHelpCenteriOSURL),
+                std::string(applicationLocale))];
 
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
 
@@ -147,6 +160,7 @@ bool AllowsAddPassword(PrefService* pref_service) {
 
   [self.consumer
       setUserEmail:base::UTF8ToUTF16(_syncService->GetAccountInfo().email)];
+  [self.consumer setHelpCenterURL:_helpCenterURL];
   [self displayOrHideTrustedVaultPasswordManagerWidgetPromo];
   [self providePasswordsToConsumer];
 
