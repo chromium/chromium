@@ -96,6 +96,19 @@ class InstallPromptData {
   // accepted.
   bool ShouldWithheldPermissionsOnDialogAccept() const;
 
+  // Getters for site access section. Must only be called when
+  // `ShouldWithheldPermissionsOnDialogAccept()` is true.
+  std::u16string GetSiteAccessHeader() const;
+  std::u16string GetSiteAccessOnClickOptionText() const;
+  std::u16string GetSiteAccessOnClickOptionSubtext() const;
+  std::u16string GetSiteAccessAlwaysOptionText() const;
+  std::u16string GetSiteAccessAlwaysOptionSubtext() const;
+  std::u16string GetVisibleHostPermissions() const;
+  std::u16string GetCollapsedHostPermissions() const;
+  size_t GetNonHostPermissionCount() const;
+  InstallPromptPermissions GetNonHostPermissions() const;
+  bool has_all_hosts_permission() const;
+
   // Getters for webstore metadata. Only populated when the type is
   // INLINE_INSTALL_PROMPT, EXTERNAL_INSTALL_PROMPT, or REPAIR_PROMPT.
   std::tuple<int, double> GetRatingStars() const;
@@ -142,10 +155,19 @@ class InstallPromptData {
   // permissions if only additional ones are being requested)
   InstallPromptPermissions prompt_permissions_;
 
+  // Non-host permissions that are being requested, used when host permissions
+  // are displayed separately in the site access section.
+  InstallPromptPermissions non_host_permissions_;
+
+  // Host permissions that are being requested, used when specific sites are
+  // displayed in the site access section.
+  InstallPromptPermissions host_permissions_;
+
   // True if the current user is a child.
   bool requires_parent_permission_ = false;
 
   bool is_requesting_host_permissions_ = false;
+  bool has_all_hosts_permission_ = false;
 
   // The extension being installed.
   scoped_refptr<const extensions::Extension> extension_;

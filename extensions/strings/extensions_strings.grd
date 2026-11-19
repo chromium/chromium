@@ -634,6 +634,36 @@
       <message name="IDS_PARENT_PERMISSION_PROMPT_CANCEL_BUTTON" desc="Text for the cancel button on the parent permission prompt.">
         Cancel
       </message>
+      <message name="IDS_EXTENSION_PROMPT_SITE_ACCESS_HEADER" desc="Header of the radio group in the extension installation prompt that allows the user to choose site access permissions.">
+        Read and change your data
+      </message>
+      <message name="IDS_EXTENSION_PROMPT_SITE_ACCESS_ON_CLICK" desc="Label for the radio button in the extension installation prompt that grants the extension site access only when clicked.">
+        Only when you click the extension
+      </message>
+      <message name="IDS_EXTENSION_PROMPT_SITE_ACCESS_ON_CLICK_SUBTEXT" desc="Subtext for the radio button in the extension installation prompt that grants the extension site access only when clicked.">
+        Grants temporary access to your data on the site
+      </message>
+      <message name="IDS_EXTENSION_PROMPT_SITE_ACCESS_ALWAYS_ON_ALL_SITES" desc="Label for the radio button in the extension installation prompt that grants the extension permanent access on all sites.">
+        Always on all sites
+      </message>
+      <message name="IDS_EXTENSION_PROMPT_SITE_ACCESS_ALWAYS_ON_ALL_SITES_SUBTEXT" desc="Subtext for the radio button in the extension installation prompt that grants the extension permanent access on all sites.">
+        Grants permanent access to your data on all sites
+      </message>
+      <message name="IDS_EXTENSION_PROMPT_SITE_ACCESS_ALWAYS_ON_LISTED_SITES" desc="Label for the radio button in the extension installation prompt that grants the extension permanent access on the listed sites.">
+        Always on the listed sites
+      </message>
+      <message name="IDS_EXTENSION_PROMPT_SITE_ACCESS_ALWAYS_ON_LISTED_SITES_SUBTEXT" desc="Subtext for the radio button in the extension installation prompt that grants the extension permanent access on the listed sites.">
+        Grants permanent access to your data on the sites listed below
+      </message>
+      <message name="IDS_EXTENSION_PROMPT_SITE_ACCESS_HOST_AND_SUBDOMAIN" desc="Single entry permission string in the extension installation prompt requesting access to data on a website and its sub-domains.">
+        All <ph name="WEBSITE_1">$1<ex>google.com</ex></ph> sites
+      </message>
+      <message name="IDS_EXTENSION_PROMPT_SITE_ACCESS_LISTED_SITES_ARIA_LABEL" desc="Accessible label for the list of websites in the extension installation prompt.">
+        Listed sites
+      </message>
+      <message name="IDS_EXTENSION_PROMPT_SITE_ACCESS_SHOW_ALL_SITES_ARIA_LABEL" desc="Accessible label for the 'Show all' button that expands the list of websites in the extension installation prompt.">
+        Show all sites
+      </message>
     </messages>
   </release>
 </grit>

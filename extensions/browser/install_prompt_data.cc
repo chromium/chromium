@@ -4,16 +4,23 @@
 
 #include "extensions/browser/install_prompt_data.h"
 
+#include <set>
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extensions_client.h"
+#include "extensions/common/permissions/permission_message_util.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "extensions/common/url_pattern_set.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -40,14 +47,64 @@ void InstallPromptData::AddPermissionSet(const PermissionSet& permissions) {
   Manifest::Type type =
       extension_ ? extension_->GetType() : Manifest::Type::kUnknown;
   prompt_permissions_.LoadFromPermissionSet(&permissions, type);
-  if (!permissions.effective_hosts().is_empty()) {
+
+  PermissionSet non_host_permissions(permissions.apis().Clone(),
+                                     permissions.manifest_permissions().Clone(),
+                                     URLPatternSet(), URLPatternSet());
+  if (ExtensionsBrowserClient::Get()) {
+    ExtensionsBrowserClient::Get()->AddAdditionalAllowedHosts(
+        permissions, &non_host_permissions);
+  }
+  non_host_permissions_.LoadFromPermissionSet(&non_host_permissions, type);
+
+  // Do not offer site access options if an API or manifest permission already
+  // implies access to all hosts, since API permissions cannot be withheld at
+  // runtime and `non_host_permissions_` already warns about all-sites access.
+  if (non_host_permissions.ShouldWarnAllHosts()) {
+    return;
+  }
+
+  if (permissions.ShouldWarnAllHosts(/*include_api_permissions=*/false)) {
     is_requesting_host_permissions_ = true;
+    has_all_hosts_permission_ = true;
+    host_permissions_ = InstallPromptPermissions();
+    return;
+  }
+
+  URLPatternSet regular_hosts;
+  PermissionIDSet dummy_permissions;
+  ExtensionsClient::Get()->FilterHostPermissions(
+      permissions.effective_hosts(), &regular_hosts, &dummy_permissions);
+  std::set<std::string> hosts =
+      permission_message_util::GetDistinctHosts(regular_hosts,
+                                                /*include_rcd=*/true,
+                                                /*exclude_file_scheme=*/true);
+  hosts.erase("");
+  if (!hosts.empty()) {
+    is_requesting_host_permissions_ = true;
+    std::vector<std::u16string> host_submessages;
+    host_submessages.reserve(hosts.size());
+    for (const std::string& host : hosts) {
+      std::u16string host_str = base::UTF8ToUTF16(host);
+      if (host_str.starts_with(u"*.")) {
+        host_str = l10n_util::GetStringFUTF16(
+            IDS_EXTENSION_PROMPT_SITE_ACCESS_HOST_AND_SUBDOMAIN,
+            host_str.substr(2));
+      }
+      host_submessages.push_back(std::move(host_str));
+    }
+    PermissionMessages host_messages;
+    host_messages.emplace_back(
+        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_SITE_ACCESS_HEADER),
+        PermissionIDSet(), std::move(host_submessages));
+    host_permissions_.AddPermissionMessages(host_messages);
   }
 }
 
 void InstallPromptData::AddPermissionMessages(
     const PermissionMessages& permissions) {
   prompt_permissions_.AddPermissionMessages(permissions);
+  non_host_permissions_.AddPermissionMessages(permissions);
 }
 
 void InstallPromptData::SetWebstoreData(
@@ -339,8 +396,72 @@ void InstallPromptData::OnDialogCanceled() {
 bool InstallPromptData::ShouldWithheldPermissionsOnDialogAccept() const {
   return base::FeatureList::IsEnabled(
              extensions_features::kExtensionInstallSiteAccessOptions) &&
-         util::CanWithholdPermissionsFromExtension(*extension_) &&
+         extension_ && util::CanWithholdPermissionsFromExtension(*extension_) &&
          is_requesting_host_permissions_ && type_ == INSTALL_PROMPT;
+}
+
+std::u16string InstallPromptData::GetSiteAccessHeader() const {
+  CHECK(ShouldWithheldPermissionsOnDialogAccept());
+  return l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_SITE_ACCESS_HEADER);
+}
+
+std::u16string InstallPromptData::GetSiteAccessOnClickOptionText() const {
+  CHECK(ShouldWithheldPermissionsOnDialogAccept());
+  return l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_SITE_ACCESS_ON_CLICK);
+}
+
+std::u16string InstallPromptData::GetSiteAccessOnClickOptionSubtext() const {
+  CHECK(ShouldWithheldPermissionsOnDialogAccept());
+  return l10n_util::GetStringUTF16(
+      IDS_EXTENSION_PROMPT_SITE_ACCESS_ON_CLICK_SUBTEXT);
+}
+
+std::u16string InstallPromptData::GetSiteAccessAlwaysOptionText() const {
+  CHECK(ShouldWithheldPermissionsOnDialogAccept());
+  return l10n_util::GetStringUTF16(
+      has_all_hosts_permission_
+          ? IDS_EXTENSION_PROMPT_SITE_ACCESS_ALWAYS_ON_ALL_SITES
+          : IDS_EXTENSION_PROMPT_SITE_ACCESS_ALWAYS_ON_LISTED_SITES);
+}
+
+std::u16string InstallPromptData::GetSiteAccessAlwaysOptionSubtext() const {
+  CHECK(ShouldWithheldPermissionsOnDialogAccept());
+  return l10n_util::GetStringUTF16(
+      has_all_hosts_permission_
+          ? IDS_EXTENSION_PROMPT_SITE_ACCESS_ALWAYS_ON_ALL_SITES_SUBTEXT
+          : IDS_EXTENSION_PROMPT_SITE_ACCESS_ALWAYS_ON_LISTED_SITES_SUBTEXT);
+}
+
+std::u16string InstallPromptData::GetVisibleHostPermissions() const {
+  CHECK(ShouldWithheldPermissionsOnDialogAccept());
+  if (has_all_hosts_permission_ || host_permissions_.visible_details.empty()) {
+    return std::u16string();
+  }
+  return host_permissions_.visible_details[0];
+}
+
+std::u16string InstallPromptData::GetCollapsedHostPermissions() const {
+  CHECK(ShouldWithheldPermissionsOnDialogAccept());
+  if (has_all_hosts_permission_ ||
+      host_permissions_.collapsed_details.empty()) {
+    return std::u16string();
+  }
+  return host_permissions_.collapsed_details[0];
+}
+
+size_t InstallPromptData::GetNonHostPermissionCount() const {
+  CHECK(ShouldWithheldPermissionsOnDialogAccept());
+  return non_host_permissions_.permissions.size();
+}
+
+InstallPromptPermissions InstallPromptData::GetNonHostPermissions() const {
+  CHECK(ShouldWithheldPermissionsOnDialogAccept());
+  return non_host_permissions_;
+}
+
+bool InstallPromptData::has_all_hosts_permission() const {
+  CHECK(ShouldWithheldPermissionsOnDialogAccept());
+  return has_all_hosts_permission_;
 }
 
 }  // namespace extensions
