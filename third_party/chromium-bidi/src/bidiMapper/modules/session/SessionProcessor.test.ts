@@ -26,7 +26,7 @@ import type {MapperOptions} from '../../MapperOptions.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
-import {AclStorage} from './AclStorage.js';
+import {AclManager} from './AclManager.js';
 import type {EventManager} from './EventManager.js';
 import {SessionProcessor} from './SessionProcessor.js';
 
@@ -39,7 +39,7 @@ describe('SessionProcessor', () => {
   let browserCdpClient: sinon.SinonStubbedInstance<CdpClient>;
   let initConnection: sinon.SinonStub<[MapperOptions], Promise<void>>;
   let browsingContextStorage: BrowsingContextStorage;
-  let aclStorage: AclStorage;
+  let aclManager: AclManager;
   let sessionProcessor: SessionProcessor;
 
   beforeEach(() => {
@@ -63,12 +63,12 @@ describe('SessionProcessor', () => {
       isTopLevelContext: () => false,
     } as unknown as BrowsingContextImpl);
     initConnection = sinon.stub<[MapperOptions], Promise<void>>().resolves();
-    aclStorage = new AclStorage(browsingContextStorage);
+    aclManager = new AclManager(browsingContextStorage);
     sessionProcessor = new SessionProcessor(
       eventManager,
       browserCdpClient,
       initConnection,
-      aclStorage,
+      aclManager,
     );
   });
 
@@ -79,10 +79,10 @@ describe('SessionProcessor', () => {
       });
 
       assert.isUndefined(result.capabilities['goog:acl']);
-      assert.isTrue(aclStorage.isCommandAllowed('network.addIntercept'));
+      assert.isTrue(aclManager.isCommandAllowed('network.addIntercept'));
     });
 
-    it('interprets invalid goog:acl as no permissions', async () => {
+    it('interprets invalid goog:acl as no access', async () => {
       const result = await sessionProcessor.new({
         capabilities: {
           alwaysMatch: {
@@ -98,8 +98,8 @@ describe('SessionProcessor', () => {
         perNavigable: {},
       };
       assert.deepEqual(result.capabilities['goog:acl'], expectedActualAcl);
-      assert.deepEqual(aclStorage.getAcl(), expectedActualAcl);
-      assert.isFalse(aclStorage.isCommandAllowed('browsingContext.getTree'));
+      assert.deepEqual(aclManager.getAcl(), expectedActualAcl);
+      assert.isFalse(aclManager.isCommandAllowed('browsingContext.getTree'));
     });
 
     it('stores goog:acl from alwaysMatch and returns actual ACL in capabilities', async () => {
@@ -128,7 +128,7 @@ describe('SessionProcessor', () => {
         perNavigable: {},
       };
       assert.deepEqual(result.capabilities['goog:acl'], expectedActualAcl);
-      assert.deepEqual(aclStorage.getAcl(), expectedActualAcl);
+      assert.deepEqual(aclManager.getAcl(), expectedActualAcl);
     });
 
     it('stores goog:acl from firstMatch and returns actual ACL in capabilities', async () => {
@@ -155,7 +155,7 @@ describe('SessionProcessor', () => {
         perNavigable: {},
       };
       assert.deepEqual(result.capabilities['goog:acl'], expectedActualAcl);
-      assert.deepEqual(aclStorage.getAcl(), expectedActualAcl);
+      assert.deepEqual(aclManager.getAcl(), expectedActualAcl);
     });
 
     it('ignores perNavigable in goog:acl', async () => {
@@ -189,9 +189,9 @@ describe('SessionProcessor', () => {
         perNavigable: {},
       };
       assert.deepEqual(result.capabilities['goog:acl'], expectedActualAcl);
-      assert.deepEqual(aclStorage.getAcl(), expectedActualAcl);
+      assert.deepEqual(aclManager.getAcl(), expectedActualAcl);
       assert.isFalse(
-        aclStorage.isCommandAllowed(
+        aclManager.isCommandAllowed(
           'browsingContext.navigate',
           TOP_LEVEL_CONTEXT,
         ),
@@ -215,10 +215,29 @@ describe('SessionProcessor', () => {
       } catch (err) {
         assert.instanceOf(err, InvalidArgumentException);
         sinon.assert.notCalled(initConnection);
-        assert.isTrue(aclStorage.isCommandAllowed('network.addIntercept'));
+        assert.isTrue(aclManager.isCommandAllowed('network.addIntercept'));
         return;
       }
       assert.fail('Should have thrown');
+    });
+  });
+
+  describe('setAcl', () => {
+    it('delegates to the ACL manager', async () => {
+      const acl = {
+        default: {
+          commands: ['browsingContext.getTree', 'browsingContext.navigate'],
+        },
+      };
+      const reason = 'Fill in the checkout form.';
+      const result = {
+        acl: {default: {commands: ['browsingContext.getTree']}},
+        denied: {acl: {default: {commands: ['browsingContext.navigate']}}},
+      };
+      const updateAcl = sinon.stub(aclManager, 'updateAcl').resolves(result);
+
+      assert.deepEqual(await sessionProcessor.setAcl({acl, reason}), result);
+      sinon.assert.calledOnceWithExactly(updateAcl, acl, reason);
     });
   });
 });

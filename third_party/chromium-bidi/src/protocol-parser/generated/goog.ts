@@ -31,6 +31,7 @@ export const GoogCommandSchema: z.ZodLazy<
       typeof GoogCdp.GetSessionSchema,
       typeof GoogCdp.ResolveRealmSchema,
       typeof GoogCdp.SendCommandSchema,
+      typeof GoogSession.SetAclSchema,
     ]
   >
 > = z.lazy(() =>
@@ -39,6 +40,7 @@ export const GoogCommandSchema: z.ZodLazy<
     GoogCdp.GetSessionSchema,
     GoogCdp.ResolveRealmSchema,
     GoogCdp.SendCommandSchema,
+    GoogSession.SetAclSchema,
   ]),
 );
 export const GoogResultSchema: z.ZodLazy<
@@ -48,6 +50,7 @@ export const GoogResultSchema: z.ZodLazy<
       typeof GoogCdp.GetSessionResultSchema,
       typeof GoogCdp.ResolveRealmResultSchema,
       typeof GoogCdp.SendCommandResultSchema,
+      typeof GoogSession.SetAclResultSchema,
     ]
   >
 > = z.lazy(() =>
@@ -56,6 +59,7 @@ export const GoogResultSchema: z.ZodLazy<
     GoogCdp.GetSessionResultSchema,
     GoogCdp.ResolveRealmResultSchema,
     GoogCdp.SendCommandResultSchema,
+    GoogSession.SetAclResultSchema,
   ]),
 );
 export const GoogEventSchema: z.ZodLazy<typeof GoogCdp.EventSchema> = z.lazy(
@@ -249,6 +253,89 @@ export namespace GoogCdp {
       event: z.string(),
       params: z.any(),
       session: GoogCdp.SessionIdSchema.optional(),
+    }),
+  );
+}
+export namespace GoogSession {
+  export const AclEntrySchema: z.ZodLazy<
+    z.ZodObject<{
+      commands: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      commands: z.array(z.string()).optional(),
+    }),
+  );
+}
+export namespace GoogSession {
+  export const AclSchema: z.ZodLazy<
+    z.ZodObject<{
+      default: z.ZodOptional<typeof GoogSession.AclEntrySchema>;
+      perNavigable: z.ZodOptional<
+        z.ZodRecord<
+          typeof BrowsingContext.BrowsingContextSchema,
+          typeof GoogSession.AclEntrySchema
+        >
+      >;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      default: GoogSession.AclEntrySchema.optional(),
+      perNavigable: z
+        .record(
+          BrowsingContext.BrowsingContextSchema,
+          GoogSession.AclEntrySchema,
+        )
+        .optional(),
+    }),
+  );
+}
+export namespace GoogSession {
+  export const SetAclSchema: z.ZodLazy<
+    z.ZodObject<{
+      method: z.ZodLiteral<'goog:session.setAcl'>;
+      params: typeof GoogSession.SetAclParametersSchema;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      method: z.literal('goog:session.setAcl'),
+      params: GoogSession.SetAclParametersSchema,
+    }),
+  );
+}
+export namespace GoogSession {
+  export const SetAclParametersSchema: z.ZodLazy<
+    z.ZodObject<{
+      acl: typeof GoogSession.AclSchema;
+      reason: z.ZodOptional<z.ZodString>;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      acl: GoogSession.AclSchema,
+      reason: z.string().optional(),
+    }),
+  );
+}
+export namespace GoogSession {
+  export const SetAclResultSchema: z.ZodLazy<
+    z.ZodObject<{
+      acl: typeof GoogSession.AclSchema;
+      denied: z.ZodOptional<
+        z.ZodObject<{
+          acl: typeof GoogSession.AclSchema;
+          reason: z.ZodOptional<z.ZodString>;
+        }>
+      >;
+    }>
+  > = z.lazy(() =>
+    z.object({
+      acl: GoogSession.AclSchema,
+      denied: z
+        .object({
+          acl: GoogSession.AclSchema,
+          reason: z.string().optional(),
+        })
+        .optional(),
     }),
   );
 }

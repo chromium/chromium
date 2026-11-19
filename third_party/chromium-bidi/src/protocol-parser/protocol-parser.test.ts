@@ -20,7 +20,12 @@ import {z} from 'zod';
 
 import {InvalidArgumentException} from '../protocol/protocol.js';
 
-import {GoogBrowsingContext, GoogCdp, parseObject} from './protocol-parser.js';
+import {
+  GoogBrowsingContext,
+  GoogCdp,
+  GoogSession,
+  parseObject,
+} from './protocol-parser.js';
 
 describe('parseObject', () => {
   const schema = z.object({
@@ -185,6 +190,61 @@ describe('GoogBrowsingContext', () => {
       assert.throws(
         () =>
           GoogBrowsingContext.parseGetAccessibilityTreeParams({context: 123}),
+        InvalidArgumentException,
+      );
+    });
+  });
+});
+
+describe('GoogSession', () => {
+  describe('parseSetAclRequest', () => {
+    it('should parse an ACL with a reason', () => {
+      const params = {
+        acl: {
+          default: {commands: ['browsingContext.getTree']},
+          perNavigable: {
+            'context-1': {commands: ['browsingContext.navigate']},
+          },
+        },
+        reason: 'Fill in the checkout form.',
+      };
+
+      const result: unknown = GoogSession.parseSetAclRequest(params);
+      assert.deepEqual(result, {...params, 'goog:params': {}});
+    });
+
+    it('should parse an empty ACL without a reason', () => {
+      const result: unknown = GoogSession.parseSetAclRequest({acl: {}});
+      assert.deepEqual(result, {acl: {}, 'goog:params': {}});
+    });
+
+    it('should throw if the ACL is missing', () => {
+      assert.throws(
+        () => GoogSession.parseSetAclRequest({}),
+        InvalidArgumentException,
+      );
+    });
+
+    it('should throw if the ACL is null', () => {
+      assert.throws(
+        () => GoogSession.parseSetAclRequest({acl: null}),
+        InvalidArgumentException,
+      );
+    });
+
+    it('should throw if the commands are not an array', () => {
+      assert.throws(
+        () =>
+          GoogSession.parseSetAclRequest({
+            acl: {default: {commands: 'browsingContext.getTree'}},
+          }),
+        InvalidArgumentException,
+      );
+    });
+
+    it('should throw if the reason is not a string', () => {
+      assert.throws(
+        () => GoogSession.parseSetAclRequest({acl: {}, reason: 1}),
         InvalidArgumentException,
       );
     });

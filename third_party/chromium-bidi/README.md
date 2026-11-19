@@ -69,6 +69,24 @@ top-level browsing context. The command implements the specification draft
 
 The event `goog:cdp.<CDP Event Name>` contains a CDP event.
 
+### Command `goog:session.setAcl`
+
+The command requests or retracts access for a restricted session. It takes
+the full desired access control list (ACL) in `acl` and an optional `reason`,
+and returns the ACL now in effect. The command implements the proposal
+[WICG/agentic-webdriver-bidi](https://github.com/WICG/agentic-webdriver-bidi).
+
+- The client sends the full desired ACL, not a diff, so the call is idempotent.
+- `reason` tells the user why the access is needed. It is untrusted
+  client text.
+- Unsupported commands and unknown or non-top-level navigables are dropped.
+  The rest becomes the session ACL and is returned.
+- If the browser refuses part of the request, the result lists the refused
+  entries in `denied`, with an optional `reason`. Until the browser can decide
+  on requests, every request is allowed as is.
+- `goog:session.setAcl` commands are processed one at a time, in order. Other
+  commands don't wait for them and are checked against the ACL in effect.
+
 ### Field `goog:channel`
 
 Each command can be extended with a `goog:channel`:

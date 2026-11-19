@@ -27,12 +27,14 @@ export type GoogCommand =
   | GoogBrowsingContext.GetAccessibilityTree
   | GoogCdp.GetSession
   | GoogCdp.ResolveRealm
-  | GoogCdp.SendCommand;
+  | GoogCdp.SendCommand
+  | GoogSession.SetAcl;
 export type GoogResult =
   | GoogBrowsingContext.GetAccessibilityTreeResult
   | GoogCdp.GetSessionResult
   | GoogCdp.ResolveRealmResult
-  | GoogCdp.SendCommandResult;
+  | GoogCdp.SendCommandResult
+  | GoogSession.SetAclResult;
 export type GoogEvent = GoogCdp.Event;
 export namespace GoogBrowsingContext {
   export type AccessibilityNode = {
@@ -129,5 +131,39 @@ export namespace GoogCdp {
     event: string;
     params: any;
     session?: GoogCdp.SessionId;
+  };
+}
+export namespace GoogSession {
+  export type AclEntry = {
+    commands?: [...string[]];
+  };
+}
+export namespace GoogSession {
+  export type Acl = {
+    default?: GoogSession.AclEntry;
+    perNavigable?: {
+      [key: BrowsingContext.BrowsingContext]: GoogSession.AclEntry;
+    };
+  };
+}
+export namespace GoogSession {
+  export type SetAcl = {
+    method: 'goog:session.setAcl';
+    params: GoogSession.SetAclParameters;
+  };
+}
+export namespace GoogSession {
+  export type SetAclParameters = {
+    acl: GoogSession.Acl;
+    reason?: string;
+  };
+}
+export namespace GoogSession {
+  export type SetAclResult = {
+    acl: GoogSession.Acl;
+    denied?: {
+      acl: GoogSession.Acl;
+      reason?: string;
+    };
   };
 }

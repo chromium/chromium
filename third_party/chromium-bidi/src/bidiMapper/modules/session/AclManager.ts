@@ -18,19 +18,37 @@
 import {
   UnsupportedOperationException,
   type BrowsingContext,
+  type ChromiumBidi,
   type CommandData,
+  type GoogSession,
 } from '../../../protocol/protocol.js';
+import {Mutex} from '../../../utils/Mutex.js';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
-export interface AclEntry {
-  commands?: string[];
-}
+// Aliases of the generated types, so `goog.cddl` stays the source of truth.
+type AclEntry = GoogSession.AclEntry;
+export type AclConfig = GoogSession.Acl;
 
-export interface AclConfig {
-  default?: AclEntry;
-  perNavigable?: Record<BrowsingContext.BrowsingContext, AclEntry>;
-}
+/**
+ * Lets the embedder (e.g. the browser) decide on the requested ACL, e.g. by
+ * asking the user. `reason` is untrusted client text. Resolves with the ACL the
+ * embedder allows, which becomes the session ACL, and with what it refused, if
+ * anything. Called on every ACL change, so the embedder always knows the session
+ * ACL.
+ */
+export type UpdateAclHandler = (
+  requestedAcl: AclConfig,
+  reason?: string,
+) => Promise<GoogSession.SetAclResult>;
+
+/**
+ * Allows the requested ACL as is. Used until the embedder provides its own
+ * handler.
+ */
+export const allowAllUpdateAclHandler: UpdateAclHandler = (requestedAcl) => {
+  return Promise.resolve({acl: requestedAcl});
+};
 
 /** ACL rules for a command's unvalidated `params`. */
 interface AclCommandRule {
@@ -121,24 +139,62 @@ export const SUPPORTED_ACL_COMMANDS: ReadonlySet<string> = new Set<string>(
 /** Session commands that are always allowed without an ACL grant. */
 export const ACL_EXEMPT_COMMANDS: ReadonlySet<string> = new Set([
   // keep-sorted start
+  'goog:session.setAcl',
   'session.end',
   'session.new',
   'session.status',
   // keep-sorted end
-] satisfies readonly CommandData['method'][]);
+] satisfies readonly ChromiumBidi.Command['method'][]);
 
 /**
  * Manages session ACL configuration (global default and per top-level navigable)
- * and checks whether commands are allowed.
+ * and checks whether commands are allowed. ACL changes requested by the client
+ * go through the embedder's handler, one at a time.
  */
-export class AclStorage {
+export class AclManager {
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #updateAclHandler: UpdateAclHandler;
+  readonly #updateAclMutex = new Mutex();
   #enabled = false;
   #defaultCommands = new Set<string>();
   #navigableCommands = new WeakMap<BrowsingContextImpl, Set<string>>();
 
-  constructor(browsingContextStorage: BrowsingContextStorage) {
+  constructor(
+    browsingContextStorage: BrowsingContextStorage,
+    // TODO(crbug.com/586824814): let the embedder provide the handler.
+    updateAclHandler: UpdateAclHandler = allowAllUpdateAclHandler,
+  ) {
     this.#browsingContextStorage = browsingContextStorage;
+    this.#updateAclHandler = updateAclHandler;
+  }
+
+  /**
+   * Asks the embedder for `requestedAcl`, the full desired ACL, and stores the
+   * ACL it allows. Returns the ACL now in effect with what the embedder
+   * refused, if anything. Requests are processed one at a time, in order.
+   */
+  async updateAcl(
+    requestedAcl: unknown,
+    reason?: string,
+  ): Promise<GoogSession.SetAclResult> {
+    return await this.#updateAclMutex.run(async () => {
+      // If the embedder fails, so does the request, and the ACL doesn't change.
+      const decision = await this.#updateAclHandler(
+        this.#normalizeAcl(requestedAcl),
+        reason,
+      );
+      // TODO(crbug.com/586824814): remove, as restricted mode will be enforced
+      // when the mapper is created.
+      this.setEnabled(true);
+      return {...decision, acl: this.setAcl(decision.acl)};
+    });
+  }
+
+  /**
+   * Whether ACL enforcement is enabled, i.e. the session is restricted.
+   */
+  isEnabled(): boolean {
+    return this.#enabled;
   }
 
   /**
@@ -150,29 +206,53 @@ export class AclStorage {
 
   /**
    * Configures the session ACL. Unsupported commands, invalid entries, and
-   * unknown or non-top-level navigables are ignored (granting no permissions).
+   * unknown or non-top-level navigables are ignored (granting no access).
    *
    * @returns The actually saved ACL configuration.
    */
   setAcl(acl: unknown): AclConfig {
+    // Reuse the normalization so the stored and the normalized ACLs can't
+    // drift apart.
+    const normalizedAcl = this.#normalizeAcl(acl);
+    this.#defaultCommands = new Set(normalizedAcl.default?.commands);
     this.#navigableCommands = new WeakMap();
+    for (const [contextId, entry] of Object.entries(
+      normalizedAcl.perNavigable ?? {},
+    )) {
+      // `#normalizeAcl` keeps only known top-level navigables.
+      const context = this.#browsingContextStorage.getContext(contextId);
+      this.#navigableCommands.set(context, new Set(entry.commands));
+    }
 
+    return this.getAcl();
+  }
+
+  /**
+   * Returns `acl` without unsupported commands, invalid entries, and unknown
+   * or non-top-level navigables, i.e. what `setAcl` would store, without
+   * storing it.
+   */
+  #normalizeAcl(acl: unknown): AclConfig {
     const aclConfig = acl as AclConfig | null | undefined;
-    this.#defaultCommands = this.#extractSupportedCommands(aclConfig?.default);
-
+    const perNavigable: Record<BrowsingContext.BrowsingContext, AclEntry> = {};
     for (const [contextId, entry] of Object.entries(
       aclConfig?.perNavigable ?? {},
     )) {
       const context = this.#browsingContextStorage.findContext(contextId);
       if (context?.isTopLevelContext()) {
-        this.#navigableCommands.set(
-          context,
-          this.#extractSupportedCommands(entry),
-        );
+        perNavigable[contextId] = {
+          commands: Array.from(this.#extractSupportedCommands(entry)),
+        };
       }
     }
-
-    return this.getAcl();
+    return {
+      default: {
+        commands: Array.from(
+          this.#extractSupportedCommands(aclConfig?.default),
+        ),
+      },
+      perNavigable,
+    };
   }
 
   #extractSupportedCommands(entry: AclEntry | undefined | null): Set<string> {

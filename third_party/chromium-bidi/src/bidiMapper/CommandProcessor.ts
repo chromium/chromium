@@ -49,7 +49,7 @@ import {PermissionsProcessor} from './modules/permissions/PermissionsProcessor.j
 import type {PreloadScriptStorage} from './modules/script/PreloadScriptStorage.js';
 import type {RealmStorage} from './modules/script/RealmStorage.js';
 import {ScriptProcessor} from './modules/script/ScriptProcessor.js';
-import type {AclStorage} from './modules/session/AclStorage.js';
+import type {AclManager} from './modules/session/AclManager.js';
 import type {EventManager} from './modules/session/EventManager.js';
 import {SessionProcessor} from './modules/session/SessionProcessor.js';
 import {StorageProcessor} from './modules/storage/StorageProcessor.js';
@@ -70,7 +70,7 @@ interface CommandProcessorEventsMap extends Record<string | symbol, unknown> {
 
 export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   // keep-sorted start
-  #aclStorage: AclStorage;
+  #aclManager: AclManager;
   #autofillProcessor: AutofillProcessor;
   #bluetoothProcessor: BluetoothProcessor;
   #browserCdpClient: CdpClient;
@@ -103,14 +103,14 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     bluetoothProcessor: BluetoothProcessor,
     digitalCredentialsProcessor: DigitalCredentialsProcessor,
     userContextStorage: UserContextStorage,
-    aclStorage: AclStorage,
+    aclManager: AclManager,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
     initConnection: (options: MapperOptions) => Promise<void>,
     logger?: LoggerFn,
   ) {
     super();
     this.#browserCdpClient = browserCdpClient;
-    this.#aclStorage = aclStorage;
+    this.#aclManager = aclManager;
     this.#parser = parser;
     this.#logger = logger;
 
@@ -158,7 +158,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       eventManager,
       browserCdpClient,
       initConnection,
-      this.#aclStorage,
+      this.#aclManager,
     );
     this.#storageProcessor = new StorageProcessor(
       browserCdpClient,
@@ -175,7 +175,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     // Restricted sessions can run only the commands that their ACL grants.
     // Check before parsing, so that a disallowed command fails with an ACL
     // error rather than a parameter validation error.
-    this.#aclStorage.assertCommandAllowed(command.method, command.params);
+    this.#aclManager.assertCommandAllowed(command.method, command.params);
 
     switch (command.method) {
       // Autofill module
@@ -556,6 +556,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
 
       // Session module
       // keep-sorted start block=yes
+      case 'goog:session.setAcl':
+        return await this.#sessionProcessor.setAcl(
+          this.#parser.parseSetAclParams(command.params),
+        );
       case 'session.end':
         throw new UnsupportedOperationException(
           `Method ${command.method} is not implemented.`,

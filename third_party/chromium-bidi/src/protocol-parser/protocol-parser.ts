@@ -621,6 +621,21 @@ export namespace GoogBrowsingContext {
   // keep-sorted end
 }
 
+/** @see `src/protocol/goog.cddl` */
+export namespace GoogSession {
+  // keep-sorted start block=yes
+
+  export function parseSetAclRequest(
+    params: unknown,
+  ): Protocol.GoogSession.SetAclParameters {
+    return parseObject(
+      params,
+      WebDriverBidiGoog.GoogSession.SetAclParametersSchema,
+    );
+  }
+  // keep-sorted end
+}
+
 export namespace Permissions {
   // keep-sorted start block=yes
 

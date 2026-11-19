@@ -20,31 +20,32 @@ import type {GoogChannel} from '../../../protocol/chromium-bidi.js';
 import {
   type ChromiumBidi,
   type EmptyResult,
+  type GoogSession,
   InvalidArgumentException,
   Session,
 } from '../../../protocol/protocol.js';
 import type {MapperOptions} from '../../MapperOptions.js';
 
-import type {AclConfig, AclStorage} from './AclStorage.js';
+import type {AclConfig, AclManager} from './AclManager.js';
 import type {EventManager} from './EventManager.js';
 
 export class SessionProcessor {
   #eventManager: EventManager;
   #browserCdpClient: CdpClient;
   #initConnection: (opts: MapperOptions) => Promise<void>;
-  #aclStorage: AclStorage;
+  #aclManager: AclManager;
   #created = false;
 
   constructor(
     eventManager: EventManager,
     browserCdpClient: CdpClient,
     initConnection: (opts: MapperOptions) => Promise<void>,
-    aclStorage: AclStorage,
+    aclManager: AclManager,
   ) {
     this.#eventManager = eventManager;
     this.#browserCdpClient = browserCdpClient;
     this.#initConnection = initConnection;
-    this.#aclStorage = aclStorage;
+    this.#aclManager = aclManager;
   }
 
   status(): Session.StatusResult {
@@ -142,11 +143,13 @@ export class SessionProcessor {
     const rawAcl = matchedCapabilities['goog:acl'] as
       AclConfig | null | undefined;
     let acl: AclConfig | undefined;
+    // TODO(crbug.com/587316489): remove the initial `goog:acl`, so that every
+    // ACL change goes through `goog:session.setAcl` and the embedder.
     if (rawAcl !== undefined) {
-      this.#aclStorage.setEnabled(true);
+      this.#aclManager.setEnabled(true);
       // Only `default` ACL is supported in `session.new`; `perNavigable`
       // entries are ignored.
-      acl = this.#aclStorage.setAcl({default: rawAcl?.default});
+      acl = this.#aclManager.setAcl({default: rawAcl?.default});
     }
     await this.#initConnection(matchedCapabilities);
 
@@ -167,6 +170,12 @@ export class SessionProcessor {
         userAgent: version.userAgent,
       },
     };
+  }
+
+  async setAcl(
+    params: GoogSession.SetAclParameters,
+  ): Promise<GoogSession.SetAclResult> {
+    return await this.#aclManager.updateAcl(params.acl, params.reason);
   }
 
   async subscribe(

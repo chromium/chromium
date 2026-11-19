@@ -21,6 +21,7 @@ import type {
   Browser,
   BrowsingContext,
   GoogCdp,
+  GoogSession,
   Emulation,
   GoogBrowsingContext,
   Input,
@@ -262,6 +263,7 @@ export interface BidiCommandParameterParser {
 
   // Session module
   // keep-sorted start block=yes
+  parseSetAclParams(params: unknown): GoogSession.SetAclParameters;
   parseSubscribeParams(params: unknown): Session.SubscribeParameters;
   parseUnsubscribeParams(params: unknown): Session.UnsubscribeParameters;
   // keep-sorted end
