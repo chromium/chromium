@@ -98,7 +98,8 @@ class ViewTransitionBrowserTest : public ContentBrowserTest {
 };
 
 // TODO(crbug.com/468211765): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/587515408): Flaky on Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_NavigationCancelledAfterScreenshot \
   DISABLED_NavigationCancelledAfterScreenshot
 #else
