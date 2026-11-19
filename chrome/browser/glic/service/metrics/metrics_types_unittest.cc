@@ -54,6 +54,10 @@ TEST(MetricsTypesTest, GetInvocationSourceString) {
   EXPECT_EQ(
       "ActivityListBubble",
       GetInvocationSourceString(mojom::InvocationSource::kActivityListBubble));
+  EXPECT_EQ(
+      "HistoryPageCriticalActionChatLinkout",
+      GetInvocationSourceString(
+          mojom::InvocationSource::kHistoryPageCriticalActionChatLinkout));
 }
 
 TEST(MetricsTypesTest, GetResponseSegmentation) {
@@ -201,6 +205,34 @@ TEST(MetricsTypesTest, GetResponseSegmentation) {
             GetResponseSegmentation(
                 /*attached=*/false, mojom::WebClientMode::kAudio,
                 mojom::InvocationSource::kActivityListBubble));
+
+  // HistoryPageCriticalActionChatLinkout Attached Text
+  EXPECT_EQ(
+      ResponseSegmentation::kHistoryPageCriticalActionChatLinkoutAttachedText,
+      GetResponseSegmentation(
+          /*attached=*/true, mojom::WebClientMode::kText,
+          mojom::InvocationSource::kHistoryPageCriticalActionChatLinkout));
+
+  // HistoryPageCriticalActionChatLinkout Attached Audio
+  EXPECT_EQ(
+      ResponseSegmentation::kHistoryPageCriticalActionChatLinkoutAttachedAudio,
+      GetResponseSegmentation(
+          /*attached=*/true, mojom::WebClientMode::kAudio,
+          mojom::InvocationSource::kHistoryPageCriticalActionChatLinkout));
+
+  // HistoryPageCriticalActionChatLinkout Detached Text
+  EXPECT_EQ(
+      ResponseSegmentation::kHistoryPageCriticalActionChatLinkoutDetachedText,
+      GetResponseSegmentation(
+          /*attached=*/false, mojom::WebClientMode::kText,
+          mojom::InvocationSource::kHistoryPageCriticalActionChatLinkout));
+
+  // HistoryPageCriticalActionChatLinkout Detached Audio
+  EXPECT_EQ(
+      ResponseSegmentation::kHistoryPageCriticalActionChatLinkoutDetachedAudio,
+      GetResponseSegmentation(
+          /*attached=*/false, mojom::WebClientMode::kAudio,
+          mojom::InvocationSource::kHistoryPageCriticalActionChatLinkout));
 }
 
 }  // namespace

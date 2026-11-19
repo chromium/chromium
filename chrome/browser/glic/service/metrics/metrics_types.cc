@@ -162,6 +162,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "ActorTool";
     case mojom::InvocationSource::kActivityListBubble:
       return "ActivityListBubble";
+    case mojom::InvocationSource::kHistoryPageCriticalActionChatLinkout:
+      return "HistoryPageCriticalActionChatLinkout";
   }
 }
 

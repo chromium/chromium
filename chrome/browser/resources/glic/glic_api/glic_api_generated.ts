@@ -768,7 +768,8 @@ export enum InvocationSource {
   TAB_CONTEXT_MENU = 41,
   // From Web Continuity.
   WEB_CONTINUITY = 42,
-  // From the history page chat linkout.
+  // From the visit-level "Go to Gemini chat" item in a chrome://history entry's
+  // menu. Opens the conversation at its default position.
   HISTORY_PAGE_CHAT_LINKOUT = 43,
   // From the Context Hub topics UI.
   CONTEXT_HUB_TOPICS = 44,
@@ -787,6 +788,9 @@ export enum InvocationSource {
   ACTOR_TOOL = 49,
   // User clicked a conversation row in the activity list bubble.
   ACTIVITY_LIST_BUBBLE = 50,
+  // From the "Open chat" button on a chrome://history critical action row.
+  // Targets the turn where the action happened, when known.
+  HISTORY_PAGE_CRITICAL_ACTION_CHAT_LINKOUT = 51,
 }
 
 // Target for actuation.

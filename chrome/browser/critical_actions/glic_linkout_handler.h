@@ -19,6 +19,10 @@ class GlicLinkoutHandler : public ChatLinkoutHandler {
   GlicLinkoutHandler& operator=(const GlicLinkoutHandler&) = delete;
 
   // ChatLinkoutHandler:
+  // Only `kHistoryPageCriticalActionChatLinkout` passes
+  // `entry.conversation_anchor_id` to Glic, as the `ConversationId` turn ID.
+  // Every other source, including the chrome://history entry-menu
+  // `kHistoryPageChatLinkout`, passes no turn ID.
   void OpenConversation(
       content::WebContents* web_contents,
       const CriticalActionEntry& entry,

@@ -22,7 +22,11 @@ class ChatLinkoutHandler {
   virtual ~ChatLinkoutHandler() = default;
 
   // Handles navigation/presentation for a critical action's source context,
-  // relative to the initiating `web_contents`.
+  // relative to the initiating `web_contents`. `source` identifies the
+  // requesting surface. Implementations decide from `source` alone whether to
+  // target `entry.conversation_anchor_id` (e.g. a specific turn/message), so
+  // callers cannot request a combination of surface and anchor behavior that
+  // doesn't exist.
   virtual void OpenConversation(
       content::WebContents* web_contents,
       const CriticalActionEntry& entry,

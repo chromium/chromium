@@ -192,6 +192,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Fre"/>
   <variant name="HandoffButton"/>
   <variant name="HistoryPageChatLinkout"/>
+  <variant name="HistoryPageCriticalActionChatLinkout"/>
   <variant name="IndigoPageAction"/>
   <variant name="Iph"/>
   <variant name="NavigationCapture"/>

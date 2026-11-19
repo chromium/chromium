@@ -4,6 +4,9 @@
 
 #include "chrome/browser/critical_actions/glic_linkout_handler.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -17,6 +20,28 @@
 #include "content/public/browser/web_contents.h"
 
 namespace critical_actions {
+
+namespace {
+
+// Returns the Glic turn ID to pass for `anchor_id` when opening a conversation
+// from `source`, or std::nullopt to pass none.
+std::optional<std::string> GetTurnIdForSource(
+    std::string_view anchor_id,
+    glic::mojom::InvocationSource source) {
+  // An action's anchor is the turn where that action happened. The entry-menu
+  // linkout is visit-level, and a visit can have several critical actions, so
+  // no single turn belongs to it.
+  if (source != glic::mojom::InvocationSource::
+                    kHistoryPageCriticalActionChatLinkout ||
+      anchor_id.empty()) {
+    return std::nullopt;
+  }
+  // For Glic, the conversation anchor is the turn ID. Its length is already
+  // limited when it is stored.
+  return std::string(anchor_id);
+}
+
+}  // namespace
 
 // static
 GlicLinkoutHandler* GlicLinkoutHandler::GetInstance() {
@@ -53,7 +78,9 @@ void GlicLinkoutHandler::OpenConversation(
         tabs::TabInterface::MaybeGetFromContents(web_contents);
     if (tab) {
       glic::Target target(*tab);
-      target.conversation = glic::ConversationId(entry.conversation_id);
+      target.conversation = glic::ConversationId(
+          entry.conversation_id,
+          GetTurnIdForSource(entry.conversation_anchor_id, source));
 
       glic::GlicInvokeOptions options(std::move(target), source);
       options.fre_completion_wait_mode = glic::FreCompletionWaitMode::kNever;

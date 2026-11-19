@@ -171,7 +171,8 @@ enum InvocationSource {
   [MinVersion=27] kTabContextMenu = 41,
   // From Web Continuity.
   [MinVersion=28] kWebContinuity = 42,
-  // From the history page chat linkout.
+  // From the visit-level "Go to Gemini chat" item in a chrome://history entry's
+  // menu. Opens the conversation at its default position.
   [MinVersion=29] kHistoryPageChatLinkout = 43,
   // From the Context Hub topics UI.
   [MinVersion=30] kContextHubTopics = 44,
@@ -190,6 +191,9 @@ enum InvocationSource {
   [MinVersion=33] kActorTool = 49,
   // User clicked a conversation row in the activity list bubble.
   [MinVersion=34] kActivityListBubble = 50,
+  // From the "Open chat" button on a chrome://history critical action row.
+  // Targets the turn where the action happened, when known.
+  [MinVersion=35] kHistoryPageCriticalActionChatLinkout = 51,
 };
 
 // LINT.ThenChange(//chrome/browser/glic/public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java:GlicInvocationSource,
