@@ -290,7 +290,6 @@
     "Libfuzzer Upload Mac ASan": "ci/Libfuzzer Upload Mac ASan/gn-args.json",
     "Libfuzzer Upload Mac ASan Schema v1": "ci/Libfuzzer Upload Mac ASan Schema v1/gn-args.json",
     "Libfuzzer Upload Windows ASan": "ci/Libfuzzer Upload Windows ASan/gn-args.json",
-    "Libfuzzer Upload Windows ASan Schema v1": "ci/Libfuzzer Upload Windows ASan Schema v1/gn-args.json",
     "Libfuzzer Upload iOS Catalyst Debug": "ci/Libfuzzer Upload iOS Catalyst Debug/gn-args.json",
     "MSAN Release (chained origins)": "ci/MSAN Release (chained origins)/gn-args.json",
     "MSAN Release (no origins)": "ci/MSAN Release (no origins)/gn-args.json",

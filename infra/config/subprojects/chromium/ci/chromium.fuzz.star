@@ -1411,6 +1411,7 @@ libfuzzer_builder(
     target_bits = 64,
     target_platform = builder_config.target_platform.WIN,
     clusterfuzz_archive_path = "win32-release_x64-asan/libfuzzer-win32-release_x64",
+    clusterfuzz_archive_schema_version = 1,
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
     execution_timeout = 8 * time.hour,
@@ -1431,35 +1432,4 @@ libfuzzer_builder(
     test_builder_name = "win-x64-libfuzzer-asan-rel-tests",
     use_component_build = False,
     use_ssd_for_test_builder = None,
-)
-
-# TODO(516753903): Deprecate this builder once we confirm builds are green and
-# working correctly on ClusterFuzz.
-libfuzzer_builder(
-    name = "Libfuzzer Upload Windows ASan Schema v1",
-    description_html = "Libfuzzer ASan for Chrome on Windows in archive schema v1",
-    builderless = True,
-    os = os.WINDOWS_DEFAULT,
-    ssd = None,
-    free_space = builders.free_space.high,
-    gardener_rotations = args.ignore_default(None),
-    build_config = builder_config.build_config.RELEASE,
-    target_bits = 64,
-    target_platform = builder_config.target_platform.WIN,
-    clusterfuzz_archive_path = "win32-release_x64-asan-schemav1/libfuzzer-win32-release_x64",
-    clusterfuzz_archive_schema_version = 1,
-    console_short_name = "win-v1",
-    execution_timeout = 8 * time.hour,
-    # NOTE: optimize_for_fuzzing is used by the other libFuzzer build configs
-    # but it does not work on Windows.
-    gn_extra_configs = [
-        "asan",
-        "chrome_with_codecs",
-        "minimal_symbols",
-        "mojo_fuzzer",
-        "pdf_xfa",
-    ],
-    sanitizer = "asan",
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
-    use_component_build = False,
 )
