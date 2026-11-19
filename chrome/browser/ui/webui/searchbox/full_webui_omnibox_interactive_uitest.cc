@@ -9655,14 +9655,13 @@ class FullWebUIOmniboxDragInteractiveTest
 
   auto SetUpDragDropClient() {
     return Do([this]() {
-      // The popup's widget is a `NativeWidgetAura` in the browser window, so
-      // its web contents start drags through the drag and drop client of the
-      // browser window's root window.
+      // The popup's web contents start drags through the drag and drop client
+      // of the popup's root window. That's the browser window's root, unless
+      // the popup is a desktop widget with its own root.
+      views::Widget* const popup_widget = GetPopupWidget(browser());
+      ASSERT_TRUE(popup_widget);
       aura::Window* const root_window =
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->GetWidget()
-              ->GetNativeWindow()
-              ->GetRootWindow();
+          popup_widget->GetNativeWindow()->GetRootWindow();
       drag_drop_client_ = std::make_unique<TestDragDropClient>(root_window);
       event_generator_ =
           std::make_unique<ui::test::EventGenerator>(root_window);
