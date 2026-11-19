@@ -232,11 +232,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
         mMediator.onUrlChanged();
     }
 
-    @Override
-    public void onTabCrashed() {
-        mMediator.onTabCrashed();
-    }
-
     public void setUseSmallWidget(boolean useSmallWidget) {
         mMediator.setUseSmallWidget(useSmallWidget);
     }

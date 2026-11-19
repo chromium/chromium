@@ -54,8 +54,6 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.util.DrawableUtils;
-import org.chromium.components.content_settings.CookieControlsBridge;
-import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
@@ -71,7 +69,6 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.WebContents;
@@ -90,7 +87,6 @@ import java.util.Objects;
 @NullMarked
 public class StatusMediator
         implements TemplateUrlServiceObserver,
-                CookieControlsObserver,
                 SearchEngineIconObserver,
                 PermissionStatusHandler.Delegate {
 
@@ -163,15 +159,12 @@ public class StatusMediator
     private @ColorRes int mSecurityIconTintRes;
     private @StringRes int mSecurityIconDescriptionRes;
     private @ColorRes int mNavigationIconTintRes;
-    private @Nullable CookieControlsBridge mCookieControlsBridge;
     private @Nullable SearchEngineService mSearchEngineService;
     private @Nullable StatusIconResource mSearchEngineIcon;
     private @Nullable StatusIconResource mSiteSearchFavicon;
     private @Nullable NullableObservableSupplier<SiteSearchData> mSiteSearchDataSupplier;
     private @Nullable OnClickListener mOnStatusIconNavigateBackButtonPress;
     private @Nullable FuseboxSessionState mInputSessionState;
-    private int mLastTabId;
-    private boolean mCurrentTabCrashed;
     private Drawable mDefaultStatusBackground;
     private Drawable mDefaultStatusBackgroundIncognito;
     private Drawable mVerboseStatusBackground;
@@ -276,10 +269,6 @@ public class StatusMediator
         var templateUrlService = mTemplateUrlServiceSupplier.get();
         if (templateUrlService != null) {
             templateUrlService.removeObserver(this);
-        }
-        if (mCookieControlsBridge != null) {
-            mCookieControlsBridge.destroy();
-            mCookieControlsBridge = null;
         }
         mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
         setFuseboxSessionState(null);
@@ -1062,33 +1051,7 @@ public class StatusMediator
 
     public void onUrlChanged() {
         updateStatusViewMinWidth();
-        Tab currentTab = mLocationBarDataProvider.getTab();
-        Profile profile = mProfileSupplier.get();
-        if (profile != null && currentTab != null) {
-            WebContents webContents = currentTab.getWebContents();
-            if (webContents != null) {
-                BrowserContextHandle originalBrowserContext =
-                        profile.isOffTheRecord() ? profile.getOriginalProfile() : null;
-                if (mCookieControlsBridge == null) {
-                    mCookieControlsBridge =
-                            new CookieControlsBridge(
-                                    this,
-                                    webContents,
-                                    originalBrowserContext,
-                                    profile.isIncognitoBranded());
-                } else if (mLastTabId != currentTab.getId() || mCurrentTabCrashed) {
-                    mCookieControlsBridge.updateWebContents(
-                            webContents, originalBrowserContext, profile.isIncognitoBranded());
-                    mCurrentTabCrashed = false;
-                }
-            }
-            mLastTabId = currentTab.getId();
-        }
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
-    }
-
-    public void onTabCrashed() {
-        mCurrentTabCrashed = true;
     }
 
     void setShowStatusView(boolean show) {
@@ -1199,14 +1162,6 @@ public class StatusMediator
 
     private boolean isPageInfoMovedAndConnectionNotSecure() {
         return isPageInfoMovedToAppMenu() && mPageSecurityLevel != ConnectionSecurityLevel.SECURE;
-    }
-
-    @Nullable CookieControlsBridge getCookieControlsBridgeForTesting() {
-        return mCookieControlsBridge;
-    }
-
-    void setCookieControlsBridgeForTesting(CookieControlsBridge cookieControlsBridge) {
-        mCookieControlsBridge = cookieControlsBridge;
     }
 
     public PermissionStatusHandler getPermissionStatusHandlerForTesting() {

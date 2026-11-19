@@ -11,11 +11,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -73,8 +71,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.CookieControlsBridge;
-import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
@@ -105,8 +101,6 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class StatusMediatorUnitTest {
     private static final String TAG = "StatusMediatorUnitTest";
-    private static final int CURRENT_TAB_ID = 5;
-    private static final int NEW_TAB_ID = 1;
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -119,8 +113,6 @@ public final class StatusMediatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private PermissionDialogController mPermissionDialogController;
     @Mock private PageInfoIphController mPageInfoIphController;
-    @Mock private CookieControlsBridge mCookieControlsBridge;
-    @Mock private CookieControlsBridge.Natives mCookieControlsBridgeJniMock;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private NavigationController mNavigationController;
@@ -160,7 +152,6 @@ public final class StatusMediatorUnitTest {
     public void setUp() {
         SearchEngineService.setInstanceForTesting(mSearchEngineService);
         TrackerFactory.setTrackerForTests(mTracker);
-        CookieControlsBridgeJni.setInstanceForTesting(mCookieControlsBridgeJniMock);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNatives);
         lenient().doReturn(1L).when(mLargeIconBridgeNatives).init();
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
@@ -672,88 +663,6 @@ public final class StatusMediatorUnitTest {
 
         mMediator.setBackground();
         assertNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
-    }
-
-    @Test
-    public void onUrlChanged_whenTabChanges_shouldUpdateWebContents() {
-        mMediator.setCookieControlsBridgeForTesting(mCookieControlsBridge);
-        doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(mTab).when(mLocationBarDataProvider).getTab();
-
-        verify(mCookieControlsBridge, never()).updateWebContents(any(), any(), anyBoolean());
-
-        doReturn(CURRENT_TAB_ID).when(mTab).getId();
-
-        mMediator.onUrlChanged();
-        verify(mCookieControlsBridge).updateWebContents(any(), any(), anyBoolean());
-
-        mMediator.onUrlChanged();
-        verify(mCookieControlsBridge).updateWebContents(any(), any(), anyBoolean());
-
-        doReturn(NEW_TAB_ID).when(mTab).getId();
-        mMediator.onUrlChanged();
-        verify(mCookieControlsBridge, times(2)).updateWebContents(any(), any(), anyBoolean());
-    }
-
-    @Test
-    public void onUrlChanged_whenTabNotChanging_shouldNotUpdateWebContents() {
-        mMediator.setCookieControlsBridgeForTesting(mCookieControlsBridge);
-        doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(mTab).when(mLocationBarDataProvider).getTab();
-
-        doReturn(CURRENT_TAB_ID).when(mTab).getId();
-
-        mMediator.onUrlChanged();
-        verify(mCookieControlsBridge).updateWebContents(any(), any(), anyBoolean());
-
-        mMediator.onUrlChanged();
-        verify(mCookieControlsBridge).updateWebContents(any(), any(), anyBoolean());
-    }
-
-    @Test
-    public void onUrlChanged_whenTabCrashing_shouldUpdateWebContents() {
-        mMediator.setCookieControlsBridgeForTesting(mCookieControlsBridge);
-        doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(mTab).when(mLocationBarDataProvider).getTab();
-
-        doReturn(CURRENT_TAB_ID).when(mTab).getId();
-
-        mMediator.onUrlChanged();
-        verify(mCookieControlsBridge).updateWebContents(any(), any(), anyBoolean());
-
-        // Tab crashed, need to update the web contents at next url change.
-        mMediator.onTabCrashed();
-        mMediator.onUrlChanged();
-        verify(mCookieControlsBridge, times(2)).updateWebContents(any(), any(), anyBoolean());
-
-        // Subsequent url changes on the same tab should not trigger any web contents update.
-        mMediator.onUrlChanged();
-        verify(mCookieControlsBridge, times(2)).updateWebContents(any(), any(), anyBoolean());
-    }
-
-    @Test
-    public void onUrlChanged_whenNotExistingCookieControlsBridge_shouldCreateNewBridge() {
-        doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(mTab).when(mLocationBarDataProvider).getTab();
-
-        assertNull(mMediator.getCookieControlsBridgeForTesting());
-
-        mMediator.onUrlChanged();
-
-        assertNotEquals(null, mMediator.getCookieControlsBridgeForTesting());
-    }
-
-    @Test
-    public void onUrlChanged_whenInIncognito_shouldUpdateWebContentsWithUpdatedIncognitoState() {
-        mMediator.setCookieControlsBridgeForTesting(mCookieControlsBridge);
-        doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(mTab).when(mLocationBarDataProvider).getTab();
-        doReturn(true).when(mProfile).isIncognitoBranded();
-        doReturn(CURRENT_TAB_ID).when(mTab).getId();
-
-        mMediator.onUrlChanged();
-        verify(mCookieControlsBridge)
-                .updateWebContents(any(), any(), /* isIncognitoBranded= */ eq(true));
     }
 
     @Test

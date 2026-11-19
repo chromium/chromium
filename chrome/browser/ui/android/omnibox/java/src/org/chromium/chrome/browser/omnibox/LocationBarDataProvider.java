@@ -38,9 +38,9 @@ import java.lang.annotation.RetentionPolicy;
  * <p>Provides an {@link Observer} mechanism to notify subscribers of state transitions (e.g. {@code
  * onTabChanged}, {@code onUrlChanged}, {@code onPrimaryColorChanged}, {@code
  * onSecurityStateChanged}, {@code onPageLoadStopped}, {@code onTitleChanged}, {@code
- * onIncognitoStateChanged}, {@code onTabCrashed}). Because data is typically computed lazily or on
- * demand, observer methods pass signals rather than data payloads; consumers are expected to pull
- * the specific data they require.
+ * onIncognitoStateChanged}). Because data is typically computed lazily or on demand, observer
+ * methods pass signals rather than data payloads; consumers are expected to pull the specific data
+ * they require.
  *
  * <p><b>Strict Immutability:</b> This interface is intentionally immutable and read-only, and
  * <b>must remain immutable</b>. Do NOT add setters or mutator methods to {@code
@@ -93,9 +93,6 @@ public interface LocationBarDataProvider {
         default void onUrlChanged(boolean isTabChanging) {}
 
         default void hintZeroSuggestRefresh() {}
-
-        /** Notifies when the tab crashes. */
-        default void onTabCrashed() {}
 
         /** Notifies when whether the current URL has an installed app might have changed. */
         default void onAppInstallationStateChanged() {}
