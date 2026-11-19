@@ -1319,6 +1319,7 @@ class CORE_EXPORT Element : public ContainerNode {
   void FocusStateChanged();
   void FocusVisibleStateChanged();
   void FocusWithinStateChanged();
+  void UpdateFocusWithinAfterMove(Element* old_focus_within_parent);
   void ActiveViewTransitionStateChanged();
   void ActiveViewTransitionTypeStateChanged();
   void OverscrollTargetStateChanged();

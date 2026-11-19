@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/dom/text_visitor.h"
 #include "third_party/blink/renderer/core/dom/tree_scope_adopter.h"
 #include "third_party/blink/renderer/core/dom/user_action_element_set.h"
+#include "third_party/blink/renderer/core/dom/user_action_element_traversal.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -796,6 +797,13 @@ void Node::moveBefore(Node* new_child,
   GetDocument().SetStatePreservingAtomicMoveInProgress(true);
 
   ContainerNode* old_parent = new_child->parentNode();
+  auto* moved_element = DynamicTo<Element>(new_child);
+  Element* focused = GetDocument().FocusedElement();
+  Element* old_focus_within_parent = nullptr;
+  if (focused && moved_element &&
+      moved_element->IsShadowIncludingInclusiveAncestorOf(*focused)) {
+    old_focus_within_parent = UserActionElementTraversal::Next(*moved_element);
+  }
 
   insertBefore(new_child, ref_child, exception_state);
   GetDocument().SetStatePreservingAtomicMoveInProgress(false);
@@ -806,6 +814,9 @@ void Node::moveBefore(Node* new_child,
 
   DCHECK(old_parent);
   new_child->MovedFrom(*old_parent);
+  if (old_focus_within_parent && old_focus_within_parent->HasFocusWithin()) {
+    moved_element->UpdateFocusWithinAfterMove(old_focus_within_parent);
+  }
 }
 
 Node* Node::replaceChild(Node* new_child,

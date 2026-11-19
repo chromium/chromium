@@ -4520,26 +4520,31 @@ void Element::MovedFrom(ContainerNode& old_parent) {
   DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
 
   UpdateSubframeThrottlingAfterMove(*this);
+}
 
-  // `old_parent` can be the document.
-  if (!old_parent.IsElementNode()) {
+void Element::UpdateFocusWithinAfterMove(Element* old_focus_within_parent) {
+  DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
+  DCHECK(old_focus_within_parent);
+  DCHECK(old_focus_within_parent->HasFocusWithin());
+
+  Element* new_focus_within_parent = UserActionElementTraversal::Next(*this);
+  if (old_focus_within_parent == new_focus_within_parent) {
     return;
   }
 
-  Element* focused_element = GetDocument().FocusedElement();
-  Element* new_parent_element = parentElement();
-  Element* old_parent_element = &To<Element>(old_parent);
-  if (focused_element && old_parent.HasFocusWithin() &&
-      contains(focused_element) && old_parent != *new_parent_element) {
-    Element* common_ancestor = To<Element>(old_parent_element->CommonAncestor(
-        *new_parent_element, UserActionElementParent));
+  Element* common_ancestor =
+      new_focus_within_parent
+          ? DynamicTo<Element>(old_focus_within_parent->CommonAncestor(
+                *new_focus_within_parent, UserActionElementParent))
+          : nullptr;
 
-    // The "focus within" flag is set separately on each ancestor, and affects
-    // the :focus-within CSS property. We set it to the right value here because
-    // we skipped the step that sets it on removal/insertion.
-    old_parent_element->SetHasFocusWithinUpToAncestor(
-        false, common_ancestor, /*need_snap_container_search=*/false);
-    new_parent_element->SetHasFocusWithinUpToAncestor(
+  // The "focus within" flag is set separately on each ancestor, and affects
+  // the :focus-within CSS property. We set it to the right value here because
+  // we skipped the step that sets it on removal/insertion.
+  old_focus_within_parent->SetHasFocusWithinUpToAncestor(
+      false, common_ancestor, /*need_snap_container_search=*/false);
+  if (new_focus_within_parent) {
+    new_focus_within_parent->SetHasFocusWithinUpToAncestor(
         true, common_ancestor, /*need_snap_container_search=*/false);
   }
 }
