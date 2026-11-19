@@ -20,6 +20,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/diff.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/file_format.h"
+#include "tools/binary_size/libsupersize/viewer/caspian/file_format_v2.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/lens.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/tree_builder.h"
@@ -141,16 +142,20 @@ void ClearInfoAndBuilderObjects() {
 extern "C" {
 void LoadSizeFile(char* compressed, size_t size) {
   ClearInfoAndBuilderObjects();
+  info = std::make_unique<SizeInfo>();
   if (IsDiffSizeInfo(compressed, size)) {
-    info = std::make_unique<SizeInfo>();
     before_info = std::make_unique<SizeInfo>();
     ParseDiffSizeInfo(compressed, size, before_info.get(), info.get(),
                       &removed_sources, &added_sources);
     // DeltaSizeInfo instantiation for sparse diff.
     diff_info.reset(new DeltaSizeInfo(
         Diff(before_info.get(), info.get(), &removed_sources, &added_sources)));
+  } else if (IsSizeV2(compressed, size)) {
+    // ParseSizeInfoV2() already parallelizes internally across worker threads,
+    // which must run on the main runtime thread so Emscripten returns workers
+    // to the pool synchronously instead of stranding nested pthreads.
+    ParseSizeInfo(compressed, size, info.get());
   } else {
-    info = std::make_unique<SizeInfo>();
     // Copy |compressed|, since the caller frees it once LoadSizeFile() returns.
     after_parse_thread =
         std::thread([buf = std::vector<char>(compressed, compressed + size),

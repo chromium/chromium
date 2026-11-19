@@ -538,6 +538,15 @@ void ParseDiffSizeInfo(char* file,
     rest += added_sources_len;
   }
 
+  if (IsSizeV2(rest, before_len) || IsSizeV2(rest + before_len, after_len)) {
+    // ParseSizeInfoV2() already parallelizes internally across worker threads.
+    // Running both halves sequentially on the calling thread lets both use
+    // ParallelFor() and avoids nested Emscripten pthreads.
+    ParseSizeInfo(rest, before_len, before);
+    ParseSizeInfo(rest + before_len, after_len, after);
+    return;
+  }
+
   std::thread before_thread([rest, before_len, before]() {
     ParseSizeInfo(rest, before_len, before);
   });

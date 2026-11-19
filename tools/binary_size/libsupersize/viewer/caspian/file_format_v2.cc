@@ -261,7 +261,10 @@ void AttributeRelocations(
 }
 
 // Runs |fn(0..num_tasks-1)| across a bounded pool of worker threads, falling
-// back to serial execution when single-threaded (e.g. non-threaded WASM).
+// back to serial execution when single-threaded (e.g. non-threaded WASM) or on
+// a non-main Emscripten pthread. Joining nested pthreads from a pthread defers
+// worker cleanup via postMessage until the main runtime thread returns to the
+// JS event loop, which can strand workers and exhaust PTHREAD_POOL_SIZE.
 template <typename Func>
 void ParallelFor(size_t num_tasks, Func&& fn) {
   if (num_tasks == 0) {
@@ -269,7 +272,8 @@ void ParallelFor(size_t num_tasks, Func&& fn) {
   }
   size_t default_threads = 1;
 #ifdef __EMSCRIPTEN__
-  if (emscripten_has_threading_support()) {
+  if (emscripten_has_threading_support() &&
+      emscripten_is_main_runtime_thread()) {
     default_threads = 4;
   }
 #else
