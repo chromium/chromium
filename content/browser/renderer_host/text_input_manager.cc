@@ -656,7 +656,18 @@ bool TextInputManager::IsViewFocused(RenderWidgetHostViewBase* view) const {
     return false;
   }
   RenderWidgetHostViewBase* root_view = view->GetRootView();
-  if (!root_view) {
+  if (!root_view || !root_view->host()) {
+    return false;
+  }
+  // Only the primary main frame's widget (and widgets embedded under it) can
+  // be focused. RenderWidgetHostViewBase::GetFocusedWidget() echoes back any
+  // widget that is not the primary main frame's widget (a routing rule for
+  // popups), so without this check the main-frame widget of a non-primary
+  // page (e.g. in the back-forward cache, prerendering, or pending deletion)
+  // would always report itself as focused.
+  RenderWidgetHostImpl* root_host = root_view->host();
+  if (!root_host->delegate() ||
+      !root_host->delegate()->IsWidgetForPrimaryMainFrame(root_host)) {
     return false;
   }
   RenderWidgetHostImpl* focused_widget = root_view->GetFocusedWidget();

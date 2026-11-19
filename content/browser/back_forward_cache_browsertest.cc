@@ -1970,6 +1970,50 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   }
 }
 
+// Tests that a page in the back-forward cache cannot take over the
+// TextInputManager's active view (the tab-wide IME target) from the primary
+// page by sending TextInputStateChanged while cached. See crbug.com/574410501.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CachedPageCannotBecomeActiveTextInputView) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // 1) Navigate to |url_1|, then to |url_2| so |rfh_1| enters the
+  // back-forward cache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  RenderFrameHostImplWrapper rfh_1(current_frame_host());
+  RenderWidgetHost* rwh_1 = rfh_1->GetRenderWidgetHost();
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  ASSERT_TRUE(rfh_1->IsInBackForwardCache());
+
+  // 2) Focus a password <input> on the primary page.
+  RenderFrameHostImpl* rfh_2 = current_frame_host();
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+  EXPECT_TRUE(ExecJs(rfh_2,
+                     "var input = document.createElement('input');"
+                     "input.setAttribute('type', 'password');"
+                     "document.body.appendChild(input);"));
+  {
+    TextInputManagerTypeObserver type_observer(web_contents(),
+                                               ui::TEXT_INPUT_TYPE_PASSWORD);
+    SimulateKeyPress(web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
+                     ui::VKEY_TAB, false, false, false, false);
+    type_observer.Wait();
+  }
+  ASSERT_EQ(rfh_2->GetView(), GetActiveViewFromWebContents(web_contents()));
+
+  // 3) Send a non-NONE TextInputState on the cached page's main-frame widget.
+  // The primary page must remain the active text input view.
+  auto state = ui::mojom::TextInputState::New();
+  state->type = ui::TEXT_INPUT_TYPE_TEXT;
+  SendTextInputStateChangedToWidget(rwh_1, std::move(state));
+
+  EXPECT_EQ(rfh_2->GetView(), GetActiveViewFromWebContents(web_contents()));
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
+            GetTextInputTypeFromWebContents(web_contents()));
+}
+
 // Tests that trying to focus on a BFCached cross-site iframe won't crash.
 // See https://crbug.com/1250218.
 // TODO(crbug.com/40856039): Flaky on linux tsan

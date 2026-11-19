@@ -608,6 +608,54 @@ TEST_F(TextInputManagerTest, PopupActiveStateDependsOnCreatorFrameFocus) {
   EXPECT_EQ(popup_widget.get(), manager->GetActiveWidget());
 }
 
+// Test that a root (non-popup, non-child-frame) widget that is not the primary
+// main frame's widget, such as the main-frame widget of a page in the
+// back-forward cache or a prerendered page, is never considered focused and
+// cannot take over the active view. See crbug.com/574410501.
+TEST_F(TextInputManagerTest, NonPrimaryRootWidgetCannotBecomeActive) {
+  NavigationSimulator::CreateRendererInitiated(GURL("https://a.test/"),
+                                               main_rfh())
+      ->Commit();
+  auto* main_rfh_impl = static_cast<RenderFrameHostImpl*>(main_rfh());
+  auto* main_view = static_cast<RenderWidgetHostViewBase*>(
+      main_rfh()->GetRenderWidgetHost()->GetView());
+  TextInputManager* manager = main_view->GetTextInputManager();
+  ASSERT_TRUE(manager);
+
+  ui::mojom::TextInputState password_state;
+  password_state.type = ui::TEXT_INPUT_TYPE_PASSWORD;
+  manager->UpdateTextInputState(main_view, password_state);
+  ASSERT_EQ(main_view, manager->active_view_for_testing());
+
+  // A root widget sharing the WebContents delegate that is not the primary
+  // main frame's widget.
+  auto other_widget = RenderWidgetHostFactory::Create(
+      /*frame_tree=*/nullptr, main_rfh_impl->GetRenderWidgetHost()->delegate(),
+      viz::FrameSinkId(7, 7),
+      main_rfh_impl->GetSiteInstance()->group()->GetSafeRef(),
+      main_rfh()->GetProcess()->GetNextRoutingID(),
+      /*hidden=*/true,
+      /*renderer_initiated_creation=*/false);
+  auto other_view =
+      std::make_unique<TestRenderWidgetHostView>(other_widget.get());
+  ASSERT_EQ(WidgetType::kFrame, other_view->GetWidgetType());
+  ASSERT_EQ(manager, other_view->GetTextInputManager());
+
+  EXPECT_TRUE(manager->IsViewFocused(main_view));
+  EXPECT_FALSE(manager->IsViewFocused(other_view.get()));
+
+  ui::mojom::TextInputState text_state;
+  text_state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  manager->UpdateTextInputState(other_view.get(), text_state);
+  EXPECT_EQ(main_view, manager->active_view_for_testing());
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
+            manager->GetTextInputTypeForViewForTesting(main_view));
+
+  // A focus resync must not promote the non-primary view either.
+  manager->SyncActiveViewWithFocus(other_view.get());
+  EXPECT_EQ(main_view, manager->active_view_for_testing());
+}
+
 class SelectionBoundsCountingObserver : public TextInputManager::Observer {
  public:
   void OnSelectionBoundsChanged(
