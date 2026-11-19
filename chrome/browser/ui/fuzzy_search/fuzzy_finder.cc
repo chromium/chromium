@@ -8,11 +8,13 @@
 #include <functional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/fuzzy_search/fuzzy_search_item.h"
 
@@ -58,6 +60,10 @@ constexpr int kGapExtensionPenalty = 2;
 // range ([0.25, 1.0]) above non-matches (0.0).
 constexpr double kScoreBias = 0.25;
 
+// Discounts word-by-word multi-word scores so an exact in-order phrase match
+// ranks above a split or cross-field match.
+constexpr double kMultiTokenScale = 0.88;
+
 // Returns true if index `i` of `text` is the start of the string or immediately
 // follows a whitespace delimiter.
 bool IsWordBoundary(std::u16string_view text, size_t i) {
@@ -73,6 +79,19 @@ gfx::Range FindExactMatchRange(
     return gfx::Range::InvalidRange();
   }
   return gfx::Range(match_start, match_start + match_length);
+}
+
+std::vector<gfx::Range> MergeRanges(std::vector<gfx::Range> ranges) {
+  std::ranges::sort(ranges);
+  std::vector<gfx::Range> merged;
+  for (const gfx::Range& range : ranges) {
+    if (!merged.empty() && range.start() <= merged.back().end()) {
+      merged.back().set_end(std::max(merged.back().end(), range.end()));
+    } else {
+      merged.push_back(range);
+    }
+  }
+  return merged;
 }
 
 }  // namespace
@@ -154,6 +173,16 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(std::u16string_view query,
   }
 
   const std::u16string normalized_query = base::i18n::ToLower(trimmed_query);
+  const std::vector<std::u16string_view> tokens =
+      base::SplitStringPiece(normalized_query, base::kWhitespaceUTF16,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const bool is_multi_word = tokens.size() >= 2;
+  if (is_multi_word &&
+      std::ranges::none_of(tokens, [](std::u16string_view token) {
+        return token.size() >= kMinQueryLength;
+      })) {
+    return {};
+  }
 
   std::vector<FuzzySearchResult> results;
   results.reserve(searchable_items_.size());
@@ -161,7 +190,32 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(std::u16string_view query,
   for (FuzzySearchItem* item : searchable_items_) {
     CHECK(item);
     std::vector<gfx::Range> match_ranges;
-    const double score = ScoreItem(item, normalized_query, match_ranges);
+    double score = ScoreItem(item, normalized_query, match_ranges);
+
+    if (is_multi_word) {
+      double token_sum = 0.0;
+      std::vector<gfx::Range> token_ranges;
+      bool all_matched = true;
+      for (std::u16string_view token : tokens) {
+        std::vector<gfx::Range> ranges;
+        const double token_score = ScoreItem(item, token, ranges);
+        if (token_score <= 0.0 || token_score < params_.min_score) {
+          all_matched = false;
+          break;
+        }
+        token_sum += token_score;
+        token_ranges.insert(token_ranges.end(), ranges.begin(), ranges.end());
+      }
+      if (!all_matched) {
+        continue;
+      }
+      const double split_score = (token_sum / tokens.size()) * kMultiTokenScale;
+      if (split_score > score) {
+        score = split_score;
+        match_ranges = MergeRanges(std::move(token_ranges));
+      }
+    }
+
     // Non-matches (score 0) are always dropped, even if `min_score` is 0.
     if (score > 0.0 && score >= params_.min_score) {
       results.push_back(

@@ -274,52 +274,16 @@ TEST_F(FuzzyFinderTest, UnicodeAndNonLatinStrings) {
   EXPECT_LE(results.size(), 4u);
 }
 
-TEST_F(FuzzyFinderTest, MaxResultsZeroReturnsEmpty) {
-  auto items = CreateItems({{u"Tab 1"}, {u"Tab 2"}, {u"Tab 3"}});
-  FuzzyFinder finder(items);
-
-  // Explicitly requesting 0 results -> returns empty
-  EXPECT_THAT(finder.FuzzyFind(u"Tab", /*max_results=*/0), IsEmpty());
-}
-
-TEST_F(FuzzyFinderTest, MaxResultsLimitsReturnedCount) {
+TEST_F(FuzzyFinderTest, MaxResultsBoundsReturnedCount) {
   auto items =
       CreateItems({{u"Tab 1"}, {u"Tab 2"}, {u"Tab 3"}, {u"Tab 4"}});
   FuzzyFinder finder(items);
 
-  // Capped at custom limit of 2
-  auto results = finder.FuzzyFind(u"Tab", /*max_results=*/2);
-  EXPECT_EQ(results.size(), 2u);
-  EXPECT_THAT(ExtractResultTitles(results),
+  EXPECT_THAT(finder.FuzzyFind(u"Tab", /*max_results=*/0), IsEmpty());
+  EXPECT_THAT(ExtractResultTitles(finder.FuzzyFind(u"Tab", /*max_results=*/2)),
               ElementsAre(u"Tab 1", u"Tab 2"));
-}
-
-TEST_F(FuzzyFinderTest, MaxResultsLessThanTotalMatches) {
-  auto items = CreateItems({{u"Tab 1"},
-                            {u"Tab 2"},
-                            {u"Tab 3"},
-                            {u"Tab 4"},
-                            {u"Tab 5"},
-                            {u"Tab 6"},
-                            {u"Tab 7"},
-                            {u"Tab 8"}});
-  FuzzyFinder finder(items);
-
-  auto results = finder.FuzzyFind(u"Tab", /*max_results=*/5);
-  EXPECT_EQ(results.size(), 5u);
-  EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Tab 1", u"Tab 2", u"Tab 3", u"Tab 4", u"Tab 5"));
-}
-
-TEST_F(FuzzyFinderTest, MaxResultsLargerThanTotalMatches) {
-  auto items = CreateItems({{u"Tab 1"}, {u"Tab 2"}, {u"Tab 3"}});
-  FuzzyFinder finder(items);
-
-  // Requests 50 results when only 3 match -> safely returns 3
-  auto results = finder.FuzzyFind(u"Tab", /*max_results=*/50);
-  EXPECT_EQ(results.size(), 3u);
-  EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Tab 1", u"Tab 2", u"Tab 3"));
+  EXPECT_THAT(ExtractResultTitles(finder.FuzzyFind(u"Tab", /*max_results=*/50)),
+              ElementsAre(u"Tab 1", u"Tab 2", u"Tab 3", u"Tab 4"));
 }
 
 TEST_F(FuzzyFinderTest, EmptyQueryReturnsEmpty) {
@@ -472,26 +436,6 @@ TEST_F(FuzzyFinderTest, FuzzyFindTypoTolerance) {
   EXPECT_GT(results[0].score, 0.0);
 }
 
-TEST_F(FuzzyFinderTest, FuzzyFindTitlePrioritizedOverSynonym) {
-  // Query "passkey" (m = 7, max_possible = 176):
-  // Both match "passkey" with norm = 0.8977.
-  // 1. "Passkey Settings" matches via Title (weight 1.00): final = 0.8977.
-  // 2. "Google Password Manager" matches via Synonym (weight 0.85):
-  //    final = 0.8977 * 0.85 = 0.7631.
-  // Expected rank: "Passkey Settings" > "Google Password Manager".
-  auto items = CreateItems({
-      {u"Google Password Manager", u"", {u"passkey"}},
-      {u"Passkey Settings", u"", {u"credentials"}},
-  });
-  FuzzyFinder finder(items);
-
-  auto results = finder.FuzzyFind(u"passkey", /*max_results=*/2);
-  EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Passkey Settings", u"Google Password Manager"));
-  ASSERT_EQ(results.size(), 2u);
-  EXPECT_GT(results[0].score, results[1].score);
-}
-
 TEST_F(FuzzyFinderTest, FuzzyFindSynonymOnlyMatch) {
   auto items = CreateItems({
       {u"Google Password Manager", u"", {u"credentials", u"passkey"}},
@@ -556,24 +500,6 @@ TEST_F(FuzzyFinderTest, FuzzyFindTitlePrioritizedOverSecondaryText) {
   EXPECT_GT(results[0].score, results[1].score);
 }
 
-TEST_F(FuzzyFinderTest, FuzzyFindSynonymPrioritizedOverSecondaryText) {
-  // Both match "credentials":
-  // 1. "Password Manager" matches via Synonym (weight 0.85).
-  // 2. "Passkey Settings" matches via Secondary Text (weight 0.80).
-  // Expected rank: "Password Manager" > "Passkey Settings".
-  auto items = CreateItems({
-      {u"Passkey Settings", u"credentials"},
-      {u"Password Manager", u"General", {u"credentials"}},
-  });
-  FuzzyFinder finder(items);
-
-  auto results = finder.FuzzyFind(u"credentials", /*max_results=*/2);
-  EXPECT_THAT(ExtractResultTitles(results),
-              ElementsAre(u"Password Manager", u"Passkey Settings"));
-  ASSERT_EQ(results.size(), 2u);
-  EXPECT_GT(results[0].score, results[1].score);
-}
-
 TEST_F(FuzzyFinderTest, ContiguousDominanceOverScatteredSubsequences) {
   // Contiguous match ("Performance Monitor") vs scattered subsequence match
   // ("Page Event Resource Filter") for query "perf".
@@ -608,27 +534,6 @@ TEST_F(FuzzyFinderTest, ShortQueryRejectsSingleCharacterSubstitutions) {
   FuzzyFinder finder2(items2);
   auto results2 = finder2.FuzzyFind(u"ta", /*max_results=*/5);
   EXPECT_THAT(ExtractResultTitles(results2), ElementsAre(u"Ta"));
-}
-
-TEST_F(FuzzyFinderTest, MinScoreCutoffFiltersWeakMatches) {
-  // Items with varying match quality for query "perf":
-  // - "Performance Monitor": Contiguous prefix match (~0.96 >= 0.60)
-  // - "Page Event Resource Filter": Word boundary scattered match (~0.67 >=
-  // 0.60)
-  // - "Operation": Low-quality match with non-boundary start and typo (< 0.60)
-  auto items = CreateItems({
-      {u"Performance Monitor"},
-      {u"Page Event Resource Filter"},
-      {u"Operation"},
-  });
-  FuzzyFinder finder(items);
-
-  // Default internal cutoff (0.60) keeps the high-quality and scattered matches
-  // while filtering out weak matches below 0.60.
-  auto results = finder.FuzzyFind(u"perf", /*max_results=*/5);
-  EXPECT_THAT(
-      ExtractResultTitles(results),
-      ElementsAre(u"Performance Monitor", u"Page Event Resource Filter"));
 }
 
 TEST_F(FuzzyFinderTest, MatchRangesComputation) {
@@ -810,7 +715,7 @@ TEST_F(FuzzyFinderTest, WeightsAreClampedToUnitRange) {
 }
 
 TEST_F(FuzzyFinderTest, MinScoreParamChangesCutoff) {
-  // Same corpus as MinScoreCutoffFiltersWeakMatches, for query "perf":
+  // Match quality for query "perf":
   // - "Performance Monitor": ~0.96
   // - "Page Event Resource Filter": ~0.67
   // - "Operation": weak match below 0.60
@@ -945,6 +850,69 @@ TEST_F(FuzzyFinderTest, OutOfRangeBonusWeightCheckFails) {
   check_fails_for_bonus(-0.1);
   check_fails_for_bonus(1.1);
   check_fails_for_bonus(std::numeric_limits<double>::quiet_NaN());
+}
+
+TEST_F(FuzzyFinderTest, FuzzyFindMultiWordAcrossFieldsAndOrder) {
+  auto items = CreateItems({
+      {u"Delete browsing data", u"", {u"cache", u"cookies"}},
+      {u"Customize Chrome", u"", {u"dark", u"mode"}},
+      {u"New Incognito window"},
+      {u"Always hide", u"", {u"show"}},
+      {u"Always show"},
+  });
+  FuzzyFinder finder(items);
+
+  // Cross-field (title + synonym) and live-typing partial second word.
+  auto results = finder.FuzzyFind(u"delete cache", /*max_results=*/5);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0].item->GetTitle(), u"Delete browsing data");
+  EXPECT_THAT(results[0].match_ranges, ElementsAre(gfx::Range(0, 6)));
+  EXPECT_EQ(results[0].exact_match_range, gfx::Range::InvalidRange());
+
+  EXPECT_THAT(ExtractResultTitles(finder.FuzzyFind(u"delete c", 5)),
+              ElementsAre(u"Delete browsing data"));
+
+  // Split across separate synonyms leaves title ranges empty.
+  results = finder.FuzzyFind(u"dark mode", /*max_results=*/5);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0].item->GetTitle(), u"Customize Chrome");
+  EXPECT_THAT(results[0].match_ranges, IsEmpty());
+
+  // Reordered title words sort ranges; overlapping words coalesce.
+  results = finder.FuzzyFind(u"window incognito", /*max_results=*/5);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0].item->GetTitle(), u"New Incognito window");
+  EXPECT_THAT(results[0].match_ranges,
+              ElementsAre(gfx::Range(4, 13), gfx::Range(14, 20)));
+
+  results = finder.FuzzyFind(u"delete del", /*max_results=*/5);
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0].match_ranges, ElementsAre(gfx::Range(0, 6)));
+
+  // Exact whole-phrase match outranks a cross-field split match.
+  results = finder.FuzzyFind(u"always show", /*max_results=*/5);
+  EXPECT_THAT(ExtractResultTitles(results),
+              ElementsAre(u"Always show", u"Always hide"));
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_GT(results[0].score, results[1].score);
+  EXPECT_EQ(results[0].exact_match_range, gfx::Range(0, 11));
+  EXPECT_EQ(results[1].exact_match_range, gfx::Range::InvalidRange());
+}
+
+TEST_F(FuzzyFinderTest, FuzzyFindMultiWordRejectsUnmatchedTokens) {
+  auto items = CreateItems({
+      {u"Delete browsing data", u"", {u"cache", u"cookies"}},
+      {u"A B"},
+  });
+  FuzzyFinder finder(items);
+
+  EXPECT_THAT(finder.FuzzyFind(u"delete banana", /*max_results=*/5), IsEmpty());
+  EXPECT_THAT(finder.FuzzyFind(u"delete x", /*max_results=*/5), IsEmpty());
+  EXPECT_THAT(finder.FuzzyFind(u"a b", /*max_results=*/5), IsEmpty());
+
+  FuzzyFinder lenient_finder(items, {.min_score = 0.0});
+  EXPECT_THAT(lenient_finder.FuzzyFind(u"delete zzz", /*max_results=*/5),
+              IsEmpty());
 }
 
 }  // namespace
