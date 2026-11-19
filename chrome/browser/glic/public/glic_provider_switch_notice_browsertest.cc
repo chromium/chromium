@@ -111,7 +111,7 @@ class GlicProviderSwitchNoticeBrowserTest : public InProcessBrowserTest {
 
   // Returns the latched provider's key.
   GlicProviderKey LatchedProviderKey() {
-    return GetGlicProviderSpec(profile()).GetProviderKey();
+    return GetGlicProviderSpec(profile()).GetProviderKeyForTesting();
   }
 
  private:

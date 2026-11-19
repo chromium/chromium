@@ -45,8 +45,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
-#include "chrome/browser/glic/public/glic_provider.h"
-#include "chrome/browser/glic/public/glic_provider_latch.h"
+#include "chrome/browser/glic/public/glic_provider_change.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
@@ -546,13 +545,6 @@ void LogGlicInvokeOptions(const GlicInvokeOptions& options,
   LOG(WARNING) << "GlicInvokeOptions {\n" << ss.str() << "}";
 }
 
-mojom::GlicProviderType GetProviderType(Profile& profile) {
-  return GlicProviderLatch::GetProvider(profile) ==
-                 GlicProvider::kGeminiEnterprise
-             ? mojom::GlicProviderType::kGeminiEnterprise
-             : mojom::GlicProviderType::kGemini;
-}
-
 std::vector<mojom::LocaleOptionPtr> BuildAvailableUiLocales() {
   std::vector<mojom::LocaleOptionPtr> options;
   base::flat_set<std::string> seen_codes;
@@ -829,7 +821,11 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
 
   payload->tiered_rollout_info = std::move(tiered_rollout_info);
 
-  payload->provider = GetProviderType(*profile);
+  payload->provider = GetGlicProviderSpec(profile).GetProviderKey(
+                          GlicProviderKeyPasskeyProvider::GetPassKey()) ==
+                              GlicProviderKey::Gemini()
+                          ? mojom::GlicProviderType::kGemini
+                          : mojom::GlicProviderType::kGeminiEnterprise;
 
   std::move(callback).Run(std::move(payload));
 }

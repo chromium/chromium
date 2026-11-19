@@ -124,7 +124,7 @@ class GlicProviderSwitchNoticeTest : public testing::Test {
 
   // Returns the latched provider's key.
   GlicProviderKey LatchedProviderKey() {
-    return GetGlicProviderSpec(profile_.get()).GetProviderKey();
+    return GetGlicProviderSpec(profile_.get()).GetProviderKeyForTesting();
   }
 
   content::BrowserTaskEnvironment task_environment_;

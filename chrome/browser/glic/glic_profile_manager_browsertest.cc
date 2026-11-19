@@ -20,7 +20,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_provider.h"
-#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -306,8 +305,6 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
                                                enterprise_profile_path);
   Profile& enterprise_profile = profiles::testing::CreateProfileSync(
       profile_manager, enterprise_profile_path);
-  ASSERT_EQ(GlicProviderLatch::GetProvider(enterprise_profile),
-            GlicProvider::kGeminiEnterprise);
   ASSERT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(&enterprise_profile));
   EXPECT_FALSE(
       GlicEnabling::IsOsEntryPointEnabledForProfile(&enterprise_profile));

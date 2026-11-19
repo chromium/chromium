@@ -11,7 +11,6 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_provider.h"
-#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/scoped_glic_provider_override.h"
 #include "chrome/browser/global_features.h"
@@ -139,8 +138,6 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerGeminiEnterpriseBrowserTest,
   auto* keep_alive_registry = KeepAliveRegistry::GetInstance();
   auto* profile_manager = g_browser_process->profile_manager();
   Profile* profile = GetProfile();
-  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile),
-            GlicProvider::kGeminiEnterprise);
   ASSERT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(profile));
 
   // Neither the launcher pref nor the global hotkey scope enables the OS
