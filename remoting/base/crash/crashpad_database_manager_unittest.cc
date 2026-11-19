@@ -126,4 +126,35 @@ TEST_F(CrashpadDatabaseManagerTest, GetCrashpadDatabasePathIsNonEmpty) {
   EXPECT_FALSE(GetCrashpadDatabasePath().empty());
 }
 
+TEST_F(CrashpadDatabaseManagerTest,
+       InitializeWithoutCreatingDoesNotCreateDirectory) {
+  base::FilePath db_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("crash_db"));
+
+  CrashpadDatabaseManager reader_before_init(logger_);
+  EXPECT_FALSE(
+      reader_before_init.InitializeCrashpadDatabaseWithoutCreating(db_path));
+  EXPECT_FALSE(base::PathExists(db_path));
+
+  CrashpadDatabaseManager creator(logger_);
+  ASSERT_TRUE(creator.InitializeCrashpadDatabase(db_path));
+  EXPECT_TRUE(base::DirectoryExists(db_path));
+
+  CrashpadDatabaseManager reader_after_init(logger_);
+  EXPECT_TRUE(
+      reader_after_init.InitializeCrashpadDatabaseWithoutCreating(db_path));
+
+  // Only creation of the root directory is skipped. Given an existing empty
+  // directory, Crashpad still succeeds and creates its subdirectories inside
+  // it, so callers that must not write into an unrelated directory have to
+  // check for an initialized database first.
+  base::FilePath empty_dir =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("empty_dir"));
+  ASSERT_TRUE(base::CreateDirectory(empty_dir));
+  CrashpadDatabaseManager reader_empty_dir(logger_);
+  EXPECT_TRUE(
+      reader_empty_dir.InitializeCrashpadDatabaseWithoutCreating(empty_dir));
+  EXPECT_FALSE(base::IsDirectoryEmpty(empty_dir));
+}
+
 }  // namespace remoting

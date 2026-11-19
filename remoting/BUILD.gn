@@ -44,6 +44,10 @@ group("remoting_all") {
       ]
     }
 
+    if (is_win) {
+      deps += [ "//remoting/host/crash:remoting_crashpad_tester" ]
+    }
+
     if (use_glib) {
       deps += [ "//remoting/host/linux/dbus_interfaces:gen_dbus_interface" ]
     }

@@ -45,6 +45,10 @@ class CrashpadDatabaseManager {
   // empty, falls back to `GetCrashpadDatabasePath()`.
   bool InitializeCrashpadDatabase(
       const base::FilePath& database_path = base::FilePath());
+  // Opens an existing Crashpad database at `database_path` (or
+  // `GetCrashpadDatabasePath()` if empty) without creating its root directory.
+  bool InitializeCrashpadDatabaseWithoutCreating(
+      const base::FilePath& database_path = base::FilePath());
   bool EnableReportUploads();
 
   void LogCompletedCrashpadReports();

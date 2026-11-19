@@ -193,6 +193,19 @@ bool CrashpadDatabaseManager::InitializeCrashpadDatabase(
   return true;
 }
 
+bool CrashpadDatabaseManager::InitializeCrashpadDatabaseWithoutCreating(
+    const base::FilePath& database_path) {
+  base::FilePath target_database_path =
+      database_path.empty() ? GetCrashpadDatabasePath() : database_path;
+  database_ = crashpad::CrashReportDatabase::InitializeWithoutCreating(
+      target_database_path);
+  if (!database_) {
+    logger_->LogError("Unable to open existing crash database");
+    return false;
+  }
+  return LoadCompletedReports() && LoadPendingReports();
+}
+
 bool CrashpadDatabaseManager::EnableReportUploads() {
   if (!database_ || !database_->GetSettings()->SetUploadsEnabled(true)) {
     logger_->LogError("Unable to enable Crashpad report uploads");

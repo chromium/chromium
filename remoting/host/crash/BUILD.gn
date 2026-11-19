@@ -55,3 +55,21 @@ if (is_linux) {
     ]
   }
 }
+
+if (is_win) {
+  executable("remoting_crashpad_tester") {
+    testonly = true
+
+    sources = [ "crashpad_tester_win.cc" ]
+
+    deps = [
+      "//base",
+      "//build/win:default_exe_manifest",
+      "//remoting/base",
+      "//remoting/base:logging",
+      "//remoting/base:os_utils",
+      "//remoting/base/crash:crashpad",
+      "//remoting/base/crash:crashpad_db_mgr",
+    ]
+  }
+}
