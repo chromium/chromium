@@ -45,9 +45,11 @@ class FacilitatedPaymentsDriver {
   virtual ~FacilitatedPaymentsDriver();
 
   // Validates each of the `qr_codes` decoded from the page's images as a
-  // payment QR code, and logs its scheme and validation result. The codes can
-  // be any QR codes, e.g. URLs, which are logged as not being payment codes.
-  void OnPaymentQrCodesDetected(const std::vector<std::string>& qr_codes) const;
+  // payment QR code, and logs its scheme and validation result, including to
+  // UKM for the page of `ukm_source_id`. The codes can be any QR codes, e.g.
+  // URLs, which are logged as not being payment codes.
+  void OnPaymentQrCodesDetected(const std::vector<std::string>& qr_codes,
+                                ukm::SourceId ukm_source_id) const;
 
 #if BUILDFLAG(IS_ANDROID)
   // The Pix and payment link flows are only available on Android.

@@ -107,14 +107,18 @@ FacilitatedPaymentsDriver::FacilitatedPaymentsDriver(
 FacilitatedPaymentsDriver::~FacilitatedPaymentsDriver() = default;
 
 void FacilitatedPaymentsDriver::OnPaymentQrCodesDetected(
-    const std::vector<std::string>& qr_codes) const {
+    const std::vector<std::string>& qr_codes,
+    ukm::SourceId ukm_source_id) const {
   // Each QR code is logged, since a page can show codes of several schemes.
   for (const std::string& qr_code : qr_codes) {
     PaymentQrCodeValidation validation =
         validate_payment_qr_code(base::StringViewToRustSlice(qr_code));
-    LogQrCodeValidationResult(
-        TranslateRustPaymentQrCodeScheme(validation.scheme),
-        TranslateRustPaymentQrCodeValidationResult(validation.result));
+    const QrCodeScheme scheme =
+        TranslateRustPaymentQrCodeScheme(validation.scheme);
+    const QrCodeValidationResult result =
+        TranslateRustPaymentQrCodeValidationResult(validation.result);
+    LogQrCodeValidationResult(scheme, result);
+    LogQrCodeDetectedUkm(ukm_source_id, scheme, result);
   }
 }
 

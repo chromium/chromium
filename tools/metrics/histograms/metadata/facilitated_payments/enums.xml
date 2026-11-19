@@ -259,6 +259,20 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:QrCodeHeuristicSignal) -->
 
+<!-- LINT.IfChange(FacilitatedPayments.QrCode.Scheme) -->
+
+<enum name="FacilitatedPayments.QrCode.Scheme">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Pix"/>
+  <int value="2" label="DuitNow"/>
+  <int value="3" label="PromptPay"/>
+  <int value="4" label="QRIS"/>
+  <int value="5" label="ShopeePay"/>
+  <int value="6" label="MoMo"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:QrCodeScheme) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.QrCode.ValidationResult) -->
 
 <enum name="FacilitatedPayments.QrCode.ValidationResult">

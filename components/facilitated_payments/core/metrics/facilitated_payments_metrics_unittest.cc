@@ -608,6 +608,26 @@ TEST_F(FacilitatedPaymentsMetricsUkmTest, LogPixCodeCopied) {
   EXPECT_EQ(ukm_entries[0].metrics.at("HasIframe"), true);
 }
 
+// Tests that the QR code detected UKM records the scheme and the validation
+// result.
+TEST_F(FacilitatedPaymentsMetricsUkmTest, LogQrCodeDetectedUkm) {
+  using UkmEntry = ukm::builders::FacilitatedPayments_QrCodeDetected;
+  const ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+
+  LogQrCodeDetectedUkm(source_id, QrCodeScheme::kPix,
+                       QrCodeValidationResult::kValidPixDynamic);
+
+  auto ukm_entries = ukm_recorder_.GetEntries(
+      UkmEntry::kEntryName,
+      {UkmEntry::kPaymentQrCodeSchemeName, UkmEntry::kValidationResultName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_EQ(ukm_entries[0].source_id, source_id);
+  EXPECT_EQ(ukm_entries[0].metrics.at(UkmEntry::kPaymentQrCodeSchemeName),
+            static_cast<int64_t>(QrCodeScheme::kPix));
+  EXPECT_EQ(ukm_entries[0].metrics.at(UkmEntry::kValidationResultName),
+            static_cast<int64_t>(QrCodeValidationResult::kValidPixDynamic));
+}
+
 TEST_F(FacilitatedPaymentsMetricsUkmTest, LogEwalletPaymentLinkDetectedUkm) {
   LogPaymentLinkDetected(ukm::UkmRecorder::GetNewSourceID(),
                          PaymentLinkValidator::Scheme::kShopeePay);

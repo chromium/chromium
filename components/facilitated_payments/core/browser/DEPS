@@ -10,6 +10,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "facilitated_payments_driver_qr_code_unittest\\.cc": [
+    "+components/ukm/test_ukm_recorder.h",
+  ],
   ".*manager_unittest\\.cc": [
     "+components/autofill/core/common",
     "+components/ukm",

@@ -7,11 +7,15 @@
 
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments::facilitated {
@@ -61,6 +65,9 @@ class FacilitatedPaymentsDriverQrCodeTest : public testing::Test {
                     &MockFacilitatedPaymentsApiClient::CreateApiClient)) {}
 
  protected:
+  base::test::TaskEnvironment task_environment_;
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
+  const ukm::SourceId ukm_source_id_ = ukm::UkmRecorder::GetNewSourceID();
   MockFacilitatedPaymentsClient client_;
   TestFacilitatedPaymentsDriver driver_;
 };
@@ -69,7 +76,7 @@ class FacilitatedPaymentsDriverQrCodeTest : public testing::Test {
 TEST_F(FacilitatedPaymentsDriverQrCodeTest, LogsValidCodeUnderScheme) {
   base::HistogramTester histogram_tester;
 
-  driver_.OnPaymentQrCodesDetected({kDuitNowCode});
+  driver_.OnPaymentQrCodesDetected({kDuitNowCode}, ukm_source_id_);
 
   histogram_tester.ExpectUniqueSample(kDuitNowValidationResultHistogram,
                                       QrCodeValidationResult::kValid, 1);
@@ -79,7 +86,7 @@ TEST_F(FacilitatedPaymentsDriverQrCodeTest, LogsValidCodeUnderScheme) {
 TEST_F(FacilitatedPaymentsDriverQrCodeTest, LogsPixCodeType) {
   base::HistogramTester histogram_tester;
 
-  driver_.OnPaymentQrCodesDetected({kDynamicPixCode});
+  driver_.OnPaymentQrCodesDetected({kDynamicPixCode}, ukm_source_id_);
 
   histogram_tester.ExpectUniqueSample(kPixValidationResultHistogram,
                                       QrCodeValidationResult::kValidPixDynamic,
@@ -91,7 +98,7 @@ TEST_F(FacilitatedPaymentsDriverQrCodeTest, LogsPixCodeType) {
 TEST_F(FacilitatedPaymentsDriverQrCodeTest, LogsFailureUnderScheme) {
   base::HistogramTester histogram_tester;
 
-  driver_.OnPaymentQrCodesDetected({kDuitNowCodeWithWrongCrc});
+  driver_.OnPaymentQrCodesDetected({kDuitNowCodeWithWrongCrc}, ukm_source_id_);
 
   histogram_tester.ExpectUniqueSample(kDuitNowValidationResultHistogram,
                                       QrCodeValidationResult::kFailedCrcCheck,
@@ -103,7 +110,7 @@ TEST_F(FacilitatedPaymentsDriverQrCodeTest, LogsFailureUnderScheme) {
 TEST_F(FacilitatedPaymentsDriverQrCodeTest, LogsFailedTlvParsingUnderScheme) {
   base::HistogramTester histogram_tester;
 
-  driver_.OnPaymentQrCodesDetected({kPixCodeWithoutCrc});
+  driver_.OnPaymentQrCodesDetected({kPixCodeWithoutCrc}, ukm_source_id_);
 
   histogram_tester.ExpectUniqueSample(kPixValidationResultHistogram,
                                       QrCodeValidationResult::kFailedTlvParsing,
@@ -117,7 +124,7 @@ TEST_F(FacilitatedPaymentsDriverQrCodeTest,
   base::HistogramTester histogram_tester;
 
   driver_.OnPaymentQrCodesDetected(
-      {kPixCodeWithEmptyAdditionalDataFieldTemplate});
+      {kPixCodeWithEmptyAdditionalDataFieldTemplate}, ukm_source_id_);
 
   histogram_tester.ExpectUniqueSample(
       kPixValidationResultHistogram,
@@ -129,7 +136,7 @@ TEST_F(FacilitatedPaymentsDriverQrCodeTest,
 TEST_F(FacilitatedPaymentsDriverQrCodeTest, LogsNonPaymentCodeAsUnknown) {
   base::HistogramTester histogram_tester;
 
-  driver_.OnPaymentQrCodesDetected({kUrlQrCode});
+  driver_.OnPaymentQrCodesDetected({kUrlQrCode}, ukm_source_id_);
 
   histogram_tester.ExpectUniqueSample(kUnknownValidationResultHistogram,
                                       QrCodeValidationResult::kNotPaymentCode,
@@ -140,13 +147,39 @@ TEST_F(FacilitatedPaymentsDriverQrCodeTest, LogsNonPaymentCodeAsUnknown) {
 TEST_F(FacilitatedPaymentsDriverQrCodeTest, LogsEachCode) {
   base::HistogramTester histogram_tester;
 
-  driver_.OnPaymentQrCodesDetected({kDuitNowCode, kDuitNowCode, kUrlQrCode});
+  driver_.OnPaymentQrCodesDetected({kDuitNowCode, kDuitNowCode, kUrlQrCode},
+                                   ukm_source_id_);
 
   histogram_tester.ExpectUniqueSample(kDuitNowValidationResultHistogram,
                                       QrCodeValidationResult::kValid, 2);
   histogram_tester.ExpectUniqueSample(kUnknownValidationResultHistogram,
                                       QrCodeValidationResult::kNotPaymentCode,
                                       1);
+}
+
+// Tests that a UKM with the scheme and the validation result is recorded for
+// each QR code, on the page's source.
+TEST_F(FacilitatedPaymentsDriverQrCodeTest, RecordsUkmForEachCode) {
+  using UkmEntry = ukm::builders::FacilitatedPayments_QrCodeDetected;
+
+  driver_.OnPaymentQrCodesDetected({kDuitNowCodeWithWrongCrc, kUrlQrCode},
+                                   ukm_source_id_);
+
+  const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> entries =
+      ukm_recorder_.GetEntries(UkmEntry::kEntryName,
+                               {UkmEntry::kPaymentQrCodeSchemeName,
+                                UkmEntry::kValidationResultName});
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[0].source_id, ukm_source_id_);
+  EXPECT_EQ(entries[0].metrics.at(UkmEntry::kPaymentQrCodeSchemeName),
+            static_cast<int64_t>(QrCodeScheme::kDuitNow));
+  EXPECT_EQ(entries[0].metrics.at(UkmEntry::kValidationResultName),
+            static_cast<int64_t>(QrCodeValidationResult::kFailedCrcCheck));
+  EXPECT_EQ(entries[1].source_id, ukm_source_id_);
+  EXPECT_EQ(entries[1].metrics.at(UkmEntry::kPaymentQrCodeSchemeName),
+            static_cast<int64_t>(QrCodeScheme::kUnknown));
+  EXPECT_EQ(entries[1].metrics.at(UkmEntry::kValidationResultName),
+            static_cast<int64_t>(QrCodeValidationResult::kNotPaymentCode));
 }
 
 }  // namespace

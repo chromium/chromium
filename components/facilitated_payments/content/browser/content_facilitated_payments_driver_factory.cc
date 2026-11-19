@@ -218,7 +218,8 @@ void ContentFacilitatedPaymentsDriverFactory::OnBarcodesDetected(
       qr_codes.push_back(std::move(barcode.raw_value));
     }
   }
-  driver.OnPaymentQrCodesDetected(qr_codes);
+  driver.OnPaymentQrCodesDetected(qr_codes,
+                                  render_frame_host->GetPageUkmSourceId());
 }
 
 void ContentFacilitatedPaymentsDriverFactory::RenderFrameDeleted(

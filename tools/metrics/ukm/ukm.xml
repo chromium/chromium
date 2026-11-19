@@ -9516,6 +9516,50 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="FacilitatedPayments.QrCodeDetected">
+  <owner>qihuizhao@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded for each QR code decoded from the images of a page that the
+    renderer heuristics reported as a likely payment QR code page. Used to find
+    which merchant pages show payment QR codes, of which scheme, and whether
+    they validate. QR codes that are not payment codes are recorded too, as
+    Unknown, to measure how often the heuristics select pages whose QR codes are
+    not payment codes. Recorded once per decoded QR code, on at most one
+    decoding pass per page, since detection stops for the page once a QR code is
+    found. Only the scheme and the validation result are recorded, not the
+    content of the QR code.
+  </summary>
+  <metric name="PaymentQrCodeScheme" enum="FacilitatedPayments.QrCode.Scheme">
+    <summary>
+      The payment scheme that the merchant account information of the QR code
+      identifies, or Unknown if it is not an EMV Merchant-Presented code or
+      identifies no supported scheme.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ValidationResult"
+      enum="FacilitatedPayments.QrCode.ValidationResult">
+    <summary>
+      The result of validating the QR code as a payment QR code of its scheme.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="FamilyLinkUser.BlockedContent">
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

@@ -198,6 +198,15 @@ void LogQrCodeValidationResult(QrCodeScheme scheme,
       result);
 }
 
+void LogQrCodeDetectedUkm(ukm::SourceId ukm_source_id,
+                          QrCodeScheme scheme,
+                          QrCodeValidationResult result) {
+  ukm::builders::FacilitatedPayments_QrCodeDetected(ukm_source_id)
+      .SetPaymentQrCodeScheme(static_cast<int64_t>(scheme))
+      .SetValidationResult(static_cast<int64_t>(result))
+      .Record(ukm::UkmRecorder::Get());
+}
+
 void LogPixIframeIsSameOriginAsMainFrame(bool is_same_origin) {
   base::UmaHistogramBoolean("FacilitatedPayments.Pix.Iframe.IsSameOrigin",
                             is_same_origin);

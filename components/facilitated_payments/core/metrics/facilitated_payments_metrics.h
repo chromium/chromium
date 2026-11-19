@@ -325,18 +325,25 @@ using QrCodeHeuristicSignals =
                   QrCodeHeuristicSignal::kMaxValue>;
 
 // The scheme of a decoded QR code, which selects the variant of
-// `FacilitatedPayments.QrCode.{QrCodeScheme}.ValidationResult`. Mirrors the
-// Rust `PaymentQrCodeScheme`, whose generated C++ name is taken.
+// `FacilitatedPayments.QrCode.{QrCodeScheme}.ValidationResult` and is recorded
+// in the `FacilitatedPayments.QrCodeDetected` UKM. Mirrors the Rust
+// `PaymentQrCodeScheme`, whose generated C++ name is taken.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(QrCodeScheme)
 enum class QrCodeScheme {
   // The QR code is not of a supported payment scheme.
-  kUnknown,
-  kPix,
-  kDuitNow,
-  kPromptPay,
-  kQris,
-  kShopeePay,
-  kMoMo,
+  kUnknown = 0,
+  kPix = 1,
+  kDuitNow = 2,
+  kPromptPay = 3,
+  kQris = 4,
+  kShopeePay = 5,
+  kMoMo = 6,
+  kMaxValue = kMoMo,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.QrCode.Scheme)
 
 // The validation result of a decoded QR code. Mirrors the Rust
 // `PaymentQrCodeValidationResult`, whose generated C++ name is taken.
@@ -398,6 +405,12 @@ void LogQrCodeSuccessfulAttemptIndex(int attempt_index);
 // Logs the validation `result` of a decoded QR code under its `scheme`.
 void LogQrCodeValidationResult(QrCodeScheme scheme,
                                QrCodeValidationResult result);
+
+// Logs the `FacilitatedPayments.QrCodeDetected` UKM for a decoded QR code of
+// `scheme` with the validation `result`, on the page of `ukm_source_id`.
+void LogQrCodeDetectedUkm(ukm::SourceId ukm_source_id,
+                          QrCodeScheme scheme,
+                          QrCodeValidationResult result);
 
 // Log when a given payment link in a certain page for an eWallet push payment
 // flow is detected.

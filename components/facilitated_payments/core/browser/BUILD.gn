@@ -106,6 +106,7 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
     "//testing/gtest",
   ]
 }

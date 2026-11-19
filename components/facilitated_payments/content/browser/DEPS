@@ -22,7 +22,9 @@ specific_include_rules = {
    ],
    "content_facilitated_payments_driver_factory_unittest.cc": [
       "+components/optimization_guide/core",
+      "+components/ukm/test_ukm_recorder.h",
       "+content/public/test",
       "+net/base/net_errors.h",
+      "+services/metrics/public/cpp/ukm_builders.h",
    ]
 }

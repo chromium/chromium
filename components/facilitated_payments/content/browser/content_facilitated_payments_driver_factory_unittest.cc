@@ -20,6 +20,7 @@
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/wallet/content/browser/walletable_pass_barcode_detector.h"
 #include "components/wallet/content/common/mojom/image_extractor.mojom.h"
 #include "components/wallet/core/browser/data_models/wallet_barcode.h"
@@ -28,6 +29,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -692,6 +694,29 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   histogram_tester.ExpectUniqueSample(kUnknownValidationResultHistogram,
                                       QrCodeValidationResult::kNotPaymentCode,
                                       1);
+}
+
+// Tests that the QR code detected UKM is recorded on the scanned page.
+TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
+       OnBarcodesDetected_QrCode_RecordsUkmOnPage) {
+  using UkmEntry = ukm::builders::FacilitatedPayments_QrCodeDetected;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  NavigateAndCommit(GURL("https://merchant.example/checkout"));
+  factory_->OnHeuristicSignalsReported(main_rfh(), *MakeQualifyingSignals());
+
+  barcode_detector_->Finish({{.raw_value = kDuitNowCode,
+                              .format = wallet::WalletBarcodeFormat::QR_CODE}});
+
+  const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> entries =
+      ukm_recorder.GetEntries(UkmEntry::kEntryName,
+                              {UkmEntry::kPaymentQrCodeSchemeName,
+                               UkmEntry::kValidationResultName});
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0].source_id, main_rfh()->GetPageUkmSourceId());
+  EXPECT_EQ(entries[0].metrics.at(UkmEntry::kPaymentQrCodeSchemeName),
+            static_cast<int64_t>(QrCodeScheme::kDuitNow));
+  EXPECT_EQ(entries[0].metrics.at(UkmEntry::kValidationResultName),
+            static_cast<int64_t>(QrCodeValidationResult::kValid));
 }
 
 // Tests that the QR codes of a pass that finishes after the page was navigated
