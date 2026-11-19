@@ -104,7 +104,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   static void SetObserverForTesting(TestObserver* observer);
 
-  static RenderFrameProxyHost* FromID(int process_id, int routing_id);
+  static RenderFrameProxyHost* FromID(GlobalRoutingID id);
   static RenderFrameProxyHost* FromFrameToken(
       int process_id,
       const blink::RemoteFrameToken& frame_token);

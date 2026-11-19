@@ -25,6 +25,7 @@
 #include "content/common/input/synthetic_gesture_target.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -424,11 +425,11 @@ bool TestRenderViewHost::CreateRenderView(
   RenderFrameHostImpl* main_frame = nullptr;
   RenderFrameProxyHost* proxy_host = nullptr;
   if (main_frame_routing_id_ != IPC::mojom::kRoutingIdNone) {
-    main_frame = RenderFrameHostImpl::FromID(GetProcess()->GetID(),
-                                             main_frame_routing_id_);
+    main_frame = RenderFrameHostImpl::FromID(
+        GlobalRenderFrameHostId(GetProcess()->GetID(), main_frame_routing_id_));
   } else {
-    proxy_host = RenderFrameProxyHost::FromID(GetProcess()->GetDeprecatedID(),
-                                              proxy_route_id);
+    proxy_host = RenderFrameProxyHost::FromID(
+        GlobalRoutingID(GetProcess()->GetID(), proxy_route_id));
   }
 
   DCHECK_EQ(!!main_frame, is_active());

@@ -640,14 +640,14 @@ class RemoterFactoryImpl final : public media::mojom::RemoterFactory {
 };
 #endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING)
 
-RenderFrameHostOrProxy LookupRenderFrameHostOrProxy(int process_id,
+RenderFrameHostOrProxy LookupRenderFrameHostOrProxy(ChildProcessId process_id,
                                                     int routing_id) {
-  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
   RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
-      ChildProcessId::FromUnsafeValue(process_id), routing_id);
+      GlobalRenderFrameHostId(process_id, routing_id));
   RenderFrameProxyHost* proxy = nullptr;
   if (!rfh) {
-    proxy = RenderFrameProxyHost::FromID(process_id, routing_id);
+    proxy =
+        RenderFrameProxyHost::FromID(GlobalRoutingID(process_id, routing_id));
   }
   return RenderFrameHostOrProxy(rfh, proxy);
 }
@@ -8901,7 +8901,7 @@ FrameTreeNode* RenderFrameHostImpl::FindAndVerifyChild(
     int32_t child_frame_routing_id,
     bad_message::BadMessageReason reason) {
   auto child_frame_or_proxy = LookupRenderFrameHostOrProxy(
-      GetProcess()->GetDeprecatedID(), child_frame_routing_id);
+      GetProcess()->GetID(), child_frame_routing_id);
   return FindAndVerifyChildInternal(child_frame_or_proxy, reason);
 }
 
@@ -14929,7 +14929,9 @@ bool RenderFrameHostImpl::CanExecuteJavaScript() {
 FrameTreeNodeId RenderFrameHost::GetFrameTreeNodeIdForRoutingId(
     int process_id,
     int routing_id) {
-  auto frame_or_proxy = LookupRenderFrameHostOrProxy(process_id, routing_id);
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+  auto frame_or_proxy = LookupRenderFrameHostOrProxy(
+      ChildProcessId::FromUnsafeValue(process_id), routing_id);
   if (frame_or_proxy) {
     return frame_or_proxy.GetFrameTreeNode()->frame_tree_node_id();
   }

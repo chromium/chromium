@@ -69,10 +69,8 @@ namespace {
 
 RenderFrameProxyHost::TestObserver* g_observer_for_testing = nullptr;
 
-// The (process id, routing id) pair that identifies one RenderFrameProxy.
-typedef std::pair<int32_t, int32_t> RenderFrameProxyHostID;
 using RoutingIDFrameProxyMap =
-    absl::flat_hash_map<RenderFrameProxyHostID, RenderFrameProxyHost*>;
+    absl::flat_hash_map<GlobalRoutingID, RenderFrameProxyHost*>;
 base::LazyInstance<RoutingIDFrameProxyMap>::DestructorAtExit
     g_routing_id_frame_proxy_map = LAZY_INSTANCE_INITIALIZER;
 
@@ -99,11 +97,10 @@ void RenderFrameProxyHost::SetObserverForTesting(TestObserver* observer) {
 }
 
 // static
-RenderFrameProxyHost* RenderFrameProxyHost::FromID(int process_id,
-                                                   int routing_id) {
+RenderFrameProxyHost* RenderFrameProxyHost::FromID(GlobalRoutingID id) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
   RoutingIDFrameProxyMap* frames = g_routing_id_frame_proxy_map.Pointer();
-  auto it = frames->find(RenderFrameProxyHostID(process_id, routing_id));
+  auto it = frames->find(id);
   return it == frames->end() ? nullptr : it->second;
 }
 
@@ -149,10 +146,7 @@ RenderFrameProxyHost::RenderFrameProxyHost(
       "render_frame_proxy_host_when_created", *this);
   GetAgentSchedulingGroup().AddRoute(routing_id_, this);
   CHECK(g_routing_id_frame_proxy_map.Get()
-            .insert(std::make_pair(
-                RenderFrameProxyHostID(GetProcess()->GetDeprecatedID(),
-                                       routing_id_),
-                this))
+            .insert(std::make_pair(GetGlobalID(), this))
             .second);
   CHECK(GetTokenFrameProxyMap()
             .insert(std::make_pair(frame_token_, this))
@@ -205,8 +199,7 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
   render_view_host_.reset();
 
   GetAgentSchedulingGroup().RemoveRoute(routing_id_);
-  g_routing_id_frame_proxy_map.Get().erase(
-      RenderFrameProxyHostID(GetProcess()->GetDeprecatedID(), routing_id_));
+  g_routing_id_frame_proxy_map.Get().erase(GetGlobalID());
   GetTokenFrameProxyMap().erase(frame_token_);
   TRACE_EVENT_END("navigation.debug", perfetto::NamedTrack::FromPointer(
                                           "RenderFrameProxyHost", this));

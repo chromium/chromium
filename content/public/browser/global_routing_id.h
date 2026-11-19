@@ -7,6 +7,7 @@
 
 #include <compare>
 #include <ostream>
+#include <utility>
 
 #include "base/hash/hash.h"
 #include "content/common/content_export.h"
@@ -44,6 +45,11 @@ struct CONTENT_EXPORT GlobalRoutingID {
                                     const GlobalRoutingID&) = default;
   constexpr friend bool operator==(const GlobalRoutingID&,
                                    const GlobalRoutingID&) = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const GlobalRoutingID& id) {
+    return H::combine(std::move(h), id.child_id, id.route_id);
+  }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const GlobalRoutingID& id) {

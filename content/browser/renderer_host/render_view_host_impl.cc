@@ -437,12 +437,12 @@ bool RenderViewHostImpl::CreateRenderView(
   RenderFrameHostImpl* main_rfh = nullptr;
   RenderFrameProxyHost* main_rfph = nullptr;
   if (main_frame_routing_id_ != IPC::mojom::kRoutingIdNone) {
-    main_rfh = RenderFrameHostImpl::FromID(GetProcess()->GetID(),
-                                           main_frame_routing_id_);
+    main_rfh = RenderFrameHostImpl::FromID(
+        GlobalRenderFrameHostId(GetProcess()->GetID(), main_frame_routing_id_));
     CHECK(main_rfh, base::NotFatalUntil::M152);
   } else {
-    main_rfph = RenderFrameProxyHost::FromID(GetProcess()->GetDeprecatedID(),
-                                             proxy_route_id);
+    main_rfph = RenderFrameProxyHost::FromID(
+        GlobalRoutingID(GetProcess()->GetID(), proxy_route_id));
     CHECK(main_rfph, base::NotFatalUntil::M152);
   }
   FrameTreeNode* const frame_tree_node =
