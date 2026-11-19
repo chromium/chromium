@@ -592,6 +592,11 @@ void DaemonProcessWin::InitializeUpdatePendingEvent() {
     PLOG(ERROR) << "Failed to create " << kHostUpdatePendingEventName;
     return;
   }
+  // A signal that predates this process is stale: the service configuration
+  // already points at the updated binaries. Without this reset, a lingering
+  // handle to a signaled event would stop the new instance with
+  // kRestartForUpdateExitCode and restart the service in a loop.
+  ::ResetEvent(update_pending_event_.Get());
 
   if (!update_pending_watcher_.StartWatchingOnce(update_pending_event_.Get(),
                                                  this)) {
@@ -613,6 +618,8 @@ void DaemonProcessWin::Stop(int exit_code) {
 }
 
 void DaemonProcessWin::OnSessionCountChanged(size_t session_count) {
+  // TODO(crbug.com/551615326): Add unit tests for the update stop paths in
+  // DaemonProcessWin and the restart reporting in HostService.
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
   if (session_active_event_.is_valid()) {
@@ -626,7 +633,7 @@ void DaemonProcessWin::OnSessionCountChanged(size_t session_count) {
   if (session_count == 0 && update_pending_ && !stopping_) {
     HOST_LOG
         << "All desktop sessions closed with update pending; stopping host.";
-    Stop(kSuccessExitCode);
+    Stop(kRestartForUpdateExitCode);
   }
 }
 
@@ -643,7 +650,7 @@ void DaemonProcessWin::OnObjectSignaled(HANDLE object) {
 
   if (desktop_sessions().empty()) {
     HOST_LOG << "No active desktop sessions; stopping host for update.";
-    Stop(kSuccessExitCode);
+    Stop(kRestartForUpdateExitCode);
   } else {
     HOST_LOG << "Active desktop sessions present; starting 24h grace timer.";
     update_pending_timer_.Start(
@@ -663,13 +670,22 @@ void DaemonProcessWin::OnUpdatePendingTimeout() {
   for (const auto& [id, _] : desktop_sessions()) {
     session_ids.push_back(id);
   }
+  // Prevent OnSessionCountChanged() from calling Stop() when the last session
+  // is closed below. Stop() runs the stopped callback, which destroys `this`,
+  // so it must only be called once, after the loop. Previously the last
+  // CloseDesktopSessionWithError() re-entered Stop() and the trailing Stop()
+  // then ran on a freed object.
+  update_pending_ = false;
   for (int id : session_ids) {
     CloseDesktopSessionWithError(id, protocol::ErrorCode::SOFTWARE_UPGRADED,
                                  "Host restarting for pending update.",
                                  FROM_HERE);
   }
 
-  Stop(kSuccessExitCode);
+  // The service control manager restarts the service after the 60 second
+  // recovery delay configured by the installer, so clients cannot reconnect
+  // during that window.
+  Stop(kRestartForUpdateExitCode);
 }
 
 }  // namespace remoting

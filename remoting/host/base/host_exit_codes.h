@@ -19,6 +19,9 @@ enum HostExitCodes {
   kInvalidCommandLineExitCode = 3,
   kNoPermissionExitCode = 4,
   kAgentProcessBrokerDisconnected = 5,
+  // The Windows host service stopped to load a deferred update and should be
+  // restarted by the service control manager.
+  kRestartForUpdateExitCode = 6,
 
   // Error codes that do indicate a permanent error condition.
   kInvalidHostConfigurationExitCode = 100,

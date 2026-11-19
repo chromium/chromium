@@ -87,6 +87,37 @@ void DisableAutoStart() {
   }
 }
 
+// Controls whether the service control manager applies the service's failure
+// actions (`SC_ACTION_RESTART`, configured by the installer) when the service
+// stops with a non-zero exit code, in addition to when the process crashes.
+// This is only enabled while stopping to load a deferred update so that other
+// non-zero exits (e.g. `kCpuNotSupported`) do not cause restart loops.
+bool SetFailureActionsOnNonCrashFailures(bool enabled) {
+  ScopedScHandle scmanager(
+      OpenSCManager(nullptr, SERVICES_ACTIVE_DATABASE, SC_MANAGER_CONNECT));
+  if (!scmanager.is_valid()) {
+    PLOG(ERROR) << "Failed to connect to the service control manager";
+    return false;
+  }
+
+  ScopedScHandle service(
+      OpenService(scmanager.Get(), kWindowsServiceName, SERVICE_CHANGE_CONFIG));
+  if (!service.is_valid()) {
+    PLOG(ERROR) << "Failed to open the '" << kWindowsServiceName << "' service";
+    return false;
+  }
+
+  SERVICE_FAILURE_ACTIONS_FLAG flag = {.fFailureActionsOnNonCrashFailures =
+                                           enabled ? TRUE : FALSE};
+  if (!ChangeServiceConfig2W(service.Get(), SERVICE_CONFIG_FAILURE_ACTIONS_FLAG,
+                             &flag)) {
+    PLOG(ERROR) << "Failed to update the failure actions flag of the '"
+                << kWindowsServiceName << "' service";
+    return false;
+  }
+  return true;
+}
+
 // Grants PROCESS_QUERY_LIMITED_INFORMATION on the current process and
 // TOKEN_QUERY on its process token to standard users. This allows standard
 // user client processes to verify the session ID and integrity level of the
@@ -299,6 +330,14 @@ void HostService::RunAsServiceImpl() {
     return;
   }
 
+  // Clear the flag in case the previous instance set it while stopping for an
+  // update (see `SetFailureActionsOnNonCrashFailures()`). The host owns this
+  // flag, so it is cleared unconditionally on every start. If clearing fails,
+  // the flag may still be enabled, so the error exit below is not reported to
+  // the service control manager to avoid restarting it in a loop.
+  const bool failure_actions_flag_cleared =
+      SetFailureActionsOnNonCrashFailures(false);
+
   // Query for supported hardware as soon as the Windows service is started.
   // This greatly reduces the risk of hitting a crash due to an unsupported CPU
   // instruction since very little specialized code has been executed at this
@@ -307,8 +346,10 @@ void HostService::RunAsServiceImpl() {
     LOG(ERROR) << "CPU not supported, shutting down to prevent random crashes";
     service_status.dwCurrentState = SERVICE_STOPPED;
     service_status.dwControlsAccepted = 0;
-    service_status.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
-    service_status.dwServiceSpecificExitCode = kCpuNotSupported;
+    if (failure_actions_flag_cleared) {
+      service_status.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
+      service_status.dwServiceSpecificExitCode = kCpuNotSupported;
+    }
     if (!SetServiceStatus(service_status_handle_, &service_status)) {
       PLOG(ERROR) << "Failed to report service status to the service control "
                   << "manager";
@@ -336,6 +377,23 @@ void HostService::RunAsServiceImpl() {
   run_loop.Run();
   weak_factory_.InvalidateWeakPtrs();
 
+  // If the daemon stopped to load a deferred update, report a service-specific
+  // error so the service control manager restarts the service (with the new
+  // binaries) using the installer-configured `SC_ACTION_RESTART` actions. This
+  // depends on those failure actions being configured; if the installer could
+  // not set them or an administrator removed them, the service stays stopped.
+  if (daemon_exit_code_ == kRestartForUpdateExitCode) {
+    // Report the error even if the flag cannot be set: without the flag the
+    // service control manager does not run the failure actions (same outcome
+    // as a clean stop), but it still records the exit code for diagnostics.
+    if (!SetFailureActionsOnNonCrashFailures(true)) {
+      LOG(ERROR) << "Failed to enable failure actions; the service may not be "
+                 << "restarted automatically to load the pending update.";
+    }
+    service_status.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
+    service_status.dwServiceSpecificExitCode = kRestartForUpdateExitCode;
+  }
+
   // Tell SCM that the service is stopped.
   service_status.dwCurrentState = SERVICE_STOPPED;
   service_status.dwControlsAccepted = 0;
@@ -358,6 +416,10 @@ void HostService::StopDaemonProcess(int exit_code) {
     DisableAutoStart();
   }
 
+  // The last exit code wins: an explicit SERVICE_CONTROL_STOP or
+  // SERVICE_CONTROL_SHUTDOWN that arrives after an update stop records
+  // kSuccessExitCode, which intentionally suppresses the restart.
+  daemon_exit_code_ = exit_code;
   daemon_process_.reset();
 }
 

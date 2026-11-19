@@ -17,6 +17,7 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/win/wts_terminal_monitor.h"
 
 namespace base {
@@ -92,6 +93,10 @@ class HostService : public WtsTerminalMonitor {
   std::list<RegisteredObserver> observers_;
 
   std::unique_ptr<DaemonProcess> daemon_process_;
+
+  // The exit code passed to `StopDaemonProcess()`, used to determine how the
+  // service stop is reported to the service control manager.
+  int daemon_exit_code_ = kSuccessExitCode;
 
   // Service message loop. |main_task_runner_| must be valid as long as the
   // service notification handler is registered.
