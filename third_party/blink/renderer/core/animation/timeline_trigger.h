@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMELINE_TRIGGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMELINE_TRIGGER_H_
 
+#include "cc/animation/animation_events.h"
 #include "cc/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_trigger_options.h"
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
@@ -28,6 +29,7 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   using RangeBoundary = TimelineTriggerRange::Boundary;
   using TriggerBoundaries = TimelineTriggerRange::TriggerBoundaries;
   using CcBoundaries = cc::TimelineTrigger::Boundaries;
+  using AnimationTriggerEvent = cc::AnimationTriggerEvent;
 
   explicit TimelineTrigger(TimelineTriggerRangeList* ranges);
   static TimelineTrigger* Create(
@@ -123,13 +125,7 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
   void NotifyActivated(base::TimeTicks activate_time) override;
   void NotifyDeactivated(base::TimeTicks deactivate_time) override;
 
-  // An activation or deactivation observed by the compositor at |time|.
-  struct CompositorNotification {
-    State state;
-    base::TimeDelta time;
-  };
-  void ExecuteCompositorNotification(
-      const CompositorNotification& notification);
+  void ExecuteCompositorNotification(const AnimationTriggerEvent& event);
 
   void HandlePostTripAdd(Animation* animation,
                          Behavior activate_behavior,
@@ -148,7 +144,7 @@ class CORE_EXPORT TimelineTrigger : public AnimationTrigger {
 
   // Activations and deactivations observed on the impl thread that haven't
   // been synced yet, see ExecutePendingCompositorNotifications().
-  Vector<CompositorNotification> pending_compositor_notifications_;
+  Vector<AnimationTriggerEvent> pending_compositor_notifications_;
 };
 
 template <>

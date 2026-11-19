@@ -228,29 +228,32 @@ void TimelineTrigger::CreateCompositorTrigger() {
 }
 
 void TimelineTrigger::NotifyActivated(base::TimeTicks activate_time) {
-  pending_compositor_notifications_.push_back(CompositorNotification{
-      State::kPrimary, activate_time - base::TimeTicks()});
+  pending_compositor_notifications_.push_back(AnimationTriggerEvent(
+      compositor_trigger_->id(), AnimationTriggerEvent::Type::kActivate,
+      activate_time));
 }
 
 void TimelineTrigger::NotifyDeactivated(base::TimeTicks deactivate_time) {
-  pending_compositor_notifications_.push_back(CompositorNotification{
-      State::kInverse, deactivate_time - base::TimeTicks()});
+  pending_compositor_notifications_.push_back(AnimationTriggerEvent(
+      compositor_trigger_->id(), AnimationTriggerEvent::Type::kDeactivate,
+      deactivate_time));
 }
 
 void TimelineTrigger::ExecuteCompositorNotification(
-    const CompositorNotification& notification) {
-  state_ = notification.state;
+    const AnimationTriggerEvent& event) {
+  const bool activate = event.type == AnimationTriggerEvent::Type::kActivate;
+  state_ = activate ? State::kPrimary : State::kInverse;
   DCHECK(GetRange());
   // The trigger typically gets its state from the underlying trigger ranges,
   // but when triggering from the compositor, the compositor determines the
   // state of the trigger, so the range is kept in sync with it. Only a single
   // range is supported currently.
   GetRange()->SetState(state_);
-  if (notification.state == State::kPrimary) {
-    PerformActivate(notification.time);
+  const base::TimeDelta time = event.time - base::TimeTicks();
+  if (activate) {
+    PerformActivate(time);
   } else {
-    DCHECK_EQ(notification.state, State::kInverse);
-    PerformDeactivate(notification.time);
+    PerformDeactivate(time);
   }
 }
 
@@ -263,7 +266,7 @@ void TimelineTrigger::ExecutePendingCompositorNotifications() {
   // TODO(crbug.com/451238244): If the compositor acted on an animation shortly
   // before its end, "update animations and send events" can report a finish
   // that the trigger's action preempted.
-  Vector<CompositorNotification> notifications;
+  Vector<AnimationTriggerEvent> notifications;
   notifications.swap(pending_compositor_notifications_);
   for (const auto& notification : notifications) {
     ExecuteCompositorNotification(notification);

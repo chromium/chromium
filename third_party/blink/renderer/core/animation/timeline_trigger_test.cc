@@ -465,7 +465,7 @@ TEST_F(TimelineTriggerTest, ScrollAndTimeDrivenAnimationReplay) {
         scroll-timeline: --scroll-timeline y;
       }
       #wrapper {
-        timeline-trigger: --trigger scroll();
+        timeline-trigger: --trigger scroll() 0% 60%;
       }
       #sda-target {
         animation: anim 5s both;
@@ -529,12 +529,12 @@ TEST_F(TimelineTriggerTest, ScrollAndTimeDrivenAnimationReplay) {
   EXPECT_EQ(tda->CurrentTimeInternal().value(),
             ANIMATION_TIME_DELTA_FROM_SECONDS(1));
 
-  // Manually trigger the "activate" behavior (replay). It takes effect in the
-  // next animation frame.
-  cc::AnimationTriggerDelegate* delegate =
-      static_cast<cc::AnimationTriggerDelegate*>(trigger);
-  delegate->NotifyActivated(platform()->NowTicks());
-  GetPage().Animator().ServiceScriptedAnimations(platform()->NowTicks());
+  // Scroll out of the trigger's range and back in to trigger the "activate"
+  // behavior (replay) again.
+  scroller->scrollTo(nullptr, 0, 250);
+  UpdateAllLifecyclePhasesForTest();
+  scroller->scrollTo(nullptr, 0, 125);
+  UpdateAllLifecyclePhasesForTest();
 
   // Verify:
   // - Scroll-driven animation did NOT rewind (still 50%).
