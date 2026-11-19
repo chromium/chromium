@@ -55,6 +55,9 @@ message ContextualCueingRequest {
   // It is guaranteed that tabs in active_tab_page_context and
   // background_tabs will not be in historical_tabs.
   repeated Tab historical_tabs = 5;
+
+  // The Chrome platform that the request is from.
+  ChromePlatform chrome_platform = 6 [features = { field_presence: EXPLICIT }];
 }
 
 message ContextualCueingHistory {
