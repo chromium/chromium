@@ -14332,13 +14332,13 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
 
 void RenderFrameHostImpl::RequestAXTreeSnapshot(
     AXTreeSnapshotCallback callback,
-    mojom::SnapshotAccessibilityTreeParamsPtr params) {
+    blink::mojom::SnapshotAccessibilityTreeParamsPtr params) {
   // TODO(crbug.com/40583141): Remove once frame_ can no longer be null.
   if (!IsRenderFrameLive()) {
     return;
   }
 
-  GetMojomFrameInRenderer()->SnapshotAccessibilityTree(
+  GetAssociatedLocalFrame()->SnapshotAccessibilityTree(
       std::move(params),
       base::BindOnce(&RenderFrameHostImpl::RequestAXTreeSnapshotCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

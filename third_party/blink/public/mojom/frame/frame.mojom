@@ -78,6 +78,7 @@ import "third_party/blink/public/mojom/unbounded_element/unbounded_element.mojom
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/window_features/window_features.mojom";
+import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/base/ime/mojom/virtual_keyboard_types.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
@@ -835,6 +836,25 @@ interface NonAssociatedLocalFrameHost {
   MaybeStartOutermostMainFrameNavigation(array<url.mojom.Url> urls);
 };
 
+// Parameters for `LocalFrame.SnapshotAccessibilityTree()`.
+struct SnapshotAccessibilityTreeParams {
+  // See ui/accessibility/ax_mode.h for valid values of |ax_mode|.
+  uint32 ax_mode;
+
+  // The maximum number of nodes to snapshot before exiting early.
+  // Note that this is not a hard limit; once this limit is reached a
+  // few more nodes may be added in order to ensure a well-formed
+  // tree is returned. Use 0 for no max. The corresponding C++ code
+  // uses size_t.
+  uint64 max_nodes;
+
+  // The maximum amount of time to spend snapshotting the tree. Like
+  // max_nodes, this is not a hard limit, and once this limit is reached
+  // a few more nodes may be added in order to ensure a well-formed tree.
+  // Use 0 for no timeout.
+  mojo_base.mojom.TimeDelta timeout;
+};
+
 // Implemented in Blink, this interface defines frame-specific methods that will
 // be invoked from the browser process (e.g. content::RenderFrameHostImpl).
 //
@@ -843,6 +863,7 @@ interface NonAssociatedLocalFrameHost {
 // content. In the future this interface will likely host more methods as the
 // Onion Soup project advances, which can potentially lead to the removal of
 // content/common/frame.mojom if enough code is moved to Blink.
+
 // Identifies a WebMCP script tool registered in a frame, for
 // `LocalFrame.InvokeScriptToolForInspector()`.
 union ScriptToolSelector {
@@ -1296,6 +1317,11 @@ interface LocalFrame {
   // parameter of LocalFrameHost.DidAddMessageToConsole() filled in for Error
   // messages if at all possible.
   SetWantErrorMessageStackTrace();
+
+  // Requests a one-time snapshot of the accessibility tree without enabling
+  // accessibility if it wasn't already enabled.
+  SnapshotAccessibilityTree(SnapshotAccessibilityTreeParams params)
+      => (ax.mojom.AXTreeUpdate snapshot);
 };
 
 // Implemented in Blink, this interface defines main-frame-specific methods that

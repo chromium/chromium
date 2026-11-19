@@ -204,6 +204,9 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void PerformFullContentSpellCheck() override;
 #endif
   void SetWantErrorMessageStackTrace() override;
+  void SnapshotAccessibilityTree(
+      blink::mojom::SnapshotAccessibilityTreeParamsPtr params,
+      SnapshotAccessibilityTreeCallback callback) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

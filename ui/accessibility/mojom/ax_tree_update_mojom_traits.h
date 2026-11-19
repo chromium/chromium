@@ -7,7 +7,7 @@
 
 #include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/accessibility/mojom/ax_event_intent.mojom.h"
+#include "ui/accessibility/mojom/ax_event_intent.mojom-shared.h"
 #include "ui/accessibility/mojom/ax_event_intent_mojom_traits.h"
 #include "ui/accessibility/mojom/ax_node_data_mojom_traits.h"
 #include "ui/accessibility/mojom/ax_tree_checks.mojom-shared.h"

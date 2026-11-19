@@ -91,6 +91,7 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -1866,14 +1867,6 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
     return CreatePreviewDocumentResult::kFail;
   }
 
-  // If tagged PDF exporting is enabled, we also need to capture an
-  // accessibility tree. AXTreeSnapshotter should stay alive through the end of
-  // the scope of printing, because text drawing commands are only annotated
-  // with a DOMNodeId if accessibility is enabled.
-  if (delegate_->ShouldGenerateTaggedPDF())
-    snapshotter_ =
-        render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDFPrinting);
-
   mojom::PageSizeMarginsPtr default_page_layout =
       ComputePageLayoutForCss(print_preview_context_.prepared_frame(), 0,
                               print_params, ignore_css_margins_)
@@ -2367,7 +2360,6 @@ void PrintRenderFrameHelper::Reset() {
   preview_ui_id_ = base::UnguessableToken();
 #endif
   notify_browser_of_print_failure_ = true;
-  snapshotter_.reset();
 
   // The callback is supposed to be consumed at this point meaning we
   // reported results to the PrintWithParams() caller.
@@ -2413,6 +2405,9 @@ bool PrintRenderFrameHelper::PrintPagesNative(
     uint32_t page_count,
     const std::vector<uint32_t>& printed_pages) {
   DCHECK(!printed_pages.empty());
+  if (render_frame_gone_) {
+    return false;
+  }
 
   // Clone `print_pages_params_->params` across `PrintPageInternal()`, which can
   // spin a nested loop or run script that resets `print_pages_params_`.
@@ -2434,21 +2429,16 @@ bool PrintRenderFrameHelper::PrintPagesNative(
       delegate_->ShouldGenerateTaggedPDF());
 
   // If tagged PDF exporting is enabled, we also need to capture an
-  // accessibility tree and store it in the metafile. AXTreeSnapshotter
-  // should stay alive through the end of this function, because text
-  // drawing commands are only annotated with a DOMNodeId if accessibility
-  // is enabled.
-  std::unique_ptr<content::AXTreeSnapshotter> snapshotter;
+  // accessibility tree and store it in the metafile.
   ui::AXTreeUpdate accessibility_tree;
   if (generate_tagged_pdf) {
-    snapshotter =
-        render_frame()->CreateAXTreeSnapshotter(ui::AXMode::kPDFPrinting);
-    snapshotter->Snapshot(
-        /*max_node_count=*/0,
+    render_frame()->GetWebFrame()->GetDocument().SnapshotAccessibilityTree(
+        /*max_nodes=*/0,
         /*timeout=*/{},
         print_params.printed_doc_type == mojom::SkiaDocumentType::kMSKP
             ? &accessibility_tree
-            : &metafile.accessibility_tree());
+            : &metafile.accessibility_tree(),
+        ui::AXMode::kPDFPrinting);
     metafile.set_generate_document_outline(
         print_params.generate_document_outline);
   }
@@ -2918,20 +2908,18 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
   TRACE_EVENT1("print", "PrintRenderFrameHelper::PreviewPageRendered",
                "page_index", page_index);
 
-  // Make sure the RenderFrame is alive before taking the snapshot.
-  if (render_frame_gone_)
-    snapshotter_.reset();
-
   // For tagged PDF exporting, send a snapshot of the accessibility tree
   // along with page 0. The accessibility tree contains the content for
   // all of the pages of the main frame.
   //
   // TODO(dmazzoni) Support multi-frame tagged PDFs.
   // http://crbug.com/1039817
-  if (snapshotter_ && page_index == 0) {
+  if (!render_frame_gone_ && delegate_->ShouldGenerateTaggedPDF() &&
+      page_index == 0) {
     ui::AXTreeUpdate accessibility_tree;
-    snapshotter_->Snapshot(/* max_node_count= */ 0,
-                           /* timeout= */ {}, &accessibility_tree);
+    render_frame()->GetWebFrame()->GetDocument().SnapshotAccessibilityTree(
+        /*max_nodes=*/0,
+        /*timeout=*/{}, &accessibility_tree, ui::AXMode::kPDFPrinting);
     GetPrintManagerHost()->SetAccessibilityTree(print_params.document_cookie,
                                                 accessibility_tree);
   }

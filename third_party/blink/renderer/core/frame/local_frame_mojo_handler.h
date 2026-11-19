@@ -256,6 +256,9 @@ class CORE_EXPORT LocalFrameMojoHandler
       mojom::blink::SubframeResourceLengthsPtr resource_lengths) final;
   void GetScrollPosition(GetScrollPositionCallback callback) final;
   void SetWantErrorMessageStackTrace() final;
+  void SnapshotAccessibilityTree(
+      mojom::blink::SnapshotAccessibilityTreeParamsPtr params,
+      SnapshotAccessibilityTreeCallback callback) final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,

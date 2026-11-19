@@ -16,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/public/web/web_ax_object.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -403,6 +404,59 @@ TEST_F(AccessibilityTest, SnapshotWithValidAriaOwnsInOwnedSubtree) {
     }
   }
   EXPECT_TRUE(inner_target_is_owned);
+}
+
+TEST_F(AccessibilityTest, SnapshotAccessibilityTreeRecordsHistograms) {
+  SetBodyInnerHTML(R"HTML(
+    <div>
+      <button>One</button>
+      <button>Two</button>
+      <button>Three</button>
+      <button>Four</button>
+    </div>
+  )HTML");
+
+  base::HistogramTester histogram_tester;
+
+  // Normal snapshot via WebDocument (also verifies kInlineTextBoxes in
+  // kAXModeComplete is stripped safely).
+  {
+    ui::AXTreeUpdate response;
+    WebDocument(&GetDocument())
+        .SnapshotAccessibilityTree(/*max_nodes=*/0, /*timeout=*/{}, &response,
+                                   ui::kAXModeComplete);
+    EXPECT_FALSE(response.nodes.empty());
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.AXTreeSnapshotter.Snapshot.Request", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "Accessibility.AXTreeSnapshotter.Snapshot.Error", 0);
+  }
+
+  // Max-nodes limit reached records kSerializeMaxNodesReached (4).
+  {
+    ui::AXTreeUpdate response;
+    WebDocument(&GetDocument())
+        .SnapshotAccessibilityTree(/*max_nodes=*/1, /*timeout=*/{}, &response,
+                                   ui::kAXModeBasic);
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.AXTreeSnapshotter.Snapshot.Request", true, 2);
+    histogram_tester.ExpectBucketCount(
+        "Accessibility.AXTreeSnapshotter.Snapshot.Error",
+        /*kSerializeMaxNodesReached=*/4, 1);
+  }
+
+  // Null/inactive document records kNoActiveDocument (2).
+  {
+    ui::AXTreeUpdate response;
+    WebDocument().SnapshotAccessibilityTree(/*max_nodes=*/0, /*timeout=*/{},
+                                            &response, ui::kAXModeBasic);
+    EXPECT_TRUE(response.nodes.empty());
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.AXTreeSnapshotter.Snapshot.Request", true, 3);
+    histogram_tester.ExpectBucketCount(
+        "Accessibility.AXTreeSnapshotter.Snapshot.Error",
+        /*kNoActiveDocument=*/2, 1);
+  }
 }
 
 TEST_F(AccessibilityTest, RemoveReferencesToAXID) {

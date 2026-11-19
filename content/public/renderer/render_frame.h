@@ -27,7 +27,6 @@
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/ax_tree_update.h"
 
 class GURL;
 
@@ -61,31 +60,6 @@ class RenderAccessibility;
 struct RenderFrameMediaPlaybackOptions;
 class RenderFrameVisitor;
 
-// A class that takes a snapshot of the accessibility tree. Accessibility
-// support in Blink is enabled for the lifetime of this object, which can
-// be useful if you need consistent IDs between multiple snapshots.
-class AXTreeSnapshotter {
- public:
-  AXTreeSnapshotter() = default;
-
-  // Return in |accessibility_tree| a snapshot of the accessibility tree
-  // for the frame with the given accessibility mode.
-  //
-  // - |max_nodes_count| specifies the maximum number of nodes to snapshot
-  //   before exiting early. Note that this is not a hard limit; once this limit
-  //   is reached a few more nodes may be added in order to ensure a
-  //   well-formed tree is returned. Use 0 for no max.
-  // - |timeout| will stop generating the result after a certain timeout
-  //   (per frame), specified in milliseconds. Like max_node_count, this is not
-  //   a hard limit, and once this/ limit is reached a few more nodes may
-  //   be added in order to ensure a well-formed tree. Use 0 for no timeout.
-  virtual void Snapshot(size_t max_node_count,
-                        base::TimeDelta timeout,
-                        ui::AXTreeUpdate* accessibility_tree) = 0;
-
-  virtual ~AXTreeSnapshotter() = default;
-};
-
 // This interface wraps functionality, which is specific to frames, such as
 // navigation. It provides communication with a corresponding RenderFrameHost
 // in the browser process.
@@ -104,12 +78,6 @@ class CONTENT_EXPORT RenderFrame : public base::SupportsUserData {
 
   // Return the RenderAccessibility associated with this frame.
   virtual RenderAccessibility* GetRenderAccessibility() = 0;
-
-  // Return an object that can take a snapshot of the accessibility tree.
-  // |ax_mode| is the accessibility mode to use, which determines which
-  // fields of AXNodeData are populated when you make a snapshot.
-  virtual std::unique_ptr<AXTreeSnapshotter> CreateAXTreeSnapshotter(
-      ui::AXMode ax_mode) = 0;
 
   // Returns the associated WebView.
   virtual blink::WebView* GetWebView() = 0;

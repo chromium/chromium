@@ -272,4 +272,10 @@ void FakeLocalFrame::PerformFullContentSpellCheck() {}
 
 void FakeLocalFrame::SetWantErrorMessageStackTrace() {}
 
+void FakeLocalFrame::SnapshotAccessibilityTree(
+    blink::mojom::SnapshotAccessibilityTreeParamsPtr params,
+    SnapshotAccessibilityTreeCallback callback) {
+  std::move(callback).Run(ui::AXTreeUpdate());
+}
+
 }  // namespace content

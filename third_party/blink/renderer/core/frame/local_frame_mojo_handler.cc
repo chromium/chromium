@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_oom.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
@@ -89,6 +90,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_tree_update.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
@@ -1576,6 +1579,16 @@ void LocalFrameMojoHandler::GetScrollPosition(
 
 void LocalFrameMojoHandler::SetWantErrorMessageStackTrace() {
   frame_->SetWantErrorMessageStackTrace();
+}
+
+void LocalFrameMojoHandler::SnapshotAccessibilityTree(
+    mojom::blink::SnapshotAccessibilityTreeParamsPtr params,
+    SnapshotAccessibilityTreeCallback callback) {
+  ui::AXTreeUpdate response;
+  AXObjectCache::SnapshotAccessibilityTree(
+      GetDocument(), base::saturated_cast<size_t>(params->max_nodes),
+      params->timeout, &response, ui::AXMode(params->ax_mode));
+  std::move(callback).Run(response);
 }
 
 void LocalFrameMojoHandler::RequestFullscreenVideoElement() {

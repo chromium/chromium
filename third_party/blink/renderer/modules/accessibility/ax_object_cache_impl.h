@@ -622,7 +622,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Sends the location changes over mojo to the browser process.
   void SerializeLocationChanges();
 
-  // This method is used to fulfill AXTreeSnapshotter requests.
+  // This method is used to fulfill accessibility tree snapshot requests.
   void SerializeEntireTreeAndDispose(
       size_t max_nodes,
       base::TimeDelta timeout,

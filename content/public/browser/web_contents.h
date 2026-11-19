@@ -641,11 +641,11 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   enum class AXTreeSnapshotPolicy { kAll, kSameOriginDirectDescendants };
 
   // Request a one-time snapshot of the accessibility tree without changing the
-  // accessibility mode. See RenderFrame::CreateAXTreeSnapshotter for
-  // definitions of |ax_mode|, and AXTreeSnapshotter::Snapshot for definitions
-  // of |max_nodes| and |timeout|. |policy| is used directly in
-  // WebContentsImpl::RequestAXTreeSnapshot; its meaning is explained in the
-  // AXTreeSnapshotPolicy definition above.
+  // accessibility mode. |ax_mode| determines which fields of AXNodeData are
+  // populated. |max_nodes| and |timeout| specify soft limits on the number of
+  // nodes and time spent snapshotting per frame (0 for no limit). |policy| is
+  // used directly in WebContentsImpl::RequestAXTreeSnapshot; its meaning is
+  // explained in the AXTreeSnapshotPolicy definition above.
   using AXTreeSnapshotCallback = base::OnceCallback<void(ui::AXTreeUpdate&)>;
   virtual void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
                                      ui::AXMode ax_mode,

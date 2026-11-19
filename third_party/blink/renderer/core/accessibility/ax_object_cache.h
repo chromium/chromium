@@ -66,6 +66,14 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   static AXObjectCache* Create(Document&, const ui::AXMode&);
   static AXObjectCache* CreateSnapshotter(Document&, const ui::AXMode&);
 
+  // Takes a one-time snapshot of `document`'s accessibility tree (recording
+  // request and error UMA histograms) without changing its accessibility mode.
+  static void SnapshotAccessibilityTree(Document* document,
+                                        size_t max_nodes,
+                                        base::TimeDelta timeout,
+                                        ui::AXTreeUpdate* response,
+                                        const ui::AXMode& ax_mode);
+
   AXObjectCache(const AXObjectCache&) = delete;
   AXObjectCache& operator=(const AXObjectCache&) = delete;
   virtual ~AXObjectCache() = default;

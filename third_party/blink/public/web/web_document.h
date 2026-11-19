@@ -52,7 +52,6 @@
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_script_tool_types.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/accessibility/ax_error_types.h"
 
 namespace base {
 class UnguessableToken;
@@ -199,8 +198,7 @@ class BLINK_EXPORT WebDocument : public WebNode {
   void SnapshotAccessibilityTree(size_t max_nodes,
                                  base::TimeDelta timeout,
                                  ui::AXTreeUpdate* response,
-                                 ui::AXMode mode,
-                                 ui::AXSerializationErrorFlagSet* out_error);
+                                 ui::AXMode mode);
 
   // Returns the number of active resource requests that are being loaded by the
   // document's ResourceFetcher.

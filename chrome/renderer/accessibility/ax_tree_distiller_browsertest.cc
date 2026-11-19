@@ -13,8 +13,12 @@
 #include "base/functional/bind.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_update.h"
 
 class AXTreeDistillerTestBase : public ChromeRenderViewTest {
  public:
@@ -40,9 +44,8 @@ class AXTreeDistillerTestBase : public ChromeRenderViewTest {
     // information.
     const ui::AXMode ax_mode = ui::AXMode::kWebContents | ui::AXMode::kHTML |
                                ui::AXMode::kExtendedProperties;
-    render_frame->CreateAXTreeSnapshotter(ax_mode)->Snapshot(
-        /* max_nodes= */ 0,
-        /* timeout= */ {}, &snapshot);
+    GetMainFrame()->GetDocument().SnapshotAccessibilityTree(
+        /*max_nodes=*/0, /*timeout=*/{}, &snapshot, ax_mode);
     ui::AXTree tree(snapshot);
     distiller_ = std::make_unique<AXTreeDistiller>(
         render_frame,

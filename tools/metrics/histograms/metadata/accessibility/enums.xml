@@ -1272,7 +1272,7 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="Max nodes and timeout limits both reached"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/renderer/accessibility/ax_tree_snapshotter_impl.cc:AXTreeSnapshotErrorReason) -->
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/accessibility/ax_object_cache.cc:AXTreeSnapshotErrorReason) -->
 
 <!-- LINT.IfChange(CanvasAccessibilityHeuristicResult) -->
 

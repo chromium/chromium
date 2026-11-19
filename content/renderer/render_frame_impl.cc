@@ -84,7 +84,6 @@
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/window_features_converter.h"
-#include "content/renderer/accessibility/ax_tree_snapshotter_impl.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
 #include "content/renderer/agent_scheduling_group.h"
@@ -2325,15 +2324,6 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
   frame_->Detach();
 }
 
-void RenderFrameImpl::SnapshotAccessibilityTree(
-    mojom::SnapshotAccessibilityTreeParamsPtr params,
-    SnapshotAccessibilityTreeCallback callback) {
-  ui::AXTreeUpdate response;
-  AXTreeSnapshotterImpl snapshotter(this, ui::AXMode(params->ax_mode));
-  snapshotter.Snapshot(params->max_nodes, params->timeout, &response);
-  std::move(callback).Run(response);
-}
-
 void RenderFrameImpl::GetSerializedHtmlWithLocalLinks(
     const base::flat_map<GURL, base::FilePath>& url_map,
     const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
@@ -2372,11 +2362,6 @@ RenderFrame* RenderFrameImpl::GetMainRenderFrame() {
 
 RenderAccessibility* RenderFrameImpl::GetRenderAccessibility() {
   return render_accessibility_manager_->GetRenderAccessibilityImpl();
-}
-
-std::unique_ptr<AXTreeSnapshotter> RenderFrameImpl::CreateAXTreeSnapshotter(
-    ui::AXMode ax_mode) {
-  return std::make_unique<AXTreeSnapshotterImpl>(this, ax_mode);
 }
 
 blink::WebLocalFrame* RenderFrameImpl::GetWebFrame() {

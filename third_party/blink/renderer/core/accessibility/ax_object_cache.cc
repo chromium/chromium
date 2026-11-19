@@ -31,8 +31,11 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
@@ -41,8 +44,34 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/accessibility/ax_error_types.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_tree_update.h"
 
 namespace blink {
+
+namespace {
+
+constexpr char kAXTreeSnapshotterErrorHistogramName[] =
+    "Accessibility.AXTreeSnapshotter.Snapshot.Error";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AXTreeSnapshotErrorReason)
+enum class AXTreeSnapshotErrorReason {
+  kGenericSerializationError = 0,
+  kNoWebFrame = 1,
+  kNoActiveDocument = 2,
+  kNoExistingAXObjectCache = 3,
+  kSerializeMaxNodesReached = 4,
+  kSerializeTimeoutReached = 5,
+  kSerializeMaxNodesAndTimeoutReached = 6,
+  kMaxValue = kSerializeMaxNodesAndTimeoutReached,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:AXTreeSnapshotErrorReason)
+
+}  // namespace
 
 AXObjectCache::AXObjectCacheCreateFunction AXObjectCache::create_function_ =
     nullptr;
@@ -62,6 +91,52 @@ AXObjectCache* AXObjectCache::CreateSnapshotter(Document& document,
                                                 const ui::AXMode& ax_mode) {
   DCHECK(create_function_);
   return create_function_(document, ax_mode, /*for_snapshot_only*/ true);
+}
+
+void AXObjectCache::SnapshotAccessibilityTree(Document* document,
+                                              size_t max_nodes,
+                                              base::TimeDelta timeout,
+                                              ui::AXTreeUpdate* response,
+                                              const ui::AXMode& ax_mode) {
+  base::UmaHistogramBoolean("Accessibility.AXTreeSnapshotter.Snapshot.Request",
+                            true);
+
+  if (!document || !document->IsActive()) {
+    base::UmaHistogramEnumeration(kAXTreeSnapshotterErrorHistogramName,
+                                  AXTreeSnapshotErrorReason::kNoActiveDocument);
+    return;
+  }
+
+  // Do not generate inline textboxes, which are expensive to create and just
+  // present extra noise to snapshot consumers.
+  ui::AXMode snapshot_mode(ax_mode);
+  snapshot_mode.set_mode(ui::AXMode::kInlineTextBoxes, false);
+
+  ui::AXSerializationErrorFlagSet out_error;
+  // This creates a different AXObjectCache from any owned by document for the
+  // case where a11y stays on, because the AXMode may require a different set
+  // of nodes.
+  AXObjectCache* cache = CreateSnapshotter(*document, snapshot_mode);
+  cache->SerializeEntireTreeAndDispose(max_nodes, timeout, response,
+                                       &out_error);
+
+  bool max_nodes_reached =
+      out_error.Has(ui::AXSerializationErrorFlag::kMaxNodesReached);
+  bool timeout_reached =
+      out_error.Has(ui::AXSerializationErrorFlag::kTimeoutReached);
+  if (max_nodes_reached && timeout_reached) {
+    base::UmaHistogramEnumeration(
+        kAXTreeSnapshotterErrorHistogramName,
+        AXTreeSnapshotErrorReason::kSerializeMaxNodesAndTimeoutReached);
+  } else if (max_nodes_reached) {
+    base::UmaHistogramEnumeration(
+        kAXTreeSnapshotterErrorHistogramName,
+        AXTreeSnapshotErrorReason::kSerializeMaxNodesReached);
+  } else if (timeout_reached) {
+    base::UmaHistogramEnumeration(
+        kAXTreeSnapshotterErrorHistogramName,
+        AXTreeSnapshotErrorReason::kSerializeTimeoutReached);
+  }
 }
 
 namespace {

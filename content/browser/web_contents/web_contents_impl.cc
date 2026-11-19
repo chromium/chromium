@@ -2406,8 +2406,9 @@ void WebContentsImpl::ResetAccessibility() {
 // single combined accessibility tree.
 class AXTreeSnapshotCombiner : public base::RefCounted<AXTreeSnapshotCombiner> {
  public:
-  AXTreeSnapshotCombiner(WebContents::AXTreeSnapshotCallback callback,
-                         mojom::SnapshotAccessibilityTreeParamsPtr params)
+  AXTreeSnapshotCombiner(
+      WebContents::AXTreeSnapshotCallback callback,
+      blink::mojom::SnapshotAccessibilityTreeParamsPtr params)
       : callback_(std::move(callback)), params_(std::move(params)) {}
 
   WebContents::AXTreeSnapshotCallback AddFrame(bool is_root) {
@@ -2441,7 +2442,7 @@ class AXTreeSnapshotCombiner : public base::RefCounted<AXTreeSnapshotCombiner> {
 
   ui::AXTreeCombiner combiner_;
   WebContents::AXTreeSnapshotCallback callback_;
-  mojom::SnapshotAccessibilityTreeParamsPtr params_;
+  blink::mojom::SnapshotAccessibilityTreeParamsPtr params_;
 };
 
 void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
@@ -2460,7 +2461,7 @@ void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
   // an accessibility tree snapshot, and AXTreeSnapshotCombiner will combine
   // them into a single tree and call |callback| with that result, then
   // delete |combiner|.
-  auto params = mojom::SnapshotAccessibilityTreeParams::New();
+  auto params = blink::mojom::SnapshotAccessibilityTreeParams::New();
   params->ax_mode = ax_mode.flags();
   params->max_nodes = max_nodes;
   params->timeout = timeout;

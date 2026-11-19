@@ -6,7 +6,7 @@
 #define UI_ACCESSIBILITY_MOJOM_AX_EVENT_INTENT_MOJOM_TRAITS_H_
 
 #include "ui/accessibility/ax_event_intent.h"
-#include "ui/accessibility/mojom/ax_event_intent.mojom.h"
+#include "ui/accessibility/mojom/ax_event_intent.mojom-shared.h"
 
 namespace mojo {
 

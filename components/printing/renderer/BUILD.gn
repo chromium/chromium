@@ -20,6 +20,7 @@ static_library("renderer") {
     "//printing/common",
     "//third_party/blink/public:blink",
     "//third_party/blink/public/common",
+    "//ui/accessibility:ax_base",
     "//ui/base",
   ]
 }

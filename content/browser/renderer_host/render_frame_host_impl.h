@@ -1331,8 +1331,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Request a one-time snapshot of the accessibility tree without changing
   // the accessibility mode.
-  void RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
-                             mojom::SnapshotAccessibilityTreeParamsPtr params);
+  void RequestAXTreeSnapshot(
+      AXTreeSnapshotCallback callback,
+      blink::mojom::SnapshotAccessibilityTreeParamsPtr params);
 
   // Resets the accessibility serializer in the renderer.
   void AccessibilityReset();
@@ -3707,9 +3708,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::HitTestResponsePtr hit_test_response);
 
   // Callback that will be called as a response to the call to the method
-  // content::mojom::RenderAccessibility::SnapshotAccessibilityTree(). The
-  // |callback| passed will be invoked after the renderer has responded with a
-  // standalone snapshot of the accessibility tree as |snapshot|.
+  // blink::mojom::LocalFrame::SnapshotAccessibilityTree(). The |callback|
+  // passed will be invoked after the renderer has responded with a standalone
+  // snapshot of the accessibility tree as |snapshot|.
   void RequestAXTreeSnapshotCallback(AXTreeSnapshotCallback callback,
                                      const ui::AXTreeUpdate& snapshot);
 

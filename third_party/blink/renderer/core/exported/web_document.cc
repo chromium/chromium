@@ -399,18 +399,12 @@ WebString WebDocument::OutgoingReferrer() const {
   return WebString(ConstUnwrap<Document>()->domWindow()->OutgoingReferrer());
 }
 
-void WebDocument::SnapshotAccessibilityTree(
-    size_t max_nodes,
-    base::TimeDelta timeout,
-    ui::AXTreeUpdate* response,
-    ui::AXMode mode,
-    ui::AXSerializationErrorFlagSet* out_error) {
-  // This creates a different AXObjectCache from any owned by document for
-  // case where a11y stays on, because the AXMode may require a different set
-  // of nodes.
-  Member<blink::AXObjectCache> cache =
-      blink::AXObjectCache::CreateSnapshotter(*Unwrap<Document>(), mode);
-  cache->SerializeEntireTreeAndDispose(max_nodes, timeout, response, out_error);
+void WebDocument::SnapshotAccessibilityTree(size_t max_nodes,
+                                            base::TimeDelta timeout,
+                                            ui::AXTreeUpdate* response,
+                                            ui::AXMode mode) {
+  AXObjectCache::SnapshotAccessibilityTree(Unwrap<Document>(), max_nodes,
+                                           timeout, response, mode);
 }
 
 size_t WebDocument::ActiveResourceRequestCount() const {

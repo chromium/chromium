@@ -49,10 +49,6 @@ class WebLocalFrame;
 class WebView;
 }  // namespace blink
 
-namespace content {
-class AXTreeSnapshotter;
-}
-
 namespace printing {
 
 class MetafileSkia;
@@ -669,13 +665,6 @@ class PrintRenderFrameHelper
   int ipc_nesting_level_ = 0;
   bool render_frame_gone_ = false;
   bool delete_pending_ = false;
-
-  // If tagged PDF exporting is enabled, we also need to capture an
-  // accessibility tree and store it in the metafile. AXTreeSnapshotter should
-  // stay alive through the duration of printing one document, because text
-  // drawing commands are only annotated with a DOMNodeId if accessibility
-  // is enabled.
-  std::unique_ptr<content::AXTreeSnapshotter> snapshotter_;
 
   // Used for two reasons:
   // * To give the document time to finish loading any pending resources that
