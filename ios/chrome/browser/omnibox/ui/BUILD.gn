@@ -112,6 +112,7 @@ source_set("omnibox_internal") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "omnibox_container_view_unittest.mm",
     "omnibox_text_field_ios_unittest.mm",
     "omnibox_text_view_ios_unittest.mm",
   ]

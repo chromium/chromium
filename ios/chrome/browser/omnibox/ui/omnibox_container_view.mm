@@ -197,6 +197,12 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
   // The last computed intrinsic height, used by the `intrinsicContentSize`
   // property.
   CGFloat _currentIntrinsicHeight;
+  // The last computed number of lines of user text.
+  NSUInteger _numberOfLines;
+  // Reusable offscreen TextKit 1 components for measuring user text height.
+  NSTextStorage* _sizingTextStorage;
+  NSLayoutManager* _sizingLayoutManager;
+  NSTextContainer* _sizingTextContainer;
   // Constraint determining whether the text input is constraint to the close
   // button.
   NSLayoutConstraint* _textInputToCloseButton;
@@ -432,13 +438,19 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
 
   // Records the number of lines and update it in the text view.
   NSInteger numberOfLines = round(userTextHeight / singleLineHeight);
+  _numberOfLines = numberOfLines;
   [self.metricsRecorder setNumberOfLines:numberOfLines];
-  _textView.textContainer.maximumNumberOfLines = numberOfLines;
+  // Only cap lines when trailing non-user text (pre-edit, inline autocomplete,
+  // or additional text) must be clipped on the last user line.
+  BOOL hasTrailingNonUserText = userText.length < _textView.textStorage.length;
+  _textView.textContainer.maximumNumberOfLines =
+      hasTrailingNonUserText ? numberOfLines : 0;
   NSLineBreakMode defaultLineBreakMode =
       [self lineBreakModeForUserText:userText];
   [self updateLastLineClipping:defaultLineBreakMode];
 
   // Limit the number of lines and update intrinsic size.
+  CGFloat previousIdealHeight = _lastComputedIdealHeight;
   _lastComputedIdealHeight = ceilf(userTextHeight + verticalPadding);
   CGFloat maxHeightFromLines =
       (singleLineHeight * MaxNumberOfLines(_presentationContext)) +
@@ -454,6 +466,12 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
     _textInputHeightConstraint.active = YES;
   } else {
     _textInputHeightConstraint.constant = intrinsicHeight;
+  }
+
+  if (previousIdealHeight != _lastComputedIdealHeight) {
+    // Ensures `updateTextViewLayout` updates `scrollEnabled` even when
+    // `intrinsicHeight` is already capped at `maxHeightFromLines`.
+    [self setNeedsLayout];
   }
 
   if (_currentIntrinsicHeight != intrinsicHeight) {
@@ -477,9 +495,11 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
   NSTextStorage* textStorage = _textView.textStorage;
   NSRange fullRange = NSMakeRange(0, textStorage.length);
 
+  [textStorage beginEditing];
   [self applyLineBreakMode:defaultLineBreakMode
       toMutableAttributedString:textStorage
                         inRange:fullRange];
+  [textStorage endEditing];
 
   NSLayoutManager* layoutManager = _textView.layoutManager;
   NSUInteger numberOfGlyphs = [layoutManager numberOfGlyphs];
@@ -518,9 +538,11 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
     if (clipStartCharIndex < textStorage.length) {
       NSRange clipRange = NSMakeRange(clipStartCharIndex,
                                       textStorage.length - clipStartCharIndex);
+      [textStorage beginEditing];
       [self applyLineBreakMode:NSLineBreakByClipping
           toMutableAttributedString:textStorage
                             inRange:clipRange];
+      [textStorage endEditing];
     }
   }
 }
@@ -530,7 +552,7 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
     return 1;
   }
 
-  return _textView.textContainer.maximumNumberOfLines;
+  return _numberOfLines;
 }
 
 #pragma mark - TextFieldViewContaining
@@ -597,27 +619,39 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
 #pragma mark - Private
 
 /// Computes the height needed to layout `attributedText` with `drawingWidth`.
-/// The height is computed with `lineBreakModeForUserText`.
+/// The height is computed with `lineBreakModeForUserText` using TextKit 1
+/// (`NSLayoutManager`) to match `_textView.layoutManager`.
 - (CGFloat)heightForAttributedText:(NSAttributedString*)attributedText
                   withDrawingWidth:(CGFloat)drawingWidth {
-  if (attributedText.length == 0) {
+  if (attributedText.length == 0 || drawingWidth <= 0) {
     return 0;
   }
-  NSMutableAttributedString* mutableString = [[NSMutableAttributedString alloc]
-      initWithAttributedString:attributedText];
+  if (!_sizingLayoutManager) {
+    _sizingTextStorage = [[NSTextStorage alloc] init];
+    _sizingLayoutManager = [[NSLayoutManager alloc] init];
+    _sizingTextContainer = [[NSTextContainer alloc] initWithSize:CGSizeZero];
+    _sizingTextContainer.lineFragmentPadding = 0;
+    _sizingTextContainer.maximumNumberOfLines = 0;
+    [_sizingLayoutManager addTextContainer:_sizingTextContainer];
+    [_sizingTextStorage addLayoutManager:_sizingLayoutManager];
+  }
   NSLineBreakMode lineBreakMode =
       [self lineBreakModeForUserText:attributedText];
-  NSRange fullRange = NSMakeRange(0, mutableString.length);
+  _sizingTextContainer.size = CGSizeMake(drawingWidth, CGFLOAT_MAX);
+  _sizingTextContainer.lineBreakMode = lineBreakMode;
+  [_sizingTextStorage beginEditing];
+  [_sizingTextStorage setAttributedString:attributedText];
+  NSRange fullRange = NSMakeRange(0, _sizingTextStorage.length);
   [self applyLineBreakMode:lineBreakMode
-      toMutableAttributedString:mutableString
+      toMutableAttributedString:_sizingTextStorage
                         inRange:fullRange];
-  CGSize constraintSize = CGSizeMake(drawingWidth, CGFLOAT_MAX);
-  NSStringDrawingOptions options =
-      NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading;
-  CGRect boundingRect = [mutableString boundingRectWithSize:constraintSize
-                                                    options:options
-                                                    context:nil];
-  return ceilf(boundingRect.size.height);
+  [_sizingTextStorage endEditing];
+  [_sizingLayoutManager ensureLayoutForTextContainer:_sizingTextContainer];
+  CGRect usedRect =
+      [_sizingLayoutManager usedRectForTextContainer:_sizingTextContainer];
+  [_sizingTextStorage
+      deleteCharactersInRange:NSMakeRange(0, _sizingTextStorage.length)];
+  return ceilf(usedRect.size.height);
 }
 
 /// Returns the line break mode to apply for the text.
