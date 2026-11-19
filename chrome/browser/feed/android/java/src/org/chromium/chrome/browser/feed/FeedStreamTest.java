@@ -119,6 +119,7 @@ public class FeedStreamTest {
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     private final StubSnackbarController mSnackbarController = new StubSnackbarController();
     @Mock private Runnable mMockRunnable;
+    @Mock private Runnable mSecondMockRunnable;
     @Mock private Callback<Boolean> mMockRefreshCallback;
     @Mock private FeedStream.ShareHelperWrapper mShareHelper;
     @Mock private Profile mProfileMock;
@@ -653,6 +654,55 @@ public class FeedStreamTest {
         assertTrue(actionSourceView.isFocused());
         assertTrue(
                 accessibilityDelegate.mEventTypes.contains(AccessibilityEvent.TYPE_VIEW_FOCUSED));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testInProgressWorkTrackerMultipleAndDuplicateFinish() {
+        testInProgressWorkTrackerMultipleAndDuplicateFinishImpl();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testInProgressWorkTrackerMultipleAndDuplicateFinish_legacy() {
+        testInProgressWorkTrackerMultipleAndDuplicateFinishImpl();
+    }
+
+    private void testInProgressWorkTrackerMultipleAndDuplicateFinishImpl() {
+        FeedStream.InProgressWorkTracker tracker = mFeedStream.getInProgressWorkTrackerForTesting();
+        Runnable finish1 = tracker.addWork();
+        Runnable finish2 = tracker.addWork();
+
+        tracker.postTaskAfterWorkComplete(mMockRunnable);
+        verify(mMockRunnable, never()).run();
+
+        finish1.run();
+        finish1.run();
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mMockRunnable, never()).run();
+
+        finish2.run();
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mMockRunnable).run();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_STARTUP_TAB_OPTIMIZATIONS)
+    public void testInProgressWorkTrackerDestroyDropsCallbacksAndStaleWork() {
+        FeedStream.InProgressWorkTracker tracker = mFeedStream.getInProgressWorkTrackerForTesting();
+        Runnable finish1 = tracker.addWork();
+        tracker.postTaskAfterWorkComplete(mMockRunnable);
+
+        tracker.destroy();
+        finish1.run();
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mMockRunnable, never()).run();
+
+        Runnable finishAfterDestroy = tracker.addWork();
+        tracker.postTaskAfterWorkComplete(mSecondMockRunnable);
+        finishAfterDestroy.run();
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mSecondMockRunnable, never()).run();
     }
 
     @Test

@@ -26,6 +26,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -291,31 +292,46 @@ public class FeedStream implements Stream {
     }
 
     // Tracks in-progress work, primarily for work done by xsurface.
-    class InProgressWorkTracker {
-        private int mNextWorkId;
-        private final HashSet<Integer> mActiveWork = new HashSet<>();
-        private final SettableNonNullObservableSupplier<Boolean> mWorkPending =
-                ObservableSuppliers.createNonNull(false);
-
-        InProgressWorkTracker() {}
-
-        void destroy() {
-            mActiveWork.clear();
-        }
+    interface InProgressWorkTracker {
+        void destroy();
 
         /**
          * Record that background work has begun, returns a runnable to be called when work is
          * complete.
          */
-        Runnable addWork() {
+        Runnable addWork();
+
+        /**
+         * postTask to call runnable after all in-progress work is complete.
+         *
+         * @param runnable The runnable to post once all in-progress work is complete.
+         */
+        void postTaskAfterWorkComplete(Runnable runnable);
+    }
+
+    private static final class LegacyInProgressWorkTracker implements InProgressWorkTracker {
+        private int mNextWorkId;
+        private final HashSet<Integer> mActiveWork = new HashSet<>();
+        private final SettableNonNullObservableSupplier<Boolean> mWorkPending =
+                ObservableSuppliers.createNonNull(false);
+
+        LegacyInProgressWorkTracker() {}
+
+        @Override
+        public void destroy() {
+            mActiveWork.clear();
+        }
+
+        @Override
+        public Runnable addWork() {
             int id = mNextWorkId++;
             mActiveWork.add(id);
             mWorkPending.set(true);
             return () -> finishWork(id);
         }
 
-        /** postTask to call runnable after all in-progress work is complete. */
-        void postTaskAfterWorkComplete(Runnable runnable) {
+        @Override
+        public void postTaskAfterWorkComplete(Runnable runnable) {
             if (!mWorkPending.get()) {
                 PostTask.postTask(TaskTraits.UI_DEFAULT, runnable);
             } else {
@@ -345,6 +361,63 @@ public class FeedStream implements Stream {
             mActiveWork.remove(workId);
             if (mActiveWork.isEmpty()) {
                 mWorkPending.set(false);
+            }
+        }
+    }
+
+    private static final class CountingInProgressWorkTracker implements InProgressWorkTracker {
+        private int mActiveWorkCount;
+        private boolean mIsDestroyed;
+        private @Nullable List<Runnable> mPendingCallbacks;
+
+        CountingInProgressWorkTracker() {}
+
+        @Override
+        public void destroy() {
+            mIsDestroyed = true;
+            mActiveWorkCount = 0;
+            mPendingCallbacks = null;
+        }
+
+        @Override
+        public Runnable addWork() {
+            if (mIsDestroyed) return CallbackUtils.emptyRunnable();
+            mActiveWorkCount++;
+            return new WorkCompletionRunnable();
+        }
+
+        @Override
+        public void postTaskAfterWorkComplete(Runnable runnable) {
+            if (mIsDestroyed) return;
+            if (mActiveWorkCount == 0) {
+                PostTask.postTask(TaskTraits.UI_DEFAULT, runnable);
+                return;
+            }
+            if (mPendingCallbacks == null) {
+                mPendingCallbacks = new ArrayList<>(1);
+            }
+            mPendingCallbacks.add(runnable);
+        }
+
+        private void finishWork() {
+            assert mActiveWorkCount > 0;
+            mActiveWorkCount--;
+            if (mActiveWorkCount > 0 || mPendingCallbacks == null) return;
+            List<Runnable> callbacks = mPendingCallbacks;
+            mPendingCallbacks = null;
+            for (Runnable callback : callbacks) {
+                PostTask.postTask(TaskTraits.UI_DEFAULT, callback);
+            }
+        }
+
+        private final class WorkCompletionRunnable implements Runnable {
+            private boolean mFinished;
+
+            @Override
+            public void run() {
+                if (mFinished || mIsDestroyed) return;
+                mFinished = true;
+                finishWork();
             }
         }
     }
@@ -561,7 +634,10 @@ public class FeedStream implements Stream {
     private final SnackbarManager mSnackManager;
     private final WindowAndroid mWindowAndroid;
     private final Stream.StreamsMediator mStreamsMediator;
-    InProgressWorkTracker mInProgressWorkTracker = new InProgressWorkTracker();
+    private final InProgressWorkTracker mInProgressWorkTracker =
+            ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()
+                    ? new CountingInProgressWorkTracker()
+                    : new LegacyInProgressWorkTracker();
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
