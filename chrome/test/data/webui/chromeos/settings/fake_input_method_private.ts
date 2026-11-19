@@ -16,12 +16,6 @@ export class FakeInputMethodPrivate {
     return Promise.resolve();
   }
 
-  getLanguagePackStatus():
-      Promise<chrome.inputMethodPrivate.LanguagePackStatus> {
-    return Promise.resolve(
-        chrome.inputMethodPrivate.LanguagePackStatus.UNKNOWN);
-  }
-
   get onChanged() {
     return {
       addListener: () => {

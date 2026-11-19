@@ -14,7 +14,6 @@ import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './add_input_methods_dialog.js';
 import './add_spellcheck_languages_dialog.js';
 import './os_edit_dictionary_page.js';
@@ -137,8 +136,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         },
       },
 
-      languagePacksInSettingsEnabled_: Boolean,
-
       acceleratorFetcher: Object,
 
       isShortcutCustomizationEnabled_: Boolean,
@@ -156,8 +153,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     this.isShortcutCustomizationEnabled_ =
         loadTimeData.getBoolean('isShortcutCustomizationEnabled');
     this.metaKey_ = MetaKey.kSearch;
-    // TODO: crbug.com/335232633 - Inline this and remove it.
-    this.languagePacksInSettingsEnabled_ = false;
   }
 
   // Public API: Bidirectional data flow.
@@ -196,8 +191,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   // loadTimeData flags.
   declare private onDeviceGrammarCheckEnabled_: boolean;
-  // TODO: crbug.com/335232633 - Inline this and remove it.
-  declare private languagePacksInSettingsEnabled_: boolean;
 
   // Computed properties.
   declare private spellCheckLanguages_: SpellCheckLanguageState[]|undefined;
@@ -724,42 +717,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     }
     if (this.showNextImeShortcutReminder_) {
       this.setPrefValue('ash.shortcut_reminders.next_ime_dismissed', true);
-    }
-  }
-
-  private shouldShowSpinner_(imeId: string): boolean {
-    return this.languagePacksInSettingsEnabled_ &&
-        this.languageHelper.getImeLanguagePackStatus(imeId) ===
-        chrome.inputMethodPrivate.LanguagePackStatus.IN_PROGRESS;
-  }
-
-  private shouldShowLanguagePackError_(imeId: string): boolean {
-    if (!this.languagePacksInSettingsEnabled_) {
-      return false;
-    }
-    const status = this.languageHelper.getImeLanguagePackStatus(imeId);
-    return status ===
-        chrome.inputMethodPrivate.LanguagePackStatus.ERROR_OTHER ||
-        status ===
-        chrome.inputMethodPrivate.LanguagePackStatus.ERROR_NEEDS_REBOOT;
-  }
-
-  private getLanguagePacksErrorMessage_(imeId: string): string {
-    const status = this.languageHelper.getImeLanguagePackStatus(imeId);
-    switch (status) {
-      case chrome.inputMethodPrivate.LanguagePackStatus.ERROR_NEEDS_REBOOT:
-      // We currently have a string - `inputMethodLanguagePacksNeedsRebootError`
-      // in WebUI,
-      // `IDS_OS_SETTINGS_INPUT_METHOD_LANGUAGE_PACKS_NEEDS_REBOOT_ERROR` in the
-      // GRD file - to special case the `ERROR_NEEDS_REBOOT` case. However, the
-      // string is not finalised, and therefore should not be shown to the user.
-      // TODO: b/315725816 - Either finalise the string and add it here, or
-      // remove the string altogether.
-      case chrome.inputMethodPrivate.LanguagePackStatus.ERROR_OTHER:
-        return this.i18n('inputMethodLanguagePacksGeneralError');
-      default:
-        console.error('Invalid status:', status);
-        return '';
     }
   }
 }

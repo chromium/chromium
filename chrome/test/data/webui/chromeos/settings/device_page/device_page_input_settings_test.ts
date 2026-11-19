@@ -38,7 +38,6 @@ suite('<settings-device-page> Input settings', () => {
       supported: [],
       enabled: [],
       currentId: 'fakeID',
-      imeLanguagePackStatus: {},
     },
     alwaysTranslate: [],
     neverTranslate: [],

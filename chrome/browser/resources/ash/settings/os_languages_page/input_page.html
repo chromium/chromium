@@ -15,18 +15,10 @@
     margin-bottom: var(--cr-section-vertical-margin);
   }
 
-  .explain-selected,
-  .language-packs-error {
-    font-weight: initial;
-    margin-top: 4px;
-  }
-
   .explain-selected {
     color: var(--cros-text-color-positive);
-  }
-
-  .language-packs-error {
-    color: var(--cros-text-color-alert);
+    font-weight: initial;
+    margin-top: 4px;
   }
 
   .icon-external {
@@ -51,20 +43,11 @@
     padding-inline-start: 4px;
   }
 
-  iron-icon[icon='cr:error'],
-  iron-icon[icon='os-settings:multidevice-error'] {
-    --iron-icon-fill-color: var(--cros-icon-color-alert);
-    margin-inline-end: 4px;
-  }
-
   iron-icon[icon='cr:error'] {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
     height: var(--cr-icon-size);
+    margin-inline-end: 4px;
     width: var(--cr-icon-size);
-  }
-
-  iron-icon[icon='os-settings:multidevice-error'] {
-    height: 16px;
-    width: 16px;
   }
 
   #inputMethodsManagedbyPolicyIcon,
@@ -131,12 +114,6 @@
   cr-button[disabled] iron-icon {
     --iron-icon-fill-color: var(--cros-button-icon-color-primary-disabled);
   }
-
-  paper-spinner-lite {
-    height: 14px;
-    width: 14px;
-    --paper-spinner-stroke-width: 2px;
-  }
 </style>
 
 <div class="settings-box first">
@@ -192,25 +169,7 @@
               $i18n{inputMethodEnabled}
             </div>
           </template>
-          <template is="dom-if" if="[[shouldShowLanguagePackError_(
-                  item.id, languagePacksInSettingsEnabled_,
-                  languages.inputMethods.imeLanguagePackStatus.*)]]">
-            <div class="language-packs-error">
-              <iron-icon id="failure-icon" icon="os-settings:multidevice-error">
-              </iron-icon>
-              <span>
-                [[getLanguagePacksErrorMessage_(item.id,
-                    languages.inputMethods.imeLanguagePackStatus.*)]]
-              </span>
-            </div>
-          </template>
         </div>
-        <template is="dom-if"
-            if="[[shouldShowSpinner_(item.id, languagePacksInSettingsEnabled_,
-                  languages.inputMethods.imeLanguagePackStatus.*)]]">
-          <paper-spinner-lite aria-hidden="true" active>
-          </paper-spinner-lite>
-        </template>
         <template is="dom-if"
             if="[[hasOptionsPageInSettings_(item.id)]]">
           <div class="internal-wrapper">
