@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string>
 #include <vector>
 
 namespace autofill {
@@ -21,6 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 // to `NSLinkAttributeName` attributes.
 NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
     const autofill::LegalMessageLines& legalMessageLines);
+
+// Returns the region of `locale` if Autofill supports it as a country, or an
+// empty string otherwise.
+std::string CWVCountryCodeFromLocale(NSLocale* locale);
 
 NS_ASSUME_NONNULL_END
 

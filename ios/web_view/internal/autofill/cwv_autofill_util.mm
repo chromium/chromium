@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/gfx/range/range.h"
@@ -29,6 +30,14 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
     [legalMessages addObject:[legalMessage copy]];
   }
   return [legalMessages copy];
+}
+
+std::string CWVCountryCodeFromLocale(NSLocale* locale) {
+  // Not `regionCode`: it requires iOS 17, above //ios/web_view's minimum.
+  std::string country_code =
+      base::SysNSStringToUTF8([locale objectForKey:NSLocaleCountryCode]);
+  return autofill::data_util::IsValidCountryCode(country_code) ? country_code
+                                                               : std::string();
 }
 
 NS_ASSUME_NONNULL_END

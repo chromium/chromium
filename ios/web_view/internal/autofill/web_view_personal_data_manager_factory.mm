@@ -4,6 +4,8 @@
 
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
 
+#import <Foundation/Foundation.h>
+
 #import <utility>
 
 #import "base/i18n/language_tag.h"
@@ -15,6 +17,7 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_util.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_image_fetcher_factory.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_image_fetcher_impl.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
@@ -65,6 +68,8 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
   auto* sync_service =
       WebViewSyncServiceFactory::GetForBrowserState(browser_state);
 
+  // There's no GeoIP country without a variations service. Use the device
+  // region so new addresses don't default to the UI language's country.
   return std::make_unique<autofill::PersonalDataManager>(
       profile_db, account_db, browser_state->GetPrefs(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
@@ -73,7 +78,8 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
       base::i18n::GetLanguageTagFromString(
           ApplicationContext::GetInstance()->GetApplicationLocale())
           .value_or(base::i18n::GetKnownLanguageTag("und")),
-      /*country_code=*/"", /*autofill_optimization_guide_decider=*/nullptr);
+      CWVCountryCodeFromLocale(NSLocale.currentLocale),
+      /*autofill_optimization_guide_decider=*/nullptr);
 }
 
 }  // namespace ios_web_view
