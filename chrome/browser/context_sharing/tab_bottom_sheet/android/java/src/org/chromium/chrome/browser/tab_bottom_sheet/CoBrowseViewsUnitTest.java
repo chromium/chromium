@@ -402,6 +402,45 @@ public class CoBrowseViewsUnitTest {
     }
 
     @Test
+    public void testEmptyPlaceholder_HiddenWhileTabInactive() {
+        when(mMockContentProvider.setupPlaceholderView(any())).thenReturn(true);
+        View rootView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
+        CoBrowseViews coBrowseViews =
+                new CoBrowseViews(
+                        rootView,
+                        TabBottomSheetClientType.GLIC,
+                        CoBrowseContainerType.SIDE_PANEL,
+                        mWebUi,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        mMockContentProvider,
+                        SupplierUtils.ofNull(),
+                        CallbackUtils.emptyRunnable());
+        View emptyPlaceholder = rootView.findViewById(R.id.empty_placeholder_container);
+        // Active by default with no WebContents: the empty placeholder is initially visible.
+        assertEquals(View.VISIBLE, emptyPlaceholder.getVisibility());
+
+        coBrowseViews.setWebContents(mWebContents, false);
+        assertEquals(View.GONE, emptyPlaceholder.getVisibility());
+
+        // The tab is switched away from, then its WebContents moves to the new tab: the old tab's
+        // views must not show the empty placeholder while they are still on screen.
+        coBrowseViews.setIsTabActive(false);
+        coBrowseViews.setWebContents(null, false);
+        assertEquals(View.GONE, emptyPlaceholder.getVisibility());
+
+        // Returning to the tab without WebContents shows the empty placeholder.
+        coBrowseViews.setIsTabActive(true);
+        assertEquals(View.VISIBLE, emptyPlaceholder.getVisibility());
+
+        // Deactivating the tab hides an already-visible empty placeholder.
+        coBrowseViews.setIsTabActive(false);
+        assertEquals(View.GONE, emptyPlaceholder.getVisibility());
+
+        coBrowseViews.destroy();
+    }
+
+    @Test
     public void testLoadingPlaceholder_CloseCallbackPassedAndDestroyed() {
         View loadingPlaceholder = new View(mContext);
         final Runnable[] capturedCloseCallback = new Runnable[1];

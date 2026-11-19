@@ -30,6 +30,7 @@ public class TestCoBrowseComponentProvider implements CoBrowseComponentProvider 
     static @Nullable ResizingPlaceholderCoordinator sResizingPlaceholderCoordinator;
     static @Nullable Runnable sLastLoadingCloseCallback;
 
+    @CalledByNative
     public static void setUsePlaceholderForTesting(boolean usePlaceholder) {
         ResettersForTesting.register(() -> sUsePlaceholder = false);
         sUsePlaceholder = usePlaceholder;

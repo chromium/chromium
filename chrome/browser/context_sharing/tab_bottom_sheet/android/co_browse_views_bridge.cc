@@ -61,9 +61,19 @@ CoBrowseViewsBridge::CoBrowseViewsBridge(
       background_color_id_(background_color_id),
       placeholder_elem_color_id_(placeholder_elem_color_id),
       close_callback_(std::move(close_callback)),
+      is_tab_active_(tab.IsActivated()),
       bottom_sheet_content_provider_(bottom_sheet_content_provider),
       tab_insert_subscription_(tab.RegisterDidInsert(
           base::BindRepeating(&CoBrowseViewsBridge::OnTabInserted,
+                              base::Unretained(this)))),
+      tab_did_activate_subscription_(tab.RegisterDidActivate(
+          base::BindRepeating(&CoBrowseViewsBridge::OnTabDidActivate,
+                              base::Unretained(this)))),
+      tab_will_deactivate_subscription_(tab.RegisterWillDeactivate(
+          base::BindRepeating(&CoBrowseViewsBridge::OnTabWillDeactivate,
+                              base::Unretained(this)))),
+      tab_will_detach_subscription_(tab.RegisterWillDetach(
+          base::BindRepeating(&CoBrowseViewsBridge::OnTabWillDetach,
                               base::Unretained(this)))) {}
 
 CoBrowseViewsBridge::~CoBrowseViewsBridge() {
@@ -110,6 +120,10 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
   int32_t placeholder_elem_color = static_cast<int32_t>(
       color_provider->GetColor(placeholder_elem_color_id_));
 
+  if (!tab_android->IsActivated()) {
+    is_tab_active_ = false;
+  }
+
   JNIEnv* env = AttachCurrentThread();
   java_co_browse_views_.Reset(Java_CoBrowseViewFactory_buildCoBrowseViews(
       env, window_android, web_contents, background_color,
@@ -120,6 +134,10 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
   if (is_loading_ && !java_co_browse_views_.is_null()) {
     Java_CoBrowseViews_setIsLoading(env, java_co_browse_views_,
                                     /*is_loading=*/true);
+  }
+  if (!is_tab_active_ && !java_co_browse_views_.is_null()) {
+    Java_CoBrowseViews_setIsTabActive(env, java_co_browse_views_,
+                                      /*is_tab_active=*/false);
   }
 
   return !java_co_browse_views_.is_null();
@@ -154,6 +172,12 @@ void CoBrowseViewsBridge::SetWebContents(content::WebContents* web_contents,
     return;
   }
 
+  // Only lower `is_tab_active_` here, never raise it from `IsActivated()`:
+  // during the tab model's `willSet` phase `OnTabWillDeactivate` has already
+  // cleared `is_tab_active_` while `IsActivated()` still returns true.
+  if (!tab_android->IsActivated()) {
+    SetTabActive(false);
+  }
   JNIEnv* env = AttachCurrentThread();
   Java_CoBrowseViews_setWebContents(env, java_co_browse_views_, web_contents,
                                     request_focus);
@@ -183,6 +207,15 @@ bool CoBrowseViewsBridge::HasJavaWebContentsForTesting() const {
   JNIEnv* env = AttachCurrentThread();
   return !Java_CoBrowseViews_getWebContents(env, java_co_browse_views_)
               .is_null();
+}
+
+bool CoBrowseViewsBridge::IsEmptyPlaceholderVisibleForTesting() const {
+  if (!java_co_browse_views_) {
+    return false;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  return Java_CoBrowseViews_isEmptyPlaceholderVisibleForTesting(  // IN-TEST
+      env, java_co_browse_views_);
 }
 
 void CoBrowseViewsBridge::WebContentsDestroyed() {
@@ -226,6 +259,29 @@ void CoBrowseViewsBridge::OnTabInserted(tabs::TabInterface* tab) {
   if (current_window && current_window != window_android_) {
     CreateCoBrowseViews(web_contents(), /*request_focus=*/false);
   }
+}
+
+void CoBrowseViewsBridge::SetTabActive(bool is_tab_active) {
+  is_tab_active_ = is_tab_active;
+  if (!java_co_browse_views_) {
+    return;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  Java_CoBrowseViews_setIsTabActive(env, java_co_browse_views_, is_tab_active_);
+}
+
+void CoBrowseViewsBridge::OnTabDidActivate(tabs::TabInterface* tab) {
+  SetTabActive(true);
+}
+
+void CoBrowseViewsBridge::OnTabWillDeactivate(tabs::TabInterface* tab) {
+  SetTabActive(false);
+}
+
+void CoBrowseViewsBridge::OnTabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  SetTabActive(false);
 }
 
 }  // namespace context_sharing

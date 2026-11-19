@@ -15,6 +15,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
@@ -60,6 +61,7 @@ public class CoBrowseViews {
     private @Nullable View mPeekView;
     private boolean mIsPlaceholderSetUp;
     private boolean mIsLoading;
+    private boolean mIsTabActive = true;
     private @Nullable View mPlaceholderView;
     private @Nullable View mLoadingPlaceholderView;
     private @Nullable NullableObservableSupplier<Boolean> mPlaceholderAllowedSupplier;
@@ -228,6 +230,20 @@ public class CoBrowseViews {
         updatePlaceholderVisibility();
     }
 
+    /**
+     * Sets whether the tab that owns these views is active. The empty placeholder only shows for
+     * the active tab, since an inactive tab's views can still be on screen briefly (e.g. while the
+     * side panel swaps content on a tab switch) after their WebContents moved to another tab.
+     */
+    @CalledByNative
+    public void setIsTabActive(boolean isTabActive) {
+        if (mIsTabActive == isTabActive) {
+            return;
+        }
+        mIsTabActive = isTabActive;
+        updatePlaceholderVisibility();
+    }
+
     public NullableObservableSupplier<WebContents> getWebContentsSupplier() {
         return mWebContentsSupplier;
     }
@@ -269,6 +285,11 @@ public class CoBrowseViews {
 
     @Nullable View getLoadingPlaceholderViewForTesting() {
         return mLoadingPlaceholderView;
+    }
+
+    @CalledByNativeForTesting
+    boolean isEmptyPlaceholderVisibleForTesting() {
+        return mPlaceholderView != null && mPlaceholderView.getVisibility() == View.VISIBLE;
     }
 
     void setIgnoreClearFocus(boolean ignoreClearFocus) {
@@ -353,7 +374,8 @@ public class CoBrowseViews {
                                 ViewGroup.LayoutParams.MATCH_PARENT));
             }
         }
-        mWebContentsSupplier.addSyncObserverAndCallIfNonNull(mWebContentsObserver);
+        mWebContentsSupplier.addSyncObserver(mWebContentsObserver);
+        updatePlaceholderVisibility();
     }
 
     private void onPlaceholderAllowedChanged(@Nullable Boolean allowed) {
@@ -381,7 +403,11 @@ public class CoBrowseViews {
                 mPlaceholderAllowedSupplier == null
                         || Boolean.TRUE.equals(mPlaceholderAllowedSupplier.get());
         boolean showPlaceholder =
-                !showLoading && mIsPlaceholderSetUp && isPlaceholderAllowed && webContentsNull;
+                !showLoading
+                        && mIsPlaceholderSetUp
+                        && isPlaceholderAllowed
+                        && mIsTabActive
+                        && webContentsNull;
         mPlaceholderView.setVisibility(showPlaceholder ? View.VISIBLE : View.GONE);
     }
 }
