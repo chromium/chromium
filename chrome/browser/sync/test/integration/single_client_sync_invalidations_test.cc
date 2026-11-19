@@ -10,6 +10,7 @@
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
+#include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -21,6 +22,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/engine/sync_status.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -279,42 +281,42 @@ class SingleClientSyncInvalidationsTest
 
   ~SingleClientSyncInvalidationsTest() override = default;
 
+  // SyncTest:
+  bool TestUsesSelfNotifications() override { return false; }
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
   [[nodiscard]] bool SetupSync() {
     if (!SyncTest::SetupSync()) {
       return false;
     }
 
-    // Wait for committing DeviceInfo with sharing_fields, it may happen
-    // asynchronously due to FCM token registration.
+    // Wait for committing DeviceInfo with sharing_fields and standalone
+    // invalidation fields, which may happen asynchronously due to FCM token
+    // registration.
     if (!device_info_helper::WaitForFullDeviceInfoCommitted(
-            GetLocalCacheGuid())) {
+            GetLocalCacheGuid()) ||
+        !ServerDeviceInfoMatchChecker(
+             Contains(AllOf(HasCacheGuid(GetLocalCacheGuid()),
+                            InterestedDataTypesContain(syncer::BOOKMARKS),
+                            HasInstanceIdToken())))
+             .Wait()) {
       return false;
     }
 
-    // Wait for the client to download the committed DeviceInfo reflection and
-    // settle into a quiescent state.
-    //
-    // This is required because invalidation optimization flags (e.g.
-    // `devices_fcm_registration_tokens` in commit messages) are dropped
-    // whenever `DEVICE_INFO` is updated during a sync cycle (see
-    // `Syncer::GetInvalidationInfo()`).
-    //
-    // For example:
-    // 1. Local DeviceInfo with sharing fields is committed to FakeServer.
-    // 2. FakeServer generates a DEVICE_INFO invalidation.
-    // 3. If a test immediately modifies a data type (e.g. adding a bookmark),
-    //    the resulting sync cycle will download the pending DEVICE_INFO update
-    //    during GetUpdates before committing the bookmark.
-    // 4. Because DEVICE_INFO was updated in that cycle, the optimization flags
-    //    and FCM registration tokens will be omitted from the bookmark commit.
-    //
-    // AwaitQuiescence() ensures this download cycle completes before the test
-    // executes any subsequent commits.
-    return AwaitQuiescence();
-  }
+    if (!CommittedAllNudgedChangesChecker(GetSyncService(0)).Wait()) {
+      return false;
+    }
 
-  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return GetParam();
+    // Download the committed local DeviceInfo reflection before returning,
+    // because `Syncer::GetInvalidationInfo()` drops optimization flags (such
+    // as `devices_fcm_registration_tokens`) in any sync cycle that receives a
+    // `DEVICE_INFO` update during its pre-commit `GetUpdates`. With reflection
+    // blocking enabled, no self-invalidation is sent for the local DeviceInfo
+    // commit, so trigger an explicit refresh to advance `DEVICE_INFO`'s
+    // progress marker.
+    return GetClient(0)->TriggerRefreshAndWait({syncer::DEVICE_INFO});
   }
 
   // Injects a test DeviceInfo entity to the fake server.
@@ -419,6 +421,51 @@ IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
   EXPECT_THAT(
       bookmark_progress_marker.get_update_triggers().notification_hint(),
       Contains(Not(IsEmpty())));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
+                       ShouldNotDeliverSelfInvalidationOnLocalCommit) {
+  ASSERT_TRUE(SetupSync());
+
+  // Neither startup commits during `SetupSync()` nor subsequent local commits
+  // should deliver self-invalidations when reflection blocking is enabled
+  // (`!TestUsesSelfNotifications()`).
+  syncer::SyncStatus status;
+  ASSERT_TRUE(GetSyncService(0)->QueryDetailedSyncStatusForDebugging(&status));
+  ASSERT_EQ(status.notifications_received, 0);
+
+  const std::vector<sync_pb::SyncEntity> server_device_infos_before =
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
+  ASSERT_THAT(server_device_infos_before, SizeIs(1));
+  const int64_t last_updated_timestamp = server_device_infos_before.front()
+                                             .specifics()
+                                             .device_info()
+                                             .last_updated_timestamp();
+
+  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
+      ->GetDeviceInfoTracker()
+      ->ForcePulseForTest();
+  ASSERT_TRUE(ServerDeviceInfoMatchChecker(
+                  ElementsAre(HasBeenUpdatedAfter(last_updated_timestamp)))
+                  .Wait());
+
+  ASSERT_TRUE(GetSyncService(0)->QueryDetailedSyncStatusForDebugging(&status));
+  EXPECT_EQ(status.notifications_received, 0);
+
+  // Inject a server-side change for a *different* data type (`BOOKMARKS`) and
+  // wait both for its notification hint to reach `FakeServer` and for the
+  // bookmark to be applied locally. Because invalidations are delivered in FIFO
+  // order and a `DEVICE_INFO` self-invalidation cannot populate `BOOKMARKS`'s
+  // notification hint, this acts as a deterministic barrier proving no async
+  // self-invalidation from the local `DEVICE_INFO` commit was in flight either.
+  const base::Uuid remote_bookmark_uuid = InjectSyncedBookmark(GetFakeServer());
+  ASSERT_TRUE(NotificationHintChecker(syncer::BOOKMARKS).Wait());
+  ASSERT_TRUE(bookmarks_helper::BookmarksUuidChecker(/*profile=*/0,
+                                                     remote_bookmark_uuid)
+                  .Wait());
+
+  ASSERT_TRUE(GetSyncService(0)->QueryDetailedSyncStatusForDebugging(&status));
+  EXPECT_EQ(status.notifications_received, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,

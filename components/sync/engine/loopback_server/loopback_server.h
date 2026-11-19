@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -45,9 +46,12 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
    public:
     virtual ~ObserverForTests() = default;
 
-    // Called after the server has processed a successful commit. The types
-    // updated as part of the commit are passed in `committed_data_types`.
-    virtual void OnCommit(syncer::DataTypeSet committed_data_types) = 0;
+    // Called after the server has processed a successful commit.
+    // `committer_cache_guid` is the committing client's cache GUID for client
+    // COMMIT requests, or empty for server-initiated changes. The types updated
+    // as part of the commit are passed in `committed_data_types`.
+    virtual void OnCommit(std::string_view committer_cache_guid,
+                          syncer::DataTypeSet committed_data_types) = 0;
 
     // Called when a committed tombstone includes a deletion origin.
     virtual void OnCommittedDeletionOrigin(

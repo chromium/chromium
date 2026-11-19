@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -63,7 +65,8 @@ class CommittedBookmarkEntityNameObserver : public FakeServer::Observer {
     fake_server_->RemoveObserver(this);
   }
 
-  void OnCommit(DataTypeSet committed_data_types) override {
+  void OnCommit(std::string_view committer_cache_guid,
+                DataTypeSet committed_data_types) override {
     sync_pb::ClientToServerMessage message;
     fake_server_->GetLastCommitMessage(&message);
     for (const sync_pb::SyncEntity& entity : message.commit().entries()) {

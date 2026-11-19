@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_HISTORY_HELPER_H_
 
 #include <map>
+#include <string_view>
 #include <vector>
 
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -195,7 +196,8 @@ class ServerHistoryMatchChecker
       delete;
 
   // FakeServer::Observer overrides.
-  void OnCommit(syncer::DataTypeSet committed_data_types) override;
+  void OnCommit(std::string_view committer_cache_guid,
+                syncer::DataTypeSet committed_data_types) override;
 
   // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override;

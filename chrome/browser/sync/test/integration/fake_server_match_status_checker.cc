@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -21,6 +23,7 @@ FakeServerMatchStatusChecker::~FakeServerMatchStatusChecker() {
 }
 
 void FakeServerMatchStatusChecker::OnCommit(
+    std::string_view committer_cache_guid,
     syncer::DataTypeSet committed_data_types) {
   CheckExitCondition();
 }

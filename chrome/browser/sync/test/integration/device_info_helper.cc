@@ -22,6 +22,7 @@ ServerDeviceInfoMatchChecker::ServerDeviceInfoMatchChecker(
 ServerDeviceInfoMatchChecker::~ServerDeviceInfoMatchChecker() = default;
 
 void ServerDeviceInfoMatchChecker::OnCommit(
+    std::string_view committer_cache_guid,
     syncer::DataTypeSet committed_data_types) {
   if (committed_data_types.Has(syncer::DEVICE_INFO)) {
     CheckExitCondition();

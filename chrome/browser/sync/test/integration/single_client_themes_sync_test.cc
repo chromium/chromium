@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -128,7 +130,8 @@ class ServerThemeMatchChecker
   ServerThemeMatchChecker& operator=(const ServerThemeMatchChecker&) = delete;
 
   // FakeServer::Observer overrides.
-  void OnCommit(syncer::DataTypeSet committed_data_types) override;
+  void OnCommit(std::string_view committer_cache_guid,
+                syncer::DataTypeSet committed_data_types) override;
 
   // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override;
@@ -143,6 +146,7 @@ ServerThemeMatchChecker::ServerThemeMatchChecker(const Matcher& matcher)
 ServerThemeMatchChecker::~ServerThemeMatchChecker() = default;
 
 void ServerThemeMatchChecker::OnCommit(
+    std::string_view committer_cache_guid,
     syncer::DataTypeSet committed_data_types) {
   if (committed_data_types.Has(syncer::THEMES)) {
     CheckExitCondition();

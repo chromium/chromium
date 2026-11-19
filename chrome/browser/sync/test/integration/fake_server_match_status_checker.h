@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SERVER_MATCH_STATUS_CHECKER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SERVER_MATCH_STATUS_CHECKER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/sync/base/data_type.h"
@@ -22,7 +24,8 @@ class FakeServerMatchStatusChecker : public StatusChangeChecker,
   ~FakeServerMatchStatusChecker() override;
 
   // FakeServer::Observer implementation.
-  void OnCommit(syncer::DataTypeSet committed_data_types) override;
+  void OnCommit(std::string_view committer_cache_guid,
+                syncer::DataTypeSet committed_data_types) override;
   void OnSuccessfulGetUpdates() override;
 
  protected:

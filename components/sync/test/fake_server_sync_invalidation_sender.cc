@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -37,9 +39,11 @@ constexpr char kSyncInvalidationsAppId[] =
 
 FakeServerSyncInvalidationSender::FakeServerSyncInvalidationSender(
     FakeServer* fake_server,
-    const base::FilePath& storage_dir)
+    const base::FilePath& storage_dir,
+    bool reflection_blocking_enabled)
     : fake_server_(CHECK_DEREF(fake_server)),
-      fake_state_file_path_(storage_dir.AppendASCII("fake_invalidations.json")) {
+      fake_state_file_path_(storage_dir.AppendASCII("fake_invalidations.json")),
+      reflection_blocking_enabled_(reflection_blocking_enabled) {
   CHECK(!storage_dir.empty());
   LoadFakeStateFromDisk();
   fake_server_observation_.Observe(fake_server);
@@ -85,21 +89,25 @@ FakeServerSyncInvalidationSender::GetWeakPtr() {
 }
 
 void FakeServerSyncInvalidationSender::OnWillCommit() {
-  token_to_interested_data_types_.clear();
-  UpdateTokenToInterestedDataTypesMap();
+  token_to_subscribed_client_.clear();
+  UpdateSubscribedClientsMap();
 }
 
 void FakeServerSyncInvalidationSender::OnCommit(
+    std::string_view committer_cache_guid,
     syncer::DataTypeSet committed_data_types) {
-  // Update token to interested data types mapping. This is needed to support
-  // newly added DeviceInfos during commit request.
-  UpdateTokenToInterestedDataTypesMap();
-  for (const auto& token_and_data_types : token_to_interested_data_types_) {
-    const std::string& token = token_and_data_types.first;
+  // Update token mapping to support newly added/updated DeviceInfos during the
+  // commit request.
+  UpdateSubscribedClientsMap();
+  for (const auto& [token, client_info] : token_to_subscribed_client_) {
+    if (reflection_blocking_enabled_ && !committer_cache_guid.empty() &&
+        client_info.cache_guid == committer_cache_guid) {
+      continue;
+    }
 
     // Send the invalidation only for interested types.
     const syncer::DataTypeSet invalidated_data_types =
-        Intersection(committed_data_types, token_and_data_types.second);
+        Intersection(committed_data_types, client_info.interested_data_types);
     if (invalidated_data_types.empty()) {
       continue;
     }
@@ -138,13 +146,12 @@ void FakeServerSyncInvalidationSender::DeliverInvalidationsToHandlers() {
   DVLOG(1) << "Trying to deliver invalidations for "
            << invalidations_to_deliver_.size()
            << " FCM tokens. Known target tokens from DeviceInfo: "
-           << token_to_interested_data_types_.size();
+           << token_to_subscribed_client_.size();
   std::set<std::string> processed_tokens;
   for (const auto& token_and_invalidations : invalidations_to_deliver_) {
     const std::string& token = token_and_invalidations.first;
 
     // Pass a message to GCMDriver to simulate a message from the server.
-    // TODO(crbug.com/40130815): Implement reflection blocking.
     instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver =
         GetFakeGCMDriverByToken(token);
     if (!fake_gcm_driver) {
@@ -195,12 +202,14 @@ FakeServerSyncInvalidationSender::GetFakeGCMDriverByToken(
   return nullptr;
 }
 
-void FakeServerSyncInvalidationSender::UpdateTokenToInterestedDataTypesMap() {
+void FakeServerSyncInvalidationSender::UpdateSubscribedClientsMap() {
   base::flat_map<std::string, base::Time> token_to_mtime;
   for (const sync_pb::SyncEntity& entity :
        fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO)) {
+    const sync_pb::DeviceInfoSpecifics& device_info =
+        entity.specifics().device_info();
     const sync_pb::InvalidationSpecificFields& invalidation_fields =
-        entity.specifics().device_info().invalidation_fields();
+        device_info.invalidation_fields();
     const std::string& token = invalidation_fields.instance_id_token();
     if (token.empty()) {
       continue;
@@ -210,22 +219,24 @@ void FakeServerSyncInvalidationSender::UpdateTokenToInterestedDataTypesMap() {
     // latest updated one. This may happen after resetting sync engine and
     // changing cache GUID without signout.
     // TODO(crbug.com/40225423): remove once fixed.
-    const base::Time last_updated = syncer::ProtoTimeToTime(
-        entity.specifics().device_info().last_updated_timestamp());
+    const base::Time last_updated =
+        syncer::ProtoTimeToTime(device_info.last_updated_timestamp());
     auto it = token_to_mtime.find(token);
     if (it != token_to_mtime.end() && it->second >= last_updated) {
       continue;
     }
 
     token_to_mtime[token] = last_updated;
-    token_to_interested_data_types_[token] = syncer::DataTypeSet();
+    SubscribedClientInfo client_info;
+    client_info.cache_guid = device_info.cache_guid();
     for (const int field_number :
          invalidation_fields.interested_data_type_ids()) {
       const syncer::DataType data_type =
           syncer::GetDataTypeFromSpecificsFieldNumber(field_number);
       CHECK(syncer::IsRealDataType(data_type));
-      token_to_interested_data_types_[token].Put(data_type);
+      client_info.interested_data_types.Put(data_type);
     }
+    token_to_subscribed_client_[token] = std::move(client_info);
   }
 }
 

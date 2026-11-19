@@ -111,7 +111,8 @@ class FakeSyncServerContext : public ProfileManagerObserverIOS {
         invalidation_sender_(
             std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
                 server_.get(),
-                base_path)) {
+                base_path,
+                /*reflection_blocking_enabled=*/false)) {
     // Ensure the active scene's initial profile has finished loading before
     // attaching the observer and overriding sync network.
     CHECK(chrome_test_util::GetOriginalProfile());

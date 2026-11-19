@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
@@ -86,7 +87,8 @@ class ServerPrinterMatchChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // FakeServer::Observer implementation.
-  void OnCommit(syncer::DataTypeSet committed_data_types) override;
+  void OnCommit(std::string_view committer_cache_guid,
+                syncer::DataTypeSet committed_data_types) override;
 
  private:
   const Matcher matcher_;

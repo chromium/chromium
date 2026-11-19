@@ -458,7 +458,8 @@ void SyncTest::PostCreateThreads() {
               fake_server_->AsWeakPtr());
       fake_server_sync_invalidation_sender_ =
           std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
-              fake_server_.get(), fake_server_dir);
+              fake_server_.get(), fake_server_dir,
+              /*reflection_blocking_enabled=*/!TestUsesSelfNotifications());
 
       SetupMockGaiaResponses();
 

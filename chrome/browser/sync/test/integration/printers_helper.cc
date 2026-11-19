@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -169,6 +170,7 @@ ServerPrinterMatchChecker::ServerPrinterMatchChecker(const Matcher& matcher)
 ServerPrinterMatchChecker::~ServerPrinterMatchChecker() = default;
 
 void ServerPrinterMatchChecker::OnCommit(
+    std::string_view committer_cache_guid,
     syncer::DataTypeSet committed_data_types) {
   if (committed_data_types.Has(syncer::PRINTERS)) {
     CheckExitCondition();

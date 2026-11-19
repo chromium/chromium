@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <ostream>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -459,6 +460,7 @@ ServerHistoryMatchChecker::ServerHistoryMatchChecker(const Matcher& matcher)
 ServerHistoryMatchChecker::~ServerHistoryMatchChecker() = default;
 
 void ServerHistoryMatchChecker::OnCommit(
+    std::string_view committer_cache_guid,
     syncer::DataTypeSet committed_data_types) {
   if (committed_data_types.Has(syncer::HISTORY)) {
     CheckExitCondition();

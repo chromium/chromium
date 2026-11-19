@@ -30,7 +30,8 @@ class ServerDeviceInfoMatchChecker
       delete;
 
   // FakeServer::Observer overrides.
-  void OnCommit(syncer::DataTypeSet committed_data_types) override;
+  void OnCommit(std::string_view committer_cache_guid,
+                syncer::DataTypeSet committed_data_types) override;
 
   // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override;

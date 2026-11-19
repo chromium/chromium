@@ -596,7 +596,8 @@ bool LoopbackServer::HandleGetUpdatesRequest(
   // During initial bookmark sync, we create new entities for bookmark permanent
   // folders, and hence we should inform the observers.
   if (is_initial_bookmark_sync && observer_for_tests_) {
-    observer_for_tests_->OnCommit({syncer::BOOKMARKS});
+    observer_for_tests_->OnCommit(/*committer_cache_guid=*/"",
+                                  {syncer::BOOKMARKS});
   }
 
   return true;
@@ -802,7 +803,7 @@ bool LoopbackServer::HandleCommitRequest(
   }
 
   if (observer_for_tests_) {
-    observer_for_tests_->OnCommit(committed_data_types);
+    observer_for_tests_->OnCommit(guid, committed_data_types);
   }
 
   return throttled_datatypes_in_request->empty();

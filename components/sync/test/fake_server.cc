@@ -399,7 +399,7 @@ void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
   }
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committed_data_types=*/{data_type});
+  OnCommit(/*committer_cache_guid=*/"", /*committed_data_types=*/{data_type});
 }
 
 
@@ -420,6 +420,7 @@ bool FakeServer::ModifyEntitySpecifics(
 
   // Notify observers so invalidations are mimic-ed.
   OnCommit(
+      /*committer_cache_guid=*/"",
       /*committed_data_types=*/{GetDataTypeFromSpecifics(updated_specifics)});
 
   return true;
@@ -439,7 +440,8 @@ bool FakeServer::ModifyBookmarkEntity(
   }
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committed_data_types=*/{syncer::BOOKMARKS});
+  OnCommit(/*committer_cache_guid=*/"",
+           /*committed_data_types=*/{syncer::BOOKMARKS});
 
   return true;
 }
@@ -454,7 +456,8 @@ void FakeServer::ClearServerData() {
   }
 
   // Notify observers so invalidations are mimic-ed.
-  OnCommit(/*committed_data_types=*/{syncer::NIGORI});
+  OnCommit(/*committer_cache_guid=*/"",
+           /*committed_data_types=*/{syncer::NIGORI});
 }
 
 void FakeServer::DeleteAllEntitiesForDataType(DataType data_type) {
@@ -577,9 +580,10 @@ void FakeServer::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void FakeServer::OnCommit(syncer::DataTypeSet committed_data_types) {
+void FakeServer::OnCommit(std::string_view committer_cache_guid,
+                          syncer::DataTypeSet committed_data_types) {
   for (Observer& observer : observers_) {
-    observer.OnCommit(committed_data_types);
+    observer.OnCommit(committer_cache_guid, committed_data_types);
   }
 }
 
