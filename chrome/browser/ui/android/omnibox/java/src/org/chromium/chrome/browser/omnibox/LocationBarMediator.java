@@ -3028,6 +3028,14 @@ public class LocationBarMediator
 
         // Restore the saved tab state.
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
+        // Input retained across tab switches is assumed to be the user's own. Initial text that was
+        // never edited is instead a rendering of the page the session started on, so it must not
+        // be restored once the tab shows a different page. End such a session and let the
+        // subsequent onUrlChanged() present the current page.
+        if (state != null
+                && state.isInitialInputForOtherPage(mLocationBarDataProvider.getCurrentGurl())) {
+            state.deactivate();
+        }
         if (state != null && state.isSessionActive()) {
             AutocompleteInput input = state.getAutocompleteInput();
             input.setFocusReason(OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);

@@ -688,6 +688,24 @@ public class LocationBarMediatorUnitTest {
                 /* onFullyActivated= */ null);
     }
 
+    /** Activates the session on a page that supplies the initial text, as done on focus. */
+    private void activateSessionWithInitialTextOfPage(GURL pageUrl) {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        UrlBarData.setShouldShowUrlForTesting(true);
+        doReturn(pageUrl).when(mLocationBarDataProvider).getCurrentGurl();
+        mTabletMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        activateSessionState(/* webContents= */ null);
+        assertFalse(mSessionState.getAutocompleteInput().getInitialUserText().isEmpty());
+    }
+
+    /** Emulates switching to the tab owning {@code mSessionState} while it shows the given page. */
+    private void switchToSessionTabShowing(GURL pageUrl) {
+        doReturn(pageUrl).when(mLocationBarDataProvider).getCurrentGurl();
+        mTabletMediator.onTabChanged(null);
+        mTabletMediator.onUrlChanged(/* isTabChanging= */ true);
+    }
+
     private void beginInput(AutocompleteInput input) {
         beginInput(mMediator, input);
     }
@@ -2876,6 +2894,40 @@ public class LocationBarMediatorUnitTest {
         assertEquals(
                 newText,
                 mFuseboxSessionStateCaptor.getValue().getAutocompleteInput().getUserText());
+    }
+
+    @Test
+    public void testOnTabChanged_uneditedInitialTextOfOtherPage_endsRetainedSession() {
+        activateSessionWithInitialTextOfPage(JUnitTestGURLs.URL_1);
+
+        switchToSessionTabShowing(JUnitTestGURLs.URL_2);
+
+        assertFalse(mSessionState.isSessionActive());
+        verify(mAutocompleteCoordinator, never()).beginInput(any());
+    }
+
+    @Test
+    public void testOnTabChanged_uneditedInitialTextOfSamePage_restoresRetainedSession() {
+        activateSessionWithInitialTextOfPage(JUnitTestGURLs.URL_1);
+        String initialText = mSessionState.getAutocompleteInput().getInitialUserText();
+
+        switchToSessionTabShowing(JUnitTestGURLs.URL_1);
+
+        assertTrue(mSessionState.isSessionActive());
+        assertUserText(initialText);
+        verify(mAutocompleteCoordinator, atLeastOnce()).beginInput(any());
+    }
+
+    @Test
+    public void testOnTabChanged_editedTextOnOtherPage_restoresRetainedSession() {
+        activateSessionWithInitialTextOfPage(JUnitTestGURLs.URL_1);
+        mSessionState.getAutocompleteInput().setUserText(TEST_USER_TEXT);
+
+        switchToSessionTabShowing(JUnitTestGURLs.URL_2);
+
+        assertTrue(mSessionState.isSessionActive());
+        assertUserText(TEST_USER_TEXT);
+        verify(mAutocompleteCoordinator, atLeastOnce()).beginInput(any());
     }
 
     @Test

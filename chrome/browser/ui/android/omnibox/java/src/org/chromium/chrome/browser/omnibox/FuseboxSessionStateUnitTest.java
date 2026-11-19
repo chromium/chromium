@@ -44,6 +44,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link FuseboxSessionState}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -409,6 +410,37 @@ public class FuseboxSessionStateUnitTest {
                 /* withAttachments= */ false);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testIsInitialInputForOtherPage_uneditedInitialText() {
+        activateDesktopSession(PageClassification.OTHER);
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+
+        assertFalse(session.isInitialInputForOtherPage(SAMPLE_PAGE_URL));
+        assertTrue(session.isInitialInputForOtherPage(JUnitTestGURLs.URL_1));
+
+        session.deactivate();
+        assertFalse(session.isInitialInputForOtherPage(JUnitTestGURLs.URL_1));
+    }
+
+    @Test
+    public void testIsInitialInputForOtherPage_editedText() {
+        AutocompleteInput input = activateDesktopSession(PageClassification.OTHER);
+        input.setUserText("edited");
+
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        assertFalse(session.isInitialInputForOtherPage(JUnitTestGURLs.URL_1));
+    }
+
+    @Test
+    public void testIsInitialInputForOtherPage_initialTextNotDerivedFromPage() {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
+        doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        activate(session);
+
+        assertFalse(session.isInitialInputForOtherPage(JUnitTestGURLs.URL_1));
     }
 
     private void activate(FuseboxSessionState session) {

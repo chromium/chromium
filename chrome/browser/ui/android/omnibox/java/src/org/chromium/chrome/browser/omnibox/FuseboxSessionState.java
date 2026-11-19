@@ -147,7 +147,8 @@ public class FuseboxSessionState implements UserData {
      * applies them again, for example after the tab navigated in the background while the session
      * stayed active. Only this page metadata is refreshed on re-activation. The initial user text
      * and preview match URL, which are derived from the page URL below, are computed once on the
-     * first activation and are left as they are.
+     * first activation and are left as they are. Callers restoring a retained session should
+     * consult {@link #isInitialInputForOtherPage} first.
      *
      * @param context The context appropriate for the current Activity window.
      * @param webContents The WebContents of the contextual tasks WebUI.
@@ -377,6 +378,25 @@ public class FuseboxSessionState implements UserData {
     /** Returns whether the Fusebox session is active. */
     public boolean isSessionActive() {
         return mIsActive;
+    }
+
+    /**
+     * Returns whether the retained input is the unedited initial text of a page other than the
+     * supplied one.
+     *
+     * <p>The initial user text is derived from the page the session was first activated on, see
+     * {@link #activate}. It is not authored by the user, so it is only meaningful for as long as
+     * the tab shows that page. Text edited by the user is independent of the page and is never
+     * reported here.
+     *
+     * @param pageUrl The URL of the page currently shown by the tab hosting this session.
+     */
+    boolean isInitialInputForOtherPage(GURL pageUrl) {
+        GURL initialInputUrl = mAutocompleteInput.getInitialPreviewMatchUrl();
+        boolean isFromOtherPage = initialInputUrl != null && !initialInputUrl.equals(pageUrl);
+        boolean isUnedited =
+                mAutocompleteInput.getUserText().equals(mAutocompleteInput.getInitialUserText());
+        return mIsActive && isFromOtherPage && isUnedited;
     }
 
     /** Modifies this session input to have the values of the given input. */
