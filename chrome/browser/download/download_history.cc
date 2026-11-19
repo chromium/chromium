@@ -551,12 +551,19 @@ void DownloadHistory::LoadHistoryDownloads(
   }
 
   // Completed downloads started before this time are removed from history
-  // instead of being loaded.
+  // instead of being loaded. The age is measured from the most recent download
+  // rather than from `now`, so that a forward clock jump doesn't remove recent
+  // downloads.
   std::optional<base::Time> remove_completed_downloads_started_before;
   if (base::FeatureList::IsEnabled(
           download::features::kRemoveOldDownloadsFromHistory)) {
+    base::Time most_recent_start_time;
+    for (const history::DownloadRow& row : rows) {
+      most_recent_start_time = std::max(most_recent_start_time, row.start_time);
+    }
     remove_completed_downloads_started_before =
-        now - download::features::kRemoveOldDownloadsFromHistoryMinAge.Get();
+        std::min(now, most_recent_start_time) -
+        download::features::kRemoveOldDownloadsFromHistoryMinAge.Get();
   }
 
   for (const history::DownloadRow& row : rows) {

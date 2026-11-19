@@ -1366,6 +1366,53 @@ TEST_P(DownloadHistoryRemoveOldDownloadsTest, LoadHistory) {
       "Download.History.DownloadCount.PostRemoval", enabled ? 3 : 4, 1);
 }
 
+// Tests that the age of downloads is measured from the most recent download
+// rather than from now, so that recent downloads are kept after a forward clock
+// jump.
+TEST_P(DownloadHistoryRemoveOldDownloadsTest, AgeRelativeToMostRecentDownload) {
+  const bool enabled = GetParam();
+  const base::Time now = base::Time::Now();
+
+  // Simulate a clock that jumped 200 days forward since the last download.
+  history::DownloadRow most_recent, older_within_90_days, older_beyond_90_days;
+  InitBasicItem(FILE_PATH_LITERAL("/foo/most_recent.pdf"),
+                "http://example.com/most_recent.pdf",
+                "http://example.com/referrer.html",
+                download::DownloadItem::COMPLETE, &most_recent);
+  most_recent.start_time = now - base::Days(200);
+  InitBasicItem(FILE_PATH_LITERAL("/foo/older_within_90_days.pdf"),
+                "http://example.com/older_within_90_days.pdf",
+                "http://example.com/referrer.html",
+                download::DownloadItem::COMPLETE, &older_within_90_days);
+  older_within_90_days.start_time = now - base::Days(289);
+  if (enabled) {
+    InitDownloadRow(FILE_PATH_LITERAL("/foo/older_beyond_90_days.pdf"),
+                    "http://example.com/older_beyond_90_days.pdf",
+                    "http://example.com/referrer.html",
+                    download::DownloadItem::COMPLETE, &older_beyond_90_days);
+  } else {
+    InitBasicItem(FILE_PATH_LITERAL("/foo/older_beyond_90_days.pdf"),
+                  "http://example.com/older_beyond_90_days.pdf",
+                  "http://example.com/referrer.html",
+                  download::DownloadItem::COMPLETE, &older_beyond_90_days);
+  }
+  older_beyond_90_days.start_time = now - base::Days(291);
+
+  CreateDownloadHistory(
+      {CreateDownloadHistoryEntry(most_recent),
+       CreateDownloadHistoryEntry(older_within_90_days),
+       CreateDownloadHistoryEntry(
+           older_beyond_90_days,
+           enabled ? LoadDownloadRowResult::kSkipCreation
+                   : LoadDownloadRowResult::kCreateDownload)});
+
+  if (enabled) {
+    ExpectDownloadsRemoved({older_beyond_90_days.id});
+  } else {
+    ExpectNoDownloadsRemoved();
+  }
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Test loading history download rows with content URIs retrieves display names.
 TEST_F(DownloadHistoryTest, LoadContentUriDownloads) {

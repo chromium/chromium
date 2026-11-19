@@ -67,8 +67,9 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kUseParallelRequestsForQUIC);
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDeleteOverwrittenDownloads);
 
 // When enabled, completed downloads that started more than
-// `kRemoveOldDownloadsFromHistoryMinAge` ago are removed from download history
-// when it is loaded, instead of being loaded. Downloaded files are not deleted.
+// `kRemoveOldDownloadsFromHistoryMinAge` before the most recent download (or
+// before now, if earlier) are removed from download history when it is loaded,
+// instead of being loaded. Downloaded files are not deleted.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kRemoveOldDownloadsFromHistory);
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
