@@ -787,7 +787,7 @@
     {
         "name": "lifecycle-viewmodel-savedstate-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha05"
+        "version": "2.12.0-alpha06"
     },
     {
         "name": "loader",
@@ -1172,7 +1172,7 @@
     {
         "name": "tracing-android",
         "group": "androidx.tracing",
-        "version": "2.0.5"
+        "version": "2.1.0-alpha01"
     },
     {
         "name": "tracing-ktx",
