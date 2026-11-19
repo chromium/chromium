@@ -109,6 +109,42 @@ std::string ExtensionCookiesTestHelper::FetchCookies(
   return result;
 }
 
+std::string ExtensionCookiesTestHelper::FetchCookiesNoCors(
+    content::RenderFrameHost* frame,
+    const GURL& url) {
+  const char kScriptTemplate[] = R"(
+      fetch($1, {method: 'GET', mode: 'no-cors', credentials: 'include'})
+        .then(() => window.domAutomationController.send('done'))
+        .catch((err) => window.domAutomationController.send('err: ' + err));)";
+  content::DOMMessageQueue messages(frame);
+  content::ExecuteScriptAsync(frame,
+                              content::JsReplace(kScriptTemplate, url.spec()));
+
+  net::test_server::ControllableHttpResponse& http_response =
+      GetNextCookieResponse();
+  http_response.WaitForRequest();
+
+  std::string cookie_header;
+  auto it = http_response.http_request()->headers.find(
+      net::HttpRequestHeaders::kCookie);
+  if (it != http_response.http_request()->headers.end()) {
+    cookie_header = it->second;
+  }
+
+  http_response.Send(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/plain; charset=utf-8\r\n"
+      "Content-Length: 0\r\n"
+      "\r\n");
+  http_response.Done();
+
+  std::string result;
+  if (!messages.PopMessage(&result)) {
+    EXPECT_TRUE(messages.WaitForMessage(&result));
+  }
+  return cookie_header;
+}
+
 std::string ExtensionCookiesTestHelper::NavigateChildAndGetCookies(
     content::RenderFrameHost* frame,
     const std::string& host) {

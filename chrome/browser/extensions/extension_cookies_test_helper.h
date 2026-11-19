@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ref.h"
 
+class GURL;
 class Profile;
 
 namespace content {
@@ -90,6 +91,13 @@ class ExtensionCookiesTestHelper {
   // observed on the wire by consuming the next slot in the response pool.
   std::string FetchCookies(content::RenderFrameHost* frame,
                            const std::string& host);
+
+  // Issues a `mode: 'no-cors'` fetch against `url` from `frame`. `url` must
+  // resolve (possibly via redirects) to `kFetchCookiesPath` on this test
+  // server. Returns the Cookie header observed on the wire by consuming the
+  // next slot in the response pool.
+  std::string FetchCookiesNoCors(content::RenderFrameHost* frame,
+                                 const GURL& url);
 
   // Triggers a `frame`-initiated navigation of `frame` to `host`. Returns
   // the cookies that were sent on that navigation request (read from the
