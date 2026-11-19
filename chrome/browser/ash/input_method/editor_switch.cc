@@ -10,14 +10,12 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/generative_ai_country_restrictions.h"
-#include "ash/constants/web_app_id_constants.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
-#include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
@@ -38,12 +36,6 @@
 
 namespace ash::input_method {
 namespace {
-
-constexpr const char* kWorkspaceDomainsWithPathDenylist[][2] = {
-    {"calendar.google", ""}, {"docs.google", ""},      {"drive.google", ""},
-    {"keep.google", ""},     {"mail.google", "/chat"}, {"mail.google", "/mail"},
-    {"meet.google", ""},     {"script.google", ""},    {"sites.google", ""},
-};
 
 constexpr int kTextLengthMaxLimit = 10000;
 
@@ -111,21 +103,6 @@ bool IsTriggerableFromConsentStatus(
          consent_status == chromeos::editor_menu::EditorConsentStatus::kUnset;
 }
 
-bool IsUrlAllowed(GURL url) {
-  if (base::FeatureList::IsEnabled(features::kOrcaOnWorkspace)) {
-    return true;
-  }
-
-  for (auto& denied_domain_with_path : kWorkspaceDomainsWithPathDenylist) {
-    if (IsSubDomainWithPathPrefix(url, denied_domain_with_path[0],
-                                  denied_domain_with_path[1])) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 bool IsAppAllowed(std::string_view app_id) {
   constexpr auto kNonWorkspaceAppIdDenylist =
       base::MakeFixedFlatSet<std::string_view>({
@@ -133,41 +110,7 @@ bool IsAppAllowed(std::string_view app_id) {
           file_manager::kFileManagerSwaAppId,
       });
 
-  if (kNonWorkspaceAppIdDenylist.contains(app_id)) {
-    return false;
-  }
-
-  constexpr auto kWorkspaceAppIdDenylist =
-      base::MakeFixedFlatSet<std::string_view>({
-          extension_misc::kGmailAppId,
-          extension_misc::kCalendarAppId,
-          extension_misc::kGoogleDocsAppId,
-          extension_misc::kGoogleSlidesAppId,
-          extension_misc::kGoogleSheetsAppId,
-          extension_misc::kGoogleDriveAppId,
-          extension_misc::kGoogleKeepAppId,
-          extension_misc::kGoogleMeetPwaAppId,
-          extension_misc::kGoogleDocsPwaAppId,
-          extension_misc::kGoogleSheetsPwaAppId,
-          // App ids in demo mode
-          extension_misc::kCalendarDemoAppId,
-          extension_misc::kGoogleDocsDemoAppId,
-          extension_misc::kGoogleSheetsDemoAppId,
-          extension_misc::kGoogleSlidesDemoAppId,
-          ash::kGmailAppId,
-          ash::kGoogleChatAppId,
-          ash::kOldGoogleChatAppId,
-          ash::kGoogleMeetAppId,
-          ash::kGoogleDocsAppId,
-          ash::kGoogleSlidesAppId,
-          ash::kGoogleSheetsAppId,
-          ash::kGoogleDriveAppId,
-          ash::kGoogleKeepAppId,
-          ash::kGoogleCalendarAppId,
-      });
-
-  return base::FeatureList::IsEnabled(features::kOrcaOnWorkspace) ||
-         !kWorkspaceAppIdDenylist.contains(app_id);
+  return !kNonWorkspaceAppIdDenylist.contains(app_id);
 }
 
 bool IsTriggerableFromTextLength(int text_length) {
@@ -347,10 +290,6 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
     blocked_reasons.push_back(EditorBlockedReason::kBlockedByTextLength);
   }
 
-  if (!IsUrlAllowed(context_->active_url())) {
-    blocked_reasons.push_back(EditorBlockedReason::kBlockedByUrl);
-  }
-
   if (!IsAppAllowed(context_->app_id())) {
     blocked_reasons.push_back(EditorBlockedReason::kBlockedByApp);
   }
@@ -394,7 +333,6 @@ bool EditorSwitch::CanBeTriggered() const {
          IsInputTypeAllowed(context_->input_type()) &&
          IsAppTypeAllowed(context_->app_type()) &&
          IsTriggerableFromConsentStatus(current_consent_status) &&
-         IsUrlAllowed(context_->active_url()) &&
          IsAppAllowed(context_->app_id()) &&
          !net::NetworkChangeNotifier::IsOffline() &&
          !context_->InTabletMode() &&

@@ -1175,9 +1175,6 @@ BASE_FEATURE(kOrcaUseAccountCapabilities, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOrcaForceFetchContextOnGetEditorPanelContext,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, we force fetching input context
-BASE_FEATURE(kOrcaOnWorkspace, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables new Orca service connection logic.
 BASE_FEATURE(kOrcaServiceConnection, base::FEATURE_ENABLED_BY_DEFAULT);
 
