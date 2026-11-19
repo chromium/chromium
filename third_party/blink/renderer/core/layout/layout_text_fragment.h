@@ -137,10 +137,10 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
 
   unsigned start_;
   unsigned fragment_length_;
-  bool is_remaining_text_layout_object_;
   String content_string_;
 
   Member<FirstLetterPseudoElement> first_letter_pseudo_element_;
+  bool is_remaining_text_layout_object_;
 };
 
 template <>
