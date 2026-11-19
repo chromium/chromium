@@ -158,13 +158,13 @@ class PDFiumPage {
   // Returns the indices of image objects.
   std::vector<int> GetImageObjectIndices();
 
+  // Returns the image as a 32-bit bitmap format. The image dimensions will be
+  // at most `max_image_dimension`.
+  SkBitmap GetImageBitmap(int page_object_index, uint32_t max_image_dimension);
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Returns if the page has images.
   bool HasImages();
-
-  // Returns the image as a 32-bit bitmap format for OCR. The image dimensions
-  // will be at most `max_image_dimension`.
-  SkBitmap GetImageForOcr(int page_object_index, int max_image_dimension);
 
   // Called to inform PDFiumPage that OCR operations performed on this page
   // added text into the page or not.
@@ -334,10 +334,10 @@ class PDFiumPage {
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageHeuristicEnhancementsTest,
                            AnnotLinkReplacesDuplicateWebLink);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageHighlightTest, PopulateHighlights);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, LowResolutionImage);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, HighResolutionImage);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, RotatedPage);
-  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageForOcrTest, NonImage);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageBitmapTest, LowResolutionImage);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageBitmapTest, HighResolutionImage);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageBitmapTest, RotatedPage);
+  FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageBitmapTest, NonImage);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageTest, ImagesWithAltText);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageImageTest, TextAndImagesWithAltText);
   FRIEND_TEST_ALL_PREFIXES(PDFiumPageLinkTest, AnnotLinkGeneration);

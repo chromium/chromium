@@ -1370,18 +1370,17 @@ std::vector<int> PDFiumPage::GetImageObjectIndices() {
       images_, [](const Image& image) { return image.page_object_index; });
 }
 
+SkBitmap PDFiumPage::GetImageBitmap(int page_object_index,
+                                    uint32_t max_image_dimension) {
+  FPDF_PAGE page = GetPage();
+  FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, page_object_index);
+  return GetImageForOcr(engine_->doc(), page, page_object, max_image_dimension);
+}
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 bool PDFiumPage::HasImages() {
   CalculateImages();
   return images_.size();
-}
-
-SkBitmap PDFiumPage::GetImageForOcr(int page_object_index,
-                                    int max_image_dimension) {
-  FPDF_PAGE page = GetPage();
-  FPDF_PAGEOBJECT page_object = FPDFPage_GetObject(page, page_object_index);
-  return ::chrome_pdf::GetImageForOcr(engine_->doc(), page, page_object,
-                                      max_image_dimension);
 }
 
 void PDFiumPage::OnSearchifyGotOcrResult(bool added_text) {

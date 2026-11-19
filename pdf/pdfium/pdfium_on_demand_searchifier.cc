@@ -268,7 +268,7 @@ PDFiumOnDemandSearchifier::GetNextBitmap() {
     int image_index = current_page_image_object_indices_.back();
     current_page_image_object_indices_.pop_back();
     SkBitmap bitmap =
-        current_page_->GetImageForOcr(image_index, max_image_dimension_);
+        current_page_->GetImageBitmap(image_index, max_image_dimension_);
     if (!bitmap.drawsNothing()) {
       return BitmapResult{bitmap, image_index};
     }
