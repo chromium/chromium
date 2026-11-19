@@ -21,6 +21,11 @@ BASE_FEATURE(kGenericSensorExtraClasses, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSensorsAllowAskBlockPermissionModel,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Makes "ask" the initial default setting for sensors, instead of "allow".
+// Only takes effect when `kSensorsAllowAskBlockPermissionModel` is also
+// enabled, as "ask" is not a valid sensors setting otherwise.
+BASE_FEATURE(kSensorsAskByDefault, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables browser-side privacy mitigations for generic sensors.
 BASE_FEATURE(kSensorPrivacyMitigations, base::FEATURE_ENABLED_BY_DEFAULT);
 

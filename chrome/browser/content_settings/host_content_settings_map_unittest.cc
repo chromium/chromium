@@ -3222,3 +3222,53 @@ TEST_F(HostContentSettingsMapTest, RecordDefaultSensorsSetting) {
     map->ShutdownOnUIThread();
   }
 }
+
+TEST_F(HostContentSettingsMapTest, SensorsDefaultSettingIsAllow) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetDefaultContentSetting(ContentSettingsType::SENSORS));
+}
+
+TEST_F(HostContentSettingsMapTest, SensorsAskByDefault) {
+  {
+    base::test::ScopedFeatureList ask_by_default(
+        ::features::kSensorsAskByDefault);
+    // The initial default is computed when the registry is initialized.
+    content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
+
+    TestingProfile profile;
+    HostContentSettingsMap* map =
+        HostContentSettingsMapFactory::GetForProfile(&profile);
+    EXPECT_EQ(CONTENT_SETTING_ASK,
+              map->GetDefaultContentSetting(ContentSettingsType::SENSORS));
+
+    // An explicitly chosen default still takes precedence.
+    map->SetDefaultContentSetting(ContentSettingsType::SENSORS,
+                                  CONTENT_SETTING_ALLOW);
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              map->GetDefaultContentSetting(ContentSettingsType::SENSORS));
+  }
+  content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
+}
+
+TEST_F(HostContentSettingsMapTest,
+       SensorsAskByDefaultRequiresAllowAskBlockPermissionModel) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{::features::kSensorsAskByDefault},
+        /*disabled_features=*/{
+            ::features::kSensorsAllowAskBlockPermissionModel});
+    content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
+
+    TestingProfile profile;
+    HostContentSettingsMap* map =
+        HostContentSettingsMapFactory::GetForProfile(&profile);
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              map->GetDefaultContentSetting(ContentSettingsType::SENSORS));
+  }
+  content_settings::ContentSettingsRegistry::GetInstance()->ResetForTest();
+}

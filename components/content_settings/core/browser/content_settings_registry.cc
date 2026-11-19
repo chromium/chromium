@@ -19,6 +19,10 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 
+#if BUILDFLAG(USE_BLINK)
+#include "services/device/public/cpp/device_features.h"
+#endif  // BUILDFLAG(USE_BLINK)
+
 namespace content_settings {
 
 namespace {
@@ -338,7 +342,16 @@ void ContentSettingsRegistry::Init() {
   // TODO(crbug.com/40602007): Update this to "SECURE_ONLY" once
   // DeviceOrientationEvents and DeviceMotionEvents are only fired in secure
   // contexts.
-  Register(ContentSettingsType::SENSORS, "sensors", CONTENT_SETTING_ALLOW,
+  ContentSetting sensors_initial_default = CONTENT_SETTING_ALLOW;
+#if BUILDFLAG(USE_BLINK)
+  // "Ask" is only a valid sensors setting under the Allow/Ask/Block model.
+  if (base::FeatureList::IsEnabled(
+          ::features::kSensorsAllowAskBlockPermissionModel) &&
+      base::FeatureList::IsEnabled(::features::kSensorsAskByDefault)) {
+    sensors_initial_default = CONTENT_SETTING_ASK;
+  }
+#endif  // BUILDFLAG(USE_BLINK)
+  Register(ContentSettingsType::SENSORS, "sensors", sensors_initial_default,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
            /*valid_settings=*/
            {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
