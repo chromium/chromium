@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/window_properties.h"
@@ -15,8 +16,11 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -585,5 +589,109 @@ TEST_F(WmDecorationControllerDelegateTest, ReenterOverviewDuringExitAnimation) {
   EXPECT_TRUE(decoration1->layer()->GetTargetVisibility());
   EXPECT_TRUE(decoration2->layer()->GetTargetVisibility());
 }
+
+// Tests that the decoration is not copied to the old layer used in the
+// cross-fade animation, and is hidden while the animation is running.
+TEST_F(WmDecorationControllerDelegateTest, CrossFadeDoesNotCopyDecoration) {
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300});
+  auto* window_state = WindowState::Get(window.get());
+  auto* decoration =
+      Shell::Get()->decoration_controller()->GetDecorationForWindow(
+          window.get());
+  ASSERT_TRUE(decoration);
+  EXPECT_TRUE(decoration->layer()->GetTargetVisibility());
+
+  auto verify = [&](base::FunctionRef<void()> change_state,
+                    bool decoration_visible) {
+    gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    ui::Layer* old_window_layer = window->layer();
+    ui::Layer* decoration_layer = decoration->layer();
+
+    change_state();
+
+    // The window layer has been recreated for the cross-fade animation, but
+    // the decoration layer stays in the new window layer and is hidden.
+    ASSERT_NE(old_window_layer, window->layer());
+    EXPECT_EQ(decoration_layer, decoration->layer());
+    EXPECT_EQ(window->layer(), decoration_layer->parent());
+    for (ui::Layer* child : old_window_layer->children()) {
+      EXPECT_FALSE(child->name().starts_with("Decoration")) << child->name();
+    }
+    EXPECT_FALSE(decoration_layer->GetTargetVisibility());
+
+    // The decoration of the new state is shown when the animation ends.
+    window->layer()->GetAnimator()->StopAnimating();
+    EXPECT_EQ(decoration_visible, decoration->layer()->GetTargetVisibility());
+  };
+
+  {
+    SCOPED_TRACE("Maximize");
+    verify([&] { window_state->Maximize(); }, /*decoration_visible=*/false);
+  }
+  {
+    SCOPED_TRACE("Restore from maximized");
+    verify([&] { window_state->Restore(); }, /*decoration_visible=*/true);
+  }
+
+  // Entering fullscreen is not animated.
+  const WMEvent fullscreen_event(WM_EVENT_TOGGLE_FULLSCREEN);
+  window_state->OnWMEvent(&fullscreen_event);
+  ASSERT_TRUE(window_state->IsFullscreen());
+  EXPECT_FALSE(decoration->layer()->GetTargetVisibility());
+  {
+    SCOPED_TRACE("Restore from fullscreen");
+    verify([&] { window_state->Restore(); }, /*decoration_visible=*/true);
+  }
+}
+
+namespace {
+
+// The param indicates whether the cross-fade bounds change animation is
+// enabled. A change of the origin is animated with a transform animation if it
+// is enabled, and with a bounds animation otherwise.
+class WmDecorationControllerDelegateBoundsAnimationTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  WmDecorationControllerDelegateBoundsAnimationTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kCrossFadeBoundsChangeAnimation, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+// Tests that the decoration is hidden while the transform or bounds animation
+// is running.
+TEST_P(WmDecorationControllerDelegateBoundsAnimationTest,
+       HideDecorationDuringAnimation) {
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {200, 300});
+  auto* decoration =
+      Shell::Get()->decoration_controller()->GetDecorationForWindow(
+          window.get());
+  ASSERT_TRUE(decoration);
+  EXPECT_TRUE(decoration->layer()->GetTargetVisibility());
+
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  const SetBoundsWMEvent event({100, 100, 200, 300}, /*animate=*/true);
+  WindowState::Get(window.get())->OnWMEvent(&event);
+  ui::LayerAnimator* animator = window->layer()->GetAnimator();
+  ASSERT_TRUE(animator->IsAnimatingProperty(
+      GetParam() ? ui::LayerAnimationElement::TRANSFORM
+                 : ui::LayerAnimationElement::BOUNDS));
+  EXPECT_FALSE(decoration->layer()->GetTargetVisibility());
+
+  animator->StopAnimating();
+  EXPECT_TRUE(decoration->layer()->GetTargetVisibility());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WmDecorationControllerDelegateBoundsAnimationTest,
+                         testing::Bool());
 
 }  // namespace ash

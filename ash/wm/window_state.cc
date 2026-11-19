@@ -45,6 +45,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
@@ -65,8 +66,10 @@
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_owner.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/decoration/decoration.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -75,6 +78,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/decoration_controller.h"
 #include "ui/wm/core/ime_util_chromeos.h"
 #include "ui/wm/core/window_util.h"
 
@@ -1170,6 +1174,7 @@ void WindowState::SetBoundsDirectAnimated(
     }
     ui::Layer* layer = window_->layer();
     ui::ScopedLayerAnimationSettings slide_settings(layer->GetAnimator());
+    slide_settings.AddObserver(CreateDecorationHidingObserver(window_));
     std::optional<ui::AnimationThroughputReporter> reporter;
     // Intentionally record the same `histogram_name` even if a different
     // animation scheme is used behind the scenes.
@@ -1233,8 +1238,19 @@ void WindowState::SetBoundsDirectAnimated(
   // cleaned up after the animation completes.
   // Specify |set_bounds| to true here to keep the old bounds in the child
   // windows of |window|.
+  // The decoration (e.g. shadow) is not copied to the old layers, because it
+  // may already have been updated for the new state. It stays in the new layer
+  // and is hidden during the animation.
   std::unique_ptr<ui::LayerTreeOwner> old_layer_owner =
-      wm::RecreateLayers(window_);
+      wm::RecreateLayersWithClosure(
+          window_,
+          base::BindRepeating(
+              [](ui::LayerOwner* decoration,
+                 ui::LayerOwner* owner) -> std::unique_ptr<ui::Layer> {
+                return owner == decoration ? nullptr : owner->RecreateLayer();
+              },
+              base::Unretained(static_cast<ui::LayerOwner*>(
+                  wm::DecorationController::GetDecorationForWindow(window_)))));
 
   // Resize the window to the new size, which will force a layout and paint.
   SetBoundsDirect(target_bounds);

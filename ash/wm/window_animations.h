@@ -24,6 +24,7 @@ class Point;
 }
 
 namespace ui {
+class ImplicitAnimationObserver;
 class Layer;
 class LayerTreeOwner;
 }
@@ -108,6 +109,12 @@ ASH_EXPORT void CrossFadeAnimation(
 
 // Returns true if `window` is currently animating with a cross-fade animation.
 ASH_EXPORT bool HasCrossFadeAnimation(aura::Window* window);
+
+// Returns an observer that hides the decoration (e.g. shadow) of `window` while
+// the animations it observes are running. The observer deletes itself when the
+// animations end or `window` is destroyed.
+ui::ImplicitAnimationObserver* CreateDecorationHidingObserver(
+    aura::Window* window);
 
 // Animates `window` from `old_origin` (in parent coordinates) to `window`'s
 // current origin using a layer transform animation. `window` must not be

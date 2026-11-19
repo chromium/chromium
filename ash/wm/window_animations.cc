@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/resize_shadow_controller.h"
+#include "ash/wm/scoped_decoration_hider.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/check.h"
@@ -28,6 +29,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -86,6 +88,32 @@ constexpr char kCrossFadeSmoothness[] =
     "Ash.Window.AnimationSmoothness.CrossFade";
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHasCrossFadeAnimationKey, false)
+
+// Hides the decoration (e.g. shadow) of a window while the animations it
+// observes are running. Deletes itself when the animations end or the window is
+// destroyed.
+class DecorationHidingObserver : public aura::WindowObserver,
+                                 public ui::ImplicitAnimationObserver {
+ public:
+  explicit DecorationHidingObserver(aura::Window* window)
+      : decoration_hider_(window) {
+    window_observation_.Observe(window);
+  }
+  DecorationHidingObserver(const DecorationHidingObserver&) = delete;
+  DecorationHidingObserver& operator=(const DecorationHidingObserver&) = delete;
+  ~DecorationHidingObserver() override = default;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override { delete this; }
+
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override { delete this; }
+
+ private:
+  ScopedDecorationHider decoration_hider_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+};
 
 base::TimeDelta GetCrossFadeDuration(aura::Window* window,
                                      const gfx::RectF& old_bounds,
@@ -383,6 +411,7 @@ void CrossFadeAnimationInternal(
     // its newly set bounds.
     ui::ScopedLayerAnimationSettings settings(new_layer()->GetAnimator());
     settings.AddObserver(observer);
+    settings.AddObserver(CreateDecorationHidingObserver(window));
     settings.SetTransitionDuration(animation_duration);
     settings.SetTweenType(animation_tween_type);
     settings.DeferPaint();
@@ -656,6 +685,11 @@ bool HasCrossFadeAnimation(aura::Window* window) {
   return window->GetProperty(kHasCrossFadeAnimationKey);
 }
 
+ui::ImplicitAnimationObserver* CreateDecorationHidingObserver(
+    aura::Window* window) {
+  return new DecorationHidingObserver(window);
+}
+
 void PositionAnimation(aura::Window* window,
                        const gfx::Point& old_origin,
                        const BoundsChangeAnimationParams& animation_params) {
@@ -688,6 +722,7 @@ void PositionAnimation(aura::Window* window,
 
   ui::ScopedLayerAnimationSettings slide_settings(
       window->layer()->GetAnimator());
+  slide_settings.AddObserver(CreateDecorationHidingObserver(window));
   std::optional<ui::AnimationThroughputReporter> reporter;
   if (!animation_params.histogram_name.empty()) {
     reporter.emplace(slide_settings.GetAnimator(),
