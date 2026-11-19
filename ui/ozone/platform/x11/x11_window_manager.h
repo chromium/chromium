@@ -49,6 +49,11 @@ class X11WindowManager {
   // OnLostCapture.
   void UngrabEvents(X11Window* window);
 
+  // Notifies all other X11Windows that `window` synchronously claimed input
+  // focus via SetInputFocus, so they drop stale focus state immediately rather
+  // than waiting for an asynchronous FocusOut event.
+  void OnWindowFocused(X11Window* window);
+
   // Gets the current X11PlatformWindow recipient of mouse events.
   X11Window* located_events_grabber() const { return located_events_grabber_; }
 

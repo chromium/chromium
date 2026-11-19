@@ -1029,4 +1029,58 @@ TEST_F(X11WindowTest, PointerFocusDeferredWhileCaptured) {
   delegate.set_window(nullptr);
 }
 
+// Activating an override-redirect window gives it input focus directly with
+// SetInputFocus and marks it active right away. Any other window must then be
+// deactivated right away too, instead of when its FocusOut event is processed
+// later, which may be after the override-redirect window was closed.
+// https://crbug.com/372283580
+TEST_F(X11WindowTest, ActivatingOverrideRedirectWindowDeactivatesOthers) {
+  ActivationTrackingWindowDelegate delegate;
+  auto window =
+      CreateX11Window(&delegate, gfx::Rect(10, 10, 100, 100), nullptr);
+  delegate.set_window(window.get());
+  const auto x11_window = static_cast<x11::Window>(delegate.widget());
+  ASSERT_NE(x11_window, x11::Window::None);
+
+  ActivationTrackingWindowDelegate bubble_delegate;
+  PlatformWindowInitProperties bubble_params(gfx::Rect(50, 50, 100, 100));
+  bubble_params.type = PlatformWindowType::kBubble;
+  auto bubble = std::make_unique<X11Window>(&bubble_delegate);
+  bubble->Initialize(std::move(bubble_params));
+  bubble_delegate.set_window(bubble.get());
+
+  auto dispatch_focus_event = [](x11::Window target, bool focus_in) {
+    x11::FocusEvent focus_event;
+    focus_event.opcode = focus_in ? x11::FocusEvent::In : x11::FocusEvent::Out;
+    focus_event.event = target;
+    focus_event.mode = x11::NotifyMode::Normal;
+    focus_event.detail = x11::NotifyDetail::Nonlinear;
+    x11::Connection::Get()->DispatchEvent(
+        x11::Event(false, std::move(focus_event)));
+  };
+
+  // The window manager focuses the main window.
+  dispatch_focus_event(x11_window, true);
+  EXPECT_TRUE(delegate.active());
+
+  bubble->Show(false);
+  bubble->Activate();
+  EXPECT_TRUE(bubble_delegate.active());
+  EXPECT_FALSE(delegate.active());
+
+  // The FocusOut that the X server sends for the main window must not change
+  // anything.
+  dispatch_focus_event(x11_window, false);
+  EXPECT_FALSE(delegate.active());
+  EXPECT_TRUE(bubble_delegate.active());
+
+  // When the bubble is closed, focus returns to the main window.
+  bubble_delegate.set_window(nullptr);
+  bubble.reset();
+  dispatch_focus_event(x11_window, true);
+  EXPECT_TRUE(delegate.active());
+
+  delegate.set_window(nullptr);
+}
+
 }  // namespace ui

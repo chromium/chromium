@@ -506,6 +506,17 @@ void X11Window::OnXWindowLostCapture() {
   platform_window_delegate_->OnLostCapture();
 }
 
+void X11Window::OnLostFocusToOtherWindow() {
+  if (!has_window_focus_ && !has_pointer_focus_) {
+    return;
+  }
+  BeforeActivationStateChanged();
+  has_window_focus_ = false;
+  has_pointer_focus_ = false;
+  pointer_focus_deferred_ = false;
+  AfterActivationStateChanged();
+}
+
 void X11Window::OnCursorUpdate() {
   platform_window_delegate_->OnCursorUpdate();
 }
@@ -878,9 +889,7 @@ void X11Window::Activate() {
         connection_->GetAtom("UTF8_STRING"), token.value());
   }
 
-  BeforeActivationStateChanged();
-
-  ignore_keyboard_input_ = false;
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
 
   // wmii says that it supports _NET_ACTIVE_WINDOW but does not.
   // https://code.google.com/p/wmii/issues/detail?id=266
@@ -893,6 +902,9 @@ void X11Window::Activate() {
   // override_redirect windows ignore _NET_ACTIVE_WINDOW.
   // https://crbug.com/940924
   if (wm_supports_active_window && !override_redirect_) {
+    BeforeActivationStateChanged();
+    ignore_keyboard_input_ = false;
+
     std::array<uint32_t, 5> data = {
         // We're an app.
         1,
@@ -912,6 +924,19 @@ void X11Window::Activate() {
     // would have raised an X error if the window is not mapped.
     connection_->SetInputFocus({x11::InputFocus::Parent, xwindow_, timestamp})
         .IgnoreError();
+    connection_->Flush();
+
+    // Clear focus on any other in-process X11Window before marking `this`
+    // active so two windows never report active simultaneously and the
+    // resulting FocusOut event on the old window becomes a no-op instead of
+    // firing a late deactivation after `this` closes.
+    X11WindowManager::GetInstance()->OnWindowFocused(this);
+    if (!weak_this) {
+      return;
+    }
+
+    BeforeActivationStateChanged();
+    ignore_keyboard_input_ = false;
     // At this point, we know we will receive focus, and some webdriver tests
     // depend on a window being IsActive() immediately after an Activate(), so
     // just set this state now.

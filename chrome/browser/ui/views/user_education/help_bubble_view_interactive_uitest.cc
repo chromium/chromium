@@ -224,19 +224,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
 // entering accessible keyboard navigation commands to try to read the help
 // bubble, or by trying to interact with the help bubble with the mouse to e.g.
 // close it.
-//
-// There's a race condition on at least Linux where the focus update happens
-// later than expected, on an OS message callback, which can kill the tab editor
-// bubble while we're trying to reactivate it below
-// (https://crbug.com/372283580).
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_BubblePreventsCloseOnLossOfFocus \
-  DISABLED_BubblePreventsCloseOnLossOfFocus
-#else
-#define MAYBE_BubblePreventsCloseOnLossOfFocus BubblePreventsCloseOnLossOfFocus
-#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
-                       MAYBE_BubblePreventsCloseOnLossOfFocus) {
+                       BubblePreventsCloseOnLossOfFocus) {
   browser()->GetTabStripModel()->AddToNewGroup({0});
 
   HelpBubbleParams params;

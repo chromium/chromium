@@ -80,6 +80,26 @@ void X11WindowManager::UngrabEvents(X11Window* window) {
   }
 }
 
+void X11WindowManager::OnWindowFocused(X11Window* window) {
+  // Snapshot the other windows first. OnLostFocusToOtherWindow() notifies the
+  // delegate that the window was deactivated, which can synchronously close
+  // windows (e.g. bubbles that close on deactivation) and remove them from
+  // `windows_` while it is being iterated. The WeakPtrs skip windows that were
+  // destroyed by an earlier notification.
+  std::vector<base::WeakPtr<X11Window>> other_windows;
+  other_windows.reserve(windows_.size());
+  for (const auto& [widget, candidate] : windows_) {
+    if (candidate != window) {
+      other_windows.push_back(candidate->GetWeakPtr());
+    }
+  }
+  for (const auto& other : other_windows) {
+    if (other) {
+      other->OnLostFocusToOtherWindow();
+    }
+  }
+}
+
 void X11WindowManager::AddWindow(X11Window* window) {
   CHECK(window, base::NotFatalUntil::M163);
   auto widget = window->GetWidget();

@@ -78,6 +78,7 @@ class X11Window : public PlatformWindow,
 
   // X11WindowManager calls this.
   void OnXWindowLostCapture();
+  void OnLostFocusToOtherWindow();
 
   // X11WindowManager posts a task to call this on every window when capture
   // is released.
