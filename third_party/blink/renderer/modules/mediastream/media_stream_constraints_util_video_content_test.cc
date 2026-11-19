@@ -188,6 +188,20 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, OverconstrainedOnFrameRate) {
   EXPECT_FALSE(result.HasValue());
   EXPECT_EQ(constraint_factory_.basic().frame_rate.GetName(),
             result.failed_constraint_name());
+
+  constraint_factory_.Reset();
+  constraint_factory_.basic().frame_rate.SetMax(0.0);
+  result = SelectSettings();
+  EXPECT_FALSE(result.HasValue());
+  EXPECT_EQ(constraint_factory_.basic().frame_rate.GetName(),
+            result.failed_constraint_name());
+
+  constraint_factory_.Reset();
+  constraint_factory_.basic().frame_rate.SetExact(0.0);
+  result = SelectSettings();
+  EXPECT_FALSE(result.HasValue());
+  EXPECT_EQ(constraint_factory_.basic().frame_rate.GetName(),
+            result.failed_constraint_name());
 }
 
 TEST_F(MediaStreamConstraintsUtilVideoContentTest,
@@ -1478,6 +1492,24 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, MandatoryRangeFrameRate) {
     CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result,
                                                             kMaxFrameRate);
   }
+
+  // 0Hz screen capture configuration (min: 0, max: 30): the capturer format
+  // uses the positive max frame rate while the track keeps min_frame_rate = 0.0
+  // so idle refresh frames are suppressed.
+  {
+    const double kMinFrameRate = 0.0;
+    const double kMaxFrameRate = 30.0;
+    constraint_factory_.basic().frame_rate.SetMin(kMinFrameRate);
+    constraint_factory_.basic().frame_rate.SetMax(kMaxFrameRate);
+    auto result = SelectSettings();
+    EXPECT_TRUE(result.HasValue());
+    EXPECT_EQ(kMaxFrameRate, result.FrameRate());
+    EXPECT_EQ(kMinFrameRate, result.min_frame_rate());
+    EXPECT_EQ(kMaxFrameRate, result.max_frame_rate());
+    CheckNonFrameRateDefaults(result);
+    CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result,
+                                                            kMaxFrameRate);
+  }
 }
 
 TEST_F(MediaStreamConstraintsUtilVideoContentTest, IdealFrameRate) {
@@ -1546,6 +1578,42 @@ TEST_F(MediaStreamConstraintsUtilVideoContentTest, IdealFrameRate) {
     CheckNonFrameRateDefaults(result);
     CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(result,
                                                             kIdealFrameRate);
+  }
+
+  // Non-positive ideal frame rate (e.g. getDisplayMedia({video: {frameRate:
+  // 0}})) is clamped to kMinScreenCastFrameRate.
+  // TODO(crbug.com/587562244): Add WPT coverage for non-positive frameRate
+  // constraints in getDisplayMedia() and applyConstraints().
+  for (double ideal_frame_rate : {0.0, -5.0, 1e-45}) {
+    constraint_factory_.Reset();
+    constraint_factory_.basic().frame_rate.SetIdeal(ideal_frame_rate);
+    auto result = SelectSettings();
+    EXPECT_TRUE(result.HasValue());
+    EXPECT_EQ(static_cast<float>(kMinScreenCastFrameRate), result.FrameRate());
+    EXPECT_GT(result.FrameRate(), 0.0f);
+    EXPECT_EQ(std::optional<double>(), result.min_frame_rate());
+    EXPECT_EQ(std::optional<double>(), result.max_frame_rate());
+    CheckNonFrameRateDefaults(result);
+    CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(
+        result, kMinScreenCastFrameRate);
+  }
+
+  // Non-positive ideal with min: 0.0 preserves min_frame_rate = 0.0 while
+  // clamping the capturer and track adapter frame rate to
+  // kMinScreenCastFrameRate.
+  {
+    constraint_factory_.Reset();
+    constraint_factory_.basic().frame_rate.SetMin(0.0);
+    constraint_factory_.basic().frame_rate.SetIdeal(0.0);
+    constraint_factory_.basic().frame_rate.SetMax(30.0);
+    auto result = SelectSettings();
+    EXPECT_TRUE(result.HasValue());
+    EXPECT_EQ(static_cast<float>(kMinScreenCastFrameRate), result.FrameRate());
+    EXPECT_EQ(0.0, result.min_frame_rate());
+    EXPECT_EQ(30.0, result.max_frame_rate());
+    CheckNonFrameRateDefaults(result);
+    CheckTrackAdapterSettingsEqualsFormatDefaultAspectRatio(
+        result, kMinScreenCastFrameRate);
   }
 }
 

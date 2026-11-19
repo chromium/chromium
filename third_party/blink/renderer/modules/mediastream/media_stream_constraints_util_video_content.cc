@@ -36,6 +36,12 @@ static_assert(kDefaultScreenCastWidth <= kMaxScreenCastDimension,
 static_assert(kDefaultScreenCastHeight <= kMaxScreenCastDimension,
               "Invalid kDefaultScreenCastHeight");
 
+// Minimum positive capture frame rate (~0.001 fps, exact in IEEE-754 float),
+// acting as the positive floor required by the Screen Capture spec.
+// `VideoCaptureParams` only carries the target/max capture rate; 0Hz capture
+// sets `min_frame_rate = 0.0` on the track while keeping a positive capture
+// rate.
+const double kMinScreenCastFrameRate = 1.0 / 1024.0;
 const double kMaxScreenCastFrameRate = 120.0;
 const double kDefaultScreenCastFrameRate =
     MediaStreamVideoSource::kDefaultFrameRate;
@@ -87,7 +93,7 @@ class VideoContentCaptureCandidates {
   bool IsEmpty() const {
     return resolution_set_.IsEmpty() || frame_rate_set_.IsEmpty() ||
            (frame_rate_set_.Max().has_value() &&
-            frame_rate_set_.Max().value() <= 0.0) ||
+            frame_rate_set_.Max().value() < kMinScreenCastFrameRate) ||
            device_id_set_.IsEmpty() || noise_reduction_set_.IsEmpty() ||
            rescale_set_.IsEmpty();
   }
@@ -184,12 +190,14 @@ double SelectFrameRateFromCandidates(
   double frame_rate = basic_constraint_set.frame_rate.HasIdeal()
                           ? basic_constraint_set.frame_rate.Ideal()
                           : default_frame_rate;
-  if (candidate_set.Max() && frame_rate > *candidate_set.Max())
+  if (candidate_set.Max() && frame_rate > *candidate_set.Max()) {
     frame_rate = *candidate_set.Max();
-  else if (candidate_set.Min() && frame_rate < *candidate_set.Min())
+  } else if (candidate_set.Min() && frame_rate < *candidate_set.Min()) {
     frame_rate = *candidate_set.Min();
+  }
 
-  return frame_rate;
+  return std::clamp(frame_rate, kMinScreenCastFrameRate,
+                    kMaxScreenCastFrameRate);
 }
 
 media::VideoCaptureParams SelectVideoCaptureParamsFromCandidates(
@@ -211,7 +219,8 @@ media::VideoCaptureParams SelectVideoCaptureParamsFromCandidates(
   params.resolution_change_policy = SelectResolutionPolicyFromCandidates(
       candidates.resolution_set(), default_resolution_policy);
   // Content capture always uses default power-line frequency.
-  DCHECK(params.IsValid());
+  CHECK(params.IsValid());
+  CHECK_GT(params.requested_format.frame_rate, 0.0f);
 
   return params;
 }
@@ -252,8 +261,9 @@ std::optional<bool> SelectNoiseReductionFromCandidates(
         basic_constraint_set.goog_noise_reduction.Ideal());
   }
 
-  if (candidates.is_universal())
+  if (candidates.is_universal()) {
     return std::optional<bool>();
+  }
 
   // A non-universal BoolSet can have at most one element.
   return std::optional<bool>(candidates.FirstElement());
@@ -284,10 +294,11 @@ bool SelectRescaleFromCandidates(
 }
 
 int ClampToValidScreenCastDimension(int value) {
-  if (value > kMaxScreenCastDimension)
+  if (value > kMaxScreenCastDimension) {
     return kMaxScreenCastDimension;
-  else if (value < kMinScreenCastDimension)
+  } else if (value < kMinScreenCastDimension) {
     return kMinScreenCastDimension;
+  }
   return value;
 }
 
@@ -349,10 +360,14 @@ VideoCaptureSettings SelectResultFromCandidates(
   bool enable_rescale = SelectRescaleFromCandidates(candidates.rescale_set(),
                                                     basic_constraint_set);
 
+  DoubleRangeSet adapter_frame_rate_set =
+      basic_constraint_set.frame_rate.HasIdeal()
+          ? candidates.frame_rate_set().Intersection(DoubleRangeSet(
+                kMinScreenCastFrameRate, kMaxScreenCastFrameRate))
+          : candidates.frame_rate_set();
   auto track_adapter_settings = SelectVideoTrackAdapterSettings(
-      basic_constraint_set, candidates.resolution_set(),
-      candidates.frame_rate_set(), capture_params.requested_format,
-      enable_rescale);
+      basic_constraint_set, candidates.resolution_set(), adapter_frame_rate_set,
+      capture_params.requested_format, enable_rescale);
 
   return VideoCaptureSettings(std::move(device_id), capture_params,
                               noise_reduction, track_adapter_settings,
@@ -372,7 +387,8 @@ VideoCaptureSettings UnsatisfiedConstraintsResult(
     return VideoCaptureSettings(constraint_set.aspect_ratio.GetName());
   } else if (candidates.frame_rate_set().IsEmpty() ||
              (candidates.frame_rate_set().Max().has_value() &&
-              candidates.frame_rate_set().Max().value() <= 0)) {
+              candidates.frame_rate_set().Max().value() <
+                  kMinScreenCastFrameRate)) {
     return VideoCaptureSettings(constraint_set.frame_rate.GetName());
   } else if (candidates.noise_reduction_set().IsEmpty()) {
     return VideoCaptureSettings(constraint_set.goog_noise_reduction.GetName());
@@ -396,15 +412,17 @@ VideoCaptureSettings SelectSettingsVideoContentCapture(
 
   candidates = candidates.Intersection(
       VideoContentCaptureCandidates(constraints.Basic()));
-  if (candidates.IsEmpty())
+  if (candidates.IsEmpty()) {
     return UnsatisfiedConstraintsResult(candidates, constraints.Basic());
+  }
 
   for (const auto& advanced_set : constraints.Advanced()) {
     VideoContentCaptureCandidates advanced_candidates(advanced_set);
     VideoContentCaptureCandidates intersection =
         candidates.Intersection(advanced_candidates);
-    if (!intersection.IsEmpty())
+    if (!intersection.IsEmpty()) {
       candidates = std::move(intersection);
+    }
   }
 
   DCHECK(!candidates.IsEmpty());

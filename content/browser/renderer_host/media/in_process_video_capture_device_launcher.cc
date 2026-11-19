@@ -279,6 +279,15 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       NOTREACHED();
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
     case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
+      if (!params.IsValid() || params.requested_format.frame_size.IsEmpty() ||
+          params.requested_format.frame_rate <= 0.0f) {
+        DLOG(ERROR) << "Invalid tab capture params: "
+                    << media::VideoCaptureFormat::ToString(
+                           params.requested_format);
+        start_capture_closure =
+            base::BindOnce(std::move(after_start_capture_callback), nullptr);
+        break;
+      }
       start_capture_closure = base::BindOnce(
           &InProcessVideoCaptureDeviceLauncher::DoStartTabCaptureOnDeviceThread,
           device_id, params, prefer_shared_memory_buffers_, std::move(receiver),
@@ -289,6 +298,15 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
     case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET: {
+      if (!params.IsValid() || params.requested_format.frame_size.IsEmpty() ||
+          params.requested_format.frame_rate <= 0.0f) {
+        DLOG(ERROR) << "Invalid desktop capture params: "
+                    << media::VideoCaptureFormat::ToString(
+                           params.requested_format);
+        start_capture_closure =
+            base::BindOnce(std::move(after_start_capture_callback), nullptr);
+        break;
+      }
       const DesktopMediaID desktop_id = DesktopMediaID::Parse(device_id);
       if (desktop_id.is_null()) {
         DLOG(ERROR) << "Desktop media ID is null";

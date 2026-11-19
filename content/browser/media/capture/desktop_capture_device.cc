@@ -503,9 +503,7 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
   CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
   CHECK_GT(params.requested_format.frame_size.GetArea(), 0,
            base::NotFatalUntil::M160);
-  // TODO(crbug.com/578932753): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK_GT(params.requested_format.frame_rate, 0);
+  CHECK_GT(params.requested_format.frame_rate, 0);
   CHECK(desktop_capturer_, base::NotFatalUntil::M160);
   CHECK(client, base::NotFatalUntil::M160);
   CHECK(!client_, base::NotFatalUntil::M160);
@@ -515,10 +513,7 @@ void DesktopCaptureDevice::Core::AllocateAndStart(
   requested_frame_rate_ = params.requested_format.frame_rate;
   frame_rate_ = requested_frame_rate_;
   rrf_rate_ = 0;
-  requested_frame_duration_ = base::Microseconds(static_cast<int64_t>(
-      static_cast<double>(base::Time::kMicrosecondsPerSecond) /
-          requested_frame_rate_ +
-      0.5 /* round to nearest int */));
+  requested_frame_duration_ = base::Hertz(requested_frame_rate_);
 
   // Pass the min/max resolution and fixed aspect ratio settings from |params|
   // to the CaptureResolutionChooser.
