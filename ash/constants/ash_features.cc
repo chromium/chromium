@@ -1166,28 +1166,10 @@ BASE_FEATURE(kOobeAutoEnrollmentCheckForced, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables Orca for ARC apps.
 BASE_FEATURE(kOrcaArc, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables elaborate for Orca.
-BASE_FEATURE(kOrcaElaborate, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables emojify for Orca.
-BASE_FEATURE(kOrcaEmojify, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Orca for managed users.
 BASE_FEATURE(kOrcaForManagedUsers,
              "kOrcaForManagedUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables formalize for Orca.
-BASE_FEATURE(kOrcaFormalize, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables proofread for Orca.
-BASE_FEATURE(kOrcaProofread, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables rephrase for Orca.
-BASE_FEATURE(kOrcaRephrase, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables shorten for Orca.
-BASE_FEATURE(kOrcaShorten, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables elaborate for internationalized Orca.
 BASE_FEATURE(kOrcaInternationalizeElaborate, base::FEATURE_ENABLED_BY_DEFAULT);

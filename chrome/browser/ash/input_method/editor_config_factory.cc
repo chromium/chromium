@@ -18,25 +18,14 @@ namespace {
 
 orca::mojom::EditorConfigPtr EnglishConfig(
     const base::i18n::LanguageTag& locale) {
-  std::vector<orca::mojom::PresetTextQueryType> allowed;
-  if (base::FeatureList::IsEnabled(features::kOrcaElaborate)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kElaborate);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaEmojify)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kEmojify);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaFormalize)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kFormalize);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaProofread)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kProofread);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaRephrase)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kRephrase);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaShorten)) {
-    allowed.push_back(orca::mojom::PresetTextQueryType::kShorten);
-  }
+  std::vector<orca::mojom::PresetTextQueryType> allowed = {
+      orca::mojom::PresetTextQueryType::kElaborate,
+      orca::mojom::PresetTextQueryType::kEmojify,
+      orca::mojom::PresetTextQueryType::kFormalize,
+      orca::mojom::PresetTextQueryType::kProofread,
+      orca::mojom::PresetTextQueryType::kRephrase,
+      orca::mojom::PresetTextQueryType::kShorten,
+  };
   return orca::mojom::EditorConfig::New(
       /*allowed_types=*/std::move(allowed),
       /*language_code=*/std::string(locale.tag_string()));
