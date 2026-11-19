@@ -166,8 +166,9 @@ class TabStripCollectionController
 
   // Updates the browser theme when focus mode is active for a tab group.
   // Only updates themes for permanent tab groups; non-group focus mode does not
-  // theme the browser. Triggered when tab group focus changes or when the color
-  // of the currently focused tab group changes.
+  // theme the browser. Triggered when tab group focus changes, when the color
+  // of the currently focused tab group changes, or when the focused ephemeral
+  // group is promoted to a permanent one.
   void UpdateFocusModeTheme(std::optional<tab_groups::TabGroupId> group_id);
 
 #if BUILDFLAG(IS_CHROMEOS)

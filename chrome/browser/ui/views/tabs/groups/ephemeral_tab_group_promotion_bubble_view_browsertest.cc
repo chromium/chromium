@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/groups/color_picker_view.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
@@ -304,6 +305,30 @@ IN_PROC_BROWSER_TEST_F(EphemeralTabGroupPromotionBubbleViewBrowserTest,
             u"Promoted Title");
   EXPECT_EQ(group_model()->GetTabGroup(group)->visual_data()->color(),
             chosen_color);
+}
+
+// Ephemeral groups do not theme the browser, regular focused groups do.
+// Promotion keeps the group focused, so the browser must take on the group's
+// focus theme as soon as the group is promoted.
+IN_PROC_BROWSER_TEST_F(EphemeralTabGroupPromotionBubbleViewBrowserTest,
+                       CreateAppliesFocusThemeToBrowser) {
+  BrowserWidget* const browser_widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->browser_widget();
+  const tab_groups::TabGroupId group = EnterFocusAndOpenBubble();
+  views::Widget* const widget = WaitForBubbleWidget();
+  ASSERT_NE(nullptr, widget);
+  base::WeakPtr<views::Widget> weak_widget = widget->GetWeakPtr();
+  EXPECT_EQ(browser_widget->user_color_override(), std::nullopt);
+
+  PickDifferentColor(widget,
+                     group_model()->GetTabGroup(group)->visual_data()->color());
+  Click(GetViewInBubble(widget,
+                        EphemeralTabGroupPromotionBubbleView::kCreateButtonId));
+  WaitForClose(weak_widget);
+
+  ASSERT_FALSE(tab_strip_model()->IsEphemeralTabGroup(group));
+  ASSERT_EQ(group, tab_strip_model()->GetFocusedGroup());
+  EXPECT_NE(browser_widget->user_color_override(), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(EphemeralTabGroupPromotionBubbleViewBrowserTest,
