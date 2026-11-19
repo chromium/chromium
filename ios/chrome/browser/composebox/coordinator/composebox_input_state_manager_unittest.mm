@@ -1580,3 +1580,69 @@ TEST_F(ComposeboxInputStateManagerTest,
           activationSource:AiModeActivationSource::kToolMenu];
   EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
 }
+
+// Tests that `setActiveToolMode:` selects an unmapped server tool mode, enters
+// AI Mode, and resets when the tool is removed on config reload.
+TEST_F(ComposeboxInputStateManagerTest,
+       SetActiveToolModeAndReconcileServerTool) {
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set();
+  omnibox::ToolConfig* deep_browse_config = config.add_tool_configs();
+  deep_browse_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+  deep_browse_config->set_menu_label("Browse deeply");
+  omnibox::ToolRule* rule = deep_browse_config->mutable_rule();
+  rule->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+  rule->set_allow_all_input_types(true);
+  rule->set_allow_all_models(true);
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE];
+
+  ASSERT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+  ASSERT_EQ(state.activeTool, ComposeboxMode::kAIM);
+  ASSERT_TRUE(manager_.inputState.has_value());
+  ASSERT_EQ(manager_.inputState->active_tool,
+            omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+
+  omnibox::SearchboxConfig empty_config;
+  empty_config.mutable_rule_set();
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&empty_config));
+  aim_eligibility_callback_.Run();
+
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+}
+
+// Tests that `setActiveToolMode:` with `TOOL_MODE_AIM` clears the active server
+// tool while staying in AI Mode (`TOOL_MODE_AIM` on the manager and
+// `TOOL_MODE_UNSPECIFIED` in `InputStateModel`).
+TEST_F(ComposeboxInputStateManagerTest,
+       SetActiveToolModeAIMClearsServerToolWhileStayingInAIMode) {
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set();
+  omnibox::ToolConfig* canvas_config = config.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  canvas_config->set_menu_label("Canvas");
+  omnibox::ToolRule* rule = canvas_config->mutable_rule();
+  rule->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  rule->set_allow_all_input_types(true);
+  rule->set_allow_all_models(true);
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
+  ASSERT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_CANVAS);
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
+  ASSERT_TRUE(manager_.inputState.has_value());
+  EXPECT_EQ(manager_.inputState->active_tool,
+            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+}
