@@ -1,6 +1,6 @@
 {
-  "version": "97.5",
-  "log_list_timestamp": "2026-11-18T13:34:31Z",
+  "version": "98.0",
+  "log_list_timestamp": "2026-11-19T13:48:36Z",
   "operators": [
     {
       "name": "Google",
@@ -1102,8 +1102,8 @@
           "monitoring_url": "https://tuscolo2028h1.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
@@ -1120,8 +1120,8 @@
           "monitoring_url": "https://tuscolo2028h2.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
@@ -1138,8 +1138,8 @@
           "monitoring_url": "https://trastevere2026h2.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
@@ -1156,8 +1156,8 @@
           "monitoring_url": "https://trastevere2027h1.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
@@ -1174,8 +1174,8 @@
           "monitoring_url": "https://trastevere2027h2.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
@@ -1192,8 +1192,8 @@
           "monitoring_url": "https://trastevere2028h1.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
@@ -1210,8 +1210,8 @@
           "monitoring_url": "https://trastevere2028h2.skylight.geomys.org/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
@@ -1363,8 +1363,8 @@
           "monitoring_url": "https://gouda2028h1.mon.ct.ipng.ch/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
@@ -1381,8 +1381,8 @@
           "monitoring_url": "https://gouda2028h2.mon.ct.ipng.ch/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
@@ -1399,8 +1399,8 @@
           "monitoring_url": "https://halloumi2028h1.mon.ct.ipng.ch/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
@@ -1417,8 +1417,8 @@
           "monitoring_url": "https://halloumi2028h2.mon.ct.ipng.ch/",
           "mmd": 60,
           "state": {
-            "qualified": {
-              "timestamp": "2026-09-09T13:45:00Z"
+            "usable": {
+              "timestamp": "2026-11-19T13:50:00Z"
             }
           },
           "temporal_interval": {
