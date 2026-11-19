@@ -425,10 +425,8 @@ void LogComposeRequestReason(ComposeRequestReason reason);
 void LogComposeRequestReason(EvalLocation eval_location,
                              ComposeRequestReason reason);
 
-void LogComposeRequestStatus(bool page_language_supported,
-                             compose::mojom::ComposeStatus status);
+void LogComposeRequestStatus(compose::mojom::ComposeStatus status);
 void LogComposeRequestStatus(EvalLocation eval_location,
-                             bool page_language_supported,
                              compose::mojom::ComposeStatus status);
 
 // Log the duration of a compose request. |is_ok| indicates the status of

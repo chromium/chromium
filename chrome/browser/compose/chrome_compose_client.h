@@ -304,9 +304,6 @@ class ChromeComposeClient
   // expired.
   bool ActiveFieldHasUnexpiredSession();
 
-  // Checks if the page assessed language is supported by Compose.
-  bool IsPageLanguageSupported();
-
   compose::ComposeManagerImpl manager_{this};
 
   std::unique_ptr<compose::ComposeDialogController> compose_dialog_controller_;

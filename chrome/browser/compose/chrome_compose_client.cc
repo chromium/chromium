@@ -246,8 +246,7 @@ void ChromeComposeClient::BindComposeDialog(
         &GetWebContents(), GetModelExecutor(),
         GetModelQualityLogsUploaderService(), GetSessionId(),
         GetInnerTextProvider(),
-        autofill::FieldGlobalId{{}, autofill::FieldRendererId(-1)},
-        IsPageLanguageSupported(), this);
+        autofill::FieldGlobalId{{}, autofill::FieldRendererId(-1)}, this);
     debug_session_->set_collect_inner_text(false);
     debug_session_->set_fre_complete(
         pref_service_->GetBoolean(prefs::kPrefHasCompletedComposeFRE));
@@ -511,8 +510,8 @@ void ChromeComposeClient::CreateNewSession(
   auto new_session = std::make_unique<ComposeSession>(
       &GetWebContents(), GetModelExecutor(),
       GetModelQualityLogsUploaderService(), GetSessionId(),
-      GetInnerTextProvider(), trigger_field.global_id(),
-      IsPageLanguageSupported(), this, std::move(callback));
+      GetInnerTextProvider(), trigger_field.global_id(), this,
+      std::move(callback));
   current_session = new_session.get();
   sessions_.insert_or_assign(active_compose_ids_.value().first,
                              std::move(new_session));
@@ -665,12 +664,6 @@ ComposeSession* ChromeComposeClient::GetSessionForActiveComposeField() {
     }
   }
   return nullptr;
-}
-
-bool ChromeComposeClient::IsPageLanguageSupported() {
-  translate::TranslateManager* translate_manager =
-      ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
-  return compose_enabling_->IsPageLanguageSupported(translate_manager);
 }
 
 bool ChromeComposeClient::GetMSBBStateFromPrefs() {

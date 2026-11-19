@@ -244,7 +244,6 @@ ComposeSession::ComposeSession(
     base::Token session_id,
     InnerTextProvider* inner_text,
     autofill::FieldGlobalId node_id,
-    bool is_page_language_supported,
     Observer* observer,
     ComposeCallback callback)
     : executor_(executor),
@@ -259,7 +258,6 @@ ComposeSession::ComposeSession(
       inner_text_caller_(inner_text),
       ukm_source_id_(web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()),
       node_id_(node_id),
-      is_page_language_supported_(is_page_language_supported),
       session_id_(session_id),
       weak_ptr_factory_(this) {
   session_duration_ = std::make_unique<base::ElapsedTimer>();
@@ -554,7 +552,6 @@ void ComposeSession::RequestWithSession(
 void ComposeSession::ComposeRequestTimeout(int id) {
   request_timeouts_.erase(id);
   compose::LogComposeRequestStatus(
-      is_page_language_supported_,
       compose::mojom::ComposeStatus::kRequestTimeout);
 
   active_mojo_state_->has_pending_request = false;
@@ -600,8 +597,7 @@ void ComposeSession::ModelExecutionCallback(
 
     compose::LogComposeRequestReason(eval_location, request_reason);
     compose::LogComposeRequestStatus(
-        eval_location, is_page_language_supported_,
-        compose::mojom::ComposeStatus::kRequestTimeout);
+        eval_location, compose::mojom::ComposeStatus::kRequestTimeout);
     return;
   }
 
@@ -738,9 +734,8 @@ void ComposeSession::ModelExecutionComplete(
   }
 
   // Log successful response status.
-  compose::LogComposeRequestStatus(is_page_language_supported_,
-                                   compose::mojom::ComposeStatus::kOk);
-  compose::LogComposeRequestStatus(eval_location, is_page_language_supported_,
+  compose::LogComposeRequestStatus(compose::mojom::ComposeStatus::kOk);
+  compose::LogComposeRequestStatus(eval_location,
                                    compose::mojom::ComposeStatus::kOk);
   compose::LogComposeRequestDuration(request_delta, eval_location,
                                      /* is_ok */ true);
@@ -770,9 +765,8 @@ void ComposeSession::ProcessError(
     compose::EvalLocation eval_location,
     compose::mojom::ComposeStatus error,
     compose::ComposeRequestReason request_reason) {
-  compose::LogComposeRequestStatus(is_page_language_supported_, error);
-  compose::LogComposeRequestStatus(eval_location, is_page_language_supported_,
-                                   error);
+  compose::LogComposeRequestStatus(error);
+  compose::LogComposeRequestStatus(eval_location, error);
   ++session_events_.failed_requests_count;
 
   // Feedback can not be given for a request with an error so report now.

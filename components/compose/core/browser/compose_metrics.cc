@@ -65,11 +65,6 @@ std::string_view EvalLocationString(EvalLocation location) {
   }
 }
 
-std::string_view LanguageSupportedString(bool page_language_supported) {
-  return page_language_supported ? "PageLanguageSupported"
-                                 : "PageLanguageUnsupported";
-}
-
 bool HasAckedFreOrAcceptedMsbb(ComposeFreOrMsbbSessionCloseReason reason) {
   switch (reason) {
     case ComposeFreOrMsbbSessionCloseReason::kAckedOrAcceptedWithoutInsert:
@@ -225,27 +220,15 @@ void LogComposeRequestReason(EvalLocation eval_location,
       reason);
 }
 
-void LogComposeRequestStatus(bool page_language_supported,
-                             compose::mojom::ComposeStatus status) {
+void LogComposeRequestStatus(compose::mojom::ComposeStatus status) {
   base::UmaHistogramEnumeration(kComposeRequestStatus, status);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Compose.Request.",
-                    LanguageSupportedString(page_language_supported),
-                    ".Status"}),
-      status);
 }
 
 void LogComposeRequestStatus(EvalLocation eval_location,
-                             bool page_language_supported,
                              compose::mojom::ComposeStatus status) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"Compose.", EvalLocationString(eval_location), ".Request.Status"}),
-      status);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Compose.", EvalLocationString(eval_location), ".Request.",
-                    LanguageSupportedString(page_language_supported),
-                    ".Status"}),
       status);
 }
 
