@@ -125,6 +125,7 @@
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
+#include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
@@ -2105,6 +2106,18 @@ void HTMLCanvasElement::SetOffscreenCanvasResource(
   SetSize(OffscreenCanvasFrame()->Size());
   NotifyOutOfBandFrame();
   NotifyListenersCanvasChanged();
+
+  // A placeholder canvas normally displays its frames through a surface layer
+  // and needs no repaint. A placeholder in a canvas subtree is instead painted
+  // into its ancestor canvas's drawable paint record, so each new frame must
+  // invalidate paint, as DidDraw() does for other contexts, so that ancestor
+  // canvases fire paint events.
+  if (IsInCanvasSubtree()) {
+    if (LayoutObject* layout_object = GetLayoutObject()) {
+      layout_object->SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+          PaintInvalidationReason::kImage);
+    }
+  }
 
   if (accessibility_manager_) {
     // OffscreenCanvas taint state is carried per-frame on the exported resource
