@@ -124,6 +124,8 @@ blink_core_sources_timing = [
   "worker_global_scope_performance.h",
   "worker_performance.cc",
   "worker_performance.h",
+  "worklet_performance.cc",
+  "worklet_performance.h",
 ]
 
 blink_core_tests_timing = [

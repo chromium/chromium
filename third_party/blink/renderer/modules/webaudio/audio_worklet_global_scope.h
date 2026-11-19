@@ -30,6 +30,7 @@ class MessagePort;
 class MessagePortChannel;
 class SerializedScriptValue;
 class V8BlinkAudioWorkletProcessorConstructor;
+class WorkletPerformance;
 struct GlobalScopeCreationParams;
 
 // The storage for the construction of AudioWorkletProcessor, contains the
@@ -103,6 +104,7 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   uint64_t currentFrame() const { return current_frame_; }
   double currentTime() const;
   MessagePort* port() const { return port_.Get(); }
+  WorkletPerformance* performance() const { return performance_.Get(); }
   float sampleRate() const { return sample_rate_; }
   uint32_t renderQuantumSize() const { return render_quantum_size_; }
 
@@ -138,6 +140,7 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
 
   size_t current_frame_ = 0;
   Member<MessagePort> port_;
+  Member<WorkletPerformance> performance_;
   float sample_rate_ = 0.0f;
   uint32_t render_quantum_size_ = 128;
 

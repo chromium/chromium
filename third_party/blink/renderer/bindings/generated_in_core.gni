@@ -1944,6 +1944,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_worklet.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_worklet_global_scope.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_worklet_global_scope.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_worklet_performance.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_worklet_performance.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_writable_stream.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_writable_stream_default_controller.cc",

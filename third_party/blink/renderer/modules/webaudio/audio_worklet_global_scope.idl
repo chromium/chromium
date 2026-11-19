@@ -12,6 +12,7 @@
     readonly attribute unsigned long long currentFrame;
     readonly attribute double currentTime;
     [RuntimeEnabled=AudioWorkletSharedPort] readonly attribute MessagePort port;
+    [RuntimeEnabled=AudioWorkletPerformance, Replaceable] readonly attribute WorkletPerformance performance;
     readonly attribute float sampleRate;
     [RuntimeEnabled=WebAudioConfigurableRenderQuantum, MeasureAs=WebAudioRenderQuantumSize] readonly attribute unsigned long renderQuantumSize;
 };

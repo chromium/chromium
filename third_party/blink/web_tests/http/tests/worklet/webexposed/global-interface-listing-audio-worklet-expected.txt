@@ -170,6 +170,10 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface WorkletGlobalScope
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface WorkletPerformance
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE:     method now
 CONSOLE MESSAGE: interface WritableStream
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter locked
@@ -234,9 +238,11 @@ CONSOLE MESSAGE: [GLOBAL OBJECT]
 CONSOLE MESSAGE:     attribute globalThis
 CONSOLE MESSAGE:     getter currentFrame
 CONSOLE MESSAGE:     getter currentTime
+CONSOLE MESSAGE:     getter performance
 CONSOLE MESSAGE:     getter port
 CONSOLE MESSAGE:     getter renderQuantumSize
 CONSOLE MESSAGE:     getter sampleRate
 CONSOLE MESSAGE:     method gc
 CONSOLE MESSAGE:     method registerProcessor
+CONSOLE MESSAGE:     setter performance
 

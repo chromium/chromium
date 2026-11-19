@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_processor_constructor.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/core/timing/worklet_performance.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -41,6 +44,13 @@ AudioWorkletGlobalScope::AudioWorkletGlobalScope(
   // an exception here, requiring low-latency behavior similar to any visible
   // state.
   GetThread()->GetWorkerBackingThread().SetForegrounded();
+
+  if (RuntimeEnabledFeatures::AudioWorkletPerformanceEnabled()) {
+    // TODO(crbug.com/392542574): Plumb the document's time origin through
+    // GlobalScopeCreationParams; until then now() returns 0.
+    performance_ = MakeGarbageCollected<WorkletPerformance>(
+        base::TimeTicks(), CrossOriginIsolatedCapability());
+  }
 }
 
 AudioWorkletGlobalScope::~AudioWorkletGlobalScope() = default;
@@ -233,8 +243,8 @@ AudioWorkletGlobalScope::CreateProcessor(
   UnpackedSerializedScriptValue* unpacked_node_options =
       MakeGarbageCollected<UnpackedSerializedScriptValue>(
           std::move(node_options));
-  ScriptValue deserialized_options(
-      isolate, unpacked_node_options->Deserialize(isolate));
+  ScriptValue deserialized_options(isolate,
+                                   unpacked_node_options->Deserialize(isolate));
   if (unpacked_node_options->Value()->HasDeserializationError()) {
     return base::unexpected(AudioWorkletProcessorErrorDetails::Create(
         AudioWorkletProcessorErrorState::kConstructionError, name,
@@ -326,6 +336,7 @@ void AudioWorkletGlobalScope::SetObjectProxy(
 void AudioWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(processor_definition_map_);
   visitor->Trace(port_);
+  visitor->Trace(performance_);
   WorkletGlobalScope::Trace(visitor);
 }
 

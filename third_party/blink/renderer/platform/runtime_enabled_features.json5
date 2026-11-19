@@ -828,6 +828,12 @@
       status: "experimental",
     },
     {
+      // Exposes WorkletPerformance on AudioWorkletGlobalScope.performance.
+      // https://chromestatus.com/feature/5108412173123584
+      name: "AudioWorkletPerformance",
+      status: "test",
+    },
+    {
       name: "AudioWorkletProcessorErrorEventType",
       status: "stable",
     },
