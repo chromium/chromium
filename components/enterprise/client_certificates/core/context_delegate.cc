@@ -18,10 +18,15 @@
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/client_certificates/core/metrics_util.h"
-#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 #include "net/cert/x509_certificate.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "components/policy/core/common/cloud/cloud_policy_util_ios.h"
+#else
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
+#endif
 
 namespace client_certificates {
 
@@ -136,9 +141,22 @@ std::optional<std::string> ContextDelegate::GetConfiguredComputerName(
   if (!cached_computer_name_.has_value()) {
     std::string raw_name = computer_name_for_testing_.has_value()
                                ? *computer_name_for_testing_
+#if BUILDFLAG(IS_IOS)
+                               : policy::GetIOSManagedDeviceName();
+#else
                                : policy::GetDeviceName();
+#endif
     std::string sanitized = SanitizeAndTruncateCommonName(raw_name);
     if (sanitized.empty()) {
+#if BUILDFLAG(IS_IOS)
+      LOG_POLICY(WARNING, DEVICE_TRUST)
+          << "Managed App Configuration DeviceName is unset or empty for "
+             "computer_name; falling back to default identifier.";
+#else
+      LOG_POLICY(WARNING, DEVICE_TRUST)
+          << "Device name is empty for computer_name; falling back to default "
+             "identifier.";
+#endif
       return std::nullopt;
     }
     cached_computer_name_ = std::move(sanitized);

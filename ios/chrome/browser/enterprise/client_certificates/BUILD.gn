@@ -61,7 +61,9 @@ source_set("util") {
     "//base",
     "//components/enterprise",
     "//components/enterprise/client_certificates/core:management_delegate",
+    "//components/prefs",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
+    "//net",
   ]
 
   friend = [ ":unit_tests" ]
@@ -84,15 +86,21 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser",
     "//components/enterprise:test_support",
     "//components/enterprise/browser/identifiers",
+    "//components/enterprise/client_certificates/core",
     "//components/enterprise/client_certificates/core:test_support",
     "//components/enterprise/client_certificates/ios",
+    "//components/policy/core/common",
+    "//components/prefs:test_support",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
+    "//net",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  frameworks = [ "Foundation.framework" ]
 }

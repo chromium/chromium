@@ -24,6 +24,7 @@
 #import "components/enterprise/client_certificates/core/private_key_types.h"
 #import "components/enterprise/client_certificates/core/unexportable_private_key_factory.h"
 #import "components/enterprise/client_certificates/ios/certificate_provisioning_service_ios.h"
+#import "components/prefs/pref_service.h"
 #import "crypto/unexportable_key.h"
 #import "ios/chrome/browser/enterprise/client_certificates/browser_context_delegate_ios.h"
 #import "ios/chrome/browser/enterprise/client_certificates/lazy_unexportable_private_key_factory.h"
@@ -129,14 +130,15 @@ CreateBrowserCertificateProvisioningService(
     client_certificates::CertificateStore* certificate_store,
     policy::DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  if (!url_loader_factory || !device_management_service || !certificate_store) {
+  if (!local_state || !url_loader_factory || !device_management_service ||
+      !certificate_store) {
     return nullptr;
   }
 
   auto core_service =
       client_certificates::CertificateProvisioningService::Create(
           local_state, certificate_store,
-          std::make_unique<BrowserContextDelegateIOS>(),
+          std::make_unique<BrowserContextDelegateIOS>(local_state),
           client_certificates::KeyUploadClient::Create(
               std::make_unique<
                   enterprise_attestation::BrowserCloudManagementDelegate>(
