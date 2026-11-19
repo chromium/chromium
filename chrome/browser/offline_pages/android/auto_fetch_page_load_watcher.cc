@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher.h"
@@ -339,8 +341,8 @@ void InternalImpl::TabModelReady() {
 
 }  // namespace auto_fetch_internal
 
-// Watches out for tab events, and calls |InternalImpl::TabModelReady| and
-// |InternalImpl::TabClosed|.
+// Watches out for tab events of one profile, and calls
+// |InternalImpl::TabModelReady| and |InternalImpl::TabClosed|.
 class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
                                              public TabModelObserver {
  public:
@@ -355,15 +357,17 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
   }
 
   ~TabWatcher() override {
-    if (observed_tab_model_) {
-      observed_tab_model_->RemoveObserver(this);
-    }
     TabModelList::RemoveObserver(this, profile_);
   }
 
   void RegisterTabObserver() {
+    // Observe the list before seeding the existing models, so that no model
+    // added in between is missed.
     TabModelList::AddObserver(this, profile_);
-    ObserveNonOffTheRecordTabModel();
+    TabModelList::ForEach(profile_, [this](TabModel* model) {
+      ObserveTabModel(model);
+      return true;
+    });
   }
 
   // TabModelObserver.
@@ -373,16 +377,14 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
     }
   }
 
-  // TabModelListObserver.
+  // TabModelListObserver. Only called for tab models of `profile_`.
   void OnTabModelAdded(TabModel* tab_model) override {
-    ObserveNonOffTheRecordTabModel();
+    ObserveTabModel(tab_model);
   }
 
   void OnTabModelRemoved(TabModel* tab_model) override {
-    if (observed_tab_model_ == tab_model) {
-      observed_tab_model_->RemoveObserver(this);
-      observed_tab_model_ = nullptr;
-      ObserveNonOffTheRecordTabModel();
+    if (tab_model_observations_.IsObservingSource(tab_model)) {
+      tab_model_observations_.RemoveObservation(tab_model);
     }
   }
 
@@ -391,27 +393,31 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void ObserveNonOffTheRecordTabModel() {
-    if (observed_tab_model_) {
+  // Observes every standard non-off-the-record tab model of `profile_`, e.g.
+  // one per window, so that tab closures in any of them are seen.
+  void ObserveTabModel(TabModel* model) {
+    if (model->IsOffTheRecord() ||
+        model->GetTabModelType() != TabModel::TabModelType::kStandard ||
+        tab_model_observations_.IsObservingSource(model)) {
       return;
     }
-    // The assumption is that there can be at most one non-off-the-record tab
-    // model. Observe it if it exists.
-    TabModelList::ForEach(profile_, [this](TabModel* model) {
-      if (!model->IsOffTheRecord()) {
-        observed_tab_model_ = model;
-        observed_tab_model_->AddObserver(this);
-        impl_->TabModelReady();
-        return false;
-      }
-      return true;
-    });
+    tab_model_observations_.AddObservation(model);
+    if (!tab_model_ready_) {
+      tab_model_ready_ = true;
+      // TODO(crbug.com/40254448): Defer the missing-tab decision until all of
+      // this profile's TabModels finish session restore; see multi-window
+      // restore.
+      impl_->TabModelReady();
+    }
   }
 
   raw_ptr<InternalImpl> impl_;
   raw_ptr<Profile> profile_;
-  // The observed tab model. May be null if not yet observing.
-  raw_ptr<TabModel> observed_tab_model_ = nullptr;
+  // Whether |InternalImpl::TabModelReady| was called.
+  bool tab_model_ready_ = false;
+  // Observations of the non-off-the-record tab models of `profile_`.
+  base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
+      tab_model_observations_{this};
   base::WeakPtrFactory<TabWatcher> weak_ptr_factory_{this};
 };
 

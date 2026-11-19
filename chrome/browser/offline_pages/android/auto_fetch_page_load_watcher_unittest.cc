@@ -7,15 +7,22 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service_factory.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/offline_pages/core/background/request_coordinator_stub_taco.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_renderer_host.h"
@@ -283,6 +290,92 @@ TEST_F(AutoFetchInternalImplTest, OtherTabClosedDoesNotNotify) {
   impl_.TabClosed(kDefaultTabId + 1);
 
   EXPECT_EQ(std::vector<int64_t>(), delegate_.set_notification_state_requests);
+}
+
+// Tests which tab models |AutoFetchPageLoadWatcher| observes, with real
+// TabModelList registration.
+class AutoFetchPageLoadWatcherTabModelTest : public testing::Test {
+ public:
+  void SetUp() override {
+    request_coordinator_taco_.CreateRequestCoordinator();
+  }
+
+  void TearDown() override {
+    watcher_.reset();
+    for (TabModel* model : registered_models_) {
+      TabModelList::RemoveTabModel(model);
+    }
+  }
+
+  TestTabModel* AddTabModel(
+      Profile* profile,
+      TabModel::TabModelType type = TabModel::TabModelType::kStandard) {
+    models_.push_back(std::make_unique<TestTabModel>(
+        profile, chrome::android::ActivityType::kTabbed, type));
+    TabModelList::AddTabModel(models_.back().get());
+    registered_models_.push_back(models_.back().get());
+    return models_.back().get();
+  }
+
+  void RemoveTabModel(TestTabModel* model) {
+    TabModelList::RemoveTabModel(model);
+    std::erase(registered_models_, model);
+  }
+
+  void CreateWatcher() {
+    watcher_ = std::make_unique<AutoFetchPageLoadWatcher>(
+        &profile_, &notifier_, request_coordinator_taco_.request_coordinator());
+  }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+  TestingProfile other_profile_;
+  RequestCoordinatorStubTaco request_coordinator_taco_;
+  MockAutoFetchNotifier notifier_;
+  std::vector<std::unique_ptr<TestTabModel>> models_;
+  std::vector<raw_ptr<TabModel>> registered_models_;
+  std::unique_ptr<AutoFetchPageLoadWatcher> watcher_;
+};
+
+// The watcher observes every regular tab model of its profile, e.g. one per
+// window, including ones added later, until they are removed. It never
+// observes those of another profile or of the profile's off-the-record profile.
+TEST_F(AutoFetchPageLoadWatcherTabModelTest,
+       ObservesEveryTabModelOfOwnProfile) {
+  TestTabModel* other_profile_model = AddTabModel(&other_profile_);
+  TestTabModel* otr_model =
+      AddTabModel(profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  TestTabModel* empty_model =
+      AddTabModel(&profile_, TabModel::TabModelType::kEmpty);
+  TestTabModel* headless_model =
+      AddTabModel(&profile_, TabModel::TabModelType::kHeadless);
+  TestTabModel* first_window_model = AddTabModel(&profile_);
+  TestTabModel* second_window_model = AddTabModel(&profile_);
+  CreateWatcher();
+
+  // Observers are registered in a posted task.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return second_window_model->GetObserver() != nullptr; }));
+  EXPECT_NE(nullptr, first_window_model->GetObserver());
+  EXPECT_EQ(nullptr, other_profile_model->GetObserver());
+  EXPECT_EQ(nullptr, otr_model->GetObserver());
+  EXPECT_EQ(nullptr, empty_model->GetObserver());
+  EXPECT_EQ(nullptr, headless_model->GetObserver());
+
+  TestTabModel* third_window_model = AddTabModel(&profile_);
+  TestTabModel* other_profile_second_model = AddTabModel(&other_profile_);
+  EXPECT_NE(nullptr, third_window_model->GetObserver());
+  EXPECT_EQ(nullptr, other_profile_second_model->GetObserver());
+
+  RemoveTabModel(second_window_model);
+  EXPECT_EQ(nullptr, second_window_model->GetObserver());
+  EXPECT_NE(nullptr, first_window_model->GetObserver());
+  EXPECT_NE(nullptr, third_window_model->GetObserver());
+
+  watcher_.reset();
+  EXPECT_EQ(nullptr, first_window_model->GetObserver());
+  EXPECT_EQ(nullptr, third_window_model->GetObserver());
 }
 
 }  // namespace
