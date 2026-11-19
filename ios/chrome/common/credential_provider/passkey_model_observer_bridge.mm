@@ -5,19 +5,19 @@
 #import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 
 PasskeyModelObserverBridge::PasskeyModelObserverBridge(
-    id<PasskeyModelObserverDelegate> observer_delegate,
+    id<PasskeyModelObserverDelegate> delegate,
     webauthn::PasskeyModel* passkey_model)
-    : passkey_model_(passkey_model), observer_(observer_delegate) {
+    : observer_(delegate) {
   DCHECK(observer_);
 
   scoped_observation_.Observe(passkey_model);
 }
 
-PasskeyModelObserverBridge::~PasskeyModelObserverBridge() {}
+PasskeyModelObserverBridge::~PasskeyModelObserverBridge() = default;
 
 bool PasskeyModelObserverBridge::IsObserving(
     webauthn::PasskeyModel* passkey_model) const {
-  return passkey_model == passkey_model_;
+  return passkey_model && scoped_observation_.IsObservingSource(passkey_model);
 }
 
 // webauthn::PasskeyModel::Observer:
@@ -28,10 +28,19 @@ void PasskeyModelObserverBridge::OnPasskeysChanged(
 }
 
 void PasskeyModelObserverBridge::OnPasskeyModelShuttingDown() {
+  webauthn::PasskeyModel* passkey_model = scoped_observation_.GetSource();
   scoped_observation_.Reset();
-  [observer_ passKeyModelShuttingDown:passkey_model_];
+  [observer_ passKeyModelShuttingDown:passkey_model];
 }
 
 void PasskeyModelObserverBridge::OnPasskeyModelIsReady(bool is_ready) {
-  [observer_ passkeyModelIsReady:passkey_model_];
+  webauthn::PasskeyModel* passkey_model = scoped_observation_.GetSource();
+  if (is_ready) {
+    [observer_ passkeyModelIsReady:passkey_model];
+    return;
+  }
+  if ([observer_
+          respondsToSelector:@selector(passkeyModelDidFailInitialization:)]) {
+    [observer_ passkeyModelDidFailInitialization:passkey_model];
+  }
 }
