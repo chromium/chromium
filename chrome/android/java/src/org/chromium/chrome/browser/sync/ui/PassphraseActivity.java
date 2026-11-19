@@ -14,14 +14,14 @@ import android.os.Bundle;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -35,7 +35,7 @@ import org.chromium.components.sync.SyncService.SyncStateChangedListener;
  * target of an Android notification.
  */
 @NullMarked
-public class PassphraseActivity extends ChromeBaseAppCompatActivity
+public class PassphraseActivity extends SynchronousInitializationActivity
         implements PassphraseDialogFragment.Delegate, FragmentManager.OnBackStackChangedListener {
     public static final String FRAGMENT_PASSPHRASE = "passphrase_fragment";
     public static final String FRAGMENT_SPINNER = "spinner_fragment";
@@ -47,24 +47,43 @@ public class PassphraseActivity extends ChromeBaseAppCompatActivity
     private @Nullable SyncStateChangedListener mSyncStateChangedListener;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // The Chrome browser process must be started here because this Activity
-        // may be started explicitly from Android notifications.
-        // During a normal user flow the ChromeTabbedActivity would start the Chrome browser
-        // process and this wouldn't be necessary.
-        ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-        mProfile = ProfileManager.getLastUsedRegularProfile();
+    protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
+        super.onCreateInternal(savedInstanceState);
+        if (savedInstanceState != null && getProfileSupplier().get() == null) {
+            // The Profile is still loading, but the dialogs restored by super.onCreate() need it
+            // when they are created in onStart(). Drop them; the right dialog is shown again once
+            // the Profile is available.
+            getSupportFragmentManager()
+                    .popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+    }
+
+    @Initializer
+    @Override
+    protected void onProfileAvailable(Profile profile) {
+        super.onProfileAvailable(profile);
+        mProfile = profile;
         mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
         var syncService = SyncServiceFactory.getForProfile(mProfile);
         assert syncService != null;
         mSyncService = syncService;
         getSupportFragmentManager().addOnBackStackChangedListener(this);
+
+        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+            maybeDisplayDialogOnResume();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (mIdentityManager == null) return;
+        maybeDisplayDialogOnResume();
+    }
+
+    private void maybeDisplayDialogOnResume() {
+        // The Profile can become available after finish() but before onPause().
+        if (isFinishing()) return;
         assumeNonNull(mIdentityManager);
         Account account =
                 AccountInfo.getAndroidAccountFrom(mIdentityManager.getPrimaryAccountInfo());
@@ -78,7 +97,7 @@ public class PassphraseActivity extends ChromeBaseAppCompatActivity
                 displayPassphraseDialog();
             } else {
                 addSyncStateChangedListener();
-                displaySpinnerDialog();
+                if (!isShowingDialog(FRAGMENT_SPINNER)) displaySpinnerDialog();
             }
         }
     }
@@ -113,7 +132,7 @@ public class PassphraseActivity extends ChromeBaseAppCompatActivity
     }
 
     private boolean isShowingDialog(String tag) {
-        return getFragmentManager().findFragmentByTag(tag) != null;
+        return getSupportFragmentManager().findFragmentByTag(tag) != null;
     }
 
     private void displayPassphraseDialog() {
