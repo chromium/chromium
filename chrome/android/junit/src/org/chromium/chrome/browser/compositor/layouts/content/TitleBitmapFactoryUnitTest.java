@@ -213,7 +213,8 @@ public class TitleBitmapFactoryUnitTest {
         Token existingGroupId = new Token(/* high= */ 1L, /* low= */ 2L);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(existingGroupId)))
                 .thenReturn(true);
-        when(mTabModel.getTabGroupColor(existingGroupId)).thenReturn(TabGroupColorId.GREY);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(existingGroupId)))
+                .thenReturn(TabGroupColorId.GREY);
 
         Bitmap groupBitmap =
                 mFactory.getGroupTitleBitmap(
@@ -248,7 +249,8 @@ public class TitleBitmapFactoryUnitTest {
                         mFaviconDimension / 2, mFaviconDimension / 2, Bitmap.Config.ARGB_8888);
         Token groupId = new Token(/* high= */ 1L, /* low= */ 2L);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
-        when(mTabModel.getTabGroupColor(groupId)).thenReturn(TabGroupColorId.GREY);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(groupId)))
+                .thenReturn(TabGroupColorId.GREY);
 
         Bitmap tabTitle1 = mFactory.getTabTitleBitmap("First Title");
         Bitmap favicon1 = mFactory.getFaviconBitmap(largeFavicon);

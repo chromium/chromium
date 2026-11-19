@@ -407,7 +407,8 @@ public class VerticalTabsTest {
                 () ->
                         targetColorId
                                 == selector.getCurrentModel()
-                                        .getTabGroupColor(tab1.getTabGroupId()),
+                                        .getTabGroupColor(
+                                                TabGroupId.fromRawToken(tab1.getTabGroupId())),
                 "Tab group color ID should match the stored color ID.");
     }
 

@@ -467,7 +467,9 @@ public class TabStripGroupContextMenuTest {
 
         // Verify the default grey color is selected.
         @TabGroupColorId
-        int color = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabGroupColor(mTabGroupId));
+        int color =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> tabModel.getTabGroupColor(TabGroupId.fromRawToken(mTabGroupId)));
         assertEquals("The default grey color should be selected", TabGroupColorId.GREY, color);
 
         // Select the blue color.
@@ -475,7 +477,9 @@ public class TabStripGroupContextMenuTest {
         onView(withContentDescription(blueColor)).perform(click());
 
         // Verify the blue color is selected.
-        color = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabGroupColor(mTabGroupId));
+        color =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> tabModel.getTabGroupColor(TabGroupId.fromRawToken(mTabGroupId)));
         assertEquals("The blue color should be selected", TabGroupColorId.BLUE, color);
     }
 

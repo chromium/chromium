@@ -216,7 +216,7 @@ public class TitleBitmapFactory {
     public @Nullable Bitmap getGroupTitleBitmap(
             TabModel tabModel, Context context, Token groupId, String title) {
         if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))) return null;
-        @TabGroupColorId int colorId = tabModel.getTabGroupColor(groupId);
+        @TabGroupColorId int colorId = tabModel.getTabGroupColor(TabGroupId.fromRawToken(groupId));
         @ColorInt
         int color =
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(

@@ -4258,7 +4258,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(Collections.singletonList(mTab1), TAB_GROUP_ID);
         when(mTabModel.isIncognito()).thenReturn(false);
         // Mock that we have a stored color stored with reference to root ID of tab1.
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID)).thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn(COLOR_2);
         when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
 
         // Test a group of three.

@@ -677,7 +677,8 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidChangeColor() {
-        when(mTabModel.getTabGroupColor(TOKEN_1)).thenReturn(TabGroupColorId.RED);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TOKEN_1)))
+                .thenReturn(TabGroupColorId.RED);
 
         mTabGroupObserverCaptor.getValue().didChangeTabGroupColor(TOKEN_1, TabGroupColorId.RED);
         verify(mTabGroupSyncService, times(1))

@@ -1371,7 +1371,9 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mCollectionModel.addTabGroupObserver(colorObserver);
                     mCollectionModel.setTabGroupColor(tabGroupId, testColor);
-                    assertEquals(testColor, mCollectionModel.getTabGroupColor(tabGroupId));
+                    assertEquals(
+                            testColor,
+                            mCollectionModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
                     assertEquals(
                             testColor, mCollectionModel.getTabGroupColorWithFallback(tabGroupId));
                     mCollectionModel.removeTabGroupObserver(colorObserver);
@@ -1540,7 +1542,9 @@ public class TabCollectionTabModelImplTest {
             assertEquals(
                     newTitle,
                     mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
-            assertEquals(newColor, mCollectionModel.getTabGroupColor(tabGroupId));
+            assertEquals(
+                    newColor,
+                    mCollectionModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
             assertEquals(newCollapsed, mCollectionModel.getTabGroupCollapsed(tabGroupId));
 
             assertEquals(1, titleCallback.getCallCount());
@@ -1786,7 +1790,9 @@ public class TabCollectionTabModelImplTest {
                     TabGroupColorUtils.INVALID_COLOR_ID,
                     TabGroupVisualDataStore.getTabGroupColor(tabGroupId));
 
-            assertEquals(TabGroupColorId.GREY, mCollectionModel.getTabGroupColor(tabGroupId));
+            assertEquals(
+                    TabGroupColorId.GREY,
+                    mCollectionModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
 
             assertEquals(1, colorCallback.getCallCount());
         } finally {
@@ -2728,11 +2734,15 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(
                             group1Title,
                             mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId1)));
-                    assertEquals(group1Color, mCollectionModel.getTabGroupColor(groupId1));
+                    assertEquals(
+                            group1Color,
+                            mCollectionModel.getTabGroupColor(TabGroupId.fromRawToken(groupId1)));
                     assertEquals(
                             group2Title,
                             mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId2)));
-                    assertEquals(group2Color, mCollectionModel.getTabGroupColor(groupId2));
+                    assertEquals(
+                            group2Color,
+                            mCollectionModel.getTabGroupColor(TabGroupId.fromRawToken(groupId2)));
                 });
     }
 
@@ -3677,7 +3687,9 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(
                             title,
                             mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
-                    assertEquals(color, mCollectionModel.getTabGroupColor(tabGroupId));
+                    assertEquals(
+                            color,
+                            mCollectionModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
                 });
         assertEquals(3, getCount());
         assertTabsInOrderAre(List.of(tab0, tab1, tab2));

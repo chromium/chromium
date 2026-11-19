@@ -254,13 +254,12 @@ std::u16string TabCollectionTabModelImpl::GetTabGroupTitle(
 }
 
 int32_t TabCollectionTabModelImpl::GetTabGroupColor(
-    const base::Token& tab_group_id) const {
-  auto group_id = TabGroupId::FromRawToken(tab_group_id);
-  if (!HasTabGroup(group_id)) {
+    const TabGroupId& tab_group_id) const {
+  if (!HasTabGroup(tab_group_id)) {
     return kInvalidTabGroupColorId;
   }
   const TabGroupVisualData* visual_data =
-      GetTabGroupVisualDataChecked(group_id);
+      GetTabGroupVisualDataChecked(tab_group_id);
   return static_cast<int32_t>(visual_data->color());
 }
 

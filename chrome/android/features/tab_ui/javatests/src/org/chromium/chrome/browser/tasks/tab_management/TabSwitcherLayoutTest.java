@@ -911,7 +911,9 @@ public class TabSwitcherLayoutTest {
                             tabModel.getTabGroupTitle(
                                     TabGroupId.fromRawToken(tab1.getTabGroupId())));
                     assertEquals(
-                            nextSuggestedColorId, tabModel.getTabGroupColor(tab1.getTabGroupId()));
+                            nextSuggestedColorId,
+                            tabModel.getTabGroupColor(
+                                    TabGroupId.fromRawToken(tab1.getTabGroupId())));
                 });
     }
 
@@ -1011,10 +1013,14 @@ public class TabSwitcherLayoutTest {
                                             normalTabModel.getTabAt(0).getTabGroupId())));
                     assertEquals(
                             nextSuggestedColorId1,
-                            tabModel.getTabGroupColor(normalTabModel.getTabAt(4).getTabGroupId()));
+                            tabModel.getTabGroupColor(
+                                    TabGroupId.fromRawToken(
+                                            normalTabModel.getTabAt(4).getTabGroupId())));
                     assertEquals(
                             nextSuggestedColorId2,
-                            tabModel.getTabGroupColor(normalTabModel.getTabAt(0).getTabGroupId()));
+                            tabModel.getTabGroupColor(
+                                    TabGroupId.fromRawToken(
+                                            normalTabModel.getTabAt(0).getTabGroupId())));
                 });
     }
 
@@ -1476,7 +1482,8 @@ public class TabSwitcherLayoutTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel tabModel = getCurrentModel();
-                    return tabModel.getTabGroupColor(tabModel.getTabAt(index).getTabGroupId());
+                    return tabModel.getTabGroupColor(
+                            TabGroupId.fromRawToken(tabModel.getTabAt(index).getTabGroupId()));
                 });
     }
 

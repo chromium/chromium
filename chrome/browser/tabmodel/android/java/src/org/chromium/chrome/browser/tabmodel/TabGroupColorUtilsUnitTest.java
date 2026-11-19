@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 
 import java.util.Set;
@@ -60,8 +61,10 @@ public class TabGroupColorUtilsUnitTest {
 
         when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that the first and third colors already exist.
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_1)).thenReturn(COLOR_1);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_2)).thenReturn(COLOR_3);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                .thenReturn(COLOR_1);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_2)))
+                .thenReturn(COLOR_3);
 
         assertEquals(COLOR_2, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
     }
@@ -75,9 +78,12 @@ public class TabGroupColorUtilsUnitTest {
 
         when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that the first and second colors already exist.
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_1)).thenReturn(COLOR_1);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_2)).thenReturn(COLOR_1);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_3)).thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                .thenReturn(COLOR_1);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_2)))
+                .thenReturn(COLOR_1);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_3)))
+                .thenReturn(COLOR_2);
 
         assertEquals(COLOR_3, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
     }
@@ -89,7 +95,8 @@ public class TabGroupColorUtilsUnitTest {
 
         when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that only the second color already exists.
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_1)).thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                .thenReturn(COLOR_2);
 
         assertEquals(COLOR_1, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
     }
@@ -109,15 +116,24 @@ public class TabGroupColorUtilsUnitTest {
 
         when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that all colors are used.
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_1)).thenReturn(COLOR_1);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_2)).thenReturn(COLOR_2);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_3)).thenReturn(COLOR_3);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_4)).thenReturn(COLOR_4);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_5)).thenReturn(COLOR_5);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_6)).thenReturn(COLOR_6);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_7)).thenReturn(COLOR_7);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_8)).thenReturn(COLOR_8);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_9)).thenReturn(COLOR_9);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                .thenReturn(COLOR_1);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_2)))
+                .thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_3)))
+                .thenReturn(COLOR_3);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_4)))
+                .thenReturn(COLOR_4);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_5)))
+                .thenReturn(COLOR_5);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_6)))
+                .thenReturn(COLOR_6);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_7)))
+                .thenReturn(COLOR_7);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_8)))
+                .thenReturn(COLOR_8);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_9)))
+                .thenReturn(COLOR_9);
 
         assertEquals(COLOR_1, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
     }
@@ -136,25 +152,35 @@ public class TabGroupColorUtilsUnitTest {
 
         when(mTabModel.getAllTabGroupIds()).thenReturn(tabGroupIdsSet);
         // Mock that all colors are used except for COLOR_8.
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_1)).thenReturn(COLOR_1);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_2)).thenReturn(COLOR_2);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_3)).thenReturn(COLOR_3);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_4)).thenReturn(COLOR_4);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_5)).thenReturn(COLOR_5);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_6)).thenReturn(COLOR_6);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_7)).thenReturn(COLOR_7);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_8)).thenReturn(COLOR_9);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                .thenReturn(COLOR_1);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_2)))
+                .thenReturn(COLOR_2);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_3)))
+                .thenReturn(COLOR_3);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_4)))
+                .thenReturn(COLOR_4);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_5)))
+                .thenReturn(COLOR_5);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_6)))
+                .thenReturn(COLOR_6);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_7)))
+                .thenReturn(COLOR_7);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_8)))
+                .thenReturn(COLOR_9);
 
         assertEquals(COLOR_8, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
 
         // Mock that subsequent addition of the missing color directs the suggestion to COLOR_1.
         tabGroupIdsSet.add(TAB_GROUP_ID_9);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_9)).thenReturn(COLOR_8);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_9)))
+                .thenReturn(COLOR_8);
         assertEquals(COLOR_1, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
 
         // Mock that subsequent addition of the first color directs the suggestion to COLOR_2.
         tabGroupIdsSet.add(TAB_GROUP_ID_10);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID_10)).thenReturn(COLOR_1);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID_10)))
+                .thenReturn(COLOR_1);
         assertEquals(COLOR_2, TabGroupColorUtils.getNextSuggestedColorId(mTabModel));
     }
 }

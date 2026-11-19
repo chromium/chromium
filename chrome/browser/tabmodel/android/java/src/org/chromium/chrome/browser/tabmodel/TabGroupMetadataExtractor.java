@@ -64,7 +64,7 @@ public class TabGroupMetadataExtractor {
         if (tabGroupId == null) return null;
 
         // 3. Fetch group-level properties using the tab group ID.
-        int tabGroupColor = tabModel.getTabGroupColor(tabGroupId);
+        int tabGroupColor = tabModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
         @Nullable String tabGroupTitle =
                 tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
         boolean tabGroupCollapsed = tabModel.getTabGroupCollapsed(tabGroupId);

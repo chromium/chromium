@@ -4286,7 +4286,7 @@ public class StripLayoutHelper
 
     private void updateGroupTitleTint(StripLayoutGroupTitle groupTitle) {
         if (mModel == null) return;
-        int colorId = mModel.getTabGroupColor(groupTitle.getTabGroupId());
+        int colorId = mModel.getTabGroupColor(TabGroupId.fromRawToken(groupTitle.getTabGroupId()));
         // If the color is invalid, temporarily assign a default placeholder color.
         if (colorId == TabGroupColorUtils.INVALID_COLOR_ID) colorId = TabGroupColorId.GREY;
         updateGroupTitleTint(groupTitle, colorId);

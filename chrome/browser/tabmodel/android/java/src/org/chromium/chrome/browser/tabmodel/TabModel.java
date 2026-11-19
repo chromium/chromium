@@ -661,7 +661,7 @@ public interface TabModel extends TabList {
      * TabGroupColorId} if found, otherwise a {@link TabGroupColorUtils.INVALID_COLOR_ID} if there
      * is no color entry for the group.
      */
-    int getTabGroupColor(Token tabGroupId);
+    int getTabGroupColor(TabGroupId tabGroupId);
 
     /**
      * This method fetches tab group colors for the specified tab group. If the color does not

@@ -296,7 +296,8 @@ public class TabUiUtilsUnitTest {
     public void testUpdateTabGroupColor() {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(true);
-        when(mTabModel.getTabGroupColor(TAB_GROUP_ID)).thenReturn(TabGroupColorId.BLUE);
+        when(mTabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(TabGroupColorId.BLUE);
         TabUiUtils.updateTabGroupColor(mTabModel, TAB_GROUP_ID, TabGroupColorId.RED);
         verify(mTabModel).setTabGroupColor(TAB_GROUP_ID, TabGroupColorId.RED);
 

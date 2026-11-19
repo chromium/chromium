@@ -958,7 +958,8 @@ public class ChromeTabbedActivityTest {
                     Assert.assertEquals(
                             TAB_GROUP_TITLE,
                             tabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)));
-                    Assert.assertEquals(0, tabModel.getTabGroupColor(TAB_GROUP_ID));
+                    Assert.assertEquals(
+                            0, tabModel.getTabGroupColor(TabGroupId.fromRawToken(TAB_GROUP_ID)));
                     if (shouldApplyCollapse) {
                         Assert.assertTrue(tabModel.getTabGroupCollapsed(TAB_GROUP_ID));
                     } else {

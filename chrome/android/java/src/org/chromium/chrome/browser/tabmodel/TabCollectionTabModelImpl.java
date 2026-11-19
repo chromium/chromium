@@ -1605,7 +1605,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public int getTabGroupColor(Token tabGroupId) {
+    public int getTabGroupColor(TabGroupId tabGroupId) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null) return TabGroupColorUtils.INVALID_COLOR_ID;
         return TabCollectionTabModelImplJni.get()
@@ -1614,7 +1614,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     public @TabGroupColorId int getTabGroupColorWithFallback(Token tabGroupId) {
-        int color = getTabGroupColor(tabGroupId);
+        int color = getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
         return color == TabGroupColorUtils.INVALID_COLOR_ID ? TabGroupColorId.GREY : color;
     }
 
@@ -2868,7 +2868,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         setTabGroupTitle(
                 TabGroupId.fromRawToken(tabGroupId),
                 getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
-        setTabGroupColor(tabGroupId, getTabGroupColor(tabGroupId));
+        setTabGroupColor(tabGroupId, getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
         setTabGroupCollapsed(tabGroupId, getTabGroupCollapsed(tabGroupId));
     }
 
@@ -2961,7 +2961,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         int getTabGroupColor(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId);
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
         boolean getTabGroupCollapsed(
                 JniPtr<NativeTabCollectionTabModelImpl> self,

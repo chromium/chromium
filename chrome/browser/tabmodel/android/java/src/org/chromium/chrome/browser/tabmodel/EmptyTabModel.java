@@ -466,7 +466,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void deleteTabGroupTitle(TabGroupId tabGroupId) {}
 
     @Override
-    public int getTabGroupColor(Token tabGroupId) {
+    public int getTabGroupColor(TabGroupId tabGroupId) {
         return TabGroupColorId.GREY;
     }
 

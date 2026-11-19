@@ -12,6 +12,7 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,7 +52,7 @@ public class TabGroupColorUtils {
 
         // Filter all tab groups for ones that already have a color assigned.
         for (Token tabGroupId : tabGroupIds) {
-            int colorId = tabModel.getTabGroupColor(tabGroupId);
+            int colorId = tabModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
 
             // If the tab group has a color stored on shared prefs, increment the colorId map count.
             if (colorId != INVALID_COLOR_ID) {

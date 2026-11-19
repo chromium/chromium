@@ -143,7 +143,7 @@ public class RemoteTabGroupMutationHelper {
         if (savedTabGroup.title == null) {
             savedTabGroup.title = new String();
         }
-        savedTabGroup.color = mTabModel.getTabGroupColor(tabGroupId);
+        savedTabGroup.color = mTabModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
         if (savedTabGroup.color == TabGroupColorUtils.INVALID_COLOR_ID) {
             savedTabGroup.color = TabGroupColorId.GREY;
         }
@@ -181,7 +181,8 @@ public class RemoteTabGroupMutationHelper {
             if (tmpTitle != null) {
                 title = tmpTitle;
             }
-            @TabGroupColorId int tmpColor = mTabModel.getTabGroupColor(tabGroupId);
+            @TabGroupColorId
+            int tmpColor = mTabModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
             if (tmpColor != TabGroupColorUtils.INVALID_COLOR_ID) {
                 color = tmpColor;
             }

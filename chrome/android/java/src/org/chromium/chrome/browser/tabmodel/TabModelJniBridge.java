@@ -633,7 +633,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
     @Override
     @CalledByNative
-    public abstract int getTabGroupColor(@JniType("base::Token") Token tabGroupId);
+    public abstract int getTabGroupColor(@JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
     @Override
     @CalledByNative

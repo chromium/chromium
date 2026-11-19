@@ -958,7 +958,8 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testOnTabGroupVisualsChanged_color() {
         Token groupId = new Token(1L, 2L);
-        when(mTabCollectionTabModelImplJni.getTabGroupColor(any(), eq(groupId)))
+        when(mTabCollectionTabModelImplJni.getTabGroupColor(
+                        any(), eq(TabGroupId.fromRawToken(groupId))))
                 .thenReturn(TabGroupColorId.GREY);
 
         mTabModel.setTabGroupColor(groupId, TabGroupColorId.BLUE);
