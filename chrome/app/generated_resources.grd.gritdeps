@@ -12,7 +12,6 @@ chrome/app/glic_strings.grdp
 chrome/app/gmc_strings.grdp
 chrome/app/media_live_preview_strings.grdp
 chrome/app/media_router_strings.grdp
-chrome/app/nearby_share_strings.grdp
 chrome/app/password_manager_ui_strings.grdp
 chrome/app/printing_strings.grdp
 chrome/app/profiles_strings.grdp

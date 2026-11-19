@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Nearby Share specific strings (included from generated_resources.grd). -->
+<!-- Nearby Share specific strings (included from chromeos_strings.grd). -->
 <grit-part>
   <!-- Confirmation page -->
   <message name="IDS_NEARBY_CONFIRMATION_PAGE_ADD_CONTACT_SUBTITLE" desc="Subtitle of the checkbox to add the person to a users contacts. This will make the local device visible to them once they are nearby.">

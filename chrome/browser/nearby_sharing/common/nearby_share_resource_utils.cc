@@ -4,7 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_utils.h"
 
-#include "chrome/grit/generated_resources.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // Returns "Nearby Share".

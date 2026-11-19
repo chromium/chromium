@@ -540,6 +540,7 @@
         Swipe down for more layout options
       </message>
       <if expr="is_chromeos">
+        <part file="nearby_share_strings.grdp" />
         <part file="recorder_strings.grdp" />
         <part file="sharesheet_strings.grdp" />
 

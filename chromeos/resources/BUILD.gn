@@ -10,6 +10,7 @@ grit_strings("strings") {
   source = "chromeos_strings.grd"
   inputs =
       [
+        "nearby_share_strings.grdp",
         "recorder_strings.grdp",
         "sharesheet_strings.grdp",
       ] +

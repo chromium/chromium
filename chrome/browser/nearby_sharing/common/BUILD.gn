@@ -23,8 +23,8 @@ source_set("common") {
   deps = [
     "//ash/constants",
     "//build:branding_buildflags",
-    "//chrome/app:generated_resources",
     "//chromeos/ash/services/nearby/public/mojom",
+    "//chromeos/resources:strings",
     "//components/pref_registry",
     "//components/prefs",
     "//net",
@@ -53,6 +53,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
-    "//chrome/app:generated_resources",
+    "//chromeos/resources:strings",
   ]
 }

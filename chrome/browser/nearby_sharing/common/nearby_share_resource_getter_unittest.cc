@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
-#include "chrome/grit/generated_resources.h"
+#include "chromeos/resources/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class NearbyShareResourceGetterTest : public ::testing::Test {

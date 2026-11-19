@@ -338,11 +338,6 @@ are declared in tools/grit/grit_args.gni.
         <part file="extensions_strings.grdp" />
       </if>
 
-      <!-- Nearby Share specific strings -->
-      <if expr="not is_android">
-        <part file="nearby_share_strings.grdp" />
-      </if>
-
       <!-- What's New strings -->
       <if expr="not is_android">
         <part file="whats_new_strings.grdp" />

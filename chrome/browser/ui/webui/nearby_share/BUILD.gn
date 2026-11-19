@@ -18,7 +18,6 @@ static_library("nearby_share") {
     "//ui/views/controls/webview",
   ]
   deps = [
-    "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/nearby_sharing",
     "//chrome/browser/nearby_sharing:share_target",
@@ -34,6 +33,7 @@ static_library("nearby_share") {
     "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
+    "//chromeos/resources:strings",
     "//ui/webui",
   ]
 }
