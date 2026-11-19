@@ -9,9 +9,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -65,7 +67,7 @@ public class InactiveShortcutMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
-    @Mock private Callback<TemplateUrl> mOnRemoveSearchEngine;
+    @Mock private Callback<String> mOnRemoveSearchEngine;
     @Mock private AimEligibilityServiceFactory.Natives mAimEligibilityNativesMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
@@ -255,9 +257,7 @@ public class InactiveShortcutMediatorUnitTest {
     @Test
     public void testActivateClicked() {
         initMediator();
-        TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
-
-        mMediator.onMenuItemClicked(R.string.site_search_list_menu_activate, templateUrl);
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_activate, "keyword");
 
         verify(mTemplateUrlService).activateSearchEngine("keyword");
     }
@@ -265,9 +265,7 @@ public class InactiveShortcutMediatorUnitTest {
     @Test
     public void testMakeDefaultClicked() {
         initMediator();
-        TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
-
-        mMediator.onMenuItemClicked(R.string.site_search_list_menu_make_default, templateUrl);
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_make_default, "keyword");
 
         verify(mTemplateUrlService).setSearchEngine("keyword");
     }
@@ -275,11 +273,27 @@ public class InactiveShortcutMediatorUnitTest {
     @Test
     public void testDeleteClicked() {
         initMediator();
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_delete, "keyword");
+
+        verify(mOnRemoveSearchEngine).onResult("keyword");
+    }
+
+    @Test
+    public void testMenu_doesNotAccessTemplateUrlAfterListItemCreation() {
         TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
+        when(mSettingsDataProvider.getTemplateUrlsByCategory(
+                        TemplateUrlCategory.INACTIVE_SITE_SEARCH))
+                .thenReturn(List.of(templateUrl));
+        initMediator();
+        ListMenuDelegate delegate = mModelList.get(0).model.get(SiteSearchProperties.MENU_DELEGATE);
+        // The TemplateUrl is not guaranteed to stay valid once the list item has been created.
+        clearInvocations(templateUrl);
 
-        mMediator.onMenuItemClicked(R.string.site_search_list_menu_delete, templateUrl);
+        BasicListMenu listMenu = (BasicListMenu) delegate.getListMenu();
+        listMenu.clickItemForTesting(0);
 
-        verify(mOnRemoveSearchEngine).onResult(templateUrl);
+        verify(mTemplateUrlService).activateSearchEngine("keyword");
+        verifyNoInteractions(templateUrl);
     }
 
     private void verifyCollapsedModelListView(int searchEngineCount) {

@@ -31,8 +31,8 @@ import java.util.List;
 @NullMarked
 public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
     private final Runnable mOnAddSearchEngine;
-    private final Callback<TemplateUrl> mOnEditSearchEngine;
-    private final Callback<TemplateUrl> mOnRemoveSearchEngine;
+    private final Callback<String> mOnEditSearchEngine;
+    private final Callback<String> mOnRemoveSearchEngine;
 
     public CustomSiteSearchMediator(
             Context context,
@@ -40,8 +40,8 @@ public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
             Profile profile,
             SearchEngineSettingsDataProvider settingsDataProvider,
             Runnable onAddSearchEngine,
-            Callback<TemplateUrl> onEditSearchEngine,
-            Callback<TemplateUrl> onRemoveSearchEngine) {
+            Callback<String> onEditSearchEngine,
+            Callback<String> onRemoveSearchEngine) {
         super(context, modelList, profile, settingsDataProvider);
         mOnAddSearchEngine = onAddSearchEngine;
         mOnEditSearchEngine = onEditSearchEngine;
@@ -75,12 +75,14 @@ public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
 
     @Override
     protected ListMenuDelegate createMenuDelegate(TemplateUrl url) {
+        String keyword = url.getKeyword();
+        boolean isStarterPack = url.getStarterPackId() != StarterPackId.NONE;
         return () -> {
             ModelList menuItems = new ModelList();
             // If url is from a starter pack, we can only deactivate it; otherwise, we can edit,
             // make default, deactivate and delete it.
             // TODO: Handle this in the native layer.
-            if (url.getStarterPackId() != StarterPackId.NONE) {
+            if (isStarterPack) {
                 menuItems.add(
                         new ListItemBuilder()
                                 .withTitleRes(R.string.site_search_list_menu_deactivate)
@@ -109,21 +111,21 @@ public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
                     menuItems,
                     (model, view) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);
-                        onMenuItemClicked(textId, url);
+                        onMenuItemClicked(textId, keyword);
                     });
         };
     }
 
     @VisibleForTesting
-    void onMenuItemClicked(int textId, TemplateUrl url) {
+    void onMenuItemClicked(int textId, String keyword) {
         if (R.string.site_search_list_menu_edit == textId) {
-            mOnEditSearchEngine.onResult(url);
+            mOnEditSearchEngine.onResult(keyword);
         } else if (R.string.site_search_list_menu_make_default == textId) {
-            mTemplateUrlService.setSearchEngine(url.getKeyword());
+            mTemplateUrlService.setSearchEngine(keyword);
         } else if (R.string.site_search_list_menu_deactivate == textId) {
-            mTemplateUrlService.deactivateSearchEngine(url.getKeyword());
+            mTemplateUrlService.deactivateSearchEngine(keyword);
         } else if (R.string.site_search_list_menu_delete == textId) {
-            mOnRemoveSearchEngine.onResult(url);
+            mOnRemoveSearchEngine.onResult(keyword);
         }
     }
 }

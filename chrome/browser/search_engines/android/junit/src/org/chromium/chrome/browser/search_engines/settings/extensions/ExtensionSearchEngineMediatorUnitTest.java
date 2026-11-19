@@ -151,16 +151,32 @@ public class ExtensionSearchEngineMediatorUnitTest {
     }
 
     @Test
-    public void testOnMenuItemClicked_Manage() {
+    public void testMenu_doesNotAccessTemplateUrlAfterListItemCreation() {
         when(mTemplateUrl.getProvidingExtensionId()).thenReturn("extension_id");
-        mMediator.onMenuItemClicked(R.string.site_search_extensions_menu_manage, mTemplateUrl);
+        mMediator.onTemplateURLServiceChanged();
+        ArgumentCaptor<ListItem> itemCaptor = ArgumentCaptor.forClass(ListItem.class);
+        verify(mModelList).add(itemCaptor.capture());
+        ListMenuDelegate delegate =
+                itemCaptor.getValue().model.get(SiteSearchProperties.MENU_DELEGATE);
+        // The TemplateUrl is not guaranteed to stay valid once the list item has been created.
+        Mockito.clearInvocations(mTemplateUrl);
+
+        BasicListMenu listMenu = (BasicListMenu) delegate.getListMenu();
+        listMenu.clickItemForTesting(1);
+
+        verify(mMockExtensionControlHandler).disableExtension("extension_id");
+        Mockito.verifyNoInteractions(mTemplateUrl);
+    }
+
+    @Test
+    public void testOnMenuItemClicked_Manage() {
+        mMediator.onMenuItemClicked(R.string.site_search_extensions_menu_manage, "extension_id");
         verify(mCustomTabLauncher).openUrlInCct(mContext, "chrome://extensions/?id=extension_id");
     }
 
     @Test
     public void testOnMenuItemClicked_Disable() {
-        when(mTemplateUrl.getProvidingExtensionId()).thenReturn("extension_id");
-        mMediator.onMenuItemClicked(R.string.site_search_extensions_menu_disable, mTemplateUrl);
+        mMediator.onMenuItemClicked(R.string.site_search_extensions_menu_disable, "extension_id");
         verify(mMockExtensionControlHandler).disableExtension("extension_id");
     }
 

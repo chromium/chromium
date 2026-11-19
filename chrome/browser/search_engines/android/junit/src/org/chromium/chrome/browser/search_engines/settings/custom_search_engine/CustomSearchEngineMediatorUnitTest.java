@@ -60,8 +60,8 @@ public class CustomSearchEngineMediatorUnitTest {
     @Mock private SearchEngineSettingsDataProvider mSettingsDataProvider;
     @Mock private TemplateUrl mTemplateUrl;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
-    @Mock private Callback<TemplateUrl> mOnEditSearchEngine;
-    @Mock private Callback<TemplateUrl> mOnRemoveSearchEngine;
+    @Mock private Callback<String> mOnEditSearchEngine;
+    @Mock private Callback<String> mOnRemoveSearchEngine;
 
     private CustomSearchEngineMediator mMediator;
 
@@ -110,6 +110,22 @@ public class CustomSearchEngineMediatorUnitTest {
     }
 
     @Test
+    public void testMenu_doesNotAccessTemplateUrlAfterListItemCreation() {
+        ArgumentCaptor<ListItem> itemCaptor = ArgumentCaptor.forClass(ListItem.class);
+        verify(mModelList).add(itemCaptor.capture());
+        ListMenuDelegate delegate =
+                itemCaptor.getValue().model.get(SiteSearchProperties.MENU_DELEGATE);
+        // The TemplateUrl is not guaranteed to stay valid once the list item has been created.
+        Mockito.clearInvocations(mTemplateUrl);
+
+        BasicListMenu listMenu = (BasicListMenu) delegate.getListMenu();
+        listMenu.clickItemForTesting(0);
+
+        verify(mOnEditSearchEngine).onResult("keyword");
+        Mockito.verifyNoInteractions(mTemplateUrl);
+    }
+
+    @Test
     public void testMenuDelegate() {
         ArgumentCaptor<ListItem> itemCaptor = ArgumentCaptor.forClass(ListItem.class);
         verify(mModelList).add(itemCaptor.capture());
@@ -144,9 +160,9 @@ public class CustomSearchEngineMediatorUnitTest {
         String keyword = "keyword";
         when(mTemplateUrl.getKeyword()).thenReturn(keyword);
 
-        mMediator.onMenuItemClicked(R.string.site_search_list_menu_edit, mTemplateUrl);
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_edit, "keyword");
 
-        verify(mOnEditSearchEngine).onResult(mTemplateUrl);
+        verify(mOnEditSearchEngine).onResult("keyword");
     }
 
     @Test
@@ -154,7 +170,7 @@ public class CustomSearchEngineMediatorUnitTest {
         String keyword = "keyword";
         when(mTemplateUrl.getKeyword()).thenReturn(keyword);
 
-        mMediator.onMenuItemClicked(R.string.site_search_list_menu_make_default, mTemplateUrl);
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_make_default, "keyword");
 
         verify(mTemplateUrlService).setSearchEngine(keyword);
     }
@@ -164,9 +180,9 @@ public class CustomSearchEngineMediatorUnitTest {
         String keyword = "keyword";
         when(mTemplateUrl.getKeyword()).thenReturn(keyword);
 
-        mMediator.onMenuItemClicked(R.string.site_search_list_menu_delete, mTemplateUrl);
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_delete, "keyword");
 
-        verify(mOnRemoveSearchEngine).onResult(mTemplateUrl);
+        verify(mOnRemoveSearchEngine).onResult("keyword");
     }
 
     @Test

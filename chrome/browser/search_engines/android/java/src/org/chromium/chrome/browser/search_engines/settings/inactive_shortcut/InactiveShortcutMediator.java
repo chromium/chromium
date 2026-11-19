@@ -27,14 +27,14 @@ import java.util.List;
 
 @NullMarked
 public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
-    private final Callback<TemplateUrl> mOnRemoveSearchEngine;
+    private final Callback<String> mOnRemoveSearchEngine;
 
     public InactiveShortcutMediator(
             Context context,
             ModelList modelList,
             Profile profile,
             SearchEngineSettingsDataProvider settingsDataProvider,
-            Callback<TemplateUrl> onRemoveSearchEngine) {
+            Callback<String> onRemoveSearchEngine) {
         super(context, modelList, profile, settingsDataProvider);
         mOnRemoveSearchEngine = onRemoveSearchEngine;
 
@@ -58,6 +58,8 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
 
     @Override
     protected ListMenuDelegate createMenuDelegate(TemplateUrl url) {
+        String keyword = url.getKeyword();
+        boolean isStarterPack = url.getStarterPackId() != StarterPackId.NONE;
         return () -> {
             ModelList menuItems = new ModelList();
             // If url is from a starter pack, we can only activate it; otherwise, we can make
@@ -67,7 +69,7 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
                     new ListItemBuilder()
                             .withTitleRes(R.string.site_search_list_menu_activate)
                             .build());
-            if (url.getStarterPackId() == StarterPackId.NONE) {
+            if (!isStarterPack) {
                 menuItems.add(
                         new ListItemBuilder()
                                 .withTitleRes(R.string.site_search_list_menu_make_default)
@@ -83,19 +85,19 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
                     menuItems,
                     (model, view) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);
-                        onMenuItemClicked(textId, url);
+                        onMenuItemClicked(textId, keyword);
                     });
         };
     }
 
     @VisibleForTesting
-    void onMenuItemClicked(int textId, TemplateUrl url) {
+    void onMenuItemClicked(int textId, String keyword) {
         if (R.string.site_search_list_menu_activate == textId) {
-            mTemplateUrlService.activateSearchEngine(url.getKeyword());
+            mTemplateUrlService.activateSearchEngine(keyword);
         } else if (R.string.site_search_list_menu_make_default == textId) {
-            mTemplateUrlService.setSearchEngine(url.getKeyword());
+            mTemplateUrlService.setSearchEngine(keyword);
         } else if (R.string.site_search_list_menu_delete == textId) {
-            mOnRemoveSearchEngine.onResult(url);
+            mOnRemoveSearchEngine.onResult(keyword);
         }
     }
 }

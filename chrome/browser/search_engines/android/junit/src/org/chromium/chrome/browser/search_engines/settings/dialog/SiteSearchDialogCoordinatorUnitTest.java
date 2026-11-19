@@ -9,9 +9,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -58,6 +61,7 @@ public class SiteSearchDialogCoordinatorUnitTest {
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
                 new SiteSearchDialogCoordinator(mContext, mModalDialogManager, mTemplateUrlService);
+        when(mTemplateUrlService.getTemplateUrlForKeyword("keyword")).thenReturn(mTemplateUrl);
     }
 
     @Test
@@ -108,7 +112,7 @@ public class SiteSearchDialogCoordinatorUnitTest {
         when(mTemplateUrlService.getDisplayUrl(mTemplateUrl)).thenReturn("https://test.com");
         when(mTemplateUrl.getPrepopulatedId()).thenReturn(0);
 
-        mCoordinator.showEditDialog(mTemplateUrl);
+        mCoordinator.showEditDialog("keyword");
 
         verify(mModalDialogManager)
                 .showDialog(
@@ -158,7 +162,7 @@ public class SiteSearchDialogCoordinatorUnitTest {
         when(mTemplateUrl.getURL()).thenReturn("https://test.com");
         when(mTemplateUrl.getPrepopulatedId()).thenReturn(1);
 
-        mCoordinator.showEditDialog(mTemplateUrl);
+        mCoordinator.showEditDialog("keyword");
 
         verify(mModalDialogManager)
                 .showDialog(
@@ -174,7 +178,7 @@ public class SiteSearchDialogCoordinatorUnitTest {
     public void testRemoveTemplateUrl_DialogNotNeeded() {
         when(mTemplateUrl.requiresRemovalConfirmation()).thenReturn(false);
 
-        mCoordinator.removeTemplateUrl(mTemplateUrl);
+        mCoordinator.removeTemplateUrl("keyword");
 
         verify(mModalDialogManager, never())
                 .showDialog(
@@ -185,7 +189,7 @@ public class SiteSearchDialogCoordinatorUnitTest {
     public void testRemoveTemplateUrl_DialogShowAndConfirm() {
         when(mTemplateUrl.requiresRemovalConfirmation()).thenReturn(true);
 
-        mCoordinator.removeTemplateUrl(mTemplateUrl);
+        mCoordinator.removeTemplateUrl("keyword");
 
         verify(mModalDialogManager)
                 .showDialog(
@@ -219,7 +223,7 @@ public class SiteSearchDialogCoordinatorUnitTest {
     public void testRemoveTemplateUrl_DialogCancel() {
         when(mTemplateUrl.requiresRemovalConfirmation()).thenReturn(true);
 
-        mCoordinator.removeTemplateUrl(mTemplateUrl);
+        mCoordinator.removeTemplateUrl("keyword");
 
         verify(mModalDialogManager)
                 .showDialog(
@@ -230,6 +234,62 @@ public class SiteSearchDialogCoordinatorUnitTest {
         ModalDialogProperties.Controller controller =
                 dialogModel.get(ModalDialogProperties.CONTROLLER);
         controller.onClick(dialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
+        verify(mTemplateUrlService, never()).removeSearchEngine(any());
+    }
+
+    @Test
+    public void testShowEditDialog_doesNotAccessTemplateUrlAfterShowing() {
+        when(mTemplateUrl.getKeyword()).thenReturn("keyword");
+        when(mTemplateUrl.getShortName()).thenReturn("name");
+        when(mTemplateUrlService.getDisplayUrl(mTemplateUrl)).thenReturn("https://test.com");
+        mCoordinator.showEditDialog("keyword");
+        verify(mModalDialogManager)
+                .showDialog(
+                        mDialogModelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+        PropertyModel dialogModel = mDialogModelCaptor.getValue();
+        // The TemplateUrl is not guaranteed to stay valid while the dialog is open.
+        clearInvocations(mTemplateUrl);
+
+        dialogModel
+                .get(ModalDialogProperties.CONTROLLER)
+                .onClick(dialogModel, ModalDialogProperties.ButtonType.POSITIVE);
+
+        verify(mTemplateUrlService)
+                .editSearchEngine("keyword", "name", "keyword", "https://test.com");
+        verifyNoInteractions(mTemplateUrl);
+    }
+
+    @Test
+    public void testRemoveTemplateUrl_doesNotAccessTemplateUrlAfterShowing() {
+        when(mTemplateUrl.requiresRemovalConfirmation()).thenReturn(true);
+        mCoordinator.removeTemplateUrl("keyword");
+        verify(mModalDialogManager)
+                .showDialog(
+                        mDialogModelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+        PropertyModel dialogModel = mDialogModelCaptor.getValue();
+        // The TemplateUrl is not guaranteed to stay valid while the dialog is open.
+        clearInvocations(mTemplateUrl);
+
+        dialogModel
+                .get(ModalDialogProperties.CONTROLLER)
+                .onClick(dialogModel, ModalDialogProperties.ButtonType.POSITIVE);
+
+        verify(mTemplateUrlService).removeSearchEngine("keyword");
+        verifyNoInteractions(mTemplateUrl);
+    }
+
+    @Test
+    public void testShowEditDialog_unknownKeyword() {
+        mCoordinator.showEditDialog("unknown");
+
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+    }
+
+    @Test
+    public void testRemoveTemplateUrl_unknownKeyword() {
+        mCoordinator.removeTemplateUrl("unknown");
+
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
         verify(mTemplateUrlService, never()).removeSearchEngine(any());
     }
 

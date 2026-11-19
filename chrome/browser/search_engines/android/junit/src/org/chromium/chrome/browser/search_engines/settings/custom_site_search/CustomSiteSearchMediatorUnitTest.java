@@ -9,9 +9,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -70,8 +72,8 @@ public class CustomSiteSearchMediatorUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private Runnable mOnAddSearchEngine;
-    @Mock private Callback<TemplateUrl> mOnEditSearchEngine;
-    @Mock private Callback<TemplateUrl> mOnRemoveSearchEngine;
+    @Mock private Callback<String> mOnEditSearchEngine;
+    @Mock private Callback<String> mOnRemoveSearchEngine;
 
     private Context mContext;
     private CustomSiteSearchMediator mMediator;
@@ -261,21 +263,35 @@ public class CustomSiteSearchMediatorUnitTest {
     }
 
     @Test
+    public void testMenu_doesNotAccessTemplateUrlAfterListItemCreation() {
+        TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
+        when(mSettingsDataProvider.getTemplateUrlsByCategory(
+                        TemplateUrlCategory.ACTIVE_SITE_SEARCH))
+                .thenReturn(List.of(templateUrl));
+        mMediator = initializeMediator();
+        ListMenuDelegate delegate = mModelList.get(0).model.get(SiteSearchProperties.MENU_DELEGATE);
+        // The TemplateUrl is not guaranteed to stay valid once the list item has been created.
+        clearInvocations(templateUrl);
+
+        BasicListMenu listMenu = (BasicListMenu) delegate.getListMenu();
+        listMenu.clickItemForTesting(0);
+
+        verify(mOnEditSearchEngine).onResult("keyword");
+        verifyNoInteractions(templateUrl);
+    }
+
+    @Test
     public void testEditClicked() {
         mMediator = initializeMediator();
-        TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_edit, "keyword");
 
-        mMediator.onMenuItemClicked(R.string.site_search_list_menu_edit, templateUrl);
-
-        verify(mOnEditSearchEngine).onResult(templateUrl);
+        verify(mOnEditSearchEngine).onResult("keyword");
     }
 
     @Test
     public void testMakeDefaultClicked() {
         mMediator = initializeMediator();
-        TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
-
-        mMediator.onMenuItemClicked(R.string.site_search_list_menu_make_default, templateUrl);
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_make_default, "keyword");
 
         verify(mTemplateUrlService).setSearchEngine("keyword");
     }
@@ -283,9 +299,7 @@ public class CustomSiteSearchMediatorUnitTest {
     @Test
     public void testDeactivateClicked() {
         mMediator = initializeMediator();
-        TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
-
-        mMediator.onMenuItemClicked(R.string.site_search_list_menu_deactivate, templateUrl);
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_deactivate, "keyword");
 
         verify(mTemplateUrlService).deactivateSearchEngine("keyword");
     }
@@ -293,11 +307,9 @@ public class CustomSiteSearchMediatorUnitTest {
     @Test
     public void testDeleteClicked() {
         mMediator = initializeMediator();
-        TemplateUrl templateUrl = createMockTemplateUrl("keyword", "shortName");
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_delete, "keyword");
 
-        mMediator.onMenuItemClicked(R.string.site_search_list_menu_delete, templateUrl);
-
-        verify(mOnRemoveSearchEngine).onResult(templateUrl);
+        verify(mOnRemoveSearchEngine).onResult("keyword");
     }
 
     private void verifyCollapsedModelListView(int searchEngineCount) {

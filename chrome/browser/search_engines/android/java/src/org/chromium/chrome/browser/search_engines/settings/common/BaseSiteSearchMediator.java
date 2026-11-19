@@ -210,6 +210,12 @@ public abstract class BaseSiteSearchMediator
     /**
      * Creates the popup menu delegate for a specific search engine item.
      *
+     * <p>{@code url} is only valid for the duration of this call. It refers to a native object that
+     * the {@link TemplateUrlService} may delete at any later point, whereas the returned delegate,
+     * the menu it builds and the menu's click handlers run at times chosen by the user and can
+     * outlive the list item they were created for. Implementations must therefore read everything
+     * they need from {@code url} right away and must not capture it.
+     *
      * @param url The TemplateUrl the menu actions will apply to.
      * @return A ListMenuDelegate to handle menu interactions, or null if no menu is needed.
      */

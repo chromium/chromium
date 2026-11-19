@@ -54,11 +54,24 @@ public class SiteSearchDialogCoordinator {
         mMediator.show(dialogModel);
     }
 
-    public void showEditDialog(TemplateUrl templateUrl) {
+    /**
+     * Shows the dialog to edit the search engine currently registered for the given keyword. Does
+     * nothing if there is no such search engine anymore.
+     *
+     * <p>The search engine is looked up here rather than passed in, because callers decide to edit
+     * it at an earlier time than this dialog is shown, and the dialog in turn is confirmed later
+     * still. A {@link TemplateUrl} is only used while this method runs; the dialog retains nothing
+     * but the keyword.
+     *
+     * @param originalKeyword The keyword of the search engine to edit.
+     */
+    public void showEditDialog(String originalKeyword) {
+        TemplateUrl templateUrl = mTemplateUrlService.getTemplateUrlForKeyword(originalKeyword);
+        if (templateUrl == null) return;
+
         SiteSearchDialogSaveAction saveAction =
                 (name, keyword, url) -> {
-                    mTemplateUrlService.editSearchEngine(
-                            templateUrl.getKeyword(), name, keyword, url);
+                    mTemplateUrlService.editSearchEngine(originalKeyword, name, keyword, url);
                 };
         PropertyModel dialogViewModel = createEditDialogViewModel(templateUrl, mMediator);
         // The mediator needs to be initialized before the ModelChangeProcessor is created, or the
@@ -73,14 +86,24 @@ public class SiteSearchDialogCoordinator {
         mMediator.show(dialogModel);
     }
 
-    public void removeTemplateUrl(TemplateUrl templateUrl) {
+    /**
+     * Removes the search engine currently registered for the given keyword, asking for confirmation
+     * first where required. Does nothing if there is no such search engine anymore.
+     *
+     * <p>See {@link #showEditDialog} for why this takes a keyword.
+     *
+     * @param keyword The keyword of the search engine to remove.
+     */
+    public void removeTemplateUrl(String keyword) {
+        TemplateUrl templateUrl = mTemplateUrlService.getTemplateUrlForKeyword(keyword);
+        if (templateUrl == null) return;
+
         if (!templateUrl.requiresRemovalConfirmation()) {
-            mTemplateUrlService.removeSearchEngine(templateUrl.getKeyword());
+            mTemplateUrlService.removeSearchEngine(keyword);
             return;
         }
 
-        ModalDialogProperties.Controller dialogController =
-                createRemoveDialogController(templateUrl);
+        ModalDialogProperties.Controller dialogController = createRemoveDialogController(keyword);
         PropertyModel dialogModel = createRemoveDialogModel(dialogController, templateUrl);
         mModalDialogManager.showDialog(dialogModel, ModalDialogManager.ModalDialogType.APP);
     }
@@ -146,12 +169,12 @@ public class SiteSearchDialogCoordinator {
                 .build();
     }
 
-    private ModalDialogProperties.Controller createRemoveDialogController(TemplateUrl templateUrl) {
+    private ModalDialogProperties.Controller createRemoveDialogController(String keyword) {
         return new ModalDialogProperties.Controller() {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                    mTemplateUrlService.removeSearchEngine(templateUrl.getKeyword());
+                    mTemplateUrlService.removeSearchEngine(keyword);
                     mModalDialogManager.dismissDialog(
                             model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {

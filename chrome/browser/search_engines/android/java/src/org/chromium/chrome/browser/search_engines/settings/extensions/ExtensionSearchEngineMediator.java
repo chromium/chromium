@@ -60,6 +60,7 @@ public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
 
     @Override
     protected @Nullable ListMenuDelegate createMenuDelegate(TemplateUrl url) {
+        String extensionId = url.getProvidingExtensionId();
         return () -> {
             ModelList menuItems = new ModelList();
             menuItems.add(
@@ -76,14 +77,13 @@ public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
                     menuItems,
                     (model, view) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);
-                        onMenuItemClicked(textId, url);
+                        onMenuItemClicked(textId, extensionId);
                     });
         };
     }
 
     @VisibleForTesting
-    void onMenuItemClicked(int textId, TemplateUrl url) {
-        String extensionId = url.getProvidingExtensionId();
+    void onMenuItemClicked(int textId, @Nullable String extensionId) {
         if (extensionId == null) return;
 
         if (R.string.site_search_extensions_menu_manage == textId) {
