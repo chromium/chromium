@@ -64,7 +64,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, App) {
   RunTest("omnibox_popup/full_app_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, Searchbox) {
+// TODO(crbug.com/587693401): Times out on Linux debug, where the mocha suite
+// no longer fits in the 90s test launcher timeout.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_Searchbox DISABLED_Searchbox
+#else
+#define MAYBE_Searchbox Searchbox
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFullTest, MAYBE_Searchbox) {
   RunTest("omnibox_popup/omnibox_popup_searchbox_test.js", "mocha.run();");
 }
 
