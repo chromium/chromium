@@ -12765,7 +12765,8 @@
         {
             "platforms": [
                 "android",
-                "android_desktop"
+                "android_desktop",
+                "chromeos"
             ],
             "experiments": [
                 {
