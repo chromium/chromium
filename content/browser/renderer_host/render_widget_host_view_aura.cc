@@ -54,6 +54,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/unbounded_surface_window_aura.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
+#include "content/common/features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -124,7 +125,6 @@
 #include "components/stylus_handwriting/win/features.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_controller_win.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
-#include "content/common/features.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
 #include "ui/accessibility/platform/browser_accessibility_win.h"
@@ -570,6 +570,14 @@ void RenderWidgetHostViewAura::InitAsPopup(
 void RenderWidgetHostViewAura::Hide() {
   window_->Hide();
   visibility_ = Visibility::HIDDEN;
+  // OnOldViewDidNavigatePreCommit() keeps the id of a view that has shown no
+  // content. If the commit swaps in another view instead, drop the id that
+  // the DelegatedFrameHost no longer embeds, so the next show allocates one.
+  if (!has_pre_navigation_content_ && !GetCurrentSurfaceId().is_valid() &&
+      base::FeatureList::IsEnabled(
+          features::kKeepLocalSurfaceIdOnFirstNavigation)) {
+    window_->InvalidateLocalSurfaceId();
+  }
   HideImpl();
 }
 
@@ -3118,6 +3126,10 @@ void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation(
   const cc::RenderFrameMetadata& metadata =
       host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
 
+  if (metadata.local_surface_id && metadata.local_surface_id->is_valid()) {
+    has_pre_navigation_content_ = true;
+  }
+
   // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   SetContentBackgroundColor(metadata.root_background_color.toSkColor());
   if (inset_surface_id_.is_valid() && metadata.local_surface_id &&
@@ -3758,7 +3770,14 @@ void RenderWidgetHostViewAura::OnOldViewDidNavigatePreCommit() {
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
 
   // Invalidate the surface so that we don't attempt to evict it multiple times.
-  window_->InvalidateLocalSurfaceId();
+  // A view that has shown no content keeps its id: the browser may already
+  // embed it, and a new id would make the browser's next frame depend on a
+  // surface that the renderer never submits to.
+  if (has_pre_navigation_content_ ||
+      !base::FeatureList::IsEnabled(
+          features::kKeepLocalSurfaceIdOnFirstNavigation)) {
+    window_->InvalidateLocalSurfaceId();
+  }
   delegated_frame_host_->DidNavigateMainFramePreCommit();
   CancelActiveTouches();
 }
@@ -4024,7 +4043,7 @@ void RenderWidgetHostViewAura::DidNavigate() {
     // LocalSurfaceId.
     window_->InvalidateLocalSurfaceId();
   } else {
-    if (is_first_navigation_) {
+    if (!has_pre_navigation_content_) {
       // The first navigation does not need a new LocalSurfaceID. The renderer
       // can use the ID that was already provided.
       SynchronizeVisualProperties(cc::DeadlinePolicy::UseExistingDeadline(),
@@ -4035,7 +4054,7 @@ void RenderWidgetHostViewAura::DidNavigate() {
     }
   }
   delegated_frame_host_->DidNavigate();
-  is_first_navigation_ = false;
+  has_pre_navigation_content_ = true;
 }
 
 void RenderWidgetHostViewAura::CreateUnboundedSurface(

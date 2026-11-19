@@ -45,6 +45,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -54,6 +55,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/slow_http_response.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -359,6 +361,123 @@ IN_PROC_BROWSER_TEST_F(PaintHoldingRenderWidgetHostViewBrowserTest,
   // navigating to the new page so the fallback content is eventually cleared.
   EXPECT_TRUE(GetRenderWidgetHost()->IsContentRenderingTimeoutRunning());
 }
+
+#if defined(USE_AURA)
+// Records the primary main frame's view and its LocalSurfaceId when a
+// navigation is ready to commit and when it has committed.
+class LocalSurfaceIdAtCommitObserver : public WebContentsObserver {
+ public:
+  explicit LocalSurfaceIdAtCommitObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+    if (navigation_handle->IsInPrimaryMainFrame()) {
+      view_before_ = GetView();
+      id_before_ = view_before_->GetLocalSurfaceId();
+      showing_before_ = view_before_->IsShowing();
+    }
+  }
+
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    if (navigation_handle->HasCommitted() &&
+        navigation_handle->IsInPrimaryMainFrame()) {
+      view_after_ = GetView();
+      id_after_ = view_after_->GetLocalSurfaceId();
+    }
+  }
+
+  RenderWidgetHostViewBase* view_before() const { return view_before_; }
+  RenderWidgetHostViewBase* view_after() const { return view_after_; }
+  const viz::LocalSurfaceId& id_before() const { return id_before_; }
+  const viz::LocalSurfaceId& id_after() const { return id_after_; }
+  bool showing_before() const { return showing_before_; }
+
+ private:
+  RenderWidgetHostViewBase* GetView() {
+    return static_cast<RenderWidgetHostViewBase*>(
+        web_contents()->GetRenderWidgetHostView());
+  }
+
+  raw_ptr<RenderWidgetHostViewBase> view_before_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> view_after_ = nullptr;
+  viz::LocalSurfaceId id_before_;
+  viz::LocalSurfaceId id_after_;
+  bool showing_before_ = false;
+};
+
+// The first navigation of a visible view that has shown no content keeps the
+// LocalSurfaceId that the browser already embeds.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
+                       FirstNavigationKeepsEmbeddedSurfaceId) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // The test needs a view whose first navigation is still ahead.
+  ASSERT_TRUE(shell()
+                  ->web_contents()
+                  ->GetController()
+                  .GetLastCommittedEntry()
+                  ->IsInitialEntry());
+  LocalSurfaceIdAtCommitObserver observer(shell()->web_contents());
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  // The commit must reuse a visible view for the test to cover this case.
+  ASSERT_TRUE(observer.view_before());
+  ASSERT_TRUE(observer.showing_before());
+  ASSERT_EQ(observer.view_before(), observer.view_after());
+  EXPECT_TRUE(observer.id_before().is_valid());
+  EXPECT_EQ(observer.id_before(), observer.id_after());
+
+  // After the load, including RenderWidgetHostViewAura::DidNavigate(), the
+  // DelegatedFrameHost still embeds the same parent id. The renderer may
+  // have advanced the child sequence number.
+  const viz::LocalSurfaceId embedded =
+      observer.view_after()->GetCurrentSurfaceId().local_surface_id();
+  EXPECT_EQ(observer.id_before().parent_sequence_number(),
+            embedded.parent_sequence_number());
+  EXPECT_EQ(observer.id_before().embed_token(), embedded.embed_token());
+}
+
+// A first navigation that swaps in another view hides the old one, which drops
+// the LocalSurfaceId that its DelegatedFrameHost no longer embeds.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
+                       FirstNavigationSwapOutDropsSurfaceId) {
+  if (!AreAllSitesIsolatedForTesting()) {
+    GTEST_SKIP() << "The cross-site navigation must swap views.";
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // The popup's first view lives in the opener's process and has committed no
+  // navigation when the cross-site one swaps in a new view.
+  ShellAddedObserver new_shell_observer;
+  TestNavigationObserver popup_observer(nullptr);
+  popup_observer.StartWatchingNewWebContents();
+  ExecuteScriptAsync(
+      shell(), JsReplace("window.open($1);", embedded_test_server()->GetURL(
+                                                 "b.com", "/title1.html")));
+  Shell* popup = new_shell_observer.GetShell();
+  bool swapped = false;
+  bool showing = true;
+  viz::LocalSurfaceId swapped_out_id;
+  RenderFrameHostChangedCallbackRunner runner(
+      popup->web_contents(),
+      base::BindLambdaForTesting(
+          [&](RenderFrameHost* old_host, RenderFrameHost* new_host) {
+            ASSERT_TRUE(old_host);
+            auto* old_view =
+                static_cast<RenderWidgetHostViewBase*>(old_host->GetView());
+            swapped = old_view != new_host->GetView();
+            showing = old_view->IsShowing();
+            swapped_out_id = old_view->GetLocalSurfaceId();
+          }));
+  popup_observer.Wait();
+
+  ASSERT_TRUE(swapped);
+  EXPECT_FALSE(showing);
+  EXPECT_FALSE(swapped_out_id.is_valid());
+}
+#endif  // defined(USE_AURA)
 
 // TODO(jonross): Update Mac to also invalidate its viz::LocalSurfaceIds when
 // performing navigations while hidden. https://crbug.com/935364

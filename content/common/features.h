@@ -156,6 +156,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kIOSurfaceCapturer);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsSuitableForUrlInfoEarlyReturnHoldback);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kKeepChildProcessAfterIPCReset);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kKeepLocalSurfaceIdOnFirstNavigation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kKeepUnassignedSiteInstanceInOriginalBrowsingInstance);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kKillOnInvalidNavigationHeaders);

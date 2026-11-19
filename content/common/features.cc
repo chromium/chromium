@@ -436,6 +436,12 @@ BASE_FEATURE(kIsSuitableForUrlInfoEarlyReturnHoldback,
 // When enabled, child process will not terminate itself when IPC is reset.
 BASE_FEATURE(kKeepChildProcessAfterIPCReset, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch. When enabled, an Aura view keeps its LocalSurfaceId across its
+// first navigation while it has shown no content, so that a surface the
+// browser already embeds is the one the renderer draws into.
+BASE_FEATURE(kKeepLocalSurfaceIdOnFirstNavigation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When navigating away from a previously committed unassigned NavigationEntry
 // (e.g., chrome-native://newtab/ on Android), only replace its SiteInstance if
 // the new navigation stayed in that same SiteInstance, keeping it in its

@@ -916,7 +916,14 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Tracks the last text input type notified to the InputMethod.
   ui::TextInputType last_text_input_type_ = ui::TEXT_INPUT_TYPE_NONE;
 
-  bool is_first_navigation_ = true;
+  // True once the browser has seen a renderer frame with a valid
+  // LocalSurfaceId activate in this view, or the view has committed a
+  // navigation. Until then OnOldViewDidNavigatePreCommit() keeps the current
+  // LocalSurfaceId, and DidNavigate() hands it to the renderer for the first
+  // navigation when the view is visible. If a frame has activated but its
+  // metadata has not reached the browser by the commit, the new document
+  // draws into the same surface. Android accepts the same window.
+  bool has_pre_navigation_content_ = false;
   viz::LocalSurfaceId inset_surface_id_;
 
   // See OnDisplayMetricsChanged() for details.

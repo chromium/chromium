@@ -323,6 +323,8 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
         window()->GetHost()->compositor());
   }
 
+  DelegatedFrameHost* delegated_frame_host() { return GetDelegatedFrameHost(); }
+
   viz::SurfaceId surface_id() const {
     return GetDelegatedFrameHost()->GetCurrentSurfaceId();
   }
@@ -7255,6 +7257,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
   view_->ShowWithVisibility(PageVisibilityState::kVisible);
   // No new LocalSurfaceId should be allocated for the first navigation and the
   // timer should not fire.
+  view_->OnOldViewDidNavigatePreCommit();
   widget_host_->DidNavigate();
   widget_host_->InitializePaintHolding(true);
   viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
@@ -7270,6 +7273,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
   widget_host_->reset_new_content_rendering_timeout_fired();
 
   // Start the timer. Verify that a new LocalSurfaceId is allocated.
+  view_->OnOldViewDidNavigatePreCommit();
   widget_host_->DidNavigate();
   widget_host_->InitializePaintHolding(true);
   viz::LocalSurfaceId id2 = view_->GetLocalSurfaceId();
@@ -7286,6 +7290,135 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
   }
   EXPECT_TRUE(widget_host_->new_content_rendering_timeout_fired());
   widget_host_->reset_new_content_rendering_timeout_fired();
+}
+
+// Runs the steps of a navigation commit that reuses `view`, in production
+// order: WebContentsImpl::DidNavigateMainFramePreCommit(),
+// WebContentsImpl::PrimaryMainFrameCommitted(), then
+// RenderWidgetHostImpl::DidNavigate().
+void CommitNavigation(FakeRenderWidgetHostViewAura* view,
+                      RenderWidgetHostImpl* widget_host) {
+  view->OnOldViewDidNavigatePreCommit();
+  view->ShowWithVisibility(PageVisibilityState::kVisible);
+  widget_host->DidNavigate();
+}
+
+// A view that has shown no content keeps the LocalSurfaceId it already embeds
+// across its first navigation, so the browser does not depend on a surface the
+// renderer never submits to.
+TEST_F(RenderWidgetHostViewAuraTest,
+       FirstNavigationKeepsLocalSurfaceIdWithoutContent) {
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->SetSize(gfx::Size(100, 100));
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  const viz::LocalSurfaceId id0 = view_->GetLocalSurfaceId();
+  ASSERT_TRUE(id0.is_valid());
+  const viz::SurfaceId primary0 =
+      *view_->GetNativeView()->layer()->AsSurface()->GetSurfaceId();
+  EXPECT_EQ(id0, primary0.local_surface_id());
+
+  CommitNavigation(view_, widget_host_);
+
+  EXPECT_EQ(id0, view_->GetLocalSurfaceId());
+  EXPECT_EQ(primary0,
+            *view_->GetNativeView()->layer()->AsSurface()->GetSurfaceId());
+
+  // The re-embed of `id0` completes the navigation in the
+  // DelegatedFrameHost, which then falls back to `id0` without evicting it.
+  DelegatedFrameHost* dfh = view_->delegated_frame_host();
+  EXPECT_FALSE(dfh->GetPreNavigationSurfaceIdForTesting().is_valid());
+  EXPECT_EQ(
+      id0,
+      dfh->GetFirstSurfaceIdAfterNavigationForTesting().local_surface_id());
+  dfh->ResetFallbackToFirstNavigationSurface();
+  EXPECT_EQ(id0, dfh->GetFallbackSurfaceIdForTesting().local_surface_id());
+  // Eviction would invalidate the view's id.
+  EXPECT_EQ(id0, view_->GetLocalSurfaceId());
+  EXPECT_TRUE(dfh->HasPrimarySurface());
+}
+
+// A first navigation while hidden still drops the LocalSurfaceId, and the
+// next show allocates a new one, as for any hidden navigation.
+TEST_F(RenderWidgetHostViewAuraTest,
+       HiddenFirstNavigationInvalidatesLocalSurfaceId) {
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->SetSize(gfx::Size(100, 100));
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  const viz::LocalSurfaceId id0 = view_->GetLocalSurfaceId();
+  ASSERT_TRUE(id0.is_valid());
+  view_->Hide();
+
+  view_->OnOldViewDidNavigatePreCommit();
+  widget_host_->DidNavigate();
+  EXPECT_FALSE(view_->GetLocalSurfaceId().is_valid());
+
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  const viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
+  EXPECT_TRUE(id1.is_valid());
+  EXPECT_LT(id0.parent_sequence_number(), id1.parent_sequence_number());
+}
+
+// Once a renderer frame has activated, the first navigation gets a new
+// LocalSurfaceId, so the old content is not reused across documents.
+TEST_F(RenderWidgetHostViewAuraTest,
+       FirstNavigationAllocatesLocalSurfaceIdAfterContent) {
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->SetSize(gfx::Size(100, 100));
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  const viz::LocalSurfaceId id0 = view_->GetLocalSurfaceId();
+  ASSERT_TRUE(id0.is_valid());
+  cc::RenderFrameMetadata metadata;
+  metadata.local_surface_id = id0;
+  view_->SetRenderFrameMetadata(metadata);
+  view_->OnRenderFrameMetadataChangedAfterActivation(base::TimeTicks::Now());
+
+  CommitNavigation(view_, widget_host_);
+
+  const viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
+  EXPECT_TRUE(id1.is_valid());
+  EXPECT_LT(id0.parent_sequence_number(), id1.parent_sequence_number());
+}
+
+// A navigation after the first one gets a new LocalSurfaceId.
+TEST_F(RenderWidgetHostViewAuraTest, SecondNavigationAllocatesLocalSurfaceId) {
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->SetSize(gfx::Size(100, 100));
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  const viz::LocalSurfaceId id0 = view_->GetLocalSurfaceId();
+  CommitNavigation(view_, widget_host_);
+  const viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
+  EXPECT_EQ(id0, id1);
+
+  CommitNavigation(view_, widget_host_);
+
+  const viz::LocalSurfaceId id2 = view_->GetLocalSurfaceId();
+  EXPECT_TRUE(id2.is_valid());
+  EXPECT_LT(id1.parent_sequence_number(), id2.parent_sequence_number());
+}
+
+// With the kill switch off, the first navigation gets a new LocalSurfaceId even
+// without content.
+TEST_F(RenderWidgetHostViewAuraTest,
+       FirstNavigationAllocatesLocalSurfaceIdWithKillSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kKeepLocalSurfaceIdOnFirstNavigation);
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->SetSize(gfx::Size(100, 100));
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  const viz::LocalSurfaceId id0 = view_->GetLocalSurfaceId();
+  ASSERT_TRUE(id0.is_valid());
+
+  CommitNavigation(view_, widget_host_);
+
+  const viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
+  EXPECT_TRUE(id1.is_valid());
+  EXPECT_LT(id0.parent_sequence_number(), id1.parent_sequence_number());
 }
 
 // If a tab is evicted, allocate a new LocalSurfaceId next time it's shown.
