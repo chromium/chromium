@@ -5795,7 +5795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetAllScreensMedia.Result3"
-    enum="UserMediaRequestResult" expires_after="2026-12-31">
+    enum="UserMediaRequestResult" expires_after="2027-11-15">
   <owner>simonha@google.com</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
