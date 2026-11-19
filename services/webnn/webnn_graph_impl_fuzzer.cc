@@ -3208,9 +3208,12 @@ void WebNNGraphImplFuzzerBase::SetUp() {
     context_properties_ =
         create_context_result->get_success()->context_properties;
 #if defined(ARCH_CPU_32_BITS)
-    // On 32-bit builds, limit each tensor to 128 MiB so fuzz runs don't run out
-    // of memory.
-    constexpr uint64_t kMaxTensorBytes = 128 * 1024 * 1024;
+    // On 32-bit builds, limit each tensor to 4 MiB so fuzz runs don't run out
+    // of virtual address space. ML Drift WebGPU on SwiftShader promotes float16
+    // to float32 (2x) and pads channels to multiples of 4 in BHWC4 layout (up
+    // to 4x for C=1), and quantized or coordinate-expansion ops can expand by
+    // up to 16x across multiple simultaneously live CPU/GPU/staging buffers.
+    constexpr uint64_t kMaxTensorBytes = 4 * 1024 * 1024;
     context_properties_.tensor_byte_length_limit =
         std::min(context_properties_.tensor_byte_length_limit, kMaxTensorBytes);
 #endif  // defined(ARCH_CPU_32_BITS)
