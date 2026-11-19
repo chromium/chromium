@@ -1,0 +1,18 @@
+# proto-file: https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/restrictive_license_approval.proto
+# proto-message: RestrictiveLicenseApproval
+
+license_approval {
+  # Path to the license file, relative to this directory.
+  license_path: "THIRD_PARTY_LICENSES"
+
+  # SPDX ID, or ID provided by license classifier.
+  id: "GPL-2.0"
+
+  # The bug ID for tracking (just the number).
+  bug: 531505610
+
+  # Relevant info for maintainers / context of approval.
+  note: "Approved by rend@google.com. GPL-2.0 in THIRD_PARTY_LICENSES comes "
+        "solely from GRTE Linux header extensions (ioprio.h), which is covered "
+        "by the Linux kernel syscall header exception."
+}
