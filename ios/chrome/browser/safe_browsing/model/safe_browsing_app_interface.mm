@@ -35,6 +35,35 @@ namespace {
 constexpr int kCacheDurationSec = 60;
 bool g_last_sent_request_has_intelligent_scan_info = false;
 
+// Populates the exact-match `ThreatInfo` fields for `url` on `response` and
+// stores `response` in the original profile's `VerdictCacheManager`.
+void CacheRealTimeUrlVerdict(
+    NSString* url,
+    safe_browsing::RTLookupResponse::ThreatInfo::VerdictType verdict_type,
+    safe_browsing::RTLookupResponse::ThreatInfo::ThreatType threat_type,
+    safe_browsing::RTLookupResponse response) {
+  const GURL gurl(base::SysNSStringToUTF8(url));
+  safe_browsing::RTLookupResponse::ThreatInfo* threat_info =
+      response.add_threat_info();
+  threat_info->set_verdict_type(verdict_type);
+  if (threat_type !=
+      safe_browsing::RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED) {
+    threat_info->set_threat_type(threat_type);
+  }
+  threat_info->set_cache_duration_sec(kCacheDurationSec);
+  std::string cache_expression = base::StrCat({gurl.host(), gurl.path()});
+  threat_info->set_cache_expression_using_match_type(cache_expression);
+  threat_info->set_cache_expression_match_type(
+      safe_browsing::RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  safe_browsing::VerdictCacheManager* cache_manager =
+      VerdictCacheManagerFactory::GetForProfile(profile);
+  if (cache_manager) {
+    cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
+  }
+}
+
 network::TestURLLoaderFactory* GetTestURLLoaderFactory() {
   static base::NoDestructor<network::TestURLLoaderFactory> factory;
   return factory.get();
@@ -100,7 +129,6 @@ GetBrandingPretender() {
 + (void)cacheRealTimeVerdictForURL:(NSString*)url
                       forceRequest:(BOOL)forceRequest
                    intelligentScan:(BOOL)intelligentScan {
-  const GURL gurl(base::SysNSStringToUTF8(url));
   safe_browsing::RTLookupResponse response;
   if (forceRequest) {
     response.set_client_side_detection_type(
@@ -109,22 +137,17 @@ GetBrandingPretender() {
   if (intelligentScan) {
     response.mutable_llama_forced_trigger_info()->set_intelligent_scan(true);
   }
-  safe_browsing::RTLookupResponse::ThreatInfo* threat_info =
-      response.add_threat_info();
-  threat_info->set_verdict_type(
-      safe_browsing::RTLookupResponse::ThreatInfo::SAFE);
-  threat_info->set_cache_duration_sec(kCacheDurationSec);
-  std::string cache_expression = base::StrCat({gurl.host(), gurl.path()});
-  threat_info->set_cache_expression_using_match_type(cache_expression);
-  threat_info->set_cache_expression_match_type(
-      safe_browsing::RTLookupResponse::ThreatInfo::EXACT_MATCH);
+  CacheRealTimeUrlVerdict(
+      url, safe_browsing::RTLookupResponse::ThreatInfo::SAFE,
+      safe_browsing::RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED,
+      std::move(response));
+}
 
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  safe_browsing::VerdictCacheManager* cache_manager =
-      VerdictCacheManagerFactory::GetForProfile(profile);
-  if (cache_manager) {
-    cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
-  }
++ (void)cacheSuspiciousSiteVerdictForURL:(NSString*)url {
+  CacheRealTimeUrlVerdict(
+      url, safe_browsing::RTLookupResponse::ThreatInfo::WARN,
+      safe_browsing::RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING,
+      safe_browsing::RTLookupResponse());
 }
 
 + (void)triggerClassificationDoneWithURL:(NSString*)url

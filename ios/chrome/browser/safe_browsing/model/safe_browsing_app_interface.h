@@ -33,6 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
                       forceRequest:(BOOL)forceRequest
                    intelligentScan:(BOOL)intelligentScan;
 
+// Caches an artificial real-time suspicious site (`WARN` /
+// `SOCIAL_ENGINEERING`) verdict for `url`.
++ (void)cacheSuspiciousSiteVerdictForURL:(NSString*)url;
+
 // Triggers the completion of visual classification for `url` with `scores`.
 + (void)triggerClassificationDoneWithURL:(NSString*)url
                             visualScores:(NSArray<NSNumber*>*)scores;

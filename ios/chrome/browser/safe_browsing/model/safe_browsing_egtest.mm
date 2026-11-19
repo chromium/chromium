@@ -318,6 +318,13 @@ void EnableEnterpriseUrlFilteringPrefs() {
              .name}));
   }
 
+  if ([self isRunningTest:@selector(testSuspiciousSiteWarningBackToSafety)] ||
+      [self
+          isRunningTest:
+              @selector(testSuspiciousSiteWarningMarkAsSafeAndClearHistory)]) {
+    config.features_enabled.push_back(safe_browsing::kSuspiciousSiteWarnings);
+  }
+
   config.additional_args.push_back(
       std::string("--mark_as_allowlisted_for_real_time=") + _safeURL1.spec());
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -1601,6 +1608,93 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // The late verdict should reload the page and display the interstitial.
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_SAFEBROWSING_HEADING)];
+}
+
+// Tests that a suspicious site navigation commits the page, presents the
+// suspicious site warning alert, and navigates back to the previous safe host
+// when "Back to safety" is tapped.
+- (void)testSuspiciousSiteWarningBackToSafety {
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnhanced];
+
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Use a 127.0.0.1 URL so its host differs from `_safeURL1` ("localhost"),
+  // allowing `SuspiciousSiteTabHelper::OnBackToSafetyClicked()` to navigate
+  // back to `_safeURL1`.
+  GURL suspiciousURL = self.testServer->GetURL("/echo_also_safe");
+  [SafeBrowsingAppInterface
+      cacheSuspiciousSiteVerdictForURL:base::SysUTF8ToNSString(
+                                           suspiciousURL.spec())];
+
+  [ChromeEarlGrey loadURL:suspiciousURL];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
+
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_SUSPICIOUS_SITE_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_SUSPICIOUS_SITE_MESSAGE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_SUSPICIOUS_SITE_BACK_TO_SAFETY)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+}
+
+// Tests that tapping "Mark as safe" on a suspicious site warning allowlists the
+// host for subsequent reloads, and clearing browsing history revokes the
+// allowlist so that the warning is shown again.
+- (void)testSuspiciousSiteWarningMarkAsSafeAndClearHistory {
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnhanced];
+
+  GURL suspiciousURL = self.testServer->GetURL("/echo_also_safe");
+  [SafeBrowsingAppInterface
+      cacheSuspiciousSiteVerdictForURL:base::SysUTF8ToNSString(
+                                           suspiciousURL.spec())];
+
+  [ChromeEarlGrey loadURL:suspiciousURL];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
+
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_SUSPICIOUS_SITE_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_SUSPICIOUS_SITE_PROCEED_BUTTON)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_SUSPICIOUS_SITE_TITLE))]
+      assertWithMatcher:grey_nil()];
+
+  // Reloading the allowlisted host should not present the warning alert.
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_SUSPICIOUS_SITE_TITLE))]
+      assertWithMatcher:grey_nil()];
+
+  // Clearing browsing history revokes the allowlist and clears the verdict
+  // cache. Re-caching the verdict and reloading should present the alert again.
+  [ChromeEarlGrey clearBrowsingHistory];
+  [SafeBrowsingAppInterface
+      cacheSuspiciousSiteVerdictForURL:base::SysUTF8ToNSString(
+                                           suspiciousURL.spec())];
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_SUSPICIOUS_SITE_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Dismiss the alert cleanly before teardown.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_SUSPICIOUS_SITE_PROCEED_BUTTON)]
+      performAction:grey_tap()];
 }
 
 @end
