@@ -110,6 +110,7 @@ class CORE_EXPORT CountersAttachmentContext {
                      int value);
   void RemoveStaleCounters(const LayoutObject&,
                            const AtomicString& counter_name);
+  void RemoveStaleCounters(const LayoutObject&, CounterStack&);
   void RemoveCounterIfAncestorExists(const LayoutObject&,
                                      const AtomicString& counter_name);
   void UpdateCounterValue(const LayoutObject&,
@@ -117,7 +118,7 @@ class CORE_EXPORT CountersAttachmentContext {
                           unsigned counter_type,
                           int counter_value);
   void MaybeCreateListItemCounter(const Element& element);
-  void EnterStyleContainmentScope();
+  void EnterStyleContainmentScope(const LayoutObject&);
   void LeaveStyleContainmentScope();
 
   AtomicString list_item_{"list-item"};
