@@ -339,6 +339,7 @@ suite('HistoryListTest', function() {
       isBrowsingHistoryFilterByActorEnabled: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: false,
     });
     await finishSetup([]);
     await microtasksFinished();
@@ -369,6 +370,7 @@ suite('HistoryListTest', function() {
       isBrowsingHistoryFilterByActorEnabled: true,
       isBrowsingHistoryFilterByDeviceEnabled: true,
       isBrowsingHistoryFilterByTimePeriodEnabled: true,
+      isBrowsingHistoryFilterByDomainEnabled: true,
     });
     await finishSetup([]);
     await microtasksFinished();
@@ -439,6 +441,7 @@ suite('HistoryListTest', function() {
       isBrowsingHistoryFilterByActorEnabled: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: true,
+      isBrowsingHistoryFilterByDomainEnabled: false,
     });
     element.searchedTerm = '';
     element.queryState = {
@@ -447,6 +450,7 @@ suite('HistoryListTest', function() {
       includeActorVisits: true,
       clientIds: [],
       timePeriodOptionId: TimePeriodOptionId.kAllTime,
+      domain: '',
     };
     await microtasksFinished();
     assertFalse(element.$.noResults.hidden);
@@ -464,6 +468,38 @@ suite('HistoryListTest', function() {
         loadTimeData.getString('noMatchingResults'),
         element.$.noResults.textContent.trim());
 
+    // Filtering by domain alone when only domain filtering is enabled.
+    loadTimeData.overrideValues({
+      isBrowsingHistoryFilterByActorEnabled: false,
+      isBrowsingHistoryFilterByDeviceEnabled: false,
+      isBrowsingHistoryFilterByTimePeriodEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: true,
+    });
+    element.searchedTerm = '';
+    element.queryState = {
+      ...element.queryState,
+      includeUserVisits: true,
+      includeActorVisits: true,
+      clientIds: [],
+      timePeriodOptionId: TimePeriodOptionId.kAllTime,
+      domain: '',
+    };
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noResults'),
+        element.$.noResults.textContent.trim());
+
+    element.queryState = {
+      ...element.queryState,
+      domain: 'example.com',
+    };
+    await microtasksFinished();
+    assertFalse(element.$.noResults.hidden);
+    assertEquals(
+        loadTimeData.getString('noMatchingResults'),
+        element.$.noResults.textContent.trim());
+
     // Resetting all filters and the search query restores the default
     // empty-state message.
     element.searchedTerm = '';
@@ -473,6 +509,7 @@ suite('HistoryListTest', function() {
       includeActorVisits: true,
       clientIds: [],
       timePeriodOptionId: TimePeriodOptionId.kAllTime,
+      domain: '',
     };
     await microtasksFinished();
     assertFalse(element.$.noResults.hidden);
@@ -545,6 +582,20 @@ suite('HistoryListTest', function() {
     const event = await domainSelectedPromise;
     assertEquals('www.google.com', event.detail.domain);
     assertFalse(listChangeQueryFired);
+    await microtasksFinished();
+
+    element.$.sharedMenu.get().close();
+    items[0]!.$.menuButton.click();
+    await microtasksFinished();
+    assertTrue(element.shadowRoot.querySelector<HTMLElement>(
+                                     '#menuMoreButton')!.hidden);
+
+    element.$.sharedMenu.get().close();
+    items[1]!.$.menuButton.click();
+    await microtasksFinished();
+    assertFalse(
+        element.shadowRoot.querySelector<HTMLElement>(
+                              '#menuMoreButton')!.hidden);
   });
 
   test('ChangingSearchDeselectsItems', async function() {
@@ -1403,6 +1454,7 @@ suite('HistoryListTest', function() {
       isBrowsingHistoryFilterByActorEnabled: false,
       isBrowsingHistoryFilterByDeviceEnabled: false,
       isBrowsingHistoryFilterByTimePeriodEnabled: false,
+      isBrowsingHistoryFilterByDomainEnabled: false,
     });
     await finishSetup([]);
     assertFalse(element.$.noResults.hidden);

@@ -795,7 +795,8 @@ export class HistoryListElement extends HistoryListElementBase {
   private isHistoryFilteringEnabled_(): boolean {
     return loadTimeData.getBoolean('isBrowsingHistoryFilterByActorEnabled') ||
         loadTimeData.getBoolean('isBrowsingHistoryFilterByDeviceEnabled') ||
-        loadTimeData.getBoolean('isBrowsingHistoryFilterByTimePeriodEnabled');
+        loadTimeData.getBoolean('isBrowsingHistoryFilterByTimePeriodEnabled') ||
+        this.isFilterByDomainEnabled_();
   }
 
   private hasActiveFilter_(): boolean {
@@ -805,7 +806,8 @@ export class HistoryListElement extends HistoryListElementBase {
          !this.queryState.includeActorVisits);
     return hasActiveActorDropdownFilter ||
         this.queryState.clientIds.length > 0 ||
-        this.queryState.timePeriodOptionId !== TimePeriodOptionId.kAllTime;
+        this.queryState.timePeriodOptionId !== TimePeriodOptionId.kAllTime ||
+        this.queryState.domain !== '';
   }
 
   protected noResultsMessage_(): string {
@@ -820,6 +822,10 @@ export class HistoryListElement extends HistoryListElementBase {
   }
 
   protected canSearchMoreFromSite_(): boolean {
+    if (this.isFilterByDomainEnabled_()) {
+      return this.queryState.domain === '' ||
+          this.queryState.domain !== this.actionMenuModel_?.item.domain;
+    }
     return this.searchedTerm === '' ||
         this.searchedTerm !== this.actionMenuModel_?.item.domain;
   }
