@@ -1620,6 +1620,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetworkServiceFeatures.ORB_SNIFFERS_IN_RUST,
                 "Enables the Rust-based ORB content sniffers instead of C++."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_PRESERVE_GOOGLE_ACCOUNT_MIRRORING,
+                "When enabled, preserves Google Account mirroring configuration when WebView"
+                        + " adopts a new native WebContents (e.g., for popup windows)."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
