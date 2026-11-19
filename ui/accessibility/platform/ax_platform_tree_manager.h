@@ -14,6 +14,7 @@ namespace ui {
 
 class AXPlatformNode;
 class AXPlatformNodeDelegate;
+class BrowserAccessibilityManager;
 
 // Abstract interface for a class that manages AXPlatformNodes and is
 // able to query for them via `GetPlatformNodeFromTree`. Extends
@@ -25,6 +26,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
   AXPlatformTreeManager(const AXPlatformTreeManager&) = delete;
   AXPlatformTreeManager& operator=(const AXPlatformTreeManager&) = delete;
   ~AXPlatformTreeManager() override;
+
+  // Returns `this` if this manager is a `BrowserAccessibilityManager`, or
+  // `nullptr` otherwise (for example, `views::AtomicViewAXTreeManager`).
+  virtual BrowserAccessibilityManager* AsBrowserAccessibilityManager();
+  virtual const BrowserAccessibilityManager* AsBrowserAccessibilityManager()
+      const;
 
   // Returns an AXPlatformNode with the specified and |node_id|.
   virtual AXPlatformNode* GetPlatformNodeFromTree(AXNodeID node_id) const = 0;

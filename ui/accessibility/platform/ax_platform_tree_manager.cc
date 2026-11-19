@@ -13,6 +13,16 @@ AXPlatformTreeManager::AXPlatformTreeManager(std::unique_ptr<AXTree> tree)
 
 AXPlatformTreeManager::~AXPlatformTreeManager() = default;
 
+BrowserAccessibilityManager*
+AXPlatformTreeManager::AsBrowserAccessibilityManager() {
+  return nullptr;
+}
+
+const BrowserAccessibilityManager*
+AXPlatformTreeManager::AsBrowserAccessibilityManager() const {
+  return nullptr;
+}
+
 void AXPlatformTreeManager::FireSentinelEventForTesting() {}
 
 ui::AXMode AXPlatformTreeManagerDelegate::GetScopedAccessibilityMode() const {
