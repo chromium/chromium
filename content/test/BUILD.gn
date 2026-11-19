@@ -3261,6 +3261,7 @@ test("content_unittests") {
       "../browser/child_thread_type_switcher_linux_unittest.cc",
       "../child/sandboxed_process_thread_type_handler_unittest.cc",
       "../common/zygote/zygote_communication_linux_unittest.cc",
+      "../utility/speech/speech_recognition_sandbox_hook_linux_unittest.cc",
     ]
   }
 
@@ -3534,9 +3535,12 @@ test("content_unittests") {
       "//components/crash/content/browser/error_reporting",
       "//content/app:locale",
       "//content/common:sandbox_support_linux",
+      "//content/utility/speech:speech_recognition_sandbox_hook",
       "//sandbox/linux:sandbox_services",
       "//sandbox/linux:sandbox_services_headers",
     ]
+    data_deps +=
+        [ "//content/utility/speech:fake_soda_presandbox_library_for_testing" ]
   }
 
   if (is_linux && enable_vr) {
