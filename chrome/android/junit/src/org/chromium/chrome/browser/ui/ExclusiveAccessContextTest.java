@@ -173,15 +173,49 @@ public class ExclusiveAccessContextTest {
     }
 
     @Test
-    public void testToggleBrowserFullscreenMode() {
+    public void testToggleBrowserFullscreenMode_WhenNotInFullscreen_NotifiesOnEnterImmersiveMode() {
         JniUniquePtr<NativeExclusiveAccessManagerAndroid> nativePtr =
                 JniUniquePtr.createForTesting(456L);
         ExclusiveAccessManager manager =
                 createInitializedExclusiveAccessManager(
                         nativePtr, /* initialPersistentFullscreenMode= */ false);
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(false);
 
         manager.toggleBrowserFullscreenMode(/* userInitiated= */ true);
 
+        verify(
+                        mFullscreenManager,
+                        description(
+                                "Should notify FullscreenManager that a Browser immersive mode"
+                                        + " session is starting when toggling into fullscreen."))
+                .onEnterBrowserImmersiveMode();
+        verify(
+                        mExclusiveAccessManagerJni,
+                        description(
+                                "Should forward toggleBrowserFullscreenMode call to the JNI"
+                                        + " bridge."))
+                .toggleBrowserFullscreenMode(/* self= */ nativePtr, /* userInitiated= */ true);
+        manager.destroy();
+    }
+
+    @Test
+    public void
+            testToggleBrowserFullscreenMode_WhenAlreadyInFullscreen_DoesNotNotifyOnEnterImmersiveMode() {
+        JniUniquePtr<NativeExclusiveAccessManagerAndroid> nativePtr =
+                JniUniquePtr.createForTesting(456L);
+        ExclusiveAccessManager manager =
+                createInitializedExclusiveAccessManager(
+                        nativePtr, /* initialPersistentFullscreenMode= */ true);
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
+
+        manager.toggleBrowserFullscreenMode(/* userInitiated= */ true);
+
+        verify(
+                        mFullscreenManager,
+                        never().description(
+                                        "Should not call onEnterBrowserImmersiveMode when toggling"
+                                                + " out of an existing fullscreen session."))
+                .onEnterBrowserImmersiveMode();
         verify(
                         mExclusiveAccessManagerJni,
                         description(

@@ -48,6 +48,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -59,6 +60,8 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeEntryMethod;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate.ActionType;
 import org.chromium.chrome.browser.history.IncognitoHistoryDisclaimerCoordinator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -70,6 +73,7 @@ import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
 import org.chromium.chrome.browser.omaha.inline.InAppUpdateRestartScheduler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reader_mode.ReaderModeBottomSheetManager;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -128,11 +132,13 @@ public class TabbedRootUiCoordinatorUnitTest {
     @Mock private InAppUpdateController mMockInAppUpdateController;
     @Mock private DeferredStartupHandler mDeferredStartupHandler;
     @Mock private Tracker mTracker;
+    @Mock private MockTab mTab;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
 
     private AppCompatActivity mActivity;
     private TabbedRootUiCoordinator mCoordinator;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
@@ -442,7 +448,7 @@ public class TabbedRootUiCoordinatorUnitTest {
                 mActivity,
                 /* onOmniboxFocusChangedListener= */ null,
                 /* shareDelegateSupplier= */ ObservableSuppliers.alwaysNull(),
-                new ActivityTabProvider(),
+                mActivityTabProvider,
                 mProfileSupplier,
                 /* bookmarkModelSupplier= */ ObservableSuppliers.alwaysNull(),
                 /* tabBookmarkerSupplier= */ ObservableSuppliers.alwaysNull(),
@@ -519,6 +525,48 @@ public class TabbedRootUiCoordinatorUnitTest {
         assertSame(
                 mCoordinator.getTopUiThemeColorProvider(),
                 readerModeBottomSheetManager.getThemeColorProviderForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testHandleMenuOrKeyboardAction_fullscreenButton_recordsEntryMethod() {
+        when(mTab.getContext()).thenReturn(mActivity);
+        when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
+        mActivityTabProvider.setForTesting(mTab);
+
+        // 1. Entering Browser immersive mode from the 3-dot menu fullscreen button records
+        // APP_MENU_FULLSCREEN_BUTTON.
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(false);
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ImmersiveModeMetrics.HISTOGRAM_ENTRY_METHOD,
+                        ImmersiveModeEntryMethod.APP_MENU_FULLSCREEN_BUTTON)) {
+            assertTrue(
+                    mCoordinator.handleMenuOrKeyboardAction(
+                            R.id.fullscreen_button, /* fromMenu= */ true));
+        }
+
+        // 2. Entering Browser immersive mode from keyboard shortcut records KEYBOARD_SHORTCUT.
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ImmersiveModeMetrics.HISTOGRAM_ENTRY_METHOD,
+                        ImmersiveModeEntryMethod.KEYBOARD_SHORTCUT)) {
+            assertTrue(
+                    mCoordinator.handleMenuOrKeyboardAction(
+                            R.id.fullscreen_button, /* fromMenu= */ false));
+        }
+
+        // 3. Toggling out of an already active Browser immersive mode session does not record
+        // EntryMethod.
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ImmersiveModeMetrics.HISTOGRAM_ENTRY_METHOD)
+                        .build()) {
+            assertTrue(
+                    mCoordinator.handleMenuOrKeyboardAction(
+                            R.id.fullscreen_button, /* fromMenu= */ false));
+        }
     }
 
     private AtomicInteger attachLoadingStub() {

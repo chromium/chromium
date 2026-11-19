@@ -2876,6 +2876,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ImmersiveMode.EntryMethod"
+    enum="ImmersiveModeEntryMethod" expires_after="2027-05-15">
+  <owner>eleanorlee@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the entry method used to enter Browser immersive mode (e.g., via the
+    3-dot app menu fullscreen button or keyboard shortcut). Recorded once each
+    time Browser immersive mode is entered.
+  </summary>
+</histogram>
+
+<histogram name="Android.ImmersiveMode.NavigationsPerSession" units="count"
+    expires_after="2027-05-15">
+  <owner>eleanorlee@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the number of committed cross-document primary main frame
+    navigations that occurred while remaining in a single Browser immersive mode
+    session (excluding page reloads and initial New Tab Page loads when opening
+    a new tab). Recorded once when exiting Browser immersive mode.
+  </summary>
+</histogram>
+
+<histogram name="Android.ImmersiveMode.SessionDuration" units="ms"
+    expires_after="2027-05-15">
+  <owner>eleanorlee@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the total duration (in milliseconds) of a Browser immersive mode
+    session. Recorded once when exiting Browser immersive mode.
+  </summary>
+</histogram>
+
+<histogram name="Android.ImmersiveMode.TabSwitchesPerSession" units="count"
+    expires_after="2027-05-15">
+  <owner>eleanorlee@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the number of tab switches (TabHidingType.CHANGED_TABS) that
+    occurred while remaining in a single Browser immersive mode session (does
+    not differentiate between Ctrl + Tab, Ctrl + T, Ctrl + W, etc.). Recorded
+    once when exiting Browser immersive mode.
+  </summary>
+</histogram>
+
 <histogram name="Android.InAppUpdate.AppMenu.Action"
     enum="InAppUpdateAppMenuAction" expires_after="2027-03-10">
   <owner>vakh@chromium.org</owner>

@@ -95,4 +95,10 @@ public interface FullscreenManager {
 
     /** Sets the custom FullscreenManagerDelegate. */
     void setFullscreenManagerDelegate(FullscreenManagerDelegate delegate);
+
+    /**
+     * Notifies the manager that the upcoming fullscreen session is user-initiated Browser immersive
+     * mode (rather than renderer-initiated HTML5 tab fullscreen) for session metrics tracking.
+     */
+    default void onEnterBrowserImmersiveMode() {}
 }

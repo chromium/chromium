@@ -936,6 +936,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/fullscreen/BrowserControlsManagerUnitTest.java",
       "src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerCompatUnitTest.java",
       "src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerLegacyUnitTest.java",
+      "src/org/chromium/chrome/browser/fullscreen/ImmersiveModeMetricsUnitTest.java",
     ]
 
     deps = [

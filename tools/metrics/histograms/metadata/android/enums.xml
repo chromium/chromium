@@ -1751,6 +1751,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/hub/internal/android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediator.java:HubSearchEntrypoint) -->
 
+<!-- LINT.IfChange(ImmersiveModeEntryMethod) -->
+
+<enum name="ImmersiveModeEntryMethod">
+  <int value="0" label="AppMenuFullscreenButton"/>
+  <int value="1" label="KeyboardShortcut"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/fullscreen/ImmersiveModeMetrics.java:ImmersiveModeEntryMethod) -->
+
 <!-- LINT.IfChange(InAppUpdateAppMenuAction) -->
 
 <enum name="InAppUpdateAppMenuAction">

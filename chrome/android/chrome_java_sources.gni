@@ -725,6 +725,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerCompat.java",
   "java/src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerFactory.java",
   "java/src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandlerLegacy.java",
+  "java/src/org/chromium/chrome/browser/fullscreen/ImmersiveModeMetrics.java",
   "java/src/org/chromium/chrome/browser/gesturenav/BackActionDelegate.java",
   "java/src/org/chromium/chrome/browser/gesturenav/GestureNavMetrics.java",
   "java/src/org/chromium/chrome/browser/gesturenav/GestureNavigationProperties.java",

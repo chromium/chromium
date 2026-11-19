@@ -35,6 +35,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ApplicationStatus.WindowFocusChangedListener;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -115,6 +117,13 @@ public abstract class FullscreenHtmlApiHandlerBase
     private boolean mIsInMultiWindowMode;
 
     private boolean mNotifyOnNextExit;
+
+    // Session state for Browser immersive mode metrics (NavigationsPerSession,
+    // TabSwitchesPerSession, and SessionDuration in ImmersiveModeMetrics).
+    private boolean mIsBrowserImmersiveSessionActive;
+    private long mBrowserImmersiveEnterTimeMs;
+    private int mImmersiveNavigationsCount;
+    private int mImmersiveTabSwitchesCount;
 
     // Current ContentView. Updates when active tab is switched or WebContents is swapped
     // in the current Tab.
@@ -372,6 +381,17 @@ public abstract class FullscreenHtmlApiHandlerBase
                         boolean isTabSwitch = reason == TabHidingType.CHANGED_TABS;
                         mFullscreenManagerDelegate.onExitFullscreen(
                                 isPersistentImmersiveModeEnabled() && isTabSwitch ? tab : null);
+                        // Tab Switches per Session: Count all tab switches
+                        // (TabHidingType.CHANGED_TABS) that occur while remaining in a Browser
+                        // immersive mode session (does not differentiate between Ctrl + Tab,
+                        // Ctrl + T, Ctrl + W, etc.).
+                        if (mIsBrowserImmersiveSessionActive
+                                && isPersistentImmersiveModeEnabled()
+                                && isTabSwitch
+                                && getPersistentFullscreenMode()
+                                && modelSelector.getCurrentModel().getCount() > 0) {
+                            mImmersiveTabSwitchesCount++;
+                        }
                     }
 
                     @Override
@@ -388,6 +408,18 @@ public abstract class FullscreenHtmlApiHandlerBase
                             mFullscreenManagerDelegate.onExitFullscreen(
                                     isPersistentImmersiveModeEnabled() ? tab : null);
                             if (!isPersistentImmersiveModeEnabled()) return;
+                            // Navigations per Session: Count committed cross-document page
+                            // navigations that occur while remaining in a Browser immersive mode
+                            // session (excluding page reloads via Ctrl + R and New Tab Page loads
+                            // such as opening a new tab via Ctrl + T, which is already counted
+                            // under TabSwitchesPerSession).
+                            if (mIsBrowserImmersiveSessionActive
+                                    && getPersistentFullscreenMode()
+                                    && navigation.hasCommitted()
+                                    && !navigation.isReload()
+                                    && !UrlUtilities.isNtpUrl(navigation.getUrl())) {
+                                mImmersiveNavigationsCount++;
+                            }
                             updateActiveTabForPersistentFullscreen(tab);
                         }
                     }
@@ -689,6 +721,18 @@ public abstract class FullscreenHtmlApiHandlerBase
         }
     }
 
+    /**
+     * Marks the start of a Browser immersive mode session and resets the per-session navigation,
+     * tab-switch, and duration counters for {@link ImmersiveModeMetrics}.
+     */
+    @Override
+    public void onEnterBrowserImmersiveMode() {
+        mIsBrowserImmersiveSessionActive = true;
+        mBrowserImmersiveEnterTimeMs = TimeUtils.elapsedRealtimeMillis();
+        mImmersiveNavigationsCount = 0;
+        mImmersiveTabSwitchesCount = 0;
+    }
+
     @Override
     public void exitPersistentFullscreenMode() {
         // Return to the original starting position and bounds if the fullscreen was opening on
@@ -708,6 +752,19 @@ public abstract class FullscreenHtmlApiHandlerBase
 
         if (getPersistentFullscreenMode()) {
             mPersistentModeSupplier.set(false);
+            // Navigations per Session, Tab Switches per Session, and Session Duration: Emit session
+            // histograms once when exiting a Browser immersive mode session.
+            if (mIsBrowserImmersiveSessionActive) {
+                long durationMs =
+                        Math.max(
+                                0,
+                                TimeUtils.elapsedRealtimeMillis() - mBrowserImmersiveEnterTimeMs);
+                ImmersiveModeMetrics.recordSessionMetrics(
+                        mImmersiveNavigationsCount, mImmersiveTabSwitchesCount, durationMs);
+                mIsBrowserImmersiveSessionActive = false;
+                mImmersiveNavigationsCount = 0;
+                mImmersiveTabSwitchesCount = 0;
+            }
 
             if (mWebContentsInFullscreen != null && mTabInFullscreen != null) {
                 // mContentViewInFullscreen is non-null, since mWebContentsInFullscreen is non-null

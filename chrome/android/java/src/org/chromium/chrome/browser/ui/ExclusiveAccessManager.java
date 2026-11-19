@@ -259,6 +259,10 @@ public class ExclusiveAccessManager
         if (mExclusiveAccessManagerAndroidNativePointer == null) {
             return;
         }
+        // Start tracking a Browser immersive mode session when entering Browser immersive mode.
+        if (!mFullscreenManager.getPersistentFullscreenMode()) {
+            mFullscreenManager.onEnterBrowserImmersiveMode();
+        }
         ExclusiveAccessManagerJni.get()
                 .toggleBrowserFullscreenMode(
                         mExclusiveAccessManagerAndroidNativePointer, userInitiated);

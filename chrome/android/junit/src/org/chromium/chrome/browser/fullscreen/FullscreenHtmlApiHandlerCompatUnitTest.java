@@ -40,11 +40,13 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -53,10 +55,12 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImp
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
 
@@ -87,10 +91,12 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
                     .build();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private TabBrowserControlsConstraintsHelper mTabBrowserControlsConstraintsHelper;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
+    @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
 
     private TestContentView mContentView;
@@ -556,6 +562,8 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         doReturn(mContentView).when(mTab).getContentView();
         doReturn(true).when(mTab).isUserInteractable();
         doReturn(mTab).when(mTabModelSelector).getCurrentTab();
+        Mockito.lenient().doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
+        Mockito.lenient().doReturn(2).when(mTabModel).getCount();
 
         // Status bar and navigation bar should be visible.
         mContentView.setRootWindowInsets(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
@@ -684,5 +692,215 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
                                 "Should pass null on cross-document navigation to exit fullscreen"
                                         + " when immersive mode is disabled."))
                 .onExitFullscreen(null);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testImmersiveModeMetrics_ZeroActivitySession_RecordsZeroCountsAndExactDuration() {
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreenAndSetMockDelegate();
+        mFakeTimeTestRule.advanceMillis(3000);
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_NAVIGATIONS_PER_SESSION, 0)
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_TAB_SWITCHES_PER_SESSION, 0)
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_SESSION_DURATION, 3000)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        }
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testImmersiveModeMetrics_SessionCountersRecordedOnExit() {
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreenAndSetMockDelegate();
+
+        NavigationHandle crossDocNavigation = Mockito.mock(NavigationHandle.class);
+        doReturn(false).when(crossDocNavigation).isSameDocument();
+        doReturn(true).when(crossDocNavigation).hasCommitted();
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(crossDocNavigation).getUrl();
+
+        // Perform 2 committed cross-document navigations while in Browser immersive mode.
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, crossDocNavigation);
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, crossDocNavigation);
+
+        // Perform 3 tab switches while remaining in Browser immersive mode.
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, TabHidingType.CHANGED_TABS);
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, TabHidingType.CHANGED_TABS);
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, TabHidingType.CHANGED_TABS);
+
+        mFakeTimeTestRule.advanceMillis(15000);
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_NAVIGATIONS_PER_SESSION, 2)
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_TAB_SWITCHES_PER_SESSION, 3)
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_SESSION_DURATION, 15000)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+            // Calling exit a second time should not emit duplicate session histograms.
+            mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        }
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testImmersiveModeMetrics_ExcludedNavigationsAndNonTabSwitchHiding_NotCounted() {
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreenAndSetMockDelegate();
+
+        // 1. Same-document navigation (e.g. anchor link) should not count.
+        NavigationHandle sameDocNavigation = Mockito.mock(NavigationHandle.class);
+        doReturn(true).when(sameDocNavigation).isSameDocument();
+        doReturn(true).when(sameDocNavigation).hasCommitted();
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, sameDocNavigation);
+
+        // 2. Uncommitted navigation should not count.
+        NavigationHandle uncommittedNavigation = Mockito.mock(NavigationHandle.class);
+        doReturn(false).when(uncommittedNavigation).isSameDocument();
+        doReturn(false).when(uncommittedNavigation).hasCommitted();
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, uncommittedNavigation);
+
+        // 3. Page reload (e.g. Ctrl + R) should not count.
+        NavigationHandle reloadNavigation = Mockito.mock(NavigationHandle.class);
+        doReturn(false).when(reloadNavigation).isSameDocument();
+        doReturn(true).when(reloadNavigation).hasCommitted();
+        doReturn(true).when(reloadNavigation).isReload();
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, reloadNavigation);
+
+        // 4. Initial New Tab Page load with chrome://new-tab-page/ URL (when opening a new tab via
+        // Ctrl + T) should not count.
+        NavigationHandle ntpUrlNavigation = Mockito.mock(NavigationHandle.class);
+        doReturn(false).when(ntpUrlNavigation).isSameDocument();
+        doReturn(true).when(ntpUrlNavigation).hasCommitted();
+        doReturn(JUnitTestGURLs.NTP_URL).when(ntpUrlNavigation).getUrl();
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, ntpUrlNavigation);
+
+        // 5. Hiding a tab due to activity backgrounding (rather than CHANGED_TABS) should not count
+        // as a tab switch.
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, TabHidingType.ACTIVITY_HIDDEN);
+
+        // 6. Closing the last tab (CHANGED_TABS when the current TabModel is now empty) should not
+        // count as a tab switch.
+        doReturn(0).when(mTabModel).getCount();
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, TabHidingType.CHANGED_TABS);
+
+        mFakeTimeTestRule.advanceMillis(8000);
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_NAVIGATIONS_PER_SESSION, 0)
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_TAB_SWITCHES_PER_SESSION, 0)
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_SESSION_DURATION, 8000)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        }
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void
+            testImmersiveModeMetrics_MultipleSequentialSessions_ResetsCountersBetweenSessions() {
+        NavigationHandle crossDocNavigation = Mockito.mock(NavigationHandle.class);
+        doReturn(false).when(crossDocNavigation).isSameDocument();
+        doReturn(true).when(crossDocNavigation).hasCommitted();
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(crossDocNavigation).getUrl();
+
+        // Session 1: 2 navigations, 1 tab switch, 10000ms duration.
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreenAndSetMockDelegate();
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, crossDocNavigation);
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, crossDocNavigation);
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, TabHidingType.CHANGED_TABS);
+        mFakeTimeTestRule.advanceMillis(10000);
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_NAVIGATIONS_PER_SESSION, 2)
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_TAB_SWITCHES_PER_SESSION, 1)
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_SESSION_DURATION, 10000)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        }
+
+        // Session 2: 1 navigation, 2 tab switches, 4500ms duration (verifies counters and start
+        // time reset cleanly after Session 1).
+        mFullscreenHtmlApiHandlerCompat.onEnterBrowserImmersiveMode();
+        enterFullscreenAndSetMockDelegate();
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, crossDocNavigation);
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, TabHidingType.CHANGED_TABS);
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, TabHidingType.CHANGED_TABS);
+        mFakeTimeTestRule.advanceMillis(4500);
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_NAVIGATIONS_PER_SESSION, 1)
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_TAB_SWITCHES_PER_SESSION, 2)
+                        .expectIntRecord(ImmersiveModeMetrics.HISTOGRAM_SESSION_DURATION, 4500)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        }
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_ZOOM_IMMERSIVE)
+    public void testImmersiveModeMetrics_NotRecordedForTabFullscreenSession() {
+        // Enter regular HTML5 tab fullscreen (without calling onEnterBrowserImmersiveMode).
+        enterFullscreenAndSetMockDelegate();
+
+        NavigationHandle crossDocNavigation = Mockito.mock(NavigationHandle.class);
+        doReturn(false).when(crossDocNavigation).isSameDocument();
+        doReturn(true).when(crossDocNavigation).hasCommitted();
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab, crossDocNavigation);
+        mFullscreenHtmlApiHandlerCompat
+                .getTabFullscreenObserverForTesting()
+                .onHidden(mTab, TabHidingType.CHANGED_TABS);
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(ImmersiveModeMetrics.HISTOGRAM_NAVIGATIONS_PER_SESSION)
+                        .expectNoRecords(ImmersiveModeMetrics.HISTOGRAM_TAB_SWITCHES_PER_SESSION)
+                        .expectNoRecords(ImmersiveModeMetrics.HISTOGRAM_SESSION_DURATION)
+                        .build()) {
+            mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        }
     }
 }

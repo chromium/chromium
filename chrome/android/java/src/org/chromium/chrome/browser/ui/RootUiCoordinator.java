@@ -102,6 +102,8 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics;
+import org.chromium.chrome.browser.fullscreen.ImmersiveModeMetrics.ImmersiveModeEntryMethod;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.handoff.HandoffController;
 import org.chromium.chrome.browser.host_zoom.HostZoomListenerFactory;
@@ -768,17 +770,7 @@ public class RootUiCoordinator
 
                             @Override
                             public void enterImmersiveMode() {
-                                assert ChromeFeatureList.sAndroidZoomImmersive.isEnabled();
-                                Tab tab = mActivityTabProvider.get();
-                                if (tab == null) {
-                                    return;
-                                }
-
-                                assumeNonNull(mExclusiveAccessManager);
-                                mExclusiveAccessManager.toggleBrowserFullscreenMode(
-                                        /* userInitiated= */ true);
-                                assumeNonNull(mAppMenuCoordinator);
-                                mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
+                                toggleImmersiveMode(/* fromMenu= */ true);
                             }
 
                             @Override
@@ -2027,7 +2019,8 @@ public class RootUiCoordinator
                     .notifyEvent(EventConstants.PAGE_ZOOM_OPENED);
             mPageZoomBarCoordinator.show(tab.getWebContents());
         } else if (id == R.id.fullscreen_button) {
-            mPageZoomManager.enterImmersiveMode();
+            toggleImmersiveMode(fromMenu);
+            return true;
         } else if (id == R.id.open_with_id) {
             Tab tab = mActivityTabProvider.get();
             assert tab != null && tab.isNativePage() && tab.getNativePage() instanceof PdfPage;
@@ -2074,6 +2067,29 @@ public class RootUiCoordinator
             return true;
         }
         return false;
+    }
+
+    private void toggleImmersiveMode(boolean fromMenu) {
+        assert ChromeFeatureList.sAndroidZoomImmersive.isEnabled();
+        Tab tab = mActivityTabProvider.get();
+        if (tab == null) {
+            return;
+        }
+
+        // Entry Method Split: Record whether Browser immersive mode was entered via the 3-dot app
+        // menu fullscreen button or via keyboard shortcut (F11).
+        if (!mFullscreenManager.getPersistentFullscreenMode()) {
+            ImmersiveModeMetrics.recordEntryMethod(
+                    fromMenu
+                            ? ImmersiveModeEntryMethod.APP_MENU_FULLSCREEN_BUTTON
+                            : ImmersiveModeEntryMethod.KEYBOARD_SHORTCUT);
+        }
+
+        assumeNonNull(mExclusiveAccessManager);
+        mExclusiveAccessManager.toggleBrowserFullscreenMode(/* userInitiated= */ true);
+        if (mAppMenuCoordinator != null) {
+            mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
+        }
     }
 
     // AppMenuBlocker implementation
