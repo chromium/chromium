@@ -319,8 +319,8 @@ void TransportChannelImpl::SendUpstreamMessage(
               [](base::WeakPtr<TransportChannelImpl> self,
                  scoped_refptr<base::RefCountedData<SyncSendState>> sync_state,
                  std::string session_id, int64_t client_sequence_number,
-                 bool success, int response_code) {
-                if (!success) {
+                 int response_code) {
+                if (response_code < 200 || response_code >= 300) {
                   VLOG(1) << "Failed to send upstream message for session "
                           << session_id << " (response code: " << response_code
                           << ")";

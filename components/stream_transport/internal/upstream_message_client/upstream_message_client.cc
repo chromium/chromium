@@ -165,8 +165,8 @@ UpstreamMessageClient::SendUpstreamMessage(
       pending_requests_.size() >= max_pending_requests ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false,
-                                  /*response_code=*/-1));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), /*http_status_code=*/-1));
     return upstream_message;
   }
 
@@ -284,7 +284,6 @@ void UpstreamMessageClient::CompleteRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int response_code = http_status_code.value_or(-1);
-  bool success = response_code == net::HTTP_OK;
 
   pending->metrics_log.RecordResponse(http_status_code);
 
@@ -293,7 +292,7 @@ void UpstreamMessageClient::CompleteRequest(
   std::unique_ptr<PendingRequest> owned_pending = std::move(it->second);
   pending_requests_.erase(it);
 
-  std::move(owned_pending->callback).Run(success, response_code);
+  std::move(owned_pending->callback).Run(response_code);
 }
 
 }  // namespace stream_transport

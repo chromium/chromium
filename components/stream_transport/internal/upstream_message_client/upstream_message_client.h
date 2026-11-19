@@ -48,8 +48,9 @@ namespace stream_transport {
 // OnePlatform via authenticated HTTPS POST requests (`SimpleURLLoader`).
 class UpstreamMessageClient {
  public:
-  using SendCompleteCallback =
-      base::OnceCallback<void(bool success, int response_code)>;
+  // Invoked with the HTTP response status code (e.g. 200, 204, 409), or -1
+  // if rejected before dispatch or no HTTP response was received.
+  using SendCompleteCallback = base::OnceCallback<void(int http_status_code)>;
 
   UpstreamMessageClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -65,7 +66,7 @@ class UpstreamMessageClient {
   // the HTTPS POST to the server, and returns the assembled envelope. If the
   // request is rejected before network dispatch (e.g. untrustworthy endpoint or
   // pending-request cap reached), `callback` is invoked asynchronously with
-  // `(false, -1)` and the assembled envelope is still returned.
+  // -1 and the assembled envelope is still returned.
   virtual browser_actuator::ActuatorUpstreamMessage SendUpstreamMessage(
       std::string_view session_id,
       int64_t client_sequence_number,

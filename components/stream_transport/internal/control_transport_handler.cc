@@ -60,6 +60,7 @@ void ControlTransportHandler::OnMessage(PayloadType payload_type,
       break;
     }
     case browser_actuator::ControlCommand::kStartSessionAck:
+      break;
     case browser_actuator::ControlCommand::COMMAND_NOT_SET:
       DLOG(WARNING) << "Received unexpected command case, skipping: "
                     << static_cast<int>(command.command_case());

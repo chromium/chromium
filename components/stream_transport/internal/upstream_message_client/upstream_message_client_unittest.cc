@@ -96,15 +96,15 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   browser_actuator::ActuatorUpstreamMessage returned_upstream =
       client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
                                  /*responding_to_sequence_number=*/std::nullopt,
                                  PayloadType::kControl, command,
                                  future.GetCallback());
 
-  EXPECT_TRUE(future.Get<0>());
-  EXPECT_EQ(net::HTTP_OK, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(net::HTTP_OK, status);
 
   ASSERT_EQ(1u, requests_.size());
   const auto& request = requests_[0];
@@ -157,14 +157,14 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
                              /*responding_to_sequence_number=*/std::nullopt,
                              PayloadType::kExperimentalTriggering, command,
                              future.GetCallback());
 
-  EXPECT_TRUE(future.Get<0>());
-  EXPECT_EQ(net::HTTP_OK, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(net::HTTP_OK, status);
 
   histogram_tester.ExpectUniqueSample(
       "StreamTransport.Upstream.PayloadSize.ExperimentalTriggering",
@@ -188,13 +188,13 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageProbeSuccess) {
   browser_actuator::TransportProbe probe;
   probe.mutable_response()->set_probe_id("probe_1");
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
                              /*responding_to_sequence_number=*/std::nullopt,
                              PayloadType::kProbe, probe, future.GetCallback());
 
-  EXPECT_TRUE(future.Get<0>());
-  EXPECT_EQ(net::HTTP_OK, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(net::HTTP_OK, status);
 
   ASSERT_EQ(1u, requests_.size());
   browser_actuator::SendSessionMessageRequest request_proto;
@@ -232,14 +232,14 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
                              /*responding_to_sequence_number=*/std::nullopt,
                              PayloadType::kTaskIngress, command,
                              future.GetCallback());
 
-  EXPECT_TRUE(future.Get<0>());
-  EXPECT_EQ(net::HTTP_OK, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(net::HTTP_OK, status);
 
   ASSERT_EQ(1u, requests_.size());
   browser_actuator::SendSessionMessageRequest request_proto;
@@ -278,15 +278,15 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   browser_actuator::ActuatorUpstreamMessage returned_upstream =
       client.SendUpstreamMessage("session_1", /*client_sequence_number=*/2,
                                  /*responding_to_sequence_number=*/42,
                                  PayloadType::kControl, command,
                                  future.GetCallback());
 
-  EXPECT_TRUE(future.Get<0>());
-  EXPECT_EQ(net::HTTP_OK, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(net::HTTP_OK, status);
 
   ASSERT_EQ(1u, requests_.size());
   const auto& request = requests_[0];
@@ -323,14 +323,14 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageHttpError) {
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
                              /*responding_to_sequence_number=*/std::nullopt,
                              PayloadType::kControl, command,
                              future.GetCallback());
 
-  EXPECT_FALSE(future.Get<0>());
-  EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, status);
 
   histogram_tester.ExpectUniqueSample(
       "StreamTransport.Upstream.PayloadSize.Control", command.ByteSizeLong(),
@@ -357,14 +357,14 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
                              /*responding_to_sequence_number=*/std::nullopt,
                              PayloadType::kControl, command,
                              future.GetCallback());
 
-  EXPECT_FALSE(future.Get<0>());
-  EXPECT_EQ(-1, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(-1, status);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
@@ -377,7 +377,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client->SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
                               /*responding_to_sequence_number=*/std::nullopt,
                               PayloadType::kControl, command,
@@ -413,12 +413,12 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> first_future;
+  base::test::TestFuture<int> first_future;
   client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
                              /*responding_to_sequence_number=*/std::nullopt,
                              PayloadType::kControl, command,
                              first_future.GetCallback());
-  base::test::TestFuture<bool, int> second_future;
+  base::test::TestFuture<int> second_future;
   client.SendUpstreamMessage("session_2", /*client_sequence_number=*/1,
                              /*responding_to_sequence_number=*/std::nullopt,
                              PayloadType::kControl, command,
@@ -449,14 +449,14 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
                              /*responding_to_sequence_number=*/std::nullopt,
                              PayloadType::kControl, command,
                              future.GetCallback());
 
-  EXPECT_FALSE(future.Get<0>());
-  EXPECT_EQ(-1, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(-1, status);
   EXPECT_TRUE(requests_.empty());
 }
 
@@ -474,9 +474,9 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> f1;
-  base::test::TestFuture<bool, int> f2;
-  base::test::TestFuture<bool, int> f3;
+  base::test::TestFuture<int> f1;
+  base::test::TestFuture<int> f2;
+  base::test::TestFuture<int> f3;
 
   client.SendUpstreamMessage("session_1", 1, std::nullopt,
                              PayloadType::kControl, command, f1.GetCallback());
@@ -485,8 +485,8 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   client.SendUpstreamMessage("session_1", 3, std::nullopt,
                              PayloadType::kControl, command, f3.GetCallback());
 
-  EXPECT_FALSE(f3.Get<0>());
-  EXPECT_EQ(-1, f3.Get<1>());
+  int status3 = f3.Get();
+  EXPECT_EQ(-1, status3);
   EXPECT_TRUE(
       base::test::RunUntil([this]() { return requests_.size() == 2u; }));
   EXPECT_EQ(2u, requests_.size());
@@ -494,10 +494,10 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   // Completing one in-flight request frees capacity for a subsequent send.
   test_url_loader_factory_.SimulateResponseForPendingRequest(kEndpoint, "",
                                                              net::HTTP_OK);
-  EXPECT_TRUE(f1.Get<0>());
-  EXPECT_EQ(net::HTTP_OK, f1.Get<1>());
+  int status1 = f1.Get();
+  EXPECT_EQ(net::HTTP_OK, status1);
 
-  base::test::TestFuture<bool, int> f4;
+  base::test::TestFuture<int> f4;
   client.SendUpstreamMessage("session_1", 4, std::nullopt,
                              PayloadType::kControl, command, f4.GetCallback());
   EXPECT_TRUE(
@@ -515,7 +515,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client.SendUpstreamMessage("session_1", 1, std::nullopt,
                              PayloadType::kControl, command,
                              future.GetCallback());
@@ -543,8 +543,8 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   test_url_loader_factory_.SimulateResponseForPendingRequest(kEndpoint, "OK",
                                                              net::HTTP_OK);
 
-  EXPECT_TRUE(future.Get<0>());
-  EXPECT_EQ(net::HTTP_OK, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(net::HTTP_OK, status);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
@@ -558,7 +558,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client.SendUpstreamMessage("session_1", 1, std::nullopt,
                              PayloadType::kControl, command,
                              future.GetCallback());
@@ -586,8 +586,8 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kEndpoint, "Unauthorized", net::HTTP_UNAUTHORIZED);
 
-  EXPECT_FALSE(future.Get<0>());
-  EXPECT_EQ(net::HTTP_UNAUTHORIZED, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(net::HTTP_UNAUTHORIZED, status);
   EXPECT_EQ(2u, requests_.size());
   EXPECT_EQ(2u, removed_token_account_ids_.size());
 }
@@ -607,7 +607,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future1;
+  base::test::TestFuture<int> future1;
   client.SendUpstreamMessage("session_1", 1, std::nullopt,
                              PayloadType::kControl, command,
                              future1.GetCallback());
@@ -615,22 +615,22 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromServiceError(""));
 
-  EXPECT_FALSE(future1.Get<0>());
-  EXPECT_EQ(-1, future1.Get<1>());
+  int status1 = future1.Get();
+  EXPECT_EQ(-1, status1);
   EXPECT_TRUE(requests_.empty());
 
   // Verify the failed request was removed from `pending_requests_` so the
   // single-request capacity slot is free for subsequent calls.
   test_url_loader_factory_.AddResponse(kEndpoint, "OK", net::HTTP_OK);
-  base::test::TestFuture<bool, int> future2;
+  base::test::TestFuture<int> future2;
   client.SendUpstreamMessage("session_1", 2, std::nullopt,
                              PayloadType::kControl, command,
                              future2.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "valid_token", base::Time::Now() + base::Hours(1));
 
-  EXPECT_TRUE(future2.Get<0>());
-  EXPECT_EQ(net::HTTP_OK, future2.Get<1>());
+  int status2 = future2.Get();
+  EXPECT_EQ(net::HTTP_OK, status2);
 }
 
 TEST_F(BrowserActuatorUpstreamMessageClientTest,
@@ -647,7 +647,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client.SendUpstreamMessage("session_1", 1, std::nullopt,
                              PayloadType::kControl, command,
                              future.GetCallback());
@@ -668,8 +668,8 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kEndpoint, "Unauthorized", net::HTTP_UNAUTHORIZED);
 
-  EXPECT_FALSE(future.Get<0>());
-  EXPECT_EQ(net::HTTP_UNAUTHORIZED, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(net::HTTP_UNAUTHORIZED, status);
   EXPECT_EQ(1u, requests_.size());
   ASSERT_EQ(1u, removed_token_account_ids_.size());
   EXPECT_EQ(initial_account_id, removed_token_account_ids_[0]);
@@ -690,7 +690,7 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   browser_actuator::ControlCommand command;
   command.mutable_close_channel();
 
-  base::test::TestFuture<bool, int> future;
+  base::test::TestFuture<int> future;
   client.SendUpstreamMessage("session_1", 1, std::nullopt,
                              PayloadType::kControl, command,
                              future.GetCallback());
@@ -708,13 +708,187 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kEndpoint, "Unauthorized", net::HTTP_UNAUTHORIZED);
 
-  EXPECT_FALSE(future.Get<0>());
-  EXPECT_EQ(net::HTTP_UNAUTHORIZED, future.Get<1>());
+  int status = future.Get();
+  EXPECT_EQ(net::HTTP_UNAUTHORIZED, status);
   EXPECT_EQ(1u, requests_.size());
   ASSERT_EQ(1u, removed_token_account_ids_.size());
   EXPECT_EQ(initial_account_id, removed_token_account_ids_[0]);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       SendCompleteCallbackReceives204StatusCode) {
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  test_url_loader_factory_.AddResponse(kEndpoint, "", net::HTTP_NO_CONTENT);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  int status = future.Get();
+  EXPECT_EQ(status, net::HTTP_NO_CONTENT);
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       SendCompleteCallbackReceives409StatusCode) {
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  test_url_loader_factory_.AddResponse(kEndpoint, "Conflict",
+                                       net::HTTP_CONFLICT);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  int status = future.Get();
+  EXPECT_EQ(status, net::HTTP_CONFLICT);
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       SendCompleteCallbackReceives503StatusCode) {
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  test_url_loader_factory_.AddResponse(kEndpoint, "Unavailable",
+                                       net::HTTP_SERVICE_UNAVAILABLE);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  int status = future.Get();
+  EXPECT_EQ(status, net::HTTP_SERVICE_UNAVAILABLE);
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       SendCompleteCallbackReceives429StatusCode) {
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  test_url_loader_factory_.AddResponse(kEndpoint, "Too Many Requests",
+                                       net::HTTP_TOO_MANY_REQUESTS);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  int status = future.Get();
+  EXPECT_EQ(status, net::HTTP_TOO_MANY_REQUESTS);
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       SendCompleteCallbackReceives400StatusCode) {
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  test_url_loader_factory_.AddResponse(kEndpoint, "Bad Request",
+                                       net::HTTP_BAD_REQUEST);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  int status = future.Get();
+  EXPECT_EQ(status, net::HTTP_BAD_REQUEST);
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       SendCompleteCallbackReceivesMinusOneOnNetworkError) {
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  network::URLLoaderCompletionStatus status(net::ERR_CONNECTION_RESET);
+  test_url_loader_factory_.AddResponse(
+      GURL(kEndpoint), network::mojom::URLResponseHead::New(), "", status);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  int response_code = future.Get();
+  EXPECT_EQ(response_code, -1);
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       SendCompleteCallbackReceivesMinusOneOnOAuthFailure) {
+  // Use a separate unauthenticated `IdentityTestEnvironment` so no primary
+  // account is signed in (avoiding `ClearPrimaryAccount()`, which is
+  // disallowed on ChromeOS).
+  signin::IdentityTestEnvironment unauthenticated_identity_env(
+      &test_url_loader_factory_);
+
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               unauthenticated_identity_env.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  int response_code = future.Get();
+  EXPECT_EQ(response_code, -1);
+}
+
+TEST_F(BrowserActuatorUpstreamMessageClientTest,
+       SendCompleteCallbackReceivesMinusOneOnTransientOAuthFailure) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  UpstreamMessageClient client(test_shared_loader_factory_,
+                               identity_test_env_.identity_manager(),
+                               GURL(kEndpoint), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  client.SendUpstreamMessage("session_1", 1, std::nullopt,
+                             PayloadType::kControl, command,
+                             future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromConnectionError(net::ERR_TIMED_OUT));
+
+  int response_code = future.Get();
+  EXPECT_EQ(response_code, -1);
+  EXPECT_TRUE(requests_.empty());
+}
 
 }  // namespace
 }  // namespace stream_transport

@@ -236,5 +236,27 @@ TEST(ControlTransportHandlerTest, ExpectedTypeUrlMatchesControlCommand) {
                           browser_actuator::ControlCommand().GetTypeName()}));
 }
 
+TEST(ControlTransportHandlerTest, OnMessageStartSessionAckIsSilentNoop) {
+  MockTransportSession session("session_1");
+  bool close_channel_called = false;
+  bool close_session_called = false;
+
+  ControlTransportHandler handler(
+      &session,
+      base::BindLambdaForTesting([&]() { close_channel_called = true; }),
+      base::BindLambdaForTesting(
+          [&](std::string_view) { close_session_called = true; }));
+
+  EXPECT_CALL(session, SendUpstreamMessage(testing::_, testing::_)).Times(0);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_start_session_ack();
+
+  handler.OnMessage(PayloadType::kControl, command.SerializeAsString());
+
+  EXPECT_FALSE(close_channel_called);
+  EXPECT_FALSE(close_session_called);
+}
+
 }  // namespace
 }  // namespace stream_transport
