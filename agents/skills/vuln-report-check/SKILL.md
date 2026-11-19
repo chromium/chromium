@@ -11,7 +11,7 @@ description: >-
   amounts, or full exploit development.
 metadata:
   publisher: elklm
-  version: 0.9.3
+  version: 0.9.4
   icon: 🧪
 ---
 

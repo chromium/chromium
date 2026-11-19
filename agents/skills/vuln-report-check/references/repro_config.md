@@ -29,6 +29,10 @@ Rules worth knowing:
 - A `server.port` other than `8000` blocks automated reproduction only;
   `py.server_contract` checks that the script listens on the stated port.
 - An attached `patch.diff` or `*fix*` diff must be declared.
+- Turning off the sandbox in `flags` (`--no-sandbox`, `--disable-gpu-sandbox`,
+  `--no-zygote-sandbox`, `--disable-seccomp-filter-sandbox`,
+  `--disable-namespace-sandbox`, `--disable-setuid-sandbox`) fails report
+  quality only: a bug that needs the sandbox off is not a security bug.
 - `release` or `official` with a sanitizer trace in `crash_log` fails.
 - `null` for `user_interaction` or `preconditions` fails when the report steps
   say "click" or edit `/etc/hosts`.

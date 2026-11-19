@@ -26,6 +26,18 @@ ENVIRONMENT_BINARIES = (('chrome-desktop', 'chrome'), ('d8', 'd8'))
 MANUAL_BUILDS = ('msan', 'ubsan', 'hwasan', 'debug', 'official')
 BUILDS = ('asan', 'release') + MANUAL_BUILDS
 ARCHES = ('x64', 'arm64', 'x86', 'arm')
+# Chrome switches that turn off the sandbox for all or some processes. A bug
+# that only reproduces with one of these is not a security bug.
+SANDBOX_OFF_SWITCHES = frozenset(
+    {
+        'no-sandbox',
+        'disable-gpu-sandbox',
+        'no-zygote-sandbox',
+        'disable-seccomp-filter-sandbox',
+        'disable-namespace-sandbox',
+        'disable-setuid-sandbox',
+    }
+)
 REQUIRED_PORT = 8000
 CANONICAL_OS_PAIRS = (
     ('linux', 'Linux'),
@@ -414,6 +426,19 @@ def _check_build(
     return checks
 
 
+def _is_sandbox_off_switch(flag: str) -> bool:
+    """Returns whether `flag` is a Chrome switch that turns off a sandbox.
+
+    Chrome accepts both `-` and `--` before a switch name, trims spaces
+    around each argument, and ignores any `=value`, so `-no-sandbox` and
+    `"--no-sandbox=1 "` also count. Case is ignored because Windows
+    lowercases switch names.
+    """
+    trimmed = flag.strip()
+    name = trimmed.lstrip('-').split('=', 1)[0].lower()
+    return trimmed.startswith('-') and name in SANDBOX_OFF_SWITCHES
+
+
 def _check_flags(
     submission: common.Submission,
     values: Mapping[str, Any],
@@ -421,9 +446,11 @@ def _check_flags(
 ) -> list[common.Check]:
     """Checks that `flags` lists only command-line switches.
 
-    Whether a d8 PoC that calls V8 internal functions (`%Foo()`) also lists
-    `--allow-natives-syntax` is left to the agent, so no JavaScript has to be
-    parsed here.
+    Switches that turn off the sandbox fail report quality only: automated
+    reproduction still runs, but a bug that needs the sandbox off is not a
+    security bug. Whether a d8 PoC that calls V8 internal functions
+    (`%Foo()`) also lists `--allow-natives-syntax` is left to the agent, so
+    no JavaScript has to be parsed here.
     """
     flags = values['flags']
     bad = [flag for flag in flags if len(flag) < 2 or not flag.startswith('-')]
@@ -436,6 +463,19 @@ def _check_flags(
             ' in "poc", not in "flags".',
         )
     submission.set_field('flags', common.VALUE, flags)
+    sandbox_off = [flag for flag in flags if _is_sandbox_off_switch(flag)]
+    if sandbox_off:
+        return [
+            common.Check(
+                'config.flags',
+                common.FAIL,
+                f'"flags" turns off the Chrome sandbox: {_quote(sandbox_off)}.',
+                fix='Remove these switches and confirm the bug still'
+                ' reproduces with the sandbox on; a bug that needs the'
+                ' sandbox off is not a security bug.',
+                axis=common.AXIS_QUALITY,
+            )
+        ]
     return [
         common.Check(
             'config.flags',
@@ -1030,7 +1070,12 @@ def _suggest_config(submission: common.Submission) -> dict[str, Any]:
         'environment': env,
         'binary': pick('binary', dict(ENVIRONMENT_BINARIES).get(env)),
         'build': pick('build', '<asan|release>'),
-        'flags': pick('flags', default_flags),
+        # Drop sandbox-off switches so copying the template fixes them.
+        'flags': [
+            flag
+            for flag in pick('flags', default_flags)
+            if not _is_sandbox_off_switch(flag)
+        ],
         'poc': pick('poc', default_poc),
         'server': (
             {'file': server_file, 'port': REQUIRED_PORT}
