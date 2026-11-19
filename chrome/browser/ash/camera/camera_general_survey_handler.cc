@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "camera_general_survey_handler.h"
+#include "chrome/browser/ash/camera/camera_general_survey_handler.h"
 
 #include <optional>
+#include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
@@ -14,7 +16,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 
 namespace ash {
@@ -55,19 +60,26 @@ class CameraGeneralSurveyHandlerDelegate
         weak_ptr_factory_.GetWeakPtr()));
   }
 
-  bool ShouldShowSurvey() const override {
+  bool ShouldShowSurvey(const AccountId& account_id) const override {
     if (!hw_info_.has_value()) {
       LOG(ERROR) << "Unable to show camera HaTS because HW info is empty!";
       return false;
     }
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id));
+    CHECK(profile);
     return HatsNotificationController::ShouldShowSurveyToProfile(
-        ProfileManager::GetActiveUserProfile(), *GetHatsConfig());
+        profile, *GetHatsConfig());
   }
 
-  void ShowSurvey() override {
+  void ShowSurvey(const AccountId& account_id) override {
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id));
+    CHECK(profile);
     base::flat_map<std::string, std::string> survey_data = {
         {"board", hw_info_->board}, {"model", hw_info_->model}};
-    Profile* profile = ProfileManager::GetActiveUserProfile();
     hats_notification_controller_ =
         base::MakeRefCounted<HatsNotificationController>(
             profile, *GetHatsConfig(), survey_data);
@@ -118,21 +130,16 @@ CameraGeneralSurveyHandler::CameraGeneralSurveyHandler(
     base::TimeDelta trigger_delay)
     : min_usage_duration_(min_usage_duration),
       trigger_delay_(trigger_delay),
-      is_enabled_(is_enabled),
       delegate_(std::move(delegate)) {
-  if (!is_enabled_) {
+  if (!is_enabled) {
     return;
   }
-  camera_observer_.Observe(delegate_.get());
-  delegate_->LoadConfig();
+  auto* session_manager = session_manager::SessionManager::Get();
+  CHECK(session_manager->sessions().empty());
+  session_manager_observation_.Observe(session_manager);
 }
 
 CameraGeneralSurveyHandler::~CameraGeneralSurveyHandler() = default;
-
-void CameraGeneralSurveyHandler::TriggerSurvey() {
-  delegate_->ShowSurvey();
-  has_triggered_ = true;
-}
 
 void CameraGeneralSurveyHandler::OnActiveClientChange(
     cros::mojom::CameraClientType type,
@@ -154,12 +161,31 @@ void CameraGeneralSurveyHandler::OnActiveClientChange(
     if (elapsed < min_usage_duration_) {
       return;
     }
-    if (delegate_->ShouldShowSurvey()) {
+    // TODO(crbug.com/278643115): Take the `account_id` from the callers.
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    CHECK(active_session);
+    const AccountId& account_id = active_session->account_id();
+    if (delegate_->ShouldShowSurvey(account_id)) {
       timer_.Start(FROM_HERE, trigger_delay_,
                    base::BindOnce(&CameraGeneralSurveyHandler::TriggerSurvey,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                                  weak_ptr_factory_.GetWeakPtr(), account_id));
     }
   }
+}
+
+void CameraGeneralSurveyHandler::OnUserSessionStarted(bool is_primary_user) {
+  if (!is_primary_user) {
+    return;
+  }
+  session_manager_observation_.Reset();
+  camera_observer_.Observe(delegate_.get());
+  delegate_->LoadConfig();
+}
+
+void CameraGeneralSurveyHandler::TriggerSurvey(const AccountId& account_id) {
+  delegate_->ShowSurvey(account_id);
+  has_triggered_ = true;
 }
 
 }  // namespace ash

@@ -13,6 +13,9 @@
 #include "base/scoped_observation_traits.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/hats/hats_config.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace ash {
@@ -21,7 +24,9 @@ namespace ash {
 // using camera after being used for |min_usage_duration_|.
 // The user is considered "finished" using the camera if the camera remains
 // closed for |trigger_delay_|.
-class CameraGeneralSurveyHandler : public media::CameraActiveClientObserver {
+class CameraGeneralSurveyHandler
+    : public media::CameraActiveClientObserver,
+      public session_manager::SessionManagerObserver {
  public:
   struct HardwareInfo {
     std::string board;
@@ -43,12 +48,13 @@ class CameraGeneralSurveyHandler : public media::CameraActiveClientObserver {
     // Loads the config then keeps it internally.
     virtual void LoadConfig() = 0;
 
-    // Checks whether the device met all conditions to participate the survey.
-    virtual bool ShouldShowSurvey() const = 0;
+    // Checks whether the device and `account_id` met all conditions to
+    // participate in the survey.
+    virtual bool ShouldShowSurvey(const AccountId& account_id) const = 0;
 
     // Triggers the survey invitation notification,
     // in which when open will show the camera survey.
-    virtual void ShowSurvey() = 0;
+    virtual void ShowSurvey(const AccountId& account_id) = 0;
   };
 
   CameraGeneralSurveyHandler();
@@ -62,13 +68,17 @@ class CameraGeneralSurveyHandler : public media::CameraActiveClientObserver {
       delete;
   ~CameraGeneralSurveyHandler() override;
 
+  // media::CameraActiveClientObserver:
   void OnActiveClientChange(
       cros::mojom::CameraClientType type,
       bool is_new_active_client,
       const base::flat_set<std::string>& active_device_ids) override;
 
+  // session_manager::SessionManagerObserver:
+  void OnUserSessionStarted(bool is_primary_user) override;
+
  private:
-  void TriggerSurvey();
+  void TriggerSurvey(const AccountId& account_id);
 
   // Describes how long a camera must remain open to trigger the survey show.
   const base::TimeDelta min_usage_duration_;
@@ -84,9 +94,11 @@ class CameraGeneralSurveyHandler : public media::CameraActiveClientObserver {
   // true.
   base::TimeTicks open_at_;
 
-  const bool is_enabled_;
   const std::unique_ptr<Delegate> delegate_;
   bool has_triggered_ = false;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
   base::ScopedObservation<Delegate, media::CameraActiveClientObserver>
       camera_observer_{this};
   base::WeakPtrFactory<CameraGeneralSurveyHandler> weak_ptr_factory_{this};

@@ -13,13 +13,13 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ash/camera",
   "+chrome/browser/ash/hats",
-  "+chrome/browser/profiles",
+  "+chrome/browser/profiles/profile.h",
 ]
 
 specific_include_rules = {
-  # Only tests need these //chrome dependencies.
   "camera_general_survey_handler_unittest\\.cc": [
-    "+chrome/browser/ash/camera",
+    "+chrome/test/base/testing_browser_process.h",
   ],
 }
