@@ -94,6 +94,7 @@ build_webui("build") {
     "focus_config.ts",
     "full_data_reset.html.ts",
     "full_data_reset.ts",
+    "icons.html.ts",
     "notification_cards/notification_card.html.ts",
     "notification_cards/notification_card.ts",
     "notification_cards/notification_cards_browser_proxy.ts",
@@ -118,6 +119,7 @@ build_webui("build") {
     "prefs/pref_toggle_button.html.ts",
     "prefs/pref_toggle_button.ts",
     "router.ts",
+    "searchable_label.html.ts",
     "searchable_label.ts",
     "settings_section.html.ts",
     "settings_section.ts",
@@ -198,8 +200,6 @@ build_webui("build") {
     "toolbar.css",
   ]
 
-  icons_html_files = [ "icons.html" ]
-
   ts_composite = true
 
   ts_definitions = [
@@ -207,9 +207,7 @@ build_webui("build") {
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/passwords_private.d.ts",
-    "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
-    "//tools/typescript/definitions/tabs.d.ts",
   ]
 
   ts_deps = [

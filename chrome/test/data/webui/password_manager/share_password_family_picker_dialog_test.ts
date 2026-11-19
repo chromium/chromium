@@ -4,6 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
+import type {SharePasswordFamilyPickerDialogElement} from 'chrome://password-manager/password_manager.js';
 import {SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -17,9 +18,10 @@ function assertVisibleTextContent(element: HTMLElement, expectedText: string) {
   assertEquals(expectedText, element?.textContent.trim());
 }
 
-function countSelectedRecipients(dialog: HTMLElement): number {
+function countSelectedRecipients(
+    dialog: SharePasswordFamilyPickerDialogElement): number {
   return Array
-      .from(dialog.shadowRoot!.querySelectorAll('share-password-recipient'))
+      .from(dialog.shadowRoot.querySelectorAll('share-password-recipient'))
       .filter(item => item.selected)
       .length;
 }

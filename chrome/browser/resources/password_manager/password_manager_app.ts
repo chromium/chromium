@@ -121,8 +121,8 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
       /**
        * A Map specifying which element should be focused when exiting a
        * subpage. The key of the map holds a Route path, and the value holds
-       * either a query selector that identifies the desired element, an element
-       * or a function to be run when a neon-animation-finish event is handled.
+       * either an element or a function to be run when the selected page
+       * changes.
        */
       focusConfig_: {type: Object},
     };

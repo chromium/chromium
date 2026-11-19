@@ -2,13 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {quoteString} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import {getHtml} from './searchable_label.html.js';
+
+export interface TextSegment {
+  text: string;
+  bold: boolean;
+}
 
 export class SearchableLabelElement extends CrLitElement {
   static get is() {
     return 'searchable-label';
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   static override get properties() {
@@ -24,53 +35,33 @@ export class SearchableLabelElement extends CrLitElement {
   override accessor title: string = '';
   accessor searchTerm: string = '';
 
-  // Do not attach a shadowRoot so that nodes appended to the light DOM in
-  // `setSearchedTextToBold_()` are actually visible.
+  // Do not attach a shadowRoot so that rendered nodes are in the light DOM.
   override createRenderRoot() {
     return this;
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    if (changedProperties.has('title') || changedProperties.has('searchTerm')) {
-      this.setSearchedTextToBold_();
-    }
-  }
-
   /**
-   * Updates the page title. If a search term is specified, highlights any
-   * occurrences of the search term in bold.
+   * Splits `title` into segments, marking occurrences of `searchTerm` as bold.
    */
-  private setSearchedTextToBold_() {
+  protected getSegments_(): TextSegment[] {
+    assert(this.searchTerm);
+    const segments: TextSegment[] = [];
     const titleText = this.title;
-
-    if (!this.searchTerm) {
-      this.textContent = ` ${titleText} `;
-      return;
-    }
-
     const re = new RegExp(quoteString(this.searchTerm), 'gim');
     let i = 0;
     let match;
-    this.textContent = '';
     while (match = re.exec(titleText)) {
       if (match.index > i) {
-        this.appendTextElement('span', titleText.slice(i, match.index));
+        segments.push({text: titleText.slice(i, match.index), bold: false});
       }
       i = re.lastIndex;
       // Mark the highlighted text in bold.
-      this.appendTextElement('b', titleText.substring(match.index, i));
+      segments.push({text: titleText.substring(match.index, i), bold: true});
     }
     if (i < titleText.length) {
-      this.appendTextElement('span', titleText.slice(i));
+      segments.push({text: titleText.slice(i), bold: false});
     }
-  }
-
-  private appendTextElement(type: string, text: string) {
-    const element = document.createElement(type);
-    element.textContent = text;
-    this.appendChild(element);
+    return segments;
   }
 }
 

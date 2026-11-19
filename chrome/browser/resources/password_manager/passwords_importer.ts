@@ -189,7 +189,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   launchImport() {
     this.executeIfTrustedVaultUnlocked(() => {
       this.dialogState_ = DialogState.IN_PROGRESS;
-      // Timeout is needed to allow Polymer to render the Settings page before
+      // Timeout is needed to allow the Settings page to render before
       // the system file picker has been opened.
       setTimeout(() => {
         if (this.isAccountStoreUser) {

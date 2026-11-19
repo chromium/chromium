@@ -50,7 +50,6 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
       /** Whether the control is checked. */
       checked: {
         type: Boolean,
-        notify: true,
         reflect: true,
       },
 

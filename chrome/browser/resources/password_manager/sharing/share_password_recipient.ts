@@ -42,7 +42,6 @@ export class SharePasswordRecipientElement extends CrLitElement {
       selected: {
         type: Boolean,
         reflect: true,
-        notify: true,
       },
     };
   }

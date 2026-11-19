@@ -16,49 +16,33 @@ import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
+function getDisplayedNameHtml(label: HTMLElement): string {
+  // Strip Lit expression/formatting HTML comments to compare the rendered DOM.
+  return label.innerHTML.replace(/<!--[\s\S]*?-->/g, '').trim();
+}
+
 /**
- * @param subsection The passwords subsection element that will be checked.
- * @param expectedPasswords The expected passwords in this subsection.
+ * @param section The passwords section element that will be checked.
+ * @param expectedGroups The expected password groups in this section.
+ * @param expectedLabels Optional expected inner HTML for each item's label.
+ *     Defaults to each group's plain `name` (no `<b>`/`<span>` children).
  */
 function validatePasswordsSubsection(
     section: PasswordsSectionElement,
     expectedGroups: chrome.passwordsPrivate.CredentialGroup[],
-    searchTerm: string) {
+    expectedLabels?: string[]) {
   assertEquals(expectedGroups.length > 0, isVisible(section.$.passwords));
   const listItemElements =
       section.shadowRoot.querySelectorAll('password-list-item');
-  assertEquals(listItemElements.length, expectedGroups.length);
+  assertEquals(expectedGroups.length, listItemElements.length);
 
   for (let index = 0; index < expectedGroups.length; ++index) {
     const expectedGroup = expectedGroups[index]!;
     const listItemElement = listItemElements[index];
-
-    const matchingUsername =
-        expectedGroup.entries.find(cred => cred.username.includes(searchTerm))
-            ?.username;
-    const matchingDomain =
-        expectedGroup.entries
-            .find(
-                cred => cred.affiliatedDomains.some(
-                    domain => domain.name.includes(searchTerm)))
-            ?.affiliatedDomains
-            .find(domain => domain.name.includes(searchTerm))
-            ?.name;
-
     assertTrue(!!listItemElement);
-    if (!searchTerm || expectedGroup.name.includes(searchTerm)) {
-      assertEquals(
-          expectedGroup.name,
-          listItemElement.$.displayedName.textContent.trim());
-    } else if (matchingUsername) {
-      assertEquals(
-          expectedGroup.name + ' • ' + matchingUsername,
-          listItemElement.$.displayedName.textContent.trim());
-    } else {
-      assertEquals(
-          expectedGroup.name + ' • ' + matchingDomain,
-          listItemElement.$.displayedName.textContent.trim());
-    }
+    assertEquals(
+        expectedLabels ? expectedLabels[index]! : expectedGroup.name,
+        getDisplayedNameHtml(listItemElement.$.displayedName));
   }
 }
 
@@ -119,7 +103,7 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups, '');
+    validatePasswordsSubsection(section, passwordManager.data.groups);
   });
 
   test('passwords list is hidden if nothing to show', async function() {
@@ -225,7 +209,7 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups, '');
+    validatePasswordsSubsection(section, passwordManager.data.groups);
 
     const query = new URLSearchParams();
     query.set(UrlParam.SEARCH_TERM, 'bar');
@@ -233,7 +217,16 @@ suite('PasswordsSectionTest', function() {
     await microtasksFinished();
 
     validatePasswordsSubsection(
-        section, passwordManager.data.groups.slice(1), 'bar');
+        section, passwordManager.data.groups.slice(1),
+        ['<b>bar</b><span>.com</span>']);
+
+    // Clearing the search term restores plain text labels without
+    // `<b>`/`<span>` elements.
+    query.delete(UrlParam.SEARCH_TERM);
+    Router.getInstance().updateRouterParams(query);
+    await microtasksFinished();
+
+    validatePasswordsSubsection(section, passwordManager.data.groups);
   });
 
   test('search by username', async function() {
@@ -250,7 +243,7 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups, '');
+    validatePasswordsSubsection(section, passwordManager.data.groups);
 
     const query = new URLSearchParams();
     query.set(UrlParam.SEARCH_TERM, 'ert');
@@ -258,7 +251,8 @@ suite('PasswordsSectionTest', function() {
     await microtasksFinished();
 
     validatePasswordsSubsection(
-        section, passwordManager.data.groups.slice(0, 1), 'ert');
+        section, passwordManager.data.groups.slice(0, 1),
+        ['<span>foo.com • qw</span><b>ert</b><span>y</span>']);
   });
 
   test('search by domain', async function() {
@@ -283,7 +277,7 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups, '');
+    validatePasswordsSubsection(section, passwordManager.data.groups);
 
     const query = new URLSearchParams();
     query.set(UrlParam.SEARCH_TERM, 'bar.uk');
@@ -291,7 +285,8 @@ suite('PasswordsSectionTest', function() {
     await microtasksFinished();
 
     validatePasswordsSubsection(
-        section, passwordManager.data.groups.slice(1), 'bar.uk');
+        section, passwordManager.data.groups.slice(1),
+        ['<span>bar.com • </span><b>bar.uk</b>']);
   });
 
   test('search by group name ranked higher', async function() {
@@ -311,7 +306,7 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    validatePasswordsSubsection(section, passwordManager.data.groups, '');
+    validatePasswordsSubsection(section, passwordManager.data.groups);
 
     const query = new URLSearchParams();
     query.set(UrlParam.SEARCH_TERM, 'foo');
@@ -320,7 +315,10 @@ suite('PasswordsSectionTest', function() {
 
     // Now foo.com is the first item because the group name matches query.
     validatePasswordsSubsection(
-        section, passwordManager.data.groups.reverse(), 'foo');
+        section, passwordManager.data.groups.reverse(), [
+          '<b>foo</b><span>.com</span>',
+          '<span>bar.com • test@</span><b>foo</b><span>.com</span>',
+        ]);
   });
 
   test('clicking add button opens an add password dialog', async function() {

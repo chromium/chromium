@@ -1,4 +1,13 @@
-<cr-iconset name="passwords-icon" size="20">
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/cr_elements/cr_icon/cr_iconset.js';
+
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+
+const div = document.createElement('div');
+div.innerHTML = getTrustedHTML`<cr-iconset name="passwords-icon" size="20">
   <svg>
     <defs>
       <g id="passkey-old"><path d="M9 10c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm0-4.5c.83 0 1.5.67 1.5 1.5S9.83 8.5 9 8.5 7.5 7.83 7.5 7 8.17 5.5 9 5.5zm6.5 7.5v-.13a2.497 2.497 0 001.75-2.37 2.5 2.5 0 00-5 0c0 1.12.74 2.05 1.75 2.37V16l1 1 1.5-1.5-.75-.75.75-.75-1-1zm-.75-1.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM4.5 14.09c0-.18.09-.34.22-.42C6.02 12.9 7.5 12.5 9 12.5c.88 0 1.75.15 2.58.42-.39-.5-.65-1.09-.76-1.73A9.94 9.94 0 009 11c-1.84 0-3.56.5-5.03 1.37-.61.35-.97 1.02-.97 1.72V16h9.5v-1.5h-8v-.41z"></path></g>
@@ -30,3 +39,9 @@
     </defs>
   </svg>
 </cr-iconset>
+`;
+
+const iconsets = div.querySelectorAll('cr-iconset');
+for (const iconset of iconsets) {
+  document.head.appendChild(iconset);
+}
