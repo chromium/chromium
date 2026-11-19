@@ -58,6 +58,8 @@ class ImmersiveModeBrowserViewTest
     : public TopChromeMdParamTest<ChromeOSBrowserUITest> {
  public:
   ImmersiveModeBrowserViewTest() {
+    // TODO(crbug.com/584313535): Remove the Tab Search bubble tests and
+    // re-enable kOrganizerPanel.
     feature_list_.InitAndDisableFeature(organizer_panel::kOrganizerPanel);
   }
   ImmersiveModeBrowserViewTest(const ImmersiveModeBrowserViewTest&) = delete;
