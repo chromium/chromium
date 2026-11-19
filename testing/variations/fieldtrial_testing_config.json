@@ -9921,23 +9921,6 @@
             ]
         }
     ],
-    "GlicCookieSyncOnTokenChange": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicCookieSyncEarlyNoStartup",
-                        "GlicCookieSyncOnTokenChange"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicDisableDaisyChainNewTabs": [
         {
             "platforms": [
