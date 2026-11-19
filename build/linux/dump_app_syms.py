@@ -28,11 +28,11 @@ if (
 ):
     try:
         with open(outfile, 'w') as outfileobj:
-            # -v generates some warning outputs to stderr even on success.
-            # Capture stderr to suppress warnings in the console during successful
-            # runs, and show them only when the command fails.
+            # Omit -v so benign DWARF/CFI warnings are suppressed while fatal
+            # errors are still written to stderr. Capture stderr to show it
+            # only when the command fails.
             subprocess.run(
-                [dumpsyms, '-m', '-d', '-v', infile],
+                [dumpsyms, '-m', '-d', infile],
                 stdout=outfileobj,
                 stderr=subprocess.PIPE,
                 text=True,
