@@ -32,7 +32,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
-#include "third_party/re2/src/re2/re2.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 
@@ -95,14 +94,14 @@ bool AcceptsGzip(const HttpRequest& request) {
          it->second.find("gzip") != std::string::npos;
 }
 
-// Returns `kV4` if the decoded request body has a `"protocol": "4.0"` entry,
-// with any number of spaces after the colon, else `kV3`. Requests without a
-// protocol entry, such as downloads, also get `kV3`.
+// Returns `kV4` if the request body is a JSON dict with a `request.protocol` of
+// "4.0", else `kV3`.
 ProtocolVersion GetProtocolVersion(const HttpRequest& request) {
-  return re2::RE2::PartialMatch(request.decoded_content,
-                                R"("protocol": *"4\.0")")
-             ? ProtocolVersion::kV4
-             : ProtocolVersion::kV3;
+  const std::optional<base::DictValue> content = ParseJsonContent(request);
+  const std::string* protocol =
+      content ? content->FindStringByDottedPath("request.protocol") : nullptr;
+  return protocol && *protocol == "4.0" ? ProtocolVersion::kV4
+                                        : ProtocolVersion::kV3;
 }
 
 }  // namespace

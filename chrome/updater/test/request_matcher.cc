@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -18,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -29,13 +26,14 @@
 #include "base/version.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/test/http_request.h"
-#include "chrome/updater/test/unit_test_util.h"
+#include "chrome/updater/test/json_matchers.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "net/base/url_util.h"
 #include "net/http/http_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -43,16 +41,6 @@
 namespace updater::test::request {
 
 namespace {
-
-// Returns `request.apps` (protocol V4), else `request.app` (protocol V3).
-// Older updaters that the integration tests install still send protocol V3.
-const base::ListValue* FindAppList(const base::DictValue& doc) {
-  if (const base::ListValue* app_list =
-          doc.FindListByDottedPath("request.apps")) {
-    return app_list;
-  }
-  return doc.FindListByDottedPath("request.app");
-}
 
 // Returns the parts of the multipart `body`, each with its headers and data
 // but without the surrounding delimiters, or an error message if `body` is not
@@ -112,16 +100,6 @@ void CheckValidRegex(const std::string& regex,
                      const re2::RE2::Options& options) {
   const re2::RE2 re(regex, options);
   CHECK(re.ok()) << "Invalid regex [" << regex << "]: " << re.error();
-}
-
-// Returns true if `haystack` covers `needle`, comparing strings
-// case-insensitively. See `IsJSONSubset`.
-bool IsJSONSubsetCaseInsensitive(const base::Value& needle,
-                                 const base::Value& haystack) {
-  return IsJSONSubset(needle, haystack,
-                      [](const std::string& a, const std::string& b) {
-                        return base::EqualsCaseInsensitiveASCII(a, b);
-                      });
 }
 
 }  // namespace
@@ -253,97 +231,28 @@ Matcher GetContentMatcher(
 }
 
 Matcher GetScopeMatcher(UpdaterScope scope) {
-  return base::BindLambdaForTesting(
-      [scope](const HttpRequest& request) -> testing::AssertionResult {
-        const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
-            request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-        const std::optional<bool> ismachine =
-            doc ? doc->FindBoolByDottedPath("request.ismachine") : std::nullopt;
-        if (!ismachine || *ismachine != IsSystemInstall(scope)) {
-          return testing::AssertionFailure()
-                 << "Request does not match scope [" << scope
-                 << "]: " << GetPrintableContent(request);
-        }
-        return testing::AssertionSuccess();
-      });
+  return GetJSONContentMatcher(
+      json::UpdateRequest(json::HasKey("ismachine", IsSystemInstall(scope))));
 }
 
 Matcher GetAppPriorityMatcher(const std::string& app_id,
                               UpdateService::Priority priority) {
-  return base::BindLambdaForTesting([app_id,
-                                     priority](const HttpRequest& request)
-                                        -> testing::AssertionResult {
-    const bool is_match = [&app_id, priority, &request] {
-      const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
-          request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-      if (!doc) {
-        return false;
-      }
-      const base::ListValue* app_list = FindAppList(*doc);
-      if (!app_list) {
-        return false;
-      }
-      for (const base::Value& app : *app_list) {
-        if (const auto* dict = app.GetIfDict()) {
-          if (const auto* appid = dict->FindString("appid");
-              appid && base::EqualsCaseInsensitiveASCII(*appid, app_id)) {
-            if (const auto* install_source =
-                    dict->FindString("installsource")) {
-              static constexpr auto kInstallSources =
-                  std::array{"ondemand", "taggedmi", "policy"};
-              return std::ranges::contains(kInstallSources, *install_source) ==
-                     (priority == UpdateService::Priority::kForeground);
-            }
-          }
-        }
-      }
-      return priority != UpdateService::Priority::kForeground;
-    }();
-    if (!is_match) {
-      return testing::AssertionFailure()
-             << "Request does not match app_id [" << app_id << "], priority ["
-             << priority << "]: " << GetPrintableContent(request);
-    }
-    return testing::AssertionSuccess();
-  });
+  const json::ValueMatcher foreground = json::HasApp(
+      app_id,
+      json::HasKey("installsource", json::IsString(testing::AnyOf(
+                                        "ondemand", "taggedmi", "policy"))));
+  return GetJSONContentMatcher(testing::AllOf(
+      json::UpdateRequest(json::HasKey("apps", json::IsList(testing::_))),
+      priority == UpdateService::Priority::kForeground
+          ? foreground
+          : json::ValueMatcher(testing::Not(foreground))));
 }
 
 Matcher GetUpdaterEnableUpdatesMatcher() {
-  return base::BindLambdaForTesting(
-      [](const HttpRequest& request) -> testing::AssertionResult {
-        const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
-            request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-        if (!doc) {
-          return testing::AssertionFailure()
-                 << "Could not parse decoded content as a JSON dict: "
-                 << GetPrintableContent(request);
-        }
-        const base::ListValue* app_list = FindAppList(*doc);
-        if (!app_list) {
-          return testing::AssertionFailure()
-                 << "No `request.apps` or `request.app` list in request: "
-                 << GetPrintableContent(request);
-        }
-        for (const base::Value& app : *app_list) {
-          const base::DictValue* dict = app.GetIfDict();
-          if (!dict) {
-            continue;
-          }
-          const std::string* appid = dict->FindString("appid");
-          if (!appid ||
-              !base::EqualsCaseInsensitiveASCII(*appid, kUpdaterAppId)) {
-            continue;
-          }
-          const base::DictValue* update_check = dict->FindDict("updatecheck");
-          if (update_check &&
-              update_check->FindBool("updatedisabled").value_or(false)) {
-            return testing::AssertionFailure()
-                   << "Update is wrongfully disabled for updater itself: "
-                   << GetPrintableContent(request);
-          }
-        }
-        return testing::AssertionSuccess();
-      });
+  return GetJSONContentMatcher(testing::AllOf(
+      json::UpdateRequest(json::HasKey("apps", json::IsList(testing::_))),
+      testing::Not(json::HasApp(
+          kUpdaterAppId, json::HasPath("updatecheck.updatedisabled", true)))));
 }
 
 Matcher GetMultipartContentMatcher(
@@ -426,76 +335,46 @@ Matcher GetMultipartContentMatcher(
       });
 }
 
-Matcher GetJSONContentMatcher(const base::DictValue& expected_target) {
+Matcher GetJSONContentMatcher(json::ValueMatcher matcher) {
   return base::BindLambdaForTesting(
-      [target = base::Value(expected_target.Clone())](
-          const HttpRequest& request) -> testing::AssertionResult {
-        std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
-            request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-        if (!doc) {
+      [matcher](const HttpRequest& request) -> testing::AssertionResult {
+        std::optional<base::DictValue> content = ParseJsonContent(request);
+        if (!content) {
           return testing::AssertionFailure()
-                 << "Could not parse decoded content as a JSON dict, expected "
-                    "JSON subset: ["
-                 << target.DebugString()
-                 << "], request content: " << GetPrintableContent(request);
+                 << "Request content is not a JSON dict, expected a JSON dict "
+                    "that "
+                 << testing::DescribeMatcher<const base::Value&>(matcher)
+                 << ", request content: " << GetPrintableContent(request);
         }
-
-        base::Value doc_value(std::move(*doc));
-        if (!IsJSONSubsetCaseInsensitive(target, doc_value)) {
-          return testing::AssertionFailure()
-                 << "Expected JSON subset: [" << target.DebugString()
-                 << "] not found in (parsed) request content: ["
-                 << doc_value.DebugString() << "]";
+        const base::Value value(std::move(*content));
+        // Explaining costs more than matching, so explain only a mismatch.
+        if (matcher.Matches(value)) {
+          return testing::AssertionSuccess();
         }
-
-        return testing::AssertionSuccess();
+        testing::StringMatchResultListener listener;
+        matcher.MatchAndExplain(value, &listener);
+        return testing::AssertionFailure()
+               << "Request JSON content mismatch: " << listener.str()
+               << "\n  Expected a JSON dict that "
+               << testing::DescribeMatcher<const base::Value&>(matcher)
+               << "\n  Request content: " << GetPrintableContent(request);
       });
+}
+
+Matcher GetJSONContentMatcher(const base::DictValue& expected_target) {
+  return GetJSONContentMatcher(
+      json::Covers(base::Value(expected_target.Clone())));
 }
 
 Matcher GetAppJSONContentMatcher(const base::DictValue& expected_app) {
   CHECK(!expected_app.contains("event"))
-      << "Use `events`; the matcher maps it to `event` for protocol V3.";
-  // Protocol V3 names the event list `event`.
-  base::DictValue v3_app = expected_app.Clone();
-  if (std::optional<base::Value> events = v3_app.Extract("events")) {
-    v3_app.Set("event", std::move(*events));
-  }
-  return base::BindLambdaForTesting(
-      [v4_needle = base::Value(expected_app.Clone()),
-       v3_needle = base::Value(std::move(v3_app))](
-          const HttpRequest& request) -> testing::AssertionResult {
-        const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
-            request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-        if (!doc) {
-          return testing::AssertionFailure()
-                 << "Could not parse decoded content as a JSON dict, expected "
-                    "app JSON subset: ["
-                 << v4_needle.DebugString()
-                 << "], request content: " << GetPrintableContent(request);
-        }
-        // Only protocol V4 names the app list `apps`.
-        const base::ListValue* v4_apps =
-            doc->FindListByDottedPath("request.apps");
-        const base::ListValue* app_list =
-            v4_apps ? v4_apps : doc->FindListByDottedPath("request.app");
-        if (!app_list) {
-          return testing::AssertionFailure()
-                 << "No `request.apps` or `request.app` list, expected app "
-                    "JSON subset: ["
-                 << v4_needle.DebugString()
-                 << "], request content: " << GetPrintableContent(request);
-        }
-        const base::Value& needle = v4_apps ? v4_needle : v3_needle;
-        if (std::ranges::none_of(*app_list, [&needle](const base::Value& app) {
-              return IsJSONSubsetCaseInsensitive(needle, app);
-            })) {
-          return testing::AssertionFailure()
-                 << "Expected app JSON subset: [" << needle.DebugString()
-                 << "] not found in (parsed) request app list: ["
-                 << app_list->DebugString() << "]";
-        }
-        return testing::AssertionSuccess();
-      });
+      << "Use the protocol V4 name `events`.";
+  json::ValueMatcher app_matcher =
+      json::Covers(base::Value(expected_app.Clone()));
+  const std::string* app_id = expected_app.FindString("appid");
+  return GetJSONContentMatcher(
+      app_id ? json::HasApp(*app_id, std::move(app_matcher))
+             : json::HasAppMatching(std::move(app_matcher)));
 }
 
 }  // namespace updater::test::request

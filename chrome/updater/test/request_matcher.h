@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/version.h"
+#include "chrome/updater/test/json_matchers.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,17 +74,20 @@ using MatcherGroup = std::list<Matcher>;
 [[nodiscard]] Matcher GetContentMatcher(
     const std::vector<std::string>& expected_content_regex_sequence);
 
-// Returns a matcher that succeeds if the decoded body parses as a JSON
-// dictionary covering `expected_target` (comparing string values
-// case-insensitively; see `IsJSONSubset`).
+// Returns a matcher that succeeds if the decoded body is a JSON dict that
+// matches `matcher`, after renaming protocol V3 names to their V4 names (see
+// `ParseJsonContent()`).
+[[nodiscard]] Matcher GetJSONContentMatcher(json::ValueMatcher matcher);
+
+// Returns a matcher that succeeds if the decoded body is a JSON dict that
+// covers `expected_target` (see `json::Covers()`). Use protocol V4 names; they
+// match V3 requests too.
 [[nodiscard]] Matcher GetJSONContentMatcher(
     const base::DictValue& expected_target);
 
-// Returns a matcher that succeeds if any entry of the JSON body's app list
-// (`request.apps`, else `request.app`) covers `expected_app` (comparing string
-// values case-insensitively; see `IsJSONSubset`). For a `request.app` (protocol
-// V3) list, a top-level `events` key matches the entry's `event` key. CHECKs
-// that `expected_app` does not set `event`.
+// Returns a matcher that succeeds if an app in the JSON body's `request.apps`
+// covers `expected_app` (see `json::Covers()`). Use protocol V4 names; they
+// match V3 requests too. CHECKs that `expected_app` does not set `event`.
 [[nodiscard]] Matcher GetAppJSONContentMatcher(
     const base::DictValue& expected_app);
 

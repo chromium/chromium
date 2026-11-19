@@ -18,10 +18,12 @@
 #include "base/version.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/test/http_request.h"
+#include "chrome/updater/test/json_matchers.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -64,7 +66,8 @@ testing::AssertionResult FailsWithMessage(const Matcher& matcher,
 
 // Substring of the `GetAppJSONContentMatcher()` failure message for an app list
 // without a matching entry.
-constexpr char kAppJSONMismatch[] = "not found in (parsed) request app list";
+constexpr char kAppJSONMismatch[] =
+    "Request JSON content mismatch: .request.apps";
 
 // Returns a matcher for app `{app-1}` with an event of type 3.
 Matcher MakeApp1EventsMatcher() {
@@ -282,11 +285,11 @@ TEST(RequestMatcherTest, GetJSONContentMatcher) {
                            base::DictValue().Set("appid", "{app-1}")))));
 
   HttpRequest request;
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "Could not parse"));
+  EXPECT_TRUE(FailsWithMessage(matcher, request, "is not a JSON dict"));
   EXPECT_TRUE(FailsWithMessage(matcher, request, "{app-1}"));
 
   request.decoded_content = "not valid json";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "Could not parse"));
+  EXPECT_TRUE(FailsWithMessage(matcher, request, "is not a JSON dict"));
 
   request.decoded_content = R"({
     "request": {
@@ -306,8 +309,59 @@ TEST(RequestMatcherTest, GetJSONContentMatcher) {
       "apps": [{"appid": "{app-1}"}]
     }
   })";
-  EXPECT_TRUE(FailsWithMessage(matcher, request,
-                               "not found in (parsed) request content"));
+  EXPECT_TRUE(FailsWithMessage(
+      matcher, request, R"(.request.protocol: is "3.1", expected "4.0")"));
+}
+
+TEST(RequestMatcherTest, GetJSONContentMatcherWithValueMatcher) {
+  Matcher matcher = GetJSONContentMatcher(
+      json::HasApp("{app-1}", json::HasKey("version", "1.0")));
+
+  // The failure messages describe the expected content.
+  static constexpr char kExpected[] =
+      R"(a JSON dict that has app "{app-1}" that has key "version" that is )"
+      R"(equal to "1.0")";
+  HttpRequest request;
+  EXPECT_TRUE(FailsWithMessage(matcher, request, "is not a JSON dict"));
+  EXPECT_TRUE(FailsWithMessage(matcher, request, kExpected));
+
+  request.decoded_content =
+      R"({"request": {"apps": [{"appid": "{app-1}", "version": "2.0"}]}})";
+  request.has_content = true;
+  EXPECT_TRUE(FailsWithMessage(
+      matcher, request,
+      R"(Request JSON content mismatch: .request.apps[0].version: is "2.0")"));
+  EXPECT_TRUE(FailsWithMessage(matcher, request, kExpected));
+  EXPECT_TRUE(FailsWithMessage(
+      matcher, request,
+      R"(Request content: {"request": {"apps": [{"appid": "{app-1}")"));
+
+  request.decoded_content =
+      R"({"request": {"apps": [{"appid": "{APP-1}", "version": "1.0"}]}})";
+  EXPECT_TRUE(matcher.Run(request));
+}
+
+TEST(RequestMatcherTest, GetJSONContentMatcherRenamesProtocolV3Names) {
+  Matcher matcher = GetJSONContentMatcher(testing::AllOf(
+      json::UpdateRequest(json::HasKey(
+          "updaters",
+          json::IsList(testing::Contains(json::HasKey("name", "x"))))),
+      json::HasApp("{app-1}", json::HasEvent(json::HasKey("eventtype", 3)))));
+
+  HttpRequest request;
+  request.decoded_content = R"({"request": {
+    "protocol": "3.1",
+    "updater": [{"name": "x"}],
+    "app": [{"appid": "{app-1}", "event": [{"eventtype": 3}]}]
+  }})";
+  EXPECT_TRUE(matcher.Run(request));
+
+  request.decoded_content = R"({"request": {
+    "protocol": "4.0",
+    "updaters": [{"name": "x"}],
+    "apps": [{"appid": "{app-1}", "events": [{"eventtype": 3}]}]
+  }})";
+  EXPECT_TRUE(matcher.Run(request));
 }
 
 TEST(RequestMatcherTest, GetAppJSONContentMatcherRequiresAppList) {
@@ -315,11 +369,11 @@ TEST(RequestMatcherTest, GetAppJSONContentMatcherRequiresAppList) {
 
   // The failure messages name the expected app.
   HttpRequest request;
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "Could not parse"));
+  EXPECT_TRUE(FailsWithMessage(matcher, request, "is not a JSON dict"));
   EXPECT_TRUE(FailsWithMessage(matcher, request, "{app-1}"));
 
   request.decoded_content = R"({"request": {}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "No `request.apps`"));
+  EXPECT_TRUE(FailsWithMessage(matcher, request, ".request.apps: is missing"));
   EXPECT_TRUE(FailsWithMessage(matcher, request, "{app-1}"));
 }
 
@@ -491,7 +545,8 @@ TEST(RequestMatcherTest, GetAppPriorityMatcher) {
       GetAppPriorityMatcher("app1", UpdateService::Priority::kForeground);
   Matcher bg_matcher =
       GetAppPriorityMatcher("app1", UpdateService::Priority::kBackground);
-  static constexpr char kAppMismatch[] = "Request does not match app_id [app1]";
+  // The failure messages describe the expected app.
+  static constexpr char kAppMismatch[] = R"(app "app1")";
 
   HttpRequest request;
   EXPECT_TRUE(FailsWithMessage(fg_matcher, request, kAppMismatch));
@@ -573,10 +628,10 @@ TEST(RequestMatcherTest, GetUpdaterEnableUpdatesMatcher) {
   Matcher matcher = GetUpdaterEnableUpdatesMatcher();
 
   HttpRequest request;
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "Could not parse"));
+  EXPECT_TRUE(FailsWithMessage(matcher, request, "is not a JSON dict"));
 
   request.decoded_content = R"({"request": {}})";
-  EXPECT_TRUE(FailsWithMessage(matcher, request, "No `request.apps`"));
+  EXPECT_TRUE(FailsWithMessage(matcher, request, ".request.apps: is missing"));
 
   request.decoded_content = R"({"request": {"apps": [{}]}})";
   EXPECT_TRUE(matcher.Run(request));
@@ -586,7 +641,8 @@ TEST(RequestMatcherTest, GetUpdaterEnableUpdatesMatcher) {
                     R"(", "updatecheck": {"updatedisabled": false}}]}})"});
   EXPECT_TRUE(matcher.Run(request));
 
-  static constexpr char kUpdateDisabled[] = "Update is wrongfully disabled";
+  static constexpr char kUpdateDisabled[] =
+      ".request.apps[0].updatecheck.updatedisabled: is true";
   request.decoded_content =
       base::StrCat({R"({"request": {"apps": [{"appid": ")", kUpdaterAppId,
                     R"(", "updatecheck": {"updatedisabled": true}}]}})"});

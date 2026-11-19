@@ -7,7 +7,8 @@
 
 // GMock matchers on JSON values, for the update protocol request bodies that
 // `ScopedServer` receives. Combine them with GMock matchers such as
-// `testing::AllOf()` and `testing::Not()`. A mismatch explains where the value
+// `testing::AllOf()` and `testing::Not()`, and match a request with
+// `request::GetJSONContentMatcher()`. A mismatch explains where the value
 // differs, as in `.request.apps[1].ping.ad: is 5098, expected absent`.
 
 #include <string>
@@ -114,6 +115,8 @@ ValueMatcher Covers(base::Value expected);
 
 // The matchers below match an update protocol request body, or an app in its
 // `request.apps` list, that uses protocol V4 names.
+// `request::GetJSONContentMatcher()` renames protocol V3 names in a request to
+// their V4 names.
 
 // Matches a body whose `request` dict matches `matcher`.
 ValueMatcher UpdateRequest(ValueMatcher matcher);
