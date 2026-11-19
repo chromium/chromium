@@ -7352,7 +7352,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ClickInput" singular="True">
-  <owner>dougarnett@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>sisidovski@chromium.org</owner>
   <summary>
     Metrics associated with user click input. In particular, captures when user
     has a burst of clicks at the same location which may be a signal of user
@@ -8246,7 +8247,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ContentManagementSystemPageLoad" singular="True">
-  <owner>felixarntz@google.com</owner>
+  <owner>nrosenthal@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
   <summary>
     Metrics stating whether the main frame of a page uses certain content
     management systems. This event is recorded when the page is going to be
@@ -12016,7 +12018,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="JavascriptFrameworkPageLoad" singular="True">
-  <owner>houssein@chromium.org</owner>
+  <owner>nrosenthal@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
   <summary>
     Metrics stating whether the main frame of a page uses certain JavaScript
     frameworks. This event is recorded when the page is going to be unloaded or
@@ -20520,8 +20523,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Preloading.Attempt">
-  <owner>domenic@chromium.org</owner>
-  <owner>chrome-instant-ecosystem@google.com</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
   <summary>
     This event is logged for each preloading attempt i.e., for preloading
     features like preresolve, preconnect, prerender, prefetch, and others, as
@@ -20658,8 +20662,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Preloading.Attempt.PreviousPrimaryPage">
-  <owner>domenic@chromium.org</owner>
-  <owner>chrome-instant-ecosystem@google.com</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
   <summary>
     This event is logged for each preloading attempt i.e., for preloading
     features like preresolve, preconnect, prerender, prefetch, and others, as
@@ -20791,8 +20796,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Preloading.Prediction">
-  <owner>domenic@chromium.org</owner>
-  <owner>chrome-instant-ecosystem@google.com</owner>
+  <owner>taiyo@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
   <summary>
     This event is logged for each preloading prediction and metrics related to
     the preloading predictors like OmniboxDirectURLInput, Speculation Rules and
@@ -20844,8 +20850,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Preloading.Prediction.PreviousPrimaryPage">
-  <owner>domenic@chromium.org</owner>
-  <owner>chrome-instant-ecosystem@google.com</owner>
+  <owner>taiyo@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
   <summary>
     This is the same as Preloading.Prediction but UKM is associated with the
     WebContents primary triggering page (if exists) and logged when the user
