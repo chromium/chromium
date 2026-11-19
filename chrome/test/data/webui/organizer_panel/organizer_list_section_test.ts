@@ -1072,6 +1072,7 @@ suite('OrganizerListSectionTest', () => {
     await microtasksFinished();
     assertEquals(
         1, metrics.count(menuHistogram, OrganizerSectionMenuOption.SHOW_ALL));
+    assertEquals(1, mockHandler.getCallCount('setSectionShowAll'));
 
     // Click Show All a second time: no metric logged since value didn't change.
     header.$.menuButton.click();
@@ -1080,7 +1081,30 @@ suite('OrganizerListSectionTest', () => {
     await microtasksFinished();
     assertEquals(
         1, metrics.count(menuHistogram, OrganizerSectionMenuOption.SHOW_ALL));
+    assertEquals(1, mockHandler.getCallCount('setSectionShowAll'));
   });
+
+  test(
+      'does not double-record MenuAction on rapid menu selections',
+      async () => {
+        listSection.delegate =
+            new TestSectionDelegate('Open Tabs', [{title: ['Tab 1']}]);
+        await microtasksFinished();
+
+        const header = listSection.$.header;
+        const menuHistogram = 'Tabs.Organizer.Section.OpenTabs.MenuAction';
+
+        header.$.menuButton.click();
+        await microtasksFinished();
+        header.$.showAllButton.click();
+        header.$.showAllButton.click();
+        await microtasksFinished();
+
+        assertEquals(
+            1,
+            metrics.count(menuHistogram, OrganizerSectionMenuOption.SHOW_ALL));
+        assertEquals(1, mockHandler.getCallCount('setSectionShowAll'));
+      });
 
   test('does not record metrics on programmatic state updates', async () => {
     mockHandler.setPromiseResolveFor(

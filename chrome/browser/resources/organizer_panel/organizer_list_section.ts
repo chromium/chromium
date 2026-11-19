@@ -325,10 +325,13 @@ export class OrganizerListSectionElement extends CrLitElement implements
     if (this.showAll_ === showAll) {
       return;
     }
+    this.showAll_ = showAll;
     chrome.metricsPrivate.recordEnumerationValue(
         `Tabs.Organizer.Section.${
             this.delegate.getHistogramSectionName()}.MenuAction`,
         e.detail.option, OrganizerSectionMenuOption.COUNT);
+    this.browserProxy_.handler.setSectionShowAll(
+        this.delegate.getId(), this.showAll_);
   }
 
   protected getZeroState_(): TemplateResult|typeof nothing {
@@ -338,16 +341,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
       return nothing;
     }
     return this.delegate?.getZeroState?.() ?? nothing;
-  }
-
-  protected onShowAllChanged_(e: CustomEvent<{value: boolean}>) {
-    if (this.showAll_ === e.detail.value) {
-      return;
-    }
-    this.showAll_ = e.detail.value;
-    assert(this.delegate);
-    this.browserProxy_.handler.setSectionShowAll(
-        this.delegate.getId(), this.showAll_);
   }
 
   private recordActionMetrics_(action: OrganizerAction, index: number) {

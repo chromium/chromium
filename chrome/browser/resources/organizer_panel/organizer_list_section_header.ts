@@ -82,7 +82,6 @@ export class OrganizerListSectionHeaderElement extends
       },
       showAll: {
         type: Boolean,
-        notify: true,
         reflect: true,
       },
       title: {
@@ -234,13 +233,11 @@ export class OrganizerListSectionHeaderElement extends
 
   protected onShowSomeClick_() {
     this.$.menu.close();
-    this.showAll = false;
     this.fire('menu-action', {option: OrganizerSectionMenuOption.SHOW_SOME});
   }
 
   protected onShowAllClick_() {
     this.$.menu.close();
-    this.showAll = true;
     this.fire('menu-action', {option: OrganizerSectionMenuOption.SHOW_ALL});
   }
 }

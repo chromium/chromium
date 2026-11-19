@@ -14,7 +14,6 @@ export function getHtml(this: OrganizerListSectionElement) {
     .title="${this.delegate?.getHeader() || ''}"
     @expanded-changed="${this.onExpandedChanged_}"
     @menu-action="${this.onMenuAction_}"
-    @show-all-changed="${this.onShowAllChanged_}"
     @toggle-action="${this.onToggleAction_}">
 </organizer-list-section-header>
 <cr-collapse id="items" role="list" ?opened="${this.isExpanded_()}"

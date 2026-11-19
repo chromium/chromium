@@ -204,45 +204,46 @@ suite('OrganizerListSectionHeaderTest', () => {
         menuButton.getBoundingClientRect().bottom,
         menu.getDialog().getBoundingClientRect().top);
 
-    let whenShowAllChanged = eventToPromise<CustomEvent<{value: boolean}>>(
-        'show-all-changed', header);
+    let whenMenuAction =
+        eventToPromise<CustomEvent<{option: OrganizerSectionMenuOption}>>(
+            'menu-action', header);
     showAllButton.click();
-    let event = await whenShowAllChanged;
+    let event = await whenMenuAction;
     await microtasksFinished();
-    assertTrue(event.detail.value);
-    assertTrue(header.showAll);
-    assertEquals('false', showSomeButton.getAttribute('aria-checked'));
-    assertEquals('true', showAllButton.getAttribute('aria-checked'));
-    assertTrue(header.$.showSomeCheck.hasAttribute('invisible'));
-    assertFalse(header.$.showAllCheck.hasAttribute('invisible'));
+    assertEquals(OrganizerSectionMenuOption.SHOW_ALL, event.detail.option);
     assertFalse(menu.open);
+    assertFalse(header.showAll);
+
+    header.showAll = true;
+    await microtasksFinished();
 
     menuButton.click();
     await microtasksFinished();
     assertTrue(menu.open);
 
-    whenShowAllChanged = eventToPromise<CustomEvent<{value: boolean}>>(
-        'show-all-changed', header);
+    whenMenuAction =
+        eventToPromise<CustomEvent<{option: OrganizerSectionMenuOption}>>(
+            'menu-action', header);
     showSomeButton.click();
-    event = await whenShowAllChanged;
+    event = await whenMenuAction;
     await microtasksFinished();
-    assertFalse(event.detail.value);
-    assertFalse(header.showAll);
-    assertEquals('true', showSomeButton.getAttribute('aria-checked'));
-    assertEquals('false', showAllButton.getAttribute('aria-checked'));
-    assertFalse(header.$.showSomeCheck.hasAttribute('invisible'));
-    assertTrue(header.$.showAllCheck.hasAttribute('invisible'));
+    assertEquals(OrganizerSectionMenuOption.SHOW_SOME, event.detail.option);
     assertFalse(menu.open);
+    assertTrue(header.showAll);
   });
 
   test('updates check mark visibility when showAll changes', async () => {
     header.showAll = false;
     await microtasksFinished();
+    assertEquals('true', header.$.showSomeButton.getAttribute('aria-checked'));
+    assertEquals('false', header.$.showAllButton.getAttribute('aria-checked'));
     assertFalse(header.$.showSomeCheck.hasAttribute('invisible'));
     assertTrue(header.$.showAllCheck.hasAttribute('invisible'));
 
     header.showAll = true;
     await microtasksFinished();
+    assertEquals('false', header.$.showSomeButton.getAttribute('aria-checked'));
+    assertEquals('true', header.$.showAllButton.getAttribute('aria-checked'));
     assertTrue(header.$.showSomeCheck.hasAttribute('invisible'));
     assertFalse(header.$.showAllCheck.hasAttribute('invisible'));
   });
