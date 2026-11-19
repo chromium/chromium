@@ -16941,6 +16941,138 @@ TEST_P(UnboundedElementTest, HasDamageWithUnboundedElementOutsideViewport) {
   host_impl_->DidFinishImplFrame(args2);
 }
 
+class UnboundedFrameDamageTest : public UnboundedElementTest {
+ protected:
+  static viz::LocalSurfaceId MakeId(uint32_t parent_seq) {
+    return viz::LocalSurfaceId(
+        parent_seq, 1, base::UnguessableToken::CreateForTesting(1u, 2u));
+  }
+
+  void AddUnboundedLayer(const gfx::Size& size) {
+    auto* root = SetupDefaultRootLayer(gfx::Size(100, 100));
+    unbounded_layer_ = AddLayerInActiveTree();
+    unbounded_layer_->SetBounds(size);
+    unbounded_layer_->SetDrawsContent(true);
+    unbounded_layer_->SetHitTestOpaqueness(HitTestOpaqueness::kOpaque);
+    CopyProperties(root, unbounded_layer_);
+    CreateEffectNode(unbounded_layer_).render_surface_reason =
+        RenderSurfaceReason::kUnboundedElement;
+    UpdateDrawProperties(host_impl_->active_tree());
+  }
+
+  void SetUnboundedSink(const viz::LocalSurfaceId& id) {
+    auto sink = FakeLayerTreeFrameSink::CreateSoftware();
+    unbounded_sink_ = sink.get();
+    host_impl_->SetUnboundedFrameSink(std::move(sink), id);
+  }
+
+  // Sets up a 50x50 unbounded layer whose frames go to `unbounded_sink_`,
+  // submitting under `id`.
+  void SetUpUnboundedLayer(const viz::LocalSurfaceId& id) {
+    AddUnboundedLayer(gfx::Size(50, 50));
+    SetUnboundedSink(id);
+  }
+
+  void SetUnboundedBounds(const gfx::Size& size) {
+    unbounded_layer_->SetBounds(size);
+    UpdateDrawProperties(host_impl_->active_tree());
+  }
+
+  void DrawFrame() {
+    auto args = viz::CreateBeginFrameArgsForTesting(
+        BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, seq_,
+        base::TimeTicks() + base::Milliseconds(seq_));
+    ++seq_;
+    host_impl_->WillBeginImplFrame(args);
+    TestFrameData frame;
+    frame.begin_frame_ack = viz::BeginFrameAck(args, true);
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
+    host_impl_->DrawLayers(&frame);
+    host_impl_->DidDrawAllLayers(frame);
+    host_impl_->DidFinishImplFrame(args);
+  }
+
+  const viz::CompositorRenderPass& LastUnboundedRootPass() {
+    CHECK(unbounded_sink_->last_sent_frame());
+    return *unbounded_sink_->last_sent_frame()->render_pass_list.back();
+  }
+
+  raw_ptr<LayerImpl> unbounded_layer_ = nullptr;
+  raw_ptr<FakeLayerTreeFrameSink> unbounded_sink_ = nullptr;
+  uint64_t seq_ = 1;
+};
+INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(UnboundedFrameDamageTest,
+                                       CommitToActiveTree,
+                                       CommitToPendingTree);
+
+TEST_P(UnboundedFrameDamageTest, FrameSinkAfterFirstDrawForcesFullDamage) {
+  // The surface can be drawn, consuming its damage, before the frame sink
+  // arrives.
+  AddUnboundedLayer(gfx::Size(50, 50));
+  DrawFrame();
+
+  SetUnboundedSink(MakeId(1));
+  DrawFrame();
+  EXPECT_EQ(1u, unbounded_sink_->num_sent_frames());
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 50), LastUnboundedRootPass().damage_rect);
+  EXPECT_TRUE(LastUnboundedRootPass().has_damage_from_contributing_content);
+}
+
+TEST_P(UnboundedFrameDamageTest, GrowBeforeNewLocalSurfaceIdIsClamped) {
+  SetUpUnboundedLayer(MakeId(1));
+  DrawFrame();
+
+  // Viz rejects size changes under the same LocalSurfaceId, so the frame is
+  // clamped to the previous size.
+  SetUnboundedBounds(gfx::Size(50, 120));
+  DrawFrame();
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 50), LastUnboundedRootPass().output_rect);
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 50), LastUnboundedRootPass().damage_rect);
+
+  // The clamped frame consumed the resize damage, so the first frame under
+  // the new LocalSurfaceId must still be fully damaged.
+  host_impl_->SetUnboundedLocalSurfaceId(MakeId(2));
+  DrawFrame();
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 120), LastUnboundedRootPass().output_rect);
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 120), LastUnboundedRootPass().damage_rect);
+  EXPECT_TRUE(LastUnboundedRootPass().has_damage_from_contributing_content);
+}
+
+TEST_P(UnboundedFrameDamageTest, ViewportDamageDoesNotForceFullDamage) {
+  SetUpUnboundedLayer(MakeId(1));
+  DrawFrame();
+
+  // Partial main viewport damage doesn't expand partial unbounded damage.
+  host_impl_->SetViewportDamage(gfx::Rect(5, 5, 10, 10));
+  unbounded_layer_->UnionUpdateRect(gfx::Rect(15, 15, 25, 25));
+  DrawFrame();
+  EXPECT_EQ(gfx::Rect(15, 15, 25, 25), LastUnboundedRootPass().damage_rect);
+
+  // Main viewport damage alone doesn't damage the unbounded frame.
+  host_impl_->SetViewportDamage(gfx::Rect(5, 5, 10, 10));
+  DrawFrame();
+  EXPECT_EQ(gfx::Rect(), LastUnboundedRootPass().damage_rect);
+  EXPECT_FALSE(LastUnboundedRootPass().has_damage_from_contributing_content);
+}
+
+TEST_P(UnboundedFrameDamageTest,
+       ClampedResizeDoesNotForceFullDamageOnSubsequentFrames) {
+  SetUpUnboundedLayer(MakeId(1));
+  DrawFrame();
+
+  // Resize before a new LocalSurfaceId arrives; this frame is clamped.
+  SetUnboundedBounds(gfx::Size(50, 120));
+  DrawFrame();
+
+  // Subsequent frames under the same LocalSurfaceId where only the main
+  // viewport is damaged must not force full damage on the unbounded frame.
+  host_impl_->SetViewportDamage(gfx::Rect(5, 5, 10, 10));
+  DrawFrame();
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 50), LastUnboundedRootPass().output_rect);
+  EXPECT_EQ(gfx::Rect(), LastUnboundedRootPass().damage_rect);
+  EXPECT_FALSE(LastUnboundedRootPass().has_damage_from_contributing_content);
+}
+
 TEST_P(LayerTreeHostImplTest, CollectTrackedElementRects) {
   auto* root_layer = SetupRootLayer<SolidColorLayerImpl>(
       host_impl_->active_tree(), gfx::Size(100, 100));

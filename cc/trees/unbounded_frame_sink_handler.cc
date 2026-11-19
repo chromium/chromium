@@ -29,6 +29,9 @@ void UnboundedFrameSinkHandler::SetFrameSink(
     const viz::LocalSurfaceId& local_surface_id) {
   frame_sink_ = std::move(frame_sink);
   local_surface_id_ = local_surface_id;
+  last_submitted_local_surface_id_ = viz::LocalSurfaceId();
+  last_submitted_size_in_pixels_ = gfx::Size();
+  last_requested_size_in_pixels_ = gfx::Size();
   if (frame_sink_) {
     frame_sink_->BindToClient(this);
     frame_sink_->SetLocalSurfaceId(local_surface_id);
@@ -43,6 +46,7 @@ void UnboundedFrameSinkHandler::DismissFrameSink() {
   local_surface_id_ = viz::LocalSurfaceId();
   last_submitted_local_surface_id_ = viz::LocalSurfaceId();
   last_submitted_size_in_pixels_ = gfx::Size();
+  last_requested_size_in_pixels_ = gfx::Size();
 }
 
 void UnboundedFrameSinkHandler::SetLocalSurfaceId(
@@ -55,12 +59,30 @@ void UnboundedFrameSinkHandler::SetLocalSurfaceId(
 
 void UnboundedFrameSinkHandler::SubmitFrame(viz::CompositorFrame frame) {
   if (frame_sink_ && local_surface_id_.is_valid()) {
+    // Viz treats the first frame under a new LocalSurfaceId as a continuation
+    // of the previous surface and only redraws its damage_rect, but cc may
+    // have already reported that damage on an earlier, clamped frame. The
+    // first frame clamped below after a size change has damage computed for
+    // its unclamped size, which misses the strip left behind when the surface
+    // shrinks. Fully damage both. Later clamped frames at the same unclamped
+    // size keep cc's damage.
+    const gfx::Size requested_size_in_pixels = frame.size_in_pixels();
+    const bool needs_full_damage =
+        !frame.render_pass_list.empty() &&
+        (local_surface_id_ != last_submitted_local_surface_id_ ||
+         requested_size_in_pixels != last_requested_size_in_pixels_);
     if (local_surface_id_ == last_submitted_local_surface_id_ &&
         !last_submitted_size_in_pixels_.IsEmpty() &&
         !frame.render_pass_list.empty()) {
       frame.render_pass_list.back()->output_rect.set_size(
           last_submitted_size_in_pixels_);
     }
+    if (needs_full_damage) {
+      viz::CompositorRenderPass& root_pass = *frame.render_pass_list.back();
+      root_pass.damage_rect = root_pass.output_rect;
+      root_pass.has_damage_from_contributing_content = true;
+    }
+    last_requested_size_in_pixels_ = requested_size_in_pixels;
     last_submitted_size_in_pixels_ = frame.size_in_pixels();
     last_submitted_local_surface_id_ = local_surface_id_;
     frame_sink_->SubmitCompositorFrame(std::move(frame),
