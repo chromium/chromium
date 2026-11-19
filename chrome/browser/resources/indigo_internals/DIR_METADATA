@@ -1,3 +1,1 @@
-buganizer: {
-  component_id: 1999829
-}
+mixins: "//chrome/browser/indigo/COMMON_METADATA"
