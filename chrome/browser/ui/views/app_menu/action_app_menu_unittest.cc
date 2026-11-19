@@ -1527,6 +1527,106 @@ TEST_F(ActionAppMenuTest, ZoomChildActionsInvocation) {
   testing::Mock::VerifyAndClearExpectations(&mock_action_invoked_);
 }
 
+// Zoom in/out keep the menu open, but the fullscreen button closes the menu
+// before entering fullscreen. Regression test for crbug.com/575916890.
+TEST_F(ActionAppMenuTest, ZoomFullscreenButtonClosesMenuBeforeExecuting) {
+  testing::InSequence s;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+  auto* zoom_view =
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
+  ASSERT_TRUE(zoom_view);
+
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionZoomPlus, testing::_, testing::_))
+      .Times(1);
+  views::test::ButtonTestApi(zoom_view->zoom_plus_button_for_testing())
+      .NotifyDefaultMouseClick();
+  EXPECT_TRUE(menu.IsShowing());
+
+  // The fullscreen button is the last child of the zoom row.
+  auto* fullscreen_button =
+      views::AsViewClass<views::ImageButton>(zoom_view->children().back());
+  ASSERT_TRUE(fullscreen_button);
+
+  // The menu must close before the fullscreen action runs.
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionFullscreen, testing::_, testing::_))
+      .Times(1);
+  views::test::ButtonTestApi(fullscreen_button).NotifyDefaultMouseClick();
+
+  EXPECT_FALSE(menu.IsShowing());
+}
+
+// Entering immersive fullscreen on ChromeOS and macOS synchronously calls
+// AppMenuButton::CloseMenu(), which destroys ActionAppMenu from inside the
+// deferred kActionFullscreen callback in ActionAppMenu::OnMenuClosed() while
+// MenuController defers MenuRunnerImpl destruction on the stack.
+TEST_F(ActionAppMenuTest, ZoomFullscreenButtonDestroyingMenuOnClose) {
+  widget_->Show();
+  testing::InSequence s;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  auto menu = std::make_unique<ActionAppMenu>(&mock_window_interface_,
+                                              on_menu_closed.Get());
+  menu->RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu->IsShowing());
+
+  views::MenuItemView* root = menu->root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+  zoom_item->ScrollViewToVisible();
+  auto* zoom_view =
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
+  ASSERT_TRUE(zoom_view);
+  auto* fullscreen_button =
+      views::AsViewClass<views::ImageButton>(zoom_view->children().back());
+  ASSERT_TRUE(fullscreen_button);
+
+  views::Widget* menu_widget = zoom_view->GetWidget();
+  ASSERT_TRUE(menu_widget);
+  menu_widget->LayoutRootViewIfNecessary();
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionFullscreen, testing::_, testing::_))
+      .Times(1)
+      .WillOnce([&](actions::ActionId, actions::ActionItem*,
+                    actions::ActionInvocationContext) {
+        menu->CloseMenu();
+        menu.reset();
+        views::test::ButtonTestApi(fullscreen_button).NotifyDefaultMouseClick();
+      });
+
+  const gfx::Point point_in_screen =
+      fullscreen_button->GetBoundsInScreen().CenterPoint();
+  gfx::Point point_in_menu = point_in_screen;
+  views::View::ConvertPointFromScreen(menu_widget->GetRootView(),
+                                      &point_in_menu);
+
+  ui::MouseEvent press_event(
+      ui::EventType::kMousePressed, point_in_menu, point_in_screen,
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  menu_widget->OnMouseEvent(&press_event);
+
+  ui::MouseEvent release_event(
+      ui::EventType::kMouseReleased, point_in_menu, point_in_screen,
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  menu_widget->OnMouseEvent(&release_event);
+
+  EXPECT_EQ(menu, nullptr);
+}
+
 TEST_F(ActionAppMenuTest, ColorTokensValidInDarkMode) {
   widget_->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
 

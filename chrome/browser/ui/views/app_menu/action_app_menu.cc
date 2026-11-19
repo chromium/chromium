@@ -208,6 +208,10 @@ bool ActsOnFocusedView(const actions::ActionItem& action) {
          action_id == actions::kActionPaste;
 }
 
+bool IsRepeatableAction(std::optional<actions::ActionId> action_id) {
+  return action_id == kActionZoomMinus || action_id == kActionZoomPlus;
+}
+
 }  // namespace
 
 ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
@@ -458,9 +462,8 @@ bool ActionAppMenu::ShouldExecuteCommandWithoutClosingMenu(int id,
   if (action_iterator == command_to_action_map_.end()) {
     return false;
   }
-  const std::optional<actions::ActionId> action_id =
-      action_iterator->second->GetActionItem()->GetActionId();
-  return action_id == kActionZoomMinus || action_id == kActionZoomPlus;
+  return IsRepeatableAction(
+      action_iterator->second->GetActionItem()->GetActionId());
 }
 
 void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
@@ -496,7 +499,13 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   // ActionItems, so execute the action first and reset search_controller
   // to avoid dangling pointers.
   if (action_to_execute) {
+    // The action may synchronously destroy `this` (for example, when entering
+    // immersive fullscreen).
+    base::WeakPtr<ActionAppMenu> weak_this = weak_ptr_factory_.GetWeakPtr();
     action_to_execute->InvokeAction(std::move(action_context));
+    if (!weak_this) {
+      return;
+    }
   }
   search_controller_.reset();
 
@@ -749,6 +758,15 @@ void ActionAppMenu::RemoveSubmenuActionsFromMap(
        parent_menu_item->GetSubmenu()->GetMenuItems()) {
     RemoveSubmenuActionsFromMap(child);
     command_to_action_map_.erase(child->GetCommand());
+  }
+}
+
+void ActionAppMenu::DispatchMenuCommand(actions::ActionId action_id,
+                                        int mouse_event_flags) {
+  if (IsRepeatableAction(action_id)) {
+    ExecuteCommand(action_id, mouse_event_flags);
+  } else {
+    CancelAndEvaluate(action_id, mouse_event_flags);
   }
 }
 
@@ -1167,7 +1185,7 @@ void ActionAppMenu::PopulateCustomRow(views::MenuItemView* view_parent,
       view_parent->AddChildView(std::make_unique<AppMenuZoomView>(
           browser_window_interface_, &action_view_controller_,
           command_to_action_map_, custom_action_item,
-          base::BindRepeating(&ActionAppMenu::ExecuteCommand,
+          base::BindRepeating(&ActionAppMenu::DispatchMenuCommand,
                               weak_ptr_factory_.GetWeakPtr())));
       break;
 

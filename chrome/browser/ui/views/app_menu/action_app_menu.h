@@ -136,6 +136,11 @@ class ActionAppMenu : public views::MenuDelegate,
       actions::BaseAction* action) const;
   void RemoveSubmenuActionsFromMap(views::MenuItemView* parent_menu_item);
 
+  // Runs a command from a custom row button. Repeatable actions (zoom in/out)
+  // run with the menu kept open; others, such as fullscreen, close the menu
+  // first and run once it has closed.
+  void DispatchMenuCommand(actions::ActionId action_id, int mouse_event_flags);
+
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
 
   // Pins the root menu to its current width: the submenu's minimum preferred
