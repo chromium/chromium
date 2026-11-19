@@ -14,10 +14,13 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/ukm/content/source_url_recorder.h"
@@ -434,6 +437,37 @@ TEST_F(AmbientSigninControllerTest, CooldownTrackedPerTopLevelSiteETLDPlus1) {
   prompt_factory_->WaitForPermissionBubble();
   EXPECT_TRUE(current_ambient_request()->ShouldBubbleStartOpen());
   CompleteRequestAndWait(model4.get());
+}
+
+TEST_F(AmbientSigninControllerTest, CooldownNotInheritedInIncognito) {
+  // Put the regular profile into cooldown for example.com.
+  for (int i = 0; i < 2; ++i) {
+    auto model = CreatePasskeyModel(main_rfh());
+    controller()->Show(model.get());
+    prompt_factory_->WaitForPermissionBubble();
+    current_ambient_request()->OnBubbleDismissed();
+    CompleteRequestAndWait(model.get());
+  }
+
+  const GURL url("https://example.com");
+  HostContentSettingsMap* regular_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  EXPECT_TRUE(
+      regular_map
+          ->GetWebsiteSetting(url, url,
+                              ContentSettingsType::WEBAUTHN_AMBIENT_SIGNIN_DATA)
+          .is_dict());
+
+  // The incognito profile must not see the regular profile's dismissal data.
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  HostContentSettingsMap* otr_map =
+      HostContentSettingsMapFactory::GetForProfile(otr_profile);
+  EXPECT_TRUE(
+      otr_map
+          ->GetWebsiteSetting(url, url,
+                              ContentSettingsType::WEBAUTHN_AMBIENT_SIGNIN_DATA)
+          .is_none());
 }
 
 TEST_F(AmbientSigninControllerTest,

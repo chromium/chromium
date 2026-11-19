@@ -360,7 +360,7 @@ void WebsiteSettingsRegistry::Init() {
            "webauthn-ambient-signin-data", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::LOSSY,
            WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE, DESKTOP,
-           WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
 }
 
 }  // namespace content_settings
