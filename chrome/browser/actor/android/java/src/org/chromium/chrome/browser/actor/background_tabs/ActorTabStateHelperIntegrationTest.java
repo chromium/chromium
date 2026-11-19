@@ -40,7 +40,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -273,9 +272,6 @@ public class ActorTabStateHelperIntegrationTest {
                                     mTab, placeholder.getId(), 0, activeWindowId);
                     BackgroundSession session = new BackgroundSession(tabData, /* taskId= */ 100);
 
-                    List<BackgroundSession> backgroundSessions = new ArrayList<>();
-                    backgroundSessions.add(session);
-
                     Profile profile = selector.getModel(false).getProfile();
                     BackgroundTabPool pool = BackgroundTabPoolManager.acquire(profile);
                     try {
@@ -289,15 +285,14 @@ public class ActorTabStateHelperIntegrationTest {
 
                         // Execute restoration
                         int restoredCount =
-                                BackgroundSessionTabRestorer.restoreTabsForWindow(
+                                BackgroundSessionTabRestorer.restoreSessionsIntoWindow(
+                                        List.of(session),
                                         selector,
                                         activeWindowId,
                                         window,
-                                        backgroundSessions,
                                         delegateFactory,
                                         /* waitDurationMs= */ 0,
-                                        /* isColdStart= */ false,
-                                        backgroundSessions::removeAll);
+                                        /* isColdStart= */ false);
                         assertEquals(1, restoredCount);
                     } finally {
                         BackgroundTabPoolManager.release(pool);
@@ -308,7 +303,7 @@ public class ActorTabStateHelperIntegrationTest {
                     assertEquals(1, tabModel.getCount());
                     assertEquals(mTab, tabModel.getTabAt(0));
                     assertEquals(mTab, TabModelUtils.getCurrentTab(tabModel));
-                    assertTrue(backgroundSessions.isEmpty());
+                    assertTrue(session.getTabDataList().isEmpty());
                 });
     }
 
@@ -347,9 +342,6 @@ public class ActorTabStateHelperIntegrationTest {
                                     mTab, placeholder.getId(), 0, windowId);
                     BackgroundSession session = new BackgroundSession(tabData, /* taskId= */ 100);
 
-                    List<BackgroundSession> backgroundSessions = new ArrayList<>();
-                    backgroundSessions.add(session);
-
                     Profile profile = selector.getModel(false).getProfile();
                     BackgroundTabPool pool = BackgroundTabPoolManager.acquire(profile);
                     try {
@@ -363,15 +355,14 @@ public class ActorTabStateHelperIntegrationTest {
 
                         // Execute restoration
                         int restoredCount =
-                                BackgroundSessionTabRestorer.restoreTabsForWindow(
+                                BackgroundSessionTabRestorer.restoreSessionsIntoWindow(
+                                        List.of(session),
                                         selector,
                                         windowId,
                                         window,
-                                        backgroundSessions,
                                         delegateFactory,
                                         /* waitDurationMs= */ 0,
-                                        /* isColdStart= */ false,
-                                        backgroundSessions::removeAll);
+                                        /* isColdStart= */ false);
                         assertEquals(1, restoredCount);
                     } finally {
                         BackgroundTabPoolManager.release(pool);
@@ -382,7 +373,7 @@ public class ActorTabStateHelperIntegrationTest {
                     // - Placeholder tab is destroyed and removed from model
                     assertEquals(1, tabModel.getCount());
                     assertEquals(mTab, tabModel.getTabAt(0));
-                    assertTrue(backgroundSessions.isEmpty());
+                    assertTrue(session.getTabDataList().isEmpty());
                 });
     }
 }

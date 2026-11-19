@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.actor;
 
-import android.app.Activity;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 
@@ -13,11 +12,9 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.actor.background_tabs.ActorTabStateHelper;
 import org.chromium.chrome.browser.actor.background_tabs.BackgroundSession;
 import org.chromium.chrome.browser.actor.background_tabs.OffscreenRenderingManager;
-import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -26,7 +23,6 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.base.WindowAndroid;
@@ -58,12 +54,6 @@ public class ActorBackgroundActuationManager {
     /** Returns the list of currently active background sessions. */
     public List<BackgroundSession> getBackgroundSessions() {
         return Collections.unmodifiableList(mBackgroundSessions);
-    }
-
-    /** Removes the specified background sessions from the active list. */
-    public void removeBackgroundSessions(List<BackgroundSession> sessionsToRemove) {
-        mBackgroundSessions.removeAll(sessionsToRemove);
-        ActorMetrics.getInstance().refreshActiveTaskModes();
     }
 
     /** Default constructor. */
@@ -293,7 +283,7 @@ public class ActorBackgroundActuationManager {
                     mFcmInitiatedTabIds.remove(tab.getId());
                 }
             }
-            restoreWarmSession(session);
+            restoreSession(session);
             if (mBackgroundSessions.contains(session)) {
                 for (Tab tab : session.getTabs()) {
                     if (tab != null) {
@@ -392,7 +382,7 @@ public class ActorBackgroundActuationManager {
                 mFcmInitiatedTabIds.remove(tab.getId());
             }
         }
-        restoreWarmSession(session);
+        restoreSession(session);
         if (mBackgroundSessions.contains(session)) {
             // If no activity was alive to restore into, stop offscreen rendering on all
             // session tabs. Persistence is handled by the caller
@@ -411,7 +401,7 @@ public class ActorBackgroundActuationManager {
         mTabProvisioner.destroyPendingTabs();
         mFcmInitiatedTabIds.clear();
 
-        restoreWarmSessions();
+        BackgroundSessionTabRestorer.restoreSessions(mBackgroundSessions);
         // Copy to avoid ConcurrentModificationException when onDestroyed triggers callback
         List<BackgroundSession> sessions = new ArrayList<>(mBackgroundSessions);
         mBackgroundSessions.clear();
@@ -443,47 +433,28 @@ public class ActorBackgroundActuationManager {
             TabDelegateFactory tabDelegateFactory,
             long waitDurationMs,
             boolean isColdStart) {
-        return BackgroundSessionTabRestorer.restoreTabsForWindow(
+        if (mBackgroundSessions.isEmpty()) {
+            return false;
+        }
+        int restoredTabCount =
+                BackgroundSessionTabRestorer.restoreSessionsIntoWindow(
+                        mBackgroundSessions,
                         selector,
                         activeWindowId,
                         window,
-                        mBackgroundSessions,
                         tabDelegateFactory,
                         waitDurationMs,
-                        isColdStart,
-                        this::removeBackgroundSessions)
-                > 0;
+                        isColdStart);
+        mBackgroundSessions.removeIf(s -> s.getTabDataList().isEmpty());
+        ActorMetrics.getInstance().refreshActiveTaskModes();
+        return restoredTabCount > 0;
     }
 
-    private void restoreWarmSessions() {
-        BackgroundSessionTabRestorer.restoreWarmSessions(
-                mBackgroundSessions,
-                mBackgroundSessions,
-                this::removeBackgroundSessions,
-                ActorBackgroundActuationManager::flushTabStateToDisk);
-    }
-
-    private void restoreWarmSession(BackgroundSession session) {
-        BackgroundSessionTabRestorer.restoreWarmSessions(
-                Collections.singletonList(session),
-                mBackgroundSessions,
-                this::removeBackgroundSessions,
-                ActorBackgroundActuationManager::flushTabStateToDisk);
-    }
-
-    // TODO(crbug.com/585189803): Move flushTabStateToDisk into BackgroundSessionTabRestorer and
-    // drop flushStateCallback once the ChromeTabbedActivity DEPS restriction is removed.
-    private static void flushTabStateToDisk(Activity activity) {
-        if (!(activity instanceof ChromeTabbedActivity cta)) {
-            return;
+    private void restoreSession(BackgroundSession session) {
+        if (BackgroundSessionTabRestorer.restoreSession(session)) {
+            mBackgroundSessions.remove(session);
         }
-        TabModelOrchestrator orchestrator = cta.getTabModelOrchestratorSupplier().get();
-        if (orchestrator != null) {
-            TabPersistentStore store = orchestrator.getTabPersistentStore();
-            if (store != null) {
-                store.saveState();
-            }
-        }
+        ActorMetrics.getInstance().refreshActiveTaskModes();
     }
 
     private @Nullable BackgroundSession findSessionByMessageId(String messageId) {
