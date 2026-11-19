@@ -390,6 +390,8 @@ ManifestAssetManager::ManifestAssetManager(
       model_observers_(model_observers),
       ledger_(local_state),
       disk_space_status_(delegate) {
+  delegate_->SetAssetManager(weak_ptr_factory_.GetWeakPtr());
+
   // Load persistent state from the ledger immediately on startup.
   ledger_.Load();
 
@@ -837,8 +839,7 @@ void ManifestAssetManager::UpdateRegistrations() {
       context.SetRegistering(component->target_version());
       keys_to_save.push_back(public_key);
       delegate_->RegisterOnDemandComponent(
-          public_key, component->target_version(), context.asset_id(),
-          weak_ptr_factory_.GetWeakPtr());
+          public_key, component->target_version(), context.asset_id());
       // Defer calling NotifyFactory until registration completes (via
       // InstallerRegistered or OnAssetReady), because the asset may already be
       // present on disk.
@@ -877,7 +878,7 @@ void ManifestAssetManager::UninstallComponent(const std::string& public_key) {
   TRACE_EVENT("optimization_guide", "ManifestAssetManager::UninstallComponent",
               perfetto::Flow::FromPointer(this), "public_key", public_key);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_->Uninstall(public_key, weak_ptr_factory_.GetWeakPtr());
+  delegate_->Uninstall(public_key);
 }
 
 void ManifestAssetManager::OnAssetUninstalled(const std::string& public_key) {
@@ -982,6 +983,15 @@ void ManifestAssetManager::OnAssetReady(const std::string& public_key,
     model_observers_->Notify(&OnDeviceModelControl::Observer::OnModelInstalled,
                              model_enum);
   }
+}
+
+void ManifestAssetManager::OnUpdateRequestComplete(
+    const std::string& public_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void ManifestAssetManager::OnMeteredConnectionChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void ManifestAssetManager::NotifyFactory(const std::string& public_key,

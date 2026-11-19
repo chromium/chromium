@@ -44,7 +44,8 @@ class ManifestMonitorDelegate : public ManifestProvider {
 class ManifestAssetManagerDelegate : public ManifestMonitorDelegate {
  public:
   // Interface for callbacks from `ManifestAssetManagerDelegate` to
-  // `ManifestAssetManager`.
+  // `ManifestAssetManager`. All methods must be invoked on the `AssetManager`'s
+  // sequence.
   class AssetManager {
    public:
     virtual ~AssetManager() = default;
@@ -61,24 +62,37 @@ class ManifestAssetManagerDelegate : public ManifestMonitorDelegate {
     virtual void InstallerRegistered(const std::string& public_key,
                                      const std::string& version,
                                      bool is_already_installed) = 0;
+
+    // Called once per `RequestUpdate()` when the update finishes, after
+    // `OnAssetReady()` if it installed the asset. Not called if a later
+    // `RequestUpdate()`, `RegisterOnDemandComponent()`, or `Uninstall()` for
+    // the same key supersedes it.
+    virtual void OnUpdateRequestComplete(const std::string& public_key) = 0;
+
+    // Called when the network connection transitions between metered and
+    // unmetered, or reconnects to an unmetered network after being offline.
+    virtual void OnMeteredConnectionChanged() = 0;
   };
 
   ~ManifestAssetManagerDelegate() override = default;
 
-  // Registers the component installer for `public_key_hex`. The policy should
-  // hold a weak pointer to `manager` and call its `InstallerRegistered`,
-  // `OnAssetReady`, and `OnAssetUninstalled` methods when appropriate.
-  virtual void RegisterOnDemandComponent(
-      const std::string& public_key_hex,
-      const std::string& target_version,
-      const std::string& component_name,
-      base::WeakPtr<AssetManager> manager) = 0;
+  // Sets the manager that receives callbacks from this delegate. Must be
+  // called before any other method.
+  virtual void SetAssetManager(base::WeakPtr<AssetManager> manager) = 0;
+
+  // Returns whether the current network connection is metered.
+  virtual bool IsConnectionMetered() const;
+
+  // Registers the component installer for `public_key_hex`.
+  virtual void RegisterOnDemandComponent(const std::string& public_key_hex,
+                                         const std::string& target_version,
+                                         const std::string& component_name) = 0;
 
   // Uninstalls a component and frees disk space.
-  virtual void Uninstall(const std::string& public_key_hex,
-                         base::WeakPtr<AssetManager> manager) = 0;
+  virtual void Uninstall(const std::string& public_key_hex) = 0;
 
-  // Triggers an immediate update check for a component.
+  // Triggers an immediate update check for a component. Completion is always
+  // reported asynchronously via `AssetManager::OnUpdateRequestComplete()`.
   virtual void RequestUpdate(const std::string& public_key_hex,
                              bool is_background) = 0;
 

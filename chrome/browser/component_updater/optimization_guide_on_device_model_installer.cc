@@ -17,6 +17,7 @@
 #include "base/byte_size.h"
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
@@ -24,6 +25,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -32,7 +34,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -51,6 +53,7 @@
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/hash.h"
+#include "net/base/network_change_notifier.h"
 
 namespace component_updater {
 
@@ -59,15 +62,10 @@ namespace component_updater {
 class OnDeviceModelUpdater {
  public:
   static void OnDemandInstall(const std::string& id,
-                              OnDemandUpdater::Priority priority) {
+                              OnDemandUpdater::Priority priority,
+                              Callback callback = base::DoNothing()) {
     g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
-        id, priority, base::BindOnce([](update_client::Error error) {
-          if (error != update_client::Error::NONE &&
-              error != update_client::Error::UPDATE_IN_PROGRESS) {
-            VLOG(1) << "Failed to update on-device model component with error "
-                    << std::to_underlying(error);
-          }
-        }));
+        id, priority, std::move(callback));
   }
 };
 
@@ -218,14 +216,15 @@ void GetComponentFreeDiskSpace(
   // in configuration and are already on disk. Reporting max free space here
   // will suppress attempts to save space by uninstalling or preventing
   // installation of model components.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), base::ByteSize::Max()));
 #else
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(),
        base::CommandLine::ForCurrentProcess()->HasSwitch(
-           optimization_guide::kGetFreeDiskSpaceWithUserVisiblePriorityTaskSwitch)
+           optimization_guide::
+               kGetFreeDiskSpaceWithUserVisiblePriorityTaskSwitch)
            ? base::TaskPriority::USER_VISIBLE
            : base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
@@ -477,7 +476,8 @@ class ManifestProviderImpl final : public optimization_guide::ManifestProvider {
     installer->Register(
         cus, base::BindOnce(
                  [](std::optional<OnDemandUpdater::Priority> priority) {
-                   if (priority) {
+                   if (priority && g_browser_process &&
+                       g_browser_process->component_updater()) {
                      OnDeviceModelUpdater::OnDemandInstall(
                          crx_file::id_util::GenerateIdFromHash(
                              kManifestPublicKeySHA256),
@@ -501,6 +501,183 @@ class ManifestProviderImpl final : public optimization_guide::ManifestProvider {
   base::WeakPtrFactory<ManifestProviderImpl> weak_ptr_factory_{this};
 };
 
+// Tracks whether the active network connection is metered and notifies
+// `AssetManager::OnMeteredConnectionChanged()` when the metered state flips or
+// when reconnecting to an unmetered network after being offline.
+//
+// Observes both `ConnectionCostObserver` (native OS cost signals) and
+// `NetworkChangeObserver` (platforms deriving cost from connection type),
+// deduplicating redundant notifications across the two. While offline,
+// `NetworkChangeNotifier::GetConnectionCost()` reports
+// `CONNECTION_COST_UNMETERED` for `CONNECTION_NONE`; `last_is_metered_`
+// preserves the last online metered state until connectivity returns.
+class MeteredConnectionMonitor final
+    : public net::NetworkChangeNotifier::ConnectionCostObserver,
+      public net::NetworkChangeNotifier::NetworkChangeObserver {
+ public:
+  using AssetManager =
+      optimization_guide::ManifestAssetManagerDelegate::AssetManager;
+
+  MeteredConnectionMonitor() {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    net::NetworkChangeNotifier::AddConnectionCostObserver(this);
+    net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  }
+
+  ~MeteredConnectionMonitor() override {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+    net::NetworkChangeNotifier::RemoveConnectionCostObserver(this);
+  }
+
+  MeteredConnectionMonitor(const MeteredConnectionMonitor&) = delete;
+  MeteredConnectionMonitor& operator=(const MeteredConnectionMonitor&) = delete;
+
+  void SetAssetManager(base::WeakPtr<AssetManager> asset_manager) {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    asset_manager_ = std::move(asset_manager);
+  }
+
+  bool IsConnectionMetered() const {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    return net::NetworkChangeNotifier::IsOffline()
+               ? last_is_metered_
+               : IsCurrentConnectionMetered();
+  }
+
+  // net::NetworkChangeNotifier::ConnectionCostObserver:
+  void OnConnectionCostChanged(
+      net::NetworkChangeNotifier::ConnectionCost /*cost*/) override {
+    MaybeNotifyChanged();
+  }
+
+  // net::NetworkChangeNotifier::NetworkChangeObserver:
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType /*type*/) override {
+    MaybeNotifyChanged();
+  }
+
+ private:
+  static bool IsCurrentConnectionMetered() {
+    return net::NetworkChangeNotifier::GetConnectionCost() ==
+           net::NetworkChangeNotifier::CONNECTION_COST_METERED;
+  }
+
+  void MaybeNotifyChanged() {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (net::NetworkChangeNotifier::IsOffline()) {
+      was_offline_ = true;
+      return;
+    }
+    const bool reconnected = std::exchange(was_offline_, false);
+    const bool is_metered = IsCurrentConnectionMetered();
+    if (is_metered == last_is_metered_ && (!reconnected || is_metered)) {
+      return;
+    }
+    last_is_metered_ = is_metered;
+    if (asset_manager_) {
+      asset_manager_->OnMeteredConnectionChanged();
+    }
+  }
+
+  base::WeakPtr<AssetManager> asset_manager_;
+  bool last_is_metered_ = IsCurrentConnectionMetered();
+  bool was_offline_ = net::NetworkChangeNotifier::IsOffline();
+};
+
+// Dispatches on-demand component updates via `OnDemandUpdater` and notifies
+// `AssetManager::OnUpdateRequestComplete()` when the latest in-flight request
+// for a component finishes.
+//
+// `OnDemandUpdater::OnDemandUpdate()` does not support cancelling an
+// already-bound completion callback. To ignore stale callbacks when a
+// component's update is superseded by a new `RequestUpdate()`,
+// `RegisterOnDemandComponent()`, or `Uninstall()`, each request is tagged with
+// a monotonically increasing `request_id` in `in_flight_requests_`; only a
+// callback matching the current `request_id` for that key is forwarded.
+class OnDemandUpdateTracker {
+ public:
+  using AssetManager =
+      optimization_guide::ManifestAssetManagerDelegate::AssetManager;
+
+  OnDemandUpdateTracker() = default;
+  ~OnDemandUpdateTracker() = default;
+
+  OnDemandUpdateTracker(const OnDemandUpdateTracker&) = delete;
+  OnDemandUpdateTracker& operator=(const OnDemandUpdateTracker&) = delete;
+
+  void SetAssetManager(base::WeakPtr<AssetManager> asset_manager) {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    asset_manager_ = std::move(asset_manager);
+  }
+
+  void RequestUpdate(const std::string& public_key_hex, bool is_background) {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    const uint64_t request_id = ++next_request_id_;
+    in_flight_requests_[public_key_hex] = request_id;
+    auto callback = base::BindOnce(&OnDemandUpdateTracker::OnUpdateComplete,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   public_key_hex, request_id);
+
+    std::string crx_id = GenerateIdFromPublicKeyHex(public_key_hex);
+    if (crx_id.empty()) {
+      LOG(ERROR) << "Invalid public key hex in RequestUpdate: ["
+                 << public_key_hex << "]";
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    update_client::Error::INVALID_ARGUMENT));
+      return;
+    }
+    if (!g_browser_process || !g_browser_process->component_updater()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback),
+                                    update_client::Error::SERVICE_ERROR));
+      return;
+    }
+
+    OnDeviceModelUpdater::OnDemandInstall(
+        crx_id,
+        is_background ? OnDemandUpdater::Priority::BACKGROUND
+                      : OnDemandUpdater::Priority::FOREGROUND,
+        std::move(callback));
+  }
+
+  // Drops tracking for any in-flight `RequestUpdate()` on `public_key_hex` so
+  // its eventual completion callback is ignored.
+  void InvalidatePendingUpdate(const std::string& public_key_hex) {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    in_flight_requests_.erase(public_key_hex);
+  }
+
+ private:
+  void OnUpdateComplete(const std::string& public_key_hex,
+                        uint64_t request_id,
+                        update_client::Error error) {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (error != update_client::Error::NONE &&
+        error != update_client::Error::UPDATE_IN_PROGRESS) {
+      VLOG(1) << "On-device model component update failed: "
+              << std::to_underlying(error);
+    }
+    auto it = in_flight_requests_.find(public_key_hex);
+    if (it == in_flight_requests_.end() || it->second != request_id) {
+      return;
+    }
+    in_flight_requests_.erase(it);
+    if (!asset_manager_) {
+      return;
+    }
+    // `ComponentInstaller::Install()` posts `ComponentReady()` (`OnAssetReady`)
+    // to the UI thread before running its install completion callback.
+    asset_manager_->OnUpdateRequestComplete(public_key_hex);
+  }
+
+  base::WeakPtr<AssetManager> asset_manager_;
+  uint64_t next_request_id_ = 0;
+  base::flat_map<std::string, uint64_t> in_flight_requests_;
+  base::WeakPtrFactory<OnDemandUpdateTracker> weak_ptr_factory_{this};
+};
+
 class ManifestAssetManagerDelegateImpl final
     : public optimization_guide::ManifestAssetManagerDelegate {
  public:
@@ -508,7 +685,24 @@ class ManifestAssetManagerDelegateImpl final
       : manifest_provider_(
             base::FilePath(optimization_guide::kManifestFileName),
             base::TaskPriority::USER_VISIBLE,
-            OnDemandUpdater::Priority::FOREGROUND) {}
+            OnDemandUpdater::Priority::FOREGROUND) {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  }
+
+  ~ManifestAssetManagerDelegateImpl() override {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  }
+
+  void SetAssetManager(base::WeakPtr<AssetManager> manager) override {
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    asset_manager_ = manager;
+    metered_connection_monitor_.SetAssetManager(manager);
+    update_tracker_.SetAssetManager(std::move(manager));
+  }
+
+  bool IsConnectionMetered() const override {
+    return metered_connection_monitor_.IsConnectionMetered();
+  }
 
   base::CallbackListSubscription ListenForManifestReady(
       ReadyCallback on_ready) override {
@@ -534,9 +728,9 @@ class ManifestAssetManagerDelegateImpl final
 
   void RegisterOnDemandComponent(const std::string& public_key_hex,
                                  const std::string& target_version,
-                                 const std::string& component_name,
-                                 base::WeakPtr<AssetManager> manager) override {
+                                 const std::string& component_name) override {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+    update_tracker_.InvalidatePendingUpdate(public_key_hex);
     if (!g_browser_process) {
       return;
     }
@@ -545,7 +739,7 @@ class ManifestAssetManagerDelegateImpl final
 
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<ManifestAssetInstallerPolicy>(
-            public_key_hex, target_version, component_name, manager));
+            public_key_hex, target_version, component_name, asset_manager_));
 
     auto register_callback = base::BindOnce(
         [](base::WeakPtr<AssetManager> manager, ComponentUpdateService* cus,
@@ -559,15 +753,14 @@ class ManifestAssetManagerDelegateImpl final
                     target_version));
           }
         },
-        manager, cus, public_key_hex, target_version);
+        asset_manager_, cus, public_key_hex, target_version);
 
     installer->Register(cus, std::move(register_callback));
   }
 
-  void Uninstall(const std::string& public_key_hex,
-                 base::WeakPtr<AssetManager> manager) override {
+  void Uninstall(const std::string& public_key_hex) override {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-
+    update_tracker_.InvalidatePendingUpdate(public_key_hex);
     std::string crx_id = GenerateIdFromPublicKeyHex(public_key_hex);
     if (!crx_id.empty() && g_browser_process &&
         g_browser_process->component_updater() &&
@@ -578,30 +771,20 @@ class ManifestAssetManagerDelegateImpl final
     base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<ManifestAssetInstallerPolicy>(
             public_key_hex, /*target_version=*/std::string(),
-            /*component_name=*/std::string(), std::move(manager)))
+            /*component_name=*/std::string(), asset_manager_))
         ->Uninstall();
   }
 
   void RequestUpdate(const std::string& public_key_hex,
                      bool is_background) override {
-    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-    if (!g_browser_process) {
-      return;
-    }
-    std::string crx_id = GenerateIdFromPublicKeyHex(public_key_hex);
-    if (crx_id.empty()) {
-      LOG(ERROR) << "Invalid public key hex in RequestUpdate: ["
-                 << public_key_hex << "]";
-      return;
-    }
-
-    OnDeviceModelUpdater::OnDemandInstall(
-        crx_id, is_background ? OnDemandUpdater::Priority::BACKGROUND
-                              : OnDemandUpdater::Priority::FOREGROUND);
+    update_tracker_.RequestUpdate(public_key_hex, is_background);
   }
 
  private:
   ManifestProviderImpl manifest_provider_;
+  base::WeakPtr<AssetManager> asset_manager_;
+  MeteredConnectionMonitor metered_connection_monitor_;
+  OnDemandUpdateTracker update_tracker_;
 };
 
 }  // namespace

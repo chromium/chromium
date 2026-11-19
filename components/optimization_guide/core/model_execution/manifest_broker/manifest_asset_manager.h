@@ -125,6 +125,8 @@ class ManifestAssetManager : public UsageTracker::Observer,
   void InstallerRegistered(const std::string& public_key,
                            const std::string& version,
                            bool is_already_installed) override;
+  void OnUpdateRequestComplete(const std::string& public_key) override;
+  void OnMeteredConnectionChanged() override;
 
   // Recomputes asset priorities from the current manifest and usage tracker,
   // then updates component registrations.

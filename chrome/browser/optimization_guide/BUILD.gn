@@ -126,6 +126,7 @@ source_set("optimization_guide_on_device_model_installer") {
     "//components/update_client",
     "//content/public/browser",
     "//crypto",
+    "//net",
   ]
 }
 

@@ -30,6 +30,10 @@ std::optional<std::string> GetCrxIdFromPublicKeyHex(
   return crx_file::id_util::GenerateIdFromHash(public_key_hash);
 }
 
+bool ManifestAssetManagerDelegate::IsConnectionMetered() const {
+  return false;
+}
+
 // static
 bool ManifestAssetManagerDelegate::VerifyInstallation(
     const base::FilePath& install_dir,

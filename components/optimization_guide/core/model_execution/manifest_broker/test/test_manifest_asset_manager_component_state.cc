@@ -81,8 +81,7 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
 
   void RegisterOnDemandComponent(const std::string& public_key_hex,
                                  const std::string& target_version,
-                                 const std::string& component_name,
-                                 base::WeakPtr<AssetManager> manager) override {
+                                 const std::string& component_name) override {
     if (!state_) {
       return;
     }
@@ -90,8 +89,6 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     Registration& registration = state_->registrations_[public_key_hex];
     CHECK(!registration.pending_registration);
     CHECK(!registration.pending_uninstall);
-    registration.manager = manager;
-    state_->manager_ = manager;
     registration.target = {public_key_hex, base::Version(target_version)};
     registration.pending_registration = true;
     registration.registration_count++;
@@ -101,8 +98,7 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     }
   }
 
-  void Uninstall(const std::string& public_key_hex,
-                 base::WeakPtr<AssetManager> manager) override {
+  void Uninstall(const std::string& public_key_hex) override {
     if (!state_) {
       return;
     }
@@ -110,8 +106,6 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     Registration& registration = state_->registrations_[public_key_hex];
     CHECK(!registration.pending_registration);
     CHECK(!registration.pending_uninstall);
-    registration.manager = manager;
-    state_->manager_ = manager;
     registration.target.public_key_hex = public_key_hex;
     registration.target.version = std::nullopt;
     registration.pending_uninstall = true;
@@ -128,6 +122,17 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     }
     VLOG(2) << "RequestUpdate " << public_key_hex;
     Registration& registration = state_->registrations_[public_key_hex];
+    if (state_->is_connection_metered_) {
+      registration.has_foreground_update_requested = false;
+      registration.has_background_update_requested = false;
+      if (state_->manager_) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(&ManifestAssetManagerDelegate::
+                                          AssetManager::OnUpdateRequestComplete,
+                                      state_->manager_, public_key_hex));
+      }
+      return;
+    }
     if (is_background) {
       registration.has_background_update_requested = true;
     } else {
@@ -144,9 +149,18 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
                        state_ ? state_->free_disk_space_ : base::ByteSize(0)));
   }
 
-  void GetInstalledAssets(
-      base::OnceCallback<void(std::vector<InstalledAsset>)> callback)
-      const override {
+  void SetAssetManager(base::WeakPtr<AssetManager> manager) override {
+    if (state_) {
+      state_->manager_ = std::move(manager);
+    }
+  }
+
+  bool IsConnectionMetered() const override {
+    return state_ && state_->is_connection_metered_;
+  }
+
+  void GetInstalledAssets(base::OnceCallback<void(std::vector<InstalledAsset>)>
+                              callback) const override {
     std::vector<InstalledAsset> assets;
     if (state_) {
       for (const auto& [public_key, component] :
@@ -242,21 +256,21 @@ void TestManifestAssetManagerComponentState::RunPendingRegistrations(
       // is already on disk, notify `OnAssetReady` for it before
       // `InstallerRegistered(..., /*is_already_installed=*/false)`.
       if (!is_already_installed && it->second.target.version.has_value() &&
-          registration.manager) {
+          manager_) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &ManifestAssetManagerDelegate::AssetManager::OnAssetReady,
-                registration.manager, it->second.target.public_key_hex,
+                manager_, it->second.target.public_key_hex,
                 *it->second.target.version, it->second.install_dir));
       }
     }
-    if (registration.manager) {
+    if (manager_) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &ManifestAssetManagerDelegate::AssetManager::InstallerRegistered,
-              registration.manager, registration.target.public_key_hex,
+              manager_, registration.target.public_key_hex,
               registration.target.version->GetString(), is_already_installed));
     }
     MaybeCompleteDownload(registration.target.public_key_hex);
@@ -264,12 +278,12 @@ void TestManifestAssetManagerComponentState::RunPendingRegistrations(
   if (registration.pending_uninstall) {
     registration.pending_uninstall = false;
     installed_components_.erase(registration.target.public_key_hex);
-    if (registration.manager) {
+    if (manager_) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &ManifestAssetManagerDelegate::AssetManager::OnAssetUninstalled,
-              registration.manager, registration.target.public_key_hex));
+              manager_, registration.target.public_key_hex));
     }
   }
 }
@@ -293,12 +307,13 @@ void TestManifestAssetManagerComponentState::SetDownloadScenario(
 void TestManifestAssetManagerComponentState::MaybeCompleteDownload(
     const std::string& public_key) {
   VLOG(2) << "MaybeCompleteDownload: " << public_key;
-  if (download_scenario_ == DownloadScenario::kOffline) {
+  if (download_scenario_ == DownloadScenario::kOffline ||
+      is_connection_metered_) {
     return;
   }
 
   auto reg_it = registrations_.find(public_key);
-  if (reg_it == registrations_.end() || !reg_it->second.manager) {
+  if (reg_it == registrations_.end() || !manager_) {
     return;
   }
   Registration& registration = reg_it->second;
@@ -317,6 +332,9 @@ void TestManifestAssetManagerComponentState::MaybeCompleteDownload(
   }
 
   installed_components_[public_key] = inst_it->second;
+  const bool had_update_requested =
+      registration.has_foreground_update_requested ||
+      registration.has_background_update_requested;
   registration.has_foreground_update_requested = false;
   registration.has_background_update_requested = false;
 
@@ -329,10 +347,17 @@ void TestManifestAssetManagerComponentState::MaybeCompleteDownload(
   VLOG(2) << "Posted OnAssetReady: " << public_key;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &ManifestAssetManagerDelegate::AssetManager::OnAssetReady,
-          registration.manager, inst_it->second.target.public_key_hex,
-          *inst_it->second.target.version, inst_it->second.install_dir));
+      base::BindOnce(&ManifestAssetManagerDelegate::AssetManager::OnAssetReady,
+                     manager_, inst_it->second.target.public_key_hex,
+                     *inst_it->second.target.version,
+                     inst_it->second.install_dir));
+  if (had_update_requested) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ManifestAssetManagerDelegate::AssetManager::
+                           OnUpdateRequestComplete,
+                       manager_, inst_it->second.target.public_key_hex));
+  }
 }
 
 void TestManifestAssetManagerComponentState::UpdateManifest(
@@ -401,6 +426,36 @@ void TestManifestAssetManagerComponentState::SimulateExternalUninstall(
       base::BindOnce(
           &ManifestAssetManagerDelegate::AssetManager::OnAssetUninstalled,
           manager_, public_key));
+}
+
+void TestManifestAssetManagerComponentState::SimulateDownloadFailed(
+    const std::string& public_key) {
+  if (auto it = registrations_.find(public_key); it != registrations_.end()) {
+    it->second.has_foreground_update_requested = false;
+    it->second.has_background_update_requested = false;
+  }
+  if (!manager_) {
+    return;
+  }
+  manager_->OnUpdateRequestComplete(public_key);
+}
+
+void TestManifestAssetManagerComponentState::SetConnectionMetered(
+    bool is_metered) {
+  if (is_connection_metered_ == is_metered) {
+    return;
+  }
+  is_connection_metered_ = is_metered;
+  if (manager_) {
+    manager_->OnMeteredConnectionChanged();
+  }
+  if (!is_connection_metered_) {
+    for (const auto& [target, _] : installable_components_) {
+      if (!installed_components_.contains(target.public_key_hex)) {
+        MaybeCompleteDownload(target.public_key_hex);
+      }
+    }
+  }
 }
 
 int TestManifestAssetManagerComponentState::GetRegistrationCount(

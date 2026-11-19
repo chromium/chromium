@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
 
@@ -43,13 +44,13 @@ class OverrideManifestAssetManagerDelegate final
   void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteSize>)>
                             callback) const override;
 
+  void SetAssetManager(base::WeakPtr<AssetManager> manager) override;
+
   void RegisterOnDemandComponent(const std::string& public_key_hex,
                                  const std::string& target_version,
-                                 const std::string& component_name,
-                                 base::WeakPtr<AssetManager> manager) override;
+                                 const std::string& component_name) override;
 
-  void Uninstall(const std::string& public_key_hex,
-                 base::WeakPtr<AssetManager> manager) override;
+  void Uninstall(const std::string& public_key_hex) override;
 
   void RequestUpdate(const std::string& public_key_hex,
                      bool is_background) override;
@@ -61,6 +62,7 @@ class OverrideManifestAssetManagerDelegate final
  private:
   base::FilePath manifest_path_;
   base::flat_map<std::string, base::FilePath> component_overrides_;
+  base::WeakPtr<AssetManager> asset_manager_;
 };
 
 }  // namespace optimization_guide
