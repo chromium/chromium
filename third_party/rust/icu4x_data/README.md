@@ -34,6 +34,10 @@ cost.
   `//tools/crates/icu4x_datagen/config.toml` (see
   [`patches/README.md`](patches/README.md) for correspondences with
   `//third_party/icu/patches/`).
+- `transliterators/`: Multi-rule custom UTS #35 transform `.txt` files compiled
+  at datagen time when referenced via `rules_file` under
+  `[[transliterators.custom]]` in `//tools/crates/icu4x_datagen/config.toml`
+  (see [`transliterators/README.md`](transliterators/README.md)).
 
 ## Regenerating Data
 
@@ -47,8 +51,8 @@ From the Chromium `src/` root:
 
 ```bash
 # Regenerate all 8 platforms using //third_party/icu/filters/*.json and
-# //tools/crates/icu4x_datagen/config.toml (including the patches listed in
-# `patches = [...]`):
+# //tools/crates/icu4x_datagen/config.toml (including `patches = [...]` and
+# `[transliterators]` allowlists / pre-compiled custom UTS #35 rule sets):
 python3 tools/crates/run_icu4x_datagen.py generate
 
 # Regenerate a single platform (e.g. common) for local iteration ONLY.

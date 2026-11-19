@@ -235,7 +235,7 @@ include!("../common/property_name_parse_general_category_v1.rs.data");
 include!("../common/property_binary_logical_order_exception_v1.rs.data");
 include!("../common/property_binary_case_ignorable_v1.rs.data");
 include!("datetime_patterns_date_coptic_v1.rs.data");
-include!("transliterator_rules_v1.rs.data");
+include!("../common/transliterator_rules_v1.rs.data");
 include!("../common/normalizer_nfd_data_v1.rs.data");
 include!("../common/property_binary_diacritic_v1.rs.data");
 include!("locale_names_language_short_heavy_v1.rs.data");

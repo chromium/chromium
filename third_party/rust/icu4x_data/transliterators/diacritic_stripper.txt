@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Latin-script diacritic stripper (`DiacriticStripper`, `und-t-und-x0-diacstr`).
+# Mirrors //chrome/browser/ash/input_method/diacritics_insensitive_string_comparator.cc.
+# Intentionally covers only Latin accented letters and ligatures used in French,
+# Spanish, Dutch, Swedish, Norwegian, Danish, and Catalan.
+
+::NFC;
+
+[ á à â ä ā å ] > a;
+[ Á À Â Ä Ā Å ] > A;
+[ é è ê ë ē   ] > e;
+[ É È Ê Ë Ē   ] > E;
+[ í ì î ï ī   ] > i;
+[ Í Ì Î Ï Ī   ] > I;
+[ ó ò ô ö ō ø ] > o;
+[ Ó Ò Ô Ö Ō Ø ] > O;
+[ ú ù û ü ū   ] > u;
+[ Ú Ù Û Ü Ū   ] > U;
+[ ý ỳ ŷ ÿ ȳ   ] > y;
+[ Ý Ỳ Ŷ Ÿ Ȳ   ] > Y;
+
+ç > c;
+ñ > n;
+æ > ae;
+œ > oe;
+Ç > C;
+Ñ > N;
+Æ > AE;
+Œ > OE;

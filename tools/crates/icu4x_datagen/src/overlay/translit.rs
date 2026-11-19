@@ -691,4 +691,57 @@ mod tests {
             std::fs::read_to_string(flutter_out.join("transliterator_rules_v1.rs.data")).unwrap();
         assert!(!flutter_baked.contains("TRANSLITERATOR_RULES_V1_UND_"));
     }
+
+    #[test]
+    fn test_chromium_config_toml_transliterators_match_checked_in_data() {
+        let root = crate::chromium_src_root();
+        let cfg_text =
+            std::fs::read_to_string(root.join("tools/crates/icu4x_datagen/config.toml")).unwrap();
+        let toml_cfg: DatagenTomlConfig = toml::from_str(&cfg_text).unwrap();
+        toml_cfg.validate(&all_registered_markers()).unwrap();
+
+        let provider = SourceTags::default().source_data_provider();
+        let fallbacker = LocaleFallbacker::try_new_unstable(&provider).unwrap();
+        let overlay_dir = TempDir::new("icu4x_real_translit_overlay").unwrap();
+        validate_and_compile_transliterators(
+            &provider,
+            &toml_cfg.transliterators,
+            &root,
+            true,
+            Some(overlay_dir.path()),
+        )
+        .unwrap();
+
+        let selected = select_markers_by_args(&["transliterator/".to_string()]).unwrap();
+        let out_dir = TempDir::new("icu4x_real_translit_baked").unwrap();
+        let mut opts = BakedOptions::default();
+        opts.use_separate_crates = false;
+        opts.overwrite = true;
+        export_platform_filtered(
+            Icu4xPlatform::Common,
+            &root.join("third_party/icu/filters"),
+            &toml_cfg,
+            OverlayDataProvider::new(provider, Some(overlay_dir.path().to_path_buf())),
+            fallbacker,
+            &selected,
+            BakedExporter::new(out_dir.path().to_path_buf(), opts).unwrap(),
+        )
+        .unwrap();
+
+        let freshly_baked =
+            std::fs::read_to_string(out_dir.path().join("transliterator_rules_v1.rs.data"))
+                .unwrap();
+        let checked_in =
+            std::fs::read_to_string(root.join(
+                "third_party/rust/icu4x_data/src/data/common/transliterator_rules_v1.rs.data",
+            ))
+            .unwrap();
+        assert_eq!(
+            freshly_baked, checked_in,
+            "Checked-in `common/transliterator_rules_v1.rs.data` is out of sync with \
+             `tools/crates/icu4x_datagen/config.toml` and \
+             `third_party/rust/icu4x_data/transliterators/*.txt`; re-run \
+             `python3 tools/crates/run_icu4x_datagen.py generate`"
+        );
+    }
 }

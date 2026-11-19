@@ -1,0 +1,44 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Supplemental IDN confusable skeleton mappings (`ExtraConf`, `und-t-und-x0-xconf`).
+# Mirrors //components/url_formatter/spoof_checks/skeleton_generator.cc.
+# Note: when adding a digit lookalike here, update `digit_lookalikes_` in
+# //components/url_formatter/spoof_checks/idn_spoof_checker.cc as well.
+
+# Letter confusables:
+[æӕ] > ae;
+[ϼҏ] > p;
+[ħнћңҥӈӊԋԧԩ] > h;
+[ĸκкқҝҟҡӄԟ] > k;
+[ŋпԥกח] > n;
+[ŧтҭԏ七丅丆丁] > t;
+[ƅьҍвß] > b;
+[ωшщพฟພຟ] > w;
+[мӎ] > m;
+[єҽҿၔ] > e;
+ґ > r;
+[ғӻ] > f;
+[ҫင] > c;
+[ұ丫] > y;
+[χҳӽӿ乂] > x;
+[ԃძ] > d;
+[ԍဌ] > g;
+[ടรຣຮ] > s;
+၂ > j;
+[०০੦૦ଠ୦೦စ] > o;
+[৭੧૧] > q;
+[บບ] > u;
+
+# Digit confusables:
+[θ] > 0;
+[२২੨੨૨೩೭շ] > 2;
+[зҙӡउওਤ੩૩౩ဒვპੜკ] > 3;
+[੫丩ㄐ] > 4;
+[ճ] > 6;
+[৪੪୫] > 8;
+[૭୨౨] > 9;
+
+# Dash confusables:
+[—一―⸺⸻] > \-;

@@ -750,15 +750,48 @@ mod tests {
         .unwrap();
         assert!(date_range.contains(r"\0\xC7|\0\0 \0\0~\0\0 \x80@\x01\0\xC7|"));
 
-        // 4. Verify `TransliteratorRulesV1` attribute filtering (only the
-        //    Chrome transliterators)
+        // 4. Verify `TransliteratorRulesV1` attribute filtering (3 upstream
+        //    CLDR transliterators + 6 pre-compiled Chromium custom rule sets,
+        //    deduplicated across all 6 browser/Cast platforms and excluded on
+        //    `flutter` / `flutter_desktop`)
         let translit =
             std::fs::read_to_string(data_dir.join("common/transliterator_rules_v1.rs.data"))
                 .unwrap();
-        assert!(translit.contains("TRANSLITERATOR_RULES_V1_UND_DE_T_DE_D0_ASCII"));
-        assert!(translit.contains("TRANSLITERATOR_RULES_V1_UND_UND_HIRA_T_UND_KANA"));
-        assert!(translit.contains("TRANSLITERATOR_RULES_V1_UND_UND_KANA_T_UND_HIRA"));
+        for expected in [
+            "TRANSLITERATOR_RULES_V1_UND_UND_T_UND_LATN_D0_ASCII",
+            "TRANSLITERATOR_RULES_V1_UND_UND_HIRA_T_UND_KANA",
+            "TRANSLITERATOR_RULES_V1_UND_UND_KANA_T_UND_HIRA",
+            "TRANSLITERATOR_RULES_V1_UND_UND_T_UND_X0_AFILL",
+            "TRANSLITERATOR_RULES_V1_UND_UND_T_UND_X0_AFILLDE",
+            "TRANSLITERATOR_RULES_V1_UND_UND_T_UND_X0_DROPACC",
+            "TRANSLITERATOR_RULES_V1_UND_UND_T_UND_X0_XCONF",
+            "TRANSLITERATOR_RULES_V1_UND_UND_T_UND_X0_RMHYPH",
+            "TRANSLITERATOR_RULES_V1_UND_UND_T_UND_X0_DIACSTR",
+        ] {
+            assert!(
+                translit.contains(expected),
+                "Expected `{expected}` in common/transliterator_rules_v1.rs.data"
+            );
+        }
+        assert!(!translit.contains("TRANSLITERATOR_RULES_V1_UND_DE_T_DE_D0_ASCII"));
         assert!(!translit.contains("TRANSLITERATOR_RULES_V1_UND_UND_ARAB_T_UND_LATN"));
+
+        for plat in ["chromeos", "android", "ios", "cast", "chromecast_video"] {
+            let plat_mod =
+                std::fs::read_to_string(data_dir.join(format!("{plat}/mod.rs"))).unwrap();
+            assert!(
+                plat_mod.contains("include!(\"../common/transliterator_rules_v1.rs.data\")"),
+                "Expected {plat}/mod.rs to deduplicate transliterator_rules_v1.rs.data against common/"
+            );
+            assert!(!data_dir.join(format!("{plat}/transliterator_rules_v1.rs.data")).exists());
+        }
+        for plat in ["flutter", "flutter_desktop"] {
+            let flutter_translit = std::fs::read_to_string(
+                data_dir.join(format!("{plat}/transliterator_rules_v1.rs.data")),
+            )
+            .unwrap();
+            assert!(!flutter_translit.contains("TRANSLITERATOR_RULES_V1_UND_"));
+        }
 
         // 5. Verify cross-platform deduplication across all platforms and
         //    `sources.gni`

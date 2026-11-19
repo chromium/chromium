@@ -57,11 +57,58 @@ abridge_non_ui_locales = true
 # pattern = "plurals/*"
 # locales = ["und", "en", "fr", "ja"]
 
+# Scope `TransliteratorRulesV1` to `locales_tree` rather than ICU4C's `translit`
+# filter so all 6 browser and Cast platforms (`common`, `chromeos`, `android`,
+# `ios`, `cast`, `chromecast_video` — including Cast, which builds `//base:i18n`
+# and `SkeletonGenerator`) export transliterators even after ICU4C's `translit`
+# data is excluded, while `flutter` and `flutter_desktop` (`locales_tree`
+# excluded) omit them.
+[[rules]]
+pattern = "transliterator/*"
+icu4c_category = "locales_tree"
+
 [transliterators]
-# Upstream CLDR `TransliteratorRulesV1` IDs exported into `icu4x_data`.
+# Upstream CLDR `TransliteratorRulesV1` IDs used by `base::i18n::CreateTransliterator`
+# and `::Latin-ASCII;` (`Latin-ASCII`, `Katakana-Hiragana`, `Hiragana-Katakana`).
 include = [
   "und-t-und-latn-d0-ascii",
   "und-hira-t-und-kana",
   "und-kana-t-und-hira",
-  "de-t-de-d0-ascii",
 ]
+
+# Pre-compiled static UTS #35 rule sets for Chromium's custom transliterators.
+# Short single-line rules are specified inline (`rules`), while multi-rule sets
+# live in formatted `.txt` files under
+# `//third_party/rust/icu4x_data/transliterators/` (`rules_file`).
+
+# `NormalizeForAddress` (`//components/autofill/core/browser/data_model/transliterator.cc`)
+[[transliterators.custom]]
+bcp47_id = "und-t-und-x0-afill"
+aliases = ["NormalizeForAddress"]
+rules = "::NFD; ::[:Nonspacing Mark:] Remove; ::Lower; ::NFC; ::Latin-ASCII;"
+
+# `DE_NormalizForAddress` (`//components/autofill/core/browser/data_model/transliterator.cc`)
+[[transliterators.custom]]
+bcp47_id = "und-t-und-x0-afillde"
+rules_file = "third_party/rust/icu4x_data/transliterators/de_normalize_for_address.txt"
+
+# `DropAcc` (`//components/url_formatter/spoof_checks/skeleton_generator.cc`) and
+# `RemoveDiacritic` (`//chromeos/ash/components/local_search_service/content_extraction_utils.cc`)
+[[transliterators.custom]]
+bcp47_id = "und-t-und-x0-dropacc"
+rules = "::NFD; ::[:Nonspacing Mark:] Remove; ::NFC; ł > l; ø > o; đ > d;"
+
+# `ExtraConf` (`//components/url_formatter/spoof_checks/skeleton_generator.cc`)
+[[transliterators.custom]]
+bcp47_id = "und-t-und-x0-xconf"
+rules_file = "third_party/rust/icu4x_data/transliterators/extra_conf.txt"
+
+# `RemoveHyphen` (`//chromeos/ash/components/local_search_service/content_extraction_utils.cc`)
+[[transliterators.custom]]
+bcp47_id = "und-t-und-x0-rmhyph"
+rules = "::[-~֊־᠆‐‑‒–—―⁓⁻₋−⸺⸻〜〰゠﹘﹣－] Remove;"
+
+# `DiacriticStripper` (`//chrome/browser/ash/input_method/diacritics_insensitive_string_comparator.cc`)
+[[transliterators.custom]]
+bcp47_id = "und-t-und-x0-diacstr"
+rules_file = "third_party/rust/icu4x_data/transliterators/diacritic_stripper.txt"
