@@ -22,6 +22,18 @@ struct ImageExtractionOptions {
   bool include_canvas;
 };
 
+// The kind of element that an extracted image came from.
+enum ImageSourceElement {
+  kImg,
+  kCanvas,
+};
+
+// An image extracted from a page, with the element it came from.
+struct ExtractedImage {
+  skia.mojom.BitmapWithArbitraryBpp bitmap;
+  ImageSourceElement source_element;
+};
+
 // Render-side handler for walletable pass image extractor.
 //
 // The renderer-side implementation of this interface is the
@@ -29,10 +41,10 @@ struct ImageExtractionOptions {
 // with a RenderFrame. And this is only created for the main RenderFrame.
 interface ImageExtractor {
     // Extracts the images on a web page that pass the filters in `options`
-    // and returns SkBitmap objects containing the images.
+    // and returns them with the element each came from.
     //
     // Extracts <img> elements, and <canvas> elements if
     // `options.include_canvas` is set.
     ExtractImages(ImageExtractionOptions options)
-        => (array<skia.mojom.BitmapWithArbitraryBpp> images);
+        => (array<ExtractedImage> images);
 };

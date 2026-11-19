@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/wallet/content/browser/walletable_pass_barcode_detector.h"
 #include "components/wallet/content/common/mojom/image_extractor.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -24,6 +25,7 @@ namespace wallet {
 namespace {
 
 using testing::ElementsAre;
+using testing::UnorderedElementsAre;
 using BarcodeDetectionStatus =
     WalletablePassBarcodeDetector::BarcodeDetectionStatus;
 
@@ -42,6 +44,20 @@ mojom::ImageExtractionOptionsPtr TestOptions() {
   static constexpr double kMaxAspectRatio = 15.0;
   return mojom::ImageExtractionOptions::New(kMinImageSize, kMaxAspectRatio,
                                             /*include_canvas=*/false);
+}
+
+// Returns one small image for each of `source_elements`.
+std::vector<mojom::ExtractedImagePtr> MakeImages(
+    std::vector<mojom::ImageSourceElement> source_elements) {
+  static constexpr int kImageSize = 10;
+  std::vector<mojom::ExtractedImagePtr> images;
+  for (mojom::ImageSourceElement source_element : source_elements) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(kImageSize, kImageSize);
+    images.push_back(
+        mojom::ExtractedImage::New(std::move(bitmap), source_element));
+  }
+  return images;
 }
 
 class MockImageExtractor : public mojom::ImageExtractor {
@@ -185,15 +201,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, ForwardsExtractionOptions) {
 // Tests that the caller's barcode formats are forwarded to the barcode
 // detection service.
 TEST_F(WalletablePassBarcodeDetectorImplTest, ForwardsBarcodeFormats) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(10, 10);
-  std::vector<SkBitmap> images = {bitmap};
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
-      .WillOnce(
-          [images](mojom::ImageExtractionOptionsPtr,
+      .WillOnce([](mojom::ImageExtractionOptionsPtr,
                    mojom::ImageExtractor::ExtractImagesCallback callback) {
-            std::move(callback).Run(images);
-          });
+        std::move(callback).Run(MakeImages({mojom::ImageSourceElement::kImg}));
+      });
   EXPECT_CALL(detector_.barcode_detector(), Detect)
       .WillOnce([](const SkBitmap&,
                    shape_detection::mojom::BarcodeDetection::DetectCallback
@@ -217,15 +229,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, ForwardsBarcodeFormats) {
 // Tests that `UNKNOWN` is never requested from the barcode detection service,
 // since it cannot be decoded and the Mac detector rejects it.
 TEST_F(WalletablePassBarcodeDetectorImplTest, DropsUnknownBarcodeFormat) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(10, 10);
-  std::vector<SkBitmap> images = {bitmap};
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
-      .WillOnce(
-          [images](mojom::ImageExtractionOptionsPtr,
+      .WillOnce([](mojom::ImageExtractionOptionsPtr,
                    mojom::ImageExtractor::ExtractImagesCallback callback) {
-            std::move(callback).Run(images);
-          });
+        std::move(callback).Run(MakeImages({mojom::ImageSourceElement::kImg}));
+      });
   EXPECT_CALL(detector_.barcode_detector(), Detect)
       .WillOnce([](const SkBitmap&,
                    shape_detection::mojom::BarcodeDetection::DetectCallback
@@ -248,16 +256,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, DropsUnknownBarcodeFormat) {
 }
 
 TEST_F(WalletablePassBarcodeDetectorImplTest, NoBarcodesFound) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(10, 10);
-  std::vector<SkBitmap> images = {bitmap};
-
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
-      .WillOnce(
-          [images](mojom::ImageExtractionOptionsPtr,
+      .WillOnce([](mojom::ImageExtractionOptionsPtr,
                    mojom::ImageExtractor::ExtractImagesCallback callback) {
-            std::move(callback).Run(images);
-          });
+        std::move(callback).Run(MakeImages({mojom::ImageSourceElement::kImg}));
+      });
 
   EXPECT_CALL(detector_.barcode_detector(), Detect)
       .WillOnce([](const SkBitmap&,
@@ -277,16 +280,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, NoBarcodesFound) {
 }
 
 TEST_F(WalletablePassBarcodeDetectorImplTest, QRCodeFound) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(10, 10);
-  std::vector<SkBitmap> images = {bitmap};
-
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
-      .WillOnce(
-          [images](mojom::ImageExtractionOptionsPtr,
+      .WillOnce([](mojom::ImageExtractionOptionsPtr,
                    mojom::ImageExtractor::ExtractImagesCallback callback) {
-            std::move(callback).Run(images);
-          });
+        std::move(callback).Run(MakeImages({mojom::ImageSourceElement::kImg}));
+      });
 
   std::vector<shape_detection::mojom::BarcodeDetectionResultPtr> barcodes;
   barcodes.push_back(CreateBarcodeDetectionResult(
@@ -337,16 +335,11 @@ TEST_F(WalletablePassBarcodeDetectorImplTest,
 
 TEST_F(WalletablePassBarcodeDetectorImplTest,
        BarcodeDetectorRemoteDisconnected) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(10, 10);
-  std::vector<SkBitmap> images = {bitmap};
-
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
-      .WillOnce(
-          [images](mojom::ImageExtractionOptionsPtr,
+      .WillOnce([](mojom::ImageExtractionOptionsPtr,
                    mojom::ImageExtractor::ExtractImagesCallback callback) {
-            std::move(callback).Run(images);
-          });
+        std::move(callback).Run(MakeImages({mojom::ImageSourceElement::kImg}));
+      });
 
   EXPECT_CALL(detector_.barcode_detector(), Detect)
       .WillOnce([&](const SkBitmap&,
@@ -367,18 +360,12 @@ TEST_F(WalletablePassBarcodeDetectorImplTest,
 }
 
 TEST_F(WalletablePassBarcodeDetectorImplTest, MultipleBarcodesFound) {
-  SkBitmap bitmap1;
-  bitmap1.allocN32Pixels(10, 10);
-  SkBitmap bitmap2;
-  bitmap2.allocN32Pixels(10, 10);
-  std::vector<SkBitmap> images = {bitmap1, bitmap2};
-
   EXPECT_CALL(detector_.image_extractor(), ExtractImages)
-      .WillOnce(
-          [images](mojom::ImageExtractionOptionsPtr,
+      .WillOnce([](mojom::ImageExtractionOptionsPtr,
                    mojom::ImageExtractor::ExtractImagesCallback callback) {
-            std::move(callback).Run(images);
-          });
+        std::move(callback).Run(MakeImages({mojom::ImageSourceElement::kImg,
+                                            mojom::ImageSourceElement::kImg}));
+      });
 
   EXPECT_CALL(detector_.barcode_detector(), Detect)
       .WillOnce([](const SkBitmap&,
@@ -415,6 +402,61 @@ TEST_F(WalletablePassBarcodeDetectorImplTest, MultipleBarcodesFound) {
             run_loop.Quit();
           }));
   run_loop.Run();
+}
+
+// Tests that each decoded barcode reports the element of the image that it was
+// decoded from, even if the detections finish out of order.
+TEST_F(WalletablePassBarcodeDetectorImplTest, ReportsSourceElement) {
+  EXPECT_CALL(detector_.image_extractor(), ExtractImages)
+      .WillOnce([](mojom::ImageExtractionOptionsPtr,
+                   mojom::ImageExtractor::ExtractImagesCallback callback) {
+        std::move(callback).Run(
+            MakeImages({mojom::ImageSourceElement::kImg,
+                        mojom::ImageSourceElement::kCanvas}));
+      });
+  std::vector<shape_detection::mojom::BarcodeDetection::DetectCallback>
+      detect_callbacks;
+  base::RunLoop detect_run_loop;
+  EXPECT_CALL(detector_.barcode_detector(), Detect)
+      .Times(2)
+      .WillRepeatedly(
+          [&](const SkBitmap&,
+              shape_detection::mojom::BarcodeDetection::DetectCallback
+                  callback) {
+            detect_callbacks.push_back(std::move(callback));
+            if (detect_callbacks.size() == 2) {
+              detect_run_loop.Quit();
+            }
+          });
+
+  base::test::TestFuture<BarcodeDetectionStatus, std::vector<WalletBarcode>>
+      future;
+  detector_.Detect(web_contents(), TestOptions(), /*barcode_formats=*/{},
+                   future.GetCallback());
+  detect_run_loop.Run();
+  ASSERT_EQ(detect_callbacks.size(), 2u);
+  // Finishes the canvas image's detection first.
+  std::vector<shape_detection::mojom::BarcodeDetectionResultPtr>
+      canvas_barcodes;
+  canvas_barcodes.push_back(CreateBarcodeDetectionResult(
+      "canvas_value", shape_detection::mojom::BarcodeFormat::QR_CODE));
+  std::move(detect_callbacks[1]).Run(std::move(canvas_barcodes));
+  std::vector<shape_detection::mojom::BarcodeDetectionResultPtr> img_barcodes;
+  img_barcodes.push_back(CreateBarcodeDetectionResult(
+      "img_value", shape_detection::mojom::BarcodeFormat::QR_CODE));
+  std::move(detect_callbacks[0]).Run(std::move(img_barcodes));
+
+  EXPECT_EQ(future.Get<0>(), BarcodeDetectionStatus::kSuccess);
+  EXPECT_THAT(
+      future.Get<1>(),
+      UnorderedElementsAre(
+          WalletBarcode{.raw_value = "img_value",
+                        .format = WalletBarcodeFormat::QR_CODE,
+                        .source_element = WalletBarcodeSourceElement::kImg},
+          WalletBarcode{
+              .raw_value = "canvas_value",
+              .format = WalletBarcodeFormat::QR_CODE,
+              .source_element = WalletBarcodeSourceElement::kCanvas}));
 }
 
 }  // namespace

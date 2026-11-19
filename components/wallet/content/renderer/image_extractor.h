@@ -56,7 +56,9 @@ class ImageExtractor : public base::SupportsUserData::Data,
   void BindReceiver(
       mojo::PendingReceiver<wallet::mojom::ImageExtractor> receiver);
 
-  std::vector<SkBitmap> ExtractQualifiedImageElements(
+  // Returns the images of the page's elements that pass the filters in
+  // `options`, with the element each came from.
+  std::vector<mojom::ExtractedImagePtr> ExtractQualifiedImageElements(
       const blink::WebDocument& document,
       const mojom::ImageExtractionOptions& options) const;
 

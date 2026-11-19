@@ -25,6 +25,7 @@ const void* const kUserDataKey = &kUserDataKey;
 // The elements whose image contents are extracted.
 constexpr std::string_view kImageSelector = "img";
 constexpr std::string_view kImageAndCanvasSelector = "img,canvas";
+constexpr std::string_view kCanvasTagName = "canvas";
 
 // The maximum number of images to extract from a page.
 // TODO(crbug.com/445386472): Use finch params to control.
@@ -71,25 +72,31 @@ void ImageExtractor::BindReceiver(
 
 // Extracts the <img> elements, and the <canvas> elements if requested, in
 // document order.
-std::vector<SkBitmap> ImageExtractor::ExtractQualifiedImageElements(
+std::vector<mojom::ExtractedImagePtr>
+ImageExtractor::ExtractQualifiedImageElements(
     const blink::WebDocument& document,
     const mojom::ImageExtractionOptions& options) const {
   const std::vector<blink::WebElement> image_elements =
       document.QuerySelectorAll(blink::WebString::FromAscii(
           options.include_canvas ? kImageAndCanvasSelector : kImageSelector));
 
-  std::vector<SkBitmap> skia_images;
-  skia_images.reserve(std::min(image_elements.size(), kMaxImages));
+  std::vector<mojom::ExtractedImagePtr> images;
+  images.reserve(std::min(image_elements.size(), kMaxImages));
   for (blink::WebElement element : image_elements) {
-    if (skia_images.size() >= kMaxImages) {
+    if (images.size() >= kMaxImages) {
       break;
     }
     SkBitmap skia_image = element.ImageContents();
-    if (IsImageQualified(skia_image, options)) {
-      skia_images.push_back(std::move(skia_image));
+    if (!IsImageQualified(skia_image, options)) {
+      continue;
     }
+    images.push_back(mojom::ExtractedImage::New(
+        std::move(skia_image),
+        element.HasHTMLTagName(blink::WebString::FromAscii(kCanvasTagName))
+            ? mojom::ImageSourceElement::kCanvas
+            : mojom::ImageSourceElement::kImg));
   }
-  return skia_images;
+  return images;
 }
 
 // Checks if an image is qualified for barcode detection. An image is

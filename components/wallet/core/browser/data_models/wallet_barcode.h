@@ -29,9 +29,18 @@ enum class WalletBarcodeFormat {
   UPC_E
 };
 
+// The kind of page element that a barcode was decoded from.
+enum class WalletBarcodeSourceElement {
+  kImg,
+  kCanvas,
+};
+
 struct WalletBarcode {
   std::string raw_value;
   WalletBarcodeFormat format;
+  // Defaults to `kImg`, since `<img>` elements are always extracted, while
+  // `<canvas>` elements are only extracted on request.
+  WalletBarcodeSourceElement source_element = WalletBarcodeSourceElement::kImg;
 
   bool operator==(const WalletBarcode& other) const = default;
 };

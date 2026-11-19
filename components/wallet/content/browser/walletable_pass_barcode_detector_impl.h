@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WALLET_CONTENT_BROWSER_WALLETABLE_PASS_BARCODE_DETECTOR_IMPL_H_
 #define COMPONENTS_WALLET_CONTENT_BROWSER_WALLETABLE_PASS_BARCODE_DETECTOR_IMPL_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -13,7 +14,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace wallet {
 
@@ -30,6 +30,11 @@ class WalletablePassBarcodeDetectorImpl : public WalletablePassBarcodeDetector {
       WalletBarcodeDetectionDetectCallback callback) override;
 
  private:
+  // The barcodes decoded from one image, and the element it came from.
+  using ImageDetectionResults =
+      std::pair<WalletBarcodeSourceElement,
+                std::vector<shape_detection::mojom::BarcodeDetectionResultPtr>>;
+
   // Creates and binds a remote for the image extractor service for the given
   // `web_contents`.
   virtual mojo::Remote<mojom::ImageExtractor> CreateAndBindImageExtractorRemote(
@@ -56,14 +61,14 @@ class WalletablePassBarcodeDetectorImpl : public WalletablePassBarcodeDetector {
   void OnImagesExtracted(
       std::vector<shape_detection::mojom::BarcodeFormat> barcode_formats,
       WalletBarcodeDetectionDetectCallback callback,
-      const std::vector<SkBitmap>& images);
+      std::vector<mojom::ExtractedImagePtr> images);
 
-  // Invoked when all barcode detections are complete.
+  // Invoked when all barcode detections are complete. Each element of
+  // `all_detected_barcodes` holds the barcodes decoded from one image, together
+  // with the element that the image came from.
   void OnAllBarcodesDetected(
       WalletBarcodeDetectionDetectCallback callback,
-      std::vector<
-          std::vector<shape_detection::mojom::BarcodeDetectionResultPtr>>
-          all_results);
+      std::vector<ImageDetectionResults> all_detected_barcodes);
 
   // Invoked when the image extractor remote is disconnected.
   void OnRemoteDisconnected(WalletBarcodeDetectionDetectCallback callback);
