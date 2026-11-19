@@ -133,7 +133,7 @@ public class TabKeyEventHandlerUnitTest {
                 mTabModel,
                 /* moveSingleTab= */ false);
 
-        verify(mTabModel).moveGroupToIndex(tab.getTabGroupId(), 2);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(tab.getTabGroupId()), 2);
     }
 
     @Test

@@ -1527,7 +1527,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         // Verify that the tab is moved to index 2, the first possible position for an unpinned
         // tab.
-        verify(mTabModel).moveGroupToIndex(groupId, 2);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(groupId), 2);
     }
 
     @Test

@@ -458,11 +458,11 @@ public class UndoGroupRestorerUnitTest {
 
         InOrder inOrder = inOrder(mUiActionHandler, mTabModel);
         inOrder.verify(mUiActionHandler).openTabGroup(SYNC_ID_A);
-        inOrder.verify(mTabModel).moveGroupToIndex(GROUP_REOPENED, 2);
+        inOrder.verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_REOPENED), 2);
         inOrder.verify(mTabModel)
                 .setTabGroupCollapsed(
                         GROUP_REOPENED, /* isCollapsed= */ true, /* animate= */ false);
-        inOrder.verify(mTabModel).moveGroupToIndex(GROUP_REOPENED, 4);
+        inOrder.verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_REOPENED), 4);
         inOrder.verify(mTabModel, never()).moveGroupToIndex(any(), anyInt());
         verify(mTabModel, never()).createTabGroupForTabGroupSync(any(), any());
     }

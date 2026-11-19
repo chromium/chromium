@@ -260,7 +260,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             Tab currentTab = tabModel.getTabById(currentTabId);
             Token tabGroupId = currentTab != null ? currentTab.getTabGroupId() : null;
             if (tabGroupId != null) {
-                tabModel.moveGroupToIndex(tabGroupId, newIndex);
+                tabModel.moveGroupToIndex(TabGroupId.fromRawToken(tabGroupId), newIndex);
             } else {
                 tabModel.moveTab(currentTabId, newIndex);
             }

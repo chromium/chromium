@@ -7109,7 +7109,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.moveSelectedStripView(false);
 
         // Verify: The group has moved.
-        verify(mModel, times(1)).moveGroupToIndex(group.getTabGroupId(), 3);
+        verify(mModel, times(1))
+                .moveGroupToIndex(TabGroupId.fromRawToken(group.getTabGroupId()), 3);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -7130,7 +7131,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.moveSelectedStripView(false);
 
         // Verify: The groups have swapped positions.
-        verify(mModel, times(1)).moveGroupToIndex(group.getTabGroupId(), 3);
+        verify(mModel, times(1))
+                .moveGroupToIndex(TabGroupId.fromRawToken(group.getTabGroupId()), 3);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -7150,7 +7152,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.moveSelectedStripView(true);
 
         // Verify: The group has moved.
-        verify(mModel, times(1)).moveGroupToIndex(group.getTabGroupId(), 1);
+        verify(mModel, times(1))
+                .moveGroupToIndex(TabGroupId.fromRawToken(group.getTabGroupId()), 1);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -7171,7 +7174,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.moveSelectedStripView(true);
 
         // Verify: The groups have swapped positions.
-        verify(mModel, times(1)).moveGroupToIndex(group.getTabGroupId(), 0);
+        verify(mModel, times(1))
+                .moveGroupToIndex(TabGroupId.fromRawToken(group.getTabGroupId()), 0);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -7193,7 +7197,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.moveSelectedStripView(false);
 
         // Verify: The groups have swapped positions.
-        verify(mModel, times(1)).moveGroupToIndex(group.getTabGroupId(), 3);
+        verify(mModel, times(1))
+                .moveGroupToIndex(TabGroupId.fromRawToken(group.getTabGroupId()), 3);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 
@@ -7215,7 +7220,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.moveSelectedStripView(true);
 
         // Verify: The groups have swapped positions.
-        verify(mModel, times(1)).moveGroupToIndex(group.getTabGroupId(), 0);
+        verify(mModel, times(1))
+                .moveGroupToIndex(TabGroupId.fromRawToken(group.getTabGroupId()), 0);
         verify(mTabUngrouper, never()).ungroupTabs(any(), anyBoolean(), anyBoolean(), any());
     }
 

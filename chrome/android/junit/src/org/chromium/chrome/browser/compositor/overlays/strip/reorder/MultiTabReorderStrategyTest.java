@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -262,7 +261,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         // Verify the fully-selected group is not ungrouped.
         verify(mTabUnGrouper)
                 .ungroupTabs(eq(Collections.emptyList()), anyBoolean(), anyBoolean(), any());
-        verify(mModel, never()).moveGroupToIndex(eq(GROUP_ID1), anyInt());
+        verify(mModel, never()).moveGroupToIndex(eq(TabGroupId.fromRawToken(GROUP_ID1)), anyInt());
 
         // Verify mUngroupedTab2 (at model index 4) is gathered adjacent to GROUP_ID1 (to index 3).
         verify(mModel).moveTab(mUngroupedTab2.getTabId(), 3);
@@ -290,7 +289,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         // to index 2.
         verify(mTabUnGrouper)
                 .ungroupTabs(eq(Collections.emptyList()), anyBoolean(), anyBoolean(), any());
-        verify(mModel).moveGroupToIndex(GROUP_ID1, 4);
+        verify(mModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_ID1), 4);
         verify(mModel).moveTab(mUngroupedTab1.getTabId(), 2);
 
         // Verify tabs and the retained group title are foregrounded.
@@ -318,7 +317,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
                 "Incorrect tab ungrouped.",
                 mGroupedTab1.getTabId(),
                 mTabListCaptor.getValue().get(0).getId());
-        verify(mModel).moveGroupToIndex(GROUP_ID2, 2);
+        verify(mModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_ID2), 2);
 
         assertFalse(
                 "Partially-selected group title should not be foregrounded.",
@@ -699,7 +698,9 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         } else if (viewToMove instanceof StripLayoutGroupTitle) {
             verify(mModel)
                     .moveGroupToIndex(
-                            eq(((StripLayoutGroupTitle) viewToMove).getTabGroupId()),
+                            eq(
+                                    TabGroupId.fromRawToken(
+                                            ((StripLayoutGroupTitle) viewToMove).getTabGroupId())),
                             eq(expectedModelIndex));
         }
     }
@@ -731,12 +732,8 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
                                 for (StripLayoutTab tab : mSelectedTabs) {
                                     tab.setIdealX(tab.getIdealX() + deltaX);
                                 }
-                                Token tabGroupId = invocation.getArgument(0);
-                                int id =
-                                        mModel.getTabsInGroup(
-                                                        TabGroupId.fromOptionalToken(tabGroupId))
-                                                .get(0)
-                                                .getId();
+                                TabGroupId tabGroupId = invocation.getArgument(0);
+                                int id = mModel.getTabsInGroup(tabGroupId).get(0).getId();
                                 int index =
                                         Math.min(mStripTabs.length - 1, invocation.getArgument(1));
                                 mStripTabs[index] = StripLayoutUtils.findTabById(mStripTabs, id);

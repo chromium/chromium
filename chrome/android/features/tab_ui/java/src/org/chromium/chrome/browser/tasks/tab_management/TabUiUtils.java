@@ -150,7 +150,7 @@ public class TabUiUtils {
                         tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)),
                         toPrevious);
         if (newIndex == TabModel.INVALID_TAB_INDEX) return false;
-        tabModel.moveGroupToIndex(groupId, newIndex);
+        tabModel.moveGroupToIndex(TabGroupId.fromRawToken(groupId), newIndex);
         return true;
     }
 

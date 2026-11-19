@@ -268,7 +268,7 @@ final class UndoGroupRestorer {
 
         int destinationIndex =
                 targetIndex > currentIndex ? targetIndex + groupTabs.size() - 1 : targetIndex;
-        tabModel.moveGroupToIndex(groupId, destinationIndex);
+        tabModel.moveGroupToIndex(TabGroupId.fromRawToken(groupId), destinationIndex);
     }
 
     /**

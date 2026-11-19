@@ -341,7 +341,7 @@ public class TabUiUtilsUnitTest {
         when(mTabModel.getTabAt(2)).thenReturn(mTab3);
 
         assertTrue(TabUiUtils.reorderTabGroup(mTabModel, TAB_GROUP_ID, /* toPrevious= */ false));
-        verify(mTabModel).moveGroupToIndex(TAB_GROUP_ID, 2);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(TAB_GROUP_ID), 2);
 
         // Null model or unknown group returns false.
         assertFalse(
@@ -369,10 +369,10 @@ public class TabUiUtilsUnitTest {
         when(mTabModel.getTabAt(2)).thenReturn(mTab3);
 
         assertTrue(TabUiUtils.reorderTabGroup(mTabModel, TAB_GROUP_ID, /* toPrevious= */ false));
-        verify(mTabModel).moveGroupToIndex(TAB_GROUP_ID, 3);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(TAB_GROUP_ID), 3);
 
         assertTrue(TabUiUtils.reorderTabGroup(mTabModel, TAB_GROUP_ID_2, /* toPrevious= */ true));
-        verify(mTabModel).moveGroupToIndex(TAB_GROUP_ID_2, 0);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(TAB_GROUP_ID_2), 0);
     }
 
     @Test

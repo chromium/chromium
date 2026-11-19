@@ -526,10 +526,10 @@ public interface TabModel extends TabList {
      * Moves the tab group with {@code tabGroupId} to the position with {@code newIndex} in
      * TabModel.
      *
-     * @param tabGroupId The {@link Token} ID of the tab group being moved.
+     * @param tabGroupId The {@link TabGroupId} of the tab group being moved.
      * @param newIndex The new index in TabModel that the group is being moved to.
      */
-    void moveGroupToIndex(Token tabGroupId, int newIndex);
+    void moveGroupToIndex(TabGroupId tabGroupId, int newIndex);
 
     /**
      * Creates a tab group containing a single tab.

@@ -559,11 +559,11 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
     private int gatherItemToIndex(StripLayoutTab stripTab, int targetIndex) {
         Tab tab = assumeNonNull(mModel.getTabById(stripTab.getTabId()));
         if (isTabInRetainedGroup(tab)) {
-            Token groupId = assumeNonNull(tab.getTabGroupId());
+            TabGroupId groupId = TabGroupId.fromRawToken(assumeNonNull(tab.getTabGroupId()));
             if (mModel.indexOf(tab) != targetIndex) {
                 mModel.moveGroupToIndex(groupId, targetIndex);
             }
-            return mModel.getTabCountForGroup(TabGroupId.fromRawToken(groupId));
+            return mModel.getTabCountForGroup(groupId);
         }
         if (mModel.indexOf(tab) != targetIndex) {
             mModel.moveTab(tab.getId(), targetIndex);
@@ -745,7 +745,8 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
     private void moveAdjacentGroupPastBlock(
             StripLayoutGroupTitle adjGroupTitle, boolean isAdjPinned, boolean towardEnd) {
         int destinationIndex = getDestinationIndex(towardEnd, isAdjPinned);
-        mModel.moveGroupToIndex(adjGroupTitle.getTabGroupId(), destinationIndex);
+        mModel.moveGroupToIndex(
+                TabGroupId.fromRawToken(adjGroupTitle.getTabGroupId()), destinationIndex);
     }
 
     /**

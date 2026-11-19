@@ -1056,7 +1056,7 @@ public class NestedLayoutDelegateUnitTest {
         assertTrue(
                 mDelegate.performAccessibilityAction(
                         view, R.id.move_tab_down, /* args= */ null, groupHeaderModel));
-        verify(mTabModel).moveGroupToIndex(TAB_GROUP_ID, 1);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(TAB_GROUP_ID), 1);
         assertTrue(
                 userActionTester.getActions().contains("TabGrid.AccessibilityDelegate.Reordered"));
     }

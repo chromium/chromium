@@ -177,7 +177,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         ArrayList<Animator> animationList = new ArrayList<>();
         if (isDragCancelled) {
             Token interactingTabGroupId = assumeNonNull(mInteractingGroupTitle).getTabGroupId();
-            mModel.moveGroupToIndex(interactingTabGroupId, mOriginIndex);
+            mModel.moveGroupToIndex(TabGroupId.fromRawToken(interactingTabGroupId), mOriginIndex);
         }
         Runnable onAnimationEnd =
                 () -> {
@@ -334,7 +334,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             // Case B: Attempt to drab past ungrouped tab.
             if (Math.abs(offset) <= getTabSwapThreshold(/* isPinned= */ false)) return false;
 
-            mModel.moveGroupToIndex(interactingTabGroupId, adjTabIndex);
+            mModel.moveGroupToIndex(TabGroupId.fromRawToken(interactingTabGroupId), adjTabIndex);
             animateViewSliding(adjStripTab);
         }
 
@@ -356,6 +356,6 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         int indexTowardStart = TabGroupUtils.getFirstTabModelIndexForList(mModel, adjTabs);
         int indexTowardEnd = TabGroupUtils.getLastTabModelIndexForList(mModel, adjTabs);
         int destIndex = towardEnd ? indexTowardEnd : indexTowardStart;
-        mModel.moveGroupToIndex(interactingTabGroupId, destIndex);
+        mModel.moveGroupToIndex(TabGroupId.fromRawToken(interactingTabGroupId), destIndex);
     }
 }

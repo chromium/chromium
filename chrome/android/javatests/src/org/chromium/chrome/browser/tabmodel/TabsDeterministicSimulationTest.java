@@ -221,7 +221,8 @@ public class TabsDeterministicSimulationTest {
                                             + ", "
                                             + newIndex
                                             + ")");
-                            mCollectionModel.moveGroupToIndex(tabGroupId, newIndex);
+                            mCollectionModel.moveGroupToIndex(
+                                    TabGroupId.fromRawToken(tabGroupId), newIndex);
                         } else {
                             Log.i(
                                     TAG,

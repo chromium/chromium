@@ -1389,11 +1389,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void moveGroupToIndex(Token tabGroupId, int newIndex) {
+    public void moveGroupToIndex(TabGroupId tabGroupId, int newIndex) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null) return;
 
-        List<Tab> tabs = getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId));
+        List<Tab> tabs = getTabsInGroup(tabGroupId);
         if (tabs.isEmpty()) return;
 
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
@@ -1403,7 +1403,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             ObserverList.RewindableIterator<TabGroupObserver> groupObservers =
                     mTabGroupObservers.rewindableIterator();
             while (groupObservers.hasNext()) {
-                groupObservers.next().willMoveTabGroup(tabGroupId);
+                groupObservers.next().willMoveTabGroup(tabGroupId.getToken());
             }
 
             int finalIndex =
@@ -1429,7 +1429,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
             groupObservers.rewind();
             while (groupObservers.hasNext()) {
-                groupObservers.next().onTabGroupMoved(tabGroupId, oldIndex, finalIndex);
+                groupObservers.next().onTabGroupMoved(tabGroupId.getToken(), oldIndex, finalIndex);
             }
         }
     }
@@ -1804,7 +1804,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         // If the destination tab adopted the metadata of an existing tab group, move the adopted
         // tab group back to its original position.
         if (undoGroupMetadata.adoptedTabGroupOriginalIndex != INVALID_TAB_INDEX) {
-            moveGroupToIndex(tabGroupId, undoGroupMetadata.adoptedTabGroupOriginalIndex);
+            moveGroupToIndex(
+                    TabGroupId.fromRawToken(tabGroupId),
+                    undoGroupMetadata.adoptedTabGroupOriginalIndex);
         }
 
         // Reset or delete the state of the undone group.
@@ -2409,7 +2411,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 }
                 assert indexInGroup == null
                         : "indexInGroup should not be set when adopting a candidate group.";
-                moveGroupToIndex(destinationTabGroupId, originalDestinationIndex);
+                moveGroupToIndex(
+                        TabGroupId.fromRawToken(destinationTabGroupId), originalDestinationIndex);
             }
 
             // Move the destination tab into the group if it is not already part of the group.
@@ -2904,7 +2907,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         int moveTabGroupTo(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId,
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId,
                 int newIndex);
 
         @JniType("std::vector<TabAndroid*>")

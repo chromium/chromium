@@ -226,7 +226,7 @@ public class VerticalTabKeyboardHandlerUnitTest {
                 .thenReturn(List.of(mTab1));
 
         assertTrue(mHandler.reorderKeyboardFocusedItem(/* toPrevious= */ false));
-        verify(mTabModel).moveGroupToIndex(GROUP_ID, 1);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_ID), 1);
     }
 
     @Test

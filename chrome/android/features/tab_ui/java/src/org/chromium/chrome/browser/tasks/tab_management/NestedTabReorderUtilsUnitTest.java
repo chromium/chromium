@@ -101,7 +101,7 @@ public class NestedTabReorderUtilsUnitTest {
         assertTrue(
                 NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 0, /* toIndex= */ 1));
-        verify(mTabModel).moveGroupToIndex(GROUP_ID, 1);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_ID), 1);
     }
 
     @Test
@@ -478,7 +478,7 @@ public class NestedTabReorderUtilsUnitTest {
         assertTrue(
                 NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 1, /* toIndex= */ 0));
-        verify(mTabModel).moveGroupToIndex(GROUP_ID, 1);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_ID), 1);
     }
 
     @Test
@@ -541,7 +541,7 @@ public class NestedTabReorderUtilsUnitTest {
         assertTrue(
                 NestedTabReorderUtils.reorderItemInDirection(
                         mTabModel, mModelList, /* pos= */ 2, /* toPrevious= */ true));
-        verify(mTabModel).moveGroupToIndex(GROUP_ID, 0);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(GROUP_ID), 0);
     }
 
     @Test

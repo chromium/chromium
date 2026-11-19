@@ -403,7 +403,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void moveGroupToIndex(Token tabGroupId, int newIndex) {}
+    public void moveGroupToIndex(TabGroupId tabGroupId, int newIndex) {}
 
     @Override
     public void createSingleTabGroup(Tab tab) {}

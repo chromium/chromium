@@ -598,7 +598,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void moveGroupToIndex(Token tabGroupId, int newIndex) {
+    public void moveGroupToIndex(TabGroupId tabGroupId, int newIndex) {
         mDelegateModel.moveGroupToIndex(tabGroupId, newIndex);
     }
 

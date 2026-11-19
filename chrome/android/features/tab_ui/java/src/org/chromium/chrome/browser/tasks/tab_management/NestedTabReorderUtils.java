@@ -189,7 +189,8 @@ public class NestedTabReorderUtils {
             boolean isGroup) {
         if (isGroup) {
             if (currentGroupId != null) {
-                tabModel.moveGroupToIndex(currentGroupId, destinationIndex);
+                tabModel.moveGroupToIndex(
+                        TabGroupId.fromRawToken(currentGroupId), destinationIndex);
             }
         } else {
             tabModel.moveTab(currentTabId, destinationIndex);

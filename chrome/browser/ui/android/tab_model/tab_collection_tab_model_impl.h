@@ -70,7 +70,7 @@ class TabCollectionTabModelImpl {
 
   // Moves the tab group to a the new index. Returns the final index of the
   // group.
-  int MoveTabGroupTo(const base::Token& tab_group_id, int to_index);
+  int MoveTabGroupTo(const tab_groups::TabGroupId& tab_group_id, int to_index);
 
   // Returns the tabs in a group. If the group is not found, returns an empty
   // vector.

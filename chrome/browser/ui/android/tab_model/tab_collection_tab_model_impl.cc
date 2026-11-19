@@ -192,9 +192,8 @@ int TabCollectionTabModelImpl::GetIndexOfTabInGroup(
   return index ? base::checked_cast<int>(*index) : kInvalidTabIndex;
 }
 
-int TabCollectionTabModelImpl::MoveTabGroupTo(const base::Token& token,
+int TabCollectionTabModelImpl::MoveTabGroupTo(const TabGroupId& tab_group_id,
                                               int to_index) {
-  TabGroupId tab_group_id = TabGroupId::FromRawToken(token);
   TabGroup* group = GetTabGroupChecked(tab_group_id);
   gfx::Range range = group->ListTabs();
   to_index =

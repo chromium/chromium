@@ -571,7 +571,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
-        verify(mTabModel).moveGroupToIndex(groupId, 5);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(groupId), 5);
     }
 
     @Test
@@ -777,7 +777,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         mCallback.markDragAbortedByEsc();
         mCallback.clearView(mRecyclerView, mViewHolder);
 
-        verify(mTabModel).moveGroupToIndex(groupId, 2);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(groupId), 2);
     }
 
     @Test
@@ -1101,7 +1101,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
         // For distance > 0, should use getLastTabModelIndexForList (which is 6).
-        verify(mTabModel).moveGroupToIndex(groupId, 6);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(groupId), 6);
     }
 
     @Test
@@ -1135,7 +1135,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
         // For distance < 0, should use getFirstTabModelIndexForList (which is 0).
-        verify(mTabModel).moveGroupToIndex(groupId, 0);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(groupId), 0);
     }
 
     @Test
@@ -2031,7 +2031,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
-        verify(mTabModel).moveGroupToIndex(groupId, 1);
+        verify(mTabModel).moveGroupToIndex(TabGroupId.fromRawToken(groupId), 1);
     }
 
     @Test

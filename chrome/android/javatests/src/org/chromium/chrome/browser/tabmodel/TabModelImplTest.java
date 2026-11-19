@@ -1692,7 +1692,7 @@ public class TabModelImplTest {
                             + " actual valid index "
                             + firstValidIndex);
         }
-        mTabModelJni.moveGroupToIndex(tabGroupId, requestedIndex);
+        mTabModelJni.moveGroupToIndex(TabGroupId.fromRawToken(tabGroupId), requestedIndex);
         if (ENABLE_DEBUG_LOGGING) {
             logTabModelStructure(mTabModelJni, "After move");
         }

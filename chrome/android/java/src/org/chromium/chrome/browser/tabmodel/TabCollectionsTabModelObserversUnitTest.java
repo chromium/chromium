@@ -194,11 +194,11 @@ public class TabCollectionsTabModelObserversUnitTest {
         when(mTabCollectionTabModelImplJni.moveTabGroupTo(any(), any(), anyInt()))
                 .thenAnswer(
                         invocation -> {
-                            Token groupId = invocation.getArgument(1);
+                            TabGroupId groupId = invocation.getArgument(1);
                             int newIndex = invocation.getArgument(2);
                             List<Tab> groupTabs = new ArrayList<>();
                             for (Tab t : mTabs) {
-                                if (groupId.equals(t.getTabGroupId())) {
+                                if (groupId.getToken().equals(t.getTabGroupId())) {
                                     groupTabs.add(t);
                                 }
                             }
@@ -424,7 +424,7 @@ public class TabCollectionsTabModelObserversUnitTest {
         tab2.setTabGroupId(groupId);
 
         reset(mTabModelObserver);
-        mTabModel.moveGroupToIndex(groupId, 1);
+        mTabModel.moveGroupToIndex(TabGroupId.fromRawToken(groupId), 1);
         verify(mTabModelObserver).didMoveTab(eq(tab1), eq(1), eq(0));
         verify(mTabModelObserver).didMoveTab(eq(tab2), eq(2), eq(1));
     }
@@ -936,7 +936,7 @@ public class TabCollectionsTabModelObserversUnitTest {
         tab2.setTabGroupId(groupId);
 
         reset(mTabGroupObserver);
-        mTabModel.moveGroupToIndex(groupId, 1);
+        mTabModel.moveGroupToIndex(TabGroupId.fromRawToken(groupId), 1);
         verify(mTabGroupObserver)
                 .onTabGroupMoved(
                         eq(groupId), /* tabModelOldIndex= */ eq(0), /* tabModelNewIndex= */ eq(1));

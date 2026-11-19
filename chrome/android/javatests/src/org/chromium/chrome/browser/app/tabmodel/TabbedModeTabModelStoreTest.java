@@ -616,7 +616,7 @@ public class TabbedModeTabModelStoreTest {
                             mTabModel.getTabByIdChecked(tabId0),
                             TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
                     Token tabGroupId = mTabModel.getTabById(tabId0).getTabGroupId();
-                    mTabModel.moveGroupToIndex(tabGroupId, 2);
+                    mTabModel.moveGroupToIndex(TabGroupId.fromRawToken(tabGroupId), 2);
                 });
 
         StorageLoadedData data = loadAllDataSync(WINDOW_TAG, false);

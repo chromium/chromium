@@ -961,7 +961,7 @@ void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
   if (index >= range[0]) {
     index += tab_group_width - 1;
   }
-  Java_TabModelJniBridge_moveGroupToIndex(env, jobj, group_id.token(), index);
+  Java_TabModelJniBridge_moveGroupToIndex(env, jobj, group_id, index);
 }
 
 void TabModelJniBridge::MoveTabToWindow(tabs::TabHandle tab,

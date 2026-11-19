@@ -950,7 +950,7 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.addTabGroupObserver(groupObserver);
                     mCollectionModel.addObserver(modelObserver);
                     // Move group to the end.
-                    mCollectionModel.moveGroupToIndex(groupId, 4);
+                    mCollectionModel.moveGroupToIndex(TabGroupId.fromRawToken(groupId), 4);
                     mCollectionModel.removeTabGroupObserver(groupObserver);
                     mCollectionModel.removeObserver(modelObserver);
                 });
@@ -3344,7 +3344,8 @@ public class TabCollectionTabModelImplTest {
     }
 
     private void moveGroupToIndex(Token groupId, int index) {
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.moveGroupToIndex(groupId, index));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.moveGroupToIndex(TabGroupId.fromRawToken(groupId), index));
     }
 
     private void moveTab(Tab tab, int index) {
@@ -4696,22 +4697,26 @@ public class TabCollectionTabModelImplTest {
         // 4. Move a tab group (triggers optimized moveTabGroup)
         // Current state: tab0, [tab2, tab3], tab1
         // Move group to after tab1 (tab1 is at tab index 3) -> tab0, tab1, [tab2, tab3]
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.moveGroupToIndex(groupId, 3));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.moveGroupToIndex(TabGroupId.fromRawToken(groupId), 3));
         verifyCacheInSync();
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
 
         // Edge Case: Move group to its own current index (2) -> no-op
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.moveGroupToIndex(groupId, 2));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.moveGroupToIndex(TabGroupId.fromRawToken(groupId), 2));
         verifyCacheInSync();
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
 
         // Edge Case: Move group to an index inside its own range (3) -> no-op
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.moveGroupToIndex(groupId, 3));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.moveGroupToIndex(TabGroupId.fromRawToken(groupId), 3));
         verifyCacheInSync();
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
 
         // Move group back to index 0 -> [tab2, tab3], tab0, tab1
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.moveGroupToIndex(groupId, 0));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mCollectionModel.moveGroupToIndex(TabGroupId.fromRawToken(groupId), 0));
         verifyCacheInSync();
         assertTabsInOrderAre(List.of(tab2, tab3, tab0, tab1));
 

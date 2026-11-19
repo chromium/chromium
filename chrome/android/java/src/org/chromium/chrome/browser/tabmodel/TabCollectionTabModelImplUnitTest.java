@@ -232,11 +232,11 @@ public class TabCollectionTabModelImplUnitTest {
         when(mTabCollectionTabModelImplJni.moveTabGroupTo(any(), any(), anyInt()))
                 .thenAnswer(
                         invocation -> {
-                            Token groupId = invocation.getArgument(1);
+                            TabGroupId groupId = invocation.getArgument(1);
                             int newIndex = invocation.getArgument(2);
                             List<Tab> groupTabs = new ArrayList<>();
                             for (Tab t : mTabs) {
-                                if (groupId.equals(t.getTabGroupId())) {
+                                if (groupId.getToken().equals(t.getTabGroupId())) {
                                     groupTabs.add(t);
                                 }
                             }
@@ -1446,7 +1446,8 @@ public class TabCollectionTabModelImplUnitTest {
         assertEquals(List.of(existingTab1, reopenedTab1, reopenedTab2, existingTab2), mTabs);
         verify(mTabModelDelegate, never()).restoreForUndo(any(), anyInt(), any());
         verify(mTabGroupUiActionHandler).openTabGroup(HIDDEN_GROUP_SYNC_ID);
-        verify(mTabCollectionTabModelImplJni).moveTabGroupTo(any(), eq(REOPENED_GROUP_ID), eq(1));
+        verify(mTabCollectionTabModelImplJni)
+                .moveTabGroupTo(any(), eq(TabGroupId.fromRawToken(REOPENED_GROUP_ID)), eq(1));
         assertEquals(reopenedTab2, mTabModel.getCurrentTabSupplier().get());
         verify(mTabModelObserver)
                 .didSelectTab(
