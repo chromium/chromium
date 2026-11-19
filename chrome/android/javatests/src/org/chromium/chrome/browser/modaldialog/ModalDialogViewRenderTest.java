@@ -498,6 +498,35 @@ public class ModalDialogViewRenderTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_CustomViewWrappedAfterBind() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCustomTextView1.setText("This is the custom view.");
+                    mCustomFrameLayout.addView(mCustomTextView1);
+                });
+        PropertyModel model =
+                createModel(
+                        mModelBuilder
+                                .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                                .with(ModalDialogProperties.CUSTOM_VIEW, mCustomFrameLayout)
+                                .with(
+                                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                        mResources,
+                                        R.string.ok));
+        // The initial bind order isn't defined, so set the key afterwards to cover the case where
+        // it's bound last.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "custom_view_wrapped_after_bind");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
     public void testRender_CustomButtonBarView() throws IOException {
         setUpViews(
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,

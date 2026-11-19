@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.modaldialog;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.robolectric.Robolectric.buildActivity;
 
 import android.app.Activity;
@@ -12,6 +13,7 @@ import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.View.MeasureSpec;
 import android.widget.FrameLayout;
 
@@ -297,6 +299,42 @@ public class ModalDialogViewUnitTest {
                 "Spacer should be VISIBLE when checkbox is below a custom view.",
                 android.view.View.VISIBLE,
                 spacer.getVisibility());
+    }
+
+    @Test
+    public void testWrapCustomViewInScrollable_SetAfterBind() {
+        var customView = new FrameLayout(mActivity);
+        var model = mModelBuilder.with(ModalDialogProperties.CUSTOM_VIEW, customView).build();
+        PropertyModelChangeProcessor.create(model, mDialogView, new ModalDialogViewBinder());
+        mActivity.setContentView(mDialogView);
+
+        // The initial bind order isn't defined, so set the key afterwards to cover the case where
+        // it's bound last.
+        model.set(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true);
+
+        assertTrue("The custom view should be shown.", customView.isShown());
+    }
+
+    @Test
+    public void testWrapCustomViewInScrollable_UnsetAfterBind() {
+        // Embedded permission prompts unset the wrap at runtime, which needs
+        // CHANGE_CUSTOM_VIEW_OR_BUTTONS.
+        var model =
+                mModelBuilder
+                        .with(ModalDialogProperties.CHANGE_CUSTOM_VIEW_OR_BUTTONS, true)
+                        .with(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, true)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mDialogView, new ModalDialogViewBinder());
+        // Set the custom view after the initial bind, so the scroll view is shown before the
+        // change whatever the bind order.
+        model.set(ModalDialogProperties.CUSTOM_VIEW, new FrameLayout(mActivity));
+
+        model.set(ModalDialogProperties.WRAP_CUSTOM_VIEW_IN_SCROLLABLE, false);
+
+        assertEquals(
+                "The scroll view should be hidden once it no longer holds the custom view.",
+                View.GONE,
+                mDialogView.findViewById(R.id.modal_dialog_scroll_view).getVisibility());
     }
 
     @Test

@@ -492,6 +492,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             mCustomViewContainer.addView(view);
         }
         mCustomViewContainer.setVisibility(wasVisible);
+        updateContentVisibility();
     }
 
     /**
