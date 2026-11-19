@@ -1,5 +1,6 @@
 source_set("auto_deletion") {
   sources = [
+    "auto_deletion_promo_commands.h",
     "auto_deletion_promo_mutator.h",
     "auto_deletion_promo_view_controller.h",
     "auto_deletion_promo_view_controller.mm",
@@ -10,8 +11,6 @@ source_set("auto_deletion") {
   deps = [
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/button_stack",

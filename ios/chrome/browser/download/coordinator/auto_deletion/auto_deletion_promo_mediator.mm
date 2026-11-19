@@ -4,39 +4,42 @@
 
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_promo_mediator.h"
 
+#import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_commands.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @implementation AutoDeletionPromoMediator {
-  // A pointer to the ApplicationContext::LocatState PrefService.
+  // A pointer to the `ApplicationContext::LocalState` `PrefService`.
   raw_ptr<PrefService> _localState;
-  // A pointer to the browser object.
-  raw_ptr<Browser> _browser;
 }
 
-- (instancetype)initWithLocalState:(PrefService*)localState
-                           browser:(Browser*)browser {
+- (instancetype)initWithLocalState:(PrefService*)localState {
   self = [super init];
   if (self) {
+    CHECK(localState);
     _localState = localState;
-    _browser = browser;
   }
 
   return self;
 }
 
-// Enables the auto-deletion feature on the user's device.
-- (void)enableAutoDeletion {
-  _localState->SetBoolean(prefs::kDownloadAutoDeletionEnabled, true);
+#pragma mark - Public
 
-  id<AutoDeletionCommands> handler = HandlerForProtocol(
-      _browser->GetCommandDispatcher(), AutoDeletionCommands);
-  [handler dismissAutoDeletionActionSheet];
-  [handler presentAutoDeletionActionSheet];
+- (void)disconnect {
+  _localState = nullptr;
+  self.autoDeletionPromoHandler = nil;
+}
+
+#pragma mark - AutoDeletionPromoMutator
+
+- (void)enableAutoDeletion {
+  if (!_localState) {
+    return;
+  }
+  _localState->SetBoolean(prefs::kDownloadAutoDeletionEnabled, true);
+  [self.autoDeletionPromoHandler presentAutoDeletionActionSheet];
 }
 
 @end

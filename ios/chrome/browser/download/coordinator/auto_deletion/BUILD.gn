@@ -2,8 +2,6 @@ source_set("auto_deletion") {
   sources = [
     "auto_deletion_coordinator.h",
     "auto_deletion_coordinator.mm",
-    "auto_deletion_iph_coordinator.h",
-    "auto_deletion_iph_coordinator.mm",
     "auto_deletion_promo_mediator.h",
     "auto_deletion_promo_mediator.mm",
     "auto_deletion_settings_mediator.h",
@@ -29,6 +27,32 @@ source_set("auto_deletion") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public/download",
     "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "auto_deletion_coordinator_unittest.mm",
+    "auto_deletion_promo_mediator_unittest.mm",
+  ]
+  deps = [
+    ":auto_deletion",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/download/ui/auto_deletion",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
   frameworks = [ "UIKit.framework" ]
 }

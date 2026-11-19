@@ -7,19 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol AutoDeletionPromoCommands;
 @protocol AutoDeletionPromoMutator;
-class Browser;
 
-// The UIViewController that manages the Auto-deletion promo's view.
+// The `UIViewController` that manages the Auto-deletion promo's view.
 @interface AutoDeletionPromoViewController : UIViewController
 
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithNibName:(NSString*)name
-                         bundle:(NSBundle*)bundle NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
+// Mutator that handles Auto-deletion model updates.
 @property(nonatomic, weak) id<AutoDeletionPromoMutator> mutator;
+
+// Handler for local Auto-deletion promo UI commands.
+@property(nonatomic, weak) id<AutoDeletionPromoCommands>
+    autoDeletionPromoHandler;
 
 @end
 

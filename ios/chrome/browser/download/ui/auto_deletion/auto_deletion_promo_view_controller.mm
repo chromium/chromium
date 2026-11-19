@@ -6,10 +6,8 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_commands.h"
 #import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_mutator.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
@@ -28,7 +26,7 @@ constexpr CGFloat kSymbolBackgroundCornerRadius = 15.0;
 // The height and width of the trash symbol's container.
 constexpr CGFloat kSymbolContainerSize = 64;
 
-// Creates a UIView that contains the the promo's icon as a subview.
+// Creates a `UIView` that contains the promo's icon as a subview.
 UIView* CreateIconContainer() {
   // Create the trash icon.
   UIImage* symbol = SymbolWithPointSize(SymbolArrowUpTrash, kTrashSymbolSize);
@@ -69,26 +67,11 @@ UIView* CreateIconContainer() {
 
 }  // namespace
 
-@interface AutoDeletionPromoViewController () <
-    ConfirmationAlertActionHandler,
-    UIAdaptivePresentationControllerDelegate> {
-  // A pointer to the browser object.
-  raw_ptr<Browser> _browser;
-}
-
+@interface AutoDeletionPromoViewController () <ConfirmationAlertActionHandler>
 @end
 
 @implementation AutoDeletionPromoViewController {
   ConfirmationAlertViewController* _promoScreen;
-}
-
-- (instancetype)initWithBrowser:(Browser*)browser {
-  self = [super initWithNibName:nil bundle:nil];
-  if (self) {
-    _browser = browser;
-  }
-
-  return self;
 }
 
 - (void)viewDidLoad {
@@ -132,18 +115,7 @@ UIView* CreateIconContainer() {
 - (void)confirmationAlertSecondaryAction {
   base::RecordAction(
       base::UserMetricsAction("IOS.AutoDeletion.IPH.RejectButtonTapped"));
-  id<AutoDeletionCommands> handler = HandlerForProtocol(
-      _browser->GetCommandDispatcher(), AutoDeletionCommands);
-  [handler dismissAutoDeletionActionSheet];
-}
-
-#pragma mark - UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  id<AutoDeletionCommands> handler = HandlerForProtocol(
-      _browser->GetCommandDispatcher(), AutoDeletionCommands);
-  [handler dismissAutoDeletionActionSheet];
+  [self.autoDeletionPromoHandler dismissAutoDeletion];
 }
 
 #pragma mark - Private
@@ -152,9 +124,7 @@ UIView* CreateIconContainer() {
 - (void)dismissPromo {
   base::RecordAction(
       base::UserMetricsAction("IOS.AutoDeletion.IPH.DismissButtonTapped"));
-  id<AutoDeletionCommands> handler = HandlerForProtocol(
-      _browser->GetCommandDispatcher(), AutoDeletionCommands);
-  [handler dismissAutoDeletionActionSheet];
+  [self.autoDeletionPromoHandler dismissAutoDeletion];
 }
 
 @end

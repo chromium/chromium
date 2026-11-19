@@ -83,6 +83,7 @@ void TestingApplicationContext::SetLocalState(PrefService* local_state) {
     network_time_tracker_.reset();
     push_notification_service_.reset();
     optimization_guide_global_state_.reset();
+    auto_deletion_service_.reset();
   }
   local_state_ = local_state;
 }

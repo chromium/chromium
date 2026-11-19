@@ -9,16 +9,24 @@
 
 #import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_mutator.h"
 
-class Browser;
+@protocol AutoDeletionPromoCommands;
 class PrefService;
 
 // Mediator for the Auto-deletion UI.
 @interface AutoDeletionPromoMediator : NSObject <AutoDeletionPromoMutator>
 
+// Handler for local Auto-deletion promo UI commands.
+@property(nonatomic, weak) id<AutoDeletionPromoCommands>
+    autoDeletionPromoHandler;
+
+// Initializes the mediator with `localState`.
 - (instancetype)initWithLocalState:(PrefService*)localState
-                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Disconnects the mediator from model services.
+- (void)disconnect;
 
 @end
 
