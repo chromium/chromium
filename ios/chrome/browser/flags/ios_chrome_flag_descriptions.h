@@ -792,6 +792,12 @@ inline constexpr char kEnableFuseboxKeyboardAccessoryName[] =
 inline constexpr char kEnableFuseboxKeyboardAccessoryDescription[] =
     "Enables parts or all of omnibox keyboard accessory.";
 
+inline constexpr char kEnableIosLiveActivityManagerName[] =
+    "Enable iOS Live Activity Manager";
+inline constexpr char kEnableIosLiveActivityManagerDescription[] =
+    "When enabled, activates management for iOS Live Activities (no "
+    "user-visible effect).";
+
 inline constexpr char kEnableLensInOmniboxCopiedImageName[] =
     "Enable Google Lens in the Omnibox for Copied Images";
 inline constexpr char kEnableLensInOmniboxCopiedImageDescription[] =

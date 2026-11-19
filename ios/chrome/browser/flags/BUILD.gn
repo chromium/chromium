@@ -105,6 +105,7 @@ source_set("flags") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/page_classification:features",
     "//ios/chrome/browser/lens/ui_bundled:features",
+    "//ios/chrome/browser/live_activity/public:features",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/page_info/features",

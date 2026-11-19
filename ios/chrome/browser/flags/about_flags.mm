@@ -117,6 +117,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_classification/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/features.h"
+#import "ios/chrome/browser/live_activity/public/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -3121,6 +3122,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSActorSuppressDialogsName,
      flag_descriptions::kIOSActorSuppressDialogsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kActorSuppressDialogs)},
+    {"enable-live-activity-manager",
+     flag_descriptions::kEnableIosLiveActivityManagerName,
+     flag_descriptions::kEnableIosLiveActivityManagerDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSLiveActivityManager)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
