@@ -9,6 +9,7 @@ import android.app.FragmentManager;
 import android.text.TextUtils;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Creates and represents the QrCode main UI. */
@@ -19,13 +20,16 @@ public class QrCodeCoordinator {
 
     /**
      * Constructor.
+     *
      * @param activity The android activity.
      * @param url the url to be shared.
      * @param windowAndroid the WindowAndroid to access system permissions.
+     * @param profile The {@link Profile} associated with the QR code.
      */
-    public QrCodeCoordinator(Activity activity, String url, WindowAndroid windowAndroid) {
+    public QrCodeCoordinator(
+            Activity activity, String url, WindowAndroid windowAndroid, Profile profile) {
         assert !TextUtils.isEmpty(url) : "URL for QR code is empty.";
-        mDialog = QrCodeDialog.newInstance(url, windowAndroid);
+        mDialog = QrCodeDialog.newInstance(url, windowAndroid, profile);
 
         mFragmentManager = activity.getFragmentManager();
     }

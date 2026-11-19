@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -31,6 +32,7 @@ public class ScreenshotShareSheetDialogCoordinator {
      * @param windowAndroid The {@link WindowAndroid} which contains the content to share.
      * @param shareUrl The URL associated with the screenshot.
      * @param shareCallback Callback called when falling back to the share sheet.
+     * @param profile The {@link Profile} associated with the screenshot.
      */
     public ScreenshotShareSheetDialogCoordinator(
             Activity activity,
@@ -38,10 +40,11 @@ public class ScreenshotShareSheetDialogCoordinator {
             Bitmap screenshot,
             @Nullable WindowAndroid windowAndroid,
             String shareUrl,
-            ChromeOptionShareCallback shareCallback) {
+            ChromeOptionShareCallback shareCallback,
+            Profile profile) {
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         mDialog = dialog;
-        mDialog.init(screenshot, windowAndroid, shareUrl, shareCallback);
+        mDialog.init(screenshot, windowAndroid, shareUrl, shareCallback, profile);
     }
 
     /** Show the main share sheet dialog. */

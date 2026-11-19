@@ -6,7 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -17,12 +17,15 @@
 #include "chrome/android/chrome_jni_headers/BitmapDownloadRequest_jni.h"
 
 static void JNI_BitmapDownloadRequest_DownloadBitmap(
+    Profile* profile,
     const std::u16string& filename,
     const SkBitmap& bitmap) {
+  if (!profile || profile->ShutdownStarted()) {
+    return;
+  }
   const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
 
-  content::DownloadManager* download_manager =
-      ProfileManager::GetLastUsedProfile()->GetDownloadManager();
+  content::DownloadManager* download_manager = profile->GetDownloadManager();
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("download_bitmap", R"(
         semantics {

@@ -4602,7 +4602,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             assert currentTab != null;
             var windowAndroid = assertNonNull(getWindowAndroid());
             QrCodeCoordinator qrCodeCoordinator =
-                    new QrCodeCoordinator(this, currentTab.getUrl().getSpec(), windowAndroid);
+                    new QrCodeCoordinator(
+                            this,
+                            currentTab.getUrl().getSpec(),
+                            windowAndroid,
+                            currentTab.getProfile());
             qrCodeCoordinator.show();
             RecordUserAction.record("MobileMenuQRCode");
             return true;

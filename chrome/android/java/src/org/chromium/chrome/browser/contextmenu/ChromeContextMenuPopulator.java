@@ -1314,7 +1314,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 Activity activity = window.getActivity().get();
                 if (activity != null) {
                     QrCodeCoordinator qrCodeCoordinator =
-                            new QrCodeCoordinator(activity, mParams.getPageUrl().getSpec(), window);
+                            new QrCodeCoordinator(
+                                    activity, mParams.getPageUrl().getSpec(), window, getProfile());
                     qrCodeCoordinator.show();
                 }
             }

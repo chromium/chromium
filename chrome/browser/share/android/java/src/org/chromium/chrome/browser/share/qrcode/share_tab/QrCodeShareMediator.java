@@ -25,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.BitmapDownloadRequest;
 import org.chromium.chrome.browser.share.qrcode.QRCodeGenerator;
 import org.chromium.ui.base.WindowAndroid;
@@ -46,6 +47,7 @@ class QrCodeShareMediator {
     private final Context mContext;
     private final PropertyModel mPropertyModel;
     private @Nullable WindowAndroid mWindowAndroid;
+    private final @Nullable Profile mProfile;
 
     // The number of times the user has attempted to download the QR code in this dialog.
     private int mNumDownloads;
@@ -55,23 +57,27 @@ class QrCodeShareMediator {
     private final Runnable mCloseDialog;
 
     /**
-     * The QrCodeScanMediator constructor.
+     * The QrCodeShareMediator constructor.
      *
      * @param context The context to use.
      * @param propertyModel The property model to use to communicate with views.
      * @param closeDialog The {@link Runnable} to close the dialog.
      * @param url The url to create the QRCode.
+     * @param windowAndroid The {@link WindowAndroid} to request permissions.
+     * @param profile The {@link Profile} associated with the download.
      */
     QrCodeShareMediator(
             Context context,
             PropertyModel propertyModel,
             Runnable closeDialog,
             String url,
-            @Nullable WindowAndroid windowAndroid) {
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable Profile profile) {
         mContext = context;
         mPropertyModel = propertyModel;
         mCloseDialog = closeDialog;
         mUrl = url;
+        mProfile = profile;
         ChromeBrowserInitializer.getInstance()
                 .runNowOrAfterFullBrowserStarted(() -> refreshQrCode(mUrl));
         mWindowAndroid = windowAndroid;
@@ -119,13 +125,15 @@ class QrCodeShareMediator {
     private void finishDownloadWithPermission(boolean granted) {
         if (granted) {
             updatePermissionSettings();
+            if (mProfile == null || mProfile.shutdownStarted()) return;
             Bitmap qrcodeBitmap = mPropertyModel.get(QrCodeShareViewProperties.QRCODE_BITMAP);
             String fileName =
                     mContext.getString(
                             R.string.qr_code_filename_prefix,
                             String.valueOf(System.currentTimeMillis()));
             mIsDownloadInProgress = true;
-            BitmapDownloadRequest.downloadBitmap(fileName, addUrlToBitmap(qrcodeBitmap, mUrl));
+            BitmapDownloadRequest.downloadBitmap(
+                    mProfile, fileName, addUrlToBitmap(qrcodeBitmap, mUrl));
             mCloseDialog.run();
         }
     }

@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.SaveBitmapDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -20,21 +21,28 @@ class ScreenshotShareSheetSaveDelegate {
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final Runnable mCloseDialogRunnable;
+    private final Profile mProfile;
 
     /**
      * The ScreenshotShareSheetSaveDelegate constructor.
+     *
      * @param context The context to use.
      * @param propertyModel The property model to use to communicate with views.
+     * @param closeDialogRunnable The runnable to close the dialog.
+     * @param windowAndroid The {@link WindowAndroid} to request permissions.
+     * @param profile The {@link Profile} associated with the download.
      */
     ScreenshotShareSheetSaveDelegate(
             Context context,
             PropertyModel propertyModel,
             Runnable closeDialogRunnable,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            Profile profile) {
         mContext = context;
         mModel = propertyModel;
         mWindowAndroid = windowAndroid;
         mCloseDialogRunnable = closeDialogRunnable;
+        mProfile = profile;
     }
 
     /** Saves the current image. */
@@ -50,7 +58,8 @@ class ScreenshotShareSheetSaveDelegate {
                         bitmap,
                         R.string.screenshot_filename_prefix,
                         mCloseDialogRunnable,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mProfile);
 
         saveBitmapDelegate.save();
     }

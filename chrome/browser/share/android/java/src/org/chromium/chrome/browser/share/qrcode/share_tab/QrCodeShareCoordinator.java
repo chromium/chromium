@@ -10,6 +10,7 @@ import android.view.View;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialogTab;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,10 +26,12 @@ public class QrCodeShareCoordinator implements QrCodeDialogTab {
             Context context,
             Runnable closeDialog,
             String url,
-            @Nullable WindowAndroid windowAndroid) {
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable Profile profile) {
         PropertyModel shareViewModel = new PropertyModel(QrCodeShareViewProperties.ALL_KEYS);
         mMediator =
-                new QrCodeShareMediator(context, shareViewModel, closeDialog, url, windowAndroid);
+                new QrCodeShareMediator(
+                        context, shareViewModel, closeDialog, url, windowAndroid, profile);
         mShareView = new QrCodeShareView(context, mMediator::downloadQrCode);
         PropertyModelChangeProcessor.create(
                 shareViewModel, mShareView, new QrCodeShareViewBinder());

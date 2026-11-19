@@ -485,7 +485,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                         (view) -> {
                             QrCodeCoordinator qrCodeCoordinator =
                                     new QrCodeCoordinator(
-                                            mActivity, mUrl, mShareParams.getWindow());
+                                            mActivity, mUrl, mShareParams.getWindow(), mProfile);
                             qrCodeCoordinator.show();
                         })
                 .build();

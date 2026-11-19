@@ -24,6 +24,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.qrcode.share_tab.QrCodeShareCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
@@ -42,6 +43,7 @@ public class QrCodeDialog extends DialogFragment {
     private static @Nullable String sLastUrlForTesting;
 
     private @Nullable WindowAndroid mWindowAndroid;
+    private @Nullable Profile mProfile;
     // TODO(crbug.com/40280300): Remove list of Tabs.
     protected ArrayList<QrCodeDialogTab> mTabs = new ArrayList<>();
 
@@ -50,9 +52,11 @@ public class QrCodeDialog extends DialogFragment {
     /**
      * Create a new instance of {@link QrCodeDialog} and set the URL.
      *
+     * @param url The URL to encode in the QR code.
      * @param windowAndroid The AndroidPermissionDelegate to be query for download permissions.
+     * @param profile The {@link Profile} associated with the dialog.
      */
-    static QrCodeDialog newInstance(String url, WindowAndroid windowAndroid) {
+    static QrCodeDialog newInstance(String url, WindowAndroid windowAndroid, Profile profile) {
         if (sInstanceForTesting != null) {
             sLastUrlForTesting = url;
             return sInstanceForTesting;
@@ -63,6 +67,7 @@ public class QrCodeDialog extends DialogFragment {
         args.putString(URL_KEY, url);
         qrCodeDialog.setArguments(args);
         qrCodeDialog.setWindowAndroid(windowAndroid);
+        qrCodeDialog.mProfile = profile;
         return qrCodeDialog;
     }
 
@@ -80,6 +85,16 @@ public class QrCodeDialog extends DialogFragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Do not recreate this dialog if its originating Profile is missing or shutting down.
+        if (mProfile == null || mProfile.shutdownStarted()) {
+            setShowsDialog(false);
+            dismiss();
+        }
+    }
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initTabs();
         return new FullscreenAlertDialog.Builder(
@@ -91,15 +106,17 @@ public class QrCodeDialog extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-        assumeNonNull(mTabLayoutPageListener);
-        mTabLayoutPageListener.resumeSelectedTab();
+        if (mTabLayoutPageListener != null) {
+            mTabLayoutPageListener.resumeSelectedTab();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        assumeNonNull(mTabLayoutPageListener);
-        mTabLayoutPageListener.pauseAllTabs();
+        if (mTabLayoutPageListener != null) {
+            mTabLayoutPageListener.pauseAllTabs();
+        }
     }
 
     @Override
@@ -110,6 +127,7 @@ public class QrCodeDialog extends DialogFragment {
         }
         mTabs.clear();
         mWindowAndroid = null;
+        mProfile = null;
     }
 
     @Override
@@ -173,7 +191,8 @@ public class QrCodeDialog extends DialogFragment {
                         context,
                         this::dismiss,
                         assumeNonNull(getArguments().getString(URL_KEY)),
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mProfile);
 
         mTabs = new ArrayList<>();
         mTabs.add(shareCoordinator);

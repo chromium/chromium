@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -20,6 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
     private final @Nullable WindowAndroid mWindowAndroid;
     private final ScreenshotShareSheetDialog mDialog;
+    private final Profile mProfile;
 
     /**
      * Constructs a new ScreenshotCoordinator which may launch the editor, or a fallback.
@@ -29,16 +31,19 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
+     * @param profile The {@link Profile} associated with the screenshot.
      */
     public ScreenshotCoordinator(
             Activity activity,
             @Nullable WindowAndroid windowAndroid,
             String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            BottomSheetController sheetController) {
+            BottomSheetController sheetController,
+            Profile profile) {
         super(activity, shareUrl, chromeOptionShareCallback, sheetController);
         mWindowAndroid = windowAndroid;
         mDialog = new ScreenshotShareSheetDialog();
+        mProfile = profile;
     }
 
     /**
@@ -51,6 +56,7 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      * @param dialog The Share Sheet dialog to use as fallback.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
+     * @param profile The {@link Profile} associated with the screenshot.
      */
     @VisibleForTesting
     ScreenshotCoordinator(
@@ -60,10 +66,12 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
             EditorScreenshotSource screenshotSource,
             ScreenshotShareSheetDialog dialog,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            BottomSheetController sheetController) {
+            BottomSheetController sheetController,
+            Profile profile) {
         super(activity, shareUrl, chromeOptionShareCallback, sheetController, screenshotSource);
         mWindowAndroid = windowAndroid;
         mDialog = dialog;
+        mProfile = profile;
     }
 
     /**
@@ -85,7 +93,8 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
                         mScreenshot,
                         mWindowAndroid,
                         mShareUrl,
-                        mChromeOptionShareCallback);
+                        mChromeOptionShareCallback,
+                        mProfile);
         shareSheet.showShareSheet();
         mScreenshot = null;
     }

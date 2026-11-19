@@ -28,6 +28,7 @@ import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -49,6 +50,8 @@ public class LongScreenshotsCoordinatorTest {
 
     @Mock private Tab mTab;
 
+    @Mock private Profile mProfile;
+
     @Mock private EntryManager mManager;
 
     @Mock private LongScreenshotsMediator mMediator;
@@ -58,6 +61,7 @@ public class LongScreenshotsCoordinatorTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(FragmentActivity.class).setup().get();
+        when(mTab.getProfile()).thenReturn(mProfile);
         // Instantiate the object under test.
         mCoordinator =
                 LongScreenshotsCoordinator.createForTests(

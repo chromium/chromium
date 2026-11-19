@@ -55,7 +55,8 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
                 tab.getWindowAndroid(),
                 shareUrl,
                 chromeOptionShareCallback,
-                sheetController);
+                sheetController,
+                tab.getProfile());
         mActivity = activity;
         mTab = tab;
         mEntryManager =

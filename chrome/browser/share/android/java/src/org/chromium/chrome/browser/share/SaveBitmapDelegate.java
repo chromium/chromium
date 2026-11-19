@@ -22,6 +22,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.text.DateFormat;
@@ -35,6 +36,7 @@ public class SaveBitmapDelegate {
     private final int mFileNameResource;
     private final WindowAndroid mWindowAndroid;
     private final Runnable mCallback;
+    private final Profile mProfile;
     private @Nullable Dialog mDialog;
 
     /**
@@ -44,18 +46,22 @@ public class SaveBitmapDelegate {
      * @param bitmap The bitmap to save.
      * @param fileNameResource The file name resource id to use when saving the image.
      * @param callback The callback to run when download is complete.
+     * @param windowAndroid The {@link WindowAndroid} to request permissions.
+     * @param profile The {@link Profile} associated with the download.
      */
     public SaveBitmapDelegate(
             Context context,
             Bitmap bitmap,
             int fileNameResource,
             Runnable callback,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            Profile profile) {
         mContext = context;
         mBitmap = bitmap;
         mFileNameResource = fileNameResource;
         mWindowAndroid = windowAndroid;
         mCallback = callback;
+        mProfile = profile;
     }
 
     /** Saves the given bitmap. */
@@ -109,13 +115,14 @@ public class SaveBitmapDelegate {
     @VisibleForTesting
     protected void finishDownloadWithPermission(boolean granted) {
         if (granted) {
+            if (mProfile.shutdownStarted()) return;
             DateFormat dateFormat =
                     DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG);
             String fileName =
                     mContext.getString(
                             mFileNameResource,
                             dateFormat.format(new Date(System.currentTimeMillis())));
-            BitmapDownloadRequest.downloadBitmap(fileName, mBitmap);
+            BitmapDownloadRequest.downloadBitmap(mProfile, fileName, mBitmap);
 
             if (mCallback != null) mCallback.run();
         }

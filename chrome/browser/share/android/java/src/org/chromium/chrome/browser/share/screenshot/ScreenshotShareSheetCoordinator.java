@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -33,6 +34,7 @@ public class ScreenshotShareSheetCoordinator {
      * @param windowAndroid The {@link WindowAndroid} that launched this screenshot.
      * @param shareUrl The URL associated with the screenshot.
      * @param shareSheetCallback The callback to be called on share.
+     * @param profile The {@link Profile} associated with the screenshot.
      */
     public ScreenshotShareSheetCoordinator(
             Context context,
@@ -41,7 +43,8 @@ public class ScreenshotShareSheetCoordinator {
             ScreenshotShareSheetView screenshotShareSheetView,
             WindowAndroid windowAndroid,
             String shareUrl,
-            ChromeOptionShareCallback shareSheetCallback) {
+            ChromeOptionShareCallback shareSheetCallback,
+            Profile profile) {
         ArrayList<PropertyKey> allProperties =
                 new ArrayList<>(Arrays.asList(ScreenshotShareSheetViewProperties.ALL_KEYS));
         mModel = new PropertyModel(allProperties);
@@ -49,7 +52,7 @@ public class ScreenshotShareSheetCoordinator {
         mModel.set(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP, screenshot);
         mSaveDelegate =
                 new ScreenshotShareSheetSaveDelegate(
-                        context, mModel, closeDialogRunnable, windowAndroid);
+                        context, mModel, closeDialogRunnable, windowAndroid, profile);
         new ScreenshotShareSheetMediator(
                 context,
                 mModel,

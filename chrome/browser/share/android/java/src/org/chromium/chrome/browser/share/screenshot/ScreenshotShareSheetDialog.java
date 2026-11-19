@@ -17,6 +17,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
@@ -29,6 +30,7 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
     private @Nullable WindowAndroid mWindowAndroid;
     private String mShareUrl;
     private ChromeOptionShareCallback mChromeOptionShareCallback;
+    private @Nullable Profile mProfile;
 
     /** The ScreenshotShareSheetDialog constructor. */
     public ScreenshotShareSheetDialog() {}
@@ -40,17 +42,20 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
      * @param windowAndroid The associated {@link WindowAndroid}.
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback the callback to trigger on share.
+     * @param profile The {@link Profile} associated with the screenshot.
      */
     @Initializer
     public void init(
             Bitmap screenshot,
             @Nullable WindowAndroid windowAndroid,
             String shareUrl,
-            ChromeOptionShareCallback chromeOptionShareCallback) {
+            ChromeOptionShareCallback chromeOptionShareCallback,
+            Profile profile) {
         mScreenshot = screenshot;
         mWindowAndroid = windowAndroid;
         mShareUrl = shareUrl;
         mChromeOptionShareCallback = chromeOptionShareCallback;
+        mProfile = profile;
     }
 
     @Override
@@ -59,9 +64,12 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
 
         // Do not recreate this dialog when activity restarts and the previous activity is gone.
         if (mWindowAndroid == null
+                || mProfile == null
+                || mProfile.shutdownStarted()
                 || mWindowAndroid.getActivity().get() == null
                 || mWindowAndroid.getActivity().get().isDestroyed()
                 || mWindowAndroid.getActivity().get().isFinishing()) {
+            setShowsDialog(false);
             dismiss();
         }
     }
@@ -85,7 +93,8 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
                 screenshotShareSheetView,
                 assertNonNull(mWindowAndroid),
                 mShareUrl,
-                mChromeOptionShareCallback);
+                mChromeOptionShareCallback,
+                assertNonNull(mProfile));
         return builder.create();
     }
 }
