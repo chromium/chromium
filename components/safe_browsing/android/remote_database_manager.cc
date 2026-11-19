@@ -235,7 +235,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
       std::move(callback), url,
       CreateSBThreatTypeSet({SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
                              SBThreatType::SB_THREAT_TYPE_URL_PHISHING}),
-      /*custom_callback_task_runner=*/nullptr);
+      client->GetCustomCallbackTaskRunner());
 
   current_requests_.push_back(std::move(req));
 

@@ -8,6 +8,8 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -23,7 +25,6 @@ void FakeSafeBrowsingDatabaseManager::AddBlocklistedUrl(
     const safe_browsing::ThreatMetadata& metadata) {
   url_to_threat_type_[url] = std::make_pair(threat_type, metadata);
 }
-
 
 void FakeSafeBrowsingDatabaseManager::RemoveBlocklistedUrl(const GURL& url) {
   url_to_threat_type_.erase(url);
@@ -56,7 +57,12 @@ bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
   if (simulate_timeout_) {
     return false;
   }
-  content::GetUIThreadTaskRunner({})->PostTask(
+  scoped_refptr<base::SequencedTaskRunner> callback_task_runner =
+      client->GetCustomCallbackTaskRunner();
+  if (!callback_task_runner) {
+    callback_task_runner = content::GetUIThreadTaskRunner({});
+  }
+  callback_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeSafeBrowsingDatabaseManager::
                          OnCheckUrlForSubresourceFilterComplete,

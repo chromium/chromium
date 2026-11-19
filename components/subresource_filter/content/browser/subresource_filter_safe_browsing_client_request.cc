@@ -7,13 +7,16 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
@@ -52,6 +55,18 @@ SubresourceFilterSafeBrowsingClientRequest::
 base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
 SubresourceFilterSafeBrowsingClientRequest::GetV5GetHashProtocolManager() {
   return v5_get_hash_protocol_manager_;
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+SubresourceFilterSafeBrowsingClientRequest::GetCustomCallbackTaskRunner() {
+  // Match `WillProcessResponse()`'s task runner priority so deferred page
+  // activation checks do not wait behind normal-priority UI tasks.
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kPrioritizeSafeBrowsingNavigationCallbacks)) {
+    return content::GetUIThreadTaskRunner(
+        {content::BrowserTaskType::kNavigationNetworkResponse});
+  }
+  return nullptr;
 }
 
 void SubresourceFilterSafeBrowsingClientRequest::Start(const GURL& url) {

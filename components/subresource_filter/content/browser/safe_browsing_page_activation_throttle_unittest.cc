@@ -46,6 +46,7 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -156,12 +157,46 @@ class V5TestingDatabaseManager : public FakeSafeBrowsingDatabaseManager {
  public:
   V5TestingDatabaseManager() = default;
 
+  void set_hold_pending_check(bool hold_pending_check) {
+    hold_pending_check_ = hold_pending_check;
+  }
+
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override {
     if (client) {
       v5_manager_from_client_ = client->GetV5GetHashProtocolManager();
+      custom_callback_task_runner_from_client_ =
+          client->GetCustomCallbackTaskRunner();
+      if (hold_pending_check_) {
+        held_client_ = client->GetWeakPtr();
+        held_url_ = url;
+        return false;
+      }
     }
     return FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
         url, client);
+  }
+
+  void CancelCheck(Client* client) override {
+    if (hold_pending_check_ && held_client_.get() == client) {
+      held_client_.reset();
+      return;
+    }
+    FakeSafeBrowsingDatabaseManager::CancelCheck(client);
+  }
+
+  void PostHeldCheckReply(
+      safe_browsing::SBThreatType threat_type,
+      const safe_browsing::SubresourceFilterMatch& subresource_filter_match,
+      base::OnceClosure on_reply_dispatched) {
+    scoped_refptr<base::SequencedTaskRunner> reply_runner =
+        custom_callback_task_runner_from_client_
+            ? custom_callback_task_runner_from_client_
+            : content::GetUIThreadTaskRunner({});
+    reply_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&V5TestingDatabaseManager::DeliverHeldCheckReply, this,
+                       threat_type, subresource_filter_match,
+                       std::move(on_reply_dispatched)));
   }
 
   base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
@@ -169,11 +204,32 @@ class V5TestingDatabaseManager : public FakeSafeBrowsingDatabaseManager {
     return v5_manager_from_client_;
   }
 
+  const scoped_refptr<base::SequencedTaskRunner>&
+  custom_callback_task_runner_from_client() const {
+    return custom_callback_task_runner_from_client_;
+  }
+
  private:
   ~V5TestingDatabaseManager() override = default;
 
+  void DeliverHeldCheckReply(
+      safe_browsing::SBThreatType threat_type,
+      const safe_browsing::SubresourceFilterMatch& subresource_filter_match,
+      base::OnceClosure on_reply_dispatched) {
+    if (base::WeakPtr<Client> client = std::move(held_client_)) {
+      client->OnCheckSubresourceFilterUrlResult(held_url_, threat_type,
+                                                subresource_filter_match);
+    }
+    std::move(on_reply_dispatched).Run();
+  }
+
+  bool hold_pending_check_ = false;
   base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
       v5_manager_from_client_;
+  scoped_refptr<base::SequencedTaskRunner>
+      custom_callback_task_runner_from_client_;
+  base::WeakPtr<Client> held_client_;
+  GURL held_url_;
 };
 
 }  //  namespace
@@ -1169,6 +1225,84 @@ TEST_F(SafeBrowsingPageActivationThrottleTest, GetV5GetHashProtocolManager) {
 
   EXPECT_EQ(v5_db_manager->v5_manager_from_client().get(),
             &v5_protocol_manager);
+}
+
+// Verifies that `safe_browsing::kPrioritizeSafeBrowsingNavigationCallbacks`
+// routes `SubresourceFilterSafeBrowsingClientRequest` replies onto
+// `BrowserTaskType::kNavigationNetworkResponse` so deferred
+// `WillProcessResponse()` resumes ahead of normal-priority UI tasks, while
+// leaving `GetCustomCallbackTaskRunner()` null when disabled.
+TEST_F(SafeBrowsingPageActivationThrottleTest,
+       ActivationCallbackRunsBeforeNormalTaskUnderContention) {
+  for (bool prioritize_callbacks : {false, true}) {
+    const GURL matched_url(prioritize_callbacks
+                               ? "https://prioritized.example.test/disallowed"
+                               : "https://default.example.test/disallowed");
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        safe_browsing::kPrioritizeSafeBrowsingNavigationCallbacks,
+        prioritize_callbacks);
+
+    auto v5_db_manager = base::MakeRefCounted<V5TestingDatabaseManager>();
+    // Hold the check open so we can defer in `WillProcessResponse()`, enqueue a
+    // competing normal-priority UI task first, and then post the Safe Browsing
+    // reply onto `GetCustomCallbackTaskRunner()`.
+    v5_db_manager->set_hold_pending_check(true);
+    set_fake_safe_browsing_database(v5_db_manager);
+
+    auto navigation_simulator =
+        content::NavigationSimulator::CreateBrowserInitiated(matched_url,
+                                                             web_contents());
+    navigation_simulator->SetAutoAdvance(false);
+    navigation_simulator->Start();
+    // `Wait()` completes `WillStartRequest()` without spinning past deferred
+    // `WillProcessResponse()`.
+    navigation_simulator->Wait();
+    navigation_simulator->ReadyToCommit();
+    ASSERT_TRUE(navigation_simulator->IsDeferred());
+
+    EXPECT_EQ(prioritize_callbacks
+                  ? content::GetUIThreadTaskRunner(
+                        {content::BrowserTaskType::kNavigationNetworkResponse})
+                  : nullptr,
+              v5_db_manager->custom_callback_task_runner_from_client());
+
+    std::vector<std::string> order;
+    bool page_activation_computed_before_normal_task = false;
+    base::RunLoop loop;
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          page_activation_computed_before_normal_task =
+              observer()->GetPageActivation(matched_url) ==
+              mojom::ActivationLevel::kEnabled;
+          order.push_back("normal_task");
+          if (order.size() == 2) {
+            loop.Quit();
+          }
+        }));
+    v5_db_manager->PostHeldCheckReply(
+        safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+        GetBetterAdsThreatMetadata().subresource_filter_match,
+        base::BindLambdaForTesting([&]() {
+          order.push_back("sb_callback");
+          if (order.size() == 2) {
+            loop.Quit();
+          }
+        }));
+    loop.Run();
+
+    EXPECT_EQ(prioritize_callbacks,
+              page_activation_computed_before_normal_task);
+    EXPECT_EQ(prioritize_callbacks
+                  ? (std::vector<std::string>{"sb_callback", "normal_task"})
+                  : (std::vector<std::string>{"normal_task", "sb_callback"}),
+              order);
+
+    navigation_simulator->Wait();
+    navigation_simulator->Commit();
+    EXPECT_EQ(mojom::ActivationLevel::kEnabled,
+              *observer()->GetPageActivationForLastCommittedLoad());
+  }
 }
 
 }  // namespace subresource_filter

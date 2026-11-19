@@ -259,7 +259,9 @@ TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_CustomCallbackTaskRunner) {
   hash_rt_run_loop.Run();
   EXPECT_TRUE(hash_rt_client.IsCallbackCalled());
 
-  // `CheckUrlForSubresourceFilter` stays on the default UI thread task runner.
+  // `CheckUrlForSubresourceFilter()` posts completion onto
+  // `custom_callback_runner` when provided, and falls back to the default UI
+  // thread task runner when null.
   GURL subresource_url("https://subresource.example.com");
   AddSafeBrowsingResponse(
       subresource_url, SafeBrowsingApiLookupResult::SUCCESS,
@@ -269,17 +271,38 @@ TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_CustomCallbackTaskRunner) {
        SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
        SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION},
       SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
-  base::RunLoop subresource_run_loop;
   TestClient subresource_client(db_, /*expected_url=*/subresource_url,
                                 /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
   subresource_client.set_custom_callback_task_runner(custom_callback_runner);
-  subresource_client.set_on_callback_done(subresource_run_loop.QuitClosure());
 
   EXPECT_FALSE(
       db_->CheckUrlForSubresourceFilter(subresource_url, &subresource_client));
-  EXPECT_FALSE(custom_callback_runner->HasPendingTask());
-  subresource_run_loop.Run();
+  EXPECT_FALSE(subresource_client.IsCallbackCalled());
+  EXPECT_TRUE(custom_callback_runner->HasPendingTask());
+  custom_callback_runner->RunPendingTasks();
   EXPECT_TRUE(subresource_client.IsCallbackCalled());
+
+  GURL default_subresource_url("https://default-subresource.example.com");
+  AddSafeBrowsingResponse(
+      default_subresource_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::NO_THREAT, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING,
+       SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+       SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION},
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+  base::RunLoop default_subresource_run_loop;
+  TestClient default_subresource_client(
+      db_, /*expected_url=*/default_subresource_url,
+      /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+  default_subresource_client.set_on_callback_done(
+      default_subresource_run_loop.QuitClosure());
+
+  EXPECT_FALSE(db_->CheckUrlForSubresourceFilter(default_subresource_url,
+                                                 &default_subresource_client));
+  EXPECT_FALSE(custom_callback_runner->HasPendingTask());
+  default_subresource_run_loop.Run();
+  EXPECT_TRUE(default_subresource_client.IsCallbackCalled());
 }
 
 TEST_F(RemoteDatabaseManagerTest, ThreatSource) {

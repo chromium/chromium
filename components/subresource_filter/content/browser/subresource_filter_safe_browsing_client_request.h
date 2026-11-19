@@ -17,6 +17,10 @@
 
 class GURL;
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
 namespace safe_browsing {
 class V5GetHashProtocolManager;
 }  // namespace safe_browsing
@@ -57,6 +61,9 @@ class SubresourceFilterSafeBrowsingClientRequest
 
   base::WeakPtr<safe_browsing::V5GetHashProtocolManager>
   GetV5GetHashProtocolManager() override;
+
+  scoped_refptr<base::SequencedTaskRunner> GetCustomCallbackTaskRunner()
+      override;
 
   size_t request_id() const { return request_id_; }
 
