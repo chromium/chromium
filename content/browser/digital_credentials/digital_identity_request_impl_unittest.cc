@@ -657,6 +657,75 @@ base::Value GenerateDpcExample3() {
   return ParseJsonAndCheck(kJson);
 }
 
+base::Value GenerateDpcExample4() {
+  constexpr char kJson[] = R"({
+    "client_metadata": {
+      "vp_formats_supported": {
+        "dc+sd-jwt": {
+          "sd-jwt_alg_values": [
+            "ES256"
+          ]
+        }
+      }
+    },
+    "dcql_query": {
+      "credentials": [
+        {
+          "format": "dc+sd-jwt",
+          "id": "cred1",
+          "meta": {
+            "vct_values": [
+              "com.emvco.dpc.card"
+            ]
+          }
+        }
+      ]
+    },
+    "nonce": "6rPwjPmOvxXn2Q0w4Z7TuHy45_13yKIqTFyF4vLC1s8",
+    "response_mode": "dc_api",
+    "response_type": "vp_token",
+    "transaction_data": [
+      "eyJ0eXBlIjogInVybjpldWRpOnNjYTpwYXltZW50OjEiLCAiY3JlZGVudGlhbF9pZHMiOiBbImNyZWQxIl0sICJ0cmFuc2FjdGlvbl9kYXRhX2hhc2hlc19hbGciOiBbInNoYS0yNTYiXSwgInBheWxvYWQiOiB7InBheWVlIjogeyJuYW1lIjogIlJvY2sgTGVnZW5kcyIsICJpZCI6ICJQYXllZS1pZC0xMjMifSwgInRyYW5zYWN0aW9uX2lkIjogIjEyMzQ1Njc4OTAiLCAiYW1vdW50X2Rpc3BsYXkiOiAiJCA1OTIuNjgifX0="
+    ]
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
+base::Value GenerateDpcExample5() {
+  constexpr char kJson[] = R"({
+    "client_metadata": {
+      "vp_formats_supported": {
+        "mso_mdoc": {
+          "deviceauth_alg_values": [
+            -7
+          ],
+          "issuerauth_alg_values": [
+            -7
+          ]
+        }
+      }
+    },
+    "dcql_query": {
+      "credentials": [
+        {
+          "format": "mso_mdoc",
+          "id": "cred1",
+          "meta": {
+            "doctype_value": "com.emvco.dpc.card"
+          }
+        }
+      ]
+    },
+    "nonce": "JCK8iJuwBQyish5jmcCYIxNBT76ZYfVZliKzrcZMCTw",
+    "response_mode": "dc_api",
+    "response_type": "vp_token",
+    "transaction_data": [
+      "eyJ0eXBlIjogInVybjpldWRpOnNjYTpwYXltZW50OjEiLCAiY3JlZGVudGlhbF9pZHMiOiBbImNyZWQxIl0sICJ0cmFuc2FjdGlvbl9kYXRhX2hhc2hlc19hbGciOiBbInNoYS0yNTYiXSwgInBheWxvYWQiOiB7ImFtb3VudCI6IDEyLjUsICJjdXJyZW5jeSI6ICJVU0QiLCAicGF5ZWUiOiB7Im5hbWUiOiAiUm9jayBMZWdlbmRzIiwgImlkIjogIlBheWVlLWlkLTEyMyJ9LCAidHJhbnNhY3Rpb25faWQiOiAiMTIzNDU2Nzg5MCJ9fQ=="
+    ]
+  })";
+  return ParseJsonAndCheck(kJson);
+}
+
 base::Value GenerateDpcExample1WithOtherData() {
   constexpr char kJson[] = R"({
     "client_metadata": {
@@ -1127,6 +1196,94 @@ TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
        Openid4VpProtocolDCQL_ComputeUiWarningLevel_DpcExample3) {
   EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, GenerateDpcExample3()),
             UiWarningLevel::kHintNoIssues);
+}
+
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_DpcExample4) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, GenerateDpcExample4()),
+            UiWarningLevel::kHintNoIssues);
+}
+
+TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,
+       Openid4VpProtocolDCQL_ComputeUiWarningLevel_DpcExample5) {
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, GenerateDpcExample5()),
+            UiWarningLevel::kHintNoIssues);
+}
+
+TEST_F(
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_DpcWithUnparsableClaim_RequiresCaution) {
+  base::Value request = ParseJsonAndCheck(R"({
+    "dcql_query": {
+      "credentials": [
+        {
+          "format": "dc+sd-jwt",
+          "id": "cred1",
+          "meta": {
+            "vct_values": [
+              "com.emvco.dpc.card"
+            ]
+          },
+          "claims": [
+            {
+              "path": ["given_name"]
+            },
+            {
+              "path": ["nationalities", null]
+            }
+          ]
+        }
+      ]
+    }
+  })");
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintCaution);
+}
+
+TEST_F(
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_DpcMixedWithNonDpcVct_RequiresCaution) {
+  base::Value request = ParseJsonAndCheck(R"({
+    "dcql_query": {
+      "credentials": [
+        {
+          "format": "dc+sd-jwt",
+          "id": "cred1",
+          "meta": {
+            "vct_values": [
+              "com.emvco.dpc.card",
+              "eu.europa.ec.eudiw.pid.1"
+            ]
+          }
+        }
+      ]
+    }
+  })");
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintCaution);
+}
+
+TEST_F(
+    DigitalIdentityRequestImplUiWarningLevelTest,
+    Openid4VpProtocolDCQL_ComputeUiWarningLevel_MdlWithSpoofedDpcVct_RequiresCaution) {
+  base::Value request = ParseJsonAndCheck(R"({
+    "dcql_query": {
+      "credentials": [
+        {
+          "format": "mso_mdoc",
+          "id": "cred1",
+          "meta": {
+            "doctype_value": "org.iso.18013.5.1.mDL",
+            "vct_values": [
+              "com.emvco.dpc.card"
+            ]
+          }
+        }
+      ]
+    }
+  })");
+  EXPECT_EQ(ComputeUiWarningLevel(kOpenid4vpProtocol, std::move(request)),
+            UiWarningLevel::kHintCaution);
 }
 
 TEST_F(DigitalIdentityRequestImplUiWarningLevelTest,

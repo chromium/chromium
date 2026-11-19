@@ -62,6 +62,7 @@ constexpr char kGetPhoneNumberTestMultiSimVctValue[] =
 constexpr char kUserInfoCredentialVctValue[] = "UserInfoCredential";
 
 constexpr char kDpcVctValue[] = "com.emvco.dpc";
+constexpr char kDpcCardVctValue[] = "com.emvco.dpc.card";
 constexpr char kDpcCredCardVctValue[] = "dpc.cred.card";
 
 constexpr char kDcqlQuery[] = "dcql_query";
@@ -90,12 +91,13 @@ bool CanClaimBypassInterstitial(const std::string& claim) {
 
 // Returns whether the vct value is a Digital Payment Credential (DPC).
 bool IsDpcVctValue(const std::string& vct_value) {
-  return vct_value == kDpcVctValue || vct_value == kDpcCredCardVctValue;
+  return vct_value == kDpcVctValue || vct_value == kDpcCardVctValue ||
+         vct_value == kDpcCredCardVctValue;
 }
 
 // Returns whether the doctype value is a Digital Payment Credential (DPC).
 bool IsDpcDocTypeValue(const std::string& doctype_value) {
-  return doctype_value == kDpcVctValue;
+  return doctype_value == kDpcVctValue || doctype_value == kDpcCardVctValue;
 }
 
 bool CanVctValueBypassInterstitial(const std::string& vct_value) {
@@ -112,11 +114,19 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
   if (!query_dict) {
     return false;
   }
-  auto credential_to_claims =
-      [](const base::DictValue& credential) -> std::vector<std::string> {
-    const base::ListValue* claims_list = credential.FindList("claims");
+  // Parses `credential["claims"]` into claim names. Returns an empty vector
+  // when `"claims"` is absent, or `std::nullopt` if `"claims"` is present but
+  // malformed or contains a claim entry/path that cannot be parsed, so callers
+  // fail closed rather than treating unparsable claims as claimless.
+  auto credential_to_claims = [](const base::DictValue& credential)
+      -> std::optional<std::vector<std::string>> {
+    const base::Value* claims_value = credential.Find("claims");
+    if (!claims_value) {
+      return std::vector<std::string>{};
+    }
+    const base::ListValue* claims_list = claims_value->GetIfList();
     if (!claims_list) {
-      return {};
+      return std::nullopt;
     }
 
     const std::string* format = credential.FindString("format");
@@ -133,15 +143,15 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
     for (const base::Value& claim : *claims_list) {
       const base::DictValue* claim_dict = claim.GetIfDict();
       if (!claim_dict) {
-        return {};
+        return std::nullopt;
       }
       const base::ListValue* paths = claim_dict->FindList("path");
       if (!paths || paths->empty()) {
-        return {};
+        return std::nullopt;
       }
       const std::string* claim_name = paths->back().GetIfString();
       if (!claim_name) {
-        return {};
+        return std::nullopt;
       }
 
       bool path_ok = false;
@@ -226,28 +236,36 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
       continue;
     }
 
-    std::vector<std::string> claims = credential_to_claims(*credential_dict);
-    if (!std::ranges::all_of(claims, CanClaimBypassInterstitial)) {
+    std::optional<std::vector<std::string>> claims =
+        credential_to_claims(*credential_dict);
+    if (!claims || !std::ranges::all_of(*claims, CanClaimBypassInterstitial)) {
       return false;
     }
 
-    bool is_dpc = std::ranges::any_of(vct_values, IsDpcVctValue) ||
-                  IsDpcDocTypeValue(doctype_value);
-    if (is_dpc) {
+    // Require DPC credentials to match their format exclusively (all
+    // `vct_values` for SD-JWT with no `doctype_value`, or a DPC `doctype_value`
+    // for `mso_mdoc` with no `vct_values`) so a query cannot mix a DPC VCT with
+    // a non-DPC VCT (e.g. a PID) or spoof an mDL request with a DPC VCT.
+    bool is_dpc_sdjwt = is_sdjwt && doctype_value.empty() &&
+                        !vct_values.empty() &&
+                        std::ranges::all_of(vct_values, IsDpcVctValue);
+    bool is_dpc_mdoc = format && *format == kMdocFormat && vct_values.empty() &&
+                       IsDpcDocTypeValue(doctype_value);
+    if (is_dpc_sdjwt || is_dpc_mdoc) {
       continue;
     }
 
     bool is_mdl =
         format && *format == kMdocFormat && doctype_value == kMdlDocumentType;
     if (is_mdl) {
-      if (claims.empty()) {
+      if (claims->empty()) {
         return false;
       }
       continue;
     }
 
     if (is_sdjwt) {
-      if (claims.empty()) {
+      if (claims->empty()) {
         return false;
       }
       continue;
