@@ -77,6 +77,12 @@ config("weston_config") {
     "-Wno-sometimes-uninitialized",
   ]
 
+  # Upstream builds weston as gnu99, and it doesn't build as C23: its
+  # unreachable() macro collides with the one C23's <stddef.h> defines, and
+  # libweston.h puts WL_DEPRECATED (which is [[deprecated]] in C23) after
+  # function declarators. Keep weston on C11 rather than the global C standard.
+  cflags_c = [ "-std=c11" ]
+
   ldflags = [ "-Wl,-rpath=\$ORIGIN" ]
 
   if (!use_system_libwayland) {

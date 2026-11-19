@@ -1257,6 +1257,12 @@ config("libmutter_config") {
     ":xkbcommon",
     ":xkbregistry",
   ]
+
+  # TODO(crbug.com/396647882, crbug.com/585970396): libmutter relies on
+  # -Wno-implicit-function-declaration for gbm functions missing from the
+  # sysroot. C23 removes implicit function declarations, so keep building as
+  # C11 until the sysroot gbm package is updated.
+  cflags_c = [ "-std=c11" ]
 }
 
 # Still needed because xcursor dependency is not cleanly decoupled from non-x11
