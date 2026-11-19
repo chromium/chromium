@@ -4472,9 +4472,7 @@ public class AwContents implements SmartClipProvider {
         }
         // TODO(crbug.com/41474845): Block dangerous downloads by default instead of routing them
         // to the embedder's handler.
-        try (TraceEvent event = TraceEvent.scoped("WebView.APICallback.ON_DOWNLOAD_REQUESTED")) {
-            handler.onDownloadRequested(download);
-        }
+        handler.onDownloadRequested(download);
     }
 
     @CalledByNative

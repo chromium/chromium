@@ -46,7 +46,12 @@ public final class AwWebDownload {
 
     /** Receives the outcome of {@link #saveTo}. Called on the UI thread. */
     public interface SaveCallback {
-        void onSuccess();
+        /**
+         * Called with the size of the saved file in bytes, i.e. the number of bytes written to the
+         * destination. This is not the number of bytes received over the network, which differs for
+         * compressed responses or for transfers that were retried.
+         */
+        void onSuccess(long totalBytes);
 
         void onError(@AwWebDownloadResult int errorCode);
     }
@@ -140,11 +145,12 @@ public final class AwWebDownload {
 
     @CalledByNative
     private void onFinished(
-            @JniType("::android_webview::AwWebDownload::Result") @AwWebDownloadResult int result) {
+            @JniType("::android_webview::AwWebDownload::Result") @AwWebDownloadResult int result,
+            long totalBytes) {
         destroyNative();
         if (mSaveCallback == null) return;
         if (result == AwWebDownloadResult.SUCCESS) {
-            mSaveCallback.onSuccess();
+            mSaveCallback.onSuccess(totalBytes);
         } else {
             mSaveCallback.onError(result);
         }

@@ -124,7 +124,7 @@ void AwWebDownload::SaveTo(const base::android::JavaRef<jobject>& java_download,
     // Generally unexpected, since AwWebDownload.java rejects saveTo() after
     // cancel(). It can still happen in niche cases where the download ends
     // before the embedder decides, e.g. when it is cancelled from DevTools.
-    ReportResult(Result::kErrorCancelled);
+    ReportResult(Result::kErrorCancelled, /*total_bytes=*/0);
     return;
   }
 
@@ -152,6 +152,7 @@ void AwWebDownload::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(item, item_);
   Result result;
+  int64_t total_bytes = 0;
   switch (item->GetState()) {
     case download::DownloadItem::IN_PROGRESS:
       // Also reported while DownloadItemImpl retries an interrupted transfer;
@@ -159,6 +160,7 @@ void AwWebDownload::OnDownloadUpdated(download::DownloadItem* item) {
       return;
     case download::DownloadItem::COMPLETE:
       result = Result::kSuccess;
+      total_bytes = item->GetReceivedBytes();
       break;
     case download::DownloadItem::CANCELLED:
       result = Result::kErrorCancelled;
@@ -178,14 +180,14 @@ void AwWebDownload::OnDownloadUpdated(download::DownloadItem* item) {
           &RemoveDownload,
           content::DownloadItemUtils::GetBrowserContext(item)->GetWeakPtr(),
           item->GetGuid()));
-  ReportResult(result);
+  ReportResult(result, total_bytes);
 }
 
 void AwWebDownload::OnDownloadDestroyed(download::DownloadItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(item, item_);
   Detach();
-  ReportResult(Result::kErrorCancelled);
+  ReportResult(Result::kErrorCancelled, /*total_bytes=*/0);
 }
 
 void AwWebDownload::Detach() {
@@ -195,7 +197,7 @@ void AwWebDownload::Detach() {
   target_callback_.Reset();
 }
 
-void AwWebDownload::ReportResult(Result result) {
+void AwWebDownload::ReportResult(Result result, int64_t total_bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!java_download_) {
     return;
@@ -205,7 +207,7 @@ void AwWebDownload::ReportResult(Result result) {
   base::android::ScopedJavaGlobalRef<jobject> java_download =
       std::move(java_download_);
   Java_AwWebDownload_onFinished(base::android::AttachCurrentThread(),
-                                java_download, result);
+                                java_download, result, total_bytes);
 }
 
 }  // namespace android_webview

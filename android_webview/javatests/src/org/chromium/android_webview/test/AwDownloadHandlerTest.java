@@ -104,11 +104,18 @@ public class AwDownloadHandlerTest extends AwParameterizedTest {
      * Calls saveTo() on the UI thread and returns a future with the {@link AwWebDownloadResult}.
      */
     private static CompletableFuture<Integer> saveTo(AwWebDownload download, Uri destination) {
+        return saveTo(download, destination, new CompletableFuture<>());
+    }
+
+    /** Like {@link #saveTo(AwWebDownload, Uri)}, and completes {@code totalBytes} on success. */
+    private static CompletableFuture<Integer> saveTo(
+            AwWebDownload download, Uri destination, CompletableFuture<Long> totalBytes) {
         CompletableFuture<Integer> result = new CompletableFuture<>();
         AwWebDownload.SaveCallback callback =
                 new AwWebDownload.SaveCallback() {
                     @Override
-                    public void onSuccess() {
+                    public void onSuccess(long bytes) {
+                        totalBytes.complete(bytes);
                         complete(AwWebDownloadResult.SUCCESS);
                     }
 
@@ -213,10 +220,12 @@ public class AwDownloadHandlerTest extends AwParameterizedTest {
             AwWebDownload download = startDownload(serveAttachment(server, "file.txt"));
 
             File destination = new File(mDownloadDir, "file.txt");
+            CompletableFuture<Long> totalBytes = new CompletableFuture<>();
             Assert.assertEquals(
                     AwWebDownloadResult.SUCCESS,
-                    await(saveTo(download, Uri.fromFile(destination))));
+                    await(saveTo(download, Uri.fromFile(destination), totalBytes)));
             Assert.assertEquals(CONTENT.length(), destination.length());
+            Assert.assertEquals(CONTENT.length(), (long) totalBytes.get());
         }
     }
 
@@ -253,7 +262,10 @@ public class AwDownloadHandlerTest extends AwParameterizedTest {
         try (TestWebServer server = TestWebServer.start()) {
             AwWebDownload download = startDownload(serveAttachment(server, "media.txt"));
 
-            Assert.assertEquals(AwWebDownloadResult.SUCCESS, await(saveTo(download, item)));
+            CompletableFuture<Long> totalBytes = new CompletableFuture<>();
+            Assert.assertEquals(
+                    AwWebDownloadResult.SUCCESS, await(saveTo(download, item, totalBytes)));
+            Assert.assertEquals(CONTENT.length(), (long) totalBytes.get());
             try (ParcelFileDescriptor file = resolver.openFileDescriptor(item, "r")) {
                 Assert.assertEquals(CONTENT.length(), file.getStatSize());
             }

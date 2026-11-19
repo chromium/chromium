@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_WEB_DOWNLOAD_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_WEB_DOWNLOAD_H_
 
+#include <cstdint>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
@@ -32,8 +33,8 @@ namespace android_webview {
 // Result::kErrorCancelled.
 class AwWebDownload final : public download::DownloadItem::Observer {
  public:
-  // Outcome of AwWebDownload#saveTo(). The error values are passed through to
-  // the AndroidX API, so they must match androidx.webkit.DownloadException.
+  // Outcome of AwWebDownload#saveTo(). The support library glue maps the error
+  // values to the error codes of androidx.webkit.DownloadException.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AwWebDownloadResult
   enum class Result {
@@ -80,7 +81,7 @@ class AwWebDownload final : public download::DownloadItem::Observer {
  private:
   // Stops observing the item and drops the pending target decision.
   void Detach();
-  void ReportResult(Result result);
+  void ReportResult(Result result, int64_t total_bytes);
 
   // Null once the download ended.
   raw_ptr<download::DownloadItem> item_;
