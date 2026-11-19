@@ -26,6 +26,7 @@ source_set("readaloud") {
     "//media/mojo/mojom",
     "//mojo/public/cpp/base",
     "//services/media_session/public/cpp",
+    "//url",
   ]
 }
 

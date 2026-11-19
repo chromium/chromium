@@ -401,4 +401,39 @@ TEST_F(OverviewGenerationBrokerTest,
   EXPECT_EQ(base::as_string_view(response_bytes), resp2.SerializeAsString());
 }
 
+TEST(OverviewGenerationBrokerSanitizePageUrlTest, SanitizePageUrl) {
+  EXPECT_EQ(OverviewGenerationBroker::SanitizePageUrl(
+                GURL("https://user:secret@example.com:8080/path?utm=1#frag")),
+            GURL("https://example.com:8080/path"));
+  EXPECT_EQ(OverviewGenerationBroker::SanitizePageUrl(
+                GURL("https://token@example.com/path?#")),
+            GURL("https://example.com/path"));
+  EXPECT_EQ(OverviewGenerationBroker::SanitizePageUrl(
+                GURL("https://:secret@example.com/path")),
+            GURL("https://example.com/path"));
+  EXPECT_EQ(OverviewGenerationBroker::SanitizePageUrl(
+                GURL("http://example.com/article")),
+            GURL("http://example.com/article"));
+
+  constexpr const char* kRejectedUrls[] = {
+      "",
+      "not a url",
+      "https://",
+      "https://example.com:99999/path",
+      "file:///usr/local/home/doc.html",
+      "chrome://settings",
+      "chrome-untrusted://read-anything-side-panel.top-chrome/",
+      "data:text/html,<h1>Hi</h1>",
+      "blob:https://example.com/0000-1111",
+      "view-source:https://example.com/article",
+      "filesystem:https://example.com/temporary/a",
+      "javascript:alert(1)",
+      "about:blank",
+  };
+  for (const char* raw_url : kRejectedUrls) {
+    SCOPED_TRACE(raw_url);
+    EXPECT_EQ(OverviewGenerationBroker::SanitizePageUrl(GURL(raw_url)), GURL());
+  }
+}
+
 }  // namespace readaloud

@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "url/gurl.h"
 
 namespace readaloud {
 
@@ -34,6 +35,19 @@ OverviewGenerationBroker::~OverviewGenerationBroker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+// static
+GURL OverviewGenerationBroker::SanitizePageUrl(const GURL& page_url) {
+  if (!page_url.is_valid() || !page_url.SchemeIsHTTPOrHTTPS()) {
+    return GURL();
+  }
+  GURL::Replacements replacements;
+  replacements.ClearUsername();
+  replacements.ClearPassword();
+  replacements.ClearQuery();
+  replacements.ClearRef();
+  return page_url.ReplaceComponents(replacements);
+}
+
 optimization_guide::proto::ReadAloudGenerateTextRequest
 OverviewGenerationBroker::BuildGenerateTextRequest(
     std::string_view page_title,
@@ -45,14 +59,9 @@ OverviewGenerationBroker::BuildGenerateTextRequest(
   request.set_page_title(std::string(page_title));
   request.set_page_content(std::string(page_content));
 
-  // Sanitize Web URL
-  if (page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS()) {
-    GURL::Replacements replacements;
-    replacements.ClearUsername();
-    replacements.ClearPassword();
-    replacements.ClearQuery();
-    replacements.ClearRef();
-    request.set_page_url(page_url.ReplaceComponents(replacements).spec());
+  if (GURL sanitized_url = SanitizePageUrl(page_url);
+      sanitized_url.is_valid()) {
+    request.set_page_url(sanitized_url.spec());
   }
 
   // Language code is optional. Defaults to English server-side.

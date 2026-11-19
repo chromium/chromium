@@ -65,10 +65,18 @@ class OverviewGenerationBroker {
   OverviewGenerationBroker& operator=(const OverviewGenerationBroker&) = delete;
   ~OverviewGenerationBroker();
 
+  // Returns `page_url` restricted to HTTP/HTTPS with credentials, query and
+  // ref stripped, or an empty GURL for anything else. Outbound Read Aloud
+  // payloads (such as overview generation requests and feedback reports) share
+  // this helper so the URL leaving the device is reduced to what identifies
+  // the page: local and internal schemes carry nothing useful to the server,
+  // and the stripped components are where secrets and per-user state tend to
+  // live.
+  [[nodiscard]] static GURL SanitizePageUrl(const GURL& page_url);
+
   // Constructs a ReadAloudGenerateTextRequest protobuf from the given page
-  // metadata and distilled content. Sanitizes `page_url` by restricting to
-  // HTTP/HTTPS and stripping credentials, query, and ref parameters per
-  // privacy requirements.
+  // metadata and distilled content. `page_url` is sanitized with
+  // `SanitizePageUrl()`.
   optimization_guide::proto::ReadAloudGenerateTextRequest
   BuildGenerateTextRequest(std::string_view page_title,
                            std::string_view page_content,
