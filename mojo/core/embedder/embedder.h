@@ -44,7 +44,9 @@ scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner();
 
 // InitFeatures will be called as soon as the base::FeatureList is initialized.
 // NOTE: This is temporarily necessary because of how Mojo is started with
-// respect to base::FeatureList.
+// respect to base::FeatureList. It must be called before Init() for features
+// which configure the process's ipcz node (e.g. kMojoIpczMemV2 and
+// kMojoIpczParcelCapacityPolicy) to take effect.
 //
 // TODO(rockot): Remove once a long term solution is in place for using
 // base::Features inside of Mojo.

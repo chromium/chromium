@@ -116,6 +116,9 @@ class TestBase {
   // potential proxies in between are eliminated.
   void WaitForDirectLocalLink(IpczHandle a, IpczHandle b);
 
+  // Returns the memory flags `node` was created with.
+  IpczMemoryFlags GetNodeMemoryFlags(IpczHandle node);
+
  private:
   static void HandleEvent(const IpczTrapEvent* event);
 };

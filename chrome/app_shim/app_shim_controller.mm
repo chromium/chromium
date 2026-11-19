@@ -309,8 +309,9 @@ void AppShimController::PreInitFeatureState(
        "DisallowSpaceCharacterInURLHostParsing", "LRUCacheMemoryConsumer",
        "MemoryConsumerModeOverrides", "NonSpecialLeadingSlashHandling",
        "PreservePercentEncodedDotInPath", "UseIDNAContextJRules",
-       "MojoBindingsInlineSLS", "MojoIpczMemV2", "MojoFixGeometricBufferGrowth",
-       "MojoFixGeometricBufferGrowth2", "UseNSURLDataForGURLConversion",
+       "MojoBindingsInlineSLS", "MojoIpczMemV2", "MojoIpczParcelCapacityPolicy",
+       "MojoFixGeometricBufferGrowth", "MojoFixGeometricBufferGrowth2",
+       "UseNSURLDataForGURLConversion",
        "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache",
        "UseMachVouchers"});
 }

@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <array>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -26,8 +28,11 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/features.h"
+#include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/core.h"
@@ -36,6 +41,8 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/ipcz/include/ipcz/ipcz.h"
+#include "third_party/ipcz/src/test/test_base.h"
 
 namespace mojo::core {
 namespace {
@@ -428,6 +435,93 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessMixMachAndFdsClient,
 }
 
 #endif  // BUILDFLAG(IS_MAC)
+
+struct ParcelCapacityPolicyTestCase {
+  std::string_view name;
+  // The "policy" param of kMojoIpczParcelCapacityPolicy, or nullopt to disable
+  // the feature.
+  std::optional<std::string_view> policy;
+  IpczMemoryFlags expected_memory_flags;
+};
+
+constexpr auto kParcelCapacityPolicyTestCases =
+    std::to_array<ParcelCapacityPolicyTestCase>({
+        {"Disabled", std::nullopt, IPCZ_MEMORY_FIXED_PARCEL_CAPACITY},
+        {"Fixed", "fixed", IPCZ_MEMORY_FIXED_PARCEL_CAPACITY},
+        {"NoCapacity", "no-capacity", IPCZ_MEMORY_NO_PARCEL_CAPACITY},
+        {"ExpandOnce", "expand-once", IPCZ_MEMORY_EXPAND_PARCEL_CAPACITY_ONCE},
+        {"RestrictedDynamic", "restricted-dynamic",
+         IPCZ_MEMORY_RESTRICTED_DYNAMIC_PARCEL_CAPACITY},
+        {"Dynamic", "dynamic", IPCZ_NO_FLAGS},
+        // Unknown policies fall back to fixed.
+        {"Unknown", "unknown", IPCZ_MEMORY_FIXED_PARCEL_CAPACITY},
+    });
+
+// Uses ipcz's internal TestBase to inspect the memory flags of Mojo's ipcz
+// node, and MojoTestBase for multiprocess test facilities.
+class EmbedderParcelCapacityPolicyTest
+    : public ipcz::test::internal::TestBase,
+      public test::MojoTestBase,
+      public testing::WithParamInterface<ParcelCapacityPolicyTestCase> {
+ public:
+  EmbedderParcelCapacityPolicyTest() {
+    if (GetParam().policy) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          kMojoIpczParcelCapacityPolicy,
+          {{"policy", std::string(*GetParam().policy)}});
+    } else {
+      feature_list_.InitAndDisableFeature(kMojoIpczParcelCapacityPolicy);
+    }
+
+    // Mojo was initialized before `feature_list_`, so initialize it again.
+    ShutDown();
+    InitFeatures();
+    Init(Configuration{.is_broker_process = true});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(EmbedderParcelCapacityPolicyTest, MultiprocessEcho) {
+  EXPECT_EQ(GetParam().expected_memory_flags,
+            GetNodeMemoryFlags(GetIpczNode()));
+
+  // Messages of various sizes still round-trip between processes when the
+  // parent (broker) node uses this policy. Each size is sent twice so the
+  // second send can use any capacity the first one added. The child process
+  // keeps Mojo's default policy.
+  RunTestClient("MultiprocessEchoClient", [&](MojoHandle server_mp) {
+    for (const size_t num_bytes : {5u, 6000u, 40000u, 100000u}) {
+      const std::string message(num_bytes, 'x');
+      VerifyEcho(server_mp, message);
+      VerifyEcho(server_mp, message);
+    }
+    WriteMessage(server_mp, "exit");
+  });
+}
+
+// Echoes messages until "exit". Uses EmbedderTest because a client's fixture
+// can't depend on a test parameter.
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessEchoClient,
+                                  EmbedderTest,
+                                  client_mp) {
+  for (;;) {
+    std::string message = ReadMessage(client_mp);
+    if (message == "exit") {
+      break;
+    }
+    WriteMessage(client_mp, message);
+  }
+  ASSERT_EQ(MOJO_RESULT_OK, MojoClose(client_mp));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         EmbedderParcelCapacityPolicyTest,
+                         testing::ValuesIn(kParcelCapacityPolicyTestCases),
+                         [](const auto& info) {
+                           return std::string(info.param.name);
+                         });
 
 #endif  // !BUILDFLAG(IS_IOS)
 

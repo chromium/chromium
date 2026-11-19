@@ -145,9 +145,10 @@ ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>) {
   // Create a new (non-broker) node which we will connect below to the global
   // Mojo ipcz node in this process.
   const IpczAPI& ipcz = core::GetIpczAPI();
+  const core::IpczNodeOptions& global_node_options = core::GetIpczNodeOptions();
   const IpczCreateNodeOptions create_options = {
       .size = sizeof(create_options),
-      .memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY,
+      .memory_flags = global_node_options.memory_flags,
   };
   IpczHandle node;
   const IpczResult create_result =
@@ -156,7 +157,6 @@ ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>) {
   CHECK_EQ(create_result, IPCZ_RESULT_OK);
   node_.reset(Handle(node));
 
-  const core::IpczNodeOptions& global_node_options = core::GetIpczNodeOptions();
   IpczConnectNodeFlags local_connect_flags;
   IpczConnectNodeFlags global_connect_flags;
   if (global_node_options.is_broker) {

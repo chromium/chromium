@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "build/build_config.h"
@@ -24,6 +25,7 @@
 #include "mojo/core/ipcz_driver/driver.h"
 #include "mojo/core/ipcz_driver/transport.h"
 #include "mojo/public/c/system/thunks.h"
+#include "third_party/ipcz/include/ipcz/ipcz.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "mojo/core/channel_linux.h"
@@ -35,6 +37,28 @@ namespace mojo::core {
 namespace {
 
 bool g_enable_memv2 = false;
+IpczMemoryFlags g_memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY;
+
+// Returns the IpczMemoryFlags for the parcel capacity policy selected by
+// kMojoIpczParcelCapacityPolicy.
+IpczMemoryFlags GetParcelCapacityPolicyMemoryFlags() {
+  if (!base::FeatureList::IsEnabled(kMojoIpczParcelCapacityPolicy)) {
+    return IPCZ_MEMORY_FIXED_PARCEL_CAPACITY;
+  }
+  switch (kMojoIpczParcelCapacityPolicyParam.Get()) {
+    case MojoIpczParcelCapacityPolicy::kFixed:
+      return IPCZ_MEMORY_FIXED_PARCEL_CAPACITY;
+    case MojoIpczParcelCapacityPolicy::kNoCapacity:
+      return IPCZ_MEMORY_NO_PARCEL_CAPACITY;
+    case MojoIpczParcelCapacityPolicy::kExpandOnce:
+      return IPCZ_MEMORY_EXPAND_PARCEL_CAPACITY_ONCE;
+    case MojoIpczParcelCapacityPolicy::kRestrictedDynamic:
+      return IPCZ_MEMORY_RESTRICTED_DYNAMIC_PARCEL_CAPACITY;
+    case MojoIpczParcelCapacityPolicy::kDynamic:
+      return IPCZ_NO_FLAGS;
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -59,6 +83,7 @@ void InitFeatures() {
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
   g_enable_memv2 = base::FeatureList::IsEnabled(kMojoIpczMemV2);
+  g_memory_flags = GetParcelCapacityPolicyMemoryFlags();
 }
 
 void Init(const Configuration& configuration) {
@@ -70,6 +95,7 @@ void Init(const Configuration& configuration) {
           configuration.is_broker_process ||
           configuration.force_direct_shared_memory_allocation,
       .enable_memv2 = g_enable_memv2,
+      .memory_flags = g_memory_flags,
   }));
   MojoEmbedderSetSystemThunks(GetMojoIpczImpl());
 }

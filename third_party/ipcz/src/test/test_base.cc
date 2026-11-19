@@ -9,6 +9,7 @@
 
 #include "api.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/node.h"
 #include "ipcz/router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/synchronization/notification.h"
@@ -232,6 +233,10 @@ void TestBase::WaitForDirectLocalLink(IpczHandle a, IpczHandle b) {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(8ms);
   }
+}
+
+IpczMemoryFlags TestBase::GetNodeMemoryFlags(IpczHandle node) {
+  return Node::FromHandle(node)->options().memory_flags;
 }
 
 void TestBase::HandleEvent(const IpczTrapEvent* event) {

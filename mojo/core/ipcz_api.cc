@@ -40,11 +40,7 @@ bool InitializeIpczNodeForProcess(const IpczNodeOptions& options) {
   }
   const IpczCreateNodeOptions create_options = {
       .size = sizeof(create_options),
-
-      // TODO(crbug.com/40876289): Enable parcel data allocation capacity
-      // to be expanded.
-      .memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY,
-
+      .memory_flags = options.memory_flags,
       .enabled_features = enabled_features.data(),
       .num_enabled_features = enabled_features.size(),
   };

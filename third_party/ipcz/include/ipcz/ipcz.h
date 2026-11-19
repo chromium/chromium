@@ -467,6 +467,7 @@ class IpczDriver {
                                          const void* options) const = 0;  // in
 };
 
+// LINT.IfChange(ParcelCapacityPolicyFlags)
 // Flags which may be passed via the `memory_flags` field of
 // IpczCreateNodeOptions to configure features of ipcz internal memory
 // allocation and usage.
@@ -516,6 +517,7 @@ typedef uint32_t IpczMemoryFlags;
 // as needed.
 #define IPCZ_MEMORY_RESTRICTED_DYNAMIC_PARCEL_CAPACITY \
   ((IpczMemoryFlags)(1 << 3))
+// LINT.ThenChange(//mojo/core/embedder/features.h:MojoIpczParcelCapacityPolicy)
 
 // Feature identifiers which may be passed through IpczCreateNodeOptions to
 // control dynamic runtime features.

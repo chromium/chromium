@@ -23,6 +23,12 @@ struct IpczNodeOptions {
   bool is_broker;
   bool use_local_shared_memory_allocation;
   bool enable_memv2;
+
+  // Passed to ipcz as IpczCreateNodeOptions::memory_flags. Selects the node's
+  // parcel capacity policy.
+  // TODO(crbug.com/502553324): Default to the policy picked by the
+  // kMojoIpczParcelCapacityPolicy experiment, then remove the feature.
+  IpczMemoryFlags memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY;
 };
 MOJO_SYSTEM_IMPL_EXPORT bool InitializeIpczNodeForProcess(
     const IpczNodeOptions& options = {});
