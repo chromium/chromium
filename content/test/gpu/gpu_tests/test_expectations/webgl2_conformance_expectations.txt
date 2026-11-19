@@ -894,7 +894,6 @@ crbug.com/577781532 [ android android-pixel-11-pro-xl ] deqp/functional/gles3/in
 
 # Brya failures
 crbug.com/416483574 [ android android-brya passthrough ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
-crbug.com/416408899 [ android android-brya passthrough ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/416408899 [ android android-brya passthrough ] conformance2/renderbuffers/framebuffer-test.html [ Failure ]
 crbug.com/416417899 [ android android-brya passthrough ] deqp/functional/gles3/negativebufferapi.html [ Failure ]
 crbug.com/416417899 [ android android-brya passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
@@ -1006,7 +1005,6 @@ crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] WebglExtension_WEBGL_comp
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] WebglExtension_WEBGL_provoking_vertex [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Slow ]
-crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/ext-disjoint-timer-query-webgl2.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/extensions/webgl-stencil-texturing.html [ Failure ]
 crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
@@ -1026,10 +1024,9 @@ crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 passthrough angle-vulkan ] 
 crbug.com/1448567 [ android android-pixel-2 passthrough ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
 crbug.com/1448569 [ win angle-d3d11 ] conformance2/glsl3/texture-bias.html [ Failure ]
 
-crbug.com/332743717 [ android android-pixel-4 angle-disabled no-passthrough ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
-crbug.com/332743717 [ linux ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
-crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
-crbug.com/332743717 [ android android-pixel-2 angle-disabled no-passthrough ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
+# The test creates too-large renderbuffers
+crbug.com/332743717 conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
+
 crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scissor.html [ Failure ]
 
 
