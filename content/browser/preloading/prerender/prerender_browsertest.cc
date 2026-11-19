@@ -63,6 +63,7 @@
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_no_vary_search_hint_commit_deferring_condition.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
+#include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
@@ -143,8 +144,10 @@
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
+#include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/events/base_event_utils.h"
@@ -14974,6 +14977,69 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, VerifyPrerenderProcessVisibility) {
   // Expect the change in the ChildProcessLauncherPriority to increase priority.
   EXPECT_NE(prerender_process_host->GetPriority(),
             base::Process::Priority::kBestEffort);
+}
+
+class PrerenderSameDocumentOriginInvariantsBrowserTest
+    : public PrerenderBrowserTest {
+ public:
+  PrerenderSameDocumentOriginInvariantsBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kEnforceSameDocumentOriginInvariants,
+         blink::features::kTreatMhtmlInitialDocumentLoadsAsCrossDocument},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderSameDocumentOriginInvariantsBrowserTest,
+                       ActivatePageWithDynamicInsecureNavigationsSet) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(prerender_rfh->browsing_context_state()
+                  ->current_replication_state()
+                  .insecure_navigations_set.empty());
+
+  // Change the set after commit, without a same-document navigation that would
+  // refresh the saved commit parameters.
+  ASSERT_TRUE(ExecJs(prerender_rfh, R"(
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'Content-Security-Policy';
+    meta.content = 'upgrade-insecure-requests';
+    document.head.appendChild(meta);
+  )"));
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !prerender_rfh->browsing_context_state()
+                ->current_replication_state()
+                .insecure_navigations_set.empty();
+  }));
+  const auto expected_set = prerender_rfh->browsing_context_state()
+                                ->current_replication_state()
+                                .insecure_navigations_set;
+
+  test::PrerenderHostObserver host_observer(*web_contents(), prerendering_url);
+  NavigatePrimaryPage(prerendering_url);
+  ASSERT_TRUE(host_observer.was_activated());
+  ASSERT_EQ(prerender_rfh, current_frame_host());
+  ASSERT_EQ(expected_set, prerender_rfh->browsing_context_state()
+                              ->current_replication_state()
+                              .insecure_navigations_set);
+  EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kUpgradeInsecureRequests,
+            prerender_rfh->browsing_context_state()
+                ->current_replication_state()
+                .insecure_request_policy);
+
+  TestNavigationObserver same_document_navigation(web_contents());
+  ASSERT_TRUE(ExecJs(prerender_rfh, "history.pushState({}, '', '#same-doc')"));
+  same_document_navigation.Wait();
+  EXPECT_EQ(prerendering_url.Resolve("#same-doc"),
+            prerender_rfh->GetLastCommittedURL());
+  EXPECT_TRUE(prerender_rfh->IsRenderFrameLive());
 }
 
 class PrerenderSpecificRequestHeadersBrowserTest : public PrerenderBrowserTest {

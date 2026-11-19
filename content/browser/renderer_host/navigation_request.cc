@@ -10934,15 +10934,18 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForPrerenderActivation() {
     params->document_sequence_number = frame_entry->document_sequence_number();
   }
 
-  // insecure_request_policy field of the replication state is set during the
-  // navigation commit based on DidCommitProvisionalLoadParams. As prerendering
-  // activates existing page, copy its main frame replication state to ensure
-  // that the effective replication state doesn't change after activation.
+  // The insecure_request_policy and insecure_navigations_set fields are set
+  // during navigation commit based on DidCommitProvisionalLoadParams. As
+  // prerendering activates an existing page, copy its main frame replication
+  // state to ensure it doesn't change after activation.
   // TODO(crbug.com/40192974): replication state should belong to the Browsing
   // Instance Frame State.
   params->insecure_request_policy =
       prerender_navigation_state_->prerender_main_frame_replication_state
           .insecure_request_policy;
+  params->insecure_navigations_set =
+      prerender_navigation_state_->prerender_main_frame_replication_state
+          .insecure_navigations_set;
   return params;
 }
 
