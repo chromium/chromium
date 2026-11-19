@@ -490,6 +490,22 @@ TEST(HashSetTest, ConstructFromOtherContainerIterators) {
 static_assert(!IsTraceableV<HashSet<int>>,
               "HashSet<int, int> must not be traceable.");
 
+TEST(HashSetTest, PostIncrementAndIteratorAdapterGet) {
+  using Table = HashTable<int, int, IdentityExtractor, HashTraits<int>,
+                          HashTraits<int>, PartitionAllocator>;
+  Table table;
+  table.insert(10);
+  table.insert(20);
+
+  Table::const_iterator cit = static_cast<const Table&>(table).begin();
+  Table::const_iterator old_cit = cit++;
+  EXPECT_NE(old_cit, cit);
+
+  HashTableIteratorAdapter<Table, HashTraits<int>> adapter(table.begin());
+  ASSERT_NE(adapter.Get(), nullptr);
+  EXPECT_TRUE(*adapter == 10 || *adapter == 20);
+}
+
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_HASH_TABLE_MODIFICATION_CHECKS)
 TEST(HashSetTest, MutationDuringIteration) {
   HashSet<int> set = {1, 2, 3};

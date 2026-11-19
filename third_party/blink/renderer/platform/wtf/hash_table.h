@@ -368,7 +368,7 @@ class HashTableConstIterator final
   }
 
   ALWAYS_INLINE const_iterator operator++(int) {
-    auto copy = this;
+    auto copy = *this;
     ++(*this);
     return copy;
   }
@@ -2248,7 +2248,7 @@ struct HashTableIteratorAdapter {
       : impl_(impl) {}
 
   ALWAYS_INLINE GetType Get() const {
-    return const_cast<GetType>(SourceGetType(impl_.get()));
+    return const_cast<GetType>(SourceGetType(impl_.Get()));
   }
   ALWAYS_INLINE typename Traits::IteratorReferenceType operator*() const {
     return *Get();
@@ -2307,7 +2307,7 @@ struct HashTableIteratorAdapter<HashTableType, Traits> {
       : impl_(impl) {}
 
   ALWAYS_INLINE GetType Get() const {
-    return const_cast<GetType>(SourceGetType(impl_.get()));
+    return const_cast<GetType>(SourceGetType(impl_.Get()));
   }
   ALWAYS_INLINE typename Traits::IteratorReferenceType operator*() const {
     return *Get();
