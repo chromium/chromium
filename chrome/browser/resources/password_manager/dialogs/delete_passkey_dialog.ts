@@ -20,8 +20,9 @@ import {getHtml} from './delete_passkey_dialog.html.js';
 export interface DeletePasskeyDialogElement {
   $: {
     cancelButton: CrButtonElement,
-    dialog: CrDialogElement,
     deleteButton: CrButtonElement,
+    dialog: CrDialogElement,
+    link: HTMLElement,
   };
 }
 

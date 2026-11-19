@@ -164,23 +164,15 @@ suite('MovePasswordsDialogTest', function() {
         {id: 0, username: 'user1', password: 'password123!'});
     await createDialog([passwordEntry]);
 
-    const item =
-        dialog.shadowRoot.querySelector<HTMLElement>('password-preview-item');
+    const item = dialog.shadowRoot.querySelector('password-preview-item');
     assertTrue(!!item);
 
-    const passwordElement =
-        item.shadowRoot!.querySelector<HTMLInputElement>('#password');
-    assertTrue(!!passwordElement);
-    assertNotEquals(passwordEntry.password, passwordElement.value);
+    assertNotEquals(passwordEntry.password, item.$.password.value);
 
-    const showPasswordButton =
-        item.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#showPasswordButton');
-    assertTrue(!!showPasswordButton);
-    showPasswordButton.click();
+    item.$.showPasswordButton.click();
     await microtasksFinished();
 
-    assertEquals(passwordEntry.password, passwordElement.value);
+    assertEquals(passwordEntry.password, item.$.password.value);
   });
 
   test('Dialog closes if passwords array becomes empty', async function() {

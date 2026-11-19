@@ -38,7 +38,7 @@ suite('RemoveActorLoginPermissionDialogTest', function() {
   });
 
   test('cancel button closes dialog', function() {
-    dialog.shadowRoot.querySelector<HTMLElement>('#cancel')!.click();
+    dialog.$.cancel.click();
     assertFalse(dialog.$.dialog.open);
   });
 });

@@ -17,6 +17,7 @@ import {getHtml} from './remove_actor_login_permission_dialog.html.js';
 
 export interface RemoveActorLoginPermissionDialogElement {
   $: {
+    cancel: CrButtonElement,
     dialog: CrDialogElement,
     disconnect: CrButtonElement,
     text: HTMLElement,

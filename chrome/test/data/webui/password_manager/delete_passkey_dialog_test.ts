@@ -35,7 +35,7 @@ suite('DeletePasskeyDialogTest', function() {
   });
 
   test('displays a warning with links to the website', function() {
-    const link = dialog.shadowRoot.querySelector<HTMLAnchorElement>('#link a')!;
+    const link = dialog.$.link.querySelector('a');
     assertTrue(!!link);
     assertEquals(link.textContent.trim(), 'test.com');
     assertEquals(link.href.trim(), passkey.affiliatedDomains[0]!.url);
