@@ -37,6 +37,12 @@ class TabCollectionNode {
   enum class Type { TABSTRIP, PINNED, UNPINNED, GROUP, SPLIT, TAB };
   // LINT.ThenChange(components/tabs/public/tab_collection.h:TYPE)
 
+  enum class RemoveChildReason {
+    kClosed,
+    kMoved,
+    kDetached,
+  };
+
   // Helper type for creating CustomAddChildViewCallbacks with
   // base::BindRepeating.
   typedef views::View* (views::View::*CustomAddChildView)(
@@ -94,8 +100,7 @@ class TabCollectionNode {
   // `remove_child_from_node_`.
   void RemoveChild(base::PassKey<TabCollectionNode> pass_key,
                    const tabs::TabCollectionNodeHandle& handle,
-                   bool perform_deinitialization,
-                   bool remove_for_detach = false);
+                   RemoveChildReason remove_reason);
 
   // Moves the node to the new index within the same parent. Also updates the
   // z-order of the moved child to the highest to ensure it shows over other
@@ -221,6 +226,10 @@ class TabCollectionNode {
   // Adds `child_node` to `children_`.
   void AddChildNode(std::unique_ptr<TabCollectionNode> child_node,
                     size_t model_index);
+
+  // Removes `child_it` from `children_`.
+  void RemoveChildNode(NodeChildren::iterator child_it,
+                       RemoveChildReason remove_reason);
 
   // Creates node_view_, then returns the unique_ptr to the view.
   std::unique_ptr<views::View> CreateAndSetView();

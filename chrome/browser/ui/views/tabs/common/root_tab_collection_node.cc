@@ -177,8 +177,8 @@ void RootTabCollectionNode::OnChildrenRemoved(
       UnregisterSubtree(child_node);
     }
     parent_node->RemoveChild(GetPassKey(), handle,
-                             /*perform_deinitialization=*/false,
-                             remove_for_detach);
+                             remove_for_detach ? RemoveChildReason::kDetached
+                                               : RemoveChildReason::kClosed);
   }
   UpdateAccessibleTabIndices();
   on_children_removed_callback_list_.Notify();
@@ -213,7 +213,7 @@ void RootTabCollectionNode::OnChildMoved(
     CHECK(moved_node);
     UnregisterSubtree(moved_node);
     src_parent_node->RemoveChild(GetPassKey(), moved_node_handle,
-                                 /*perform_deinitialization=*/false);
+                                 RemoveChildReason::kMoved);
     dst_parent_node->AddNewChild(
         GetPassKey(), GetNodeFromHandle(moved_node_handle), to_position.index,
         /*perform_initialization=*/true,

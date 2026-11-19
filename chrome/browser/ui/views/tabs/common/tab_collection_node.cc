@@ -140,27 +140,8 @@ std::unique_ptr<views::View> TabCollectionNode::Initialize() {
 }
 
 void TabCollectionNode::Deinitialize() {
-  if (std::holds_alternative<tabs::ConstDanglingUntriagedTabCollection>(
-          node_data_)) {
-    const tabs::TabCollection* collection =
-        std::get<tabs::ConstDanglingUntriagedTabCollection>(node_data_);
-    for (const auto& child_data : collection->GetChildren()) {
-      tabs::TabCollectionNodeHandle child_handle;
-      if (std::holds_alternative<std::unique_ptr<tabs::TabCollection>>(
-              child_data)) {
-        child_handle =
-            std::get<std::unique_ptr<tabs::TabCollection>>(child_data)
-                ->GetHandle();
-      } else {
-        CHECK(std::holds_alternative<tabs::ScopedTab>(child_data));
-        child_handle = std::get<tabs::ScopedTab>(child_data)->GetHandle();
-      }
-      RemoveChild(GetPassKey(), child_handle,
-                  /*perform_deinitialization=*/true);
-    }
-  } else {
-    CHECK(std::holds_alternative<tabs::ConstDanglingUntriagedTabInterface>(
-        node_data_));
+  while (!children_.empty()) {
+    RemoveChildNode(children_.end() - 1, RemoveChildReason::kClosed);
   }
 }
 
@@ -239,33 +220,13 @@ void TabCollectionNode::AddNewChild(
 
 void TabCollectionNode::RemoveChild(base::PassKey<TabCollectionNode> pass_key,
                                     const tabs::TabCollectionNodeHandle& handle,
-                                    bool perform_deinitialization,
-                                    bool remove_for_detach) {
+                                    RemoveChildReason remove_reason) {
   for (auto it = children_.begin(); it != children_.end(); ++it) {
-    TabCollectionNode* child_node = it->get();
-
-    if (child_node->GetHandle() != handle) {
+    if ((*it)->GetHandle() != handle) {
       continue;
     }
 
-    if (perform_deinitialization) {
-      child_node->Deinitialize();
-    }
-
-    views::View* node_view_to_remove = child_node->node_view_;
-
-    // We must remove the TabCollectionNode from `children_` before destroying
-    // the node itself to prevent potential UAF issues resulting from listeners
-    // fired in its destructor. See crbug.com/491286738 for details.
-    std::unique_ptr<TabCollectionNode> node_to_remove = std::move(*it);
-    children_.erase(it);
-    node_to_remove.reset();
-
-    if (remove_child_from_node_ && !remove_for_detach) {
-      remove_child_from_node_.Run(node_view_to_remove);
-    } else {
-      node_view_->RemoveChildViewT(node_view_to_remove);
-    }
+    RemoveChildNode(it, remove_reason);
     return;
   }
 
@@ -367,6 +328,30 @@ void TabCollectionNode::AddChildNode(
     size_t model_index) {
   child_node->SetController(tab_strip_controller_);
   children_.insert(children_.begin() + model_index, std::move(child_node));
+}
+
+void TabCollectionNode::RemoveChildNode(NodeChildren::iterator child_it,
+                                        RemoveChildReason remove_reason) {
+  TabCollectionNode* child_node = child_it->get();
+  if (remove_reason == RemoveChildReason::kClosed) {
+    child_node->Deinitialize();
+  }
+
+  views::View* node_view_to_remove = child_node->node_view_;
+
+  // We must remove the TabCollectionNode from `children_` before destroying
+  // the node itself to prevent potential UAF issues resulting from listeners
+  // fired in its destructor. See crbug.com/491286738 for details.
+  std::unique_ptr<TabCollectionNode> node_to_remove = std::move(*child_it);
+  children_.erase(child_it);
+  node_to_remove.reset();
+
+  if (remove_child_from_node_ &&
+      remove_reason != RemoveChildReason::kDetached) {
+    remove_child_from_node_.Run(node_view_to_remove);
+  } else {
+    node_view_->RemoveChildViewT(node_view_to_remove);
+  }
 }
 
 void TabCollectionNode::EnsureFocusOrder(size_t child_index) {
