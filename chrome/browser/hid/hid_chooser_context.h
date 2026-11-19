@@ -111,9 +111,9 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
   // Forward HidManager::GetDevices.
   void GetDevices(device::mojom::HidManager::GetDevicesCallback callback);
 
-  // Only call this if you're sure |devices_| has been initialized before-hand.
-  // The returned raw pointer is owned by |devices_| and will be destroyed when
-  // the device is removed.
+  // Returns the device info matching `guid`. Returns nullptr if `devices_` is
+  // not initialized or `guid` was not found. The returned raw pointer is owned
+  // by `devices_` and will be destroyed when the device is removed.
   const device::mojom::HidDeviceInfo* GetDeviceInfo(const std::string& guid);
 
   device::mojom::HidManager* GetHidManager();
@@ -124,6 +124,8 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
   void SetHidManagerForTesting(
       mojo::PendingRemote<device::mojom::HidManager> manager,
       device::mojom::HidManager::GetDevicesCallback callback);
+
+  bool is_initialized_for_testing() const { return is_initialized_; }
 
   void PermissionForWebViewChanged();
   void PermissionForWebViewRevoked(const url::Origin& web_view_origin);

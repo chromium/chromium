@@ -146,6 +146,9 @@ class HidChooserContextTestBase {
 
   HidChooserContext* context() { return context_; }
   TestingProfile* profile() { return profile_; }
+  TestingProfileManager* testing_profile_manager() {
+    return testing_profile_manager_.get();
+  }
   permissions::MockPermissionObserver& permission_observer() {
     return permission_observer_;
   }
@@ -753,6 +756,49 @@ TEST_F(HidChooserContextTest, AddChangeRemoveDevice) {
   EXPECT_EQ(removed_device->guid, kTestGuid);
   EXPECT_EQ(removed_device->collections.size(), 2u);
   ASSERT_FALSE(context()->GetDeviceInfo(kTestGuid));
+}
+
+TEST_F(HidChooserContextTest, GetDeviceInfoBeforeInitialization) {
+  TestingProfile* uninitialized_profile =
+      testing_profile_manager()->CreateTestingProfile(
+          "uninitialized@example.com");
+  HidChooserContext* uninitialized_context =
+      HidChooserContextFactory::GetForProfile(uninitialized_profile);
+
+  // Before HidManager initialization, GetDeviceInfo() returns nullptr.
+  EXPECT_FALSE(uninitialized_context->is_initialized_for_testing());
+  EXPECT_EQ(nullptr, uninitialized_context->GetDeviceInfo("non-existent-guid"));
+
+  // Also check while GetDevicesAndSetClient() is in flight.
+  device::FakeHidManager fake_hid_manager;
+  mojo::PendingRemote<device::mojom::HidManager> hid_manager;
+  fake_hid_manager.Bind(hid_manager.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>> future;
+  uninitialized_context->SetHidManagerForTesting(std::move(hid_manager),
+                                                 future.GetCallback());
+  EXPECT_FALSE(uninitialized_context->is_initialized_for_testing());
+  EXPECT_EQ(nullptr, uninitialized_context->GetDeviceInfo("non-existent-guid"));
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(uninitialized_context->is_initialized_for_testing());
+  EXPECT_EQ(nullptr, uninitialized_context->GetDeviceInfo("non-existent-guid"));
+}
+
+TEST_F(HidChooserContextTest, ConnectionErrorResetsInitializedState) {
+  const char kTestGuid[] = "guid";
+  auto device = ConnectDeviceBlocking(CreateDeviceWithOneCollection(kTestGuid));
+  ASSERT_TRUE(context()->GetDeviceInfo(kTestGuid));
+  EXPECT_TRUE(context()->is_initialized_for_testing());
+
+  base::RunLoop loop;
+  EXPECT_CALL(device_observer(), OnHidManagerConnectionError())
+      .WillOnce(RunClosure(loop.QuitClosure()));
+  SimulateHidManagerConnectionError();
+  loop.Run();
+
+  EXPECT_FALSE(context()->is_initialized_for_testing());
+  EXPECT_EQ(nullptr, context()->GetDeviceInfo(kTestGuid));
 }
 
 namespace {
