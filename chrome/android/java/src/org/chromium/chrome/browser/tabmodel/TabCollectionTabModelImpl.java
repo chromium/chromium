@@ -1599,9 +1599,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void deleteTabGroupTitle(Token tabGroupId) {
-        if (!containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return;
-        setTabGroupTitle(TabGroupId.fromRawToken(tabGroupId), UNSET_TAB_GROUP_TITLE);
+    public void deleteTabGroupTitle(TabGroupId tabGroupId) {
+        if (!containsTabGroup(tabGroupId)) return;
+        setTabGroupTitle(tabGroupId, UNSET_TAB_GROUP_TITLE);
     }
 
     @Override
@@ -1824,7 +1824,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         // Reset or delete the state of the undone group.
         if (undoGroupMetadata.adoptedTabGroupTitle) {
-            deleteTabGroupTitle(tabGroupId);
+            deleteTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
         }
         if (undoGroupMetadata.didCreateNewGroup) {
             closeDetachedTabGroup(tabGroupId);

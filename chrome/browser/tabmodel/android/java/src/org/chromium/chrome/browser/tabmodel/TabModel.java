@@ -654,7 +654,7 @@ public interface TabModel extends TabList {
     void setTabGroupTitle(TabGroupId tabGroupId, String title);
 
     /** Deletes the stored title for the tab group, defaulting it back to "N tabs." */
-    void deleteTabGroupTitle(Token tabGroupId);
+    void deleteTabGroupTitle(TabGroupId tabGroupId);
 
     /**
      * This method fetches tab group colors id for the specified tab group. It will be a {@link

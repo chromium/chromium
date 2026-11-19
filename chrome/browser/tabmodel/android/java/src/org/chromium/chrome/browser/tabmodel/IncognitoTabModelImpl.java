@@ -695,7 +695,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void deleteTabGroupTitle(Token tabGroupId) {
+    public void deleteTabGroupTitle(TabGroupId tabGroupId) {
         mDelegateModel.deleteTabGroupTitle(tabGroupId);
     }
 

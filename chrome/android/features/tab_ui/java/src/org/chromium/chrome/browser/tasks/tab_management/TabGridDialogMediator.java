@@ -1317,7 +1317,7 @@ public class TabGridDialogMediator
                         mActivity, mCurrentGroupModifiedTitle, tabsCount)) {
             // When dialog title is unset or was unchanged, delete previously stored title and
             // restore default title.
-            tabModel.deleteTabGroupTitle(mCurrentTabGroupId);
+            tabModel.deleteTabGroupTitle(TabGroupId.fromRawToken(mCurrentTabGroupId));
 
             String originalTitle = TabGroupTitleUtils.getDefaultTitle(mActivity, tabsCount);
             mModel.set(

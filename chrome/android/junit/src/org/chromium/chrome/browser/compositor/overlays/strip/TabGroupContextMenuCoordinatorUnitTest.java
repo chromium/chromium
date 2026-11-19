@@ -668,7 +668,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         keyboardVisibilityListener.keyboardObscuringChanged(false);
 
         // Verify the previous title is deleted and is default to "N tabs"
-        verify(mTabModel).deleteTabGroupTitle(TAB_GROUP_ID);
+        verify(mTabModel).deleteTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID));
         assertEquals("1 tab", groupTitleEditText.getText().toString());
     }
 
@@ -692,7 +692,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // 3. Clearing the text deletes the title in TabModel without wiping the active EditText.
         groupTitleEditText.setText("");
         ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
-        verify(mTabModel).deleteTabGroupTitle(TAB_GROUP_ID);
+        verify(mTabModel).deleteTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID));
         assertEquals("", groupTitleEditText.getText().toString());
     }
 

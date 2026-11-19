@@ -3289,19 +3289,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabGroupTitleEditor_storeTitle() {
-        mTabModel.setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
-        verify(mTabModel)
-                .setTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID), CUSTOMIZED_DIALOG_TITLE1);
-    }
-
-    @Test
-    public void tabGroupTitleEditor_deleteTitle() {
-        mTabModel.deleteTabGroupTitle(TAB_GROUP_ID);
-        verify(mTabModel).deleteTabGroupTitle(TAB_GROUP_ID);
-    }
-
-    @Test
     public void addSpecialItem() {
         mMediator.resetWithListOfTabs(null, null, false);
 

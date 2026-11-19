@@ -803,7 +803,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
             if (isTitleUnset(newTitle) || newTitle.equals(getDefaultTitle())) {
                 // Delete the title in TabModel so the tab strip visually updates to the default
                 // ("N tabs"), without clobbering the text in the active EditText.
-                getTabModel().deleteTabGroupTitle(mTabGroupId);
+                getTabModel().deleteTabGroupTitle(TabGroupId.fromRawToken(mTabGroupId));
             } else {
                 TabUiUtils.updateTabGroupTitle(getTabModel(), mTabGroupId, newTitle);
             }

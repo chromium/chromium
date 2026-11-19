@@ -1609,7 +1609,7 @@ public class TabGridDialogTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Token tabGroupId = tabModel.getTabAt(0).getTabGroupId();
-                    tabModel.deleteTabGroupTitle(tabGroupId);
+                    tabModel.deleteTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
                 });
         verifyShowingDialog(cta, 2, null);
         collapseTargetString = "Collapse tab group with 2 tabs.";

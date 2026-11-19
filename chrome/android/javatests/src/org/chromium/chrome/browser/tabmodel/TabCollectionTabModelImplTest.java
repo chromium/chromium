@@ -1347,7 +1347,7 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addTabGroupObserver(titleDeleteObserver);
-                    mCollectionModel.deleteTabGroupTitle(tabGroupId);
+                    mCollectionModel.deleteTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
                     assertEquals(
                             UNSET_TAB_GROUP_TITLE,
                             mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));

@@ -1261,7 +1261,7 @@ public class TabGridDialogMediatorUnitTest {
 
         // When updated title is a empty string, delete stored title and restore default title in
         // PropertyModel.
-        verify(mTabModel).deleteTabGroupTitle(eq(TAB_GROUP_ID));
+        verify(mTabModel).deleteTabGroupTitle(eq(TabGroupId.fromRawToken(TAB_GROUP_ID)));
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
         verify(mTabModel)
                 .setTabGroupTitle(
