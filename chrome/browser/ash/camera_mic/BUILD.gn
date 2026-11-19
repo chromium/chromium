@@ -23,7 +23,6 @@ static_library("camera_mic") {
     "//ash/strings",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser/ash/borealis",
-    "//chrome/browser/ash/login/session",
     "//chrome/browser/ui:chrome_pages",
     "//chromeos/ash/experiences/settings_ui",
     "//components/session_manager/core",
@@ -35,13 +34,6 @@ static_library("camera_mic") {
     "//media/capture/video/chromeos/public",
     "//ui/base",
     "//ui/message_center",
-  ]
-
-  allow_circular_includes_from = [
-    # TODO: Currently UserSessionInitializer notifies VmCameraMicManager,
-    # so initroducing an Observer should resolve the dependency on
-    # c/b/ash/login/session.
-    "//chrome/browser/ash/login/session",
   ]
 }
 

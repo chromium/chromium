@@ -44,7 +44,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/auth:auth",
   "//chrome/browser/ash/boca/on_task:on_task",
   "//chrome/browser/ash/bruschetta:bruschetta",
-  "//chrome/browser/ash/camera_mic:camera_mic",
   "//chrome/browser/ash/cert_provisioning:cert_provisioning",
   "//chrome/browser/ash/crostini:crostini",
   "//chrome/browser/ash/eche_app:eche_app",
