@@ -173,7 +173,7 @@ AppMenuSearchController::AppMenuSearchController(
   CHECK(search_bar_);
   CHECK(delegate_);
   query_changed_subscription_ =
-      search_bar_->AddTextChangedCallback(base::BindRepeating(
+      search_bar_->AddQueryChangedCallback(base::BindRepeating(
           &AppMenuSearchController::OnQueryChanged, base::Unretained(this)));
 }
 

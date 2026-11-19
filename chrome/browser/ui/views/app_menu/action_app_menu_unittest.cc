@@ -109,6 +109,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -148,7 +149,9 @@
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/menu_test_utils.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -3440,9 +3443,36 @@ class SearchFieldBlurCounter : public views::FocusChangeListener {
       focus_observation_{this};
 };
 
-// Regression test for crbug.com/582788496: an IME composition (e.g. pinyin) in
+// Records whether a row for `kActionPrint` is added to the observed submenu.
+// Only the full menu has that row, so it tells a rebuild of the full menu
+// apart from a rebuild of the search results.
+class FullMenuRowObserver : public views::ViewObserver {
+ public:
+  explicit FullMenuRowObserver(views::View* submenu) {
+    observation_.Observe(submenu);
+  }
+  ~FullMenuRowObserver() override = default;
+
+  bool full_menu_row_added() const { return full_menu_row_added_; }
+
+  // views::ViewObserver:
+  void OnChildViewAdded(views::View* observed_view,
+                        views::View* child) override {
+    auto* item = views::AsViewClass<views::MenuItemView>(child);
+    if (item && item->GetCommand() == kActionPrint) {
+      full_menu_row_added_ = true;
+    }
+  }
+
+ private:
+  bool full_menu_row_added_ = false;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
+// Regression test: an IME composition (e.g. pinyin) in
 // the search field must survive the menu rebuild that each query change
-// triggers.
+// triggers, and later composition updates and the commit must not rebuild the
+// full menu on the way to the new results, which resized the menu for a frame.
 TEST_F(ActionAppMenuWithSearchTest, ImeCompositionSurvivesSearchResultRebuild) {
   ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
   menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
@@ -3477,6 +3507,26 @@ TEST_F(ActionAppMenuWithSearchTest, ImeCompositionSurvivesSearchResultRebuild) {
   EXPECT_EQ(counter.blur_count(), 0);
   EXPECT_EQ(input_method->GetTextInputClient(), search_field);
   EXPECT_TRUE(search_field->HasCompositionText());
+
+  // With results showing, updating the composition and committing it must go
+  // straight to the new results, without the full menu in between.
+  FullMenuRowObserver row_observer(root->GetSubmenu());
+  composition.text = u"nih";
+  search_field->SetCompositionText(composition);
+  EXPECT_FALSE(row_observer.full_menu_row_added());
+  EXPECT_EQ(root->GetMenuItemByID(kActionNewTab), nullptr);
+  EXPECT_EQ(counter.blur_count(), 0);
+
+  // Committing different text shows its results: "New Tab" is a result row
+  // for "new", while the normal menu has it as a block button, not a row.
+  search_field->InsertText(
+      u"new",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_FALSE(row_observer.full_menu_row_added());
+  EXPECT_NE(root->GetMenuItemByID(kActionNewTab), nullptr);
+  EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+  EXPECT_FALSE(search_field->HasCompositionText());
+  EXPECT_EQ(counter.blur_count(), 0);
 
   menu.CloseMenu();
 }

@@ -6,12 +6,16 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -66,21 +70,43 @@ class AppMenuSearchBarView::SearchField : public views::Textfield,
   void Layout(PassKey) override;
   void OnFocus() override;
   void OnBlur() override;
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
   // views::TextfieldController:
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
+
+  // Sets the query programmatically. Runs the query changed callbacks, which
+  // ContentsChanged() only runs for user edits.
+  void SetQuery(std::u16string_view text);
+
+  // Runs `callback` once per change of the query, with the final text. The
+  // textfield's own text changed callbacks also run for the intermediate
+  // states of an edit, such as the empty text an IME composition update
+  // passes through between removing the old composition and inserting the
+  // new one.
+  [[nodiscard]] base::CallbackListSubscription AddQueryChangedCallback(
+      base::RepeatingClosure callback);
 
  private:
   // Empties the query and keeps the search bar focused.
   void ClearQuery();
+
+  // Runs the query changed callbacks if the text differs from the one they
+  // last saw. An edit that leaves the text as it was, such as committing a
+  // composition unchanged, is not a change of the query.
+  void NotifyIfQueryChanged();
 
   // Shows the clear button only while there is a query.
   void UpdateClearButtonVisibility();
 
   raw_ptr<views::ImageView> search_icon_ = nullptr;
   raw_ptr<views::ImageButton> clear_button_ = nullptr;
-  base::CallbackListSubscription text_changed_subscription_;
+  base::RepeatingClosureList query_changed_callbacks_;
+  // The text the query changed callbacks last ran for.
+  std::u16string notified_query_;
 };
 
 AppMenuSearchBarView::SearchField::SearchField() {
@@ -128,8 +154,6 @@ AppMenuSearchBarView::SearchField::SearchField() {
                             kClearButtonElementId);
   views::InstallCircleHighlightPathGenerator(clear_button.get());
   clear_button_ = AddChildView(std::move(clear_button));
-  text_changed_subscription_ = AddTextChangedCallback(base::BindRepeating(
-      &SearchField::UpdateClearButtonVisibility, base::Unretained(this)));
 
   views::InkDrop::Get(this)->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
@@ -175,9 +199,46 @@ void AppMenuSearchBarView::SearchField::OnBlur() {
   }
 }
 
+bool AppMenuSearchBarView::SearchField::HandleAccessibleAction(
+    const ui::AXActionData& action_data) {
+  const bool handled = views::Textfield::HandleAccessibleAction(action_data);
+  // kSetValue sets the text programmatically, which ContentsChanged() does
+  // not report.
+  if (handled && action_data.action == ax::mojom::Action::kSetValue) {
+    NotifyIfQueryChanged();
+  }
+  return handled;
+}
+
+void AppMenuSearchBarView::SearchField::ContentsChanged(
+    views::Textfield* sender,
+    const std::u16string& new_contents) {
+  NotifyIfQueryChanged();
+}
+
+void AppMenuSearchBarView::SearchField::SetQuery(std::u16string_view text) {
+  SetText(text);
+  NotifyIfQueryChanged();
+}
+
+base::CallbackListSubscription
+AppMenuSearchBarView::SearchField::AddQueryChangedCallback(
+    base::RepeatingClosure callback) {
+  return query_changed_callbacks_.Add(std::move(callback));
+}
+
 void AppMenuSearchBarView::SearchField::ClearQuery() {
-  SetText(std::u16string());
+  SetQuery(std::u16string_view());
   RequestFocus();
+}
+
+void AppMenuSearchBarView::SearchField::NotifyIfQueryChanged() {
+  if (GetText() == notified_query_) {
+    return;
+  }
+  notified_query_ = GetText();
+  UpdateClearButtonVisibility();
+  query_changed_callbacks_.Notify();
 }
 
 void AppMenuSearchBarView::SearchField::UpdateClearButtonVisibility() {
@@ -232,12 +293,12 @@ std::u16string_view AppMenuSearchBarView::GetText() const {
 }
 
 void AppMenuSearchBarView::SetText(std::u16string_view text) {
-  search_field_->SetText(text);
+  search_field_->SetQuery(text);
 }
 
-base::CallbackListSubscription AppMenuSearchBarView::AddTextChangedCallback(
-    views::PropertyChangedCallback callback) {
-  return search_field_->AddTextChangedCallback(std::move(callback));
+base::CallbackListSubscription AppMenuSearchBarView::AddQueryChangedCallback(
+    base::RepeatingClosure callback) {
+  return search_field_->AddQueryChangedCallback(std::move(callback));
 }
 
 BEGIN_METADATA(AppMenuSearchBarView)

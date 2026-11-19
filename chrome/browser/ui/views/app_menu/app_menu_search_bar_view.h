@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,8 +32,10 @@ class AppMenuSearchBarView : public views::BoxLayoutView {
 
   std::u16string_view GetText() const;
   void SetText(std::u16string_view text);
-  [[nodiscard]] base::CallbackListSubscription AddTextChangedCallback(
-      views::PropertyChangedCallback callback);
+  // Runs `callback` once per change of the query, after the change is
+  // complete.
+  [[nodiscard]] base::CallbackListSubscription AddQueryChangedCallback(
+      base::RepeatingClosure callback);
 
  private:
   // The textfield, with the focus and key handling it needs inside the menu.

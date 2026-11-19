@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
@@ -16,7 +18,12 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/ime/composition_text.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
@@ -164,16 +171,70 @@ TEST_F(AppMenuSearchBarViewTest, ClearButtonClearsText) {
   search_bar->SetText(u"downloads");
   EXPECT_TRUE(clear_button->GetVisible());
 
-  int text_changed_count = 0;
-  base::CallbackListSubscription text_sub = search_bar->AddTextChangedCallback(
-      base::BindLambdaForTesting([&]() { ++text_changed_count; }));
+  int query_changed_count = 0;
+  base::CallbackListSubscription query_sub = search_bar->AddQueryChangedCallback(
+      base::BindLambdaForTesting([&]() { ++query_changed_count; }));
 
   views::test::ButtonTestApi(clear_button).NotifyDefaultMouseClick();
   EXPECT_TRUE(search_bar->GetText().empty());
   EXPECT_FALSE(clear_button->GetVisible());
   EXPECT_TRUE(GetSearchField(search_bar)->HasFocus());
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
-  EXPECT_GT(text_changed_count, 0);
+  EXPECT_EQ(query_changed_count, 1);
+}
+
+// Regression test: replacing an IME composition is one change of the query,
+// and committing it unchanged is none. The query changed callback must not run
+// for the empty text the textfield passes through while it removes the old
+// composition, which looks like a cleared query. Programmatic changes and the
+// accessibility kSetValue action count as changes too, but only when the text
+// differs.
+TEST_F(AppMenuSearchBarViewTest,
+       ImeCompositionChangeNotifiesOnceWithFinalText) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* search_bar =
+      widget->SetContentsView(std::make_unique<AppMenuSearchBarView>());
+  widget->Show();
+  views::Textfield* search_field = GetSearchField(search_bar);
+  views::Button* clear_button = GetClearButton(search_bar);
+  search_field->RequestFocus();
+
+  std::vector<std::u16string> notified_texts;
+  base::CallbackListSubscription subscription =
+      search_bar->AddQueryChangedCallback(base::BindLambdaForTesting(
+          [&]() { notified_texts.emplace_back(search_bar->GetText()); }));
+
+  ui::CompositionText composition;
+  composition.text = u"你和";
+  search_field->SetCompositionText(composition);
+  composition.text = u"你好";
+  search_field->SetCompositionText(composition);
+  EXPECT_THAT(notified_texts, testing::ElementsAre(u"你和", u"你好"));
+  EXPECT_TRUE(clear_button->GetVisible());
+
+  // Committing the composition unchanged is not a change of the query.
+  search_field->InsertText(
+      u"你好",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_FALSE(search_field->HasCompositionText());
+  EXPECT_THAT(notified_texts, testing::ElementsAre(u"你和", u"你好"));
+
+  // Programmatic changes notify too, but only when the text changes.
+  search_bar->SetText(u"你好");
+  EXPECT_THAT(notified_texts, testing::ElementsAre(u"你和", u"你好"));
+  search_bar->SetText(u"");
+  EXPECT_THAT(notified_texts, testing::ElementsAre(u"你和", u"你好", u""));
+  EXPECT_FALSE(clear_button->GetVisible());
+
+  // Setting the value through the accessibility API changes the text without
+  // a user edit, and still counts as a change of the query.
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kSetValue;
+  action_data.value = "downloads";
+  EXPECT_TRUE(search_field->HandleAccessibleAction(action_data));
+  EXPECT_THAT(notified_texts,
+              testing::ElementsAre(u"你和", u"你好", u"", u"downloads"));
+  EXPECT_TRUE(clear_button->GetVisible());
 }
 
 TEST_F(AppMenuSearchBarViewTest, HoverHighlightHiddenWhileFocused) {
