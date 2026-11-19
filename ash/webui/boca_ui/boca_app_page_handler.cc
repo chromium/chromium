@@ -824,6 +824,14 @@ void BocaAppHandler::SetSitePermission(const std::string& url,
     return;
   }
 
+  if (!BocaAppClient::Get()->IsBocaAppWindow(
+          web_ui_->GetWebContents()->GetTopLevelNativeWindow())) {
+    std::move(callback).Run(false);
+    receiver_.ReportBadMessage(
+        "SetSitePermission called outside of Boca SWA window.");
+    return;
+  }
+
   GURL request_gurl(url);
   if (!request_gurl.is_valid()) {
     std::move(callback).Run(false);

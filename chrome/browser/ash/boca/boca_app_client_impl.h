@@ -26,6 +26,7 @@ class BocaAppClientImpl : public BocaAppClient {
   void LaunchApp() override;
   int GetAppInstanceCount() override;
   void OpenFeedbackDialog() override;
+  bool IsBocaAppWindow(aura::Window* window) override;
   std::unique_ptr<SharedCrdSessionWrapper> CreateSharedCrdSessionWrapper()
       override;
 };

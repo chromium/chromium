@@ -307,6 +307,7 @@ class MockBocaAppClient : public BocaAppClient {
   MOCK_METHOD(std::string, GetSchoolToolsServerBaseUrl, (), (override));
   MOCK_METHOD(void, OpenFeedbackDialog, (), (override));
   MOCK_METHOD(int, GetAppInstanceCount, (), (override));
+  MOCK_METHOD(bool, IsBocaAppWindow, (aura::Window*), (override));
 };
 
 class MockSessionManager : public BocaSessionManager {
@@ -614,6 +615,7 @@ class BocaAppPageHandlerTest : public AshTestBase {
     boca_app_client_ = std::make_unique<NiceMock<MockBocaAppClient>>();
     ON_CALL(*boca_app_client_, GetSchoolToolsServerBaseUrl())
         .WillByDefault(Return(kTestDefaultUrl));
+    ON_CALL(*boca_app_client_, IsBocaAppWindow(_)).WillByDefault(Return(true));
 
     // Sign in a test user.
     ASSERT_TRUE(
@@ -4045,6 +4047,33 @@ TEST_F(BocaAppPageHandlerConsumerTest, SetSitePermission_DeniedWhenNoWindows) {
                               success_future.GetCallback());
   EXPECT_FALSE(success_future.Get());
   EXPECT_TRUE(remote().is_connected());
+}
+
+TEST_F(BocaAppPageHandlerConsumerTest,
+       SetSitePermission_DeniedWhenNotInBocaSWAWindow) {
+  const std::string requested_url = "https://example.com/safe";
+
+  auto tab = mojom::TabInfo::New(std::nullopt, "safe", GURL(requested_url),
+                                 GURL("https://example.com/favicon"),
+                                 /*url_type=*/std::nullopt);
+  std::vector<mojom::TabInfoPtr> tabs;
+  tabs.push_back(std::move(tab));
+  fake_tab_info_collector()->AddWindow(std::move(tabs));
+
+  // Simulate that the top-level native window is not a Boca SWA window.
+  EXPECT_CALL(*boca_app_client(), IsBocaAppWindow(_)).WillOnce(Return(false));
+
+  EXPECT_CALL(*mock_content_settings_handler(),
+              SetContentSettingForOrigin(_, _, _))
+      .Times(0);
+
+  base::test::TestFuture<bool> success_future;
+  remote()->SetSitePermission(requested_url, mojom::Permission::kCamera,
+                              mojom::PermissionSetting::kAllow,
+                              success_future.GetCallback());
+  EXPECT_FALSE(success_future.Get());
+  remote().FlushForTesting();
+  EXPECT_FALSE(remote().is_connected());
 }
 
 struct GeminiStatusTestParam {

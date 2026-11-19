@@ -12,9 +12,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/ash/components/boca/shared_crd_session_wrapper.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/aura/window.h"
 
 namespace ash::boca {
 namespace {
@@ -55,6 +57,16 @@ void BocaAppClientImpl::OpenFeedbackDialog() {
                            /*description_placeholder_text=*/std::string(),
                            kBocaAppFeedbackCategoryTag,
                            /*extra_diagnostics=*/std::string());
+}
+
+bool BocaAppClientImpl::IsBocaAppWindow(aura::Window* window) {
+  if (!window) {
+    return false;
+  }
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
+  return browser &&
+         ash::IsBrowserForSystemWebApp(*browser, SystemWebAppType::BOCA);
 }
 
 std::unique_ptr<SharedCrdSessionWrapper>

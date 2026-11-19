@@ -9,6 +9,10 @@
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 
+namespace aura {
+class Window;
+}
+
 namespace ash::boca {
 
 class SharedCrdSessionWrapper;
@@ -36,6 +40,9 @@ class BocaAppClient {
   virtual std::string GetSchoolToolsServerBaseUrl();
 
   virtual void OpenFeedbackDialog();
+
+  // Returns whether the specified window belongs to the Boca System Web App.
+  virtual bool IsBocaAppWindow(aura::Window* window);
 
   // TODO(crbug.com/447355422): Make it pure.
   // Gets a new `SharedCrdSessionWrapper` instance for the current profile.

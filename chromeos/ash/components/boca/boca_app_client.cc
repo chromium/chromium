@@ -57,6 +57,10 @@ std::string BocaAppClient::GetSchoolToolsServerBaseUrl() {
 // Implemented in boca_app_client_impl.cc
 void BocaAppClient::OpenFeedbackDialog() {}
 
+bool BocaAppClient::IsBocaAppWindow(aura::Window* window) {
+  return false;
+}
+
 std::unique_ptr<SharedCrdSessionWrapper>
 BocaAppClient::CreateSharedCrdSessionWrapper() {
   return nullptr;
