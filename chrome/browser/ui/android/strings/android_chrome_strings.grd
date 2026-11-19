@@ -1659,6 +1659,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_PASSWORD_SUBPAGE_NAVIGATION_BUTTON" desc="Text for the button in the password check row in the Safety Check page indicating that upon clicking on it, the user will be redirected to the Safety Hub passwords subpage.">
         View details
       </message>
+      <message name="IDS_SAFETY_HUB_PASSWORDS_SUBPAGE_HEADER" desc="Header text shown at the top of the Safety Check passwords subpage explaining that users can check if their passwords are safe or compromised.">
+        Make sure your passwords are safe, find out if they’ve been compromised, and get advice to help protect yourself online
+      </message>
       <message name="IDS_SAFETY_HUB_PASSWORDS_NAVIGATION_BUTTON" desc="Text for the button in the password check row in the Safety Check page indicating that upon clicking on it, the user will be redirected to the Google password manager.">
         Go to Password Manager
       </message>

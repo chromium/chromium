@@ -68,9 +68,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     static final String SAFE_BROWSING_LEARN_MORE_URL =
             "https://support.google.com/chrome?p=safe_browsing_preferences";
 
-    @VisibleForTesting
-    static final String HELP_CENTER_URL = "https://support.google.com/chrome?p=safety_check";
-
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 

@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 @NullMarked
 public abstract class SafetyHubBaseFragment extends ChromeBaseSettingsFragment {
+    static final String HELP_CENTER_URL = "https://support.google.com/chrome?p=safety_check";
+
     private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
 
     @Override
