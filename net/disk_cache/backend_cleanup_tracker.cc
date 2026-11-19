@@ -23,8 +23,7 @@ namespace disk_cache {
 namespace {
 
 using TrackerMap =
-    std::unordered_map<base::FilePath,
-                       raw_ptr<BackendCleanupTracker, CtnExperimental>>;
+    std::unordered_map<base::FilePath, raw_ptr<BackendCleanupTracker>>;
 struct AllBackendCleanupTrackers {
   TrackerMap map;
 

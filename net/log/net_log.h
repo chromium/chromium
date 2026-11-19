@@ -383,11 +383,10 @@ class NET_EXPORT NetLog {
   //
   // In practice |observers_| will be very small (<5) so O(n)
   // operations on it are fine.
-  std::vector<raw_ptr<ThreadSafeObserver, VectorExperimental>> observers_
-      GUARDED_BY(lock_);
+  std::vector<raw_ptr<ThreadSafeObserver>> observers_ GUARDED_BY(lock_);
 
-  std::vector<raw_ptr<ThreadSafeCaptureModeObserver, VectorExperimental>>
-      capture_mode_observers_ GUARDED_BY(lock_);
+  std::vector<raw_ptr<ThreadSafeCaptureModeObserver>> capture_mode_observers_
+      GUARDED_BY(lock_);
 };
 
 }  // namespace net

@@ -74,8 +74,7 @@ class NET_EXPORT LinuxSystemProxyResolutionService
 
   // Typed view of the requests in the base class's `pending_requests_`. This
   // allows the destructor to abort in-flight requests without downcasting.
-  std::set<raw_ptr<LinuxSystemProxyResolutionRequest, SetExperimental>>
-      linux_pending_requests_;
+  std::set<raw_ptr<LinuxSystemProxyResolutionRequest>> linux_pending_requests_;
 
   // Used to launch proxy resolution requests. Individual
   // LinuxSystemProxyResolutionRequest instances use this to initiate proxy

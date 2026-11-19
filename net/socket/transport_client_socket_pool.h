@@ -548,7 +548,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                     // pointer of each element of |jobs_| stored either in
                     // |unassigned_jobs_|, or as the associated |job_| of an
                     // element of |unbound_requests_|.
-    std::list<raw_ptr<ConnectJob, CtnExperimental>> unassigned_jobs_;
+    std::list<raw_ptr<ConnectJob>> unassigned_jobs_;
     RequestQueue unbound_requests_;
     size_t active_socket_count_ = 0;  // number of active client sockets
     // A timer for when to start the backup job.
@@ -809,7 +809,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
 
   // Pools that create connections through |this|.  |this| will try to close
   // their idle sockets when it stalls.  Must be empty on destruction.
-  std::set<raw_ptr<HigherLayeredPool, SetExperimental>> higher_pools_;
+  std::set<raw_ptr<HigherLayeredPool>> higher_pools_;
 
   const raw_ptr<SSLClientContext> ssl_client_context_;
 

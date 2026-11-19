@@ -41,7 +41,7 @@ namespace net {
 // DohProviderEntries are only constructed with static data in production.
 struct NET_EXPORT DohProviderEntry {
  public:
-  using List = std::vector<raw_ptr<const DohProviderEntry, VectorExperimental>>;
+  using List = std::vector<raw_ptr<const DohProviderEntry>>;
 
   std::string_view provider;
   // Avoid using base::Feature& and use raw_ref instead. Use feature.get()

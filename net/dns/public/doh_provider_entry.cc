@@ -393,7 +393,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
 
   static const base::NoDestructor<DohProviderEntry::List> providers(
       base::ToVector(*entries, [](const DohProviderEntry& entry) {
-        return raw_ptr<const DohProviderEntry, VectorExperimental>(&entry);
+        return raw_ptr<const DohProviderEntry>(&entry);
       }));
   return *providers;
 }

@@ -148,7 +148,7 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   // Set of URL requests to hold the requests that reduce the accuracy of
   // throughput computation. These requests are not used in throughput
   // computation.
-  typedef std::unordered_set<raw_ptr<const URLRequest, CtnExperimental>>
+  typedef std::unordered_set<raw_ptr<const URLRequest>>
       AccuracyDegradingRequests;
 
   // Returns the computed downstream throughput in kilobits per second if it

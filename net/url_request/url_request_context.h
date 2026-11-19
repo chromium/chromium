@@ -187,7 +187,7 @@ class NET_EXPORT URLRequestContext final {
 
   // Gets the URLRequest objects that hold a reference to this
   // URLRequestContext.
-  std::set<raw_ptr<const URLRequest, SetExperimental>>* url_requests() const {
+  std::set<raw_ptr<const URLRequest>>* url_requests() const {
     return url_requests_.get();
   }
 
@@ -394,8 +394,7 @@ class NET_EXPORT URLRequestContext final {
 
   std::unique_ptr<TransportSecurityPersister> transport_security_persister_;
 
-  std::unique_ptr<std::set<raw_ptr<const URLRequest, SetExperimental>>>
-      url_requests_;
+  std::unique_ptr<std::set<raw_ptr<const URLRequest>>> url_requests_;
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   std::unique_ptr<unexportable_keys::UnexportableKeyService>

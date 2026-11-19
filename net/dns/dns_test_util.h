@@ -425,8 +425,7 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
 
   bool force_doh_server_available_ = true;
   std::unique_ptr<DnsProbeRunner> next_probe_runner_;
-  std::set<raw_ptr<MockDohProbeRunner, SetExperimental>>
-      running_doh_probe_runners_;
+  std::set<raw_ptr<MockDohProbeRunner>> running_doh_probe_runners_;
 
   base::WeakPtrFactory<MockDnsTransactionFactory> weak_ptr_factory_{this};
 };

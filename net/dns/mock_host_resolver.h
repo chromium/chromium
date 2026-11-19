@@ -213,7 +213,7 @@ class MockHostResolverBase : public HostResolver {
     std::optional<RuleResultOrError> default_result_;
   };
 
-  using RequestMap = std::map<size_t, raw_ptr<RequestBase, CtnExperimental>>;
+  using RequestMap = std::map<size_t, raw_ptr<RequestBase>>;
 
   // A set of states in MockHostResolver. This is used to observe the internal
   // state variables after destructing a MockHostResolver.
@@ -493,7 +493,7 @@ class MockHostResolverBase : public HostResolver {
   const int initial_cache_invalidation_num_;
   std::map<HostCache::Key, int> cache_invalidation_nums_;
 
-  std::set<raw_ptr<MdnsListenerImpl, SetExperimental>> listeners_;
+  std::set<raw_ptr<MdnsListenerImpl>> listeners_;
 
   size_t next_request_id_ = 1;
 

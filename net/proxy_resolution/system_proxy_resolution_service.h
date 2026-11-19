@@ -85,8 +85,7 @@ class NET_EXPORT SystemProxyResolutionService : public ProxyResolutionService {
   // the std::unique_ptr<ProxyResolutionRequest> returned from ResolveProxy().
   // Platform subclasses static_cast to their concrete request type only in
   // their destructor cleanup loop.
-  std::set<raw_ptr<SystemProxyResolutionRequest, SetExperimental>>
-      pending_requests_;
+  std::set<raw_ptr<SystemProxyResolutionRequest>> pending_requests_;
 
   // Once set, no new platform proxy requests are started.
   bool is_shutting_down_ = false;
