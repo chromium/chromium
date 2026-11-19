@@ -1223,7 +1223,7 @@ BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
 
 // Enables toggling the PiP "auto layout" mode (e.g. snap to the display edge)
 // via a pin button on PiP windows.
-BASE_FEATURE(kPipAutoLayoutToggle, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPipAutoLayoutToggle, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.

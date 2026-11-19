@@ -1551,7 +1551,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   constexpr int kTimestampHeight = 16;
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/581276704): Use this as `kOriginRightMargin` on ChromeOS
-  // when `ash::features::kPipAutoLayoutToggle` is enabled by default.
+  // when `ash::features::kPipAutoLayoutToggle` is removed.
   constexpr int kOriginRightMarginWithPinButton =
       kOriginRightMargin + kPinButtonSize.width();
   const int origin_right_margin =
