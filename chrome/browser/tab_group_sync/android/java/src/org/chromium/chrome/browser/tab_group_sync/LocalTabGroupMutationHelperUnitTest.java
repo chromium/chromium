@@ -268,7 +268,7 @@ public class LocalTabGroupMutationHelperUnitTest {
     public void testUpdateTabGroup_AddTabsFromSync() {
         // One local group with one tab syncing.
         addOneTab();
-        when(mTabModel.getTabGroupCollapsed(TOKEN_1)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TOKEN_1))).thenReturn(true);
 
         // One saved group with two tabs: both with no local mapping.
         SavedTabGroup savedTabGroup =

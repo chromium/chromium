@@ -242,7 +242,9 @@ public class NextTabSelectionUtil {
 
         // Don't keep selection inside a collapsed tab group.
         Token groupId = anchorTab.getTabGroupId();
-        if (groupId == null || model.getTabGroupCollapsed(groupId)) return null;
+        if (groupId == null || model.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId))) {
+            return null;
+        }
 
         List<Tab> tabsInGroup = model.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
         int indexInGroup = tabsInGroup.indexOf(anchorTab);
@@ -253,7 +255,7 @@ public class NextTabSelectionUtil {
 
     private static boolean isTabGroupCollapsed(TabModel model, Tab tab) {
         Token groupId = tab.getTabGroupId();
-        return groupId != null && model.getTabGroupCollapsed(groupId);
+        return groupId != null && model.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId));
     }
 
     private static boolean validNextTab(@Nullable Tab tab, Collection<Tab> closingTabs) {

@@ -338,7 +338,7 @@ public class NextTabSelectionUtilUnitTest {
         Tab tab1 = createTab();
         Tab tab2 = createTab();
 
-        when(mTabModel.getTabGroupCollapsed(groupId)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId))).thenReturn(true);
         setUpTabsInTabModel(mTabModel, List.of(tab0, tab1, tab2));
 
         Tab result = NextTabSelectionUtil.findNearbyNotClosingTab(mTabModel, 1, List.of(tab1));
@@ -414,7 +414,7 @@ public class NextTabSelectionUtilUnitTest {
         Tab tab3 = createTab();
         setUpTabsInTabModel(mTabModel, List.of(tab0, tab1, tab2, tab3));
         setUpTabGroup(mTabModel, groupId, List.of(tab1, tab2));
-        when(mTabModel.getTabGroupCollapsed(groupId)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId))).thenReturn(true);
 
         setCurrentTab(tab2);
         assertEquals(tab3, getNextTabIfClosed(mTabModel, tab2, false));

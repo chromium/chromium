@@ -1188,7 +1188,7 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(List.of(mTab1, mTab2));
-        when(mTabModel.getTabGroupCollapsed(groupId)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId))).thenReturn(true);
 
         // Setup mModel indices.
         when(mTabModel.indexOf(mTab1)).thenReturn(0);

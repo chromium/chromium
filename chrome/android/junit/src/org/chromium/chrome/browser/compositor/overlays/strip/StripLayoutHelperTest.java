@@ -5422,7 +5422,7 @@ public class StripLayoutHelperTest {
         // Mark the group as collapsed. Fake a click on the group indicator.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
-        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID_1))).thenReturn(true);
         mStripLayoutHelper.onClick(
                 TIMESTAMP, views[0], MotionEventUtils.MOTION_EVENT_BUTTON_NONE, 0);
 
@@ -5635,10 +5635,12 @@ public class StripLayoutHelperTest {
         // Group first two tabs and collapse.
         initializeTest(/* tabIndex= */ 3);
         groupTabs(0, 2, TAB_GROUP_ID_1);
-        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID_1))).thenReturn(true);
         doAnswer(
                         invocation -> {
-                            when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(false);
+                            when(mModel.getTabGroupCollapsed(
+                                            TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                                    .thenReturn(false);
                             return null;
                         })
                 .when(mModel)
@@ -5683,10 +5685,12 @@ public class StripLayoutHelperTest {
         StripLayoutGroupTitle groupTitle = mStripLayoutHelper.findGroupTitle(TAB_GROUP_ID_1);
         assertNotNull(groupTitle);
         mStripLayoutHelper.collapseTabGroupForTesting(groupTitle, true);
-        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID_1))).thenReturn(true);
         doAnswer(
                         invocation -> {
-                            when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(false);
+                            when(mModel.getTabGroupCollapsed(
+                                            TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                                    .thenReturn(false);
                             mStripLayoutHelper.collapseTabGroupForTesting(groupTitle, false);
                             return null;
                         })
@@ -6733,7 +6737,7 @@ public class StripLayoutHelperTest {
     public void testMultiSelect_ShiftClick_ThroughCollapsedGroup_ExpandsGroup() {
         initializeTest(/* tabIndex= */ 0);
         groupTabs(1, 4, TAB_GROUP_ID_1);
-        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
+        when(mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID_1))).thenReturn(true);
         // Update layout to set view draw properties
         resizeStripAndUpdateLayout(STRIP_WIDTH);
         StripLayoutView[] stripViews = mStripLayoutHelper.getStripLayoutViewsForTesting();

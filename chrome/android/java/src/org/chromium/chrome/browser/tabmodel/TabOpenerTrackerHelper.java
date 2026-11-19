@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -190,7 +191,7 @@ import java.util.Set;
 
     private boolean isTabGroupCollapsed(TabModel tabModel, Tab tab) {
         Token groupId = tab.getTabGroupId();
-        return groupId != null && tabModel.getTabGroupCollapsed(groupId);
+        return groupId != null && tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId));
     }
 
     // ============================================================================================

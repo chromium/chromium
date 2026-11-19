@@ -197,7 +197,10 @@ final class UndoGroupRestorer {
 
             if (tabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))) {
                 mergeIntoLiveGroup(
-                        tabModel, groupId, restoredTabs, tabModel.getTabGroupCollapsed(groupId));
+                        tabModel,
+                        groupId,
+                        restoredTabs,
+                        tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId)));
                 continue;
             }
 
@@ -221,7 +224,7 @@ final class UndoGroupRestorer {
                             tabModel,
                             localGroupId,
                             restoredTabs,
-                            tabModel.getTabGroupCollapsed(localGroupId));
+                            tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(localGroupId)));
                 }
                 continue;
             }
@@ -332,7 +335,7 @@ final class UndoGroupRestorer {
                     indexInGroup == TabList.INVALID_TAB_INDEX ? null : indexInGroup,
                     TabGroupMergeNotificationType.DONT_NOTIFY);
         }
-        if (tabModel.getTabGroupCollapsed(groupId) != shouldCollapse) {
+        if (tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId)) != shouldCollapse) {
             tabModel.setTabGroupCollapsed(groupId, shouldCollapse, /* animate= */ false);
         }
     }

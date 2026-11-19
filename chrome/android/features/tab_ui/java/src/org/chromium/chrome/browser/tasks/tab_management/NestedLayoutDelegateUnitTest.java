@@ -160,7 +160,8 @@ public class NestedLayoutDelegateUnitTest {
     public void testOnTabAdded_TabInExpandedGroup() {
         setupTabsInModel(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(false);
 
         int index = mDelegate.onTabAdded(mTab1);
 
@@ -174,7 +175,8 @@ public class NestedLayoutDelegateUnitTest {
     public void testOnTabAdded_TabInCollapsedGroup_NewHeader() {
         setupTabsInModel(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(true);
 
         int index = mDelegate.onTabAdded(mTab1);
 
@@ -189,7 +191,8 @@ public class NestedLayoutDelegateUnitTest {
         addGroupHeaderToModelList(TAB1_ID);
         setupTabsInModel(mTab1, mTab2);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(true);
 
         int index = mDelegate.onTabAdded(mTab2);
 
@@ -576,7 +579,8 @@ public class NestedLayoutDelegateUnitTest {
         addGroupHeaderToModelList(TAB1_ID);
 
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(true);
 
         mDelegate.didMoveTabOutOfGroup(mTab3, TAB_GROUP_ID);
 
@@ -684,7 +688,8 @@ public class NestedLayoutDelegateUnitTest {
         assertEquals(2, mModelList.size());
 
         when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(List.of(mTab1, mTab2, mTab3));
 
@@ -838,10 +843,12 @@ public class NestedLayoutDelegateUnitTest {
     public void testGetGroupCardTypeAndIsGroupCollapsed() {
         assertEquals(TAB_GROUP, mDelegate.getGroupCardType());
 
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         assertTrue(mDelegate.isGroupCollapsed(TAB_GROUP_ID));
 
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(false);
         assertFalse(mDelegate.isGroupCollapsed(TAB_GROUP_ID));
     }
 

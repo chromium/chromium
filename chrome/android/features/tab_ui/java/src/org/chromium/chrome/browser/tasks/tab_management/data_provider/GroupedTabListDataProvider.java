@@ -373,7 +373,8 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
     }
 
     private boolean isGroupCollapsed(TabModel model, Token tabGroupId) {
-        return !mSupportsGroupExpansion || model.getTabGroupCollapsed(tabGroupId);
+        return !mSupportsGroupExpansion
+                || model.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId));
     }
 
     private boolean isGroupSelected(@Nullable Tab selectedTab, Token tabGroupId) {

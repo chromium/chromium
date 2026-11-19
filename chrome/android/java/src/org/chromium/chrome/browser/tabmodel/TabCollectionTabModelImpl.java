@@ -1630,7 +1630,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public boolean getTabGroupCollapsed(Token tabGroupId) {
+    public boolean getTabGroupCollapsed(TabGroupId tabGroupId) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null) return false;
         return TabCollectionTabModelImplJni.get()
@@ -2053,7 +2053,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 if (isInGroup) {
                     assumeNonNull(tabGroupId);
                     setLastShownTabForGroup(tabGroupId, newSelectedTab);
-                    if (getTabGroupCollapsed(tabGroupId)) {
+                    if (getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId))) {
                         setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
                     }
                 }
@@ -2461,7 +2461,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
 
         // Ensure the destination group is not collapsed.
-        boolean wasDestinationTabGroupCollapsed = getTabGroupCollapsed(destinationTabGroupId);
+        boolean wasDestinationTabGroupCollapsed =
+                getTabGroupCollapsed(TabGroupId.fromRawToken(destinationTabGroupId));
         if (wasDestinationTabGroupCollapsed) {
             setTabGroupCollapsed(destinationTabGroupId, /* isCollapsed= */ false);
         }
@@ -2871,7 +2872,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         setTabGroupColor(
                 TabGroupId.fromRawToken(tabGroupId),
                 getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
-        setTabGroupCollapsed(tabGroupId, getTabGroupCollapsed(tabGroupId));
+        setTabGroupCollapsed(tabGroupId, getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId)));
     }
 
     @VisibleForTesting
@@ -2967,7 +2968,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         boolean getTabGroupCollapsed(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId);
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
         boolean detachedTabGroupExists(
                 JniPtr<NativeTabCollectionTabModelImpl> self,

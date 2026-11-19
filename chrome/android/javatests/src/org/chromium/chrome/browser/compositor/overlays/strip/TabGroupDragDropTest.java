@@ -1038,7 +1038,8 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                             "Dropped group should remain collapsed in destination window",
                             destActivity
                                     .getCurrentTabModel()
-                                    .getTabGroupCollapsed(sourceGroupId[0]));
+                                    .getTabGroupCollapsed(
+                                            TabGroupId.fromRawToken(sourceGroupId[0])));
                 });
     }
 
@@ -1107,7 +1108,8 @@ public class TabGroupDragDropTest extends TabStripDragDropTestBase {
                             "Dropped group should expand when strip is hidden",
                             destActivity
                                     .getCurrentTabModel()
-                                    .getTabGroupCollapsed(sourceGroupId[0]));
+                                    .getTabGroupCollapsed(
+                                            TabGroupId.fromRawToken(sourceGroupId[0])));
                 });
     }
 

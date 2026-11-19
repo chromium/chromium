@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -241,8 +242,9 @@ public class TabOpenerTrackerHelperUnitTest {
         Tab currentTab = createTab(parentTab.getId());
         Tab childTab = createTab(currentTab.getId());
         childTab.setTabGroupId(groupId);
-        doReturn(true).when(mTabModel).getTabGroupCollapsed(groupId);
-        assertTrue(mTabModel.getTabGroupCollapsed(childTab.getTabGroupId()));
+        doReturn(true).when(mTabModel).getTabGroupCollapsed(TabGroupId.fromRawToken(groupId));
+        assertTrue(
+                mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(childTab.getTabGroupId())));
 
         mHelper.addRelatedTabForTesting(parentTab.getId());
         mHelper.addRelatedTabForTesting(currentTab.getId());

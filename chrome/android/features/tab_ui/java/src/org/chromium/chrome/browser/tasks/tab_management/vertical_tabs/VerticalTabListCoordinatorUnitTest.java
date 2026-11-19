@@ -1149,7 +1149,7 @@ public class VerticalTabListCoordinatorUnitTest {
         final boolean[] collapsedState = {true};
         doAnswer(invocation -> collapsedState[0])
                 .when(mTabModel)
-                .getTabGroupCollapsed(any(Token.class));
+                .getTabGroupCollapsed(any(TabGroupId.class));
         doAnswer(
                         invocation -> {
                             collapsedState[0] = invocation.getArgument(1);
@@ -1240,7 +1240,8 @@ public class VerticalTabListCoordinatorUnitTest {
     public void testTabGroupHeaderActionButton_NullGroupId_ReturnsNull() {
         Tab tab = prepareMockTab(mMockTab1, TAB_ID_1);
         setupMockTabGroup(TAB_GROUP_ID, List.of(tab));
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(true);
 
         boolean[] ungroupedAfterTitle = {false};
         when(tab.getTabGroupId()).thenAnswer(_ -> ungroupedAfterTitle[0] ? null : TAB_GROUP_ID);
@@ -1271,7 +1272,7 @@ public class VerticalTabListCoordinatorUnitTest {
         final boolean[] collapsedState = {false};
         doAnswer(invocation -> collapsedState[0])
                 .when(mTabModel)
-                .getTabGroupCollapsed(any(Token.class));
+                .getTabGroupCollapsed(any(TabGroupId.class));
         doAnswer(
                         invocation -> {
                             collapsedState[0] = invocation.getArgument(1);
@@ -1794,7 +1795,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         })
                 .when(mTabModel)
                 .setTabGroupCollapsed(eq(groupId), anyBoolean(), anyBoolean());
-        when(mTabModel.getTabGroupCollapsed(groupId)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId))).thenReturn(true);
 
         mIsVerticalTabsActiveSupplier.set(true);
         createCoordinator();

@@ -678,7 +678,7 @@ public interface TabModel extends TabList {
     void setTabGroupColor(TabGroupId tabGroupId, @TabGroupColorId int color);
 
     /** Returns whether the tab group is expanded or collapsed. */
-    boolean getTabGroupCollapsed(Token tabGroupId);
+    boolean getTabGroupCollapsed(TabGroupId tabGroupId);
 
     /** Sets whether the tab group is expanded or collapsed. */
     default void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed) {

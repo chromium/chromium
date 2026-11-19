@@ -25,6 +25,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Set;
 
@@ -176,7 +177,7 @@ public class TabMultiSelectHelperUnitTest {
     @Test
     public void testHandleShiftClick_AutoExpandsGroup() {
         when(mTab2.getTabGroupId()).thenReturn(GROUP_ID);
-        when(mTabModel.getTabGroupCollapsed(GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(GROUP_ID))).thenReturn(true);
 
         mHelper.setAnchorTabIdForTesting(TAB1_ID);
         mHelper.handleTabClick(TAB3_ID, KeyEvent.META_SHIFT_ON);

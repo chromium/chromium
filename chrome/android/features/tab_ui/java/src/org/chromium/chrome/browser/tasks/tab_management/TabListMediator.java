@@ -1319,7 +1319,7 @@ public class TabListMediator implements TabListNotificationHandler {
         TabModel tabModel = getCurrentTabModelChecked();
         if (!tabModel.containsTabGroup(TabGroupId.fromRawToken(tabGroupId))) return;
 
-        boolean isCollapsed = tabModel.getTabGroupCollapsed(tabGroupId);
+        boolean isCollapsed = tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId));
         boolean newCollapsedState = !isCollapsed;
 
         tabModel.setTabGroupCollapsed(tabGroupId, newCollapsedState, /* animate= */ false);

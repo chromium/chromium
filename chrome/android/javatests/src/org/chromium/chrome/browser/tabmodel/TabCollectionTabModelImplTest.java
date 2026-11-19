@@ -1401,7 +1401,9 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.addTabGroupObserver(collapsedObserver);
                     mCollectionModel.setTabGroupCollapsed(
                             tabGroupId, /* isCollapsed= */ true, /* animate= */ false);
-                    assertTrue(mCollectionModel.getTabGroupCollapsed(tabGroupId));
+                    assertTrue(
+                            mCollectionModel.getTabGroupCollapsed(
+                                    TabGroupId.fromRawToken(tabGroupId)));
                     mCollectionModel.removeTabGroupObserver(collapsedObserver);
                 });
         collapsedChangedHelper.waitForOnly("setTabGroupCollapsed true failed");
@@ -1422,7 +1424,9 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mCollectionModel.addTabGroupObserver(collapsedDeleteObserver);
                     mCollectionModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
-                    assertFalse(mCollectionModel.getTabGroupCollapsed(tabGroupId));
+                    assertFalse(
+                            mCollectionModel.getTabGroupCollapsed(
+                                    TabGroupId.fromRawToken(tabGroupId)));
                     mCollectionModel.removeTabGroupObserver(collapsedDeleteObserver);
                 });
         collapsedDeletedHelper.waitForOnly("setTabGroupCollapsed failed");
@@ -1443,14 +1447,17 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.setIndex(
                             mCollectionModel.indexOf(tab0), TabSelectionType.FROM_USER);
                     mCollectionModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ true);
-                    assertTrue(mCollectionModel.getTabGroupCollapsed(tabGroupId));
+                    assertTrue(
+                            mCollectionModel.getTabGroupCollapsed(
+                                    TabGroupId.fromRawToken(tabGroupId)));
 
                     mCollectionModel.setIndex(
                             mCollectionModel.indexOf(tab2), TabSelectionType.FROM_USER);
                     assertEquals(tab2, mCollectionModel.getCurrentTabSupplier().get());
                     assertFalse(
                             "Selecting a tab should expand its collapsed group.",
-                            mCollectionModel.getTabGroupCollapsed(tabGroupId));
+                            mCollectionModel.getTabGroupCollapsed(
+                                    TabGroupId.fromRawToken(tabGroupId)));
                 });
     }
 
@@ -1548,7 +1555,9 @@ public class TabCollectionTabModelImplTest {
             assertEquals(
                     newColor,
                     mCollectionModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId)));
-            assertEquals(newCollapsed, mCollectionModel.getTabGroupCollapsed(tabGroupId));
+            assertEquals(
+                    newCollapsed,
+                    mCollectionModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId)));
 
             assertEquals(1, titleCallback.getCallCount());
             assertEquals(1, colorCallback.getCallCount());

@@ -67,7 +67,8 @@ public class TabGroupMetadataExtractor {
         int tabGroupColor = tabModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
         @Nullable String tabGroupTitle =
                 tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
-        boolean tabGroupCollapsed = tabModel.getTabGroupCollapsed(tabGroupId);
+        boolean tabGroupCollapsed =
+                tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId));
 
         // If the tab group is collapsed, do not select any tab within the group.
         if (tabGroupCollapsed) selectedTabId = Tab.INVALID_TAB_ID;

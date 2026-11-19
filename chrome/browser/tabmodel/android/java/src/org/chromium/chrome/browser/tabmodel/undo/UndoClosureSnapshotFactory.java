@@ -93,7 +93,8 @@ public final class UndoClosureSnapshotFactory {
                 String groupTitle = tabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId));
                 int groupColor =
                         tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(groupId));
-                boolean groupCollapsed = tabModel.getTabGroupCollapsed(groupId);
+                boolean groupCollapsed =
+                        tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(groupId));
                 boolean groupIsHiding =
                         tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(groupId));
 

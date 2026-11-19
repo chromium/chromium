@@ -582,7 +582,8 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 // this for collapsed groups so the active tab is unchanged and a hidden tab is not
                 // activated.
                 if (mDragStartGroupId == null
-                        || !tabModel.getTabGroupCollapsed(mDragStartGroupId)) {
+                        || !tabModel.getTabGroupCollapsed(
+                                TabGroupId.fromRawToken(mDragStartGroupId))) {
                     selectTabForGroup(tabModel, tabsInGroup);
                 }
 

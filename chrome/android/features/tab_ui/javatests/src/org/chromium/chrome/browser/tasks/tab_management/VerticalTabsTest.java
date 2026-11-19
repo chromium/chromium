@@ -428,13 +428,19 @@ public class VerticalTabsTest {
         clickTabItemAtPosition(0);
 
         CriteriaHelper.pollUiThread(
-                () -> selector.getCurrentModel().getTabGroupCollapsed(tab1.getTabGroupId()),
+                () ->
+                        selector.getCurrentModel()
+                                .getTabGroupCollapsed(
+                                        TabGroupId.fromRawToken(tab1.getTabGroupId())),
                 "Tab group should be collapsed after clicking its header in Left Rail.");
 
         clickTabItemAtPosition(0);
 
         CriteriaHelper.pollUiThread(
-                () -> !selector.getCurrentModel().getTabGroupCollapsed(tab1.getTabGroupId()),
+                () ->
+                        !selector.getCurrentModel()
+                                .getTabGroupCollapsed(
+                                        TabGroupId.fromRawToken(tab1.getTabGroupId())),
                 "Tab group should be expanded after clicking its header in Left Rail again.");
     }
 
@@ -1104,7 +1110,7 @@ public class VerticalTabsTest {
                 () -> model.setTabGroupCollapsed(tab2.getTabGroupId(), true));
 
         CriteriaHelper.pollUiThread(
-                () -> model.getTabGroupCollapsed(tab2.getTabGroupId()),
+                () -> model.getTabGroupCollapsed(TabGroupId.fromRawToken(tab2.getTabGroupId())),
                 "Tab group should be collapsed initially.");
 
         // In the Flat RV, position 0 is tab4, position 1 is group header for tab3/tab2, position 2
@@ -1119,7 +1125,7 @@ public class VerticalTabsTest {
         // 3. Verify the tab group is automatically expanded and all 4 tabs are multi-selected.
         CriteriaHelper.pollUiThread(
                 () ->
-                        !model.getTabGroupCollapsed(tab2.getTabGroupId())
+                        !model.getTabGroupCollapsed(TabGroupId.fromRawToken(tab2.getTabGroupId()))
                                 && model.getMultiSelectedTabsCount() == 4
                                 && model.isTabMultiSelected(tab4.getId())
                                 && model.isTabMultiSelected(tab3.getId())

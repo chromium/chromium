@@ -2083,7 +2083,9 @@ public class StripLayoutHelper
             }
             Token tabGroupId = tab.getTabGroupId();
             updateGroupTextAndSharedState(tabGroupId);
-            if (tabGroupId != null && mModel != null && mModel.getTabGroupCollapsed(tabGroupId)) {
+            if (tabGroupId != null
+                    && mModel != null
+                    && mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId))) {
                 if (selected) {
                     mModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
                 } else {
@@ -3635,7 +3637,7 @@ public class StripLayoutHelper
         if (groupTitle == null || mModel == null) return;
 
         Token tabGroupId = groupTitle.getTabGroupId();
-        boolean isCollapsed = mModel.getTabGroupCollapsed(tabGroupId);
+        boolean isCollapsed = mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId));
         assert isCollapsed == groupTitle.isCollapsed();
 
         mModel.setTabGroupCollapsed(tabGroupId, !isCollapsed, /* animate= */ true);
@@ -4199,7 +4201,8 @@ public class StripLayoutHelper
                 boolean tabSelected = false;
                 if (nextTab != null) {
                     Token nextGroupId = nextTab.getTabGroupId();
-                    if (nextGroupId == null || !mModel.getTabGroupCollapsed(nextGroupId)) {
+                    if (nextGroupId == null
+                            || !mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(nextGroupId))) {
                         TabModelUtils.setIndex(mModel, mModel.indexOf(nextTab));
                         tabSelected = true;
                     }
@@ -4225,7 +4228,8 @@ public class StripLayoutHelper
         }
         Tab tab = getTabById(activeTab.getTabId());
         Token tabGroupId = tab != null ? tab.getTabGroupId() : null;
-        if (tabGroupId != null && mModel.getTabGroupCollapsed(tabGroupId)) {
+        if (tabGroupId != null
+                && mModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId))) {
             mModel.setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ false);
             bringActiveTabToVisibleArea(LayoutManagerImpl.time(), /* animate= */ true);
         }
@@ -4584,7 +4588,9 @@ public class StripLayoutHelper
         if (mStripGroupTitles.length != oldGroupCount) {
             for (int i = 0; i < mStripGroupTitles.length; ++i) {
                 final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
-                boolean isCollapsed = mModel.getTabGroupCollapsed(groupTitle.getTabGroupId());
+                boolean isCollapsed =
+                        mModel.getTabGroupCollapsed(
+                                TabGroupId.fromRawToken(groupTitle.getTabGroupId()));
                 updateTabGroupCollapsed(groupTitle, isCollapsed, false);
             }
             finishAnimationsAndCloseDyingTabs();

@@ -164,7 +164,8 @@ public class UndoGroupRestorerUnitTest {
     public void testPartialGroupMergedAtIndexInGroup() {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(true);
         // The group is collapsed before the merge and expanded by it.
-        when(mTabModel.getTabGroupCollapsed(GROUP_A)).thenReturn(true, false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(GROUP_A)))
+                .thenReturn(true, false);
         UndoClosureSnapshot snapshot =
                 createSnapshot(
                         List.of(
@@ -185,7 +186,7 @@ public class UndoGroupRestorerUnitTest {
                 snapshot);
 
         InOrder inOrder = inOrder(mTabModel);
-        inOrder.verify(mTabModel).getTabGroupCollapsed(GROUP_A);
+        inOrder.verify(mTabModel).getTabGroupCollapsed(TabGroupId.fromRawToken(GROUP_A));
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         Collections.singletonList(mTab2),
@@ -208,7 +209,7 @@ public class UndoGroupRestorerUnitTest {
     @Test
     public void testPartialGroupInvalidIndexInGroupAppendsInModelOrder() {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_A))).thenReturn(true);
-        when(mTabModel.getTabGroupCollapsed(GROUP_A)).thenReturn(false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(GROUP_A))).thenReturn(false);
         when(mTabModel.indexOf(mTab1)).thenReturn(5);
         when(mTabModel.indexOf(mTab2)).thenReturn(3);
         UndoClosureSnapshot snapshot =
@@ -543,7 +544,8 @@ public class UndoGroupRestorerUnitTest {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(GROUP_REOPENED)))
                 .thenReturn(true);
         // The reopened group is collapsed before the merge and expanded by it.
-        when(mTabModel.getTabGroupCollapsed(GROUP_REOPENED)).thenReturn(true, false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(GROUP_REOPENED)))
+                .thenReturn(true, false);
         stubSavedGroup(SYNC_ID_A, GROUP_REOPENED);
 
         UndoClosureSnapshot snapshot =
@@ -562,7 +564,7 @@ public class UndoGroupRestorerUnitTest {
 
         verify(mUiActionHandler, never()).openTabGroup(anyString());
         InOrder inOrder = inOrder(mTabModel);
-        inOrder.verify(mTabModel).getTabGroupCollapsed(GROUP_REOPENED);
+        inOrder.verify(mTabModel).getTabGroupCollapsed(TabGroupId.fromRawToken(GROUP_REOPENED));
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         Collections.singletonList(mTab2),

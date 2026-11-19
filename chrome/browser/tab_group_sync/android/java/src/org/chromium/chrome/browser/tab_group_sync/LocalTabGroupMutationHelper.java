@@ -199,7 +199,7 @@ public class LocalTabGroupMutationHelper {
         // If the tab doesn't exist yet, create a new one.
         int groupStartIndex = mTabModel.indexOf(tabs.get(0));
         Tab parent = tabs.get(0);
-        boolean wasCollapsed = mTabModel.getTabGroupCollapsed(tabGroupId);
+        boolean wasCollapsed = mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId));
         for (int i = 0; i < tabGroup.savedTabs.size(); i++) {
             SavedTabGroupTab savedTab = tabGroup.savedTabs.get(i);
             int desiredTabModelIndex = groupStartIndex + i;

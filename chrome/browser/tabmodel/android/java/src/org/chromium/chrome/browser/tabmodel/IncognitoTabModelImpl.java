@@ -715,7 +715,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public boolean getTabGroupCollapsed(Token tabGroupId) {
+    public boolean getTabGroupCollapsed(TabGroupId tabGroupId) {
         return mDelegateModel.getTabGroupCollapsed(tabGroupId);
     }
 

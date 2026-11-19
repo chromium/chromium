@@ -838,7 +838,7 @@ std::optional<TabGroupVisualData> TabModelJniBridge::GetTabGroupVisualData(
   }
 
   const bool collapsed =
-      Java_TabModelJniBridge_getTabGroupCollapsed(env, jobj, group_id.token());
+      Java_TabModelJniBridge_getTabGroupCollapsed(env, jobj, group_id);
 
   const TabGroupColorId color_id = (color == kInvalidTabGroupColorId)
                                        ? tab_groups::TabGroupColorId::kGrey

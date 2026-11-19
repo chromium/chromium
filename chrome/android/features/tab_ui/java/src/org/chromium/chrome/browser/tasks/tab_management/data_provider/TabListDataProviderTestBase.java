@@ -126,8 +126,9 @@ abstract class TabListDataProviderTestBase {
         when(model.getTabGroupCollapsed(any()))
                 .thenAnswer(
                         invocation -> {
-                            Token tabGroupId = invocation.getArgument(0);
-                            return mCollapsed.getOrDefault(tabGroupId, true);
+                            TabGroupId tabGroupId = invocation.getArgument(0);
+                            return mCollapsed.getOrDefault(
+                                    TabGroupId.toOptionalToken(tabGroupId), true);
                         });
         when(model.containsTabGroup(any()))
                 .thenAnswer(

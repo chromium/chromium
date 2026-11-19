@@ -969,7 +969,8 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testOnTabGroupVisualsChanged_collapsed() {
         Token groupId = new Token(1L, 2L);
-        when(mTabCollectionTabModelImplJni.getTabGroupCollapsed(any(), eq(groupId)))
+        when(mTabCollectionTabModelImplJni.getTabGroupCollapsed(
+                        any(), eq(TabGroupId.fromRawToken(groupId))))
                 .thenReturn(false);
 
         mTabModel.setTabGroupCollapsed(groupId, true);

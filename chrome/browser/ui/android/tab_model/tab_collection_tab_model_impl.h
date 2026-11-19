@@ -106,7 +106,7 @@ class TabCollectionTabModelImpl {
   std::u16string GetTabGroupTitle(
       const tab_groups::TabGroupId& tab_group_id) const;
   int32_t GetTabGroupColor(const tab_groups::TabGroupId& tab_group_id) const;
-  bool GetTabGroupCollapsed(const base::Token& tab_group_id) const;
+  bool GetTabGroupCollapsed(const tab_groups::TabGroupId& tab_group_id) const;
 
   // Checks if a detached tab group exists.
   bool DetachedTabGroupExists(const base::Token& tab_group_id) const;

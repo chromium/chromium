@@ -479,7 +479,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void setTabGroupColor(TabGroupId tabGroupId, int color) {}
 
     @Override
-    public boolean getTabGroupCollapsed(Token tabGroupId) {
+    public boolean getTabGroupCollapsed(TabGroupId tabGroupId) {
         return false;
     }
 

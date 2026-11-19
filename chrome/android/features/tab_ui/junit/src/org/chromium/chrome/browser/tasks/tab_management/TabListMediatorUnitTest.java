@@ -1822,7 +1822,8 @@ public class TabListMediatorUnitTest {
         setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
 
         createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(false);
         mModelList.clear();
 
         mTabModelObserverCaptor
@@ -2417,7 +2418,8 @@ public class TabListMediatorUnitTest {
 
         // Force the group to be expanded so resetWithListOfTabs inserts both the header and the
         // child.
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(false);
 
         // Reset the mediator. It will process childTab, realize it's part of a group,
         // insert the header card first, and then since it's expanded, insert the child card.
@@ -2691,7 +2693,8 @@ public class TabListMediatorUnitTest {
                 .thenReturn(true);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(List.of(mTab1));
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
                 .thenReturn(CUSTOMIZED_DIALOG_TITLE1);
 
@@ -5141,7 +5144,8 @@ public class TabListMediatorUnitTest {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         List<Tab> tabs = List.of(mTab1, tab3);
         createTabGroup(tabs, TAB_GROUP_ID);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(false);
 
         mMediator.resetWithListOfTabs(null, null, false);
         mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, true);
@@ -5484,7 +5488,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(List.of(mTab2, tab3), tabGroupId);
         when(mTab2.getIsPinned()).thenReturn(false);
         when(tab3.getIsPinned()).thenReturn(false);
-        when(mTabModel.getTabGroupCollapsed(tabGroupId)).thenReturn(false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId))).thenReturn(false);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenReturn(List.of(mTab2, tab3));
 
@@ -5534,7 +5538,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(List.of(mTab1, mTab2), tabGroupId);
         when(mTab1.getIsPinned()).thenReturn(false);
         when(mTab2.getIsPinned()).thenReturn(false);
-        when(mTabModel.getTabGroupCollapsed(tabGroupId)).thenReturn(false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId))).thenReturn(false);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenReturn(List.of(mTab1, mTab2));
 
@@ -7387,7 +7391,8 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(tabs, null, false);
 
         // Mock tab model collapse state.
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(false);
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -7402,7 +7407,8 @@ public class TabListMediatorUnitTest {
         histogramWatcher.assertExpected();
 
         // Test expand.
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.VerticalTabs.TabGroupCollapsed", false);
@@ -7634,7 +7640,7 @@ public class TabListMediatorUnitTest {
                 .thenReturn(tabs.size());
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(tabs);
-        when(mTabModel.getTabGroupCollapsed(tabGroupId)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId))).thenReturn(true);
         int firstTabId = tabs.get(0).getId();
         when(mTabModel.getGroupLastShownTabId(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenReturn(firstTabId);
@@ -7659,7 +7665,7 @@ public class TabListMediatorUnitTest {
             @TabListLayoutType int layoutType = mTabListConfig.layoutType;
             boolean isCollapsed =
                     layoutType != TabListLayoutType.NESTED
-                            || mTabModel.getTabGroupCollapsed(tabGroupId);
+                            || mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId));
             model.set(TabProperties.IS_COLLAPSED, isCollapsed);
             if (layoutType == TabListLayoutType.GROUPED
                     && ChromeFeatureList.sAndroidTabUiRefactor.isEnabled()) {
@@ -7678,7 +7684,8 @@ public class TabListMediatorUnitTest {
         createTabGroup(tabs, TAB_GROUP_ID);
 
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(isCollapsed);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(isCollapsed);
         when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(TAB_GROUP_ID)))
                 .thenReturn(COLOR_2);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
@@ -9178,7 +9185,8 @@ public class TabListMediatorUnitTest {
         stubTabModelWithTabs(mTabModel, tabs);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(true);
 
         GroupedTabListDataProvider provider =
                 new GroupedTabListDataProvider(
@@ -9197,7 +9205,8 @@ public class TabListMediatorUnitTest {
         assertEquals(TAB3_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
 
         // Expand inserts the children after the header: [Group, TAB1, TAB2, TAB3].
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(false);
         groupObserver.didChangeTabGroupCollapsed(
                 TAB_GROUP_ID, /* isCollapsed= */ false, /* animate= */ false);
         assertEquals(4, mModelList.size());
@@ -9219,7 +9228,8 @@ public class TabListMediatorUnitTest {
         assertEquals(TAB2_ID, mModelList.get(3).model.get(TabProperties.TAB_ID));
 
         // Collapse removes the children: [TAB3, Group].
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(true);
         groupObserver.didChangeTabGroupCollapsed(
                 TAB_GROUP_ID, /* isCollapsed= */ true, /* animate= */ false);
         assertEquals(2, mModelList.size());
@@ -9470,7 +9480,8 @@ public class TabListMediatorUnitTest {
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE, TAB4_URL);
         createTabGroup(List.of(tab3, tab4), TAB_GROUP_ID);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(isCollapsed);
+        when(mTabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(isCollapsed);
         mMediator.resetWithListOfTabs(
                 List.of(mTab1, tab3, tab4), /* tabGroupSyncIds= */ null, /* quickMode= */ false);
         mDataObserver.onDataReset(List.of(createTabItem(TAB1_ID)));

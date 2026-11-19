@@ -65,7 +65,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         Token targetTabGroupId = tab.getTabGroupId();
 
         if (targetTabGroupId != null
-                && tabModel.getTabGroupCollapsed(targetTabGroupId)
+                && tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(targetTabGroupId))
                 && mModelList.indexFromTabGroupId(targetTabGroupId) != TabModel.INVALID_TAB_INDEX) {
             // Hidden if the group is collapsed and a valid header exists.
             return TabList.INVALID_TAB_INDEX;
@@ -140,7 +140,9 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
             mMediator.updateTabGroupTitle(groupId);
 
             if (newIndex == TabList.INVALID_TAB_INDEX
-                    || mMediator.getCurrentTabModelChecked().getTabGroupCollapsed(groupId)) {
+                    || mMediator
+                            .getCurrentTabModelChecked()
+                            .getTabGroupCollapsed(TabGroupId.fromRawToken(groupId))) {
                 return newIndex;
             }
         }
@@ -398,7 +400,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     @Override
     boolean isGroupCollapsed(Token tabGroupId) {
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        return tabModel.getTabGroupCollapsed(tabGroupId);
+        return tabModel.getTabGroupCollapsed(TabGroupId.fromRawToken(tabGroupId));
     }
 
     @Override
