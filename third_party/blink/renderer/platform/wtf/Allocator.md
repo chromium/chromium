@@ -38,12 +38,13 @@ to learn the design.
 
 #### `USING_FAST_MALLOC`
 
-Before PartitionAlloc become the default, `USING_FAST_MALLOC` had been used to
-specify the allocator to be PartitionAlloc instead of malloc for an object.
-Now `USING_FAST_MALLOC` only makes a difference when PartitionAlloc is disabled
-in the build or [\*Scan](https://crbug.com/1277560) is enabled for blink.
-For now `USING_FAST_MALLOC` is still preferred for non-GC blink objects that
-allow `new`.
+Before PartitionAlloc became the default, `USING_FAST_MALLOC` was used to
+specify PartitionAlloc instead of `malloc` for an object. Now
+`USING_FAST_MALLOC` is a no-op when PartitionAlloc-Everywhere
+(`USE_PARTITION_ALLOC_AS_MALLOC`) is enabled, and only allocates from a
+dedicated `FastMalloc` partition in builds where `malloc` is not backed by
+PartitionAlloc. For now `USING_FAST_MALLOC` is still preferred for non-GC blink
+objects that allow `new`.
 
 ### Discardable memory
 

@@ -70,8 +70,6 @@ struct IntegrityMetadataSet;
 // TODO(yoichio) : Migrate existing ResourceRequest occurrence not using request
 // body to ResourceRequestHead.
 class PLATFORM_EXPORT ResourceRequestHead {
-  DISALLOW_NEW();
-
  public:
   // TODO: Remove this enum from here since it is not used in this class anymore
   enum class RedirectStatus : uint8_t { kFollowedRedirect, kNoRedirect };
@@ -303,8 +301,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
       const network::FetchRetryOptions& fetch_retry_options) {
     fetch_retry_options_ = fetch_retry_options;
   }
-
-
 
   // True if service workers should not get events for the request.
   bool GetSkipServiceWorker() const { return skip_service_worker_; }
@@ -876,7 +872,6 @@ class PLATFORM_EXPORT ResourceRequest final : public ResourceRequestHead {
   void SetHttpBody(scoped_refptr<EncodedFormData>);
 
   ResourceRequestBody& MutableBody() { return body_; }
-
 
  private:
   ResourceRequestBody body_;

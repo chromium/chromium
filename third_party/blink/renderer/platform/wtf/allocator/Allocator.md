@@ -14,8 +14,10 @@ we allocate `Vector`s, `HashTable`s, and `String`s in the Buffer partition.
 
 * ArrayBuffer partition: A partition to allocate `ArrayBufferContents`s.
 
-* FastMalloc partition: A partition to allocate all other objects. Objects
-marked with `USING_FAST_MALLOC` are allocated on the FastMalloc partition.
+* FastMalloc partition: A partition used in non-PartitionAlloc-Everywhere
+builds to allocate all other objects marked with `USING_FAST_MALLOC`. When
+`USE_PARTITION_ALLOC_AS_MALLOC` is enabled, `USING_FAST_MALLOC` is a no-op and
+these objects are allocated via the default `malloc` PartitionAlloc partition.
 
 The Buffer partition and the FastMalloc partition have many buckets. They
 support any arbitrary size of allocations but padding may be added to align the

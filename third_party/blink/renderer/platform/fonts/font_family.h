@@ -36,8 +36,6 @@ namespace blink {
 class SharedFontFamily;
 
 class PLATFORM_EXPORT FontFamily {
-  DISALLOW_NEW();
-
  public:
   // https://drafts.csswg.org/css-fonts/#font-family-prop
   enum class Type : uint8_t { kFamilyName, kGenericFamily };
@@ -89,6 +87,7 @@ class PLATFORM_EXPORT FontFamily {
 class PLATFORM_EXPORT SharedFontFamily : public FontFamily,
                                          public RefCounted<SharedFontFamily> {
   USING_FAST_MALLOC(SharedFontFamily);
+
  public:
   SharedFontFamily(const SharedFontFamily&) = delete;
   SharedFontFamily& operator=(const SharedFontFamily&) = delete;
