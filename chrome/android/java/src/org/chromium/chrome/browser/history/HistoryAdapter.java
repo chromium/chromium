@@ -926,6 +926,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         }
     }
 
+    @Nullable CriticalActionsCoordinator getCriticalActionsCoordinatorForTests(
+            HistoryItemView itemView) {
+        return mCriticalActionsCoordinators.get(itemView);
+    }
+
     ItemGroup getFirstGroupForTests() {
         return getGroupAt(0).first;
     }

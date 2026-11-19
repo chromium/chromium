@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -37,6 +38,7 @@ import android.os.Build.VERSION_CODES;
 import android.provider.Browser;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.EditText;
@@ -478,6 +480,7 @@ public class HistoryUiTest {
 
         // Tapping the chevron expands the list of actions.
         expandIcon.performClick();
+        endCriticalActionsAnimation(view);
         layoutRecyclerView();
         Assert.assertNull(shadowOf(mActivity).peekNextStartedActivity());
         Assert.assertEquals(View.VISIBLE, panelContainer.getVisibility());
@@ -524,21 +527,25 @@ public class HistoryUiTest {
 
         // Tapping the chevron again collapses the list.
         expandIcon.performClick();
+        endCriticalActionsAnimation(view);
         layoutRecyclerView();
         Assert.assertNull(shadowOf(mActivity).peekNextStartedActivity());
         Assert.assertEquals(View.GONE, panelContainer.getVisibility());
         Assert.assertEquals(0f, expandIcon.getRotation(), 0f);
         assertClickActionLabel(expandIcon, "Expand section");
 
-        // Expand it again, and rebind the ViewHolder to another item and back, as when recycled.
+        // Expand it again, and rebind the ViewHolder to another item and back while it's being
+        // expanded, as when recycled.
         expandIcon.performClick();
+        Assert.assertNotNull(getCriticalActionsAnimator(view));
         ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(4);
         Assert.assertNotNull(holder);
         mAdapter.onBindViewHolder(holder, 5);
+        Assert.assertNull(getCriticalActionsAnimator(view));
         Assert.assertEquals(View.GONE, expandIcon.getVisibility());
         Assert.assertEquals(View.GONE, panelContainer.getVisibility());
         mAdapter.onBindViewHolder(holder, 4);
-        // The expanded state is restored, with the icon flipped.
+        // The expanded state is restored, with the icon flipped right away.
         Assert.assertEquals(View.VISIBLE, panelContainer.getVisibility());
         Assert.assertEquals(2, list.getChildCount());
         Assert.assertEquals(180f, expandIcon.getRotation(), 0f);
@@ -567,7 +574,7 @@ public class HistoryUiTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.CRITICAL_ACTION_HISTORY)
-    public void testCriticalActions_DeletionDisabled_NoExtraEndPadding() {
+    public void testCriticalActions_DeletionDisabled_EndPadding() {
         // Deleting history is disabled by policy, so rows have no remove button.
         doReturn(false).when(mPrefService).getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
         mAdapter.setSelectionActive(false);
@@ -582,6 +589,9 @@ public class HistoryUiTest {
         mHistoryProvider.addItem(itemWithoutActions);
         loadItems();
 
+        int defaultEndPadding =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.default_list_row_padding);
+
         // The chevron is the row's end button, so no extra end padding is added.
         HistoryItemView viewWithActions = (HistoryItemView) getItemView(4);
         Assert.assertEquals(itemWithActions, viewWithActions.getItem());
@@ -593,13 +603,20 @@ public class HistoryUiTest {
         // Without any end button, the end padding keeps the text off the edge.
         HistoryItemView viewWithoutActions = (HistoryItemView) getItemView(5);
         Assert.assertEquals(itemWithoutActions, viewWithoutActions.getItem());
-        Assert.assertEquals(
-                mActivity.getResources().getDimensionPixelSize(R.dimen.default_list_row_padding),
-                getContentEndPadding(viewWithoutActions));
-    }
+        Assert.assertEquals(defaultEndPadding, getContentEndPadding(viewWithoutActions));
 
-    private static int getContentEndPadding(HistoryItemView view) {
-        return view.findViewById(R.id.content).getPaddingEnd();
+        // Selection mode hides the chevron, so the row has no end button and gets the padding.
+        toggleItemSelection(2);
+        Assert.assertEquals(View.GONE, viewWithActions.getRemoveButtonForTests().getVisibility());
+        Assert.assertEquals(
+                View.GONE, viewWithActions.getCriticalActionsExpandIcon().getVisibility());
+        Assert.assertEquals(defaultEndPadding, getContentEndPadding(viewWithActions));
+
+        // Leaving selection mode shows the chevron again, so the padding is removed.
+        toggleItemSelection(2);
+        Assert.assertEquals(
+                View.VISIBLE, viewWithActions.getCriticalActionsExpandIcon().getVisibility());
+        Assert.assertEquals(0, getContentEndPadding(viewWithActions));
     }
 
     @Test
@@ -619,6 +636,46 @@ public class HistoryUiTest {
         assertThat(
                 shadowOf(mActivity).peekNextStartedActivity(),
                 allOf(hasAction(equalTo(Intent.ACTION_VIEW)), hasData(itemWithActions.getUrl())));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CRITICAL_ACTION_HISTORY)
+    public void testCriticalActionsAnimation() {
+        mHistoryProvider.addItem(createItemWithCriticalActions());
+        loadItems();
+        HistoryItemView view = (HistoryItemView) getItemView(4);
+        View expandIcon = view.getCriticalActionsExpandIcon();
+        View panelContainer = view.getCriticalActionsContainer();
+        int collapsedHeight = measureHeight(view);
+
+        // Expanding starts with the panel shown, but entirely hidden below the row.
+        expandIcon.performClick();
+        ValueAnimator animator = getCriticalActionsAnimator(view);
+        Assert.assertNotNull(animator);
+        Assert.assertEquals(View.VISIBLE, panelContainer.getVisibility());
+        Assert.assertEquals(collapsedHeight, measureHeight(view));
+
+        // Then the row grows to reveal the panel, moving the rows below down.
+        animator.setCurrentFraction(0.5f);
+        int halfwayHeight = measureHeight(view);
+        animator.end();
+        int expandedHeight = measureHeight(view);
+        Assert.assertTrue(collapsedHeight < halfwayHeight);
+        Assert.assertTrue(halfwayHeight < expandedHeight);
+
+        // Collapsing keeps the panel shown until the rows below have moved back up over it.
+        expandIcon.performClick();
+        animator = getCriticalActionsAnimator(view);
+        Assert.assertNotNull(animator);
+        Assert.assertEquals(expandedHeight, measureHeight(view));
+        animator.setCurrentFraction(0.5f);
+        Assert.assertEquals(View.VISIBLE, panelContainer.getVisibility());
+        halfwayHeight = measureHeight(view);
+        Assert.assertTrue(collapsedHeight < halfwayHeight);
+        Assert.assertTrue(halfwayHeight < expandedHeight);
+        animator.end();
+        Assert.assertEquals(View.GONE, panelContainer.getVisibility());
+        Assert.assertEquals(collapsedHeight, measureHeight(view));
     }
 
     private static void assertClickActionLabel(View view, @Nullable String expectedLabel) {
@@ -1834,6 +1891,31 @@ public class HistoryUiTest {
         assertFalse(
                 "Handler should be disabled when search bar is empty.",
                 historyManager.getHandleBackPressChangedSupplier().get());
+    }
+
+    private @Nullable ValueAnimator getCriticalActionsAnimator(HistoryItemView view) {
+        CriticalActionsCoordinator coordinator =
+                mAdapter.getCriticalActionsCoordinatorForTests(view);
+        Assert.assertNotNull(coordinator);
+        return coordinator.getExpansionAnimatorForTesting();
+    }
+
+    /** Finishes expanding or collapsing the critical actions of the given view. */
+    private void endCriticalActionsAnimation(HistoryItemView view) {
+        ValueAnimator animator = getCriticalActionsAnimator(view);
+        Assert.assertNotNull(animator);
+        animator.end();
+    }
+
+    private int measureHeight(View view) {
+        view.measure(
+                MeasureSpec.makeMeasureSpec(mRecyclerView.getWidth(), MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+        return view.getMeasuredHeight();
+    }
+
+    private static int getContentEndPadding(HistoryItemView view) {
+        return view.findViewById(R.id.content).getPaddingEnd();
     }
 
     private void toggleItemSelection(int position) {

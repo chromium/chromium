@@ -21,6 +21,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history.CriticalActionsProperties.Expansion;
 import org.chromium.chrome.browser.history.CriticalActionsProperties.ItemType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -55,7 +56,7 @@ public class CriticalActionsMediatorTest {
     private void assertHidden() {
         assertFalse(mModel.get(CriticalActionsProperties.EXPAND_ICON_VISIBLE));
         assertNull(mModel.get(CriticalActionsProperties.EXPAND_ICON_CONTENT_DESCRIPTION));
-        assertFalse(mModel.get(CriticalActionsProperties.PANEL_VISIBLE));
+        assertSame(Expansion.COLLAPSED, mModel.get(CriticalActionsProperties.EXPANSION));
         assertNull(mModel.get(CriticalActionsProperties.EXPAND_ICON_CLICK_HANDLER));
         assertNull(mModel.get(CriticalActionsProperties.EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL));
         assertEquals(0, mModelList.size());
@@ -69,8 +70,8 @@ public class CriticalActionsMediatorTest {
         assertEquals(
                 "2 key browsing actions",
                 mModel.get(CriticalActionsProperties.EXPAND_ICON_CONTENT_DESCRIPTION));
-        assertEquals(0f, mModel.get(CriticalActionsProperties.EXPAND_ICON_ROTATION), 0f);
-        assertFalse(mModel.get(CriticalActionsProperties.PANEL_VISIBLE));
+        // Attaching shows the state right away.
+        assertSame(Expansion.COLLAPSED, mModel.get(CriticalActionsProperties.EXPANSION));
         assertNotNull(mModel.get(CriticalActionsProperties.EXPAND_ICON_CLICK_HANDLER));
         assertEquals(
                 "Expand section",
@@ -88,8 +89,7 @@ public class CriticalActionsMediatorTest {
     public void testAttach_Expanded() {
         attach(LABELS, /* expanded= */ true, /* selectionActive= */ false);
 
-        assertTrue(mModel.get(CriticalActionsProperties.PANEL_VISIBLE));
-        assertEquals(180f, mModel.get(CriticalActionsProperties.EXPAND_ICON_ROTATION), 0f);
+        assertSame(Expansion.EXPANDED, mModel.get(CriticalActionsProperties.EXPANSION));
         assertEquals(
                 "Collapse section",
                 mModel.get(CriticalActionsProperties.EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL));
@@ -117,16 +117,15 @@ public class CriticalActionsMediatorTest {
 
         expandIconClickHandler.run();
         assertEquals(List.of(true), mExpansionChanges);
-        assertTrue(mModel.get(CriticalActionsProperties.PANEL_VISIBLE));
-        assertEquals(180f, mModel.get(CriticalActionsProperties.EXPAND_ICON_ROTATION), 0f);
+        // Tapping the chevron animates the change.
+        assertSame(Expansion.ANIMATE_TO_EXPANDED, mModel.get(CriticalActionsProperties.EXPANSION));
         assertEquals(
                 "Collapse section",
                 mModel.get(CriticalActionsProperties.EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL));
 
         expandIconClickHandler.run();
         assertEquals(List.of(true, false), mExpansionChanges);
-        assertFalse(mModel.get(CriticalActionsProperties.PANEL_VISIBLE));
-        assertEquals(0f, mModel.get(CriticalActionsProperties.EXPAND_ICON_ROTATION), 0f);
+        assertSame(Expansion.ANIMATE_TO_COLLAPSED, mModel.get(CriticalActionsProperties.EXPANSION));
         assertEquals(
                 "Expand section",
                 mModel.get(CriticalActionsProperties.EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL));
@@ -156,12 +155,25 @@ public class CriticalActionsMediatorTest {
     }
 
     @Test
+    public void testReattachAfterToggle_NotAnimated() {
+        attach(LABELS, /* expanded= */ false, /* selectionActive= */ false);
+        Runnable expandIconClickHandler =
+                mModel.get(CriticalActionsProperties.EXPAND_ICON_CLICK_HANDLER);
+        assertNotNull(expandIconClickHandler);
+        expandIconClickHandler.run();
+        assertSame(Expansion.ANIMATE_TO_EXPANDED, mModel.get(CriticalActionsProperties.EXPANSION));
+
+        attach(LABELS, /* expanded= */ false, /* selectionActive= */ false);
+        assertSame(Expansion.COLLAPSED, mModel.get(CriticalActionsProperties.EXPANSION));
+    }
+
+    @Test
     public void testSelectionActive() {
         attach(LABELS, /* expanded= */ true, /* selectionActive= */ true);
         assertFalse(mModel.get(CriticalActionsProperties.EXPAND_ICON_VISIBLE));
         assertNull(mModel.get(CriticalActionsProperties.EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL));
         // The panel stays expanded while selecting items.
-        assertTrue(mModel.get(CriticalActionsProperties.PANEL_VISIBLE));
+        assertSame(Expansion.EXPANDED, mModel.get(CriticalActionsProperties.EXPANSION));
 
         mMediator.setSelectionActive(false);
         assertTrue(mModel.get(CriticalActionsProperties.EXPAND_ICON_VISIBLE));

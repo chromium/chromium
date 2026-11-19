@@ -11,7 +11,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -33,11 +32,32 @@ class CriticalActionsProperties {
     static final WritableObjectPropertyKey<@Nullable CharSequence> EXPAND_ICON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
-    /** Rotation of the chevron in degrees (0 when collapsed, 180 when expanded). */
-    static final WritableFloatPropertyKey EXPAND_ICON_ROTATION = new WritableFloatPropertyKey();
+    /** Whether the below-row "Gemini actions" panel is expanded, and whether to animate to it. */
+    static final class Expansion {
+        static final Expansion COLLAPSED =
+                new Expansion(/* expanded= */ false, /* animate= */ false);
+        static final Expansion EXPANDED = new Expansion(/* expanded= */ true, /* animate= */ false);
+        static final Expansion ANIMATE_TO_COLLAPSED =
+                new Expansion(/* expanded= */ false, /* animate= */ true);
+        static final Expansion ANIMATE_TO_EXPANDED =
+                new Expansion(/* expanded= */ true, /* animate= */ true);
 
-    /** Whether the below-row "Gemini actions" panel container is visible. */
-    static final WritableBooleanPropertyKey PANEL_VISIBLE = new WritableBooleanPropertyKey();
+        public final boolean expanded;
+        public final boolean animate;
+
+        private Expansion(boolean expanded, boolean animate) {
+            this.expanded = expanded;
+            this.animate = animate;
+        }
+
+        static Expansion of(boolean expanded, boolean animate) {
+            if (animate) return expanded ? ANIMATE_TO_EXPANDED : ANIMATE_TO_COLLAPSED;
+            return expanded ? EXPANDED : COLLAPSED;
+        }
+    }
+
+    /** Whether the panel is expanded, and whether to animate to that state. */
+    static final WritableObjectPropertyKey<Expansion> EXPANSION = new WritableObjectPropertyKey<>();
 
     /** Toggles the panel when the chevron is clicked. Null when there are no critical actions. */
     static final WritableObjectPropertyKey<@Nullable Runnable> EXPAND_ICON_CLICK_HANDLER =
@@ -50,8 +70,7 @@ class CriticalActionsProperties {
     static final PropertyKey[] ALL_KEYS = {
         EXPAND_ICON_VISIBLE,
         EXPAND_ICON_CONTENT_DESCRIPTION,
-        EXPAND_ICON_ROTATION,
-        PANEL_VISIBLE,
+        EXPANSION,
         EXPAND_ICON_CLICK_HANDLER,
         EXPAND_ICON_CLICK_ACCESSIBILITY_LABEL,
     };

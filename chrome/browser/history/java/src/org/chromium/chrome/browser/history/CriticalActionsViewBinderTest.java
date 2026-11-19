@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.history;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import android.animation.ValueAnimator;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
@@ -25,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.history.CriticalActionsProperties.Expansion;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,6 +43,7 @@ public class CriticalActionsViewBinderTest {
     private TestActivity mActivity;
     private ImageView mExpandIcon;
     private FrameLayout mPanelContainer;
+    private CriticalActionsExpansionAnimator mExpansionAnimator;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor<
                     PropertyModel, CriticalActionsViewBinder.ViewHolder, PropertyKey>
@@ -50,11 +54,13 @@ public class CriticalActionsViewBinderTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mExpandIcon = new ImageView(mActivity);
         mPanelContainer = new FrameLayout(mActivity);
+        mPanelContainer.setVisibility(View.GONE);
+        mExpansionAnimator = new CriticalActionsExpansionAnimator(mExpandIcon, mPanelContainer);
         mModel = new PropertyModel(CriticalActionsProperties.ALL_KEYS);
         mProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel,
-                        new CriticalActionsViewBinder.ViewHolder(mExpandIcon, mPanelContainer),
+                        new CriticalActionsViewBinder.ViewHolder(mExpandIcon, mExpansionAnimator),
                         CriticalActionsViewBinder::bindRow);
     }
 
@@ -74,19 +80,30 @@ public class CriticalActionsViewBinderTest {
                 CriticalActionsProperties.EXPAND_ICON_CONTENT_DESCRIPTION,
                 "2 key browsing actions");
         assertEquals("2 key browsing actions", mExpandIcon.getContentDescription());
+    }
 
-        mModel.set(CriticalActionsProperties.EXPAND_ICON_ROTATION, 180f);
+    @Test
+    public void testExpanded() {
+        mModel.set(CriticalActionsProperties.EXPANSION, Expansion.EXPANDED);
+        assertNull(mExpansionAnimator.getAnimatorForTesting());
+        assertEquals(View.VISIBLE, mPanelContainer.getVisibility());
         assertEquals(180f, mExpandIcon.getRotation(), 0f);
-        mModel.set(CriticalActionsProperties.EXPAND_ICON_ROTATION, 0f);
+
+        mModel.set(CriticalActionsProperties.EXPANSION, Expansion.COLLAPSED);
+        assertNull(mExpansionAnimator.getAnimatorForTesting());
+        assertEquals(View.GONE, mPanelContainer.getVisibility());
         assertEquals(0f, mExpandIcon.getRotation(), 0f);
     }
 
     @Test
-    public void testPanelVisible() {
-        mModel.set(CriticalActionsProperties.PANEL_VISIBLE, true);
+    public void testExpanded_Animated() {
+        mModel.set(CriticalActionsProperties.EXPANSION, Expansion.ANIMATE_TO_EXPANDED);
+        ValueAnimator animator = mExpansionAnimator.getAnimatorForTesting();
+        assertNotNull(animator);
         assertEquals(View.VISIBLE, mPanelContainer.getVisibility());
-        mModel.set(CriticalActionsProperties.PANEL_VISIBLE, false);
-        assertEquals(View.GONE, mPanelContainer.getVisibility());
+
+        animator.end();
+        assertEquals(180f, mExpandIcon.getRotation(), 0f);
     }
 
     @Test

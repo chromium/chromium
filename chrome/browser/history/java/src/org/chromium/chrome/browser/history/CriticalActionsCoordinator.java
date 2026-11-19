@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.history;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,7 @@ public class CriticalActionsCoordinator implements Destroyable {
     private final PropertyModel mModel;
     private final ModelList mModelList;
     private final CriticalActionsMediator mMediator;
+    private final CriticalActionsExpansionAnimator mExpansionAnimator;
     private final PropertyModelChangeProcessor<
                     PropertyModel, CriticalActionsViewBinder.ViewHolder, PropertyKey>
             mPropertyModelChangeProcessor;
@@ -52,8 +54,9 @@ public class CriticalActionsCoordinator implements Destroyable {
         mPanelContainer = panelContainer;
         mModel = new PropertyModel(CriticalActionsProperties.ALL_KEYS);
         mModelList = new ModelList();
+        mExpansionAnimator = new CriticalActionsExpansionAnimator(expandIcon, panelContainer);
         CriticalActionsViewBinder.ViewHolder viewHolder =
-                new CriticalActionsViewBinder.ViewHolder(expandIcon, panelContainer);
+                new CriticalActionsViewBinder.ViewHolder(expandIcon, mExpansionAnimator);
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, viewHolder, CriticalActionsViewBinder::bindRow);
@@ -76,6 +79,8 @@ public class CriticalActionsCoordinator implements Destroyable {
         if (CriticalActionsMediator.shouldShowCriticalActions(actionLabels)) {
             ensurePanelInflated();
         }
+        // Finish expanding or collapsing the previously attached item, as the row is being reused.
+        mExpansionAnimator.endAnimation();
         mMediator.attachToHistoryItem(actionLabels, expanded, selectionActive, onExpansionChanged);
     }
 
@@ -86,6 +91,7 @@ public class CriticalActionsCoordinator implements Destroyable {
 
     @Override
     public void destroy() {
+        mExpansionAnimator.destroy();
         // Clear the chevron's click handler and label while the binder is still attached.
         mMediator.destroy();
         mPropertyModelChangeProcessor.destroy();
@@ -119,5 +125,10 @@ public class CriticalActionsCoordinator implements Destroyable {
                                                         /* attachToRoot= */ false),
                                 CriticalActionsViewBinder::bindActionItem)
                         .build();
+    }
+
+    /** Returns the running expand/collapse animation, if any. */
+    public @Nullable ValueAnimator getExpansionAnimatorForTesting() {
+        return mExpansionAnimator.getAnimatorForTesting();
     }
 }

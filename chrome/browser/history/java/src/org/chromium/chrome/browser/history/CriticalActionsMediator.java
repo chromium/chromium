@@ -10,6 +10,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history.CriticalActionsProperties.Expansion;
 import org.chromium.chrome.browser.history.CriticalActionsProperties.ItemType;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -20,10 +21,6 @@ import java.util.List;
 /** Mediator driving the critical actions state, chevron, and action list for a history row. */
 @NullMarked
 class CriticalActionsMediator {
-    // The chevron points down when collapsed, and is flipped to point up when expanded.
-    private static final float COLLAPSED_ROTATION_DEGREES = 0f;
-    private static final float EXPANDED_ROTATION_DEGREES = 180f;
-
     private final Context mContext;
     private final PropertyModel mModel;
     private final ModelList mModelList;
@@ -80,7 +77,8 @@ class CriticalActionsMediator {
         mModel.set(
                 CriticalActionsProperties.EXPAND_ICON_CLICK_HANDLER,
                 show ? mToggleExpandedHandler : null);
-        updateExpansion();
+        // Attaching the row to an item, e.g. when it's recycled, shows its state right away.
+        updateExpansion(/* animate= */ false);
         updateExpandIconVisibility();
         updateClickAccessibilityLabel();
     }
@@ -107,16 +105,13 @@ class CriticalActionsMediator {
         if (mOnExpansionChanged != null) {
             mOnExpansionChanged.onResult(mExpanded);
         }
-        updateExpansion();
+        updateExpansion(/* animate= */ true);
         updateClickAccessibilityLabel();
     }
 
-    /** Updates the chevron's rotation and the panel's visibility. */
-    private void updateExpansion() {
-        mModel.set(
-                CriticalActionsProperties.EXPAND_ICON_ROTATION,
-                mExpanded ? EXPANDED_ROTATION_DEGREES : COLLAPSED_ROTATION_DEGREES);
-        mModel.set(CriticalActionsProperties.PANEL_VISIBLE, mExpanded);
+    /** Expands or collapses the panel, optionally with an animation. */
+    private void updateExpansion(boolean animate) {
+        mModel.set(CriticalActionsProperties.EXPANSION, Expansion.of(mExpanded, animate));
     }
 
     /** Updates the chevron's visibility. It's hidden in selection mode, where taps select rows. */

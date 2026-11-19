@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import android.animation.ValueAnimator;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -88,6 +89,7 @@ public class CriticalActionsCoordinatorTest {
 
         // Expand by clicking the chevron.
         mExpandIcon.performClick();
+        endExpansionAnimation();
         assertEquals(Boolean.TRUE, recordedExpanded.get());
         assertEquals(View.VISIBLE, mPanelContainer.getVisibility());
         assertEquals(180f, mExpandIcon.getRotation(), 0f);
@@ -105,6 +107,7 @@ public class CriticalActionsCoordinatorTest {
 
         // Collapse by clicking the chevron again.
         mExpandIcon.performClick();
+        endExpansionAnimation();
         assertEquals(Boolean.FALSE, recordedExpanded.get());
         assertEquals(View.GONE, mPanelContainer.getVisibility());
         assertEquals(0f, mExpandIcon.getRotation(), 0f);
@@ -128,6 +131,62 @@ public class CriticalActionsCoordinatorTest {
         assertNull(getClickActionLabel(mExpandIcon));
         mExpandIcon.performClick();
         assertNull(recordedExpanded.get());
+        assertEquals(View.GONE, mPanelContainer.getVisibility());
+    }
+
+    @Test
+    public void testReattachEndsAnimation() {
+        List<String> labels = List.of("Filled a form");
+        mCoordinator.attachToHistoryItem(
+                labels,
+                /* expanded= */ false,
+                /* selectionActive= */ false,
+                /* onExpansionChanged= */ null);
+        assertTrue(mExpandIcon.hasOnClickListeners());
+        mExpandIcon.performClick();
+        assertNotNull(mCoordinator.getExpansionAnimatorForTesting());
+
+        // Reattaching the row to an item without actions shows it collapsed right away.
+        mCoordinator.attachToHistoryItem(
+                List.of(),
+                /* expanded= */ false,
+                /* selectionActive= */ false,
+                /* onExpansionChanged= */ null);
+        assertNull(mCoordinator.getExpansionAnimatorForTesting());
+        assertEquals(View.GONE, mPanelContainer.getVisibility());
+
+        // Reattaching it to an expanded item shows it expanded right away.
+        mCoordinator.attachToHistoryItem(
+                labels,
+                /* expanded= */ true,
+                /* selectionActive= */ false,
+                /* onExpansionChanged= */ null);
+        assertNull(mCoordinator.getExpansionAnimatorForTesting());
+        assertEquals(View.VISIBLE, mPanelContainer.getVisibility());
+        assertEquals(180f, mExpandIcon.getRotation(), 0f);
+    }
+
+    @Test
+    public void testReattachWithSameStateEndsAnimation() {
+        List<String> labels = List.of("Filled a form");
+        mCoordinator.attachToHistoryItem(
+                labels,
+                /* expanded= */ false,
+                /* selectionActive= */ false,
+                /* onExpansionChanged= */ null);
+        mExpandIcon.performClick();
+        assertNotNull(mCoordinator.getExpansionAnimatorForTesting());
+
+        // Reattaching the same item, now expanded, finishes expanding it right away.
+        mCoordinator.attachToHistoryItem(
+                labels,
+                /* expanded= */ true,
+                /* selectionActive= */ false,
+                /* onExpansionChanged= */ null);
+        assertNull(mCoordinator.getExpansionAnimatorForTesting());
+        assertEquals(View.VISIBLE, mPanelContainer.getVisibility());
+        assertEquals(ViewGroup.LayoutParams.WRAP_CONTENT, mPanelContainer.getLayoutParams().height);
+        assertEquals(180f, mExpandIcon.getRotation(), 0f);
     }
 
     @Test
@@ -162,6 +221,12 @@ public class CriticalActionsCoordinatorTest {
         assertEquals(0, mPanelContainer.getChildCount());
         assertFalse(mExpandIcon.hasOnClickListeners());
         assertNull(getClickActionLabel(mExpandIcon));
+    }
+
+    private void endExpansionAnimation() {
+        ValueAnimator animator = mCoordinator.getExpansionAnimatorForTesting();
+        assertNotNull(animator);
+        animator.end();
     }
 
     private static @Nullable CharSequence getClickActionLabel(View view) {

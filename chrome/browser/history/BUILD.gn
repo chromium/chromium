@@ -124,6 +124,7 @@ if (is_android) {
     srcjar_deps = [ ":jni_headers" ]
     sources = [
       "java/src/org/chromium/chrome/browser/history/CriticalActionsCoordinator.java",
+      "java/src/org/chromium/chrome/browser/history/CriticalActionsExpansionAnimator.java",
       "java/src/org/chromium/chrome/browser/history/CriticalActionsMediator.java",
       "java/src/org/chromium/chrome/browser/history/CriticalActionsProperties.java",
       "java/src/org/chromium/chrome/browser/history/CriticalActionsViewBinder.java",
@@ -184,6 +185,7 @@ if (is_android) {
 
     sources = [
       "java/src/org/chromium/chrome/browser/history/CriticalActionsCoordinatorTest.java",
+      "java/src/org/chromium/chrome/browser/history/CriticalActionsExpansionAnimatorTest.java",
       "java/src/org/chromium/chrome/browser/history/CriticalActionsMediatorTest.java",
       "java/src/org/chromium/chrome/browser/history/CriticalActionsViewBinderTest.java",
       "java/src/org/chromium/chrome/browser/history/FilterSheetCoordinatorTest.java",
