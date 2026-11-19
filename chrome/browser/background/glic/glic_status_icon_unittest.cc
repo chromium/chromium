@@ -183,6 +183,39 @@ TEST_F(GlicStatusIconTest, ContextMenu) {
 
 TEST_F(GlicStatusIconTest, UpdateHotkey) {
   auto* context_menu = status_icon()->GetContextMenuForTesting();
+  std::optional<size_t> toggle_index =
+      context_menu->GetIndexOfCommandId(IDC_GLIC_STATUS_ICON_MENU_TOGGLE);
+  ASSERT_TRUE(toggle_index.has_value());
+
+  // Platform status icons (such as StatusIconMac) rebuild their native menu
+  // inside OnMenuStateChanged(), so GetForceShowAcceleratorForItemAt() must
+  // already reflect the new hotkey state when the observer notification fires.
+  class ForceShowRecordingObserver : public StatusIconMenuModel::Observer {
+   public:
+    ForceShowRecordingObserver(StatusIconMenuModel* model, size_t index)
+        : model_(model), index_(index) {
+      model_->AddObserver(this);
+    }
+    ~ForceShowRecordingObserver() override { model_->RemoveObserver(this); }
+
+    void OnMenuStateChanged() override {
+      observed_force_show_ = model_->GetForceShowAcceleratorForItemAt(index_);
+      ++notification_count_;
+    }
+
+    std::optional<bool> observed_force_show() const {
+      return observed_force_show_;
+    }
+    size_t notification_count() const { return notification_count_; }
+
+   private:
+    raw_ptr<StatusIconMenuModel> model_;
+    size_t index_;
+    std::optional<bool> observed_force_show_;
+    size_t notification_count_ = 0;
+  };
+
+  ForceShowRecordingObserver observer(context_menu, toggle_index.value());
   ui::Accelerator new_accelerator(ui::VKEY_A,
                                   ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   glic_status_icon()->UpdateHotkey(new_accelerator);
@@ -190,6 +223,12 @@ TEST_F(GlicStatusIconTest, UpdateHotkey) {
   EXPECT_TRUE(context_menu->GetAcceleratorForCommandId(
       IDC_GLIC_STATUS_ICON_MENU_TOGGLE, &toggle_accelerator));
   EXPECT_EQ(toggle_accelerator, new_accelerator);
+  EXPECT_EQ(1u, observer.notification_count());
+  EXPECT_EQ(true, observer.observed_force_show());
+
+  glic_status_icon()->UpdateHotkey(ui::Accelerator());
+  EXPECT_EQ(2u, observer.notification_count());
+  EXPECT_EQ(false, observer.observed_force_show());
 }
 
 TEST_F(GlicStatusIconTest, InitialStateWouldOpen) {

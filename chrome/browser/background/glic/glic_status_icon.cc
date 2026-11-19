@@ -248,10 +248,10 @@ void GlicStatusIcon::UpdateHotkey(const ui::Accelerator& hotkey) {
   std::optional<size_t> toggle_menu_item_index =
       context_menu_->GetIndexOfCommandId(IDC_GLIC_STATUS_ICON_MENU_TOGGLE);
   CHECK(toggle_menu_item_index);
-  context_menu_->SetAcceleratorForCommandId(IDC_GLIC_STATUS_ICON_MENU_TOGGLE,
-                                            &hotkey);
   context_menu_->SetForceShowAcceleratorForItemAt(
       toggle_menu_item_index.value(), !hotkey.IsEmpty());
+  context_menu_->SetAcceleratorForCommandId(IDC_GLIC_STATUS_ICON_MENU_TOGGLE,
+                                            &hotkey);
 }
 
 void GlicStatusIcon::UpdateVisibilityOfExitInContextMenu() {

@@ -9,7 +9,8 @@
 
 #include <string>
 
-#include "base/gtest_prod_util.h"
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/status_icons/desktop_notification_balloon.h"
 #include "chrome/browser/status_icons/status_icon.h"
@@ -45,28 +46,28 @@ class StatusIconMac : public StatusIcon, public StatusIconMenuModel::Observer {
 
   bool HasStatusIconMenu();
 
-  // When open_menu_with_secondary_click_ is true, do not set the status item's
-  // menu, so that left click will not open a menu. When a secondary click is
-  // detected, this function is called which creates and sets the menu on the
-  // status item, simulates a click, and then unsets the menu afterwards.
-  void CreateAndOpenMenu();
-
   bool open_menu_with_secondary_click() {
     return open_menu_with_secondary_click_;
   }
+
+  // Posts a deferred `menu_` rebuild if a model state change arrived while
+  // `menu_` was open.
+  void OnMenuDidEndTracking();
+
+  // Runs `open_menu_for_testing_` and returns true if a test intercepted
+  // opening `item_.menu`.
+  bool MaybeRunOpenMenuForTesting();
+
+  NSStatusItem* GetItemForTesting() { return item(); }
+  void SetOpenMenuForTesting(base::RepeatingClosure callback);
 
  protected:
   // Overridden from StatusIcon.
   void UpdatePlatformContextMenu(StatusIconMenuModel* model) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, CreateMenu);
-  FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, MenuToolTip);
-  FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest, SecondaryClickMenuNoToolTip);
-  FRIEND_TEST_ALL_PREFIXES(StatusIconMacTest,
-                           Os26_StatusIconHiddenInFullscreen);
-
   void CreateMenu(ui::MenuModel* model);
+  void FlushDeferredMenuRebuild();
 
   // Getter for item_ that allows lazy initialization.
   NSStatusItem* item();
@@ -75,23 +76,27 @@ class StatusIconMac : public StatusIcon, public StatusIconMenuModel::Observer {
   // Notification balloon.
   DesktopNotificationBalloon notification_;
 
-  // Status menu shown when right-clicking the system icon, if it has been
-  // created by |UpdatePlatformContextMenu|.
+  // Status menu attached to `item_` when created by
+  // `UpdatePlatformContextMenu`.
   MenuControllerCocoa* __strong menu_;
 
   // Boolean which determines whether the menu should be opened with secondary
-  // clicks. When true, left click will dispatch a click event even if a menu
-  // exists, and right click/control-click will open the menu. Additionally, the
-  // tooltip will be shown when hovering the status icon and not as an entry in
-  // the menu.
+  // clicks. When true, plain left clicks dispatch a click event even if a menu
+  // exists, while right clicks, control-clicks, VoiceOver (AXPress), and
+  // Ctrl+F8 status menu navigation open `item_.menu`.
   bool open_menu_with_secondary_click_ = false;
 
-  // Stores the menu model so that it can be created later in
-  // CreateAndOpenMenu() or so its observers can be cleaned up.
-  raw_ptr<StatusIconMenuModel> menu_model_ = nullptr;
+  // Set when `OnMenuStateChanged` fires while `menu_` is actively tracking, so
+  // `menu_` is rebuilt once tracking finishes instead of cancelling the open
+  // menu.
+  bool menu_needs_rebuild_ = false;
+
+  base::RepeatingClosure open_menu_for_testing_;
 
   base::ScopedObservation<StatusIconMenuModel, StatusIconMenuModel::Observer>
       observation_{this};
+
+  base::WeakPtrFactory<StatusIconMac> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_COCOA_STATUS_ICONS_STATUS_ICON_MAC_H_

@@ -11,9 +11,12 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/cocoa/status_icons/status_icons_features.h"
 #include "ui/gfx/image/image.h"
@@ -22,6 +25,8 @@
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 static const char kStatusItemControllerKey = 0;
+static void (*g_orig_mouse_down)(id, SEL, NSEvent*) = nullptr;
+static void (*g_orig_right_mouse_down)(id, SEL, NSEvent*) = nullptr;
 
 // This class bridges between the Objective-C API for status items and the C++
 // classes integrating with Chromium. Owned by the NSStatusBarButton as an
@@ -38,13 +43,25 @@ static const char kStatusItemControllerKey = 0;
 // Clears all internal state.
 - (void)reset;
 
-// Handles left mouse clicks. Takes a single parameter so that it can be the
-// "action" of a "target/action" pair.
+// Observes `NSMenuDidEndTrackingNotification` on `menu` so deferred rebuilds
+// flush as soon as menu tracking finishes.
+- (void)setObservedMenu:(NSMenu*)menu;
+
+// Handles primary mouse-down events before AppKit opens `item.menu` when
+// `open_menu_with_secondary_click()` is enabled.
+- (void)handleMouseDown:(NSEvent*)event;
+
+// Handles right mouse-down events.
+- (void)handleRightMouseDown:(NSEvent*)event;
+
+// Target/action handler for menu-less status items (including AXPress /
+// performClick:).
 - (void)handleClick:(id)sender;
 @end
 
 @implementation StatusItemController {
   raw_ptr<StatusIconMac> _statusIcon;  // weak
+  NSStatusBarButton* __weak _button;
 }
 
 + (void)initialize {
@@ -53,6 +70,33 @@ static const char kStatusItemControllerKey = 0;
   if (self != [StatusItemController class]) {
     return;
   }
+
+  // Keep `item.menu` populated even when `open_menu_with_secondary_click()` is
+  // true so macOS `Ctrl+F8` ("Move focus to status menus", which checks
+  // `-[NSStatusItem _participatesInNavigationLoop]` -> `item.menu != nil`) and
+  // VoiceOver `AXPress` (`Ctrl+Option+Space`) work natively like other status
+  // bar extras. Because AppKit opens `item.menu` inside `-[NSControl
+  // mouseDown:]` whenever `item.menu` is non-nil, swizzle `mouseDown:` on
+  // `NSStatusBarButton` to dispatch plain left-clicks directly when
+  // `open_menu_with_secondary_click()` is enabled while forwarding
+  // Control-clicks (and standard menu items) to the original `mouseDown:`.
+  Method mouse_down_method =
+      class_getInstanceMethod([NSStatusBarButton class], @selector(mouseDown:));
+  g_orig_mouse_down = reinterpret_cast<void (*)(id, SEL, NSEvent*)>(
+      method_getImplementation(mouse_down_method));
+  IMP mouse_down_imp =
+      imp_implementationWithBlock(^(id object_self, NSEvent* event) {
+        StatusItemController* controller =
+            [StatusItemController controllerForButton:object_self];
+        if (!controller) {
+          g_orig_mouse_down(object_self, @selector(mouseDown:), event);
+          return;
+        }
+        [controller handleMouseDown:event];
+      });
+  class_replaceMethod([NSStatusBarButton class], @selector(mouseDown:),
+                      mouse_down_imp,
+                      method_getTypeEncoding(mouse_down_method));
 
   // NSStatusBarButton implements -rightMouseDown: by spinning its own event
   // loop. What that practically means, though, is that the status bar item
@@ -74,22 +118,35 @@ static const char kStatusItemControllerKey = 0;
   //
   // Therefore, swizzle the -[NSStatusBarButton rightMouseDown:] method to gain
   // control and achieve the desired behavior.
-  IMP imp = imp_implementationWithBlock(^(id object_self, NSEvent* event) {
+  Method right_mouse_down_method = class_getInstanceMethod(
+      [NSStatusBarButton class], @selector(rightMouseDown:));
+  g_orig_right_mouse_down = reinterpret_cast<void (*)(id, SEL, NSEvent*)>(
+      method_getImplementation(right_mouse_down_method));
+  IMP right_mouse_down_imp = imp_implementationWithBlock(^(id object_self,
+                                                           NSEvent* event) {
     StatusItemController* controller =
         [StatusItemController controllerForButton:object_self];
-    [controller handleClick:nil isRightButton:YES];
+    if (!controller) {
+      g_orig_right_mouse_down(object_self, @selector(rightMouseDown:), event);
+      return;
+    }
+    [controller handleRightMouseDown:event];
   });
-
   class_replaceMethod([NSStatusBarButton class], @selector(rightMouseDown:),
-                      imp, nullptr);
+                      right_mouse_down_imp,
+                      method_getTypeEncoding(right_mouse_down_method));
 }
 
 - (instancetype)initWithStatusIconMac:(StatusIconMac*)icon
                    forStatusBarButton:(NSStatusBarButton*)button {
+  if (!(self = [super init])) {
+    return nil;
+  }
   objc_setAssociatedObject(button, &kStatusItemControllerKey, self,
                            OBJC_ASSOCIATION_RETAIN);
 
   _statusIcon = icon;
+  _button = button;
 
   // Hide the status bar icon when transitioning into fullscreen and show it
   // after leaving fullscreen. This is a workaround for a macOS 26.x-only bug
@@ -125,38 +182,79 @@ static const char kStatusItemControllerKey = 0;
 - (void)reset {
   [NSNotificationCenter.defaultCenter removeObserver:self];
   _statusIcon = nullptr;
+  _button = nil;
 }
 
 - (void)dealloc {
   [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
-- (void)handleClick:(id)sender {
-  [self handleClick:sender isRightButton:NO];
+- (void)setObservedMenu:(NSMenu*)menu {
+  [NSNotificationCenter.defaultCenter
+      removeObserver:self
+                name:NSMenuDidEndTrackingNotification
+              object:nil];
+  if (menu) {
+    [NSNotificationCenter.defaultCenter
+        addObserver:self
+           selector:@selector(menuDidEndTracking:)
+               name:NSMenuDidEndTrackingNotification
+             object:menu];
+  }
 }
 
-- (void)handleClick:(id)sender isRightButton:(BOOL)isRightButton {
+- (void)menuDidEndTracking:(NSNotification*)notification {
+  if (_statusIcon) {
+    _statusIcon->OnMenuDidEndTracking();
+  }
+}
+
+- (void)handleMouseDown:(NSEvent*)event {
+  if (!_statusIcon) {
+    return;
+  }
+
+  NSStatusBarButton* button = _button;
+  if (!button) {
+    return;
+  }
+
+  if (_statusIcon->HasStatusIconMenu() &&
+      _statusIcon->open_menu_with_secondary_click() &&
+      !(event.modifierFlags & NSEventModifierFlagControl)) {
+    _statusIcon->DispatchClickEvent();
+    return;
+  }
+
+  if (_statusIcon->HasStatusIconMenu() &&
+      _statusIcon->MaybeRunOpenMenuForTesting()) {
+    return;
+  }
+
+  g_orig_mouse_down(button, @selector(mouseDown:), event);
+}
+
+- (void)handleRightMouseDown:(NSEvent*)event {
+  if (!_statusIcon) {
+    return;
+  }
+
+  if (_statusIcon->HasStatusIconMenu()) {
+    if (_statusIcon->MaybeRunOpenMenuForTesting()) {
+      return;
+    }
+    [_button performClick:nil];
+  }
+}
+
+- (void)handleClick:(id)sender {
   CHECK(_statusIcon);
 
   if (!_statusIcon->HasStatusIconMenu()) {
-    // If there is no menu at all, just dispatch the click.
+    // If there is no menu at all, dispatch the click (covers both mouse clicks
+    // and VoiceOver AXPress / performClick:).
     _statusIcon->DispatchClickEvent();
-  } else if (_statusIcon->open_menu_with_secondary_click()) {
-    // Otherwise, there is a menu. For "open menu with a secondary click", plain
-    // left-clicks are dispatched normally, and secondary clicks open the menu.
-    NSEvent* event = NSApp.currentEvent;
-    BOOL secondary_click =
-        isRightButton || (event.type == NSEventTypeLeftMouseDown &&
-                          event.modifierFlags & NSEventModifierFlagControl);
-    if (secondary_click) {
-      _statusIcon->CreateAndOpenMenu();
-    } else if (event.type == NSEventTypeLeftMouseDown) {
-      _statusIcon->DispatchClickEvent();
-    }
   }
-  // There is no "else" here. If there is a menu, but it's not opened with a
-  // secondary click, it is set as the menu property on the item and code flow
-  // never gets here.
 }
 
 - (void)windowWillEnterFullScreen:(NSNotification*)notification {
@@ -217,7 +315,9 @@ void StatusIconMac::SetImage(const gfx::ImageSkia& image) {
 }
 
 void StatusIconMac::SetToolTip(const std::u16string& tool_tip) {
-  item().button.toolTip = base::SysUTF16ToNSString(tool_tip);
+  NSString* ns_tool_tip = base::SysUTF16ToNSString(tool_tip);
+  item().button.toolTip = ns_tool_tip;
+  item().button.accessibilityLabel = ns_tool_tip;
 }
 
 void StatusIconMac::DisplayBalloon(
@@ -232,8 +332,6 @@ void StatusIconMac::DisplayBalloon(
 void StatusIconMac::SetOpenMenuWithSecondaryClick(
     bool open_menu_with_secondary_click) {
   open_menu_with_secondary_click_ = open_menu_with_secondary_click;
-  [item().button
-      sendActionOn:(NSEventMaskLeftMouseDown | NSEventMaskRightMouseDown)];
 }
 
 void StatusIconMac::SetImageTemplate(bool is_template) {
@@ -247,39 +345,82 @@ void StatusIconMac::SetVisible(bool visible) {
 }
 
 void StatusIconMac::OnMenuStateChanged() {
+  if ([menu_ isMenuOpen]) {
+    menu_needs_rebuild_ = true;
+    return;
+  }
   // Recreate menu to reflect changes to the menu model.
-  CreateMenu(menu_model_);
-}
-
-bool StatusIconMac::HasStatusIconMenu() {
-  return open_menu_with_secondary_click_ ? menu_model_ : menu_ != nil;
-}
-
-void StatusIconMac::CreateAndOpenMenu() {
-  CreateMenu(menu_model_);
-  [item().button performClick:nil];
-  item().menu = nil;
-}
-
-void StatusIconMac::UpdatePlatformContextMenu(StatusIconMenuModel* model) {
-  if (!model) {
-    menu_ = nil;
-  } else if (open_menu_with_secondary_click_) {
-    menu_model_ = model;
-  } else {
-    if (model != menu_model_) {
-      observation_.Reset();
-      observation_.Observe(model);
-      menu_model_ = model;
-    }
+  if (StatusIconMenuModel* model = observation_.GetSource()) {
     CreateMenu(model);
   }
 }
 
+void StatusIconMac::OnMenuDidEndTracking() {
+  if (!menu_needs_rebuild_) {
+    return;
+  }
+  // AppKit posts `NSMenuDidEndTrackingNotification` before dispatching the
+  // selected `NSMenuItem`'s action (`-[MenuControllerCocoa itemSelected:]`),
+  // and `NSMenuItem.target` is weak. Defer replacing `menu_` to the next
+  // run-loop turn so the closing `MenuControllerCocoa` stays alive to deliver
+  // `ActivatedAt()`.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&StatusIconMac::FlushDeferredMenuRebuild,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void StatusIconMac::FlushDeferredMenuRebuild() {
+  if (!menu_needs_rebuild_ || [menu_ isMenuOpen]) {
+    return;
+  }
+  if (StatusIconMenuModel* model = observation_.GetSource()) {
+    CreateMenu(model);
+  }
+}
+
+bool StatusIconMac::MaybeRunOpenMenuForTesting() {
+  if (!open_menu_for_testing_) {
+    return false;
+  }
+  open_menu_for_testing_.Run();
+  return true;
+}
+
+void StatusIconMac::SetOpenMenuForTesting(base::RepeatingClosure callback) {
+  open_menu_for_testing_ = std::move(callback);
+}
+
+bool StatusIconMac::HasStatusIconMenu() {
+  return menu_ != nil;
+}
+
+void StatusIconMac::UpdatePlatformContextMenu(StatusIconMenuModel* model) {
+  observation_.Reset();
+  menu_needs_rebuild_ = false;
+  weak_factory_.InvalidateWeakPtrs();
+  if (!model) {
+    if (item_) {
+      [[StatusItemController controllerForButton:item_.button]
+          setObservedMenu:nil];
+      item_.menu = nil;
+    }
+    menu_ = nil;
+    return;
+  }
+
+  observation_.Observe(model);
+  CreateMenu(model);
+}
+
 void StatusIconMac::CreateMenu(ui::MenuModel* model) {
   CHECK(model, base::NotFatalUntil::M162);
+  menu_needs_rebuild_ = false;
+  weak_factory_.InvalidateWeakPtrs();
   menu_ = [[MenuControllerCocoa alloc] initWithModel:model
                                        isContextMenu:NO
                                             delegate:nil];
-  item().menu = menu_.menu;
+  NSStatusItem* status_item = item();
+  status_item.menu = menu_.menu;
+  [[StatusItemController controllerForButton:status_item.button]
+      setObservedMenu:menu_.menu];
 }
