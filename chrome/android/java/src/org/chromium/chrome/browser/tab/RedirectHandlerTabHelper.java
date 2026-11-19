@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Intent;
 
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -32,13 +30,33 @@ public class RedirectHandlerTabHelper implements TabObserver, UserData {
     private RedirectHandler mRedirectHandler;
 
     /**
-     * Returns {@link RedirectHandler} that hangs on to a given {@link Tab}.
-     * If not present, creates a new instance and associate it with the {@link UserDataHost}
-     * that the {@link Tab} manages.
+     * Returns {@link RedirectHandler} that hangs on to a given {@link Tab}. If not present, creates
+     * a new instance and associates it with the {@link UserDataHost} that the {@link Tab} manages.
+     *
      * @param tab Tab instance that the RedirectHandler hangs on to.
      * @return RedirectHandler for a given Tab.
      */
     public static RedirectHandler getOrCreateHandlerFor(Tab tab) {
+        return getOrCreateFor(tab).mRedirectHandler;
+    }
+
+    static void maybeCreateForInitialNavigation(Tab tab, NavigationHandle navigation) {
+        if (tab.getUserDataHost().getUserData(USER_DATA_KEY) == null
+                && isInitialAboutNavigation(tab, navigation)) {
+            getOrCreateFor(tab).recordInitialAboutNavigation(navigation);
+        }
+    }
+
+    private static boolean isInitialAboutNavigation(Tab tab, NavigationHandle navigation) {
+        @Nullable WebContents webContents = tab.getWebContents();
+        return webContents != null
+                && UrlConstants.ABOUT_SCHEME.equals(navigation.getUrl().getScheme())
+                && navigation.isRendererInitiated()
+                && !navigation.isRedirect()
+                && webContents.getNavigationController().getLastCommittedEntryIndex() == 0;
+    }
+
+    private static RedirectHandlerTabHelper getOrCreateFor(Tab tab) {
         UserDataHost host = tab.getUserDataHost();
         RedirectHandlerTabHelper helper = host.getUserData(USER_DATA_KEY);
         if (helper == null) {
@@ -46,7 +64,7 @@ public class RedirectHandlerTabHelper implements TabObserver, UserData {
             host.setUserData(USER_DATA_KEY, helper);
             tab.addObserver(helper);
         }
-        return helper.mRedirectHandler;
+        return helper;
     }
 
     /**
@@ -60,17 +78,12 @@ public class RedirectHandlerTabHelper implements TabObserver, UserData {
     }
 
     /**
-     * Replace {@link RedirectHandler} instance for the Tab with the new one.
+     * Replaces {@link RedirectHandler} instance for the Tab with the new one.
      *
-     * @return Old {@link RedirectHandler} associated with the Tab. Could be {@code null}.
+     * @return Old {@link RedirectHandler} associated with the Tab.
      */
     public static RedirectHandler swapHandlerForTesting(Tab tab, RedirectHandler newHandler) {
-        assert newHandler != null;
-        RedirectHandlerTabHelper helper = tab.getUserDataHost().getUserData(USER_DATA_KEY);
-        if (helper == null) {
-            getOrCreateHandlerFor(tab);
-            helper = assumeNonNull(tab.getUserDataHost().getUserData(USER_DATA_KEY));
-        }
+        RedirectHandlerTabHelper helper = getOrCreateFor(tab);
         RedirectHandler oldHandler = helper.mRedirectHandler;
         helper.mRedirectHandler = newHandler;
         return oldHandler;
@@ -95,20 +108,8 @@ public class RedirectHandlerTabHelper implements TabObserver, UserData {
     public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
         // The initial about:blank navigation in a new window is synchronously committed by the
         // renderer, and so is not visible to Navigation Throttles.
-        @Nullable WebContents webContents = mTab.getWebContents();
-        if (webContents != null
-                && navigation.getUrl().getScheme().equals(UrlConstants.ABOUT_SCHEME)
-                && !mRedirectHandler.isOnNavigation()
-                && navigation.isRendererInitiated()
-                && !navigation.isRedirect()
-                && webContents.getNavigationController().getLastCommittedEntryIndex() == 0) {
-            mRedirectHandler.updateNewUrlLoading(
-                    navigation.pageTransition(),
-                    /* isRedirect= */ false,
-                    navigation.hasUserGesture(),
-                    /* lastCommittedEntryIndex= */ 0,
-                    /* isInitialNavigation= */ true,
-                    /* isRendererInitiated= */ true);
+        if (!mRedirectHandler.isOnNavigation() && isInitialAboutNavigation(tab, navigation)) {
+            recordInitialAboutNavigation(navigation);
         }
 
         if (navigation.isPageActivation()) {
@@ -120,6 +121,17 @@ public class RedirectHandlerTabHelper implements TabObserver, UserData {
         }
     }
 
+    private void recordInitialAboutNavigation(NavigationHandle navigation) {
+        assert !mRedirectHandler.isOnNavigation();
+        mRedirectHandler.updateNewUrlLoading(
+                navigation.pageTransition(),
+                /* isRedirect= */ false,
+                navigation.hasUserGesture(),
+                /* lastCommittedEntryIndex= */ 0,
+                /* isInitialNavigation= */ true,
+                /* isRendererInitiated= */ true);
+    }
+
     @Override
     public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
         // Intentionally do nothing to prevent automatic observer removal on detachment.
@@ -127,17 +139,25 @@ public class RedirectHandlerTabHelper implements TabObserver, UserData {
 
     /** Wrapper around RedirectHandler#updateIntent() that supplies //chrome-level params. */
     public static void updateIntentInTab(Tab tab, @Nullable Intent intent, boolean isCustomTab) {
-        boolean sendToExternalHandler = false;
-        boolean startedTabbedChromeTask = false;
-        boolean canInitialNavigationLeaveChrome = false;
-        if (intent != null) {
-            sendToExternalHandler = CustomTabsIntent.isSendToExternalDefaultHandlerEnabled(intent);
-            startedTabbedChromeTask =
-                    IntentUtils.safeGetBooleanExtra(
-                            intent, IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, false);
-            canInitialNavigationLeaveChrome =
-                    CustomTabsIntent.isInitialNavigationAllowedToLeaveBrowser(intent);
+        if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) {
+            @Nullable RedirectHandler handler = getHandlerFor(tab);
+            if (handler != null) {
+                handler.updateIntent(
+                        intent,
+                        isCustomTab,
+                        /* sendToExternalApps= */ false,
+                        /* externalIntentStartedTask= */ false,
+                        /* canInitialNavigationLeaveChrome= */ false);
+            }
+            return;
         }
+        boolean sendToExternalHandler =
+                CustomTabsIntent.isSendToExternalDefaultHandlerEnabled(intent);
+        boolean startedTabbedChromeTask =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, false);
+        boolean canInitialNavigationLeaveChrome =
+                CustomTabsIntent.isInitialNavigationAllowedToLeaveBrowser(intent);
         RedirectHandlerTabHelper.getOrCreateHandlerFor(tab)
                 .updateIntent(
                         intent,

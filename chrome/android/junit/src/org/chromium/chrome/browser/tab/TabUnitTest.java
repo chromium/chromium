@@ -38,7 +38,9 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.util.SparseArray;
 import android.view.ContextThemeWrapper;
@@ -76,6 +78,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -98,6 +101,7 @@ import org.chromium.components.autofill.AutofillProviderUMA;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
@@ -2248,5 +2252,88 @@ public class TabUnitTest {
         mTab.didFinishPageLoad(url);
 
         assertFalse(SadTab.isShowing(mTab));
+    }
+
+    @Test
+    public void testRedirectHandlerTabHelperLazyInitOnInitialAboutNavigation() {
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
+        TabBrowserControlsConstraintsHelperJni.setInstanceForTesting(
+                mock(TabBrowserControlsConstraintsHelper.Natives.class));
+        mTab.updateWindowAndroid(null);
+        TabHelpers.initTabHelpers(mTab, null);
+
+        mTab.setWebContentsForTesting(mWebContents);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+
+        // (a) Handler starts null and stays null on non-about: or lastCommittedEntryIndex > 0
+        // navigations.
+        assertNull(RedirectHandlerTabHelper.getHandlerFor(mTab));
+
+        NavigationHandle httpNav = mock(NavigationHandle.class);
+        when(httpNav.getUrl()).thenReturn(new GURL("https://example.com"));
+        when(httpNav.isRendererInitiated()).thenReturn(true);
+        when(httpNav.isRedirect()).thenReturn(false);
+        when(mNavigationController.getLastCommittedEntryIndex()).thenReturn(0);
+
+        for (TabObserver observer : mTab.mObservers) {
+            observer.onDidFinishNavigationInPrimaryMainFrame(mTab, httpNav);
+        }
+        assertNull(RedirectHandlerTabHelper.getHandlerFor(mTab));
+
+        NavigationHandle lateAboutNav = mock(NavigationHandle.class);
+        when(lateAboutNav.getUrl()).thenReturn(new GURL("about:blank"));
+        when(lateAboutNav.isRendererInitiated()).thenReturn(true);
+        when(lateAboutNav.isRedirect()).thenReturn(false);
+        when(mNavigationController.getLastCommittedEntryIndex()).thenReturn(1);
+
+        for (TabObserver observer : mTab.mObservers) {
+            observer.onDidFinishNavigationInPrimaryMainFrame(mTab, lateAboutNav);
+        }
+        assertNull(RedirectHandlerTabHelper.getHandlerFor(mTab));
+
+        // (b) Initial renderer-initiated non-redirect about:blank with lastCommittedEntryIndex == 0
+        // lazily creates the handler.
+        NavigationHandle initialAboutNav = mock(NavigationHandle.class);
+        when(initialAboutNav.getUrl()).thenReturn(new GURL("about:blank"));
+        when(initialAboutNav.isRendererInitiated()).thenReturn(true);
+        when(initialAboutNav.isRedirect()).thenReturn(false);
+        when(initialAboutNav.pageTransition()).thenReturn(PageTransition.LINK);
+        when(initialAboutNav.hasUserGesture()).thenReturn(false);
+        when(mNavigationController.getLastCommittedEntryIndex()).thenReturn(0);
+
+        for (TabObserver observer : mTab.mObservers) {
+            observer.onDidFinishNavigationInPrimaryMainFrame(mTab, initialAboutNav);
+        }
+        RedirectHandler handler = RedirectHandlerTabHelper.getHandlerFor(mTab);
+        assertNotNull(handler);
+        assertTrue(handler.isOnNavigation());
+        RedirectHandler.InitialNavigationState initialNavState =
+                handler.getInitialNavigationState();
+        assertNotNull(initialNavState);
+        assertTrue(initialNavState.isRendererInitiated);
+        assertFalse(initialNavState.hasUserGesture);
+    }
+
+    @Test
+    public void testRedirectHandlerTabHelperUpdateIntentInTab() {
+        RedirectHandlerTabHelper.updateIntentInTab(
+                mTab, /* intent= */ null, /* isCustomTab= */ false);
+        assertNull(RedirectHandlerTabHelper.getHandlerFor(mTab));
+
+        RedirectHandlerTabHelper.updateIntentInTab(
+                mTab, new Intent(Intent.ACTION_MAIN), /* isCustomTab= */ false);
+        assertNull(RedirectHandlerTabHelper.getHandlerFor(mTab));
+
+        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        viewIntent.putExtra(IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, true);
+        RedirectHandlerTabHelper.updateIntentInTab(mTab, viewIntent, /* isCustomTab= */ false);
+
+        RedirectHandler handler = RedirectHandlerTabHelper.getHandlerFor(mTab);
+        assertNotNull(handler);
+        assertTrue(handler.wasTaskStartedByExternalIntent());
+
+        RedirectHandlerTabHelper.updateIntentInTab(
+                mTab, /* intent= */ null, /* isCustomTab= */ false);
+        assertFalse(handler.wasTaskStartedByExternalIntent());
     }
 }

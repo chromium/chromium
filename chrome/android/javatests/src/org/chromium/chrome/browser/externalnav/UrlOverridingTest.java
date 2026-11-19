@@ -1685,7 +1685,7 @@ public class UrlOverridingTest {
         final RedirectHandler spyHandler =
                 Mockito.spy(
                         ThreadUtils.runOnUiThreadBlocking(
-                                () -> RedirectHandlerTabHelper.getHandlerFor(tab)));
+                                () -> RedirectHandlerTabHelper.getOrCreateHandlerFor(tab)));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

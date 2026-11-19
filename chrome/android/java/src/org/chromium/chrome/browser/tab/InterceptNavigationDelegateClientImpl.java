@@ -73,6 +73,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                     @Override
                     public void onDidFinishNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
+                        RedirectHandlerTabHelper.maybeCreateForInitialNavigation(tab, navigation);
                         mInterceptNavigationDelegate.onNavigationFinishedInPrimaryMainFrame(
                                 navigation);
                     }

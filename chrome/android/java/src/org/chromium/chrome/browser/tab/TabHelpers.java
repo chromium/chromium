@@ -52,7 +52,6 @@ public final class TabHelpers {
                 && PriceTrackingFeatures.isPriceAnnotationsEligible(tab.getProfile())) {
             ShoppingPersistedTabData.initialize(tab);
         }
-        RedirectHandlerTabHelper.getOrCreateHandlerFor(tab);
     }
 
     /**
