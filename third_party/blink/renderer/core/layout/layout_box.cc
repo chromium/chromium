@@ -3782,20 +3782,6 @@ PhysicalSize LayoutBox::StitchedSize() const {
   return converter.ToPhysical(size);
 }
 
-LayoutBox* LayoutBox::LocationContainer() const {
-  NOT_DESTROYED();
-  // A non-root SVG object derived from LayoutBox doesn't have a meaningful
-  // location container.
-  if (IsSVGChild()) {
-    return nullptr;
-  }
-
-  // The box's location is relative to its containing box.
-  LayoutObject* container = Container();
-  while (container && !container->IsBox())
-    container = container->Container();
-  return To<LayoutBox>(container);
-}
 
 DISABLE_CFI_PERF
 PhysicalRect LayoutBox::PhysicalContractedBoxRect(

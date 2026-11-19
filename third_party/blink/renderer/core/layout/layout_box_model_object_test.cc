@@ -787,16 +787,12 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionInlineBlockUnderStickyInline) {
     </div>
   )HTML");
 
-  auto* container = GetLayoutBoxByElementId("container");
   auto* outer = GetLayoutBoxModelObjectByElementId("outer");
   auto* inner = GetLayoutBoxByElementId("inner");
 
-  // An inline-block's geometry location container skips its inline ancestors,
-  // but its layout container chain retains them for sticky ancestry.
   ASSERT_TRUE(outer->IsLayoutInline());
   ASSERT_TRUE(inner->IsInline());
   ASSERT_EQ(outer, inner->Container());
-  ASSERT_EQ(container, inner->LocationContainer());
 
   const auto inner_constraints = inner->StickyConstraints();
   EXPECT_EQ(outer, inner_constraints.NearestStickyLayerShiftingStickyBox());

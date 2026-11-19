@@ -511,7 +511,7 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
   const PhysicalRect rect_in_container(PhysicalLocation(), StitchedSize());
 
   WritingModeConverter converter =
-      LocationContainer()->CreateWritingModeConverter();
+      ContainingBox()->CreateWritingModeConverter();
   LogicalRect logical_rect = converter.ToLogical(rect_in_container);
   auto [top, bottom] = SelectionTopAndBottom(*this, logical_rect);
 

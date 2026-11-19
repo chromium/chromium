@@ -353,35 +353,6 @@ TEST_F(LayoutBoxTest, BackgroundRect) {
       layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent).IsEmpty());
 }
 
-TEST_F(LayoutBoxTest, LocationContainer) {
-  SetBodyInnerHTML(R"HTML(
-    <div id='div'>
-      <b>Inline content<img id='img'></b>
-    </div>
-    <table id='table'>
-      <tbody id='tbody'>
-        <tr id='row'>
-          <td id='cell' style='width: 100px; height: 80px'></td>
-        </tr>
-      </tbody>
-    </table>
-  )HTML");
-
-  const LayoutBox* body = GetDocument().body()->GetLayoutBox();
-  const LayoutBox* div = GetLayoutBoxByElementId("div");
-  const LayoutBox* img = GetLayoutBoxByElementId("img");
-  const LayoutBox* table = GetLayoutBoxByElementId("table");
-  const LayoutBox* tbody = GetLayoutBoxByElementId("tbody");
-  const LayoutBox* row = GetLayoutBoxByElementId("row");
-  const LayoutBox* cell = GetLayoutBoxByElementId("cell");
-
-  EXPECT_EQ(body, div->LocationContainer());
-  EXPECT_EQ(div, img->LocationContainer());
-  EXPECT_EQ(body, table->LocationContainer());
-  EXPECT_EQ(table, tbody->LocationContainer());
-  EXPECT_EQ(tbody, row->LocationContainer());
-  EXPECT_EQ(row, cell->LocationContainer());
-}
 
 TEST_F(LayoutBoxTest, TopLeftLocationFlipped) {
   SetBodyInnerHTML(R"HTML(
@@ -432,7 +403,7 @@ TEST_F(LayoutBoxTest, TableRowCellTopLeftLocationFlipped) {
   EXPECT_EQ(PhysicalOffset(0, 0), cell2->PhysicalLocation());
 }
 
-TEST_F(LayoutBoxTest, LocationContainerOfSVG) {
+TEST_F(LayoutBoxTest, LocationOfSVG) {
   SetBodyInnerHTML(R"HTML(
     <svg id='svg' style='writing-mode:vertical-rl' width='500' height='500'>
       <foreignObject x='44' y='77' width='100' height='80' id='foreign'>
@@ -441,22 +412,16 @@ TEST_F(LayoutBoxTest, LocationContainerOfSVG) {
       </foreignObject>
     </svg>
   )HTML");
-  const LayoutBox* svg_root = GetLayoutBoxByElementId("svg");
   const LayoutBox* foreign = GetLayoutBoxByElementId("foreign");
   const LayoutBox* child = GetLayoutBoxByElementId("child");
 
-  EXPECT_EQ(GetDocument().body()->GetLayoutObject(),
-            svg_root->LocationContainer());
-
   // The foreign object's location is not affected by SVGRoot's writing-mode.
-  EXPECT_FALSE(foreign->LocationContainer());
   EXPECT_EQ(PhysicalSize(100, 80), foreign->StitchedSize());
   EXPECT_EQ(PhysicalOffset(44, 77), foreign->PhysicalLocation());
   // The writing mode style should be still be inherited.
   EXPECT_TRUE(foreign->HasFlippedBlocksWritingMode());
 
   // The child of the foreign object is affected by writing-mode.
-  EXPECT_EQ(foreign, child->LocationContainer());
   EXPECT_EQ(PhysicalSize(33, 55), child->StitchedSize());
   EXPECT_EQ(PhysicalOffset(67, 0), child->PhysicalLocation());
   EXPECT_TRUE(child->HasFlippedBlocksWritingMode());

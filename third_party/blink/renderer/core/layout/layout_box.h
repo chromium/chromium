@@ -250,9 +250,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     LocationChanged();
   }
 
-  // The ancestor box that this object's PhysicalLocation is relative to.
-  virtual LayoutBox* LocationContainer() const;
-
   // Note that those functions have their origin at this box's CSS border box.
   // As such their location doesn't account for 'top'/'left'.
   PhysicalRect PhysicalBorderBoxRect() const {
@@ -1252,9 +1249,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // The CSS border box rect for this box.
   //
   // The location is the distance from the border edge of the first fragment of
-  // this object, to the border edge of the first fragment of
-  // LocationContainer(). It doesn't include transforms, relative position
-  // offsets etc.
+  // this object, to the border edge of the first fragment of its containing
+  // box. It doesn't include transforms, relative position offsets etc.
   PhysicalOffset frame_location_;
 
  private:
