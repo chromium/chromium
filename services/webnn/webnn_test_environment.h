@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/webnn/webnn_context_provider_impl.h"
@@ -84,11 +85,12 @@ class WebNNTestEnvironment {
           WebNNContextProviderImpl::WebNNStatus::kWebNNEnabled,
       WebNNContextProviderImpl::LoseAllContextsCallback
           lose_all_contexts_callback = base::DoNothing(),
-      std::unique_ptr<base::test::TaskEnvironment> task_environment = nullptr);
+      std::unique_ptr<base::test::TaskEnvironment> task_environment =
+          std::make_unique<base::test::TaskEnvironment>());
 
   ~WebNNTestEnvironment();
 
-  void RunUntilIdle();
+  void RunUntilIdle() { task_environment_->RunUntilIdle(); }
 
   // Waits until all WebNNContextImpl instances have been fully destroyed
   // (destructor has run). Call after resetting context remotes to ensure
