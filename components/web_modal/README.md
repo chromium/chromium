@@ -124,13 +124,11 @@ web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
 Understanding how web-contents modal dialogs behave when the underlying `WebContents` navigates involves a clean division of responsibility between container hosts and dialog feature controllers:
 
 * **Automatic Cross-Site Teardown (Containers)**:
-  `WebContentsModalDialogManager` is a `content::WebContentsObserver`. When a primary main frame commits a cross-site (`!SameDomainOrHost(...)`) navigation, `DidFinishNavigation()` automatically notifies observers (`OnWillCloseOnNavigation`) and closes all active and queued child dialogs (`CloseAllDialogs()`). Container implementers **do not** need any navigation-handling code.
+  `WebContentsModalDialogManager` is a `content::WebContentsObserver`. When a primary main frame commits a cross-site (`!SameDomainOrHost(...)`) navigation, `DidFinishNavigation()` automatically closes all active and queued child dialogs (`CloseAllDialogs()`). Container implementers **do not** need any navigation-handling code.
 * **Automatic BackForwardCache (`BFCache`) Protection**:
   If a primary main frame navigates while a web-modal dialog is open, the manager automatically disables BFCache (`DisabledReasonId::kModalDialog`).
 * **Same-Origin / Same-Site Dismissal (Dialog Features)**:
   Because the manager only auto-closes dialogs on cross-site navigations, dialogs remain open across same-origin or same-site primary main frame navigations. Dialog feature controllers whose prompts should dismiss on *any* page navigation (e.g., [`PrintPreviewDialogController::DidFinishNavigation()`](../../chrome/browser/printing/print_preview_dialog_controller.cc)) must observe `WebContentsObserver` directly and tear down their own prompt.
-* **Pre-Teardown Navigation Hook**:
-  Dialog feature controllers needing to distinguish whether their prompt closed due to a user clicking "Cancel" versus being forcibly closed by an automatic cross-site navigation teardown can implement `WebContentsModalDialogManager::Observer::OnWillCloseOnNavigation()`.
 
 ---
 

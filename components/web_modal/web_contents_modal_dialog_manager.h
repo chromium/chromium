@@ -10,6 +10,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "components/web_modal/web_modal_export.h"
@@ -31,15 +32,12 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
       public content::WebContentsObserver,
       public content::WebContentsUserData<WebContentsModalDialogManager> {
  public:
-  // Observes when web modal dialog is about to close as a result of a page
-  // navigation.
+  // Observes lifecycle events of dialogs managed by
+  // WebContentsModalDialogManager.
   class Observer : public base::CheckedObserver {
    public:
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
-
-    // Called when the web modal is closing due to host web contents navigation.
-    virtual void OnWillCloseOnNavigation() {}
 
     // Called when ShowDialogWithManager() is called.
     virtual void OnWillShow() {}
@@ -73,8 +71,7 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   // Updates all child dialog's position to use the latest delegate host.
   void UpdateDialogHost();
 
-  // Manages observer for when dialogs are closed as a result of page
-  // navigation.
+  // Adds or removes an Observer.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

@@ -190,7 +190,6 @@ void WebContentsModalDialogManager::DidFinishNavigation(
           navigation_handle->GetPreviousPrimaryMainFrameURL(),
           navigation_handle->GetURL(),
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
-    observer_list_.Notify(&Observer::OnWillCloseOnNavigation);
     CloseAllDialogs();
   }
 }

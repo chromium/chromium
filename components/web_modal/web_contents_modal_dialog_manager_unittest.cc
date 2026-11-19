@@ -10,12 +10,14 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "components/web_modal/test_web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "components/web_modal/web_contents_modal_dialog_manager_unittest_mac_helper.h"
@@ -23,15 +25,17 @@
 
 namespace web_modal {
 
-class MockCloseOnNavigationObserver
-    : public WebContentsModalDialogManager::Observer {
- public:
-  MockCloseOnNavigationObserver() = default;
-  ~MockCloseOnNavigationObserver() override = default;
+namespace {
 
-  MOCK_METHOD(void, OnWillCloseOnNavigation, (), (override));
+class MockObserver : public WebContentsModalDialogManager::Observer {
+ public:
+  MockObserver() = default;
+  ~MockObserver() override = default;
+
   MOCK_METHOD(void, OnWillShow, (), (override));
 };
+
+}  // namespace
 
 // Tracks persistent state changes of the native WC-modal dialog manager.
 class NativeManagerTracker {
@@ -439,40 +443,50 @@ TEST_F(WebContentsModalDialogManagerTest, CloseAllDialogs) {
     EXPECT_EQ(NativeManagerTracker::CLOSED, trackers[i].state_);
 }
 
-// Test that dialogs are closed on WebContents navigation.
+// Test that dialogs are closed on cross-site WebContents navigation.
 TEST_F(WebContentsModalDialogManagerTest, CloseOnNavigation) {
-  MockCloseOnNavigationObserver observer;
-  EXPECT_CALL(observer, OnWillCloseOnNavigation());
-
   const gfx::NativeWindow dialog = MakeFakeDialog();
   NativeManagerTracker tracker;
   TestNativeWebContentsModalDialogManager* native_manager =
       new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
   manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
-
-  manager->AddObserver(&observer);
 
   NavigateAndCommit(GURL("https://example.com/"));
   EXPECT_EQ(NativeManagerTracker::CLOSED, tracker.state_);
+  EXPECT_FALSE(manager->IsDialogActive());
 }
 
-// Test that the CloseOnNavigation observer is not triggered if the dialog is
-// closed for another reason.
-TEST_F(WebContentsModalDialogManagerTest,
-       ObserverNotNotifiedOfNonNavigationClose) {
-  MockCloseOnNavigationObserver observer;
-  EXPECT_CALL(observer, OnWillCloseOnNavigation()).Times(0);
+// Test that Observer::OnWillShow() is called when ShowDialogWithManager() is
+// invoked while observing, and not after RemoveObserver().
+TEST_F(WebContentsModalDialogManagerTest, ObserverOnWillShow) {
+  testing::StrictMock<MockObserver> observer;
+  base::ScopedObservation<WebContentsModalDialogManager,
+                          WebContentsModalDialogManager::Observer>
+      observation(&observer);
+  observation.Observe(manager);
 
-  const gfx::NativeWindow dialog = MakeFakeDialog();
-  NativeManagerTracker tracker;
-  TestNativeWebContentsModalDialogManager* native_manager =
-      new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
-  manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
+  const gfx::NativeWindow dialog1 = MakeFakeDialog();
+  EXPECT_CALL(observer, OnWillShow());
+  manager->ShowDialogWithManager(
+      dialog1, std::make_unique<TestNativeWebContentsModalDialogManager>(
+                   dialog1, manager, nullptr));
+  testing::Mock::VerifyAndClearExpectations(&observer);
 
-  manager->AddObserver(&observer);
+  const gfx::NativeWindow dialog2 = MakeFakeDialog();
+  EXPECT_CALL(observer, OnWillShow());
+  manager->ShowDialogWithManager(
+      dialog2, std::make_unique<TestNativeWebContentsModalDialogManager>(
+                   dialog2, manager, nullptr));
+  testing::Mock::VerifyAndClearExpectations(&observer);
 
-  native_manager->Close();
-  EXPECT_EQ(NativeManagerTracker::CLOSED, tracker.state_);
+  observation.Reset();
+
+  const gfx::NativeWindow dialog3 = MakeFakeDialog();
+  manager->ShowDialogWithManager(
+      dialog3, std::make_unique<TestNativeWebContentsModalDialogManager>(
+                   dialog3, manager, nullptr));
+
+  test_api->CloseAllDialogs();
 }
 
 }  // namespace web_modal

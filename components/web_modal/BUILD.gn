@@ -71,6 +71,8 @@ source_set("unit_tests") {
     ":web_modal",
     "//base",
     "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }
