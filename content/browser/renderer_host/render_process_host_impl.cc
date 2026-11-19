@@ -4550,7 +4550,6 @@ void RenderProcessHostImpl::Cleanup() {
   TRACE_EVENT("shutdown", "RenderProcessHostImpl::Cleanup",
               ChromeTrackEvent::kRenderProcessHost, *this);
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
-  base::UmaHistogramBoolean("BrowserRenderProcessHost.Cleanup.Total", true);
   // Keep the one renderer thread around forever in single process mode.
   if (run_renderer_in_process()) {
     return;
