@@ -25,7 +25,7 @@
     Ask <ph name="ENGINE">$1<ex>AI Mode</ex></ph>
   </message>
 
-  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL" desc="Label text for the action match that opens lens.">
+  <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL" desc="Label text for the action match that opens lens. Also used for the 'Ask Google about this page' context menu and app menu items on Desktop Android." formatter_data="android_java">
     Ask Google about this page
   </message>
   <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL_ALT" desc="Alternative label text for the action match that opens lens.">
