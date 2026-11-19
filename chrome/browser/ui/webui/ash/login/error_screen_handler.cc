@@ -8,7 +8,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
