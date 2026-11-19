@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -296,7 +297,8 @@ TEST_F(WaylandPointerTest, AxisSourceTypes) {
           WL_POINTER_AXIS_SOURCE_CONTINUOUS,
           WL_POINTER_AXIS_SOURCE_WHEEL_TILT}) {
       SendAxisEvents(pointer, server->GetNextTime(), source,
-                     WL_POINTER_AXIS_VERTICAL_SCROLL, rand() % 20);
+                     WL_POINTER_AXIS_VERTICAL_SCROLL,
+                     base::RandIntInclusive(0, 19));
     }
   });
 
