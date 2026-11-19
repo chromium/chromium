@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/add_supervision_resources.h"
 #include "chrome/grit/add_supervision_resources_map.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/supervision_resources.h"
 #include "chrome/grit/supervision_resources_map.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"

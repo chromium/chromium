@@ -50,7 +50,6 @@ static_library("parent_access") {
     "//ash/public/cpp",
     "//ash/strings",
     "//ash/webui/common:trusted_types_util",
-    "//chrome/app:generated_resources",
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/parent_access:resources",

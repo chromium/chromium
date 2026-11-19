@@ -40,18 +40,4 @@
   <message name="IDS_UTILITY_PROCESS_PDF_SERVICE_NAME" desc="The name of the utility process used for PDF conversions.">
     PDF Service
   </message>
-
-  <!-- Strings shared among supervised user experiences -->
-  <message name="IDS_SUPERVISED_USER_ERROR_TITLE" desc="Title for the UI shown to supervised users when an error has occurred.">
-    An error occurred
-  </message>
-  <message name="IDS_SUPERVISED_USER_ERROR_DESCRIPTION" desc="Message shown if UI shown to supervised users has failed to load for any reason.">
-    Please try again later
-  </message>
-  <message name="IDS_SUPERVISED_USER_OFFLINE_TITLE" desc="Heading string shown in the UI shown to supervised users when the network is not available.">
-    Can’t connect to the internet
-  </message>
-  <message name="IDS_SUPERVISED_USER_OFFLINE_DESCRIPTION" desc="Description shown in the UI shown to supervised users when the network is not available.">
-    Check your internet connection
-  </message>
 </grit-part>
