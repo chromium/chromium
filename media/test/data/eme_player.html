@@ -103,6 +103,14 @@
       video.removeEventListener('ended', Utils.failTest);
       Utils.installTitleEventHandler(video, 'ended');
       video.removeEventListener('timeupdate', onTimeUpdate);
+
+      // Several encrypted streams have 0.5s clear leads, so 1s of playback
+      // already covers encrypted frames. Seek near the end to save test time,
+      // skipping MediaFoundationClearKey (which has 2s clear-lead clips).
+      if (testConfig.keySystem != MEDIAFOUNDATION_CLEARKEY &&
+          Number.isFinite(video.duration)) {
+        video.currentTime = Math.max(video.currentTime, video.duration - 0.5);
+      }
     }
 
     function onFirstPlayEnded(e) {
