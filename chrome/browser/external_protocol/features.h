@@ -6,12 +6,19 @@
 #define CHROME_BROWSER_EXTERNAL_PROTOCOL_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace features {
 
 // Blocks web-initiated external protocol launches with a local+ scheme.
 // See crbug.com/539667062.
 BASE_DECLARE_FEATURE(kLocalOnlyAppProtocolPrefix);
+
+#if BUILDFLAG(IS_LINUX)
+// Classifies omnibox input with a scheme that has an XDG "x-scheme-handler"
+// association as a URL instead of a search. See crbug.com/40428807.
+BASE_DECLARE_FEATURE(kXdgSchemeHandlerDetection);
+#endif
 
 }  // namespace features
 

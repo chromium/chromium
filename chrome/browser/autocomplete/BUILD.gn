@@ -279,6 +279,7 @@ source_set("unit_tests") {
     ":autocomplete",
     "//base",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/external_protocol",
     "//chrome/browser/history",
     "//chrome/browser/omnibox",
     "//chrome/browser/profiles:test_support",

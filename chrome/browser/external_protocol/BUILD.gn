@@ -21,6 +21,10 @@ source_set("external_protocol") {
     sources += [ "auto_launch_protocols_policy_handler.h" ]
     public_deps += [ "//components/policy/core/browser" ]
   }
+
+  if (is_linux) {
+    sources += [ "xdg_scheme_handler_cache_linux.h" ]
+  }
 }
 
 source_set("impl") {
@@ -60,12 +64,19 @@ source_set("impl") {
   if (!is_android && !is_chromeos) {
     sources += [ "auto_launch_protocols_policy_handler.cc" ]
   }
+
+  if (is_linux) {
+    sources += [ "xdg_scheme_handler_cache_linux.cc" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
   sources = [ "external_protocol_handler_unittest.cc" ]
+  if (is_linux) {
+    sources += [ "xdg_scheme_handler_cache_linux_unittest.cc" ]
+  }
 
   deps = [
     ":external_protocol",

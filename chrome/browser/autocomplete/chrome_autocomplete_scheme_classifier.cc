@@ -17,6 +17,12 @@
 #include "content/public/common/url_constants.h"
 #include "url/url_util.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/feature_list.h"
+#include "chrome/browser/external_protocol/features.h"
+#include "chrome/browser/external_protocol/xdg_scheme_handler_cache_linux.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -52,7 +58,14 @@ bool IsCustomSchemeHandledByWebApp(Profile* profile,
 
 ChromeAutocompleteSchemeClassifier::ChromeAutocompleteSchemeClassifier(
     Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+#if BUILDFLAG(IS_LINUX)
+  // Start scanning now so the result is ready by the time a scheme is typed.
+  if (base::FeatureList::IsEnabled(features::kXdgSchemeHandlerDetection)) {
+    xdg_scheme_handler_cache_ = XdgSchemeHandlerCache::GetOrCreate();
+  }
+#endif
+}
 
 ChromeAutocompleteSchemeClassifier::~ChromeAutocompleteSchemeClassifier() =
     default;
@@ -99,10 +112,14 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
 
     case ExternalProtocolHandler::UNKNOWN: {
 #if BUILDFLAG(IS_LINUX)
-      // Linux impl of GetApplicationNameForScheme doesn't distinguish
-      // between URL schemes with handers and those without. This will
-      // make the default behaviour be search on Linux.
-      return metrics::OmniboxInputType::EMPTY;
+      // GetApplicationNameForScheme() on Linux doesn't distinguish between
+      // URL schemes with handlers and those without, and it blocks. Use the
+      // XDG scheme handler associations instead; unknown schemes default to
+      // search.
+      return xdg_scheme_handler_cache_ &&
+                     xdg_scheme_handler_cache_->HasHandler(scheme)
+                 ? metrics::OmniboxInputType::URL
+                 : metrics::OmniboxInputType::EMPTY;
 #elif BUILDFLAG(IS_CHROMEOS)
       return IsCustomSchemeHandledByWebApp(profile_, scheme)
                  ? metrics::OmniboxInputType::URL

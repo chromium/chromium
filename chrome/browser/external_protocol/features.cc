@@ -8,4 +8,8 @@ namespace features {
 
 BASE_FEATURE(kLocalOnlyAppProtocolPrefix, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kXdgSchemeHandlerDetection, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features
