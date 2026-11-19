@@ -50,6 +50,10 @@ BASE_FEATURE(kWaylandUnscaledTouchpadScrolling,
 const base::FeatureParam<double> kWaylandUnscaledTouchpadScrollingNewFactor{
     &kWaylandUnscaledTouchpadScrolling, "scroll_scaling_factor", 2.5};
 
+// Kill switch for composing c with cedilla from Dead<acute> + c on Wayland
+// when GTK would do so (pt_BR locales or the "cedilla" input method).
+BASE_FEATURE(kWaylandCedillaCompose, base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsWaylandOverlayDelegationEnabled() {
   return base::FeatureList::IsEnabled(kWaylandOverlayDelegation);
 }

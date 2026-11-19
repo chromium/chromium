@@ -17,6 +17,7 @@ BASE_DECLARE_FEATURE(kDispatchPointerEventsOnFrameEvent);
 BASE_DECLARE_FEATURE(kDispatchTouchEventsOnFrameEvent);
 BASE_DECLARE_FEATURE(kWaylandUnscaledTouchpadScrolling);
 extern const base::FeatureParam<double> kWaylandUnscaledTouchpadScrollingNewFactor;
+BASE_DECLARE_FEATURE(kWaylandCedillaCompose);
 
 bool IsWaylandOverlayDelegationEnabled();
 bool IsWaylandFractionalScaleV1Enabled();

@@ -10,7 +10,9 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/environment.h"
 #include "base/i18n/break_iterator.h"
@@ -18,6 +20,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -2172,6 +2175,66 @@ TEST_F(WaylandInputMethodContextWithMockV3Test,
       text);
   EXPECT_EQ(input_method_context->predicted_state_for_testing().selection,
             gfx::Range(20, 20));
+}
+
+namespace {
+
+class FakeEnvironment : public base::Environment {
+ public:
+  explicit FakeEnvironment(base::EnvironmentMap vars)
+      : vars_(std::move(vars)) {}
+  ~FakeEnvironment() override = default;
+
+  std::optional<std::string> GetVar(base::cstring_view variable_name) override {
+    auto it = vars_.find(variable_name);
+    if (it == vars_.end()) {
+      return std::nullopt;
+    }
+    return it->second;
+  }
+
+ private:
+  base::EnvironmentMap vars_;
+};
+
+bool ShouldComposeCedilla(base::EnvironmentMap vars) {
+  FakeEnvironment env(std::move(vars));
+  return ShouldComposeCedillaForDeadAcuteC(env);
+}
+
+}  // namespace
+
+TEST(WaylandInputMethodContextCedillaTest, ImModule) {
+  EXPECT_FALSE(ShouldComposeCedilla({}));
+  EXPECT_FALSE(ShouldComposeCedilla({{"LANG", "en_US.UTF-8"}}));
+  EXPECT_TRUE(ShouldComposeCedilla(
+      {{"LANG", "en_US.UTF-8"}, {"GTK_IM_MODULE", "cedilla"}}));
+  EXPECT_TRUE(ShouldComposeCedilla(
+      {{"LANG", "en_US.UTF-8"}, {"QT_IM_MODULE", "cedilla"}}));
+  EXPECT_TRUE(ShouldComposeCedilla({{"GTK_IM_MODULE", "cedilla:ibus"}}));
+  EXPECT_FALSE(ShouldComposeCedilla({{"GTK_IM_MODULE", "ibus"}}));
+  EXPECT_FALSE(ShouldComposeCedilla({{"GTK_IM_MODULE", "ibus:cedilla"}}));
+}
+
+TEST(WaylandInputMethodContextCedillaTest, Locale) {
+  EXPECT_TRUE(ShouldComposeCedilla({{"LANG", "pt_BR.UTF-8"}}));
+  EXPECT_TRUE(ShouldComposeCedilla({{"LANG", "pt_BR"}}));
+  EXPECT_FALSE(ShouldComposeCedilla({{"LANG", "pt_PT.UTF-8"}}));
+  EXPECT_TRUE(
+      ShouldComposeCedilla({{"LANG", "en_US.UTF-8"}, {"LC_CTYPE", "pt_BR"}}));
+  EXPECT_FALSE(
+      ShouldComposeCedilla({{"LANG", "pt_BR.UTF-8"}, {"LC_CTYPE", "en_US"}}));
+  EXPECT_TRUE(ShouldComposeCedilla(
+      {{"LC_ALL", "pt_BR.UTF-8"}, {"LC_CTYPE", "en_US.UTF-8"}}));
+  // An empty variable is ignored.
+  EXPECT_TRUE(ShouldComposeCedilla({{"LC_ALL", ""}, {"LANG", "pt_BR.UTF-8"}}));
+}
+
+TEST(WaylandInputMethodContextCedillaTest, KillSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kWaylandCedillaCompose);
+  EXPECT_FALSE(ShouldComposeCedilla({{"GTK_IM_MODULE", "cedilla"}}));
+  EXPECT_FALSE(ShouldComposeCedilla({{"LANG", "pt_BR.UTF-8"}}));
 }
 
 }  // namespace ui

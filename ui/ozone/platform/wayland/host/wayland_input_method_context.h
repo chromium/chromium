@@ -24,6 +24,10 @@
 #include "ui/ozone/platform/wayland/host/zwp_text_input_v1.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_v3.h"
 
+namespace base {
+class Environment;
+}
+
 namespace ui {
 
 class WaylandConnection;
@@ -211,6 +215,11 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // Keeps modifiers_map sent from the wayland compositor.
   std::vector<std::string> modifiers_map_;
 };
+
+// Returns whether Dead<acute> followed by c should compose c with cedilla,
+// as GTK does for pt_BR locales and with its "cedilla" input method. Exposed
+// for testing.
+bool ShouldComposeCedillaForDeadAcuteC(base::Environment& env);
 
 }  // namespace ui
 

@@ -35,6 +35,30 @@ bool CheckCharacterComposeTable(
          ui::ComposeChecker::CheckSequenceResult::NO_MATCH;
 }
 
+// Checks for Dead<acute> followed by c/C, which composes c with cedilla in
+// the pt_BR Compose table and with GTK's "cedilla" input method.
+bool CheckCedillaSequence(
+    const ui::CharacterComposer::ComposeBuffer& compose_sequence,
+    uint32_t* composed_character) {
+  constexpr uint32_t kCombiningAcute = 0x0301;
+  if (compose_sequence.size() != 2 ||
+      compose_sequence[0] !=
+          ui::DomKey::DeadKeyFromCombiningCharacter(kCombiningAcute) ||
+      !compose_sequence[1].IsCharacter()) {
+    return false;
+  }
+  switch (compose_sequence[1].ToCharacter()) {
+    case 'c':
+      *composed_character = 0x00E7;
+      return true;
+    case 'C':
+      *composed_character = 0x00C7;
+      return true;
+    default:
+      return false;
+  }
+}
+
 // Looks up `key` in `table`, sorted by key, and returns the matching value, if
 // any.
 std::optional<uint16_t> FindInTable(
@@ -168,7 +192,9 @@ bool CharacterComposer::FilterKeyPressSequenceMode(const KeyEvent& event) {
 
   // Check compose table.
   uint32_t composed_character_utf32 = 0;
-  if (CheckCharacterComposeTable(compose_buffer_, &composed_character_utf32)) {
+  if ((dead_acute_c_produces_cedilla_ &&
+       CheckCedillaSequence(compose_buffer_, &composed_character_utf32)) ||
+      CheckCharacterComposeTable(compose_buffer_, &composed_character_utf32)) {
     // Key press is recognized as a part of composition.
     if (composed_character_utf32 != 0) {
       // We get a composed character.

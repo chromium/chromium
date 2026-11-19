@@ -63,6 +63,13 @@ class COMPONENT_EXPORT(UI_BASE_IME_TYPES) CharacterComposer {
   // Returns the preedit string.
   const std::u16string& preedit_string() const { return preedit_string_; }
 
+  // When enabled, Dead<acute> followed by c/C composes U+00E7/U+00C7 (c with
+  // cedilla) instead of U+0107/U+0106 (c with acute), matching the pt_BR
+  // Compose table and GTK's "cedilla" input method.
+  void set_dead_acute_c_produces_cedilla(bool enabled) {
+    dead_acute_c_produces_cedilla_ = enabled;
+  }
+
  private:
   // An enum to describe composition mode.
   enum CompositionMode {
@@ -104,6 +111,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_TYPES) CharacterComposer {
   CompositionMode composition_mode_ = KEY_SEQUENCE_MODE;
 
   const PreeditStringMode preedit_string_mode_;
+
+  bool dead_acute_c_produces_cedilla_ = false;
 };
 
 // Abstract class for determining whether a ComposeBuffer forms a valid

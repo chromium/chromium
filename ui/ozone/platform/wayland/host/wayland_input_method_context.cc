@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -20,6 +21,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/notimplemented.h"
+#include "base/strings/cstring_view.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -37,6 +40,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/span_style.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -252,6 +256,39 @@ class WaylandInputmethodContextV3Client : public ZwpTextInputV3Client {
 
 }  // namespace
 
+bool ShouldComposeCedillaForDeadAcuteC(base::Environment& env) {
+  if (!base::FeatureList::IsEnabled(kWaylandCedillaCompose)) {
+    return false;
+  }
+
+  // GTK_IM_MODULE and QT_IM_MODULE may list several modules separated by
+  // colons; the first available one is used.
+  static constexpr base::cstring_view kImModuleVars[] = {"GTK_IM_MODULE",
+                                                         "QT_IM_MODULE"};
+  for (base::cstring_view var : kImModuleVars) {
+    std::string value = env.GetVar(var).value_or(std::string());
+    std::vector<std::string_view> modules = base::SplitStringPiece(
+        value, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (!modules.empty() && modules.front() == "cedilla") {
+      return true;
+    }
+  }
+
+  // GTK uses the pt_BR Compose table, which maps Dead<acute> + c to c with
+  // cedilla, for pt_BR locales. Use the same precedence as setlocale() for
+  // LC_CTYPE.
+  static constexpr base::cstring_view kLocaleVars[] = {"LC_ALL", "LC_CTYPE",
+                                                       "LANG"};
+  for (base::cstring_view var : kLocaleVars) {
+    std::optional<std::string> locale = env.GetVar(var);
+    if (locale && !locale->empty()) {
+      return base::StartsWith(*locale, "pt_BR",
+                              base::CompareCase::INSENSITIVE_ASCII);
+    }
+  }
+  return false;
+}
+
 WaylandInputMethodContext::WaylandInputMethodContext(
     WaylandConnection* connection,
     WaylandKeyboard::Delegate* key_delegate,
@@ -264,6 +301,8 @@ WaylandInputMethodContext::WaylandInputMethodContext(
                   ->AsWeakPtr()),
       text_input_v1_(nullptr),
       character_composer_(kPreeditStringMode) {
+  character_composer_.set_dead_acute_c_produces_cedilla(
+      ShouldComposeCedillaForDeadAcuteC(*base::Environment::Create()));
   window_->set_focus_client(this);
   Init();
 }

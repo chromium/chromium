@@ -671,4 +671,30 @@ TEST_F(CharacterComposerTest, HexadecimalSequenceAndDeadKey) {
                            std::u16string(1, 0x3042));
 }
 
+TEST_F(CharacterComposerTest, DeadAcuteCProducesCedilla) {
+  character_composer_->set_dead_acute_c_produces_cedilla(true);
+  // LATIN SMALL LETTER C WITH CEDILLA
+  ExpectDeadKeyFiltered(kCombiningAcute);
+  ExpectUnicodeKeyComposed(VKEY_C, DomCode::US_C, EF_NONE, 'c',
+                           std::u16string(1, 0x00E7));
+  // LATIN CAPITAL LETTER C WITH CEDILLA
+  ExpectDeadKeyFiltered(kCombiningAcute);
+  ExpectUnicodeKeyComposed(VKEY_C, DomCode::US_C, EF_SHIFT_DOWN, 'C',
+                           std::u16string(1, 0x00C7));
+  // Other acute sequences are unchanged.
+  ExpectDeadKeyFiltered(kCombiningAcute);
+  ExpectUnicodeKeyComposed(VKEY_E, DomCode::US_E, EF_NONE, 'e',
+                           std::u16string(1, 0x00E9));
+  // The Compose key sequence is unchanged.
+  ExpectComposeKeyFiltered();
+  ExpectUnicodeKeyFiltered(VKEY_OEM_7, DomCode::QUOTE, 0, '\'');
+  ExpectUnicodeKeyComposed(VKEY_C, DomCode::US_C, EF_NONE, 'c',
+                           std::u16string(1, 0x0107));
+
+  character_composer_->set_dead_acute_c_produces_cedilla(false);
+  ExpectDeadKeyFiltered(kCombiningAcute);
+  ExpectUnicodeKeyComposed(VKEY_C, DomCode::US_C, EF_NONE, 'c',
+                           std::u16string(1, 0x0107));
+}
+
 }  // namespace ui
