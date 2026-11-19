@@ -13,15 +13,14 @@
 
 namespace net {
 
-// Parses a Sec-WebSocket-Extensions header value and returns a vector of
-// WebSocketExtension objects representing the parsed extensions.
+// Parses a Sec-WebSocket-Extensions header value (RFC 6455 Section 9.1).
 //
 // The input string must not contain newline characters, and any
 // LWS-concatenation must be performed before calling this function.
 //
-// Returns a vector of WebSocketExtension objects. If a syntax error is found,
-// the returned vector will be empty.
-NET_EXPORT std::vector<WebSocketExtension> ParseWebSocketExtensions(
+// Returns a vector of `WebSocketExtension` objects, or an empty vector if a
+// syntax error is found.
+NET_EXPORT_PRIVATE std::vector<WebSocketExtension> ParseWebSocketExtensions(
     std::string_view data);
 
 }  // namespace net

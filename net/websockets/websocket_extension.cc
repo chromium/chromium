@@ -5,37 +5,43 @@
 #include "net/websockets/websocket_extension.h"
 
 #include <algorithm>
-#include <map>
+#include <functional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "net/http/http_util.h"
 
 namespace net {
 
-WebSocketExtension::Parameter::Parameter(const std::string& name)
-    : name_(name) {}
+WebSocketExtension::Parameter::Parameter(std::string name)
+    : name_(std::move(name)) {}
 
-WebSocketExtension::Parameter::Parameter(const std::string& name,
-                                         const std::string& value)
-    : name_(name), value_(value) {
-  DCHECK(!value.empty());
-  // |extension-param| must be a token.
-  DCHECK(HttpUtil::IsToken(value));
+WebSocketExtension::Parameter::Parameter(std::string name, std::string value)
+    : name_(std::move(name)), value_(std::move(value)) {
+  DCHECK(!value_.empty());
+  // `extension-param` must be a token.
+  DCHECK(HttpUtil::IsToken(value_));
 }
 
-bool WebSocketExtension::Parameter::operator==(const Parameter& other) const =
+WebSocketExtension::Parameter::Parameter(const Parameter&) = default;
+WebSocketExtension::Parameter& WebSocketExtension::Parameter::operator=(
+    const Parameter&) = default;
+WebSocketExtension::Parameter::Parameter(Parameter&&) noexcept = default;
+WebSocketExtension::Parameter& WebSocketExtension::Parameter::operator=(
+    Parameter&&) noexcept = default;
+WebSocketExtension::Parameter::~Parameter() = default;
+
+WebSocketExtension::WebSocketExtension(std::string name)
+    : name_(std::move(name)) {}
+
+WebSocketExtension::WebSocketExtension(const WebSocketExtension&) = default;
+WebSocketExtension& WebSocketExtension::operator=(const WebSocketExtension&) =
     default;
-
-WebSocketExtension::WebSocketExtension() = default;
-
-WebSocketExtension::WebSocketExtension(const std::string& name)
-    : name_(name) {}
-
-WebSocketExtension::WebSocketExtension(const WebSocketExtension& other) =
-    default;
-
+WebSocketExtension::WebSocketExtension(WebSocketExtension&&) noexcept = default;
+WebSocketExtension& WebSocketExtension::operator=(
+    WebSocketExtension&&) noexcept = default;
 WebSocketExtension::~WebSocketExtension() = default;
 
 bool WebSocketExtension::Equivalent(const WebSocketExtension& other) const {

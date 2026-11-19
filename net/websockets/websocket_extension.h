@@ -6,6 +6,7 @@
 #define NET_WEBSOCKETS_WEBSOCKET_EXTENSION_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "net/base/net_export.h"
@@ -20,29 +21,36 @@ class NET_EXPORT_PRIVATE WebSocketExtension {
   class NET_EXPORT_PRIVATE Parameter final {
    public:
     // Construct a parameter which does not have a value.
-    explicit Parameter(const std::string& name);
+    explicit Parameter(std::string name);
     // Construct a parameter with a non-empty value.
-    Parameter(const std::string& name, const std::string& value);
+    Parameter(std::string name, std::string value);
 
-    bool operator==(const Parameter&) const;
+    Parameter(const Parameter&);
+    Parameter& operator=(const Parameter&);
+    Parameter(Parameter&&) noexcept;
+    Parameter& operator=(Parameter&&) noexcept;
+    ~Parameter();
+
+    friend bool operator==(const Parameter&, const Parameter&) = default;
 
     bool HasValue() const { return !value_.empty(); }
     const std::string& name() const { return name_; }
     const std::string& value() const { return value_; }
 
-    // The default copy constructor and the assignment operator are defined:
-    // we need them.
    private:
     std::string name_;
     std::string value_;
   };
 
-  WebSocketExtension();
-  explicit WebSocketExtension(const std::string& name);
-  WebSocketExtension(const WebSocketExtension& other);
+  explicit WebSocketExtension(std::string name);
+
+  WebSocketExtension(const WebSocketExtension&);
+  WebSocketExtension& operator=(const WebSocketExtension&);
+  WebSocketExtension(WebSocketExtension&&) noexcept;
+  WebSocketExtension& operator=(WebSocketExtension&&) noexcept;
   ~WebSocketExtension();
 
-  void Add(const Parameter& parameter) { parameters_.push_back(parameter); }
+  void Add(Parameter parameter) { parameters_.push_back(std::move(parameter)); }
   const std::string& name() const { return name_; }
   const std::vector<Parameter>& parameters() const { return parameters_; }
 
@@ -52,8 +60,6 @@ class NET_EXPORT_PRIVATE WebSocketExtension {
 
   std::string ToString() const;
 
-  // The default copy constructor and the assignment operator are defined:
-  // we need them.
  private:
   std::string name_;
   std::vector<Parameter> parameters_;

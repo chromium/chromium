@@ -50,7 +50,7 @@ TEST(WebSocketExtensionTest, ValueOrderMattersToEquivalence) {
 }
 
 TEST(WebSocketExtensionTest, EmptyToString) {
-  EXPECT_EQ("", WebSocketExtension().ToString());
+  EXPECT_EQ("", WebSocketExtension("").ToString());
 }
 
 TEST(WebSocketExtensionTest, SimpleToString) {
