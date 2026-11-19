@@ -2147,8 +2147,8 @@ void BaseRenderingContext2D::fillGlyphRun(const GlyphRun* glyph_run,
       shaped_text->GetText(), glyph_run->x() + x, glyph_run->y() + y,
       CanvasRenderingContext2DState::kFillPaintType,
       V8CanvasTextAlign::Enum::kLeft, shaped_text->ContextTextBaseline(),
-      glyph_run->start(), glyph_run->end(), nullptr, shaped_text->GetFont(),
-      shaped_text->Direction());
+      glyph_run->start(), glyph_run->end(), /*max_width=*/nullptr,
+      shaped_text->GetFont(), glyph_run);
 }
 
 void BaseRenderingContext2D::strokeGlyphRun(const GlyphRun* glyph_run,
@@ -2161,8 +2161,8 @@ void BaseRenderingContext2D::strokeGlyphRun(const GlyphRun* glyph_run,
       shaped_text->GetText(), glyph_run->x() + x, glyph_run->y() + y,
       CanvasRenderingContext2DState::kStrokePaintType,
       V8CanvasTextAlign::Enum::kLeft, shaped_text->ContextTextBaseline(),
-      glyph_run->start(), glyph_run->end(), nullptr, shaped_text->GetFont(),
-      shaped_text->Direction());
+      glyph_run->start(), glyph_run->end(), /*max_width=*/nullptr,
+      shaped_text->GetFont(), glyph_run);
 }
 
 void BaseRenderingContext2D::fillGlyphRuns(
@@ -2194,12 +2194,20 @@ void BaseRenderingContext2D::DrawTextInternal(
     unsigned run_end,
     double* max_width,
     const Font* cluster_font,
-    std::optional<TextDirection> direction_override) {
+    const GlyphRun* glyph_run) {
   if (!std::isfinite(x) || !std::isfinite(y)) {
     return;
   }
   if (max_width && (!std::isfinite(*max_width) || *max_width <= 0)) {
     return;
+  }
+  const ShapedText* shaped_text = nullptr;
+  const PlainTextNode* shaped_node = nullptr;
+  if (glyph_run != nullptr) {
+    shaped_text = glyph_run->GetShapedText();
+    DCHECK(shaped_text);
+    shaped_node = shaped_text->GetPlainTextNode();
+    DCHECK(shaped_node);
   }
 
   HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
@@ -2228,16 +2236,17 @@ void BaseRenderingContext2D::DrawTextInternal(
   // FIXME: Need to turn off font smoothing.
 
   const ComputedStyle* computed_style =
-      canvas ? canvas->EnsureComputedStyle() : nullptr;
+      (!shaped_text && canvas) ? canvas->EnsureComputedStyle() : nullptr;
   CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
-  // Glyph runs must be bidi-resolved exactly as they were by shapeText(): the
-  // current context direction and the canvas unicode-bidi do not apply.
+  // Glyph runs must be bidi-resolved and shaped exactly as they were by
+  // shapeText(): the current context direction and canvas unicode-bidi do not
+  // apply
   TextDirection direction =
-      direction_override
-          ? *direction_override
+      shaped_text
+          ? shaped_text->Direction()
           : ToTextDirection(GetState().GetDirection(), host, computed_style);
   bool is_rtl = direction == TextDirection::kRtl;
-  bool bidi_override = !direction_override && computed_style &&
+  bool bidi_override = !shaped_text && computed_style &&
                        IsOverride(computed_style->GetUnicodeBidi());
 
   // Obtain `paint_canvas` and `state` after `AccessFont`,
@@ -2253,16 +2262,26 @@ void BaseRenderingContext2D::DrawTextInternal(
   const CanvasRenderingContext2DState& state = GetState();
 
   PlainTextPainter& text_painter = host->GetPlainTextPainter();
-  TextRun text_run(text, direction, bidi_override);
   // Draw the item text at the correct point.
   gfx::PointF location(ClampTo<float>(x), ClampTo<float>(y));
   gfx::RectF bounds;
   double font_width = 0;
-  if (run_start == 0 && run_end == text.length()) [[likely]] {
-    font_width = text_painter.ComputeInlineSize(text_run, *font, &bounds);
+  if (glyph_run != nullptr) {
+    font_width = glyph_run->width();
+    bounds = shaped_text->ComputeGlyphBoundsForRange(run_start, run_end);
+    // Shift full-text origin bounds into the local coordinate space of this
+    // glyph run, whose draw origin is already offset by glyph_run->x()
+    const float run_visual_left =
+        static_cast<float>(glyph_run->x()) + shaped_text->TextAlignDx();
+    bounds.Offset(-run_visual_left, 0.0f);
   } else {
-    font_width = text_painter.ComputeSubInlineSize(text_run, run_start, run_end,
-                                                   *font, &bounds);
+    TextRun text_run(text, direction, bidi_override);
+    if (run_start == 0 && run_end == text.length()) [[likely]] {
+      font_width = text_painter.ComputeInlineSize(text_run, *font, &bounds);
+    } else {
+      font_width = text_painter.ComputeSubInlineSize(text_run, run_start,
+                                                     run_end, *font, &bounds);
+    }
   }
 
   bool use_max_width = (max_width && *max_width < font_width);
@@ -2333,10 +2352,9 @@ void BaseRenderingContext2D::DrawTextInternal(
 
   Draw<OverdrawOp::kNone>(
       /*draw_func=*/
-      [font, text = std::move(text), direction, bidi_override, location,
-       run_start, run_end, canvas, &text_painter](MemoryManagedPaintCanvas* c,
-                                                  const cc::PaintFlags* flags) {
-        TextRun text_run(text, direction, bidi_override);
+      [font, shaped_node, text = std::move(text), direction, bidi_override,
+       location, run_start, run_end, canvas, &text_painter](
+          MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
         // Font::DrawType::kGlyphsAndClusters is required for printing to PDF,
         // otherwise the character to glyph mapping will not be reversible,
         // which prevents text data from being extracted from PDF files or
@@ -2349,6 +2367,12 @@ void BaseRenderingContext2D::DrawTextInternal(
         Font::DrawType draw_type = (canvas && canvas->IsPrinting())
                                        ? Font::DrawType::kGlyphsAndClusters
                                        : Font::DrawType::kGlyphsOnly;
+        if (shaped_node) {
+          text_painter.DrawNode(*shaped_node, run_start, run_end, *font, *c,
+                                location, *flags, draw_type);
+          return;
+        }
+        TextRun text_run(text, direction, bidi_override);
         text_painter.DrawWithBidiReorder(text_run, run_start, run_end, *font,
                                          Font::kUseFallbackIfFontNotReady, *c,
                                          location, *flags, draw_type);

@@ -194,6 +194,7 @@ struct VectorTraits<RunSegment> : VectorTraitsBase<RunSegment> {
 
 void ShapedText::Trace(Visitor* visitor) const {
   visitor->Trace(font_);
+  visitor->Trace(node_);
   visitor->Trace(runs_with_offset_);
   ScriptWrappable::Trace(visitor);
 }
@@ -260,12 +261,11 @@ std::pair<float, gfx::RectF> ShapedText::MeasureRuns(
     PlainTextPainter& text_painter) {
   runs_with_offset_.clear();
 
-  const PlainTextNode& node =
-      text_painter.SegmentAndShape(TextRun(text_, direction_), *font_);
+  node_ = &text_painter.SegmentAndShape(TextRun(text_, direction_), *font_);
   gfx::RectF glyph_bounds;
   float xpos = 0;
-  runs_with_offset_.reserve(node.ItemList().size());
-  for (const auto& item : node.ItemList()) {
+  runs_with_offset_.reserve(node_->ItemList().size());
+  for (const auto& item : node_->ItemList()) {
     // Save the run for computing additional metrics.
     const ShapeResult* shape_result = item.GetShapeResult();
 

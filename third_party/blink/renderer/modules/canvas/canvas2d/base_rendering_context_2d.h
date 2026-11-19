@@ -430,20 +430,19 @@ class MODULES_EXPORT BaseRenderingContext2D
   void UpdateRecordingLimits(bool is_graphite);
   virtual bool IsHibernating() const { return false; }
   virtual void EnableAccelerationIfPossible() {}
-  // When set, `direction_override` is used instead of the context direction,
-  // and the canvas unicode-bidi override is ignored.
-  void DrawTextInternal(
-      const String& text,
-      double x,
-      double y,
-      CanvasRenderingContext2DState::PaintType paint_type,
-      V8CanvasTextAlign::Enum align,
-      V8CanvasTextBaseline::Enum baseline,
-      unsigned run_start,
-      unsigned run_end,
-      double* max_width = nullptr,
-      const Font* cluster_font = nullptr,
-      std::optional<TextDirection> direction_override = std::nullopt);
+  // When glyph_run is non-null, draws its slice directly from the
+  // PlainTextNode and direction captured by shapeText() instead of reshaping
+  void DrawTextInternal(const String& text,
+                        double x,
+                        double y,
+                        CanvasRenderingContext2DState::PaintType paint_type,
+                        V8CanvasTextAlign::Enum align,
+                        V8CanvasTextBaseline::Enum baseline,
+                        unsigned run_start,
+                        unsigned run_end,
+                        double* max_width = nullptr,
+                        const Font* cluster_font = nullptr,
+                        const GlyphRun* glyph_run = nullptr);
 
   void PutByteArray(const SkPixmap& source,
                     const gfx::Rect& source_rect,

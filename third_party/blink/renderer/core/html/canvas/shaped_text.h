@@ -22,6 +22,7 @@ namespace blink {
 
 class DOMRectReadOnly;
 class ExceptionState;
+class PlainTextNode;
 class PlainTextPainter;
 
 // Shaping state and shaping-based queries for a single-style text string,
@@ -123,6 +124,7 @@ class CORE_EXPORT ShapedText final : public ScriptWrappable {
   gfx::RectF ComputeGlyphBoundsForRange(uint32_t start, uint32_t end) const;
 
   const Font* GetFont() const { return font_.Get(); }
+  const PlainTextNode* GetPlainTextNode() const { return node_.Get(); }
   const String& GetText() const { return text_; }
   TextDirection Direction() const { return direction_; }
   V8CanvasTextAlign::Enum ContextTextAlign() const { return ctx_text_align_; }
@@ -168,6 +170,7 @@ class CORE_EXPORT ShapedText final : public ScriptWrappable {
 
   // Needed for selection rects, bounding boxes and caret position.
   Member<const Font> font_;
+  Member<const PlainTextNode> node_;
   TextDirection direction_ = TextDirection::kLtr;
   String text_;
 
