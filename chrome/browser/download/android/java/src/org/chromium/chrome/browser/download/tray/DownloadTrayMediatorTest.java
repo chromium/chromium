@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.download.tray;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -51,6 +53,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link DownloadTrayMediator}. */
@@ -501,7 +504,7 @@ public class DownloadTrayMediatorTest {
     }
 
     @Test
-    public void testFullTray_listsInterruptedDownloadsUntilRetried() {
+    public void testFullTray_listsInterruptedDownloadsUntilCancelled() {
         runToState("done", OfflineItemState.COMPLETE);
         dismissAndWait();
         runToState("interrupted", OfflineItemState.INTERRUPTED);
@@ -522,10 +525,154 @@ public class DownloadTrayMediatorTest {
                 interrupted.get(DownloadTrayItemProperties.DESCRIPTION));
         assertNull(interrupted.get(DownloadTrayItemProperties.ON_OPEN));
 
-        // Retried, it leaves the tray.
+        // Retried, its row shows the download in progress where it is; cancelled, it leaves the
+        // tray.
         mModel.onItemUpdated(
                 createItem("interrupted", OfflineItemState.IN_PROGRESS), /* updateDelta= */ null);
+        assertEquals(List.of("interrupted.pdf", "done.pdf"), titles(rows));
+        assertTrue(interrupted.get(DownloadTrayItemProperties.IS_IN_PROGRESS));
+        mModel.onItemUpdated(
+                createItem("interrupted", OfflineItemState.CANCELLED), /* updateDelta= */ null);
         assertEquals(List.of("done.pdf"), titles(rows));
+    }
+
+    @Test
+    public void testFullTray_listsRunningThenPausedThenEndedDownloads() {
+        runToState("done", OfflineItemState.COMPLETE);
+        dismissAndWait();
+        OfflineItem dangerous = createItem("dangerous", OfflineItemState.IN_PROGRESS);
+        dangerous.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("a", OfflineItemState.IN_PROGRESS),
+                        createItem("paused", OfflineItemState.PAUSED),
+                        createItem("pending", OfflineItemState.PENDING),
+                        createItem("b", OfflineItemState.IN_PROGRESS),
+                        dangerous,
+                        createIncognitoItem(
+                                "incognito",
+                                OfflineItemState.IN_PROGRESS,
+                                OtrProfileId.getPrimaryOtrProfileId())));
+
+        // As on desktop: running (or waiting to), then paused, then ended, each most recently
+        // started first. Dangerous downloads and ones the window doesn't show aren't listed.
+        mMediator.toggleFullTray();
+        ModelList rows = captureFullTrayRows();
+        assertEquals(
+                List.of("b.pdf", "pending.pdf", "a.pdf", "paused.pdf", "done.pdf"), titles(rows));
+    }
+
+    @Test
+    public void testFullTray_capsRowsAcrossInProgressAndEndedDownloads() {
+        runToState("older", OfflineItemState.COMPLETE);
+        mMediator.onDismissed();
+        runToState("newer", OfflineItemState.COMPLETE);
+        mMediator.onDismissed();
+        List<OfflineItem> active = new ArrayList<>();
+        for (int i = 0; i < DownloadStateModel.MAX_RECENT_ITEMS - 1; i++) {
+            active.add(createItem("active" + i, OfflineItemState.IN_PROGRESS));
+        }
+        mModel.onItemsAdded(active);
+
+        // As on desktop, one cap covers all rows, so only the newer ended download fits.
+        mMediator.toggleFullTray();
+        ModelList rows = captureFullTrayRows();
+        assertEquals(DownloadStateModel.MAX_RECENT_ITEMS, rows.size());
+        assertEquals(
+                "newer.pdf", rows.get(rows.size() - 1).model.get(DownloadTrayItemProperties.TITLE));
+    }
+
+    @Test
+    public void testInProgressRow_showsProgressAndFollowsDownload() {
+        OfflineItem item = createItem("a", OfflineItemState.IN_PROGRESS);
+        item.receivedBytes = 2_150_000;
+        item.timeRemainingMs = TimeUnit.SECONDS.toMillis(15);
+        mModel.onItemsAdded(List.of(item));
+        mMediator.toggleFullTray();
+        PropertyModel row = captureFullTrayRows().get(0).model;
+        assertEquals(
+                "2.15 MB / 4.30 MB • 15 secs left",
+                row.get(DownloadTrayItemProperties.DESCRIPTION));
+        assertEquals(50, row.get(DownloadTrayItemProperties.PROGRESS));
+        assertFalse(row.get(DownloadTrayItemProperties.IS_PAUSED));
+        assertNull(row.get(DownloadTrayItemProperties.ON_OPEN)); // Nothing to open yet.
+
+        // The row follows the download while the tray is open. Without a time left, as on the
+        // Downloads page, only the sizes show.
+        item = createItem("a", OfflineItemState.IN_PROGRESS);
+        item.receivedBytes = 3_440_000;
+        mModel.onItemUpdated(item, /* updateDelta= */ null);
+        assertEquals("3.44 MB / 4.30 MB", row.get(DownloadTrayItemProperties.DESCRIPTION));
+        assertEquals(80, row.get(DownloadTrayItemProperties.PROGRESS));
+
+        // Fractional percentages round to the nearest integer (3.60 / 4.30 is ~83.7%).
+        item = createItem("a", OfflineItemState.IN_PROGRESS);
+        item.receivedBytes = 3_600_000;
+        mModel.onItemUpdated(item, /* updateDelta= */ null);
+        assertEquals(84, row.get(DownloadTrayItemProperties.PROGRESS));
+
+        // More than the announced size fills the bar, no further.
+        item = createItem("a", OfflineItemState.IN_PROGRESS);
+        item.receivedBytes = 5_000_000;
+        mModel.onItemUpdated(item, /* updateDelta= */ null);
+        assertEquals(100, row.get(DownloadTrayItemProperties.PROGRESS));
+
+        item = createItem("a", OfflineItemState.PAUSED);
+        item.receivedBytes = 3_440_000;
+        mModel.onItemUpdated(item, /* updateDelta= */ null);
+        assertEquals("3.44 MB / 4.30 MB • Paused", row.get(DownloadTrayItemProperties.DESCRIPTION));
+        assertTrue(row.get(DownloadTrayItemProperties.IS_PAUSED));
+
+        // With no size known, the bar animates only while downloading, and a download that has
+        // received nothing shows its state alone.
+        item = createItem("a", OfflineItemState.IN_PROGRESS);
+        item.totalSizeBytes = 0;
+        item.receivedBytes = 1_500_000;
+        mModel.onItemUpdated(item, /* updateDelta= */ null);
+        assertEquals("1.50 MB / ?", row.get(DownloadTrayItemProperties.DESCRIPTION));
+        assertEquals(
+                DownloadTrayItemProperties.PROGRESS_INDETERMINATE,
+                row.get(DownloadTrayItemProperties.PROGRESS));
+
+        item = createItem("a", OfflineItemState.PENDING);
+        item.totalSizeBytes = 0;
+        mModel.onItemUpdated(item, /* updateDelta= */ null);
+        assertEquals("Pending", row.get(DownloadTrayItemProperties.DESCRIPTION));
+        assertEquals(0, row.get(DownloadTrayItemProperties.PROGRESS));
+    }
+
+    @Test
+    public void testInProgressRow_becomesEndedRowInPlaceOrLeavesTheTray() {
+        runToState("done", OfflineItemState.COMPLETE);
+        mMediator.onDismissed();
+        mModel.onItemsAdded(
+                List.of(
+                        createItem("a", OfflineItemState.IN_PROGRESS),
+                        createItem("b", OfflineItemState.IN_PROGRESS)));
+        mMediator.toggleFullTray();
+        ModelList rows = captureFullTrayRows();
+        assertEquals(List.of("b.pdf", "a.pdf", "done.pdf"), titles(rows));
+
+        // Completing while the tray is open, "b" keeps its place as an ended row. As on desktop, a
+        // download started meanwhile isn't added.
+        OfflineItem completed = createItem("b", OfflineItemState.COMPLETE);
+        mModel.onItemUpdated(completed, /* updateDelta= */ null);
+        mModel.onItemsAdded(List.of(createItem("late", OfflineItemState.PAUSED)));
+        assertEquals(List.of("b.pdf", "a.pdf", "done.pdf"), titles(rows));
+        assertFalse(rows.get(0).model.get(DownloadTrayItemProperties.IS_IN_PROGRESS));
+        assertEquals(
+                "4.30 MB • Done", rows.get(0).model.get(DownloadTrayItemProperties.DESCRIPTION));
+
+        // Flagged as dangerous, "a" gets its own warning UI instead of a row. Nothing is
+        // downloading any more, yet as on desktop no completion popup replaces the open tray.
+        OfflineItem dangerous = createItem("a", OfflineItemState.IN_PROGRESS);
+        dangerous.dangerType = DownloadDangerType.DANGEROUS_CONTENT;
+        mModel.onItemUpdated(dangerous, /* updateDelta= */ null);
+        assertEquals(List.of("b.pdf", "done.pdf"), titles(rows));
+        verify(mPopupController, times(1)).showCompletions(any(), any());
+
+        rows.get(0).model.get(DownloadTrayItemProperties.ON_OPEN).onClick(mAnchor);
+        verify(mDelegate).openItem(completed);
     }
 
     @Test
@@ -645,6 +792,25 @@ public class DownloadTrayMediatorTest {
                 rows.get(0).model.get(DownloadTrayItemProperties.DESCRIPTION));
         assertEquals(
                 "4.30 MB • Done", rows.get(1).model.get(DownloadTrayItemProperties.DESCRIPTION));
+    }
+
+    @Test
+    public void testDescription_keepsSizesLeftToRightInRightToLeftLocales() {
+        Locale defaultLocale = Locale.getDefault();
+        Locale.setDefault(new Locale("he"));
+        try {
+            OfflineItem item = createItem("a", OfflineItemState.PAUSED);
+            item.receivedBytes = 2_150_000;
+            mModel.onItemsAdded(List.of(item));
+            mMediator.toggleFullTray();
+            PropertyModel row = captureFullTrayRows().get(0).model;
+
+            // The sizes are embedded as left-to-right text (U+202A ... U+202C), as on desktop.
+            String description = row.get(DownloadTrayItemProperties.DESCRIPTION).toString();
+            assertTrue(description, description.contains("\u202A2.15 MB / 4.30 MB\u202C"));
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
     }
 
     @Test

@@ -6,16 +6,12 @@ package org.chromium.chrome.browser.download.tray;
 
 import android.view.View;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Properties of a single download row in the download toolbar button tray. Shared by the completion
@@ -23,13 +19,11 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 class DownloadTrayItemProperties {
-    /** View types of the rows in the download tray list. */
-    @IntDef({RowType.ENDED})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface RowType {
-        /** A download that has completed or been interrupted. */
-        int ENDED = 0;
-    }
+    /** The view type of the rows in the download tray list, which all share one layout. */
+    static final int ROW_TYPE = 0;
+
+    /** The {@link #PROGRESS} of a download whose size, and so how far along it is, is unknown. */
+    static final int PROGRESS_INDETERMINATE = -1;
 
     /** The file-type icon drawable resource. */
     static final WritableIntPropertyKey ICON = new WritableIntPropertyKey();
@@ -45,7 +39,21 @@ class DownloadTrayItemProperties {
     static final WritableObjectPropertyKey<View.@Nullable OnClickListener> ON_OPEN =
             new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = {ICON, TITLE, DESCRIPTION, ON_OPEN};
+    /** Whether the download is in progress, which shows the progress bar. */
+    static final WritableBooleanPropertyKey IS_IN_PROGRESS = new WritableBooleanPropertyKey();
+
+    /**
+     * How much of a download in progress has been received, from 0 to 100, or {@link
+     * #PROGRESS_INDETERMINATE}, as desktop's progress bar value.
+     */
+    static final WritableIntPropertyKey PROGRESS = new WritableIntPropertyKey();
+
+    /** Whether the download is paused. */
+    static final WritableBooleanPropertyKey IS_PAUSED = new WritableBooleanPropertyKey();
+
+    static final PropertyKey[] ALL_KEYS = {
+        ICON, TITLE, DESCRIPTION, ON_OPEN, IS_IN_PROGRESS, PROGRESS, IS_PAUSED
+    };
 
     private DownloadTrayItemProperties() {}
 }

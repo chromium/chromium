@@ -25,7 +25,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
-import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.RowType;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -190,7 +189,10 @@ public class DownloadTrayCoordinator implements DownloadTrayMediator.PopupContro
         list.setLayoutManager(new LinearLayoutManager(themedContext));
         // The adapter keeps each row's view bound to its model while the popup shows.
         mAdapter = new SimpleRecyclerViewAdapter(rows);
-        mAdapter.registerType(RowType.ENDED, this::buildRow, DownloadTrayItemViewBinder::bind);
+        mAdapter.registerType(
+                DownloadTrayItemProperties.ROW_TYPE,
+                this::buildRow,
+                DownloadTrayItemViewBinder::bind);
         list.setAdapter(mAdapter);
         return content;
     }

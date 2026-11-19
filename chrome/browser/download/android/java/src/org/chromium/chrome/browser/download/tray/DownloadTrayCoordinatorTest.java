@@ -38,7 +38,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadStateModel;
 import org.chromium.chrome.browser.download.R;
-import org.chromium.chrome.browser.download.tray.DownloadTrayItemProperties.RowType;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -130,7 +129,8 @@ public class DownloadTrayCoordinatorTest {
     private View firstRow() {
         SimpleRecyclerViewAdapter adapter = shownAdapter();
         RecyclerView list = shownContent().findViewById(R.id.download_tray_list);
-        SimpleRecyclerViewAdapter.ViewHolder holder = adapter.createViewHolder(list, RowType.ENDED);
+        SimpleRecyclerViewAdapter.ViewHolder holder =
+                adapter.createViewHolder(list, DownloadTrayItemProperties.ROW_TYPE);
         adapter.bindViewHolder(holder, 0);
         return holder.itemView;
     }

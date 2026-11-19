@@ -6,7 +6,8 @@ found in the LICENSE file.
 -->
 
 <!-- A single download row in the download toolbar button tray: file-type icon and the file name
-     with a status description below it. Clicking the row opens the download, as on desktop. -->
+     with a status description below it, above a progress bar shown while the download is in
+     progress. Clicking the row opens the download, as on desktop. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,43 +16,64 @@ found in the LICENSE file.
     android:minHeight="@dimen/download_tray_item_min_height"
     android:paddingStart="@dimen/download_tray_item_padding_horizontal"
     android:paddingEnd="@dimen/download_tray_item_padding_horizontal"
-    android:orientation="horizontal"
+    android:paddingTop="@dimen/download_tray_item_padding_vertical"
+    android:paddingBottom="@dimen/download_tray_item_padding_vertical"
+    android:orientation="vertical"
     android:gravity="center_vertical"
     android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     android:screenReaderFocusable="true">
 
-    <ImageView
-        android:id="@+id/download_tray_item_icon"
-        android:layout_width="@dimen/download_tray_item_icon_size"
-        android:layout_height="@dimen/download_tray_item_icon_size"
-        android:layout_marginEnd="@dimen/download_tray_item_icon_margin_end"
-        android:background="@drawable/rounded_rectangle_surface_container_low"
-        android:scaleType="center"
-        android:importantForAccessibility="no"
-        app:tint="@color/default_icon_color_tint_list" />
-
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/download_tray_item_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="middle"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        <ImageView
+            android:id="@+id/download_tray_item_icon"
+            android:layout_width="@dimen/download_tray_item_icon_size"
+            android:layout_height="@dimen/download_tray_item_icon_size"
+            android:layout_marginEnd="@dimen/download_tray_item_icon_margin_end"
+            android:background="@drawable/rounded_rectangle_surface_container_low"
+            android:scaleType="center"
+            android:importantForAccessibility="no"
+            app:tint="@color/default_icon_color_tint_list" />
 
-        <TextView
-            android:id="@+id/download_tray_item_description"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/download_tray_item_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="middle"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+            <TextView
+                android:id="@+id/download_tray_item_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        </LinearLayout>
     </LinearLayout>
+
+    <!-- The description already says how far along the download is. -->
+    <ProgressBar
+        android:id="@+id/download_tray_item_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/download_tray_progress_height"
+        android:layout_marginTop="@dimen/download_tray_progress_spacing"
+        android:max="100"
+        android:progressBackgroundTint="@color/progress_bar_bg_color_list"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
 </LinearLayout>

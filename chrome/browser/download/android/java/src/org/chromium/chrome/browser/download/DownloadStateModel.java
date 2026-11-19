@@ -55,10 +55,10 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
     @VisibleForTesting static final long RECENT_WINDOW_MS = TimeUnit.HOURS.toMillis(24);
 
     /**
-     * The most items {@link #getRecentEndedItems} returns. Mirrors the desktop download bubble's
-     * {@code kDefaultMaxNumItemsToShow}.
+     * The most items {@link #getRecentEndedItems} returns, and the most rows the tray lists in
+     * total. Mirrors the desktop download bubble's {@code kDefaultMaxNumItemsToShow}.
      */
-    @VisibleForTesting static final int MAX_RECENT_ITEMS = 30;
+    public static final int MAX_RECENT_ITEMS = 30;
 
     /** Notified synchronously after the cache has been updated. */
     public interface Observer {

@@ -6,14 +6,18 @@ package org.chromium.chrome.browser.download.tray;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -29,6 +33,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -113,5 +118,44 @@ public class DownloadTrayItemViewBinderTest {
                                 action ->
                                         action.getId()
                                                 == AccessibilityNodeInfoCompat.ACTION_CLICK));
+    }
+
+    @Test
+    public void testBind_showsProgressBarOnlyWhileInProgress() {
+        ProgressBar progress = mView.findViewById(R.id.download_tray_item_progress);
+        assertEquals(View.GONE, progress.getVisibility());
+        PropertyModel model =
+                new PropertyModel.Builder(DownloadTrayItemProperties.ALL_KEYS)
+                        .with(DownloadTrayItemProperties.IS_IN_PROGRESS, true)
+                        .with(DownloadTrayItemProperties.PROGRESS, 40)
+                        .with(DownloadTrayItemProperties.IS_PAUSED, false)
+                        .build();
+        PropertyModelChangeProcessor.create(model, mView, DownloadTrayItemViewBinder::bind);
+
+        assertEquals(View.VISIBLE, progress.getVisibility());
+        assertEquals(40, progress.getProgress());
+        assertFalse(progress.isIndeterminate());
+        Context context = mView.getContext();
+        ColorStateList activeTint =
+                ColorStateList.valueOf(SemanticColorUtils.getProgressBarForeground(context));
+        assertEquals(activeTint, progress.getProgressTintList());
+
+        // Paused, the bar loses its accent colour; with no known size it animates.
+        model.set(DownloadTrayItemProperties.IS_PAUSED, true);
+        ColorStateList pausedTint =
+                ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorSecondary(context));
+        assertNotEquals(activeTint, pausedTint);
+        assertEquals(pausedTint, progress.getProgressTintList());
+        assertEquals(pausedTint, progress.getIndeterminateTintList());
+        model.set(
+                DownloadTrayItemProperties.PROGRESS,
+                DownloadTrayItemProperties.PROGRESS_INDETERMINATE);
+        assertTrue(progress.isIndeterminate());
+        // Once the size is known, it fills again; once the download ends, the bar goes.
+        model.set(DownloadTrayItemProperties.PROGRESS, 60);
+        assertFalse(progress.isIndeterminate());
+        assertEquals(60, progress.getProgress());
+        model.set(DownloadTrayItemProperties.IS_IN_PROGRESS, false);
+        assertEquals(View.GONE, progress.getVisibility());
     }
 }
