@@ -49,6 +49,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.CloseButtonVisibility;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.SecondaryButtonBehavior;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -241,7 +243,7 @@ public class AdaptiveUiSheetCoordinatorTest {
                         AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
-                        AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN,
+                        AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                         AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS);
         assertEquals(expected, AdaptiveUiSheetViewBinder.NON_VISUAL_SHEET_KEYS);
     }
@@ -341,7 +343,9 @@ public class AdaptiveUiSheetCoordinatorTest {
                         .with(
                                 AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                                 () -> secondaryClicks[0]++)
-                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN, true)
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN)
                         .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
@@ -402,7 +406,9 @@ public class AdaptiveUiSheetCoordinatorTest {
         int[] primaryClicks = new int[1];
         PropertyModel closeModel =
                 newModelBuilder()
-                        .with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true)
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
                         .with(
                                 AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
@@ -563,7 +569,9 @@ public class AdaptiveUiSheetCoordinatorTest {
     public void testFilterTouchForSecurity_DefaultFalse() {
         PropertyModel model =
                 newModelBuilder()
-                        .with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true)
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
                         .build();
@@ -586,7 +594,9 @@ public class AdaptiveUiSheetCoordinatorTest {
         int[] secondaryClicks = new int[1];
         PropertyModel model =
                 newModelBuilder()
-                        .with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true)
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
                         .with(
                                 AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
@@ -596,7 +606,9 @@ public class AdaptiveUiSheetCoordinatorTest {
                         .with(
                                 AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                                 () -> secondaryClicks[0]++)
-                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN, true)
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN)
                         .with(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY, true)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
@@ -693,7 +705,9 @@ public class AdaptiveUiSheetCoordinatorTest {
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.TITLE, "Title")
-                        .with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true)
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
         View root = content.getContentView();
@@ -760,7 +774,9 @@ public class AdaptiveUiSheetCoordinatorTest {
                         .with(AdaptiveUiProperties.TITLE, "Title")
                         .with(AdaptiveUiProperties.DESCRIPTION, "Description")
                         .with(AdaptiveUiProperties.FOOTER_MESSAGE, "Footer")
-                        .with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true)
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
                         .with(AdaptiveUiProperties.CUSTOM_VIEW, customView)
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
@@ -962,7 +978,9 @@ public class AdaptiveUiSheetCoordinatorTest {
                 newModelBuilder()
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
                         .with(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED, () -> clicks[0]++)
-                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN, true)
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN)
                         .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
 
@@ -1002,12 +1020,151 @@ public class AdaptiveUiSheetCoordinatorTest {
     @Test
     public void testCloseButtonClick_RequestsDismiss() {
         PropertyModel model =
-                newModelBuilder().with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true).build();
+                newModelBuilder()
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
+                        .build();
         AdaptiveUiSheetCoordinator content = createContent(model);
 
         find(content, R.id.adaptive_ui_sheet_close_button).performClick();
 
         assertEquals(List.of(DismissReason.CLOSE_BUTTON), mSheetDismissals);
+    }
+
+    @Test
+    public void testCloseButtonVisibility_DefaultHiddenAndShown() {
+        AdaptiveUiSheetCoordinator defaultContent =
+                createContent(
+                        newModelBuilder()
+                                .with(
+                                        AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                        CloseButtonVisibility.DEFAULT)
+                                .build());
+        assertEquals(
+                View.GONE,
+                find(defaultContent, R.id.adaptive_ui_sheet_close_button).getVisibility());
+        assertEquals(
+                View.GONE, find(defaultContent, R.id.adaptive_ui_sheet_header).getVisibility());
+
+        AdaptiveUiSheetCoordinator hiddenContent =
+                createContent(
+                        newModelBuilder()
+                                .with(
+                                        AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                        CloseButtonVisibility.HIDDEN)
+                                .build());
+        assertEquals(
+                View.GONE,
+                find(hiddenContent, R.id.adaptive_ui_sheet_close_button).getVisibility());
+        assertEquals(View.GONE, find(hiddenContent, R.id.adaptive_ui_sheet_header).getVisibility());
+
+        AdaptiveUiSheetCoordinator shownContent =
+                createContent(
+                        newModelBuilder()
+                                .with(
+                                        AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                        CloseButtonVisibility.SHOWN)
+                                .build());
+        assertEquals(
+                View.VISIBLE,
+                find(shownContent, R.id.adaptive_ui_sheet_close_button).getVisibility());
+        assertEquals(
+                View.VISIBLE, find(shownContent, R.id.adaptive_ui_sheet_header).getVisibility());
+    }
+
+    @Test
+    public void testCloseButtonClick_DoesNotRunSecondaryCallback() {
+        int[] secondaryClicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .with(
+                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
+                                () -> secondaryClicks[0]++)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        View closeButton = find(content, R.id.adaptive_ui_sheet_close_button);
+        View secondaryButton = find(content, R.id.adaptive_ui_sheet_secondary_button);
+
+        assertEquals(View.VISIBLE, closeButton.getVisibility());
+        assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+
+        closeButton.performClick();
+
+        assertEquals(0, secondaryClicks[0]);
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mSheetDismissals);
+    }
+
+    @Test
+    public void testSecondaryClick_CloseBehaviorDismissesWithoutCallback() {
+        String secondaryText = "No thanks";
+        int[] secondaryClicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, secondaryText)
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .with(
+                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
+                                () -> secondaryClicks[0]++)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        TextView secondaryButton = find(content, R.id.adaptive_ui_sheet_secondary_button);
+        View closeButton = find(content, R.id.adaptive_ui_sheet_close_button);
+
+        assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+        assertEquals(secondaryText, secondaryButton.getText().toString());
+        assertEquals(View.GONE, closeButton.getVisibility());
+
+        secondaryButton.performClick();
+
+        assertEquals(0, secondaryClicks[0]);
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mSheetDismissals);
+    }
+
+    @Test
+    public void testSecondaryClick_CloseBehaviorRespectsButtonTapProtection() {
+        int[] secondaryClicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .with(
+                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
+                                () -> secondaryClicks[0]++)
+                        .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, 500L)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+        BottomSheetObserver observer = showAndCaptureObserver(content);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+        observer.onSheetContentChanged(content);
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        View secondaryButton = find(content, R.id.adaptive_ui_sheet_secondary_button);
+
+        secondaryButton.performClick();
+        assertEquals(0, secondaryClicks[0]);
+        verify(mBottomSheetController, never()).hideContent(eq(content), anyBoolean(), anyInt());
+        assertTrue(mSheetDismissals.isEmpty());
+
+        ShadowSystemClock.advanceBy(Duration.ofMillis(501));
+        secondaryButton.performClick();
+        assertEquals(0, secondaryClicks[0]);
+        verify(mBottomSheetController)
+                .hideContent(content, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
+        content.destroy();
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mSheetDismissals);
     }
 
     @Test

@@ -16,6 +16,8 @@ import androidx.activity.OnBackPressedCallback;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.CloseButtonVisibility;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.SecondaryButtonBehavior;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -26,20 +28,19 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Bridges a feature's {@link AdaptiveUiProperties} {@link PropertyModel} to a {@link
  * ModalDialogProperties} {@link PropertyModel} for a single dialog presentation.
  *
- * <p>Creation-time keys (button presence and styles, accessibility description, and the {@link
+ * <p>Creation-time keys (button presence and styles including {@link
+ * AdaptiveUiProperties#SECONDARY_BUTTON_BEHAVIOR}, close-button visibility via {@link
+ * AdaptiveUiProperties#CLOSE_BUTTON_VISIBILITY}, accessibility description, and the {@link
  * AdaptiveUiProperties#DESCRIPTION} / {@link AdaptiveUiProperties#CUSTOM_VIEW} body layout) are
  * resolved once when the dialog model is constructed, satisfying {@code ModalDialogViewBinder}'s
  * button and custom-view consistency assertions without {@code CHANGE_CUSTOM_VIEW_OR_BUTTONS}. Live
- * 1:1 keys are bound via {@link PropertyModelChangeProcessor} and {@link
- * AdaptiveUiDialogViewBinder}.
+ * keys are bound via {@link PropertyModelChangeProcessor} and {@link AdaptiveUiDialogViewBinder}.
  *
  * <p>Also drives the {@link ModalDialogManager}: {@link #show()} queues the dialog, an in-dialog
  * action or {@link #hide} dismisses it, and the owner hears when it is shown and when it is gone.
@@ -199,15 +200,9 @@ final class AdaptiveUiDialogCoordinator
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
         if (buttonType == ButtonType.POSITIVE) {
-            onActionButtonClicked(
-                    AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                    AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
-                    DismissReason.PRIMARY_ACTION);
+            onPrimaryButtonClicked();
         } else if (buttonType == ButtonType.NEGATIVE) {
-            onActionButtonClicked(
-                    AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
-                    AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN,
-                    DismissReason.SECONDARY_ACTION);
+            onSecondaryButtonClicked();
         }
     }
 
@@ -223,12 +218,37 @@ final class AdaptiveUiDialogCoordinator
         mOnDismissed.onResult(reason);
     }
 
+    /**
+     * Whether the dialog shows its title close ('X') button ({@link CloseButtonVisibility#DEFAULT}
+     * or {@link CloseButtonVisibility#SHOWN}).
+     */
+    private static boolean isCloseButtonShown(PropertyModel model) {
+        return model.get(AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY)
+                != CloseButtonVisibility.HIDDEN;
+    }
+
+    /**
+     * Whether a dialog permits drawing the negative button (omitted only when {@link
+     * AdaptiveUiProperties#SECONDARY_BUTTON_BEHAVIOR} is {@link SecondaryButtonBehavior#CLOSE} and
+     * the title 'X' button is shown).
+     */
+    static boolean canDrawSecondaryButton(PropertyModel model) {
+        return model.get(AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR)
+                        != SecondaryButtonBehavior.CLOSE
+                || !isCloseButtonShown(model);
+    }
+
+    /** Whether the dialog draws a negative button at creation time. */
+    private static boolean drawsSecondaryButton(PropertyModel model) {
+        return !TextUtils.isEmpty(model.get(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT))
+                && canDrawSecondaryButton(model);
+    }
+
     private PropertyModel createDialogModel(
             Context context, PropertyModel model, @AdaptiveUiScope int scope) {
-        String primaryText = model.get(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT);
-        String secondaryText = model.get(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT);
-        boolean hasPrimary = !TextUtils.isEmpty(primaryText);
-        boolean hasSecondary = !TextUtils.isEmpty(secondaryText);
+        boolean hasPrimary =
+                !TextUtils.isEmpty(model.get(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT));
+        boolean hasDrawnSecondary = drawsSecondaryButton(model);
 
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -236,7 +256,10 @@ final class AdaptiveUiDialogCoordinator
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(
                                 ModalDialogProperties.BUTTON_STYLES,
-                                computeButtonStyles(hasPrimary, hasSecondary))
+                                computeButtonStyles(hasPrimary, hasDrawnSecondary))
+                        .with(
+                                ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE,
+                                isCloseButtonShown(model))
                         .with(
                                 ModalDialogProperties.TITLE_CLOSE_BUTTON_CLICK_LISTENER,
                                 this::onCloseButtonClicked);
@@ -247,7 +270,7 @@ final class AdaptiveUiDialogCoordinator
         }
 
         if (model.get(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY)
-                && (hasPrimary || hasSecondary)) {
+                && (hasPrimary || hasDrawnSecondary)) {
             builder.with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true);
         }
 
@@ -323,15 +346,34 @@ final class AdaptiveUiDialogCoordinator
         requestDismiss(DismissReason.BACK_PRESS);
     }
 
-    private void onActionButtonClicked(
-            ReadableObjectPropertyKey<@Nullable Runnable> callbackKey,
-            ReadableBooleanPropertyKey keepsOpenKey,
-            @DismissReason int reason) {
+    private void onPrimaryButtonClicked() {
         if (isDismissing()) return;
-        Runnable callback = mModel.get(callbackKey);
+        Runnable callback = mModel.get(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED);
         if (callback != null) callback.run();
-        if (mModel.get(keepsOpenKey)) return;
-        requestDismiss(reason);
+        if (mModel.get(AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN)) return;
+        requestDismiss(DismissReason.PRIMARY_ACTION);
+    }
+
+    private void onSecondaryButtonClicked() {
+        if (isDismissing()) return;
+        switch (mModel.get(AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR)) {
+            case SecondaryButtonBehavior.CLOSE:
+                requestDismiss(DismissReason.SECONDARY_ACTION);
+                return;
+            case SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN:
+                runSecondaryButtonCallback();
+                return;
+            case SecondaryButtonBehavior.ACTION_THEN_DISMISS:
+            default:
+                runSecondaryButtonCallback();
+                requestDismiss(DismissReason.SECONDARY_ACTION);
+                return;
+        }
+    }
+
+    private void runSecondaryButtonCallback() {
+        Runnable callback = mModel.get(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED);
+        if (callback != null) callback.run();
     }
 
     private void onCloseButtonClicked(View view) {

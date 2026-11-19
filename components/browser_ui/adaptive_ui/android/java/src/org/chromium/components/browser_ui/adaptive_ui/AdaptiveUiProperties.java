@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -20,9 +21,21 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableLongPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * Shared model properties for an {@link AdaptiveUiEntry} presented as a bottom sheet or a modal
  * dialog.
+ *
+ * <p>Features should handle each user response once. Handle the primary button, and a secondary
+ * button with {@link SecondaryButtonBehavior#ACTION_THEN_DISMISS} or {@link
+ * SecondaryButtonBehavior#ACTION_THEN_STAY_OPEN}, in {@link #ON_PRIMARY_BUTTON_CLICKED} and {@link
+ * #ON_SECONDARY_BUTTON_CLICKED}. Handle closes that run no callback, such as the close ('X') button
+ * or a {@link SecondaryButtonBehavior#CLOSE} button (reported as {@link
+ * DismissReason#SECONDARY_ACTION}), in {@link AdaptiveUiObserver#onDismissed}.
  */
 @NullMarked
 public class AdaptiveUiProperties {
@@ -86,9 +99,32 @@ public class AdaptiveUiProperties {
     public static final WritableObjectPropertyKey<@Nullable CharSequence> DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
-    /** Whether to show a close ('X') button in the header. Defaults to {@code false}. */
-    public static final WritableBooleanPropertyKey SHOW_CLOSE_BUTTON =
-            new WritableBooleanPropertyKey();
+    /** Visibility policy for the close ('X') button on bottom sheets and dialogs. */
+    @IntDef({
+        CloseButtonVisibility.DEFAULT,
+        CloseButtonVisibility.SHOWN,
+        CloseButtonVisibility.HIDDEN
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
+    public @interface CloseButtonVisibility {
+        /** Bottom sheets hide the close ('X') button; dialogs show it in the title. */
+        int DEFAULT = 0;
+
+        /** Both bottom sheets and dialogs show the close ('X') button. */
+        int SHOWN = 1;
+
+        /** Neither shows the close ('X') button. */
+        int HIDDEN = 2;
+    }
+
+    /**
+     * Whether to show the close ('X') button, as a {@link CloseButtonVisibility}. Tapping it closes
+     * the entry with {@link DismissReason#CLOSE_BUTTON}. Read-only. Defaults to {@link
+     * CloseButtonVisibility#DEFAULT}.
+     */
+    public static final ReadableIntPropertyKey CLOSE_BUTTON_VISIBILITY =
+            new ReadableIntPropertyKey();
 
     /** Optional footer text displayed at the bottom of the surface. */
     public static final WritableObjectPropertyKey<@Nullable CharSequence> FOOTER_MESSAGE =
@@ -145,8 +181,10 @@ public class AdaptiveUiProperties {
             new WritableObjectPropertyKey<>();
 
     /**
-     * Callback invoked when the secondary button is clicked, before the framework closes the entry
-     * (unless {@link #SECONDARY_BUTTON_KEEPS_OPEN} is {@code true}).
+     * Callback invoked when the secondary button is clicked for {@link
+     * SecondaryButtonBehavior#ACTION_THEN_DISMISS} (before the framework closes the entry) and
+     * {@link SecondaryButtonBehavior#ACTION_THEN_STAY_OPEN}. Not invoked for {@link
+     * SecondaryButtonBehavior#CLOSE} or when the close ('X') button is clicked.
      */
     public static final WritableObjectPropertyKey<@Nullable Runnable> ON_SECONDARY_BUTTON_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -155,17 +193,52 @@ public class AdaptiveUiProperties {
     public static final WritableBooleanPropertyKey SECONDARY_BUTTON_DISABLED =
             new WritableBooleanPropertyKey();
 
+    /** How the secondary button behaves when clicked, and when dialogs draw it alongside 'X'. */
+    @IntDef({
+        SecondaryButtonBehavior.ACTION_THEN_DISMISS,
+        SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN,
+        SecondaryButtonBehavior.CLOSE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
+    public @interface SecondaryButtonBehavior {
+        /**
+         * A real choice or secondary action, such as starting another flow or recording an explicit
+         * decision. Drawn on both bottom sheets and dialogs. Runs {@link
+         * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, then closes the entry with {@link
+         * DismissReason#SECONDARY_ACTION}.
+         */
+        int ACTION_THEN_DISMISS = 0;
+
+        /**
+         * An in-place secondary action. Drawn on both bottom sheets and dialogs. Runs {@link
+         * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED} and keeps the entry open.
+         */
+        int ACTION_THEN_STAY_OPEN = 1;
+
+        /**
+         * Only closes the entry, like the close ('X') button, Esc, back, or a scrim tap (such as
+         * "No thanks"). Never runs {@link AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}; handle
+         * the outcome in {@link AdaptiveUiObserver#onDismissed}. Bottom sheets and dialogs with
+         * {@link CloseButtonVisibility#HIDDEN} draw this button and close the entry with {@link
+         * DismissReason#SECONDARY_ACTION}; dialogs omit it while the close ('X') button is shown.
+         */
+        int CLOSE = 2;
+    }
+
     /**
-     * Whether clicking the secondary button keeps the entry open instead of automatically closing
-     * it with {@link DismissReason#SECONDARY_ACTION}. Defaults to {@code false}.
+     * How the secondary button behaves, as a {@link SecondaryButtonBehavior}. Read-only. Defaults
+     * to {@link SecondaryButtonBehavior#ACTION_THEN_DISMISS}.
      */
-    public static final WritableBooleanPropertyKey SECONDARY_BUTTON_KEEPS_OPEN =
-            new WritableBooleanPropertyKey();
+    public static final ReadableIntPropertyKey SECONDARY_BUTTON_BEHAVIOR =
+            new ReadableIntPropertyKey();
 
     /**
      * Time in milliseconds after the entry is shown during which primary and secondary button
      * clicks are ignored to prevent unintended taps. For sheets, the period starts once the sheet
-     * has finished opening. Each tap on these buttons restarts the period. Must not be negative.
+     * has finished opening. Each tap on these buttons restarts the period. Does not apply to the
+     * header or dialog title close ('X') button (a {@link SecondaryButtonBehavior#CLOSE} secondary
+     * is not drawn on dialogs while the close ('X') button is shown). Must not be negative.
      * Defaults to {@code 0} (off).
      */
     public static final WritableLongPropertyKey BUTTON_TAP_PROTECTION_PERIOD_MS =
@@ -174,9 +247,11 @@ public class AdaptiveUiProperties {
     /**
      * Whether to filter touches on the primary and secondary buttons when another visible window
      * wholly or partially obscures this window. Read-only because dialogs cannot turn touch
-     * filtering off once enabled. Dialogs apply it only if the entry has an action button when
-     * shown: a button added later is not filtered, and removing every action button while shown
-     * trips a ModalDialog assert. Defaults to {@code false} (off).
+     * filtering off once enabled. Dialogs apply it only if the entry has a drawn button when shown
+     * (a {@link SecondaryButtonBehavior#CLOSE} secondary is not drawn on dialogs while the close
+     * ('X') button is shown): a button added later is not filtered, and removing every drawn button
+     * while shown trips a ModalDialog assert. Does not filter the header or dialog title close
+     * ('X') button. Defaults to {@code false} (off).
      */
     public static final ReadableBooleanPropertyKey FILTER_TOUCH_FOR_SECURITY =
             new ReadableBooleanPropertyKey();
@@ -191,7 +266,7 @@ public class AdaptiveUiProperties {
                 SHEET_HALF_HEIGHT_RATIO,
                 SHEET_FULL_HEIGHT_RATIO,
                 DESCRIPTION,
-                SHOW_CLOSE_BUTTON,
+                CLOSE_BUTTON_VISIBILITY,
                 FOOTER_MESSAGE,
                 BACK_PRESS_HANDLER,
                 CUSTOM_VIEW,
@@ -203,7 +278,7 @@ public class AdaptiveUiProperties {
                 SECONDARY_BUTTON_TEXT,
                 ON_SECONDARY_BUTTON_CLICKED,
                 SECONDARY_BUTTON_DISABLED,
-                SECONDARY_BUTTON_KEEPS_OPEN,
+                SECONDARY_BUTTON_BEHAVIOR,
                 BUTTON_TAP_PROTECTION_PERIOD_MS,
                 FILTER_TOUCH_FOR_SECURITY,
             };

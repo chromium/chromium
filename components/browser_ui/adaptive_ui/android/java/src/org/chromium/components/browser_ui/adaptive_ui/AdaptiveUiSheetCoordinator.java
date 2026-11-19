@@ -20,6 +20,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.SecondaryButtonBehavior;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -29,10 +30,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
@@ -189,20 +188,10 @@ final class AdaptiveUiSheetCoordinator
 
         mContentView
                 .findViewById(R.id.adaptive_ui_sheet_primary_button)
-                .setOnClickListener(
-                        v ->
-                                onActionButtonClicked(
-                                        AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
-                                        AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
-                                        DismissReason.PRIMARY_ACTION));
+                .setOnClickListener(v -> onPrimaryButtonClicked());
         mContentView
                 .findViewById(R.id.adaptive_ui_sheet_secondary_button)
-                .setOnClickListener(
-                        v ->
-                                onActionButtonClicked(
-                                        AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
-                                        AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN,
-                                        DismissReason.SECONDARY_ACTION));
+                .setOnClickListener(v -> onSecondaryButtonClicked());
         mContentView
                 .findViewById(R.id.adaptive_ui_sheet_close_button)
                 .setOnClickListener(v -> requestDismiss(DismissReason.CLOSE_BUTTON));
@@ -412,15 +401,34 @@ final class AdaptiveUiSheetCoordinator
         return id != 0 ? id : R.string.bottom_sheet_accessibility_description;
     }
 
-    private void onActionButtonClicked(
-            ReadableObjectPropertyKey<@Nullable Runnable> callbackKey,
-            ReadableBooleanPropertyKey keepsOpenKey,
-            @DismissReason int reason) {
+    private void onPrimaryButtonClicked() {
         if (isDismissing() || isWithinButtonTapProtectionPeriod()) return;
-        Runnable callback = mModel.get(callbackKey);
+        Runnable callback = mModel.get(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED);
         if (callback != null) callback.run();
-        if (mModel.get(keepsOpenKey)) return;
-        requestDismiss(reason);
+        if (mModel.get(AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN)) return;
+        requestDismiss(DismissReason.PRIMARY_ACTION);
+    }
+
+    private void onSecondaryButtonClicked() {
+        if (isDismissing() || isWithinButtonTapProtectionPeriod()) return;
+        switch (mModel.get(AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR)) {
+            case SecondaryButtonBehavior.CLOSE:
+                requestDismiss(DismissReason.SECONDARY_ACTION);
+                return;
+            case SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN:
+                runSecondaryButtonCallback();
+                return;
+            case SecondaryButtonBehavior.ACTION_THEN_DISMISS:
+            default:
+                runSecondaryButtonCallback();
+                requestDismiss(DismissReason.SECONDARY_ACTION);
+                return;
+        }
+    }
+
+    private void runSecondaryButtonCallback() {
+        Runnable callback = mModel.get(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED);
+        if (callback != null) callback.run();
     }
 
     private boolean isWithinButtonTapProtectionPeriod() {

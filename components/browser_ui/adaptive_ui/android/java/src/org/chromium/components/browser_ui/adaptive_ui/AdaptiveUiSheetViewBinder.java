@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.CloseButtonVisibility;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -34,11 +35,11 @@ import java.util.Set;
  * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, {@link
- * AdaptiveUiProperties#SECONDARY_BUTTON_KEEPS_OPEN}, {@link
+ * AdaptiveUiProperties#SECONDARY_BUTTON_BEHAVIOR}, {@link
  * AdaptiveUiProperties#BUTTON_TAP_PROTECTION_PERIOD_MS}, and {@link
  * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are read directly by {@link
- * AdaptiveUiSheetCoordinator}, and {@link AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION} applies
- * only to dialogs.
+ * AdaptiveUiSheetCoordinator}. {@link AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION} is
+ * dialog-only and ignored by sheets.
  */
 @NullMarked
 final class AdaptiveUiSheetViewBinder {
@@ -58,7 +59,7 @@ final class AdaptiveUiSheetViewBinder {
                     AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
-                    AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN,
+                    AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                     AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS);
 
     static void bind(PropertyModel model, View view, PropertyKey key) {
@@ -81,12 +82,12 @@ final class AdaptiveUiSheetViewBinder {
             bindText(
                     view.findViewById(R.id.adaptive_ui_sheet_footer_message),
                     model.get(AdaptiveUiProperties.FOOTER_MESSAGE));
-        } else if (key == AdaptiveUiProperties.SHOW_CLOSE_BUTTON) {
+        } else if (key == AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY) {
+            boolean visible =
+                    model.get(AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY)
+                            == CloseButtonVisibility.SHOWN;
             view.findViewById(R.id.adaptive_ui_sheet_close_button)
-                    .setVisibility(
-                            model.get(AdaptiveUiProperties.SHOW_CLOSE_BUTTON)
-                                    ? View.VISIBLE
-                                    : View.GONE);
+                    .setVisibility(visible ? View.VISIBLE : View.GONE);
             updateHeaderVisibility(view);
         } else if (key == AdaptiveUiProperties.CUSTOM_VIEW) {
             bindCustomView(

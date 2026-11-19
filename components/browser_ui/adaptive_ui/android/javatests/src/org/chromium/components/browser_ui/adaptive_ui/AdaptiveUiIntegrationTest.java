@@ -17,9 +17,11 @@ import static org.robolectric.Robolectric.buildActivity;
 
 import android.app.Activity;
 import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
@@ -43,7 +45,10 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.CloseButtonVisibility;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.SecondaryButtonBehavior;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -56,6 +61,7 @@ import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
+import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -80,6 +86,38 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
     private static final int SWIPE_STEPS = 10;
     private static final long SWIPE_STEP_MS = 10;
 
+    // TabModalPresenter asserts TITLE or CONTENT_DESCRIPTION, so title-less helpers set
+    // DIALOG_CONTENT_DESCRIPTION.
+    private static final class TestTabModalPresenter extends TabModalPresenter {
+        private final FrameLayout mContainer;
+
+        TestTabModalPresenter(Activity activity, FrameLayout container) {
+            super(activity);
+            mContainer = container;
+        }
+
+        @Override
+        protected ViewGroup createDialogContainer() {
+            return mContainer;
+        }
+
+        @Override
+        protected void showDialogContainer() {
+            runEnterAnimation();
+        }
+
+        @Override
+        protected void removeDialogView(@Nullable PropertyModel model) {
+            super.removeDialogView(model);
+            mContainer.animate().cancel();
+            mContainer.removeAllViews();
+            mContainer.setVisibility(View.GONE);
+        }
+
+        @Override
+        protected void setBrowserControlsAccess(boolean restricted) {}
+    }
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
@@ -93,10 +131,12 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
 
     private Activity mActivity;
+    private FrameLayout mTabDialogContainer;
     private FrameLayout mSheetContainer;
     private ManagedBottomSheetController mSheetController;
     private BottomSheetTestSupport mSheetSupport;
     private AppModalPresenter mDialogPresenter;
+    private TestTabModalPresenter mTabDialogPresenter;
     private ModalDialogManager mDialogManager;
     private AdaptiveUiControllerImpl mController;
     private @Nullable PropertyModel mScrimModel;
@@ -115,8 +155,13 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
     public void setUp() {
         mActivity = buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mTabDialogContainer = new FrameLayout(mActivity);
+        mTabDialogContainer.setVisibility(View.GONE);
         mSheetContainer = new FrameLayout(mActivity);
-        mActivity.setContentView(mSheetContainer);
+        FrameLayout root = new FrameLayout(mActivity);
+        root.addView(mTabDialogContainer);
+        root.addView(mSheetContainer);
+        mActivity.setContentView(root);
         layoutRoot();
 
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
@@ -137,7 +182,9 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
                         mInsetObserver);
         mSheetSupport = new BottomSheetTestSupport(mSheetController);
         mDialogPresenter = new AppModalPresenter(mActivity);
+        mTabDialogPresenter = new TestTabModalPresenter(mActivity, mTabDialogContainer);
         mDialogManager = new ModalDialogManager(mDialogPresenter, ModalDialogType.APP);
+        mDialogManager.registerPresenter(mTabDialogPresenter, ModalDialogType.TAB);
         mController =
                 new AdaptiveUiControllerImpl(mWindowAndroid, mDialogManager, mSheetController);
     }
@@ -177,9 +224,11 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
     public void testSecondaryAndCloseButtons_SheetAndDialog() {
         int[] secondaryClicks = new int[1];
         showSheet(secondaryModel(() -> secondaryClicks[0]++));
+        assertEquals(View.GONE, sheetButton(R.id.adaptive_ui_sheet_close_button).getVisibility());
         clickSheet(R.id.adaptive_ui_sheet_secondary_button);
         assertEquals(1, secondaryClicks[0]);
         showDialog(secondaryModel(() -> secondaryClicks[0]++));
+        assertEquals(View.VISIBLE, dialogCloseButton().getVisibility());
         dialogButton(ButtonType.NEGATIVE).performClick();
         assertEquals(2, secondaryClicks[0]);
         assertEquals(
@@ -187,9 +236,18 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
                 mDismissReasons);
         mDismissReasons.clear();
 
-        showSheet(newModelBuilder().with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true).build());
+        showSheet(
+                newModelBuilder()
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
+                        .build());
         clickSheet(R.id.adaptive_ui_sheet_close_button);
-        showDialog(newModelBuilder().with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true).build());
+        showDialog(
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.close))
+                        .build());
+        assertEquals(View.VISIBLE, dialogCloseButton().getVisibility());
         dialogCloseButton().performClick();
         assertEquals(
                 List.of(DismissReason.CLOSE_BUTTON, DismissReason.CLOSE_BUTTON), mDismissReasons);
@@ -198,7 +256,10 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
     @Test
     public void testControllerDestroy_ClosesOpenEntriesAndDetaches() {
         showSheet(newModelBuilder().build());
-        showDialog(newModelBuilder().build());
+        showDialog(
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.ok))
+                        .build());
         assertEquals(mController, AdaptiveUiController.from(mWindowAndroid));
 
         mController.destroy();
@@ -495,11 +556,184 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
         verifyObscuredTouchFiltering(/* isSheet= */ false);
     }
 
+    @Test
+    public void testDialogCloseButtonVisibility_DefaultAndHideOptOut() {
+        int[] secondaryClicks = new int[1];
+        HistogramWatcher closeWatcher =
+                watchDismissReason(/* isDialog= */ true, DismissReason.CLOSE_BUTTON);
+        showDialog(secondaryModel(() -> secondaryClicks[0]++));
+        assertEquals(ModalDialogType.TAB, mDialogManager.getCurrentType());
+        assertEquals(View.VISIBLE, dialogCloseButton().getVisibility());
+        assertEquals(str(R.string.close), dialogCloseButton().getContentDescription());
+        assertEquals(View.VISIBLE, dialogButton(ButtonType.NEGATIVE).getVisibility());
+        dialogCloseButton().performClick();
+        closeWatcher.assertExpected();
+        assertEquals(0, secondaryClicks[0]);
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDismissReasons);
+        mDismissReasons.clear();
+
+        PropertyModel shownModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, str(R.string.ok))
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
+                        .build();
+        showDialog(shownModel);
+        assertEquals(View.VISIBLE, dialogCloseButton().getVisibility());
+        dialogCloseButton().performClick();
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDismissReasons);
+        mDismissReasons.clear();
+
+        PropertyModel hideModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, str(R.string.ok))
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.HIDDEN)
+                        .build();
+        showDialog(hideModel);
+        assertEquals(View.GONE, dialogCloseButton().getVisibility());
+        dialogButton(ButtonType.POSITIVE).performClick();
+        assertEquals(List.of(DismissReason.PRIMARY_ACTION), mDismissReasons);
+    }
+
+    @Test
+    public void testCloseSecondaryBehavior_ParityAcrossSheetAndTabAndWindowDialogs() {
+        int[] sheetClicks = new int[1];
+        HistogramWatcher sheetSecondaryWatcher =
+                watchDismissReason(/* isDialog= */ false, DismissReason.SECONDARY_ACTION);
+        showSheet(closeSecondaryModel(() -> sheetClicks[0]++, CloseButtonVisibility.DEFAULT));
+        assertEquals(
+                View.VISIBLE, sheetButton(R.id.adaptive_ui_sheet_secondary_button).getVisibility());
+        assertEquals(View.GONE, sheetButton(R.id.adaptive_ui_sheet_close_button).getVisibility());
+        clickSheet(R.id.adaptive_ui_sheet_secondary_button);
+        sheetSecondaryWatcher.assertExpected();
+        assertEquals(0, sheetClicks[0]);
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mDismissReasons);
+        mDismissReasons.clear();
+
+        HistogramWatcher sheetCloseWatcher =
+                watchDismissReason(/* isDialog= */ false, DismissReason.CLOSE_BUTTON);
+        showSheet(closeSecondaryModel(() -> sheetClicks[0]++, CloseButtonVisibility.SHOWN));
+        assertEquals(
+                View.VISIBLE, sheetButton(R.id.adaptive_ui_sheet_close_button).getVisibility());
+        assertEquals(
+                View.VISIBLE, sheetButton(R.id.adaptive_ui_sheet_secondary_button).getVisibility());
+        clickSheet(R.id.adaptive_ui_sheet_close_button);
+        sheetCloseWatcher.assertExpected();
+        assertEquals(0, sheetClicks[0]);
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDismissReasons);
+        mDismissReasons.clear();
+
+        int[] dialogClicks = new int[1];
+        for (int scope : new int[] {AdaptiveUiScope.TRANSIENT, AdaptiveUiScope.WINDOW}) {
+            // Exercise both CloseButtonVisibility.DEFAULT and CloseButtonVisibility.SHOWN; dialogs
+            // show 'X' for both.
+            @CloseButtonVisibility
+            int closeButtonVisibility =
+                    scope == AdaptiveUiScope.WINDOW
+                            ? CloseButtonVisibility.SHOWN
+                            : CloseButtonVisibility.DEFAULT;
+            HistogramWatcher dialogWatcher =
+                    watchDismissReason(/* isDialog= */ true, DismissReason.CLOSE_BUTTON);
+            showDialog(closeSecondaryModel(() -> dialogClicks[0]++, closeButtonVisibility), scope);
+            assertEquals(
+                    scope == AdaptiveUiScope.TRANSIENT ? ModalDialogType.TAB : ModalDialogType.APP,
+                    mDialogManager.getCurrentType());
+            assertEquals(View.GONE, dialogButton(ButtonType.NEGATIVE).getVisibility());
+            assertEquals(View.VISIBLE, dialogCloseButton().getVisibility());
+            dialogCloseButton().performClick();
+            dialogWatcher.assertExpected();
+        }
+        assertEquals(0, dialogClicks[0]);
+        assertEquals(
+                List.of(DismissReason.CLOSE_BUTTON, DismissReason.CLOSE_BUTTON), mDismissReasons);
+    }
+
+    @Test
+    public void testCloseSecondaryBehavior_HiddenCloseButtonDrawsNegativeOnDialog() {
+        int[] clicks = new int[1];
+        HistogramWatcher secondaryWatcher =
+                watchDismissReason(/* isDialog= */ true, DismissReason.SECONDARY_ACTION);
+        showDialog(closeSecondaryModel(() -> clicks[0]++, CloseButtonVisibility.HIDDEN));
+        assertEquals(View.GONE, dialogCloseButton().getVisibility());
+        assertEquals(View.VISIBLE, dialogButton(ButtonType.NEGATIVE).getVisibility());
+        dialogButton(ButtonType.NEGATIVE).performClick();
+        secondaryWatcher.assertExpected();
+        assertEquals(0, clicks[0]);
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mDismissReasons);
+    }
+
+    @Test
+    public void testCloseSecondaryBehavior_SecurityFilterWithoutPrimaryShowsOnDialog() {
+        int[] clicks = new int[1];
+        PropertyModel filterTouchModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, str(R.string.ok))
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, str(R.string.cancel))
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .with(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                        .with(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED, () -> clicks[0]++)
+                        .build();
+        HistogramWatcher closeWatcher =
+                watchDismissReason(/* isDialog= */ true, DismissReason.CLOSE_BUTTON);
+        showDialog(filterTouchModel);
+        assertEquals(View.GONE, dialogButton(ButtonType.POSITIVE).getVisibility());
+        assertEquals(View.GONE, dialogButton(ButtonType.NEGATIVE).getVisibility());
+        assertEquals(View.VISIBLE, dialogCloseButton().getVisibility());
+        dialogCloseButton().performClick();
+        closeWatcher.assertExpected();
+        assertEquals(0, clicks[0]);
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDismissReasons);
+    }
+
+    @Test
+    public void testCloseSecondaryBehavior_NonButtonDismissalsSkipCallback() {
+        int[] clicks = new int[1];
+        showDialog(
+                closeSecondaryModel(() -> clicks[0]++, CloseButtonVisibility.DEFAULT),
+                AdaptiveUiScope.TRANSIENT);
+        assertTrue(
+                dialogView()
+                        .dispatchKeyEvent(
+                                new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE)));
+
+        showDialog(
+                closeSecondaryModel(() -> clicks[0]++, CloseButtonVisibility.DEFAULT),
+                AdaptiveUiScope.TRANSIENT);
+        assertTrue(mTabDialogPresenter.getDialogContainerForTest().performClick());
+
+        showDialog(
+                closeSecondaryModel(() -> clicks[0]++, CloseButtonVisibility.DEFAULT),
+                AdaptiveUiScope.WINDOW);
+        mDialogPresenter.getDialogForTesting().getOnBackPressedDispatcher().onBackPressed();
+
+        showDialog(
+                closeSecondaryModel(() -> clicks[0]++, CloseButtonVisibility.DEFAULT),
+                AdaptiveUiScope.WINDOW);
+        mDialogPresenter.getDialogForTesting().cancel();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(0, clicks[0]);
+        assertEquals(
+                List.of(
+                        DismissReason.BACK_PRESS,
+                        DismissReason.TOUCH_OUTSIDE,
+                        DismissReason.BACK_PRESS,
+                        DismissReason.TOUCH_OUTSIDE),
+                mDismissReasons);
+    }
+
     private void verifyObscuredTouchFiltering(boolean isSheet) {
         int[] primaryClicks = new int[1];
         int[] secondaryClicks = new int[1];
         var model =
                 newModelBuilder()
+                        .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.ok))
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
                         .with(
                                 AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
@@ -508,7 +742,9 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
                         .with(
                                 AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                                 () -> secondaryClicks[0]++)
-                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN, true)
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN)
                         .with(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY, true)
                         .build();
         if (isSheet) {
@@ -539,6 +775,14 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
         assertEquals(List.of(DismissReason.PRIMARY_ACTION), mDismissReasons);
     }
 
+    private static HistogramWatcher watchDismissReason(
+            boolean isDialog, @DismissReason int reason) {
+        String suffix = isDialog ? "ModalDialog" : "BottomSheet";
+        return HistogramWatcher.newBuilder()
+                .expectIntRecord("Android.AdaptiveUi.DismissReason." + suffix, reason)
+                .build();
+    }
+
     private @Nullable Void onScrim(PropertyModel params, boolean visible) {
         mScrimModel = visible ? params : null;
         params.get(ScrimProperties.VISIBILITY_CALLBACK).onResult(visible);
@@ -555,6 +799,7 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
 
     private PropertyModel primaryModel(Runnable onPrimary, long tapProtectionMs) {
         return newModelBuilder()
+                .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.ok))
                 .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
                 .with(AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED, onPrimary)
                 .with(AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS, tapProtectionMs)
@@ -563,7 +808,20 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
 
     private PropertyModel secondaryModel(Runnable onSecondary) {
         return newModelBuilder()
+                .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.cancel))
                 .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, str(R.string.cancel))
+                .with(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED, onSecondary)
+                .build();
+    }
+
+    private PropertyModel closeSecondaryModel(
+            Runnable onSecondary, @CloseButtonVisibility int closeButtonVisibility) {
+        return newModelBuilder()
+                .with(AdaptiveUiProperties.TITLE, str(R.string.ok))
+                .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, str(R.string.ok))
+                .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, str(R.string.cancel))
+                .with(AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR, SecondaryButtonBehavior.CLOSE)
+                .with(AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY, closeButtonVisibility)
                 .with(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED, onSecondary)
                 .build();
     }
@@ -609,6 +867,8 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
     private void layoutRoot() {
         mActivity.getWindow().getDecorView().layout(0, 0, ROOT_SIZE_PX, ROOT_SIZE_PX);
         int spec = MeasureSpec.makeMeasureSpec(ROOT_SIZE_PX, MeasureSpec.EXACTLY);
+        mTabDialogContainer.measure(spec, spec);
+        mTabDialogContainer.layout(0, 0, ROOT_SIZE_PX, ROOT_SIZE_PX);
         mSheetContainer.measure(spec, spec);
         mSheetContainer.layout(0, 0, ROOT_SIZE_PX, ROOT_SIZE_PX);
     }
@@ -642,17 +902,20 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
         layoutRoot();
     }
 
-    // TRANSIENT dialogs request TAB modality and fall back to ModalDialogManager's default
-    // AppModalPresenter here; assertions depend only on shared ModalDialogView behavior.
-    private void showDialog(PropertyModel model) {
-        showDialog(model, AdaptiveUiScope.TRANSIENT);
+    // TRANSIENT dialogs use TestTabModalPresenter (ModalDialogType.TAB); WINDOW dialogs use
+    // AppModalPresenter (ModalDialogType.APP).
+    private AdaptiveUiEntry showDialog(PropertyModel model) {
+        return showDialog(model, AdaptiveUiScope.TRANSIENT);
     }
 
-    private void showDialog(PropertyModel model, @AdaptiveUiScope int scope) {
+    private AdaptiveUiEntry showDialog(PropertyModel model, @AdaptiveUiScope int scope) {
         var entry = newEntry(model, scope, AdaptiveUiContainer.MODAL_DIALOG);
         assertEquals(Integer.valueOf(AdaptiveUiContainer.MODAL_DIALOG), mController.show(entry));
-        // Drain Dialog's SHOW message so AppModalPresenter's OnShowListener starts tap protection.
+        // Drain the main looper so the presenter finishes showing (AppModalPresenter starts tap
+        // protection in its OnShowListener).
         ShadowLooper.idleMainLooper();
+        layoutRoot();
+        return entry;
     }
 
     private void clickSheet(int id) {
@@ -680,14 +943,21 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
         return bottom;
     }
 
+    private ModalDialogView dialogView() {
+        ModalDialogView view =
+                mDialogManager.getCurrentType() == ModalDialogType.TAB
+                        ? mTabDialogPresenter.getDialogViewForTest()
+                        : mDialogPresenter.getDialogViewForTesting();
+        assertNotNull(view);
+        return view;
+    }
+
     private View dialogButton(@ButtonType int buttonType) {
-        return mDialogPresenter
-                .getDialogViewForTesting()
-                .findViewWithTag(ModalDialogView.getTagForButtonType(buttonType));
+        return dialogView().findViewWithTag(ModalDialogView.getTagForButtonType(buttonType));
     }
 
     private View dialogCloseButton() {
-        return mDialogPresenter.getDialogViewForTesting().findViewById(R.id.title_close_button);
+        return dialogView().findViewById(R.id.title_close_button);
     }
 
     private static void dispatchTap(View target, int flags) {

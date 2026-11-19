@@ -23,13 +23,14 @@ import java.util.Set;
  * ModalDialogProperties} {@link PropertyModel} via {@link
  * org.chromium.ui.modelutil.PropertyModelChangeProcessor}.
  *
- * <p>Creation-time structural keys ({@link AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION}, {@link
- * AdaptiveUiProperties#CUSTOM_VIEW}, {@link AdaptiveUiProperties#CUSTOM_VIEW_SCROLLS_ITSELF}, and
- * {@link AdaptiveUiProperties#FILTER_TOUCH_FOR_SECURITY}) and event-time action keys ({@link
+ * <p>Creation-time keys ({@link AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION}, {@link
+ * AdaptiveUiProperties#CLOSE_BUTTON_VISIBILITY}, {@link AdaptiveUiProperties#CUSTOM_VIEW}, {@link
+ * AdaptiveUiProperties#CUSTOM_VIEW_SCROLLS_ITSELF}, {@link
+ * AdaptiveUiProperties#SECONDARY_BUTTON_BEHAVIOR}, and {@link
+ * AdaptiveUiProperties#FILTER_TOUCH_FOR_SECURITY}) and event-time action keys ({@link
  * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
- * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, {@link
- * AdaptiveUiProperties#SECONDARY_BUTTON_KEEPS_OPEN}, and {@link
+ * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, and {@link
  * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are handled by {@link AdaptiveUiDialogCoordinator};
  * sheet-only keys ({@link AdaptiveUiProperties#SHEET_OPENED_ACCESSIBILITY_STRING_ID}, {@link
  * AdaptiveUiProperties#SHEET_CLOSED_ACCESSIBILITY_STRING_ID}, {@link
@@ -50,13 +51,14 @@ final class AdaptiveUiDialogViewBinder {
                     AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
                     AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                     AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
+                    AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
                     AdaptiveUiProperties.CUSTOM_VIEW,
                     AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                     AdaptiveUiProperties.BACK_PRESS_HANDLER,
                     AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
-                    AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN,
+                    AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                     AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY);
 
     static void bind(PropertyModel model, PropertyModel dialogModel, PropertyKey key) {
@@ -87,10 +89,6 @@ final class AdaptiveUiDialogViewBinder {
                     UiUtils.maybeSetLinkMovementMethod(descriptionView);
                 }
             }
-        } else if (key == AdaptiveUiProperties.SHOW_CLOSE_BUTTON) {
-            dialogModel.set(
-                    ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE,
-                    model.get(AdaptiveUiProperties.SHOW_CLOSE_BUTTON));
         } else if (key == AdaptiveUiProperties.FOOTER_MESSAGE) {
             dialogModel.set(
                     ModalDialogProperties.FOOTER_MESSAGE,
@@ -104,21 +102,25 @@ final class AdaptiveUiDialogViewBinder {
                         TextUtils.isEmpty(primaryText) ? null : primaryText);
             }
         } else if (key == AdaptiveUiProperties.SECONDARY_BUTTON_TEXT) {
-            String secondaryText = model.get(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT);
-            if (!TextUtils.isEmpty(secondaryText)
-                    || dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT) != null) {
-                dialogModel.set(
-                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                        TextUtils.isEmpty(secondaryText) ? null : secondaryText);
+            if (AdaptiveUiDialogCoordinator.canDrawSecondaryButton(model)) {
+                String secondaryText = model.get(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT);
+                if (!TextUtils.isEmpty(secondaryText)
+                        || dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT) != null) {
+                    dialogModel.set(
+                            ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                            TextUtils.isEmpty(secondaryText) ? null : secondaryText);
+                }
             }
         } else if (key == AdaptiveUiProperties.PRIMARY_BUTTON_DISABLED) {
             dialogModel.set(
                     ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
                     model.get(AdaptiveUiProperties.PRIMARY_BUTTON_DISABLED));
         } else if (key == AdaptiveUiProperties.SECONDARY_BUTTON_DISABLED) {
-            dialogModel.set(
-                    ModalDialogProperties.NEGATIVE_BUTTON_DISABLED,
-                    model.get(AdaptiveUiProperties.SECONDARY_BUTTON_DISABLED));
+            if (AdaptiveUiDialogCoordinator.canDrawSecondaryButton(model)) {
+                dialogModel.set(
+                        ModalDialogProperties.NEGATIVE_BUTTON_DISABLED,
+                        model.get(AdaptiveUiProperties.SECONDARY_BUTTON_DISABLED));
+            }
         } else if (key == AdaptiveUiProperties.BUTTON_TAP_PROTECTION_PERIOD_MS) {
             dialogModel.set(
                     ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,

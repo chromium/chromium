@@ -38,6 +38,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.CloseButtonVisibility;
+import org.chromium.components.browser_ui.adaptive_ui.AdaptiveUiProperties.SecondaryButtonBehavior;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogViewBinder;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -133,13 +135,14 @@ public class AdaptiveUiDialogCoordinatorTest {
                         AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
                         AdaptiveUiProperties.SHEET_HALF_HEIGHT_RATIO,
                         AdaptiveUiProperties.SHEET_FULL_HEIGHT_RATIO,
+                        AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
                         AdaptiveUiProperties.CUSTOM_VIEW,
                         AdaptiveUiProperties.CUSTOM_VIEW_SCROLLS_ITSELF,
                         AdaptiveUiProperties.BACK_PRESS_HANDLER,
                         AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.PRIMARY_BUTTON_KEEPS_OPEN,
-                        AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN,
+                        AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
                         AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY);
         assertEquals(expected, AdaptiveUiDialogViewBinder.COORDINATOR_HANDLED_KEYS);
         assertTrue(
@@ -193,7 +196,9 @@ public class AdaptiveUiDialogCoordinatorTest {
                 newModelBuilder()
                         .with(AdaptiveUiProperties.TITLE, "Title")
                         .with(AdaptiveUiProperties.FOOTER_MESSAGE, "Footer")
-                        .with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true)
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
                         .with(AdaptiveUiProperties.PRIMARY_BUTTON_DISABLED, true)
@@ -339,7 +344,9 @@ public class AdaptiveUiDialogCoordinatorTest {
         PropertyModel model =
                 newModelBuilder()
                         .with(AdaptiveUiProperties.TITLE, "Title")
-                        .with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true)
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
                         .with(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY, true)
                         .build();
         PropertyModel dialogModel = createCoordinator(model).getDialogModel();
@@ -604,7 +611,9 @@ public class AdaptiveUiDialogCoordinatorTest {
                 newModelBuilder()
                         .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
                         .with(AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED, () -> clicks[0]++)
-                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_KEEPS_OPEN, true)
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.ACTION_THEN_STAY_OPEN)
                         .build();
         AdaptiveUiDialogCoordinator coordinator = createCoordinator(model);
 
@@ -643,7 +652,11 @@ public class AdaptiveUiDialogCoordinatorTest {
     @Test
     public void testCloseButtonClick_RequestsDismiss() {
         PropertyModel model =
-                newModelBuilder().with(AdaptiveUiProperties.SHOW_CLOSE_BUTTON, true).build();
+                newModelBuilder()
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
+                        .build();
         PropertyModel dialogModel = createCoordinator(model).getDialogModel();
 
         dialogModel
@@ -651,6 +664,318 @@ public class AdaptiveUiDialogCoordinatorTest {
                 .onClick(new View(mActivity));
 
         assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDialogDismissals);
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // CLOSE_BUTTON_VISIBILITY and SECONDARY_BUTTON_BEHAVIOR.
+    // ---------------------------------------------------------------------------------------
+
+    @Test
+    public void testCloseButtonVisibility_ShownByDefaultAndWhenShown() {
+        PropertyModel defaultModel =
+                newModelBuilder().with(AdaptiveUiProperties.TITLE, "Title").build();
+        PropertyModel defaultDialogModel = createCoordinator(defaultModel).getDialogModel();
+        assertTrue(defaultDialogModel.get(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE));
+        ModalDialogView defaultView = bindToRealModalDialogView(defaultDialogModel);
+        assertEquals(
+                View.VISIBLE, defaultView.findViewById(R.id.title_close_button).getVisibility());
+
+        PropertyModel shownModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
+                        .build();
+        PropertyModel shownDialogModel = createCoordinator(shownModel).getDialogModel();
+        assertTrue(shownDialogModel.get(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE));
+        ModalDialogView shownView = bindToRealModalDialogView(shownDialogModel);
+        assertEquals(View.VISIBLE, shownView.findViewById(R.id.title_close_button).getVisibility());
+    }
+
+    @Test
+    public void testCloseButtonVisibility_HiddenWhenHidden() {
+        PropertyModel hiddenModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.HIDDEN)
+                        .build();
+        PropertyModel hiddenDialogModel = createCoordinator(hiddenModel).getDialogModel();
+        assertFalse(hiddenDialogModel.get(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE));
+        ModalDialogView hiddenView = bindToRealModalDialogView(hiddenDialogModel);
+        assertEquals(View.GONE, hiddenView.findViewById(R.id.title_close_button).getVisibility());
+    }
+
+    @Test
+    public void testCloseButtonClick_WithCloseSecondary_ReportsCloseButtonWithoutCallback() {
+        int[] secondaryClicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Continue")
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .with(
+                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
+                                () -> secondaryClicks[0]++)
+                        .build();
+        PropertyModel dialogModel = createCoordinator(model).getDialogModel();
+
+        dialogModel
+                .get(ModalDialogProperties.TITLE_CLOSE_BUTTON_CLICK_LISTENER)
+                .onClick(new View(mActivity));
+
+        assertEquals(0, secondaryClicks[0]);
+        assertEquals(List.of(DismissReason.CLOSE_BUTTON), mDialogDismissals);
+    }
+
+    @Test
+    public void testCloseSecondary_WhenCloseButtonShown_OmitsNegativeButton() {
+        PropertyModel withPrimaryModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Continue")
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .build();
+        PropertyModel withPrimaryDialogModel = createCoordinator(withPrimaryModel).getDialogModel();
+        assertEquals(
+                "Continue", withPrimaryDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertNull(withPrimaryDialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        assertEquals(
+                ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE,
+                withPrimaryDialogModel.get(ModalDialogProperties.BUTTON_STYLES));
+        assertTrue(withPrimaryDialogModel.get(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE));
+
+        ModalDialogView dialogView = bindToRealModalDialogView(withPrimaryDialogModel);
+        View negativeButton =
+                dialogView.findViewWithTag(
+                        ModalDialogView.getTagForButtonType(ButtonType.NEGATIVE));
+        assertNotNull(negativeButton);
+        assertEquals(View.GONE, negativeButton.getVisibility());
+        assertEquals(
+                View.VISIBLE, dialogView.findViewById(R.id.title_close_button).getVisibility());
+
+        PropertyModel closeOnlyModel =
+                newModelBuilder()
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.SHOWN)
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .build();
+        PropertyModel closeOnlyDialogModel = createCoordinator(closeOnlyModel).getDialogModel();
+        assertNull(closeOnlyDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertNull(closeOnlyDialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        assertEquals(
+                ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE,
+                closeOnlyDialogModel.get(ModalDialogProperties.BUTTON_STYLES));
+    }
+
+    @Test
+    public void testCloseSecondary_WhenCloseButtonShown_SkipsLiveUpdates() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Allow")
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .build();
+        PropertyModel dialogModel = createCoordinator(model).getDialogModel();
+        ModalDialogView dialogView = bindToRealModalDialogView(dialogModel);
+        View negativeButton =
+                dialogView.findViewWithTag(
+                        ModalDialogView.getTagForButtonType(ButtonType.NEGATIVE));
+        assertNotNull(negativeButton);
+
+        model.set(AdaptiveUiProperties.SECONDARY_BUTTON_DISABLED, true);
+        assertFalse(dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_DISABLED));
+
+        model.set(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Not now");
+        assertNull(dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        assertEquals(View.GONE, negativeButton.getVisibility());
+
+        model.set(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "");
+        assertNull(dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+    }
+
+    @Test
+    public void
+            testCloseSecondary_WhenCloseButtonHidden_DrawsNegativeAndDismissesWithoutCallback() {
+        int[] secondaryClicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Continue")
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.HIDDEN)
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .with(
+                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
+                                () -> secondaryClicks[0]++)
+                        .build();
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(model);
+        PropertyModel dialogModel = coordinator.getDialogModel();
+
+        assertFalse(dialogModel.get(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE));
+        assertEquals("No thanks", dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        assertEquals(
+                ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
+                dialogModel.get(ModalDialogProperties.BUTTON_STYLES));
+
+        ModalDialogView dialogView = bindToRealModalDialogView(dialogModel);
+        assertEquals(View.GONE, dialogView.findViewById(R.id.title_close_button).getVisibility());
+        View negativeButton =
+                dialogView.findViewWithTag(
+                        ModalDialogView.getTagForButtonType(ButtonType.NEGATIVE));
+        assertNotNull(negativeButton);
+        assertEquals(View.VISIBLE, negativeButton.getVisibility());
+
+        coordinator.onClick(dialogModel, ButtonType.NEGATIVE);
+        assertEquals(0, secondaryClicks[0]);
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mDialogDismissals);
+    }
+
+    @Test
+    public void testCloseSecondary_WhenCloseButtonHidden_BindsLiveUpdates() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.HIDDEN)
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .build();
+        PropertyModel dialogModel = createCoordinator(model).getDialogModel();
+        ModalDialogView dialogView = bindToRealModalDialogView(dialogModel);
+        View negativeButton =
+                dialogView.findViewWithTag(
+                        ModalDialogView.getTagForButtonType(ButtonType.NEGATIVE));
+        assertNotNull(negativeButton);
+        assertEquals(View.VISIBLE, negativeButton.getVisibility());
+
+        model.set(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Not now");
+        assertEquals("Not now", dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+
+        model.set(AdaptiveUiProperties.SECONDARY_BUTTON_DISABLED, true);
+        assertTrue(dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_DISABLED));
+        assertFalse(negativeButton.isEnabled());
+
+        model.set(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "");
+        assertNull(dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        assertEquals(View.GONE, negativeButton.getVisibility());
+    }
+
+    @Test
+    public void testActionThenDismissSecondary_DrawsNegativeAlongsideCloseButton() {
+        int[] secondaryClicks = new int[1];
+        PropertyModel model =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Primary")
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "Secondary")
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.ACTION_THEN_DISMISS)
+                        .with(
+                                AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
+                                () -> secondaryClicks[0]++)
+                        .build();
+        AdaptiveUiDialogCoordinator coordinator = createCoordinator(model);
+        PropertyModel dialogModel = coordinator.getDialogModel();
+
+        assertTrue(dialogModel.get(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE));
+        assertEquals("Secondary", dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        assertEquals(
+                ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
+                dialogModel.get(ModalDialogProperties.BUTTON_STYLES));
+
+        ModalDialogView dialogView = bindToRealModalDialogView(dialogModel);
+        assertEquals(
+                View.VISIBLE, dialogView.findViewById(R.id.title_close_button).getVisibility());
+        View negativeButton =
+                dialogView.findViewWithTag(
+                        ModalDialogView.getTagForButtonType(ButtonType.NEGATIVE));
+        assertNotNull(negativeButton);
+        assertEquals(View.VISIBLE, negativeButton.getVisibility());
+
+        coordinator.onClick(dialogModel, ButtonType.NEGATIVE);
+        assertEquals(1, secondaryClicks[0]);
+        assertEquals(List.of(DismissReason.SECONDARY_ACTION), mDialogDismissals);
+    }
+
+    @Test
+    public void testFilterTouchForSecurity_WithCloseSecondary() {
+        PropertyModel closeOnlyModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .with(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                        .build();
+        PropertyModel closeOnlyDialogModel = createCoordinator(closeOnlyModel).getDialogModel();
+        assertFalse(closeOnlyDialogModel.get(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY));
+        ModalDialogView closeOnlyView = bindToRealModalDialogView(closeOnlyDialogModel);
+        View closeOnlyPositive =
+                closeOnlyView.findViewWithTag(
+                        ModalDialogView.getTagForButtonType(ButtonType.POSITIVE));
+        assertNotNull(closeOnlyPositive);
+        assertFalse(closeOnlyPositive.getFilterTouchesWhenObscured());
+
+        PropertyModel withPrimaryModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT, "Confirm")
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .with(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                        .build();
+        PropertyModel withPrimaryDialogModel = createCoordinator(withPrimaryModel).getDialogModel();
+        assertTrue(withPrimaryDialogModel.get(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY));
+        ModalDialogView withPrimaryView = bindToRealModalDialogView(withPrimaryDialogModel);
+        View positiveButton =
+                withPrimaryView.findViewWithTag(
+                        ModalDialogView.getTagForButtonType(ButtonType.POSITIVE));
+        assertNotNull(positiveButton);
+        assertTrue(positiveButton.getFilterTouchesWhenObscured());
+
+        PropertyModel hiddenCloseModel =
+                newModelBuilder()
+                        .with(AdaptiveUiProperties.SECONDARY_BUTTON_TEXT, "No thanks")
+                        .with(
+                                AdaptiveUiProperties.CLOSE_BUTTON_VISIBILITY,
+                                CloseButtonVisibility.HIDDEN)
+                        .with(
+                                AdaptiveUiProperties.SECONDARY_BUTTON_BEHAVIOR,
+                                SecondaryButtonBehavior.CLOSE)
+                        .with(AdaptiveUiProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                        .build();
+        PropertyModel hiddenCloseDialogModel = createCoordinator(hiddenCloseModel).getDialogModel();
+        assertTrue(hiddenCloseDialogModel.get(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY));
+        ModalDialogView hiddenCloseView = bindToRealModalDialogView(hiddenCloseDialogModel);
+        View negativeButton =
+                hiddenCloseView.findViewWithTag(
+                        ModalDialogView.getTagForButtonType(ButtonType.NEGATIVE));
+        assertNotNull(negativeButton);
+        assertTrue(negativeButton.getFilterTouchesWhenObscured());
     }
 
     @Test
