@@ -45,7 +45,20 @@ clang_toolchain("v8_snapshot") {
     v8_current_cpu = v8_target_cpu
     current_os = "linux"
     sysroot = cros_v8_snapshot_sysroot
+
+    # This toolchain builds Linux tools for the build host, not device code.
+    # Clear is_chromeos_device along with board display and Linux host
+    # library args so Blink builds cleanly for the host.
+    is_chromeos_device = false
     use_dbus = false
+    use_glib = false
+    use_system_libdrm = false
+    use_cups = false
+    ozone_auto_platforms = false
+    ozone_platform = "headless"
+    ozone_platform_headless = true
+    ozone_platform_gbm = false
+    ozone_platform_drm = false
   }
 
   extra_cflags = cros_v8_snapshot_extra_cflags

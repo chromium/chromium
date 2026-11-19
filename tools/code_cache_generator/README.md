@@ -40,7 +40,8 @@ machines:
 | --- | --- | --- |
 | Linux, Windows | Same OS and CPU as the target | `resources.pak` |
 | ChromeOS on a Linux machine (linux-chromeos) | Linux, same CPU as the target | `resources.pak` |
-| ChromeOS devices (cros toolchains) | Linux | Not generated |
+| ChromeOS devices, x64 and arm64 (cros toolchains) | Linux | `resources.pak` |
+| ChromeOS devices, 32-bit arm (cros toolchains) | Linux | Not generated |
 | Mac, either CPU | Any Mac, including an arm64 Mac building x64 | `webui_code_cache.<arch>.pak` |
 | Mac | Linux | Not generated |
 | Other cross builds | Any | Not generated |
@@ -66,6 +67,17 @@ one snapshot.
 The generator runs V8 with `--predictable`, so the output is deterministic for
 a given V8, snapshot, and input.
 
+For ChromeOS device builds, the generator compiles as an `IS_LINUX` binary in
+[build/toolchain/cros/BUILD.gn](/build/toolchain/cros/BUILD.gn), while Chrome
+runs on ChromeOS. `CodeCacheGenPlatform` disallows V8 feature flag overrides and
+passes only `--predictable`.
+`ChromeContentBrowserClient::DisallowV8FeatureFlagOverridesForSite()` in
+[chrome_content_browser_client.cc](/chrome/browser/chrome_content_browser_client.cc)
+likewise disallows V8 overrides for top-chrome WebUI renderers under
+`kWebUIBundledCodeCache`, and ChromeOS `login_manager` adds no `--js-flags`. As
+a result, `FlagList::Hash()` and `Version::Hash()` match, and `--snapshot_blob`
+supplies the target's `snapshot_blob.bin` checksum.
+
 ## Cross-compilation
 
 The generator compiles modules and serializes the result; it never executes
@@ -81,9 +93,14 @@ builds the generator in `v8_snapshot_toolchain`, which
 [snapshot_toolchain.gni](/v8/gni/snapshot_toolchain.gni) selects. For an x64
 Mac target on an arm64 Mac, that toolchain is `clang_arm64_v8_x64` in
 [build/toolchain/mac/BUILD.gn](/build/toolchain/mac/BUILD.gn), which produces
-an arm64 program with x64 V8 inside. For native builds it is the default
-toolchain. [BUILD.gn](BUILD.gn) also keeps a default-toolchain copy for the
-Python unit test.
+an arm64 program with x64 V8 inside. For 64-bit ChromeOS device targets, it is
+`v8_snapshot` in
+[build/toolchain/cros/BUILD.gn](/build/toolchain/cros/BUILD.gn), an x64 Linux
+program with the target CPU's V8 inside. 32-bit arm device builds skip
+generation because their x86 snapshot toolchain needs 32-bit host libraries
+absent from the ChromeOS ebuild. For native builds it is the default toolchain.
+[BUILD.gn](BUILD.gn) also keeps a default-toolchain copy for the Python unit
+test.
 
 A generator from another toolchain would load the snapshot built next to
 itself, which belongs to the build machine. To avoid that, the build passes
@@ -166,11 +183,14 @@ generation actions.
 ## Cost
 
 *   Size: the cache for the current set of WebUIs is about 3.5 MB per CPU,
-    so about 7.1 MB in a universal Mac app. Linux and Windows ship the same
-    data inside `resources.pak`.
+    so about 7.1 MB in a universal Mac app. Linux, Windows, and ChromeOS ship
+    the same data inside `resources.pak`.
 *   Build time: Mac builds on Mac machines add one link, the generator, plus
     the generation actions. The snapshot toolchain already builds Blink there.
     Mac builds on Linux machines are unchanged, since they skip generation.
+    ChromeOS device builds disable `use_v8_context_snapshot`, so enabling
+    generation adds a Blink build in `cros:v8_snapshot` for the generator
+    plus the generation actions.
 
 ## Testing
 
