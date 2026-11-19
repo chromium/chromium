@@ -1898,16 +1898,14 @@ void RasterImplementation::FlushPaintCachePurgedEntries() {
 
     switch (static_cast<cc::PaintCacheDataType>(i)) {
       case cc::PaintCacheDataType::kPath:
-        UNSAFE_TODO(
-            DEFINE_PAINT_CACHE_DELETION(kMaxImmediateDeletedPaintCachePaths,
-                                        DeletePaintCachePathsINTERNALImmediate,
-                                        DeletePaintCachePathsINTERNAL));
+        DEFINE_PAINT_CACHE_DELETION(kMaxImmediateDeletedPaintCachePaths,
+                                    DeletePaintCachePathsINTERNALImmediate,
+                                    DeletePaintCachePathsINTERNAL);
         break;
       case cc::PaintCacheDataType::kSkRuntimeEffect:
-        UNSAFE_TODO(DEFINE_PAINT_CACHE_DELETION(
-            kMaxImmediateDeletedPaintCacheEffects,
-            DeletePaintCacheEffectsINTERNALImmediate,
-            DeletePaintCacheEffectsINTERNAL));
+        DEFINE_PAINT_CACHE_DELETION(kMaxImmediateDeletedPaintCacheEffects,
+                                    DeletePaintCacheEffectsINTERNALImmediate,
+                                    DeletePaintCacheEffectsINTERNAL);
         break;
     }
     ids.clear();
