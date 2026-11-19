@@ -444,6 +444,13 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       std::move(feature_list), metrics_client->metrics_state_manager(),
       aw_field_trials_.get(), &ignored_safe_seed_manager,
       low_entropy_source_value, *entropy_providers);
+
+  // `kVariationsCompressedSeed` and `kVariationsSeedSignature` are not read or
+  // written again after `SetUpFieldTrials()` (and are not persisted to disk in
+  // `kPersistentPrefsAllowlist`), so it is safe to clear them here to avoid
+  // retaining the Base64-encoded seed in memory for the lifetime of the
+  // process.
+  variations_field_trial_creator_->seed_store()->PurgeSeedFromLocalStatePrefs();
 }
 
 }  // namespace android_webview

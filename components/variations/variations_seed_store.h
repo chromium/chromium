@@ -309,6 +309,14 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // from disk.
   void AllowToPurgeSeedsDataFromMemory();
 
+  // Purges the latest seed data and signature from Local State prefs. This may
+  // be called after startup field trial setup by platforms (such as Android
+  // WebView) that store the seed prefs in an in-memory pref store and never
+  // persist or re-read the seed from Local State after startup. Calling
+  // LoadSeed() or LoadSeedSync() after this is not allowed unless a new seed is
+  // stored.
+  void PurgeSeedFromLocalStatePrefs();
+
   // Commits any pending writes to disk immediately.
   void CommitPendingWrite();
 
@@ -542,6 +550,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // Handles reads and writes to seed files.
   std::unique_ptr<SeedReaderWriter> seed_reader_writer_;
+
+  // Whether PurgeSeedFromLocalStatePrefs() has been called without a subsequent
+  // StoreSeedData() call.
+  bool seed_purged_from_local_state_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

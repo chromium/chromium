@@ -241,6 +241,8 @@ VariationsSeedStore::~VariationsSeedStore() = default;
 
 void VariationsSeedStore::LoadSeed(LoadSeedCallback done_callback,
                                    bool require_synchronous) {
+  CHECK(!seed_purged_from_local_state_)
+      << "LoadSeed() cannot be called after PurgeSeedFromLocalStatePrefs().";
   auto verify_and_parse_seed_cb =
       base::BindOnce(&VariationsSeedStore::VerifyAndParseSeedAndRunCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(done_callback),
@@ -975,6 +977,7 @@ void VariationsSeedStore::StoreValidatedSeed(
           .session_geo_level1 = geo_level1,
       });
   if (result == StoreSeedResult::kSuccess) {
+    seed_purged_from_local_state_ = false;
     StoreLatestSerialNumber(seed.parsed.serial_number());
     if (require_synchronous) {
       // Synchronous stores happen during startup (e.g. importing the initial
@@ -1218,6 +1221,12 @@ bool VariationsSeedStore::ApplyDeltaPatch(const std::string& existing_data,
 void VariationsSeedStore::AllowToPurgeSeedsDataFromMemory() {
   seed_reader_writer_->AllowToPurgeSeedDataFromMemory();
   safe_seed_store_->AllowToPurgeSeedDataFromMemory();
+}
+
+void VariationsSeedStore::PurgeSeedFromLocalStatePrefs() {
+  seed_purged_from_local_state_ = true;
+  local_state_->ClearPref(prefs::kVariationsCompressedSeed);
+  local_state_->ClearPref(prefs::kVariationsSeedSignature);
 }
 
 void VariationsSeedStore::CommitPendingWrite() {
