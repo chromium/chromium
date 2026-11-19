@@ -25,6 +25,7 @@
 #include "content/public/common/persistent_notification_status.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 namespace content {
 namespace {
@@ -117,6 +118,19 @@ void DispatchNotificationEventOnRegistration(
   if (service_worker_status == blink::ServiceWorkerStatusCode::kOk) {
     CHECK(service_worker_registration->active_version(),
           base::NotFatalUntil::M159);
+
+    // The registration ID in the database row comes from the renderer. Only
+    // dispatch to a registration of the notification's origin. Rows written
+    // before `BlinkNotificationServiceImpl` checked the ID can violate this.
+    if (service_worker_registration->key().origin() !=
+        url::Origin::Create(notification_database_data.origin)) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(dispatch_complete_callback),
+                         PersistentNotificationStatus::kServiceWorkerMissing,
+                         blink::ServiceWorkerStatusCode::kErrorNotFound));
+      return;
+    }
 
     std::move(dispatch_event_action)
         .Run(service_worker_registration.get(), notification_database_data,
