@@ -39,9 +39,7 @@ bool IsUsEnglishEngine(const std::string& engine_id) {
 }
 
 bool IsFstEngine(const std::string& engine_id) {
-  return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE) ||
-         base::StartsWith(engine_id, "experimental_",
-                          base::CompareCase::SENSITIVE);
+  return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE);
 }
 
 bool IsJapaneseEngine(const std::string& engine_id) {
@@ -149,8 +147,6 @@ mojom::LatinSettingsPtr CreateLatinSettings(
   auto settings = mojom::LatinSettings::New();
   auto autocorrect_pref = GetPhysicalKeyboardAutocorrectPref(prefs, engine_id);
   settings->autocorrect =
-      base::StartsWith(engine_id, "experimental_",
-                       base::CompareCase::SENSITIVE) ||
       base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning) ||
       autocorrect_pref == AutocorrectPreference::kEnabled;
   settings->predictive_writing =

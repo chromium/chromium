@@ -73,9 +73,7 @@ bool IsRuleBasedEngine(std::string_view engine_id) {
 }
 
 bool IsFstEngine(std::string_view engine_id) {
-  return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE) ||
-         base::StartsWith(engine_id, "experimental_",
-                          base::CompareCase::SENSITIVE);
+  return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE);
 }
 
 bool IsKoreanEngine(std::string_view engine_id) {
@@ -113,9 +111,7 @@ bool IsTransliterationEngine(std::string_view engine_id) {
 
 bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
                                           std::string_view engine_id) {
-  if (base::StartsWith(engine_id, "experimental_",
-                       base::CompareCase::SENSITIVE) ||
-      base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning)) {
+  if (base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning)) {
     return true;
   }
 
