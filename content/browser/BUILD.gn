@@ -3366,6 +3366,7 @@ source_set("browser") {
       "//ui/android",
       "//ui/android:ui_android_jni_headers",
       "//ui/compositor",
+      "//ui/events:motionevent_jni_headers",
       "//ui/gfx/animation/keyframe",
       "//url",
     ]

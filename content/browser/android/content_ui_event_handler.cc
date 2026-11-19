@@ -24,6 +24,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/ContentUiEventHandler_jni.h"
+#include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
@@ -138,8 +139,12 @@ void ContentUiEventHandler::SendMouseWheelEvent(
       /*android_action_button=*/0,
       /*android_gesture_classification=*/0,
       /*android_button_state=*/0,
-      /*raw_offset_x_pixels=*/0,
-      /*raw_offset_y_pixels=*/0,
+      /*raw_offset_x_pixels=*/
+      JNI_MotionEvent::Java_MotionEvent_getRawX(env, motion_event) -
+          pointer.pos_x_pixels,
+      /*raw_offset_y_pixels=*/
+      JNI_MotionEvent::Java_MotionEvent_getRawY(env, motion_event) -
+          pointer.pos_y_pixels,
       /*for_touch_handle=*/false,
       /*pointer0=*/&pointer,
       /*pointer1=*/nullptr);
@@ -159,8 +164,7 @@ void ContentUiEventHandler::SendMouseEvent(
   auto source = ui::MotionEventAndroidSourceJava::Create(motion_event, false);
 
   // Construct a motion_event object minimally, only to convert the raw
-  // parameters to ui::MotionEvent values. Since we used only the cached values
-  // at index=0, it is okay to even pass a null event to the constructor.
+  // parameters to ui::MotionEvent values.
   ui::MotionEventAndroid::Pointer pointer(
       /*id=*/source->GetPointerId(0), /*pos_x_pixels=*/source->GetXPix(0),
       /*pos_y_pixels=*/source->GetYPix(0),
@@ -181,8 +185,12 @@ void ContentUiEventHandler::SendMouseEvent(
       /*action_index=*/0, android_action_button,
       /*android_gesture_classification=*/0,
       /*android_button_state=*/source->GetButtonState(),
-      /*raw_offset_x_pixels=*/0,
-      /*raw_offset_y_pixels=*/0,
+      /*raw_offset_x_pixels=*/
+      JNI_MotionEvent::Java_MotionEvent_getRawX(env, motion_event) -
+          pointer.pos_x_pixels,
+      /*raw_offset_y_pixels=*/
+      JNI_MotionEvent::Java_MotionEvent_getRawY(env, motion_event) -
+          pointer.pos_y_pixels,
       /*for_touch_handle=*/false,
       /*pointer0=*/&pointer,
       /*pointer1=*/nullptr);
