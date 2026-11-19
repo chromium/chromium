@@ -6079,18 +6079,14 @@ void BrowserView::ShowIncognitoClearBrowsingDataDialog() {
   CHECK(ToolbarButtonProvider::From(browser_));
   IncognitoClearBrowsingDataDialogCoordinator::From(browser())->Show(
       IncognitoClearBrowsingDataDialog::Type::kDefaultBubble,
-      ToolbarButtonProvider::From(browser_)
-          ->GetAvatarToolbarButtonInterface()
-          ->GetBubbleAnchor(*browser()));
+      ToolbarButtonProvider::From(browser_)->GetAvatarToolbarButtonInterface());
 }
 
 void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
   CHECK(ToolbarButtonProvider::From(browser_));
   IncognitoClearBrowsingDataDialogCoordinator::From(browser())->Show(
       IncognitoClearBrowsingDataDialog::Type::kHistoryDisclaimerBubble,
-      ToolbarButtonProvider::From(browser_)
-          ->GetAvatarToolbarButtonInterface()
-          ->GetBubbleAnchor(*browser()));
+      ToolbarButtonProvider::From(browser_)->GetAvatarToolbarButtonInterface());
 }
 
 void BrowserView::UpdateWebAppStatusIconsVisiblity() {

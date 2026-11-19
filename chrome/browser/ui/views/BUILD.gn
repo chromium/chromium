@@ -1454,6 +1454,7 @@ source_set("incognito_clear_browsing_data_dialog") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/accessibility",
+    "//chrome/browser/ui/views/toolbar",
     "//ui/base",
     "//ui/gfx",
     "//ui/strings:ui_strings",

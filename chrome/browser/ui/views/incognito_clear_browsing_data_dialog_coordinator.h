@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_COORDINATOR_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_tracker.h"
 
+class AvatarToolbarButtonInterface;
 class BrowserWindowInterface;
 class Profile;
 
@@ -34,9 +38,9 @@ class IncognitoClearBrowsingDataDialogCoordinator {
       const IncognitoClearBrowsingDataDialogCoordinator&) = delete;
   ~IncognitoClearBrowsingDataDialogCoordinator();
 
-  // Shows the bubble for this browser anchored to `anchor`.
+  // Shows the bubble for this browser anchored to `avatar_button`.
   void Show(IncognitoClearBrowsingDataDialog::Type type,
-            views::BubbleAnchor anchor);
+            AvatarToolbarButtonInterface* avatar_button);
 
   // Returns true if the bubble is currently showing for this window.
   bool IsShowing() const;
@@ -45,11 +49,17 @@ class IncognitoClearBrowsingDataDialogCoordinator {
   GetIncognitoClearBrowsingDataDialogForTesting();
 
  private:
+  void ShowBubble(IncognitoClearBrowsingDataDialog::Type type,
+                  views::BubbleAnchor anchor,
+                  base::ScopedClosureRunner keep_visible);
+
   ui::ScopedUnownedUserData<IncognitoClearBrowsingDataDialogCoordinator>
       scoped_unowned_user_data_;
 
   views::ViewTracker bubble_tracker_;
   const raw_ptr<Profile> profile_;
+  base::WeakPtrFactory<IncognitoClearBrowsingDataDialogCoordinator>
+      weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INCOGNITO_CLEAR_BROWSING_DATA_DIALOG_COORDINATOR_H_
