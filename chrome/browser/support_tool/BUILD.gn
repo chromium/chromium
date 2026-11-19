@@ -62,6 +62,7 @@ if (!is_android) {
 
     deps = [
       "//base",
+      "//chrome/browser/enterprise",
       "//chrome/browser/feedback:feedback_impl",
       "//components/feedback",
       "//components/feedback/redaction_tool",
@@ -142,6 +143,7 @@ if (!is_android) {
       ":impl",
       ":support_tool",
       "//base",
+      "//chrome/browser/enterprise",
       "//chrome/browser/policy:policy_util",
       "//chrome/browser/profiles:profile",
       "//chrome/test:test_support",

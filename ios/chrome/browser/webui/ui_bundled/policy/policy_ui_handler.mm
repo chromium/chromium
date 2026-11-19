@@ -32,6 +32,7 @@
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#import "components/policy/core/common/enterprise_management_status_util.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
 #import "components/policy/core/common/policy_logger.h"
 #import "components/policy/core/common/policy_map.h"
@@ -46,6 +47,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
+#import "ios/chrome/browser/policy/model/browser_management_service.h"
+#import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/policy_conversions_client_ios.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
@@ -625,11 +628,20 @@ void PolicyUIHandler::GetDebugString(GetDebugStringCallback callback) {
 
 std::string PolicyUIHandler::GetPoliciesJsonImpl() {
   copy_to_json_count_ += 1;
-  return policy::GenerateJson(
-      /*policy_values=*/policy::PolicyConversions(
+  base::DictValue policy_values =
+      policy::PolicyConversions(
           std::make_unique<PolicyConversionsClientIOS>(&profile_.get()))
-          .ToValueDict(),
-      GetStatusValue(),
+          .ToValueDict();
+  base::DictValue status = GetStatusValue();
+  status.Set(policy::kManagementServiceKey,
+             policy::GetManagementServiceStatus(
+                 policy::BrowserManagementServiceFactory::GetForPlatform(),
+                 policy::BrowserManagementServiceFactory::GetForProfile(
+                     &profile_.get()),
+                 GetPolicyService()));
+
+  return policy::GenerateJson(
+      std::move(policy_values), std::move(status),
       policy::JsonGenerationParams()
           .with_application_name(l10n_util::GetStringUTF8(IDS_IOS_PRODUCT_NAME))
           .with_channel_name(std::string(GetChannelString(GetChannel())))

@@ -5,9 +5,19 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_ENTERPRISE_MANAGEMENT_STATUS_UTIL_H_
 #define COMPONENTS_POLICY_CORE_COMMON_ENTERPRISE_MANAGEMENT_STATUS_UTIL_H_
 
+#include <string_view>
 #include <vector>
 
+#include "base/values.h"
+#include "components/policy/policy_export.h"
+
 namespace policy {
+
+inline constexpr std::string_view kManagementServiceKey = "managementService";
+inline constexpr std::string_view kPlatformManagementStatusKey =
+    "platformManagementStatus";
+inline constexpr std::string_view kBrowserManagementStatusKey =
+    "browserManagementStatus";
 
 class ManagementService;
 class PolicyService;
@@ -41,6 +51,13 @@ std::vector<PlatformManagementStatus> GetPlatformManagementStatuses(
 
 // Extracts and maps the browser management status(es) from the browser management service and policies.
 std::vector<BrowserManagementStatus> GetBrowserManagementStatuses(
+    ManagementService* browser_management_service,
+    PolicyService* policy_service);
+
+// Returns human-readable platform and browser management statuses for
+// diagnostic output.
+POLICY_EXPORT base::DictValue GetManagementServiceStatus(
+    ManagementService* platform_management_service,
     ManagementService* browser_management_service,
     PolicyService* policy_service);
 

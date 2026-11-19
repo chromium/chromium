@@ -15,10 +15,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/value_provider/chrome_policies_value_provider.h"
 #include "chrome/browser/policy/value_provider/policy_value_provider.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/browser/webui/policy_webui_constants.h"
+#include "components/policy/core/common/enterprise_management_status_util.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -247,8 +250,8 @@ PolicyValueAndStatusAggregator::CreateDefaultPolicyValueAndStatusAggregator(
   return aggregator;
 }
 
-PolicyValueAndStatusAggregator::PolicyValueAndStatusAggregator(
-    Profile* profile) {
+PolicyValueAndStatusAggregator::PolicyValueAndStatusAggregator(Profile* profile)
+    : profile_(profile) {
   if (profile) {
     profile_observation_.Observe(profile);
   }
@@ -264,6 +267,15 @@ base::DictValue PolicyValueAndStatusAggregator::GetAggregatedPolicyStatus() {
         << " status: " << status_provider_description_pair.second->GetStatus();
     status.Set(status_provider_description_pair.first,
                status_provider_description_pair.second->GetStatus());
+  }
+  if (profile_) {
+    Profile* original_profile = profile_->GetOriginalProfile();
+    status.Set(
+        policy::kManagementServiceKey,
+        policy::GetManagementServiceStatus(
+            policy::ManagementServiceFactory::GetForPlatform(),
+            policy::ManagementServiceFactory::GetForProfile(original_profile),
+            original_profile->GetProfilePolicyConnector()->policy_service()));
   }
   return status;
 }
@@ -378,6 +390,7 @@ void PolicyValueAndStatusAggregator::OnProfileWillBeDestroyed(
   CHECK(profile_observation_.IsObservingSource(profile),
         base::NotFatalUntil::M162);
   profile_observation_.Reset();
+  profile_ = nullptr;
   policy_value_provider_observations_.RemoveAllObservations();
   value_providers_.clear();
 }

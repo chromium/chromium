@@ -5,13 +5,56 @@
 #include "components/policy/core/common/enterprise_management_status_util.h"
 
 #include <string>
+#include <string_view>
+#include <utility>
 
+#include "base/notreached.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 
 namespace policy {
+
+namespace {
+
+std::string_view GetPlatformManagementStatusName(
+    PlatformManagementStatus status) {
+  switch (status) {
+    case PlatformManagementStatus::kUnmanaged:
+      return "Unmanaged";
+    case PlatformManagementStatus::kComputerLocal:
+      return "Computer Local";
+    case PlatformManagementStatus::kDomainLocal:
+      return "Domain Local";
+    case PlatformManagementStatus::kCloud:
+      return "Cloud";
+    case PlatformManagementStatus::kCloudDomain:
+      return "Cloud Domain";
+  }
+  NOTREACHED();
+}
+
+std::string_view GetBrowserManagementStatusName(
+    BrowserManagementStatus status) {
+  switch (status) {
+    case BrowserManagementStatus::kUnmanaged:
+      return "Unmanaged";
+    case BrowserManagementStatus::kComputerLocalLe3:
+      return "Computer Local (<= 3 policies)";
+    case BrowserManagementStatus::kComputerLocalGt3:
+      return "Computer Local (> 3 policies)";
+    case BrowserManagementStatus::kDomainLocal:
+      return "Domain Local";
+    case BrowserManagementStatus::kCloud:
+      return "Cloud";
+    case BrowserManagementStatus::kCloudDomain:
+      return "Cloud Domain";
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 std::vector<PlatformManagementStatus> GetPlatformManagementStatuses(
     ManagementService* platform_management_service) {
@@ -76,6 +119,27 @@ std::vector<BrowserManagementStatus> GetBrowserManagementStatuses(
     }
   }
   return statuses;
+}
+
+base::DictValue GetManagementServiceStatus(
+    ManagementService* platform_management_service,
+    ManagementService* browser_management_service,
+    PolicyService* policy_service) {
+  base::ListValue platform_status;
+  for (PlatformManagementStatus status :
+       GetPlatformManagementStatuses(platform_management_service)) {
+    platform_status.Append(GetPlatformManagementStatusName(status));
+  }
+
+  base::ListValue browser_status;
+  for (BrowserManagementStatus status : GetBrowserManagementStatuses(
+           browser_management_service, policy_service)) {
+    browser_status.Append(GetBrowserManagementStatusName(status));
+  }
+
+  return base::DictValue()
+      .Set(kPlatformManagementStatusKey, std::move(platform_status))
+      .Set(kBrowserManagementStatusKey, std::move(browser_status));
 }
 
 }  // namespace policy

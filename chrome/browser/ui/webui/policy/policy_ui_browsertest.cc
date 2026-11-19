@@ -53,6 +53,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/enterprise_management_status_util.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -741,6 +742,49 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, SendPolicyValues) {
   // Retrieve the contents of the policy table from the UI and verify that it
   // matches the expectation.
   VerifyPolicies(expected_policies);
+}
+
+IN_PROC_BROWSER_TEST_P(PolicyUITest, ExportManagementServiceInformation) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::CLOUD |
+          policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext())),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN |
+          policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
+  std::string json = content::EvalJs(web_contents(), R"(
+    (async () => {
+      const {BrowserProxy} = await import('./browser_proxy.js');
+      const {GetPoliciesReason} = await import('./policy.mojom-webui.js');
+      return await BrowserProxy.getPolicies(GetPoliciesReason.kExport);
+    })()
+  )")
+                         .ExtractString();
+  std::optional<base::Value> value = base::JSONReader::Read(json, 0);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_dict());
+  const base::DictValue* status = value->GetDict().FindDict("status");
+  ASSERT_TRUE(status);
+  const base::DictValue* management_service =
+      status->FindDict(policy::kManagementServiceKey);
+  ASSERT_TRUE(management_service);
+
+  const base::ListValue* platform_status =
+      management_service->FindList(policy::kPlatformManagementStatusKey);
+  ASSERT_TRUE(platform_status);
+  EXPECT_THAT(*platform_status,
+              testing::ElementsAre("Cloud", "Computer Local"));
+
+  const base::ListValue* browser_status =
+      management_service->FindList(policy::kBrowserManagementStatusKey);
+  ASSERT_TRUE(browser_status);
+  EXPECT_THAT(*browser_status,
+              testing::ElementsAre("Cloud Domain", "Domain Local"));
 }
 
 IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButton) {

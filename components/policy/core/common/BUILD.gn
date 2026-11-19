@@ -568,6 +568,7 @@ source_set("unit_tests") {
     "cloud/user_policy_metrics_recorder_unittest.cc",
     "command_line_policy_provider_unittest.cc",
     "enterprise_management_metrics_provider_unittest.cc",
+    "enterprise_management_status_util_unittest.cc",
     "generate_policy_source_unittest.cc",
     "local_test_policy_loader_unittest.cc",
     "management/management_service_unittest.cc",

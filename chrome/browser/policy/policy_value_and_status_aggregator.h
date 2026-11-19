@@ -137,6 +137,7 @@ class PolicyValueAndStatusAggregator : public PolicyValueProvider::Observer,
                                      PolicyStatusProvider::Observer>
       policy_status_provider_observations_{this};
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  raw_ptr<Profile> profile_;
 };
 }  // namespace policy
 

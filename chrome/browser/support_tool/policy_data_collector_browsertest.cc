@@ -20,6 +20,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/policy_value_and_status_aggregator.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -30,6 +31,8 @@
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/browser/webui/policy_webui_constants.h"
+#include "components/policy/core/common/enterprise_management_status_util.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"
@@ -206,6 +209,15 @@ class PolicyDataCollectorBrowserTestAsh
 
 IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTest,
                        CollectPolicyValuesAndMetadata) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::CLOUD |
+          policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->GetProfile()),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN |
+          policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+
   // PolicyDataCollector for testing.
   PolicyDataCollector data_collector(browser()->GetProfile());
 
@@ -274,8 +286,8 @@ IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTest,
   error = test_future_export_data.Get();
   EXPECT_EQ(error, std::nullopt);
 
-  // The result must contain three main parts: "chromeMetadata", policies and
-  // "status".
+  // The result must contain "chromeMetadata", policies, management service
+  // status, and policy provider status.
   base::DictValue policy_result;
   ASSERT_NO_FATAL_FAILURE(ReadExportedPolicyFile(
       &policy_result, output_path.Append(FILE_PATH_LITERAL("policies.json"))));
@@ -301,10 +313,22 @@ IN_PROC_BROWSER_TEST_F(PolicyDataCollectorBrowserTest,
   ASSERT_TRUE(chrome_policies);
   EXPECT_EQ(*chrome_policies, expected_policies);
 
-  // Check that the returned contains "status". We just check if the returned
-  // status is not empty.
   base::DictValue* status = policy_result.FindDict("status");
   ASSERT_TRUE(status);
+  const base::DictValue* management_service =
+      status->FindDict(policy::kManagementServiceKey);
+  ASSERT_TRUE(management_service);
+  const base::ListValue* platform_status =
+      management_service->FindList(policy::kPlatformManagementStatusKey);
+  ASSERT_TRUE(platform_status);
+  EXPECT_THAT(*platform_status,
+              testing::ElementsAre("Cloud", "Computer Local"));
+  const base::ListValue* browser_status =
+      management_service->FindList(policy::kBrowserManagementStatusKey);
+  ASSERT_TRUE(browser_status);
+  EXPECT_THAT(*browser_status,
+              testing::ElementsAre("Cloud Domain", "Domain Local"));
+
   EXPECT_FALSE(status->empty());
 }
 
