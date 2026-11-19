@@ -23,17 +23,12 @@ static_library("fatal_crash") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/policy/reporting/event_based_logs:utils",
-    "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//components/reporting/proto:metric_data_proto",
     "//components/reporting/util:status",
     "//components/user_manager:common",
     "//third_party/abseil-cpp:absl",
-  ]
-
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
   ]
 }
 

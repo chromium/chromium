@@ -15,6 +15,7 @@ static_library("event_observers") {
   deps = [
     "//base",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash",
     "//chrome/browser/ash/policy/reporting/os_updates",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/support_tool:support_tool_proto",
