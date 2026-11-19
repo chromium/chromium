@@ -4,6 +4,9 @@
 
 #include "chrome/utility/importer/firefox_importer.h"
 
+#include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -15,6 +18,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/importer/mock_importer_bridge.h"
@@ -27,8 +31,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "sql/database.h"
+#include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/favicon_size.h"
 
 using ::testing::_;
 
@@ -65,6 +74,11 @@ class FirefoxImporterTest : public testing::Test {
     importer_->StartImport(profile, user_data_importer::FAVORITES,
                            bridge_.get());
     run_loop.Run();
+
+    EXPECT_EQ(1u, fake_parser_.reencode_favicons_call_count());
+    for (const auto& favicon : *favicons) {
+      EXPECT_FALSE(favicon.png_data.empty());
+    }
   }
 
  protected:
@@ -279,6 +293,173 @@ TEST_F(FirefoxImporterTest, ImportBookmarksWithParserDisconnect) {
 
   // The import must still complete instead of stalling forever.
   run_loop.Run();
+}
+
+TEST_F(FirefoxImporterTest,
+       ImportBookmarksWithDisconnectDuringFaviconReencode) {
+  base::FilePath places_path;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &places_path));
+  places_path =
+      places_path.AppendASCII("import").AppendASCII("firefox").AppendASCII(
+          "48.0.2");
+  ASSERT_TRUE(base::DirectoryExists(places_path));
+  user_data_importer::SourceProfile profile;
+  profile.source_path = places_path;
+
+  std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*bridge_, NotifyStarted());
+  EXPECT_CALL(*bridge_, NotifyItemStarted(user_data_importer::FAVORITES));
+  // Default bookmarks HTML parsing succeeds, so bookmarks are imported before
+  // favicon re-encoding is requested.
+  EXPECT_CALL(*bridge_, AddBookmarks(_, _))
+      .WillOnce(::testing::SaveArg<0>(&bookmarks));
+  // Disconnecting during ReencodeFavicons must drop favicons without falling
+  // back to local decoding.
+  EXPECT_CALL(*bridge_, SetFavicons(_)).Times(0);
+  EXPECT_CALL(*bridge_, NotifyItemEnded(user_data_importer::FAVORITES));
+  EXPECT_CALL(*bridge_,
+              NotifyItemStarted(user_data_importer::AUTOFILL_FORM_DATA));
+  EXPECT_CALL(*bridge_,
+              NotifyItemEnded(user_data_importer::AUTOFILL_FORM_DATA));
+  EXPECT_CALL(*bridge_, NotifyEnded())
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  fake_parser_.set_reencode_favicons_override_for_testing(
+      base::BindLambdaForTesting([this]() { receiver_.reset(); }));
+  importer_->SetBookmarkHtmlParser(receiver_.BindNewPipeAndPassRemote());
+
+  importer_->StartImport(
+      profile,
+      user_data_importer::FAVORITES | user_data_importer::AUTOFILL_FORM_DATA,
+      bridge_.get());
+  run_loop.Run();
+
+  EXPECT_EQ(6u, bookmarks.size());
+  EXPECT_EQ(1u, fake_parser_.reencode_favicons_call_count());
+}
+
+TEST_F(FirefoxImporterTest, ImportBookmarksWithCorruptedAndOversizedFavicons) {
+  base::ScopedTempDir source_temp_dir;
+  ASSERT_TRUE(source_temp_dir.CreateUniqueTempDir());
+
+  // Create a minimal Firefox 55+ places.sqlite (without moz_favicons) with
+  // three bookmarks.
+  {
+    sql::Database places_db(sql::test::kTestTag);
+    ASSERT_TRUE(
+        places_db.Open(source_temp_dir.GetPath().AppendASCII("places.sqlite")));
+    ASSERT_TRUE(places_db.Execute(
+        "CREATE TABLE moz_places (id INTEGER PRIMARY KEY, url TEXT, "
+        "title TEXT)"));
+    ASSERT_TRUE(places_db.Execute(
+        "CREATE TABLE moz_bookmarks (id INTEGER PRIMARY KEY, type INTEGER, "
+        "fk INTEGER, parent INTEGER, position INTEGER, title TEXT, "
+        "keyword_id INTEGER, dateAdded INTEGER, guid TEXT)"));
+    ASSERT_TRUE(places_db.Execute(
+        "CREATE TABLE moz_keywords (id INTEGER PRIMARY KEY, keyword TEXT)"));
+    ASSERT_TRUE(places_db.Execute(
+        "CREATE TABLE moz_anno_attributes (id INTEGER PRIMARY KEY, "
+        "name TEXT)"));
+    ASSERT_TRUE(
+        places_db.Execute("CREATE TABLE moz_items_annos (item_id INTEGER, "
+                          "anno_attribute_id INTEGER)"));
+
+    ASSERT_TRUE(places_db.Execute(
+        "INSERT INTO moz_bookmarks VALUES "
+        "(1, 2, NULL, 0, 0, 'root', NULL, 0, 'root________'),"
+        "(2, 2, NULL, 1, 0, 'toolbar', NULL, 0, 'toolbar_____'),"
+        "(3, 2, NULL, 1, 1, 'menu', NULL, 0, 'menu________'),"
+        "(4, 2, NULL, 1, 2, 'unfiled', NULL, 0, 'unfiled_____')"));
+    ASSERT_TRUE(
+        places_db.Execute("INSERT INTO moz_places VALUES "
+                          "(10, 'https://example.com/one', 'One'),"
+                          "(11, 'https://example.com/two', 'Two'),"
+                          "(12, 'https://corrupt.example/page', 'Corrupt')"));
+    ASSERT_TRUE(places_db.Execute(
+        "INSERT INTO moz_bookmarks VALUES "
+        "(100, 1, 10, 2, 0, 'One', NULL, 1000000, 'bm1_________'),"
+        "(101, 1, 11, 2, 1, 'Two', NULL, 1000000, 'bm2_________'),"
+        "(102, 1, 12, 2, 2, 'Corrupt', NULL, 1000000, 'bm3_________')"));
+  }
+
+  // Create favicons.sqlite with one valid 32x32 PNG shared by two bookmarks and
+  // one corrupt blob.
+  {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(32, 32);
+    bitmap.eraseColor(SK_ColorBLUE);
+    std::optional<std::vector<uint8_t>> valid_png =
+        gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                          /*discard_transparency=*/false);
+    ASSERT_TRUE(valid_png.has_value());
+
+    sql::Database favicons_db(sql::test::kTestTag);
+    ASSERT_TRUE(favicons_db.Open(
+        source_temp_dir.GetPath().AppendASCII("favicons.sqlite")));
+    ASSERT_TRUE(favicons_db.Execute(
+        "CREATE TABLE moz_icons (id INTEGER PRIMARY KEY, icon_url TEXT, "
+        "data BLOB)"));
+    ASSERT_TRUE(favicons_db.Execute(
+        "CREATE TABLE moz_pages_w_icons (id INTEGER PRIMARY KEY, "
+        "page_url TEXT)"));
+    ASSERT_TRUE(favicons_db.Execute(
+        "CREATE TABLE moz_icons_to_pages (page_id INTEGER, icon_id INTEGER)"));
+
+    sql::Statement insert_icon(favicons_db.GetUniqueStatement(
+        "INSERT INTO moz_icons (id, icon_url, data) VALUES (?, ?, ?)"));
+    insert_icon.BindInt64(0, 1);
+    insert_icon.BindString(1, "https://example.com/favicon.png");
+    insert_icon.BindBlob(2, *valid_png);
+    ASSERT_TRUE(insert_icon.Run());
+
+    insert_icon.Reset(true);
+    insert_icon.BindInt64(0, 2);
+    insert_icon.BindString(1, "https://corrupt.example/favicon.png");
+    const std::vector<uint8_t> corrupt_bytes = {0x00, 0x01, 0x02, 0x03};
+    insert_icon.BindBlob(2, corrupt_bytes);
+    ASSERT_TRUE(insert_icon.Run());
+
+    ASSERT_TRUE(
+        favicons_db.Execute("INSERT INTO moz_pages_w_icons VALUES "
+                            "(1, 'https://example.com/one'),"
+                            "(2, 'https://example.com/two'),"
+                            "(3, 'https://corrupt.example/page')"));
+    ASSERT_TRUE(favicons_db.Execute(
+        "INSERT INTO moz_icons_to_pages VALUES (1, 1), (2, 1), (3, 2)"));
+  }
+
+  user_data_importer::SourceProfile profile;
+  profile.source_path = source_temp_dir.GetPath();
+
+  std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
+  favicon_base::FaviconUsageDataList favicons;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*bridge_, NotifyStarted());
+  EXPECT_CALL(*bridge_, NotifyItemStarted(user_data_importer::FAVORITES));
+  EXPECT_CALL(*bridge_, AddBookmarks(_, _))
+      .WillOnce(::testing::SaveArg<0>(&bookmarks));
+  EXPECT_CALL(*bridge_, SetFavicons(_))
+      .WillOnce(::testing::SaveArg<0>(&favicons));
+  EXPECT_CALL(*bridge_, NotifyItemEnded(user_data_importer::FAVORITES));
+  EXPECT_CALL(*bridge_, NotifyEnded())
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  importer_->SetBookmarkHtmlParser(receiver_.BindNewPipeAndPassRemote());
+  importer_->StartImport(profile, user_data_importer::FAVORITES, bridge_.get());
+  run_loop.Run();
+
+  EXPECT_EQ(3u, bookmarks.size());
+  EXPECT_EQ(1u, fake_parser_.reencode_favicons_call_count());
+  ASSERT_EQ(1u, favicons.size());
+  EXPECT_EQ(GURL("https://example.com/favicon.png"), favicons[0].favicon_url);
+  EXPECT_EQ((std::set<GURL>{GURL("https://example.com/one"),
+                            GURL("https://example.com/two")}),
+            favicons[0].urls);
+  SkBitmap decoded = gfx::PNGCodec::Decode(favicons[0].png_data);
+  ASSERT_FALSE(decoded.isNull());
+  EXPECT_EQ(gfx::kFaviconSize, decoded.width());
+  EXPECT_EQ(gfx::kFaviconSize, decoded.height());
 }
 
 TEST_F(FirefoxImporterTest, ImportHistorySchema) {

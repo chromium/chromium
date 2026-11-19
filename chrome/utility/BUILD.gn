@@ -146,6 +146,7 @@ static_library("utility") {
       "//chrome/common/importer:interfaces",
       "//chrome/services/reading_mode_metrics:lib",
       "//components/autofill/core/common",
+      "//components/favicon_base",
       "//components/user_data_importer/common",
       "//components/user_data_importer/content",
       "//components/user_data_importer/utility:bookmarks",
@@ -293,6 +294,7 @@ if (!is_android) {
     deps = [
       ":utility",
       "//base",
+      "//base/test:test_support",
       "//chrome/common:constants",
       "//chrome/common/importer",
       "//chrome/common/importer:test_support",
@@ -301,11 +303,14 @@ if (!is_android) {
       "//components/user_data_importer/content:test_support",
       "//components/user_data_importer/utility:safari_data_importer",
       "//content/test:test_support",
+      "//skia",
       "//sql",
       "//sql:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/zlib/google:compression_utils",
+      "//ui/gfx",
+      "//ui/gfx/codec",
       "//url",
     ]
   }

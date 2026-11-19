@@ -18,7 +18,6 @@
 #include "chrome/utility/importer/external_process_importer_bridge.h"
 #include "chrome/utility/importer/importer.h"
 #include "chrome/utility/importer/importer_creator.h"
-#include "content/public/utility/utility_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
@@ -35,7 +34,6 @@ void ProfileImportImpl::StartImport(
     mojo::PendingRemote<chrome::mojom::ProfileImportObserver> observer,
     mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
         bookmark_html_parser) {
-  content::UtilityThread::Get()->EnsureBlinkInitialized();
   importer_ = importer::CreateImporterByType(source_profile.importer_type);
   if (!importer_.get()) {
     mojo::Remote<chrome::mojom::ProfileImportObserver>(std::move(observer))

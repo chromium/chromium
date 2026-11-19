@@ -9,14 +9,18 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
+#include <set>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -28,7 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/edge_database_reader_win.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
-#include "components/user_data_importer/content/favicon_reencode.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -105,21 +109,11 @@ struct GuidComparator {
   }
 };
 
-std::optional<std::vector<uint8_t>> ReadFaviconData(
-    const base::FilePath& file) {
-  std::optional<std::vector<uint8_t>> image_data = base::ReadFileToBytes(file);
-  if (!image_data) {
-    return std::nullopt;
-  }
-
-  return importer::ReencodeFavicon(image_data.value());
-}
-
 void BuildBookmarkEntries(
     const EdgeFavoriteEntry& current_entry,
     bool is_toolbar,
     std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks,
-    favicon_base::FaviconUsageDataList* favicons,
+    std::vector<Importer::RawFaviconUsageData>* favicons,
     std::vector<std::u16string>* path) {
   for (const EdgeFavoriteEntry* entry : current_entry.children) {
     if (entry->is_folder) {
@@ -136,19 +130,18 @@ void BuildBookmarkEntries(
       }
     } else {
       bookmarks->push_back(entry->ToBookmarkEntry(is_toolbar, *path));
-      favicon_base::FaviconUsageData favicon;
       if (entry->url.is_valid() && !entry->favicon_file.empty()) {
-        std::optional<std::vector<uint8_t>> png_data =
-            ReadFaviconData(entry->favicon_file);
-        if (png_data) {
-          favicon.png_data = std::move(png_data).value();
+        std::optional<std::vector<uint8_t>> image_data =
+            base::ReadFileToBytes(entry->favicon_file);
+        if (image_data && !image_data->empty()) {
           // As the database doesn't provide us a favicon URL we'll fake one.
           GURL::Replacements path_replace;
           path_replace.SetPathStr("/favicon.ico");
-          favicon.favicon_url =
+          GURL favicon_url =
               entry->url.GetWithEmptyPath().ReplaceComponents(path_replace);
-          favicon.urls.insert(entry->url);
-          favicons->push_back(favicon);
+          favicons->emplace_back(std::move(favicon_url),
+                                 std::set<GURL>{entry->url},
+                                 std::move(*image_data));
         }
       }
     }
@@ -170,7 +163,9 @@ void EdgeImporter::StartImport(
   if ((items & user_data_importer::FAVORITES) && !cancelled()) {
     bridge_->NotifyItemStarted(user_data_importer::FAVORITES);
     ImportFavorites();
-    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+    // `ImportFavorites()` will eventually call `bridge_->NotifyItemEnded()` and
+    // `bridge_->NotifyEnded()`.
+    return;
   }
   bridge_->NotifyEnded();
 }
@@ -179,7 +174,7 @@ EdgeImporter::~EdgeImporter() = default;
 
 void EdgeImporter::ImportFavorites() {
   std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
-  favicon_base::FaviconUsageDataList favicons;
+  std::vector<RawFaviconUsageData> favicons;
   ParseFavoritesDatabase(&bookmarks, &favicons);
 
   if (!bookmarks.empty() && !cancelled()) {
@@ -187,8 +182,14 @@ void EdgeImporter::ImportFavorites() {
         l10n_util::GetStringUTF16(IDS_BOOKMARK_GROUP_FROM_EDGE);
     bridge_->AddBookmarks(bookmarks, first_folder_name);
   }
-  if (!favicons.empty() && !cancelled())
-    bridge_->SetFavicons(favicons);
+  ReencodeFaviconsAndSetOnBridge(
+      std::move(favicons), base::BindOnce(&EdgeImporter::FinishFavoritesImport,
+                                          base::WrapRefCounted(this)));
+}
+
+void EdgeImporter::FinishFavoritesImport() {
+  bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+  bridge_->NotifyEnded();
 }
 
 // From Edge 13 (released with Windows 10 TH2), Favorites are stored in a JET
@@ -211,7 +212,7 @@ void EdgeImporter::ImportFavorites() {
 // URL                  LongText
 void EdgeImporter::ParseFavoritesDatabase(
     std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks,
-    favicon_base::FaviconUsageDataList* favicons) {
+    std::vector<RawFaviconUsageData>* favicons) {
   base::FilePath database_path = FindSpartanDatabase(source_path_);
   if (database_path.empty())
     return;

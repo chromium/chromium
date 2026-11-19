@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "chrome/utility/importer/importer.h"
-#include "components/favicon_base/favicon_usage_data.h"
 
 namespace user_data_importer {
 struct ImportedBookmarkEntry;
@@ -33,11 +32,12 @@ class EdgeImporter : public Importer {
   ~EdgeImporter() override;
 
   void ImportFavorites();
+  void FinishFavoritesImport();
   // This function will read the favorites from the spartan database storing
-  // the bookmark items in |bookmarks| and favicon information in |favicons|.
+  // the bookmark items in |bookmarks| and raw favicon data in |favicons|.
   void ParseFavoritesDatabase(
       std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks,
-      favicon_base::FaviconUsageDataList* favicons);
+      std::vector<RawFaviconUsageData>* favicons);
 
   // Edge does not have source path. It's used in unit tests only for providing
   // a fake source for the spartan database location.

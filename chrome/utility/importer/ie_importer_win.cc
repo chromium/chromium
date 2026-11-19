@@ -17,15 +17,20 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,7 +47,6 @@
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
-#include "components/user_data_importer/content/favicon_reencode.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -358,10 +362,10 @@ std::optional<std::vector<uint8_t>> ReadFaviconDataFromCache(
   return base::ReadFileToBytes(base::FilePath(cache->lpszLocalFileName));
 }
 
-// Reads the binary image data of favicon of an internet shortcut file |file|.
-// |favicon_url| read by ReadFaviconURLFromInternetShortcut is also needed to
-// examine the IE cache.
-std::optional<std::vector<uint8_t>> ReadReencodedFaviconData(
+// Reads the raw binary image data of favicon of an internet shortcut file
+// |file|. |favicon_url| read by ReadFaviconURLFromInternetShortcut is also
+// needed to examine the IE cache.
+std::optional<std::vector<uint8_t>> ReadRawFaviconData(
     const base::FilePath& file,
     const GURL& favicon_url) {
   std::optional<std::vector<uint8_t>> image_data =
@@ -372,35 +376,37 @@ std::optional<std::vector<uint8_t>> ReadReencodedFaviconData(
       return std::nullopt;
     }
   }
+  if (image_data->empty()) {
+    return std::nullopt;
+  }
 
-  return importer::ReencodeFavicon(image_data.value());
+  return image_data;
 }
 
-// Loads favicon image data and registers to |favicon_map|.
+// Loads raw favicon image data and registers to |favicon_map| for sandboxed
+// decoding.
 void UpdateFaviconMap(
     const base::FilePath& url_file,
     const GURL& url,
     IUniformResourceLocator* url_locator,
-    std::map<GURL, favicon_base::FaviconUsageData>* favicon_map) {
+    std::map<GURL, Importer::RawFaviconUsageData>* favicon_map) {
   GURL favicon_url = ReadFaviconURLFromInternetShortcut(url_locator);
-  if (!favicon_url.is_valid())
+  if (!favicon_url.is_valid()) {
     return;
+  }
 
-  std::map<GURL, favicon_base::FaviconUsageData>::iterator it =
-      favicon_map->find(favicon_url);
+  auto it = favicon_map->find(favicon_url);
   if (it != favicon_map->end()) {
     // Known favicon URL.
     it->second.urls.insert(url);
   } else {
-    // New favicon URL. Read the image data and store.
-    std::optional<std::vector<uint8_t>> png_data =
-        ReadReencodedFaviconData(url_file, favicon_url);
-    if (png_data) {
-      favicon_base::FaviconUsageData usage;
-      usage.png_data = std::move(png_data).value();
-      usage.favicon_url = favicon_url;
-      usage.urls.insert(url);
-      favicon_map->insert(std::make_pair(favicon_url, usage));
+    // New favicon URL. Read the raw image data and store.
+    std::optional<std::vector<uint8_t>> raw_data =
+        ReadRawFaviconData(url_file, favicon_url);
+    if (raw_data) {
+      favicon_map->emplace(favicon_url, Importer::RawFaviconUsageData(
+                                            favicon_url, std::set<GURL>{url},
+                                            std::move(*raw_data)));
     }
   }
 }
@@ -437,43 +443,43 @@ void IEImporter::StartImport(
     // As coming from untrusted source ensure items is correct.
     items = user_data_importer::FAVORITES;
   }
+  items_ = items;
   source_path_ = source_profile.source_path;
 
   bridge_->NotifyStarted();
 
-  if ((items & user_data_importer::HOME_PAGE) && !cancelled()) {
+  if ((items_ & user_data_importer::HOME_PAGE) && !cancelled()) {
     bridge_->NotifyItemStarted(user_data_importer::HOME_PAGE);
     ImportHomepage();  // Doesn't have a UI item.
     bridge_->NotifyItemEnded(user_data_importer::HOME_PAGE);
   }
   // The order here is important!
-  if ((items & user_data_importer::HISTORY) && !cancelled()) {
+  if ((items_ & user_data_importer::HISTORY) && !cancelled()) {
     bridge_->NotifyItemStarted(user_data_importer::HISTORY);
     ImportHistory();
     bridge_->NotifyItemEnded(user_data_importer::HISTORY);
   }
-  if ((items & user_data_importer::FAVORITES) && !cancelled()) {
+  if ((items_ & user_data_importer::FAVORITES) && !cancelled()) {
     bridge_->NotifyItemStarted(user_data_importer::FAVORITES);
     ImportFavorites();
-    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+    // `ImportFavorites()` will call `ImportRemainingItems()` once it
+    // (asynchronously) finishes.
+    return;
   }
-  if ((items & user_data_importer::SEARCH_ENGINES) && !cancelled()) {
-    bridge_->NotifyItemStarted(user_data_importer::SEARCH_ENGINES);
-    ImportSearchEngines();
-    bridge_->NotifyItemEnded(user_data_importer::SEARCH_ENGINES);
-  }
-  bridge_->NotifyEnded();
+  ImportRemainingItems();
 }
 
 IEImporter::~IEImporter() = default;
 
 void IEImporter::ImportFavorites() {
   FavoritesInfo info;
-  if (!GetFavoritesInfo(&info))
+  if (!GetFavoritesInfo(&info)) {
+    FinishFavoritesImport();
     return;
+  }
 
   BookmarkVector bookmarks;
-  favicon_base::FaviconUsageDataList favicons;
+  std::vector<RawFaviconUsageData> favicons;
   ParseFavoritesFolder(info, &bookmarks, &favicons);
 
   if (!bookmarks.empty() && !cancelled()) {
@@ -484,8 +490,23 @@ void IEImporter::ImportFavorites() {
 
     bridge_->AddBookmarks(bookmarks, first_folder_name);
   }
-  if (!favicons.empty() && !cancelled())
-    bridge_->SetFavicons(favicons);
+  ReencodeFaviconsAndSetOnBridge(
+      std::move(favicons), base::BindOnce(&IEImporter::FinishFavoritesImport,
+                                          base::WrapRefCounted(this)));
+}
+
+void IEImporter::FinishFavoritesImport() {
+  bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+  ImportRemainingItems();
+}
+
+void IEImporter::ImportRemainingItems() {
+  if ((items_ & user_data_importer::SEARCH_ENGINES) && !cancelled()) {
+    bridge_->NotifyItemStarted(user_data_importer::SEARCH_ENGINES);
+    ImportSearchEngines();
+    bridge_->NotifyItemEnded(user_data_importer::SEARCH_ENGINES);
+  }
+  bridge_->NotifyEnded();
 }
 
 void IEImporter::ImportHistory() {
@@ -661,7 +682,7 @@ bool IEImporter::GetFavoritesInfo(IEImporter::FavoritesInfo* info) {
 void IEImporter::ParseFavoritesFolder(
     const FavoritesInfo& info,
     BookmarkVector* bookmarks,
-    favicon_base::FaviconUsageDataList* favicons) {
+    std::vector<RawFaviconUsageData>* favicons) {
   base::FilePath file;
   std::vector<base::FilePath::StringType> file_list;
   base::FilePath favorites_path(info.path);
@@ -670,30 +691,33 @@ void IEImporter::ParseFavoritesFolder(
       favorites_path.StripTrailingSeparators().value().size();
   base::FileEnumerator file_enumerator(favorites_path, true,
                                        base::FileEnumerator::FILES);
-  while (!(file = file_enumerator.Next()).value().empty() && !cancelled())
+  while (!(file = file_enumerator.Next()).value().empty() && !cancelled()) {
     file_list.push_back(file.value());
+  }
 
   // Keep the bookmarks in alphabetical order.
   std::sort(file_list.begin(), file_list.end());
 
-  // Map from favicon URLs to the favicon data (the binary image data and the
-  // set of bookmark URLs referring to the favicon).
-  typedef std::map<GURL, favicon_base::FaviconUsageData> FaviconMap;
-  FaviconMap favicon_map;
+  // Map from favicon URLs to the raw favicon data (the raw binary image bytes
+  // and the set of bookmark URLs referring to the favicon).
+  std::map<GURL, RawFaviconUsageData> favicon_map;
 
   for (std::vector<base::FilePath::StringType>::iterator it = file_list.begin();
        it != file_list.end(); ++it) {
     base::FilePath shortcut(*it);
-    if (!base::EqualsCaseInsensitiveASCII(shortcut.Extension(), ".url"))
+    if (!base::EqualsCaseInsensitiveASCII(shortcut.Extension(), ".url")) {
       continue;
+    }
 
     // Skip the bookmark with invalid URL.
     Microsoft::WRL::ComPtr<IUniformResourceLocator> url_locator;
-    if (!LoadInternetShortcut(shortcut, &url_locator))
+    if (!LoadInternetShortcut(shortcut, &url_locator)) {
       continue;
+    }
     GURL url = ReadURLFromInternetShortcut(url_locator.Get());
-    if (!url.is_valid())
+    if (!url.is_valid()) {
       continue;
+    }
     // Skip default bookmarks. go.microsoft.com redirects to
     // search.microsoft.com, and http://go.microsoft.com/fwlink/?LinkId=XXX,
     // which URLs IE has as default, to some another sites.
@@ -712,8 +736,9 @@ void IEImporter::ParseFavoritesFolder(
     base::FilePath::StringType relative_string =
         shortcut.DirName().value().substr(favorites_path_len);
     if (!relative_string.empty() &&
-        base::FilePath::IsSeparator(relative_string[0]))
+        base::FilePath::IsSeparator(relative_string[0])) {
       relative_string = relative_string.substr(1);
+    }
     base::FilePath relative_path(relative_string);
 
     user_data_importer::ImportedBookmarkEntry entry;
@@ -740,8 +765,8 @@ void IEImporter::ParseFavoritesFolder(
     SortBookmarksInIEOrder(this, bookmarks);
   }
 
-  // Record favicon data.
-  for (FaviconMap::iterator iter = favicon_map.begin();
-       iter != favicon_map.end(); ++iter)
-    favicons->push_back(iter->second);
+  // Record raw favicon data.
+  for (auto& [favicon_url, raw_favicon] : favicon_map) {
+    favicons->push_back(std::move(raw_favicon));
+  }
 }

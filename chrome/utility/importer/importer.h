@@ -9,11 +9,16 @@
 
 #include <atomic>
 #include <memory>
+#include <set>
+#include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/gurl.h"
 
 class ImporterBridge;
 
@@ -24,6 +29,22 @@ struct SourceProfile;
 // The base class of all importers.
 class Importer : public base::RefCountedThreadSafe<Importer> {
  public:
+  // Raw favicon image bytes and URL metadata collected prior to sandboxed
+  // decoding and PNG re-encoding.
+  struct RawFaviconUsageData {
+    RawFaviconUsageData();
+    RawFaviconUsageData(GURL favicon_url,
+                        std::set<GURL> urls,
+                        std::vector<uint8_t> raw_data);
+    RawFaviconUsageData(RawFaviconUsageData&&);
+    RawFaviconUsageData& operator=(RawFaviconUsageData&&);
+    ~RawFaviconUsageData();
+
+    GURL favicon_url;
+    std::set<GURL> urls;
+    std::vector<uint8_t> raw_data;
+  };
+
   Importer(const Importer&) = delete;
   Importer& operator=(const Importer&) = delete;
 
@@ -60,9 +81,30 @@ class Importer : public base::RefCountedThreadSafe<Importer> {
   std::unique_ptr<mojo::Remote<user_data_importer::mojom::BookmarkHtmlParser>>
   BindBookmarkHtmlParser();
 
+  // Re-encodes `raw_favicons` into PNGs via the sandboxed `parser` (binding
+  // `bookmark_html_parser_remote_` in the two-argument overload if `parser` is
+  // not already bound), passes any valid favicons to `bridge_->SetFavicons()`,
+  // and invokes `on_done` (including when `raw_favicons` is empty,
+  // `cancelled()` is true, or `parser` disconnects).
+  void ReencodeFaviconsAndSetOnBridge(
+      std::vector<RawFaviconUsageData> raw_favicons,
+      base::OnceClosure on_done);
+  void ReencodeFaviconsAndSetOnBridge(
+      std::vector<RawFaviconUsageData> raw_favicons,
+      base::OnceClosure on_done,
+      std::unique_ptr<
+          mojo::Remote<user_data_importer::mojom::BookmarkHtmlParser>> parser);
+
   scoped_refptr<ImporterBridge> bridge_;
 
  private:
+  void OnFaviconsReencoded(
+      std::unique_ptr<
+          mojo::Remote<user_data_importer::mojom::BookmarkHtmlParser>> parser,
+      std::vector<RawFaviconUsageData> raw_favicons,
+      base::OnceClosure on_done,
+      const base::flat_map<uint32_t, std::vector<uint8_t>>& png_favicons);
+
   mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
       bookmark_html_parser_remote_;
 

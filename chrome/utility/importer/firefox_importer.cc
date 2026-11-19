@@ -4,12 +4,16 @@
 
 #include "chrome/utility/importer/firefox_importer.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <set>
 #include <string_view>
+#include <utility>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,7 +28,6 @@
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
 #include "components/user_data_importer/content/content_bookmark_parser_utils.h"
-#include "components/user_data_importer/content/favicon_reencode.h"
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -64,32 +67,6 @@ bool CanImportURL(const GURL& url) {
   }
 
   return true;
-}
-
-// Initializes |favicon_url| and |png_data| members of given FaviconUsageData
-// structure with provided favicon data. Returns true if data is valid.
-bool SetFaviconData(std::string_view icon_url,
-                    const std::vector<unsigned char>& icon_data,
-                    favicon_base::FaviconUsageData* usage_data) {
-  usage_data->favicon_url = GURL(icon_url);
-
-  // Don't bother importing favicons with invalid URLs.
-  if (!usage_data->favicon_url.is_valid()) {
-    return false;
-  }
-
-  // Data must be valid.
-  if (icon_data.empty()) {
-    return false;
-  }
-
-  std::optional<std::vector<uint8_t>> png_data =
-      importer::ReencodeFavicon(base::as_byte_span(icon_data));
-  if (png_data) {
-    usage_data->png_data = std::move(png_data).value();
-    return true;
-  }
-  return false;
 }
 
 }  // namespace
@@ -223,15 +200,13 @@ void FirefoxImporter::ImportHistory() {
 void FirefoxImporter::ImportBookmarks() {
   base::FilePath sqlite_file = GetCopiedSourcePath("places.sqlite");
   if (!base::PathExists(sqlite_file)) {
-    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
-    ImportRemainingItems();
+    FinishBookmarksImport();
     return;
   }
 
   auto db = std::make_unique<sql::Database>(kDatabaseTag);
   if (!db->Open(sqlite_file)) {
-    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
-    ImportRemainingItems();
+    FinishBookmarksImport();
     return;
   }
 
@@ -264,9 +239,8 @@ void FirefoxImporter::ImportBookmarks() {
   auto html_parser = BindBookmarkHtmlParser();
 
   auto* raw_parser = html_parser.get();
-  raw_parser->set_disconnect_handler(
-      base::BindOnce(&FirefoxImporter::OnBookmarkHtmlParserDisconnected,
-                     base::WrapRefCounted(this)));
+  raw_parser->set_disconnect_handler(base::BindOnce(
+      &FirefoxImporter::FinishBookmarksImport, base::WrapRefCounted(this)));
   (*raw_parser)
       ->Parse(raw_html,
               base::BindOnce(&FirefoxImporter::OnDefaultBookmarksParsed,
@@ -276,7 +250,7 @@ void FirefoxImporter::ImportBookmarks() {
                              favicons_location, std::move(html_parser)));
 }
 
-void FirefoxImporter::OnBookmarkHtmlParserDisconnected() {
+void FirefoxImporter::FinishBookmarksImport() {
   bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
   ImportRemainingItems();
 }
@@ -312,21 +286,22 @@ void FirefoxImporter::OnDefaultBookmarksParsed(
   // TODO(crbug.com/40304654): We do not support POST based keywords yet.
   // We won't include them in the list.
   std::set<int> post_keyword_ids;
-  const char query[] =
-      "SELECT b.id FROM moz_bookmarks b "
-      "INNER JOIN moz_items_annos ia ON ia.item_id = b.id "
-      "INNER JOIN moz_anno_attributes aa ON ia.anno_attribute_id = aa.id "
-      "WHERE aa.name = 'bookmarkProperties/POSTData'";
-  sql::Statement s(db->GetUniqueStatement(query));
+  {
+    const char query[] =
+        "SELECT b.id FROM moz_bookmarks b "
+        "INNER JOIN moz_items_annos ia ON ia.item_id = b.id "
+        "INNER JOIN moz_anno_attributes aa ON ia.anno_attribute_id = aa.id "
+        "WHERE aa.name = 'bookmarkProperties/POSTData'";
+    sql::Statement s(db->GetUniqueStatement(query));
 
-  if (!s.is_valid()) {
-    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
-    ImportRemainingItems();
-    return;
-  }
+    if (!s.is_valid()) {
+      FinishBookmarksImport();
+      return;
+    }
 
-  while (s.Step() && !cancelled()) {
-    post_keyword_ids.insert(s.ColumnInt(0));
+    while (s.Step() && !cancelled()) {
+      post_keyword_ids.insert(s.ColumnInt(0));
+    }
   }
 
   for (const auto& item : list) {
@@ -429,21 +404,22 @@ void FirefoxImporter::OnDefaultBookmarksParsed(
     bridge_->SetKeywords(search_engines, false);
   }
 
+  std::vector<RawFaviconUsageData> raw_favicons;
   if (!cancelled()) {
-    favicon_base::FaviconUsageDataList favicons;
     if (favicons_location == FaviconsLocation::kFaviconsDatabase) {
       DCHECK(favicon_map.empty());
-      LoadFavicons(bookmarks, &favicons);
+      LoadFavicons(bookmarks, &raw_favicons);
     } else if (!favicon_map.empty()) {
-      LoadFavicons(db.get(), favicon_map, &favicons);
-    }
-    if (!favicons.empty()) {
-      bridge_->SetFavicons(favicons);
+      LoadFavicons(db.get(), favicon_map, &raw_favicons);
     }
   }
+  db.reset();
 
-  bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
-  ImportRemainingItems();
+  ReencodeFaviconsAndSetOnBridge(
+      std::move(raw_favicons),
+      base::BindOnce(&FirefoxImporter::FinishBookmarksImport,
+                     base::WrapRefCounted(this)),
+      std::move(html_parser));
 }
 
 #if !BUILDFLAG(IS_MAC)
@@ -643,28 +619,25 @@ void FirefoxImporter::GetWholeBookmarkFolder(sql::Database* db,
   }
 }
 
-void FirefoxImporter::LoadFavicons(
-    sql::Database* db,
-    const FaviconMap& favicon_map,
-    favicon_base::FaviconUsageDataList* favicons) {
+void FirefoxImporter::LoadFavicons(sql::Database* db,
+                                   const FaviconMap& favicon_map,
+                                   std::vector<RawFaviconUsageData>* favicons) {
   const char query[] = "SELECT url, data FROM moz_favicons WHERE id=?";
   sql::Statement s(db->GetUniqueStatement(query));
 
-  if (!s.is_valid())
+  if (!s.is_valid()) {
     return;
+  }
 
   for (const auto& i : favicon_map) {
     s.BindInt64(0, i.first);
     if (s.Step()) {
-      std::vector<unsigned char> data = s.ColumnBlobAsVector(1);
-
-      favicon_base::FaviconUsageData usage_data;
-      if (!SetFaviconData(s.ColumnStringView(0), data, &usage_data)) {
-        continue;
+      GURL favicon_url(s.ColumnStringView(0));
+      std::vector<uint8_t> data = s.ColumnBlobAsVector(1);
+      if (favicon_url.is_valid() && !data.empty()) {
+        favicons->emplace_back(std::move(favicon_url), i.second,
+                               std::move(data));
       }
-
-      usage_data.urls = i.second;
-      favicons->push_back(usage_data);
     }
     s.Reset(true);
   }
@@ -672,14 +645,16 @@ void FirefoxImporter::LoadFavicons(
 
 void FirefoxImporter::LoadFavicons(
     const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
-    favicon_base::FaviconUsageDataList* favicons) {
+    std::vector<RawFaviconUsageData>* favicons) {
   base::FilePath file = GetCopiedSourcePath("favicons.sqlite");
-  if (!base::PathExists(file))
+  if (!base::PathExists(file)) {
     return;
+  }
 
   sql::Database db(kDatabaseTag);
-  if (!db.Open(file))
+  if (!db.Open(file)) {
     return;
+  }
 
   sql::Statement s(db.GetUniqueStatement(
       "SELECT moz_icons.id, moz_icons.icon_url, moz_icons.data "
@@ -689,8 +664,9 @@ void FirefoxImporter::LoadFavicons(
       "INNER JOIN moz_pages_w_icons "
       "ON moz_pages_w_icons.id = moz_icons_to_pages.page_id "
       "WHERE moz_pages_w_icons.page_url = ?"));
-  if (!s.is_valid())
+  if (!s.is_valid()) {
     return;
+  }
 
   // A map from icon id to the corresponding index in the |favicons| vector.
   std::map<uint64_t, size_t> icon_cache;
@@ -709,15 +685,14 @@ void FirefoxImporter::LoadFavicons(
         continue;
       }
 
-      std::vector<unsigned char> data = s.ColumnBlobAsVector(2);
-
-      favicon_base::FaviconUsageData usage_data;
-      if (!SetFaviconData(s.ColumnStringView(1), data, &usage_data)) {
+      GURL favicon_url(s.ColumnStringView(1));
+      std::vector<uint8_t> data = s.ColumnBlobAsVector(2);
+      if (!favicon_url.is_valid() || data.empty()) {
         continue;
       }
 
-      usage_data.urls.insert(entry.url);
-      favicons->push_back(usage_data);
+      favicons->emplace_back(std::move(favicon_url), std::set<GURL>{entry.url},
+                             std::move(data));
       icon_cache[icon_id] = favicons->size() - 1;
     }
   }

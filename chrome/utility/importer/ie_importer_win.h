@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/utility/importer/importer.h"
-#include "components/favicon_base/favicon_usage_data.h"
 
 namespace user_data_importer {
 struct ImportedBookmarkEntry;
@@ -51,6 +50,8 @@ class IEImporter : public Importer {
   ~IEImporter() override;
 
   void ImportFavorites();
+  void FinishFavoritesImport();
+  void ImportRemainingItems();
 
   // Reads history information from COM interface.
   void ImportHistory();
@@ -67,10 +68,12 @@ class IEImporter : public Importer {
   bool GetFavoritesInfo(FavoritesInfo* info);
 
   // This function will read the files in the Favorites folder, and store
-  // the bookmark items in |bookmarks| and favicon information in |favicons|.
+  // the bookmark items in |bookmarks| and raw favicon data in |favicons|.
   void ParseFavoritesFolder(const FavoritesInfo& info,
                             BookmarkVector* bookmarks,
-                            favicon_base::FaviconUsageDataList* favicons);
+                            std::vector<RawFaviconUsageData>* favicons);
+
+  uint16_t items_ = 0;
 
   // Set to true when importing favorites from old Edge on Windows 10.
   bool edge_import_mode_;
