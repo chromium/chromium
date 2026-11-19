@@ -97,6 +97,7 @@ source_set("ui") {
   ]
   if (!is_android) {
     deps += [
+      "//chrome/browser/glic/browser_ui:modal",
       "//chrome/browser/signin",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -104,9 +105,10 @@ source_set("ui") {
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/skills",
-      "//components/constrained_window",
       "//components/prefs",
-      "//components/web_modal",
+      "//components/zoom",
+      "//ui/base/interaction",
+      "//ui/gfx/geometry",
     ]
   }
 }
@@ -141,6 +143,7 @@ source_set("browser_tests") {
     "//components/skills/internal",
     "//components/skills/public",
     "//components/skills/public:mojo_bindings",
+    "//net:test_support",
     "//ui/base",
   ]
   if (!is_android) {
@@ -199,6 +202,7 @@ source_set("interactive_ui_tests") {
   ]
   if (!is_android) {
     deps += [
+      ":ui",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/webui/skills",
@@ -234,6 +238,7 @@ source_set("unit_tests") {
     "//components/skills/mocks",
     "//components/skills/proto",
     "//components/skills/public",
+    "//components/skills/public:mojo_bindings",
     "//components/tabs:test_support",
     "//content/public/browser",
     "//content/test:test_support",

@@ -20,6 +20,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -59,6 +59,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 
 namespace {
@@ -193,7 +194,7 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
         ClickElement(kSkillsPageElementId, kAddButtonQuery),
         InstrumentNonTabWebView(
             kSkillsDialogElementId,
-            skills::SkillsDialogView::kSkillsDialogElementId),
+            skills::SkillsUiTabController::kSkillsDialogElementId),
         Do([this]() {
           histogram_tester_.ExpectUniqueSample(
               "Skills.Dialog.Creation.ManagementPage.Blank.Action",
@@ -219,7 +220,7 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest {
         WaitForElementEnabled(kSkillsDialogElementId, kSaveButtonQuery),
         ClickElement(kSkillsDialogElementId, kSaveButtonQuery,
                      ExecuteJsMode::kFireAndForget),
-        WaitForHide(skills::SkillsDialogView::kSkillsDialogElementId),
+        WaitForHide(skills::SkillsUiTabController::kSkillsDialogElementId),
         Do([this]() {
           histogram_tester_.ExpectBucketCount(
               "Skills.Dialog.Creation.ManagementPage.Blank.Action",
@@ -298,22 +299,22 @@ IN_PROC_BROWSER_TEST_F(SkillsPageInteractiveUITest, DialogZoomModeDisabled) {
           kSkillsPageElementId, kAddButtonQuery,
           WebContentsInteractionTestUtil::StateChange::Type::kExists),
       ClickElement(kSkillsPageElementId, kAddButtonQuery),
-      InstrumentNonTabWebView(kSkillsDialogElementId,
-                              skills::SkillsDialogView::kSkillsDialogElementId),
+      InstrumentNonTabWebView(
+          kSkillsDialogElementId,
+          skills::SkillsUiTabController::kSkillsDialogElementId),
       Do([this]() {
         views::View* web_view =
             views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-                skills::SkillsDialogView::kSkillsDialogElementId,
+                skills::SkillsUiTabController::kSkillsDialogElementId,
                 BrowserView::GetBrowserViewForBrowser(browser())
                     ->GetElementContext());
-        EXPECT_TRUE(web_view);
+        ASSERT_TRUE(web_view);
         content::WebContents* web_contents =
-            static_cast<skills::SkillsDialogView*>(web_view->parent())
-                ->web_contents();
-        EXPECT_TRUE(web_contents);
+            static_cast<views::WebView*>(web_view)->GetWebContents();
+        ASSERT_TRUE(web_contents);
         zoom::ZoomController* zoom_controller =
             zoom::ZoomController::FromWebContents(web_contents);
-        EXPECT_TRUE(zoom_controller);
+        ASSERT_TRUE(zoom_controller);
         EXPECT_EQ(zoom_controller->zoom_mode(),
                   zoom::ZoomController::ZOOM_MODE_DISABLED);
       }));

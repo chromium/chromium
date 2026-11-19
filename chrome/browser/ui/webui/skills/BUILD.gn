@@ -20,7 +20,6 @@ source_set("skills") {
   public = [
     "skills_dialog_delegate.h",
     "skills_dialog_handler.h",
-    "skills_dialog_view.h",
     "skills_navigation_throttle.h",
     "skills_page_handler.h",
     "skills_page_handler_v2.h",
@@ -30,7 +29,6 @@ source_set("skills") {
   sources = [
     "skills_dialog_handler.cc",
     "skills_dialog_handler.h",
-    "skills_dialog_view.cc",
     "skills_navigation_throttle.cc",
     "skills_page_handler.cc",
     "skills_page_handler_v2.cc",
@@ -71,14 +69,8 @@ source_set("skills") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/base",
-    "//ui/base/interaction",
-    "//ui/views",
-    "//ui/views/controls/webview",
     "//ui/webui",
   ]
-  if (!is_android) {
-    deps += [ "//ui/web_dialogs" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -138,6 +130,7 @@ if (!is_android) {
       "//chrome/browser/signin",
       "//chrome/browser/skills",
       "//chrome/browser/skills:public",
+      "//chrome/browser/skills:ui",
       "//chrome/browser/sync",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",

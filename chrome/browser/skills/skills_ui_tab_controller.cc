@@ -4,7 +4,12 @@
 
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 
+#include <utility>
+
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/glic/browser_ui/glic_modal.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -17,9 +22,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
-#include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
-#include "components/constrained_window/constrained_window_views.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
@@ -27,18 +31,45 @@
 #include "components/skills/public/skills_service.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/navigation_controller.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/views/window/dialog_delegate.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace {
 
-using glic::mojom::SkillSource;
+// Width and height constants for the Skills creation/editing dialog.
+constexpr int kWebViewWidth = 512;
+constexpr int kWebViewMinHeight = 527;
+constexpr int kWebViewMaxHeight = 601;  // Extra space needed for errors and
+                                        // multi-line user account info.
+constexpr int kWebViewMinHeight2 = 200;
+constexpr int kWebViewMaxHeight2 = 710;  // Extra space needed for errors and
+                                         // multi-line user account info.
+
+gfx::Size GetWebViewMinSize() {
+  const int min_height =
+      base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled)
+          ? kWebViewMinHeight2
+          : kWebViewMinHeight;
+  return gfx::Size(kWebViewWidth, min_height);
+}
+
+gfx::Size GetWebViewMaxSize() {
+  const int max_height =
+      base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled)
+          ? kWebViewMaxHeight2
+          : kWebViewMaxHeight;
+  return gfx::Size(kWebViewWidth, max_height);
+}
 
 }  // namespace
 
 namespace skills {
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SkillsUiTabController,
+                                      kSkillsDialogElementId);
 
 SkillsUiTabController::SkillsUiTabController(tabs::TabInterface& tab)
     : SkillsUiTabControllerInterface(tab), tab_(tab) {
@@ -47,20 +78,17 @@ SkillsUiTabController::SkillsUiTabController(tabs::TabInterface& tab)
 }
 
 SkillsUiTabController::~SkillsUiTabController() {
-  if (dialog_widget_) {
-    dialog_widget_->RemoveObserver(this);
-    OnDialogClosing(views::Widget::ClosedReason::kUnspecified);
-  }
+  OnDialogClosing();
 }
 
 void SkillsUiTabController::OnTabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
-  // Synchronously close the widget on 'kDelete' while the tab's UI
+  // Synchronously close the modal on 'kDelete' while the tab's UI
   // scaffolding is still valid. This prevents re-entrancy crashes during tab
   // closure.
   if (reason == tabs::TabInterface::DetachReason::kDelete) {
-    OnDialogClosing(views::Widget::ClosedReason::kUnspecified);
+    OnDialogClosing();
   }
 }
 
@@ -68,82 +96,85 @@ void SkillsUiTabController::ShowDialog(Skill skill,
                                        SkillsDialogEntryPoint entrypoint,
                                        mojom::SkillsDialogType dialog_type,
                                        std::unique_ptr<glic::Target> target) {
-  if (dialog_widget_) {
-    // Dialog is already open.
+  if (dialog_modal_) {
+    dialog_modal_->Activate();
     return;
   }
-  // TODO(crbug.com/477385216): Update to use an enum for creation mode.
-  RecordSkillsDialogAction(SkillsDialogAction::kOpened, entrypoint,
-                           /*is_edit_mode=*/IsEditMode(&skill));
-  current_skill_ = skill;
-  target_ = std::move(target);
+  if (!tab_->CanShowModalUI()) {
+    return;
+  }
 
-  content::WebContents* contents = tab_->GetContents();
-  CHECK(contents);
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   GURL dialog_url =
       skills::AppendOpenStartTime(GURL(std::string(chrome::kChromeUISkillsURL) +
                                        chrome::kChromeUISkillsDialogPath));
-  auto dialog_view =
-      std::make_unique<skills::SkillsDialogView>(profile, dialog_url);
 
-  dialog_delegate_ = std::make_unique<views::DialogDelegate>();
-  dialog_delegate_->SetShowCloseButton(false);
-  dialog_delegate_->SetButtons(
-      static_cast<int>(ui::mojom::DialogButton::kNone));
-  dialog_delegate_->SetModalType(ui::mojom::ModalType::kChild);
-  dialog_delegate_->SetOwnershipOfNewWidget(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  glic::GlicModal::Params params;
+  params.content_url = dialog_url;
+  params.element_identifier = kSkillsDialogElementId;
+  params.close_on_navigate = true;
+  params.min_size = GetWebViewMinSize();
+  params.max_size = GetWebViewMaxSize();
+  params.initial_size = params.min_size;
+  params.size_to_content = true;
 
-  // Create Skills Dialog Delegate.
-  content::WebContents* dialog_contents = dialog_view->web_contents();
-  if (dialog_contents && dialog_contents->GetWebUI()) {
-    if (auto* skills_ui = dialog_contents->GetWebUI()
-                              ->GetController()
-                              ->GetAs<skills::SkillsUI>()) {
-      skills_ui->InitializeDialog(weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(skill), entrypoint, dialog_type);
-    }
-  }
-  dialog_delegate_->SetInitiallyFocusedView(dialog_view->web_view());
-  dialog_delegate_->SetContentsView(std::move(dialog_view));
-  dialog_widget_ = constrained_window::ShowWebModalDialogViewsOwned(
-      dialog_delegate_.get(), tab_->GetContents(),
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  params.on_webui_created = base::BindOnce(
+      [](base::WeakPtr<SkillsUiTabController> controller, Skill skill_param,
+         SkillsDialogEntryPoint entrypoint_param,
+         mojom::SkillsDialogType dialog_type_param,
+         content::WebContents* dialog_contents) {
+        if (!controller || !dialog_contents || !dialog_contents->GetWebUI()) {
+          return;
+        }
+        if (auto* skills_ui = dialog_contents->GetWebUI()
+                                  ->GetController()
+                                  ->GetAs<skills::SkillsUI>()) {
+          skills_ui->InitializeDialog(std::move(controller),
+                                      std::move(skill_param), entrypoint_param,
+                                      dialog_type_param);
+        }
+        if (!base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled)) {
+          zoom::ZoomController::CreateForWebContents(dialog_contents);
+          zoom::ZoomController::FromWebContents(dialog_contents)
+              ->SetZoomMode(zoom::ZoomController::ZOOM_MODE_DISABLED);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), skill, entrypoint, dialog_type);
 
-  dialog_widget_->MakeCloseSynchronous(base::BindOnce(
-      &SkillsUiTabController::OnDialogClosing, weak_ptr_factory_.GetWeakPtr()));
-}
+  params.on_closed = base::BindOnce(&SkillsUiTabController::OnDialogClosing,
+                                    weak_ptr_factory_.GetWeakPtr());
 
-void SkillsUiTabController::OnDialogClosing(
-    views::Widget::ClosedReason reason) {
-  if (!dialog_widget_) {
+  dialog_modal_ = glic::GlicModal::Show(*tab_, std::move(params));
+  if (!dialog_modal_) {
     return;
   }
-  dialog_widget_.reset();
-  dialog_delegate_.reset();
+
+  // TODO(crbug.com/477385216): Update to use an enum for creation mode.
+  RecordSkillsDialogAction(SkillsDialogAction::kOpened, entrypoint,
+                           /*is_edit_mode=*/IsEditMode(&skill));
+  current_skill_ = std::move(skill);
+  target_ = std::move(target);
+}
+
+void SkillsUiTabController::OnDialogClosing() {
+  if (!dialog_modal_) {
+    return;
+  }
+  dialog_modal_.reset();
+  current_skill_.reset();
   if (on_dialog_closed_callback_for_testing_) {
     std::move(on_dialog_closed_callback_for_testing_).Run();
   }
 }
 
 void SkillsUiTabController::CloseDialog() {
-  if (!dialog_widget_) {
+  if (!dialog_modal_) {
     return;
   }
-  dialog_widget_->Close();
+  dialog_modal_->Close();
 }
 
 BrowserWindowInterface* SkillsUiTabController::GetBrowserWindowInterface() {
   return tab_->GetBrowserWindowInterface();
-}
-
-void SkillsUiTabController::OnWidgetDestroyed(views::Widget* widget) {
-  if (dialog_widget_.get() != widget) {
-    return;
-  }
-  // Call the central closing logic to ensure state is reset.
-  OnDialogClosing(views::Widget::ClosedReason::kUnspecified);
 }
 
 void SkillsUiTabController::OnSkillSaved(const std::string& skill_id) {
@@ -197,7 +228,7 @@ void SkillsUiTabController::InvokeSkill(std::string_view skill_id) {
 }
 
 bool SkillsUiTabController::IsShowing() const {
-  return dialog_widget_ != nullptr;
+  return dialog_modal_ != nullptr;
 }
 
 void SkillsUiTabController::SetTargetForTesting(

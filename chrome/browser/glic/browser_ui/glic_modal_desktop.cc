@@ -410,7 +410,7 @@ class GlicModalDesktop : public GlicModal {
     }
 
     auto dialog_params = std::make_unique<tabs::TabDialogManager::Params>();
-    dialog_params->close_on_navigate = false;
+    dialog_params->close_on_navigate = params.close_on_navigate;
     tabs::TabDialogManager* tab_dialog_manager =
         tabs::TabDialogManager::From(&tab);
     dialog_widget_ = tab_dialog_manager->CreateAndShowDialog(

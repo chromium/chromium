@@ -54,7 +54,7 @@ into the Browser process and compiled into TypeScript bindings served to the
 
 | Code | Process | Sandbox | Reaches this code via |
 | :--- | :--- | :--- | :--- |
-| `skills_ui.*`, `skills_page_handler.*`, `skills_page_handler_v2.*`, `skills_dialog_handler.*`, `skills_dialog_view.*`, `skills_navigation_throttle.*` | Browser | None | `SkillsUIConfig` (`chrome://skills`) and `PopulateChromeWebUIFrameBinders()` on Windows, macOS, Linux, and ChromeOS; `SkillsNavigationThrottle::MaybeCreateAndAdd()` in V2 mode only (`features::kSkillsWebViewV2Enabled`) |
+| `skills_ui.*`, `skills_page_handler.*`, `skills_page_handler_v2.*`, `skills_dialog_handler.*`, `skills_navigation_throttle.*` | Browser | None | `SkillsUIConfig` (`chrome://skills`) and `PopulateChromeWebUIFrameBinders()` on Windows, macOS, Linux, and ChromeOS; `SkillsNavigationThrottle::MaybeCreateAndAdd()` in V2 mode only (`features::kSkillsWebViewV2Enabled`) |
 | `skills.mojom` (`:mojo_bindings`) | Browser and WebUI Renderer | Renderer sandbox (Renderer side); None (Browser side) | Generated C++ bindings in `//chrome/browser/ui/webui/skills/` and WebUI TypeScript bindings in `//chrome/browser/resources/skills/` |
 
 The threat model for `skills.mojom` assumes the **most privileged** host, the

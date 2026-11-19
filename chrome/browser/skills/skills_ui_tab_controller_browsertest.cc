@@ -18,17 +18,18 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/page_transition_types.h"
@@ -46,6 +47,11 @@ class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
                                    {features::kSkillsWebViewV2Enabled});
   }
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
   SkillsUiTabController* skills_ui_tab_controller() {
     auto* tab = browser()->GetActiveTabInterface();
     if (!tab) {
@@ -57,10 +63,8 @@ class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
 
   // Helper to determine if a dialog is visible on the current active tab.
   bool IsDialogVisible() {
-    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
-    auto* manager =
-        web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-    return manager && manager->IsDialogActive();
+    views::Widget* widget = GetDialogWidget();
+    return widget && widget->IsVisible();
   }
 
   // Helper to get the ElementContext for the current browser window.
@@ -74,7 +78,7 @@ class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
   // Locates the WebContents inside the open dialog using the ElementIdentifier.
   content::WebContents* GetDialogWebContents() {
     auto* view = views::ElementTrackerViews::GetInstance()->GetUniqueView(
-        SkillsDialogView::kSkillsDialogElementId, GetBrowserContext());
+        SkillsUiTabController::kSkillsDialogElementId, GetBrowserContext());
 
     if (!view) {
       return nullptr;
@@ -87,7 +91,7 @@ class SkillsUiTabControllerBrowserTest : public InProcessBrowserTest {
   // Helper to get the underlying widget of the dialog.
   views::Widget* GetDialogWidget() {
     auto* view = views::ElementTrackerViews::GetInstance()->GetUniqueView(
-        SkillsDialogView::kSkillsDialogElementId, GetBrowserContext());
+        SkillsUiTabController::kSkillsDialogElementId, GetBrowserContext());
 
     if (!view) {
       return nullptr;
@@ -406,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   views::Widget* widget = GetDialogWidget();
   widget->GetFocusManager()->SetFocusedView(
       views::ElementTrackerViews::GetInstance()->GetUniqueView(
-          SkillsDialogView::kSkillsDialogElementId, GetBrowserContext()));
+          SkillsUiTabController::kSkillsDialogElementId, GetBrowserContext()));
 
   static constexpr char kSetupScript[] = R"(
     (async function() {
@@ -475,6 +479,37 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   // Verify that the toast is now showing and has the correct ID.
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kSkillDeleted);
+}
+
+// Verify that same-site navigations keep the dialog open while cross-site
+// navigations close it.
+IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
+                       ClosesOnCrossSiteNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  skills::Skill test_skill("id", "name", "icon", "prompt");
+  skills_ui_tab_controller()->ShowDialog(
+      std::move(test_skill), SkillsDialogEntryPoint::kWebClientPrefilled,
+      mojom::SkillsDialogType::kEdit, nullptr);
+  ASSERT_TRUE(IsDialogVisible());
+
+  // Same-site navigation should leave the dialog open.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+  EXPECT_TRUE(IsDialogVisible());
+  EXPECT_TRUE(skills_ui_tab_controller()->IsShowing());
+
+  // Cross-site navigation should close the dialog.
+  base::test::TestFuture<void> close_future;
+  skills_ui_tab_controller()->SetOnDialogClosedCallbackForTesting(
+      close_future.GetCallback());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  ASSERT_TRUE(close_future.Wait());
+  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_FALSE(skills_ui_tab_controller()->IsShowing());
 }
 
 }  // namespace skills

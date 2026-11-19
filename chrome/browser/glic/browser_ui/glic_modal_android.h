@@ -73,6 +73,8 @@ class GlicModalAndroid : public GlicModal,
   void OnAvailableSizeChanged(JNIEnv* env, int width_dip, int height_dip);
 
  private:
+  class HostTabNavigationObserver;
+
   void UpdateAutoResize(content::RenderWidgetHostView* rwhv);
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
@@ -90,6 +92,7 @@ class GlicModalAndroid : public GlicModal,
   base::OnceClosure on_closed_;
   base::CallbackListSubscription tab_will_detach_subscription_;
   base::CallbackListSubscription tab_will_become_hidden_subscription_;
+  std::unique_ptr<HostTabNavigationObserver> host_tab_navigation_observer_;
 };
 
 }  // namespace glic

@@ -4,8 +4,8 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/skills/skills_interactive_uitest_base.h"
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
 
@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest, UpdateUserSkill) {
       OpenGlicAndInstrument(), AddUserOwnedSkill(user_created_skill, &skill_id),
       WaitForSkillPreviewShown(user_created_skill.name), UpdateSkill(&skill_id),
       InstrumentNonTabWebView(kSkillsDialogElementId,
-                              SkillsDialogView::kSkillsDialogElementId),
+                              SkillsUiTabController::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(user_created_skill, edited_skill),
       ClickButtonAndVerifyDialogHides(kSaveButtonQuery),
       WaitForSkillPreviewShown(edited_skill.name));
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest,
       OpenGlicAndInstrument(), AddUserOwnedSkill(user_created_skill, &skill_id),
       WaitForSkillPreviewShown(user_created_skill.name), UpdateSkill(&skill_id),
       InstrumentNonTabWebView(kSkillsDialogElementId,
-                              SkillsDialogView::kSkillsDialogElementId),
+                              SkillsUiTabController::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(user_created_skill, edited_skill),
       ClickButtonAndVerifyDialogHides(kCancelButtonQuery));
 
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUpdateInteractiveUiTest,
       // Update oldest skill (Skill 0).
       UpdateSkill(&test_skills[0].id),
       InstrumentNonTabWebView(kSkillsDialogElementId,
-                              SkillsDialogView::kSkillsDialogElementId),
+                              SkillsUiTabController::kSkillsDialogElementId),
       EditDialogInput(updated_skill_name, kNameInputQuery),
       ClickButtonAndVerifyDialogHides(kSaveButtonQuery),
       // Skill 0 should now move to the top because it was just updated.

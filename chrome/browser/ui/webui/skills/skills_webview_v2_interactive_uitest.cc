@@ -20,6 +20,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
-#include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -394,16 +394,17 @@ IN_PROC_BROWSER_TEST_F(SkillsWebViewV2InteractiveUITest,
             skills::SkillsDialogEntryPoint::kManagementPageBlank,
             skills::mojom::SkillsDialogType::kEdit, nullptr);
       }),
-      WaitForShow(skills::SkillsDialogView::kSkillsDialogElementId),
-      InstrumentNonTabWebView(kSkillsHostTabId,
-                              skills::SkillsDialogView::kSkillsDialogElementId),
+      WaitForShow(skills::SkillsUiTabController::kSkillsDialogElementId),
+      InstrumentNonTabWebView(
+          kSkillsHostTabId,
+          skills::SkillsUiTabController::kSkillsDialogElementId),
       InstrumentInnerWebContents(kSkillsGuestId, kSkillsHostTabId, 0),
       WaitForJsResult(kSkillsGuestId,
                       "() => window.client?.getConnected() === true"),
       WaitForJsResult(
           kSkillsGuestId,
           "() => document.body.classList.contains('dialog-mode') === true"),
-      CheckView(skills::SkillsDialogView::kSkillsDialogElementId,
+      CheckView(skills::SkillsUiTabController::kSkillsDialogElementId,
                 [](views::WebView* web_view) {
                   return !web_view->size().IsEmpty();
                 }));

@@ -8,10 +8,10 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/skills/skills_interactive_uitest_base.h"
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
-#include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/skills/features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(SkillsInvocationInteractiveUiTest,
   RunTestSequence(
       OpenGlicAndInstrument(), CreateSkill(user_created_skill),
       InstrumentNonTabWebView(kSkillsDialogElementId,
-                              SkillsDialogView::kSkillsDialogElementId),
+                              SkillsUiTabController::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(user_created_skill, edited_skill),
       ClickButtonAndVerifyDialogHides(kSaveButtonQuery),
       // Wait for the "Skill saved" toast and click its action button.

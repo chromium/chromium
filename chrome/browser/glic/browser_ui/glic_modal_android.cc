@@ -14,12 +14,15 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
@@ -30,9 +33,45 @@
 
 namespace glic {
 
+class GlicModalAndroid::HostTabNavigationObserver
+    : public content::WebContentsObserver {
+ public:
+  HostTabNavigationObserver(content::WebContents* tab_contents,
+                            GlicModalAndroid* modal)
+      : content::WebContentsObserver(tab_contents), modal_(modal) {
+    CHECK(modal_);
+  }
+  HostTabNavigationObserver(const HostTabNavigationObserver&) = delete;
+  HostTabNavigationObserver& operator=(const HostTabNavigationObserver&) =
+      delete;
+  ~HostTabNavigationObserver() override = default;
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->IsInPrimaryMainFrame() ||
+        !navigation_handle->HasCommitted()) {
+      return;
+    }
+    const bool different_site_navigation =
+        !net::registry_controlled_domains::SameDomainOrHost(
+            navigation_handle->GetPreviousPrimaryMainFrameURL(),
+            navigation_handle->GetURL(),
+            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    if (different_site_navigation) {
+      Observe(nullptr);
+      modal_->Close();
+    }
+  }
+
+ private:
+  const raw_ptr<GlicModalAndroid> modal_;
+};
+
 GlicModalAndroid::GlicModalAndroid() = default;
 
 GlicModalAndroid::~GlicModalAndroid() {
+  host_tab_navigation_observer_.reset();
   Observe(nullptr);
   tab_will_detach_subscription_ = {};
   tab_will_become_hidden_subscription_ = {};
@@ -107,6 +146,10 @@ bool GlicModalAndroid::ShowInternal(tabs::TabInterface& tab,
     tab_will_become_hidden_subscription_ =
         tab.RegisterWillBecomeHidden(base::BindRepeating(
             &GlicModalAndroid::OnTabWillBecomeHidden, base::Unretained(this)));
+  }
+  if (params.close_on_navigate) {
+    host_tab_navigation_observer_ =
+        std::make_unique<HostTabNavigationObserver>(tab.GetContents(), this);
   }
   return true;
 }
@@ -205,6 +248,7 @@ void GlicModalAndroid::OnDismissed() {
     base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(modal_web_contents_));
   }
+  host_tab_navigation_observer_.reset();
 
   if (on_closed_) {
     std::move(on_closed_).Run();

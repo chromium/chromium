@@ -90,6 +90,11 @@ class GlicModal {
     // WebUI's async content (e.g. embedded <webview>) finishes rendering.
     bool suppress_first_auto_resize = false;
 
+    // If true, closes the modal when the hosting tab's primary main frame
+    // commits a cross-site navigation (matching
+    // `tabs::TabDialogManager::Params::close_on_navigate`).
+    bool close_on_navigate = false;
+
     // Android portrait & landscape max dimensions in dp (used when
     // BUILDFLAG(IS_ANDROID)).
     gfx::Size portrait_max_size_dp = gfx::Size(380, 567);

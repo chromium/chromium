@@ -20,13 +20,13 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/skills/skills_glic_mojom_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
-#include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/channel_info.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -306,10 +306,11 @@ SkillsInteractiveUiTestBase::VerifyAndEditSkillDialogInput(
 ui::test::InteractiveTestApi::MultiStep
 SkillsInteractiveUiTestBase::ClickButtonAndVerifyDialogHides(
     const DeepQuery& button_query) {
-  return Steps(WaitForElementEnabled(kSkillsDialogElementId, button_query),
-               MoveMouseTo(kSkillsDialogElementId, button_query), ClickMouse(),
-               // Verify the dialog hides.
-               WaitForHide(skills::SkillsDialogView::kSkillsDialogElementId));
+  return Steps(
+      WaitForElementEnabled(kSkillsDialogElementId, button_query),
+      MoveMouseTo(kSkillsDialogElementId, button_query), ClickMouse(),
+      // Verify the dialog hides.
+      WaitForHide(skills::SkillsUiTabController::kSkillsDialogElementId));
 }
 
 ui::test::InteractiveTestApi::StepBuilder

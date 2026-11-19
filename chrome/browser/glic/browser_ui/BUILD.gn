@@ -45,6 +45,7 @@ source_set("modal") {
     ]
     deps += [
       "//chrome/browser/glic/android:jni_headers",
+      "//net",
       "//third_party/jni_zero",
       "//ui/android",
     ]

@@ -26,6 +26,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_prefs.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -299,6 +300,22 @@ TEST_F(SkillsUiTabControllerTest, SendPrompt_CallsInvokeWithAutoSubmit) {
       });
 
   controller_->SendPrompt("Test Prompt", /*new_conversation=*/false);
+}
+
+TEST_F(SkillsUiTabControllerTest,
+       ShowDialog_DoesNotLogOpenedWhenModalCannotBeShown) {
+  EXPECT_CALL(mock_tab_, CanShowModalUI()).WillOnce(Return(true));
+  EXPECT_CALL(mock_tab_, GetContents()).WillOnce(Return(nullptr));
+
+  Skill test_skill("", "skill_name", "icon", "Test Prompt");
+  controller_->ShowDialog(std::move(test_skill),
+                          SkillsDialogEntryPoint::kWebClientPrefilled,
+                          mojom::SkillsDialogType::kAdd, nullptr);
+
+  EXPECT_FALSE(controller_->IsShowing());
+  EXPECT_FALSE(controller_->GetCurrentSkillForTesting().has_value());
+  histogram_tester_.ExpectTotalCount(
+      "Skills.Dialog.Creation.WebClient.Prefilled.Action", 0);
 }
 
 class SkillsUiTabControllerV2Test : public SkillsUiTabControllerTest {

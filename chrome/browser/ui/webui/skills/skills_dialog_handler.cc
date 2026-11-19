@@ -120,8 +120,8 @@ void SkillsDialogHandler::SubmitSkill(
   // Triggers toast
   delegate_->OnSkillSaved(response->id);
   RecordSkillsSaveResult(SkillsSaveResult::kSuccess);
-  delegate_->CloseDialog();
   std::move(wrapped_callback).Run(true);
+  delegate_->CloseDialog();
 }
 
 void SkillsDialogHandler::DeleteSkill(const std::string& skill_id) {

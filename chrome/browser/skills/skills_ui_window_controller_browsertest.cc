@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
-#include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -40,6 +40,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -90,7 +91,7 @@ class SkillsUiWindowControllerBrowserTest : public InProcessBrowserTest {
             browser_view->GetWidget());
 
     auto* view = views::ElementTrackerViews::GetInstance()->GetUniqueView(
-        SkillsDialogView::kSkillsDialogElementId, context);
+        SkillsUiTabController::kSkillsDialogElementId, context);
 
     if (!view) {
       return nullptr;

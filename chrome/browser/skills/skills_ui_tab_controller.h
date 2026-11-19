@@ -8,46 +8,36 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
 
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
-#include "chrome/browser/glic/host/glic.mojom-forward.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
-#include "chrome/common/buildflags.h"
 #include "components/skills/public/skill.h"
-#include "components/skills/public/skills_service.h"
 #include "components/tabs/public/tab_interface.h"
-#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
-#include "ui/views/window/dialog_delegate.h"
+#include "ui/base/interaction/element_identifier.h"
 
-namespace tabs {
-class TabInterface;
-}
-
-namespace views {
-class Widget;
-}  // namespace views
+class BrowserWindowInterface;
+class Profile;
 
 namespace glic {
 class GlicKeyedService;
+class GlicModal;
 struct Target;
-}
+}  // namespace glic
 
 namespace skills {
 
-struct Skill;
-class SkillsDialogDelegate;
-
 // A controller responsible for managing the skills dialog for the tab.
 class SkillsUiTabController : public SkillsUiTabControllerInterface,
-                              public SkillsDialogDelegate,
-                              public views::WidgetObserver {
+                              public SkillsDialogDelegate {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSkillsDialogElementId);
+
   explicit SkillsUiTabController(tabs::TabInterface& tab);
   ~SkillsUiTabController() override;
 
@@ -77,11 +67,8 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   void InvokeSkill(std::string_view skill_id) override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
 
-  // views::WidgetObserver override:
-  void OnWidgetDestroyed(views::Widget* widget) override;
-
   // Synchronously resets pointers to ensure immediate memory cleanup.
-  void OnDialogClosing(views::Widget::ClosedReason reason);
+  void OnDialogClosing();
 
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
@@ -121,12 +108,8 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   // Subscription for tab detach events.
   base::CallbackListSubscription will_detach_subscription_;
 
-  // The Delegate handles the dialog logic and owns the internal View.
-  std::unique_ptr<views::DialogDelegate> dialog_delegate_;
-
-  // The Widget represents the window.
-  // CLIENT_OWNS_WIDGET ensures stability during tab reparenting/dragging.
-  std::unique_ptr<views::Widget> dialog_widget_;
+  // Active modal dialog handle when open.
+  std::unique_ptr<glic::GlicModal> dialog_modal_;
 
   std::unique_ptr<glic::Target> target_;
   std::string last_invoked_skill_id_for_testing_;

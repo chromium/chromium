@@ -5,8 +5,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "chrome/browser/skills/skills_interactive_uitest_base.h"
+#include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
-#include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
 
@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
   RunTestSequence(
       OpenGlicAndInstrument(), CreateSkill(user_created_skill),
       InstrumentNonTabWebView(kSkillsDialogElementId,
-                              SkillsDialogView::kSkillsDialogElementId),
+                              SkillsUiTabController::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(user_created_skill, edited_skill),
       ClickButtonAndVerifyDialogHides(kSaveButtonQuery),
       WaitForSkillPreviewShown(edited_skill.name));
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
   RunTestSequence(
       OpenGlicAndInstrument(), CreateSkill(user_created_skill),
       InstrumentNonTabWebView(kSkillsDialogElementId,
-                              SkillsDialogView::kSkillsDialogElementId),
+                              SkillsUiTabController::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(user_created_skill, edited_skill),
       ClickButtonAndVerifyDialogHides(kCancelButtonQuery));
 
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
       // pre-populated with the 1P skill's fields.
       CreateSkill(first_party_skill),
       InstrumentNonTabWebView(kSkillsDialogElementId,
-                              SkillsDialogView::kSkillsDialogElementId),
+                              SkillsUiTabController::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(first_party_skill, edited_skill),
       ClickButtonAndVerifyDialogHides(kSaveButtonQuery),
       WaitForSkillPreviewShown(edited_skill.name),
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(SkillsCreationInteractiveUiTest,
       UninstrumentWebContents(kSkillsDialogElementId,
                               /*fail_if_not_instrumented=*/false),
       InstrumentNonTabWebView(kSkillsDialogElementId,
-                              SkillsDialogView::kSkillsDialogElementId),
+                              SkillsUiTabController::kSkillsDialogElementId),
       VerifyAndEditSkillDialogInput(edited_skill, updated_skill),
       ClickButtonAndVerifyDialogHides(kSaveButtonQuery),
       WaitForSkillPreviewShown(updated_skill.name));
