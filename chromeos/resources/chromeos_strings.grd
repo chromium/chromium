@@ -344,14 +344,8 @@
       <message name="IDS_EDITOR_MENU_WRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in write mode.">
         Help me write
       </message>
-      <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode.">
-        Enter a prompt like "write a thank you note"
-      </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode.">
         Refine
-      </message>
-      <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode.">
-        Enter a prompt like "make it more confident"
       </message>
       <message name="IDS_EDITOR_MENU_FREEFORM_PROMPT_INPUT_FIELD_PLACEHOLDER" desc="Placeholder text displayed in the freeform text input field of the Editor Menu.">
         Enter a prompt
@@ -378,9 +372,6 @@
       </message>
       <message name="IDS_MAHI_FEEDBACK_PLACEHOLDER" desc="Placeholder text displayed in the feedback text box">
         Feedback for mahi feature
-      </message>
-      <message name="IDS_MAHI_OUTLINE_BUTTON_LABEL_TEXT" desc="The text label for the outline button inside the Mahi menu">
-        Show outlines
       </message>
       <message name="IDS_MAHI_SUMMARIZE_BUTTON_LABEL_TEXT" desc="The text label for the summarize button inside the Mahi menu">
         Summarize
@@ -604,9 +595,6 @@
       <message name="IDS_ASH_SHELF_RESTART_BUTTON" desc="Text shown on restart button on login/lock screen.">
         Restart
       </message>
-      <message name="IDS_ASH_SHELF_UNLOCK_BUTTON" desc="Text shown on unlock button on lock screen.">
-        Unlock
-      </message>
       <message name="IDS_ASH_SHELF_SIGN_OUT_BUTTON" desc="Text shown on sign out button on lock screen.">
         Sign out
       </message>
@@ -758,9 +746,6 @@
       </message>
       <message name="IDS_HELP_APP_PERKS" desc="Name of a tab in the Help app that offers users additional perks like apps or drive storage space.">
         Perks
-      </message>
-      <message name="IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP" desc="Text for the suggestion chip to view updated patch notes are available. [CHAR_LIMIT=24]">
-        What's new with ChromeOS
       </message>
       <message name="IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE" desc="Title for a ChromeOS launcher continue section item that can be used to quickly access most recent ChromeOS release notes. Continue section contains set of UI elements that are suggestions for continuing recent user workflows. Release notes element is shown after ChromeOS device updates to a new version. Clicking the relese notes element will redirect user to an app that gives the user more information about the ChromeOS update [CHAR_LIMIT=20]">
         ChromeOS update
@@ -1762,9 +1747,6 @@
       <message name="IDS_NETWORK_TYPE_METERED_WIFI" desc="Label for metered Wi-Fi networks (i.e., Wi-Fi networks which have resticted data usage such as a monthly limit).">
         metered Wi-Fi
       </message>
-      <message name="IDS_NETWORK_TYPE_BLUETOOTH" desc="Label for Bluetooth networks.">
-        Bluetooth
-      </message>
       <message name="IDS_NETWORK_TYPE_CELLULAR" desc="Label for Cellular networks.">
         Cellular
       </message>
@@ -2292,9 +2274,6 @@
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_SEND_FEEDBACK" desc="Label for Network diagnostics send feedback report button">
         Send Feedback Report
-      </message>
-      <message name="IDS_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH_PROBLEM_NOT_FOUND" desc="Error message shown when a WiFi signal could not be detected">
-        Signal not found
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH_PROBLEM_WEAK" desc="Error message shown when a only a weak WiFi signal could be detected">
         Weak signal
