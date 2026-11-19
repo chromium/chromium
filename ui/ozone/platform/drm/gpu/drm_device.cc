@@ -21,6 +21,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -194,10 +195,21 @@ DrmDevice::DrmDevice(const base::FilePath& device_path,
                      bool is_primary_device,
                      std::unique_ptr<GbmDevice> gbm)
     : DrmWrapper(device_path, std::move(fd), is_primary_device),
+      base::RefCountedDeleteOnSequence<DrmDevice>(
+          base::SingleThreadTaskRunner::GetCurrentDefault()),
       page_flip_manager_(new PageFlipManager()),
       gbm_(std::move(gbm)) {}
 
-DrmDevice::~DrmDevice() = default;
+// The last reference may be dropped on another thread (e.g. by a
+// DrmFramebuffer on the GPU main thread); the deletion is then posted to the
+// owning sequence. If that sequence has already stopped, the posted task never
+// runs and the device, its fd and `gbm_` are leaked. This is intended: the DRM
+// thread lives as long as the GPU process, and the alternative would touch a
+// dead IO message pump from the wrong thread. Tests that stop their DRM thread
+// before dropping the last reference will see this leak under LSan.
+DrmDevice::~DrmDevice() {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+}
 
 bool DrmDevice::Initialize() {
   if (!DrmWrapper::Initialize()) {
@@ -218,9 +230,15 @@ bool DrmDevice::Initialize() {
     return false;
   }
 
-  watcher_ = std::make_unique<IOWatcher>(GetFd(), page_flip_manager_.get());
+  StartPageFlipWatcher();
 
   return true;
+}
+
+void DrmDevice::StartPageFlipWatcher() {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(!watcher_);
+  watcher_ = std::make_unique<IOWatcher>(GetFd(), page_flip_manager_.get());
 }
 
 bool DrmDevice::SetCrtc(uint32_t crtc_id,

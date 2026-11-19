@@ -194,7 +194,7 @@ void HardwareDisplayControllerTest::SetUp() {
   last_swap_result_ = gfx::SwapResult::SWAP_FAILED;
 
   auto gbm_device = std::make_unique<MockGbmDevice>();
-  drm_ = new FakeDrmDevice(std::move(gbm_device));
+  drm_ = base::MakeRefCounted<FakeDrmDevice>(std::move(gbm_device));
   InitializeDrmDevice(/* use_atomic= */ true);
 }
 
@@ -335,8 +335,8 @@ class HardwareDisplayControllerMockedDeviceTest
     last_swap_result_ = gfx::SwapResult::SWAP_FAILED;
 
     auto gbm_device = std::make_unique<MockGbmDevice>();
-    drm_ = new testing::NiceMock<MockDrmDevice>(base::FilePath(),
-                                                std::move(gbm_device), true);
+    drm_ = base::MakeRefCounted<testing::NiceMock<MockDrmDevice>>(
+        base::FilePath(), std::move(gbm_device), true);
     InitializeDrmDevice(/* use_atomic= */ true);
   }
 };

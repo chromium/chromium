@@ -354,10 +354,16 @@ FakeDrmDevice::FakeDrmDevice(std::unique_ptr<GbmDevice> gbm_device)
 FakeDrmDevice::FakeDrmDevice(const base::FilePath& path,
                              std::unique_ptr<GbmDevice> gbm_device,
                              bool is_primary_device)
-    : DrmDevice(std::move(path),
+    : DrmDevice(path,
                 base::ScopedFD(),
                 is_primary_device,
-                std::move(gbm_device)) {
+                std::move(gbm_device)) {}
+
+FakeDrmDevice::FakeDrmDevice(const base::FilePath& path,
+                             base::ScopedFD fd,
+                             std::unique_ptr<GbmDevice> gbm_device,
+                             bool is_primary_device)
+    : DrmDevice(path, std::move(fd), is_primary_device, std::move(gbm_device)) {
 }
 
 FakeDrmDevice::~FakeDrmDevice() {

@@ -16,6 +16,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
@@ -205,8 +206,9 @@ class ScreenManagerTest : public testing::Test {
   void SetUp() override {
     auto gbm = std::make_unique<MockGbmDevice>();
     supported_modifiers_ = gbm->GetSupportedModifiers();
-    drm_ = new FakeDrmDevice(std::move(gbm));
-    drm2_ = new FakeDrmDevice(std::make_unique<MockGbmDevice>());
+    drm_ = base::MakeRefCounted<FakeDrmDevice>(std::move(gbm));
+    drm2_ =
+        base::MakeRefCounted<FakeDrmDevice>(std::make_unique<MockGbmDevice>());
     device_manager_ = std::make_unique<DrmDeviceManager>(nullptr);
     screen_manager_ = std::make_unique<ScreenManager>();
   }
@@ -238,6 +240,7 @@ class ScreenManagerTest : public testing::Test {
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<FakeDrmDevice> drm_;
   scoped_refptr<FakeDrmDevice> drm2_;
   std::unique_ptr<DrmDeviceManager> device_manager_;

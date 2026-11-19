@@ -7,6 +7,7 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
@@ -58,6 +59,7 @@ class DrmGpuUtilTest : public testing::Test {
                                   /*pmode=*/nullptr);
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<DrmDeviceGenerator> fake_device_generator_;
   scoped_refptr<DrmDevice> device_;
   raw_ptr<FakeDrmDevice> fake_drm_;

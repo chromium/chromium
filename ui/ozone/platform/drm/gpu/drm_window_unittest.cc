@@ -123,7 +123,7 @@ void DrmWindowTest::SetUp() {
   last_swap_buffers_result_ = gfx::SwapResult::SWAP_FAILED;
 
   auto gbm_device = std::make_unique<MockGbmDevice>();
-  drm_ = new FakeDrmDevice(std::move(gbm_device));
+  drm_ = base::MakeRefCounted<FakeDrmDevice>(std::move(gbm_device));
   screen_manager_ = std::make_unique<ScreenManager>();
 
   InitializeDrmState(drm_.get());
@@ -149,7 +149,8 @@ void DrmWindowTest::SetUp() {
   screen_manager_->AddWindow(kDefaultWidgetHandle, std::move(window));
 
   // Secondary DrmDevice for test cases that need it.
-  drm2_ = new FakeDrmDevice(std::make_unique<MockGbmDevice>());
+  drm2_ =
+      base::MakeRefCounted<FakeDrmDevice>(std::make_unique<MockGbmDevice>());
 }
 
 void DrmWindowTest::TearDown() {

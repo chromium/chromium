@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_mode.h"
@@ -50,6 +51,7 @@ class HardwareDisplayControllerInfoTest : public testing::Test {
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<DrmDeviceGenerator> fake_device_generator_;
   scoped_refptr<DrmDevice> device_;
   raw_ptr<FakeDrmDevice> fake_drm_;

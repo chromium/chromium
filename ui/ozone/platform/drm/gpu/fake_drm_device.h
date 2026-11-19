@@ -24,6 +24,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/files/scoped_file.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -178,6 +179,10 @@ class FakeDrmDevice : public DrmDevice {
   explicit FakeDrmDevice(const base::FilePath& path,
                          std::unique_ptr<GbmDevice> gbm_device,
                          bool is_primary_device);
+  FakeDrmDevice(const base::FilePath& path,
+                base::ScopedFD fd,
+                std::unique_ptr<GbmDevice> gbm_device,
+                bool is_primary_device);
 
   FakeDrmDevice(const FakeDrmDevice&) = delete;
   FakeDrmDevice& operator=(const FakeDrmDevice&) = delete;
@@ -277,6 +282,11 @@ class FakeDrmDevice : public DrmDevice {
 
   // Return true if InitializeState has been called yet.
   bool IsInitialized() const { return !!plane_manager_; }
+
+  // Starts watching the device file descriptor for page flip events. Requires
+  // that the device was constructed with a valid file descriptor and that the
+  // current thread has an IO message pump.
+  void StartPageFlipWatcherForTesting() { StartPageFlipWatcher(); }
 
   void RunCallbacks();
 

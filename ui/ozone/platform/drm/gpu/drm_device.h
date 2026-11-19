@@ -14,6 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/time/time.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/display/types/drm_formats_and_modifiers.h"
@@ -26,8 +28,11 @@ namespace ui {
 class HardwareDisplayPlaneManager;
 class GbmDevice;
 
+// Owned by the sequence it is constructed on (the DRM thread in production),
+// and always destroyed there, since its page flip watcher is bound to that
+// thread's IO message pump.
 class DrmDevice : public DrmWrapper,
-                  public base::RefCountedThreadSafe<DrmDevice> {
+                  public base::RefCountedDeleteOnSequence<DrmDevice> {
  public:
   using PageFlipCallback =
       base::OnceCallback<void(unsigned int /* frame */,
@@ -82,9 +87,14 @@ class DrmDevice : public DrmWrapper,
   GbmDevice* gbm_device() const { return gbm_.get(); }
 
  protected:
-  friend class base::RefCountedThreadSafe<DrmDevice>;
+  friend class base::RefCountedDeleteOnSequence<DrmDevice>;
+  friend class base::DeleteHelper<DrmDevice>;
 
   ~DrmDevice() override;
+
+  // Starts watching the device file descriptor for page flip events. Must be
+  // called on the owning sequence, which must have an IO message pump.
+  void StartPageFlipWatcher();
 
   std::unique_ptr<HardwareDisplayPlaneManager> plane_manager_;
 

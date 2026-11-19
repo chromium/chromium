@@ -150,7 +150,7 @@ void DrmOverlayValidatorTest::SetUp() {
 
   auto gbm = std::make_unique<MockGbmDevice>();
   gbm_ = gbm.get();
-  drm_ = new FakeDrmDevice(std::move(gbm));
+  drm_ = base::MakeRefCounted<FakeDrmDevice>(std::move(gbm));
 }
 
 void DrmOverlayValidatorTest::InitDrmStatesAndControllers(

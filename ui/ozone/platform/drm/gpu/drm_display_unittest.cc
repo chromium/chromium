@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
@@ -111,6 +112,7 @@ testing::Matcher<TileProperty> EqTileProperty(const TileProperty& expected) {
 }  // namespace
 
 TEST(DrmDisplayTest, TiledDisplay) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<DrmDeviceGenerator> fake_device_generator =
       std::make_unique<FakeDrmDeviceGenerator>();
   scoped_refptr<DrmDevice> device = fake_device_generator->CreateDevice(

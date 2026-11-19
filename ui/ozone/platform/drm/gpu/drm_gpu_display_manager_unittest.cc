@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_features.h"
@@ -281,6 +282,7 @@ class DrmGpuDisplayManagerTest : public testing::Test {
     return drm_gpu_display_manager_->FindDisplayByConnectorId(connector);
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   size_t next_drm_device_number_ = 0u;
 
   std::unique_ptr<DrmDeviceManager> device_manager_;

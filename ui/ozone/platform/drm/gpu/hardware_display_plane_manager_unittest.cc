@@ -108,6 +108,7 @@ class HardwareDisplayPlaneManagerTest
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
   HardwareDisplayPlaneList state_;
   scoped_refptr<DrmFramebuffer> fake_buffer_;
   scoped_refptr<FakeDrmDevice> fake_drm_;
@@ -119,7 +120,7 @@ void HardwareDisplayPlaneManagerTest::SetUp() {
   use_atomic_ = GetParam();
 
   auto gbm_device = std::make_unique<MockGbmDevice>();
-  fake_drm_ = new FakeDrmDevice(std::move(gbm_device));
+  fake_drm_ = base::MakeRefCounted<FakeDrmDevice>(std::move(gbm_device));
 
   fake_buffer_ = CreateBuffer(kDefaultBufferSize);
 }
@@ -1681,7 +1682,7 @@ class HardwareDisplayPlaneManagerPlanesReadyTest : public testing::Test {
 
   void SetUp() override {
     auto gbm_device = std::make_unique<MockGbmDevice>();
-    fake_drm_ = new FakeDrmDevice(std::move(gbm_device));
+    fake_drm_ = base::MakeRefCounted<FakeDrmDevice>(std::move(gbm_device));
     drm_framebuffer_ = CreateBuffer(kDefaultBufferSize);
     planes_without_fences_ = CreatePlanesWithoutFences();
     planes_with_fences_ = CreatePlanesWithFences();
@@ -1717,12 +1718,12 @@ class HardwareDisplayPlaneManagerPlanesReadyTest : public testing::Test {
     return planes;
   }
 
-  scoped_refptr<FakeDrmDevice> fake_drm_;
-  std::unique_ptr<HardwareDisplayPlaneManager> plane_manager_;
-  bool callback_called = false;
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::MainThreadType::DEFAULT,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+  scoped_refptr<FakeDrmDevice> fake_drm_;
+  std::unique_ptr<HardwareDisplayPlaneManager> plane_manager_;
+  bool callback_called = false;
   scoped_refptr<DrmFramebuffer> drm_framebuffer_;
   const FakeFenceFD fake_fence_fd1_;
   const FakeFenceFD fake_fence_fd2_;
@@ -2160,6 +2161,7 @@ class HardwareDisplayPlaneAtomicMock : public HardwareDisplayPlaneAtomic {
 };
 
 TEST(HardwareDisplayPlaneManagerAtomic, EnableBlend) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   auto gbm_device = std::make_unique<MockGbmDevice>();
   auto drm_device = base::MakeRefCounted<FakeDrmDevice>(std::move(gbm_device));
   auto plane_manager =
@@ -2207,6 +2209,7 @@ class HardwareDisplayPlaneManagerSeamlessModeTest : public testing::Test {
     CHECK(plane_manager_->Initialize());
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   int64_t crtc_id_;
   scoped_refptr<MockDrmDevice> drm_device_;
   std::unique_ptr<HardwareDisplayPlaneManagerAtomic> plane_manager_;
