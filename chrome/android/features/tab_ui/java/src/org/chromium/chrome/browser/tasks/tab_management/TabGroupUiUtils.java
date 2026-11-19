@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.tab_ui.R;
@@ -864,12 +865,15 @@ public class TabGroupUiUtils {
         if (groupId == null) {
             return false;
         }
+        TabModel targetModel = getTabModelForGroup(tabModel, groupId);
+        if (targetModel.getTabModelType() == TabModelType.HEADLESS) {
+            return false;
+        }
         @WindowId
         int windowId = TabWindowManagerSingleton.getInstance().findWindowIdForTabGroup(groupId);
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return false;
         }
-        TabModel targetModel = getTabModelForGroup(tabModel, groupId);
         Tab selectedTab = TabGroupUtils.getSelectedOrFirstTabInGroup(targetModel, groupId);
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowChecker;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowInfo;
 import org.chromium.chrome.browser.tasks.tab_management.GroupWindowState;
@@ -399,17 +400,22 @@ import java.util.function.Supplier;
                         R.id.tab_group_open_group_menu_id,
                         R.string.open_group_menu_item,
                         tabGroup,
-                        /* isEnabled= */ tabGroup.groupWindowState != GroupWindowState.IN_CURRENT));
+                        /* isEnabled= */ tabGroup.syncId != null
+                                && tabGroup.groupWindowState != GroupWindowState.IN_CURRENT));
         if (MultiWindowUtils.isLinkNavigationToNewWindowSupported()) {
-            boolean canOpenInNewWindow =
-                    tabGroup.groupWindowState != GroupWindowState.IN_CURRENT
-                            || tabModel.getCount() > tabItems.size();
+            boolean isHeadlessOtherWindow =
+                    tabGroup.groupWindowState == GroupWindowState.IN_ANOTHER
+                            && TabGroupUiUtils.getTabModelForGroup(tabModel, tabGroup.localId)
+                                            .getTabModelType()
+                                    == TabModelType.HEADLESS;
             submenuItems.add(
                     buildTabGroupActionItem(
                             R.id.tab_group_open_in_new_window_menu_id,
                             R.string.open_group_in_new_window_menu_item,
                             tabGroup,
-                            /* isEnabled= */ canOpenInNewWindow));
+                            /* isEnabled= */ !isHeadlessOtherWindow
+                                    && (tabGroup.groupWindowState != GroupWindowState.IN_CURRENT
+                                            || tabModel.getCount() > tabItems.size())));
         }
         if (!tabModel.isIncognito()
                 && mTabGroupSyncServiceSupplier.get() != null

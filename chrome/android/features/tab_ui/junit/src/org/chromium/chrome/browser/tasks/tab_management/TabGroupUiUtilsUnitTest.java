@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -2547,5 +2548,37 @@ public class TabGroupUiUtilsUnitTest {
         verify(mMultiInstanceOrchestrator)
                 .moveTabGroupToNewWindow(any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(1);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testOpenTabGroupInNewWindow_otherWindow_headlessWindow_returnsFalse() {
+        Token oldGroupId = new Token(1L, 2L);
+        GroupWindowInfo groupInfo =
+                createGroupWindowInfo(oldGroupId, /* syncId= */ null, GroupWindowState.IN_ANOTHER);
+        when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(oldGroupId)))
+                .thenReturn(false);
+        when(mTabWindowManager.findWindowIdForTabGroup(oldGroupId)).thenReturn(2);
+        when(mTabWindowManager.findWindowIdForTabGroup(oldGroupId, false)).thenReturn(2);
+        when(mTabWindowManager.getTabModelSelectorById(2)).thenReturn(mOtherSelector);
+        when(mOtherSelector.getModel(false)).thenReturn(mOtherModel);
+        when(mOtherModel.getTabModelType()).thenReturn(TabModelType.HEADLESS);
+        when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(oldGroupId)))
+                .thenReturn(true);
+        when(mOtherModel.getTabsInGroup(TabGroupId.fromOptionalToken(oldGroupId)))
+                .thenReturn(List.of(mTab));
+        when(mTab.getId()).thenReturn(1);
+        when(mTab.getTabGroupId()).thenReturn(oldGroupId);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        assertFalse(
+                TabGroupUiUtils.openTabGroupInNewWindow(
+                        mTabModel,
+                        groupInfo,
+                        mTabGroupSyncService,
+                        mUiActionHandler,
+                        mMultiInstanceManager));
+
+        verify(mMultiInstanceOrchestrator, never()).moveTabGroupToNewWindow(any(), anyInt());
     }
 }
