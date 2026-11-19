@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>fake_dmserver Admin Dashboard</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      display: grid;
+      grid-template-columns: 200px minmax(0, 1fr);
+      margin: 0;
+      background: #f8f9fa;
+      font: 14px sans-serif;
+    }
+    h1, h2 { margin-top: 0; color: #1a73e8; }
+    h1 { font-size: 18px; }
+    nav {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 16px;
+      background: #fff;
+      border-right: 1px solid #dadce0;
+    }
+    nav a {
+      display: block;
+      padding: 10px 12px;
+      border-radius: 6px;
+      color: #3c4043;
+      text-decoration: none;
+    }
+    nav a[aria-current] { background: #e8f0fe; color: #1a73e8; }
+    main { padding: 24px 32px; }
+    .section {
+      margin-bottom: 24px;
+      padding: 20px;
+      overflow-x: auto;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+    }
+    .section-header, .dep {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    table { width: 100%; margin-top: 12px; border-collapse: collapse; }
+    th, td { padding: 8px 12px; border: 1px solid #dadce0; text-align: left; }
+    th { background: #f1f3f4; }
+    label { display: block; margin-bottom: 12px; font-weight: bold; }
+    select, input, textarea { display: block; width: 100%; margin-top: 4px; }
+    #policy-json-editor { font-family: monospace; }
+    button {
+      padding: 6px 12px;
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .status { margin-top: 12px; font-weight: bold; }
+    [data-active=true] { color: #137333; }
+    [data-active=false] { color: #c5221f; }
+    button[data-active] { color: #fff; }
+    button[data-active=true] { background: #ea4335; }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>fake_dmserver Admin Dashboard</h1>
+    <a href="#clients">Clients</a>
+    <a href="#reports">Reports</a>
+    <a href="#events">Real-time Events</a>
+    <a href="#commands">Remote Commands</a>
+    <a href="#policies">Policies</a>
+  </nav>
+
+  <main>
+    <section id="tab-clients">
+      <div class="section">
+        <h2>Registered Clients</h2>
+        <table id="clients-table"></table>
+      </div>
+    </section>
+
+    <section id="tab-reports" hidden>
+      <div class="section">
+        <div class="section-header">
+          <h2>Browser Reports</h2>
+          <div class="dep" id="dep-browser-reports"></div>
+        </div>
+        <table id="browser-reports-table"></table>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <h2>Profile Reports</h2>
+          <div class="dep" id="dep-profile-reports"></div>
+        </div>
+        <table id="profile-reports-table"></table>
+      </div>
+    </section>
+
+    <section id="tab-events" hidden>
+      <div class="section">
+        <div class="section-header">
+          <h2>Real-time Reporting Events</h2>
+          <div class="dep" id="dep-realtime-events"></div>
+        </div>
+        <table id="realtime-stats-table"></table>
+        <table id="events-table"></table>
+      </div>
+    </section>
+
+    <section id="tab-commands" hidden>
+      <div class="section">
+        <h2>Remote Command Dispatcher</h2>
+        <label>
+          Target Scope
+          <select id="command-scope">
+            <option value="browser">Browser</option>
+            <option value="profile">Profile</option>
+          </select>
+        </label>
+        <label>
+          Command Type
+          <select id="command-type">
+            <option value="12">12: BROWSER_CLEAR_BROWSING_DATA</option>
+            <option value="14">14: BROWSER_ROTATE_ATTESTATION_CREDENTIAL</option>
+            <option value="18">18: BROWSER_EXTENSION_UPDATE_CHECK</option>
+          </select>
+        </label>
+        <label>
+          Payload
+          <textarea id="command-payload" rows="3" placeholder="{}"></textarea>
+        </label>
+        <button id="dispatch-command-btn" type="button">
+          Dispatch Command
+        </button>
+        <div id="command-status" class="status"></div>
+        <table id="commands-table"></table>
+      </div>
+    </section>
+
+    <section id="tab-policies" hidden>
+      <div class="section">
+        <h2>Policies (policy.json)</h2>
+        <textarea id="policy-json-editor" rows="12"></textarea>
+        <p>
+          <button id="save-policies-btn" type="button">
+            Save &amp; Push Policies
+          </button>
+          <button id="push-invalidation-btn" type="button">
+            Push Invalidation Only
+          </button>
+        </p>
+        <div id="policy-status" class="status"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    function showTab() {
+      const hash = location.hash.slice(1);
+      const id = $('tab-' + hash) ? hash : 'clients';
+      for (const section of document.querySelectorAll('main > section')) {
+        section.hidden = section.id !== 'tab-' + id;
+      }
+      for (const link of document.querySelectorAll('nav a')) {
+        link.toggleAttribute('aria-current', link.hash === '#' + id);
+      }
+    }
+
+    // Tables. `rows` maps the JSON response of `url` to table rows.
+    const formatTime = ms => ms ? new Date(ms).toISOString() : '';
+
+    const TABLES = [
+      {
+        id: 'clients-table',
+        url: '/admin/api/clients',
+        columns: ['Device ID', 'Device Token', 'Machine Name', 'Username'],
+        rows: data => (data.clients || []).map(c => [
+          c.device_id, c.device_token, c.machine_name, c.username,
+        ]),
+      },
+      {
+        id: 'browser-reports-table',
+        url: '/admin/api/reports/browser',
+        columns: [
+          'Device ID', 'Timestamp', 'Computer Name', 'OS User',
+          'Serial Number', 'Browser Version',
+        ],
+        rows: data => (data.reports || []).map(r => [
+          r.device_id, formatTime(r.timestamp_ms), r.computer_name,
+          r.os_user, r.serial_number, r.browser_version,
+        ]),
+      },
+      {
+        id: 'profile-reports-table',
+        url: '/admin/api/reports/profile',
+        columns: ['Device ID', 'Timestamp', 'Name', 'ID', 'Profile Path'],
+        rows: data => (data.reports || []).map(r => [
+          r.device_id, formatTime(r.timestamp_ms), r.name, r.id,
+          r.profile_path,
+        ]),
+      },
+      {
+        id: 'realtime-stats-table',
+        url: '/admin/api/reports/events',
+        columns: ['Event Type', 'Count'],
+        rows: data => Object.entries(
+            Object.groupBy(data.events || [], e => e.event_type))
+            .map(([type, events]) => [type, events.length]),
+      },
+      {
+        id: 'events-table',
+        url: '/admin/api/reports/events',
+        columns: ['Index', 'Event Type'],
+        rows: data => (data.events || []).map((e, i) => [i, e.event_type]),
+      },
+      {
+        id: 'commands-table',
+        url: '/admin/api/commands',
+        columns: [
+          'ID', 'Type', 'Status', 'Result', 'Payload', 'Result Payload',
+        ],
+        rows: data => (data.commands || []).map(c => [
+          c.command_id, c.type, c.status, c.result, c.payload,
+          c.result_payload,
+        ]),
+      },
+    ];
+
+    function addRow(parent, cells, tag) {
+      const tr = parent.insertRow();
+      for (const cell of cells) {
+        tr.appendChild(document.createElement(tag)).textContent = cell ?? '';
+      }
+    }
+
+    async function loadTable(table) {
+      const rows = table.rows(await (await fetch(table.url)).json());
+      const element = $(table.id);
+      element.tBodies[0]?.remove();
+      const tbody = element.createTBody();
+      for (const row of rows) {
+        addRow(tbody, row, 'td');
+      }
+    }
+
+    function refreshTables() {
+      TABLES.forEach(loadTable);
+    }
+
+    // Sends `body` to `url` and shows the result in `statusId`.
+    // `onSuccess` returns the status text, or null if the request failed.
+    async function postAndShow(url, body, statusId, pendingText, onSuccess) {
+      const status = $(statusId);
+      status.textContent = pendingText;
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body,
+        });
+        const data = await response.json();
+        status.textContent =
+            onSuccess(data) || 'Error: ' + (data.error || 'Failed');
+      } catch (e) {
+        status.textContent = 'Error: ' + e;
+      }
+    }
+
+    // Remote commands.
+    $('dispatch-command-btn').addEventListener('click', () => {
+      const body = JSON.stringify({
+        scope: $('command-scope').value,
+        command_type: Number($('command-type').value),
+        payload: $('command-payload').value,
+      });
+      postAndShow(
+          '/admin/api/commands', body, 'command-status',
+          'Dispatching command...', data => {
+            if (data.command_id === undefined) {
+              return null;
+            }
+            refreshTables();
+            return 'Command dispatched. Command ID: ' + data.command_id;
+          });
+    });
+
+    // Policies. Each entry of `DEPS` is a policy that a section needs.
+    // "Enable" sets `value` in `scope`. "Disable" removes the policy from
+    // all scopes.
+    const DEPS = [
+      {
+        id: 'browser-reports',
+        policy: 'CloudReportingEnabled',
+        scope: 'machine',
+        value: true,
+      },
+      {
+        id: 'profile-reports',
+        policy: 'CloudProfileReportingEnabled',
+        scope: 'user',
+        value: true,
+      },
+      {
+        id: 'realtime-events',
+        policy: 'OnSecurityEventEnterpriseConnector',
+        scope: 'machine',
+        value: [{service_provider: 'google'}],
+      },
+    ];
+
+    function parseJson(text) {
+      try {
+        return JSON.parse(text);
+      } catch {
+        return null;
+      }
+    }
+
+    function isSet(policies, name) {
+      return [policies.machine, policies.user].some(scope => {
+        const value = scope?.[name];
+        return Array.isArray(value) ? value.length > 0 : value === true;
+      });
+    }
+
+    function updateDeps(policiesJson) {
+      const policies = parseJson(policiesJson) || {};
+      for (const dep of DEPS) {
+        const active = isSet(policies, dep.policy);
+        const badge = $('dep-' + dep.id).querySelector('.badge');
+        const button = $('dep-' + dep.id).querySelector('button');
+        badge.textContent = active ? 'Active' : 'Missing';
+        button.textContent = active ? 'Disable' : 'Enable';
+        badge.dataset.active = button.dataset.active = active;
+      }
+    }
+
+    function savePolicies() {
+      const policiesJson = $('policy-json-editor').value;
+      postAndShow(
+          '/admin/api/policies', policiesJson, 'policy-status',
+          'Saving policies...', data => {
+            if (!data.success) {
+              return null;
+            }
+            updateDeps(policiesJson);
+            return 'Policies saved and pushed successfully.';
+          });
+    }
+
+    function togglePolicy(dep) {
+      const editor = $('policy-json-editor');
+      const policies = parseJson(editor.value || '{}');
+      if (!policies) {
+        alert('Cannot update policy: editor content is not valid JSON.');
+        return;
+      }
+      if (isSet(policies, dep.policy)) {
+        delete policies.machine?.[dep.policy];
+        delete policies.user?.[dep.policy];
+      } else {
+        policies[dep.scope] ??= {};
+        policies[dep.scope][dep.policy] = dep.value;
+      }
+      editor.value = JSON.stringify(policies, null, 2);
+      savePolicies();
+    }
+
+    async function loadPolicies() {
+      try {
+        const text = await (await fetch('/admin/api/policies')).text();
+        $('policy-json-editor').value = text;
+        updateDeps(text);
+      } catch (e) {
+        $('policy-status').textContent = 'Error loading policies: ' + e;
+      }
+    }
+
+    for (const dep of DEPS) {
+      const label = document.createElement('span');
+      label.append('Requires ', document.createElement('code'), ':');
+      label.querySelector('code').textContent = dep.policy;
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.textContent = 'Checking...';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.addEventListener('click', () => togglePolicy(dep));
+      $('dep-' + dep.id).append(label, badge, button);
+    }
+
+    $('save-policies-btn').addEventListener('click', savePolicies);
+
+    $('push-invalidation-btn').addEventListener('click', () => {
+      postAndShow(
+          '/admin/api/policies/invalidate', undefined, 'policy-status',
+          'Pushing invalidation...',
+          data => data.success && 'Invalidation sent. Result: ' + data.sent);
+    });
+
+    for (const table of TABLES) {
+      addRow($(table.id).createTHead(), table.columns, 'th');
+    }
+    addEventListener('hashchange', showTab);
+    showTab();
+    refreshTables();
+    loadPolicies();
+  </script>
+</body>
+</html>

@@ -121,6 +121,17 @@ void EmbeddedPolicyTestServerTestBase::SetGoogleLoginTokenHeader(
           .append(user_email));
 }
 
+void EmbeddedPolicyTestServerTestBase::SetHeader(const std::string& key,
+                                                 const std::string& value) {
+  CHECK(resource_request_);
+  resource_request_->headers.SetHeader(key, value);
+}
+
+void EmbeddedPolicyTestServerTestBase::SetPayload(const std::string& payload) {
+  CHECK(payload_.empty());
+  payload_ = payload;
+}
+
 void EmbeddedPolicyTestServerTestBase::SetPayload(
     const enterprise_management::DeviceManagementRequest&
         device_management_request) {

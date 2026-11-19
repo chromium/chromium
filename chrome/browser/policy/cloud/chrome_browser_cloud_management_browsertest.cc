@@ -354,6 +354,13 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
             /* retry_callback */ base::DoNothing(),
             /* should_retry_callback */ base::DoNothing());
 
+    ASSERT_TRUE(chrome_desktop_report);
+    em::DeviceManagementRequest request;
+    *request.mutable_chrome_desktop_report_request() = *chrome_desktop_report;
+    std::string payload;
+    ASSERT_TRUE(request.SerializeToString(&payload));
+    config->SetRequestPayload(payload);
+
     std::unique_ptr<DeviceManagementService::Job> job =
         service_->CreateJob(std::move(config));
 

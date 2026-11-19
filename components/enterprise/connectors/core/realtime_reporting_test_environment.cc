@@ -12,16 +12,14 @@
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/test_support/report_storage.h"
 
 namespace enterprise_connectors::test {
 
 RealtimeReportingTestEnvironment::RealtimeReportingTestEnvironment(
-    std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_server,
-    std::unique_ptr<RealtimeReportingTestServer> reporting_server)
-    : policy_server_(std::move(policy_server)),
-      reporting_server_(std::move(reporting_server)) {
+    std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_server)
+    : policy_server_(std::move(policy_server)) {
   CHECK(policy_server_);
-  CHECK(reporting_server_);
 }
 
 RealtimeReportingTestEnvironment::~RealtimeReportingTestEnvironment() = default;
@@ -39,12 +37,11 @@ RealtimeReportingTestEnvironment::Create(
     return nullptr;
   }
   return std::make_unique<RealtimeReportingTestEnvironment>(
-      std::move(policy_server),
-      std::make_unique<RealtimeReportingTestServer>());
+      std::move(policy_server));
 }
 
 bool RealtimeReportingTestEnvironment::Start() {
-  return policy_server_->Start() && reporting_server_->Start();
+  return policy_server_->Start();
 }
 
 std::vector<std::string> RealtimeReportingTestEnvironment::GetArguments() {
@@ -55,8 +52,13 @@ std::vector<std::string> RealtimeReportingTestEnvironment::GetArguments() {
       base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
                     policy_server_->GetServiceURL().spec()}),
       base::StrCat({"--", policy::switches::kRealtimeReportingUrl, "=",
-                    reporting_server_->GetServiceURL().spec()}),
+                    policy_server_->GetRealtimeReportingURL().spec()}),
   };
+}
+
+std::vector<::chrome::cros::reporting::proto::UploadEventsRequest>
+RealtimeReportingTestEnvironment::GetUploadedReports() const {
+  return policy_server_->report_storage()->GetRealtimeReports();
 }
 
 }  // namespace enterprise_connectors::test

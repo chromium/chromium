@@ -9,8 +9,8 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
@@ -27,9 +27,16 @@ namespace policy {
 class ClientStorage;
 class PolicyStorage;
 class RemoteCommandsState;
+class ReportStorage;
 
 extern const char kFakeDeviceToken[];
 extern const char kInvalidEnrollmentToken[];
+
+// Request type of the "/admin" and "/admin/..." paths.
+inline constexpr char kAdminRequestType[] = "admin";
+
+// Returns true for "/admin" and "/admin/..." paths.
+bool IsAdminPath(std::string_view path);
 
 // Runs a fake implementation of the cloud policy server on the local machine.
 class EmbeddedPolicyTestServer {
@@ -62,6 +69,8 @@ class EmbeddedPolicyTestServer {
       return parent_->remote_commands_state();
     }
 
+    ReportStorage* report_storage() { return parent_->report_storage(); }
+
    private:
     const raw_ptr<EmbeddedPolicyTestServer> parent_;
   };
@@ -74,15 +83,30 @@ class EmbeddedPolicyTestServer {
   // Initializes and waits until the server is ready to accept requests.
   bool Start(int port = 0, std::string_view address = "127.0.0.1");
 
+  // Stops the server and waits until no request handler runs. Does nothing if
+  // the server does not run. Subclasses call this first in their destructor,
+  // because `HandleRequest()` can use their members on the IO thread.
+  bool ShutdownAndWaitUntilComplete();
+
   ClientStorage* client_storage();
 
   PolicyStorage* policy_storage();
 
   RemoteCommandsState* remote_commands_state();
 
+  ReportStorage* report_storage();
+
   // Returns the service URL.
   GURL GetServiceURL() const;
 
+  // Returns the realtime reporting URL.
+  GURL GetRealtimeReportingURL() const;
+
+  // Returns the GCM checkin URL.
+  GURL GetGcmCheckinURL() const;
+
+  // Returns the GCM registration URL.
+  GURL GetGcmRegistrationURL() const;
   // Public so it can be used by tests.
   void RegisterHandler(std::unique_ptr<EmbeddedPolicyTestServer::RequestHandler>
                            request_handler);
@@ -122,6 +146,8 @@ class EmbeddedPolicyTestServer {
   // TODO(b/275564884): Combine the remote commands state with the server state.
   // Separate because fake_dm_server clears server_state_ on each handler call.
   std::unique_ptr<RemoteCommandsState> remote_commands_state_;
+
+  std::unique_ptr<ReportStorage> report_storage_;
 
   std::map<std::string, std::unique_ptr<RequestHandler>> request_handlers_;
   net::test_server::EmbeddedTestServer http_server_;

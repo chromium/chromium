@@ -91,7 +91,7 @@ policy blob. This command typically requires root permissions.
 ```
 
 The server will output its address, for example:
-`{"host": "127.0.0.1", "port": 6112}`.
+`{"host": "127.0.0.1", "port": 6112, "fcm_port": 0, ...}`.
 
 Optional arguments:
 - `--port=...` to set the server port. Defaults to 6112.

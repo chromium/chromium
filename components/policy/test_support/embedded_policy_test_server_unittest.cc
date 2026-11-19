@@ -12,6 +12,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
 #include "components/policy/test_support/policy_storage.h"
+#include "components/policy/test_support/request_handler_for_realtime_reporting.h"
 #include "components/policy/test_support/test_server_helpers.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -138,5 +139,16 @@ TEST_F(EmbeddedPolicyTestServerTest, HandleRequest_PolicyViaExternalEndpoint) {
   EXPECT_EQ(GetResponseBody(), kRawPolicyPayload);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+TEST_F(EmbeddedPolicyTestServerTest,
+       HandleRequest_RealtimeReporting_ConfiguredError) {
+  test_server()->ConfigureRequestError(kRealtimeReportingRequestType,
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
+  SetURL(test_server()->GetRealtimeReportingURL());
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_INTERNAL_SERVER_ERROR);
+}
 
 }  // namespace policy

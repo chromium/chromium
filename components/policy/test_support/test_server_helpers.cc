@@ -10,6 +10,7 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "google/protobuf/message_lite.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -24,8 +25,6 @@ using ::net::test_server::HttpResponse;
 
 namespace em = enterprise_management;
 
-namespace {
-
 std::unique_ptr<HttpResponse> CreateHttpResponse(
     net::HttpStatusCode code,
     const std::string& content,
@@ -36,8 +35,6 @@ std::unique_ptr<HttpResponse> CreateHttpResponse(
   response->set_content(content);
   return response;
 }
-
-}  // namespace
 
 void CustomHttpResponse::SendResponse(
     base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
@@ -101,7 +98,7 @@ bool GetProfileIdFromRequest(const net::test_server::HttpRequest& request,
 
 std::unique_ptr<HttpResponse> CreateHttpResponse(
     net::HttpStatusCode code,
-    const em::DeviceManagementResponse& proto_content) {
+    const google::protobuf::MessageLite& proto_content) {
   return CreateHttpResponse(code, proto_content.SerializeAsString(),
                             "application/x-protobuffer");
 }
@@ -110,6 +107,10 @@ std::unique_ptr<HttpResponse> CreateHttpResponse(
     net::HttpStatusCode code,
     const std::string& text_content) {
   return CreateHttpResponse(code, text_content, "text/plain");
+}
+
+net::HttpStatusCode GetResponseCode(const HttpResponse& response) {
+  return static_cast<const CustomHttpResponse&>(response).code();
 }
 
 }  // namespace policy

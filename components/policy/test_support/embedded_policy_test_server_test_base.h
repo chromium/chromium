@@ -28,6 +28,7 @@ namespace policy {
 class ClientStorage;
 class PolicyStorage;
 class RemoteCommandsState;
+class ReportStorage;
 
 class EmbeddedPolicyTestServerTestBase : public testing::Test {
  public:
@@ -52,6 +53,8 @@ class EmbeddedPolicyTestServerTestBase : public testing::Test {
   void SetEnrollmentTokenHeader(const std::string& enrollment_token);
   void SetDeviceTokenHeader(const std::string& device_token);
   void SetGoogleLoginTokenHeader(const std::string& user_email);
+  void SetHeader(const std::string& key, const std::string& value);
+  void SetPayload(const std::string& payload);
   void SetPayload(const enterprise_management::DeviceManagementRequest&
                       device_management_request);
 
@@ -74,6 +77,8 @@ class EmbeddedPolicyTestServerTestBase : public testing::Test {
   RemoteCommandsState* remote_commands_state() {
     return test_server_.remote_commands_state();
   }
+
+  ReportStorage* report_storage() { return test_server_.report_storage(); }
 
  private:
   // Adds a query param to the |resource_request_|.

@@ -12,6 +12,10 @@
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 
+namespace enterprise_management {
+class RegisterBrowserRequest;
+}  // namespace enterprise_management
+
 namespace policy {
 
 class RequestHandlerForRegisterBrowserOrPolicyAgent

@@ -22,6 +22,7 @@ namespace {
 
 constexpr char kDeviceId1[] = "fake_device_id_1";
 constexpr char kDeviceId2[] = "fake_device_id_2";
+constexpr char kProfileId[] = "fake_profile_id";
 constexpr char kDeviceToken[] = "fake_device_token";
 constexpr char kMachineName[] = "machine_name";
 
@@ -168,4 +169,43 @@ TEST_F(RequestHandlerForRemoteCommandsTest, HandleRequest_HasPendingCommand) {
   EXPECT_EQ(second_remote_command.command_id(), cmd2.command_id());
   EXPECT_EQ(second_remote_command.type(), cmd2.type());
 }
+
+TEST_F(RequestHandlerForRemoteCommandsTest, HandleRequest_ScopedCommands) {
+  ClientStorage::ClientInfo client_info;
+  client_info.device_token = kDeviceToken;
+  client_info.device_id = kDeviceId1;
+  client_info.machine_name = kMachineName;
+  client_storage()->RegisterClient(std::move(client_info));
+
+  em::RemoteCommand command;
+  command.set_type(em::RemoteCommand::COMMAND_ECHO_TEST);
+  int64_t browser_id = remote_commands_state()->AddPendingRemoteCommand(
+      command, RemoteCommandScope::kBrowser);
+  int64_t profile_id = remote_commands_state()->AddPendingRemoteCommand(
+      command, RemoteCommandScope::kProfile);
+
+  SetProfileIdParam(kProfileId);
+  em::DeviceManagementRequest device_management_request;
+  device_management_request.mutable_remote_command_request()
+      ->set_signature_type(em::PolicyFetchRequest::SHA256_RSA);
+  SetPayload(device_management_request);
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_OK);
+  em::DeviceRemoteCommandResponse remote_response =
+      GetDeviceManagementResponse().remote_command_response();
+  ASSERT_EQ(remote_response.secure_commands_size(), 1);
+  std::string public_key =
+      policy_storage()->signature_provider()->GetCurrentKey()->public_key();
+  EXPECT_EQ(ValidateSignedData(remote_response.secure_commands()[0], public_key,
+                               em::PolicyFetchRequest::SHA256_RSA)
+                .command_id(),
+            profile_id);
+
+  std::vector<em::RemoteCommand> remaining =
+      remote_commands_state()->ExtractPendingRemoteCommands();
+  ASSERT_EQ(remaining.size(), 1u);
+  EXPECT_EQ(remaining[0].command_id(), browser_id);
+}
+
 }  // namespace policy

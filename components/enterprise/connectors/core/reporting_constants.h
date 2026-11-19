@@ -31,6 +31,15 @@ inline constexpr char kKeyLoginEvent[] = "loginEvent";
 inline constexpr char kKeyPasswordBreachEvent[] = "passwordBreachEvent";
 inline constexpr char kKeySaasUsageEvent[] = "saasUsageEvent";
 inline constexpr char kKeyBrowserLaunchEvent[] = "browserLaunchEvent";
+inline constexpr char kKeyPolicyValidationReportEvent[] =
+    "policyValidationReportEvent";
+inline constexpr char kKeyExtensionAppInstallEvent[] =
+    "extensionAppInstallEvent";
+inline constexpr char kKeyReportingRecordEvent[] = "reportingRecordEvent";
+inline constexpr char kKeyContentTransferEvent[] = "contentTransferEvent";
+inline constexpr char kKeyUrlNavigationEvent[] = "urlNavigationEvent";
+inline constexpr char kKeySuspiciousUrlEvent[] = "suspiciousUrlEvent";
+inline constexpr char kKeyBrowserHistogramEvent[] = "browserHistogramEvent";
 
 inline constexpr char kEnterpriseWarnedSeenThreatType[] =
     "ENTERPRISE_WARNED_SEEN";

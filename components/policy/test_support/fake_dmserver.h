@@ -9,19 +9,25 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/grpc/grpc_unary_handler.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
+#include "components/policy/test_support/policy_invalidator.h"
 #include "components/policy/test_support/remote_commands_service.castcore.pb.h"
-#include "components/policy/test_support/remote_commands_state.h"
+#include "components/policy/test_support/request_handler_for_admin.h"
+#include "net/test/embedded_test_server/http_request.h"
 
 /*
 A bare-bones test server for testing cloud policy support.
@@ -97,28 +103,55 @@ Example:
 
 namespace fakedms {
 
+enum class ParseFlagsResult {
+  kSuccess,
+  kHelp,
+  kError,
+};
+
 void InitLogging(const std::optional<std::string>& log_path,
                  bool log_to_console,
                  int min_log_level);
 void PrintHelp();
-bool ParseFlags(const base::CommandLine& command_line,
-                std::string& policy_blob_path,
-                std::string& client_state_path,
-                std::string& grpc_unix_socket_uri,
-                std::optional<std::string>& log_path,
-                base::ScopedFD& startup_pipe,
-                bool& log_to_console,
-                int& min_log_level,
-                int& port);
+
+struct FakeServerConfig {
+  std::string policy_blob_path;
+  std::string client_state_path;
+  std::string grpc_unix_socket_uri;
+  std::optional<std::string> log_path;
+  base::ScopedFD startup_pipe;
+  bool log_to_console = false;
+  int min_log_level = 0;
+  int port = 0;
+  // std::nullopt disables the FakeFcmServer.
+  std::optional<int> fcm_port;
+};
+
+ParseFlagsResult ParseFlags(const base::CommandLine& command_line,
+                            FakeServerConfig& config);
 
 // TODO(b/293451778): Move this to its own file.
 class RemoteCommandsWaitOperation;
 
-class FakeDMServer : public policy::EmbeddedPolicyTestServer {
+// Cloud policy test server for device management, FCM push invalidations, and
+// gRPC remote commands.
+//
+// Threading model:
+// - The main sequence owns server lifecycle, request handling, gRPC requests,
+//   FakeFcmServer, and PolicyInvalidator. Destruction stops the HTTP server
+//   first so no HTTP tasks can be posted during teardown.
+// - EmbeddedTestServer invokes HandleRequest() on its internal IO thread, which
+//   returns an async HttpResponse wrapper that hops to `main_task_runner_` and
+//   replies back on the IO thread.
+// - `RemoteCommandsState` still uses its own lock because it is shared with
+//   EmbeddedPolicyTestServer browser tests.
+class FakeDMServer : public policy::EmbeddedPolicyTestServer,
+                     public policy::RequestHandlerForAdmin::Delegate {
  public:
   FakeDMServer(const std::string& policy_blob_path,
                const std::string& client_state_path,
                const std::string& grpc_unix_socket_path,
+               scoped_refptr<base::SequencedTaskRunner> debounce_task_runner,
                base::OnceClosure shutdown_cb = base::DoNothing());
   ~FakeDMServer() override;
 
@@ -126,13 +159,17 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   // fake_dmserver_main thread, note that the EmbeddedPolicyTestServer will
   // shut down on its own when the destructor is called.
   // Starts the gRPC server on the same thread as the fake_dmserver_main thread.
-  // Returns true if it's starts the servers successfully and false otherwise.
-  // If `port` is 0, the server will listen on a random port.
-  bool StartFakeServer(int port = 0);
+  // Starts the FakeFcmServer; an FCM port conflict logs a warning and starts
+  // without FCM. Returns true if the HTTP server starts, and false otherwise.
+  // If `port` or `fcm_port` is 0, the server listens on a random port. If
+  // `fcm_port` is std::nullopt, the FakeFcmServer does not start.
+  bool StartFakeServer(int port = 0, std::optional<int> fcm_port = 0);
 
-  // Writes the host and port of the EmbeddedPolicyTestServer to the given pipe
-  // in a json format {"host": "localhost", "port": 1234}, it will return true
-  // if it's able to write the URL to the pipe, and false otherwise.
+  // Returns the FakeFcmServer.
+  FakeFcmServer* fcm_server() { return policy_invalidator_.fcm_server(); }
+
+  // Writes server connection info as JSON to `startup_pipe` (see
+  // WriteURLToPipe() for fields). Returns true on success.
   bool WriteURLToPipe(base::ScopedFD&& startup_pipe);
 
   // Overrides the EmbeddedPolicyTestServer request handler.
@@ -140,6 +177,42 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
       const net::test_server::HttpRequest& request) override;
 
  private:
+  class DeferredHttpResponse;
+
+  struct MainThreadResponse {
+    MainThreadResponse();
+    MainThreadResponse(MainThreadResponse&&);
+    MainThreadResponse& operator=(MainThreadResponse&&);
+    ~MainThreadResponse();
+
+    std::unique_ptr<net::test_server::HttpResponse> response;
+    base::OnceClosure after_send;
+  };
+
+  static MainThreadResponse RunRequestOnMainThread(
+      base::WeakPtr<FakeDMServer> server,
+      net::test_server::HttpRequest request);
+
+  // policy::RequestHandlerForAdmin::Delegate:
+  std::optional<bool> TriggerPolicyInvalidation() override;
+  std::string GetPoliciesJson() const override;
+  bool UpdatePoliciesJson(const std::string& json_content) override;
+
+  // Handles `request` on the main sequence. `after_send` is optionally set to
+  // a main-sequence closure that runs after the HTTP response is sent.
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequestOnMainThread(
+      const net::test_server::HttpRequest& request,
+      base::OnceClosure& after_send);
+
+  // Resets the server state and reloads policies from `policy_blob_path_`.
+  bool ReloadPoliciesFromFile();
+
+  // Loads previously persisted binary reports from the data directory.
+  void LoadPersistedReports(const base::FilePath& data_dir);
+
+  // Loads previously persisted real-time reports from the reports directory.
+  void LoadPersistedRealtimeReports(const base::FilePath& reports_dir);
+
   // Sets the policy payload in the policy storage, it will return true if it's
   // able to set the policy and false otherwise.
   bool SetPolicyPayload(const std::string* policy_type,
@@ -167,6 +240,10 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   // the policy blob file doesn't exist yet or all the values are read
   // correctly, and false otherwise.
   bool ReadPolicyBlobFile();
+
+  // Sets the values of the policy `blob` in the server state. Returns false if
+  // a value is invalid.
+  bool ParsePolicyBlob(const base::DictValue& blob);
 
   // Writes all the clients to the client state file, it will return true if
   // it's able to write the client storage to the state file, and false
@@ -246,15 +323,12 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   const base::FilePath client_state_path_;
   std::string grpc_unix_socket_uri_;
 
+  const scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+
   // Sequence checker for fake_dmserver main IO thread.
   SEQUENCE_CHECKER(fake_dmserver_main_sequence_checker_);
-  // Sequence checker for embedded server's request handling thread, and all the
-  // functions called by HandleRequest
-  SEQUENCE_CHECKER(embedded_server_sequence_checker_);
 
   std::optional<cast::utils::GrpcServer> grpc_server_;
-  // Callback to shut down the grpc server.
-  base::OnceClosure shut_down_on_main_task_runner_;
   // Callback to reset the grpc server then shut down the fake_dmserver main.
   base::OnceClosure shut_down_server_;
 
@@ -264,6 +338,9 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
            base::UniquePtrComparator>
       waiters_;
 
+  PolicyInvalidator policy_invalidator_;
+
+  base::WeakPtr<FakeDMServer> main_weak_ptr_;
   base::WeakPtrFactory<FakeDMServer> weak_ptr_factory_{this};
 };
 

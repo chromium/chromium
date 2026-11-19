@@ -62,7 +62,10 @@ for `fake_dmserver` to save/load its internal state.
 
 Optional arguments:
 - `--help`, `-h`: Show help message.
-- `--port=...`: Set the server port (defaults to 6112).
+- `--port=...`: Set the server port (defaults to 6112; 0 for random port).
+- `--fcm-port=...`: Set the mock FCM push notification port (defaults to 6113;
+  0 for random port).
+- `--no-fcm`: Disable the mock FCM push notification server.
 
 ### Step 3: Launch Chrome
 
@@ -91,19 +94,42 @@ available, specify the parameters manually:
 # Replace the URL with the host and port from the previous step
 ./out/Default/chrome \
   --enable-chrome-browser-cloud-management \
-  --device-management-url=http://127.0.0.1:6112/device_management
+  --device-management-url=http://127.0.0.1:6112/device_management \
+  --realtime-reporting-url=http://127.0.0.1:6112/realtime_reporting \
+  --gcm-mcs-endpoint=http://127.0.0.1:6113 \
+  --gcm-checkin-url=http://127.0.0.1:6112/gcm_checkin \
+  --gcm-registration-url=http://127.0.0.1:6112/gcm_register
 ```
 
 Note that some features only work with `--use-fake-dmserver`.
 
 ### Step 4: Test Your Feature
 
-Use server logs for debugging. `policies.json` should auto-reload without
-needing to restart the server. Use chrome://policy to load and reload policies
-after every change.
+Use server logs for debugging. `policies.json` will auto-reload without
+needing to restart the server. When Chrome is launched with the GCM flags
+above (`--gcm-mcs-endpoint`, `--gcm-checkin-url`, `--gcm-registration-url`),
+changes to `policies.json` also push invalidations to Chrome automatically;
+otherwise (such as with `--use-fake-dmserver` alone), click "Reload policies"
+on `chrome://policy` to fetch updated policies.
 
-Browser and profile reports are saved in human-readable .textproto files in
+Browser reports, profile reports, and real-time reporting events are saved in
 `$HOME/dmserver_data`.
+
+### Step 5: Web Administration Dashboard
+
+`fake_dmserver` provides an interactive web dashboard at
+`http://127.0.0.1:6112/admin`.
+
+Supported features:
+* View registered clients.
+* View browser reports, profile reports, and real-time reporting events.
+* Edit policies live with immediate push notification updates.
+* Send remote commands and view execution results.
+
+### Step 6: REST API
+
+`fake_dmserver` also provides a REST API for automated testing and scripting.
+See [rest_api.md](rest_api.md) for endpoint details and examples.
 
 ## 2. How to Set Valid Policies (`policies.json`)
 
@@ -122,10 +148,16 @@ define the actual policies to be applied.
     * `action`: (String enum) `"allow"` or `"block"`
     * `reasons`: (Array of String enums) elements can be `"blocked_category"`
       or `"risk_score"`
+*   `machine-extensions`, `user-extensions`: (Object) A dictionary where keys
+    are 32-character extension IDs (`[a-p]{32}`) and values are dictionaries
+    of policy names to values for `chrome.storage.managed`. Values can be raw
+    values (e.g., `{"PolicyName": "value"}`) or explicit dictionaries with
+    a `"Value"` key (e.g., `{"PolicyName": {"Value": "val"}}`).
 *   `policy_user`: (String) The user ID (e.g., email address) to embed in
     policy responses. On desktop, this must use one of the supported signature
-    domains (`example.com`, `chromepolicytest.com`, or `managedchrome.com`). For
-    user policies, it must also match the signed-in profile account.
+    domains (`example.com`, `chromepolicytest.com`, or `managedchrome.com`), and
+    defaults to `username@example.com` if omitted. For user policies, it must
+    also match the signed-in profile account.
 *   `managed_users`: (Array of Strings) A list of users that the server should
     treat as managed. Use `"*"` to treat all users as managed.
 *   `device_affiliation_ids`: (Array of Strings) A list of affiliation IDs for
@@ -176,6 +208,15 @@ More complete example showcasing some of `fake_dmserver`'s features:
   },
   "recommended_machine": {
     "BookmarkBarEnabled": true
+  },
+  "machine-extensions": {
+    "abcdefghijklmnopabcdefghijklmnop": {
+      "server_url": "https://sync.example.com",
+      "sync_frequency": {
+        "Value": 300,
+        "Level": "Recommended"
+      }
+    }
   },
   "machine-extension-install": {
     "abcdefghijklmnopabcdefghijklmnop@1.0.0": {

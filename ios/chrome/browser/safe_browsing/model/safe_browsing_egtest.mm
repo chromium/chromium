@@ -678,7 +678,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // Verify the server is notified the browser showed a warning.
   [self waitForEnterpriseReports:1];
   std::vector<UploadEventsRequest> requests =
-      _reportingEnvironment->reporting_server()->GetUploadedReports();
+      _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertInterstitialEvent:requests[0]
                             url:_phishingURL
@@ -694,7 +694,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
 
   // Verify the server is notified the end user bypassed the warning.
   [self waitForEnterpriseReports:2];
-  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  requests = _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(2U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertInterstitialEvent:requests[1]
                             url:_phishingURL
@@ -811,7 +811,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // Verify the server is notified the browser showed a warning.
   [self waitForEnterpriseReports:1];
   std::vector<UploadEventsRequest> requests =
-      _reportingEnvironment->reporting_server()->GetUploadedReports();
+      _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertInterstitialEvent:requests[0]
                             url:_malwareURL
@@ -826,7 +826,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
 
   // Verify the server is notified the end user bypassed the warning.
   [self waitForEnterpriseReports:2];
-  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  requests = _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(2U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertInterstitialEvent:requests[1]
                             url:_malwareURL
@@ -1226,7 +1226,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // Verify the server is notified the browser blocked a navigation.
   [self waitForEnterpriseReports:1];
   std::vector<UploadEventsRequest> requests =
-      _reportingEnvironment->reporting_server()->GetUploadedReports();
+      _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertUrlFilteringInterstitialEvent:requests[0]
                                         url:_enterpriseWarnURL
@@ -1256,7 +1256,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // Verify the server is notified the browser flagged a navigation.
   [self waitForEnterpriseReports:1];
   std::vector<UploadEventsRequest> requests =
-      _reportingEnvironment->reporting_server()->GetUploadedReports();
+      _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertUrlFilteringInterstitialEvent:requests[0]
                                         url:_enterpriseWarnURL
@@ -1271,7 +1271,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // Verify the server is notified about the user bypassing a flagged a
   // navigation.
   [self waitForEnterpriseReports:2];
-  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  requests = _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(2U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertUrlFilteringInterstitialEvent:requests[1]
                                         url:_enterpriseWarnURL
@@ -1302,7 +1302,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // Verify the server is notified the browser flagged a navigation.
   [self waitForEnterpriseReports:1];
   std::vector<UploadEventsRequest> requests =
-      _reportingEnvironment->reporting_server()->GetUploadedReports();
+      _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertUrlFilteringInterstitialEvent:requests[0]
                                         url:_enterpriseWarnURL
@@ -1318,7 +1318,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
 
   // Verify the server is notified the browser flagged a navigation.
   [self waitForEnterpriseReports:2];
-  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  requests = _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(2U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertUrlFilteringInterstitialEvent:requests[1]
                                         url:_enterpriseWarnURL
@@ -1333,7 +1333,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // Verify the server is notified about the user bypassing a flagged a
   // navigation.
   [self waitForEnterpriseReports:3];
-  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  requests = _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(3U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertUrlFilteringInterstitialEvent:requests[2]
                                         url:_enterpriseWarnURL
@@ -1364,7 +1364,7 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // Verify the server is notified the browser blocked a navigation.
   [self waitForEnterpriseReports:1];
   std::vector<UploadEventsRequest> requests =
-      _reportingEnvironment->reporting_server()->GetUploadedReports();
+      _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertUrlFilteringInterstitialEvent:requests[0]
                                         url:_enterpriseBlockURL

@@ -23,11 +23,19 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
+#include "base/test/values_test_util.h"
+#include "build/build_config.h"
+#include "components/enterprise/common/proto/upload_request_response.pb.h"
+#include "components/invalidation/invalidation_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
@@ -35,10 +43,19 @@
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
+#include "components/policy/test_support/fake_fcm_server.h"
+#include "components/policy/test_support/fcm_test_util.h"
+#include "components/policy/test_support/policy_invalidator.h"
 #include "components/policy/test_support/policy_storage.h"
+#include "components/policy/test_support/remote_commands_state.h"
+#include "components/policy/test_support/report_storage.h"
+#include "components/policy/test_support/test_server_helpers.h"
+#include "google_apis/gcm/base/mcs_util.h"
+#include "google_apis/gcm/protocol/mcs.pb.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/socket/tcp_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -147,9 +164,53 @@ class Response {
   std::string mime_type_;
 };
 
+std::string GetStanzaType(const mcs_proto::DataMessageStanza& stanza) {
+  for (int i = 0; i < stanza.app_data_size(); ++i) {
+    if (stanza.app_data(i).key() == "type") {
+      return stanza.app_data(i).value();
+    }
+  }
+  return "";
+}
+
+// Expects that `stanza` is an invalidation from the `project_number` project.
+void ExpectFcmProject(const mcs_proto::DataMessageStanza& stanza,
+                      int64_t project_number) {
+  const std::string from = base::NumberToString(project_number);
+  EXPECT_EQ(stanza.from(), from);
+  EXPECT_EQ(stanza.category(), "com.google.chrome.fcm.invalidations-" + from);
+}
+
+// Reads the browser and user policy invalidations pushed to `client`.
+void ExpectPolicyInvalidationStanzas(net::StreamSocket& client) {
+  std::vector<std::string> types;
+  for (int i = 0; i < 2; ++i) {
+    mcs_proto::DataMessageStanza stanza;
+    ASSERT_TRUE(ReadFcmPacket(client, gcm::kDataMessageStanzaTag, &stanza));
+    ExpectFcmProject(stanza,
+                     invalidation::kNonCriticalInvalidationsProjectNumber);
+    types.push_back(GetStanzaType(stanza));
+  }
+  EXPECT_THAT(types,
+              testing::UnorderedElementsAre(kBrowserPolicyInvalidationType,
+                                            kUserPolicyInvalidationType));
+}
+
+// Adds a browser remote command as a marker, and expects that the next stanza
+// that `client` receives is the marker. Thus no other stanza came before it.
+void ExpectNextStanzaIsMarker(FakeDMServer& fake_dmserver,
+                              net::StreamSocket& client) {
+  em::RemoteCommand command;
+  command.set_type(em::RemoteCommand::COMMAND_ECHO_TEST);
+  fake_dmserver.remote_commands_state()->AddPendingRemoteCommand(
+      command, policy::RemoteCommandScope::kBrowser);
+  mcs_proto::DataMessageStanza stanza;
+  ASSERT_TRUE(ReadFcmPacket(client, gcm::kDataMessageStanzaTag, &stanza));
+  EXPECT_EQ(GetStanzaType(stanza), kBrowserRemoteCommandInvalidationType);
+}
+
 }  // namespace
 
-// TODO(b/239676448): Add missing unittest for Writing to Pipe.
 class FakeDMServerTest : public testing::Test {
  public:
   FakeDMServerTest()
@@ -163,13 +224,50 @@ class FakeDMServerTest : public testing::Test {
     client_state_path_ = temp_dir_.GetPath().Append(
         base::FilePath(FILE_PATH_LITERAL("state.json")));
     ASSERT_FALSE(PathExists(client_state_path_));
-    grpc_unix_socket_uri_ = "unix:///tmp/fake_dmserver_grpc.sock";
+  }
+
+  // Returns a server whose debounce timer runs on `debounce_runner_`.
+  FakeDMServer CreateFakeDMServer(
+      base::OnceClosure shutdown_cb = base::DoNothing()) {
+    return FakeDMServer(
+        policy_blob_path_.MaybeAsASCII(), client_state_path_.MaybeAsASCII(),
+        /*grpc_unix_socket_path=*/"", debounce_runner_, std::move(shutdown_cb));
+  }
+
+  // Waits until the file watcher has seen a change of the policy file.
+  void WaitForPolicyFileChange() {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return debounce_runner_->HasPendingTask(); }));
+  }
+
+  // Returns the number of files that match `pattern` in the data directory.
+  size_t CountDataFiles(const base::FilePath::StringType& pattern) {
+    base::FileEnumerator enumerator(client_state_path_.DirName(),
+                                    /*recursive=*/false,
+                                    base::FileEnumerator::FILES, pattern);
+    size_t count = 0;
+    for (base::FilePath file = enumerator.Next(); !file.empty();
+         file = enumerator.Next()) {
+      ++count;
+    }
+    return count;
   }
 
   Response SendRequest(
       const GURL& server_url,
       const std::string& request_path,
       std::optional<em::DeviceManagementRequest> request_proto = std::nullopt) {
+    return request_proto ? SendRequest(server_url, request_path,
+                                       request_proto->SerializeAsString(),
+                                       "application/x-protobuffer")
+                         : SendRequest(server_url, request_path, "", "");
+  }
+
+  // Sends `body` with `content_type`, or no body if `content_type` is empty.
+  Response SendRequest(const GURL& server_url,
+                       const std::string& request_path,
+                       const std::string& body,
+                       const std::string& content_type) {
     std::string request_url =
         base::StringPrintf("http://%s:%s%s", server_url.GetHost().c_str(),
                            server_url.GetPort().c_str(), request_path.c_str());
@@ -183,10 +281,9 @@ class FakeDMServerTest : public testing::Test {
     std::unique_ptr<network::SimpleURLLoader> url_loader =
         network::SimpleURLLoader::Create(std::move(resource_request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
-    if (request_proto) {
-      std::string body;
-      CHECK(request_proto->SerializeToString(&body));
-      url_loader->AttachStringForUpload(body, "application/x-protobuffer");
+    url_loader->SetAllowHttpErrorResults(true);
+    if (!content_type.empty()) {
+      url_loader->AttachStringForUpload(body, content_type);
     }
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
@@ -211,7 +308,8 @@ class FakeDMServerTest : public testing::Test {
 
  protected:
   base::FilePath policy_blob_path_, client_state_path_;
-  std::string grpc_unix_socket_uri_;
+  scoped_refptr<base::TestMockTimeTaskRunner> debounce_runner_ =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -220,10 +318,8 @@ class FakeDMServerTest : public testing::Test {
 
 TEST_F(FakeDMServerTest, HandleExitRequestSucceeds) {
   base::MockOnceCallback<void()> callback;
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_, callback.Get());
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer(callback.Get());
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   EXPECT_CALL(callback, Run());
   Response response = SendRequest(fake_dmserver.GetServiceURL(), "/test/exit");
@@ -233,10 +329,8 @@ TEST_F(FakeDMServerTest, HandleExitRequestSucceeds) {
 }
 
 TEST_F(FakeDMServerTest, HandlePingRequestSucceeds) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   Response response = SendRequest(fake_dmserver.GetServiceURL(), "/test/ping");
   EXPECT_EQ(response.status, net::HTTP_OK);
@@ -245,10 +339,8 @@ TEST_F(FakeDMServerTest, HandlePingRequestSucceeds) {
 }
 
 TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -318,10 +410,8 @@ TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
 }
 
 TEST_F(FakeDMServerTest, ReadClientStateFileWithWrongJSONDataFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(client_state_path_, "wrong data"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
@@ -332,10 +422,8 @@ TEST_F(FakeDMServerTest, ReadClientStateFileWithWrongJSONDataFails) {
 }
 
 TEST_F(FakeDMServerTest, ReadClientStateFileWithNonDictFileFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(client_state_path_, R"([ "1", "2" ])"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
@@ -346,10 +434,8 @@ TEST_F(FakeDMServerTest, ReadClientStateFileWithNonDictFileFails) {
 }
 
 TEST_F(FakeDMServerTest, GetClientFromValueWithNonDictValueFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(client_state_path_,
                               R"({ "fake_device_id" : "not dict" })"));
@@ -361,10 +447,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonDictValueFails) {
 }
 
 TEST_F(FakeDMServerTest, GetClientFromValueWithOnlyDeviceIDFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(
       client_state_path_,
@@ -377,10 +461,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithOnlyDeviceIDFails) {
 }
 
 TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringDeviceIDFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(client_state_path_,
                               R"({ "fake_device_id" : { "device_id" : 7 } })"));
@@ -392,10 +474,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringDeviceIDFails) {
 }
 
 TEST_F(FakeDMServerTest, GetClientFromValueWithoutStateKeyListFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
     {
@@ -416,10 +496,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithoutStateKeyListFails) {
 }
 
 TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringStateKeysFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
     {
@@ -441,10 +519,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringStateKeysFails) {
 }
 
 TEST_F(FakeDMServerTest, GetClientFromValueNoUsernameSucceeds) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
     {
@@ -465,10 +541,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueNoUsernameSucceeds) {
 }
 
 TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringPolicyTypesFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
     {
@@ -490,10 +564,8 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringPolicyTypesFails) {
 }
 
 TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(
       policy_blob_path_,
@@ -646,10 +718,8 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {
 }
 
 TEST_F(FakeDMServerTest, HandlePolicyRequestWithCustomErrorSucceeds) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_,
                               R"(
@@ -685,10 +755,8 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithCustomErrorSucceeds) {
 }
 
 TEST_F(FakeDMServerTest, HandleExternalPolicyRequestSucceeds) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, kPolicyBlobForExternalPolicy));
   ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
@@ -740,10 +808,8 @@ TEST_F(FakeDMServerTest, HandleExternalPolicyRequestSucceeds) {
 }
 
 TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithWrongJSONDataFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, "wrong data"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
@@ -754,10 +820,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithWrongJSONDataFails) {
 }
 
 TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictFileFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"([ "1", "2" ])"));
   EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
@@ -768,10 +832,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictFileFails) {
 }
 
 TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictPoliciesFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -787,10 +849,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictPoliciesFails) {
 }
 
 TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictExternalPoliciesFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -806,10 +866,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonDictExternalPoliciesFails) {
 }
 
 TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonIntRequestErrorFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -832,10 +890,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonIntRequestErrorFails) {
 
 TEST_F(FakeDMServerTest,
        ReadPolicyBlobFileWithNonBoolAllowSetDeviceAttributesFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -857,10 +913,8 @@ TEST_F(FakeDMServerTest,
 }
 
 TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonStringManagementDomainFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -887,10 +941,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonStringManagementDomainFails) {
 
 TEST_F(FakeDMServerTest,
        ReadPolicyBlobFileWithNonIntInitialEnrollmentModeFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -916,10 +968,8 @@ TEST_F(FakeDMServerTest,
 }
 
 TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonIntCurrentKeyIndexFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -941,10 +991,8 @@ TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithNonIntCurrentKeyIndexFails) {
 }
 
 TEST_F(FakeDMServerTest, SetPolicyPayloadWithoutValueOrTypeFieldFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -962,10 +1010,8 @@ TEST_F(FakeDMServerTest, SetPolicyPayloadWithoutValueOrTypeFieldFails) {
 }
 
 TEST_F(FakeDMServerTest, SetPolicyPayloadWithNonBase64ValueFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -983,10 +1029,8 @@ TEST_F(FakeDMServerTest, SetPolicyPayloadWithNonBase64ValueFails) {
 }
 
 TEST_F(FakeDMServerTest, SetExternalPolicyPayloadWithoutValueOrTypeFieldFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -1008,10 +1052,8 @@ TEST_F(FakeDMServerTest, SetExternalPolicyPayloadWithoutValueOrTypeFieldFails) {
 }
 
 TEST_F(FakeDMServerTest, SetExternalPolicyPayloadWithNonBase64ValueFails) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -1033,10 +1075,8 @@ TEST_F(FakeDMServerTest, SetExternalPolicyPayloadWithNonBase64ValueFails) {
 }
 
 TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -1196,10 +1236,8 @@ TEST_F(FakeDMServerTest, HandleExtensionInstallPolicyRequestSucceeds) {
 }
 
 TEST_F(FakeDMServerTest, HandlePolicyRequestWithJsonFormatSucceeds) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -1299,10 +1337,8 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithJsonFormatSucceeds) {
 }
 
 TEST_F(FakeDMServerTest, HandlePolicyRequestWithRecommendedJsonFormatSucceeds) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -1415,10 +1451,8 @@ TEST_F(FakeDMServerTest, HandlePolicyRequestWithRecommendedJsonFormatSucceeds) {
 
 TEST_F(FakeDMServerTest,
        HandleExtensionInstallPolicyRequestWithJsonFormatSucceeds) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
     {
@@ -1491,11 +1525,353 @@ TEST_F(FakeDMServerTest,
             em::ExtensionInstallPolicy::REASON_RISK_SCORE);
 }
 
-TEST_F(FakeDMServerTest, WriteDesktopReportRequestAsTextproto) {
+TEST_F(FakeDMServerTest,
+       HandleExtensionCloudPolicyRequestWithJsonFormatSucceeds) {
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
+
+  static constexpr char kExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  const char* const kPolicyType =
+      policy::dm_protocol::kChromeMachineLevelExtensionCloudPolicyType;
+  ASSERT_TRUE(
+      base::WriteFile(policy_blob_path_, base::StringPrintf(R"(
+    {
+      "policy_user": "tast-user@managedchrome.com",
+      "machine-extensions": {
+        "%s": {
+          "ShorthandPolicy": 123,
+          "ExplicitPolicy": {"Value": true, "Level": "Recommended"}
+        }
+      }
+    }
+  )",
+                                                            kExtensionId)));
+  ASSERT_TRUE(
+      base::WriteFile(client_state_path_, base::StringPrintf(R"(
+    {
+      "fake_device_id": {
+        "device_id": "fake_device_id",
+        "device_token": "fake_device_token",
+        "machine_name": "fake_machine_name",
+        "username": "tast-user@managedchrome.com",
+        "state_keys": [ "fake_state_key" ],
+        "allowed_policy_types": [ "%s" ]
+      }
+    }
+  )",
+                                                             kPolicyType)));
+
+  em::DeviceManagementRequest request_proto;
+  auto* policy_request = request_proto.mutable_policy_request()->add_requests();
+  policy_request->set_policy_type(kPolicyType);
+  policy_request->set_settings_entity_id(kExtensionId);
+  Response response =
+      SendRequest(fake_dmserver.GetServiceURL(),
+                  "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                  "oauth_token=fake_policy_token&request=policy",
+                  std::move(request_proto));
+  EXPECT_EQ(response.status, net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
+  ASSERT_EQ(response.proto().policy_response().responses_size(), 1);
+
+  em::PolicyData policy_data;
+  ASSERT_TRUE(policy_data.ParseFromString(
+      response.proto().policy_response().responses(0).policy_data()));
+  EXPECT_EQ(policy_data.policy_type(), kPolicyType);
+  em::ExternalPolicyData external_policy_data;
+  ASSERT_TRUE(external_policy_data.ParseFromString(policy_data.policy_value()));
+  GURL download_url(external_policy_data.download_url());
+  ASSERT_TRUE(download_url.is_valid());
+
+  Response download_response =
+      SendRequest(fake_dmserver.GetServiceURL(), download_url.PathForRequest());
+  EXPECT_EQ(download_response.status, net::HTTP_OK);
+  ASSERT_NO_FATAL_FAILURE(download_response.AssertText());
+  EXPECT_THAT(download_response.text(), base::test::IsJson(R"({
+    "ShorthandPolicy": {"Value": 123},
+    "ExplicitPolicy": {"Value": true, "Level": "Recommended"}
+  })"));
+}
+
+TEST_F(FakeDMServerTest, ReadPolicyBlobFileWithInvalidExtensionIdFails) {
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
+
+  // Non [a-p] character 'z' in extension id.
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, R"(
+    {
+      "policy_user": "tast-user@managedchrome.com",
+      "machine-extensions": {
+        "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz": {
+          "SomePolicy": "val"
+        }
+      }
+    }
+  )"));
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
+                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                        "oauth_token=fake_policy_token&request=policy")
+                .status,
+            net::HTTP_INTERNAL_SERVER_ERROR);
+}
+
+TEST_F(FakeDMServerTest, ParseFlagsUnknownSwitch) {
+  FakeServerConfig config;
+
+  {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII("policy_path", "/tmp/x.json");
+    EXPECT_EQ(ParseFlags(command_line, config), ParseFlagsResult::kError);
+  }
+  {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII("policy-blob-path", "/tmp/x.json");
+    EXPECT_EQ(ParseFlags(command_line, config), ParseFlagsResult::kSuccess);
+    EXPECT_EQ(config.policy_blob_path, "/tmp/x.json");
+  }
+  {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitch("help");
+    EXPECT_EQ(ParseFlags(command_line, config), ParseFlagsResult::kHelp);
+  }
+}
+
+TEST_F(FakeDMServerTest, ParseFlagsFcmPort) {
+  {
+    FakeServerConfig config;
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    ASSERT_EQ(ParseFlags(command_line, config), ParseFlagsResult::kSuccess);
+    // Chrome connects to this port when it uses fake_dmserver. ChromeOS does
+    // not connect to it.
+    EXPECT_EQ(config.fcm_port,
+              BUILDFLAG(IS_CHROMEOS) ? std::nullopt : std::optional(6113));
+  }
+  {
+    FakeServerConfig config;
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII("fcm-port", "0");
+    ASSERT_EQ(ParseFlags(command_line, config), ParseFlagsResult::kSuccess);
+    EXPECT_EQ(config.fcm_port, std::optional(0));
+  }
+  {
+    FakeServerConfig config;
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII("fcm-port", "1234");
+    ASSERT_EQ(ParseFlags(command_line, config), ParseFlagsResult::kSuccess);
+    EXPECT_EQ(config.fcm_port, std::optional(1234));
+  }
+  {
+    FakeServerConfig config;
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitch("no-fcm");
+    ASSERT_EQ(ParseFlags(command_line, config), ParseFlagsResult::kSuccess);
+    EXPECT_EQ(config.fcm_port, std::nullopt);
+  }
+  {
+    FakeServerConfig config;
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitch("no-fcm");
+    command_line.AppendSwitchASCII("fcm-port", "0");
+    EXPECT_EQ(ParseFlags(command_line, config), ParseFlagsResult::kError);
+  }
+}
+
+TEST_F(FakeDMServerTest, WriteURLToPipeOutputsFcmPort) {
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
+
+  int fds[2];
+  ASSERT_EQ(pipe(fds), 0);
+  base::ScopedFD read_fd(fds[0]);
+  base::ScopedFD write_fd(fds[1]);
+
+  EXPECT_TRUE(fake_dmserver.WriteURLToPipe(std::move(write_fd)));
+
+  std::string buffer(1024, '\0');
+  ssize_t bytes_read = read(read_fd.get(), buffer.data(), buffer.size());
+  ASSERT_GT(bytes_read, 0);
+  buffer.resize(static_cast<size_t>(bytes_read));
+
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(buffer, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(dict.has_value());
+
+  GURL service_url = fake_dmserver.GetServiceURL();
+  const std::string* host = dict->FindString("host");
+  ASSERT_TRUE(host);
+  EXPECT_EQ(*host, service_url.GetHost());
+  EXPECT_EQ(dict->FindInt("port"), service_url.IntPort());
+  EXPECT_EQ(dict->FindInt("fcm_port"), fake_dmserver.fcm_server()->port());
+  const std::string* realtime_reporting_url =
+      dict->FindString("realtime_reporting_url");
+  ASSERT_TRUE(realtime_reporting_url);
+  EXPECT_EQ(*realtime_reporting_url,
+            fake_dmserver.GetRealtimeReportingURL().spec());
+}
+
+TEST_F(FakeDMServerTest, IssueRemoteCommandsSendFcmMessages) {
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  ASSERT_TRUE(fake_dmserver.StartFakeServer());
+  auto client =
+      ConnectAndLoginFcmClient(fake_dmserver.fcm_server()->port(), 99999);
+  ASSERT_TRUE(client);
+
+  em::RemoteCommand command;
+  command.set_type(em::RemoteCommand::DEVICE_REMOTE_POWERWASH);
+  for (const auto& [scope, type] :
+       {std::pair(policy::RemoteCommandScope::kBrowser,
+                  kBrowserRemoteCommandInvalidationType),
+        std::pair(policy::RemoteCommandScope::kProfile,
+                  kProfileRemoteCommandInvalidationType)}) {
+    fake_dmserver.remote_commands_state()->AddPendingRemoteCommand(command,
+                                                                   scope);
+    mcs_proto::DataMessageStanza stanza;
+    ASSERT_TRUE(ReadFcmPacket(*client, gcm::kDataMessageStanzaTag, &stanza));
+    ExpectFcmProject(stanza, invalidation::kCriticalInvalidationsProjectNumber);
+    EXPECT_EQ(GetStanzaType(stanza), type);
+  }
+}
+
+TEST_F(FakeDMServerTest, AdminApiPoliciesSendFcmMessages) {
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, "{}"));
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  ASSERT_TRUE(fake_dmserver.StartFakeServer());
+  const GURL url = fake_dmserver.GetServiceURL();
+
+  // Without connected clients, invalidation succeeds with sent=false.
+  Response no_client_resp = SendRequest(url, "/admin/api/policies/invalidate",
+                                        "", "application/json");
+  EXPECT_EQ(no_client_resp.status, net::HTTP_OK);
+  EXPECT_THAT(std::get<std::string>(no_client_resp.body),
+              base::test::IsJson(R"({"success": true, "sent": false})"));
+
+  auto client =
+      ConnectAndLoginFcmClient(fake_dmserver.fcm_server()->port(), 88888);
+  ASSERT_TRUE(client);
+
+  Response sent_resp = SendRequest(url, "/admin/api/policies/invalidate", "",
+                                   "application/json");
+  EXPECT_EQ(sent_resp.status, net::HTTP_OK);
+  EXPECT_THAT(std::get<std::string>(sent_resp.body),
+              base::test::IsJson(R"({"success": true, "sent": true})"));
+  ExpectPolicyInvalidationStanzas(*client);
+
+  EXPECT_EQ(
+      SendRequest(url, "/admin/api/policies", "not json", "application/json")
+          .status,
+      net::HTTP_BAD_REQUEST);
+  constexpr char kPolicies[] =
+      "// comment\n"
+      R"({"policy_user": "user@example.com", "managed_users": ["*"]})";
+  EXPECT_EQ(
+      SendRequest(url, "/admin/api/policies", kPolicies, "application/json")
+          .status,
+      net::HTTP_OK);
+  ExpectPolicyInvalidationStanzas(*client);
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(policy_blob_path_, &contents));
+  EXPECT_EQ(contents, kPolicies);
+
+  // The watcher event for the write above must not send an invalidation.
+  WaitForPolicyFileChange();
+  debounce_runner_->FastForwardUntilNoTasksRemain();
+  ExpectNextStanzaIsMarker(fake_dmserver, *client);
+}
+
+TEST_F(FakeDMServerTest, AdminApiRejectsInvalidPolicies) {
+  constexpr char kValidPolicies[] = R"({"policy_user": "user@example.com"})";
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, kValidPolicies));
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  ASSERT_TRUE(fake_dmserver.StartFakeServer());
+
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(), "/admin/api/policies",
+                        R"({"machine-extensions": {"bad_id": {}}})",
+                        "application/json")
+                .status,
+            net::HTTP_BAD_REQUEST);
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(policy_blob_path_, &contents));
+  EXPECT_EQ(contents, kValidPolicies);
+}
+
+TEST_F(FakeDMServerTest, AdminApiFixesInvalidPolicyFile) {
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, "not json"));
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  ASSERT_TRUE(fake_dmserver.StartFakeServer());
+  const GURL url = fake_dmserver.GetServiceURL();
+  constexpr char kRegisterPath[] =
+      "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+      "oauth_token=fake_policy_token&request=register";
+  ASSERT_EQ(SendRequest(url, kRegisterPath).status,
+            net::HTTP_INTERNAL_SERVER_ERROR);
+
+  Response invalidate_resp = SendRequest(url, "/admin/api/policies/invalidate",
+                                         "", "application/json");
+  EXPECT_EQ(invalidate_resp.status, net::HTTP_BAD_REQUEST);
+  EXPECT_THAT(std::get<std::string>(invalidate_resp.body),
+              base::test::IsJson(R"({"error": "Invalid policy file"})"));
+
+  EXPECT_EQ(SendRequest(url, "/admin/api/policies",
+                        R"({"managed_users": ["*"],
+                            "policy_user": "user@example.com"})",
+                        "application/json")
+                .status,
+            net::HTTP_OK);
+  EXPECT_EQ(SendRequest(url, kRegisterPath).status, net::HTTP_OK);
+}
+
+TEST_F(FakeDMServerTest, PolicyFileChangesAreDebounced) {
+  ASSERT_TRUE(base::WriteFile(policy_blob_path_, "{}"));
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  ASSERT_TRUE(fake_dmserver.StartFakeServer());
+  auto client =
+      ConnectAndLoginFcmClient(fake_dmserver.fcm_server()->port(), 11111);
+  ASSERT_TRUE(client);
+
+  for (int i = 0; i < 3; ++i) {
+    ASSERT_TRUE(base::WriteFile(
+        policy_blob_path_,
+        base::StringPrintf(R"({"policy_user": "user%d@example.com"})", i)));
+  }
+  WaitForPolicyFileChange();
+
+  debounce_runner_->FastForwardBy(kPolicyFileDebounceDelay -
+                                  base::Milliseconds(1));
+  ExpectNextStanzaIsMarker(fake_dmserver, *client);
+
+  debounce_runner_->FastForwardUntilNoTasksRemain();
+  ExpectPolicyInvalidationStanzas(*client);
+  ExpectNextStanzaIsMarker(fake_dmserver, *client);
+}
+
+TEST_F(FakeDMServerTest, StartFakeServerWithOccupiedFcmPort) {
+  FakeDMServer server1(policy_blob_path_.MaybeAsASCII(),
+                       client_state_path_.MaybeAsASCII(),
+                       /*grpc_unix_socket_path=*/"", debounce_runner_);
+  ASSERT_TRUE(server1.StartFakeServer(/*port=*/0, /*fcm_port=*/0));
+  int occupied_fcm_port = server1.fcm_server()->port();
+  ASSERT_GT(occupied_fcm_port, 0);
+
+  FakeDMServer server2(policy_blob_path_.MaybeAsASCII(),
+                       client_state_path_.MaybeAsASCII(),
+                       /*grpc_unix_socket_path=*/"", debounce_runner_);
+  EXPECT_TRUE(server2.StartFakeServer(/*port=*/0, occupied_fcm_port));
+  EXPECT_EQ(server2.fcm_server()->port(), 0);
+  EXPECT_EQ(SendRequest(server2.GetServiceURL(), "/test/ping").status,
+            net::HTTP_OK);
+}
+
+TEST_F(FakeDMServerTest, StartFakeServerWithFcmDisabled) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+                             /*grpc_unix_socket_path=*/"", debounce_runner_);
+  EXPECT_TRUE(fake_dmserver.StartFakeServer(/*port=*/0, std::nullopt));
+  EXPECT_EQ(fake_dmserver.fcm_server()->port(), 0);
+}
+
+TEST_F(FakeDMServerTest, WriteDesktopReportRequestAsTextproto) {
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   em::DeviceManagementRequest request_proto;
   em::ChromeDesktopReportRequest* desktop_report =
@@ -1524,8 +1900,9 @@ TEST_F(FakeDMServerTest, WriteDesktopReportRequestAsTextproto) {
       FILE_PATH_LITERAL("desktop_report_*.textproto"));
   base::FilePath report_file = enumerator.Next();
   ASSERT_FALSE(report_file.empty());
-  EXPECT_THAT(report_file.BaseName().MaybeAsASCII(),
-              testing::MatchesRegex(R"(desktop_report_[0-9]{14}\.textproto)"));
+  EXPECT_THAT(
+      report_file.BaseName().MaybeAsASCII(),
+      testing::MatchesRegex(R"(desktop_report_[0-9]{14}_[0-9]+\.textproto)"));
   EXPECT_TRUE(enumerator.Next().empty());
 
   std::string file_content;
@@ -1546,10 +1923,8 @@ TEST_F(FakeDMServerTest, WriteDesktopReportRequestAsTextproto) {
 }
 
 TEST_F(FakeDMServerTest, WriteProfileReportRequestAsTextproto) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   em::DeviceManagementRequest request_proto;
   em::ChromeProfileReportRequest* profile_report =
@@ -1572,8 +1947,9 @@ TEST_F(FakeDMServerTest, WriteProfileReportRequestAsTextproto) {
       FILE_PATH_LITERAL("profile_report_*.textproto"));
   base::FilePath report_file = enumerator.Next();
   ASSERT_FALSE(report_file.empty());
-  EXPECT_THAT(report_file.BaseName().MaybeAsASCII(),
-              testing::MatchesRegex(R"(profile_report_[0-9]{14}\.textproto)"));
+  EXPECT_THAT(
+      report_file.BaseName().MaybeAsASCII(),
+      testing::MatchesRegex(R"(profile_report_[0-9]{14}_[0-9]+\.textproto)"));
   EXPECT_TRUE(enumerator.Next().empty());
 
   std::string file_content;
@@ -1588,10 +1964,8 @@ TEST_F(FakeDMServerTest, WriteProfileReportRequestAsTextproto) {
 }
 
 TEST_F(FakeDMServerTest, WriteInvalidReportRequestDoesNotCrash) {
-  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
-                             client_state_path_.MaybeAsASCII(),
-                             grpc_unix_socket_uri_);
-  EXPECT_TRUE(fake_dmserver.Start());
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  EXPECT_TRUE(fake_dmserver.StartFakeServer());
 
   std::string request_url = base::StringPrintf(
       "http://%s:%s/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
@@ -1616,14 +1990,120 @@ TEST_F(FakeDMServerTest, WriteInvalidReportRequestDoesNotCrash) {
   base::test::TestFuture<std::optional<std::string>> test_future;
   url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(), test_future.GetCallback());
-  EXPECT_TRUE(test_future.Take().has_value());
-  EXPECT_EQ(url_loader->ResponseInfo()->headers->response_code(), net::HTTP_OK);
+  EXPECT_FALSE(test_future.Take().has_value());
+  EXPECT_EQ(url_loader->ResponseInfo()->headers->response_code(),
+            net::HTTP_BAD_REQUEST);
 
-  base::FileEnumerator enumerator(
-      client_state_path_.DirName(),
-      /*recursive=*/false, base::FileEnumerator::FILES,
-      FILE_PATH_LITERAL("desktop_report_*.textproto"));
+  base::FileEnumerator enumerator(client_state_path_.DirName(),
+                                  /*recursive=*/false,
+                                  base::FileEnumerator::FILES,
+                                  FILE_PATH_LITERAL("desktop_report_*"));
   EXPECT_TRUE(enumerator.Next().empty());
+}
+
+TEST_F(FakeDMServerTest, WriteRealtimeReportFiles) {
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  ASSERT_TRUE(fake_dmserver.StartFakeServer());
+
+  ::chrome::cros::reporting::proto::UploadEventsRequest request;
+  request.add_events()->set_event_id("event_1");
+  request.add_events()->set_event_id("event_2");
+  EXPECT_EQ(
+      SendRequest(fake_dmserver.GetServiceURL(), "/realtime_reporting",
+                  request.SerializeAsString(), "application/x-protobuffer")
+          .status,
+      net::HTTP_OK);
+
+  // Each event has its own .pb and .textproto files.
+  EXPECT_EQ(CountDataFiles(FILE_PATH_LITERAL("realtime_*.pb")), 2u);
+  EXPECT_EQ(CountDataFiles(FILE_PATH_LITERAL("realtime_*.textproto")), 2u);
+}
+
+TEST_F(FakeDMServerTest, PersistedReportsAreLoadedAtStartup) {
+  auto send_report = [&](FakeDMServer& server, const char* request_type,
+                         em::DeviceManagementRequest request_proto) {
+    ASSERT_EQ(SendRequest(server.GetServiceURL(),
+                          base::StringPrintf(
+                              "/?apptype=Chrome&deviceid=dev1&devicetype=2&"
+                              "request=%s",
+                              request_type),
+                          std::move(request_proto))
+                  .status,
+              net::HTTP_OK);
+  };
+  auto send_desktop_report = [&](FakeDMServer& server,
+                                 const std::string& version) {
+    em::DeviceManagementRequest request_proto;
+    request_proto.mutable_chrome_desktop_report_request()
+        ->mutable_browser_report()
+        ->set_browser_version(version);
+    send_report(server, policy::dm_protocol::kValueRequestChromeDesktopReport,
+                std::move(request_proto));
+  };
+  auto send_profile_report = [&](FakeDMServer& server,
+                                 const std::string& version) {
+    em::DeviceManagementRequest request_proto;
+    request_proto.mutable_chrome_profile_report_request()
+        ->mutable_browser_report()
+        ->set_browser_version(version);
+    send_report(server, policy::dm_protocol::kValueRequestChromeProfileReport,
+                std::move(request_proto));
+  };
+  {
+    FakeDMServer fake_dmserver = CreateFakeDMServer();
+    ASSERT_TRUE(fake_dmserver.StartFakeServer());
+    // Send multiple reports from the same device in the same second to verify
+    // persisted files do not overwrite each other.
+    send_desktop_report(fake_dmserver, "130.0.6723.58");
+    send_desktop_report(fake_dmserver, "131.0.6778.10");
+    send_profile_report(fake_dmserver, "130.0.6723.58");
+    send_profile_report(fake_dmserver, "131.0.6778.10");
+
+    ::chrome::cros::reporting::proto::UploadEventsRequest realtime_request;
+    realtime_request.add_events()->set_event_id("event_1");
+    realtime_request.add_events()->set_event_id("event_2");
+    ASSERT_EQ(SendRequest(fake_dmserver.GetServiceURL(), "/realtime_reporting",
+                          realtime_request.SerializeAsString(),
+                          "application/x-protobuffer")
+                  .status,
+              net::HTTP_OK);
+  }
+
+  EXPECT_EQ(CountDataFiles(FILE_PATH_LITERAL("desktop_report_*.pb")), 2u);
+  EXPECT_EQ(CountDataFiles(FILE_PATH_LITERAL("desktop_report_*.textproto")),
+            2u);
+  EXPECT_EQ(CountDataFiles(FILE_PATH_LITERAL("profile_report_*.pb")), 2u);
+  EXPECT_EQ(CountDataFiles(FILE_PATH_LITERAL("profile_report_*.textproto")),
+            2u);
+  EXPECT_EQ(CountDataFiles(FILE_PATH_LITERAL("realtime_*.pb")), 2u);
+  EXPECT_EQ(CountDataFiles(FILE_PATH_LITERAL("realtime_*.textproto")), 2u);
+
+  FakeDMServer fake_dmserver = CreateFakeDMServer();
+  ASSERT_TRUE(fake_dmserver.StartFakeServer());
+
+  auto extract_versions = [](const auto& entries) {
+    std::vector<std::pair<std::string, std::string>> result;
+    for (const auto& entry : entries) {
+      result.emplace_back(entry.device_id,
+                          entry.report.browser_report().browser_version());
+    }
+    return result;
+  };
+  EXPECT_THAT(
+      extract_versions(fake_dmserver.report_storage()->GetBrowserReports()),
+      testing::UnorderedElementsAre(std::make_pair("dev1", "130.0.6723.58"),
+                                    std::make_pair("dev1", "131.0.6778.10")));
+  EXPECT_THAT(
+      extract_versions(fake_dmserver.report_storage()->GetProfileReports()),
+      testing::UnorderedElementsAre(std::make_pair("dev1", "130.0.6723.58"),
+                                    std::make_pair("dev1", "131.0.6778.10")));
+
+  std::vector<std::string> event_ids;
+  for (const auto& event :
+       fake_dmserver.report_storage()->GetRealtimeEvents()) {
+    event_ids.push_back(event.event_id());
+  }
+  EXPECT_THAT(event_ids, testing::UnorderedElementsAre("event_1", "event_2"));
 }
 
 }  // namespace fakedms

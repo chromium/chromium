@@ -5,6 +5,7 @@ include_rules = [
   #
   # to test.
 
+  "+components/invalidation",
   "+crypto",
   '+google_apis/gaia/gaia_auth_util.h',
   "+net",
@@ -14,4 +15,8 @@ include_rules = [
   "+services/network/test",
   "+third_party/re2",
   "+chromecast/cast_core/grpc",
+  "+components/enterprise/common/proto",
+  "+components/enterprise/connectors/core/reporting_event_mappings.h",
+  "+google/protobuf",
+  "+google_apis/gcm",
 ]

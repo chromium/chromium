@@ -59,8 +59,15 @@ std::unique_ptr<HttpResponse> RequestHandlerForRemoteCommands::HandleRequest(
     state->AddRemoteCommandResult(result);
   }
 
+  const bool is_profile =
+      !KeyValueFromUrl(request.GetURL(), dm_protocol::kParamProfileID)
+           .empty() ||
+      remote_command_request.type() ==
+          dm_protocol::kChromeUserRemoteCommandType;
   std::vector<em::RemoteCommand> pending_commands =
-      state->ExtractPendingRemoteCommands();
+      state->ExtractPendingRemoteCommands(is_profile
+                                              ? RemoteCommandScope::kProfile
+                                              : RemoteCommandScope::kBrowser);
   ProcessSecureRemoteCommands(remote_command_request, client_info,
                               pending_commands,
                               response.mutable_remote_command_response());

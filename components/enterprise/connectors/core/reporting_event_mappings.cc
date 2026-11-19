@@ -54,7 +54,15 @@ constexpr auto kEventCaseToEventNameMap =
          {EventCase::kBrowserCrashEvent, kBrowserCrashEvent},
          {EventCase::kExtensionTelemetryEvent, kExtensionTelemetryEvent},
          {EventCase::kSaasUsageReportEvent, kKeySaasUsageEvent},
-         {EventCase::kBrowserLaunchEvent, kKeyBrowserLaunchEvent}});
+         {EventCase::kBrowserLaunchEvent, kKeyBrowserLaunchEvent},
+         {EventCase::kPolicyValidationReportEvent,
+          kKeyPolicyValidationReportEvent},
+         {EventCase::kExtensionAppInstallEvent, kKeyExtensionAppInstallEvent},
+         {EventCase::kReportingRecordEvent, kKeyReportingRecordEvent},
+         {EventCase::kContentTransferEvent, kKeyContentTransferEvent},
+         {EventCase::kUrlNavigationEvent, kKeyUrlNavigationEvent},
+         {EventCase::kSuspiciousUrlEvent, kKeySuspiciousUrlEvent},
+         {EventCase::kBrowserHistogramEvent, kKeyBrowserHistogramEvent}});
 
 }  // namespace
 

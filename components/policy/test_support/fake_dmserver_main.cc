@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "components/policy/test_support/fake_dmserver.h"
@@ -17,33 +18,30 @@ int main(int argc, char** argv) {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("fake_dmserver");
   base::CommandLine::Init(argc, argv);
 
-  std::string policy_blob_path;
-  std::string client_state_path;
-  std::string unix_socket_path;
-  std::optional<std::string> log_path;
-  base::ScopedFD startup_pipe;
-  int min_log_level;
-  bool log_to_console;
-  int port = 0;
-
+  fakedms::FakeServerConfig config;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!fakedms::ParseFlags(*command_line, policy_blob_path, client_state_path,
-                           unix_socket_path, log_path, startup_pipe,
-                           log_to_console, min_log_level, port)) {
-    fakedms::PrintHelp();
-    return 0;
+  switch (fakedms::ParseFlags(*command_line, config)) {
+    case fakedms::ParseFlagsResult::kSuccess:
+      break;
+    case fakedms::ParseFlagsResult::kHelp:
+      fakedms::PrintHelp();
+      return 0;
+    case fakedms::ParseFlagsResult::kError:
+      return 1;
   }
-  fakedms::InitLogging(log_path, log_to_console, min_log_level);
+  fakedms::InitLogging(config.log_path, config.log_to_console,
+                       config.min_log_level);
 
   base::RunLoop run_loop;
-  fakedms::FakeDMServer policy_test_server(policy_blob_path, client_state_path,
-                                           unix_socket_path,
-                                           run_loop.QuitClosure());
-  if (!policy_test_server.StartFakeServer(port)) {
+  fakedms::FakeDMServer policy_test_server(
+      config.policy_blob_path, config.client_state_path,
+      config.grpc_unix_socket_uri,
+      base::SequencedTaskRunner::GetCurrentDefault(), run_loop.QuitClosure());
+  if (!policy_test_server.StartFakeServer(config.port, config.fcm_port)) {
     return 1;
   }
-  if (startup_pipe.is_valid()) {
-    if (!policy_test_server.WriteURLToPipe(std::move(startup_pipe))) {
+  if (config.startup_pipe.is_valid()) {
+    if (!policy_test_server.WriteURLToPipe(std::move(config.startup_pipe))) {
       return 1;
     }
   }

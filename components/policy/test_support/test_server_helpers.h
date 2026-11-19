@@ -13,12 +13,14 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
-namespace net {
-namespace test_server {
+namespace google::protobuf {
+class MessageLite;
+}  // namespace google::protobuf
+
+namespace net::test_server {
 class HttpResponse;
 struct HttpRequest;
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
 
 namespace policy {
 
@@ -65,6 +67,12 @@ bool GetGoogleLoginFromRequest(const net::test_server::HttpRequest& request,
 bool GetProfileIdFromRequest(const net::test_server::HttpRequest& request,
                              std::string* out);
 
+// Returns an HttpResponse with a given `code`, `content` and `content_type`.
+std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
+    net::HttpStatusCode code,
+    const std::string& content,
+    const std::string& content_type);
+
 // Returns a text/plain HttpResponse with a given `code` and `content`.
 std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
     net::HttpStatusCode code,
@@ -73,7 +81,7 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
 // Returns an application/x-protobuffer HttpResponse.
 std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
     net::HttpStatusCode code,
-    const enterprise_management::DeviceManagementResponse& content);
+    const google::protobuf::MessageLite& content);
 
 }  // namespace policy
 

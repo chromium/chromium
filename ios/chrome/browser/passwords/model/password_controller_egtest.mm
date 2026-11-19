@@ -916,7 +916,7 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
   [self waitForEnterpriseReports:1];
 
   std::vector<UploadEventsRequest> requests =
-      _reportingEnvironment->reporting_server()->GetUploadedReports();
+      _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(1U, requests.size(), @"Wrong number of reports.");
   GREYAssertEqual(std::string("iOS"), requests[0].device().os_platform(),
                   @"Wrong OS platform in report.");
@@ -952,7 +952,7 @@ TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
   // expected because during `-setUp`, the browser fetches a policy from
   // `_reportingEnvironment` that only enables password breach event reporting.
   std::vector<UploadEventsRequest> requests =
-      _reportingEnvironment->reporting_server()->GetUploadedReports();
+      _reportingEnvironment->GetUploadedReports();
   GREYAssertEqual(1U, requests.size(), @"Wrong number of reports.");
   GREYAssertEqual(std::string("iOS"), requests[0].device().os_platform(),
                   @"Wrong OS platform in report.");

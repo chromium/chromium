@@ -18,6 +18,8 @@ static_library("test_support") {
     "remote_commands_result_waiter.h",
     "remote_commands_state.cc",
     "remote_commands_state.h",
+    "report_storage.cc",
+    "report_storage.h",
     "request_handler_for_api_authorization.cc",
     "request_handler_for_api_authorization.h",
     "request_handler_for_auto_enrollment.cc",
@@ -28,6 +30,8 @@ static_library("test_support") {
     "request_handler_for_check_android_management.h",
     "request_handler_for_check_user_account.cc",
     "request_handler_for_check_user_account.h",
+    "request_handler_for_chrome_report.cc",
+    "request_handler_for_chrome_report.h",
     "request_handler_for_client_cert_provisioning.cc",
     "request_handler_for_client_cert_provisioning.h",
     "request_handler_for_determine_promotion_eligibility.cc",
@@ -40,6 +44,8 @@ static_library("test_support") {
     "request_handler_for_device_state_retrieval.h",
     "request_handler_for_policy.cc",
     "request_handler_for_policy.h",
+    "request_handler_for_realtime_reporting.cc",
+    "request_handler_for_realtime_reporting.h",
     "request_handler_for_register_browser.cc",
     "request_handler_for_register_browser.h",
     "request_handler_for_register_cert_based.cc",
@@ -50,6 +56,8 @@ static_library("test_support") {
     "request_handler_for_remote_commands.h",
     "request_handler_for_unregister.cc",
     "request_handler_for_unregister.h",
+    "request_handlers_for_gcm.cc",
+    "request_handlers_for_gcm.h",
     "signature_provider.cc",
     "signature_provider.h",
     "simple_request_handler.cc",
@@ -61,6 +69,12 @@ static_library("test_support") {
     sources += [
       "fake_dmserver.cc",
       "fake_dmserver.h",
+      "fake_fcm_server.cc",
+      "fake_fcm_server.h",
+      "policy_invalidator.cc",
+      "policy_invalidator.h",
+      "request_handler_for_admin.cc",
+      "request_handler_for_admin.h",
     ]
   }
   if (is_chromeos) {
@@ -70,9 +84,15 @@ static_library("test_support") {
     ]
   }
 
-  public_deps = [ "//net:test_support" ]
+  public_deps = [
+    "//components/enterprise/common/proto:upload_request_response",
+    "//google_apis/gcm",
+    "//net:test_support",
+  ]
   deps = [
     "//base",
+    "//components/enterprise/connectors/core:constants",
+    "//components/invalidation",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
     "//components/policy/proto",
@@ -89,7 +109,24 @@ static_library("test_support") {
     deps += [ "//components/policy:generated_testonly" ]
     data_deps = [ "//third_party/protobuf:protoc($host_toolchain)" ]
     data = [
+      "admin_dashboard.html",
+
+      # protoc reads these .proto files (and their imports) at runtime to write
+      # the {desktop,profile}_report_* and realtime_* .textproto files.
+      "//components/enterprise/common/proto/google3_protos.proto",
+      "//components/enterprise/common/proto/synced/browser_events.proto",
+      "//components/enterprise/common/proto/synced/extension_install_events.proto",
+      "//components/enterprise/common/proto/synced/policy_validation_report.proto",
+      "//components/enterprise/common/proto/synced/saas_usage_report_event.proto",
+      "//components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.proto",
+      "//components/enterprise/common/proto/upload_request_response.proto",
       "//components/policy/proto/device_management_backend.proto",
+      "//components/reporting/proto/synced/health.proto",
+      "//components/reporting/proto/synced/record.proto",
+      "//components/reporting/proto/synced/record_constants.proto",
+      "//components/reporting/proto/synced/status.proto",
+      "//components/safe_browsing/core/common/proto/csd.proto",
+      "//third_party/metrics_proto/histogram_event.proto",
       "//third_party/private_membership/src/private_membership.proto",
       "//third_party/private_membership/src/private_membership_rlwe.proto",
       "//third_party/shell-encryption/src/serialization.proto",
@@ -147,28 +184,38 @@ source_set("unittests") {
     "embedded_policy_test_server_unittest.cc",
     "policy_storage_unittest.cc",
     "remote_commands_state_unittest.cc",
+    "report_storage_unittest.cc",
     "request_handler_for_api_authorization_unittest.cc",
     "request_handler_for_auto_enrollment_unittest.cc",
     "request_handler_for_browser_public_key_upload_unittest.cc",
     "request_handler_for_check_android_management_unittest.cc",
     "request_handler_for_check_user_account_unittest.cc",
+    "request_handler_for_chrome_report_unittest.cc",
     "request_handler_for_client_cert_provisioning_unittest.cc",
     "request_handler_for_determine_promotion_eligibility_unittest.cc",
     "request_handler_for_device_attribute_update_permission_unittest.cc",
     "request_handler_for_device_initial_enrollment_state_unittest.cc",
     "request_handler_for_device_state_retrieval_unittest.cc",
     "request_handler_for_policy_unittest.cc",
+    "request_handler_for_realtime_reporting_unittest.cc",
     "request_handler_for_register_browser_unittest.cc",
     "request_handler_for_register_cert_based_unittest.cc",
     "request_handler_for_register_device_and_user_unittest.cc",
     "request_handler_for_remote_commands_unittest.cc",
     "request_handler_for_unregister_unittest.cc",
+    "request_handlers_for_gcm_unittest.cc",
     "signature_provider_unittest.cc",
     "simple_request_handler_unittest.cc",
   ]
 
   if (is_chromeos || (is_linux && !is_cfi && target_cpu != "arm64")) {
-    sources += [ "fake_dmserver_unittest.cc" ]
+    sources += [
+      "fake_dmserver_unittest.cc",
+      "fake_fcm_server_unittest.cc",
+      "fcm_test_util.cc",
+      "fcm_test_util.h",
+      "request_handler_for_admin_unittest.cc",
+    ]
   }
   if (is_chromeos) {
     sources += [ "request_handler_for_psm_auto_enrollment_unittest.cc" ]
@@ -176,10 +223,17 @@ source_set("unittests") {
 
   deps = [
     ":test_support",
+    "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:saas_usage_report_event",
+    "//components/invalidation",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
     "//components/policy/proto",
     "//crypto:test_support",
+    "//google_apis/gcm",
+    "//net",
+    "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

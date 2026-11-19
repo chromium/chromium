@@ -12,6 +12,7 @@
 
 namespace enterprise_management {
 class DevicePolicyResponse;
+class PolicyData;
 class PolicyFetchRequest;
 class PolicyFetchResponse;
 }  // namespace enterprise_management
