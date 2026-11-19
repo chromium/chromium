@@ -61,9 +61,9 @@ void BrowserMemoryCoordinatorImpl::InitializePolicies() {
 
   registry_.Get().OnFeatureListInitialized();
 
-  memory_pressure_listener_policy_.emplace(policy_manager_);
-  memory_pressure_listener_policy_registration_.emplace(
-      policy_manager_, *memory_pressure_listener_policy_);
+  memory_pressure_policy_.emplace(policy_manager_);
+  memory_pressure_policy_registration_.emplace(policy_manager_,
+                                               *memory_pressure_policy_);
 
   if (base::FeatureList::IsEnabled(kMemoryCoordinatorZeroLimit)) {
     zero_limit_policy_.emplace(policy_manager_);

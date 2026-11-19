@@ -15,7 +15,7 @@
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_consumer_registry.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
-#include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
+#include "content/common/memory_coordinator/memory_pressure_policy.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom-forward.h"
 #include "content/public/browser/browser_memory_coordinator.h"
 #include "content/public/common/child_process_id.h"
@@ -85,9 +85,9 @@ class CONTENT_EXPORT BrowserMemoryCoordinatorImpl
       hosts_;
 
   // The policies are created by InitializePolicies().
-  std::optional<MemoryPressureListenerPolicy> memory_pressure_listener_policy_;
+  std::optional<MemoryPressurePolicy> memory_pressure_policy_;
   std::optional<MemoryCoordinatorPolicyRegistration>
-      memory_pressure_listener_policy_registration_;
+      memory_pressure_policy_registration_;
 
   std::optional<ZeroLimitPolicy> zero_limit_policy_;
 

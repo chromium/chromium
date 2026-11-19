@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
+#include "content/common/memory_coordinator/memory_pressure_policy.h"
 
 #include <string_view>
 
@@ -90,21 +90,20 @@ base::MemoryLimit GetMemoryLimitForLevel(base::MemoryPressureLevel level) {
 
 }  // namespace
 
-MemoryPressureListenerPolicy::MemoryPressureListenerPolicy(
+MemoryPressurePolicy::MemoryPressurePolicy(
     MemoryCoordinatorPolicyManager& manager)
     : PredicateMemoryCoordinatorPolicy(manager,
                                        base::BindRepeating(&IsTargetConsumer)) {
   if (auto* memory_pressure_source = base::MemoryPressureSource::MaybeGet()) {
-    memory_pressure_subscription_ =
-        memory_pressure_source->AddCallback(base::BindRepeating(
-            &MemoryPressureListenerPolicy::OnMemoryPressureLevelUpdated,
-            base::Unretained(this)));
+    memory_pressure_subscription_ = memory_pressure_source->AddCallback(
+        base::BindRepeating(&MemoryPressurePolicy::OnMemoryPressureLevelUpdated,
+                            base::Unretained(this)));
   }
 }
 
-MemoryPressureListenerPolicy::~MemoryPressureListenerPolicy() = default;
+MemoryPressurePolicy::~MemoryPressurePolicy() = default;
 
-void MemoryPressureListenerPolicy::OnMemoryPressureLevelUpdated(
+void MemoryPressurePolicy::OnMemoryPressureLevelUpdated(
     base::MemoryPressureLevel level) {
   base::MemoryLimit limit = GetMemoryLimitForLevel(level);
 

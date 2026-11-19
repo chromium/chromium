@@ -35,7 +35,7 @@ GURL GetNextUrl() {
   return GURL("http://" + base::NumberToString(counter++) + ".com");
 }
 
-// Mirrors how the MemoryPressureListenerPolicy translates a memory pressure
+// Mirrors how the MemoryPressurePolicy translates a memory pressure
 // level into memory limit updates and release requests.
 void SimulateMemoryPressure(base::TestMemoryConsumerRegistry& registry,
                             base::MemoryPressureLevel memory_pressure_level) {

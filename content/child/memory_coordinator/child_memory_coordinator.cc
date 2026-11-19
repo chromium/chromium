@@ -39,9 +39,9 @@ void ChildMemoryCoordinator::InitializePolicies() {
 
   browser_memory_coordinator_bridge_registration_.emplace(
       policy_manager_, browser_memory_coordinator_bridge_);
-  memory_pressure_listener_policy_.emplace(policy_manager_);
-  memory_pressure_listener_policy_registration_.emplace(
-      policy_manager_, *memory_pressure_listener_policy_);
+  memory_pressure_policy_.emplace(policy_manager_);
+  memory_pressure_policy_registration_.emplace(policy_manager_,
+                                               *memory_pressure_policy_);
 }
 
 // static

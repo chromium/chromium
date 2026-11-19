@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
+#include "content/common/memory_coordinator/memory_pressure_policy.h"
 
 #include <cstdint>
 #include <memory>
@@ -65,7 +65,7 @@ class MockMemoryConsumerGroupHost : public MemoryConsumerGroupHost {
 
 }  // namespace
 
-class MemoryPressureListenerPolicyTest : public testing::Test {
+class MemoryPressurePolicyTest : public testing::Test {
  protected:
   const uint32_t consumer_id_ = base::PersistentHash(kConsumerName);
   const uint32_t disk_writing_consumer_id_ =
@@ -77,7 +77,7 @@ class MemoryPressureListenerPolicyTest : public testing::Test {
   MemoryCoordinatorPolicyManager policy_manager_;
 };
 
-TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
+TEST_F(MemoryPressurePolicyTest, ResponseToPressure) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
 
@@ -94,7 +94,7 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
   policy_manager_.OnConsumerGroupAdded(kConsumerId2, kConsumerName2,
                                        kTestTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryPressurePolicy policy(policy_manager_);
   MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Moderate pressure: 50% limit and release memory.
@@ -135,7 +135,7 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
   policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
-TEST_F(MemoryPressureListenerPolicyTest, IgnoreOtherProcesses) {
+TEST_F(MemoryPressurePolicyTest, IgnoreOtherProcesses) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kRemoteChildId(1);
   const std::string kRemoteName = "consumer1";
@@ -146,7 +146,7 @@ TEST_F(MemoryPressureListenerPolicyTest, IgnoreOtherProcesses) {
   policy_manager_.OnConsumerGroupAdded(kRemoteId, kRemoteName, kTestTraits,
                                        kRemoteChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryPressurePolicy policy(policy_manager_);
   MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Local pressure should NOT affect remote process consumers.
@@ -159,7 +159,7 @@ TEST_F(MemoryPressureListenerPolicyTest, IgnoreOtherProcesses) {
   policy_manager_.RemoveMemoryConsumerGroupHost(kRemoteChildId);
 }
 
-TEST_F(MemoryPressureListenerPolicyTest, IgnoreAffectedByMemoryPressureNo) {
+TEST_F(MemoryPressurePolicyTest, IgnoreAffectedByMemoryPressureNo) {
   static constexpr base::MemoryConsumerTraits kBackgroundOnlyTraits(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
       base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
@@ -184,7 +184,7 @@ TEST_F(MemoryPressureListenerPolicyTest, IgnoreAffectedByMemoryPressureNo) {
   policy_manager_.OnConsumerGroupAdded(kConsumerId2, kConsumerName2,
                                        kBackgroundOnlyTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryPressurePolicy policy(policy_manager_);
   MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Only the consumer that responds to memory pressure is updated.
@@ -200,7 +200,7 @@ TEST_F(MemoryPressureListenerPolicyTest, IgnoreAffectedByMemoryPressureNo) {
   policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
-TEST_F(MemoryPressureListenerPolicyTest, Persistence) {
+TEST_F(MemoryPressurePolicyTest, Persistence) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
 
@@ -208,7 +208,7 @@ TEST_F(MemoryPressureListenerPolicyTest, Persistence) {
                                              &host);
 
   {
-    MemoryPressureListenerPolicy policy(policy_manager_);
+    MemoryPressurePolicy policy(policy_manager_);
     MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
     // Moderate pressure: 50% limit and release memory.
@@ -247,8 +247,7 @@ TEST_F(MemoryPressureListenerPolicyTest, Persistence) {
   policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
-TEST_F(MemoryPressureListenerPolicyTest,
-       MemoryCacheSkippedWhenFeatureDisabled) {
+TEST_F(MemoryPressurePolicyTest, MemoryCacheSkippedWhenFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       blink::features::kReleaseResourceStrongReferencesOnMemoryPressure);
@@ -269,7 +268,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
   policy_manager_.OnConsumerGroupAdded(kOtherConsumerId, kOtherConsumerName,
                                        kTestTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryPressurePolicy policy(policy_manager_);
   MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // When feature is disabled, MemoryCache is skipped, but other consumer is
@@ -286,8 +285,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
   policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
 }
 
-TEST_F(MemoryPressureListenerPolicyTest,
-       MemoryCacheIncludedWhenFeatureEnabled) {
+TEST_F(MemoryPressurePolicyTest, MemoryCacheIncludedWhenFeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       blink::features::kReleaseResourceStrongReferencesOnMemoryPressure);
@@ -308,7 +306,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
   policy_manager_.OnConsumerGroupAdded(kOtherConsumerId, kOtherConsumerName,
                                        kTestTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryPressurePolicy policy(policy_manager_);
   MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // When feature is enabled, MemoryCache is included along with other
@@ -333,8 +331,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
 // limit when the pressure goes from moderate to critical, but are not asked to
 // release memory. They are not asked to release memory when the pressure goes
 // back to none either, as they can't be above their restored limit.
-TEST_F(MemoryPressureListenerPolicyTest,
-       DiskWritingConsumersNotReleasedOnCritical) {
+TEST_F(MemoryPressurePolicyTest, DiskWritingConsumersNotReleasedOnCritical) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
 
@@ -347,7 +344,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                        kDiskWritingConsumerName,
                                        kDiskWritingTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryPressurePolicy policy(policy_manager_);
   MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Moderate pressure: both consumers get a 50% limit and release memory.
@@ -395,7 +392,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
 // Consumers that release memory by writing it to disk are not asked to release
 // memory when the pressure goes straight from none to critical. They are asked
 // once the pressure goes down to moderate.
-TEST_F(MemoryPressureListenerPolicyTest,
+TEST_F(MemoryPressurePolicyTest,
        DiskWritingConsumersNotReleasedOnCriticalFromNoPressure) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
@@ -409,7 +406,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                        kDiskWritingConsumerName,
                                        kDiskWritingTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryPressurePolicy policy(policy_manager_);
   MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Critical pressure: both consumers get a 0% limit, but only the other
@@ -460,7 +457,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
 // Consumers that release memory by writing it to disk and are added while under
 // critical pressure get the critical pressure limit, but are not asked to
 // release memory.
-TEST_F(MemoryPressureListenerPolicyTest,
+TEST_F(MemoryPressurePolicyTest,
        DiskWritingConsumerAddedUnderCriticalNotReleased) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process
@@ -468,7 +465,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
   policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
                                              &host);
 
-  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryPressurePolicy policy(policy_manager_);
   MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // No consumers yet, so no updates.
@@ -493,7 +490,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
 
 // Repeated critical pressure notifications re-trigger the release for stateless
 // consumers, except for those that release memory by writing it to disk.
-TEST_F(MemoryPressureListenerPolicyTest,
+TEST_F(MemoryPressurePolicyTest,
        DiskWritingConsumersNotReleasedOnRepeatedCritical) {
   // Disabling kStatefulMemoryPressure makes all consumers stateless, so that
   // they are eligible for repeated releases.
@@ -512,7 +509,7 @@ TEST_F(MemoryPressureListenerPolicyTest,
                                        kDiskWritingConsumerName,
                                        kDiskWritingTraits, kChildId);
 
-  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryPressurePolicy policy(policy_manager_);
   MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
 
   // Critical pressure: both consumers get a 0% limit, but only the other

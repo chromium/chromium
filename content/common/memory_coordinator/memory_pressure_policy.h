@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_PRESSURE_LISTENER_POLICY_H_
-#define CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_PRESSURE_LISTENER_POLICY_H_
+#ifndef CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_PRESSURE_POLICY_H_
+#define CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_PRESSURE_POLICY_H_
 
 #include "base/callback_list.h"
 #include "base/memory/memory_pressure_level.h"
@@ -21,12 +21,11 @@ namespace content {
 // by writing it to disk get the lowered limit but are not asked to release
 // memory (see
 // base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReadsAndWritesToDisk).
-class CONTENT_EXPORT MemoryPressureListenerPolicy
+class CONTENT_EXPORT MemoryPressurePolicy
     : public PredicateMemoryCoordinatorPolicy {
  public:
-  explicit MemoryPressureListenerPolicy(
-      MemoryCoordinatorPolicyManager& manager);
-  ~MemoryPressureListenerPolicy() override;
+  explicit MemoryPressurePolicy(MemoryCoordinatorPolicyManager& manager);
+  ~MemoryPressurePolicy() override;
 
  private:
   // Updates the memory limit of the consumers based on `level`.
@@ -38,4 +37,4 @@ class CONTENT_EXPORT MemoryPressureListenerPolicy
 };
 }  // namespace content
 
-#endif  // CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_PRESSURE_LISTENER_POLICY_H_
+#endif  // CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_PRESSURE_POLICY_H_
