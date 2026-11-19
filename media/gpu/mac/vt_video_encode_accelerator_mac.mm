@@ -23,6 +23,7 @@
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/no_destructor.h"
@@ -538,6 +539,12 @@ CreateCompressionSession(
   // are guaranteed that the output callback will not execute again.
   video_toolbox::ScopedVTCompressionSessionRef session;
   auto create_session = [&] {
+    // On Apple Silicon, the first low-latency VTCompressionSessionCreate call
+    // triggers synchronous code-signing verification of Google Chrome Framework
+    // inside Security.framework, which performs tens of thousands of
+    // valloc/free iterations in a single task and can exhaust PartitionAlloc's
+    // pool when Scheduler-Loop Quarantine is enabled (crbug.com/584749151).
+    base::ScopedSafetyChecksExclusion excluded;
     return VTCompressionSessionCreate(
         kCFAllocatorDefault, input_size.width(), input_size.height(),
         VideoCodecToCMVideoCodec(VideoCodecProfileToVideoCodec(profile)),
