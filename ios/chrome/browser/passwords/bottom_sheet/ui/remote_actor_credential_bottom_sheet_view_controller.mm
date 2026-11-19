@@ -280,6 +280,12 @@ std::u16string GetActorName() {
   NSString* sharedLabel =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_SUCCESS_TITLE);
   self.primaryActionButton.accessibilityLabel = sharedLabel;
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(
+                      handleUIAccessibilityAnnouncementDidFinishNotification:)
+             name:UIAccessibilityAnnouncementDidFinishNotification
+           object:nil];
   UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
                                   sharedLabel);
 }
@@ -510,6 +516,22 @@ std::u16string GetActorName() {
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
   return cell;
+}
+
+// Notifies the mutator once VoiceOver finishes reading the confirmation
+// announcement.
+- (void)handleUIAccessibilityAnnouncementDidFinishNotification:
+    (NSNotification*)notification {
+  NSString* announcement = base::apple::ObjCCast<NSString>(
+      notification.userInfo[UIAccessibilityAnnouncementKeyStringValue]);
+  if ([announcement
+          isEqualToString:self.primaryActionButton.accessibilityLabel]) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:self
+                  name:UIAccessibilityAnnouncementDidFinishNotification
+                object:nil];
+    [self.mutator didFinishConfirmationAnnouncement];
+  }
 }
 
 @end

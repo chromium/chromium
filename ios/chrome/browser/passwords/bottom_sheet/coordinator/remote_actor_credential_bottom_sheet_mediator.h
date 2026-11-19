@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/time/time.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_mutator.h"
 
 class FaviconLoader;
@@ -93,6 +94,12 @@ class SyncService;
 // Disconnects the mediator and cleans up dependencies. Must be called before
 // deallocation.
 - (void)disconnect;
+
+// Overrides the `delay` after which the confirmation is dismissed if the
+// VoiceOver announcement does not finish first. Defaults to
+// `kConfirmationDismissDelay`, or `kConfirmationDismissDelayIfVoiceOverRunning`
+// when VoiceOver is running.
+- (void)setConfirmationFallbackDelayForTesting:(base::TimeDelta)delay;
 
 @end
 

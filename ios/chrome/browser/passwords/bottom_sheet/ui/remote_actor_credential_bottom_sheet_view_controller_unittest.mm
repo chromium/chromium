@@ -553,3 +553,22 @@ TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
   OCMExpect([mutator_ didCancel]);
   [view_controller_.actionHandler confirmationAlertPrimaryAction];
 }
+
+// Tests that finishing the confirmation VoiceOver announcement notifies the
+// mutator.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
+       TestConfirmationAnnouncementCompletionNotifiesMutator) {
+  LoadViewWithSuggestions(@[ PasswordSuggestion(@"user") ]);
+  [view_controller_ showConfirmationState];
+
+  OCMExpect([mutator_ didFinishConfirmationAnnouncement]);
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIAccessibilityAnnouncementDidFinishNotification
+                    object:nil
+                  userInfo:@{
+                    UIAccessibilityAnnouncementKeyStringValue :
+                        l10n_util::GetNSString(
+                            IDS_IOS_PASSWORD_SHARING_SUCCESS_TITLE),
+                    UIAccessibilityAnnouncementKeyWasSuccessful : @YES,
+                  }];
+}

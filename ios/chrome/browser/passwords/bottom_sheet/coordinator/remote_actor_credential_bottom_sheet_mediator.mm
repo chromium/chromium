@@ -87,6 +87,9 @@ using password_manager::RemoteActorCredentialSharingResult;
   // Timer delaying the end of a successful flow so the confirmation checkmark
   // is visible before the bottom sheet is dismissed.
   base::OneShotTimer _confirmationTimer;
+
+  // Overrides `GetConfirmationDismissDelay()` in tests.
+  std::optional<base::TimeDelta> _confirmationFallbackDelayForTesting;
 }
 
 - (instancetype)
@@ -225,6 +228,18 @@ using password_manager::RemoteActorCredentialSharingResult;
   [self.delegate mediator:self didFinishWithResult:result];
 }
 
+- (void)didFinishConfirmationAnnouncement {
+  if (_confirmationTimer.IsRunning()) {
+    [self finishWithSuccess];
+  }
+}
+
+#pragma mark - Testing
+
+- (void)setConfirmationFallbackDelayForTesting:(base::TimeDelta)delay {
+  _confirmationFallbackDelayForTesting = delay;
+}
+
 #pragma mark - Private
 
 // Returns the requested domain formatted for display, or an empty string if the
@@ -283,16 +298,24 @@ using password_manager::RemoteActorCredentialSharingResult;
   [self.delegate mediator:self didFinishWithResult:result];
 }
 
-// Shows the success checkmark and finishes the flow once it has been visible
-// long enough.
+// Shows the success checkmark and finishes the flow once VoiceOver finishes its
+// announcement, or after a delay (used as a fallback when VoiceOver is
+// running).
 - (void)showConfirmation {
-  [_consumer showConfirmationState];
-
+  // `_confirmationTimer` must be running before
+  // `[_consumer showConfirmationState]` posts the accessibility announcement,
+  // because `didFinishConfirmationAnnouncement` checks
+  // `_confirmationTimer.IsRunning()` and would otherwise ignore an immediate
+  // completion callback.
   __weak __typeof(self) weakSelf = self;
-  _confirmationTimer.Start(FROM_HERE, GetConfirmationDismissDelay(),
+  _confirmationTimer.Start(FROM_HERE,
+                           _confirmationFallbackDelayForTesting.value_or(
+                               GetConfirmationDismissDelay()),
                            base::BindOnce(^{
                              [weakSelf finishWithSuccess];
                            }));
+
+  [_consumer showConfirmationState];
 }
 
 // Notifies the delegate that the credential was shared successfully.

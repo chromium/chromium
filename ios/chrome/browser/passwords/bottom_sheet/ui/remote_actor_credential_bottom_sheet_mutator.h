@@ -19,6 +19,9 @@
 // sheet, or goes back to the remote actor when there are no saved passwords.
 - (void)didCancel;
 
+// Called when VoiceOver finishes reading the confirmation announcement.
+- (void)didFinishConfirmationAnnouncement;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_UI_REMOTE_ACTOR_CREDENTIAL_BOTTOM_SHEET_MUTATOR_H_

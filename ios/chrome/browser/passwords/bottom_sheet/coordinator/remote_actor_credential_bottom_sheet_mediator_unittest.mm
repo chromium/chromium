@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_mediator.h"
 
 #import <memory>
+#import <optional>
 #import <string>
 #import <string_view>
 #import <utility>
@@ -16,6 +17,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "base/time/time.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -155,13 +157,18 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
 
   // Starts a mediator with a saved credential, selects it and completes the
   // share successfully, expecting the loading state and then the checkmark.
-  void ShareCredentialAndWaitForConfirmation() {
+  // `fallback_delay`, if set, overrides the confirmation fallback delay.
+  void ShareCredentialAndWaitForConfirmation(
+      std::optional<base::TimeDelta> fallback_delay = std::nullopt) {
     base::test::TestFuture<void> added_future;
     account_store_->AddLogin(password_manager::FromPasswordForm(
                                  *CreateTestForm(kUsername1, kPassword1)),
                              added_future.GetCallback());
     ASSERT_TRUE(added_future.Wait());
     mediator_ = CreateMediatorWithSignedInSyncingUser(&sharing_service_);
+    if (fallback_delay) {
+      [mediator_ setConfirmationFallbackDelayForTesting:*fallback_delay];
+    }
 
     OCMExpect([consumer_ setDomain:[OCMArg any]]);
     mediator_.consumer = consumer_;
@@ -289,6 +296,48 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
   OCMExpect([delegate_ mediator:mediator_
             didFinishWithResult:RemoteActorCredentialSharingResult::kSuccess]);
   [mediator_ disconnect];
+}
+
+// Tests that finishing the confirmation announcement reports success
+// immediately, without waiting for the fallback delay, and only once.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestConfirmationAnnouncementFinishedReportsSuccessImmediately) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShareCredentialAndWaitForConfirmation(base::Seconds(5)));
+
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  EXPECT_OCMOCK_VERIFY(delegate_);
+
+  OCMExpect([delegate_ mediator:mediator_
+            didFinishWithResult:RemoteActorCredentialSharingResult::kSuccess]);
+  [mediator_ didFinishConfirmationAnnouncement];
+  EXPECT_OCMOCK_VERIFY(delegate_);
+
+  // The delegate is not notified a second time.
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+// Tests that the confirmation is dismissed after the fallback delay if the
+// announcement never finishes.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestConfirmationAnnouncementNeverFinishedReportsSuccessAfterFallback) {
+  ASSERT_NO_FATAL_FAILURE(
+      ShareCredentialAndWaitForConfirmation(base::Seconds(5)));
+
+  task_environment_.FastForwardBy(base::Milliseconds(4999));
+  EXPECT_OCMOCK_VERIFY(delegate_);
+
+  OCMExpect([delegate_ mediator:mediator_
+            didFinishWithResult:RemoteActorCredentialSharingResult::kSuccess]);
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+}
+
+// Tests that `didFinishConfirmationAnnouncement` is a no-op when the mediator
+// is not waiting in the confirmation state.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestConfirmationAnnouncementFinishedOutsideConfirmationIsNoOp) {
+  [mediator_ didFinishConfirmationAnnouncement];
+  EXPECT_OCMOCK_VERIFY(delegate_);
 }
 
 // Tests that receiving the final sharing result stops the loading state.
