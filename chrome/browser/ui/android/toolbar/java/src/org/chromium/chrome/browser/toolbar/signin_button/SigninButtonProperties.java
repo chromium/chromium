@@ -11,6 +11,7 @@ import android.view.View;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** The SigninButton model allows for interactions between the view and the controller. */
@@ -38,6 +39,9 @@ final class SigninButtonProperties {
     public static final WritableObjectPropertyKey<ColorStateList> AVATAR_TINT =
             new WritableObjectPropertyKey<>();
 
+    // The alpha applied to the avatar button when it is not tinted.
+    public static final WritableFloatPropertyKey BUTTON_ALPHA = new WritableFloatPropertyKey();
+
     // The click listener for the signin button to handle interactions with the button.
     public static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK =
             new WritableObjectPropertyKey<>("on_click");
@@ -56,6 +60,7 @@ final class SigninButtonProperties {
                 USE_SIGNIN_TEXT_BUTTON,
                 BUTTON_AVATAR,
                 AVATAR_TINT,
+                BUTTON_ALPHA,
                 ON_CLICK,
                 AVATAR_CONTENT_DESCRIPTION,
                 IS_ENABLED

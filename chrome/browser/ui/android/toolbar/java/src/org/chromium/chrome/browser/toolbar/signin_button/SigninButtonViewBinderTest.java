@@ -51,6 +51,7 @@ public class SigninButtonViewBinderTest {
 
         mModel =
                 new PropertyModel.Builder(SigninButtonProperties.ALL_KEYS)
+                        .with(SigninButtonProperties.BUTTON_ALPHA, 1.0f)
                         .with(SigninButtonProperties.IS_ENABLED, true)
                         .with(SigninButtonProperties.AVATAR_TINT, null)
                         .build();
@@ -58,24 +59,24 @@ public class SigninButtonViewBinderTest {
     }
 
     @Test
-    public void testSignedInAvatarDimsWhenDisabled() {
+    public void testSignedInAvatarDimsWhenUnfocused() {
         assertEquals(1.0f, mAvatarButton.getAlpha(), FLOAT_EPSILON);
 
-        mModel.set(SigninButtonProperties.IS_ENABLED, false);
+        mModel.set(SigninButtonProperties.BUTTON_ALPHA, mDisabledAlpha);
         assertEquals(mDisabledAlpha, mAvatarButton.getAlpha(), FLOAT_EPSILON);
 
-        mModel.set(SigninButtonProperties.IS_ENABLED, true);
+        mModel.set(SigninButtonProperties.BUTTON_ALPHA, 1.0f);
         assertEquals(1.0f, mAvatarButton.getAlpha(), FLOAT_EPSILON);
     }
 
     @Test
-    public void testTintedAvatarNotDoubleDimmedWhenDisabled() {
+    public void testTintedAvatarNotDoubleDimmedWhenUnfocused() {
         ColorStateList tint = ColorStateList.valueOf(Color.GRAY);
         mModel.set(SigninButtonProperties.AVATAR_TINT, tint);
-        mModel.set(SigninButtonProperties.IS_ENABLED, false);
+        mModel.set(SigninButtonProperties.BUTTON_ALPHA, mDisabledAlpha);
         assertEquals(1.0f, mAvatarButton.getAlpha(), FLOAT_EPSILON);
 
-        // Switching to an untinted (signed-in) avatar while disabled applies view alpha dimming.
+        // Switching to an untinted (signed-in) avatar while unfocused applies view alpha dimming.
         mModel.set(SigninButtonProperties.AVATAR_TINT, null);
         assertEquals(mDisabledAlpha, mAvatarButton.getAlpha(), FLOAT_EPSILON);
 

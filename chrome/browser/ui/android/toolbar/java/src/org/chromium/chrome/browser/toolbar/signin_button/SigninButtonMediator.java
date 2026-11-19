@@ -72,8 +72,6 @@ import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Objects;
-
 /**
  * The mediator for a signin button on the NTP toolbar. Listens for sign in state changes and drives
  * corresponding changes to the property model values which back the SigninButton view
@@ -170,9 +168,9 @@ final class SigninButtonMediator
         mThemeColorProvider = themeColorProvider;
         mOnSigninTapped = onSigninTapped;
         mActivityFocusTint = mThemeColorProvider.getActivityFocusTint();
-        mModel.set(
-                SigninButtonProperties.IS_ENABLED,
-                hasActivityFocusTint(mThemeColorProvider.getTint(), mActivityFocusTint));
+        float unfocusedAlpha = mThemeColorProvider.getUnfocusedAlpha();
+        mModel.set(SigninButtonProperties.IS_ENABLED, unfocusedAlpha == 1.0f);
+        mModel.set(SigninButtonProperties.BUTTON_ALPHA, unfocusedAlpha);
     }
 
     /**
@@ -231,19 +229,14 @@ final class SigninButtonMediator
             @Nullable ColorStateList activityFocusTint,
             float unfocusedAlpha,
             @BrandedColorScheme int brandedColorScheme) {
-        boolean isWindowActive = hasActivityFocusTint(tint, activityFocusTint);
-        mModel.set(SigninButtonProperties.IS_ENABLED, isWindowActive);
+        mModel.set(SigninButtonProperties.IS_ENABLED, unfocusedAlpha == 1.0f);
+        mModel.set(SigninButtonProperties.BUTTON_ALPHA, unfocusedAlpha);
 
         // The avatar icon tint needs to be manually set.
         mActivityFocusTint = activityFocusTint;
         if (mProfile != null && !mProfile.isOffTheRecord()) {
             updateButtonState();
         }
-    }
-
-    private static boolean hasActivityFocusTint(
-            @Nullable ColorStateList tint, @Nullable ColorStateList activityFocusTint) {
-        return activityFocusTint == null || Objects.equals(tint, activityFocusTint);
     }
 
     boolean hasSpaceToShow() {

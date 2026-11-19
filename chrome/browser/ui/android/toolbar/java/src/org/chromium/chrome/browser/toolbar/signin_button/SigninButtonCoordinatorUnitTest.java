@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.signin_button;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -32,11 +33,13 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link SigninButtonCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -62,15 +65,17 @@ public class SigninButtonCoordinatorUnitTest {
     private final OneshotSupplierImpl<OmniboxStub> mOmniboxStubSupplier =
             new OneshotSupplierImpl<>();
 
+    private Activity mActivity;
     private boolean mIsNtp;
     private SigninButtonCoordinator mCoordinator;
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        when(mThemeColorProvider.getUnfocusedAlpha()).thenReturn(1.0f);
         mCoordinator =
                 new SigninButtonCoordinator(
-                        activity,
+                        mActivity,
                         mWindowAndroid,
                         /* viewStub= */ null,
                         mTabSupplier,
@@ -132,5 +137,38 @@ public class SigninButtonCoordinatorUnitTest {
 
         mCoordinator.updateButtonVisibility();
         assertTrue(mCoordinator.isShown());
+    }
+
+    @Test
+    public void testMediatorUpdatesUnfocusedAlpha() {
+        when(mThemeColorProvider.getUnfocusedAlpha()).thenReturn(0.38f);
+        PropertyModel model = new PropertyModel.Builder(SigninButtonProperties.ALL_KEYS).build();
+        SigninButtonMediator mediator =
+                new SigninButtonMediator(
+                        mActivity,
+                        mWindowAndroid,
+                        model,
+                        mProfileSupplier,
+                        mSigninAndHistorySyncActivityLauncher,
+                        mActivityResultTracker,
+                        mDeviceLockActivityLauncher,
+                        mBottomSheetController,
+                        mModalDialogManager,
+                        mSnackbarManager,
+                        mThemeColorProvider,
+                        /* onSigninTapped= */ () -> {});
+
+        assertFalse(model.get(SigninButtonProperties.IS_ENABLED));
+        assertEquals(0.38f, model.get(SigninButtonProperties.BUTTON_ALPHA), 1e-4f);
+
+        mediator.onTintChanged(
+                /* tint= */ null,
+                /* activityFocusTint= */ null,
+                /* unfocusedAlpha= */ 1.0f,
+                BrandedColorScheme.APP_DEFAULT);
+        assertTrue(model.get(SigninButtonProperties.IS_ENABLED));
+        assertEquals(1.0f, model.get(SigninButtonProperties.BUTTON_ALPHA), 1e-4f);
+
+        mediator.destroy();
     }
 }
