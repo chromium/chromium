@@ -320,8 +320,14 @@ BASE_FEATURE(kGlicOptInDialogA11yFix, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicStructuredYieldMetadata, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Runs the glic client in a PrivilegedWebContents instead of a webview.
-// This is a work in progress. See b/534807813.
-BASE_FEATURE(kGlicNoWebview, base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(b/587413187): Enable by default on ChromeOS once its rollout completes.
+BASE_FEATURE(kGlicNoWebview,
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 BASE_FEATURE(kGlicDisableHfcr, base::FEATURE_DISABLED_BY_DEFAULT);
 // Default-enabled platforms: all (appends authuser to the NoWebview guest URL).
 BASE_FEATURE(kGlicSetAuthUser, base::FEATURE_ENABLED_BY_DEFAULT);

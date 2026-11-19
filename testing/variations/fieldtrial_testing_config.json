@@ -10175,12 +10175,7 @@
     "GlicNoWebview": [
         {
             "platforms": [
-                "android",
-                "android_desktop",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "chromeos"
             ],
             "experiments": [
                 {
