@@ -60,6 +60,7 @@ join , \
   PerDependencyDeadlines \
   PrioritizeCompositorTaskRunnerOnStartup \
   PrioritizeResizeTaskRunnerOnStartup \
+  PrioritizeWebUINavigationURLLoader \
   SendGPUChannelEarly \
   SkipIPCChannelPausingForNonGuests \
   TopChromeWebUISharedRenderer \
