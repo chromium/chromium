@@ -113,7 +113,8 @@ struct RawPtrNoOpImpl {
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   // Report the current wrapped pointer if pointee isn't alive anymore.
   template <typename T>
-  PA_ALWAYS_INLINE static void ReportIfDangling(T* wrapped_ptr) {}
+  PA_ALWAYS_INLINE static void ReportIfDangling(
+      [[maybe_unused]] T* wrapped_ptr) {}
 
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
