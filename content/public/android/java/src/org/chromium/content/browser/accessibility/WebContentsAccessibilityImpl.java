@@ -1001,9 +1001,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // been passed to the Framework, which can handle clean-up on its end. We do not want to
         // delete |this| because the object is (largely) not WindowAndroid dependent.
         mNodeInfoCache.clear();
-        if (windowAndroid != null && windowAndroid.getContext().get() != null) {
-            mContext = windowAndroid.getContext().get();
-        }
+        Context newContext = windowAndroid != null ? windowAndroid.getContext().get() : null;
+        mContext = newContext != null ? newContext : ContextUtils.getApplicationContext();
 
         TraceEvent.end("WebContentsAccessibilityImpl.onWindowAndroidChanged");
     }
