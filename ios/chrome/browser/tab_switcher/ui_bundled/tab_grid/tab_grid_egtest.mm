@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -1013,9 +1014,12 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
                              inWindowWithNumber:1];
 
   // Navigate back on second window to check the navigation stack is intact.
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      performAction:grey_tap()];
+  // `grey_tap()` is not used because EarlGrey orders windows of different
+  // scenes arbitrarily when checking visibility, so the first window, which
+  // overlaps the new one, can randomly be considered as obscuring it.
+  GREYAssertTrue(
+      TapAtOffsetOf(kToolbarBackButtonIdentifier, 1, CGVectorMake(0.5, 0.5)),
+      @"Failed to tap the back button in window 1.");
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1
                              inWindowWithNumber:1];
 
@@ -1064,9 +1068,12 @@ TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
                              inWindowWithNumber:1];
 
   // Navigate back on second window to check the navigation stack is intact.
-  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      performAction:grey_tap()];
+  // `grey_tap()` is not used because EarlGrey orders windows of different
+  // scenes arbitrarily when checking visibility, so the first window, which
+  // overlaps the new one, can randomly be considered as obscuring it.
+  GREYAssertTrue(
+      TapAtOffsetOf(kToolbarBackButtonIdentifier, 1, CGVectorMake(0.5, 0.5)),
+      @"Failed to tap the back button in window 1.");
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1
                              inWindowWithNumber:1];
 
