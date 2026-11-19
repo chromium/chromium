@@ -1975,6 +1975,31 @@ public class BottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    public void testDestroy_DesktopPopupWhileShowing_RestoresClipping() {
+        BottomSheetCoordinator.setSmallScreenForTesting(false);
+        BottomSheetCoordinator sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
+        mSheetContainer.layout(0, 0, 1000, 1000);
+        initSheet(sheet, /* isLargeFormFactor= */ true);
+
+        ViewGroup containerParent = (ViewGroup) mSheetContainer.getParent();
+        containerParent.setClipChildren(true);
+        containerParent.setClipToPadding(false);
+
+        when(mSheetContent.supportsLargeFormFactor()).thenReturn(true);
+        when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+        sheet.showContent(mSheetContent);
+        assertFalse(mSheetContainer.getClipToPadding());
+        assertFalse(containerParent.getClipChildren());
+        assertFalse(containerParent.getClipToPadding());
+
+        sheet.destroy();
+        assertTrue(mSheetContainer.getClipToPadding());
+        assertTrue(containerParent.getClipChildren());
+        assertFalse(containerParent.getClipToPadding());
+    }
+
+    @Test
     public void testContentContainerHeight_LargeFormFactor() {
         BottomSheetCoordinator.setSmallScreenForTesting(false);
         int containerHeight = 1000;

@@ -13,6 +13,7 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetContainerDelegate.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerFactory.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerImpl.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetCoordinator.java",
@@ -45,6 +46,7 @@ android_library("java") {
 robolectric_library("junit_tests") {
   resources_package = "org.chromium.components.browser_ui.bottomsheet"
   sources = [
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetContainerDelegateUnitTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerImplUnitTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetCoordinatorUnitTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetHideReentrancyUnitTest.java",

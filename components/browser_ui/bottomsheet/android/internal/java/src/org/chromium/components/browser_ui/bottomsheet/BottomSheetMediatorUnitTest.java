@@ -33,7 +33,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -46,20 +45,21 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /** Unit tests for {@link BottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BottomSheetMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private final View mContentView = new View(ContextUtils.getApplicationContext());
+    private final View mToolbarView = new View(ContextUtils.getApplicationContext());
+
     private @Mock BottomSheetObserver mObserver;
     private @Mock BottomSheetContent mContent;
 
-    private final View mContentView = new View(ContextUtils.getApplicationContext());
-    private final View mToolbarView = new View(ContextUtils.getApplicationContext());
     private PropertyModel mModel;
     private BottomSheetMediator mMediator;
+    private TestSheetContainerDelegate mContainerDelegate;
     private DisplayMetrics mDisplayMetrics;
 
     @Before
@@ -69,6 +69,8 @@ public class BottomSheetMediatorUnitTest {
         mMediator =
                 new BottomSheetMediator(
                         mModel, ContextUtils.getApplicationContext().getResources());
+        mContainerDelegate = new TestSheetContainerDelegate();
+        mMediator.setSheetContainerDelegate(mContainerDelegate);
         mMediator.setSheetContainerDimensions(500, 1000);
         mMediator.addObserver(mObserver);
         when(mContent.getSheetType()).thenReturn(new BottomSheetType.Builder().build());
@@ -580,6 +582,33 @@ public class BottomSheetMediatorUnitTest {
         assertEquals(
                 BottomSheetView.SheetLayoutMode.DESKTOP_POPUP,
                 mModel.get(BottomSheetProperties.SHEET_LAYOUT_MODE));
+        assertFalse(mContainerDelegate.mClipToPadding);
+        assertTrue(mContainerDelegate.mAncestorsUnclipped);
+
+        mMediator.setSheetLayoutMode(BottomSheetView.SheetLayoutMode.DESKTOP_FALLBACK);
+        assertEquals(
+                BottomSheetView.SheetLayoutMode.DESKTOP_FALLBACK,
+                mModel.get(BottomSheetProperties.SHEET_LAYOUT_MODE));
+        assertTrue(mContainerDelegate.mClipToPadding);
+        assertFalse(mContainerDelegate.mAncestorsUnclipped);
+
+        mMediator.setSheetLayoutMode(BottomSheetView.SheetLayoutMode.STANDARD);
+        assertEquals(
+                BottomSheetView.SheetLayoutMode.STANDARD,
+                mModel.get(BottomSheetProperties.SHEET_LAYOUT_MODE));
+        assertTrue(mContainerDelegate.mClipToPadding);
+        assertFalse(mContainerDelegate.mAncestorsUnclipped);
+
+        mMediator.setSheetLayoutMode(BottomSheetView.SheetLayoutMode.DESKTOP_POPUP);
+        assertFalse(mContainerDelegate.mClipToPadding);
+        assertTrue(mContainerDelegate.mAncestorsUnclipped);
+
+        mMediator.destroy();
+        assertEquals(
+                BottomSheetView.SheetLayoutMode.DESKTOP_POPUP,
+                mModel.get(BottomSheetProperties.SHEET_LAYOUT_MODE));
+        assertTrue(mContainerDelegate.mClipToPadding);
+        assertFalse(mContainerDelegate.mAncestorsUnclipped);
     }
 
     @Test
@@ -1302,34 +1331,34 @@ public class BottomSheetMediatorUnitTest {
 
     @Test
     public void testSetBottomMargin() {
-        AtomicInteger applierCallCount = new AtomicInteger(0);
-        AtomicInteger applierMargin = new AtomicInteger(-1);
-        AtomicBoolean applierCalledBeforeObserver = new AtomicBoolean(false);
-        Callback<Integer> applier =
-                margin -> {
-                    applierCallCount.incrementAndGet();
-                    applierMargin.set(margin);
-                    try {
-                        verify(mObserver, never()).onContainerBottomMarginChanged(anyInt());
-                        applierCalledBeforeObserver.set(true);
-                    } catch (AssertionError e) {
-                        applierCalledBeforeObserver.set(false);
+        AtomicBoolean delegateCalledBeforeObserver = new AtomicBoolean(false);
+        TestSheetContainerDelegate delegate =
+                new TestSheetContainerDelegate() {
+                    @Override
+                    public void setContainerBottomMargin(int bottomMargin) {
+                        super.setContainerBottomMargin(bottomMargin);
+                        try {
+                            verify(mObserver, never()).onContainerBottomMarginChanged(anyInt());
+                            delegateCalledBeforeObserver.set(true);
+                        } catch (AssertionError e) {
+                            delegateCalledBeforeObserver.set(false);
+                        }
                     }
                 };
-        mMediator.setContainerBottomMarginApplier(applier);
+        mMediator.setSheetContainerDelegate(delegate);
 
         mMediator.setBottomMargin(24);
         assertEquals(24, mMediator.getContainerBottomMargin());
-        assertEquals(24, applierMargin.get());
-        assertEquals(1, applierCallCount.get());
-        assertTrue(applierCalledBeforeObserver.get());
+        assertEquals(24, delegate.mBottomMargin);
+        assertEquals(1, delegate.mBottomMarginCallCount);
+        assertTrue(delegateCalledBeforeObserver.get());
         verify(mObserver, times(1)).onContainerBottomMarginChanged(24);
 
-        // Setting same margin unconditionally invokes applier (so view params are kept in sync),
+        // Setting same margin unconditionally invokes delegate (so view params are kept in sync),
         // but does not trigger redundant observer notification.
         mMediator.setBottomMargin(24);
-        assertEquals(24, applierMargin.get());
-        assertEquals(2, applierCallCount.get());
+        assertEquals(24, delegate.mBottomMargin);
+        assertEquals(2, delegate.mBottomMarginCallCount);
         verify(mObserver, times(1)).onContainerBottomMarginChanged(24);
     }
 
@@ -1471,5 +1500,29 @@ public class BottomSheetMediatorUnitTest {
         // Here, systemBars (80) and e2e (100) are excluded, but ime (200) is respected.
         assertEquals(
                 new Rect(0, 50, 1080, 1920 - 200), mMediator.getVisibleViewportRectForTesting());
+    }
+
+    private static class TestSheetContainerDelegate
+            implements BottomSheetMediator.SheetContainerDelegate {
+        int mBottomMargin = -1;
+        int mBottomMarginCallCount;
+        boolean mClipToPadding = true;
+        boolean mAncestorsUnclipped;
+
+        @Override
+        public void setContainerBottomMargin(int bottomMargin) {
+            mBottomMargin = bottomMargin;
+            mBottomMarginCallCount++;
+        }
+
+        @Override
+        public void setContainerClipToPadding(boolean clipToPadding) {
+            mClipToPadding = clipToPadding;
+        }
+
+        @Override
+        public void setAncestorsUnclipped(boolean unclipped) {
+            mAncestorsUnclipped = unclipped;
+        }
     }
 }

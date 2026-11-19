@@ -20,7 +20,6 @@ import androidx.annotation.StringRes;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
@@ -70,6 +69,33 @@ class BottomSheetMediator implements TouchHandler {
     private static final GlowSpec DEFAULT_GLOW_SPEC = new GlowSpec(0, GlowSpec.ShadowSize.DEFAULT);
     private static @Nullable Boolean sIsSmallScreenForTesting;
 
+    /** Applies layout and clipping updates to the bottom sheet's host container and ancestors. */
+    interface SheetContainerDelegate {
+        /**
+         * Sets the bottom margin on the sheet container.
+         *
+         * @param bottomMargin The bottom margin in pixels.
+         */
+        void setContainerBottomMargin(@Px int bottomMargin);
+
+        /**
+         * Sets whether the sheet container clips its children to padding. Implementations also
+         * ensure {@code clipChildren} remains {@code false} so shadows and popup glow are not
+         * clipped.
+         *
+         * @param clipToPadding Whether children should be clipped to container padding.
+         */
+        void setContainerClipToPadding(boolean clipToPadding);
+
+        /**
+         * Controls whether container ancestors up to {@code android.R.id.content} are unclipped.
+         * Implementations must be idempotent for repeated calls with the same value.
+         *
+         * @param unclipped Whether container ancestors should be unclipped.
+         */
+        void setAncestorsUnclipped(boolean unclipped);
+    }
+
     private final PropertyModel mModel;
     private final ObserverList<BottomSheetObserver> mObservers = new ObserverList<>();
     private final TokenHolder mKeyboardTokenHolder = new TokenHolder(CallbackUtils.emptyRunnable());
@@ -82,6 +108,8 @@ class BottomSheetMediator implements TouchHandler {
 
     /** The visible rect for the screen taking the keyboard into account. */
     private final Rect mVisibleViewportRect = new Rect();
+
+    private final Resources mResources;
 
     private @Nullable BottomSheetContent mSheetContent;
     private @SheetState int mCurrentState = SheetState.HIDDEN;
@@ -99,10 +127,9 @@ class BottomSheetMediator implements TouchHandler {
     private boolean mIsLargeFormFactor;
     private @Px int mRequestedBottomMargin;
     private @Px int mBottomMargin;
-    private @Nullable Callback<Integer> mContainerBottomMarginApplier;
+    private @Nullable SheetContainerDelegate mSheetContainerDelegate;
     private Supplier<Integer> mEdgeToEdgeBottomInsetSupplier = () -> 0;
     private Supplier<Integer> mKeyboardInsetSupplier = () -> 0;
-    private final Resources mResources;
 
     /**
      * Creates a new BottomSheetMediator.
@@ -157,7 +184,14 @@ class BottomSheetMediator implements TouchHandler {
 
     /** Clears all registered observers when destroying the mediator. */
     void destroy() {
-        mContainerBottomMarginApplier = null;
+        if (mSheetContainerDelegate != null) {
+            if (mModel.get(BottomSheetProperties.SHEET_LAYOUT_MODE)
+                    == SheetLayoutMode.DESKTOP_POPUP) {
+                mSheetContainerDelegate.setContainerClipToPadding(true);
+            }
+            mSheetContainerDelegate.setAncestorsUnclipped(false);
+            mSheetContainerDelegate = null;
+        }
         mObservers.clear();
         mIsTouchEnabled = false;
         mEdgeToEdgeBottomInsetSupplier = () -> 0;
@@ -522,16 +556,16 @@ class BottomSheetMediator implements TouchHandler {
     }
 
     /**
-     * Sets the callback invoked synchronously to apply the effective container bottom margin to the
+     * Sets the delegate invoked synchronously to apply container layout and clipping updates to the
      * view hierarchy before observers are notified.
      */
-    void setContainerBottomMarginApplier(Callback<Integer> containerBottomMarginApplier) {
-        mContainerBottomMarginApplier = containerBottomMarginApplier;
+    void setSheetContainerDelegate(SheetContainerDelegate delegate) {
+        mSheetContainerDelegate = delegate;
     }
 
     /**
      * Recomputes the effective bottom margin of the sheet container, applies it via the registered
-     * container margin applier, and notifies observers if the effective margin changed.
+     * container delegate, and notifies observers if the effective margin changed.
      *
      * <p>Callers must invoke this after the requested margin, large-form-factor flag, or sheet
      * content changes (e.g. via {@link #setBottomMargin} or layout mode updates).
@@ -547,8 +581,8 @@ class BottomSheetMediator implements TouchHandler {
         // ensure we don't introduce subtle client regressions.
         boolean bottomMarginChanged = mBottomMargin != effectiveBottomMargin;
         mBottomMargin = effectiveBottomMargin;
-        if (mContainerBottomMarginApplier != null) {
-            mContainerBottomMarginApplier.onResult(mBottomMargin);
+        if (mSheetContainerDelegate != null) {
+            mSheetContainerDelegate.setContainerBottomMargin(mBottomMargin);
         }
 
         if (!bottomMarginChanged) return;
@@ -1052,12 +1086,24 @@ class BottomSheetMediator implements TouchHandler {
     }
 
     /**
-     * Sets the sheet layout mode in the model.
+     * Sets the sheet layout mode in the model and updates container and ancestor clipping.
      *
      * @param mode The sheet layout mode.
      */
     void setSheetLayoutMode(@SheetLayoutMode int mode) {
         mModel.set(BottomSheetProperties.SHEET_LAYOUT_MODE, mode);
+        if (mSheetContainerDelegate != null) {
+            mSheetContainerDelegate.setContainerClipToPadding(
+                    mode != SheetLayoutMode.DESKTOP_POPUP);
+        }
+        updateAncestorsUnclipped();
+    }
+
+    private void updateAncestorsUnclipped() {
+        if (mSheetContainerDelegate == null) return;
+        mSheetContainerDelegate.setAncestorsUnclipped(
+                mModel.get(BottomSheetProperties.SHEET_LAYOUT_MODE)
+                        == SheetLayoutMode.DESKTOP_POPUP);
     }
 
     /** Sets whether the device is on a platform that supports a large form factor. */

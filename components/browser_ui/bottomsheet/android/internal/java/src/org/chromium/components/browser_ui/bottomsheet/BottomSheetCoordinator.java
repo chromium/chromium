@@ -103,6 +103,8 @@ class BottomSheetCoordinator
     /** The view that contains the sheet. */
     private ViewGroup mSheetContainer;
 
+    private @Nullable BottomSheetContainerDelegate mSheetContainerDelegate;
+
     /** The height of the screen in the previous layout pass. */
     private int mPreviousScreenHeight;
 
@@ -223,6 +225,7 @@ class BottomSheetCoordinator
             mContainerLayoutChangeListener = null;
         }
         mMediator.destroy();
+        mSheetContainerDelegate = null;
         endAnimations();
     }
 
@@ -276,7 +279,9 @@ class BottomSheetCoordinator
         mMediator.setEdgeToEdgeBottomInsetSupplier(edgeToEdgeBottomInsetSupplier);
         mMediator.setKeyboardInsetSupplier(mInsetObserver.getSupplierForKeyboardInset());
         mSheetContainer = (ViewGroup) mView.getParent();
-        mMediator.setContainerBottomMarginApplier(this::applyContainerBottomMargin);
+        BottomSheetContainerDelegate delegate = new BottomSheetContainerDelegate(mSheetContainer);
+        mSheetContainerDelegate = delegate;
+        mMediator.setSheetContainerDelegate(delegate);
         onAppHeaderHeightChanged(appHeaderHeight);
         setBottomMargin(bottomMargin);
 
@@ -1061,24 +1066,11 @@ class BottomSheetCoordinator
         return mMediator.isSheetOpen();
     }
 
-    private void updateContainerClipping(boolean isPopup) {
-        if (mSheetContainer == null) return;
-        // Container child clipping must always remain false so both mobile top-shadow
-        // translations and popup glow can render past bounds without being sliced.
-        mSheetContainer.setClipChildren(false);
-        mSheetContainer.setClipToPadding(!isPopup);
-        if (mSheetContainer.getParent() instanceof ViewGroup parent) {
-            parent.setClipChildren(!isPopup);
-            parent.setClipToPadding(!isPopup);
-        }
-    }
-
     private void updateSheetLayoutMode(@SheetLayoutMode int mode) {
         mMediator.setSheetLayoutMode(mode);
         boolean isPopup = mode == SheetLayoutMode.DESKTOP_POPUP;
         mMediator.updateContainerBottomMargin();
         mMediator.updateCloseButton(isPopup, getCurrentSheetContent());
-        updateContainerClipping(isPopup);
     }
 
     /**
@@ -1555,6 +1547,9 @@ class BottomSheetCoordinator
 
     void setSheetContainerForTesting(ViewGroup sheetContainer) {
         mSheetContainer = sheetContainer;
+        if (mSheetContainerDelegate != null) {
+            mSheetContainerDelegate.setSheetContainerForTesting(sheetContainer); // IN-TEST
+        }
         mMediator.setSheetContainerDimensions(
                 sheetContainer.getWidth(), sheetContainer.getHeight());
     }
@@ -1607,12 +1602,6 @@ class BottomSheetCoordinator
     @SheetState
     int getStateBeforeKeyboardShownForTesting() {
         return mMediator.getStateBeforeKeyboardShownForTesting();
-    }
-
-    private void applyContainerBottomMargin(@Px int bottomMargin) {
-        MarginLayoutParams layoutParams = (MarginLayoutParams) mSheetContainer.getLayoutParams();
-        layoutParams.bottomMargin = bottomMargin;
-        mSheetContainer.setLayoutParams(layoutParams);
     }
 
     /**
