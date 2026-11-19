@@ -7,6 +7,7 @@ import("//build/rust/gni_impl/crubit_shared_args.gni")
 import("//build/rust/gni_impl/libclang_args.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/toolchain/kythe.gni")
+import("//build/toolchain/toolchain.gni")
 import("//build_overrides/crubit.gni")
 
 # Template to generate and build Rust bindings for a set of C++ headers using
@@ -456,7 +457,17 @@ template("rust_api_from_cpp") {
       rebase_path(_flagfile_path, root_build_dir),
       "--target-args-path",
       rebase_path(_metadata_path, root_build_dir),
+    ]
 
+    # TODO(https://crbug.com/587508854): Remove this block in the CL that rolls
+    # Crubit past the switch from Abseil's `--flagfile` to LLVM's `@<file>`
+    # response files (ToT Crubit is built only when `rust_force_head_revision`
+    # is true; pinned Crubit still requires `--flagfile`).
+    if (!rust_force_head_revision) {
+      args += [ "--use-legacy-abseil-flagfile" ]
+    }
+
+    args += [
       # This `--` is consumed by `argparse` in the wrapper script.  The second
       # `--` (further below) separates `rs_bindings_from_cc` flags from Clang
       # args.
