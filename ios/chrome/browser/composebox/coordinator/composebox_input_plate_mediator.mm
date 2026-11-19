@@ -97,6 +97,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/utils/web_state_deferred_executor.h"
+#import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -253,10 +254,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   raw_ptr<WebStateList> _webStateList;
   // The observer bridge for the WebStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
-  // The observer bridge for the active WebState.
-  std::unique_ptr<web::WebStateObserverBridge> _activeWebStateObserverBridge;
-  // The currently observed active WebState.
-  raw_ptr<web::WebState> _activeWebState;
+  // The observer bridge and forwarder for all WebStates in `_webStateList`.
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+  std::unique_ptr<AllWebStateObservationForwarder>
+      _allWebStateObservationForwarder;
   // The favicon loader.
   raw_ptr<FaviconLoader> _faviconLoader;
   // A browser agent for retrieving APC from the cache.
@@ -423,7 +424,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       _webStateListObserver =
           std::make_unique<WebStateListObserverBridge>(self);
       _webStateList->AddObserver(_webStateListObserver.get());
-      [self updateActiveWebStateObserver];
+      _webStateObserverBridge =
+          std::make_unique<web::WebStateObserverBridge>(self);
+      _allWebStateObservationForwarder =
+          std::make_unique<AllWebStateObservationForwarder>(
+              _webStateList.get(), _webStateObserverBridge.get());
     }
     _faviconLoader = faviconLoader;
     _webStateDeferredExecutor = [[WebStateDeferredExecutor alloc] init];
@@ -501,12 +506,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     _contextualSearchSession.reset();
   }
   _inNavigation = NO;
+  _allWebStateObservationForwarder.reset();
+  _webStateObserverBridge.reset();
   if (_webStateList && _webStateListObserver) {
     _webStateList->RemoveObserver(_webStateListObserver.get());
     _webStateListObserver.reset();
   }
   _webStateList = nullptr;
-  [self stopObservingActiveWebState];
   _items = nil;
   _latestTabSelectionMapping.clear();
   _userRemovedWebStateIDs.clear();
@@ -1683,33 +1689,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
   [self updateAutoAttachedCurrentTab];
-}
-
-// Stops observing the active WebState and resets the observer bridge.
-- (void)stopObservingActiveWebState {
-  if (_activeWebState && _activeWebStateObserverBridge) {
-    _activeWebState->RemoveObserver(_activeWebStateObserverBridge.get());
-    _activeWebStateObserverBridge.reset();
-  }
-  _activeWebState = nullptr;
-}
-
-// Updates active WebState observation to track `_webStateList`'s active
-// WebState. If the active WebState has changed or `_webStateList` is null,
-// unobserves the previous WebState and starts observing the new one if valid.
-- (void)updateActiveWebStateObserver {
-  web::WebState* newActiveWebState =
-      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
-  if (_activeWebState == newActiveWebState) {
-    return;
-  }
-  [self stopObservingActiveWebState];
-  _activeWebState = newActiveWebState;
-  if (_activeWebState) {
-    _activeWebStateObserverBridge =
-        std::make_unique<web::WebStateObserverBridge>(self);
-    _activeWebState->AddObserver(_activeWebStateObserverBridge.get());
-  }
 }
 
 // Returns the WebState in `_webStateList` associated with
@@ -3038,7 +3017,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 
   if (status.active_web_state_change()) {
-    [self updateActiveWebStateObserver];
     [self updateAutoAttachedCurrentTabIfNeeded];
   }
 
@@ -3056,12 +3034,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  _allWebStateObservationForwarder.reset();
+  _webStateObserverBridge.reset();
   if (_webStateList && _webStateListObserver) {
     _webStateList->RemoveObserver(_webStateListObserver.get());
     _webStateListObserver.reset();
   }
   _webStateList = nullptr;
-  [self updateActiveWebStateObserver];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -3075,19 +3054,22 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                              !navigationContext->IsSameDocument())) {
     [self handleNavigatedWebState:webState];
   }
-  [self updateAutoAttachedCurrentTabIfNeeded];
+  if (_webStateList && webState == _webStateList->GetActiveWebState()) {
+    [self updateAutoAttachedCurrentTabIfNeeded];
+  }
 }
 
 - (void)webStateDidStopLoading:(web::WebState*)webState {
   if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
     return;
   }
-  [self updateAutoAttachedCurrentTabIfNeeded];
+  if (_webStateList && webState == _webStateList->GetActiveWebState()) {
+    [self updateAutoAttachedCurrentTabIfNeeded];
+  }
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {
   _userRemovedWebStateIDs.erase(webState->GetUniqueIdentifier());
-  [self updateActiveWebStateObserver];
 }
 
 #pragma mark - Testing
