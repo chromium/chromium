@@ -216,8 +216,9 @@ public class NtpSyncedThemeManager
     }
 
     /**
-     * Downloads a theme collection image which arrived from sync. It supersedes any in-flight
-     * download.
+     * Downloads a theme collection image which arrived from sync, unless this device already shows
+     * the theme. It supersedes any in-flight download first, including the next image pre-fetched
+     * for the local daily refresh, which is the older choice.
      *
      * @param info The {@link CustomBackgroundInfo} containing theme collection metadata.
      * @param primaryColor The synced primary color, or {@code null} if none was provided.
@@ -225,12 +226,6 @@ public class NtpSyncedThemeManager
     private void onContinuousSyncedThemeCollectionImageAvailable(
             CustomBackgroundInfo info, @Nullable @ColorInt Integer primaryColor) {
         invalidateInFlightDownload();
-        if (info.isDailyRefreshEnabled) {
-            // TODO(crbug.com/488439751): Synced theme collection daily refresh isn't supported
-            // yet, so there is nothing to download.
-            maybeNotifyReadinessCallbacks();
-            return;
-        }
 
         // Only used for the comparison below, so the image fields stay null. A non-null
         // fileIdHash would have the constructor create the image directory on disk.
@@ -243,8 +238,9 @@ public class NtpSyncedThemeManager
                         primaryColor,
                         /* fileIdHash= */ null);
         if (NtpCustomizationUtils.isSyncedBackgroundPersisted(candidate)) {
-            // E.g. the stored theme delivered when the bridge attaches at startup, or another
-            // device selecting the theme this device already uses.
+            // Native sends its stored theme again at startup. Skip it if this device already uses
+            // that theme. With daily refresh, native's copy holds the next image it pre-fetched,
+            // not the image shown now, so only the collection is compared.
             maybeNotifyReadinessCallbacks();
             return;
         }
@@ -429,9 +425,12 @@ public class NtpSyncedThemeManager
     }
 
     /**
-     * Applies a synced static theme collection image from another device, and notifies any waiting
-     * readiness callbacks. A synced daily refresh returns early in {@link
-     * #onContinuousSyncedThemeCollectionImageAvailable}.
+     * Applies a theme collection image synced from another device, and notifies any waiting
+     * readiness callbacks. With daily refresh, the image is the first image of the other device.
+     * After it is applied, this device picks its own next images.
+     *
+     * <p>If the download failed, nothing is applied and there is no retry here. Native has saved
+     * the synced theme and sends it again at the next startup.
      *
      * @param info The {@link CustomBackgroundInfo} containing theme collection metadata.
      * @param bitmap The fetched background image bitmap, or {@code null} if downloading failed.

@@ -660,6 +660,45 @@ public class NtpSyncedThemeManagerUnitTest {
     }
 
     @Test
+    public void testOnThemeCollectionImageAvailable_dailyRefreshOfActiveCollection_notDownloaded() {
+        // This device already uses the collection with daily refresh, and shows another image of
+        // it than the synced one.
+        setDailyRefreshThemeCollectionToSharedPreference();
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+        stubNativeBackground(JUnitTestGURLs.URL_2, /* isDailyRefreshEnabled= */ true);
+
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
+
+        verify(mImageFetcher, never()).fetchImage(any(), any());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+        verify(mConfigManagerSpy, never()).onSyncedThemeCollectionImageChanged(any(), any());
+    }
+
+    @Test
+    public void testOnThemeCollectionImageAvailable_dailyRefreshOfOtherCollection_isApplied() {
+        // This device uses a collection with daily refresh, and another device chose another
+        // collection with daily refresh.
+        setDailyRefreshThemeCollectionToSharedPreference();
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+        CustomBackgroundInfo syncedInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_2,
+                        /* collectionId= */ "otherCollectionId",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
+        when(mNatives.getCustomBackgroundInfo(any()))
+                .thenReturn(new SyncedBackgroundInfo(syncedInfo, /* primaryColor= */ null));
+
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
+        verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
+        completeDownload(mBitmapCallbackCaptor.getValue());
+
+        verify(mConfigManagerSpy).onSyncedThemeCollectionImageChanged(eq(mContext), any());
+        assertEquals(
+                syncedInfo, NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+    }
+
+    @Test
     public void testSyncDownload_supersededBySyncOfActiveTheme() {
         // A second synced theme arrives which this device already shows. The first download is
         // superseded even though nothing new is downloaded.
@@ -711,18 +750,6 @@ public class NtpSyncedThemeManagerUnitTest {
         verifySyncDownloadSuperseded(NtpSyncedThemeBridge::onDefaultThemeSynced);
 
         verify(mConfigManagerSpy).onSyncedDefaultThemeReset(mContext);
-    }
-
-    @Test
-    public void testSyncDownload_supersededBySyncedDailyRefresh() {
-        verifySyncDownloadSuperseded(
-                bridge -> {
-                    stubNativeBackground(JUnitTestGURLs.URL_2, /* isDailyRefreshEnabled= */ true);
-                    bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
-                });
-
-        // The synced daily refresh isn't downloaded, so only the first download was started.
-        verify(mImageFetcher).fetchImage(any(), any());
     }
 
     @Test

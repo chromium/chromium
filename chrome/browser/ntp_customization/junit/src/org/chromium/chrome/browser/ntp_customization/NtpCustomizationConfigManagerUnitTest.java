@@ -1186,6 +1186,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         verify(mNtpThemeStateProvider).notifyApplyThemeChanges();
         verify(mNtpBackgroundDataManager)
                 .saveUserSelectedBackgroundTypeToSharedPreference(themeCollectionData);
+        verify(mNtpSyncedThemeManager).fetchNextThemeCollectionImageAfterDailyRefreshApplied();
     }
 
     @Test
