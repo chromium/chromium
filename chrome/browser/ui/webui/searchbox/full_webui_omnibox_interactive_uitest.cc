@@ -36,6 +36,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -350,6 +351,31 @@ class ContextMenuClipboardTextObserver
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ContextMenuClipboardTextObserver,
                                     kContextMenuClipboardText);
 #endif  // !BUILDFLAG(IS_MAC)
+
+// Non-nesting delay observer for Kombucha sequences. Avoids spinning a nested
+// `base::RunLoop` inside a `Do()` step, which on macOS can deadlock
+// `MessagePumpCFRunLoopBase::delayed_work_timer_` when the step runs inside
+// `RunDelayedWorkTimer()`.
+class DelayElapsedStateObserver : public ui::test::StateObserver<bool> {
+ public:
+  explicit DelayElapsedStateObserver(base::TimeDelta delay) {
+    timer_.Start(FROM_HERE, delay,
+                 base::BindOnce(&DelayElapsedStateObserver::OnTimerFired,
+                                base::Unretained(this)));
+  }
+  ~DelayElapsedStateObserver() override = default;
+
+  // ui::test::StateObserver<bool>:
+  bool GetStateObserverInitialState() const override { return false; }
+
+ private:
+  void OnTimerFired() { OnStateObserverStateChanged(true); }
+
+  base::OneShotTimer timer_;
+};
+
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(DelayElapsedStateObserver,
+                                    kPopupTransitionLockoutElapsed);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Returns the first `views::Button` in the view tree rooted at `root` (searched
@@ -1056,17 +1082,20 @@ class FullWebUIOmniboxInteractiveTestBase
 
   // Waits for the 100ms popup transition state lock that
   // `LocationBarView::OnPopupStateChanged` uses to suppress rapid popup
-  // transitions.
+  // transitions. Uses a non-nested Kombucha state observer rather than a nested
+  // `base::RunLoop` so the outer `RunLoop` can unwind out of
+  // `MessagePumpCFRunLoopBase::RunDelayedWorkTimer()` on macOS before the timer
+  // fires.
   // TODO(crbug.com/514810983): Remove this helper once the transition lock is
   // removed from `LocationBarView`.
   auto WaitForPopupTransitionLockout(
       base::TimeDelta delay = base::Milliseconds(150)) {
-    return Do([delay]() {
-      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), delay);
-      run_loop.Run();
-    });
+    auto steps =
+        Steps(ObserveState(kPopupTransitionLockoutElapsed, std::move(delay)),
+              WaitForState(kPopupTransitionLockoutElapsed, true),
+              StopObservingState(kPopupTransitionLockoutElapsed));
+    AddDescriptionPrefix(steps, "WaitForPopupTransitionLockout()");
+    return steps;
   }
 
   // Opens a New Tab Page, whose permanent text is empty, and waits for the
