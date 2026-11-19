@@ -15,6 +15,7 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 
 import org.junit.Before;
@@ -651,5 +652,25 @@ public class ModalDialogViewUnitTest {
                     firstHeight,
                     mDialogView.getMeasuredHeight());
         }
+    }
+
+    @Test
+    public void testCloseButtonStaysAtEndWithoutTitle() {
+        var model =
+                mModelBuilder.with(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE, true).build();
+        PropertyModelChangeProcessor.create(model, mDialogView, new ModalDialogViewBinder());
+
+        mDialogView.measure(
+                MeasureSpec.makeMeasureSpec(MAX_DIALOG_WIDTH_LFF, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(MIN_DIALOG_HEIGHT, MeasureSpec.AT_MOST));
+        mDialogView.layout(0, 0, mDialogView.getMeasuredWidth(), mDialogView.getMeasuredHeight());
+
+        View titleRow = mDialogView.findViewById(R.id.title_container);
+        View closeButton = titleRow.findViewById(R.id.title_close_button);
+        MarginLayoutParams params = (MarginLayoutParams) closeButton.getLayoutParams();
+        assertEquals(
+                "The close button should be at the end of the title row.",
+                titleRow.getWidth() - titleRow.getPaddingRight() - params.rightMargin,
+                closeButton.getRight());
     }
 }

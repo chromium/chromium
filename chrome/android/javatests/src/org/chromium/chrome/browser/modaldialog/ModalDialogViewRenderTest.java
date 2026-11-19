@@ -200,6 +200,43 @@ public class ModalDialogViewRenderTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_TitleAndCloseButton() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        final var paragraphs = new ArrayList<CharSequence>();
+        paragraphs.add("This is the message.");
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE, true)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, paragraphs)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "title_and_close_button");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_CloseButtonWithoutTitle() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        final var paragraphs = new ArrayList<CharSequence>();
+        paragraphs.add("This is the message.");
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE_CLOSE_BUTTON_VISIBLE, true)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, paragraphs)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "close_button_without_title");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
     public void testRender_TitleAndTitleEndIcon_TopAligned() throws IOException {
         setUpViews(
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,

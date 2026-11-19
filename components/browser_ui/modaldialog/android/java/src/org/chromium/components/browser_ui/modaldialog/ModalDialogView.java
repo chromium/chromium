@@ -876,7 +876,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
                 mTitleContainer.getPaddingTop(),
                 mTitleContainer.getPaddingEnd(),
                 mTitleContainer.getPaddingBottom());
-        mTitleView.setVisibility(titleVisible ? View.VISIBLE : View.GONE);
+        // The title is the row's only weighted view. Keep it INVISIBLE while the row is shown, so
+        // views after it, like the close button, stay at the end.
+        mTitleView.setVisibility(
+                titleVisible ? View.VISIBLE : (titleContainerVisible ? View.INVISIBLE : View.GONE));
         mTitleIcon.setVisibility(titleIconVisible ? View.VISIBLE : View.GONE);
         mTitleEndIcon.setVisibility(titleEndIconVisible ? View.VISIBLE : View.GONE);
         mTitleContainer.setVisibility(titleContainerVisible ? View.VISIBLE : View.GONE);
