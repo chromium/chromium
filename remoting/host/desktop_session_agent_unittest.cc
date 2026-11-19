@@ -5,6 +5,9 @@
 #include "remoting/host/desktop_session_agent.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -18,24 +21,48 @@
 #include "base/test/test_future.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/errors.h"
+#include "remoting/base/source_location.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
+#include "remoting/host/desktop_environment.h"
 #include "remoting/host/fake_desktop_environment.h"
+#include "remoting/host/host_mock_objects.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
 
 namespace {
 
+using testing::_;
+
+class MockDesktopSessionStateHandler
+    : public mojom::DesktopSessionStateHandler {
+ public:
+  MOCK_METHOD(void,
+              DisconnectSession,
+              (ErrorCode error_code,
+               const std::string& error_details,
+               const SourceLocation& error_location),
+              (override));
+};
+
 class FakeDelegate : public DesktopSessionAgent::Delegate {
  public:
-  FakeDelegate(scoped_refptr<base::SingleThreadTaskRunner> runner);
+  explicit FakeDelegate(scoped_refptr<base::SingleThreadTaskRunner> runner)
+      : factory_(std::make_unique<FakeDesktopEnvironmentFactory>(runner)) {}
+  explicit FakeDelegate(std::unique_ptr<DesktopEnvironmentFactory> factory)
+      : factory_(std::move(factory)) {}
   ~FakeDelegate() override = default;
 
   DesktopEnvironmentFactory& desktop_environment_factory() override {
-    return factory_;
+    return *factory_;
   }
 
   void OnNetworkProcessDisconnected() override {}
@@ -45,18 +72,23 @@ class FakeDelegate : public DesktopSessionAgent::Delegate {
   base::WeakPtr<Delegate> GetWeakPtr() { return weak_ptr_.GetWeakPtr(); }
 
  private:
-  FakeDesktopEnvironmentFactory factory_;
+  std::unique_ptr<DesktopEnvironmentFactory> factory_;
 
   base::WeakPtrFactory<FakeDelegate> weak_ptr_{this};
 };
 
-FakeDelegate::FakeDelegate(scoped_refptr<base::SingleThreadTaskRunner> runner)
-    : factory_(runner) {}
-
 class FakeListener : public IPC::Listener {
  public:
-  explicit FakeListener(base::RepeatingClosure action_after_received)
-      : action_after_received_(action_after_received) {}
+  explicit FakeListener(
+      base::RepeatingClosure action_after_received,
+      mojom::DesktopSessionStateHandler* state_handler = nullptr,
+      base::OnceClosure on_state_handler_bound = base::DoNothing())
+      : action_after_received_(action_after_received),
+        on_state_handler_bound_(std::move(on_state_handler_bound)) {
+    if (state_handler) {
+      state_handler_receiver_.emplace(state_handler);
+    }
+  }
   ~FakeListener() override = default;
 
  private:
@@ -66,11 +98,26 @@ class FakeListener : public IPC::Listener {
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   const base::RepeatingClosure action_after_received_;
+  base::OnceClosure on_state_handler_bound_;
+  std::optional<mojo::AssociatedReceiver<mojom::DesktopSessionStateHandler>>
+      state_handler_receiver_;
 };
 
 void FakeListener::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
+  if (interface_name == mojom::DesktopSessionStateHandler::Name_) {
+    if (state_handler_receiver_.has_value()) {
+      state_handler_receiver_->Bind(
+          mojo::PendingAssociatedReceiver<mojom::DesktopSessionStateHandler>(
+              std::move(handle)));
+      state_handler_receiver_->reset_on_disconnect();
+      if (on_state_handler_bound_) {
+        std::move(on_state_handler_bound_).Run();
+      }
+    }
+    return;
+  }
   EXPECT_EQ(mojom::DesktopSessionEventHandler::Name_, interface_name);
   action_after_received_.Run();
 }
@@ -147,6 +194,118 @@ TEST_F(DesktopSessionAgentTest, StartDesktopSessionAgent) {
 
   ASSERT_TRUE(remote_received);
   ASSERT_TRUE(session_started);
+}
+
+TEST_F(DesktopSessionAgentTest, CreateDesktopEnvironmentFails) {
+  DesktopEnvironmentFactory::CreateCallback pending_callback;
+  base::test::TestFuture<void> create_called_future;
+  auto factory = std::make_unique<MockDesktopEnvironmentFactory>();
+  EXPECT_CALL(*factory, Create(_, _, _, _))
+      .WillOnce([&](base::WeakPtr<ClientSessionControl>,
+                    base::WeakPtr<ClientSessionEvents>,
+                    const DesktopEnvironmentOptions&,
+                    DesktopEnvironmentFactory::CreateCallback callback) {
+        pending_callback = std::move(callback);
+        create_called_future.SetValue();
+      });
+  auto delegate = std::make_unique<FakeDelegate>(std::move(factory));
+  MockDesktopSessionStateHandler state_handler;
+  base::test::TestFuture<void> state_handler_bound_future;
+  base::test::TestFuture<void> disconnected_future;
+  base::test::TestFuture<void> agent_disconnected_future;
+  EXPECT_CALL(state_handler,
+              DisconnectSession(ErrorCode::HOST_CONFIGURATION_ERROR, _, _))
+      .WillOnce([&]() {
+        EXPECT_FALSE(agent_disconnected_future.IsReady());
+        disconnected_future.SetValue();
+      });
+
+  FakeListener listener(base::DoNothing(), &state_handler,
+                        state_handler_bound_future.GetCallback());
+  std::unique_ptr<IPC::ChannelProxy> proxy = IPC::ChannelProxy::Create(
+      agent_->Initialize(delegate->GetWeakPtr()), IPC::Channel::MODE_CLIENT,
+      &listener, task_runner_,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent;
+  proxy->GetRemoteAssociatedInterface(&desktop_session_agent);
+
+  // `GetRemoteAssociatedInterface()` posts the interface request to
+  // `task_runner_`; flush it before calling `Start()` on the same channel.
+  base::test::TestFuture<void> ipc_flush_future;
+  task_runner_->PostTask(FROM_HERE, ipc_flush_future.GetCallback());
+  ASSERT_TRUE(ipc_flush_future.Wait());
+
+  desktop_session_agent.set_disconnect_handler(
+      agent_disconnected_future.GetCallback());
+
+  bool start_callback_invoked = false;
+  desktop_session_agent->Start(
+      "jid", ScreenResolution(), DesktopEnvironmentOptions(),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingAssociatedRemote<mojom::DesktopSessionControl>
+                  pending_remote) { start_callback_invoked = true; }));
+
+  ASSERT_TRUE(create_called_future.Wait());
+  ASSERT_TRUE(state_handler_bound_future.Wait());
+  std::move(pending_callback).Run(nullptr);
+
+  EXPECT_TRUE(disconnected_future.Wait());
+  EXPECT_TRUE(agent_disconnected_future.Wait());
+  EXPECT_FALSE(start_callback_invoked);
+
+  desktop_session_agent.reset();
+  Shutdown();
+  delegate.reset();
+  proxy.reset();
+  EXPECT_TRUE(shutdown_future_.Wait());
+}
+
+TEST_F(DesktopSessionAgentTest, StopWhileCreateDesktopEnvironmentPending) {
+  DesktopEnvironmentFactory::CreateCallback pending_callback;
+  base::test::TestFuture<void> create_called_future;
+  auto factory = std::make_unique<MockDesktopEnvironmentFactory>();
+  EXPECT_CALL(*factory, Create(_, _, _, _))
+      .WillOnce([&](base::WeakPtr<ClientSessionControl>,
+                    base::WeakPtr<ClientSessionEvents>,
+                    const DesktopEnvironmentOptions&,
+                    DesktopEnvironmentFactory::CreateCallback callback) {
+        pending_callback = std::move(callback);
+        create_called_future.SetValue();
+      });
+  auto delegate = std::make_unique<FakeDelegate>(std::move(factory));
+  FakeListener listener(base::DoNothing());
+  std::unique_ptr<IPC::ChannelProxy> proxy = IPC::ChannelProxy::Create(
+      agent_->Initialize(delegate->GetWeakPtr()), IPC::Channel::MODE_CLIENT,
+      &listener, task_runner_,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent;
+  proxy->GetRemoteAssociatedInterface(&desktop_session_agent);
+
+  // `GetRemoteAssociatedInterface()` posts the interface request to
+  // `task_runner_`; flush it before calling `Start()` on the same channel.
+  base::test::TestFuture<void> ipc_flush_future;
+  task_runner_->PostTask(FROM_HERE, ipc_flush_future.GetCallback());
+  ASSERT_TRUE(ipc_flush_future.Wait());
+
+  bool start_callback_invoked = false;
+  desktop_session_agent->Start(
+      "jid", ScreenResolution(), DesktopEnvironmentOptions(),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingAssociatedRemote<mojom::DesktopSessionControl>
+                  pending_remote) { start_callback_invoked = true; }));
+  ASSERT_TRUE(create_called_future.Wait());
+  ASSERT_TRUE(pending_callback);
+
+  Shutdown();
+  std::move(pending_callback).Run(nullptr);
+
+  desktop_session_agent.reset();
+  delegate.reset();
+  proxy.reset();
+  EXPECT_TRUE(shutdown_future_.Wait());
+  EXPECT_FALSE(start_callback_invoked);
 }
 
 }  // namespace remoting

@@ -281,43 +281,12 @@ void DesktopSessionAgent::Start(
   network_channel_->GetRemoteAssociatedInterface(
       &desktop_session_state_handler_);
 
-#if BUILDFLAG(IS_POSIX)
-  if (options.enable_security_key()) {
-    const base::FilePath& socket_name =
-        SecurityKeyAuthHandlerPosix::GetSecurityKeySocketName();
-    if (!socket_name.empty()) {
-      // Since all socket operations in SecurityKeyAuthHandlerPosix are done on
-      // the caller's sequence, we wrap it with a SequenceBound to run it on the
-      // IO thread.
-      security_key_auth_handler_ =
-          base::SequenceBound<SecurityKeyAuthHandlerPosix>(io_task_runner_);
-
-      // We pass `base::Unretained(this)` as the `client_id` token. This is
-      // safe because the handler only uses it as an opaque key for
-      // comparison and never dereferences it.
-      security_key_auth_handler_
-          .AsyncCall(&SecurityKeyAuthHandler::SetSendMessageCallback)
-          .WithArgs(base::BindPostTaskToCurrentDefault(base::BindRepeating(
-                        &DesktopSessionAgent::OnSecurityKeyMessage,
-                        weak_factory_.GetWeakPtr())),
-                    base::Unretained(this));
-
-      security_key_auth_handler_.AsyncCall(
-          &SecurityKeyAuthHandler::CreateSecurityKeyConnection);
-    } else {
-      LOG(WARNING) << "Security key forwarding is enabled, but the socket name "
-                   << "is empty (e.g. XDG_RUNTIME_DIR is not set). "
-                   << "Forwarding will be disabled.";
-    }
-  }
-#endif
-
   // Create a desktop environment for the new session.
   delegate_->desktop_environment_factory().Create(
       weak_factory_.GetWeakPtr(), /* client_session_events= */ nullptr, options,
       base::BindOnce(&DesktopSessionAgent::OnDesktopEnvironmentCreated,
                      weak_factory_.GetWeakPtr(), resolution,
-                     std::move(callback)));
+                     options.enable_security_key(), std::move(callback)));
 }
 
 void DesktopSessionAgent::OnMouseCursor(
@@ -407,9 +376,11 @@ void DesktopSessionAgent::Stop() {
 
     session_file_operations_handler_.reset();
 
-    // Ensure that any pressed keys or buttons are released.
-    input_tracker_->ReleaseAll();
-    input_tracker_.reset();
+    if (input_tracker_) {
+      // Ensure that any pressed keys or buttons are released.
+      input_tracker_->ReleaseAll();
+      input_tracker_.reset();
+    }
 
     desktop_environment_.reset();
     action_executor_.reset();
@@ -628,12 +599,55 @@ void DesktopSessionAgent::SetAudioInjectorSampleInfo(
 
 void DesktopSessionAgent::OnDesktopEnvironmentCreated(
     const ScreenResolution& resolution,
+    [[maybe_unused]] bool enable_security_key,
     StartCallback callback,
     std::unique_ptr<DesktopEnvironment> desktop_environment) {
-  // TODO(rkjnsn): Handle null desktop_environment once multiprocess is
-  // is supported on platforms where remote desktop session creation can fail.
+  if (!desktop_environment) {
+    LOG(ERROR) << "Failed to create desktop environment.";
+    DisconnectSession(ErrorCode::HOST_CONFIGURATION_ERROR,
+                      "Failed to create desktop environment.", FROM_HERE);
+    weak_factory_.InvalidateWeakPtrs();
+    desktop_session_event_handler_.reset();
+    // Reset the receiver before dropping `callback` so Mojo does not raise an
+    // error or trip the dropped-response-callback DCHECK. `DisconnectSession()`
+    // was already queued on the same associated channel and will be delivered
+    // first.
+    desktop_session_agent_.reset();
+    return;
+  }
 
   desktop_environment_ = std::move(desktop_environment);
+
+#if BUILDFLAG(IS_POSIX)
+  if (enable_security_key) {
+    const base::FilePath& socket_name =
+        SecurityKeyAuthHandlerPosix::GetSecurityKeySocketName();
+    if (!socket_name.empty()) {
+      // Since all socket operations in SecurityKeyAuthHandlerPosix are done on
+      // the caller's sequence, we wrap it with a SequenceBound to run it on the
+      // IO thread.
+      security_key_auth_handler_ =
+          base::SequenceBound<SecurityKeyAuthHandlerPosix>(io_task_runner_);
+
+      // We pass `base::Unretained(this)` as the `client_id` token. This is
+      // safe because the handler only uses it as an opaque key for
+      // comparison and never dereferences it.
+      security_key_auth_handler_
+          .AsyncCall(&SecurityKeyAuthHandler::SetSendMessageCallback)
+          .WithArgs(base::BindPostTaskToCurrentDefault(base::BindRepeating(
+                        &DesktopSessionAgent::OnSecurityKeyMessage,
+                        weak_factory_.GetWeakPtr())),
+                    base::Unretained(this));
+
+      security_key_auth_handler_.AsyncCall(
+          &SecurityKeyAuthHandler::CreateSecurityKeyConnection);
+    } else {
+      LOG(WARNING) << "Security key forwarding is enabled, but the socket name "
+                   << "is empty (e.g. XDG_RUNTIME_DIR is not set). "
+                   << "Forwarding will be disabled.";
+    }
+  }
+#endif
 
   // Create the session controller and set the initial screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();

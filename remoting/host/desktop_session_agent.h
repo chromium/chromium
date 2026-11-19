@@ -198,6 +198,7 @@ class DesktopSessionAgent
 
   void OnDesktopEnvironmentCreated(
       const ScreenResolution& resolution,
+      bool enable_security_key,
       StartCallback callback,
       std::unique_ptr<DesktopEnvironment> desktop_environment);
   void OnCheckUrlForwarderSetUpResult(bool is_set_up);
