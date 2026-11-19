@@ -206,3 +206,6 @@ ZoomBubbleDialogTest.*
 # TODO(crbug.com/359386795): Failing on Win10 Tests x64, linux-win-cross-rel
 -AppMenuBrowserTest.InvokeUi_main
 -AppMenuBrowserTestRefreshOnly.InvokeUi_main*
+
+# TODO(crbug.com/587800529): Crashing on Win10 Tests x64.
+-TabSearchBubbleUIBrowserTest.InvokeUi_default
