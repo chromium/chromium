@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {FileSystemGrant, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
-import {FileSystemSiteEntryElement, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {FileSystemGrant, FileSystemSiteEntryElement, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
+import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 
-// clang-format on
 suite('FileSystemSettings_EnablePersistentPermissions', function() {
   let testElement: FileSystemSiteEntryElement;
   let browserProxy: TestSiteSettingsBrowserProxy;
@@ -30,8 +27,7 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestSiteSettingsBrowserProxy();
     SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
-    testElement = new FileSystemSiteEntryElement();
-    document.body.appendChild(testElement);
+    testElement = document.createElement('file-system-site-entry');
 
     // Initialize the file-system-site-list.
     const filePath: string = 'a/b';
@@ -46,13 +42,20 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
       editGrants: [TEST_FILE_SYSTEM_FILE_WRITE_GRANT],
     };
     testElement.grantsPerOrigin = FILE_SYSTEM_GRANTS;
-    flush();
+    document.body.appendChild(testElement);
   });
 
   test('FileSystemSiteListEntries_RevokeAllGrants', async function() {
+    const originElement = testElement.shadowRoot.querySelector('.origin');
+    assertTrue(!!originElement);
+    assertEquals(kTestOrigin, originElement.textContent);
+
     const removeGrantsButton =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#removeGrants');
+        testElement.shadowRoot.querySelector<HTMLElement>('#removeGrants');
     assertTrue(!!removeGrantsButton);
+    assertEquals(
+        loadTimeData.getString('siteSettingsFileSystemSiteListRemoveGrants'),
+        removeGrantsButton.getAttribute('aria-label'));
 
     const whenFired = eventToPromise('revoke-grants', testElement);
     removeGrantsButton.click();
@@ -63,7 +66,7 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
 
   test('FileSystemSiteListEntries_NavigateToSiteDetails', function() {
     const navigateToSiteDetailsForOriginButton =
-        testElement.shadowRoot!.querySelector<HTMLElement>(
+        testElement.shadowRoot.querySelector<HTMLElement>(
             '#fileSystemSiteDetails');
     assertTrue(!!navigateToSiteDetailsForOriginButton);
     navigateToSiteDetailsForOriginButton.click();
