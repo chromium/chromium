@@ -14,6 +14,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
@@ -41,10 +42,8 @@ class SupervisedUserBrowserUtilsTest : public ::testing::Test {
 };
 
 SupervisedUserBrowserUtilsTest::SupervisedUserBrowserUtilsTest() {
-  TestingProfile::Builder builder;
-  builder.SetIsSupervisedProfile();
   profile_ = IdentityTestEnvironmentProfileAdaptor::
-      CreateProfileForIdentityTestEnvironment(builder);
+      CreateProfileForIdentityTestEnvironment();
 
   identity_test_env_profile_adaptor_ =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
@@ -54,6 +53,8 @@ SupervisedUserBrowserUtilsTest::SupervisedUserBrowserUtilsTest() {
   account_info = supervised_user_test_util::PopulateAccountInfoWithName(
       account_info, kChildGivenName);
   GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      GetIdentityTestEnv()->identity_manager());
 }
 
 signin::IdentityTestEnvironment*
@@ -76,7 +77,8 @@ class SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature
 
 TEST_F(SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature,
        AreExtensionsPermissionsEnabledWithSupervisedUser) {
-  profile()->AsTestingProfile()->SetIsSupervisedProfile(true);
+  supervised_user::SupervisedUserTestEnvironment::EnableSupervisedAccount(
+      GetIdentityTestEnv()->identity_manager());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
@@ -87,7 +89,8 @@ TEST_F(SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature,
 
 TEST_F(SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature,
        AreExtensionsPermissionsEnabledWithNonSupervisedUser) {
-  profile()->AsTestingProfile()->SetIsSupervisedProfile(false);
+  supervised_user::SupervisedUserTestEnvironment::EnableRegularAccount(
+      GetIdentityTestEnv()->identity_manager());
 
   EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
 }
