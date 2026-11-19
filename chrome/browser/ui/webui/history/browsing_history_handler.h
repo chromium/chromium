@@ -109,6 +109,7 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   void TurnOnHistorySync(history::mojom::AccessPoint access_point) override;
   void OpenCriticalActionConversation(
       const std::string& critical_action_id,
+      history::mojom::OpenConversationSource source,
       OpenCriticalActionConversationCallback callback) override;
   void GetSyncedDevicesForFiltering(
       GetSyncedDevicesForFilteringCallback callback) override;
@@ -174,6 +175,7 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
   void OnCriticalActionRetrievedForLinkout(
+      history::mojom::OpenConversationSource source,
       OpenCriticalActionConversationCallback callback,
       std::optional<critical_actions::CriticalActionEntry> entry);
 

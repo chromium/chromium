@@ -454,6 +454,7 @@ suite('<history-item> integration test', function() {
         tooltip: 'Contact info',
         linkoutUrl: 'chrome://settings/addresses',
         actionType: CriticalActionType.kFormFill,
+        canOpenChat: false,
       },
       {
         id: 'email',
@@ -461,6 +462,7 @@ suite('<history-item> integration test', function() {
         tooltip: 'Contact info',
         linkoutUrl: 'chrome://settings/addresses',
         actionType: CriticalActionType.kFormFill,
+        canOpenChat: false,
       },
       {
         id: 'payment',
@@ -468,6 +470,7 @@ suite('<history-item> integration test', function() {
         tooltip: 'Payment methods',
         linkoutUrl: 'chrome://settings/payments',
         actionType: CriticalActionType.kFormFill,
+        canOpenChat: false,
       },
     ];
 
@@ -605,6 +608,7 @@ suite('<history-item> integration test', function() {
             tooltip: 'Contact info',
             linkoutUrl: 'chrome://settings/addresses',
             actionType: CriticalActionType.kFormFill,
+            canOpenChat: false,
           },
           {
             id: 'webmcp',
@@ -612,6 +616,7 @@ suite('<history-item> integration test', function() {
             tooltip: 'Website actions',
             linkoutUrl: null,
             actionType: CriticalActionType.kWebMcpTool,
+            canOpenChat: false,
           },
         ];
 
@@ -741,6 +746,7 @@ suite('<history-item> integration test', function() {
             tooltip: 'Saved passwords',
             linkoutUrl: 'chrome://password-manager',
             actionType: CriticalActionType.kCredentialAccess,
+            canOpenChat: false,
           },
         ];
         element.addNewResults(newResults, false, true);

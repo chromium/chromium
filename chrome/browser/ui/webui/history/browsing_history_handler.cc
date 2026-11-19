@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <set>
+#include <string_view>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -54,6 +55,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/favicon/core/fallback_url_util.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
@@ -125,12 +127,59 @@ history::mojom::AccountInfoPtr CreateAccountInfoDataMojo(
 }
 #endif
 
-constexpr char kOpenConversationResultHistogram[] =
-    "CriticalActions.OpenConversationResult";
+// LINT.IfChange(OpenConversationSourceToHistogramSuffix)
+std::string_view OpenConversationSourceToHistogramSuffix(
+    history::mojom::OpenConversationSource source) {
+  switch (source) {
+    case history::mojom::OpenConversationSource::kEntryMenu:
+      return "EntryMenu";
+    case history::mojom::OpenConversationSource::kCriticalActionRow:
+      return "CriticalActionRow";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/histograms.xml:OpenConversationSource)
+
+// Returns the Glic invocation source to open a conversation with for a request
+// from `source`. `GlicLinkoutHandler` derives from it whether the conversation
+// is opened at the entry's anchored turn: only
+// `kHistoryPageCriticalActionChatLinkout` targets the turn, while the entry
+// menu's visit-level `kHistoryPageChatLinkout` opens the conversation at its
+// default position.
+glic::mojom::InvocationSource GetGlicInvocationSource(
+    history::mojom::OpenConversationSource source) {
+  switch (source) {
+    case history::mojom::OpenConversationSource::kEntryMenu:
+      return glic::mojom::InvocationSource::kHistoryPageChatLinkout;
+    case history::mojom::OpenConversationSource::kCriticalActionRow:
+      // `kCriticalActionRow` is meant for a per-row entry point that is only
+      // offered when action-level chat linkouts are enabled, but the renderer
+      // is not trusted to enforce that. When the flag is off, fall back to the
+      // entry-menu behavior: still open the conversation (like "Go to Gemini
+      // chat", which is also only gated in the UI), but without targeting the
+      // anchored turn and without the new invocation source, so neither leaks
+      // out from behind the flag.
+      if (!critical_actions::features::IsActionLevelChatLinkoutsEnabled()) {
+        return glic::mojom::InvocationSource::kHistoryPageChatLinkout;
+      }
+      return glic::mojom::InvocationSource::
+          kHistoryPageCriticalActionChatLinkout;
+  }
+  NOTREACHED();
+}
 
 void RecordOpenConversationResult(
+    history::mojom::OpenConversationSource source,
     critical_actions::OpenConversationResult result) {
-  base::UmaHistogramEnumeration(kOpenConversationResultHistogram, result);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"CriticalActions.OpenConversationResult.",
+                    OpenConversationSourceToHistogramSuffix(source)}),
+      result);
+}
+
+void RecordOpenConversationHasAnchor(bool has_anchor) {
+  base::UmaHistogramBoolean(
+      "CriticalActions.OpenConversation.HasConversationAnchor", has_anchor);
 }
 
 // Identifiers for the type of device from which a history entry originated.
@@ -392,6 +441,7 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
     action_mojom->tooltip = action.GetTooltip();
     action_mojom->action_type =
         static_cast<history::mojom::CriticalActionType>(action.action_type);
+    action_mojom->can_open_chat = !action.conversation_id.empty();
     result_mojom->critical_actions.push_back(std::move(action_mojom));
   }
 
@@ -974,9 +1024,11 @@ void BrowsingHistoryHandler::OnExtendedAccountInfoUpdated(
 
 void BrowsingHistoryHandler::OpenCriticalActionConversation(
     const std::string& critical_action_id,
+    history::mojom::OpenConversationSource source,
     OpenCriticalActionConversationCallback callback) {
   if (critical_action_id.empty()) {
     RecordOpenConversationResult(
+        source,
         critical_actions::OpenConversationResult::kErrorInvalidActionEntry);
     std::move(callback).Run(
         history::mojom::OpenConversationResult::kErrorInvalidActionEntry);
@@ -987,7 +1039,7 @@ void BrowsingHistoryHandler::OpenCriticalActionConversation(
       critical_actions::CriticalActionFactory::GetForProfile(profile_);
   if (!critical_action_service) {
     RecordOpenConversationResult(
-        critical_actions::OpenConversationResult::kErrorInternal);
+        source, critical_actions::OpenConversationResult::kErrorInternal);
     std::move(callback).Run(
         history::mojom::OpenConversationResult::kErrorInternal);
     return;
@@ -997,7 +1049,7 @@ void BrowsingHistoryHandler::OpenCriticalActionConversation(
       critical_action_id,
       base::BindOnce(
           &BrowsingHistoryHandler::OnCriticalActionRetrievedForLinkout,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+          weak_factory_.GetWeakPtr(), source, std::move(callback)));
 }
 
 void BrowsingHistoryHandler::GetTimePeriodOptions(
@@ -1021,27 +1073,38 @@ void BrowsingHistoryHandler::GetTimePeriodOptions(
 }
 
 void BrowsingHistoryHandler::OnCriticalActionRetrievedForLinkout(
+    history::mojom::OpenConversationSource source,
     OpenCriticalActionConversationCallback callback,
     std::optional<critical_actions::CriticalActionEntry> entry) {
   if (!entry) {
     RecordOpenConversationResult(
+        source,
         critical_actions::OpenConversationResult::kErrorInvalidActionEntry);
     std::move(callback).Run(
         history::mojom::OpenConversationResult::kErrorInvalidActionEntry);
     return;
   }
 
+  // Anchors are only stored while action-level chat linkouts are enabled, and
+  // only the per-row "Open chat" button opens the conversation at the anchored
+  // turn, so only record whether one exists for that source while the flag is
+  // on.
+  if (source == history::mojom::OpenConversationSource::kCriticalActionRow &&
+      critical_actions::features::IsActionLevelChatLinkoutsEnabled()) {
+    RecordOpenConversationHasAnchor(!entry->conversation_anchor_id.empty());
+  }
+
   critical_actions::GlicLinkoutHandler::GetInstance()->OpenConversation(
-      web_contents_, *entry,
-      glic::mojom::InvocationSource::kHistoryPageChatLinkout,
+      web_contents_, *entry, GetGlicInvocationSource(source),
       base::BindOnce(
-          [](OpenCriticalActionConversationCallback cb,
+          [](history::mojom::OpenConversationSource source,
+             OpenCriticalActionConversationCallback cb,
              critical_actions::OpenConversationResult result) {
-            RecordOpenConversationResult(result);
+            RecordOpenConversationResult(source, result);
             std::move(cb).Run(
                 static_cast<history::mojom::OpenConversationResult>(result));
           },
-          std::move(callback)));
+          source, std::move(callback)));
 }
 
 void BrowsingHistoryHandler::GetSyncedDevicesForFiltering(

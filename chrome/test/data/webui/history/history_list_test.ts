@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {CrA11yAnnouncerMessagesSentEvent, HistoryAppElement, HistoryEntry, HistoryItemElement, HistoryListElement, HistoryToolbarElement} from 'chrome://history/history.js';
-import {BrowserProxyImpl, CriticalActionType, CrRouter, OpenConversationResult, TimePeriodOptionId} from 'chrome://history/history.js';
+import {BrowserProxyImpl, CriticalActionType, CrRouter, OpenConversationResult, OpenConversationSource, TimePeriodOptionId} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
@@ -793,6 +793,7 @@ suite('HistoryListTest', function() {
             tooltip: 'Saved passwords',
             linkoutUrl: 'chrome://password-manager',
             actionType: CriticalActionType.kCredentialAccess,
+            canOpenChat: false,
           },
         ];
         await finishSetup([historyEntry]);
@@ -834,6 +835,7 @@ suite('HistoryListTest', function() {
         tooltip: 'Downloads',
         linkoutUrl: 'chrome://downloads',
         actionType: CriticalActionType.kDownload,
+        canOpenChat: true,
       },
     ];
     await finishSetup([historyEntry]);
@@ -861,9 +863,10 @@ suite('HistoryListTest', function() {
     goToGeminiChatButton.click();
     await microtasksFinished();
 
-    const actionId =
+    const [actionId, source] =
         await testProxy.handler.whenCalled('openCriticalActionConversation');
     assertEquals('action-123', actionId);
+    assertEquals(OpenConversationSource.kEntryMenu, source);
     assertFalse(element.$.errorToast.open);
   });
 
@@ -886,6 +889,7 @@ suite('HistoryListTest', function() {
         tooltip: 'Downloads',
         linkoutUrl: 'chrome://downloads',
         actionType: CriticalActionType.kDownload,
+        canOpenChat: true,
       },
     ];
     await finishSetup([historyEntry]);
@@ -905,9 +909,10 @@ suite('HistoryListTest', function() {
     goToGeminiChatButton.click();
     await microtasksFinished();
 
-    const actionId =
+    const [actionId, source] =
         await testProxy.handler.whenCalled('openCriticalActionConversation');
     assertEquals('action-123', actionId);
+    assertEquals(OpenConversationSource.kEntryMenu, source);
     assertTrue(element.$.errorToast.open);
   });
 
@@ -927,6 +932,7 @@ suite('HistoryListTest', function() {
         tooltip: 'Downloads',
         linkoutUrl: 'chrome://downloads',
         actionType: CriticalActionType.kDownload,
+        canOpenChat: true,
       },
     ];
     await finishSetup([historyEntry]);
@@ -967,6 +973,7 @@ suite('HistoryListTest', function() {
         tooltip: 'Saved passwords',
         linkoutUrl: 'chrome://password-manager',
         actionType: CriticalActionType.kCredentialAccess,
+        canOpenChat: true,
       },
     ];
     await finishSetup([historyEntry]);
@@ -985,9 +992,10 @@ suite('HistoryListTest', function() {
     goToGeminiChatButton.click();
     await microtasksFinished();
 
-    const actionId =
+    const [actionId, source] =
         await testProxy.handler.whenCalled('openCriticalActionConversation');
     assertEquals('action-123', actionId);
+    assertEquals(OpenConversationSource.kEntryMenu, source);
     assertFalse(element.$.errorToast.open);
   });
 

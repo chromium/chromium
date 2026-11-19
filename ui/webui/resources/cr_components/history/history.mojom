@@ -186,6 +186,11 @@ struct CriticalAction {
 
   // Category type of the critical action.
   CriticalActionType action_type;
+
+  // True iff the entry has a non-empty conversation ID. This does not reflect
+  // whether chat linkouts, action-level chat linkouts or Glic are enabled;
+  // callers must gate any UI on those separately.
+  bool can_open_chat;
 };
 
 
@@ -223,6 +228,14 @@ enum OpenConversationResult {
   kErrorInternal = 2,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:OpenConversationResult)
+
+// Identifies which history-page surface requested opening a conversation.
+// LINT.IfChange(OpenConversationSource)
+enum OpenConversationSource {
+  kEntryMenu = 0,
+  kCriticalActionRow = 1,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/histograms.xml:OpenConversationSource)
 
 // Represents the entry point from which the user turns on history sync.
 enum AccessPoint {
@@ -304,8 +317,14 @@ interface PageHandler {
   TurnOnHistorySync(AccessPoint access_point);
 
   // Opens the conversation associated with the given critical action in
-  // split view.
-  OpenCriticalActionConversation(string critical_action_id)
+  // split view. `source` identifies the requesting surface. With
+  // `kCriticalActionRow`, the conversation is opened targeting the action's
+  // recorded turn (if one was stored) when action-level chat linkouts are
+  // enabled; otherwise the request is served like `kEntryMenu`, which opens
+  // the conversation at its default position. The result is recorded under
+  // CriticalActions.OpenConversationResult.{source}.
+  OpenCriticalActionConversation(string critical_action_id,
+                                 OpenConversationSource source)
       => (OpenConversationResult result);
 
   // Fetches the list of known synced devices.

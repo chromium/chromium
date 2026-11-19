@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './history_item.js';
 
 import type {HistoryEntry, HistoryQuery, PageCallbackRouter, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
-import {OpenConversationResult, TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {OpenConversationResult, OpenConversationSource, TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -605,7 +605,8 @@ export class HistoryListElement extends HistoryListElementBase {
 
     if (actionId) {
       const {result} = await BrowserProxyImpl.getInstance()
-                           .handler.openCriticalActionConversation(actionId);
+                           .handler.openCriticalActionConversation(
+                               actionId, OpenConversationSource.kEntryMenu);
       if (result !== OpenConversationResult.kSuccess) {
         this.$.errorToast.show();
       }

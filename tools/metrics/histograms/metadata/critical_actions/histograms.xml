@@ -42,6 +42,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_redirect_metrics_recorder.h:RedirectType) -->
 
+<!-- LINT.IfChange(OpenConversationSource) -->
+
+<variants name="OpenConversationSource">
+  <variant name="CriticalActionRow"
+      summary="the per-action 'Open chat' button on a critical action row"/>
+  <variant name="EntryMenu"
+      summary="the 'Go to Gemini chat' item in a history entry's menu"/>
+</variants>
+
+<!-- LINT.ThenChange(
+    //chrome/browser/ui/webui/history/browsing_history_handler.cc:OpenConversationSourceToHistogramSuffix,
+    //ui/webui/resources/cr_components/history/history.mojom:OpenConversationSource,
+) -->
+
 <histogram
     name="CriticalActions.ConversationAnchorResolutionOutcome.{ActionSource}"
     enum="CriticalActionConversationAnchorResolutionOutcome"
@@ -159,16 +173,35 @@ chromium-metrics-reviews@google.com.
   <token key="ActionSource" variants="ActionSource"/>
 </histogram>
 
-<histogram name="CriticalActions.OpenConversationResult"
+<histogram name="CriticalActions.OpenConversation.HasConversationAnchor"
+    enum="Boolean" expires_after="2027-11-01">
+  <owner>heychirag@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records whether a critical action has a conversation anchor (e.g. the Gemini
+    turn that caused it) when the user clicks its 'Open chat' button on the
+    Chrome History page. A critical action only has an anchor if one was known
+    when the action was recorded. This doesn't reflect whether the conversation
+    was then opened at that turn. Only recorded while action-level chat linkouts
+    are enabled, and only if the critical action is found, so at most once per
+    CriticalActions.OpenConversationResult.CriticalActionRow sample. It is
+    recorded before the conversation is opened, so it includes attempts that
+    then fail.
+  </summary>
+</histogram>
+
+<histogram name="CriticalActions.OpenConversationResult.{Source}"
     enum="OpenConversationResult" expires_after="2027-11-01">
   <owner>heychirag@google.com</owner>
   <owner>polonium@google.com</owner>
   <summary>
-    Records the outcome of attempting to open a Gemini conversation session
-    associated with a critical action visit from the Chrome History page.
-    Recorded in BrowsingHistoryHandler whenever the user clicks 'Go to Gemini
-    chat' in the history entry menu.
+    Records the outcome of each attempt to open the Gemini conversation of a
+    critical action from {Source} on the Chrome History page. While action-level
+    chat linkouts are disabled, attempts from CriticalActionRow open the
+    conversation without targeting a turn, but are still recorded under
+    CriticalActionRow.
   </summary>
+  <token key="Source" variants="OpenConversationSource"/>
 </histogram>
 
 <histogram name="CriticalActions.VisitIdResolutionOutcome.{ActionSource}"

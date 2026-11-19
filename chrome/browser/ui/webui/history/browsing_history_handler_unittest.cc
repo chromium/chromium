@@ -7,8 +7,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -30,13 +34,21 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/glic_enums.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
 #include "components/critical_actions/core/browser/features.h"
@@ -49,6 +61,8 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/data_type.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -785,12 +799,23 @@ INSTANTIATE_TEST_SUITE_P(,
 class BrowsingHistoryHandlerCriticalActionsTest
     : public BrowsingHistoryHandlerTest {
  public:
-  BrowsingHistoryHandlerCriticalActionsTest() {
-    feature_list_.InitAndEnableFeature(
-        critical_actions::features::kCriticalActionHistory);
-  }
+  BrowsingHistoryHandlerCriticalActionsTest()
+      : BrowsingHistoryHandlerCriticalActionsTest(
+            /*enable_action_level_chat_linkouts=*/false) {}
 
  protected:
+  // Enables `kCriticalActionHistory`, with its
+  // `enable_action_level_chat_linkouts` param set as given. This is done in the
+  // constructor, before the task environment's threads, the profile and its
+  // services exist.
+  explicit BrowsingHistoryHandlerCriticalActionsTest(
+      bool enable_action_level_chat_linkouts) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        critical_actions::features::kCriticalActionHistory,
+        {{critical_actions::features::kEnableActionLevelChatLinkouts.name,
+          enable_action_level_chat_linkouts ? "true" : "false"}});
+  }
+
   void SetUp() override {
     BrowsingHistoryHandlerTest::SetUp();
     critical_action_service_ =
@@ -941,6 +966,7 @@ TEST_P(BrowsingHistoryHandlerCriticalActionsVisitTypeTest,
   EXPECT_EQ(
       results->value[0]->critical_actions[0]->action_type,
       history::mojom::CriticalActionType::kCredentialAccess);
+  EXPECT_FALSE(results->value[0]->critical_actions[0]->can_open_chat);
 
   histogram_tester.ExpectTotalCount(
       "HistoryPage.QueryHistoryTotalTime.WithCriticalActions", 1);
@@ -1120,16 +1146,58 @@ TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
 }
 
 TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
+       CanOpenChatReflectsNonEmptyConversationId) {
+  base::Time visit_time = base::Time::Now();
+
+  BrowsingHistoryService::HistoryEntry actor_entry =
+      CreateHistoryEntry(visit_time, 42, /*is_actor_visit=*/true);
+  actor_entry.critical_actions.push_back(
+      CreateAction("action-without-conv", visit_time + base::Seconds(1), 42,
+                   critical_actions::ActionType::kFormFill,
+                   /*conversation_id=*/""));
+  actor_entry.critical_actions.push_back(
+      CreateAction("action-with-conv", visit_time, 42,
+                   critical_actions::ActionType::kDownload, "c_conv_123"));
+
+  QueryOptions options;
+  MockHistoryServiceCall(u"actor-example", options, {actor_entry},
+                         /*queried_critical_actions=*/true);
+
+  mojom::QueryResultPtr results = RunQueryHistory("actor-example");
+  ASSERT_TRUE(results);
+  ASSERT_EQ(results->value.size(), 1u);
+  ASSERT_EQ(results->value[0]->critical_actions.size(), 2u);
+  EXPECT_EQ(results->value[0]->critical_actions[0]->id, "action-without-conv");
+  EXPECT_FALSE(results->value[0]->critical_actions[0]->can_open_chat);
+  EXPECT_EQ(results->value[0]->critical_actions[1]->id, "action-with-conv");
+  EXPECT_TRUE(results->value[0]->critical_actions[1]->can_open_chat);
+}
+
+TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
        OpenCriticalActionConversationInvalidAction) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<history::mojom::OpenConversationResult> future;
-  handler()->OpenCriticalActionConversation("non-existent-action",
-                                            future.GetCallback());
-  EXPECT_EQ(future.Get(),
+  base::test::TestFuture<history::mojom::OpenConversationResult> menu_future;
+  handler()->OpenCriticalActionConversation(
+      "non-existent-action", history::mojom::OpenConversationSource::kEntryMenu,
+      menu_future.GetCallback());
+  EXPECT_EQ(menu_future.Get(),
             history::mojom::OpenConversationResult::kErrorInvalidActionEntry);
+
+  base::test::TestFuture<history::mojom::OpenConversationResult> row_future;
+  handler()->OpenCriticalActionConversation(
+      "", history::mojom::OpenConversationSource::kCriticalActionRow,
+      row_future.GetCallback());
+  EXPECT_EQ(row_future.Get(),
+            history::mojom::OpenConversationResult::kErrorInvalidActionEntry);
+
   histogram_tester.ExpectUniqueSample(
-      "CriticalActions.OpenConversationResult",
+      "CriticalActions.OpenConversationResult.EntryMenu",
       critical_actions::OpenConversationResult::kErrorInvalidActionEntry, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult.CriticalActionRow",
+      critical_actions::OpenConversationResult::kErrorInvalidActionEntry, 1);
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.OpenConversation.HasConversationAnchor", 0);
 }
 
 TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
@@ -1144,14 +1212,257 @@ TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
 
   base::HistogramTester histogram_tester;
   base::test::TestFuture<history::mojom::OpenConversationResult> future;
-  handler()->OpenCriticalActionConversation("test-action-1",
-                                            future.GetCallback());
+  handler()->OpenCriticalActionConversation(
+      "test-action-1", history::mojom::OpenConversationSource::kEntryMenu,
+      future.GetCallback());
   EXPECT_EQ(future.Get(),
             history::mojom::OpenConversationResult::kErrorInternal);
   histogram_tester.ExpectUniqueSample(
-      "CriticalActions.OpenConversationResult",
+      "CriticalActions.OpenConversationResult.EntryMenu",
       critical_actions::OpenConversationResult::kErrorInternal, 1);
+  // Not recorded for the entry menu.
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.OpenConversation.HasConversationAnchor", 0);
 }
+
+// Parameterized on whether the `enable_action_level_chat_linkouts` param of
+// `kCriticalActionHistory` is on.
+class BrowsingHistoryHandlerChatLinkoutTest
+    : public BrowsingHistoryHandlerCriticalActionsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowsingHistoryHandlerChatLinkoutTest()
+      : BrowsingHistoryHandlerCriticalActionsTest(
+            /*enable_action_level_chat_linkouts=*/GetParam()) {}
+
+ protected:
+  // Arguments of a `GlicKeyedService::Invoke()` call.
+  struct CapturedInvoke {
+    std::optional<glic::ConversationId> conversation;
+    std::optional<glic::mojom::InvocationSource> source;
+  };
+
+  // Arguments of the `Invoke()` calls so far.
+  std::vector<CapturedInvoke> captured_invokes_;
+
+  void SetUp() override {
+    BrowsingHistoryHandlerCriticalActionsTest::SetUp();
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    glic::GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(
+                       &BrowsingHistoryHandlerChatLinkoutTest::CreateGlicMock,
+                       base::Unretained(this)));
+    scoped_glic_bypass_.emplace();
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                         &mock_tab_);
+    // Records the arguments of every `Invoke()` call in `captured_invokes_`.
+    ON_CALL(*mock_glic_service(), Invoke(_))
+        .WillByDefault([this](glic::GlicInvokeOptions options) {
+          CapturedInvoke& captured = captured_invokes_.emplace_back();
+          captured.source = options.GetInvocationSource();
+          if (const auto* conversation = std::get_if<glic::ConversationId>(
+                  &options.target.conversation)) {
+            captured.conversation = *conversation;
+          }
+          return nullptr;
+        });
+  }
+
+  void TearDown() override {
+    scoped_glic_bypass_.reset();
+    BrowsingHistoryHandlerCriticalActionsTest::TearDown();
+    profile_manager_.reset();
+  }
+
+  std::unique_ptr<KeyedService> CreateGlicMock(
+      content::BrowserContext* context) {
+    Profile* p = Profile::FromBrowserContext(context);
+    return std::make_unique<testing::NiceMock<glic::MockGlicKeyedService>>(
+        p, IdentityManagerFactory::GetForProfile(p),
+        profile_manager_->profile_manager(), &glic_profile_manager_, nullptr,
+        nullptr);
+  }
+
+  glic::MockGlicKeyedService* mock_glic_service() {
+    return static_cast<glic::MockGlicKeyedService*>(
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile(),
+                                                           /*create=*/true));
+  }
+
+  bool ActionLevelChatLinkoutsEnabled() const { return GetParam(); }
+
+  // Adds a critical action with the given conversation and anchor IDs.
+  void AddActionWithConversation(std::string_view id,
+                                 std::string_view conversation_id,
+                                 std::string_view conversation_anchor_id) {
+    critical_actions::CriticalActionEntry action =
+        CreateAction(id, base::Time::Now(), 1001,
+                     critical_actions::ActionType::kDownload, conversation_id);
+    action.conversation_anchor_id = std::string(conversation_anchor_id);
+    service()->AddCriticalAction(action);
+    FlushDatabaseTasks();
+  }
+
+  history::mojom::OpenConversationResult OpenConversation(
+      std::string_view critical_action_id,
+      history::mojom::OpenConversationSource source) {
+    base::test::TestFuture<history::mojom::OpenConversationResult> future;
+    handler()->OpenCriticalActionConversation(std::string(critical_action_id),
+                                              source, future.GetCallback());
+    return future.Get();
+  }
+
+  // Detaches `web_contents()` from its tab, so that the conversation can't be
+  // opened.
+  void RemoveTab() {
+    web_contents()->RemoveUserData(
+        tabs::TabLookupFromWebContents::UserDataKey());
+  }
+
+ private:
+  std::optional<glic::GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
+  tabs::MockTabInterface mock_tab_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  glic::GlicProfileManager glic_profile_manager_;
+};
+
+// The entry menu behaves the same regardless of the action-level param: it
+// opens the conversation at its default position even if the entry has an
+// anchor.
+TEST_P(BrowsingHistoryHandlerChatLinkoutTest,
+       EntryMenuSourceUsesHistoryPageChatLinkoutWithoutAnchor) {
+  AddActionWithConversation("action-menu", "c_conv_123", "r_turn_99");
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(
+      OpenConversation("action-menu",
+                       history::mojom::OpenConversationSource::kEntryMenu),
+      history::mojom::OpenConversationResult::kSuccess);
+
+  ASSERT_EQ(captured_invokes_.size(), 1u);
+  const CapturedInvoke& captured = captured_invokes_[0];
+  ASSERT_TRUE(captured.conversation.has_value());
+  EXPECT_EQ(captured.conversation->conversation_id, "c_conv_123");
+  EXPECT_EQ(captured.conversation->turn_id, std::nullopt);
+  EXPECT_EQ(captured.source,
+            glic::mojom::InvocationSource::kHistoryPageChatLinkout);
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult.EntryMenu",
+      critical_actions::OpenConversationResult::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.OpenConversationResult.CriticalActionRow", 0);
+  // Only recorded for the per-row "Open chat" button.
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.OpenConversation.HasConversationAnchor", 0);
+}
+
+// With the action-level param on, a `kCriticalActionRow` request targets the
+// anchored turn with the new invocation source. With it off, the browser
+// doesn't rely on the renderer to withhold such requests: it falls back to the
+// entry-menu behavior (no turn ID, existing invocation source), while still
+// attributing the result to `kCriticalActionRow` in metrics.
+TEST_P(BrowsingHistoryHandlerChatLinkoutTest,
+       CriticalActionRowSourceForwardsAnchorOnlyWhenActionLevelEnabled) {
+  AddActionWithConversation("action-row", "c_conv_456", "r_turn_42");
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(OpenConversation(
+                "action-row",
+                history::mojom::OpenConversationSource::kCriticalActionRow),
+            history::mojom::OpenConversationResult::kSuccess);
+
+  ASSERT_EQ(captured_invokes_.size(), 1u);
+  const CapturedInvoke& captured = captured_invokes_[0];
+  ASSERT_TRUE(captured.conversation.has_value());
+  EXPECT_EQ(captured.conversation->conversation_id, "c_conv_456");
+  if (ActionLevelChatLinkoutsEnabled()) {
+    EXPECT_EQ(captured.conversation->turn_id, "r_turn_42");
+    EXPECT_EQ(
+        captured.source,
+        glic::mojom::InvocationSource::kHistoryPageCriticalActionChatLinkout);
+    histogram_tester.ExpectUniqueSample(
+        "CriticalActions.OpenConversation.HasConversationAnchor", true, 1);
+  } else {
+    EXPECT_EQ(captured.conversation->turn_id, std::nullopt);
+    EXPECT_EQ(captured.source,
+              glic::mojom::InvocationSource::kHistoryPageChatLinkout);
+    histogram_tester.ExpectTotalCount(
+        "CriticalActions.OpenConversation.HasConversationAnchor", 0);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult.CriticalActionRow",
+      critical_actions::OpenConversationResult::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.OpenConversationResult.EntryMenu", 0);
+}
+
+TEST_P(BrowsingHistoryHandlerChatLinkoutTest,
+       CriticalActionRowSourceWithoutAnchorOpensConversationWithoutTurnId) {
+  AddActionWithConversation("action-row-legacy", "c_conv_legacy",
+                            /*conversation_anchor_id=*/"");
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(OpenConversation(
+                "action-row-legacy",
+                history::mojom::OpenConversationSource::kCriticalActionRow),
+            history::mojom::OpenConversationResult::kSuccess);
+
+  ASSERT_EQ(captured_invokes_.size(), 1u);
+  const CapturedInvoke& captured = captured_invokes_[0];
+  ASSERT_TRUE(captured.conversation.has_value());
+  EXPECT_EQ(captured.conversation->conversation_id, "c_conv_legacy");
+  EXPECT_EQ(captured.conversation->turn_id, std::nullopt);
+  if (ActionLevelChatLinkoutsEnabled()) {
+    histogram_tester.ExpectUniqueSample(
+        "CriticalActions.OpenConversation.HasConversationAnchor", false, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "CriticalActions.OpenConversation.HasConversationAnchor", 0);
+  }
+}
+
+// A `kCriticalActionRow` request whose entry exists but which can't be opened
+// (here: `web_contents()` isn't in a tab) records the error under the
+// `CriticalActionRow` suffix.
+TEST_P(BrowsingHistoryHandlerChatLinkoutTest,
+       CriticalActionRowSourceFailureAfterEntryRetrievedIsRecorded) {
+  AddActionWithConversation("action-row-fail", "c_conv_fail", "r_turn_7");
+  RemoveTab();
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(OpenConversation(
+                "action-row-fail",
+                history::mojom::OpenConversationSource::kCriticalActionRow),
+            history::mojom::OpenConversationResult::kErrorInternal);
+  EXPECT_TRUE(captured_invokes_.empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult.CriticalActionRow",
+      critical_actions::OpenConversationResult::kErrorInternal, 1);
+  histogram_tester.ExpectTotalCount(
+      "CriticalActions.OpenConversationResult.EntryMenu", 0);
+  // Recorded before the conversation is opened, so it includes failures.
+  if (ActionLevelChatLinkoutsEnabled()) {
+    histogram_tester.ExpectUniqueSample(
+        "CriticalActions.OpenConversation.HasConversationAnchor", true, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "CriticalActions.OpenConversation.HasConversationAnchor", 0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         BrowsingHistoryHandlerChatLinkoutTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "ActionLevelEnabled"
+                                             : "ActionLevelDisabled";
+                         });
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
