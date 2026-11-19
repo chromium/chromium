@@ -118,6 +118,10 @@ class AutofillDriverRouter;
 //   });
 //
 // See AutofillDriverRouter for further details.
+//
+// The class is not `final` because tests use derived classes such as
+// TestContentAutofillDriver. All member functions except for those that send
+// Mojo messages to renderer are `final`.
 class ContentAutofillDriver : public AutofillDriver,
                               public mojom::AutofillDriver {
  public:
@@ -175,19 +179,19 @@ class ContentAutofillDriver : public AutofillDriver,
   // autofill::AutofillDriver:
   // These are the non-event functions from autofill::AutofillDriver. The events
   // are defined in the private part below.
-  LocalFrameToken GetFrameToken() const override;
-  std::optional<LocalFrameToken> Resolve(FrameToken query) override;
-  ContentAutofillDriver* GetParent() override;
-  bool IsActive() const override;
-  bool IsEmbedded() const override;
-  ContentAutofillClient& GetAutofillClient() override;
-  AutofillManager& GetAutofillManager() override;
-  ukm::SourceId GetPageUkmSourceId() const override;
-  bool IsPolicyControlledFeatureAutofillEnabled() const override;
-  bool IsPolicyControlledFeatureManualTextEnabled() const override;
-  bool CanShowAutofillUi() const override;
-  bool DocumentUsedWebOtp() const override;
-  std::optional<net::IsolationInfo> GetIsolationInfo() override;
+  LocalFrameToken GetFrameToken() const final;
+  std::optional<LocalFrameToken> Resolve(FrameToken query) final;
+  ContentAutofillDriver* GetParent() final;
+  bool IsActive() const final;
+  bool IsEmbedded() const final;
+  ContentAutofillClient& GetAutofillClient() final;
+  AutofillManager& GetAutofillManager() final;
+  ukm::SourceId GetPageUkmSourceId() const final;
+  bool IsPolicyControlledFeatureAutofillEnabled() const final;
+  bool IsPolicyControlledFeatureManualTextEnabled() const final;
+  bool CanShowAutofillUi() const final;
+  bool DocumentUsedWebOtp() const final;
+  std::optional<net::IsolationInfo> GetIsolationInfo() final;
 
  private:
   friend class ContentAutofillDriverTestApi;
@@ -290,57 +294,54 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Group (2a): renderer -> browser events, broadcast (see comment above).
   // mojom::AutofillDriver:
-  void DidEndTextFieldEditing() override;
-  void FocusOnNonFormField() override;
-  void HidePopup() override;
-  void SuppressAutomaticRefills(const FillId& fill_id) override;
-  void RequestRefill(const FillId& fill_id) override;
+  void DidEndTextFieldEditing() final;
+  void FocusOnNonFormField() final;
+  void HidePopup() final;
+  void SuppressAutomaticRefills(const FillId& fill_id) final;
+  void RequestRefill(const FillId& fill_id) final;
 
   // Group (2b): renderer -> browser events, routed (see comment above).
   // mojom::AutofillDriver:
-  void AskForValuesToFill(const FormData& form,
-                          FieldRendererId field_id,
-                          const gfx::Rect& caret_bounds,
-                          AutofillSuggestionTriggerSource trigger_source,
-                          const std::optional<PasswordSuggestionRequest>&
-                              password_request) override;
-  void DidAutofillForm(const FormData& form) override;
-  void FocusOnFormField(const FormData& form,
-                        FieldRendererId field_id) override;
-  void FormsSeen(const std::vector<FormData>& updated_forms,
-                 const std::vector<FormRendererId>& removed_forms) override;
-  void FormSubmitted(const FormData& form,
-                     mojom::SubmissionSource submission_source) override;
-  void JavaScriptChangedAutofilledValue(
+  void AskForValuesToFill(
       const FormData& form,
       FieldRendererId field_id,
-      const std::u16string& old_value) override;
+      const gfx::Rect& caret_bounds,
+      AutofillSuggestionTriggerSource trigger_source,
+      const std::optional<PasswordSuggestionRequest>& password_request) final;
+  void DidAutofillForm(const FormData& form) final;
+  void FocusOnFormField(const FormData& form, FieldRendererId field_id) final;
+  void FormsSeen(const std::vector<FormData>& updated_forms,
+                 const std::vector<FormRendererId>& removed_forms) final;
+  void FormSubmitted(const FormData& form,
+                     mojom::SubmissionSource submission_source) final;
+  void JavaScriptChangedAutofilledValue(const FormData& form,
+                                        FieldRendererId field_id,
+                                        const std::u16string& old_value) final;
   void SelectControlSelectionChanged(const FormData& form,
-                                     FieldRendererId field_id) override;
+                                     FieldRendererId field_id) final;
   void SelectFieldOptionsDidChange(const FormData& form,
-                                   FieldRendererId field_id) override;
+                                   FieldRendererId field_id) final;
   void CaretMovedInFormField(const FormData& form,
                              FieldRendererId field_id,
-                             const gfx::Rect& caret_bounds) override;
+                             const gfx::Rect& caret_bounds) final;
   void TextFieldValueChanged(const FormData& form,
                              FieldRendererId field_id,
-                             base::TimeTicks timestamp) override;
-  void TextFieldDidScroll(const FormData& form,
-                          FieldRendererId field_id) override;
+                             base::TimeTicks timestamp) final;
+  void TextFieldDidScroll(const FormData& form, FieldRendererId field_id) final;
   void FormWithEmailVerificationTokenSubmitted(
       const FormData& form,
-      FieldRendererId email_field_id) override;
+      FieldRendererId email_field_id) final;
   void DidDetectJavaScriptAutofill(
       const FormData& form,
       FieldRendererId trigger_field_id,
       std::vector<mojom::JavaScriptFieldModificationPtr> field_modifications,
-      base::TimeTicks detection_start_timestamp) override;
+      base::TimeTicks detection_start_timestamp) final;
 
   // The functions below this line do not cross the IPC boundary.
   bool IsSafeToFill(const FormFieldData& field,
                     FieldType filled_type,
                     const url::Origin& main_origin,
-                    const url::Origin& trigger_origin) const override;
+                    const url::Origin& trigger_origin) const final;
 
   // The router must only route among ContentAutofillDrivers because
   // ContentAutofillDriver casts AutofillDrivers to ContentAutofillDrivers.
