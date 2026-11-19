@@ -20,6 +20,15 @@
 
 @end
 
+// Activity state of an `IntelligenceHeaderView`, controlling the indicator
+// around the leading icon.
+enum class IntelligenceHeaderActivity {
+  // Static leading icon without an activity ring.
+  kIdle,
+  // Animated gradient ring around the leading icon.
+  kActive,
+};
+
 // Vertical padding density of an `IntelligenceHeaderView`.
 enum class IntelligenceHeaderDensity {
   // Standard padding.
@@ -56,15 +65,18 @@ enum class IntelligenceHeaderDensity {
 // Delegate receiving accessory item tap events.
 @property(nonatomic, weak) id<IntelligenceHeaderViewDelegate> delegate;
 
+// Icon displayed in the leading slot. When `nil`, defaults to the Gemini logo.
+@property(nonatomic, strong) UIImage* leadingIcon;
+
 // Main title text.
 @property(nonatomic, copy) NSString* title;
 
 // Subtitle text displayed below `title`.
 @property(nonatomic, copy) NSString* subtitle;
 
-// Whether the activity indicator ring around the leading icon is animating.
-// Default is NO (static logo).
-@property(nonatomic, assign, getter=isLoading) BOOL loading;
+// Activity state controlling the indicator ring around `leadingIcon`. Default
+// is `IntelligenceHeaderActivity::kIdle`.
+@property(nonatomic, assign) IntelligenceHeaderActivity activity;
 
 // Vertical padding around the content. Default is
 // `IntelligenceHeaderDensity::kRegular`. Not affected by `reset`.

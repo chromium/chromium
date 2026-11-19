@@ -89,27 +89,51 @@ class IntelligenceHeaderViewTest : public PlatformTest {
 
 // Tests default property values upon initialization.
 TEST_F(IntelligenceHeaderViewTest, DefaultState) {
+  EXPECT_EQ(header_view_.leadingIcon, nil);
   EXPECT_EQ(header_view_.title, nil);
   EXPECT_EQ(header_view_.subtitle, nil);
-  EXPECT_FALSE(header_view_.loading);
+  EXPECT_EQ(header_view_.activity, IntelligenceHeaderActivity::kIdle);
   EXPECT_EQ(header_view_.density, IntelligenceHeaderDensity::kRegular);
   EXPECT_EQ(header_view_.primaryItem, nil);
   EXPECT_EQ(header_view_.secondaryItems, nil);
+
+  UIImageView* icon_view = FindViewByClass<UIImageView>(header_view_);
+  ASSERT_NE(icon_view, nil);
+  EXPECT_NE(icon_view.image, nil);
 }
 
-// Tests that `loading` toggles the `GradientActivityIndicatorView` visibility.
-TEST_F(IntelligenceHeaderViewTest, LoadingTogglesActivityIndicator) {
+// Tests that `leadingIcon` overrides the default logo and setting `nil`
+// restores it.
+TEST_F(IntelligenceHeaderViewTest,
+       CustomLeadingIconOverridesAndFallsBackToDefault) {
+  UIImageView* icon_view = FindViewByClass<UIImageView>(header_view_);
+  ASSERT_NE(icon_view, nil);
+  ASSERT_NE(icon_view.image, nil);
+
+  UIImage* custom_icon = SymbolWithPointSize(SymbolPlus, kIconPointSize);
+  header_view_.leadingIcon = custom_icon;
+  EXPECT_NSEQ(header_view_.leadingIcon, custom_icon);
+  EXPECT_NSEQ(icon_view.image, custom_icon);
+
+  header_view_.leadingIcon = nil;
+  EXPECT_EQ(header_view_.leadingIcon, nil);
+  EXPECT_NE(icon_view.image, nil);
+  EXPECT_NSNE(icon_view.image, custom_icon);
+}
+
+// Tests that `activity` toggles the `GradientActivityIndicatorView` visibility.
+TEST_F(IntelligenceHeaderViewTest, ActivityTogglesActivityIndicator) {
   GradientActivityIndicatorView* indicator =
       FindViewByClass<GradientActivityIndicatorView>(header_view_);
   ASSERT_NE(indicator, nil);
   EXPECT_TRUE(indicator.hidden);
 
-  header_view_.loading = YES;
-  EXPECT_TRUE(header_view_.isLoading);
+  header_view_.activity = IntelligenceHeaderActivity::kActive;
+  EXPECT_EQ(header_view_.activity, IntelligenceHeaderActivity::kActive);
   EXPECT_FALSE(indicator.hidden);
 
-  header_view_.loading = NO;
-  EXPECT_FALSE(header_view_.isLoading);
+  header_view_.activity = IntelligenceHeaderActivity::kIdle;
+  EXPECT_EQ(header_view_.activity, IntelligenceHeaderActivity::kIdle);
   EXPECT_TRUE(indicator.hidden);
 }
 
@@ -121,7 +145,7 @@ TEST_F(IntelligenceHeaderViewTest,
       [[UIWindow alloc] initWithFrame:CGRectMake(0.0, 0.0, kTestWindowDimension,
                                                  kTestWindowDimension)];
   [window addSubview:header_view_];
-  header_view_.loading = YES;
+  header_view_.activity = IntelligenceHeaderActivity::kActive;
 
   GradientActivityIndicatorView* indicator =
       FindViewByClass<GradientActivityIndicatorView>(header_view_);
@@ -132,7 +156,7 @@ TEST_F(IntelligenceHeaderViewTest,
   EXPECT_GT(gradient_layer.animationKeys.count, 0u);
   EXPECT_GT(gradient_layer.mask.animationKeys.count, 0u);
 
-  // Detach and reattach `header_view_` while `loading` remains `YES`.
+  // Detach and reattach `header_view_` while `activity` remains `kActive`.
   [header_view_ removeFromSuperview];
   [window addSubview:header_view_];
 
@@ -142,9 +166,11 @@ TEST_F(IntelligenceHeaderViewTest,
 
 // Tests that `reset` clears content and accessories while preserving `density`.
 TEST_F(IntelligenceHeaderViewTest, ResetClearsStateAndPreservesDensity) {
+  UIImage* custom_icon = SymbolWithPointSize(SymbolPlus, kIconPointSize);
+  header_view_.leadingIcon = custom_icon;
   header_view_.title = kTestTitle;
   header_view_.subtitle = kTestSubtitle;
-  header_view_.loading = YES;
+  header_view_.activity = IntelligenceHeaderActivity::kActive;
   header_view_.density = IntelligenceHeaderDensity::kCondensed;
   header_view_.primaryItem =
       CreateIconItem(SymbolXMark, kCloseTitle, kCloseButtonId);
@@ -156,14 +182,19 @@ TEST_F(IntelligenceHeaderViewTest, ResetClearsStateAndPreservesDensity) {
 
   [header_view_ reset];
 
+  EXPECT_EQ(header_view_.leadingIcon, nil);
   EXPECT_EQ(header_view_.title, nil);
   EXPECT_EQ(header_view_.subtitle, nil);
-  EXPECT_FALSE(header_view_.loading);
+  EXPECT_EQ(header_view_.activity, IntelligenceHeaderActivity::kIdle);
   EXPECT_EQ(header_view_.density, IntelligenceHeaderDensity::kCondensed);
   EXPECT_EQ(header_view_.primaryItem, nil);
   EXPECT_EQ(header_view_.secondaryItems, nil);
   EXPECT_EQ(FindViewById(header_view_, kCloseButtonId), nil);
   EXPECT_EQ(FindViewById(header_view_, kMenuButtonId), nil);
+  UIImageView* icon_view = FindViewByClass<UIImageView>(header_view_);
+  ASSERT_NE(icon_view, nil);
+  EXPECT_NE(icon_view.image, nil);
+  EXPECT_NSNE(icon_view.image, custom_icon);
 }
 
 // Tests that tapping an identifier-backed `primaryItem` notifies `delegate` and

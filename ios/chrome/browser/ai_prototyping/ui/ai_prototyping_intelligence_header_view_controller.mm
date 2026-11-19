@@ -225,7 +225,8 @@ IntelligenceHeaderItem* CallToActionItem(NSString* identifier,
 - (void)updateHeader {
   _headerView.title = _titleField.text;
   _headerView.subtitle = _subtitleField.text;
-  _headerView.loading = _loadingSwitch.on;
+  _headerView.activity = _loadingSwitch.on ? IntelligenceHeaderActivity::kActive
+                                           : IntelligenceHeaderActivity::kIdle;
 
   NSUInteger count = static_cast<NSUInteger>(_secondaryCountStepper.value);
   _secondaryCountLabel.text =

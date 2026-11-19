@@ -150,8 +150,9 @@ using intelligence::actor::kSpacingLarge;
     return;
   }
   _actuationActive = active;
-  _headerView.loading = active;
   _fullView.actuating = active;
+  _headerView.activity = active ? IntelligenceHeaderActivity::kActive
+                                : IntelligenceHeaderActivity::kIdle;
   [self updateVisibility];
 }
 
@@ -280,7 +281,8 @@ using intelligence::actor::kSpacingLarge;
   _headerView = [[IntelligenceHeaderView alloc] initWithFrame:CGRectZero];
   _headerView.accessibilityIdentifier = kActuationHeaderAccessibilityIdentifier;
   _headerView.delegate = self;
-  _headerView.loading = _actuationActive;
+  _headerView.activity = _actuationActive ? IntelligenceHeaderActivity::kActive
+                                          : IntelligenceHeaderActivity::kIdle;
   _headerView.primaryItem = [self createPrimaryItem];
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_headerView];

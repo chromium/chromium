@@ -233,7 +233,7 @@ bool ShouldGroupItems(NSArray<IntelligenceHeaderItem*>* items) {
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _loading = NO;
+    _activity = IntelligenceHeaderActivity::kIdle;
     _density = IntelligenceHeaderDensity::kRegular;
 
     [self setupSubviews];
@@ -243,11 +243,20 @@ bool ShouldGroupItems(NSArray<IntelligenceHeaderItem*>* items) {
 }
 
 - (void)reset {
+  self.leadingIcon = nil;
   self.title = nil;
   self.subtitle = nil;
-  self.loading = NO;
+  self.activity = IntelligenceHeaderActivity::kIdle;
   self.primaryItem = nil;
   self.secondaryItems = nil;
+}
+
+- (void)setLeadingIcon:(UIImage*)leadingIcon {
+  if (_leadingIcon == leadingIcon) {
+    return;
+  }
+  _leadingIcon = leadingIcon;
+  _imageView.image = _leadingIcon ?: DefaultLeadingLogo();
 }
 
 - (void)setTitle:(NSString*)title {
@@ -265,15 +274,18 @@ bool ShouldGroupItems(NSArray<IntelligenceHeaderItem*>* items) {
   // interpolation of subtitle visibility during detent changes.
 }
 
-- (void)setLoading:(BOOL)loading {
-  if (_loading == loading) {
+- (void)setActivity:(IntelligenceHeaderActivity)activity {
+  if (_activity == activity) {
     return;
   }
-  _loading = loading;
-  if (_loading) {
-    [_activityIndicator startAnimating];
-  } else {
-    [_activityIndicator stopAnimating];
+  _activity = activity;
+  switch (_activity) {
+    case IntelligenceHeaderActivity::kIdle:
+      [_activityIndicator stopAnimating];
+      break;
+    case IntelligenceHeaderActivity::kActive:
+      [_activityIndicator startAnimating];
+      break;
   }
 }
 
