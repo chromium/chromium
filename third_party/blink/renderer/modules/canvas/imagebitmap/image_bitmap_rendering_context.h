@@ -135,6 +135,9 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   void ResetInternalBitmapToBlackTransparent(int width, int height);
 
   void SetImageInternal(scoped_refptr<StaticBitmapImage>);
+  scoped_refptr<gpu::ClientSharedImage> PrepareGpuSharedImage(
+      gpu::SyncToken& sync_token,
+      viz::ReleaseCallback* out_release_callback);
   void ResourceReleasedGpu(scoped_refptr<StaticBitmapImage>,
                            const gpu::SyncToken&,
                            bool lost_resource);

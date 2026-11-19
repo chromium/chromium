@@ -260,14 +260,8 @@ bool ImageBitmapRenderingContext::PrepareTransferableResource(
   const bool gpu_compositing = SharedGpuContext::IsGpuCompositingEnabled();
 
   if (gpu_compositing) {
-    scoped_refptr<StaticBitmapImage> image_for_compositor =
-        ImageBitmapRenderingContext::MakeAccelerated(
-            image_, SharedGpuContext::ContextProviderWrapper());
-    if (!image_for_compositor) {
-      return false;
-    }
-
-    auto shared_image = image_for_compositor->GetSharedImage();
+    gpu::SyncToken sync_token;
+    auto shared_image = PrepareGpuSharedImage(sync_token, out_release_callback);
     if (!shared_image) {
       return false;
     }
@@ -275,12 +269,7 @@ bool ImageBitmapRenderingContext::PrepareTransferableResource(
     *out_resource = viz::TransferableResource::Make(
         shared_image,
         viz::TransferableResource::ResourceSource::kImageLayerBridge,
-        image_for_compositor->GetSyncToken());
-
-    auto func = blink::BindOnce(
-        &ImageBitmapRenderingContext::ResourceReleasedGpu,
-        WrapWeakPersistent(this), std::move(image_for_compositor));
-    *out_release_callback = std::move(func);
+        sync_token);
   } else {
     image_ = image_->MakeUnaccelerated();
     if (!image_) {
@@ -325,6 +314,29 @@ bool ImageBitmapRenderingContext::PrepareTransferableResource(
   }
 
   return true;
+}
+
+scoped_refptr<gpu::ClientSharedImage>
+ImageBitmapRenderingContext::PrepareGpuSharedImage(
+    gpu::SyncToken& sync_token,
+    viz::ReleaseCallback* out_release_callback) {
+  scoped_refptr<StaticBitmapImage> image_for_compositor =
+      ImageBitmapRenderingContext::MakeAccelerated(
+          image_, SharedGpuContext::ContextProviderWrapper());
+  if (!image_for_compositor) {
+    return nullptr;
+  }
+
+  auto shared_image = image_for_compositor->GetSharedImage();
+  if (!shared_image) {
+    return nullptr;
+  }
+
+  sync_token = image_for_compositor->GetSyncToken();
+  *out_release_callback = blink::BindOnce(
+      &ImageBitmapRenderingContext::ResourceReleasedGpu,
+      WrapWeakPersistent(this), std::move(image_for_compositor));
+  return shared_image;
 }
 
 void ImageBitmapRenderingContext::ResourceReleasedGpu(
