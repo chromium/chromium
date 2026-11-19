@@ -183,7 +183,8 @@ void OnDeviceAiSettingsHandler::HandleDeleteOnDeviceAiCapability(
           static_cast<int>(optimization_guide::OnDeviceBaseModel::kMaxValue)) {
     auto base_model =
         static_cast<optimization_guide::OnDeviceBaseModel>(*base_model_int);
-    if (optimization_guide::GetOnDeviceModelCategory(base_model).has_value()) {
+    if (optimization_guide::GetOnDeviceModelUiMetadata(base_model)
+            .has_value()) {
       if (optimization_guide::OnDeviceModelControl* model_control =
               GetModelControl()) {
         model_control->UninstallCapability(base_model);

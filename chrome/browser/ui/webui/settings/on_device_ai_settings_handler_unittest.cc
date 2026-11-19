@@ -9,7 +9,9 @@
 
 #include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -20,6 +22,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -259,6 +262,12 @@ TEST_F(OnDeviceAiSettingsHandlerTest, GetCapabilities_NoModelControl) {
 
 TEST_F(OnDeviceAiSettingsHandlerTest,
        HandleGetOnDeviceAiCapabilities_FiltersHiddensAndSortsBySize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
+      base::StrCat({"AIApiFoundationalModel:model_version/v4,",
+                    media::kOnDeviceWebSpeechSmallExpertModel.name}),
+      "");
+
   FakeOnDeviceModelControl fake_control;
   handler()->set_model_control(&fake_control);
 
@@ -356,6 +365,12 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
 
 TEST_F(OnDeviceAiSettingsHandlerTest,
        HandleGetOnDeviceAiCapabilities_DownloadingAndUpdatingModels) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine(
+      base::StrCat({"AIApiFoundationalModel:model_version/v4,",
+                    media::kOnDeviceWebSpeechSmallExpertModel.name}),
+      "");
+
   FakeOnDeviceModelControl fake_control;
   handler()->set_model_control(&fake_control);
 
@@ -416,6 +431,10 @@ TEST_F(OnDeviceAiSettingsHandlerTest,
 }
 
 TEST_F(OnDeviceAiSettingsHandlerTest, HandleDeleteOnDeviceAiCapability) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitFromCommandLine("AIApiFoundationalModel:model_version/v4",
+                                   "");
+
   FakeOnDeviceModelControl fake_control;
   handler()->set_model_control(&fake_control);
 
@@ -431,11 +450,14 @@ TEST_F(OnDeviceAiSettingsHandlerTest, HandleDeleteOnDeviceAiCapability) {
                                       kGemmaSize.InBytes()),
   });
 
-  // Hidden/unmapped models (e.g. kClassifier) should not be uninstallable.
-  {
+  // Hidden/unmapped models (e.g. kClassifier) and flag-disabled models (e.g.
+  // kProofreaderSmallExpert) should not be uninstallable.
+  for (OnDeviceBaseModel disallowed_model :
+       {OnDeviceBaseModel::kClassifier,
+        OnDeviceBaseModel::kProofreaderSmallExpert}) {
     base::ListValue invalid_args;
     invalid_args.Append("ignored_callback_id");
-    invalid_args.Append(static_cast<int>(OnDeviceBaseModel::kClassifier));
+    invalid_args.Append(static_cast<int>(disallowed_model));
     handler()->HandleDeleteOnDeviceAiCapability(invalid_args);
     EXPECT_TRUE(fake_control.uninstalled_models().empty());
     test_web_ui()->ClearTrackedCalls();

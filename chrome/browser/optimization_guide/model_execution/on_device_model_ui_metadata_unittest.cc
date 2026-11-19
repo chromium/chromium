@@ -4,9 +4,13 @@
 
 #include "chrome/browser/optimization_guide/model_execution/on_device_model_ui_metadata.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ai/features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace optimization_guide {
 namespace {
@@ -14,6 +18,24 @@ namespace {
 using ::testing::ElementsAre;
 
 TEST(OnDeviceModelUiMetadataTest, GeneralPurposeModels) {
+  // By default, kAIApiFoundationalModel is disabled, so kGemma4 is hidden
+  // while Nano V3 is visible.
+  EXPECT_FALSE(
+      GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kGemma4).has_value());
+
+  {
+    // Enabling kAIApiFoundationalModel without `model_version=v4` keeps
+    // kGemma4 hidden (consistent with AIManager falling back to Nano V3).
+    base::test::ScopedFeatureList without_version;
+    without_version.InitAndEnableFeature(kAIApiFoundationalModel);
+    EXPECT_FALSE(
+        GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kGemma4).has_value());
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(kAIApiFoundationalModel,
+                                                  {{"model_version", "v4"}});
+
   auto gemma4 = GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kGemma4);
   ASSERT_TRUE(gemma4.has_value());
   EXPECT_EQ(gemma4->category, OnDeviceModelCategory::kGeneralPurpose);
@@ -55,6 +77,13 @@ TEST(OnDeviceModelUiMetadataTest, GeneralPurposeModels) {
 }
 
 TEST(OnDeviceModelUiMetadataTest, LiveTranscriptionModel) {
+  EXPECT_FALSE(GetOnDeviceModelUiMetadata(
+                   OnDeviceBaseModel::kSpeechRecognitionSmallExpert)
+                   .has_value());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kOnDeviceWebSpeechSmallExpertModel);
+
   auto speech = GetOnDeviceModelUiMetadata(
       OnDeviceBaseModel::kSpeechRecognitionSmallExpert);
   ASSERT_TRUE(speech.has_value());
@@ -67,6 +96,50 @@ TEST(OnDeviceModelUiMetadataTest, LiveTranscriptionModel) {
       speech->details,
       ElementsAre(u"Works on sites that support live audio transcription",
                   u"Downloads separately for each language you use"));
+}
+
+TEST(OnDeviceModelUiMetadataTest, ProofreadingAndSummarizingModels) {
+  EXPECT_FALSE(
+      GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kProofreaderSmallExpert)
+          .has_value());
+  EXPECT_FALSE(
+      GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kSummarizerSmallExpert)
+          .has_value());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {blink::features::kAIProofreadingAPI,
+       blink::features::kAISummarizationAPI,
+       blink::features::kAISummarizationPerformancePreference},
+      {});
+
+  auto proofreader =
+      GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kProofreaderSmallExpert);
+  ASSERT_TRUE(proofreader.has_value());
+  EXPECT_EQ(proofreader->category, OnDeviceModelCategory::kProofreading);
+  EXPECT_EQ(proofreader->category_title, u"Proofreading");
+  EXPECT_EQ(proofreader->category_description,
+            u"High-speed syntax and typographical checking without content "
+            u"alteration");
+  EXPECT_EQ(proofreader->model_display_name, u"Gemma 197M");
+  EXPECT_THAT(
+      proofreader->details,
+      ElementsAre(
+          u"Suggests fixes for spelling, grammar, and punctuation as you type",
+          u"Only suggests fixes without rewriting your text"));
+
+  auto summarizer =
+      GetOnDeviceModelUiMetadata(OnDeviceBaseModel::kSummarizerSmallExpert);
+  ASSERT_TRUE(summarizer.has_value());
+  EXPECT_EQ(summarizer->category, OnDeviceModelCategory::kSummarizing);
+  EXPECT_EQ(summarizer->category_title, u"Summarizing");
+  EXPECT_EQ(summarizer->category_description,
+            u"Condensing long-form web content into concise takeaways");
+  EXPECT_EQ(summarizer->model_display_name, u"Gemma 197M");
+  EXPECT_THAT(
+      summarizer->details,
+      ElementsAre(u"Gives you key points, a short summary, or a headline",
+                  u"Faster and more compact than general-purpose writing"));
 }
 
 TEST(OnDeviceModelUiMetadataTest, HiddenModelsReturnNullopt) {

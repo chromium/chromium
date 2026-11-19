@@ -76,6 +76,7 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/ai:features",
     "//chrome/browser/download",
     "//chrome/browser/metrics",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
@@ -92,6 +93,8 @@ source_set("impl") {
     "//components/variations",
     "//components/variations/service",
     "//components/version_info",
+    "//media",
+    "//third_party/blink/public/common:headers",
     "//ui/webui",
   ]
   if (is_android) {
@@ -205,6 +208,7 @@ source_set("unit_tests") {
   deps = [
     ":optimization_guide",
     ":test_support",
+    "//chrome/browser/ai:features",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:chrome_test_scoped_utils",
@@ -214,6 +218,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/unified_consent",
     "//components/variations:test_support",
+    "//media",
+    "//third_party/blink/public/common:headers",
   ]
 
   if (is_android) {

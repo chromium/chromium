@@ -72,13 +72,15 @@ std::optional<OnDeviceModelCategory> GetOnDeviceModelCategory(
     case OnDeviceBaseModel::kV3NanoGpu:
     case OnDeviceBaseModel::kV3NanoCpu:
       return OnDeviceModelCategory::kGeneralPurpose;
+    case OnDeviceBaseModel::kProofreaderSmallExpert:
+      return OnDeviceModelCategory::kProofreading;
+    case OnDeviceBaseModel::kSummarizerSmallExpert:
+      return OnDeviceModelCategory::kSummarizing;
     case OnDeviceBaseModel::kSpeechRecognitionSmallExpert:
       return OnDeviceModelCategory::kLiveTranscription;
     case OnDeviceBaseModel::kUnknown:
     case OnDeviceBaseModel::kClassifier:
     case OnDeviceBaseModel::kLanguageDetection:
-    case OnDeviceBaseModel::kProofreaderSmallExpert:
-    case OnDeviceBaseModel::kSummarizerSmallExpert:
     case OnDeviceBaseModel::kLayaEnWint8:
     case OnDeviceBaseModel::kLayaMlWint8:
       return std::nullopt;
