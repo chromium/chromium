@@ -787,6 +787,7 @@ build_webui("build") {
     "site_settings/chooser_exception_list.css",
     "site_settings/chooser_exception_list_entry.css",
     "site_settings/clear_storage_dialog_shared.css",
+    "site_settings/file_system_site_entry_item.css",
     "site_settings/md_select.css",
     "site_settings/media_picker.css",
     "site_settings/search_highlight_style.css",

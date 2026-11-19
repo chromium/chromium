@@ -8,17 +8,12 @@
  * permission grant for a given origin, granted via the File System Access API.
  */
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../settings_shared.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {BaseMixin} from '../base_mixin.js';
-
-import {getTemplate} from './file_system_site_entry_item.html.js';
+import {getCss} from './file_system_site_entry_item.css.js';
+import {getHtml} from './file_system_site_entry_item.html.js';
 import type {FileSystemGrant} from './file_system_site_list.js';
-
-const FileSystemSiteEntryItemElementBase = BaseMixin(PolymerElement);
 
 export interface FileSystemSiteEntryItemElement {
   $: {
@@ -26,32 +21,39 @@ export interface FileSystemSiteEntryItemElement {
   };
 }
 
-export class FileSystemSiteEntryItemElement extends
-    FileSystemSiteEntryItemElementBase {
+export class FileSystemSiteEntryItemElement extends CrLitElement {
   static get is() {
     return 'file-system-site-entry-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
-       * An Object representing an origin and its associated permission grants.
+       * An Object representing a permission grant for an origin.
        */
-      grant: Object,
+      grant: {type: Object},
     };
   }
 
-  declare grant: FileSystemGrant;
+  accessor grant: FileSystemGrant = {
+    isDirectory: false,
+    displayName: '',
+    filePath: '',
+  };
 
-  private getClassForListItem_(): string {
+  protected getClassForListItem_(): string {
     return this.grant.isDirectory ? 'icon-folder-open' : 'icon-file';
   }
 
-  private onRemoveGrantClick_() {
+  protected onRemoveGrantClick_() {
     this.fire('revoke-grant', this.grant);
   }
 }

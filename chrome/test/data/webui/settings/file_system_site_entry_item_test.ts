@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {FileSystemGrant, FileSystemSiteEntryItemElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
-// clang-format on
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite(
     'FileSystemSettings_EnablePersistentPermissions_SiteEntryItem', function() {
@@ -43,24 +39,26 @@ suite(
         document.body.appendChild(testElement);
       });
 
-      test('FileSystemSiteListEntryItemsPopulated_DirectoryGrant', function() {
-        testElement.grant = TEST_FILE_SYSTEM_DIRECTORY_GRANT;
-        flush();
-        const directoryGrantDisplayName =
-            testElement.shadowRoot!.querySelector('.display-name');
-        assertTrue(!!directoryGrantDisplayName);
-        const icon = testElement.shadowRoot!.querySelector('#fileTypeIcon');
-        assertTrue(!!icon);
-        assertTrue(icon.classList.contains('icon-folder-open'));
-      });
+      test(
+          'FileSystemSiteListEntryItemsPopulated_DirectoryGrant',
+          async function() {
+            testElement.grant = TEST_FILE_SYSTEM_DIRECTORY_GRANT;
+            await microtasksFinished();
+            const directoryGrantDisplayName =
+                testElement.shadowRoot.querySelector('.display-name');
+            assertTrue(!!directoryGrantDisplayName);
+            const icon = testElement.shadowRoot.querySelector('#fileTypeIcon');
+            assertTrue(!!icon);
+            assertTrue(icon.classList.contains('icon-folder-open'));
+          });
 
-      test('FileSystemSiteListEntryItemsPopulated_FileGrant', function() {
+      test('FileSystemSiteListEntryItemsPopulated_FileGrant', async function() {
         testElement.grant = TEST_FILE_SYSTEM_FILE_GRANT;
-        flush();
+        await microtasksFinished();
         const fileGrantDisplayName =
-            testElement.shadowRoot!.querySelector('.display-name');
+            testElement.shadowRoot.querySelector('.display-name');
         assertTrue(!!fileGrantDisplayName);
-        const icon = testElement.shadowRoot!.querySelector('#fileTypeIcon');
+        const icon = testElement.shadowRoot.querySelector('#fileTypeIcon');
         assertTrue(!!icon);
         assertTrue(icon.classList.contains('icon-file'));
       });
@@ -69,7 +67,6 @@ suite(
           'FileSystemSiteListEntryItemRemoveIndiviudalPermissionGrant',
           async function() {
             testElement.grant = TEST_FILE_SYSTEM_FILE_GRANT;
-            flush();
             const whenFired = eventToPromise('revoke-grant', testElement);
             testElement.$.removeGrant.click();
             const permissionRemovedEvent = await whenFired;
