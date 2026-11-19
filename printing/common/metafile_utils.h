@@ -26,6 +26,9 @@ namespace printing {
 
 using ContentToProxyTokenMap = base::flat_map<uint32_t, base::UnguessableToken>;
 
+// Identifies a placeholder SkPicture via `SkPicture::uniqueID()`.
+using PictureUniqueId = base::StrongAlias<class PictureUniqueIdTag, uint64_t>;
+
 // Identifies serialized content (remote subframes, typefaces, or images) within
 // a document.
 using PictureContentId = base::StrongAlias<class PictureContentIdTag, uint32_t>;
@@ -41,9 +44,10 @@ using TypefaceDeserializationContext =
 using ImageDeserializationContext =
     base::flat_map<ImageContentId, sk_sp<SkImage>>;
 
-// Stores the mapping between content's unique id and its corresponding frame
-// proxy token.
-using PictureSerializationContext = ContentToProxyTokenMap;
+// Stores the mapping between a placeholder SkPicture::uniqueID() and its
+// per-document content id.
+using PictureSerializationContext =
+    base::flat_map<PictureUniqueId, PictureContentId>;
 
 // Stores the set of typeface unique ids used by the picture frame content.
 using TypefaceSerializationContext = base::flat_set<TypefaceContentId>;

@@ -57,19 +57,27 @@ SkSerialReturnType SerializePictureAsRectData(SkPicture* picture, void* ctx) {
   const PictureSerializationContext* context =
       reinterpret_cast<PictureSerializationContext*>(ctx);
 
-  auto it = context->content_id_to_transformed_clip.find(picture->uniqueID());
+  auto id_it = context->picture_id_to_content_id.find(picture->uniqueID());
   // Defers picture serialization behavior to Skia.
+  if (id_it == context->picture_id_to_content_id.end()) {
+    return nullptr;
+  }
+  const uint32_t content_id = id_it->second;
+
+  auto it = context->content_id_to_transformed_clip.find(content_id);
   if (it == context->content_id_to_transformed_clip.end()) {
     return nullptr;
   }
 
   // This data originates from |PaintPreviewTracker|.
   const SkRect& transformed_cull_rect = it->second;
-  SerializedRectData rect_data = {
-      picture->uniqueID(),           picture->cullRect().width(),
-      picture->cullRect().height(),  transformed_cull_rect.x(),
-      transformed_cull_rect.y(),     transformed_cull_rect.width(),
-      transformed_cull_rect.height()};
+  SerializedRectData rect_data = {content_id,
+                                  picture->cullRect().width(),
+                                  picture->cullRect().height(),
+                                  transformed_cull_rect.x(),
+                                  transformed_cull_rect.y(),
+                                  transformed_cull_rect.width(),
+                                  transformed_cull_rect.height()};
   return SkData::MakeWithCopy(&rect_data, sizeof(rect_data));
 }
 

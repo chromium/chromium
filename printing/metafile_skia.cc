@@ -78,7 +78,9 @@ struct MetafileSkiaData {
   std::vector<Page> pages;
   std::unique_ptr<SkStreamAsset> data_stream;
   ContentToProxyTokenMap subframe_content_info;
+  PictureSerializationContext subframe_pic_ids;
   std::map<PictureContentId, sk_sp<SkPicture>> subframe_pics;
+  uint32_t next_subframe_content_id = 1;
   int document_cookie = 0;
   raw_ptr<TypefaceSerializationContext> typeface_content_info = nullptr;
   raw_ptr<ImageSerializationContext> image_content_info = nullptr;
@@ -215,7 +217,7 @@ bool MetafileSkia::FinishDocument() {
                             generate_document_outline_, &stream);
       break;
     case mojom::SkiaDocumentType::kMSKP:
-      SkSerialProcs procs = SerializationProcs(&data_->subframe_content_info,
+      SkSerialProcs procs = SerializationProcs(&data_->subframe_pic_ids,
                                                data_->typeface_content_info,
                                                data_->image_content_info);
       doc = SkMultiPictureDocument::Make(&stream, &procs);
@@ -252,9 +254,9 @@ void MetafileSkia::FinishFrameContent() {
       &MetafileSkia::CustomDataToSkPictureCallback, base::Unretained(this));
   sk_sp<SkPicture> pic = data_->pages[0].content.ToSkPicture(
       SkRect::MakeSize(data_->pages[0].size), nullptr, callbacks);
-  SkSerialProcs procs = SerializationProcs(&data_->subframe_content_info,
-                                           data_->typeface_content_info,
-                                           data_->image_content_info);
+  SkSerialProcs procs =
+      SerializationProcs(&data_->subframe_pic_ids, data_->typeface_content_info,
+                         data_->image_content_info);
   SkDynamicMemoryWStream stream;
   pic->serialize(&stream, &procs);
   data_->data_stream = stream.detachAsStream();
@@ -409,7 +411,9 @@ std::unique_ptr<MetafileSkia> MetafileSkia::GetMetafileForCurrentPage(
 
   metafile->data_->pages.push_back(data_->pages.back());
   metafile->data_->subframe_content_info = data_->subframe_content_info;
+  metafile->data_->subframe_pic_ids = data_->subframe_pic_ids;
   metafile->data_->subframe_pics = data_->subframe_pics;
+  metafile->data_->next_subframe_content_id = data_->next_subframe_content_id;
   metafile->data_->typeface_content_info = data_->typeface_content_info;
   metafile->data_->image_content_info = data_->image_content_info;
 
@@ -428,7 +432,8 @@ uint32_t MetafileSkia::CreateContentForRemoteFrame(
 
   // Store the map between content id and the proxy id and store the picture
   // content.
-  const PictureContentId content_id(pic->uniqueID());
+  const PictureContentId content_id(data_->next_subframe_content_id++);
+  CHECK_NE(content_id.value(), 0u);
   DCHECK(!data_->subframe_content_info.contains(content_id.value()));
   AppendSubframeInfo(content_id, render_proxy_token, std::move(pic));
   return content_id.value();
@@ -450,7 +455,8 @@ void MetafileSkia::AppendSubframeInfo(PictureContentId content_id,
                                       const base::UnguessableToken& proxy_token,
                                       sk_sp<SkPicture> pic_holder) {
   data_->subframe_content_info[content_id.value()] = proxy_token;
-  data_->subframe_pics[content_id] = pic_holder;
+  data_->subframe_pic_ids[PictureUniqueId(pic_holder->uniqueID())] = content_id;
+  data_->subframe_pics[content_id] = std::move(pic_holder);
 }
 
 SkStreamAsset* MetafileSkia::GetPdfData() const {

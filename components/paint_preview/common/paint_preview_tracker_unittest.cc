@@ -37,7 +37,7 @@ class ExpectSubframeCanvas : public SkCanvas {
     drawn_pictures_.insert({picture->uniqueID(), picture->cullRect()});
   }
 
-  void ExpectHasPicture(uint32_t expected_picture_id,
+  void ExpectHasPicture(uint64_t expected_picture_id,
                         const gfx::Rect& expected_bounds) {
     auto it = drawn_pictures_.find(expected_picture_id);
     if (it == drawn_pictures_.end()) {
@@ -54,7 +54,7 @@ class ExpectSubframeCanvas : public SkCanvas {
 
  private:
   // Map of picture id to expected bounds of pictures drawn into this canvas.
-  base::flat_map<uint32_t, SkRect> drawn_pictures_;
+  base::flat_map<uint64_t, SkRect> drawn_pictures_;
 };
 
 }  // namespace
@@ -86,10 +86,15 @@ TEST(PaintPreviewTrackerTest, TestRemoteFramePlaceholderPicture) {
   EXPECT_EQ(context->content_id_to_embedding_token[content_id],
             kEmbeddingTokenChild);
 
+  const auto& subframe_pics = tracker.GetSubframePicsForTesting();
+  ASSERT_TRUE(subframe_pics.contains(content_id));
+  const uint64_t picture_id = subframe_pics.at(content_id)->uniqueID();
+  EXPECT_EQ(context->picture_id_to_content_id[picture_id], content_id);
+
   ExpectSubframeCanvas canvas;
   tracker.CustomDataToSkPictureCallback(&canvas, content_id);
 
-  canvas.ExpectHasPicture(content_id, rect);
+  canvas.ExpectHasPicture(picture_id, rect);
 }
 
 TEST(PaintPreviewTrackerTest, TestGlyphRunList) {

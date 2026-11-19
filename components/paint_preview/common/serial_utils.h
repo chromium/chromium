@@ -33,6 +33,9 @@ struct PictureSerializationContext {
   PictureSerializationContext& operator=(
       PictureSerializationContext&&) noexcept;
 
+  // Maps a placeholder SkPicture::uniqueID() to its local 32-bit content ID.
+  base::flat_map<uint64_t, uint32_t> picture_id_to_content_id;
+
   // Maps a content ID to a transformed clip rect.
   base::flat_map<uint32_t, SkRect> content_id_to_transformed_clip;
 

@@ -98,10 +98,12 @@ uint32_t PaintPreviewTracker::CreateContentForRemoteFrame(
     const base::UnguessableToken& embedding_token) {
   sk_sp<SkPicture> pic = SkPicture::MakePlaceholder(
       SkRect::MakeXYWH(rect.x(), rect.y(), rect.width(), rect.height()));
-  const uint32_t content_id = pic->uniqueID();
+  const uint32_t content_id = next_picture_content_id_++;
+  CHECK_NE(content_id, 0u);
   DCHECK(!picture_context_.content_id_to_embedding_token.contains(content_id));
+  picture_context_.picture_id_to_content_id[pic->uniqueID()] = content_id;
   picture_context_.content_id_to_embedding_token[content_id] = embedding_token;
-  subframe_pics_[content_id] = pic;
+  subframe_pics_[content_id] = std::move(pic);
   return content_id;
 }
 

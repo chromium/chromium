@@ -62,7 +62,7 @@ TEST(MetafileSkiaTest, FrameContent) {
   flags.setColor(SK_ColorWHITE);
   const SkRect page_rect = SkRect::MakeXYWH(0, 0, kPageSideLen, kPageSideLen);
   buffer.push<cc::DrawRectOp>(page_rect, flags);
-  const PictureContentId content_id(pic_holder->uniqueID());
+  const PictureContentId content_id(1);
   buffer.push<cc::CustomDataOp>(content_id.value());
   SkSize page_size = SkSize::Make(kPageSideLen, kPageSideLen);
 
@@ -131,7 +131,7 @@ TEST(MetafileSkiaTest, GetPageBounds) {
   const SkRect page_rect =
       SkRect::MakeXYWH(0, 0, kPageSideWidth, kPageSideHeight);
   buffer.push<cc::DrawRectOp>(page_rect, flags);
-  const PictureContentId content_id(pic_holder->uniqueID());
+  const PictureContentId content_id(1);
   buffer.push<cc::CustomDataOp>(content_id.value());
   SkSize page_size = SkSize::Make(kPageSideWidth, kPageSideHeight);
 
@@ -210,7 +210,7 @@ TEST(MetafileSkiaTest, MultiPictureDocumentTypefaces) {
     // Create the page for the text content.
     cc::PaintOpBuffer buffer;
     buffer.push<cc::DrawRectOp>(page_rect, flags);
-    const PictureContentId content_id(pic_holder->uniqueID());
+    const PictureContentId content_id(i + 1);
     buffer.push<cc::CustomDataOp>(content_id.value());
 
     // Mark the page with some text using multiple fonts.

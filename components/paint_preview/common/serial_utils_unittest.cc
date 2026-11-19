@@ -46,9 +46,12 @@ TEST(PaintPreviewSerialUtils, TestMakeEmptyPicture) {
 
 TEST(PaintPreviewSerialUtils, TestTransformedPictureProcs) {
   auto pic = MakeEmptyPicture();
-  uint32_t content_id = pic->uniqueID();
+  constexpr uint32_t content_id = 1;
   const base::UnguessableToken kFrameGuid = base::UnguessableToken::Create();
   PictureSerializationContext picture_ctx;
+  EXPECT_TRUE(picture_ctx.picture_id_to_content_id
+                  .insert(std::make_pair(pic->uniqueID(), content_id))
+                  .second);
   EXPECT_TRUE(picture_ctx.content_id_to_embedding_token
                   .insert(std::make_pair(content_id, kFrameGuid))
                   .second);

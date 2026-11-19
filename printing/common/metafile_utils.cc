@@ -446,13 +446,13 @@ sk_sp<SkDocument> MakePdfDocument(
 SkSerialReturnType SerializeOopPicture(SkPicture* pic, void* ctx) {
   const auto* context =
       reinterpret_cast<const PictureSerializationContext*>(ctx);
-  uint32_t pic_id = pic->uniqueID();
-  auto iter = context->find(pic_id);
+  auto iter = context->find(PictureUniqueId(pic->uniqueID()));
   if (iter == context->end()) {
     return nullptr;
   }
 
-  return gfx::MakeSkDataFromSpanWithCopy(base::byte_span_from_ref(pic_id));
+  const uint32_t content_id = iter->second.value();
+  return gfx::MakeSkDataFromSpanWithCopy(base::byte_span_from_ref(content_id));
 }
 
 sk_sp<SkPicture> DeserializeOopPicture(const void* data,

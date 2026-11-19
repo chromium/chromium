@@ -57,6 +57,7 @@ class PaintPreviewTestService : public PaintPreviewBaseService {
 
   base::FilePath test_data_dir_;
   base::flat_map<uint32_t, Frame> frames_;
+  uint32_t next_subframe_id_ = 1;
 };
 
 }  // namespace paint_preview

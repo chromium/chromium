@@ -123,6 +123,7 @@ class PaintPreviewTracker {
   PictureSerializationContext picture_context_;
   TypefaceUsageMap typeface_glyph_usage_;
   base::flat_map<uint32_t, sk_sp<SkPicture>> subframe_pics_;
+  uint32_t next_picture_content_id_ = 1;
 
   PaintPreviewTracker(const PaintPreviewTracker&) = delete;
   PaintPreviewTracker& operator=(const PaintPreviewTracker&) = delete;
