@@ -23,11 +23,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ChildBindingState;
-import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.memory.SelfFreezeCallback;
@@ -950,13 +948,6 @@ public class ChildProcessConnection {
         assert mFallbackServiceName != null;
         @ServiceNames int serviceName;
         String className = mFallbackServiceName.getClassName();
-        if (mServiceName.getClassName().startsWith(NATIVE_SANDBOXED_SERVICE)) {
-            ThreadUtils.postOnUiThread(
-                    () ->
-                            JavaExceptionReporter.reportException(
-                                    new Throwable(
-                                            "Fallback from NativeOnlySandboxedProcessService")));
-        }
         // Don't use the exact match because service names have a number as a suffix.
         if (className.startsWith(SANDBOXED_SERVICE)) {
             serviceName = ServiceNames.JAVA_SANDBOXED;
