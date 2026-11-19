@@ -1695,6 +1695,8 @@
           "--version",
           "27.0",
           "--xcodebuild-sim-runner",
+          "--clones",
+          "2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1739,7 +1741,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 66
+          "shards": 46
         },
         "test": "ios_chrome_all_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_all_eg2tests_module/",
@@ -1753,6 +1755,8 @@
           "--version",
           "18.5",
           "--xcodebuild-sim-runner",
+          "--clones",
+          "2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1797,7 +1801,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 66
+          "shards": 46
         },
         "test": "ios_chrome_all_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_all_eg2tests_module/",
@@ -1811,6 +1815,8 @@
           "--version",
           "26.5",
           "--xcodebuild-sim-runner",
+          "--clones",
+          "2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -1855,7 +1861,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 66
+          "shards": 46
         },
         "test": "ios_chrome_all_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_all_eg2tests_module/",

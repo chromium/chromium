@@ -5446,12 +5446,33 @@ targets.bundle(
         ),
         targets.bundle(
             targets = [
-                "ios_eg2_tests_all",
                 "ios_web_shell_eg2tests_module",
             ],
             mixins = [
                 "xcodebuild_sim_runner",
                 "mac_26_vm_optional",
+            ],
+            variants = [
+                "SIM_IPAD_PRO_7TH_GEN_18_5",
+                "SIM_IPAD_PRO_7TH_GEN_26_5",
+                "SIM_IPAD_A16_27_0",
+            ],
+        ),
+        # same mixins and variants as the ios_web_shell_eg2tests_module bundle
+        # above except also adding ios_parallel_simulators
+        targets.bundle(
+            targets = [
+                "ios_eg2_tests_all",
+            ],
+            mixins = [
+                "xcodebuild_sim_runner",
+                "mac_26_vm_optional",
+                "ios_parallel_simulators",
+                targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 46,
+                    ),
+                ),
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_18_5",
