@@ -46,6 +46,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -69,6 +70,7 @@ import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDe
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -448,6 +450,7 @@ public class ContentTextSelectionTest {
     @Test
     @MediumTest
     @Feature({"TextSelection"})
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // https://crbug.com/581796974
     public void testCorrectSelectionMenuItemsAddedForInputSelection_dropdown() throws Throwable {
         setUpTestCorrectSelectionMenuItemsAddedForInputSelection();
         PendingSelectionMenu menu =
