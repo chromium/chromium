@@ -119,9 +119,32 @@
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: cover;
+  anchor-name: --match-icon;
   background-color: var(--color-composebox-input-icon);
   height: var(--cr-composebox-match-icon-size, 20px);
   width: var(--cr-composebox-match-icon-size, 20px);
+}
+
+/* A badge in the top-right corner of the icon. It is anchored to the icon
+   because embedders change the padding and width of the icon container. */
+:host([base-layout='text']) #badge {
+  inset-inline-end: anchor(end);
+  position: absolute;
+  position-anchor: --match-icon;
+  top: anchor(top);
+}
+
+/* The dot uses the URL color so that it follows dark mode and themes. */
+:host([base-layout='text']) #badge.dot {
+  -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/dot.svg);
+  -webkit-mask-size: contain;
+  background-color: var(--color-searchbox-results-url);
+  height: 4px;
+  width: 4px;
+}
+
+:host([base-layout='text']:is(:focus-visible, [selected])) #badge.dot {
+  background-color: var(--color-searchbox-results-url-selected);
 }
 
 :host([base-layout='text']) #textContainer {
@@ -165,6 +188,57 @@
 :host([base-layout='text']:is(:focus-within, [selected]))
     #remove:not([hidden]) {
   display: inline-flex;
+}
+
+/* The action icon has the same size (the cr-icon-button default), end margin
+   and offset as the remove button, so on hover the X shows up exactly where
+   the icon was. */
+:host([base-layout='text']) #actionIcon {
+  flex-shrink: 0;
+  height: 32px;
+  margin-inline-end: var(--cr-composebox-dropdown-match-margin-end, 4px);
+  position: relative;
+  top: var(--cr-composebox-match-remove-button-top, 6px);
+  width: 32px;
+}
+
+/* The 8x8 dot uses the URL color so that it follows dark mode and themes. */
+:host([base-layout='text']) #actionIcon.blue-dot {
+  -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/dot.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 8px;
+  background-color: var(--color-searchbox-results-url);
+}
+
+:host([base-layout='text']:is(:focus-visible, [selected]))
+    #actionIcon.blue-dot {
+  background-color: var(--color-searchbox-results-url-selected);
+}
+
+/* The remove button takes precedence on hover and selection. */
+:host([base-layout='text']) .container:hover
+    #remove:not([hidden]) ~ #actionIcon,
+:host([base-layout='text']:is(:focus-within, [selected]))
+    #remove:not([hidden]) ~ #actionIcon {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  /* Kept after the dot rules above so that it overrides their colors. */
+  :host([base-layout='text']) #badge.dot,
+  :host([base-layout='text']) #actionIcon.blue-dot {
+    background-color: ButtonText;
+    forced-color-adjust: none;
+  }
+
+  :host([base-layout='text']) .container:hover #badge.dot,
+  :host([base-layout='text']) .container:hover #actionIcon.blue-dot,
+  :host([base-layout='text']:is(:focus-visible, [selected])) #badge.dot,
+  :host([base-layout='text']:is(:focus-visible, [selected]))
+      #actionIcon.blue-dot {
+    background-color: HighlightText;
+  }
 }
 
 /* ==========================================================================

@@ -10,7 +10,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SecondaryTextPlacement, SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {ActionIconType, BadgeType, SecondaryTextPlacement, SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {computeImageUrl} from './common.js';
@@ -186,6 +186,28 @@ export class ComposeboxMatchElement extends CrLitElement {
 
   protected iconPath_(): string {
     return this.match.iconPath || '';
+  }
+
+  // Returns the class that styles the badge on the type icon, or an empty
+  // string if there is no badge to show.
+  protected getBadgeClass_(): string {
+    switch (this.match.suggestTemplate.typeIconBadge) {
+      case BadgeType.kDot:
+        return 'dot';
+      default:
+        return '';
+    }
+  }
+
+  // Returns the class that styles the action icon on the right side of the
+  // match, or an empty string if there is none or desktop has no design for it.
+  protected getActionIconClass_(): string {
+    switch (this.match.suggestTemplate.actionIcon) {
+      case ActionIconType.kBlueDot:
+        return 'blue-dot';
+      default:
+        return '';
+    }
   }
 
   protected imageStyle_(): string {
