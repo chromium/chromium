@@ -8,7 +8,6 @@
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
 #include "base/check_deref.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"

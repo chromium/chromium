@@ -35,7 +35,6 @@ static_library("lock") {
   deps = [
     "//ash/constants",
     "//base:i18n",
-    "//chrome/browser:resources",
     "//chrome/browser/ash/certificate_provider",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/extensions/autotest_private",

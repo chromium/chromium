@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/webui/ash/lock_screen_reauth",
-  "+chrome/grit",
 ]
 
 specific_include_rules = {

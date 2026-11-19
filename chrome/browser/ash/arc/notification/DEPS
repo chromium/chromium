@@ -25,10 +25,6 @@ specific_include_rules = {
     "+chrome/app/vector_icons",
   ],
 
-  "arc_management_transition_notification\\.cc": [
-    "+chrome/grit",
-  ],
-
   "arc_provision_notification_service\\.cc": [
     "+chrome/grit",
   ],

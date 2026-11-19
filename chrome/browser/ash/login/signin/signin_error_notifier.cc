@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"

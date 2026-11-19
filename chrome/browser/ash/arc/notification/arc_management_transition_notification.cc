@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/grit/theme_resources.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"

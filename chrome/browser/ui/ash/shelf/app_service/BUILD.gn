@@ -35,7 +35,6 @@ static_library("app_service") {
     "//ash/strings",
     "//base",
     "//chrome/app:generated_resources",
-    "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",

@@ -7,7 +7,6 @@
 #include "ash/login/resources/grit/ash_login_strings.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
-#include "chrome/grit/component_extension_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"

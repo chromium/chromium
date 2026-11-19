@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_finch_helper.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
-#include "chrome/grit/browser_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/version/version_loader.h"
 #include "components/language/core/browser/pref_names.h"

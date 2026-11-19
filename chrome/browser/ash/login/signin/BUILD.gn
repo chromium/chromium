@@ -69,7 +69,6 @@ static_library("signin") {
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
-    "//chrome/app/theme:theme_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/login",

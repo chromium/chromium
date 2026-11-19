@@ -43,7 +43,6 @@
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/icon_transcoder/svg_icon_transcoder.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/chromeos_app_icon_resources.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/crx_file/id_util.h"

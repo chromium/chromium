@@ -8,7 +8,6 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/bind.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"

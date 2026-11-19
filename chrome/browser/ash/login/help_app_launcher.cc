@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_web_dialog.h"
-#include "chrome/grit/locale_settings.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
