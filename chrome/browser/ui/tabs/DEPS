@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "existing_window_sub_menu_model_chromeos\\.cc": [
+    "+ash/strings/grit/ash_strings.h",
+  ],
+}

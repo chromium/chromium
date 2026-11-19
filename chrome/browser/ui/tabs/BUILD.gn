@@ -341,6 +341,7 @@ if (!is_android) {
       sources += [ "existing_window_sub_menu_model_chromeos.cc" ]
 
       deps += [
+        "//ash/strings",
         "//chrome/browser/ui:browser_window_header",
         "//chromeos/ui/wm",
       ]
