@@ -221,8 +221,8 @@ TEST_F(BocaManagerProducerTest, VerifyBocaMetricsManagerWasAddedForProducer) {
 }
 
 TEST_F(BocaManagerProducerTest,
-       VerifySpotlightSessionManagerWasAddedForProducer) {
-  ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
+       VerifySpotlightSessionManagerNotAddedForProducer) {
+  ASSERT_FALSE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
       boca_manager_->GetSpotlightSessionManagerForTesting()));
 }
 
@@ -282,7 +282,7 @@ TEST_F(BocaManagerConsumerTest, VerifyBocaMetricsManagerWasAddedForConsumer) {
       boca_manager_->GetBocaMetricsManagerForTesting()));
 }
 
-TEST_F(BocaManagerProducerTest,
+TEST_F(BocaManagerConsumerTest,
        VerifySpotlightSessionManagerWasAddedForConsumer) {
   ASSERT_TRUE(boca_manager_->GetBocaSessionManager()->observers().HasObserver(
       boca_manager_->GetSpotlightSessionManagerForTesting()));

@@ -287,6 +287,8 @@ class BocaSessionManager
 
   base::ObserverList<Observer>& observers() { return observers_; }
 
+  bool is_producer() const { return is_producer_; }
+
   AccountId& account_id() { return account_id_; }
 
   signin::IdentityManager* GetIdentityManager(base::PassKey<BocaAppHandler>) {

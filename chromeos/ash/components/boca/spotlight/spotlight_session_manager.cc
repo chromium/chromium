@@ -59,6 +59,9 @@ void SpotlightSessionManager::OnSessionStarted(
     const std::string& session_id,
     const ::boca::UserIdentity& producer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (boca_session_manager_->is_producer()) {
+    return;
+  }
 
   in_session_ = true;
   teacher_email_ = producer.email();
@@ -67,6 +70,9 @@ void SpotlightSessionManager::OnSessionStarted(
 
 void SpotlightSessionManager::OnSessionEnded(const std::string& session_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (boca_session_manager_->is_producer()) {
+    return;
+  }
 
   in_session_ = false;
   request_in_progress_ = false;
@@ -79,8 +85,8 @@ void SpotlightSessionManager::OnSessionEnded(const std::string& session_id) {
 void SpotlightSessionManager::OnConsumerActivityUpdated(
     const std::map<std::string, ::boca::StudentStatus>& activities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!ash::features::IsBocaSpotlightEnabled() || !in_session_) {
+  if (boca_session_manager_->is_producer() || !in_session_ ||
+      !ash::features::IsBocaSpotlightEnabled()) {
     return;
   }
   auto student_status = activities.find(

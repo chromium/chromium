@@ -103,6 +103,8 @@ class BocaAppHandler : public mojom::PageHandler,
                            UpdateCaptionConfigCallback callback) override;
   void SetFloatMode(bool is_float_mode, SetFloatModeCallback callback) override;
 
+  // Submits an access code to join an active class session. Only valid for
+  // consumers.
   void SubmitAccessCode(const std::string& access_code,
                         SubmitAccessCodeCallback callback) override;
 

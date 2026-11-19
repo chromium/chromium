@@ -2720,7 +2720,7 @@ TEST_F(BocaAppPageHandlerProducerTest, OnSessionRosterUpdatedSucceed) {
   ASSERT_TRUE(result->is_config());
 }
 
-TEST_F(BocaAppPageHandlerProducerTest, JoinSessionSucceeded) {
+TEST_F(BocaAppPageHandlerConsumerTest, JoinSessionSucceeded) {
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(1);
@@ -2745,12 +2745,12 @@ TEST_F(BocaAppPageHandlerProducerTest, JoinSessionSucceeded) {
   EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
       .WillOnce(Return(false));
 
-  boca_app_handler()->SubmitAccessCode("code", future_1.GetCallback());
+  remote()->SubmitAccessCode("code", future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
 }
 
-TEST_F(BocaAppPageHandlerProducerTest, JoinSessionFailed) {
+TEST_F(BocaAppPageHandlerConsumerTest, JoinSessionFailed) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
@@ -2777,7 +2777,7 @@ TEST_F(BocaAppPageHandlerProducerTest, JoinSessionFailed) {
   EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
       .WillOnce(Return(false));
 
-  boca_app_handler()->SubmitAccessCode("code", future_1.GetCallback());
+  remote()->SubmitAccessCode("code", future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::SubmitAccessCodeError::kInvalid, future_1.Get().value());
   histogram_tester.ExpectTotalCount(
@@ -2787,7 +2787,7 @@ TEST_F(BocaAppPageHandlerProducerTest, JoinSessionFailed) {
       google_apis::ApiErrorCode::HTTP_FORBIDDEN, 1);
 }
 
-TEST_F(BocaAppPageHandlerProducerTest,
+TEST_F(BocaAppPageHandlerConsumerTest,
        JoinSessionFailedDueToNonManagedNetwork) {
   EXPECT_CALL(*session_manager(),
               UpdateCurrentSession(_, /*dispatch_event=*/true))
@@ -2806,10 +2806,28 @@ TEST_F(BocaAppPageHandlerProducerTest,
   EXPECT_CALL(*session_client_impl(), JoinSession(_)).Times(0);
   EXPECT_CALL(*session_manager(), disabled_on_non_managed_network())
       .WillOnce(Return(true));
-  boca_app_handler()->SubmitAccessCode("code", future_1.GetCallback());
+  remote()->SubmitAccessCode("code", future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::SubmitAccessCodeError::kNetworkRestriction,
             future_1.Get().value());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, SubmitAccessCodeFailsForProducer) {
+  EXPECT_CALL(*session_client_impl(), JoinSession(_)).Times(0);
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, _)).Times(0);
+
+  std::string bad_message;
+  mojo::ScopedDefaultProcessErrorHandlerForTesting error_handler(
+      base::BindLambdaForTesting(
+          [&bad_message](const std::string& error) { bad_message = error; }));
+
+  remote()->SubmitAccessCode("code", base::DoNothing());
+  remote().FlushForTesting();
+
+  EXPECT_EQ("SubmitAccessCode called by producer.", bad_message);
+  EXPECT_FALSE(remote().is_connected());
+
+  testing::Mock::VerifyAndClearExpectations(session_manager());
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, ViewScreenSucceeded) {

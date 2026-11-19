@@ -62,13 +62,14 @@ class MockBocaAppClient : public BocaAppClient {
 
 class MockSessionManager : public BocaSessionManager {
  public:
-  explicit MockSessionManager(SessionClientImpl* session_client_impl)
+  explicit MockSessionManager(SessionClientImpl* session_client_impl,
+                              bool is_producer = false)
       : BocaSessionManager(
             session_client_impl,
             /*pref_service=*/nullptr,
             AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaId)),
             /*identity_manager=*/nullptr,
-            /*=is_producer*/ false) {}
+            is_producer) {}
   MOCK_METHOD(void,
               UpdateCurrentSession,
               (std::unique_ptr<::boca::Session>, bool),
@@ -344,6 +345,38 @@ TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightWithInactiveSession) {
   EXPECT_CALL(*spotlight_crd_manager(), InitiateSpotlightSession).Times(0);
 
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
+}
+
+TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightForProducer) {
+  StrictMock<MockSessionManager> producer_session_manager(nullptr,
+                                                          /*is_producer=*/true);
+  auto crd_manager = std::make_unique<StrictMock<MockSpotlightCrdManager>>();
+  auto* crd_manager_ptr = crd_manager.get();
+  auto service = std::make_unique<StrictMock<MockSpotlightService>>(
+      &producer_session_manager, nullptr);
+  SpotlightSessionManager producer_spotlight_manager(
+      &producer_session_manager,
+      std::make_unique<SpotlightNotificationHandler>(
+          std::make_unique<FakeSpotlightNotificationHandlerDelegate>()),
+      std::move(crd_manager), std::move(service));
+
+  ::boca::StudentDevice device;
+  device.mutable_view_screen_config()->set_view_screen_state(
+      ::boca::ViewScreenConfig::REQUESTED);
+  ::boca::StudentStatus status;
+  status.mutable_devices()->emplace(kDeviceId, device);
+  std::map<std::string, ::boca::StudentStatus> activities;
+  activities.emplace(kGaiaId, status);
+
+  EXPECT_CALL(*crd_manager_ptr, InitiateSpotlightSession).Times(0);
+  EXPECT_CALL(*crd_manager_ptr, OnSessionEnded).Times(0);
+
+  ::boca::UserIdentity producer;
+  producer.set_email(kUserEmail);
+  producer.set_full_name(kUserFullName);
+  producer_spotlight_manager.OnSessionStarted(kSessionId, producer);
+  producer_spotlight_manager.OnConsumerActivityUpdated(activities);
+  producer_spotlight_manager.OnSessionEnded(kSessionId);
 }
 
 TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightWithNoStudentStatus) {

@@ -193,15 +193,16 @@ BocaManager::BocaManager(Profile* profile,
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile),
         std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile),
         boca_session_manager_.get());
+    spotlight_session_manager_ =
+        std::make_unique<boca::SpotlightSessionManager>(
+            boca_session_manager_.get(),
+            std::make_unique<boca::SpotlightCrdManagerImpl>(
+                profile->GetPrefs()));
   }
 
   boca_metrics_manager_ =
       std::make_unique<boca::BocaMetricsManager>(boca_session_manager_.get(),
                                                  /*is_producer=*/!is_consumer);
-
-  spotlight_session_manager_ = std::make_unique<boca::SpotlightSessionManager>(
-      boca_session_manager_.get(),
-      std::make_unique<boca::SpotlightCrdManagerImpl>(profile->GetPrefs()));
 
   invalidation_service_impl_ = std::make_unique<boca::InvalidationServiceImpl>(
       gcm_driver, instance_id_driver, boca_session_manager_.get());
@@ -237,10 +238,14 @@ void BocaManager::AddObservers(const user_manager::User* user) {
     boca_session_manager_->SetSodaInstaller(soda_installer_.get());
   }
   if (ash::boca_util::IsConsumer(user)) {
-    boca_session_manager_->AddObserver(on_task_session_manager_.get());
+    if (on_task_session_manager_) {
+      boca_session_manager_->AddObserver(on_task_session_manager_.get());
+    }
+    if (spotlight_session_manager_) {
+      boca_session_manager_->AddObserver(spotlight_session_manager_.get());
+    }
   }
   boca_session_manager_->AddObserver(boca_metrics_manager_.get());
-  boca_session_manager_->AddObserver(spotlight_session_manager_.get());
 }
 
 }  // namespace ash

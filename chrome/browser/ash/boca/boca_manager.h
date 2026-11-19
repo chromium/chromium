@@ -89,6 +89,7 @@ class BocaManager : public KeyedService {
     return boca_metrics_manager_.get();
   }
 
+  // Only populated for consumer profiles in production.
   boca::SpotlightSessionManager* GetSpotlightSessionManagerForTesting() {
     return spotlight_session_manager_.get();
   }

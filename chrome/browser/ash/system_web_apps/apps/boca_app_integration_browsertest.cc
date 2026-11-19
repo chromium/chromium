@@ -30,6 +30,8 @@
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -219,6 +221,31 @@ IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
   EXPECT_THAT(toolbar_button_container->extensions_container(), IsNull());
 }
 
+IN_PROC_BROWSER_TEST_P(
+    BocaAppProviderIntegrationTest,
+    ShouldRejectSubmitAccessCodeAndOmitSpotlightForProducer) {
+  LaunchAndWait();
+  ash::BocaManager* const boca_manager =
+      ash::BocaManagerFactory::GetInstance()->GetForProfile(profile());
+  ASSERT_THAT(boca_manager, NotNull());
+  EXPECT_THAT(boca_manager->GetSpotlightSessionManagerForTesting(), IsNull());
+
+  ash::BrowserDelegate* const boca_app_browser = ash::FindSystemWebAppBrowser(
+      profile(), ash::SystemWebAppType::BOCA, ash::BrowserType::kApp);
+  ASSERT_THAT(boca_app_browser, NotNull());
+  content::WebContents* const web_contents =
+      boca_app_browser->GetActiveWebContents();
+  ASSERT_THAT(web_contents, NotNull());
+
+  content::RenderProcessHostBadMojoMessageWaiter termination_waiter(
+      web_contents->GetPrimaryMainFrame()->GetProcess());
+  content::ExecuteScriptAsync(web_contents,
+                              "import('/app/mojo_api_bootstrap.js').then(m => "
+                              "m.pageHandler.submitAccessCode('SAMPLE'));");
+  EXPECT_EQ("Received bad user message: SubmitAccessCode called by producer.",
+            termination_waiter.Wait());
+}
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     BocaAppProviderIntegrationTest);
 
@@ -288,6 +315,19 @@ IN_PROC_BROWSER_TEST_P(BocaAppConsumerIntegrationTest,
   // Install extension and verify extensions container is no longer hidden.
   LoadTestExtension();
   EXPECT_TRUE(toolbar_button_container->extensions_container()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(BocaAppConsumerIntegrationTest,
+                       ShouldRegisterSpotlightForConsumer) {
+  LaunchAndWait();
+  ash::BocaManager* const boca_manager =
+      ash::BocaManagerFactory::GetInstance()->GetForProfile(profile());
+  ASSERT_THAT(boca_manager, NotNull());
+  auto* const spotlight_manager =
+      boca_manager->GetSpotlightSessionManagerForTesting();
+  ASSERT_THAT(spotlight_manager, NotNull());
+  EXPECT_TRUE(
+      boca_session_manager()->observers().HasObserver(spotlight_manager));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

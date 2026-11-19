@@ -19,6 +19,7 @@
 
 namespace ash::boca {
 
+// Manages Spotlight screen-sharing sessions on consumer devices.
 class SpotlightSessionManager : public boca::BocaSessionManager::Observer {
  public:
   // `boca_session_manager` must not be nullptr, and must outlive this.

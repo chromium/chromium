@@ -710,6 +710,10 @@ void BocaAppHandler::SetFloatMode(bool is_float_mode,
 
 void BocaAppHandler::SubmitAccessCode(const std::string& access_code,
                                       SubmitAccessCodeCallback callback) {
+  if (is_producer_) {
+    receiver_.ReportBadMessage("SubmitAccessCode called by producer.");
+    return;
+  }
   if (boca_session_manager_->disabled_on_non_managed_network()) {
     std::move(callback).Run(mojom::SubmitAccessCodeError::kNetworkRestriction);
     return;
