@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_STREAM_TRANSPORT_INTERNAL_CLIENT_SESSION_STARTER_H_
 #define COMPONENTS_STREAM_TRANSPORT_INTERNAL_CLIENT_SESSION_STARTER_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -35,11 +37,29 @@ namespace stream_transport {
 class TransportChannelImpl;
 
 // An in-flight client session handle returned by `StartClientSession()` before
-// sequence 1 completes. Calling `Close()` cancels the in-flight start,
-// suppresses the completion callback, and sends an upstream `CloseSession`
-// command if sequence 1 already succeeded.
+// sequence 1 completes. Outbound messages sent while pending are buffered in
+// memory and flushed in FIFO order upon graduation. Calling `Close()` drops
+// buffered messages, cancels the in-flight start, suppresses the completion
+// callback, and sends an upstream `CloseSession` command if sequence 1 already
+// succeeded.
 class PendingTransportSessionImpl : public TransportSession {
  public:
+  // Maximum number of outbound messages buffered in memory while sequence 1 is
+  // in flight.
+  static constexpr size_t kMaxBufferedOutboundMessages = 16;
+
+  // An outbound message queued in memory while sequence 1 is in flight.
+  struct BufferedMessage {
+    BufferedMessage(PayloadType payload_type,
+                    std::unique_ptr<google::protobuf::MessageLite> message);
+    BufferedMessage(BufferedMessage&&) noexcept;
+    BufferedMessage& operator=(BufferedMessage&&) noexcept;
+    ~BufferedMessage();
+
+    PayloadType payload_type;
+    std::unique_ptr<google::protobuf::MessageLite> message;
+  };
+
   PendingTransportSessionImpl(std::string_view session_id,
                               base::OnceClosure on_close);
   ~PendingTransportSessionImpl() override;
@@ -57,9 +77,22 @@ class PendingTransportSessionImpl : public TransportSession {
                  std::string_view serialized_payload) override;
   void Close() override;
 
+  // Marks this pending handle closed and drops any buffered messages so
+  // re-entrant sends on a retired handle fail with `kChannelDisconnected`.
+  void MarkClosed();
+
+  // Marks this pending handle closed and transfers ownership of all buffered
+  // outbound messages in FIFO order.
+  std::vector<BufferedMessage> TakeBufferedMessages();
+
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
   const std::string session_id_;
-  base::OnceClosure on_close_;
+  base::OnceClosure on_close_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool closed_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  std::vector<BufferedMessage> buffered_messages_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 // Coordinates the handshake for client-initiated sessions: validates capacity,

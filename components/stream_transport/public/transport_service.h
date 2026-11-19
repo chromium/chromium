@@ -97,11 +97,14 @@ class TransportService : public KeyedService {
   // completes. Callers holding `raw_ptr<TransportSession>` must clear or
   // overwrite it inside `callback` and before calling `Close()`.
   //
+  // Outbound messages sent via `SendUpstreamMessage()` on the pending
+  // `TransportSession*` are buffered in Chrome memory (up to a bounded limit,
+  // returning `kBufferFull` if exceeded) until the server handshake finishes.
   // Once sequence 1 is acknowledged by the server, the pending session
   // graduates into a matured `TransportSession` registered on the downstream
-  // stream, and `callback` is invoked asynchronously on the UI sequence with
-  // the matured `TransportSession*` (or a `StartClientSessionError` on
-  // failure).
+  // stream, flushes buffered messages in FIFO order, and invokes `callback`
+  // asynchronously on the UI sequence with the matured `TransportSession*` (or
+  // a `StartClientSessionError` on failure, dropping any buffered messages).
   virtual TransportSession* StartClientSession(
       std::string_view session_id,
       PayloadType payload_type,

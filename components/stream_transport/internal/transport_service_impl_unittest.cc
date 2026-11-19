@@ -4,24 +4,31 @@
 
 #include "components/stream_transport/internal/transport_service_impl.h"
 
+#include <cstddef>
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/stream_transport/internal/client_session_starter.h"
 #include "components/stream_transport/internal/features.h"
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "components/stream_transport/internal/session_stream_recorder.h"
 #include "components/stream_transport/internal/transport_channel_impl.h"
+#include "components/stream_transport/internal/transport_message_observer.h"
 #include "components/stream_transport/internal/upstream_message_client/upstream_message_client.h"
 #include "components/stream_transport/public/common.h"
 #include "components/stream_transport/public/transport_channel.h"
@@ -315,9 +322,6 @@ TEST_F(TransportServiceImplTest, StartClientSessionSuccessPath) {
       "session_cs", PayloadType::kControl, command, future.GetCallback());
   ASSERT_NE(pending_session, nullptr);
   EXPECT_EQ(pending_session->GetSessionId(), "session_cs");
-  EXPECT_EQ(pending_session->SendUpstreamMessage(PayloadType::kControl, command)
-                .error(),
-            SendUpstreamMessageError::kChannelDisconnected);
 
   base::expected<TransportSession*, StartClientSessionError> result =
       future.Take();
@@ -772,6 +776,321 @@ TEST_F(TransportServiceImplTest,
       future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), StartClientSessionError::kSessionIdConflict);
+}
+
+class RecordingUpstreamObserver : public TransportMessageObserver {
+ public:
+  void OnDownstreamMessage(
+      std::string_view session_id,
+      const browser_actuator::ActuatorDownstreamMessage& message,
+      DownstreamDeliveryStatus status) override {}
+
+  void OnUpstreamMessage(
+      std::string_view session_id,
+      const browser_actuator::ActuatorUpstreamMessage& message,
+      int http_response_code) override {
+    if (http_response_code == 0) {
+      messages_.push_back(message);
+    }
+  }
+
+  const std::vector<browser_actuator::ActuatorUpstreamMessage>& messages()
+      const {
+    return messages_;
+  }
+
+ private:
+  std::vector<browser_actuator::ActuatorUpstreamMessage> messages_;
+};
+
+class ResetOnSessionRegisteredObserver
+    : public TransportSessionRegistry::Observer {
+ public:
+  ResetOnSessionRegisteredObserver(signin::IdentityTestEnvironment* env,
+                                   std::string_view target_session_id)
+      : env_(env), target_session_id_(target_session_id) {}
+
+  void OnSessionRegistered(TransportSession* session) override {
+    if (session->GetSessionId() == target_session_id_) {
+      env_->MakePrimaryAccountAvailable("second@gmail.com",
+                                        signin::ConsentLevel::kSignin);
+    }
+  }
+
+  void OnSessionRemoved(std::string_view session_id) override {}
+
+ private:
+  raw_ptr<signin::IdentityTestEnvironment> env_;
+  std::string target_session_id_;
+};
+
+TEST_F(TransportServiceImplTest,
+       StartClientSessionBuffersOutboundMessagesAndFlushesInOrder) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+
+  std::unique_ptr<TransportServiceImpl> service =
+      CreateService(/*record_sessions=*/false);
+  auto* channel = static_cast<TransportChannelImpl*>(service->GetChannel());
+  ASSERT_NE(channel, nullptr);
+  RecordingUpstreamObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel);
+
+  browser_actuator::ControlCommand init_cmd;
+  init_cmd.mutable_start_session_ack();
+
+  base::test::TestFuture<
+      base::expected<TransportSession*, StartClientSessionError>>
+      future;
+  raw_ptr<TransportSession> pending_session = nullptr;
+  std::optional<SendUpstreamMessageError> retired_send_error;
+  pending_session = service->StartClientSession(
+      "session_buf", PayloadType::kControl, init_cmd,
+      base::BindLambdaForTesting(
+          [&](base::expected<TransportSession*, StartClientSessionError>
+                  result) {
+            browser_actuator::ControlCommand stale_cmd;
+            stale_cmd.mutable_close_channel();
+            base::expected<void, SendUpstreamMessageError> stale_send =
+                pending_session->SendUpstreamMessage(PayloadType::kControl,
+                                                     stale_cmd);
+            if (!stale_send.has_value()) {
+              retired_send_error = stale_send.error();
+            }
+            pending_session = nullptr;
+            future.SetValue(std::move(result));
+          }));
+  ASSERT_NE(pending_session, nullptr);
+
+  // Buffer two outbound messages while sequence 1 is still in flight.
+  browser_actuator::ControlCommand msg2;
+  msg2.mutable_close_channel();
+  browser_actuator::ControlCommand msg3;
+  msg3.mutable_close_session();
+  EXPECT_TRUE(pending_session->SendUpstreamMessage(PayloadType::kControl, msg2)
+                  .has_value());
+  EXPECT_TRUE(pending_session->SendUpstreamMessage(PayloadType::kControl, msg3)
+                  .has_value());
+
+  // Neither buffered message should be dispatched before sequence 1 succeeds.
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(observer.messages().size(), 1u);
+  EXPECT_EQ(observer.messages()[0].client_sequence_number(), 1);
+
+  // Completing sequence 1 graduates the session and flushes buffered messages
+  // in FIFO order as sequence 2 and sequence 3.
+  test_url_loader_factory_.AddResponse(
+      "https://transport.test/v1:sendSessionMessage", "OK", net::HTTP_OK);
+  base::expected<TransportSession*, StartClientSessionError> result =
+      future.Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(retired_send_error, SendUpstreamMessageError::kChannelDisconnected);
+  ASSERT_EQ(observer.messages().size(), 3u);
+  EXPECT_EQ(observer.messages()[1].client_sequence_number(), 2);
+  EXPECT_EQ(observer.messages()[2].client_sequence_number(), 3);
+
+  browser_actuator::ControlCommand parsed2;
+  ASSERT_TRUE(parsed2.ParseFromString(
+      observer.messages()[1].typed_payloads(0).proto_payload().value()));
+  EXPECT_TRUE(parsed2.has_close_channel());
+
+  browser_actuator::ControlCommand parsed3;
+  ASSERT_TRUE(parsed3.ParseFromString(
+      observer.messages()[2].typed_payloads(0).proto_payload().value()));
+  EXPECT_TRUE(parsed3.has_close_session());
+
+  // Subsequent sends on the graduated session continue at sequence 4.
+  browser_actuator::ControlCommand msg4;
+  msg4.mutable_start_session_ack();
+  EXPECT_TRUE(result.value()
+                  ->SendUpstreamMessage(PayloadType::kControl, msg4)
+                  .has_value());
+  ASSERT_EQ(observer.messages().size(), 4u);
+  EXPECT_EQ(observer.messages()[3].client_sequence_number(), 4);
+}
+
+TEST_F(TransportServiceImplTest,
+       StartClientSessionDropsBufferedMessagesOnFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+
+  std::unique_ptr<TransportServiceImpl> service =
+      CreateService(/*record_sessions=*/false);
+  auto* channel = static_cast<TransportChannelImpl*>(service->GetChannel());
+  ASSERT_NE(channel, nullptr);
+  RecordingUpstreamObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<
+      base::expected<TransportSession*, StartClientSessionError>>
+      future;
+  raw_ptr<TransportSession> pending_session = nullptr;
+  std::optional<SendUpstreamMessageError> retired_send_error;
+  pending_session = service->StartClientSession(
+      "session_fail_buf", PayloadType::kControl, command,
+      base::BindLambdaForTesting(
+          [&](base::expected<TransportSession*, StartClientSessionError>
+                  result) {
+            base::expected<void, SendUpstreamMessageError> stale_send =
+                pending_session->SendUpstreamMessage(PayloadType::kControl,
+                                                     command);
+            if (!stale_send.has_value()) {
+              retired_send_error = stale_send.error();
+            }
+            pending_session = nullptr;
+            future.SetValue(std::move(result));
+          }));
+  ASSERT_NE(pending_session, nullptr);
+  EXPECT_TRUE(
+      pending_session->SendUpstreamMessage(PayloadType::kControl, command)
+          .has_value());
+
+  test_url_loader_factory_.AddResponse(
+      "https://transport.test/v1:sendSessionMessage", "Error",
+      net::HTTP_INTERNAL_SERVER_ERROR);
+  base::expected<TransportSession*, StartClientSessionError> result =
+      future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(retired_send_error, SendUpstreamMessageError::kChannelDisconnected);
+  EXPECT_EQ(result.error(), StartClientSessionError::kTransientError);
+
+  // Only sequence 1 was sent; the buffered message was dropped on failure.
+  EXPECT_EQ(observer.messages().size(), 1u);
+}
+
+TEST_F(TransportServiceImplTest,
+       StartClientSessionDropsBufferedMessagesOnClose) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+
+  std::unique_ptr<TransportServiceImpl> service =
+      CreateService(/*record_sessions=*/false);
+  auto* channel = static_cast<TransportChannelImpl*>(service->GetChannel());
+  ASSERT_NE(channel, nullptr);
+  RecordingUpstreamObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel);
+
+  browser_actuator::ControlCommand init_cmd;
+  init_cmd.mutable_start_session_ack();
+
+  bool callback_run = false;
+  TransportSession* pending_session = service->StartClientSession(
+      "session_close_buf", PayloadType::kControl, init_cmd,
+      base::BindLambdaForTesting(
+          [&callback_run](
+              base::expected<TransportSession*, StartClientSessionError>) {
+            callback_run = true;
+          }));
+  ASSERT_NE(pending_session, nullptr);
+
+  browser_actuator::ControlCommand buffered_cmd;
+  buffered_cmd.mutable_close_channel();
+  EXPECT_TRUE(
+      pending_session->SendUpstreamMessage(PayloadType::kControl, buffered_cmd)
+          .has_value());
+
+  pending_session->Close();
+  EXPECT_EQ(
+      pending_session->SendUpstreamMessage(PayloadType::kControl, buffered_cmd)
+          .error(),
+      SendUpstreamMessageError::kChannelDisconnected);
+  EXPECT_EQ(service->GetSession("session_close_buf"), nullptr);
+
+  test_url_loader_factory_.AddResponse(
+      "https://transport.test/v1:sendSessionMessage", "OK", net::HTTP_OK);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(callback_run);
+  // Sequence 1 succeeded after `Close()`, so only the teardown `CloseSession`
+  // message (sequence 2) is sent; the buffered `close_channel` was dropped.
+  ASSERT_EQ(observer.messages().size(), 2u);
+  EXPECT_EQ(observer.messages()[0].client_sequence_number(), 1);
+  EXPECT_EQ(observer.messages()[1].client_sequence_number(), 2);
+  browser_actuator::ControlCommand teardown_cmd;
+  ASSERT_TRUE(teardown_cmd.ParseFromString(
+      observer.messages()[1].typed_payloads(0).proto_payload().value()));
+  EXPECT_TRUE(teardown_cmd.has_close_session());
+  EXPECT_FALSE(teardown_cmd.has_close_channel());
+  EXPECT_EQ(service->GetSession("session_close_buf"), nullptr);
+}
+
+TEST_F(TransportServiceImplTest,
+       StartClientSessionRejectsOutboundMessagesWhenBufferFull) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+
+  base::test::TestFuture<
+      base::expected<TransportSession*, StartClientSessionError>>
+      future;
+  std::unique_ptr<TransportServiceImpl> service =
+      CreateService(/*record_sessions=*/false);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  TransportSession* pending_session = service->StartClientSession(
+      "session_full", PayloadType::kControl, command, future.GetCallback());
+  ASSERT_NE(pending_session, nullptr);
+
+  for (size_t i = 0;
+       i < PendingTransportSessionImpl::kMaxBufferedOutboundMessages; ++i) {
+    EXPECT_TRUE(
+        pending_session->SendUpstreamMessage(PayloadType::kControl, command)
+            .has_value());
+  }
+  EXPECT_EQ(pending_session->SendUpstreamMessage(PayloadType::kControl, command)
+                .error(),
+            SendUpstreamMessageError::kBufferFull);
+}
+
+TEST_F(TransportServiceImplTest,
+       StartClientSessionHandlesSessionResetDuringGraduationFlush) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowserActuatorChannelEnabled);
+
+  std::unique_ptr<TransportServiceImpl> service =
+      CreateService(/*record_sessions=*/false);
+  TransportSessionRegistry* registry =
+      service->GetChannel()->GetSessionRegistry();
+  ASSERT_NE(registry, nullptr);
+
+  ResetOnSessionRegisteredObserver observer(&identity_test_env_,
+                                            "session_reset_flush");
+  base::ScopedObservation<TransportSessionRegistry,
+                          TransportSessionRegistry::Observer>
+      observation(&observer);
+  observation.Observe(registry);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<
+      base::expected<TransportSession*, StartClientSessionError>>
+      future;
+  TransportSession* pending_session = service->StartClientSession(
+      "session_reset_flush", PayloadType::kControl, command,
+      future.GetCallback());
+  ASSERT_NE(pending_session, nullptr);
+  EXPECT_TRUE(
+      pending_session->SendUpstreamMessage(PayloadType::kControl, command)
+          .has_value());
+
+  test_url_loader_factory_.AddResponse(
+      "https://transport.test/v1:sendSessionMessage", "OK", net::HTTP_OK);
+  base::expected<TransportSession*, StartClientSessionError> result =
+      future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), StartClientSessionError::kChannelUnavailable);
+  EXPECT_EQ(service->GetSession("session_reset_flush"), nullptr);
 }
 
 }  // namespace

@@ -43,6 +43,7 @@ enum class FactoryId {
 
 enum class SendUpstreamMessageError {
   kChannelDisconnected,
+  kBufferFull,
 };
 
 // Describes a failure encountered when starting a client-initiated session.

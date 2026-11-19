@@ -10,13 +10,16 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
@@ -34,12 +37,28 @@
 
 namespace stream_transport {
 
+PendingTransportSessionImpl::BufferedMessage::BufferedMessage(
+    PayloadType payload_type,
+    std::unique_ptr<google::protobuf::MessageLite> message)
+    : payload_type(payload_type), message(std::move(message)) {}
+
+PendingTransportSessionImpl::BufferedMessage::BufferedMessage(
+    BufferedMessage&&) noexcept = default;
+
+PendingTransportSessionImpl::BufferedMessage&
+PendingTransportSessionImpl::BufferedMessage::operator=(
+    BufferedMessage&&) noexcept = default;
+
+PendingTransportSessionImpl::BufferedMessage::~BufferedMessage() = default;
+
 PendingTransportSessionImpl::PendingTransportSessionImpl(
     std::string_view session_id,
     base::OnceClosure on_close)
     : session_id_(session_id), on_close_(std::move(on_close)) {}
 
-PendingTransportSessionImpl::~PendingTransportSessionImpl() = default;
+PendingTransportSessionImpl::~PendingTransportSessionImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 std::string_view PendingTransportSessionImpl::GetSessionId() const {
   return session_id_;
@@ -49,17 +68,47 @@ base::expected<void, SendUpstreamMessageError>
 PendingTransportSessionImpl::SendUpstreamMessage(
     PayloadType payload_type,
     const google::protobuf::MessageLite& message) {
-  return base::unexpected(SendUpstreamMessageError::kChannelDisconnected);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_NE(payload_type, PayloadType::kUnspecified);
+  if (closed_) {
+    return base::unexpected(SendUpstreamMessageError::kChannelDisconnected);
+  }
+  if (buffered_messages_.size() >= kMaxBufferedOutboundMessages) {
+    return base::unexpected(SendUpstreamMessageError::kBufferFull);
+  }
+  std::unique_ptr<google::protobuf::MessageLite> copy(
+      message.New(/*arena=*/nullptr));
+  copy->CheckTypeAndMergeFrom(message);
+  buffered_messages_.emplace_back(payload_type, std::move(copy));
+  return {};
 }
 
 void PendingTransportSessionImpl::OnMessage(
     PayloadType payload_type,
-    std::string_view serialized_payload) {}
+    std::string_view serialized_payload) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void PendingTransportSessionImpl::Close() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  closed_ = true;
+  buffered_messages_.clear();
   if (on_close_) {
     std::move(on_close_).Run();
   }
+}
+
+void PendingTransportSessionImpl::MarkClosed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  closed_ = true;
+  buffered_messages_.clear();
+}
+
+std::vector<PendingTransportSessionImpl::BufferedMessage>
+PendingTransportSessionImpl::TakeBufferedMessages() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  closed_ = true;
+  return std::exchange(buffered_messages_, {});
 }
 
 ClientSessionStarter::ClientSessionStarter(
@@ -179,6 +228,7 @@ void ClientSessionStarter::OnPostFailedStart(uint64_t start_id,
   }
   PendingStart entry = std::move(it->second);
   pending_starts_.erase(it);
+  entry.pending_session->MarkClosed();
   if (!entry.cancelled && entry.callback) {
     std::move(entry.callback).Run(base::unexpected(error));
   }
@@ -193,6 +243,11 @@ void ClientSessionStarter::OnInitialMessageSent(uint64_t start_id,
   }
   PendingStart entry = std::move(it->second);
   pending_starts_.erase(it);
+  // Retire the pending handle immediately so re-entrant sends during session
+  // registration, buffer flushing, or callback execution fail with
+  // `kChannelDisconnected` before `entry` is destroyed at scope exit.
+  std::vector<PendingTransportSessionImpl::BufferedMessage> buffered_messages =
+      entry.pending_session->TakeBufferedMessages();
 
   const bool is_2xx = http_status_code >= 200 && http_status_code < 300;
   const bool same_account =
@@ -220,16 +275,45 @@ void ClientSessionStarter::OnInitialMessageSent(uint64_t start_id,
   }
 
   if (is_2xx) {
+    const base::WeakPtr<TransportChannelImpl> channel = channel_;
     TransportSessionImpl* session = registry->CreateSession(
         entry.session_id, InitIngressSource::kLocalChromeIngest);
-    if (session) {
-      std::move(entry.callback).Run(base::ok(session));
+    if (!session) {
+      // Concurrent session limit reached while sequence 1 was in flight.
+      if (channel) {
+        SendUnregisteredCloseSession(entry.session_id);
+      }
+      std::move(entry.callback)
+          .Run(base::unexpected(StartClientSessionError::kSessionLimitReached));
       return;
     }
-    // Concurrent session limit reached while sequence 1 was in flight.
-    SendUnregisteredCloseSession(entry.session_id);
-    std::move(entry.callback)
-        .Run(base::unexpected(StartClientSessionError::kSessionLimitReached));
+    // Flush outbound messages buffered while pending in FIFO order before
+    // invoking `callback`, so sequence numbers (2..N) stay ordered ahead of
+    // any sends initiated from inside `callback`.
+    for (auto& buffered : buffered_messages) {
+      if (!channel ||
+          channel->session_registry()->GetSessionImpl(entry.session_id) !=
+              session ||
+          !session->SendUpstreamMessage(buffered.payload_type, *buffered.message)
+               .has_value()) {
+        if (channel &&
+            channel->session_registry()->GetSessionImpl(entry.session_id) ==
+                session) {
+          session->Close();
+        }
+        std::move(entry.callback)
+            .Run(base::unexpected(StartClientSessionError::kChannelUnavailable));
+        return;
+      }
+    }
+    if (!channel ||
+        channel->session_registry()->GetSessionImpl(entry.session_id) !=
+            session) {
+      std::move(entry.callback)
+          .Run(base::unexpected(StartClientSessionError::kChannelUnavailable));
+      return;
+    }
+    std::move(entry.callback).Run(base::ok(session));
     return;
   }
 
@@ -258,6 +342,7 @@ void ClientSessionStarter::AbortPendingStartsForAccountChange() {
   for (auto& [id, entry] : pending_starts_) {
     if (!entry.aborted) {
       entry.aborted = true;
+      entry.pending_session->MarkClosed();
       PostFailedStart(id, StartClientSessionError::kChannelUnavailable);
     }
   }
@@ -267,6 +352,9 @@ void ClientSessionStarter::Clear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::flat_map<uint64_t, PendingStart> pending = std::move(pending_starts_);
   pending_starts_.clear();
+  for (auto& [id, entry] : pending) {
+    entry.pending_session->MarkClosed();
+  }
   for (auto& [id, entry] : pending) {
     if (!entry.cancelled && entry.callback) {
       std::move(entry.callback)
