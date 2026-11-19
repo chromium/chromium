@@ -45,6 +45,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -642,6 +644,141 @@ public class OnStartupSettingsFragmentTest {
                                         UserPrefs.get(mProfile)));
         assertEquals(List.of(), savedUrls);
         assertEquals(SessionStartupPref.NEW_TAB, getRestoreOnStartupPref());
+    }
+
+    @Test
+    @SmallTest
+    public void testSelectingRadioButtons_recordsStartupTypeChangedHistogramOnlyOnUserChange() {
+        // Verify initial fragment preference binding does not emit the startup type histogram.
+        setRestoreOnStartupPref(SessionStartupPref.NEW_TAB);
+        HistogramWatcher initialBindWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Settings.OnStartup.StartupTypeChanged")
+                        .build();
+        RadioButtonGroupOnStartupPreference pref = launchAndGetRadioGroupPreference();
+        initialBindWatcher.assertExpected();
+
+        // Re-tapping the already-checked option should not emit a duplicate histogram sample.
+        HistogramWatcher sameOptionWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Settings.OnStartup.StartupTypeChanged")
+                        .build();
+        ThreadUtils.runOnUiThreadBlocking(() -> pref.getNewTabPrefForTesting().performClick());
+        sameOptionWatcher.assertExpected();
+
+        // Selecting a different radio button should emit the newly selected SessionStartupPref.
+        HistogramWatcher selectLastWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Settings.OnStartup.StartupTypeChanged", SessionStartupPref.LAST);
+        ThreadUtils.runOnUiThreadBlocking(() -> pref.getLastPrefForTesting().performClick());
+        selectLastWatcher.assertExpected();
+
+        HistogramWatcher selectUrlsWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Settings.OnStartup.StartupTypeChanged", SessionStartupPref.URLS);
+        ThreadUtils.runOnUiThreadBlocking(() -> pref.getUrlsPrefForTesting().performClick());
+        selectUrlsWatcher.assertExpected();
+
+        // Programmatic sync updates via PrefChangeRegistrar should not emit the user histogram.
+        HistogramWatcher externalSyncWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Settings.OnStartup.StartupTypeChanged")
+                        .build();
+        setRestoreOnStartupPref(SessionStartupPref.NEW_TAB);
+        externalSyncWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testStartupPagesActions_recordsUserActionsOnlyOnConfirmedMutations() {
+        // Initialize URLS mode with one existing URL and active-window tabs for Use current pages.
+        setRestoreOnStartupPref(SessionStartupPref.URLS);
+        setRestoreOnStartupUrls(List.of(URL_ESPN));
+        setupMockTabWindowManagerWithUrls(List.of(URL_WIKIPEDIA));
+        RadioButtonGroupOnStartupPreference pref = launchAndGetRadioGroupPreference();
+        LinearLayout container = pref.getStartupPagesContainerForTesting();
+        assertNotNull(container);
+
+        UserActionTester actionTester = new UserActionTester();
+        try {
+            // Canceling the Add page dialog should not record Settings.OnStartup.AddPage.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        pref.getAddNewPageButtonForTesting().performClick();
+                        ModalDialogManager modalDialogManager =
+                                sSettingsTestRule.getActivity().getModalDialogManager();
+                        PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
+                        dialogModel
+                                .get(ModalDialogProperties.CONTROLLER)
+                                .onClick(dialogModel, ButtonType.NEGATIVE);
+                    });
+            assertEquals(0, actionTester.getActionCount("Settings.OnStartup.AddPage"));
+
+            // Confirming a valid URL in the Add page dialog should record AddPage once.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        pref.getAddNewPageButtonForTesting().performClick();
+                        ModalDialogManager modalDialogManager =
+                                sSettingsTestRule.getActivity().getModalDialogManager();
+                        PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
+                        EditText urlEditText =
+                                dialogModel
+                                        .get(ModalDialogProperties.CUSTOM_VIEW)
+                                        .findViewById(R.id.url_edit_text);
+                        urlEditText.setText(URL_DOCS);
+                        dialogModel
+                                .get(ModalDialogProperties.CONTROLLER)
+                                .onClick(dialogModel, ButtonType.POSITIVE);
+                    });
+            assertEquals(1, actionTester.getActionCount("Settings.OnStartup.AddPage"));
+
+            // Saving an edited URL (including an unchanged save) should record EditPage on each
+            // confirmed write.
+            for (String updatedUrl : List.of(URL_WIKIPEDIA, URL_WIKIPEDIA)) {
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ListMenuButton moreButton =
+                                    container
+                                            .getChildAt(0)
+                                            .findViewById(R.id.startup_page_more_button);
+                            moreButton.callOnClick();
+                        });
+                onView(withText(R.string.edit)).perform(click());
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ModalDialogManager modalDialogManager =
+                                    sSettingsTestRule.getActivity().getModalDialogManager();
+                            PropertyModel dialogModel =
+                                    modalDialogManager.getCurrentDialogForTest();
+                            EditText urlEditText =
+                                    dialogModel
+                                            .get(ModalDialogProperties.CUSTOM_VIEW)
+                                            .findViewById(R.id.url_edit_text);
+                            urlEditText.setText(updatedUrl);
+                            dialogModel
+                                    .get(ModalDialogProperties.CONTROLLER)
+                                    .onClick(dialogModel, ButtonType.POSITIVE);
+                        });
+            }
+            assertEquals(2, actionTester.getActionCount("Settings.OnStartup.EditPage"));
+
+            // Removing a row via the overflow menu should record RemovePage once.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ListMenuButton moreButton =
+                                container.getChildAt(0).findViewById(R.id.startup_page_more_button);
+                        moreButton.callOnClick();
+                    });
+            onView(withText(R.string.remove)).perform(click());
+            assertEquals(1, actionTester.getActionCount("Settings.OnStartup.RemovePage"));
+
+            // Clicking "Use current pages" should record UseCurrentPages once.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> pref.getUseCurrentPagesButtonForTesting().performClick());
+            assertEquals(1, actionTester.getActionCount("Settings.OnStartup.UseCurrentPages"));
+        } finally {
+            actionTester.tearDown();
+        }
     }
 
     private void setupMockTabWindowManagerWithUrls(List<String> currentWindowTabUrls) {

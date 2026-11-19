@@ -146,13 +146,18 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
     // OnCheckedChangeListener implementation.
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        @SessionStartupPref int newStartupType = mStartupType;
         if (checkedId == R.id.pref_new_tab) {
-            mStartupType = SessionStartupPref.NEW_TAB;
+            newStartupType = SessionStartupPref.NEW_TAB;
         } else if (checkedId == R.id.pref_last) {
-            mStartupType = SessionStartupPref.LAST;
+            newStartupType = SessionStartupPref.LAST;
         } else if (checkedId == R.id.pref_urls) {
-            mStartupType = SessionStartupPref.URLS;
+            newStartupType = SessionStartupPref.URLS;
         }
+        if (newStartupType == mStartupType) {
+            return;
+        }
+        mStartupType = newStartupType;
         if (mStartupPagesSection != null) {
             mStartupPagesSection.setVisibility(
                     mStartupType == SessionStartupPref.URLS ? View.VISIBLE : View.GONE);

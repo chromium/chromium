@@ -340,6 +340,19 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram name="Settings.OnStartup.StartupTypeChanged"
+    enum="SessionStartupPref" expires_after="2027-11-17">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the newly selected session startup option when a user explicitly
+    changes the radio button selection in the Android On-startup Settings UI.
+    Excludes initial preference binding, re-taps on the already-selected option,
+    and remote preference sync updates. Note that bucket 5 (Open new tab page)
+    corresponds to &quot;Open the Homepage&quot; on Android.
+  </summary>
+</histogram>
+
 <histogram name="Settings.Opened" enum="Boolean" expires_after="2027-05-02">
   <owner>adelm@google.com</owner>
   <owner>jinsukkim@chromium.org</owner>
@@ -1164,8 +1177,8 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     Tries to pretend the startup page URLs are search URLs, and records the
     search engine types of those URLs by comparing the TLD+1s of the URLs with
     those of the different known search engines. Recorded when a regular profile
-    is opened, if startup page URLs have been set. Note that at least one
-    profile is opened on startup.
+    is opened, if startup page URLs have been set (on Android, recorded only on
+    desktop devices). Note that at least one profile is opened on startup.
 
     To be explicit: not logged when an Incognito profile is opened because that
     inherits the settings from its parent profile. As such, it's not necessary
@@ -1179,7 +1192,9 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    The startup page settings when a regular profile is loaded.
+    The startup page settings when a regular profile is loaded. On Android,
+    recorded only on desktop devices; note that on Android, bucket 5 (Open new
+    tab page) corresponds to &quot;Open the Homepage&quot;.
 
     To be explicit: not logged when an Incognito profile is opened because that
     inherits the settings from its parent profile. As such, it's not necessary

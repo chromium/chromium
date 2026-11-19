@@ -21,6 +21,10 @@
 #include "components/search_engines/search_engine_utils.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 PrefMetricsService::PrefMetricsService(Profile* profile)
     : profile_(profile), prefs_(profile_->GetPrefs()) {
   RecordLaunchPrefs();
@@ -64,9 +68,14 @@ void PrefMetricsService::RecordLaunchPrefs() {
                               homepage_url);
 #endif
 
-  // Tab restoring is always done on Android, so these metrics are not
-  // applicable.  Also, startup pages are not supported on Android.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  // Only desktop Android devices support configuring and syncing startup
+  // preferences. Other Android devices always restore the last session and do
+  // not support startup pages, so these metrics are not applicable.
+  if (!base::android::device_info::is_desktop()) {
+    return;
+  }
+#endif
   int restore_on_startup = prefs_->GetInteger(prefs::kRestoreOnStartup);
   UMA_HISTOGRAM_ENUMERATION(
       "Settings.StartupPageLoadSettings2", restore_on_startup,
@@ -89,7 +98,6 @@ void PrefMetricsService::RecordLaunchPrefs() {
       }
     }
   }
-#endif
 }
 
 // static

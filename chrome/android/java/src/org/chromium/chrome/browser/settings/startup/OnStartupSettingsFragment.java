@@ -16,6 +16,8 @@ import android.text.TextUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -25,6 +27,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
+import org.chromium.chrome.browser.multiwindow.SessionStartupPref;
 import org.chromium.chrome.browser.multiwindow.TabbedStartupCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -87,9 +90,14 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
                 .initialize(
                         TabbedStartupCoordinator.getSessionStartupType(),
                         TabbedStartupCoordinator.getSessionStartupUrls(prefService),
-                        startupType ->
-                                TabbedStartupCoordinator.setSessionStartupType(
-                                        getProfile(), startupType),
+                        startupType -> {
+                            TabbedStartupCoordinator.setSessionStartupType(
+                                    getProfile(), startupType);
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "Settings.OnStartup.StartupTypeChanged",
+                                    startupType,
+                                    SessionStartupPref.MAX);
+                        },
                         new RadioButtonGroupOnStartupPreference.StartupPageItemActionListener() {
                             @Override
                             public void onAddNewStartupPage() {
@@ -119,6 +127,7 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
                                     }
                                     urls.remove(matchedIndex);
                                 }
+                                RecordUserAction.record("Settings.OnStartup.RemovePage");
                                 TabbedStartupCoordinator.setSessionStartupUrls(prefService, urls);
                             }
 
@@ -221,10 +230,12 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
                 new ArrayList<>(TabbedStartupCoordinator.getSessionStartupUrls(prefService));
         if (initialUrl == null) {
             urls.add(validatedUrl);
+            RecordUserAction.record("Settings.OnStartup.AddPage");
         } else if (editIndex >= 0
                 && editIndex < urls.size()
                 && TextUtils.equals(urls.get(editIndex), initialUrl)) {
             urls.set(editIndex, validatedUrl);
+            RecordUserAction.record("Settings.OnStartup.EditPage");
         } else {
             return;
         }
@@ -263,6 +274,7 @@ public class OnStartupSettingsFragment extends ChromeBaseSettingsFragment {
                 currentUrls.add(gurl.getSpec());
             }
         }
+        RecordUserAction.record("Settings.OnStartup.UseCurrentPages");
         TabbedStartupCoordinator.setSessionStartupUrls(prefService, currentUrls);
     }
 

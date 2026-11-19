@@ -33913,6 +33913,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.OnStartup.AddPage">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Reported when the user saves a new custom startup page URL in the Android
+    On-startup Settings UI.
+  </description>
+</action>
+
+<action name="Settings.OnStartup.EditPage">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Reported when the user saves an edited custom startup page URL in the
+    Android On-startup Settings UI.
+  </description>
+</action>
+
+<action name="Settings.OnStartup.RemovePage">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Reported when the user removes an existing custom startup page URL in the
+    Android On-startup Settings UI.
+  </description>
+</action>
+
+<action name="Settings.OnStartup.UseCurrentPages">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Reported when the user clicks &quot;Use current pages&quot; to replace the
+    configured startup URLs in the Android On-startup Settings UI.
+  </description>
+</action>
+
 <action name="Settings.OpenDefaultBrowserFromPassiveCell">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>

@@ -4030,7 +4030,9 @@ chromium-metrics-reviews@google.com.
     Records the number of startup URLs configured to open when the
     restore-on-startup preference is set to open specific pages (URLS). Recorded
     once per browser process session when startup URLs are evaluated for a
-    regular window on Android devices where startup preference sync is enabled.
+    regular window on Android devices where startup preference sync or the
+    On-startup Settings UI is enabled. See also
+    Settings.StartupPageLoadSettings2 for the configured startup preference.
   </summary>
 </histogram>
 
@@ -4041,8 +4043,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the session startup policy evaluated when claiming the startup
     policy for a regular window on cold startup on Android devices where startup
-    preference sync is enabled. Distinguishes between an unset preference
-    (defaulting to restoring the last session) and explicitly synced policies.
+    preference sync or the On-startup Settings UI is enabled. Distinguishes
+    between an unset preference (defaulting to restoring the last session) and
+    explicitly configured or synced policies; see also
+    Settings.StartupPageLoadSettings2 for cross-platform preference comparison.
   </summary>
 </histogram>
 
