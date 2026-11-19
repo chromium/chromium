@@ -2175,6 +2175,24 @@
             ]
         }
     ],
+    "AutofillEnableCardholderNameFixFlow": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableCardholderNameFixFlow"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableExpandIbanRegexPatternV2": [
         {
             "platforms": [
