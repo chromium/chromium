@@ -4059,40 +4059,20 @@ std::optional<GURL> GetCanonicalUrlFromFrame(RenderFrameHostImpl* frame) {
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetCanonicalUrl_None) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
-  base::HistogramTester histogram_tester;
   std::optional<GURL> canon_url =
       GetCanonicalUrlFromFrame(web_contents()->GetPrimaryMainFrame());
   // No canonical link should be returned if the page has none.
   ASSERT_FALSE(canon_url.has_value());
-  content::FetchHistogramsFromChildProcesses();
-
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_TRUE(base::TimeTicks::IsHighResolution())
-      << "The Blink.Frame.GetCanonicalUrlRendererTime histogram has "
-         "microseconds precision and requires a high-resolution clock";
-  histogram_tester.ExpectTotalCount("Blink.Frame.GetCanonicalUrlRendererTime",
-                                    1);
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetCanonicalUrl_InBody) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GetTestUrl("render_frame_host", "canonical_link_in_body.html")));
 
-  base::HistogramTester histogram_tester;
   std::optional<GURL> canon_url =
       GetCanonicalUrlFromFrame(web_contents()->GetPrimaryMainFrame());
   // A canonical link in the body should be ignored.
   ASSERT_FALSE(canon_url.has_value());
-  content::FetchHistogramsFromChildProcesses();
-
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_TRUE(base::TimeTicks::IsHighResolution())
-      << "The Blink.Frame.GetCanonicalUrlRendererTime histogram has "
-         "microseconds precision and requires a high-resolution clock";
-  histogram_tester.ExpectTotalCount("Blink.Frame.GetCanonicalUrlRendererTime",
-                                    1);
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -4104,7 +4084,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
           .ReplaceComponents(replace_fragment);
   EXPECT_TRUE(NavigateToURL(shell(), url_with_fragment));
 
-  base::HistogramTester histogram_tester;
   std::optional<GURL> canon_url =
       GetCanonicalUrlFromFrame(web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(canon_url.has_value());
@@ -4112,15 +4091,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // loaded document/URL.
   EXPECT_EQ(GURL("https://example.com/canonical.html#fragment"),
             canon_url.value());
-  content::FetchHistogramsFromChildProcesses();
-
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_TRUE(base::TimeTicks::IsHighResolution())
-      << "The Blink.Frame.GetCanonicalUrlRendererTime histogram has "
-         "microseconds precision and requires a high-resolution clock";
-  histogram_tester.ExpectTotalCount("Blink.Frame.GetCanonicalUrlRendererTime",
-                                    1);
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -4132,22 +4102,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
           .ReplaceComponents(replace_fragment);
   EXPECT_TRUE(NavigateToURL(shell(), url_with_fragment));
 
-  base::HistogramTester histogram_tester;
   std::optional<GURL> canon_url =
       GetCanonicalUrlFromFrame(web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(canon_url.has_value());
   // The first canonical link should be returned, and its fragment should
   // take precedence over the one from the loaded document/URL.
   EXPECT_EQ(GURL("https://example.com/canonical1.html#a1"), canon_url.value());
-  content::FetchHistogramsFromChildProcesses();
-
-#if BUILDFLAG(IS_ANDROID)
-  ASSERT_TRUE(base::TimeTicks::IsHighResolution())
-      << "The Blink.Frame.GetCanonicalUrlRendererTime histogram has "
-         "microseconds precision and requires a high-resolution clock";
-  histogram_tester.ExpectTotalCount("Blink.Frame.GetCanonicalUrlRendererTime",
-                                    1);
-#endif
 }
 
 // Regression test for https://crbug.com/852350

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
 
 #include "base/command_line.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -1241,9 +1240,6 @@ void LocalFrameMojoHandler::HandleRendererDebugURL(const KURL& url) {
 
 void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
     GetCanonicalUrlForSharingCallback callback) {
-#if BUILDFLAG(IS_ANDROID)
-  base::TimeTicks start_time = base::TimeTicks::Now();
-#endif
   KURL canon_url;
   HTMLLinkElement* link_element = GetDocument()->LinkCanonical();
   if (link_element) {
@@ -1259,10 +1255,6 @@ void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
   }
   std::move(callback).Run(canon_url.IsNull() ? std::nullopt
                                              : std::make_optional(canon_url));
-#if BUILDFLAG(IS_ANDROID)
-  base::UmaHistogramMicrosecondsTimes("Blink.Frame.GetCanonicalUrlRendererTime",
-                                      base::TimeTicks::Now() - start_time);
-#endif
 }
 
 void LocalFrameMojoHandler::GetOpenGraphMetadata(
