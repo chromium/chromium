@@ -122,7 +122,10 @@ source_set("unit_tests") {
 
   # The reporter doesn't run on Fuchsia, so these tests don't either.
   if (!is_fuchsia) {
-    sources += [ "activity_reporter_impl_unittest.cc" ]
+    sources += [
+      "activity_reporter_impl_unittest.cc",
+      "configurator_unittest.cc",
+    ]
     deps += [
       ":activity_reporter",
       ":buildflags",

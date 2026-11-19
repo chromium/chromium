@@ -49,22 +49,19 @@ class ActivityService final : public update_client::ActivityDataService {
   void GetActiveBits(const std::vector<std::string>& ids,
                      base::OnceCallback<void(const std::set<std::string>&)>
                          callback) const override {
-    // This is only called when we have activity to report, assume active.
+    // update_client calls this only with the apps in the current update check,
+    // and `ActivityReporterImpl` starts update checks only for active apps.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       std::set<std::string>{std::string{kChromeActivityId}}));
+                       std::set<std::string>(ids.begin(), ids.end())));
   }
 
   void GetAndClearActiveBits(
       const std::vector<std::string>& ids,
       base::OnceCallback<void(const std::set<std::string>&)> callback)
       override {
-    // Other implementations of `GetActiveBits` rely on some local state to
-    // track whether activity has happened. Since
-    // `ActivityService::GetActiveBits` is only called when this app is
-    // active, it doesn't have any local state to clear, and this function
-    // just reduces to `GetActiveBits`.
+    // Every requested app is active, so there is nothing to clear.
     GetActiveBits(ids, std::move(callback));
   }
 
