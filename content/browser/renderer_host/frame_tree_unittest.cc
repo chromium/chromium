@@ -467,7 +467,7 @@ TEST_F(FrameTreeTest, Shape) {
       GetTreeState(frame_tree));
 }
 
-// Ensure frames can be found by frame_tree_node_id, routing ID, or name.
+// Ensure frames can be found by frame_tree_node_id or name.
 TEST_F(FrameTreeTest, FindFrames) {
   main_test_rfh()->InitializeRenderFrameIfNeeded();
 
@@ -526,16 +526,6 @@ TEST_F(FrameTreeTest, FindFrames) {
   EXPECT_EQ(child2, frame_tree.FindByID(child2->frame_tree_node_id()));
   EXPECT_EQ(grandchild, frame_tree.FindByID(grandchild->frame_tree_node_id()));
   EXPECT_EQ(nullptr, frame_tree.FindByID(FrameTreeNodeId()));
-
-  // Ensure they can be found by routing id.
-  int process_id = main_test_rfh()->GetProcess()->GetDeprecatedID();
-  EXPECT_EQ(root, frame_tree.FindByRoutingID(process_id,
-                                             main_test_rfh()->GetRoutingID()));
-  EXPECT_EQ(child0, frame_tree.FindByRoutingID(process_id, 22));
-  EXPECT_EQ(child1, frame_tree.FindByRoutingID(process_id, 23));
-  EXPECT_EQ(child2, frame_tree.FindByRoutingID(process_id, 24));
-  EXPECT_EQ(grandchild, frame_tree.FindByRoutingID(process_id, 33));
-  EXPECT_EQ(nullptr, frame_tree.FindByRoutingID(process_id, 37));
 
   // Ensure they can be found by name, if they have one.
   EXPECT_EQ(root, frame_tree.FindByName(std::string()));

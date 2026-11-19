@@ -358,9 +358,6 @@ class CONTENT_EXPORT FrameTree {
   // of this FrameTree.
   FrameTreeNode* FindByID(FrameTreeNodeId frame_tree_node_id);
 
-  // Returns the FrameTreeNode with the given renderer-specific |routing_id|.
-  FrameTreeNode* FindByRoutingID(int process_id, int routing_id);
-
   // Returns the first frame in this tree with the given |name|, or the main
   // frame if |name| is empty.
   // Note that this does NOT support pseudo-names like _self, _top, and _blank,
