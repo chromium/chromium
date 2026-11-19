@@ -70,6 +70,10 @@ class AutofillSuggestionControllerIOS {
   // Returns true if suggestions are currently showing.
   bool is_showing() const { return is_showing_; }
 
+  // Returns true if the currently showing suggestions belong to any field (or
+  // its owning form, for cross-frame forms) in `frame_token`.
+  bool IsShowingForFrame(LocalFrameToken frame_token) const;
+
   // Returns the currently showing suggestions.
   const std::vector<Suggestion>& suggestions() const { return suggestions_; }
 

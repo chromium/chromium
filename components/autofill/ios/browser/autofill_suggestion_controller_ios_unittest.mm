@@ -258,5 +258,43 @@ TEST_F(AutofillSuggestionControllerIOSTest,
   testing::Mock::VerifyAndClearExpectations(&mock_delegate_);
 }
 
+// Tests that `IsShowingForFrame()` matches both the field's frame and its
+// form's frame.
+TEST_F(AutofillSuggestionControllerIOSTest, IsShowingForFrame) {
+  const LocalFrameToken main_frame_token(
+      *DeserializeJavaScriptFrameId(web::kMainFakeFrameId));
+  const LocalFrameToken child_frame_token(
+      *DeserializeJavaScriptFrameId(web::kChildFakeFrameId));
+  const LocalFrameToken other_child_frame_token(
+      *DeserializeJavaScriptFrameId(web::kChildFakeFrameId2));
+  EXPECT_FALSE(controller_.IsShowingForFrame(main_frame_token));
+  EXPECT_FALSE(controller_.IsShowingForFrame(LocalFrameToken()));
+
+  controller_.Show(CreateTestSuggestions(),
+                   AutofillSuggestionTriggerSource::kFormControlElementClicked,
+                   mock_delegate_.GetWeakPtr(), FormGlobalId(),
+                   MainFrameFieldId(FieldRendererId(1)));
+
+  EXPECT_TRUE(controller_.IsShowingForFrame(main_frame_token));
+  EXPECT_FALSE(controller_.IsShowingForFrame(child_frame_token));
+  EXPECT_FALSE(controller_.IsShowingForFrame(LocalFrameToken()));
+
+  controller_.Hide(SuggestionHidingReason::kUserAborted);
+  EXPECT_FALSE(controller_.IsShowingForFrame(main_frame_token));
+
+  // A field in a child frame whose form is hosted by the main frame matches
+  // both frames, and no other frame.
+  controller_.Show(CreateTestSuggestions(),
+                   AutofillSuggestionTriggerSource::kFormControlElementClicked,
+                   mock_delegate_.GetWeakPtr(),
+                   FormGlobalId(main_frame_token, FormRendererId(1)),
+                   FieldGlobalId(child_frame_token, FieldRendererId(1)));
+
+  EXPECT_TRUE(controller_.IsShowingForFrame(main_frame_token));
+  EXPECT_TRUE(controller_.IsShowingForFrame(child_frame_token));
+  EXPECT_FALSE(controller_.IsShowingForFrame(other_child_frame_token));
+  EXPECT_FALSE(controller_.IsShowingForFrame(LocalFrameToken()));
+}
+
 }  // namespace
 }  // namespace autofill

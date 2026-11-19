@@ -6,9 +6,13 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_TAB_HELPER_H_
 
 #import <memory>
+#import <string>
 
 #import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "components/autofill/ios/form_util/form_activity_observer.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -23,12 +27,16 @@
 namespace autofill {
 class AutofillClientIOS;
 class ChromeAutofillClientIOS;
+class FormActivityTabHelper;
+enum class SuggestionHidingReason;
 }
 
 // Class binding an instance of AutofillAgent to a WebState.
 class AutofillTabHelper : public web::WebStateObserver,
                           public web::WebStateUserData<AutofillTabHelper>,
-                          public autofill::ChildFrameRegistrarObserver {
+                          public autofill::ChildFrameRegistrarObserver,
+                          public autofill::FormActivityObserver,
+                          public web::WebFramesManager::Observer {
  public:
   AutofillTabHelper(const AutofillTabHelper&) = delete;
   AutofillTabHelper& operator=(const AutofillTabHelper&) = delete;
@@ -51,16 +59,39 @@ class AutofillTabHelper : public web::WebStateObserver,
 
   autofill::AutofillClientIOS* autofill_client();
 
+  // Returns the `ChromeAutofillClientIOS` instance bound to this tab helper.
+  autofill::ChromeAutofillClientIOS* chrome_autofill_client() {
+    return autofill_client_.get();
+  }
+
  private:
   friend class web::WebStateUserData<AutofillTabHelper>;
 
   explicit AutofillTabHelper(web::WebState* web_state);
 
   // web::WebStateObserver implementation.
+  void WasHidden(web::WebState* web_state) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
+
+  // autofill::FormActivityObserver implementation.
+  void FormActivityRegistered(
+      web::WebState* web_state,
+      web::WebFrame* sender_frame,
+      const autofill::FormActivityParams& params) override;
+
+  // web::WebFramesManager::Observer implementation.
+  void WebFrameBecameUnavailable(web::WebFramesManager* web_frames_manager,
+                                 const std::string& frame_id) override;
 
   // autofill::ChildFrameRegistrarObserver implementation.
   void OnDidDoubleRegistration(autofill::LocalFrameToken local) override;
+
+  // Hides the suggestions pushed by `BrowserAutofillManager` for `reason`.
+  // iOS never forwards focus and navigation events to `BrowserAutofillManager`,
+  // so without this the suggestion data would outlive the field it's for.
+  void HideSuggestions(autofill::SuggestionHidingReason reason);
 
   // Re-creates `autofill_agent_delegate_` with `snackbar_handler_` and
   // assigns it to the `autofill_agent_`. If `snackbar_handler_` is nil, both
@@ -85,6 +116,18 @@ class AutofillTabHelper : public web::WebStateObserver,
   // Scoped WebState observation.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
+
+  // Scoped form activity observation, used to hide suggestions on focus
+  // changes.
+  base::ScopedObservation<autofill::FormActivityTabHelper,
+                          autofill::FormActivityObserver>
+      form_activity_observation_{this};
+
+  // Scoped observation of the Autofill content world frames, used to hide
+  // suggestions when the frame holding them goes away.
+  base::ScopedObservation<web::WebFramesManager,
+                          web::WebFramesManager::Observer>
+      frames_manager_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_TAB_HELPER_H_

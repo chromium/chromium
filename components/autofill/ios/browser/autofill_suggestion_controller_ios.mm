@@ -112,6 +112,18 @@ void AutofillSuggestionControllerIOS::Hide(SuggestionHidingReason reason) {
   delegate_.reset();
 }
 
+bool AutofillSuggestionControllerIOS::IsShowingForFrame(
+    LocalFrameToken frame_token) const {
+  if (!is_showing_ || frame_token.is_empty()) {
+    return false;
+  }
+  // Match both the field's frame and its owning form's frame so cross-frame
+  // forms (where a child-frame field belongs to an ancestor frame's form) are
+  // considered showing for either frame.
+  return frame_token == field_id_.frame_token ||
+         frame_token == form_id_.frame_token;
+}
+
 FillingProduct AutofillSuggestionControllerIOS::GetMainFillingProduct() const {
   return suggestions_filling_product_;
 }
