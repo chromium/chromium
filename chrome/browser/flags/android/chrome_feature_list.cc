@@ -493,6 +493,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kQueuedCompositorWebContentsUpdates,
     &kReadAloudAudioOverviews,
     &kReadAloudIPHMenuButtonHighlightCCT,
+    &kReaderModeCpaReentry,
     &kReengagementNotification,
     &kRemoveExtraHeadersOnCrossOriginRedirect,
     &kRestoreTabGroupsOnFre,
@@ -957,6 +958,9 @@ BASE_FEATURE(kQueuedCompositorWebContentsUpdates, base::FEATURE_ENABLED_BY_DEFAU
 BASE_FEATURE(kReadAloudAudioOverviews, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAloudServerExperiments, base::FEATURE_DISABLED_BY_DEFAULT);
+// Kill switch for letting permanently suppressed users see the Reading Mode CPA
+// again. Remove once it has shipped. See crbug.com/585792505.
+BASE_FEATURE(kReaderModeCpaReentry, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReengagementNotification, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kRemoveExtraHeadersOnCrossOriginRedirect, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRestoreTabGroupsOnFre, base::FEATURE_DISABLED_BY_DEFAULT);

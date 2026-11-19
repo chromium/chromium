@@ -20,11 +20,15 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for {@link ReaderModeActionRateLimiter}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.READER_MODE_CPA_REENTRY)
 public class ReaderModeActionRateLimiterTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -46,6 +50,7 @@ public class ReaderModeActionRateLimiterTest {
         mPrefs.removeKey(ChromePreferenceKeys.READER_MODE_ACTION_SHOW_COUNT);
         mPrefs.removeKey(ChromePreferenceKeys.READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP);
         mPrefs.removeKey(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP);
+        mPrefs.removeKey(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_COUNT);
     }
 
     @Test
@@ -105,6 +110,37 @@ public class ReaderModeActionRateLimiterTest {
     }
 
     @Test
+    public void testIsActionSuppressed_permanentCountIgnoredWithReentry() {
+        mPrefs.writeInt(
+                ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_COUNT,
+                ReaderModeActionRateLimiter.SUPPRESSION_LIMIT);
+        assertFalse(mReaderModeActionRateLimiter.isActionSuppressed());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.READER_MODE_CPA_REENTRY)
+    public void testIsActionSuppressed_permanentWhenReentryDisabled() {
+        mPrefs.writeInt(
+                ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_COUNT,
+                ReaderModeActionRateLimiter.SUPPRESSION_LIMIT);
+        assertTrue(mReaderModeActionRateLimiter.isActionSuppressed());
+    }
+
+    @Test
+    public void testOnActionShown_multipleSuppressionsNotPermanentWithReentry() {
+        for (int i = 0; i < ReaderModeActionRateLimiter.SUPPRESSION_LIMIT; i++) {
+            createTemporarySuppression();
+            resetTemporarySuppression();
+        }
+
+        assertFalse(mReaderModeActionRateLimiter.isActionSuppressed());
+        assertEquals(
+                ReaderModeActionRateLimiter.SUPPRESSION_LIMIT,
+                mPrefs.readInt(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_COUNT));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.READER_MODE_CPA_REENTRY)
     public void testOnActionShown_permanentSuppressionAfterMultipleSuppressions() {
         for (int i = 0; i < ReaderModeActionRateLimiter.SUPPRESSION_LIMIT; i++) {
             createTemporarySuppression();

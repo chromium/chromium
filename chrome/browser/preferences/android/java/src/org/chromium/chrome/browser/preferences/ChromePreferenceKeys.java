@@ -869,7 +869,10 @@ public final class ChromePreferenceKeys {
     public static final String READER_MODE_ACTION_FIRST_SHOWN_TIMESTAMP =
             "Chrome.ReaderMode.ActionFirstShownTimestamp";
 
-    /** The timestamp until which the reader mode contextual page action should be suppressed. */
+    /**
+     * The number of times the reader mode contextual page action has been temporarily suppressed.
+     * Only causes permanent suppression when ReaderModeCpaReentry is disabled.
+     */
     public static final String READER_MODE_ACTION_SUPPRESSION_COUNT =
             "Chrome.ReaderMode.ActionSuppressionCount";
 

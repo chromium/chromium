@@ -10,13 +10,14 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * A class to manage rate limiting of the reader mode contextual page action. This works by:
+ * A class to manage rate limiting of the reader mode contextual page action (CPA). This works by:
  *
  * <ol>
  *   <li>Allowing a certain number of CPA show events (READER_MODE_ACTION_SHOW_COUNT) within a
@@ -24,8 +25,9 @@ import java.util.concurrent.TimeUnit;
  *   <li>If the READER_MODE_ACTION_SHOW_COUNT exceeds {@link #CPA_SHOW_LIMIT} within {@link
  *       #TRACKING_WINDOW_MS}, then the CPA is temporarily suppressed for {@link
  *       #SUPPRESSION_WINDOW_MS} (READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP).
- *   <li>If the CPA is temporarily suppressed at least {@link #SUPPRESSION_LIMIT} times
- *       (READER_MODE_ACTION_SUPPRESSION_COUNT), then it is permanently suppressed.
+ *   <li>If ReaderModeCpaReentry is disabled and the CPA is temporarily suppressed at least {@link
+ *       #SUPPRESSION_LIMIT} times (READER_MODE_ACTION_SUPPRESSION_COUNT), then it is permanently
+ *       suppressed.
  * </ol>
  */
 @NullMarked
@@ -85,19 +87,19 @@ public class ReaderModeActionRateLimiter {
      * @return True if the action should be suppressed, false otherwise.
      */
     public boolean isActionSuppressed() {
-        // If the action has been suppressed past the allowable count, then permanently suppress it
-        // until the user interacts with the feature.
-        if (ChromeSharedPreferences.getInstance()
-                        .readInt(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_COUNT, 0)
-                >= SUPPRESSION_LIMIT) {
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        // With re-entry disabled, hitting SUPPRESSION_LIMIT blocks the action permanently, since
+        // nothing resets the count.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READER_MODE_CPA_REENTRY)
+                && prefs.readInt(ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_COUNT, 0)
+                        >= SUPPRESSION_LIMIT) {
             return true;
         }
 
         long suppressionEnd =
-                ChromeSharedPreferences.getInstance()
-                        .readLong(
-                                ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP,
-                                INVALID_TIME);
+                prefs.readLong(
+                        ChromePreferenceKeys.READER_MODE_ACTION_SUPPRESSION_END_TIMESTAMP,
+                        INVALID_TIME);
         return System.currentTimeMillis() < suppressionEnd;
     }
 
