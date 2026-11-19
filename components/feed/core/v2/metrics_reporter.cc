@@ -738,9 +738,6 @@ void MetricsReporter::OnLoadStream(
       result_summary.load_from_store_status;
   LoadStreamStatus final_status = result_summary.final_status;
   bool is_initial_load = result_summary.is_initial_load;
-  bool loaded_new_content_from_network =
-      result_summary.loaded_new_content_from_network;
-  base::TimeDelta stored_content_age = result_summary.stored_content_age;
   std::optional<feedstore::Metadata::StreamMetadata> stream_metadata =
       result_summary.stream_metadata;
   VVLOG << "OnLoadStream load_from_store_status=" << load_from_store_status
@@ -773,24 +770,6 @@ void MetricsReporter::OnLoadStream(
         base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
                       "LoadStreamStatus.InitialFromStore"}),
         load_from_store_status);
-  }
-
-  // For stored_content_age, the zero-value means there was no content loaded
-  // from the store. A negative value means there was content loaded, but it had
-  // a timestamp from the future. In either case, we'll avoid recording the
-  // content age.
-  if (stored_content_age.is_positive()) {
-    if (loaded_new_content_from_network) {
-      base::UmaHistogramCustomTimes(
-          "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh",
-          stored_content_age, base::Minutes(5), base::Days(7),
-          /*buckets=*/50);
-    } else {
-      base::UmaHistogramCustomTimes(
-          "ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed",
-          stored_content_age, base::Seconds(5), base::Days(7),
-          /*buckets=*/50);
-    }
   }
 
   if (IsLoadingSuccessfulAndFresh(final_status)) {

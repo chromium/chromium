@@ -46,8 +46,6 @@ MetricsReporter::LoadStreamResultSummary NetworkLoadResults() {
   summary.load_from_store_status = LoadStreamStatus::kDataInStoreIsStale;
   summary.final_status = LoadStreamStatus::kLoadedFromNetwork;
   summary.is_initial_load = true;
-  summary.loaded_new_content_from_network = true;
-  summary.stored_content_age = base::Days(5);
   return summary;
 }
 
@@ -57,8 +55,6 @@ MetricsReporter::LoadStreamResultSummary LoadFailureResults(
   summary.load_from_store_status = LoadStreamStatus::kDataInStoreIsStale;
   summary.final_status = final_status;
   summary.is_initial_load = true;
-  summary.loaded_new_content_from_network = false;
-  summary.stored_content_age = base::Days(5);
   return summary;
 }
 
@@ -309,40 +305,6 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatusIgnoresNoStatusFromStore) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.LoadStreamStatus.UserRefresh",
       LoadStreamStatus::kLoadedFromNetwork, 0);
-}
-
-TEST_F(MetricsReporterTest, ReportsContentAgeBlockingRefresh) {
-  reporter_->OnLoadStream(StreamType(StreamKind::kForYou), NetworkLoadResults(),
-                          kContentStats, std::make_unique<LoadLatencyTimes>());
-  histogram_.ExpectUniqueTimeSample(
-      "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh", base::Days(5),
-      1);
-}
-
-TEST_F(MetricsReporterTest, ReportsContentAgeNoRefresh) {
-  MetricsReporter::LoadStreamResultSummary result_summary =
-      NetworkLoadResults();
-  result_summary.loaded_new_content_from_network = false;
-  reporter_->OnLoadStream(StreamType(StreamKind::kForYou), result_summary,
-                          kContentStats, std::make_unique<LoadLatencyTimes>());
-  histogram_.ExpectUniqueTimeSample(
-      "ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed", base::Days(5),
-      1);
-}
-
-TEST_F(MetricsReporterTest, DoNotReportContentAgeWhenNotPositive) {
-  MetricsReporter::LoadStreamResultSummary result_summary =
-      LoadFailureResults(LoadStreamStatus::kLoadedFromStore);
-  result_summary.stored_content_age = -base::Seconds(1);
-  reporter_->OnLoadStream(StreamType(StreamKind::kForYou), result_summary,
-                          kContentStats, std::make_unique<LoadLatencyTimes>());
-  result_summary.stored_content_age = base::TimeDelta();
-  reporter_->OnLoadStream(StreamType(StreamKind::kForYou), result_summary,
-                          kContentStats, std::make_unique<LoadLatencyTimes>());
-  histogram_.ExpectTotalCount(
-      "ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed", 0);
-  histogram_.ExpectTotalCount(
-      "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh", 0);
 }
 
 TEST_F(MetricsReporterTest, ReportsLoadMoreStatus) {

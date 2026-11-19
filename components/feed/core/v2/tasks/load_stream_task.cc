@@ -195,7 +195,6 @@ void LoadStreamTask::LoadFromStoreComplete(
     LoadStreamFromStoreTask::Result result) {
   load_from_store_status_ = result.status;
   latencies_->StepComplete(LoadLatencyTimes::kLoadFromStore);
-  stored_content_age_ = result.content_age;
   content_ids_ = result.content_ids;
 
   if (options_.load_type != LoadType::kBackgroundRefresh)
@@ -451,7 +450,6 @@ void LoadStreamTask::Done(LaunchResult launch_result) {
   Result result;
   result.stream_type = options_.stream_type;
   result.load_from_store_status = load_from_store_status_;
-  result.stored_content_age = stored_content_age_;
   result.content_ids = content_ids_;
   result.final_status = launch_result.load_stream_status;
   result.load_type = options_.load_type;
@@ -476,7 +474,6 @@ std::ostream& operator<<(std::ostream& os,
   os << "LoadStreamTask::Result{" << result.stream_type
      << " final_status=" << result.final_status
      << " load_from_store_status=" << result.load_from_store_status
-     << " stored_content_age=" << result.stored_content_age
      << " load_type=" << static_cast<int>(result.load_type)
      << " request_schedule?=" << result.request_schedule.has_value();
   if (result.network_response_info)

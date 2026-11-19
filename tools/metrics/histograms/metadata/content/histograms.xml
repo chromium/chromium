@@ -330,34 +330,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh"
-    units="ms" expires_after="2024-01-14">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since locally stored content was fetched from the server.
-    Reported when the feed surface is shown, and content is refreshed from the
-    network. This typically only happens when content is stale, so this is a
-    measurement of how stale content is before it's replaced by a blocking
-    refresh. Feed v2 only.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed"
-    units="ms" expires_after="2024-01-14">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since locally stored content was fetched from the server.
-    Reported when the feed surface is shown, and the local persisted feed
-    content is loaded instead of a direct network refresh. This provides a
-    measure of how stale feed content is when the feed loads without a blocking
-    network request. Feed v2 only.
-  </summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.ContentDuplication2.Position{Index}"
     enum="Boolean" expires_after="2026-04-05">
   <owner>jianli@chromium.org</owner>

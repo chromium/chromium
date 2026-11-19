@@ -98,8 +98,6 @@ class MetricsReporter {
     LoadStreamStatus load_from_store_status = LoadStreamStatus::kNoStatus;
     LoadStreamStatus final_status = LoadStreamStatus::kNoStatus;
     bool is_initial_load = false;
-    bool loaded_new_content_from_network = false;
-    base::TimeDelta stored_content_age;
     std::optional<feedstore::Metadata::StreamMetadata> stream_metadata;
   };
   virtual void OnLoadStream(const StreamType& stream_type,

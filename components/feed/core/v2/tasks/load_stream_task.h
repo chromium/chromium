@@ -70,8 +70,6 @@ class LoadStreamTask : public offline_pages::Task {
     // Status of just loading the stream from the persistent store, if that
     // was attempted.
     LoadStreamStatus load_from_store_status = LoadStreamStatus::kNoStatus;
-    // Age of content loaded from local storage. Zero if none was loaded.
-    base::TimeDelta stored_content_age;
     // Set of content IDs present in the feed.
     ContentHashSet content_ids;
     LoadType load_type = LoadType::kInitialLoad;
@@ -147,7 +145,6 @@ class LoadStreamTask : public offline_pages::Task {
   LoadStreamStatus load_from_store_status_ = LoadStreamStatus::kNoStatus;
   std::optional<NetworkResponseInfo> network_response_info_;
   bool loaded_new_content_from_network_ = false;
-  base::TimeDelta stored_content_age_;
   ContentHashSet content_ids_;
   Experiments experiments_;
   std::unique_ptr<StreamModelUpdateRequest> update_request_;

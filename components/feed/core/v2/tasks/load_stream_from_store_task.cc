@@ -80,20 +80,20 @@ void LoadStreamFromStoreTask::LoadStreamDone(
 
   content_ids_ = feedstore::GetContentIds(result.stream_data);
   if (!ignore_staleness_) {
-    content_age_ =
+    base::TimeDelta content_age =
         base::Time::Now() - feedstore::GetLastAddedTime(result.stream_data);
 
     const feedstore::Metadata& metadata = feed_stream_->GetMetadata();
 
-    if (ContentInvalidFromAge(metadata, result.stream_type, content_age_)) {
+    if (ContentInvalidFromAge(metadata, result.stream_type, content_age)) {
       Complete(LoadStreamStatus::kDataInStoreIsExpired,
                feedwire::DiscoverCardReadCacheResult::STALE);
       return;
     }
-    if (content_age_.is_negative()) {
+    if (content_age.is_negative()) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture;
     } else if (ShouldWaitForNewContent(metadata, result.stream_type,
-                                       content_age_)) {
+                                       content_age)) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStale;
     } else if (missed_last_refresh_) {
       stale_reason_ = LoadStreamStatus::kDataInStoreStaleMissedLastRefresh;
@@ -177,7 +177,6 @@ void LoadStreamFromStoreTask::Complete(
   } else {
     task_result.status = status;
   }
-  task_result.content_age = content_age_;
   task_result.content_ids = content_ids_;
   std::move(result_callback_).Run(std::move(task_result));
   TaskComplete();

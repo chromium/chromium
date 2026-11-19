@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_store.h"
@@ -39,9 +38,6 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
     // Pending actions to be uploaded if the stream is to be loaded from the
     // network.
     std::vector<feedstore::StoredAction> pending_actions;
-    // How long since the loaded content was fetched from the server.
-    // May be zero if content is not loaded.
-    base::TimeDelta content_age;
     ContentHashSet content_ids;
 
     // Loading result to be logged by
@@ -98,7 +94,6 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   // Data to be stuffed into the Result when the task is complete.
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
   std::vector<feedstore::StoredAction> pending_actions_;
-  base::TimeDelta content_age_;
   ContentHashSet content_ids_;
 
   base::WeakPtrFactory<LoadStreamFromStoreTask> weak_ptr_factory_{this};

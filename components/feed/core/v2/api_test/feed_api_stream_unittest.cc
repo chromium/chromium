@@ -668,8 +668,6 @@ TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsStale_NetworkStaleAge) {
 }
 
 TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsExpired_NetworkExpiredAge) {
-  base::HistogramTester histograms;
-
   base::TimeDelta default_content_expiration_threshold =
       GetFeedConfig().content_expiration_threshold;
   base::TimeDelta server_content_expiration_threshold =
@@ -712,9 +710,6 @@ TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsExpired_NetworkExpiredAge) {
 
   EXPECT_EQ(LoadStreamStatus::kDataInStoreIsExpired,
             metrics_reporter_->load_stream_from_store_status);
-  histograms.ExpectUniqueTimeSample(
-      "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh", content_age,
-      1);
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
@@ -741,7 +736,6 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
 
 // Same as LoadFromNetworkBecauseStoreIsStale, but with expired content.
 TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsExpired) {
-  base::HistogramTester histograms;
   const base::TimeDelta kContentAge =
       GetFeedConfig().content_expiration_threshold + base::Minutes(1);
   store_->OverwriteStream(
@@ -760,14 +754,10 @@ TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsExpired) {
   ASSERT_TRUE(surface.initial_state);
   EXPECT_EQ(LoadStreamStatus::kDataInStoreIsExpired,
             metrics_reporter_->load_stream_from_store_status);
-  histograms.ExpectUniqueTimeSample(
-      "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh", kContentAge,
-      1);
 }
 
 TEST_F(FeedApiTest, LoadStaleDataBecauseNetworkRequestFails) {
   // Fill the store with stream data that is just barely stale.
-  base::HistogramTester histograms;
   const base::TimeDelta kContentAge =
       GetFeedConfig().stale_content_threshold + base::Minutes(1);
   store_->OverwriteStream(
@@ -787,8 +777,6 @@ TEST_F(FeedApiTest, LoadStaleDataBecauseNetworkRequestFails) {
             metrics_reporter_->load_stream_from_store_status);
   EXPECT_EQ(LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure,
             metrics_reporter_->load_stream_status);
-  histograms.ExpectUniqueTimeSample(
-      "ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed", kContentAge, 1);
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFailsStoredDataIsExpired) {

@@ -351,9 +351,6 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   result_summary.load_from_store_status = result.load_from_store_status;
   result_summary.final_status = result.final_status;
   result_summary.is_initial_load = result.load_type == LoadType::kInitialLoad;
-  result_summary.loaded_new_content_from_network =
-      result.loaded_new_content_from_network;
-  result_summary.stored_content_age = result.stored_content_age;
   result_summary.stream_metadata = stream_metadata;
 
   metrics_reporter_->OnLoadStream(stream.type, result_summary, content_stats,
