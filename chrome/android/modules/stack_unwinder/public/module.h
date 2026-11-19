@@ -7,9 +7,6 @@
 
 #include <memory>
 
-#include "base/profiler/native_unwinder_android_memory_regions_map.h"
-#include "base/profiler/unwinder.h"
-
 namespace stack_unwinder {
 
 // Provides access to the stack_unwinder module.
