@@ -1222,6 +1222,10 @@ source_set("unit_tests") {
       "profile_load_tracker_win_unittest.cc",
       "profile_shortcut_manager_unittest_win.cc",
     ]
+    deps += [
+      "//chrome/common:constants",
+      "//components/prefs",
+    ]
   }
 
   if (is_linux) {

@@ -87,10 +87,15 @@ bool disable_oop_shortcut_update_or_create_for_unit_tests = false;
 // success.
 void OnProfileIconCreateSuccess(base::FilePath profile_path) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
-  if (!g_browser_process->profile_manager())
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // A profile being deleted is removed from `ProfileAttributesStorage` before
+  // its `Profile` object is destroyed; avoid writing `kProfileIconVersion` and
+  // triggering `BrowserWindowPropertyManager` for an orphaned profile.
+  if (!profile_manager || !profile_manager->GetProfileAttributesStorage()
+                               .GetProfileAttributesWithPath(profile_path)) {
     return;
-  Profile* profile =
-      g_browser_process->profile_manager()->GetProfileByPath(profile_path);
+  }
+  Profile* profile = profile_manager->GetProfileByPath(profile_path);
   if (profile) {
     profile->GetPrefs()->SetInteger(prefs::kProfileIconVersion,
                                     kCurrentProfileIconVersion);

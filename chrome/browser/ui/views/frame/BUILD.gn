@@ -2548,10 +2548,16 @@ source_set("interactive_ui_tests") {
       "browser_window_property_manager_browsertest_win.cc",
     ]
     deps += [
+      "//base",
+      "//base/test:test_support",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:misc",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/web_applications/extensions",
+      "//chrome/common:constants",
+      "//components/prefs",
     ]
   }
 }

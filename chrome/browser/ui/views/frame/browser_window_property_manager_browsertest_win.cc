@@ -11,14 +11,19 @@
 
 #include <string>
 
+#include "base/base_paths.h"
+#include "base/base_paths_win.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_path_override.h"
 #include "base/win/scoped_propvariant.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -38,8 +43,10 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -152,6 +159,38 @@ void ValidateHostedAppWindowProperties(BrowserWindowInterface* browser,
   prop_var.Reset();
 }
 
+void ValidateNoProfileRelaunchDetails(const BrowserWindowInterface* browser) {
+  HWND hwnd =
+      views::HWNDForNativeWindow(browser->GetWindow()->GetNativeWindow());
+  ASSERT_NE(hwnd, nullptr);
+
+  Microsoft::WRL::ComPtr<IPropertyStore> pps;
+  ASSERT_TRUE(SUCCEEDED(SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps))));
+
+  base::win::ScopedPropVariant prop_var;
+  EXPECT_EQ(S_OK, pps->GetValue(PKEY_AppUserModel_ID, prop_var.Receive()));
+  EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
+  EXPECT_EQ(shell_integration::win::GetAppUserModelIdForBrowser(
+                browser->GetProfile()->GetPath()),
+            prop_var.get().pwszVal);
+  prop_var.Reset();
+
+  EXPECT_EQ(S_OK, pps->GetValue(PKEY_AppUserModel_RelaunchDisplayNameResource,
+                                prop_var.Receive()));
+  EXPECT_EQ(VT_EMPTY, prop_var.get().vt);
+  prop_var.Reset();
+
+  EXPECT_EQ(S_OK, pps->GetValue(PKEY_AppUserModel_RelaunchCommand,
+                                prop_var.Receive()));
+  EXPECT_EQ(VT_EMPTY, prop_var.get().vt);
+  prop_var.Reset();
+
+  EXPECT_EQ(S_OK, pps->GetValue(PKEY_AppUserModel_RelaunchIconResource,
+                                prop_var.Receive()));
+  EXPECT_EQ(VT_EMPTY, prop_var.get().vt);
+  prop_var.Reset();
+}
+
 }  // namespace
 
 // Tests that require the profile shortcut manager to be instantiated despite
@@ -168,6 +207,13 @@ class BrowserTestWithProfileShortcutManager : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableProfileShortcutManager);
   }
+
+ private:
+  base::ScopedPathOverride fake_user_desktop_{base::DIR_USER_DESKTOP};
+  base::ScopedPathOverride fake_system_desktop_{base::DIR_COMMON_DESKTOP};
+  base::ScopedPathOverride fake_taskbar_pins_{base::DIR_TASKBAR_PINS};
+  base::ScopedPathOverride fake_implicit_apps_{
+      base::DIR_IMPLICIT_APP_SHORTCUTS};
 };
 
 // Check that the window properties on Windows are properly set.
@@ -202,6 +248,81 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithProfileShortcutManager,
           .GetProfileAttributesWithPath(path_profile2);
   ASSERT_NE(entry, nullptr);
   ValidateBrowserWindowProperties(profile2_browser, entry->GetName());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserTestWithProfileShortcutManager,
+    GuestProfileWithIconVersionPrefDoesNotSetRelaunchDetails) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_NE(profile_manager->profile_shortcut_manager(), nullptr);
+
+  // Positive control: a registered profile with `kProfileIconVersion` sets
+  // profile relaunch details on its window.
+  browser()->GetProfile()->GetPrefs()->SetInteger(prefs::kProfileIconVersion,
+                                                  1);
+  ValidateBrowserWindowProperties(browser(), std::u16string());
+
+  // A Guest profile is not registered in `ProfileAttributesStorage`, so setting
+  // `kProfileIconVersion` or creating a new browser window must not crash or
+  // set profile relaunch details.
+  BrowserWindowInterface* guest_browser1 = CreateGuestBrowser();
+  Profile* guest_profile = guest_browser1->GetProfile();
+  ASSERT_EQ(profile_manager->GetProfileAttributesStorage()
+                .GetProfileAttributesWithPath(guest_profile->GetPath()),
+            nullptr);
+
+  guest_profile->GetPrefs()->SetInteger(prefs::kProfileIconVersion, 1);
+  ValidateNoProfileRelaunchDetails(guest_browser1);
+
+  BrowserWindowInterface* guest_browser2 = CreateBrowser(guest_profile);
+  ValidateNoProfileRelaunchDetails(guest_browser2);
+  content::RunAllTasksUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTestWithProfileShortcutManager,
+                       RemovedProfileDoesNotSetRelaunchDetails) {
+  if (!profiles::IsMultipleProfilesEnabled()) {
+    return;
+  }
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_NE(profile_manager->profile_shortcut_manager(), nullptr);
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+
+  // Keep a second profile registered so `GetNumberOfProfiles() > 1u` when the
+  // third profile is removed.
+  base::FilePath profile2_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile2 =
+      profiles::testing::CreateProfileSync(profile_manager, profile2_path);
+  ScopedProfileKeepAlive profile2_keep_alive(
+      &profile2, ProfileKeepAliveOrigin::kProfileDeletionProcess);
+
+  base::FilePath profile3_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile3 =
+      profiles::testing::CreateProfileSync(profile_manager, profile3_path);
+  ScopedProfileKeepAlive profile3_keep_alive(
+      &profile3, ProfileKeepAliveOrigin::kProfileDeletionProcess);
+  profile3.GetPrefs()->SetInteger(prefs::kProfileIconVersion, 1);
+
+  // Simulate profile deletion removing the `ProfileAttributesEntry` while a
+  // `ScopedProfileKeepAlive` still retains the `Profile` instance in memory.
+  storage.RemoveProfile(profile3_path);
+  ASSERT_EQ(storage.GetProfileAttributesWithPath(profile3_path), nullptr);
+  ASSERT_EQ(storage.GetNumberOfProfiles(), 2u);
+
+  BrowserWindowInterface* profile3_browser = CreateBrowser(&profile3);
+  ValidateNoProfileRelaunchDetails(profile3_browser);
+
+  // Firing `OnProfileIconVersionChange` on an open window of a removed profile
+  // must also skip profile relaunch details.
+  profile3.GetPrefs()->SetInteger(prefs::kProfileIconVersion, 2);
+  ValidateNoProfileRelaunchDetails(profile3_browser);
+
+  CloseBrowserSynchronously(profile3_browser);
+  content::RunAllTasksUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {

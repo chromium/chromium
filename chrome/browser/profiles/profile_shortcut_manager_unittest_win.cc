@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
@@ -36,6 +38,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1228,4 +1231,70 @@ TEST_F(ProfileShortcutManagerTest, GetPinnedShortcutsForProfile) {
   EXPECT_EQ(pinned_shortcuts.size(), 2U);
   EXPECT_TRUE(expected_files.find(pinned_shortcuts[0]) != expected_files.end());
   EXPECT_TRUE(expected_files.find(pinned_shortcuts[1]) != expected_files.end());
+}
+
+TEST_F(ProfileShortcutManagerTest, GetShortcutProperties) {
+  auto expect_shortcut_properties = [&](const base::FilePath& path,
+                                        const std::wstring& expected_name,
+                                        const base::Location& location =
+                                            base::Location::Current()) {
+    SCOPED_TRACE(location.ToString());
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    std::wstring name;
+    base::FilePath icon_path;
+    profile_shortcut_manager_->GetShortcutProperties(path, &command_line, &name,
+                                                     &icon_path);
+    EXPECT_EQ(expected_name, name);
+    EXPECT_EQ(GetExePath(), command_line.GetProgram());
+    EXPECT_EQ(path.BaseName().value(),
+              command_line.GetSwitchValueNative(switches::kProfileDirectory));
+    EXPECT_FALSE(command_line.HasSwitch(switches::kSourceShortcutLocation));
+    EXPECT_EQ(profiles::internal::GetProfileIconPath(path), icon_path);
+  };
+
+  // Single registered profile in storage uses the unbadged shortcut name.
+  ProfileAttributesInitParams params_1;
+  params_1.profile_path = profile_1_path_;
+  params_1.profile_name = profile_1_name_;
+  profile_attributes_storage_->AddProfile(std::move(params_1));
+  task_environment_.RunUntilIdle();
+
+  expect_shortcut_properties(profile_1_path_, InstallUtil::GetShortcutName());
+
+  // Multiple registered profiles in storage include the profile name.
+  ProfileAttributesInitParams params_2;
+  params_2.profile_path = profile_2_path_;
+  params_2.profile_name = profile_2_name_;
+  profile_attributes_storage_->AddProfile(std::move(params_2));
+  task_environment_.RunUntilIdle();
+
+  const std::wstring expected_badged_name =
+      base::AsWString(profile_1_name_) + L" - " +
+      base::AsWString(l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME));
+  expect_shortcut_properties(profile_1_path_, expected_badged_name);
+}
+
+TEST_F(ProfileShortcutManagerTest,
+       IconCreationAfterProfileRemovedDoesNotUpdatePrefs) {
+  TestingProfile* profile = profile_manager_->CreateTestingProfile("Profile 1");
+  ASSERT_NE(profile, nullptr);
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(profile->GetPrefs()->HasPrefPath(prefs::kProfileIconVersion));
+  ASSERT_TRUE(profile->GetPrefs()->HasPrefPath(prefs::kProfileIconWin11Format));
+
+  profile->GetPrefs()->ClearPref(prefs::kProfileIconVersion);
+  profile->GetPrefs()->ClearPref(prefs::kProfileIconWin11Format);
+  ASSERT_FALSE(profile->GetPrefs()->HasPrefPath(prefs::kProfileIconVersion));
+  ASSERT_FALSE(
+      profile->GetPrefs()->HasPrefPath(prefs::kProfileIconWin11Format));
+
+  // Start an async icon update, then remove the profile from
+  // `ProfileAttributesStorage` while the `Profile` instance is still alive.
+  profile_shortcut_manager_->CreateOrUpdateProfileIcon(profile->GetPath());
+  profile_attributes_storage_->RemoveProfile(profile->GetPath());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(profile->GetPrefs()->HasPrefPath(prefs::kProfileIconVersion));
+  EXPECT_FALSE(
+      profile->GetPrefs()->HasPrefPath(prefs::kProfileIconWin11Format));
 }

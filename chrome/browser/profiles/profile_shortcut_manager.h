@@ -43,7 +43,8 @@ class ProfileShortcutManager {
                                    base::OnceCallback<void(bool)> callback) = 0;
 
   // Populates the |command_line|, |name| and |icon_path| that a shortcut for
-  // the given |profile_path| should use.
+  // the given |profile_path| should use. The profile at |profile_path| must be
+  // registered in `ProfileAttributesStorage`.
   virtual void GetShortcutProperties(const base::FilePath& profile_path,
                                      base::CommandLine* command_line,
                                      std::wstring* name,
