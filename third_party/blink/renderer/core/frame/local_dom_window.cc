@@ -790,10 +790,7 @@ void LocalDOMWindow::ReportDocumentPolicyViolation(
   const std::optional<std::string> endpoint =
       relevant_document_policy->GetFeatureEndpoint(feature);
 
-  if (is_report_only) {
-    UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.DocumentPolicy.ReportOnly",
-                              feature);
-  } else {
+  if (!is_report_only) {
     UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.DocumentPolicy.Enforced",
                               feature);
   }

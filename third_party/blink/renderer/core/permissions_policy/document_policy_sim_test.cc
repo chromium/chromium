@@ -188,39 +188,6 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyEnforcedReportHistogramTest) {
                                      3 /* kForceLoadAtTop */, 2);
 }
 
-TEST_F(DocumentPolicySimTest, DocumentPolicyReportOnlyReportHistogramTest) {
-  base::HistogramTester histogram_tester;
-
-  SimRequest::Params params;
-  params.response_http_headers = {
-      {"Document-Policy-Report-Only", "force-load-at-top"}};
-  SimRequest main_resource("https://example.com", "text/html", params);
-
-  LoadURL("https://example.com");
-  main_resource.Finish();
-
-  Window().ReportDocumentPolicyViolation(
-      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop,
-      mojom::blink::PolicyDisposition::kReport,
-      "first fragment scroll violation");
-
-  histogram_tester.ExpectTotalCount(
-      "Blink.UseCounter.DocumentPolicy.ReportOnly", 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.DocumentPolicy.ReportOnly", 3 /* kForceLoadAtTop */, 1);
-
-  // Multiple reports should be recorded multiple times.
-  Window().ReportDocumentPolicyViolation(
-      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop,
-      mojom::blink::PolicyDisposition::kReport,
-      "second fragment scroll violation");
-
-  histogram_tester.ExpectTotalCount(
-      "Blink.UseCounter.DocumentPolicy.ReportOnly", 2);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.DocumentPolicy.ReportOnly", 3 /* kForceLoadAtTop */, 2);
-}
-
 class DocumentPolicyHeaderUseCounterTest
     : public DocumentPolicySimTest,
       public testing::WithParamInterface<std::tuple<bool, bool, bool>> {};
