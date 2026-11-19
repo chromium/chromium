@@ -23,6 +23,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
@@ -138,6 +139,12 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
       return;
     }
     EnsureBrowserToJsMessaging();
+    if (wants_result) {
+      callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback),
+          base::unexpected(
+              js_injection::mojom::JavaScriptExecutionError::kFrameDestroyed));
+    }
     java_to_js_messaging_->OnExecuteJavaScript(java_script, wants_result,
                                                std::move(callback));
   }

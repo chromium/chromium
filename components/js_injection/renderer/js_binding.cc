@@ -334,10 +334,15 @@ void JsBinding::OnExecuteJavaScript(const std::u16string& javascript,
 void JsBinding::ReleaseV8GlobalObjects() {
   listeners_.clear();
   on_message_.Reset();
+  js_communication_.reset();
+  receiver_.reset();
 }
 
 void JsBinding::Bind(
     mojo::PendingAssociatedReceiver<mojom::BrowserToJsMessaging> receiver) {
+  if (!js_communication_) {
+    return;
+  }
   receiver_.reset();
   return receiver_.Bind(std::move(receiver));
 }

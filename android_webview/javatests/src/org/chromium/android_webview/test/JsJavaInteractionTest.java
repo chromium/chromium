@@ -2462,6 +2462,154 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
         Assert.assertEquals("REPLY_OK", onReceivedTitleHelper.getTitle());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testStolenJsObjectCannotPostMessageAfterNavigatingToSandboxedIframe()
+            throws Throwable {
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+
+        final String trustedTargetUrl = mTestServer.getURL(HELLO_WORLD_HTML);
+        final String parentOrigin = "http://evil.example.test";
+        final String html =
+                "<html><body>"
+                        + "<iframe id='f'></iframe>"
+                        + "<script>"
+                        + "  const f = document.getElementById('f');"
+                        + "  f.onload = () => {"
+                        + "    const stolen = f.contentWindow."
+                        + JS_OBJECT_NAME
+                        + ";"
+                        + "    f.sandbox = 'allow-same-origin';"
+                        + "    f.onload = () => {"
+                        + "      stolen.postMessage('spoofed');"
+                        + "      window."
+                        + JS_OBJECT_NAME
+                        + ".postMessage('done');"
+                        + "    };"
+                        + "    f.src = '"
+                        + trustedTargetUrl
+                        + "';"
+                        + "  };"
+                        + "  f.src = \"javascript:'ok'\";"
+                        + "</script>"
+                        + "</body></html>";
+
+        mActivityTestRule.loadDataWithBaseUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                html,
+                "text/html",
+                false,
+                parentOrigin,
+                null);
+
+        // The message from the retained subframe binding must be dropped after its script context
+        // is released; only the parent frame's 'done' message should arrive.
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        Assert.assertEquals("done", data.getAsString());
+        Assert.assertEquals(parentOrigin, data.mSourceOrigin.toString());
+        Assert.assertTrue(data.mIsMainFrame);
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testReplyProxyFailsAfterIframeNavigatesToSandboxedPage() throws Throwable {
+        final String isolatedWorld = "isolatedWorld";
+        final String trustedOrigin = "http://trusted.example.test";
+        registerWorld(mAwContents, isolatedWorld);
+
+        addWebMessageListenerOnUiThreadInIsolatedWorld(
+                mAwContents,
+                JS_OBJECT_NAME,
+                new String[] {trustedOrigin},
+                mListener,
+                isolatedWorld);
+
+        addJavaScriptOnEventOnUiThread(
+                mAwContents,
+                "if (window !== window.top) { "
+                        + JS_OBJECT_NAME
+                        + ".postMessage('subframe-ready'); }",
+                DocumentInjectionTime.DOCUMENT_START,
+                new String[] {trustedOrigin},
+                isolatedWorld);
+
+        try (TestWebServer webServer = TestWebServer.start()) {
+            List<Pair<String, String>> headers =
+                    List.of(new Pair<>("Content-Security-Policy", "sandbox allow-same-origin"));
+            String sandboxedCrossOriginUrl =
+                    webServer.setResponse(
+                            "/sandboxed.html",
+                            "<html><body><div id='secret'>attacker-dom</div></body></html>",
+                            headers);
+
+            String parentHtml =
+                    "<html><body>"
+                            + "<iframe id='f'></iframe>"
+                            + "<script>"
+                            + "  const f = document.getElementById('f');"
+                            + "  f.src = \"javascript:'init'\";"
+                            + "</script>"
+                            + "</body></html>";
+
+            mActivityTestRule.loadDataWithBaseUrlSync(
+                    mAwContents,
+                    mContentsClient.getOnPageFinishedHelper(),
+                    parentHtml,
+                    "text/html",
+                    false,
+                    trustedOrigin,
+                    null);
+
+            TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+            Assert.assertEquals("subframe-ready", data.getAsString());
+            Assert.assertEquals(trustedOrigin, data.mSourceOrigin.toString());
+            Assert.assertFalse(data.mIsMainFrame);
+            JsReplyProxy subframeReplyProxy = data.mReplyProxy;
+
+            // Navigate the subframe to the script-disabled cross-origin page and wait for onload.
+            final OnReceivedTitleHelper onReceivedTitleHelper =
+                    mContentsClient.getOnReceivedTitleHelper();
+            final int titleCallCount = onReceivedTitleHelper.getCallCount();
+            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                    mAwContents,
+                    mContentsClient,
+                    "(() => {"
+                            + "  const f = document.getElementById('f');"
+                            + "  f.onload = () => { document.title = 'subframe-navigated'; };"
+                            + "  f.src = '"
+                            + sandboxedCrossOriginUrl
+                            + "';"
+                            + "})()");
+            onReceivedTitleHelper.waitForCallback(titleCallCount);
+            Assert.assertEquals("subframe-navigated", onReceivedTitleHelper.getTitle());
+
+            // Executing JavaScript on the old document's reply proxy must fail with
+            // FRAME_DESTROYED rather than running in the new cross-origin document's isolated
+            // world.
+            final SettableFuture<Integer> jsError = SettableFuture.create();
+            subframeReplyProxy.executeJavaScript(
+                    "document.getElementById('secret').textContent",
+                    new JavaScriptExecutionCallback() {
+                        @Override
+                        public void onSuccess(String result) {}
+
+                        @Override
+                        public void onError(@JavaScriptExecutionError.EnumType int error) {
+                            jsError.set(error);
+                        }
+                    });
+
+            Assert.assertEquals(
+                    Integer.valueOf(JavaScriptExecutionError.FRAME_DESTROYED),
+                    AwActivityTestRule.waitForFuture(jsError));
+            Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+        }
+    }
+
     private boolean isJsObjectInjectedWhenLoadingUrl(
             final String baseUrl, final String jsObjectName) throws Throwable {
         mActivityTestRule.loadDataWithBaseUrlSync(
