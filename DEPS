@@ -577,7 +577,7 @@ vars = {
   'libcxx_revision':       '64f64c14ae2f4653af875bd172462a4c5e6afe18',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:f126a26ef94d5c4620d0e7d06e2390bc621d846a',
+  'gn_version': 'git_revision:ddc6c4ae595393d43b38e62f2e2baa7661af716f',
 
   # CIPD version of the src/third_party/swift-toolchain/* packages. Override
   # it in .gclient custom_vars to try a different Swift release without
