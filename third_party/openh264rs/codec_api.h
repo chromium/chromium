@@ -81,6 +81,8 @@ using enum openh264rs::WelsLogLevel;
 inline constexpr int cmResultSuccess =
     static_cast<int>(openh264rs::CM_RETURN::cmResultSuccess);
 
+inline constexpr int UNSPECIFIED_BIT_RATE = 0;
+
 // Unscoped enum so qualified `EVideoFormatType::videoFormatI420` callers
 // implicitly convert to `int`.
 enum EVideoFormatType : int {

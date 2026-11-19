@@ -680,8 +680,7 @@ void OpenH264VideoEncoder::UpdateEncoderColorSpace() {
 // When `BUILDFLAG(ENABLE_RUST_OPENH264)` (`media_use_rust_openh264`) is
 // enabled, this file is compiled twice:
 // 1. Without `RUST_OPENH264_BUILD` (in `//media/video`): builds Cisco's C++
-//    `OpenH264VideoEncoder`, defines `kRustOpenH264Encoding`, and defines
-//    `CreateOpenH264VideoEncoder()`.
+//    `OpenH264VideoEncoder` and defines `CreateOpenH264VideoEncoder()`.
 // 2. With `RUST_OPENH264_BUILD` (in `//media/video:openh264rs_video_encoder`):
 //    `openh264_video_encoder.h` includes `third_party/openh264rs/codec_api.h`
 //    and `#define`s `OpenH264VideoEncoder` to `OpenH264RsVideoEncoder`, and
@@ -699,10 +698,6 @@ std::unique_ptr<VideoEncoder> CreateOpenH264RsVideoEncoder() {
   return std::make_unique<OpenH264VideoEncoder>();
 }
 #else
-#if BUILDFLAG(ENABLE_RUST_OPENH264)
-BASE_FEATURE(kRustOpenH264Encoding, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 std::unique_ptr<VideoEncoder> CreateOpenH264VideoEncoder() {
 #if BUILDFLAG(ENABLE_RUST_OPENH264)
   if (base::FeatureList::IsEnabled(kRustOpenH264Encoding)) {

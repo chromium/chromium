@@ -7,7 +7,7 @@ Update Mechanism: Autoroll
 License: BSD-3-Clause, BSD-2-Clause
 License File: src/LICENSE_CHROMIUM, src/LICENSE_CISCO
 Security Critical: yes
-Shipped: no
+Shipped: yes
 CPEPrefix: unknown
 
 Description:

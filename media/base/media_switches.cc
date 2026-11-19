@@ -1235,6 +1235,11 @@ BASE_FEATURE(kPlatformHEVCHbdEncoderSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
+#if BUILDFLAG(ENABLE_RUST_OPENH264)
+// Enables the Rust port of OpenH264 instead of Cisco's C++ OpenH264 encoder.
+BASE_FEATURE(kRustOpenH264Encoding, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_RUST_OPENH264)
+
 #if BUILDFLAG(ENABLE_SYMPHONIA_DEMUXER)
 // Enables the use of Symphonia for container demuxing.
 // Owner: jophba@chromium.org
