@@ -1014,6 +1014,41 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, TranslateStreaming) {
             "en to ja: Sentence one en to ja: Sentence two");
 }
 
+// Tests that unpaired UTF-16 surrogates are replaced with U+FFFD before
+// reaching the translation service.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       UnpairedSurrogatesAreReplaced) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      const translator = await Translator.create({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      const translated = await translator.translate('hello \uD800 world');
+      if (translated !== 'en to ja: hello \uFFFD world') {
+        return 'translate mismatch: ' + translated;
+      }
+      const chunks = [];
+      for await (const chunk of translator.translateStreaming(
+                     'hello \uD800. world \uDC00.')) {
+        chunks.push(chunk);
+      }
+      if (chunks.length !== 2 ||
+          chunks[0] !== 'en to ja: hello \uFFFD' ||
+          chunks[1] !== ' en to ja: world \uFFFD') {
+        return 'stream mismatch: ' + JSON.stringify(chunks);
+      }
+      return 'ok';
+  )"),
+            "ok");
+}
+
 // Tests the FIFO order of multiple parallel TranslateStreaming() invocations.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, MultipleStreamingCalls) {
   MockComponentManager mock_component_manager(GetTempDir());

@@ -14,6 +14,7 @@
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -215,7 +216,8 @@ ScriptPromise<IDLString> Translator::translate(
 
   // TODO(crbug.com/335374928): implement the error handling for the translation
   // service crash.
-  translator_remote_->Translate(input, std::move(pending_remote));
+  translator_remote_->Translate(ReplaceUnmatchedSurrogates(input),
+                                std::move(pending_remote));
 
   return promise;
 }
@@ -255,7 +257,8 @@ ReadableStream* Translator::translateStreaming(
 
   // TODO(crbug.com/335374928): Implement the error handling for the translation
   // service crash.
-  translator_remote_->TranslateStreaming(input, std::move(pending_remote));
+  translator_remote_->TranslateStreaming(ReplaceUnmatchedSurrogates(input),
+                                         std::move(pending_remote));
 
   return readable_stream;
 }
