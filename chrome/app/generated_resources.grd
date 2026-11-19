@@ -4844,9 +4844,6 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_TASK_MANAGER_TOOL_PREFIX" desc="The prefix for a tool process row in the Task Manager">
         Tool: <ph name="PRINT_NAME">$1<ex>Manage People</ex></ph>
       </message>
-      <message name="IDS_TASK_MANAGER_LINUX_VM_PREFIX" desc="The prefix for a Linux virtual machine row">
-        Linux Virtual Machine: <ph name="LINUX_VM_NAME">$1<ex>termina</ex></ph>
-      </message>
       <message name="IDS_TASK_MANAGER_OMNIBOX" desc="A row in the task manager for the WebUI Omnibox.">
         Omnibox
       </message>

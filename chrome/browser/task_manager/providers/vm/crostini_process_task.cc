@@ -4,11 +4,11 @@
 
 #include "chrome/browser/task_manager/providers/vm/crostini_process_task.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "chrome/grit/generated_resources.h"
 
 namespace task_manager {
 

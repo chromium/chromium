@@ -12433,6 +12433,11 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_TASK_MANAGER_ARC_SYSTEM" desc="The prefix for an ARC system processes row">
         System: <ph name="ARC_PROCESS_NAME">$1<ex>com.android.systemui</ex></ph>
       </message>
+
+      <!-- Task Manager Linux VM prefix -->
+      <message name="IDS_TASK_MANAGER_LINUX_VM_PREFIX" desc="The prefix for a Linux virtual machine row">
+        Linux Virtual Machine: <ph name="LINUX_VM_NAME">$1<ex>termina</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>
