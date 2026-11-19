@@ -40,9 +40,13 @@
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/app_group/widget_constants.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/base/url_util.h"
 #import "url/gurl.h"
 
 namespace {
+
+// Query key added by Safari when Chrome is opened from a Smart App Banner.
+constexpr char kSmartAppBannerKey[] = "safarisab";
 
 // Returns the launch source for first run metrics.
 first_run::ExternalLaunch GetLaunchSource(MobileSessionCallerApp caller_app,
@@ -50,49 +54,18 @@ first_run::ExternalLaunch GetLaunchSource(MobileSessionCallerApp caller_app,
   if (caller_app != CALLER_APP_APPLE_MOBILESAFARI) {
     return first_run::LAUNCH_BY_OTHERS;
   }
-
-  NSString* query = url.query;
-  if (![query length]) {
-    return first_run::LAUNCH_BY_MOBILESAFARI;
-  }
-
-  // Look for `safarisab` (Smart App Banner key) anywhere in the query string.
-  NSRange found = [query rangeOfString:@"safarisab"];
-  if (found.location == NSNotFound) {
-    return first_run::LAUNCH_BY_MOBILESAFARI;
-  }
-
-  if (found.location + found.length < [query length]) {
-    unichar char_after =
-        [query characterAtIndex:(found.location + found.length)];
-    if (char_after != '&' && char_after != '=') {
-      return first_run::LAUNCH_BY_MOBILESAFARI;
-    }
-  }
-  if (found.location > 0) {
-    unichar char_before = [query characterAtIndex:(found.location - 1)];
-    if (char_before != '&') {
-      return first_run::LAUNCH_BY_MOBILESAFARI;
-    }
-  }
-  return first_run::LAUNCH_BY_SMARTAPPBANNER;
+  return net::GetValueForKeyInQuery(net::GURLWithNSURL(url), kSmartAppBannerKey,
+                                    nullptr)
+             ? first_run::LAUNCH_BY_SMARTAPPBANNER
+             : first_run::LAUNCH_BY_MOBILESAFARI;
 }
 
 // Returns whether the URL specifies opening default browser settings.
 bool IsShowDefaultBrowserSettings(NSURL* url) {
-  NSURLComponents* components = [NSURLComponents componentsWithURL:url
-                                           resolvingAgainstBaseURL:NO];
-  NSString* postOpeningActionParameter =
-      base::SysUTF8ToNSString(kPostOpeningActionParameter);
-  NSString* defaultBrowserSettingsAction =
-      base::SysUTF8ToNSString(kPostOpeningActionDefaultBrowserSettings);
-  for (NSURLQueryItem* item in components.queryItems) {
-    if ([item.name isEqualToString:postOpeningActionParameter] &&
-        [item.value isEqualToString:defaultBrowserSettingsAction]) {
-      return true;
-    }
-  }
-  return false;
+  std::string value;
+  return net::GetValueForKeyInQuery(net::GURLWithNSURL(url),
+                                    kPostOpeningActionParameter, &value) &&
+         value == kPostOpeningActionDefaultBrowserSettings;
 }
 
 // Triggers `post_opening_action` on `tab_opener`, if any.
