@@ -7,9 +7,11 @@
 
 #include <deque>
 #include <functional>
+#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -34,8 +36,27 @@ class TreeBuilder {
   Json::Value GetAncestryById(uint32_t id);
 
  private:
+  struct SmallDiffAggregate {
+    const Container* container = nullptr;
+    double size = 0.0;
+    double before_size = 0.0;
+    double padding = 0.0;
+  };
+  // Keyed by (lens group, section) so skipped deltas stay attributed to their
+  // active lens group (e.g. container, component, generated type, or template).
+  using SmallDiffMap =
+      std::map<std::pair<std::string_view, SectionId>, SmallDiffAggregate>;
+
   void AddFileEntry(const GroupedPath& source_path,
-                    const std::vector<const BaseSymbol*>& symbols);
+                    const std::vector<const BaseSymbol*>& symbols,
+                    SmallDiffMap* small_diffs);
+
+  void AddSmallDiffAggregate(std::string_view group,
+                             SectionId section,
+                             const SmallDiffAggregate& agg);
+
+  TreeNode* GetOrMakeFileNode(const GroupedPath& grouped_path,
+                              const NodeStats& node_stats);
 
   TreeNode* GetOrMakeParentNode(TreeNode* child_node);
 
@@ -64,6 +85,11 @@ class TreeBuilder {
   // in |owned_strings_|.
   // Deque is used for stability, to support string_view.
   std::deque<std::string> owned_strings_;
+  // Synthetic symbols created for aggregated small symbol diffs. Deques are
+  // used for pointer stability since DeltaSymbol and TreeNode::symbol retain
+  // raw pointers into these containers.
+  std::deque<Symbol> owned_symbols_;
+  std::deque<DeltaSymbol> owned_delta_symbols_;
   std::unique_ptr<BaseLens> lens_;
   bool method_count_mode_;
   bool relocations_mode_ = false;

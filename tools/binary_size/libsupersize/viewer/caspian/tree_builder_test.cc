@@ -64,6 +64,30 @@ std::string ShortName(const Json::Value& node) {
   const int short_name_index = node["shortNameIndex"].asInt();
   return id_path.substr(short_name_index);
 }
+
+void MakeAliasGroup(SizeInfo* info, size_t start, size_t end) {
+  auto& group = info->alias_groups.emplace_back();
+  for (size_t i = start; i < end; ++i) {
+    info->raw_symbols[i].aliases_ = &group;
+    group.push_back(&info->raw_symbols[i]);
+  }
+}
+
+void MakeAliasSymbols(SizeInfo* info,
+                      SectionId section_id,
+                      int32_t size,
+                      const char* path,
+                      const char* name_prefix,
+                      int start_idx,
+                      int count,
+                      int32_t relocation_count = 0) {
+  for (int i = 0; i < count; ++i) {
+    info->owned_strings.push_back(std::string(name_prefix) +
+                                  base::NumberToString(start_idx + i));
+    MakeSymbol(info, section_id, size, path, "", info->owned_strings.back());
+    info->raw_symbols.back().relocation_count_ = relocation_count;
+  }
+}
 }  // namespace
 
 std::unique_ptr<SizeInfo> CreateSizeInfo() {
@@ -253,6 +277,427 @@ TEST(TreeBuilderTest, TestRelocationsDiffModePreservesFileDiffStatus) {
   EXPECT_FLOAT_EQ(0.0f, file_node["children"][0]["beforeSize"].asFloat());
   EXPECT_EQ(1, file_node["childStats"]["R"]["added"].asInt());
   EXPECT_EQ(0, file_node["childStats"]["R"]["changed"].asInt());
+}
+
+TEST(TreeBuilderTest, TestDiffModeFiltersTinyAliasPss) {
+  std::unique_ptr<SizeInfo> before = MakeSizeInfo();
+  // 25-alias 2-byte group (0.08 B each < 0.1) across dir1, dir2, dir3, dir6,
+  // dir7, and dir8.
+  MakeAliasSymbols(before.get(), SectionId::kText, 2, "dir1/a.cc", "alias_", 0,
+                   10);
+  MakeAliasSymbols(before.get(), SectionId::kText, 2, "dir2/b.cc", "alias_", 10,
+                   10);
+  MakeAliasSymbols(before.get(), SectionId::kText, 2, "dir3/c.cc", "alias_", 20,
+                   1);
+  MakeAliasSymbols(before.get(), SectionId::kText, 2, "dir6/f.cc", "alias_", 21,
+                   1);
+  // Tiny alias that will be removed from wholly-removed file dir7/g.cc.
+  MakeAliasSymbols(before.get(), SectionId::kText, 2, "dir7/g.cc", "alias_", 22,
+                   1);
+  // Tiny aliases that will be removed from existing file dir8/h.cc while a real
+  // symbol is added there (mixed polarity).
+  MakeAliasSymbols(before.get(), SectionId::kText, 2, "dir8/h.cc", "alias_", 23,
+                   2);
+  // 10-alias 2-byte group (0.2 B each) that will split to 20 aliases (-0.1 B).
+  MakeAliasSymbols(before.get(), SectionId::kText, 2, "dir5/e.cc", "split_", 0,
+                   10);
+  MakeSymbol(before.get(), SectionId::kText, 100, "dir1/a.cc", "", "real_sym");
+  MakeSymbol(before.get(), SectionId::kText, 30, "dir6/f.cc", "",
+             "removed_in_f");
+  MakeSymbol(before.get(), SectionId::kText, 35, "dir7/g.cc", "",
+             "removed_in_g");
+  MakeSymbol(before.get(), SectionId::kText, 45, "dir9/i.cc", "",
+             "removed_in_i");
+  MakeAliasGroup(before.get(), 0, 25);
+  MakeAliasGroup(before.get(), 25, 35);
+
+  std::unique_ptr<SizeInfo> after = MakeSizeInfo();
+  // Alias group changes from 25 to 26 aliases (22 matched, 3 removed, 4 added):
+  // matched delta = 2/26 - 2/25 = -0.003, added = +0.077, removed = -0.080;
+  // all |delta| < 0.1 and the group's net delta is 0.
+  MakeAliasSymbols(after.get(), SectionId::kText, 2, "dir1/a.cc", "alias_", 0,
+                   10);
+  MakeAliasSymbols(after.get(), SectionId::kText, 2, "dir2/b.cc", "alias_", 10,
+                   10);
+  MakeAliasSymbols(after.get(), SectionId::kText, 2, "dir3/c.cc", "alias_", 20,
+                   1);
+  MakeAliasSymbols(after.get(), SectionId::kText, 2, "dir6/f.cc", "alias_", 21,
+                   1);
+  MakeAliasSymbols(after.get(), SectionId::kText, 2, "dir1/a.cc", "alias_", 25,
+                   2);
+  MakeAliasSymbols(after.get(), SectionId::kText, 2, "dir4/d.cc", "alias_", 27,
+                   1);
+  // Tiny alias added to dir9/i.cc while its real symbol is removed (mixed
+  // polarity).
+  MakeAliasSymbols(after.get(), SectionId::kText, 2, "dir9/i.cc", "alias_", 28,
+                   1);
+  // Split group grows from 10 to 20 aliases: matched delta = -0.1, added = +0.1
+  // (exact 0.1 boundary must be kept).
+  MakeAliasSymbols(after.get(), SectionId::kText, 2, "dir5/e.cc", "split_", 0,
+                   20);
+  MakeSymbol(after.get(), SectionId::kText, 120, "dir1/a.cc", "", "real_sym");
+  // Existing file dir3/c.cc gets a real added symbol alongside its tiny alias.
+  MakeSymbol(after.get(), SectionId::kText, 40, "dir3/c.cc", "", "added_in_c");
+  // Brand-new file dir4/d.cc gets a real added symbol alongside a tiny added
+  // alias.
+  MakeSymbol(after.get(), SectionId::kText, 50, "dir4/d.cc", "", "added_in_d");
+  // Existing file dir8/h.cc loses its tiny aliases and gains a real symbol.
+  MakeSymbol(after.get(), SectionId::kText, 60, "dir8/h.cc", "", "added_in_h");
+  MakeAliasGroup(after.get(), 0, 26);
+  MakeAliasGroup(after.get(), 26, 46);
+
+  DeltaSizeInfo diff = Diff(before.get(), after.get(), nullptr, nullptr);
+  TreeBuilder builder(&diff);
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                /*relocations_mode=*/false);
+  CheckAllTreeNodesFindable(builder, builder.Open(""));
+
+  // dir2/b.cc only had tiny alias deltas and should be omitted completely.
+  EXPECT_EQ(nullptr, builder.Find("dir2"));
+  // The zero-net alias group sums to 0, so no aggregate overhead node is
+  // emitted.
+  EXPECT_EQ(nullptr, builder.Find("(No path)"));
+
+  // dir1/a.cc keeps only real_sym (+20) with consistent size and childStats.
+  Json::Value a_node = builder.Open("dir1/a.cc");
+  ASSERT_EQ(1u, a_node["children"].size());
+  EXPECT_EQ("real_sym", a_node["children"][0]["fullName"].asString());
+  EXPECT_FLOAT_EQ(20.0f, a_node["size"].asFloat());
+  EXPECT_FLOAT_EQ(20.0f, a_node["childStats"]["t"]["size"].asFloat());
+  EXPECT_EQ(1, a_node["childStats"]["t"]["changed"].asInt());
+  EXPECT_EQ(0, a_node["childStats"]["t"]["added"].asInt());
+
+  // Existing file dir3/c.cc must not be marked wholly added because it still
+  // contains an unchanged-in-practice matched alias from `before`.
+  Json::Value c_node = builder.Open("dir3/c.cc");
+  ASSERT_EQ(1u, c_node["children"].size());
+  EXPECT_FALSE(c_node.isMember("diffStatus"));
+  EXPECT_FLOAT_EQ(40.0f, c_node["size"].asFloat());
+
+  // Brand-new file dir4/d.cc must still be marked wholly added even though its
+  // tiny added alias was skipped.
+  Json::Value d_node = builder.Open("dir4/d.cc");
+  ASSERT_EQ(1u, d_node["children"].size());
+  EXPECT_EQ(static_cast<int>(DiffStatus::kAdded), d_node["diffStatus"].asInt());
+  EXPECT_EQ(1, d_node["childStats"]["t"]["added"].asInt());
+  EXPECT_FLOAT_EQ(50.0f, d_node["size"].asFloat());
+
+  // Exact |delta| == 0.1 boundary symbols in dir5/e.cc are kept.
+  Json::Value e_node = builder.Open("dir5/e.cc");
+  EXPECT_EQ(20u, e_node["children"].size());
+  EXPECT_NEAR(0.0f, e_node["size"].asFloat(), 1e-4f);
+
+  // Existing file dir6/f.cc must not be marked wholly removed because it still
+  // contains a matched alias from `before`.
+  Json::Value f_node = builder.Open("dir6/f.cc");
+  ASSERT_EQ(1u, f_node["children"].size());
+  EXPECT_FALSE(f_node.isMember("diffStatus"));
+  EXPECT_FLOAT_EQ(-30.0f, f_node["size"].asFloat());
+
+  // Wholly removed file dir7/g.cc must still be marked wholly removed even
+  // though its tiny removed alias was skipped.
+  Json::Value g_node = builder.Open("dir7/g.cc");
+  ASSERT_EQ(1u, g_node["children"].size());
+  EXPECT_EQ(static_cast<int>(DiffStatus::kRemoved),
+            g_node["diffStatus"].asInt());
+  EXPECT_EQ(1, g_node["childStats"]["t"]["removed"].asInt());
+  EXPECT_FLOAT_EQ(-35.0f, g_node["size"].asFloat());
+
+  // Mixed-polarity files (skipped removal + visible addition in dir8/h.cc, and
+  // skipped addition + visible removal in dir9/i.cc) must not be marked wholly
+  // added or removed.
+  Json::Value h_node = builder.Open("dir8/h.cc");
+  ASSERT_EQ(1u, h_node["children"].size());
+  EXPECT_FALSE(h_node.isMember("diffStatus"));
+  Json::Value i_node = builder.Open("dir9/i.cc");
+  ASSERT_EQ(1u, i_node["children"].size());
+  EXPECT_FALSE(i_node.isMember("diffStatus"));
+}
+
+TEST(TreeBuilderTest, TestDiffModeAggregatesSmallAliasDeltas) {
+  std::unique_ptr<SizeInfo> before = MakeSizeInfo();
+  before->containers[0].name = "c1";
+  before->containers.emplace_back("c2");
+  // Container c1: 25-alias 64-byte group that grows to 26 aliases (zero net
+  // change, but added alias is +2.46 B >= 0.1 while 25 matched aliases are
+  // -0.098 B < 0.1).
+  MakeAliasSymbols(before.get(), SectionId::kText, 64, "dir_matched/a.cc",
+                   "icf_", 0, 25);
+  MakeAliasGroup(before.get(), 0, 25);
+
+  std::unique_ptr<SizeInfo> after = MakeSizeInfo();
+  after->containers[0].name = "c1";
+  after->containers.emplace_back("c2");
+  MakeAliasSymbols(after.get(), SectionId::kText, 64, "dir_matched/a.cc",
+                   "icf_", 0, 25);
+  MakeAliasSymbols(after.get(), SectionId::kText, 64, "dir_added/b.cc", "icf_",
+                   25, 1);
+  // Container c2: wholly added 4-byte 50-alias group (+0.08 B each < 0.1).
+  size_t c2_start = after->raw_symbols.size();
+  MakeAliasSymbols(after.get(), SectionId::kText, 4, "dir_c2/c.cc", "small_", 0,
+                   50);
+  for (size_t i = c2_start; i < after->raw_symbols.size(); ++i) {
+    after->raw_symbols[i].container_ = &after->containers[1];
+  }
+  MakeAliasGroup(after.get(), 0, 26);
+  MakeAliasGroup(after.get(), c2_start, after->raw_symbols.size());
+
+  DeltaSizeInfo diff = Diff(before.get(), after.get(), nullptr, nullptr);
+  TreeBuilder builder(&diff);
+  FilterList filters;
+  builder.Build(std::make_unique<ContainerLens>(), '/', false, filters,
+                /*relocations_mode=*/false);
+  CheckAllTreeNodesFindable(builder, builder.Open(""));
+
+  // c1: dir_matched is omitted, dir_added keeps the +2.46 B alias, and
+  // (No path) carries the -2.46 B aggregate so c1's net total stays 0.
+  EXPECT_EQ(nullptr, builder.Find("c1/dir_matched"));
+  Json::Value c1_node = builder.Open("c1");
+  EXPECT_NEAR(0.0f, c1_node["size"].asFloat(), 1e-4f);
+  EXPECT_NEAR(64.0f, c1_node["beforeSize"].asFloat(), 1e-4f);
+  Json::Value c1_no_path = builder.Open("c1/(No path)");
+  ASSERT_EQ(1u, c1_no_path["children"].size());
+  EXPECT_EQ("Overhead: aggregate small symbol diffs",
+            c1_no_path["children"][0]["fullName"].asString());
+  EXPECT_EQ("c1", c1_no_path["children"][0]["container"].asString());
+  EXPECT_NEAR(-64.0f / 26.0f, c1_no_path["children"][0]["size"].asFloat(),
+              1e-4f);
+
+  // c2: all 50 sub-0.1 B symbols collapse into one +4 B aggregate node so the
+  // real +4 B growth is preserved.
+  EXPECT_EQ(nullptr, builder.Find("c2/dir_c2"));
+  Json::Value c2_node = builder.Open("c2");
+  EXPECT_NEAR(4.0f, c2_node["size"].asFloat(), 1e-4f);
+  Json::Value c2_no_path = builder.Open("c2/(No path)");
+  ASSERT_EQ(1u, c2_no_path["children"].size());
+  EXPECT_EQ("c2", c2_no_path["children"][0]["container"].asString());
+  EXPECT_NEAR(4.0f, c2_no_path["children"][0]["size"].asFloat(), 1e-4f);
+
+  // Root total equals c1 (0) + c2 (+4) = +4 B.
+  EXPECT_NEAR(4.0f, builder.Open("")["size"].asFloat(), 1e-4f);
+
+  // Under IdPathLens (empty group), skipped deltas from both containers merge
+  // into one aggregate symbol with an empty container name.
+  TreeBuilder id_builder(&diff);
+  id_builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                   /*relocations_mode=*/false);
+  CheckAllTreeNodesFindable(id_builder, id_builder.Open(""));
+  Json::Value no_path = id_builder.Open("(No path)");
+  ASSERT_EQ(1u, no_path["children"].size());
+  EXPECT_EQ("", no_path["children"][0]["container"].asString());
+  EXPECT_NEAR(4.0f - 64.0f / 26.0f, no_path["children"][0]["size"].asFloat(),
+              1e-4f);
+  EXPECT_NEAR(4.0f, id_builder.Open("")["size"].asFloat(), 1e-4f);
+}
+
+TEST(TreeBuilderTest, TestDiffModeAggregatesSmallAliasDeltasPerLens) {
+  std::unique_ptr<SizeInfo> before = MakeSizeInfo();
+  // CompB: 25-alias 2-byte group (-0.08 B each when removed) -> -2 B net.
+  MakeAliasSymbols(before.get(), SectionId::kText, 2, "comp_b/b.cc", "rem_", 0,
+                   25);
+  for (Symbol& sym : before->raw_symbols) {
+    sym.component_ = "CompB";
+  }
+  MakeAliasGroup(before.get(), 0, 25);
+
+  std::unique_ptr<SizeInfo> after = MakeSizeInfo();
+  // CompA>Sub: 25-alias 2-byte group (+0.08 B each when added) -> +2 B net.
+  // Same magnitude as CompB's removal so pooling across components would cancel
+  // both to 0.
+  MakeAliasSymbols(after.get(), SectionId::kText, 2, "comp_a/a.cc", "add_", 0,
+                   25);
+  for (size_t i = 0; i < 25; ++i) {
+    after->raw_symbols[i].component_ = "CompA>Sub";
+  }
+
+  // Generated Mojo group: 50-alias 4-byte group (+0.08 B each) -> +4 B net.
+  size_t mojo_start = after->raw_symbols.size();
+  MakeAliasSymbols(after.get(), SectionId::kText, 4, "gen/foo.mojom.cc",
+                   "mojo_", 0, 50);
+  for (size_t i = mojo_start; i < after->raw_symbols.size(); ++i) {
+    after->raw_symbols[i].component_ = "CompMojo";
+    after->raw_symbols[i].flags_ = SymbolFlag::kGeneratedSource;
+  }
+
+  // Native template group: 50-alias 4-byte group (+0.08 B each) -> +4 B net.
+  size_t tmpl_start = after->raw_symbols.size();
+  for (int i = 0; i < 50; ++i) {
+    after->owned_strings.push_back("MyTemplate<T" + base::NumberToString(i) +
+                                   ">()");
+    MakeSymbol(after.get(), SectionId::kText, 4, "tmpl/t.cc", "CompT",
+               after->owned_strings.back());
+  }
+  MakeAliasGroup(after.get(), 0, mojo_start);
+  MakeAliasGroup(after.get(), mojo_start, tmpl_start);
+  MakeAliasGroup(after.get(), tmpl_start, after->raw_symbols.size());
+
+  DeltaSizeInfo diff = Diff(before.get(), after.get(), nullptr, nullptr);
+  FilterList filters;
+
+  // ComponentLens: CompA>Sub (+2) and CompB (-2) stay attributed to their own
+  // components rather than cancelling or falling back to "(No component)".
+  {
+    TreeBuilder builder(&diff);
+    builder.Build(std::make_unique<ComponentLens>(), '>', false, filters,
+                  /*relocations_mode=*/false);
+    CheckAllTreeNodesFindable(builder, builder.Open(""));
+    EXPECT_EQ(nullptr, builder.Find("(No component)"));
+    EXPECT_NEAR(2.0f, builder.Open("CompA>Sub")["size"].asFloat(), 1e-4f);
+    EXPECT_NEAR(2.0f, builder.Open("CompA>Sub/(No path)")["size"].asFloat(),
+                1e-4f);
+    EXPECT_NEAR(-2.0f, builder.Open("CompB")["size"].asFloat(), 1e-4f);
+    EXPECT_NEAR(-2.0f, builder.Open("CompB/(No path)")["size"].asFloat(),
+                1e-4f);
+  }
+
+  // GeneratedLens: Mojo symbols stay under "Mojo/(No path)", not merged into
+  // "Not generated".
+  {
+    TreeBuilder builder(&diff);
+    builder.Build(std::make_unique<GeneratedLens>(), '/', false, filters,
+                  /*relocations_mode=*/false);
+    CheckAllTreeNodesFindable(builder, builder.Open(""));
+    EXPECT_NEAR(4.0f, builder.Open("Mojo")["size"].asFloat(), 1e-4f);
+    EXPECT_NEAR(4.0f, builder.Open("Mojo/(No path)")["size"].asFloat(), 1e-4f);
+    EXPECT_NEAR(4.0f, builder.Open("Not generated")["size"].asFloat(), 1e-4f);
+  }
+
+  // TemplateLens: template small diffs stay under "MyTemplate<>/(No path)",
+  // without creating a bogus top-level "Overhead: aggregate small symbol diffs"
+  // template group.
+  {
+    TreeBuilder builder(&diff);
+    FilterList tmpl_filters = {
+        [](const GroupedPath&, const BaseSymbol& sym) {
+          return sym.IsTemplate() && sym.IsNative();
+        },
+    };
+    builder.Build(std::make_unique<TemplateLens>(), '/', false, tmpl_filters,
+                  /*relocations_mode=*/false);
+    CheckAllTreeNodesFindable(builder, builder.Open(""));
+    EXPECT_EQ(nullptr, builder.Find("Overhead: aggregate small symbol diffs"));
+    EXPECT_NEAR(4.0f, builder.Open("MyTemplate<>")["size"].asFloat(), 1e-4f);
+    Json::Value tmpl_no_path = builder.Open("MyTemplate<>/(No path)");
+    ASSERT_EQ(1u, tmpl_no_path["children"].size());
+    EXPECT_EQ("Overhead: aggregate small symbol diffs",
+              tmpl_no_path["children"][0]["fullName"].asString());
+  }
+}
+
+TEST(TreeBuilderTest, TestDiffModeFiltersTinyRelocationPss) {
+  std::unique_ptr<SizeInfo> before = MakeSizeInfo();
+  // 21-alias group with 1 relocation (0.0476 each < 0.05) across dir1 & dir2.
+  MakeAliasSymbols(before.get(), SectionId::kDataRelRo, 100, "dir1/a.cc",
+                   "rel_", 0, 16, /*relocation_count=*/1);
+  MakeAliasSymbols(before.get(), SectionId::kDataRelRo, 100, "dir2/b.cc",
+                   "rel_", 16, 5, /*relocation_count=*/1);
+  // 14-alias group with 10 relocations growing to 15 aliases: added +0.667 is
+  // kept, 14 matched -0.0476 (< 0.05) are aggregated so net stays 0.
+  size_t asym_before_start = before->raw_symbols.size();
+  MakeAliasSymbols(before.get(), SectionId::kDataRelRo, 100, "dir_asym/x.cc",
+                   "asym_", 0, 14, /*relocation_count=*/10);
+  MakeAliasGroup(before.get(), 0, 21);
+  MakeAliasGroup(before.get(), asym_before_start, asym_before_start + 14);
+
+  std::unique_ptr<SizeInfo> after = MakeSizeInfo();
+  // 21 -> 22 aliases: matched delta = 1/22 - 1/21 = -0.0022, added = +0.0455
+  // (all |delta| < 0.05 and net = 0).
+  MakeAliasSymbols(after.get(), SectionId::kDataRelRo, 100, "dir1/a.cc", "rel_",
+                   0, 16, /*relocation_count=*/1);
+  MakeAliasSymbols(after.get(), SectionId::kDataRelRo, 100, "dir2/b.cc", "rel_",
+                   16, 5, /*relocation_count=*/1);
+  MakeAliasSymbols(after.get(), SectionId::kDataRelRo, 100, "dir1/a.cc", "rel_",
+                   21, 1, /*relocation_count=*/1);
+  // Existing file dir1/a.cc also gains a real relocation symbol so we can check
+  // its diffStatus is preserved.
+  MakeSymbol(after.get(), SectionId::kDataRelRo, 100, "dir1/a.cc", "",
+             "added_rel");
+  after->raw_symbols.back().relocation_count_ = 2;
+  // Exact 0.05 boundary: wholly added 20-alias group with 1 relocation
+  // (+0.05 each) must be kept individually.
+  size_t boundary_start = after->raw_symbols.size();
+  MakeAliasSymbols(after.get(), SectionId::kDataRelRo, 100, "dir3/c.cc",
+                   "bound_", 0, 20, /*relocation_count=*/1);
+  // Asymmetric group grows 14 -> 15 aliases (net = 0).
+  size_t asym_after_start = after->raw_symbols.size();
+  MakeAliasSymbols(after.get(), SectionId::kDataRelRo, 100, "dir_asym/x.cc",
+                   "asym_", 0, 14, /*relocation_count=*/10);
+  MakeAliasSymbols(after.get(), SectionId::kDataRelRo, 100, "dir_asym_add/y.cc",
+                   "asym_", 14, 1, /*relocation_count=*/10);
+  MakeAliasGroup(after.get(), 0, 22);
+  MakeAliasGroup(after.get(), boundary_start, boundary_start + 20);
+  MakeAliasGroup(after.get(), asym_after_start, asym_after_start + 15);
+
+  DeltaSizeInfo diff = Diff(before.get(), after.get(), nullptr, nullptr);
+  TreeBuilder builder(&diff);
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                /*relocations_mode=*/true);
+  CheckAllTreeNodesFindable(builder, builder.Open(""));
+
+  EXPECT_EQ(nullptr, builder.Find("dir2"));
+  EXPECT_EQ(nullptr, builder.Find("dir_asym"));
+
+  // Existing file dir1/a.cc keeps only added_rel and is not marked wholly
+  // added because of its skipped matched relocation aliases.
+  Json::Value a_node = builder.Open("dir1/a.cc");
+  ASSERT_EQ(1u, a_node["children"].size());
+  EXPECT_EQ("added_rel", a_node["children"][0]["fullName"].asString());
+  EXPECT_FALSE(a_node.isMember("diffStatus"));
+
+  // Exact 0.05 boundary symbols in dir3/c.cc are all kept individually.
+  Json::Value c_node = builder.Open("dir3/c.cc");
+  EXPECT_EQ(20u, c_node["children"].size());
+
+  // Root total equals added_rel (+2) + boundary (+1) + asymmetric (0) = +3.
+  EXPECT_NEAR(3.0f, builder.Open("")["size"].asFloat(), 1e-4f);
+}
+
+TEST(TreeBuilderTest, TestSnapshotModeKeepsSmallAliasPss) {
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
+  MakeAliasSymbols(size_info.get(), SectionId::kText, 2, "a/b.cc", "alias_", 0,
+                   25, /*relocation_count=*/1);
+  MakeAliasGroup(size_info.get(), 0, 25);
+
+  {
+    TreeBuilder builder(size_info.get());
+    FilterList filters;
+    builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                  /*relocations_mode=*/false);
+    Json::Value file_node = builder.Open("a/b.cc");
+    EXPECT_EQ(25u, file_node["children"].size());
+    EXPECT_NEAR(2.0f, file_node["size"].asFloat(), 1e-4f);
+  }
+
+  {
+    TreeBuilder builder(size_info.get());
+    FilterList filters;
+    builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                  /*relocations_mode=*/true);
+    Json::Value file_node = builder.Open("a/b.cc");
+    EXPECT_EQ(25u, file_node["children"].size());
+    EXPECT_NEAR(1.0f, file_node["size"].asFloat(), 1e-4f);
+  }
+}
+
+TEST(TreeBuilderTest, TestMethodCountDiffModeKeepsSmallAliasPss) {
+  std::unique_ptr<SizeInfo> before = MakeSizeInfo();
+  std::unique_ptr<SizeInfo> after = MakeSizeInfo();
+  MakeAliasSymbols(after.get(), SectionId::kDexMethod, 2, "a/Foo.java", "Foo#m",
+                   0, 25);
+  MakeAliasGroup(after.get(), 0, 25);
+
+  DeltaSizeInfo diff = Diff(before.get(), after.get(), nullptr, nullptr);
+  TreeBuilder builder(&diff);
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '/',
+                /*method_count_mode=*/true, filters,
+                /*relocations_mode=*/false);
+
+  Json::Value class_node = builder.Open("a/Foo.java/Foo");
+  EXPECT_EQ(25u, class_node["children"].size());
+  EXPECT_EQ(25, class_node["childStats"]["m"]["count"].asInt());
 }
 
 }  // namespace caspian

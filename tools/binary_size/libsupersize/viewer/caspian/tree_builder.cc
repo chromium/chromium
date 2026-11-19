@@ -5,6 +5,7 @@
 #include "tools/binary_size/libsupersize/viewer/caspian/tree_builder.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <map>
 #include <stack>
@@ -19,6 +20,16 @@ namespace {
 /** Name used by a directory created to hold symbols with no name. */
 constexpr const char kComponentSep = '>';
 constexpr const char kPathSep = '/';
+// Minimum |delta| to show an individual symbol in diff mode (0.1 bytes, or
+// 0.05 in relocations mode to match 1-decimal-place tooltip rounding in
+// state.js). Tiny fractional PSS deltas caused by alias count changes in large
+// ICF alias groups (e.g. 2/27607 - 2/27606) are aggregated per
+// (lens group, section) and only emitted if their combined |delta| reaches this
+// threshold.
+constexpr float kMinDiffSize = 0.1f;
+constexpr float kMinDiffRelocations = 0.05f;
+constexpr const char* kSmallDiffsSymbolName =
+    "Overhead: aggregate small symbol diffs";
 
 struct GroupedEntry {
   GroupedPath key;
@@ -104,9 +115,16 @@ void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
       entry.symbols.push_back(sym);
     }
   }
+  SmallDiffMap small_diffs;
   for (const GroupedEntry& entry : grouped_entries) {
     if (!entry.symbols.empty()) {
-      AddFileEntry(entry.key, entry.symbols);
+      AddFileEntry(entry.key, entry.symbols, &small_diffs);
+    }
+  }
+  float min_diff_size = relocations_mode_ ? kMinDiffRelocations : kMinDiffSize;
+  for (const auto& [key, agg] : small_diffs) {
+    if (std::abs(agg.size) >= min_diff_size) {
+      AddSmallDiffAggregate(key.first, key.second, agg);
     }
   }
 }
@@ -198,18 +216,17 @@ Json::Value TreeBuilder::GetAncestryById(uint32_t id) {
 }
 
 void TreeBuilder::AddFileEntry(const GroupedPath& grouped_path,
-                               const std::vector<const BaseSymbol*>& symbols) {
+                               const std::vector<const BaseSymbol*>& symbols,
+                               SmallDiffMap* small_diffs) {
   // Creates a single file node with a child for each symbol in that file.
-
-  // In legacy .size files, unattributed .dex symbols symbols aggregated and
-  // attributed to a path which is actually a directory. Therefore it's
-  // possible that a TreeNode has already been created for |grouped_path|. This
-  // is made slightly more complicated by the fact that _parents[""] is root,
-  // but we do want to create a a new (No path) file entry.
-
   std::vector<TreeNode*> symbol_nodes;
   // Create symbol nodes.
   NodeStats node_stats;
+  float min_diff_size = relocations_mode_ ? kMinDiffRelocations : kMinDiffSize;
+  // Track whether any skipped small-diff symbols existed in `before` or
+  // `after` so we can keep file-level added/removed diffStatus accurate below.
+  bool has_skipped_before = false;
+  bool has_skipped_after = false;
   for (const BaseSymbol* sym : symbols) {
     float sym_size = relocations_mode_ ? sym->RelocationPss() : sym->Pss();
     if (sym_size == 0.0f) {
@@ -220,28 +237,134 @@ void TreeBuilder::AddFileEntry(const GroupedPath& grouped_path,
       node_stats.AddSymbol(*sym, relocations_mode_);
       continue;
     }
+    float padding = relocations_mode_ ? 0.0f : sym->PaddingPss();
+    const DeltaSymbol* delta =
+        diff_mode_ ? static_cast<const DeltaSymbol*>(sym) : nullptr;
+    float before_size = 0.0f;
+    if (delta && delta->Before()) {
+      before_size = relocations_mode_ ? delta->Before()->RelocationPss()
+                                      : delta->Before()->Pss();
+    }
+    // Skip creating individual leaf nodes for tiny diff-mode deltas (e.g.
+    // fractional PSS ripple when an alias joins/leaves a large ICF group) so
+    // they don't clutter every directory with ~0-byte rows. Method-count mode
+    // is excluded because every added/removed method counts as +/-1 regardless
+    // of byte size.
+    //
+    // Skipped deltas are accumulated per (lens group, section) so that:
+    // - zero-net alias groups cancel out and emit no overhead node at all, and
+    // - non-zero remainders (e.g. asymmetric ICF splits or wholly added/removed
+    //   small-alias groups) are emitted as one aggregate overhead symbol,
+    //   keeping group, section, and root totals accurate.
+    if (delta && !method_count_mode_ && std::abs(sym_size) < min_diff_size) {
+      has_skipped_before |= delta->Before() != nullptr;
+      has_skipped_after |= delta->After() != nullptr;
+      auto [it, inserted] =
+          small_diffs->try_emplace({grouped_path.group, sym->Section()});
+      SmallDiffAggregate& agg = it->second;
+      // Retain the container on the aggregate symbol when all skipped symbols
+      // in this bucket share one container (always true under ContainerLens);
+      // clear it if multiple containers are pooled under another lens.
+      if (inserted) {
+        agg.container =
+            (delta->After() ? delta->After() : delta->Before())->container_;
+      } else if (agg.container && agg.container->name != sym->ContainerName()) {
+        agg.container = nullptr;
+      }
+      agg.size += sym_size;
+      agg.before_size += before_size;
+      agg.padding += padding;
+      continue;
+    }
     TreeNode* symbol_node = tree_node_factory_.Make(ArtifactType::kSymbol);
     symbol_node->id_path =
         GroupedPath{"", sym->IsDex() ? sym->TemplateName() : sym->FullName()};
     symbol_node->size = sym_size;
-    symbol_node->padding = relocations_mode_ ? 0.0f : sym->PaddingPss();
+    symbol_node->padding = padding;
     symbol_node->address = sym->Address();
     symbol_node->node_stats.AddSymbol(*sym, relocations_mode_);
     symbol_node->symbol = sym;
-    if (diff_mode_) {
-      const Symbol* before = static_cast<const DeltaSymbol*>(sym)->Before();
-      symbol_node->before_size =
-          !before
-              ? 0.0f
-              : (relocations_mode_ ? before->RelocationPss() : before->Pss());
-    }
+    symbol_node->before_size = before_size;
     symbol_nodes.push_back(symbol_node);
   }
 
+  // Omit the file node (and any otherwise-empty parent directories) when all
+  // of its symbols were zero-delta or skipped as tiny diffs.
   if (symbol_nodes.empty()) {
     return;
   }
 
+  TreeNode* file_node = GetOrMakeFileNode(grouped_path, node_stats);
+
+  file_node->children.reserve(file_node->children.size() + symbol_nodes.size());
+  for (TreeNode* symbol_node : symbol_nodes) {
+    AttachToParent(symbol_node, file_node);
+  }
+
+  // NodeStats::GetGlobalDiffStatus() treats a node as wholly added when
+  // SumAdded() == SumCount() (or wholly removed when SumRemoved() ==
+  // SumCount()). If all visible symbols are added (or removed) but we skipped
+  // a symbol that existed in `before` (or `after`), bump `count` by 1 so an
+  // existing or mixed-polarity file is not misclassified as wholly added or
+  // removed. Done before attaching to ancestors so parent directories inherit
+  // the adjusted count; guarded by `parent == nullptr` so legacy reused
+  // directory nodes aren't mutated after already being attached.
+  if (file_node->parent == nullptr &&
+      (has_skipped_before || has_skipped_after)) {
+    DiffStatus status = file_node->node_stats.GetGlobalDiffStatus();
+    if ((status == DiffStatus::kAdded && has_skipped_before) ||
+        (status == DiffStatus::kRemoved && has_skipped_after)) {
+      file_node->node_stats.child_stats[0].second.count += 1;
+    }
+  }
+
+  TreeNode* orphan_node = file_node;
+  while (orphan_node != root_) {
+    orphan_node = GetOrMakeParentNode(orphan_node);
+  }
+
+  JoinDexMethodClasses(file_node);
+}
+
+void TreeBuilder::AddSmallDiffAggregate(std::string_view group,
+                                        SectionId section,
+                                        const SmallDiffAggregate& agg) {
+  Symbol& sym = owned_symbols_.emplace_back();
+  sym.section_id_ = section;
+  sym.container_ = agg.container;
+  sym.full_name_ = kSmallDiffsSymbolName;
+  sym.template_name_ = sym.full_name_;
+  sym.name_ = sym.full_name_;
+  // DeltaSymbol(&sym, &sym) satisfies WriteIntoJson's diff_mode downcast and
+  // gives a zero-delta base symbol; size and child_stats are populated below.
+  DeltaSymbol& delta_sym = owned_delta_symbols_.emplace_back(&sym, &sym);
+
+  TreeNode* symbol_node = tree_node_factory_.Make(ArtifactType::kSymbol);
+  symbol_node->id_path = GroupedPath{"", delta_sym.FullName()};
+  symbol_node->size = static_cast<float>(agg.size);
+  symbol_node->before_size = static_cast<float>(agg.before_size);
+  symbol_node->padding = static_cast<float>(agg.padding);
+  symbol_node->node_stats.child_stats.push_back(
+      {section, {.count = 1, .changed = 1, .size = symbol_node->size}});
+  symbol_node->symbol = &delta_sym;
+
+  GroupedPath grouped_path{group, delta_sym.GroupingPath()};
+  TreeNode* file_node = GetOrMakeFileNode(grouped_path, NodeStats{});
+  AttachToParent(symbol_node, file_node);
+
+  TreeNode* orphan_node = file_node;
+  while (orphan_node != root_) {
+    orphan_node = GetOrMakeParentNode(orphan_node);
+  }
+}
+
+TreeNode* TreeBuilder::GetOrMakeFileNode(const GroupedPath& grouped_path,
+                                         const NodeStats& node_stats) {
+  // In legacy .size files, unattributed .dex symbols were aggregated and
+  // attributed to a path which is actually a directory. Therefore it's
+  // possible that a TreeNode has already been created for |grouped_path|. This
+  // is made slightly more complicated by the fact that _parents[""] is root,
+  // but we do want to create a new (No path) file entry.
   auto [file_node_it, inserted] = _parents.try_emplace(grouped_path);
   TreeNode* file_node = file_node_it->second;
   if (inserted || file_node == nullptr || grouped_path.path.empty()) {
@@ -256,18 +379,7 @@ void TreeBuilder::AddFileEntry(const GroupedPath& grouped_path,
       file_node->node_stats.imposed_diff_status = it->second;
     }
   }
-
-  file_node->children.reserve(file_node->children.size() + symbol_nodes.size());
-  for (TreeNode* symbol_node : symbol_nodes) {
-    AttachToParent(symbol_node, file_node);
-  }
-
-  TreeNode* orphan_node = file_node;
-  while (orphan_node != root_) {
-    orphan_node = GetOrMakeParentNode(orphan_node);
-  }
-
-  JoinDexMethodClasses(file_node);
+  return file_node;
 }
 
 TreeNode* TreeBuilder::GetOrMakeParentNode(TreeNode* child_node) {
