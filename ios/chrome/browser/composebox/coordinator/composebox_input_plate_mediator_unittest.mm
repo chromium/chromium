@@ -857,6 +857,43 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
 }
 
+// Tests that selecting a tool leaves compact mode, which shows the leading
+// image again.
+TEST_F(ComposeboxInputPlateMediatorTest, SelectingToolLeavesCompactMode) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  SetCanvasEligible(true);
+  SetOmniboxText(u"some text");
+  ASSERT_FALSE(
+      [consumer_ showsControls:ComposeboxInputPlateControls::kLeadingImage]);
+
+  [mediator_ setToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
+
+  EXPECT_TRUE(
+      [consumer_ showsControls:ComposeboxInputPlateControls::kLeadingImage]);
+}
+
+// Tests that toggling a server tool without a dedicated `ComposeboxMode` in
+// Cobrowse leaves compact mode, enabling multimodal controls.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       TogglingServerToolInCobrowseLeavesCompactMode) {
+  [mediator_ disconnect];
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  mediator_ =
+      CreateMediator(ComposeboxEntrypoint::kCobrowse, ComposeboxMode::kAIM);
+  mediator_.consumer = consumer_;
+  SetToolAllowed(omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+  ForwardSearchboxConfig();
+  SetOmniboxText(u"some text");
+  ASSERT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
+
+  [mediator_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE
+           activationSource:AiModeActivationSource::kToolMenu];
+
+  EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kPlus]);
+}
+
 // Tests that the mediator forwards background/foreground notifications to the
 // contextual search session.
 TEST_F(ComposeboxInputPlateMediatorTest,

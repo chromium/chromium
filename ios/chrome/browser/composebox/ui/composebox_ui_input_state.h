@@ -58,6 +58,10 @@
 /// The currently active tool.
 @property(nonatomic, assign) ComposeboxMode activeTool;
 
+/// Whether the entrypoint's default tool is active, meaning no tool is
+/// explicitly selected (regular search, or plain AI Mode for Cobrowse).
+@property(nonatomic, assign) BOOL defaultToolActive;
+
 /// Whether the given attachment option should be hidden.
 - (BOOL)isAttachmentHidden:(ComposeboxAttachmentOption)option;
 

@@ -554,6 +554,7 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
   state.maxTabAttachmentCount = [self maxTabAttachmentCount];
 
   state.activeTool = ComposeboxModeForToolMode(self.activeToolMode);
+  state.defaultToolActive = self.activeToolMode == [self defaultToolMode];
 
   state.uiConfig = _cachedUIConfig;
 

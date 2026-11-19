@@ -1749,3 +1749,67 @@ TEST_F(ComposeboxInputStateManagerTest,
   EXPECT_TRUE(restoredState.modelItems[1].selected);
   EXPECT_FALSE(restoredState.modelItems[1].disabled);
 }
+
+// Tests that the UI input state reports the default tool as active only in
+// regular search outside the Cobrowse entrypoint.
+TEST_F(ComposeboxInputStateManagerTest,
+       DefaultToolActiveOnlyInRegularSearchOutsideCobrowse) {
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set();
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+  ASSERT_TRUE([manager_ computeUIInputStateWithFavicon:nil
+                                   attachedWebStateIDs:{}]
+                  .defaultToolActive);
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
+
+  EXPECT_FALSE([manager_ computeUIInputStateWithFavicon:nil
+                                    attachedWebStateIDs:{}]
+                   .defaultToolActive);
+}
+
+// Tests that the UI input state reports plain AI Mode as the default tool for
+// the Cobrowse entrypoint, and that selecting a server tool without a
+// `ComposeboxMode` makes it inactive.
+TEST_F(ComposeboxInputStateManagerTest,
+       DefaultToolActiveInCobrowseUntilServerToolSelected) {
+  [manager_ disconnect];
+  manager_ = [[ComposeboxInputStateManager alloc]
+       initWithWebStateList:&web_state_list_
+                prefService:&pref_service_
+      aimEligibilityService:mock_aim_service_.get()
+            identityManager:identity_test_env_.identity_manager()
+         templateURLService:nullptr
+              sessionHandle:session_handle_.get()
+                 entrypoint:ComposeboxEntrypoint::kCobrowse
+                isIncognito:NO];
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set();
+  omnibox::ToolConfig* deep_browse_config = config.add_tool_configs();
+  deep_browse_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+  omnibox::ToolRule* rule = deep_browse_config->mutable_rule();
+  rule->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+  rule->set_allow_all_input_types(true);
+  rule->set_allow_all_models(true);
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+  ASSERT_TRUE([manager_ computeUIInputStateWithFavicon:nil
+                                   attachedWebStateIDs:{}]
+                  .defaultToolActive);
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE];
+
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+  ASSERT_EQ(state.activeTool, ComposeboxMode::kAIM);
+  EXPECT_FALSE(state.defaultToolActive);
+}

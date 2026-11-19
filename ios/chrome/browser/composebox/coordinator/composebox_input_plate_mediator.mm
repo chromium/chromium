@@ -2572,18 +2572,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     }
   }
 
-  std::set<ComposeboxMode> modesAllowingCompact;
-  if (self.isCobrowse) {
-    modesAllowingCompact = {ComposeboxMode::kAIM,
-                            ComposeboxMode::kRegularSearch};
-  } else {
-    modesAllowingCompact = {ComposeboxMode::kRegularSearch};
-  }
-
-  BOOL alwaysExpandedForCurrentMode =
-      !modesAllowingCompact.contains(_uiInputState.activeTool);
-
-  BOOL requiresExpansion = _isMultiline || alwaysExpandedForCurrentMode;
+  // Selecting a tool keeps the input plate expanded so the tool stays visible.
+  BOOL toolExplicitlySelected = !_uiInputState.defaultToolActive;
+  BOOL requiresExpansion = _isMultiline || toolExplicitlySelected;
   return !requiresExpansion;
 }
 
