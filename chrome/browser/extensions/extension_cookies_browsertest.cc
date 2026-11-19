@@ -36,10 +36,12 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
@@ -254,6 +256,16 @@ class ExtensionSameSiteCookiesTest
   }
 
   bool HasLegacySameSiteAccessSemantics() { return GetParam(); }
+
+  // Grants activeTab permission to `extension` on `web_contents` and waits for
+  // the permission update to propagate to the Network Service.
+  void GrantActiveTabPermission(content::WebContents* web_contents,
+                                const Extension* extension) {
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
+    ExtensionActionRunner::GetForWebContents(web_contents)
+        ->RunAction(extension, /*grant_tab_permissions=*/true);
+    waiter.WaitForActiveTabPermissionGranted(extension->id());
+  }
 
  private:
   mojo::Remote<network::mojom::CookieManager> cookie_manager_remote_;
@@ -538,21 +550,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   ExpectSameSiteCookies(cookies);
 }
 
-// TODO(crbug.com/509639786): Flaky on desktop Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ActiveTabPermissions_BackgroundPage \
-  DISABLED_ActiveTabPermissions_BackgroundPage
-#else
-#define MAYBE_ActiveTabPermissions_BackgroundPage \
-  ActiveTabPermissions_BackgroundPage
-#endif
 // SameSite-cookies-flavoured copy of the ExtensionActiveTabTest.ActiveTab test.
 // In this test, the effective extension permissions are changing at runtime
 // - the test verifies that the changing permissions are correctly propagated
 // into the SameSite cookie decisions (e.g. in
 // network::url_loader_util::ShouldForceIgnoreSiteForCookies).
 IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
-                       MAYBE_ActiveTabPermissions_BackgroundPage) {
+                       ActiveTabPermissions_BackgroundPage) {
   TestExtensionDir extension_dir;
   constexpr char kManifest[] = R"(
       {
@@ -607,8 +611,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Granting activeTab permission to the extension should give it access to
   // `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(web_contents)
-      ->RunAction(extension, true);
+  GrantActiveTabPermission(web_contents, extension);
   {
     // ActiveTab access (just like OOR-CORS access) extends to the background
     // page.  This is desirable, because
@@ -647,6 +650,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   EXPECT_NE(url::Origin::Create(cross_origin_url),
             url::Origin::Create(original_document_url));
   ASSERT_TRUE(NavigateToURL(web_contents, cross_origin_url));
+  // Flush the network interface so the async activeTab revocation takes effect
+  // in the Network Service before fetching cookies.
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   {
     SCOPED_TRACE("TEST STEP 5: After navigating the tab cross-origin.");
     std::string cookies =
@@ -725,8 +731,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Granting activeTab permission to the extension should give it access to
   // `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(web_contents)
-      ->RunAction(extension, true);
+  GrantActiveTabPermission(web_contents, extension);
   {
     // ActiveTab should grant access to SameSite cookies to the
     // `extension_subframe`.
@@ -737,16 +742,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   }
 }
 
-// TODO(crbug.com/509639786): Flaky on desktop Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ActiveTabPermissions_ExtensionServiceWorker \
-  DISABLED_ActiveTabPermissions_ExtensionServiceWorker
-#else
-#define MAYBE_ActiveTabPermissions_ExtensionServiceWorker \
-  ActiveTabPermissions_ExtensionServiceWorker
-#endif
 IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
-                       MAYBE_ActiveTabPermissions_ExtensionServiceWorker) {
+                       ActiveTabPermissions_ExtensionServiceWorker) {
   const char kServiceWorker[] = R"(
       chrome.runtime.onMessage.addListener(
           function(request, sender, sendResponse) {
@@ -860,8 +857,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 
   // Granting activeTab permission to the extension should give it access to
   // `kActiveTabHost`.
-  ExtensionActionRunner::GetForWebContents(web_contents)
-      ->RunAction(extension, true);
+  GrantActiveTabPermission(web_contents, extension);
   {
     // ActiveTab access (just like OOR-CORS access) extends to the service
     // worker of an extension.  This is desirable, because
@@ -900,6 +896,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
   EXPECT_NE(url::Origin::Create(cross_origin_url),
             url::Origin::Create(original_document_url));
   ASSERT_TRUE(NavigateToURL(web_contents, cross_origin_url));
+  // Flush the network interface so the async activeTab revocation takes effect
+  // in the Network Service before fetching cookies.
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   {
     SCOPED_TRACE("TEST STEP 5: After navigating the tab cross-origin.");
     std::string cookies =
