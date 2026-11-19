@@ -17788,6 +17788,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Ask Gemini about this group
         </message>
       </if>
+      <if expr="use_titlecase">
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_COPY_LINKS" desc="In Title Case: The label of the tab group context menu item for copying links of all tabs in the group to the clipboard.">
+          Copy Links
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TAB_GROUP_HEADER_CXMENU_COPY_LINKS" desc="The label of the tab group context menu item for copying links of all tabs in the group to the clipboard.">
+          Copy links
+        </message>
+      </if>
       <message name="IDS_COPIED_TO_CLIPBOARD_TOAST_BODY" desc="Text on a toast notification that is shown when an item has been copied to clipboard.">
         Copied to clipboard
       </message>

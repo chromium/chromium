@@ -7249,6 +7249,10 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if !BUILDFLAG(IS_ANDROID)
 
+    {"tab-copy-links", flag_descriptions::kTabCopyLinksName,
+     flag_descriptions::kTabCopyLinksDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabCopyLinks)},
+
     {"tab-groups-focusing", flag_descriptions::kTabGroupsFocusingName,
      flag_descriptions::kTabGroupsFocusingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupsFocusing)},

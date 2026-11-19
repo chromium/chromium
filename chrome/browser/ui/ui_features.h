@@ -243,6 +243,8 @@ BASE_DECLARE_FEATURE_PARAM(int, kSplitViewDragAndDropMaxDistanceThreshold);
 
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
+BASE_DECLARE_FEATURE(kTabCopyLinks);
+
 BASE_DECLARE_FEATURE(kCollapseTabGroupDuringDrag);
 
 #if !BUILDFLAG(IS_ANDROID)

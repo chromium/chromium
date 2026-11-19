@@ -75,7 +75,8 @@ enum class TabGroupEditorBubbleAction {
   kHome = 10,
   kNameChanged = 11,
   kColorChanged = 12,
-  kMaxValue = kColorChanged
+  kCopyLinks = 13,
+  kMaxValue = kCopyLinks
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupEditorBubbleAction)
 

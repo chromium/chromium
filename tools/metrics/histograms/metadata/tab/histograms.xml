@@ -1038,6 +1038,17 @@ chromium-metrics-reviews@google.com.
   <token key="TabGroupContextMenuSource" variants="TabGroupContextMenuSource"/>
 </histogram>
 
+<histogram name="TabGroups.CopyLinks.Count" units="links"
+    expires_after="2027-10-01">
+  <owner>jackgeng@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the number of links copied to the clipboard when the user selects
+    'Copy links' from the tab group editor bubble. Only recorded when at least
+    one valid link was copied.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.CountAtStartup" units="groups"
     expires_after="2027-04-01">
   <owner>huitingyu@google.com</owner>

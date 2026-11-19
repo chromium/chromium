@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/tab_copy_links_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -578,6 +580,9 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
         simple_menu_items_.push_back(AddChildView(BuildFocusGroupButton()));
       }
     }
+    if (base::FeatureList::IsEnabled(features::kTabCopyLinks)) {
+      simple_menu_items_.push_back(AddChildView(BuildCopyLinksButton()));
+    }
     if (base::FeatureList::IsEnabled(features::kGlicTabGroups)) {
       AddChildView(BuildSeparator());
       simple_menu_items_.push_back(AddChildView(BuildAskGeminiButton()));
@@ -599,6 +604,10 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
       } else {
         simple_menu_items_.push_back(AddChildView(BuildFocusGroupButton()));
       }
+    }
+
+    if (base::FeatureList::IsEnabled(features::kTabCopyLinks)) {
+      simple_menu_items_.push_back(AddChildView(BuildCopyLinksButton()));
     }
 
     if (CanShareGroups()) {
@@ -915,6 +924,52 @@ void TabGroupEditorBubbleView::AskGeminiPressed() {
   if (service) {
     service->instance_coordinator().ShowInstanceForTabGroup(group_);
   }
+  GetWidget()->Close();
+}
+
+std::unique_ptr<views::LabelButton>
+TabGroupEditorBubbleView::BuildCopyLinksButton() {
+  std::unique_ptr<views::LabelButton> menu_item = CreateMenuItem(
+      TAB_GROUP_HEADER_CXMENU_COPY_LINKS,
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_COPY_LINKS),
+      base::BindRepeating(&TabGroupEditorBubbleView::CopyLinksPressed,
+                          base::Unretained(this)),
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kContentCopyIcon
+                                         : vector_icons::kContentCopyOldIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+  return menu_item;
+}
+
+void TabGroupEditorBubbleView::CopyLinksPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_TabGroupBubble_CopyLinks"));
+  shared_tab_group_metrics::RecordTabGroupEditorBubbleAction(
+      shared_tab_group_metrics::TabGroupEditorBubbleAction::kCopyLinks);
+
+  TabStripModel* const model = browser_->GetTabStripModel();
+  if (!model->group_model()->ContainsTabGroup(group_)) {
+    GetWidget()->Close();
+    return;
+  }
+  const TabGroup* const tab_group = model->group_model()->GetTabGroup(group_);
+
+  const gfx::Range tabs = tab_group->ListTabs();
+  const int start_index = base::checked_cast<int>(tabs.start());
+  const int end_index = base::checked_cast<int>(tabs.end());
+  std::vector<content::WebContents*> web_contents_list;
+  web_contents_list.reserve(tabs.length());
+  for (int i = start_index; i < end_index; ++i) {
+    if (content::WebContents* const contents = model->GetWebContentsAt(i)) {
+      web_contents_list.push_back(contents);
+    }
+  }
+
+  const size_t count = tabs::CopyLinks(browser_, web_contents_list);
+  if (count > 0) {
+    base::UmaHistogramCounts100("TabGroups.CopyLinks.Count", count);
+  }
+
   GetWidget()->Close();
 }
 

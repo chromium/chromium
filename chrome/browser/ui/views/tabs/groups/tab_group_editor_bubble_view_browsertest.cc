@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -28,6 +30,9 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -50,7 +55,13 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -890,4 +901,151 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
       tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
           kCloseGroup,
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+                       CopyLinks_FeatureDisabled_MenuItemNotPresent) {
+  ShowUi("SetUp");
+
+  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
+  ASSERT_NE(nullptr, editor_bubble);
+
+  views::Button* const copy_links_button =
+      views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
+          TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_COPY_LINKS));
+  EXPECT_EQ(nullptr, copy_links_button);
+}
+
+class TabGroupEditorBubbleViewCopyLinksBrowserTest
+    : public TabGroupEditorBubbleViewDialogBrowserTest {
+ public:
+  TabGroupEditorBubbleViewCopyLinksBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kTabCopyLinks);
+  }
+
+ protected:
+  void CreateTabGroupWithUrlsAndOpenBubble(base::span<const GURL> urls) {
+    ASSERT_FALSE(urls.empty());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls[0]));
+
+    for (size_t i = 1; i < urls.size(); ++i) {
+      InProcessBrowserTest::AddBlankTabAndShow(browser());
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls[i]));
+    }
+
+    TabStripModel* const tsm = browser()->GetTabStripModel();
+    ASSERT_EQ(base::checked_cast<int>(urls.size()), tsm->count());
+
+    std::vector<int> tab_indices;
+    tab_indices.reserve(urls.size());
+    for (size_t i = 0; i < urls.size(); ++i) {
+      tab_indices.push_back(base::checked_cast<int>(i));
+    }
+
+    const tab_groups::TabGroupId group = tsm->AddToNewGroup(tab_indices);
+    tsm->OpenTabGroupEditor(group);
+  }
+
+  void ClickCopyLinksAndWaitForBubbleClose() {
+    views::Widget* const editor_bubble = WaitForAndGetEditorBubbleWidget();
+    ASSERT_NE(nullptr, editor_bubble);
+
+    views::Button* const copy_links_button =
+        views::Button::AsButton(editor_bubble->GetContentsView()->GetViewByID(
+            TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_COPY_LINKS));
+    ASSERT_NE(nullptr, copy_links_button);
+
+    views::test::WidgetDestroyedWaiter destroyed_waiter(editor_bubble);
+
+    const ui::MouseEvent released_event(ui::EventType::kMouseReleased,
+                                        gfx::PointF(), gfx::PointF(),
+                                        base::TimeTicks(), 0, 0);
+    views::test::ButtonTestApi(copy_links_button).NotifyClick(released_event);
+
+    destroyed_waiter.Wait();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewCopyLinksBrowserTest,
+                       CopyLinks_FeatureEnabled_CopiesValidUrls) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("b.com", "/title2.html");
+
+  // The third tab has an internal URL (`chrome://version`), which should be
+  // filtered out.
+  ASSERT_NO_FATAL_FAILURE(CreateTabGroupWithUrlsAndOpenBubble(
+      {url1, url2, GURL("chrome://version")}));
+
+  ASSERT_NO_FATAL_FAILURE(ClickCopyLinksAndWaitForBubbleClose());
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupBubble_CopyLinks"));
+  histogram_tester.ExpectBucketCount(
+      "TabGroups.ContextMenu.EditorBubble.Action",
+      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
+          kCopyLinks,
+      1);
+  histogram_tester.ExpectUniqueSample("TabGroups.CopyLinks.Count", 2, 1);
+
+  const std::vector<ui::ClipboardUrlInfo> url_infos =
+      ui::clipboard_test_util::ReadURLs(ui::Clipboard::GetForCurrentThread(),
+                                        /*data_dst=*/nullptr);
+  ASSERT_EQ(2u, url_infos.size());
+  EXPECT_EQ(url1, url_infos[0].url);
+  EXPECT_EQ(url2, url_infos[1].url);
+
+  ToastController* const toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+  EXPECT_TRUE(toast_controller->IsShowingToast());
+  EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kLinkCopied);
+  EXPECT_EQ(toast_controller->GetToastViewForTesting()
+                ->label_for_testing()
+                ->GetDisplayTextForTesting(),
+            u"Links copied");
+  histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
+                                     ToastId::kLinkCopied, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewCopyLinksBrowserTest,
+                       CopyLinks_FeatureEnabled_ZeroValidUrls) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  ASSERT_NO_FATAL_FAILURE(CreateTabGroupWithUrlsAndOpenBubble(
+      {GURL("chrome://version"), GURL("chrome://settings")}));
+
+  ASSERT_NO_FATAL_FAILURE(ClickCopyLinksAndWaitForBubbleClose());
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupBubble_CopyLinks"));
+  histogram_tester.ExpectBucketCount(
+      "TabGroups.ContextMenu.EditorBubble.Action",
+      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
+          kCopyLinks,
+      1);
+  histogram_tester.ExpectTotalCount("TabGroups.CopyLinks.Count", 0);
+
+  const std::vector<ui::ClipboardUrlInfo> url_infos =
+      ui::clipboard_test_util::ReadURLs(ui::Clipboard::GetForCurrentThread(),
+                                        /*data_dst=*/nullptr);
+  EXPECT_TRUE(url_infos.empty());
+  EXPECT_TRUE(ui::clipboard_test_util::ReadText(
+                  ui::Clipboard::GetForCurrentThread(),
+                  ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr)
+                  .empty());
+
+  ToastController* const toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+  EXPECT_FALSE(toast_controller->IsShowingToast());
+  histogram_tester.ExpectBucketCount("Toast.TriggeredToShow",
+                                     ToastId::kLinkCopied, 0);
 }

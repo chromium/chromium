@@ -63,6 +63,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   static constexpr int TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP = 12;
   static constexpr int TAB_GROUP_HEADER_CXMENU_HOME = 13;
   static constexpr int TAB_GROUP_HEADER_CXMENU_ASK_GEMINI = 14;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_COPY_LINKS = 15;
 
   // The default size of icons displayed in the tab group editor bubble menu.
   static constexpr int kDefaultIconSize = 16;
@@ -128,6 +129,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<views::LabelButton> BuildNewTabInGroupButton();
   std::unique_ptr<views::LabelButton> BuildHomeButton();
   std::unique_ptr<views::LabelButton> BuildAskGeminiButton();
+  std::unique_ptr<views::LabelButton> BuildCopyLinksButton();
   std::unique_ptr<views::LabelButton> BuildUngroupButton();
   std::unique_ptr<views::LabelButton> BuildCloseGroupButton();
   std::unique_ptr<views::LabelButton> BuildDeleteGroupButton();
@@ -142,6 +144,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   void NewTabInGroupPressed();
   void HomePressed();
   void AskGeminiPressed();
+  void CopyLinksPressed();
   void UngroupPressed();
   void ShareOrManagePressed();
   void CloseGroupPressed();

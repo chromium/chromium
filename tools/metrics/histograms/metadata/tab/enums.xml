@@ -496,6 +496,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Home"/>
   <int value="11" label="Name changed"/>
   <int value="12" label="Color changed"/>
+  <int value="13" label="Copy links"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:TabGroupEditorBubbleAction) -->

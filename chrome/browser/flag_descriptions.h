@@ -7183,6 +7183,10 @@ inline constexpr char kMainNodeAnnotationsDescription[] =
     "Uses Screen2x main content extractor to annotate the accessibility tree "
     "with the main landmark on the node identified as main.";
 
+inline constexpr char kTabCopyLinksName[] = "Copy link(s)";
+inline constexpr char kTabCopyLinksDescription[] =
+    "Enables 'Copy link(s)' in the tab and tab group context menus.";
+
 inline constexpr char kWebAuthenticationPermitEnterpriseAttestationName[] =
     "Web Authentication Enterprise Attestation";
 inline constexpr char

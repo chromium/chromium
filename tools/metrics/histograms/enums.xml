@@ -16927,6 +16927,7 @@ from previous Chrome versions.
   <int value="573385109" label="SharedClipboardUI:enabled"/>
   <int value="573558859" label="EnableAISummarizationAPI:disabled"/>
   <int value="574090181" label="SidePanelPinning:disabled"/>
+  <int value="574290387" label="TabCopyLinks:enabled"/>
   <int value="574535845"
       label="HistoryClustersNavigationContextClustering:disabled"/>
   <int value="575152984" label="AiModeEntryPointAlwaysNavigates:enabled"/>
@@ -20227,6 +20228,7 @@ from previous Chrome versions.
   <int value="1534386287" label="SendTabToSelfWhenSignedIn:enabled"/>
   <int value="1534561775" label="HeavyAdPrivacyMitigations:disabled"/>
   <int value="1535497541" label="FillingAcrossGroupedSites:disabled"/>
+  <int value="1536002400" label="TabCopyLinks:disabled"/>
   <int value="1536024579" label="OverscrollHistoryNavigationSetting:enabled"/>
   <int value="1536262463"
       label="ReadClipboardDataOnClipboardItemGetType:disabled"/>
