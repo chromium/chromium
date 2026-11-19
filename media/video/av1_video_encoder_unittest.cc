@@ -4,6 +4,7 @@
 
 #include "media/video/av1_video_encoder.h"
 
+#include <array>
 #include <cstdint>
 #include <initializer_list>
 #include <optional>
@@ -14,9 +15,11 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libgav1/src/src/buffer_pool.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
@@ -28,6 +31,11 @@
 
 namespace media {
 namespace {
+
+using ::testing::AllOf;
+using ::testing::Ge;
+using ::testing::Le;
+using ::testing::Ne;
 
 class Av1HeaderParser {
  public:
@@ -189,6 +197,292 @@ class Av1VideoEncoderTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::vector<VideoEncoderOutput> outputs_;
 };
+
+TEST_F(Av1VideoEncoderTest, CqpEnablesBoundedCyclicRefreshSegmentation) {
+  constexpr gfx::Size kSize(256, 256);
+  Av1VideoEncoder encoder;
+  InitializeManualCqpEncoder(encoder, kSize);
+
+  Av1HeaderParser parser;
+  scoped_refptr<VideoFrame> f0 =
+      MakeDisjointRangeFrame(kSize, 64, base::Milliseconds(0));
+  // Keep the background static with a small moving patch so cyclic refresh
+  // continues sweeping static superblocks across frames.
+  scoped_refptr<VideoFrame> f1 = BlendFrames(*f0, *f0, base::Milliseconds(33));
+  libyuv::I420Rect(f1->GetWritableVisibleData(VideoFrame::Plane::kY),
+                   f1->stride(VideoFrame::Plane::kY),
+                   f1->GetWritableVisibleData(VideoFrame::Plane::kU),
+                   f1->stride(VideoFrame::Plane::kU),
+                   f1->GetWritableVisibleData(VideoFrame::Plane::kV),
+                   f1->stride(VideoFrame::Plane::kV), 0, 0, 32, 32, 180, 128,
+                   128);
+
+  std::optional<libgav1::ObuFrameHeader> key_hdr =
+      EncodeAndParse(encoder, parser, f0, /*key_frame=*/true, {}, 0, 120);
+  ASSERT_TRUE(key_hdr.has_value());
+  EXPECT_EQ(key_hdr->quantizer.base_index, 120);
+
+  std::optional<libgav1::ObuFrameHeader> delta_hdr =
+      EncodeAndParse(encoder, parser, f1, /*key_frame=*/false, {0}, 0, 120);
+  ASSERT_TRUE(delta_hdr.has_value());
+  EXPECT_EQ(delta_hdr->quantizer.base_index, 120);
+  EXPECT_TRUE(delta_hdr->segmentation.enabled);
+  EXPECT_TRUE(delta_hdr->segmentation.FeatureActive(
+      1, libgav1::kSegmentFeatureQuantizer));
+  const int16_t delta_q =
+      delta_hdr->segmentation
+          .feature_data[1][libgav1::kSegmentFeatureQuantizer];
+  EXPECT_THAT(delta_q, AllOf(Ne(0), Ge(-16), Le(16)));
+
+  // Dynamically change QP to 100 and verify the updated cq_level and bounded
+  // cyclic refresh window take effect without reinitializing the encoder.
+  scoped_refptr<VideoFrame> f2 = BlendFrames(*f0, *f0, base::Milliseconds(66));
+  libyuv::I420Rect(f2->GetWritableVisibleData(VideoFrame::Plane::kY),
+                   f2->stride(VideoFrame::Plane::kY),
+                   f2->GetWritableVisibleData(VideoFrame::Plane::kU),
+                   f2->stride(VideoFrame::Plane::kU),
+                   f2->GetWritableVisibleData(VideoFrame::Plane::kV),
+                   f2->stride(VideoFrame::Plane::kV), 32, 0, 32, 32, 180, 128,
+                   128);
+  std::optional<libgav1::ObuFrameHeader> delta_hdr_100 =
+      EncodeAndParse(encoder, parser, f2, /*key_frame=*/false, {0}, 0, 100);
+  ASSERT_TRUE(delta_hdr_100.has_value());
+  EXPECT_EQ(delta_hdr_100->quantizer.base_index, 100);
+  EXPECT_TRUE(delta_hdr_100->segmentation.enabled);
+  EXPECT_TRUE(delta_hdr_100->segmentation.FeatureActive(
+      1, libgav1::kSegmentFeatureQuantizer));
+  const int16_t delta_q_100 =
+      delta_hdr_100->segmentation
+          .feature_data[1][libgav1::kSegmentFeatureQuantizer];
+  EXPECT_THAT(delta_q_100, AllOf(Ne(0), Ge(-16), Le(16)));
+}
+
+TEST_F(Av1VideoEncoderTest, CqpZeroEnablesLossless) {
+  constexpr gfx::Size kSize(256, 256);
+  Av1VideoEncoder encoder;
+  InitializeManualCqpEncoder(encoder, kSize);
+
+  Av1HeaderParser parser;
+  scoped_refptr<VideoFrame> f0 =
+      MakeDisjointRangeFrame(kSize, 64, base::Milliseconds(0));
+  scoped_refptr<VideoFrame> f1 =
+      MakeDisjointRangeFrame(kSize, 96, base::Milliseconds(33));
+
+  std::optional<libgav1::ObuFrameHeader> key_hdr =
+      EncodeAndParse(encoder, parser, f0, /*key_frame=*/true, {}, 0, 0);
+  ASSERT_TRUE(key_hdr.has_value());
+  EXPECT_EQ(key_hdr->quantizer.base_index, 0);
+  EXPECT_TRUE(key_hdr->coded_lossless);
+  EXPECT_FALSE(key_hdr->segmentation.enabled);
+
+  std::optional<libgav1::ObuFrameHeader> delta_hdr =
+      EncodeAndParse(encoder, parser, f1, /*key_frame=*/false, {0}, 0, 0);
+  ASSERT_TRUE(delta_hdr.has_value());
+  EXPECT_EQ(delta_hdr->quantizer.base_index, 0);
+  EXPECT_TRUE(delta_hdr->coded_lossless);
+  EXPECT_FALSE(delta_hdr->segmentation.enabled);
+
+  // Low non-zero quantizer (q_index = 4 -> qp = 1) exits lossless, keeps
+  // min_q >= 1, and does not produce a lossless frame.
+  auto make_small_motion_frame = [&](int rect_x, base::TimeDelta ts) {
+    scoped_refptr<VideoFrame> frame = BlendFrames(*f1, *f1, ts);
+    libyuv::I420Rect(frame->GetWritableVisibleData(VideoFrame::Plane::kY),
+                     frame->stride(VideoFrame::Plane::kY),
+                     frame->GetWritableVisibleData(VideoFrame::Plane::kU),
+                     frame->stride(VideoFrame::Plane::kU),
+                     frame->GetWritableVisibleData(VideoFrame::Plane::kV),
+                     frame->stride(VideoFrame::Plane::kV), rect_x, 0, 32, 32,
+                     180, 128, 128);
+    return frame;
+  };
+  int64_t ts_ms = 66;
+  std::optional<libgav1::ObuFrameHeader> low_lossy_hdr = EncodeAndParse(
+      encoder, parser, make_small_motion_frame(0, base::Milliseconds(ts_ms)),
+      /*key_frame=*/false, {0}, 0, 4);
+  ts_ms += 33;
+  ASSERT_TRUE(low_lossy_hdr.has_value());
+  EXPECT_EQ(low_lossy_hdr->quantizer.base_index, 4);
+  EXPECT_FALSE(low_lossy_hdr->coded_lossless);
+
+  // Transition to lossy CQP at q_index = 120: lossless stays disabled and
+  // cyclic refresh segmentation resumes once libaom's running average Q rises
+  // from 0 past qp_thresh.
+  bool saw_segmentation = false;
+  for (int i = 0; i < 12; ++i) {
+    scoped_refptr<VideoFrame> frame =
+        make_small_motion_frame((i % 6) * 32, base::Milliseconds(ts_ms));
+    ts_ms += 33;
+    std::optional<libgav1::ObuFrameHeader> lossy_hdr = EncodeAndParse(
+        encoder, parser, frame, /*key_frame=*/false, {0}, 0, 120);
+    ASSERT_TRUE(lossy_hdr.has_value());
+    EXPECT_EQ(lossy_hdr->quantizer.base_index, 120);
+    EXPECT_FALSE(lossy_hdr->coded_lossless);
+    saw_segmentation |= lossy_hdr->segmentation.enabled;
+  }
+  EXPECT_TRUE(saw_segmentation);
+
+  // Transition from lossy (with active cyclic refresh) back to lossless
+  // explicitly disables AQ and re-enables lossless coding.
+  std::optional<libgav1::ObuFrameHeader> lossless_again_hdr = EncodeAndParse(
+      encoder, parser, make_small_motion_frame(32, base::Milliseconds(ts_ms)),
+      /*key_frame=*/false, {0}, 0, 0);
+  ASSERT_TRUE(lossless_again_hdr.has_value());
+  EXPECT_EQ(lossless_again_hdr->quantizer.base_index, 0);
+  EXPECT_TRUE(lossless_again_hdr->coded_lossless);
+  EXPECT_FALSE(lossless_again_hdr->segmentation.enabled);
+}
+
+TEST_F(Av1VideoEncoderTest, CqpOutOfBoundsQuantizerIsClamped) {
+  constexpr gfx::Size kSize(256, 256);
+  Av1VideoEncoder encoder;
+  InitializeManualCqpEncoder(encoder, kSize);
+
+  Av1HeaderParser parser;
+  scoped_refptr<VideoFrame> f0 =
+      MakeDisjointRangeFrame(kSize, 64, base::Milliseconds(0));
+  scoped_refptr<VideoFrame> f1 =
+      MakeDisjointRangeFrame(kSize, 96, base::Milliseconds(33));
+
+  std::optional<libgav1::ObuFrameHeader> low_hdr =
+      EncodeAndParse(encoder, parser, f0, /*key_frame=*/true, {}, 0, -1);
+  ASSERT_TRUE(low_hdr.has_value());
+  EXPECT_EQ(low_hdr->quantizer.base_index, 0);
+  EXPECT_TRUE(low_hdr->coded_lossless);
+
+  std::optional<libgav1::ObuFrameHeader> high_hdr =
+      EncodeAndParse(encoder, parser, f1, /*key_frame=*/false, {0}, 0, 300);
+  ASSERT_TRUE(high_hdr.has_value());
+  EXPECT_EQ(high_hdr->quantizer.base_index, 255);
+  EXPECT_FALSE(high_hdr->coded_lossless);
+}
+
+TEST_F(Av1VideoEncoderTest, QuantizerWithoutExternalRateControlFailsEncode) {
+  constexpr gfx::Size kSize(256, 256);
+  Av1VideoEncoder encoder;
+  encoder.DisablePostedCallbacks();
+
+  VideoEncoder::Options options;
+  options.frame_size = kSize;
+  options.framerate = 30;
+  options.latency_mode = VideoEncoder::LatencyMode::Realtime;
+  EncoderStatus init_status = EncoderStatus::Codes::kOk;
+  encoder.Initialize(AV1PROFILE_PROFILE_MAIN, options,
+                     /*info_cb=*/base::DoNothing(),
+                     /*output_cb=*/base::DoNothing(),
+                     base::BindLambdaForTesting([&](EncoderStatus status) {
+                       init_status = std::move(status);
+                     }));
+  ASSERT_TRUE(init_status.is_ok()) << init_status.message();
+
+  scoped_refptr<VideoFrame> frame =
+      MakeDisjointRangeFrame(kSize, 64, base::Milliseconds(0));
+  VideoEncoder::EncodeOptions opts(/*key_frame=*/true);
+  opts.quantizer = 120;
+  EncoderStatus encode_status = EncoderStatus::Codes::kOk;
+  encoder.Encode(frame, opts,
+                 base::BindLambdaForTesting([&](EncoderStatus status) {
+                   encode_status = std::move(status);
+                 }));
+  EXPECT_EQ(encode_status.code(), EncoderStatus::Codes::kEncoderFailedEncode);
+}
+
+TEST_F(Av1VideoEncoderTest, CqpTemporalSvcDynamicQuantizerAndLossless) {
+  constexpr gfx::Size kSize(256, 256);
+  Av1VideoEncoder encoder;
+  encoder.DisablePostedCallbacks();
+
+  VideoEncoder::Options options;
+  options.frame_size = kSize;
+  options.framerate = 30;
+  options.bitrate = Bitrate::ExternalRateControl();
+  options.scalability_mode = SVCScalabilityMode::kL1T3;
+  options.latency_mode = VideoEncoder::LatencyMode::Realtime;
+
+  EncoderStatus init_status = EncoderStatus::Codes::kOk;
+  encoder.Initialize(AV1PROFILE_PROFILE_MAIN, options,
+                     /*info_cb=*/base::DoNothing(),
+                     base::BindLambdaForTesting(
+                         [&](VideoEncoderOutput output,
+                             std::optional<VideoEncoder::CodecDescription>) {
+                           outputs_.push_back(std::move(output));
+                         }),
+                     base::BindLambdaForTesting([&](EncoderStatus status) {
+                       init_status = std::move(status);
+                     }));
+  ASSERT_TRUE(init_status.is_ok()) << init_status.message();
+
+  Av1HeaderParser parser;
+  constexpr std::array<int, 5> kQIndices = {120, 100, 0, 80, 120};
+  constexpr std::array<int, 5> kExpectedTemporalIds = {0, 2, 1, 2, 0};
+
+  for (size_t i = 0; i < kQIndices.size(); ++i) {
+    scoped_refptr<VideoFrame> frame = MakeDisjointRangeFrame(
+        kSize, static_cast<uint8_t>(48 + i * 24), base::Milliseconds(i * 33));
+    std::optional<libgav1::ObuFrameHeader> hdr =
+        EncodeAndParse(encoder, parser, frame, /*key_frame=*/i == 0, {},
+                       std::nullopt, kQIndices[i]);
+    ASSERT_TRUE(hdr.has_value()) << "frame " << i;
+    EXPECT_EQ(outputs_.back().temporal_id, kExpectedTemporalIds[i]);
+    EXPECT_EQ(hdr->quantizer.base_index, kQIndices[i]);
+    EXPECT_EQ(hdr->coded_lossless, kQIndices[i] == 0);
+  }
+}
+
+TEST_F(Av1VideoEncoderTest, ChangeOptionsUpscaleAfterLossless) {
+  constexpr gfx::Size kLargeSize(640, 480);
+  constexpr gfx::Size kSmallSize(320, 240);
+  Av1VideoEncoder encoder;
+  InitializeManualCqpEncoder(encoder, kLargeSize);
+
+  Av1HeaderParser parser;
+  auto change_options = [&](const gfx::Size& size) {
+    VideoEncoder::Options options;
+    options.frame_size = size;
+    options.framerate = 30;
+    options.bitrate = Bitrate::ExternalRateControl();
+    options.manual_reference_buffer_control = true;
+    options.latency_mode = VideoEncoder::LatencyMode::Realtime;
+    std::optional<EncoderStatus> change_status;
+    encoder.ChangeOptions(options, VideoEncoder::OutputCB(),
+                          base::BindLambdaForTesting([&](EncoderStatus status) {
+                            change_status = std::move(status);
+                          }));
+    ASSERT_TRUE(change_status.has_value());
+    ASSERT_TRUE(change_status->is_ok()) << change_status->message();
+  };
+
+  // Downscale to 320x240 and encode a lossless frame.
+  change_options(kSmallSize);
+  scoped_refptr<VideoFrame> small_frame =
+      MakeDisjointRangeFrame(kSmallSize, 64, base::Milliseconds(0));
+  std::optional<libgav1::ObuFrameHeader> lossless_hdr = EncodeAndParse(
+      encoder, parser, small_frame, /*key_frame=*/true, {}, 0, 0);
+  ASSERT_TRUE(lossless_hdr.has_value());
+  EXPECT_TRUE(lossless_hdr->coded_lossless);
+
+  // Upscale back to 640x480 and verify lossy frames with cyclic refresh
+  // segmentation succeed.
+  change_options(kLargeSize);
+  scoped_refptr<VideoFrame> large_f0 =
+      MakeDisjointRangeFrame(kLargeSize, 64, base::Milliseconds(33));
+  std::optional<libgav1::ObuFrameHeader> key_hdr =
+      EncodeAndParse(encoder, parser, large_f0, /*key_frame=*/true, {}, 0, 120);
+  ASSERT_TRUE(key_hdr.has_value());
+  EXPECT_FALSE(key_hdr->coded_lossless);
+
+  bool saw_segmentation = false;
+  for (int i = 0; i < 12; ++i) {
+    scoped_refptr<VideoFrame> delta =
+        BlendFrames(*large_f0, *large_f0, base::Milliseconds(66 + i * 33));
+    std::optional<libgav1::ObuFrameHeader> delta_hdr = EncodeAndParse(
+        encoder, parser, delta, /*key_frame=*/false, {0}, 0, 120);
+    ASSERT_TRUE(delta_hdr.has_value());
+    EXPECT_EQ(delta_hdr->quantizer.base_index, 120);
+    EXPECT_FALSE(delta_hdr->coded_lossless);
+    saw_segmentation |= delta_hdr->segmentation.enabled;
+  }
+  EXPECT_TRUE(saw_segmentation);
+}
 
 TEST_F(Av1VideoEncoderTest, ManualReferencesAliasMostRecentToLast) {
   constexpr gfx::Size kSize(256, 256);

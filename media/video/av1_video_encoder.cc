@@ -28,6 +28,29 @@ namespace media {
 
 namespace {
 
+constexpr int kMaxQIndex = 255;
+constexpr int kMaxQuantizer = 63;
+// Offset in [0, 63] quantizer units (16 q_index steps) around the target
+// quantizer in CQP mode, giving cyclic refresh and dynamic loop-filter/CDEF
+// logic room to operate while keeping `worst_quality` close to the target QP.
+constexpr int kCqpMaxQuantizerOffset = 4;
+constexpr int kDefaultCqpQIndex = 120;
+
+struct QuantizerBounds {
+  unsigned int min_q;
+  unsigned int max_q;
+};
+
+QuantizerBounds GetCqpQuantizerBounds(int qp) {
+  DCHECK_GE(qp, 1);
+  return {
+      .min_q =
+          static_cast<unsigned int>(std::max(1, qp - kCqpMaxQuantizerOffset)),
+      .max_q = static_cast<unsigned int>(
+          std::min(kMaxQuantizer, qp + kCqpMaxQuantizerOffset)),
+  };
+}
+
 void FreeCodecCtx(aom_codec_ctx_t* codec_ctx) {
   if (codec_ctx->name) {
     // Codec has been initialized, we need to destroy it.
@@ -180,6 +203,10 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
   uint32_t default_bitrate = GetDefaultVideoEncodeBitrate(
       opts.frame_size, opts.framerate.value_or(30));
   config.rc_end_usage = AOM_VBR;
+  // 0 lets libaom adaptively choose QP offsets across pyramid levels (only used
+  // in AOM_Q mode); reset here so ChangeOptions() clears the value set by
+  // kExternal below.
+  config.use_fixed_qp_offsets = 0;
   // The unit of rc_target_bitrate is kilobits per second.
   config.rc_target_bitrate = default_bitrate / 1000;
   if (opts.bitrate.has_value()) {
@@ -192,16 +219,25 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
         config.rc_end_usage = AOM_CBR;
         break;
       case Bitrate::Mode::kExternal:
-        // libaom doesn't have a special rate control mode for per-frame
-        // quantizer. Instead we just set CBR and set
-        // AV1E_SET_QUANTIZER_ONE_PASS before each frame.
-        config.rc_end_usage = AOM_CBR;
-        // Allow the whole AV1 quantizer range to be used.
-        config.rc_max_quantizer = 63;
-        config.rc_min_quantizer = 1;
+        // Configure CQP using AOM_Q with a bounded quantizer window so cyclic
+        // refresh AQ and dynamic loop-filter/CDEF logic can operate instead of
+        // disabling AQ via AV1E_SET_QUANTIZER_ONE_PASS. Keep the default
+        // `rc_target_bitrate` so cyclic refresh thresholds and SVC layer
+        // bitrates remain valid.
+        config.rc_end_usage = AOM_Q;
+        config.rc_dropframe_thresh = 0;
+        // A value of 2 uses the same QP for all frames at different levels of
+        // the pyramid (i.e. no QP offsets are applied), taking `base_qindex`
+        // directly from AOME_SET_CQ_LEVEL.
+        config.use_fixed_qp_offsets = 2;
+        QuantizerBounds bounds = GetCqpQuantizerBounds(
+            QIndexToQuantizer(VideoCodec::kAV1, kDefaultCqpQIndex));
+        config.rc_min_quantizer = bounds.min_q;
+        config.rc_max_quantizer = bounds.max_q;
         break;
     }
-    if (bitrate.target_bps() != 0) {
+    if (bitrate.mode() != Bitrate::Mode::kExternal &&
+        bitrate.target_bps() != 0) {
       config.rc_target_bitrate =
           base::saturated_cast<int32_t>(bitrate.target_bps()) / 1000;
     }
@@ -309,6 +345,8 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   }
 
   profile_ = profile;
+  cq_level_.reset();
+  aq_mode_ = AqMode::kDisabled;
   buffer_last_updated_seq_ = {};
   encode_seq_ = 0;
 
@@ -345,6 +383,7 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   CALL_AOM_CONTROL(AV1E_SET_MODE_COST_UPD_FREQ, 3);
   CALL_AOM_CONTROL(AV1E_SET_MV_COST_UPD_FREQ, 3);
 
+  CALL_AOM_CONTROL(AV1E_SET_ENABLE_CDEF, 1);
   CALL_AOM_CONTROL(AV1E_SET_ENABLE_TPL_MODEL, 0);
   CALL_AOM_CONTROL(AV1E_SET_DELTAQ_MODE, 0);
   CALL_AOM_CONTROL(AV1E_SET_ENABLE_ORDER_HINT, 0);
@@ -363,9 +402,10 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   }
   CALL_AOM_CONTROL(AV1E_SET_SVC_PARAMS, &svc_params_);
 
-  if (config_.rc_end_usage == AOM_CBR) {
-    CALL_AOM_CONTROL(AV1E_SET_AQ_MODE, 3);
-  }
+  // Enable cyclic refresh AQ across all non-lossless rate control modes.
+  CALL_AOM_CONTROL(AV1E_SET_AQ_MODE,
+                   static_cast<unsigned int>(AqMode::kCyclicRefresh));
+  aq_mode_ = AqMode::kCyclicRefresh;
 
   if (options.content_hint == ContentHint::Screen) {
     CALL_AOM_CONTROL(AV1E_SET_TUNE_CONTENT, AOM_CONTENT_SCREEN);
@@ -418,6 +458,18 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   originally_configured_size_ = options.frame_size;
   output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_cb));
   codec_ = std::move(codec);
+
+  if (config_.rc_end_usage == AOM_Q) {
+    if (EncoderStatus status = ConfigureQuantizer(kDefaultCqpQIndex);
+        !status.is_ok()) {
+      codec_.reset();
+      std::move(done_cb).Run(
+          EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                        "Setting initial CQP quantizer failed.")
+              .AddCause(std::move(status)));
+      return;
+    }
+  }
 
   if (info_cb) {
     VideoEncoderInfo info;
@@ -559,13 +611,11 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   if (encode_options.quantizer.has_value()) {
-    DCHECK_EQ(options_.bitrate->mode(), Bitrate::Mode::kExternal);
-    // Convert double quantizer to an integer within codec's supported range.
-    int qp = static_cast<int>(std::lround(encode_options.quantizer.value()));
-    qp = QIndexToQuantizer(VideoCodec::kAV1, qp);
-    qp = std::clamp(qp, static_cast<int>(config_.rc_min_quantizer),
-                    static_cast<int>(config_.rc_max_quantizer));
-    aom_codec_control(codec_.get(), AV1E_SET_QUANTIZER_ONE_PASS, qp);
+    EncoderStatus status = ConfigureQuantizer(encode_options.quantizer.value());
+    if (!status.is_ok()) {
+      std::move(done_cb).Run(std::move(status));
+      return;
+    }
   }
 
   if (options_.manual_reference_buffer_control) {
@@ -651,7 +701,37 @@ void Av1VideoEncoder::ChangeOptions(const Options& options,
     return;
   }
 
-  auto error = aom_codec_enc_config_set(codec_.get(), &new_config);
+  // Exit lossless and restore cyclic refresh AQ before applying `new_config`
+  // so libaom updates cyclic refresh state for any dimension changes.
+  if (cq_level_ == 0) {
+    aom_codec_err_t error =
+        aom_codec_control(codec_.get(), AV1E_SET_LOSSLESS, 0u);
+    if (error != AOM_CODEC_OK) {
+      std::move(done_cb).Run(
+          EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                        "Resetting AV1E_SET_LOSSLESS failed.")
+              .WithData("error_code", error)
+              .WithData("error_message", aom_codec_err_to_string(error)));
+      return;
+    }
+    cq_level_.reset();
+  }
+  if (aq_mode_ != AqMode::kCyclicRefresh) {
+    aom_codec_err_t error =
+        aom_codec_control(codec_.get(), AV1E_SET_AQ_MODE,
+                          static_cast<unsigned int>(AqMode::kCyclicRefresh));
+    if (error != AOM_CODEC_OK) {
+      std::move(done_cb).Run(
+          EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                        "Setting AV1E_SET_AQ_MODE failed.")
+              .WithData("error_code", error)
+              .WithData("error_message", aom_codec_err_to_string(error)));
+      return;
+    }
+    aq_mode_ = AqMode::kCyclicRefresh;
+  }
+
+  aom_codec_err_t error = aom_codec_enc_config_set(codec_.get(), &new_config);
   if (error != AOM_CODEC_OK) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
@@ -671,9 +751,17 @@ void Av1VideoEncoder::ChangeOptions(const Options& options,
     return;
   }
 
+  cq_level_.reset();
   config_ = new_config;
   svc_params_ = new_svc_params;
   options_ = options;
+  if (config_.rc_end_usage == AOM_Q) {
+    if (EncoderStatus status = ConfigureQuantizer(kDefaultCqpQIndex);
+        !status.is_ok()) {
+      std::move(done_cb).Run(std::move(status));
+      return;
+    }
+  }
   if (!output_cb.is_null())
     output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_cb));
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
@@ -770,6 +858,123 @@ base::expected<int, EncoderStatus> Av1VideoEncoder::AssignNextTemporalId(
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
   }
   return temporal_id;
+}
+
+EncoderStatus Av1VideoEncoder::ConfigureQuantizer(int q_index) {
+  if (config_.rc_end_usage != AOM_Q) {
+    return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                         "Per-frame quantizer requires external rate control");
+  }
+  // Clamp to AV1's valid [0, 255] QIndex range and convert to libaom's
+  // [0, 63] quantizer range.
+  q_index = std::clamp(q_index, 0, kMaxQIndex);
+  int qp = QIndexToQuantizer(VideoCodec::kAV1, static_cast<uint8_t>(q_index));
+
+  if (qp == 0) {
+    if (cq_level_ == 0) {
+      // Already in lossless mode.
+      return EncoderStatus::Codes::kOk;
+    }
+
+    // Explicitly configure lossless coding. libaom requires AQ to be disabled
+    // when lossless is enabled and sets best/worst_allowed_q to 0 internally.
+    if (aq_mode_ != AqMode::kDisabled) {
+      aom_codec_err_t error =
+          aom_codec_control(codec_.get(), AV1E_SET_AQ_MODE,
+                            static_cast<unsigned int>(AqMode::kDisabled));
+      if (error != AOM_CODEC_OK) {
+        std::string msg =
+            LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+        return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+      }
+      aq_mode_ = AqMode::kDisabled;
+    }
+    aom_codec_err_t error =
+        aom_codec_control(codec_.get(), AOME_SET_CQ_LEVEL, 0);
+    if (error != AOM_CODEC_OK) {
+      std::string msg =
+          LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+      return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+    }
+    cq_level_.reset();
+    error = aom_codec_control(codec_.get(), AV1E_SET_LOSSLESS, 1u);
+    if (error != AOM_CODEC_OK) {
+      std::string msg =
+          LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+      return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+    }
+    cq_level_ = 0;
+
+    return EncoderStatus::Codes::kOk;
+  }
+
+  if (cq_level_ == 0) {
+    // Disable lossless mode before setting quality level.
+    aom_codec_err_t error =
+        aom_codec_control(codec_.get(), AV1E_SET_LOSSLESS, 0u);
+    if (error != AOM_CODEC_OK) {
+      std::string msg =
+          LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+      return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+    }
+    cq_level_.reset();
+  }
+  if (aq_mode_ != AqMode::kCyclicRefresh) {
+    aom_codec_err_t error =
+        aom_codec_control(codec_.get(), AV1E_SET_AQ_MODE,
+                          static_cast<unsigned int>(AqMode::kCyclicRefresh));
+    if (error != AOM_CODEC_OK) {
+      std::string msg =
+          LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+      return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+    }
+    aq_mode_ = AqMode::kCyclicRefresh;
+  }
+
+  QuantizerBounds bounds = GetCqpQuantizerBounds(qp);
+  if (config_.rc_min_quantizer != bounds.min_q ||
+      config_.rc_max_quantizer != bounds.max_q) {
+    aom_codec_enc_cfg_t new_config = config_;
+    new_config.rc_min_quantizer = bounds.min_q;
+    new_config.rc_max_quantizer = bounds.max_q;
+    aom_codec_err_t error = aom_codec_enc_config_set(codec_.get(), &new_config);
+    if (error != AOM_CODEC_OK) {
+      std::string msg =
+          LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+      return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+    }
+    config_ = new_config;
+    if (svc_params_.number_temporal_layers > 1) {
+      aom_svc_params_t new_svc_params = svc_params_;
+      base::span<int> max_quantizers(new_svc_params.max_quantizers);
+      base::span<int> min_quantizers(new_svc_params.min_quantizers);
+      for (size_t i = 0;
+           i < static_cast<size_t>(new_svc_params.number_temporal_layers);
+           ++i) {
+        min_quantizers[i] = bounds.min_q;
+        max_quantizers[i] = bounds.max_q;
+      }
+      error =
+          aom_codec_control(codec_.get(), AV1E_SET_SVC_PARAMS, &new_svc_params);
+      if (error != AOM_CODEC_OK) {
+        std::string msg =
+            LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+        return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+      }
+      svc_params_ = new_svc_params;
+    }
+  }
+  if (cq_level_ != qp) {
+    aom_codec_err_t error =
+        aom_codec_control(codec_.get(), AOME_SET_CQ_LEVEL, qp);
+    if (error != AOM_CODEC_OK) {
+      std::string msg =
+          LogAomErrorMessage(codec_.get(), "AOM encoding error", error);
+      return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+    }
+    cq_level_ = qp;
+  }
+  return EncoderStatus::Codes::kOk;
 }
 
 EncoderStatus Av1VideoEncoder::ConfigureManualReferenceBuffers(

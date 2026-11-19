@@ -8,6 +8,7 @@
 #include <array>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/time/time.h"
@@ -44,11 +45,21 @@ class MEDIA_EXPORT Av1VideoEncoder : public VideoEncoder {
  private:
   static constexpr size_t kNumberOfReferenceBuffers = 3;
 
+  // Adaptive quantization modes for libaom's AV1E_SET_AQ_MODE control
+  // (see third_party/libaom/source/libaom/aom/aomcx.h).
+  enum class AqMode : unsigned int {
+    kDisabled = 0,
+    kVariance = 1,
+    kComplexity = 2,
+    kCyclicRefresh = 3,
+  };
+
   base::TimeDelta GetFrameDuration(const VideoFrame& frame);
   VideoEncoderOutput GetEncoderOutput(int temporal_id,
                                       base::TimeDelta timestamp,
                                       gfx::ColorSpace color_space) const;
   base::expected<int, EncoderStatus> AssignNextTemporalId(bool key_frame);
+  EncoderStatus ConfigureQuantizer(int q_index);
   EncoderStatus ConfigureManualReferenceBuffers(
       const EncodeOptions& encode_options,
       bool key_frame);
@@ -61,6 +72,8 @@ class MEDIA_EXPORT Av1VideoEncoder : public VideoEncoder {
   aom_codec_enc_cfg_t config_ = {};
   aom_svc_params_t svc_params_ = {};
   aom_image_t image_ = {};
+  std::optional<int> cq_level_;
+  AqMode aq_mode_ = AqMode::kDisabled;
 
   // Tracks the encode sequence number when each manual reference buffer was
   // last populated so references can be aliased in recency order (LAST,
