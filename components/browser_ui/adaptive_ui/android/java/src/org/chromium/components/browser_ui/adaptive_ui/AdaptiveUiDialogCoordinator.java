@@ -246,6 +246,12 @@ final class AdaptiveUiDialogCoordinator
 
     private PropertyModel createDialogModel(
             Context context, PropertyModel model, @AdaptiveUiScope int scope) {
+        assert !TextUtils.isEmpty(model.get(AdaptiveUiProperties.TITLE))
+                        || !TextUtils.isEmpty(
+                                model.get(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION))
+                : "Adaptive UI dialogs need a TITLE or DIALOG_CONTENT_DESCRIPTION for"
+                        + " accessibility.";
+
         boolean hasPrimary =
                 !TextUtils.isEmpty(model.get(AdaptiveUiProperties.PRIMARY_BUTTON_TEXT));
         boolean hasDrawnSecondary = drawsSecondaryButton(model);

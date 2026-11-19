@@ -43,13 +43,17 @@ public class AdaptiveUiProperties {
     public static final WritableObjectPropertyKey<@Nullable Drawable> HEADER_ICON =
             new WritableObjectPropertyKey<>();
 
-    /** Title text displayed in the header. */
+    /**
+     * Title text displayed in the header. A dialog needs a title or a {@link
+     * #DIALOG_CONTENT_DESCRIPTION} when it is created.
+     */
     public static final WritableObjectPropertyKey<@Nullable CharSequence> TITLE =
             new WritableObjectPropertyKey<>();
 
     /**
-     * Accessibility content description for the dialog when {@link #TITLE} is not set (used by
-     * dialogs only). Read-only because the dialog applies it once, when the dialog is created.
+     * Accessibility content description for dialogs; sheets ignore it. Required when {@link #TITLE}
+     * is empty, which the dialog asserts when it is created. Read-only because the dialog applies
+     * it once, at creation.
      */
     public static final ReadableObjectPropertyKey<@Nullable String> DIALOG_CONTENT_DESCRIPTION =
             new ReadableObjectPropertyKey<>();

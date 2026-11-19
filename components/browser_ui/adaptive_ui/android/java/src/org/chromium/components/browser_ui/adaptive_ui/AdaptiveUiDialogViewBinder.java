@@ -66,7 +66,10 @@ final class AdaptiveUiDialogViewBinder {
             dialogModel.set(
                     ModalDialogProperties.TITLE_ICON, model.get(AdaptiveUiProperties.HEADER_ICON));
         } else if (key == AdaptiveUiProperties.TITLE) {
-            dialogModel.set(ModalDialogProperties.TITLE, model.get(AdaptiveUiProperties.TITLE));
+            // Forward an empty title as null so TabModalPresenter falls back to
+            // CONTENT_DESCRIPTION for the accessibility pane title.
+            CharSequence title = model.get(AdaptiveUiProperties.TITLE);
+            dialogModel.set(ModalDialogProperties.TITLE, TextUtils.isEmpty(title) ? null : title);
         } else if (key == AdaptiveUiProperties.DESCRIPTION) {
             CharSequence description = model.get(AdaptiveUiProperties.DESCRIPTION);
             View dialogCustomView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -106,7 +107,8 @@ public class AdaptiveUiDialogCoordinatorTest {
     }
 
     private static PropertyModel.Builder newModelBuilder() {
-        return new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS);
+        return new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, "Dialog");
     }
 
     // ---------------------------------------------------------------------------------------
@@ -222,7 +224,8 @@ public class AdaptiveUiDialogCoordinatorTest {
     @Test
     public void testSheetAccessibilityKeysAreIgnoredByDialog() {
         PropertyModel model =
-                newModelBuilder()
+                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                        .with(AdaptiveUiProperties.TITLE, "Title")
                         .with(
                                 AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
                                 R.string.ok)
@@ -240,6 +243,48 @@ public class AdaptiveUiDialogCoordinatorTest {
         ModalDialogView dialogView = bindToRealModalDialogView(dialogModel);
         assertNotNull(dialogView);
         assertNull(dialogView.getContentDescription());
+    }
+
+    @Test
+    public void testEmptyTitleIsForwardedAsNull() {
+        PropertyModel model =
+                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                        .with(AdaptiveUiProperties.TITLE, "")
+                        .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, "Content desc")
+                        .build();
+        PropertyModel dialogModel = createCoordinator(model).getDialogModel();
+
+        // A null TITLE lets TabModalPresenter use CONTENT_DESCRIPTION as the pane title.
+        assertNull(dialogModel.get(ModalDialogProperties.TITLE));
+        assertEquals("Content desc", dialogModel.get(ModalDialogProperties.CONTENT_DESCRIPTION));
+    }
+
+    @Test
+    public void testDialogRequiresTitleOrContentDescription() {
+        PropertyModel unsetModel = new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build();
+        assertThrows(AssertionError.class, () -> createCoordinator(unsetModel));
+        assertThrows(
+                AssertionError.class, () -> createCoordinator(unsetModel, AdaptiveUiScope.WINDOW));
+
+        PropertyModel emptyModel =
+                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                        .with(AdaptiveUiProperties.TITLE, "")
+                        .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, "")
+                        .build();
+        assertThrows(AssertionError.class, () -> createCoordinator(emptyModel));
+
+        // Either label on its own is enough.
+        PropertyModel titleOnly =
+                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                        .with(AdaptiveUiProperties.TITLE, "Title")
+                        .build();
+        createCoordinator(titleOnly);
+
+        PropertyModel descriptionOnly =
+                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                        .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, "Description")
+                        .build();
+        createCoordinator(descriptionOnly);
     }
 
     @Test

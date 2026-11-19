@@ -106,7 +106,11 @@ public class AdaptiveUiControllerImplTest {
     private AdaptiveUiEntry newEntry(@AdaptiveUiScope int scope, int... containers) {
         AdaptiveUiEntry.Builder builder =
                 new AdaptiveUiEntry.Builder(
-                                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS).build())
+                                new PropertyModel.Builder(AdaptiveUiProperties.ALL_KEYS)
+                                        .with(
+                                                AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
+                                                "Dialog")
+                                        .build())
                         .setScope(scope)
                         .setObserver(mObserver);
         for (int container : containers) builder.addAllowedContainer(container);

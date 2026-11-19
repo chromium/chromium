@@ -86,8 +86,8 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
     private static final int SWIPE_STEPS = 10;
     private static final long SWIPE_STEP_MS = 10;
 
-    // TabModalPresenter asserts TITLE or CONTENT_DESCRIPTION, so title-less helpers set
-    // DIALOG_CONTENT_DESCRIPTION.
+    // Adaptive UI dialogs need a TITLE or DIALOG_CONTENT_DESCRIPTION, and TabModalPresenter
+    // asserts the same, so title-less dialog models set DIALOG_CONTENT_DESCRIPTION.
     private static final class TestTabModalPresenter extends TabModalPresenter {
         private final FrameLayout mContainer;
 
@@ -337,6 +337,7 @@ public class AdaptiveUiIntegrationTest implements AdaptiveUiObserver {
         OnBackPressedCallback dialogHandler = backHandler(dialogBackHandled);
         PropertyModel dialogModel =
                 newModelBuilder()
+                        .with(AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION, str(R.string.ok))
                         .with(AdaptiveUiProperties.BACK_PRESS_HANDLER, dialogHandler)
                         .build();
         showDialog(dialogModel, AdaptiveUiScope.WINDOW);
