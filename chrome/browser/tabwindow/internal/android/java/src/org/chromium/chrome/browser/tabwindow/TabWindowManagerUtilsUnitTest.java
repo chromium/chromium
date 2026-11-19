@@ -40,7 +40,8 @@ public class TabWindowManagerUtilsUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(1)).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
-        when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn("Test Title");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)))
+                .thenReturn("Test Title");
 
         String title =
                 TabWindowManagerUtils.getTabGroupTitleInAnyWindow(

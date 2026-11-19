@@ -2102,7 +2102,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     int numTabsInGroup =
                             tabModel.getTabCountForGroup(TabGroupId.fromRawToken(tabGroupId));
                     if (numTabsInGroup == 0) return "";
-                    String title = tabModel.getTabGroupTitle(tabGroupId);
+                    String title = tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
                     Resources res = context.getResources();
                     @TabGroupColorId
                     int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
@@ -2337,7 +2337,7 @@ public class TabListMediator implements TabListNotificationHandler {
             if (useDefault) {
                 return TabGroupTitleUtils.getDisplayableTitle(mActivity, tabModel, tabGroupId);
             } else {
-                return tabModel.getTabGroupTitle(tabGroupId);
+                return tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
             }
         }
 

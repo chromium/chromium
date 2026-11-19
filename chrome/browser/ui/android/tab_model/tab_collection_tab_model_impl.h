@@ -103,7 +103,8 @@ class TabCollectionTabModelImpl {
       const std::optional<bool>& is_collapsed);
 
   // Getters for tab group visual data.
-  std::u16string GetTabGroupTitle(const base::Token& tab_group_id) const;
+  std::u16string GetTabGroupTitle(
+      const tab_groups::TabGroupId& tab_group_id) const;
   int32_t GetTabGroupColor(const base::Token& tab_group_id) const;
   bool GetTabGroupCollapsed(const base::Token& tab_group_id) const;
 

@@ -90,7 +90,7 @@ public final class UndoClosureSnapshotFactory {
                             tab.getIsPinned(),
                             wasSelected));
             if (groupId != null && closedGroupIds.add(groupId)) {
-                String groupTitle = tabModel.getTabGroupTitle(groupId);
+                String groupTitle = tabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId));
                 int groupColor = tabModel.getTabGroupColorWithFallback(groupId);
                 boolean groupCollapsed = tabModel.getTabGroupCollapsed(groupId);
                 boolean groupIsHiding =

@@ -217,7 +217,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             }
 
             // A null title (default title) is handled in HistoricalTabSaver.
-            String title = mTabModel.getTabGroupTitle(tabGroupId);
+            String title = mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
             // Give a tab group the first color in the color list as a placeholder.
             @TabGroupColorId int color = mTabModel.getTabGroupColorWithFallback(tabGroupId);
 

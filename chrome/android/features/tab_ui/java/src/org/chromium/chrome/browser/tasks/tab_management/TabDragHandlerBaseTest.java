@@ -420,7 +420,7 @@ public class TabDragHandlerBaseTest {
         when(tab1.getTabGroupId()).thenReturn(groupId);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(List.of(tab1, tab2));
-        when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Group");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId))).thenReturn("Group");
         ChromeTabGroupDropDataAndroid groupDropData =
                 (ChromeTabGroupDropDataAndroid) mTabDragHandler.prepareGroupDropData(groupId);
         assertNotNull(groupDropData.tabGroupMetadata);

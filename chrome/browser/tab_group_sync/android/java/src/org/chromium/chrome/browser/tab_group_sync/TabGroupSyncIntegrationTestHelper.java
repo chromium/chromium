@@ -371,7 +371,9 @@ public class TabGroupSyncIntegrationTestHelper {
     public void verifyGroupInfoMatchesLocalData(int index, GroupInfo expectedGroup) {
         TabModel tabModel = getTabModel();
         Token tabGroupId = getTabGroupIdAt(index);
-        String actualTitle = runOnUiThreadBlocking(() -> tabModel.getTabGroupTitle(tabGroupId));
+        String actualTitle =
+                runOnUiThreadBlocking(
+                        () -> tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
         int actualColor =
                 runOnUiThreadBlocking(() -> tabModel.getTabGroupColorWithFallback(tabGroupId));
         List<Tab> tabs =

@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -64,7 +65,8 @@ public class TabGroupMetadataExtractor {
 
         // 3. Fetch group-level properties using the tab group ID.
         int tabGroupColor = tabModel.getTabGroupColor(tabGroupId);
-        @Nullable String tabGroupTitle = tabModel.getTabGroupTitle(tabGroupId);
+        @Nullable String tabGroupTitle =
+                tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
         boolean tabGroupCollapsed = tabModel.getTabGroupCollapsed(tabGroupId);
 
         // If the tab group is collapsed, do not select any tab within the group.

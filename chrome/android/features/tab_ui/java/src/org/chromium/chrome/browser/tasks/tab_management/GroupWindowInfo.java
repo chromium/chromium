@@ -207,7 +207,7 @@ public class GroupWindowInfo {
             List<Tab> localTabs) {
         String title = null;
         if (existsLocally && localGroupId != null) {
-            title = localTabModel.getTabGroupTitle(localGroupId);
+            title = localTabModel.getTabGroupTitle(TabGroupId.fromRawToken(localGroupId));
         }
         if (savedGroup == null) {
             if (!TextUtils.isEmpty(title)) {

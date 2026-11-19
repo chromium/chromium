@@ -685,7 +685,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public String getTabGroupTitle(Token tabGroupId) {
+    public String getTabGroupTitle(TabGroupId tabGroupId) {
         return mDelegateModel.getTabGroupTitle(tabGroupId);
     }
 

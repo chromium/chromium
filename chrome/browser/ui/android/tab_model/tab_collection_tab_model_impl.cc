@@ -244,13 +244,12 @@ void TabCollectionTabModelImpl::UpdateTabGroupVisualData(
 }
 
 std::u16string TabCollectionTabModelImpl::GetTabGroupTitle(
-    const base::Token& tab_group_id) const {
-  auto group_id = TabGroupId::FromRawToken(tab_group_id);
-  if (!HasTabGroup(group_id)) {
+    const TabGroupId& tab_group_id) const {
+  if (!HasTabGroup(tab_group_id)) {
     return std::u16string();
   }
   const TabGroupVisualData* visual_data =
-      GetTabGroupVisualDataChecked(group_id);
+      GetTabGroupVisualDataChecked(tab_group_id);
   return visual_data->title();
 }
 

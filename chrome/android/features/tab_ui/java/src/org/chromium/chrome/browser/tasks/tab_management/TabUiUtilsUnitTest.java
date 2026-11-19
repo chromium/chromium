@@ -313,7 +313,7 @@ public class TabUiUtilsUnitTest {
     public void testUpdateTabGroupTitle() {
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(true);
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("B");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn("B");
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, "A");
         verify(mTabModel).setTabGroupTitle(TAB_GROUP_ID, "A");
 
@@ -327,7 +327,7 @@ public class TabUiUtilsUnitTest {
 
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(true);
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("A");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn("A");
         TabUiUtils.updateTabGroupTitle(mTabModel, TAB_GROUP_ID, UNSET_TAB_GROUP_TITLE);
         verify(mTabModel).setTabGroupTitle(TAB_GROUP_ID, UNSET_TAB_GROUP_TITLE);
     }

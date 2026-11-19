@@ -772,7 +772,7 @@ public class HistoricalTabModelObserverUnitTest {
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(tabGroupId)))
                 .thenReturn(tabList.length);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
-        when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn(title);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId))).thenReturn(title);
         when(mTabModel.getTabGroupColorWithFallback(tabGroupId)).thenReturn(color);
         for (MockTab tab : tabList) {
             tab.setTabGroupId(tabGroupId);

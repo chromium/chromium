@@ -216,8 +216,8 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(tab2.getTitle()).thenReturn("Tab 2");
         when(tab2.getTabGroupId()).thenReturn(GROUP_2);
 
-        when(tabModel.getTabGroupTitle(GROUP_1)).thenReturn("Group 1");
-        when(tabModel.getTabGroupTitle(GROUP_2)).thenReturn(null);
+        when(tabModel.getTabGroupTitle(TabGroupId.fromRawToken(GROUP_1))).thenReturn("Group 1");
+        when(tabModel.getTabGroupTitle(TabGroupId.fromRawToken(GROUP_2))).thenReturn(null);
         when(tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(GROUP_1))).thenReturn(true);
         when(tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(GROUP_2))).thenReturn(false);
         when(mLazySupplier.get()).thenReturn(Collections.emptySet());
@@ -292,7 +292,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(tabModel.indexOf(tab1)).thenReturn(4);
         when(tabModel.indexOf(tab2)).thenReturn(7);
         when(tabModel.getIndexOfTabInGroup(tab1)).thenReturn(2);
-        when(tabModel.getTabGroupTitle(GROUP_1)).thenReturn("Group 1");
+        when(tabModel.getTabGroupTitle(TabGroupId.fromRawToken(GROUP_1))).thenReturn("Group 1");
         when(tabModel.getTabGroupColorWithFallback(GROUP_1)).thenReturn(5);
         when(tabModel.getTabGroupCollapsed(GROUP_1)).thenReturn(true);
         when(tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(GROUP_1))).thenReturn(false);

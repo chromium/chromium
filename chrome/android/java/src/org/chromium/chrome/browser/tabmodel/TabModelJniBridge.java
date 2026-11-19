@@ -629,7 +629,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @Override
     @CalledByNative
     public abstract @JniType("std::u16string") String getTabGroupTitle(
-            @JniType("base::Token") Token tabGroupId);
+            @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
     @Override
     @CalledByNative

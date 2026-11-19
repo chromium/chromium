@@ -57,6 +57,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.ArrayList;
@@ -741,7 +742,9 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Bar", mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId()));
+                            "Bar",
+                            mTabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(tabs.get(1).getTabGroupId())));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(1)));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
@@ -975,7 +978,9 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Bar", mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId()));
+                            "Bar",
+                            mTabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(tabs.get(1).getTabGroupId())));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(1)));
                 });
     }
@@ -1026,7 +1031,9 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Bar", mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId()));
+                            "Bar",
+                            mTabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(tabs.get(1).getTabGroupId())));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(1)));
                 });
     }
@@ -1153,7 +1160,9 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Bar", mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId()));
+                            "Bar",
+                            mTabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(tabs.get(1).getTabGroupId())));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(1)));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(2)));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(3)));
@@ -1181,7 +1190,9 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Bar", mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId()));
+                            "Bar",
+                            mTabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(tabs.get(1).getTabGroupId())));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(1)));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(2)));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(3)));
@@ -1315,7 +1326,9 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Foo", mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId()));
+                            "Foo",
+                            mTabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(tabs.get(1).getTabGroupId())));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
                             mTabModel.getRelatedTabList(tabs.get(1).getId()));
@@ -1388,7 +1401,8 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     Assert.assertTrue(
                             TextUtils.isEmpty(
-                                    mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId())));
+                                    mTabModel.getTabGroupTitle(
+                                            TabGroupId.fromRawToken(tabs.get(1).getTabGroupId()))));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(1)));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
@@ -1482,7 +1496,8 @@ public class RecentlyClosedBridgeTest {
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(1)));
                     Assert.assertTrue(
                             TextUtils.isEmpty(
-                                    mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId())));
+                                    mTabModel.getTabGroupTitle(
+                                            TabGroupId.fromRawToken(tabs.get(1).getTabGroupId()))));
                     Assert.assertEquals(
                             Arrays.asList(new Tab[] {tabs.get(1), tabs.get(2)}),
                             mTabModel.getRelatedTabList(tabs.get(1).getId()));
@@ -1761,7 +1776,9 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            "Group 2", mTabModel.getTabGroupTitle(tabs.get(1).getTabGroupId()));
+                            "Group 2",
+                            mTabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(tabs.get(1).getTabGroupId())));
                     Assert.assertTrue(mTabModel.isTabInTabGroup(tabs.get(1)));
                 });
         tabCount = getRecentEntriesAndReturnActiveTabCount(recentEntries);

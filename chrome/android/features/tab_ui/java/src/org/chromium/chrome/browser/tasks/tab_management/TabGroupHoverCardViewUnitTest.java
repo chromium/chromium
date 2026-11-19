@@ -153,7 +153,8 @@ public class TabGroupHoverCardViewUnitTest {
     public void testBindData_withToken() {
         when(mTabModel.getTabsInGroup(TabGroupId.fromRawToken(TAB_GROUP_ID)))
                 .thenReturn(List.of(mTab1, mTab2));
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Token Group");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn("Token Group");
 
         assertFalse(mHoverCardView.bindData(TAB_GROUP_ID));
 

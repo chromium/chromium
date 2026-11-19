@@ -318,7 +318,7 @@ public class TabGridDialogMediatorUnitTest {
                 .thenReturn(mView);
         when(mEditable.toString()).thenReturn(CUSTOMIZED_DIALOG_TITLE);
         when(mRecyclerViewPositionSupplier.get()).thenReturn(null);
-        when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
+        when(mTabModel.getTabGroupTitle(any(TabGroupId.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
@@ -841,7 +841,8 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(CUSTOMIZED_DIALOG_TITLE);
 
         mTabModelObserverCaptor.getValue().didRemoveTabForClosure(newTab);
 
@@ -866,7 +867,8 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of newTab.
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(CUSTOMIZED_DIALOG_TITLE);
 
         mTabModelObserverCaptor.getValue().didRemoveTabForClosure(newTab);
 
@@ -890,7 +892,8 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(CUSTOMIZED_DIALOG_TITLE);
 
         mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
 
@@ -920,7 +923,8 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.setCurrentTabGroupIdForTesting(TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(CUSTOMIZED_DIALOG_TITLE);
 
         // Mock that tab1 and tab2 are in the same group, and we are undoing tab2.
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
@@ -1418,7 +1422,8 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(CUSTOMIZED_DIALOG_TITLE);
 
         assertTrue(mMediator.onReset(tabGroup));
 
@@ -1492,7 +1497,8 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabGroup, TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(CUSTOMIZED_DIALOG_TITLE);
 
         assertTrue(mMediator.onReset(tabGroup));
 
@@ -1742,7 +1748,7 @@ public class TabGridDialogMediatorUnitTest {
     public void testDialogToolbarMenu_DeleteSharedGroup() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
 
-        when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(GROUP_TITLE);
+        when(mTabModel.getTabGroupTitle(any(TabGroupId.class))).thenReturn(GROUP_TITLE);
         AccountInfo accountInfo = new AccountInfo.Builder(EMAIL1, GAIA_ID1).build();
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(accountInfo);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
@@ -1760,7 +1766,7 @@ public class TabGridDialogMediatorUnitTest {
     public void testDialogToolbarMenu_LeaveSharedGroup() {
         resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1, GROUP_MEMBER2);
 
-        when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(GROUP_TITLE);
+        when(mTabModel.getTabGroupTitle(any(TabGroupId.class))).thenReturn(GROUP_TITLE);
         AccountInfo accountInfo = new AccountInfo.Builder(EMAIL2, GAIA_ID2).build();
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(accountInfo);
         when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
@@ -1960,13 +1966,15 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB_GROUP_ID);
 
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(CUSTOMIZED_DIALOG_TITLE);
         assertTrue(mMediator.onReset(tabGroup));
 
         assertEquals(CUSTOMIZED_DIALOG_TITLE, mModel.get(TabGridDialogProperties.HEADER_TITLE));
 
         String newTitle = "BAR";
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(newTitle);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(newTitle);
         mTabGroupObserverCaptor.getValue().didChangeTabGroupTitle(TAB_GROUP_ID, newTitle);
 
         assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(newTitle));

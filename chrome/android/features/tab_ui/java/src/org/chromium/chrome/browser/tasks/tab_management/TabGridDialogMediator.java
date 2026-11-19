@@ -871,7 +871,7 @@ public class TabGridDialogMediator
         assumeNonNull(tabModel);
         String storedTitle =
                 mCurrentTabGroupId != null
-                        ? tabModel.getTabGroupTitle(mCurrentTabGroupId)
+                        ? tabModel.getTabGroupTitle(TabGroupId.fromRawToken(mCurrentTabGroupId))
                         : UNSET_TAB_GROUP_TITLE;
         if (!isTitleUnset(storedTitle)) {
             mModel.set(

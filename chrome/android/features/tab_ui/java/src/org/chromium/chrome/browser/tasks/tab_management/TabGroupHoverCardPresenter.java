@@ -68,7 +68,7 @@ class TabGroupHoverCardPresenter {
         int totalTabsCount = tabsInGroup.size();
 
         // Group Title.
-        String title = currentModel.getTabGroupTitle(tabGroupId);
+        String title = currentModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
         if (TextUtils.isEmpty(title)) {
             title = TabGroupTitleUtils.getDefaultTitle(hoverCardView.getContext(), totalTabsCount);
         }

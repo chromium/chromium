@@ -407,7 +407,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         mTabGroupId = tabGroupId;
         mHandler.removeCallbacks(mDebouncedLiveUpdateRunnable);
         mCurrentModifiedTitle = null;
-        mInitialTitle = getTabModel().getTabGroupTitle(tabGroupId);
+        mInitialTitle = getTabModel().getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabGroupId,
@@ -826,7 +826,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     }
 
     private void recordTitleChangeMetrics() {
-        String finalTitle = getTabModel().getTabGroupTitle(mTabGroupId);
+        String finalTitle = getTabModel().getTabGroupTitle(TabGroupId.fromRawToken(mTabGroupId));
         if (finalTitle == null) finalTitle = "";
         if (!Objects.equals(mInitialTitle, finalTitle)) {
             if (isTitleUnset(finalTitle)) {
@@ -991,7 +991,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
 
     void setGroupDataForTesting(Token tabGroupId) {
         mTabGroupId = tabGroupId;
-        mInitialTitle = getTabModel().getTabGroupTitle(tabGroupId);
+        mInitialTitle = getTabModel().getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
     }
 
     void setTabGroupSyncServiceForTesting(TabGroupSyncService tabGroupSyncService) {

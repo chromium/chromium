@@ -99,6 +99,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -335,7 +336,9 @@ public class ChromeTabbedActivityTest {
                     Assert.assertNotNull("Tab should be in a group", groupId);
 
                     if (expectedTitle != null) {
-                        Assert.assertEquals(expectedTitle, tabModel.getTabGroupTitle(groupId));
+                        Assert.assertEquals(
+                                expectedTitle,
+                                tabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)));
                     }
                 });
     }
@@ -952,7 +955,9 @@ public class ChromeTabbedActivityTest {
                     }
 
                     // Verify other tab group properties.
-                    Assert.assertEquals(TAB_GROUP_TITLE, tabModel.getTabGroupTitle(TAB_GROUP_ID));
+                    Assert.assertEquals(
+                            TAB_GROUP_TITLE,
+                            tabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)));
                     Assert.assertEquals(0, tabModel.getTabGroupColor(TAB_GROUP_ID));
                     if (shouldApplyCollapse) {
                         Assert.assertTrue(tabModel.getTabGroupCollapsed(TAB_GROUP_ID));

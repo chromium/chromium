@@ -80,7 +80,8 @@ public class TabGroupHoverCardPresenterUnitTest {
     public void testBindData_customTitle() {
         List<Tab> tabs = List.of(mTab1, mTab2);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Custom Group");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn("Custom Group");
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
@@ -95,7 +96,7 @@ public class TabGroupHoverCardPresenterUnitTest {
     public void testBindData_fallbackTitle() {
         List<Tab> tabs = List.of(mTab1, mTab2, mTab3);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(null);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn(null);
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
@@ -107,7 +108,8 @@ public class TabGroupHoverCardPresenterUnitTest {
     public void testBindData_childTabsLimitAndExcessCounter() {
         List<Tab> tabs = List.of(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Big Group");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn("Big Group");
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
@@ -136,7 +138,8 @@ public class TabGroupHoverCardPresenterUnitTest {
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(List.of(mTab1));
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("Incognito Group");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn("Incognito Group");
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 
@@ -149,7 +152,7 @@ public class TabGroupHoverCardPresenterUnitTest {
         when(mTab3.isDestroyed()).thenReturn(true);
         List<Tab> tabs = List.of(mTab1, mTab2, mTab3);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID))).thenReturn(tabs);
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(null);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn(null);
 
         assertTrue(mPresenter.bindData(mHoverCardView, TAB_GROUP_ID));
 

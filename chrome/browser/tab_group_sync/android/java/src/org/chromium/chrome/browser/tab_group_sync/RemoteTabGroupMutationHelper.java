@@ -139,7 +139,7 @@ public class RemoteTabGroupMutationHelper {
         LogUtils.log(TAG, "createRemoteTabGroup, groupId = " + tabGroupId);
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.localId = groupId;
-        savedTabGroup.title = mTabModel.getTabGroupTitle(tabGroupId);
+        savedTabGroup.title = mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
         if (savedTabGroup.title == null) {
             savedTabGroup.title = new String();
         }
@@ -177,7 +177,7 @@ public class RemoteTabGroupMutationHelper {
         String title = new String();
         @TabGroupColorId int color = TabGroupColorId.GREY;
         if (mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
-            String tmpTitle = mTabModel.getTabGroupTitle(tabGroupId);
+            String tmpTitle = mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
             if (tmpTitle != null) {
                 title = tmpTitle;
             }

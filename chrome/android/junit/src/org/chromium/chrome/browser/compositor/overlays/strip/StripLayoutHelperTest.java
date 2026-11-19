@@ -309,7 +309,7 @@ public class StripLayoutHelperTest {
         GlicEnabling.setEnabledForTesting(ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC));
         when(mModel.isTabInTabGroup(any())).thenReturn(false);
         when(mModel.getTabUngrouper()).thenReturn(mTabUngrouper);
-        when(mModel.getTabGroupTitle(any(Token.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
+        when(mModel.getTabGroupTitle(any(TabGroupId.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
 
         mModel.setTabRemover(mTabRemover);
         mContext =
@@ -545,7 +545,8 @@ public class StripLayoutHelperTest {
     @Feature({"Accessibility"})
     public void testAccessibilityDescriptions_GroupIndicator_MultipleTabs_NamedGroup() {
         // Setup and group first three tabs. Name the group.
-        when(mModel.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
+        when(mModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                .thenReturn("Group name");
         initializeTest(/* tabIndex= */ 0);
         groupTabs(0, 3, TAB_GROUP_ID_1);
 
@@ -612,7 +613,8 @@ public class StripLayoutHelperTest {
     @Feature({"Accessibility"})
     public void testAccessibilityDescriptions_GroupIndicator_SharedGroup_MultipleTabs_NamedGroup() {
         // Setup and group first three tabs. Name the group.
-        when(mModel.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
+        when(mModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                .thenReturn("Group name");
         initializeTest(/* tabIndex= */ 0);
 
         // Create collaboration group.
@@ -637,7 +639,8 @@ public class StripLayoutHelperTest {
     @Feature({"Accessibility"})
     public void testAccessibilityDescriptions_GroupIndicator_SharedGroup_Notification() {
         // Setup and group first three tabs. Name the group.
-        when(mModel.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
+        when(mModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                .thenReturn("Group name");
         initializeTest(/* tabIndex= */ 0);
 
         // Create collaboration group and show notification bubble on group title.
@@ -667,7 +670,8 @@ public class StripLayoutHelperTest {
     @Feature({"Accessibility"})
     public void testAccessibilityDescriptions_TabWithUpdate_SharedGroup_Notification() {
         // Setup and group first three tabs. Name the group.
-        when(mModel.getTabGroupTitle(TAB_GROUP_ID_1)).thenReturn("Group name");
+        when(mModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID_1)))
+                .thenReturn("Group name");
         initializeTest(/* tabIndex= */ 0);
 
         // Create collaboration group and show notification bubble on group title.

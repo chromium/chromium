@@ -106,7 +106,9 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
 
         doReturn(true).when(mTabModel).containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID));
-        doReturn(UNSET_TAB_GROUP_TITLE).when(mTabModel).getTabGroupTitle(TAB_GROUP_ID);
+        doReturn(UNSET_TAB_GROUP_TITLE)
+                .when(mTabModel)
+                .getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID));
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
     }

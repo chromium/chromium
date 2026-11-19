@@ -648,7 +648,7 @@ public interface TabModel extends TabList {
      * TabGroupTitleUtils#UNSET_TAB_GROUP_TITLE} if a title is not set. Prefer {@link
      * TabGroupTitleUtils#getDisplayableTitle} in most cases.
      */
-    String getTabGroupTitle(Token tabGroupId);
+    String getTabGroupTitle(TabGroupId tabGroupId);
 
     /** Stores the given title for the tab group. */
     void setTabGroupTitle(Token tabGroupId, String title);

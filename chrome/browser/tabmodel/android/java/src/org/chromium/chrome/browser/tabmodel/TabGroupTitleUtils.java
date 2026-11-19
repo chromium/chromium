@@ -69,7 +69,7 @@ public class TabGroupTitleUtils {
                 || !tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) {
             return getDefaultTitle(context, /* numRelatedTabs= */ 0);
         }
-        String explicitTitle = tabModel.getTabGroupTitle(tabGroupId);
+        String explicitTitle = tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
         if (isTitleUnset(explicitTitle)) {
             int tabCount = 0;
             for (Tab tab : tabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId))) {

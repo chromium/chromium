@@ -455,7 +455,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public String getTabGroupTitle(Token tabGroupId) {
+    public String getTabGroupTitle(TabGroupId tabGroupId) {
         return UNSET_TAB_GROUP_TITLE;
     }
 

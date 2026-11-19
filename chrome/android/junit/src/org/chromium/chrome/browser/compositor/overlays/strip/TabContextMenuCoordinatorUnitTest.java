@@ -423,7 +423,8 @@ public class TabContextMenuCoordinatorUnitTest {
                 .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(true);
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TAB_GROUP_TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(TAB_GROUP_TITLE);
         mTotalTabCountSupplier = ObservableSuppliers.createNonNull(3);
         when(mTabModel.getTabCountSupplier()).thenReturn(mTotalTabCountSupplier);
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(INSTANCE_ID_1);
@@ -1231,7 +1232,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Context Menu")
     @SuppressWarnings("DirectInvocationOnMock")
     public void testAddToGroupSubmenu_fallbackTabGroupName() {
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn("");
         MultiWindowUtils.setInstanceCountForTesting(1);
         mSavedTabGroup.title = "";
         var modelList = new ModelList();
@@ -1251,7 +1252,7 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testAddToGroupSubmenu_fallbackTabGroupName_incognito() {
         setupWithIncognito(true);
         initializeCoordinatorForTesting(TabStripLayoutType.HORIZONTAL);
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn("");
         MultiWindowUtils.setInstanceCountForTesting(1);
         mSavedTabGroup.title = "";
         var modelList = new ModelList();
@@ -1629,7 +1630,8 @@ public class TabContextMenuCoordinatorUnitTest {
         TabModel tabModelWindow2 = Mockito.mock(TabModel.class);
         when(mTabWindowManager.getTabModelSelectorById(INSTANCE_ID_2)).thenReturn(selectorWindow2);
         when(selectorWindow2.getModel(false)).thenReturn(tabModelWindow2);
-        when(tabModelWindow2.getTabGroupTitle(tabGroupId2)).thenReturn("Window 2 Group");
+        when(tabModelWindow2.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId2)))
+                .thenReturn("Window 2 Group");
         when(tabModelWindow2.getTabGroupColorWithFallback(tabGroupId2))
                 .thenReturn(TAB_GROUP_INDICATOR_COLOR_ID);
         when(tabModelWindow2.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId2)))

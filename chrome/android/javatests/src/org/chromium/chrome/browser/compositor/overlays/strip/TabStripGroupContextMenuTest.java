@@ -428,7 +428,11 @@ public class TabStripGroupContextMenuTest {
                 TabStripTestUtils.getTabModel(
                         mActivityTestRule.getActivity(), /* isIncognito= */ false);
         CriteriaHelper.pollUiThread(
-                () -> "liveTitle".equals(tabModel.getTabGroupTitle(mTabGroupId)),
+                () ->
+                        "liveTitle"
+                                .equals(
+                                        tabModel.getTabGroupTitle(
+                                                TabGroupId.fromRawToken(mTabGroupId))),
                 "Tab group title should be updated live while menu is open");
 
         // Verify the menu is still open and displaying the new title.
@@ -441,7 +445,8 @@ public class TabStripGroupContextMenuTest {
         // While still showing, verify that deleting the text clears the title in TabModel.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    String currentTitle = tabModel.getTabGroupTitle(mTabGroupId);
+                    String currentTitle =
+                            tabModel.getTabGroupTitle(TabGroupId.fromRawToken(mTabGroupId));
                     return currentTitle == null || currentTitle.isEmpty();
                 },
                 "Tab group title in TabModel should be cleared while edit text is empty");

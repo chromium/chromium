@@ -99,7 +99,7 @@ public class TabModelNotificationDotManagerUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(List.of(mTab));
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID))).thenReturn(TITLE);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(true);
         when(mTabModel.getProfile()).thenReturn(mProfile);
@@ -276,7 +276,8 @@ public class TabModelNotificationDotManagerUnitTest {
 
     @Test
     public void testFallbackTitle() {
-        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(UNSET_TAB_GROUP_TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID)))
+                .thenReturn(UNSET_TAB_GROUP_TITLE);
         initializeBothBackends();
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
 

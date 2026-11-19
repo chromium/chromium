@@ -63,6 +63,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -376,7 +377,9 @@ public class VerticalTabsTest {
         CriteriaHelper.pollUiThread(
                 () ->
                         testTitle.equals(
-                                selector.getCurrentModel().getTabGroupTitle(tab1.getTabGroupId())),
+                                selector.getCurrentModel()
+                                        .getTabGroupTitle(
+                                                TabGroupId.fromRawToken(tab1.getTabGroupId()))),
                 "Tab group title should match the stored custom title.");
     }
 

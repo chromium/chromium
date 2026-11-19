@@ -829,7 +829,7 @@ std::optional<TabGroupVisualData> TabModelJniBridge::GetTabGroupVisualData(
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
 
   const std::u16string title =
-      Java_TabModelJniBridge_getTabGroupTitle(env, jobj, group_id.token());
+      Java_TabModelJniBridge_getTabGroupTitle(env, jobj, group_id);
   const int color =
       Java_TabModelJniBridge_getTabGroupColor(env, jobj, group_id.token());
 

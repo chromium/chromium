@@ -191,8 +191,8 @@ public class VerticalTabItemHoverControllerUnitTest {
                 .thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(GROUP_ID_2)))
                 .thenReturn(List.of(mTab1));
-        when(mTabModel.getTabGroupTitle(GROUP_ID_1)).thenReturn("Group 1");
-        when(mTabModel.getTabGroupTitle(GROUP_ID_2)).thenReturn("Group 2");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(GROUP_ID_1))).thenReturn("Group 1");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(GROUP_ID_2))).thenReturn("Group 2");
 
         mController =
                 new VerticalTabItemHoverController(

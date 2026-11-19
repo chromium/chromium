@@ -1326,7 +1326,9 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mCollectionModel.addTabGroupObserver(titleObserver);
                     mCollectionModel.setTabGroupTitle(tabGroupId, testTitle);
-                    assertEquals(testTitle, mCollectionModel.getTabGroupTitle(tabGroupId));
+                    assertEquals(
+                            testTitle,
+                            mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
                     mCollectionModel.removeTabGroupObserver(titleObserver);
                 });
         titleChangedHelper.waitForOnly("setTabGroupTitle failed");
@@ -1346,7 +1348,8 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.addTabGroupObserver(titleDeleteObserver);
                     mCollectionModel.deleteTabGroupTitle(tabGroupId);
                     assertEquals(
-                            UNSET_TAB_GROUP_TITLE, mCollectionModel.getTabGroupTitle(tabGroupId));
+                            UNSET_TAB_GROUP_TITLE,
+                            mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
                     mCollectionModel.removeTabGroupObserver(titleDeleteObserver);
                 });
         titleDeletedHelper.waitForOnly("deleteTabGroupTitle failed");
@@ -1533,7 +1536,9 @@ public class TabCollectionTabModelImplTest {
             assertEquals(newColor, TabGroupVisualDataStore.getTabGroupColor(tabGroupId));
             assertEquals(newCollapsed, TabGroupVisualDataStore.getTabGroupCollapsed(tabGroupId));
 
-            assertEquals(newTitle, mCollectionModel.getTabGroupTitle(tabGroupId));
+            assertEquals(
+                    newTitle,
+                    mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
             assertEquals(newColor, mCollectionModel.getTabGroupColor(tabGroupId));
             assertEquals(newCollapsed, mCollectionModel.getTabGroupCollapsed(tabGroupId));
 
@@ -1651,7 +1656,9 @@ public class TabCollectionTabModelImplTest {
         String title = "My Title";
         mCollectionModel.setTabGroupTitle(tabGroupId, title);
         assertEquals(
-                "Native title should be set", title, mCollectionModel.getTabGroupTitle(tabGroupId));
+                "Native title should be set",
+                title,
+                mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
         assertEquals(
                 "Store title should be set",
                 title,
@@ -1662,7 +1669,7 @@ public class TabCollectionTabModelImplTest {
         assertEquals(
                 "Native title should be cleared (unset)",
                 UNSET_TAB_GROUP_TITLE,
-                mCollectionModel.getTabGroupTitle(tabGroupId));
+                mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
         assertEquals(
                 "Store title should be deleted (unset)",
@@ -1683,17 +1690,19 @@ public class TabCollectionTabModelImplTest {
         final String titleB = "Title B";
 
         mCollectionModel.setTabGroupTitle(tabGroupId, titleA);
-        assertEquals(titleA, mCollectionModel.getTabGroupTitle(tabGroupId));
+        assertEquals(
+                titleA, mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
         mCollectionModel.setTabGroupTitle(tabGroupId, titleB);
-        assertEquals(titleB, mCollectionModel.getTabGroupTitle(tabGroupId));
+        assertEquals(
+                titleB, mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
         mCollectionModel.setTabGroupTitle(tabGroupId, titleA);
 
         assertEquals(
                 "Title should be reverted to A",
                 titleA,
-                mCollectionModel.getTabGroupTitle(tabGroupId));
+                mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
     }
 
     @Test
@@ -1709,7 +1718,8 @@ public class TabCollectionTabModelImplTest {
         final String titleB = "Title B";
 
         mCollectionModel.setTabGroupTitle(tabGroupId, titleA);
-        assertEquals(titleA, mCollectionModel.getTabGroupTitle(tabGroupId));
+        assertEquals(
+                titleA, mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
         when(mTabGroupCollectionData.getTabGroupId()).thenReturn(tabGroupId);
         when(mTabGroupCollectionData.getTitle()).thenReturn(titleA);
@@ -1724,14 +1734,14 @@ public class TabCollectionTabModelImplTest {
             assertEquals(
                     "Native should be updated to B",
                     titleB,
-                    mCollectionModel.getTabGroupTitle(tabGroupId));
+                    mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
             mCollectionModel.setTabGroupTitle(tabGroupId, titleA);
 
             assertEquals(
                     "Native should be reverted to A",
                     titleA,
-                    mCollectionModel.getTabGroupTitle(tabGroupId));
+                    mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
         } finally {
             TabGroupVisualDataStore.removeCachedGroups(
@@ -1818,7 +1828,9 @@ public class TabCollectionTabModelImplTest {
             assertEquals(
                     UNSET_TAB_GROUP_TITLE, TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
 
-            assertEquals(UNSET_TAB_GROUP_TITLE, mCollectionModel.getTabGroupTitle(tabGroupId));
+            assertEquals(
+                    UNSET_TAB_GROUP_TITLE,
+                    mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
             assertEquals(1, titleCallback.getCallCount());
         } finally {
@@ -2709,9 +2721,13 @@ public class TabCollectionTabModelImplTest {
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
 
                     // Visual data should be restored.
-                    assertEquals(group1Title, mCollectionModel.getTabGroupTitle(groupId1));
+                    assertEquals(
+                            group1Title,
+                            mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId1)));
                     assertEquals(group1Color, mCollectionModel.getTabGroupColor(groupId1));
-                    assertEquals(group2Title, mCollectionModel.getTabGroupTitle(groupId2));
+                    assertEquals(
+                            group2Title,
+                            mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId2)));
                     assertEquals(group2Color, mCollectionModel.getTabGroupColor(groupId2));
                 });
     }
@@ -2989,7 +3005,9 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.removeTabGroupObserver(observer);
 
                     // Group 1 is now detached. Its title should still be available.
-                    assertEquals(GROUP_1_TITLE, mCollectionModel.getTabGroupTitle(groupId1));
+                    assertEquals(
+                            GROUP_1_TITLE,
+                            mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId1)));
                 });
 
         showUndoSnackbarHelper.waitForOnly();
@@ -3651,7 +3669,9 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     mCollectionModel.cancelTabClosure(tab0.getId());
                     mCollectionModel.cancelTabClosure(tab1.getId());
-                    assertEquals(title, mCollectionModel.getTabGroupTitle(tabGroupId));
+                    assertEquals(
+                            title,
+                            mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
                     assertEquals(color, mCollectionModel.getTabGroupColor(tabGroupId));
                 });
         assertEquals(3, getCount());
@@ -4173,7 +4193,9 @@ public class TabCollectionTabModelImplTest {
                     assertFalse(mCollectionModel.isClosurePending(tab1.getId()));
                     assertEquals(tabGroupId, tab0.getTabGroupId());
                     assertEquals(tabGroupId, tab1.getTabGroupId());
-                    assertEquals(groupTitle, mCollectionModel.getTabGroupTitle(tabGroupId));
+                    assertEquals(
+                            groupTitle,
+                            mCollectionModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
 
                     mCollectionModel.removeTabGroupObserver(groupObserver);
                     mCollectionModel.removeObserver(modelObserver);

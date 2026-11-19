@@ -1573,7 +1573,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public String getTabGroupTitle(Token tabGroupId) {
+    public String getTabGroupTitle(TabGroupId tabGroupId) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null) {
             return UNSET_TAB_GROUP_TITLE;
@@ -2440,9 +2440,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         // Adopt the title of the first candidate group with a title that was merged into the
         // destination group if the destination group does not have a title.
         boolean adoptedGroupTitle = false;
-        if (TextUtils.isEmpty(getTabGroupTitle(destinationTabGroupId))) {
+        if (TextUtils.isEmpty(getTabGroupTitle(TabGroupId.fromRawToken(destinationTabGroupId)))) {
             for (Token tabGroupId : candidateTabGroupIds) {
-                String title = getTabGroupTitle(tabGroupId);
+                String title = getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
                 if (!TextUtils.isEmpty(title)) {
                     adoptedGroupTitle = true;
                     setTabGroupTitle(destinationTabGroupId, title);
@@ -2856,7 +2856,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     private void restoreTabGroupVisualData(Token tabGroupId) {
-        setTabGroupTitle(tabGroupId, getTabGroupTitle(tabGroupId));
+        setTabGroupTitle(tabGroupId, getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)));
         setTabGroupColor(tabGroupId, getTabGroupColor(tabGroupId));
         setTabGroupCollapsed(tabGroupId, getTabGroupCollapsed(tabGroupId));
     }
@@ -2946,7 +2946,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         @JniType("std::u16string")
         String getTabGroupTitle(
                 JniPtr<NativeTabCollectionTabModelImpl> self,
-                @JniType("base::Token") Token tabGroupId);
+                @JniType("tab_groups::TabGroupId") TabGroupId tabGroupId);
 
         int getTabGroupColor(
                 JniPtr<NativeTabCollectionTabModelImpl> self,

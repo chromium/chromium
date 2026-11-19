@@ -223,7 +223,7 @@ public class TabUiUtils {
         assert newGroupTitle != null;
         if (!tabModel.containsTabGroup(TabGroupId.fromOptionalToken(tabGroupId))) return false;
 
-        String curGroupTitle = tabModel.getTabGroupTitle(tabGroupId);
+        String curGroupTitle = tabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId));
         if (!newGroupTitle.equals(curGroupTitle)) {
             tabModel.setTabGroupTitle(tabGroupId, newGroupTitle);
             return true;

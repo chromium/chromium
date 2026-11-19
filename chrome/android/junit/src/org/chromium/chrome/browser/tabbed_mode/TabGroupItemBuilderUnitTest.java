@@ -155,7 +155,7 @@ public class TabGroupItemBuilderUnitTest {
         when(tabModel.getCount()).thenReturn(2);
         when(tabModel.getTabGroupCount()).thenReturn(1);
         when(tabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
-        when(tabModel.getTabGroupTitle(token1)).thenReturn("Group 1");
+        when(tabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1))).thenReturn("Group 1");
         when(tabModel.getTabGroupColorWithFallback(token1)).thenReturn(TabGroupColorId.BLUE);
 
         Tab tab = Mockito.mock(Tab.class);
@@ -180,7 +180,7 @@ public class TabGroupItemBuilderUnitTest {
         Token token1 = new Token(1L, 1L);
         when(mTabModel.getTabGroupCount()).thenReturn(1);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
-        when(mTabModel.getTabGroupTitle(token1)).thenReturn("Group 1");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1))).thenReturn("Group 1");
         when(mTabModel.getTabGroupColorWithFallback(token1)).thenReturn(TabGroupColorId.BLUE);
 
         Tab tab1 = Mockito.mock(Tab.class);
@@ -436,7 +436,7 @@ public class TabGroupItemBuilderUnitTest {
         when(mTab.getTabGroupId()).thenReturn(token1);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
         doReturn(true).when(mTabModel).containsTabGroup(TabGroupId.fromOptionalToken(token2));
-        when(mTabModel.getTabGroupTitle(token2)).thenReturn("Group 2");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token2))).thenReturn("Group 2");
         when(mTabModel.getTabGroupColorWithFallback(token2)).thenReturn(TabGroupColorId.BLUE);
 
         ListItem addToGroupItem =
@@ -763,7 +763,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mIncognitoTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
         when(mIncognitoTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1)))
                 .thenReturn(true);
-        when(mIncognitoTabModel.getTabGroupTitle(token1)).thenReturn("Incognito Group");
+        when(mIncognitoTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1)))
+                .thenReturn("Incognito Group");
         when(mIncognitoTabModel.getTabGroupColorWithFallback(token1))
                 .thenReturn(TabGroupColorId.GREY);
 
@@ -1076,7 +1077,8 @@ public class TabGroupItemBuilderUnitTest {
 
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"closing_id"});
         when(mTabGroupSyncService.getGroup("closing_id")).thenReturn(closingGroup);
-        when(mTabModel.getTabGroupTitle(token1)).thenReturn("Live Closing Group");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1)))
+                .thenReturn("Live Closing Group");
         when(mTabModel.getTabGroupColorWithFallback(token1)).thenReturn(TabGroupColorId.RED);
 
         when(mClosingTab.getTabGroupId()).thenReturn(token1);
@@ -1172,7 +1174,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mModelWindow2.getComprehensiveModel()).thenReturn(mComprehensiveModelWindow2);
         when(mModelWindow2.getTabsInGroup(TabGroupId.fromOptionalToken(token1)))
                 .thenReturn(List.of());
-        when(mModelWindow2.getTabGroupTitle(token1)).thenReturn("Live Window 2 Closing Group");
+        when(mModelWindow2.getTabGroupTitle(TabGroupId.fromRawToken(token1)))
+                .thenReturn("Live Window 2 Closing Group");
         when(mModelWindow2.getTabGroupColorWithFallback(token1)).thenReturn(TabGroupColorId.BLUE);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
@@ -1549,7 +1552,8 @@ public class TabGroupItemBuilderUnitTest {
         when(mIncognitoTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
         when(mIncognitoTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1)))
                 .thenReturn(true);
-        when(mIncognitoTabModel.getTabGroupTitle(token1)).thenReturn("Incognito Group");
+        when(mIncognitoTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1)))
+                .thenReturn("Incognito Group");
         when(mIncognitoTabModel.getTabGroupColorWithFallback(token1))
                 .thenReturn(TabGroupColorId.GREY);
 
@@ -2023,7 +2027,7 @@ public class TabGroupItemBuilderUnitTest {
         when(mTab.getTabGroupId()).thenReturn(token1);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
         doReturn(true).when(mTabModel).containsTabGroup(TabGroupId.fromOptionalToken(token2));
-        when(mTabModel.getTabGroupTitle(token2)).thenReturn("Group 2");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token2))).thenReturn("Group 2");
         when(mTabModel.getTabGroupColorWithFallback(token2)).thenReturn(TabGroupColorId.BLUE);
 
         ListItem addToGroupItem =
@@ -2179,7 +2183,8 @@ public class TabGroupItemBuilderUnitTest {
                 createMockTab(101, "Current Tab", JUnitTestGURLs.URL_1, tokenCurrent, false);
         when(mTabModel.getTabGroupCount()).thenReturn(1);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(tokenCurrent));
-        when(mTabModel.getTabGroupTitle(tokenCurrent)).thenReturn("Current Group");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tokenCurrent)))
+                .thenReturn("Current Group");
         when(mTabModel.getTabGroupColorWithFallback(tokenCurrent)).thenReturn(TabGroupColorId.BLUE);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(tokenCurrent)))
                 .thenReturn(List.of(tabCurrent));

@@ -662,13 +662,14 @@ public class TabGroupSyncLocalObserverUnitTest {
     @Test
     public void testDidChangeTitle() {
         // Valid title.
-        when(mTabModel.getTabGroupTitle(TOKEN_1)).thenReturn(TITLE_1);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TOKEN_1))).thenReturn(TITLE_1);
         mTabGroupObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, TITLE_1);
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(TITLE_1), anyInt());
 
         // Unset title.
-        when(mTabModel.getTabGroupTitle(TOKEN_1)).thenReturn(UNSET_TAB_GROUP_TITLE);
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(TOKEN_1)))
+                .thenReturn(UNSET_TAB_GROUP_TITLE);
         mTabGroupObserverCaptor.getValue().didChangeTabGroupTitle(TOKEN_1, UNSET_TAB_GROUP_TITLE);
         verify(mTabGroupSyncService, times(1))
                 .updateVisualData(eq(LOCAL_TAB_GROUP_ID_1), eq(UNSET_TAB_GROUP_TITLE), anyInt());

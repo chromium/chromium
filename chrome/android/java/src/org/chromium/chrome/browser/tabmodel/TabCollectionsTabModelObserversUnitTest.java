@@ -947,7 +947,8 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testOnTabGroupVisualsChanged_title() {
         Token groupId = new Token(1L, 2L);
-        when(mTabCollectionTabModelImplJni.getTabGroupTitle(any(), eq(groupId)))
+        when(mTabCollectionTabModelImplJni.getTabGroupTitle(
+                        any(), eq(TabGroupId.fromRawToken(groupId))))
                 .thenReturn("Old Title");
 
         mTabModel.setTabGroupTitle(groupId, "New Title");
@@ -977,7 +978,8 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Test
     public void testOnTabGroupVisualsChanged_visualData() {
         Token groupId = new Token(1L, 2L);
-        when(mTabCollectionTabModelImplJni.getTabGroupTitle(any(), eq(groupId)))
+        when(mTabCollectionTabModelImplJni.getTabGroupTitle(
+                        any(), eq(TabGroupId.fromRawToken(groupId))))
                 .thenReturn("Old Title");
 
         mTabModel.setTabGroupVisualData(

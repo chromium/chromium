@@ -823,7 +823,8 @@ public class TabGroupUiUtilsUnitTest {
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(Collections.emptyList());
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
-        when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Live Closing Title");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))
+                .thenReturn("Live Closing Title");
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.CYAN);
 
         GroupWindowInfo info =
@@ -846,7 +847,8 @@ public class TabGroupUiUtilsUnitTest {
 
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(2);
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
-        when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Title");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))
+                .thenReturn("Local Title");
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.CYAN);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(Collections.emptyList());
@@ -957,7 +959,8 @@ public class TabGroupUiUtilsUnitTest {
 
         when(mOtherModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mOtherModel.getTabCountForGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(3);
-        when(mOtherModel.getTabGroupTitle(groupId)).thenReturn("Window 2 Local Title");
+        when(mOtherModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))
+                .thenReturn("Window 2 Local Title");
         when(mOtherModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.PURPLE);
         when(mOtherModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(Collections.emptyList());
@@ -1151,7 +1154,8 @@ public class TabGroupUiUtilsUnitTest {
         when(mOtherModel.getComprehensiveModel()).thenReturn(mOtherComprehensiveModel);
         when(mOtherModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(Collections.emptyList());
-        when(mOtherModel.getTabGroupTitle(groupId)).thenReturn("Live Window 2 Closing Title");
+        when(mOtherModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))
+                .thenReturn("Live Window 2 Closing Title");
         when(mOtherModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.RED);
 
         GroupWindowInfo info =

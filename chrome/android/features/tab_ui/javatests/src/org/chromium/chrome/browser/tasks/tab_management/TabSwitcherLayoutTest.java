@@ -99,6 +99,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -902,7 +903,10 @@ public class TabSwitcherLayoutTest {
                     assertEquals(tab0.getTabGroupId(), tab1.getTabGroupId());
                     assertEquals(tab0.getTabGroupId(), tab1.getTabGroupId());
                     assertNull(tab2.getTabGroupId());
-                    assertEquals("Foo", tabModel.getTabGroupTitle(tab1.getTabGroupId()));
+                    assertEquals(
+                            "Foo",
+                            tabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(tab1.getTabGroupId())));
                     assertEquals(
                             nextSuggestedColorId, tabModel.getTabGroupColor(tab1.getTabGroupId()));
                 });
@@ -990,10 +994,14 @@ public class TabSwitcherLayoutTest {
                 () -> {
                     assertEquals(
                             "Foo",
-                            tabModel.getTabGroupTitle(normalTabModel.getTabAt(4).getTabGroupId()));
+                            tabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(
+                                            normalTabModel.getTabAt(4).getTabGroupId())));
                     assertEquals(
                             "Bar",
-                            tabModel.getTabGroupTitle(normalTabModel.getTabAt(0).getTabGroupId()));
+                            tabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(
+                                            normalTabModel.getTabAt(0).getTabGroupId())));
                     assertEquals(
                             nextSuggestedColorId1,
                             tabModel.getTabGroupColor(normalTabModel.getTabAt(4).getTabGroupId()));
@@ -1103,7 +1111,9 @@ public class TabSwitcherLayoutTest {
                 () -> {
                     assertEquals(
                             "Foo",
-                            tabModel.getTabGroupTitle(normalTabModel.getTabAt(0).getTabGroupId()));
+                            tabModel.getTabGroupTitle(
+                                    TabGroupId.fromRawToken(
+                                            normalTabModel.getTabAt(0).getTabGroupId())));
                 });
 
         // Assert color still exists post snackbar dismissal.

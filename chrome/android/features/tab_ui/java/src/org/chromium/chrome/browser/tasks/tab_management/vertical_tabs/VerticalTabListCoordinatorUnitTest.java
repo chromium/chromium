@@ -1250,7 +1250,7 @@ public class VerticalTabListCoordinatorUnitTest {
                             return "Group";
                         })
                 .when(mTabModel)
-                .getTabGroupTitle(TAB_GROUP_ID);
+                .getTabGroupTitle(TabGroupId.fromRawToken(TAB_GROUP_ID));
 
         createCoordinator();
         TabListRecyclerView recycler =
@@ -3359,7 +3359,8 @@ public class VerticalTabListCoordinatorUnitTest {
         setupMockTabGroup(tabGroupId, List.of(tab1, tab2));
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getTabGroupColor(tabGroupId)).thenReturn(TabGroupColorId.GREY);
-        when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn("Test Group");
+        when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tabGroupId)))
+                .thenReturn("Test Group");
 
         createCoordinator();
         PropertyModel model = createTabPropertyModel();
