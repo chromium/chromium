@@ -89,7 +89,10 @@ source_set("unit_tests") {
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ui/ash/shelf",
       "//chromeos/ash/experiences/arc:arc_app_constants",
+      "//components/account_id",
+      "//components/account_id:test_support",
       "//components/user_manager",
+      "//google_apis",
     ]
   }
 }

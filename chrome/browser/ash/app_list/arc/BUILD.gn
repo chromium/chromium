@@ -229,6 +229,7 @@ static_library("test_support") {
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/privacy_items",
     "//chromeos/ash/experiences/arc/session",
+    "//components/account_id",
     "//testing/gtest",
   ]
 }

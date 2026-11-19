@@ -32,7 +32,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/ambient_video_albums.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -40,6 +39,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -223,15 +223,14 @@ class PersonalizationAppAmbientProviderImplTest : public ChromeAshTestBase {
   void SetUp() override {
     ChromeAshTestBase::SetUp();
 
+    ASSERT_TRUE(
+        ash_test_helper()->user_session_test_environment().AddRegularUser(
+            kFakeTestAccountId));
+
     ASSERT_TRUE(profile_manager_.SetUp());
     ash::ScopedAccountIdAnnotator annotator(profile_manager_.profile_manager(),
                                             kFakeTestAccountId);
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
-
-    ash::FakeChromeUserManager* user_manager =
-        static_cast<ash::FakeChromeUserManager*>(
-            user_manager::UserManager::Get());
-    user_manager->AddUser(kFakeTestAccountId);
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));

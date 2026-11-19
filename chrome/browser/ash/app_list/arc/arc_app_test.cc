@@ -535,6 +535,11 @@ void ArcAppTest::CreateUserAndLogin() {
       AccountId::FromUserEmailGaiaId(profile_user_name, GaiaId("1234567890")));
   CHECK(user_manager::TestHelper(user_manager::UserManager::Get())
             .AddRegularUser(account_id));
+  // Additional users need to be registered before any user logs in.
+  for (const auto& additional_account_id : additional_account_ids_) {
+    CHECK(user_manager::TestHelper(user_manager::UserManager::Get())
+              .AddRegularUser(additional_account_id));
+  }
   CHECK_DEREF(session_manager::SessionManager::Get())
       .CreateSession(account_id,
                      user_manager::TestHelper::GetFakeUsernameHash(account_id),
@@ -571,4 +576,10 @@ bool ArcAppTest::FindPackage(const std::string& package_name) {
 
 void ArcAppTest::SetUserEmail(const std::string& email) {
   user_email_ = email;
+}
+
+void ArcAppTest::AddAdditionalUser(const AccountId& account_id) {
+  CHECK_EQ(user_manager_mode_, UserManagerMode::kCreate);
+  CHECK(!is_pre_profile_setup_called_);
+  additional_account_ids_.push_back(account_id);
 }
