@@ -163,7 +163,7 @@ ExternalVkImageGLRepresentation::ExternalVkImageGLRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
-    std::vector<raw_ptr<gles2::Texture, VectorExperimental>> textures)
+    std::vector<raw_ptr<gles2::Texture>> textures)
     : GLTextureImageRepresentation(manager, backing, tracker),
       textures_(std::move(textures)),
       representation_shared_(backing, GetTextureIds(textures_)) {

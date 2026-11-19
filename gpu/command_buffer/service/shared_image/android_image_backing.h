@@ -45,8 +45,8 @@ class AndroidImageBacking : public ClearTrackingSharedImageBacking {
 
   // All writes must wait for existing reads to complete.
   base::ScopedFD read_sync_fd_ GUARDED_BY(lock_);
-  base::flat_set<raw_ptr<const SharedImageRepresentation, CtnExperimental>>
-      active_readers_ GUARDED_BY(lock_);
+  base::flat_set<raw_ptr<const SharedImageRepresentation>> active_readers_
+      GUARDED_BY(lock_);
 
   bool is_overlay_accessing_ GUARDED_BY(lock_) = false;
 };

@@ -983,7 +983,7 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
     }
   }
 
-  std::vector<raw_ptr<gles2::Texture, VectorExperimental>> textures;
+  std::vector<raw_ptr<gles2::Texture>> textures;
   textures.reserve(gl_textures_.size());
   for (auto& gl_texture : gl_textures_) {
     CHECK(gl_texture);

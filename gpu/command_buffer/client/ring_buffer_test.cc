@@ -39,8 +39,8 @@ class BaseRingBufferTest : public testing::Test {
   static const unsigned int kAlignment = 4;
 
   void RunPendingSetToken() {
-    for (std::vector<raw_ptr<const volatile void, VectorExperimental>>::iterator
-             it = set_token_arguments_.begin();
+    for (std::vector<raw_ptr<const volatile void>>::iterator it =
+             set_token_arguments_.begin();
          it != set_token_arguments_.end(); ++it) {
       api_mock_->SetToken(cmd::kSetToken, 1, *it);
     }
@@ -80,8 +80,7 @@ class BaseRingBufferTest : public testing::Test {
 
   int32_t GetToken() { return command_buffer_->GetLastState().token; }
 
-  std::vector<raw_ptr<const volatile void, VectorExperimental>>
-      set_token_arguments_;
+  std::vector<raw_ptr<const volatile void>> set_token_arguments_;
   bool delay_set_token_;
   std::unique_ptr<CommandBufferDirect> command_buffer_;
   std::unique_ptr<AsyncAPIMock> api_mock_;

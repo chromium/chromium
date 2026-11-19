@@ -222,8 +222,7 @@ class GpuDiskCacheFactory {
   using HandleRefCounts = base::flat_map<GpuDiskCacheHandle, uint32_t>;
   HandleRefCounts handle_ref_counts_;
 
-  using PathToCacheMap =
-      base::flat_map<base::FilePath, raw_ptr<GpuDiskCache, CtnExperimental>>;
+  using PathToCacheMap = base::flat_map<base::FilePath, raw_ptr<GpuDiskCache>>;
   PathToCacheMap gpu_cache_map_;
 
   using ClearHelperQueue =

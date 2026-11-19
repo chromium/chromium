@@ -72,7 +72,7 @@ class DawnClientMemoryTransferService
 
   // Pointers to memory allocated by the MappedMemoryManager to free after
   // the next Flush.
-  std::vector<raw_ptr<void, VectorExperimental>> free_blocks_;
+  std::vector<raw_ptr<void>> free_blocks_;
 
   // Dedicated chunks to destroy after the next Flush.
   std::vector<ScopedDedicatedChunk> free_dedicated_chunks_;

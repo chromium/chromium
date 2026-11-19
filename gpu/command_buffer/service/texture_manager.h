@@ -556,7 +556,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   std::vector<FaceInfo> face_infos_;
 
   // The texture refs that point to this Texture.
-  typedef base::flat_set<raw_ptr<TextureRef, CtnExperimental>> RefSet;
+  typedef base::flat_set<raw_ptr<TextureRef>> RefSet;
   RefSet refs_;
   bool has_lightweight_ref_ = false;
 
@@ -1205,8 +1205,7 @@ class GPU_GLES2_EXPORT TextureManager
 
   scoped_refptr<FeatureInfo> feature_info_;
 
-  std::vector<raw_ptr<FramebufferManager, VectorExperimental>>
-      framebuffer_managers_;
+  std::vector<raw_ptr<FramebufferManager>> framebuffer_managers_;
 
   // Info for each texture in the system.
   typedef std::unordered_map<GLuint, scoped_refptr<TextureRef>> TextureMap;
@@ -1240,8 +1239,7 @@ class GPU_GLES2_EXPORT TextureManager
   // The default textures for each target (texture name = 0)
   std::array<scoped_refptr<TextureRef>, kNumDefaultTextures> default_textures_;
 
-  std::vector<raw_ptr<DestructionObserver, VectorExperimental>>
-      destruction_observers_;
+  std::vector<raw_ptr<DestructionObserver>> destruction_observers_;
 
   uint32_t current_service_id_generation_;
 

@@ -92,9 +92,7 @@ class GPU_GLES2_EXPORT ShaderTranslatorCache
 
   const GpuPreferences gpu_preferences_;
 
-  typedef std::map<ShaderTranslatorInitParams,
-                   raw_ptr<ShaderTranslator, CtnExperimental>>
-      Cache;
+  typedef std::map<ShaderTranslatorInitParams, raw_ptr<ShaderTranslator>> Cache;
   Cache cache_;
 };
 
