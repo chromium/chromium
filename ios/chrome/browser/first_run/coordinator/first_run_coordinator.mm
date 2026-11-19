@@ -8,8 +8,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/values.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -79,6 +81,9 @@ class FirstRunCoordinatorMetricsHelper final {
 @implementation FirstRunCoordinator {
   // First Run navigation controller.
   UINavigationController* _navigationController;
+  // YES once `_navigationController` has been presented on
+  // `baseViewController`.
+  BOOL _navigationControllerPresented;
   // Completion block called when the First Run UI finishes dismissing.
   ProceduralBlock _completion;
 }
@@ -106,15 +111,11 @@ class FirstRunCoordinatorMetricsHelper final {
 }
 
 - (void)start {
+  // `-presentScreen:` may finish First Run synchronously if all screens skip
+  // presentation, causing `delegate` to stop and deallocate `self`.
+  __weak __typeof(self) weakSelf = self;
   [self presentScreen:[self.screenProvider nextScreenType]];
-  void (^completion)(void) = ^{
-    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
-                                  first_run::kStart);
-  };
-  [_navigationController setNavigationBarHidden:YES animated:NO];
-  [self.baseViewController presentViewController:_navigationController
-                                        animated:NO
-                                      completion:completion];
+  [weakSelf presentNavigationControllerIfNeeded];
 }
 
 - (void)stopWithCompletion {
@@ -151,6 +152,13 @@ class FirstRunCoordinatorMetricsHelper final {
   // screens.
   if (type == kStepsCompleted) {
     // The user went through all screens of the FRE.
+    if (!_navigationControllerPresented) {
+      // All screens skipped presentation synchronously during `-start`, so
+      // `-presentViewController:animated:completion:` will not run to log
+      // `kStart`.
+      base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                    first_run::kStart);
+    }
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kComplete);
 
@@ -162,45 +170,10 @@ class FirstRunCoordinatorMetricsHelper final {
     }
 
     WriteFirstRunSentinel();
+    // `-didFinishFirstRun` stops and deallocates `self`, so any post-First Run
+    // IPH fallback must run beforehand.
+    [self presentPostFirstRunIPHIfNeeded];
     [self.delegate didFinishFirstRun];
-
-    if (!first_run::IsPostFREIphInProfileAgentEnabled()) {
-      if (self.browser == nullptr) {
-        // Speculative fix for some of the crashes in crbug.com/474279386. There
-        // is most likely an underlying issue somewhere in the cleanup logic,
-        // but null checking here should at least prevent some crashes.
-        return;
-      }
-
-      if (self.profile && self.profile->GetPrefs() &&
-          self.profile->GetPrefs()->GetBoolean(
-              prefs::kAppStoreGeminiPromoTriggered)) {
-        // If first run started due to app store external action, do not show
-        // any follow up IPH.
-        return;
-      }
-
-      PrefService* localState = GetApplicationContext()->GetLocalState();
-      if (localState &&
-          !localState->GetList(prefs::kFirstRunDeferredScreens).empty() &&
-          first_run::IsFREAblationEnabled() &&
-          first_run::GetFREAblationVariationType() ==
-              first_run::FREAblationVariationType::
-                  kSkipAllExceptSignInAndChoice) {
-        return;
-      }
-
-      if (IsBestOfAppLensAnimatedPromoEnabled()) {
-        // Present the Lens entrypoint IPH.
-        [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                            NewTabPageCommands) presentLensIconBubble];
-      } else {
-        // Present feed swipe IPH.
-        [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                            NewTabPageCommands) presentFeedSwipeFirstRunBubble];
-      }
-    }
-
     return;
   }
   self.childCoordinator = [self createChildCoordinatorWithScreenType:type];
@@ -282,6 +255,60 @@ class FirstRunCoordinatorMetricsHelper final {
 
 #pragma mark - Private
 
+// Presents `_navigationController` if the coordinator has not already stopped
+// during `-start`.
+- (void)presentNavigationControllerIfNeeded {
+  if (!_navigationController) {
+    return;
+  }
+  _navigationControllerPresented = YES;
+  void (^completion)(void) = ^{
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kStart);
+  };
+  [_navigationController setNavigationBarHidden:YES animated:NO];
+  [self.baseViewController presentViewController:_navigationController
+                                        animated:NO
+                                      completion:completion];
+}
+
+// Presents the post-First Run IPH if the profile agent killswitch is disabled.
+- (void)presentPostFirstRunIPHIfNeeded {
+  if (first_run::IsPostFREIphInProfileAgentEnabled()) {
+    return;
+  }
+  if (self.browser == nullptr) {
+    // Speculative fix for some of the crashes in crbug.com/474279386. There
+    // is most likely an underlying issue somewhere in the cleanup logic,
+    // but null checking here should at least prevent some crashes.
+    return;
+  }
+  if (self.profile && self.profile->GetPrefs() &&
+      self.profile->GetPrefs()->GetBoolean(
+          prefs::kAppStoreGeminiPromoTriggered)) {
+    // If first run started due to app store external action, do not show
+    // any follow up IPH.
+    return;
+  }
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (localState &&
+      !localState->GetList(prefs::kFirstRunDeferredScreens).empty() &&
+      first_run::IsFREAblationEnabled() &&
+      first_run::GetFREAblationVariationType() ==
+          first_run::FREAblationVariationType::kSkipAllExceptSignInAndChoice) {
+    return;
+  }
+  if (IsBestOfAppLensAnimatedPromoEnabled()) {
+    // Present the Lens entrypoint IPH.
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                        NewTabPageCommands) presentLensIconBubble];
+  } else {
+    // Present feed swipe IPH.
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                        NewTabPageCommands) presentFeedSwipeFirstRunBubble];
+  }
+}
+
 // Stops the coordinator and optionally executes `_completion` after dismissal.
 - (void)stopWithExecuteCompletion:(BOOL)executeCompletion {
   if (self.childCoordinator) {
@@ -296,9 +323,17 @@ class FirstRunCoordinatorMetricsHelper final {
     completion = _completion;
   }
   _completion = nil;
-  [_navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:completion];
+  if (_navigationController.presentingViewController) {
+    [_navigationController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:completion];
+  } else if (completion) {
+    // `_navigationController` was never presented because all screens finished
+    // synchronously during `-start`. Post `completion` to match the async
+    // contract of `-dismissViewControllerAnimated:completion:`.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(completion));
+  }
   _navigationController = nil;
   [super stop];
 }
