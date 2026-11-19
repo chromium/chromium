@@ -433,6 +433,16 @@ void CommandStorageManager::Save() {
   }
 }
 
+void CommandStorageManager::SaveNow(base::OnceClosure done_callback) {
+  CHECK(done_callback);
+  Save();
+  // The backend task runner is sequenced, so this runs after the writes posted
+  // by Save(). Writes queued in `pending_encrypted_ops_` aren't posted yet and
+  // aren't waited for.
+  backend_task_runner_->PostNonNestableTask(FROM_HERE,
+                                            std::move(done_callback));
+}
+
 bool CommandStorageManager::HasPendingSave() const {
   return weak_factory_for_timer_.HasWeakPtrs();
 }

@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -168,6 +169,40 @@ TEST_P(CommandStorageManagerTest, ScheduleCommandsAndSave) {
   EXPECT_EQ(0, delegate.error_count());
   EXPECT_FALSE(manager.pending_reset());
   EXPECT_EQ(0, manager.commands_since_reset());
+}
+
+TEST_P(CommandStorageManagerTest, SaveNow) {
+  TestCommandStorageManagerDelegate delegate;
+  delegate.set_delayed_save(true);
+  {
+    CommandStorageManager manager(GetParam().session_type, path_, &delegate,
+                                  os_crypt_async_.get(), backend_task_runner_);
+    CommandStorageManagerTestHelper test_helper(&manager);
+    manager.ScheduleCommand({std::make_unique<SessionCommand>(101, 0)});
+    manager.ScheduleCommand({std::make_unique<SessionCommand>(102, 0)});
+    EXPECT_TRUE(manager.HasPendingSave());
+
+    // The callback runs on the backend task runner, so wait for it without
+    // running the main thread's tasks, as BrowserProcessImpl::EndSession()
+    // does.
+    base::WaitableEvent written;
+    manager.SaveNow(base::BindLambdaForTesting([&]() { written.Signal(); }));
+    EXPECT_FALSE(manager.HasPendingSave());
+    EXPECT_TRUE(manager.pending_commands().empty());
+    written.Wait();
+    test_helper.RunMessageLoopUntilBackendDone();
+    EXPECT_EQ(0, delegate.error_count());
+  }
+
+  // Read the commands from the backend (using a new manager).
+  CommandStorageManager manager(GetParam().session_type, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
+  CommandStorageManagerTestHelper test_helper(&manager);
+  std::vector<std::unique_ptr<SessionCommand>> commands =
+      test_helper.ReadLastSessionCommands();
+  ASSERT_EQ(2U, commands.size());
+  EXPECT_EQ(101U, commands[0]->id());
+  EXPECT_EQ(102U, commands[1]->id());
 }
 
 TEST_P(CommandStorageManagerTest, HasPendingSave) {

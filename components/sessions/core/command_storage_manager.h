@@ -111,6 +111,14 @@ class SESSIONS_EXPORT CommandStorageManager {
   // Passes all pending commands to the backend for saving.
   void Save();
 
+  // Like Save(), but also runs `done_callback` on the backend task runner once
+  // the backend has written the commands. Used when the process is about to be
+  // terminated and must wait for the write. If the encryptor isn't ready yet,
+  // writes to the encrypted backend stay queued until it is, and
+  // `done_callback` doesn't wait for them, so they are lost if the process is
+  // terminated first.
+  void SaveNow(base::OnceClosure done_callback);
+
   // Returns true if StartSaveTimer() has been called, but a save has not yet
   // occurred.
   bool HasPendingSave() const;
