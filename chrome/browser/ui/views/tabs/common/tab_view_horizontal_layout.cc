@@ -303,7 +303,7 @@ TabViewHorizontalLayout::CalculateChildVisibilities(int width,
 
   const bool declutter_eligible =
       features::IsTabStripDeclutterEnabled() &&
-      !(TabView().hovered_ || TabView().HasFocus() ||
+      !(TabView().IsHovering() || TabView().HasFocus() ||
         (TabView().close_button_ && TabView().close_button_->HasFocus()));
 
   bool should_show_close_button = true;

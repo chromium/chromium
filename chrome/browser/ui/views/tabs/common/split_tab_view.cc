@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -90,6 +91,7 @@ void SplitTabView::AddedToWidget() {
 
 void SplitTabView::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
+  UpdateHovered(false);
 }
 
 void SplitTabView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -189,8 +191,7 @@ void SplitTabView::ShowHover(TabStyle::ShowHoverStyle style) {
   float radial_highlight_opacity = 1.0f;
   for (views::View* child : children()) {
     if (auto* tab_view = views::AsViewClass<TabView>(child)) {
-      tab_view->UpdateHovered(true);
-      tab_view->SchedulePaint();
+      tab_view->OnHoverStateChanged(base::PassKey<SplitTabView>());
       radial_highlight_opacity = tab_view->radial_highlight_opacity();
     }
   }
@@ -210,8 +211,7 @@ void SplitTabView::HideHover(TabStyle::HideHoverStyle style) {
 
   for (views::View* child : children()) {
     if (auto* tab_view = views::AsViewClass<TabView>(child)) {
-      tab_view->UpdateHovered(false);
-      tab_view->SchedulePaint();
+      tab_view->OnHoverStateChanged(base::PassKey<SplitTabView>());
     }
   }
 

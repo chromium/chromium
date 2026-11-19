@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -33,6 +34,7 @@
 #include "ui/views/view_observer.h"
 
 class GlowHoverController;
+class SplitTabView;
 class TabCloseButton;
 class TabCollectionNode;
 class TabIcon;
@@ -96,6 +98,7 @@ class TabView : public views::View,
   void UpdateHovered(bool hovered);
   void ShowHover(TabStyle::ShowHoverStyle style);
   void HideHover(TabStyle::HideHoverStyle style);
+  void OnHoverStateChanged(base::PassKey<SplitTabView>);
   bool IsHoverAnimationActive() const;
 
   std::optional<SkColor> GetBackgroundColor();
@@ -107,7 +110,7 @@ class TabView : public views::View,
   float radial_highlight_opacity() { return radial_highlight_opacity_; }
   const tabs::TabData& data() const { return tab_data_; }
   bool IsActive() const { return active_; }
-  bool IsHovering() const { return hovered_; }
+  bool IsHovering() const;
   bool IsClosing() const { return !collection_node_; }
   bool split() const { return split_; }
   bool pinned() const { return pinned_; }
@@ -195,6 +198,7 @@ class TabView : public views::View,
 
   void UpdateHoverCard(HoverCardAnchorTarget* target,
                        HoverCardUpdateType hover_card_update_type);
+  void OnHoverStateChanged();
 
   double GetHoverAnimationValue() const;
   float GetHoverOpacity() const;

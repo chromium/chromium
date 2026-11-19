@@ -179,7 +179,7 @@ bool TabViewVerticalLayout::IsChildVisible(const views::View* child_view,
     constexpr int kUncollapsedMinWidthThreshold = 3;
 
     const bool hovered_or_focused =
-        TabView().hovered_ || TabView().HasFocus() ||
+        TabView().IsHovering() || TabView().HasFocus() ||
         (TabView().close_button_ && TabView().close_button_->HasFocus());
     if (width <
         TabView().UncollapsedMinWidth() - kUncollapsedMinWidthThreshold) {

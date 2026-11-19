@@ -472,15 +472,7 @@ void TabView::UpdateFocusFreezing() {
 }
 
 void TabView::UpdateHovered(bool hovered) {
-  if (hovered_ == hovered) {
-    return;
-  }
-
-  if (split_) {
-    hovered_ = hovered;
-    UpdateColors();
-    UpdateZOrder();
-    InvalidateLayout();
+  if (IsHovering() == hovered) {
     return;
   }
 
@@ -506,9 +498,7 @@ void TabView::ShowHover(TabStyle::ShowHoverStyle style) {
     }
     hover_controller_->Show(style);
   }
-  UpdateColors();
-  UpdateZOrder();
-  InvalidateLayout();
+  OnHoverStateChanged();
 }
 
 void TabView::HideHover(TabStyle::HideHoverStyle style) {
@@ -523,18 +513,28 @@ void TabView::HideHover(TabStyle::HideHoverStyle style) {
   if (hover_controller_) {
     hover_controller_->Hide(style);
   }
-  UpdateColors();
-  UpdateZOrder();
-  InvalidateLayout();
+  OnHoverStateChanged();
+}
+
+void TabView::OnHoverStateChanged(base::PassKey<SplitTabView>) {
+  OnHoverStateChanged();
+}
+
+bool TabView::IsHovering() const {
+  if (split_) {
+    const auto* split_view = views::AsViewClass<SplitTabView>(parent());
+    return split_view && split_view->IsHovering();
+  }
+  return hovered_;
 }
 
 bool TabView::IsHoverAnimationActive() const {
   if (split_) {
-    auto* split_view = views::AsViewClass<SplitTabView>(parent());
+    const auto* split_view = views::AsViewClass<SplitTabView>(parent());
     // Ask the parent if its hover animation is running.
-    return split_view &&
-           (hovered_ || (split_view->hover_controller() &&
-                         split_view->hover_controller()->ShouldDraw()));
+    return split_view && (split_view->IsHovering() ||
+                          (split_view->hover_controller() &&
+                           split_view->hover_controller()->ShouldDraw()));
   }
 
   return hovered_ || (hover_controller_ && hover_controller_->ShouldDraw());
@@ -892,7 +892,9 @@ void TabView::AddedToWidget() {
 
 void TabView::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
-  UpdateHovered(false);
+  if (!split_) {
+    UpdateHovered(false);
+  }
 }
 
 void TabView::OnFocus() {
@@ -1032,7 +1034,7 @@ bool TabView::IsApparentlyActive() const {
   if (active_) {
     return true;
   }
-  if (hovered_) {
+  if (IsHovering()) {
     return GetHoverOpacity() > 0.5f;
   }
   return selected_;
@@ -1183,7 +1185,7 @@ void TabView::UpdateZOrder() {
     target_z = ZOrderLevel::kActive;
   } else if (selected_) {
     target_z = ZOrderLevel::kSelected;
-  } else if (hovered_ || HasFocus()) {
+  } else if (IsHovering() || HasFocus()) {
     target_z = ZOrderLevel::kHovered;
   }
 
@@ -1448,6 +1450,12 @@ void TabView::UpdateHoverCard(HoverCardAnchorTarget* target,
           collection_node_->GetController()->GetHoverCardController()) {
     hover_card_controller->UpdateHoverCard(target, hover_card_update_type);
   }
+}
+
+void TabView::OnHoverStateChanged() {
+  UpdateColors();
+  UpdateZOrder();
+  InvalidateLayout();
 }
 
 SkScalar TabView::GetCornerRadius() const {

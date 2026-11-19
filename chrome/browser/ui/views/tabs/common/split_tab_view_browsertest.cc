@@ -275,18 +275,44 @@ IN_PROC_BROWSER_TEST_P(SplitTabViewTest, HoverSynchronizesAcrossSplitTabs) {
   ASSERT_TRUE(tab1);
   ASSERT_TRUE(tab2);
 
+  EXPECT_FALSE(split_view->IsHovering());
+  EXPECT_FALSE(tab1->IsHovering());
+  EXPECT_FALSE(tab2->IsHovering());
   EXPECT_FALSE(tab1->IsHoverAnimationActive());
   EXPECT_FALSE(tab2->IsHoverAnimationActive());
 
   ui::MouseEvent enter_event(ui::EventType::kMouseEntered, gfx::Point(),
                              gfx::Point(), ui::EventTimeForNow(), 0, 0);
   split_view->OnMouseEntered(enter_event);
+  EXPECT_TRUE(split_view->IsHovering());
+  EXPECT_TRUE(tab1->IsHovering());
+  EXPECT_TRUE(tab2->IsHovering());
   EXPECT_TRUE(tab1->IsHoverAnimationActive());
   EXPECT_TRUE(tab2->IsHoverAnimationActive());
 
   ui::MouseEvent exit_event(ui::EventType::kMouseExited, gfx::Point(),
                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
   split_view->OnMouseExited(exit_event);
+  EXPECT_FALSE(split_view->IsHovering());
+  EXPECT_FALSE(tab1->IsHovering());
+  EXPECT_FALSE(tab2->IsHovering());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !tab1->IsHoverAnimationActive() && !tab2->IsHoverAnimationActive();
+  }));
+
+  // Updating hover directly on a child TabView should synchronize across the
+  // entire split.
+  tab1->UpdateHovered(true);
+  EXPECT_TRUE(split_view->IsHovering());
+  EXPECT_TRUE(tab1->IsHovering());
+  EXPECT_TRUE(tab2->IsHovering());
+  EXPECT_TRUE(tab1->IsHoverAnimationActive());
+  EXPECT_TRUE(tab2->IsHoverAnimationActive());
+
+  tab2->UpdateHovered(false);
+  EXPECT_FALSE(split_view->IsHovering());
+  EXPECT_FALSE(tab1->IsHovering());
+  EXPECT_FALSE(tab2->IsHovering());
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return !tab1->IsHoverAnimationActive() && !tab2->IsHoverAnimationActive();
   }));
