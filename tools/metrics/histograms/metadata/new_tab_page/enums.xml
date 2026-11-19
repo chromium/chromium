@@ -293,21 +293,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="URL blocked for supervised user"/>
 </enum>
 
-<!-- LINT.IfChange(NtpActionChips) -->
-
-<enum name="NtpActionChips">
-  <summary>
-    Buttons (action chips) on the composeplate of the Android New Tab Page.
-    Mirrors NewTabPageUtils.ActionChips.
-  </summary>
-  <int value="0" label="AI Mode button (default)"/>
-  <int value="1" label="Incognito button"/>
-  <int value="2" label="Create image button"/>
-  <int value="3" label="Gallery button"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUtils.java:ActionChips) -->
-
 <enum name="NTPBackgroundImageSource">
   <int value="0" label="No image"/>
   <int value="1" label="First party (NTP) theme without refresh daily enabled"/>
@@ -401,6 +386,21 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="1967788069" label="solidcolors_for_NTP">Colors for NTP</int>
 </enum>
+
+<!-- LINT.IfChange(NtpComposeplateViewButtonType) -->
+
+<enum name="NtpComposeplateViewButtonType">
+  <summary>
+    Buttons on the composeplate of the Android New Tab Page. Mirrors
+    ComposeplateMetricsUtils.ComposeplateViewButtonType.
+  </summary>
+  <int value="0" label="AI Mode button"/>
+  <int value="1" label="Incognito button"/>
+  <int value="2" label="Create image button"/>
+  <int value="3" label="Add image button"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/composeplate/android/java/src/org/chromium/chrome/browser/composeplate/ComposeplateMetricsUtils.java:ComposeplateViewButtonType) -->
 
 <!-- LINT.IfChange(NtpCustomizationBottomSheetType) -->
 

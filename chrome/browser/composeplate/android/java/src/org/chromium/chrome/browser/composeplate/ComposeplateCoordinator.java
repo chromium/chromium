@@ -15,8 +15,8 @@ import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils.ComposeplateViewButtonType;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
-import org.chromium.chrome.browser.ntp.NewTabPageUtils.ActionChips;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -53,10 +53,10 @@ public class ComposeplateCoordinator {
     private boolean mIsInNarrowWindow;
 
     /**
-     * The {@link ActionChips} type of the optional button, used to record its impression metrics.
-     * Null until the optional button's click listener is set.
+     * The {@link ComposeplateViewButtonType} of the optional button, used to record its impression
+     * metrics. Null until the optional button's click listener is set.
      */
-    private @Nullable @ActionChips Integer mOptionalButtonType;
+    private @Nullable @ComposeplateViewButtonType Integer mOptionalButtonType;
 
     /**
      * Constructs a new ComposeplateCoordinator.
@@ -140,10 +140,12 @@ public class ComposeplateCoordinator {
     public void recordButtonsImpression() {
         if (!mModel.get(ComposeplateProperties.IS_VISIBLE)) return;
 
-        ComposeplateMetricsUtils.recordComposeplateButtonImpression(ActionChips.DEFAULT);
+        ComposeplateMetricsUtils.recordComposeplateButtonImpression(
+                ComposeplateViewButtonType.AI_MODE);
         if (NewTabPageUtils.isBesideMvtModuleEnabled()) return;
 
-        ComposeplateMetricsUtils.recordComposeplateButtonImpression(ActionChips.INCOGNITO);
+        ComposeplateMetricsUtils.recordComposeplateButtonImpression(
+                ComposeplateViewButtonType.INCOGNITO);
         if (mOptionalButtonType != null
                 && mModel.get(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE)) {
             ComposeplateMetricsUtils.recordComposeplateButtonImpression(mOptionalButtonType);
@@ -367,28 +369,28 @@ public class ComposeplateCoordinator {
      * Sets the click listener for the optional button.
      *
      * @param optionalButtonClickListener The click listener for the optional button.
-     * @param actionChipsType The {@link ActionChips} type shown on the optional button, used to
-     *     record the click metric. Must be {@link ActionChips#CREATE_IMAGE} or {@link
-     *     ActionChips#GALLERY}.
+     * @param buttonType The {@link ComposeplateViewButtonType} of the optional button, used to
+     *     record its click and impression metrics. Must be {@link
+     *     ComposeplateViewButtonType#CREATE_IMAGE} or {@link ComposeplateViewButtonType#ADD_IMAGE}.
      */
     public void setOptionalButtonClickListener(
-            View.OnClickListener optionalButtonClickListener, @ActionChips int actionChipsType) {
-        mOptionalButtonType = actionChipsType;
+            View.OnClickListener optionalButtonClickListener,
+            @ComposeplateViewButtonType int buttonType) {
+        mOptionalButtonType = buttonType;
         mModel.set(
                 ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER,
                 createEnhancedClickListener(
-                        optionalButtonClickListener, getModuleTypeForActionChips(actionChipsType)));
+                        optionalButtonClickListener, getModuleTypeForButton(buttonType)));
     }
 
-    private static @ModuleTypeOnStartAndNtp int getModuleTypeForActionChips(
-            @ActionChips int actionChipsType) {
-        return switch (actionChipsType) {
-            case ActionChips.CREATE_IMAGE ->
+    private static @ModuleTypeOnStartAndNtp int getModuleTypeForButton(
+            @ComposeplateViewButtonType int buttonType) {
+        return switch (buttonType) {
+            case ComposeplateViewButtonType.CREATE_IMAGE ->
                     ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON;
-            case ActionChips.GALLERY -> ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_GALLERY_BUTTON;
-            default ->
-                    throw new IllegalArgumentException(
-                            "Unsupported action chips type: " + actionChipsType);
+            case ComposeplateViewButtonType.ADD_IMAGE ->
+                    ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON;
+            default -> throw new IllegalArgumentException("Unsupported button type: " + buttonType);
         };
     }
 

@@ -41,9 +41,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils.ComposeplateViewButtonType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.ntp.NewTabPageUtils.ActionChips;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils.LayoutType;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
@@ -124,18 +124,19 @@ public class ComposeplateCoordinatorUnitTest {
     @Test
     public void testRecordButtonsImpression_optionalButtonHidden() {
         testRecordButtonsImpressionImpl(
-                ActionChips.CREATE_IMAGE, /* isOptionalButtonVisible= */ false);
+                ComposeplateViewButtonType.CREATE_IMAGE, /* isOptionalButtonVisible= */ false);
     }
 
     @Test
     public void testRecordButtonsImpression_createImageButtonVisible() {
         testRecordButtonsImpressionImpl(
-                ActionChips.CREATE_IMAGE, /* isOptionalButtonVisible= */ true);
+                ComposeplateViewButtonType.CREATE_IMAGE, /* isOptionalButtonVisible= */ true);
     }
 
     @Test
-    public void testRecordButtonsImpression_galleryButtonVisible() {
-        testRecordButtonsImpressionImpl(ActionChips.GALLERY, /* isOptionalButtonVisible= */ true);
+    public void testRecordButtonsImpression_addImageButtonVisible() {
+        testRecordButtonsImpressionImpl(
+                ComposeplateViewButtonType.ADD_IMAGE, /* isOptionalButtonVisible= */ true);
     }
 
     @Test
@@ -146,7 +147,10 @@ public class ComposeplateCoordinatorUnitTest {
         String histogramName = ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION;
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecords(histogramName, ActionChips.DEFAULT, ActionChips.INCOGNITO)
+                        .expectIntRecords(
+                                histogramName,
+                                ComposeplateViewButtonType.AI_MODE,
+                                ComposeplateViewButtonType.INCOGNITO)
                         .build();
 
         mCoordinator.recordButtonsImpression();
@@ -157,7 +161,7 @@ public class ComposeplateCoordinatorUnitTest {
     @Test
     public void testRecordButtonsImpression_composeplateHidden() {
         mCoordinator.setOptionalButtonClickListener(
-                mOriginalOnClickListener, ActionChips.CREATE_IMAGE);
+                mOriginalOnClickListener, ComposeplateViewButtonType.CREATE_IMAGE);
         mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
         mCoordinator.setVisibility(/* visible= */ false, /* isCurrentPage= */ false);
 
@@ -180,13 +184,13 @@ public class ComposeplateCoordinatorUnitTest {
     public void testRecordButtonsImpression_besideMvtEnabled() {
         mCoordinator.setVisibility(/* visible= */ true, /* isCurrentPage= */ false);
         mCoordinator.setOptionalButtonClickListener(
-                mOriginalOnClickListener, ActionChips.CREATE_IMAGE);
+                mOriginalOnClickListener, ComposeplateViewButtonType.CREATE_IMAGE);
         mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION,
-                        ActionChips.DEFAULT);
+                        ComposeplateViewButtonType.AI_MODE);
 
         mCoordinator.recordButtonsImpression();
 
@@ -194,7 +198,7 @@ public class ComposeplateCoordinatorUnitTest {
     }
 
     private void testRecordButtonsImpressionImpl(
-            @ActionChips int optionalButtonType, boolean isOptionalButtonVisible) {
+            @ComposeplateViewButtonType int optionalButtonType, boolean isOptionalButtonVisible) {
         mCoordinator.setVisibility(/* visible= */ true, /* isCurrentPage= */ false);
         mCoordinator.setOptionalButtonClickListener(mOriginalOnClickListener, optionalButtonType);
         mCoordinator.setOptionalButtonVisibility(isOptionalButtonVisible);
@@ -203,7 +207,9 @@ public class ComposeplateCoordinatorUnitTest {
         HistogramWatcher.Builder builder =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
-                                histogramName, ActionChips.DEFAULT, ActionChips.INCOGNITO);
+                                histogramName,
+                                ComposeplateViewButtonType.AI_MODE,
+                                ComposeplateViewButtonType.INCOGNITO);
         if (isOptionalButtonVisible) {
             builder.expectIntRecord(histogramName, optionalButtonType);
         }
@@ -246,19 +252,21 @@ public class ComposeplateCoordinatorUnitTest {
     @Test
     public void testOptionalButtonClickListener_CreateImage() {
         testOptionalButtonClickListenerImpl(
-                ActionChips.CREATE_IMAGE,
+                ComposeplateViewButtonType.CREATE_IMAGE,
                 ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON);
     }
 
     @Test
-    public void testOptionalButtonClickListener_Canvas() {
+    public void testOptionalButtonClickListener_AddImage() {
         testOptionalButtonClickListenerImpl(
-                ActionChips.GALLERY, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_GALLERY_BUTTON);
+                ComposeplateViewButtonType.ADD_IMAGE,
+                ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON);
     }
 
     private void testOptionalButtonClickListenerImpl(
-            @ActionChips int actionChipsType, @ModuleTypeOnStartAndNtp int expectedModuleType) {
-        mCoordinator.setOptionalButtonClickListener(mOriginalOnClickListener, actionChipsType);
+            @ComposeplateViewButtonType int buttonType,
+            @ModuleTypeOnStartAndNtp int expectedModuleType) {
+        mCoordinator.setOptionalButtonClickListener(mOriginalOnClickListener, buttonType);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

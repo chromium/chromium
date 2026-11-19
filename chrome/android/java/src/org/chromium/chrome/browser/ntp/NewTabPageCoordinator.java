@@ -45,6 +45,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
 import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
+import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils.ComposeplateViewButtonType;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feed.FeedStreamViewResizerUtils;
@@ -688,13 +689,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                 this::onComposeplateButtonClicked);
         @ActionChips int merchandisingChipType = NewTabPageUtils.getMerchandisingChipsType();
         if (merchandisingChipType == ActionChips.CREATE_IMAGE
-                || merchandisingChipType == ActionChips.GALLERY) {
+                || merchandisingChipType == ActionChips.ADD_IMAGE) {
             mComposeboxInputState = fetchComposeboxInputState();
         }
         @ActionChips int chipType = getOptionalButtonChipType(mComposeboxInputState);
         if (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE) {
             mComposeplateCoordinator.setOptionalButtonClickListener(
-                    this::onCreateButtonClicked, chipType);
+                    this::onCreateButtonClicked, ComposeplateViewButtonType.CREATE_IMAGE);
             mComposeplateCoordinator.setOptionalButtonIcon(
                     InputStateUtils.resolveToolIconRes(
                             mComposeboxInputState,
@@ -704,9 +705,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                     mActivity.getString(R.string.ntp_action_chip_create_image));
             mComposeplateCoordinator.setOptionalButtonContentDescription(
                     mActivity.getString(R.string.ntp_action_chip_create_image_accessibility));
-        } else if (chipType == NewTabPageUtils.ActionChips.GALLERY) {
+        } else if (chipType == NewTabPageUtils.ActionChips.ADD_IMAGE) {
             mComposeplateCoordinator.setOptionalButtonClickListener(
-                    this::onGalleryButtonClicked, chipType);
+                    this::onAddImageButtonClicked, ComposeplateViewButtonType.ADD_IMAGE);
             mComposeplateCoordinator.setOptionalButtonIcon(
                     InputStateUtils.resolveInputIconRes(
                             mComposeboxInputState,
@@ -781,7 +782,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                 /* pastedText= */ null);
     }
 
-    private void onGalleryButtonClicked(View view) {
+    private void onAddImageButtonClicked(View view) {
         mManager.focusSearchBox(
                 /* beginVoiceSearch= */ false,
                 AutocompleteRequestType.AI_MODE,
@@ -1391,7 +1392,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /**
      * Updates the visibility of the composeplate's optional button. It is visible only when the
-     * default search engine is Google and the action chip type is either create image or gallery.
+     * default search engine is Google and the action chip type is either create image or add image.
      * The composeplate's own visibility doesn't need to be checked, since hiding the composeplate
      * also hides the optional button.
      */
@@ -1402,24 +1403,24 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         boolean isOptionalButtonVisible =
                 mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
                         && (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE
-                                || chipType == NewTabPageUtils.ActionChips.GALLERY);
+                                || chipType == NewTabPageUtils.ActionChips.ADD_IMAGE);
         mComposeplateCoordinator.setOptionalButtonVisibility(isOptionalButtonVisible);
     }
 
     /**
      * Returns the {@link NewTabPageUtils.ActionChips} type to show on the composeplate's optional
-     * button. The create image and gallery chips fall back to the default chip on devices that
-     * don't support the fusebox, since both rely on it. The create image chip falls back to the
-     * gallery chip when image generation isn't an allowed tool for the current profile.
+     * button. The create image and add image chips fall back to the default chip on devices that
+     * don't support the fusebox, since both rely on it. The create image chip falls back to the add
+     * image chip when image generation isn't an allowed tool for the current profile.
      */
     private static @ActionChips int getOptionalButtonChipType(@Nullable InputState inputState) {
         @ActionChips int chipType = NewTabPageUtils.getMerchandisingChipsType();
-        if ((chipType == ActionChips.CREATE_IMAGE || chipType == ActionChips.GALLERY)
+        if ((chipType == ActionChips.CREATE_IMAGE || chipType == ActionChips.ADD_IMAGE)
                 && !OmniboxCapabilities.isFuseboxSupportedDeviceType()) {
             return ActionChips.DEFAULT;
         }
         if (chipType == ActionChips.CREATE_IMAGE && !isImageGenToolAllowed(inputState)) {
-            return ActionChips.GALLERY;
+            return ActionChips.ADD_IMAGE;
         }
         return chipType;
     }

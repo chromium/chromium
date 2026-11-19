@@ -47,7 +47,7 @@ public class BrowserUiUtils {
         ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_INCOGNITO_BUTTON,
         ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_VOICE_SEARCH_BUTTON,
         ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_LENS_BUTTON,
-        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_GALLERY_BUTTON,
+        ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON,
         ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON,
         ModuleTypeOnStartAndNtp.NUM_ENTRIES
     })
@@ -66,7 +66,7 @@ public class BrowserUiUtils {
         int COMPOSEPLATE_VIEW_INCOGNITO_BUTTON = 11;
         int COMPOSEPLATE_VIEW_VOICE_SEARCH_BUTTON = 12;
         int COMPOSEPLATE_VIEW_LENS_BUTTON = 13;
-        int COMPOSEPLATE_VIEW_GALLERY_BUTTON = 14;
+        int COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON = 14;
         int COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON = 15;
 
         // Be sure to also update enums.xml when updating these values.

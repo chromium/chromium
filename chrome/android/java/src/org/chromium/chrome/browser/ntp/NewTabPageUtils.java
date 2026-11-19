@@ -43,27 +43,28 @@ public class NewTabPageUtils {
     }
 
     /**
-     * Action chips options for NTP Aurora V2. These values are also recorded to the
-     * NewTabPage.Composeplate.Buttons.Impression histogram, where DEFAULT stands for the AI Mode
-     * button. Entries should not be renumbered and numeric values should never be reused.
+     * Action chips options for NTP Aurora V2, which are the values of its "action_chips" param. A
+     * value selects the chips to show on the composeplate, which can be more than one, so it
+     * doesn't identify a single button of the composeplate. Entries should not be renumbered and
+     * numeric values should never be reused, since they are set by server side configs.
      */
-    // LINT.IfChange(ActionChips)
     @IntDef({
         ActionChips.DEFAULT,
         ActionChips.INCOGNITO,
         ActionChips.CREATE_IMAGE,
-        ActionChips.GALLERY
+        ActionChips.ADD_IMAGE,
+        ActionChips.ADD_IMAGE_AND_CREATE_IMAGE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionChips {
         int DEFAULT = 0;
         int INCOGNITO = 1;
         int CREATE_IMAGE = 2;
-        int GALLERY = 3;
-        int NUM_ENTRIES = 4;
+        int ADD_IMAGE = 3;
+        // TODO(crbug.com/568005713): Show both chips. Only the incognito chip is shown for now.
+        int ADD_IMAGE_AND_CREATE_IMAGE = 4;
+        int NUM_ENTRIES = 5;
     }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NtpActionChips)
 
     /**
      * Returns the view whose top margin controls the MVT section's vertical spacing. In the
@@ -137,8 +138,8 @@ public class NewTabPageUtils {
     }
 
     /**
-     * Returns the type of the action chip to show on the NTP, which is set by the "action_chips"
-     * param of NTP Aurora V2. Returns {@link ActionChips#DEFAULT} if NTP Aurora V2 is disabled.
+     * Returns the action chips option for the NTP, which is set by the "action_chips" param of NTP
+     * Aurora V2. Returns {@link ActionChips#DEFAULT} if NTP Aurora V2 is disabled.
      */
     public static @ActionChips int getMerchandisingChipsType() {
         if (!isNtpAuroraV2Enabled()) return ActionChips.DEFAULT;

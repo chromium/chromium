@@ -126,6 +126,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.test.util.browser.offlinepages.FakeOfflinePageBridge;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -1136,20 +1137,20 @@ public class NewTabPageCoordinatorUnitTest {
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
     })
-    public void testOptionalButtonVisibility_SwitchBackToGoogle_Canvas() {
+    public void testOptionalButtonVisibility_SwitchBackToGoogle_AddImage() {
         testOptionalButtonVisibilitySwitchBackToGoogleImpl();
     }
 
     /**
-     * Verifies that the Create image chip falls back to the canvas chip when image generation isn't
-     * allowed.
+     * Verifies that the Create image chip falls back to the add image chip when image generation
+     * isn't allowed.
      */
     @Test
     @EnableFeatures({
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
     })
-    public void testOptionalButton_CreateImage_ImageGenNotAllowed_FallsBackToCanvas() {
+    public void testOptionalButton_CreateImage_ImageGenNotAllowed_FallsBackToAddImage() {
         mInputStateSupplier.set(new InputStateBuilder().withAllowedTools().build());
         // Tool availability is checked when the composeplate is created, so recreate the
         // coordinator.
@@ -1160,29 +1161,29 @@ public class NewTabPageCoordinatorUnitTest {
         // The session used to determine the allowed tools is closed right away, and only one is
         // created even though the chip type is queried multiple times during initialization.
         verify(mComposeboxQueryControllerBridge).destroy();
-        verifyOptionalButtonFellBackToCanvas();
+        verifyOptionalButtonFellBackToAddImage();
     }
 
     /**
-     * Verifies that the Create image chip falls back to the canvas chip when no Composebox session
-     * can be created.
+     * Verifies that the Create image chip falls back to the add image chip when no Composebox
+     * session can be created.
      */
     @Test
     @EnableFeatures({
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
     })
-    public void testOptionalButton_CreateImage_NoComposeboxSession_FallsBackToCanvas() {
+    public void testOptionalButton_CreateImage_NoComposeboxSession_FallsBackToAddImage() {
         ComposeboxQueryControllerBridge.setInstanceForTesting(null);
         // Tool availability is checked when the composeplate is created, so recreate the
         // coordinator.
         mCoordinator.destroy();
         createCoordinator();
 
-        verifyOptionalButtonFellBackToCanvas();
+        verifyOptionalButtonFellBackToAddImage();
     }
 
-    private void verifyOptionalButtonFellBackToCanvas() {
+    private void verifyOptionalButtonFellBackToAddImage() {
         assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
         View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
         assertEquals(View.VISIBLE, optionalButton.getVisibility());
@@ -1214,6 +1215,19 @@ public class NewTabPageCoordinatorUnitTest {
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/1"
     })
     public void testComposeplateButtonClicked_ActionChipsEnabled() {
+        testComposeplateButtonClickedImpl(/* expectedFocusSearchBox= */ true);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
+    })
+    public void testComposeplateButtonClicked_AddImageAndCreateImageChips() {
+        // The add image and create image chips aren't shown yet.
+        assertEquals(
+                View.GONE, mNewTabPageLayout.findViewById(R.id.optional_button).getVisibility());
+
         testComposeplateButtonClickedImpl(/* expectedFocusSearchBox= */ true);
     }
 
@@ -1260,7 +1274,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     /**
-     * Verifies that the gallery chip falls back to the default chip on devices that don't support
+     * Verifies that the add image chip falls back to the default chip on devices that don't support
      * the fusebox.
      */
     @Test
@@ -1268,7 +1282,7 @@ public class NewTabPageCoordinatorUnitTest {
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
     })
-    public void testOptionalButton_Gallery_NonFuseboxDevice_FallsBackToDefault() {
+    public void testOptionalButton_AddImage_NonFuseboxDevice_FallsBackToDefault() {
         testOptionalButtonNonFuseboxDeviceImpl();
     }
 
@@ -1284,7 +1298,8 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     /**
-     * Verifies that clicking the Create image chip focuses the search box in image generation mode.
+     * Verifies that clicking the Create image chip focuses the search box in image generation mode
+     * and records the click.
      */
     @Test
     @EnableFeatures({
@@ -1294,9 +1309,8 @@ public class NewTabPageCoordinatorUnitTest {
     public void testCreateImageButtonClicked() {
         // The composeplate is created in setUp() since the default search engine is Google.
         assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
-        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
-
-        optionalButton.performClick();
+        clickOptionalButtonAndVerifyClickMetric(
+                ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON);
 
         verify(mManager)
                 .focusSearchBox(
@@ -1306,18 +1320,20 @@ public class NewTabPageCoordinatorUnitTest {
                         /* pastedText= */ null);
     }
 
-    /** Verifies that clicking the gallery chip focuses the search box to open the gallery. */
+    /**
+     * Verifies that clicking the add image chip focuses the search box to open the gallery and
+     * records the click.
+     */
     @Test
     @EnableFeatures({
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
     })
-    public void testGalleryButtonClicked_focusesSearchBoxForGallery() {
+    public void testAddImageButtonClicked_focusesSearchBoxForGallery() {
         // The composeplate is created in setUp() since the default search engine is Google.
         assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
-        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
-
-        optionalButton.performClick();
+        clickOptionalButtonAndVerifyClickMetric(
+                ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON);
 
         verify(mManager)
                 .focusSearchBox(
@@ -2628,5 +2644,16 @@ public class NewTabPageCoordinatorUnitTest {
                 mActivity,
                 createBlueChromeColorData(),
                 /* shouldNotifySyncedThemeManager= */ false);
+    }
+
+    private void clickOptionalButtonAndVerifyClickMetric(
+            @ModuleTypeOnStartAndNtp int expectedModuleType) {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Module.Click", expectedModuleType);
+
+        mNewTabPageLayout.findViewById(R.id.optional_button).performClick();
+
+        histogramWatcher.assertExpected();
     }
 }
