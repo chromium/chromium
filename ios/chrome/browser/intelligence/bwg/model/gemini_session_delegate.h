@@ -13,6 +13,7 @@
 
 @class GeminiChatMessageRequest;
 @class GeminiChatMessageResponse;
+@class GeminiSnackbar;
 
 // TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
 // equivalent with an enum in gemini_constants.h
@@ -230,6 +231,14 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 - (void)handleChatMessageRequest:(GeminiChatMessageRequest*)request
                       completion:(void (^)(GeminiChatMessageResponse* response))
                                      completion;
+
+#pragma mark - Snackbars
+
+// Called when the Gemini SDK requests presenting a snackbar.
+- (void)showSnackbar:(GeminiSnackbar*)snackbar;
+
+// Called when the Gemini SDK requests dismissing any active snackbars.
+- (void)dismissSnackbar;
 
 @end
 
