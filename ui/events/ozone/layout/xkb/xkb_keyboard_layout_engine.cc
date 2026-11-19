@@ -680,6 +680,32 @@ KeyboardCode FallbackKeyboardCode(DomCode dom_code, DomKey dom_key) {
   return DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
 }
 
+// Returns true for modifier, lock and group-switching keysyms (the same ranges
+// as IsModifierKey() in keyboard_code_conversion_x.cc). Their function is
+// defined by the layout rather than by the physical key, so the US layout VKEY
+// of the physical key (e.g. VKEY_MENU for AltRight) must not be used for them.
+bool IsModifierKeysym(xkb_keysym_t keysym) {
+  return (keysym >= XKB_KEY_Shift_L && keysym <= XKB_KEY_Hyper_R) ||
+         (keysym >= XKB_KEY_ISO_Lock && keysym <= XKB_KEY_ISO_Level5_Lock) ||
+         keysym == XKB_KEY_Mode_switch || keysym == XKB_KEY_Num_Lock;
+}
+
+// Returns the VKEY for a non-printable keysym with DOM key |dom_key|, falling
+// back to the US layout VKEY for non-modifier keysyms.
+KeyboardCode NonPrintableKeyboardCode(DomCode dom_code,
+                                      DomKey dom_key,
+                                      xkb_keysym_t keysym) {
+  // Match X11, which maps ISO_Level5_Shift to VKEY_OEM_8.
+  if (keysym == XKB_KEY_ISO_Level5_Shift) {
+    return VKEY_OEM_8;
+  }
+  KeyboardCode key_code = NonPrintableDomKeyToKeyboardCode(dom_key);
+  if (key_code == VKEY_UNKNOWN && !IsModifierKeysym(keysym)) {
+    key_code = FallbackKeyboardCode(dom_code, dom_key);
+  }
+  return key_code;
+}
+
 }  // anonymous namespace
 
 XkbKeyCodeConverter::XkbKeyCodeConverter() {
@@ -865,16 +891,14 @@ bool XkbKeyboardLayoutEngine::LookupXkbKeycode(DomCode dom_code,
     // Non-character key. (We only support NUL as ^@ and ^2.)
     *dom_key = NonPrintableXKeySymToDomKey(xkb_keysym);
     if (*dom_key != DomKey::NONE) {
-      *key_code = NonPrintableDomKeyToKeyboardCode(*dom_key);
-      if (*key_code == VKEY_UNKNOWN) {
-        *key_code = FallbackKeyboardCode(dom_code, *dom_key);
-      }
+      *key_code = NonPrintableKeyboardCode(dom_code, *dom_key, xkb_keysym);
       return true;
     }
     if (character == 0) {
       if ((flags & kNonShiftlikeModifiers) == 0) {
         *dom_key = DomKey::UNIDENTIFIED;
-        *key_code = DomCodeToUsLayoutNonLocatedKeyboardCode(dom_code);
+        *key_code = NonPrintableKeyboardCode(dom_code, DomKey::UNIDENTIFIED,
+                                             xkb_keysym);
         return true;
       }
       // XKB's Control transformation maps some printable keys to NUL (e.g.

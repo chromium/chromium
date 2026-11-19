@@ -160,7 +160,8 @@ class VkTestXkbKeyboardLayoutEngine : public XkbKeyboardLayoutEngine {
 // should wrap it in ASSERT_NO_FATAL_FAILURE.
 void SetLayoutFromName(XkbKeyboardLayoutEngine& layout_engine,
                        const char* layout,
-                       const char* variant = "") {
+                       const char* variant = "",
+                       const char* options = "") {
   std::unique_ptr<xkb_context, XkbContextDeleter> xkb_context(
       xkb_context_new(XKB_CONTEXT_NO_FLAGS));
   ASSERT_TRUE(xkb_context);
@@ -169,7 +170,7 @@ void SetLayoutFromName(XkbKeyboardLayoutEngine& layout_engine,
       .model = "pc101",
       .layout = layout,
       .variant = variant,
-      .options = "",
+      .options = options,
   };
   std::unique_ptr<xkb_keymap, XkbKeymapDeleter> xkb_keymap(
       xkb_keymap_new_from_names(xkb_context.get(), &names,
@@ -852,6 +853,22 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForNonPrintable) {
       {{DomCode::ALT_LEFT, EF_NONE, XKB_KEY_Alt_L}, VKEY_MENU},
       {{DomCode::ALT_RIGHT, EF_NONE, XKB_KEY_Alt_R}, VKEY_MENU},
       {{DomCode::ALT_RIGHT, EF_NONE, XKB_KEY_ISO_Level3_Shift}, VKEY_ALTGR},
+      {{DomCode::ALT_RIGHT, EF_NONE, XKB_KEY_ISO_Level5_Shift}, VKEY_OEM_8},
+      {{DomCode::INTL_BACKSLASH, EF_NONE, XKB_KEY_ISO_Level5_Shift},
+       VKEY_OEM_8},
+      // Modifier and group-switching keysyms without a VKEY equivalent must
+      // return VKEY_UNKNOWN rather than falling back to the physical US layout.
+      {{DomCode::ALT_RIGHT, EF_NONE, XKB_KEY_ISO_Level3_Latch}, VKEY_UNKNOWN},
+      {{DomCode::CAPS_LOCK, EF_NONE, XKB_KEY_ISO_Level5_Lock}, VKEY_UNKNOWN},
+      {{DomCode::CONTEXT_MENU, EF_NONE, XKB_KEY_ISO_Next_Group}, VKEY_UNKNOWN},
+      {{DomCode::ALT_RIGHT, EF_NONE, XKB_KEY_ISO_Next_Group}, VKEY_UNKNOWN},
+      {{DomCode::CAPS_LOCK, EF_NONE, XKB_KEY_ISO_Prev_Group}, VKEY_UNKNOWN},
+      {{DomCode::SHIFT_LEFT, EF_ALT_DOWN, XKB_KEY_ISO_First_Group},
+       VKEY_UNKNOWN},
+      {{DomCode::SHIFT_RIGHT, EF_ALT_DOWN, XKB_KEY_ISO_Last_Group},
+       VKEY_UNKNOWN},
+      {{DomCode::CAPS_LOCK, EF_NONE, XKB_KEY_Hyper_L}, VKEY_UNKNOWN},
+      {{DomCode::CAPS_LOCK, EF_NONE, XKB_KEY_Shift_Lock}, VKEY_UNKNOWN},
       {{DomCode::DIGIT1, EF_NONE, XKB_KEY_1}, VKEY_1},
       {{DomCode::NUMPAD1, EF_NONE, XKB_KEY_KP_1}, VKEY_1},
       {{DomCode::CAPS_LOCK, EF_NONE, XKB_KEY_Caps_Lock}, VKEY_CAPITAL},
@@ -1432,6 +1449,96 @@ TEST(XkbKeyboardLayoutEngineTest, LookupNativeKeycodeWithoutDomCode) {
       layout_engine.LookupNativeKeycode(1000, EF_NONE, &dom_key, &key_code));
   EXPECT_EQ(DomKey::NONE, dom_key);
   EXPECT_EQ(VKEY_UNKNOWN, key_code);
+}
+
+// Regression test for crbug.com/581081916. In the German Neo2 layout, AltRight
+// and IntlBackslash produce ISO_Level5_Shift (Mod4). They must map to
+// DomKey::SHIFT_LEVEL5 and VKEY_OEM_8 rather than falling back to VKEY_MENU or
+// VKEY_OEM_102.
+TEST(XkbKeyboardLayoutEngineTest, Neo2Modifiers) {
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+
+  ASSERT_NO_FATAL_FAILURE(SetLayoutFromName(layout_engine, "de", "neo"));
+
+  DomKey dom_key = DomKey::NONE;
+  KeyboardCode key_code = VKEY_UNKNOWN;
+
+  EXPECT_TRUE(
+      layout_engine.Lookup(DomCode::ALT_RIGHT, EF_NONE, &dom_key, &key_code));
+  EXPECT_EQ(DomKey::SHIFT_LEVEL5, dom_key);
+  EXPECT_EQ(VKEY_OEM_8, key_code);
+
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(DomCode::INTL_BACKSLASH, EF_NONE, &dom_key,
+                                   &key_code));
+  EXPECT_EQ(DomKey::SHIFT_LEVEL5, dom_key);
+  EXPECT_EQ(VKEY_OEM_8, key_code);
+
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(
+      layout_engine.Lookup(DomCode::CAPS_LOCK, EF_NONE, &dom_key, &key_code));
+  EXPECT_EQ(DomKey::ALT_GRAPH, dom_key);
+  EXPECT_EQ(VKEY_ALTGR, key_code);
+
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(
+      layout_engine.Lookup(DomCode::BACKSLASH, EF_NONE, &dom_key, &key_code));
+  EXPECT_EQ(DomKey::ALT_GRAPH, dom_key);
+  EXPECT_EQ(VKEY_ALTGR, key_code);
+
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(
+      layout_engine.Lookup(DomCode::ALT_LEFT, EF_NONE, &dom_key, &key_code));
+  EXPECT_EQ(DomKey::ALT, dom_key);
+  EXPECT_EQ(VKEY_MENU, key_code);
+}
+
+// Regression test for crbug.com/578545242. Keys rebound to XKB group switching
+// (such as Menu with grp:menu_toggle, CapsLock with grp:caps_toggle, or
+// AltRight with grp:toggle) must map to VKEY_UNKNOWN rather than falling back
+// to VKEY_APPS, VKEY_CAPITAL, or VKEY_MENU.
+TEST(XkbKeyboardLayoutEngineTest, GroupSwitchKeys) {
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+
+  ASSERT_NO_FATAL_FAILURE(
+      SetLayoutFromName(layout_engine, "us,ru", "",
+                        "grp:menu_toggle,grp:caps_toggle,grp:toggle"));
+
+  for (DomCode code :
+       {DomCode::CONTEXT_MENU, DomCode::CAPS_LOCK, DomCode::ALT_RIGHT}) {
+    SCOPED_TRACE(static_cast<int>(code));
+    DomKey dom_key = DomKey::NONE;
+    KeyboardCode key_code = VKEY_APPS;
+    EXPECT_TRUE(layout_engine.Lookup(code, EF_NONE, &dom_key, &key_code));
+    EXPECT_EQ(DomKey::GROUP_NEXT, dom_key);
+    EXPECT_EQ(VKEY_UNKNOWN, key_code);
+  }
+}
+
+// Super+Space bound to ISO_Next_Group (grp:win_space_toggle) must not be
+// reported as a US-layout VKEY. https://crbug.com/393384255
+TEST(XkbKeyboardLayoutEngineTest, WinSpaceToggle) {
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+  ASSERT_NO_FATAL_FAILURE(
+      SetLayoutFromName(layout_engine, "us,ru", "", "grp:win_space_toggle"));
+  DomKey dom_key = DomKey::NONE;
+  KeyboardCode key_code = VKEY_APPS;
+  EXPECT_TRUE(layout_engine.Lookup(DomCode::SPACE, EF_COMMAND_DOWN, &dom_key,
+                                   &key_code));
+  EXPECT_EQ(DomKey::GROUP_NEXT, dom_key);
+  EXPECT_EQ(VKEY_UNKNOWN, key_code);
+  // Plain Space is unaffected.
+  EXPECT_TRUE(
+      layout_engine.Lookup(DomCode::SPACE, EF_NONE, &dom_key, &key_code));
+  EXPECT_EQ(DomKey::FromCharacter(' '), dom_key);
+  EXPECT_EQ(VKEY_SPACE, key_code);
 }
 
 }  // namespace ui
