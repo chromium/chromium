@@ -198,6 +198,9 @@ TEST_F(RegisterTranslateKitComponentTest,
   run_loop.Run();
   EXPECT_TRUE(
       pref_service()->GetBoolean(prefs::kTranslateKitPreviouslyRegistered));
+  // The component isn't installed, so the library path stays empty.
+  EXPECT_TRUE(
+      pref_service()->GetFilePath(prefs::kTranslateKitBinaryPath).empty());
 }
 
 TEST_F(RegisterTranslateKitComponentTest, ComponentRegistrationForceInstall) {

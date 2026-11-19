@@ -58,7 +58,9 @@ base::FilePath TestInstallerAdapter::GetLanguagePackPath(
 
 void TestInstallerAdapter::Init(base::RepeatingClosure on_ready_callback) {
   ComponentManager::GetInstance().RegisterTranslateKitComponent();
-  on_ready_callback.Run();
+  if (on_ready_callback) {
+    on_ready_callback.Run();
+  }
 }
 
 void TestInstallerAdapter::InstallLanguagePack(LanguagePackKey language_pack) {

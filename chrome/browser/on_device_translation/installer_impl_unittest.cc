@@ -276,7 +276,10 @@ TEST_F(OnDeviceTranslationInstallerTest, IsNotInitWhileDownloadPending) {
 
 // Tests that the translate kit component can be registered only once.
 TEST_F(OnDeviceTranslationInstallerTest, InitWithCli) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(kTranslateKitBinaryPath);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      kTranslateKitBinaryPath,
+      base::FilePath(FILE_PATH_LITERAL("/path/to/libtranslatekit.so")));
   EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate).Times(0);
   installer_ = std::make_unique<OnDeviceTranslationInstallerImpl>();
 
@@ -284,6 +287,24 @@ TEST_F(OnDeviceTranslationInstallerTest, InitWithCli) {
   OnDeviceTranslationInstaller::GetInstance()->Init(run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_TRUE(OnDeviceTranslationInstaller::GetInstance()->IsInit());
+}
+
+// Tests that `Init()` accepts a null callback, before and after the library is
+// installed.
+TEST_F(OnDeviceTranslationInstallerTest, InitWithNullCallback) {
+  CreateFakeInstallation(install_dir_.GetPath());
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(update_client::Error::NONE));
+  OnDeviceTranslationInstaller::GetInstance()->Init(base::RepeatingClosure());
+  // The install finishes while only the null callback waits.
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(OnDeviceTranslationInstaller::GetInstance()->IsInit());
+  base::RunLoop run_loop;
+  OnDeviceTranslationInstaller::GetInstance()->Init(run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_TRUE(OnDeviceTranslationInstaller::GetInstance()->IsInit());
+  // A null callback for an installed library must not be run.
+  OnDeviceTranslationInstaller::GetInstance()->Init(base::RepeatingClosure());
 }
 
 TEST_F(OnDeviceTranslationInstallerTest, InstallationChanged) {
@@ -368,8 +389,9 @@ TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagesWithCli) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       "translate-kit-packages",
       package_arg);  // kTranslateKitPackagePaths string value
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      kTranslateKitBinaryPath);
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      kTranslateKitBinaryPath,
+      base::FilePath(FILE_PATH_LITERAL("/path/to/libtranslatekit.so")));
 
   installer_ = std::make_unique<OnDeviceTranslationInstallerImpl>();
 

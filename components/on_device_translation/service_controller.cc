@@ -194,7 +194,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   }
 
   // Registers the TranslateKit component.
-  installer_->Init(base::DoNothing());
+  installer_->Init(base::RepeatingClosure());
 
   // If there is no TranslateKit or there are required language packs that are
   // not installed, we will wait until they are installed to create the

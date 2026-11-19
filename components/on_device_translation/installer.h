@@ -65,7 +65,7 @@ class OnDeviceTranslationInstaller {
       LanguagePackKey language_pack) const = 0;
 
   // Start initialization. When initialization is finished, the
-  // `on_ready_callback` is called.
+  // `on_ready_callback` is called once. `on_ready_callback` may be null.
   virtual void Init(base::RepeatingClosure on_ready_callback) = 0;
   // Start installation of a language pack.
   virtual void InstallLanguagePack(LanguagePackKey language_pack) = 0;

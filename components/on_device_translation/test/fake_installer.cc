@@ -41,7 +41,9 @@ base::FilePath FakeOnDeviceTranslationInstaller::GetLanguagePackPath(
 void FakeOnDeviceTranslationInstaller::Init(
     base::RepeatingClosure on_ready_callback) {
   if (is_init_) {
-    on_ready_callback.Run();
+    if (on_ready_callback) {
+      on_ready_callback.Run();
+    }
     return;
   }
   // Schedule it to run on the next loop cycle

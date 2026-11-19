@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -78,9 +79,9 @@ base::FilePath GetSquashFsImagePath(const base::FilePath& base) {
 
 void SetBinaryPathInPrefs(PrefService* pref_service,
                           const base::FilePath& install_dir) {
-  pref_service->SetFilePath(
-      prefs::kTranslateKitBinaryPath,
-      install_dir.empty() ? base::FilePath() : GetInstalledPath(install_dir));
+  CHECK(install_dir.IsAbsolute());
+  pref_service->SetFilePath(prefs::kTranslateKitBinaryPath,
+                            GetInstalledPath(install_dir));
 }
 
 }  // namespace
@@ -224,8 +225,10 @@ void RegisterTranslateKitComponent(ComponentUpdateService* cus,
   }
 
   pref_service->SetBoolean(prefs::kTranslateKitPreviouslyRegistered, true);
-  // Clear any previously set path in the preferences
-  SetBinaryPathInPrefs(pref_service, base::FilePath());
+  // Clear any previously set path in the preferences to restore the default
+  // state rather than persisting an empty user value. `ComponentReady()` sets
+  // it again once the component is installed.
+  pref_service->ClearPref(prefs::kTranslateKitBinaryPath);
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<TranslateKitComponentInstallerPolicy>(
