@@ -27,7 +27,8 @@ ${this.showResetProfileBanner_ ? html`
       html`
     <div slot="view" id="home">
       ${this.renderPlugin_(this.routes_.BASIC) ? html`
-        <div>Home page placeholder</div>
+        <settings-home-page-index ?in-search-mode="${this.inSearchMode_}">
+        </settings-home-page-index>
       ` : ''}
     </div>
   ` : ''}

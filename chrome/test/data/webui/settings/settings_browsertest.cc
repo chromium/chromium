@@ -300,6 +300,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, HelpPage) {
   RunTest("settings/help_page_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, HomePageIndex) {
+  RunTest("settings/home_page_index_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, HomeUrlInput) {
   RunTest("settings/home_url_input_test.js", "mocha.run()");
 }

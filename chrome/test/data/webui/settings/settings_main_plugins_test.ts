@@ -260,6 +260,7 @@ suite('SettingsMain', function() {
         '.active[slot=view]');
     assertTrue(!!active);
     assertEquals('home', active.id);
+    assertTrue(!!active.querySelector('settings-home-page-index'));
     assertFalse(!!active.querySelector('settings-people-page-index'));
 
     Router.getInstance().navigateTo(routes.GENERAL);
@@ -276,6 +277,7 @@ suite('SettingsMain', function() {
         '.active[slot=view]');
     assertTrue(!!active);
     assertEquals('home', active.id);
+    assertTrue(!!active.querySelector('settings-home-page-index'));
   });
 
   test('SettingsRefresh2026GuestViews', async function() {

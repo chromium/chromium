@@ -85,6 +85,7 @@ export type {GlicBrowserProxy, LoginPermission} from './glic_page/glic_browser_p
 export {SettingsGlicPageElement} from './glic_page/glic_page.js';
 export {SettingsGlicPageFeaturePrefName, SettingsGlicSubpageElement} from './glic_page/glic_subpage.js';
 export {resetGlobalScrollTargetForTesting, setGlobalScrollTarget} from './global_scroll_target_mixin.js';
+export {SettingsHomePageIndexElement} from './home_page/home_page_index.js';
 export {loadTimeData} from './i18n_setup.js';
 // <if expr="not is_chromeos">
 export {convertLanguageCodeForChrome, convertLanguageCodeForTranslate, getBaseLanguage, isTranslateBaseLanguage} from './languages_page/languages_util.js';

@@ -77,6 +77,7 @@ build_webui_tests("build") {
     "gmail_otp_disclaimer_dialog_test.ts",
     "google_services_page_test.ts",
     "help_page_test.ts",
+    "home_page_index_test.ts",
     "home_url_input_test.ts",
     "identity_docs_page_test.ts",
     "inline_cue_menu_page_test.ts",
