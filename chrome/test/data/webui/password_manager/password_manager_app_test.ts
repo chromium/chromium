@@ -174,10 +174,8 @@ suite('PasswordManagerAppTest', function() {
     await microtasksFinished();
 
     assertTrue(app.$.toast.open);
-    const undoButton = app.shadowRoot.querySelector<HTMLElement>('#undo');
-    assertTrue(!!undoButton);
-    assertFalse(undoButton.hidden);
-    undoButton.click();
+    assertFalse(app.$.undo.hidden);
+    app.$.undo.click();
 
     await passwordManager.whenCalled('undoRemoveSavedPasswordOrException');
   });
@@ -204,9 +202,7 @@ suite('PasswordManagerAppTest', function() {
     assertTrue(app.$.toast.open);
 
     // The undo button should be hidden for passkeys.
-    const undoButton = app.shadowRoot.querySelector<HTMLElement>('#undo');
-    assertTrue(!!undoButton);
-    assertTrue(undoButton.hidden);
+    assertTrue(app.$.undo.hidden);
   });
 
   // TODO(crbug.com/408513732): Re-enable this test once the flakiness is fixed.
@@ -233,12 +229,8 @@ suite('PasswordManagerAppTest', function() {
     });
     await microtasksFinished();
     assertTrue(app.$.toast.open);
-    const button = app.shadowRoot.querySelector<HTMLElement>('#undo');
-    assertTrue(!!button);
-    assertFalse(isVisible(button));
-    assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent.trim()
-                   .includes(testEmail));
+    assertFalse(isVisible(app.$.undo));
+    assertTrue(app.$.toastMessage.textContent.trim().includes(testEmail));
   });
 
   test('Only one toast is visible', async () => {
@@ -274,12 +266,9 @@ suite('PasswordManagerAppTest', function() {
     assertEquals(app.shadowRoot.querySelectorAll('cr-toast').length, 1);
     assertTrue(app.$.toast.open);
 
-    const button = app.shadowRoot.querySelector<HTMLElement>('#undo');
-    assertTrue(!!button);
-    assertFalse(isVisible(button));
-    assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent.trim()
-                   .includes(VALUE_COPIED_TOAST_LABEL));
+    assertFalse(isVisible(app.$.undo));
+    assertTrue(app.$.toastMessage.textContent.trim().includes(
+        VALUE_COPIED_TOAST_LABEL));
   });
 
   // TODO(crbug.com/331450809): This test is flaky.
@@ -296,21 +285,14 @@ suite('PasswordManagerAppTest', function() {
     await microtasksFinished();
 
     assertFalse(app.$.toast.open);
-    const settingsSection = app.shadowRoot.querySelector('settings-section');
-    assertTrue(!!settingsSection);
-    await microtasksFinished();
-    settingsSection.fire('passwords-moved', {
+    app.$.settings.fire('passwords-moved', {
       accountEmail: testEmail,
       numberOfPasswords: 1,
     });
     await microtasksFinished();
     assertTrue(app.$.toast.open);
-    const button = app.shadowRoot.querySelector<HTMLElement>('#undo');
-    assertTrue(!!button);
-    assertFalse(isVisible(button));
-    assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent.trim()
-                   .includes(testEmail));
+    assertFalse(isVisible(app.$.undo));
+    assertTrue(app.$.toastMessage.textContent.trim().includes(testEmail));
   });
 
   // TODO(crbug.com/331450809): This test is flaky.
@@ -327,21 +309,15 @@ suite('PasswordManagerAppTest', function() {
     await microtasksFinished();
 
     assertFalse(app.$.toast.open);
-    const passwordsSection = app.shadowRoot.querySelector('passwords-section');
-    assertTrue(!!passwordsSection);
 
-    passwordsSection.fire('passwords-moved', {
+    app.$.passwords.fire('passwords-moved', {
       accountEmail: testEmail,
       numberOfPasswords: 1,
     });
     await microtasksFinished();
     assertTrue(app.$.toast.open);
-    const button = app.shadowRoot.querySelector<HTMLElement>('#undo');
-    assertTrue(!!button);
-    assertFalse(isVisible(button));
-    assertTrue(app.$.toast.querySelector<HTMLElement>(
-                              '#toast-message')!.textContent.trim()
-                   .includes(testEmail));
+    assertFalse(isVisible(app.$.undo));
+    assertTrue(app.$.toastMessage.textContent.trim().includes(testEmail));
   });
 
   // TODO(crbug.com/408513732): Re-enable this test once the flakiness is fixed.
@@ -352,9 +328,7 @@ suite('PasswordManagerAppTest', function() {
 
     assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
 
-    const passwordsSection = app.shadowRoot.querySelector('passwords-section');
-    assertTrue(!!passwordsSection);
-    const importLink = passwordsSection.$.importPasswords.querySelector('a');
+    const importLink = app.$.passwords.$.importPasswords.querySelector('a');
     assertTrue(!!importLink);
 
     // Should redirect ot Settings page.
@@ -362,12 +336,9 @@ suite('PasswordManagerAppTest', function() {
     await microtasksFinished();
 
     assertEquals(Page.SETTINGS, Router.getInstance().currentRoute.page);
-    const settingsSection = app.shadowRoot.querySelector('settings-section');
-    assertTrue(!!settingsSection);
-    await microtasksFinished();
 
     const importer =
-        settingsSection.shadowRoot.querySelector('passwords-importer');
+        app.$.settings.shadowRoot.querySelector('passwords-importer');
     assertTrue(!!importer);
 
     const spinner = importer.shadowRoot.querySelector('.spinner');

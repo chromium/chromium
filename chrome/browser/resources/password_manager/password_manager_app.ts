@@ -18,6 +18,7 @@ import './toolbar.js';
 import './dialogs/trusted_vault_error_dialog.js';
 
 import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
@@ -74,11 +75,13 @@ export interface PasswordManagerAppElement {
     drawer: CrDrawerElement,
     drawerTemplate: CrLazyRenderLitElement<PasswordManagerSideBarElement>,
     passwords: PasswordsSectionElement,
-    toast: CrToastElement,
     scrollableShadow: HTMLElement,
     settings: SettingsSectionElement,
     sidebar: PasswordManagerSideBarElement,
+    toast: CrToastElement,
+    toastMessage: HTMLElement,
     toolbar: PasswordManagerToolbarElement,
+    undo: CrButtonElement,
   };
 }
 

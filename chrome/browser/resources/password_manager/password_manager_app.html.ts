@@ -71,7 +71,7 @@ export function getHtml(this: PasswordManagerAppElement) {
   </div>
 </cr-drawer>
 <cr-toast id="toast" duration="5000">
-  <span id="toast-message">${this.toastMessage_}</span>
+  <span id="toastMessage">${this.toastMessage_}</span>
   <cr-button id="undo" aria-label="$i18n{undoDescription}"
       @click="${this.onUndoButtonClick_}" ?hidden="${!this.showUndo_}">
     $i18n{undoRemovePassword}
