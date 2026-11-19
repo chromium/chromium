@@ -43,13 +43,12 @@ class SVGAnimatedViewBoxRect : public SVGAnimatedRect {
 };
 
 SVGParsingError SVGAnimatedViewBoxRect::AttributeChanged(const String& value) {
-  SVGParsingError parse_status = SVGAnimatedRect::AttributeChanged(value);
-
-  if (parse_status == SVGParseStatus::kNoError &&
-      (BaseValue()->Width() < 0 || BaseValue()->Height() < 0)) {
-    parse_status = SVGParseStatus::kNegativeValue;
-  }
-  return parse_status;
+  return UpdateBaseValueFromAttribute(
+      *BaseValue(), value, [](const SVGRect& base_value) {
+        return base_value.Width() < 0 || base_value.Height() < 0
+                   ? SVGParseStatus::kNegativeValue
+                   : SVGParseStatus::kNoError;
+      });
 }
 
 SVGFitToViewBox::SVGFitToViewBox(SVGElement* element)
