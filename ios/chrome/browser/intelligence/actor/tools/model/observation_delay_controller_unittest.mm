@@ -14,6 +14,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -25,6 +26,7 @@
 #import "testing/gmock/include/gmock/gmock-matchers.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace actor {
 
@@ -59,6 +61,12 @@ class ObservationDelayControllerTest : public PlatformTest {
     controller_->OnAutofillPredictionsFinished();
   }
 
+  void TriggerOnPageStable() { controller_->OnPageStable(); }
+
+  void TriggerOnLcpDelayFinished() {
+    controller_->OnLcpDelayFinished(ToolExecutionResult::Ok());
+  }
+
   void WaitForState(ObservationDelayController::State target_state) {
     base::RunLoop run_loop;
     controller_->SetStateChangeCallbackForTesting(base::BindRepeating(
@@ -73,8 +81,26 @@ class ObservationDelayControllerTest : public PlatformTest {
     run_loop.Run();
   }
 
+  std::unique_ptr<web::FakeWebFrame> CreateFakeFrameWithBrowserState(
+      bool is_main) {
+    if (!js_features_overridden_) {
+      web::test::OverrideJavaScriptFeatures(
+          &fake_browser_state_,
+          {PageStabilityJavaScriptFeature::GetInstance()});
+      js_features_overridden_ = true;
+    }
+    const GURL origin("https://example.com");
+    std::unique_ptr<web::FakeWebFrame> frame =
+        is_main ? web::FakeWebFrame::CreateMainWebFrame(origin)
+                : web::FakeWebFrame::CreateChildWebFrame(origin);
+    frame->set_browser_state(&fake_browser_state_);
+    return frame;
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  web::FakeBrowserState fake_browser_state_;
+  bool js_features_overridden_ = false;
   std::unique_ptr<ObservationDelayController> controller_;
 };
 
@@ -129,13 +155,18 @@ TEST_F(ObservationDelayControllerTest, ConfiguredTimeout) {
           ObservationDelayController::State::kDone));
 }
 
+// Tests that `DidStopLoading()` exits `State::kWaitForLoadCompletion` and
+// records only `StateDuration.WaitForLoadCompletion`.
 TEST_F(ObservationDelayControllerTest, WaitForLoadCompletion_DidStopLoading) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<ObservationDelayController::Result> future;
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   fake_web_state->SetLoading(true);
   controller_->Wait(/*web_state=*/fake_web_state->GetWeakPtr(),
                     /*web_frame=*/nullptr, future.GetCallback());
+  constexpr base::TimeDelta kLoadDuration = base::Milliseconds(50);
   WaitForState(ObservationDelayController::State::kWaitForLoadCompletion);
+  task_environment_.FastForwardBy(kLoadDuration);
   TriggerDidStopLoading(fake_web_state.get());
 
   EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
@@ -148,6 +179,17 @@ TEST_F(ObservationDelayControllerTest, WaitForLoadCompletion_DidStopLoading) {
           ObservationDelayController::State::kDelayForLcp,
           ObservationDelayController::State::kWaitForAutofillPredictions,
           ObservationDelayController::State::kDone));
+
+  histogram_tester.ExpectUniqueTimeSample(
+      kIOSActorObservationDelayStateDurationWaitForLoadCompletionMetricName,
+      kLoadDuration, 1);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForPageStabilityMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationDelayForLcpMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
+      0);
 }
 
 TEST_F(ObservationDelayControllerTest, DidStartNavigation_CrossDocument) {
@@ -290,19 +332,11 @@ TEST_F(ObservationDelayControllerTest, DidStartNavigation_MaxNavigations) {
                   ObservationDelayController::State::kDone));
 }
 
-// Test that ObservationDelayController delays for LCP when using a main frame.
+// Tests that `ObservationDelayController` delays for LCP when using a main
+// frame.
 TEST_F(ObservationDelayControllerTest, ShouldDelayForLcp_MainFrame) {
-  base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndEnableFeatureWithParameters(
-      kActorTools,
-      {{"PageStabilityEnabled", "true"}, {"ActorPageStabilityLcpDelay", "1s"}});
-
-  web::FakeBrowserState fake_browser_state;
-  web::test::OverrideJavaScriptFeatures(
-      &fake_browser_state, {PageStabilityJavaScriptFeature::GetInstance()});
-  auto fake_main_frame = web::FakeWebFrame::CreateMainWebFrame(
-      /*security_origin=*/GURL("https://example.com"));
-  fake_main_frame->set_browser_state(&fake_browser_state);
+  std::unique_ptr<web::FakeWebFrame> fake_main_frame =
+      CreateFakeFrameWithBrowserState(/*is_main=*/true);
 
   web::FakeWebState fake_web_state;
   base::test::TestFuture<ObservationDelayController::Result> future;
@@ -325,20 +359,10 @@ TEST_F(ObservationDelayControllerTest, ShouldDelayForLcp_MainFrame) {
                   ObservationDelayController::State::kDone));
 }
 
-// Test that ObservationDelayController delays for LCP when using an iframe
-// frame.
+// Tests that `ObservationDelayController` delays for LCP when using an iframe.
 TEST_F(ObservationDelayControllerTest, ShouldDelayForLcp_Iframe) {
-  base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndEnableFeatureWithParameters(
-      kActorTools,
-      {{"PageStabilityEnabled", "true"}, {"ActorPageStabilityLcpDelay", "1s"}});
-
-  web::FakeBrowserState fake_browser_state;
-  web::test::OverrideJavaScriptFeatures(
-      &fake_browser_state, {PageStabilityJavaScriptFeature::GetInstance()});
-  auto fake_child_frame = web::FakeWebFrame::CreateChildWebFrame(
-      /*security_origin=*/GURL("https://example.com"));
-  fake_child_frame->set_browser_state(&fake_browser_state);
+  std::unique_ptr<web::FakeWebFrame> fake_child_frame =
+      CreateFakeFrameWithBrowserState(/*is_main=*/false);
 
   web::FakeWebState fake_web_state;
   base::test::TestFuture<ObservationDelayController::Result> future;
@@ -361,9 +385,11 @@ TEST_F(ObservationDelayControllerTest, ShouldDelayForLcp_Iframe) {
                   ObservationDelayController::State::kDone));
 }
 
-// Test that `OnAutofillPredictionsFinished` transitions the controller from
-// `State::kWaitForAutofillPredictions` to `State::kDone`.
+// Tests that `OnAutofillPredictionsFinished()` transitions the controller from
+// `State::kWaitForAutofillPredictions` to `State::kDone` and records the state
+// duration metric.
 TEST_F(ObservationDelayControllerTest, OnAutofillPredictionsFinished_Success) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<ObservationDelayController::Result> future;
   web::FakeWebState fake_web_state;
 
@@ -371,7 +397,7 @@ TEST_F(ObservationDelayControllerTest, OnAutofillPredictionsFinished_Success) {
                     /*web_frame=*/nullptr, future.GetCallback());
   WaitForState(ObservationDelayController::State::kWaitForAutofillPredictions);
 
-  EXPECT_FALSE(future.IsReady());
+  ASSERT_FALSE(future.IsReady());
   TriggerOnAutofillPredictionsFinished();
 
   EXPECT_TRUE(future.Wait());
@@ -385,19 +411,27 @@ TEST_F(ObservationDelayControllerTest, OnAutofillPredictionsFinished_Success) {
           ObservationDelayController::State::kDelayForLcp,
           ObservationDelayController::State::kWaitForAutofillPredictions,
           ObservationDelayController::State::kDone));
+
+  histogram_tester.ExpectUniqueTimeSample(
+      kIOSActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
+      base::TimeDelta(), 1);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForPageStabilityMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationDelayForLcpMetricName, 0);
 }
 
-// Test that ObservationDelayMetrics are recorded on successful completion.
+// Tests that `ObservationDelayMetrics` are recorded on successful completion,
+// omitting duration metrics when all optional wait states are skipped.
 TEST_F(ObservationDelayControllerTest, RecordsMetricsOnSuccess) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<ObservationDelayController::Result> future;
-  auto fake_web_state = std::make_unique<web::FakeWebState>();
-  fake_web_state->SetLoading(true);
+  web::FakeWebState fake_web_state;
 
-  controller_->Wait(/*web_state=*/fake_web_state->GetWeakPtr(),
+  controller_->Wait(/*web_state=*/fake_web_state.GetWeakPtr(),
                     /*web_frame=*/nullptr, future.GetCallback());
-  WaitForState(ObservationDelayController::State::kWaitForLoadCompletion);
-  TriggerDidStopLoading(fake_web_state.get());
   EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
 
   histogram_tester.ExpectUniqueSample(
@@ -407,17 +441,71 @@ TEST_F(ObservationDelayControllerTest, RecordsMetricsOnSuccess) {
   histogram_tester.ExpectUniqueSample(
       kIOSActorObservationDelayLcpDelayNeededMetricName, false, 1);
 
+  histogram_tester.ExpectUniqueTimeSample(
+      kIOSActorObservationDelayTotalWaitDurationMetricName, base::TimeDelta(),
+      1);
   histogram_tester.ExpectTotalCount(
-      kIOSActorObservationDelayTotalWaitDurationMetricName, 1);
+      kIOSActorObservationDelayStateDurationWaitForPageStabilityMetricName, 0);
   histogram_tester.ExpectTotalCount(
-      kIOSActorObservationDelayStateDurationWaitForPageStabilityMetricName, 1);
-  histogram_tester.ExpectTotalCount(
-      kIOSActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 1);
+      kIOSActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
   histogram_tester.ExpectTotalCount(
       kIOSActorObservationDelayStateDurationDelayForLcpMetricName, 0);
   histogram_tester.ExpectTotalCount(
       kIOSActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
-      1);
+      0);
+}
+
+// Tests that `ObservationDelayMetrics` records `LcpDelayNeeded=true` and
+// `StateDuration.WaitForPageStability` and `StateDuration.DelayForLcp` only
+// when those wait states actively run and complete.
+TEST_F(ObservationDelayControllerTest,
+       RecordsMetrics_ActivePageStabilityAndLcpDelay) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<web::FakeWebFrame> fake_main_frame =
+      CreateFakeFrameWithBrowserState(/*is_main=*/true);
+
+  web::FakeWebState fake_web_state;
+  base::test::TestFuture<ObservationDelayController::Result> future;
+  controller_->Wait(/*web_state=*/fake_web_state.GetWeakPtr(),
+                    /*web_frame=*/fake_main_frame->AsWeakPtr(),
+                    future.GetCallback());
+
+  constexpr base::TimeDelta kPageStabilityDuration = base::Milliseconds(30);
+  constexpr base::TimeDelta kLcpDelayDuration = base::Milliseconds(50);
+
+  WaitForState(ObservationDelayController::State::kWaitForPageStability);
+  ASSERT_FALSE(future.IsReady());
+  task_environment_.FastForwardBy(kPageStabilityDuration);
+  TriggerOnPageStable();
+
+  WaitForState(ObservationDelayController::State::kDelayForLcp);
+  ASSERT_FALSE(future.IsReady());
+  task_environment_.FastForwardBy(kLcpDelayDuration);
+  TriggerOnLcpDelayFinished();
+
+  EXPECT_EQ(future.Get(), ObservationDelayController::Result::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorObservationDelayDidTimeoutMetricName, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorObservationDelayDidNavigateMetricName, false, 1);
+  histogram_tester.ExpectUniqueSample(
+      kIOSActorObservationDelayLcpDelayNeededMetricName, true, 1);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      kIOSActorObservationDelayTotalWaitDurationMetricName,
+      kPageStabilityDuration + kLcpDelayDuration, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      kIOSActorObservationDelayStateDurationWaitForPageStabilityMetricName,
+      kPageStabilityDuration, 1);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
+  histogram_tester.ExpectUniqueTimeSample(
+      kIOSActorObservationDelayStateDurationDelayForLcpMetricName,
+      kLcpDelayDuration, 1);
+  histogram_tester.ExpectTotalCount(
+      kIOSActorObservationDelayStateDurationWaitForAutofillPredictionsMetricName,
+      0);
 }
 
 // Test that ObservationDelayMetrics are recorded properly on timeout.

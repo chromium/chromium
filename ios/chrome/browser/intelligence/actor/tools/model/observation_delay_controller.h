@@ -29,6 +29,7 @@ namespace actor {
 class AggregatedJournal;
 class PageStabilityMonitor;
 class ObservationDelayMetrics;
+struct ToolExecutionResult;
 
 // Observes a page during tool-use and determines when the page has settled
 // after an action and is ready for an observation.
@@ -112,9 +113,15 @@ class ObservationDelayController : public web::WebStateObserver {
   // Uses the PageStabilityMonitor to wait for the page to be stable.
   void WaitForPageStability();
 
+  // Invoked when `PageStabilityMonitor` finishes waiting for stability.
+  void OnPageStable();
+
   // Triggers JavaScript-based Largest Contentful Paint (LCP) observation on
   // `web_frame_` and waits up to the configured timeout for LCP completion.
   void DelayForLcp();
+
+  // Invoked when `WaitForLcp()` finishes waiting or times out.
+  void OnLcpDelayFinished(ToolExecutionResult result);
 
   // Returns whether the controller should delay for LCP after page stability.
   bool ShouldDelayForLcp() const;

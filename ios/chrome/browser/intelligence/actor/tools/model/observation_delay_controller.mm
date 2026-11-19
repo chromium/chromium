@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_metrics.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_monitor.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -108,6 +109,9 @@ void ObservationDelayController::DidStopLoading(web::WebState* web_state) {
     return;
   }
   UpdateTargetFrameIfNeeded();
+  if (metrics_) {
+    metrics_->OnLoadCompleted();
+  }
   MoveToState(State::kDelayForLcp);
 }
 
@@ -156,7 +160,7 @@ void ObservationDelayController::MoveToState(State state) {
   }
 
   if (metrics_) {
-    metrics_->WillMoveToState(state, state_);
+    metrics_->WillMoveToState(state);
   }
 
   state_ = state;
@@ -233,9 +237,18 @@ void ObservationDelayController::WaitForPageStability() {
       // TODO(crbug.com/498991756): Use a delegate to provide this value,
       // matching Desktop's ability to configure it per tool.
       base::TimeDelta(),
-      base::BindOnce(&ObservationDelayController::MoveToState,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     State::kWaitForLoadCompletion));
+      base::BindOnce(&ObservationDelayController::OnPageStable,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ObservationDelayController::OnPageStable() {
+  if (state_ != State::kWaitForPageStability) {
+    return;
+  }
+  if (metrics_) {
+    metrics_->OnPageStable();
+  }
+  MoveToState(State::kWaitForLoadCompletion);
 }
 
 void ObservationDelayController::DelayForLcp() {
@@ -246,21 +259,23 @@ void ObservationDelayController::DelayForLcp() {
     PostMoveToStateClosure(State::kWaitForAutofillPredictions).Run();
     return;
   }
+  PageStabilityJavaScriptFeature::GetInstance()->WaitForLcp(
+      web_frame_, /*timeout=*/GetActorPageStabilityLcpDelay(),
+      base::BindOnce(&ObservationDelayController::OnLcpDelayFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ObservationDelayController::OnLcpDelayFinished(
+    ToolExecutionResult /*result*/) {
+  // Proceed even if LCP checking fails or times out, as LCP checking is
+  // best-effort.
+  if (state_ != State::kDelayForLcp) {
+    return;
+  }
   if (metrics_) {
     metrics_->OnLcpDelayApplied();
   }
-  PageStabilityJavaScriptFeature::GetInstance()->WaitForLcp(
-      web_frame_, /*timeout=*/GetActorPageStabilityLcpDelay(),
-      base::BindOnce(
-          [](base::WeakPtr<ObservationDelayController> controller,
-             ToolExecutionResult result) {
-            // Proceed even if LCP checking fails or times out, as LCP checking
-            // is best-effort.
-            if (controller && controller->state_ == State::kDelayForLcp) {
-              controller->MoveToState(State::kWaitForAutofillPredictions);
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+  MoveToState(State::kWaitForAutofillPredictions);
 }
 
 void ObservationDelayController::WaitForAutofillPredictions() {
@@ -290,6 +305,9 @@ void ObservationDelayController::OnAutofillPredictionsFinished() {
   // completed (e.g. WebState destroyed).
   if (state_ != State::kWaitForAutofillPredictions) {
     return;
+  }
+  if (metrics_) {
+    metrics_->OnAutofillPredictionsFinished();
   }
   MoveToState(State::kDone);
 }

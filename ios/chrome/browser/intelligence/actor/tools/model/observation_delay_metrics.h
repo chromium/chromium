@@ -9,7 +9,6 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_controller.h"
-#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 
 namespace actor {
 
@@ -27,14 +26,25 @@ class ObservationDelayMetrics {
   // Records the start timestamp of the observation delay wait.
   void Start();
 
-  // Called when the controller is about to transition from `current_state` to
-  // `state`.
-  void WillMoveToState(ObservationDelayController::State new_state,
-                       ObservationDelayController::State current_state);
+  // Starts duration tracking for wait states and records outcome and valid
+  // state duration UMA histograms upon reaching `State::kDone`.
+  void WillMoveToState(ObservationDelayController::State new_state);
 
-  // Called when `ObservationDelayController::DelayForLcp()` actively waits for
-  // Largest Contentful Paint (LCP) on the target frame.
+  // Records the completion timestamp for the page stability wait in
+  // `State::kWaitForPageStability`.
+  void OnPageStable();
+
+  // Records the completion timestamp for page load in
+  // `State::kWaitForLoadCompletion`.
+  void OnLoadCompleted();
+
+  // Marks LCP delay as needed and records the completion timestamp for LCP
+  // waiting in `State::kDelayForLcp`.
   void OnLcpDelayApplied();
+
+  // Records the completion timestamp for Autofill form predictions in
+  // `State::kWaitForAutofillPredictions`.
+  void OnAutofillPredictionsFinished();
 
  private:
   struct StateDuration {

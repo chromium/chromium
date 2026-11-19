@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 
 namespace actor {
 
@@ -19,30 +20,8 @@ void ObservationDelayMetrics::Start() {
 }
 
 void ObservationDelayMetrics::WillMoveToState(
-    ObservationDelayController::State new_state,
-    ObservationDelayController::State current_state) {
+    ObservationDelayController::State new_state) {
   const base::TimeTicks now = base::TimeTicks::Now();
-
-  // End the previous state's timer.
-  switch (current_state) {
-    case ObservationDelayController::State::kWaitForPageStability:
-      wait_for_page_stability_.end_time = now;
-      break;
-    case ObservationDelayController::State::kWaitForLoadCompletion:
-      wait_for_load_completion_.end_time = now;
-      break;
-    case ObservationDelayController::State::kDelayForLcp:
-      delay_for_lcp_.end_time = now;
-      break;
-    case ObservationDelayController::State::kWaitForAutofillPredictions:
-      wait_for_autofill_predictions_.end_time = now;
-      break;
-    case ObservationDelayController::State::kInitial:
-    case ObservationDelayController::State::kPageNavigated:
-    case ObservationDelayController::State::kDidTimeout:
-    case ObservationDelayController::State::kDone:
-      break;
-  }
 
   // Start the new state's timer or handle terminal states.
   switch (new_state) {
@@ -112,8 +91,25 @@ void ObservationDelayMetrics::WillMoveToState(
   }
 }
 
+void ObservationDelayMetrics::OnPageStable() {
+  wait_for_page_stability_.end_time = base::TimeTicks::Now();
+  CHECK(wait_for_page_stability_.IsValid());
+}
+
+void ObservationDelayMetrics::OnLoadCompleted() {
+  wait_for_load_completion_.end_time = base::TimeTicks::Now();
+  CHECK(wait_for_load_completion_.IsValid());
+}
+
 void ObservationDelayMetrics::OnLcpDelayApplied() {
   lcp_delay_needed_ = true;
+  delay_for_lcp_.end_time = base::TimeTicks::Now();
+  CHECK(delay_for_lcp_.IsValid());
+}
+
+void ObservationDelayMetrics::OnAutofillPredictionsFinished() {
+  wait_for_autofill_predictions_.end_time = base::TimeTicks::Now();
+  CHECK(wait_for_autofill_predictions_.IsValid());
 }
 
 }  // namespace actor
