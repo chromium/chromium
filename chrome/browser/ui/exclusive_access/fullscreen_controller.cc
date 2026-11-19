@@ -742,7 +742,9 @@ bool FullscreenController::IsFullscreenWithinTab(
       web_contents ? FullscreenWithinTabHelper::FromWebContents(web_contents)
                    : nullptr;
   if (helper && helper->is_fullscreen_within_tab()) {
-    CHECK_NE(exclusive_access_tab(), web_contents, base::NotFatalUntil::M162);
+    // TODO(crbug.com/581005180): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_NE(exclusive_access_tab(), web_contents);
     return true;
   }
   return false;
