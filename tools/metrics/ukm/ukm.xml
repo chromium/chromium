@@ -18470,13 +18470,6 @@ be describing additional metrics about the same event.
       incorrect, if any other fields in the form contained a previosuly saved
       password. Recorded on the corresponding form manager destruction.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="ClassificationCorrectness.NewPassword"
       enum="PasswordManagerClassificationCorrectness">
@@ -18508,13 +18501,6 @@ be describing additional metrics about the same event.
       fields in the form contained a previosuly saved username. Recorded on the
       corresponding form manager destruction.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Context.FormSignature">
     <summary>
@@ -18605,13 +18591,6 @@ be describing additional metrics about the same event.
       This is replicated as PasswordManager.FillingAssistanceForSingleUsername
       in UMA.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="ParsingDiffFillingAndSaving"
       enum="PasswordFormParsingDifference">
@@ -18656,13 +18635,6 @@ be describing additional metrics about the same event.
       In case a store() via the Credential Management API, a virtual password
       form is created, for which this metric is recorded.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Saving.Prompt.Trigger" enum="PasswordBubbleTrigger">
     <summary>
@@ -18703,13 +18675,6 @@ be describing additional metrics about the same event.
     <summary>
       Records the outcome of a password form submission.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Submission.SubmissionResult.GeneratedPassword"
       enum="PasswordFormSubmissionResult">
@@ -18717,13 +18682,6 @@ be describing additional metrics about the same event.
       Records the outcome of a password form submission for forms on which users
       generated passwords.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Submission.SubmittedFormType2" enum="PasswordFormType2">
     <summary>
@@ -18752,13 +18710,6 @@ be describing additional metrics about the same event.
       user was shown a prompt that asked for permission to update existing
       credentials.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
   <metric name="Updating.Prompt.Trigger" enum="PasswordBubbleTrigger">
     <summary>
