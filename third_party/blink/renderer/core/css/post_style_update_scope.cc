@@ -84,6 +84,8 @@ void PostStyleUpdateScope::ApplyAnimations() {
     if (!element_animations) {
       continue;
     }
+    StyleEngine::InApplyAnimationUpdateScope element_apply_scope(
+        element->GetDocument().GetStyleEngine());
     element_animations->CssAnimations().MaybeApplyPendingUpdate(element.Get());
   }
 
