@@ -24,6 +24,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/api/messaging/send_message_tester.h"
@@ -603,7 +604,9 @@ TEST_F(RuntimeHooksDelegateMV3Test, RequestUpdateCheck) {
 
     bindings_system()->HandleResponse(
         last_params().request_id,
-        /*success=*/true, ListValueFromString(kUpdateAvailableAPIResponse),
+        /*success=*/true,
+        mojom::ResponseWrapper::NewList(
+            ListValueFromString(kUpdateAvailableAPIResponse)),
         /*error=*/std::string());
 
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
@@ -629,7 +632,9 @@ TEST_F(RuntimeHooksDelegateMV3Test, RequestUpdateCheck) {
 
     bindings_system()->HandleResponse(
         last_params().request_id,
-        /*success=*/true, ListValueFromString(kUpdateAvailableAPIResponse),
+        /*success=*/true,
+        mojom::ResponseWrapper::NewList(
+            ListValueFromString(kUpdateAvailableAPIResponse)),
         /*error=*/std::string());
 
     EXPECT_EQ(
@@ -656,10 +661,12 @@ TEST_F(RuntimeHooksDelegateMV3Test, RequestUpdateCheck) {
     v8::Local<v8::Function> func = FunctionFromString(context, kFunctionCall);
     RunFunctionOnGlobal(func, context, 0, nullptr);
 
-    bindings_system()->HandleResponse(last_params().request_id,
-                                      /*success=*/true,
-                                      ListValueFromString(kNoUpdateAPIResponse),
-                                      /*error=*/std::string());
+    bindings_system()->HandleResponse(
+        last_params().request_id,
+        /*success=*/true,
+        mojom::ResponseWrapper::NewList(
+            ListValueFromString(kNoUpdateAPIResponse)),
+        /*error=*/std::string());
 
     EXPECT_EQ(R"("no_update")", GetStringPropertyFromObject(
                                     context->Global(), context, "argument1"));

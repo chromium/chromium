@@ -34,6 +34,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
@@ -118,8 +119,9 @@ class DeclarativeApiUnitTest : public testing::Test {
     }
     fn->SetDispatcher(dispatcher.AsWeakPtr());
     fn->set_has_callback(true);
-    base::test::TestFuture<ExtensionFunction::ResponseType, base::ListValue,
-                           const std::string&, mojom::ExtraResponseDataPtr>
+    base::test::TestFuture<ExtensionFunction::ResponseType,
+                           mojom::ResponseWrapperPtr, const std::string&,
+                           mojom::ExtraResponseDataPtr>
         future;
     fn->set_response_callback(future.GetCallback());
     fn->RunWithValidation().Execute();

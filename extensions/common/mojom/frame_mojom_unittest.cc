@@ -10,6 +10,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,7 +77,9 @@ class TestFrameImpl : public mojom::LocalFrame, public mojom::LocalFrameHost {
   }
   void Request(mojom::RequestParamsPtr params,
                RequestCallback callback) override {
-    std::move(callback).Run(false, base::ListValue(), std::string(), nullptr);
+    std::move(callback).Run(false,
+                            mojom::ResponseWrapper::NewList(base::ListValue()),
+                            std::string(), nullptr);
   }
   void ResponseAck(const base::Uuid& request_uuid) override {}
   void WatchedPageChange(

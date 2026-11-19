@@ -14,6 +14,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
+#include "extensions/common/mojom/response_wrapper.mojom-forward.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
@@ -92,7 +93,7 @@ class NativeExtensionBindingsSystem {
   // Handles the response associated with the given `request_id`.
   void HandleResponse(int request_id,
                       bool success,
-                      const base::ListValue& response,
+                      mojom::ResponseWrapperPtr response,
                       const std::string& error,
                       mojom::ExtraResponseDataPtr extra_data = nullptr);
 

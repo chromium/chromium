@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::ExtensionFunctionDispatcher;
@@ -44,7 +45,7 @@ bool SendResponseHelper::GetResponse() {
 }
 
 void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
-                                    base::ListValue results,
+                                    mojom::ResponseWrapperPtr response_wrapper,
                                     const std::string& error,
                                     mojom::ExtraResponseDataPtr) {
   ASSERT_NE(ExtensionFunction::ResponseType::kBadMessage, response);

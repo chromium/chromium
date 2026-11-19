@@ -21,6 +21,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/renderer/api/messaging/message_target.h"
@@ -127,9 +128,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest, Basic) {
   EXPECT_EQ(last_params().arguments, ListValueFromString("[30]"));
 
   // Respond and validate.
-  bindings_system()->HandleResponse(last_params().request_id, true,
-                                    ListValueFromString("['active']"),
-                                    std::string());
+  bindings_system()->HandleResponse(
+      last_params().request_id, true,
+      mojom::ResponseWrapper::NewList(ListValueFromString("['active']")),
+      std::string());
 
   std::unique_ptr<base::Value> result_value = GetBaseValuePropertyFromObject(
       context->Global(), context, "responseState");
@@ -574,8 +576,9 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestLastError) {
 
   int first_request_id = last_params().request_id;
   // Respond with an error.
-  bindings_system()->HandleResponse(last_params().request_id, false,
-                                    base::ListValue(), "Some API Error");
+  bindings_system()->HandleResponse(
+      last_params().request_id, false,
+      mojom::ResponseWrapper::NewList(base::ListValue()), "Some API Error");
   EXPECT_EQ("\"Some API Error\"",
             GetStringPropertyFromObject(context->Global(), context,
                                         "lastErrorMessage"));
@@ -586,8 +589,9 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestLastError) {
   EXPECT_EQ("idle.queryState", last_params().name);
   EXPECT_NE(first_request_id, last_params().request_id);
 
-  bindings_system()->HandleResponse(last_params().request_id, false,
-                                    base::ListValue(), std::string());
+  bindings_system()->HandleResponse(
+      last_params().request_id, false,
+      mojom::ResponseWrapper::NewList(base::ListValue()), std::string());
   EXPECT_EQ("\"Unknown error.\"",
             GetStringPropertyFromObject(context->Global(), context,
                                         "lastErrorMessage"));
@@ -1232,9 +1236,10 @@ TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
 
   // Respond with a valid value. Validation should not fail.
   ASSERT_TRUE(has_last_params());
-  bindings_system()->HandleResponse(last_params().request_id, true,
-                                    ListValueFromString("['active']"),
-                                    std::string());
+  bindings_system()->HandleResponse(
+      last_params().request_id, true,
+      mojom::ResponseWrapper::NewList(ListValueFromString("['active']")),
+      std::string());
 
   EXPECT_FALSE(validation_failure_method_name);
   EXPECT_FALSE(validation_failure_error);
@@ -1242,9 +1247,10 @@ TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
   // Run the function again, and response with an invalid value.
   RunFunctionOnGlobal(call_idle_query_state, context, 0, nullptr);
   ASSERT_TRUE(has_last_params());
-  bindings_system()->HandleResponse(last_params().request_id, true,
-                                    ListValueFromString("['bad enum']"),
-                                    std::string());
+  bindings_system()->HandleResponse(
+      last_params().request_id, true,
+      mojom::ResponseWrapper::NewList(ListValueFromString("['bad enum']")),
+      std::string());
 
   // Validation should fail iff response validation is enabled.
   if (GetParam()) {

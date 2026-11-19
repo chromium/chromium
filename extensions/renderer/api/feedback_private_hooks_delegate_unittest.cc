@@ -8,6 +8,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
@@ -52,10 +53,11 @@ TEST_F(FeedbackPrivateHooksDelegateTest, SendFeedback) {
     EXPECT_EQ(v8::Promise::kPending, promise->State());
     EXPECT_TRUE(last_params().blobs.empty());
 
-    bindings_system()->HandleResponse(last_params().request_id,
-                                      /*success=*/true,
-                                      ListValueFromString(kFakeAPIResponse),
-                                      /*error=*/std::string());
+    bindings_system()->HandleResponse(
+        last_params().request_id,
+        /*success=*/true,
+        mojom::ResponseWrapper::NewList(ListValueFromString(kFakeAPIResponse)),
+        /*error=*/std::string());
 
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
     // Note: properties end up alphabetized here.
@@ -76,10 +78,11 @@ TEST_F(FeedbackPrivateHooksDelegateTest, SendFeedback) {
     v8::Local<v8::Function> func = FunctionFromString(context, kFunctionCall);
     RunFunctionOnGlobal(func, context, 0, nullptr);
 
-    bindings_system()->HandleResponse(last_params().request_id,
-                                      /*success=*/true,
-                                      ListValueFromString(kFakeAPIResponse),
-                                      /*error=*/std::string());
+    bindings_system()->HandleResponse(
+        last_params().request_id,
+        /*success=*/true,
+        mojom::ResponseWrapper::NewList(ListValueFromString(kFakeAPIResponse)),
+        /*error=*/std::string());
 
     EXPECT_EQ(R"(["success","normal"])",
               GetStringPropertyFromObject(context->Global(), context,

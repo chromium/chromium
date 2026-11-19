@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/mojom/response_wrapper.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
@@ -46,7 +47,7 @@ class SendResponseHelper {
  private:
   // Response handler.
   void OnResponse(ExtensionFunction::ResponseType response,
-                  base::ListValue results,
+                  mojom::ResponseWrapperPtr response_wrapper,
                   const std::string& error,
                   mojom::ExtraResponseDataPtr);
 

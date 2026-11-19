@@ -11,6 +11,7 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -155,7 +156,8 @@ TEST_F(CustomTypesTest, ContentSettingsPromises) {
 
     bindings_system()->HandleResponse(
         last_params().request_id, /*success=*/true,
-        ListValueFromString(R"([{"setting": "block"}])"),
+        mojom::ResponseWrapper::NewList(
+            ListValueFromString(R"([{"setting": "block"}])")),
         /*error=*/std::string());
 
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
@@ -227,7 +229,8 @@ TEST_F(CustomTypesTest, ChromeSettingPromises) {
 
     bindings_system()->HandleResponse(
         last_params().request_id, /*success=*/true,
-        ListValueFromString(R"([{"value": false}])"),
+        mojom::ResponseWrapper::NewList(
+            ListValueFromString(R"([{"value": false}])")),
         /*error=*/std::string());
 
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());

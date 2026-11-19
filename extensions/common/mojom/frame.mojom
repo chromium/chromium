@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/uuid.mojom";
 import "extensions/common/mojom/code_injection.mojom";
 import "extensions/common/mojom/context_type.mojom";
 import "extensions/common/mojom/extra_response_data.mojom";
+import "extensions/common/mojom/response_wrapper.mojom";
 import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/injection_type.mojom";
 import "extensions/common/mojom/extension_id.mojom";
@@ -166,7 +167,7 @@ interface LocalFrameHost {
   [UnlimitedSize]
   Request(RequestParams params)
       => (bool success,
-          mojo_base.mojom.ListValue response_wrapper,
+          ResponseWrapper response_wrapper,
           string error,
           ExtraResponseData? extra_data);
 

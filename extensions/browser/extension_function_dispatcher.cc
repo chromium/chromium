@@ -55,6 +55,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "extensions/common/trace_util.h"
 #include "mojo/public/cpp/bindings/message.h"
 
@@ -83,7 +84,8 @@ bool IsRequestFromServiceWorker(const mojom::RequestParams& request_params) {
 void ResponseCallbackOnError(ExtensionFunction::ResponseCallback callback,
                              ExtensionFunction::ResponseType type,
                              const std::string& error) {
-  std::move(callback).Run(type, base::ListValue(), error, nullptr);
+  std::move(callback).Run(
+      type, mojom::ResponseWrapper::NewList(base::ListValue()), error, nullptr);
 }
 
 std::optional<bad_message::BadMessageReason> ValidateRequest(
@@ -184,8 +186,9 @@ void ExtensionFunctionDispatcher::Dispatch(
     debug::ScopedScriptInjectionTrackerFailureCrashKeys tracker_keys(
         frame, params->extension_id);
     bad_message::ReceivedBadMessage(&process, *bad_message_code);
-    std::move(callback).Run(/*kFailed=*/true, base::ListValue(),
-                            ToString(*bad_message_code), nullptr);
+    std::move(callback).Run(
+        /*kFailed=*/true, mojom::ResponseWrapper::NewList(base::ListValue()),
+        ToString(*bad_message_code), nullptr);
     return;
   }
 
@@ -194,12 +197,13 @@ void ExtensionFunctionDispatcher::Dispatch(
       std::move(params), &frame, *frame.GetProcess(),
       base::BindOnce(
           [](mojom::LocalFrameHost::RequestCallback callback,
-             ExtensionFunction::ResponseType type, base::ListValue results,
+             ExtensionFunction::ResponseType type,
+             mojom::ResponseWrapperPtr response_wrapper,
              const std::string& error,
              mojom::ExtraResponseDataPtr response_data) {
             std::move(callback).Run(
                 type == ExtensionFunction::ResponseType::kSucceeded,
-                std::move(results), error, std::move(response_data));
+                std::move(response_wrapper), error, std::move(response_data));
           },
           std::move(callback)));
 }
@@ -218,8 +222,9 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
   content::RenderProcessHost* rph =
       content::RenderProcessHost::FromID(render_process_id);
   if (!rph) {
-    std::move(callback).Run(/*kFailed=*/true, base::ListValue(), "No RPH",
-                            nullptr);
+    std::move(callback).Run(
+        /*kFailed=*/true, mojom::ResponseWrapper::NewList(base::ListValue()),
+        "No RPH", nullptr);
     return;
   }
 
@@ -231,8 +236,9 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
   if (auto bad_message_code = ValidateRequest(*params, nullptr, *rph)) {
     // Kill the renderer if it's an invalid request.
     bad_message::ReceivedBadMessage(render_process_id, *bad_message_code);
-    std::move(callback).Run(/*kFailed=*/true, base::ListValue(),
-                            ToString(*bad_message_code), nullptr);
+    std::move(callback).Run(
+        /*kFailed=*/true, mojom::ResponseWrapper::NewList(base::ListValue()),
+        ToString(*bad_message_code), nullptr);
     return;
   }
 
@@ -242,8 +248,9 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
       params->service_worker_version_id, params->worker_thread_id};
   // Ignore if the worker has already stopped.
   if (!ProcessManager::Get(browser_context_)->HasServiceWorker(worker_id)) {
-    std::move(callback).Run(/*kFailed=*/true, base::ListValue(), "No SW",
-                            nullptr);
+    std::move(callback).Run(
+        /*kFailed=*/true, mojom::ResponseWrapper::NewList(base::ListValue()),
+        "No SW", nullptr);
     return;
   }
 
@@ -251,12 +258,13 @@ void ExtensionFunctionDispatcher::DispatchForServiceWorker(
       std::move(params), nullptr, *rph,
       base::BindOnce(
           [](mojom::ServiceWorkerHost::RequestWorkerCallback callback,
-             ExtensionFunction::ResponseType type, base::ListValue results,
+             ExtensionFunction::ResponseType type,
+             mojom::ResponseWrapperPtr response_wrapper,
              const std::string& error,
              mojom::ExtraResponseDataPtr response_data) {
             std::move(callback).Run(
                 type == ExtensionFunction::ResponseType::kSucceeded,
-                std::move(results), error, std::move(response_data));
+                std::move(response_wrapper), error, std::move(response_data));
           },
           std::move(callback)));
 }

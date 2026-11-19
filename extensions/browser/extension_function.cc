@@ -50,6 +50,7 @@
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/renderer.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 
@@ -424,8 +425,9 @@ ExtensionFunction::~ExtensionFunction() {
   if (!response_callback_.is_null()) {
     constexpr char kShouldCallMojoCallback[] = "Ignored did_respond()";
     std::move(response_callback_)
-        .Run(ResponseType::kFailed, base::ListValue(), kShouldCallMojoCallback,
-             nullptr);
+        .Run(ResponseType::kFailed,
+             extensions::mojom::ResponseWrapper::NewList(base::ListValue()),
+             kShouldCallMojoCallback, nullptr);
   }
 #endif  // DCHECK_IS_ON()
 }
@@ -783,7 +785,9 @@ void ExtensionFunction::SendResponseImpl(bool success) {
         std::move(transferred_blobs_));
   }
   std::move(response_callback_)
-      .Run(response, std::move(results), GetError(), std::move(extra_data));
+      .Run(response,
+           extensions::mojom::ResponseWrapper::NewList(std::move(results)),
+           GetError(), std::move(extra_data));
   LogUma(success, timer_.Elapsed(), histogram_value_);
 
   OnResponded();

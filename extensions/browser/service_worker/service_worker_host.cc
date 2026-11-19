@@ -28,6 +28,7 @@
 #include "extensions/common/api/messaging/signing_certificate.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/trace_util.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -282,8 +283,9 @@ void ServiceWorkerHost::RequestWorker(mojom::RequestParamsPtr params,
                                       RequestWorkerCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!GetBrowserContext()) {
-    std::move(callback).Run(/*kFailed=*/true, base::ListValue(),
-                            "No browser context", nullptr);
+    std::move(callback).Run(
+        /*kFailed=*/true, mojom::ResponseWrapper::NewList(base::ListValue()),
+        "No browser context", nullptr);
     return;
   }
 

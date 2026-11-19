@@ -9,8 +9,8 @@ import "mojo/public/mojom/base/uuid.mojom";
 import "extensions/common/mojom/event_dispatcher.mojom";
 import "extensions/common/mojom/extension_id.mojom";
 import "extensions/common/mojom/extra_response_data.mojom";
+import "extensions/common/mojom/response_wrapper.mojom";
 import "extensions/common/mojom/frame.mojom";
-import "mojo/public/mojom/base/values.mojom";
 import "extensions/common/mojom/message_port.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/url.mojom";
@@ -74,7 +74,7 @@ interface ServiceWorkerHost {
   [UnlimitedSize]
   RequestWorker(RequestParams params)
        => (bool success,
-          mojo_base.mojom.ListValue response_wrapper,
+          ResponseWrapper response_wrapper,
           string error,
           ExtraResponseData? extra_data);
 

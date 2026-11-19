@@ -35,6 +35,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom-forward.h"
 #include "extensions/common/stack_frame.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
@@ -150,7 +151,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   using ResponseCallback = base::OnceCallback<void(
       ResponseType type,
-      base::ListValue results,
+      extensions::mojom::ResponseWrapperPtr response_wrapper,
       const std::string& error,
       extensions::mojom::ExtraResponseDataPtr response_data)>;
 

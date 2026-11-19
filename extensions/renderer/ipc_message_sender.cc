@@ -25,6 +25,7 @@
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "extensions/common/mojom/web_request_host.mojom.h"
 #include "extensions/common/trace_util.h"
 #include "extensions/renderer/api/messaging/message_target.h"
@@ -302,7 +303,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
  private:
   void OnResponse(int request_id,
                   bool success,
-                  base::ListValue response,
+                  mojom::ResponseWrapperPtr response,
                   const std::string& error,
                   mojom::ExtraResponseDataPtr response_data) {
     ExtensionsRendererClient::Get()
@@ -369,7 +370,8 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         ->RequestWorker(std::move(params),
                         base::BindOnce(
                             [](int request_id, bool success,
-                               base::ListValue args, const std::string& error,
+                               mojom::ResponseWrapperPtr args,
+                               const std::string& error,
                                mojom::ExtraResponseDataPtr extra_data) {
                               WorkerThreadDispatcher::GetServiceWorkerData()
                                   ->bindings_system()

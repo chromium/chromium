@@ -34,6 +34,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
@@ -142,7 +143,7 @@ ApiRequestResult SendApiRequestFromFrame(content::RenderFrameHost* frame,
           ->extension_frame_host_for_testing();
   extension_frame_host->receivers_for_testing().SetCurrentTargetFrameForTesting(
       frame);
-  base::test::TestFuture<bool, base::ListValue, const std::string&,
+  base::test::TestFuture<bool, mojom::ResponseWrapperPtr, const std::string&,
                          mojom::ExtraResponseDataPtr>
       response_future;
   extension_frame_host->Request(std::move(params),

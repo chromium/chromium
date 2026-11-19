@@ -36,6 +36,7 @@
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/utils/extension_utils.h"
@@ -916,14 +917,14 @@ bool NativeExtensionBindingsSystem::HasEventListenerInContext(
 void NativeExtensionBindingsSystem::HandleResponse(
     int request_id,
     bool success,
-    const base::ListValue& response,
+    mojom::ResponseWrapperPtr response,
     const std::string& error,
     mojom::ExtraResponseDataPtr extra_data) {
   // Some API calls result in failure, but don't set an error. Use a generic and
   // unhelpful error string.
   // TODO(devlin): Track these down and fix them. See crbug.com/40485455.
   api_system_.CompleteRequest(
-      request_id, response,
+      request_id, response->get_list(),
       !success && error.empty() ? "Unknown error." : error,
       std::move(extra_data));
 }

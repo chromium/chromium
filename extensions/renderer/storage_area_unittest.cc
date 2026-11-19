@@ -13,6 +13,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/response_wrapper.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_invocation_errors.h"
@@ -201,9 +202,10 @@ TEST_F(StorageAreaTest, PromiseBasedFunctions) {
   EXPECT_THAT(last_params().arguments,
               base::test::IsJson(R"(["local", "foo"])"));
 
-  bindings_system()->HandleResponse(last_params().request_id, /*success=*/true,
-                                    ListValueFromString(R"([{"foo": 42}])"),
-                                    /*error=*/std::string());
+  bindings_system()->HandleResponse(
+      last_params().request_id, /*success=*/true,
+      mojom::ResponseWrapper::NewList(ListValueFromString(R"([{"foo": 42}])")),
+      /*error=*/std::string());
 
   EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
   EXPECT_EQ(R"({"foo":42})", V8ToString(promise->Result(), context));
