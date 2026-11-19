@@ -7,11 +7,16 @@
 #include <stddef.h>
 
 #include <limits>
+#include <memory>
+#include <string>
 
 #include "base/base64.h"
 #include "base/rand_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
+#include "components/metrics/log_store.h"
+#include "components/metrics/unsent_log_store_metrics.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -90,7 +95,8 @@ class TestUnsentLogStoreMetrics : public UnsentLogStoreMetrics {
 class TestUnsentLogStore : public UnsentLogStore {
  public:
   TestUnsentLogStore(PrefService* service, size_t min_log_bytes)
-      : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(),
+      : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(
+                           UnsentLogStoreMetricsImpl::LogQueue::kOngoing),
                        service,
                        kTestPrefName,
                        /*metadata_pref_name=*/nullptr,
@@ -103,7 +109,8 @@ class TestUnsentLogStore : public UnsentLogStore {
   TestUnsentLogStore(PrefService* service,
                      size_t min_log_bytes,
                      const std::string& signing_key)
-      : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(),
+      : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(
+                           UnsentLogStoreMetricsImpl::LogQueue::kOngoing),
                        service,
                        kTestPrefName,
                        /*metadata_pref_name=*/nullptr,
@@ -112,6 +119,16 @@ class TestUnsentLogStore : public UnsentLogStore {
                            .min_queue_size_bytes = min_log_bytes,
                        },
                        signing_key,
+                       /*logs_event_manager=*/nullptr) {}
+  TestUnsentLogStore(PrefService* service,
+                     UnsentLogStore::UnsentLogStoreLimits limits)
+      : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(
+                           UnsentLogStoreMetricsImpl::LogQueue::kOngoing),
+                       service,
+                       kTestPrefName,
+                       kTestMetaDataPrefName,
+                       limits,
+                       /*signing_key=*/std::string(),
                        /*logs_event_manager=*/nullptr) {}
   TestUnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
                      PrefService* service,
@@ -363,7 +380,9 @@ TEST_F(UnsentLogStoreTest, TrimStagedLog) {
 TEST_F(UnsentLogStoreTest,
        TrimAndPersistUnsentLogs_DoNotOverwriteInMemoryStore) {
   TestUnsentLogStore unsent_log_store(
-      std::make_unique<UnsentLogStoreMetricsImpl>(), &prefs_, kLogByteLimit);
+      std::make_unique<UnsentLogStoreMetricsImpl>(
+          UnsentLogStoreMetricsImpl::LogQueue::kOngoing),
+      &prefs_, kLogByteLimit);
 
   LogMetadata log_metadata;
   std::string log_data = GenerateLogWithMinCompressedSize(kLogByteLimit + 1);
@@ -385,7 +404,9 @@ TEST_F(UnsentLogStoreTest,
 // Verifies that TrimAndPersistUnsentLogs() maintains the log order.
 TEST_F(UnsentLogStoreTest, TrimAndPersistUnsentLogs_MaintainsLogOrder) {
   TestUnsentLogStore unsent_log_store(
-      std::make_unique<UnsentLogStoreMetricsImpl>(), &prefs_, kLogByteLimit);
+      std::make_unique<UnsentLogStoreMetricsImpl>(
+          UnsentLogStoreMetricsImpl::LogQueue::kOngoing),
+      &prefs_, kLogByteLimit);
 
   LogMetadata log_metadata;
   unsent_log_store.StoreLog("1", log_metadata,
@@ -708,6 +729,239 @@ TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
   EXPECT_EQ(0, m->unsent_samples_count());
   EXPECT_EQ(kFooBarSampleCount, m->sent_samples_count());
   EXPECT_EQ(1, m->persisted_size_in_kb());
+}
+
+// Verifies that a trim records one drop reason for each log that it removes
+// from memory because of the queue limits.
+TEST_F(UnsentLogStoreTest, DropMetrics_TrimmedQueueLimit) {
+  base::HistogramTester histogram_tester;
+  TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
+
+  // Store two more logs than the count limit. Each log is as large as the byte
+  // limit, so the two oldest logs are trimmed.
+  std::string log_data = GenerateLogWithMinCompressedSize(kLogByteLimit);
+  LogMetadata log_metadata;
+  for (size_t i = 0; i < kLogCountLimit + 2; ++i) {
+    unsent_log_store.StoreLog(log_data, log_metadata,
+                              MetricsLogsEventManager::CreateReason::kUnknown);
+  }
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+
+  EXPECT_EQ(kLogCountLimit, unsent_log_store.size());
+  histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Ongoing.DropReason",
+                                      UnsentLogDropReason::kTrimmedQueueLimit,
+                                      2);
+  histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Dropped", 2, 1);
+  histogram_tester.ExpectTotalCount("UMA.UnsentLogs.Ongoing.TrimmedOnDiskOnly",
+                                    0);
+}
+
+// Verifies that a trim records a drop reason for an oversized log only when
+// the trim removes the log from memory.
+TEST_F(UnsentLogStoreTest, DropMetrics_TrimmedLogTooLarge) {
+  base::HistogramTester histogram_tester;
+  TestUnsentLogStore unsent_log_store(&prefs_,
+                                      UnsentLogStore::UnsentLogStoreLimits{
+                                          .min_log_count = kLogCountLimit,
+                                          .min_queue_size_bytes = 1,
+                                          .max_log_size_bytes = kLogByteLimit,
+                                      });
+
+  LogMetadata log_metadata;
+  unsent_log_store.StoreLog(GenerateLogWithMinCompressedSize(kLogByteLimit + 1),
+                            log_metadata,
+                            MetricsLogsEventManager::CreateReason::kUnknown);
+
+  // The log stays in memory. Only the disk-only trim count is recorded.
+  unsent_log_store.TrimAndPersistUnsentLogs(
+      /*overwrite_in_memory_store=*/false);
+  EXPECT_EQ(1U, unsent_log_store.size());
+  histogram_tester.ExpectTotalCount("UMA.UnsentLogs.Ongoing.DropReason", 0);
+  histogram_tester.ExpectTotalCount("UMA.UnsentLogs.Dropped", 0);
+  histogram_tester.ExpectUniqueSample(
+      "UMA.UnsentLogs.Ongoing.TrimmedOnDiskOnly", 1, 1);
+
+  // The log leaves memory. The drop reason is recorded once.
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+  EXPECT_EQ(0U, unsent_log_store.size());
+  histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Ongoing.DropReason",
+                                      UnsentLogDropReason::kTrimmedLogTooLarge,
+                                      1);
+  histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Dropped", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "UMA.UnsentLogs.Ongoing.TrimmedOnDiskOnly", 1, 1);
+}
+
+// Verifies that a trim with `overwrite_in_memory_store` set to false records
+// the logs that it removes from disk because of the queue limits.
+TEST_F(UnsentLogStoreTest, DropMetrics_TrimmedOnDiskOnlyQueueLimit) {
+  base::HistogramTester histogram_tester;
+  TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
+
+  std::string log_data = GenerateLogWithMinCompressedSize(kLogByteLimit);
+  LogMetadata log_metadata;
+  for (size_t i = 0; i < kLogCountLimit; ++i) {
+    unsent_log_store.StoreLog(log_data, log_metadata,
+                              MetricsLogsEventManager::CreateReason::kUnknown);
+  }
+  unsent_log_store.TrimAndPersistUnsentLogs(
+      /*overwrite_in_memory_store=*/false);
+  histogram_tester.ExpectTotalCount("UMA.UnsentLogs.Ongoing.TrimmedOnDiskOnly",
+                                    0);
+
+  for (size_t i = 0; i < 2; ++i) {
+    unsent_log_store.StoreLog(log_data, log_metadata,
+                              MetricsLogsEventManager::CreateReason::kUnknown);
+  }
+  unsent_log_store.TrimAndPersistUnsentLogs(
+      /*overwrite_in_memory_store=*/false);
+
+  EXPECT_EQ(kLogCountLimit + 2, unsent_log_store.size());
+  histogram_tester.ExpectTotalCount("UMA.UnsentLogs.Ongoing.DropReason", 0);
+  histogram_tester.ExpectUniqueSample(
+      "UMA.UnsentLogs.Ongoing.TrimmedOnDiskOnly", 2, 1);
+}
+
+// Verifies that a single trim hitting both the individual log size limit and
+// the queue limits accumulates the counts across both branches.
+TEST_F(UnsentLogStoreTest, DropMetrics_TrimmedOversizedAndQueueLimit) {
+  base::HistogramTester histogram_tester;
+  TestUnsentLogStore unsent_log_store(&prefs_,
+                                      UnsentLogStore::UnsentLogStoreLimits{
+                                          .min_log_count = kLogCountLimit,
+                                          .min_queue_size_bytes = 1,
+                                          .max_log_size_bytes = kLogByteLimit,
+                                      });
+
+  LogMetadata log_metadata;
+  for (const char* log_data : {"zero", "one", "two", "three"}) {
+    unsent_log_store.StoreLog(log_data, log_metadata,
+                              MetricsLogsEventManager::CreateReason::kUnknown);
+  }
+  unsent_log_store.StoreLog(GenerateLogWithMinCompressedSize(kLogByteLimit + 1),
+                            log_metadata,
+                            MetricsLogsEventManager::CreateReason::kUnknown);
+  unsent_log_store.StoreLog("five", log_metadata,
+                            MetricsLogsEventManager::CreateReason::kUnknown);
+
+  // Disk-only trim skips 1 oversized log and 2 logs past the queue limits.
+  unsent_log_store.TrimAndPersistUnsentLogs(
+      /*overwrite_in_memory_store=*/false);
+  EXPECT_EQ(6U, unsent_log_store.size());
+  histogram_tester.ExpectTotalCount("UMA.UnsentLogs.Ongoing.DropReason", 0);
+  histogram_tester.ExpectUniqueSample(
+      "UMA.UnsentLogs.Ongoing.TrimmedOnDiskOnly", 3, 1);
+
+  // In-memory trim removes the same 3 logs and records both drop reasons.
+  unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+  EXPECT_EQ(3U, unsent_log_store.size());
+  histogram_tester.ExpectBucketCount("UMA.UnsentLogs.Ongoing.DropReason",
+                                     UnsentLogDropReason::kTrimmedLogTooLarge,
+                                     1);
+  histogram_tester.ExpectBucketCount("UMA.UnsentLogs.Ongoing.DropReason",
+                                     UnsentLogDropReason::kTrimmedQueueLimit,
+                                     2);
+  histogram_tester.ExpectTotalCount("UMA.UnsentLogs.Ongoing.DropReason", 3);
+}
+
+// Verifies that DropUnsentStagedLog() records a drop while DiscardStagedLog()
+// does not.
+TEST_F(UnsentLogStoreTest, DropMetrics_DiscardStagedLog) {
+  base::HistogramTester histogram_tester;
+  TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
+
+  LogMetadata log_metadata;
+  unsent_log_store.StoreLog("one", log_metadata,
+                            MetricsLogsEventManager::CreateReason::kUnknown);
+  unsent_log_store.StoreLog("two", log_metadata,
+                            MetricsLogsEventManager::CreateReason::kUnknown);
+
+  unsent_log_store.StageNextLog();
+  unsent_log_store.DiscardStagedLog("Log upload successful.");
+  histogram_tester.ExpectTotalCount("UMA.UnsentLogs.Ongoing.DropReason", 0);
+
+  unsent_log_store.StageNextLog();
+  unsent_log_store.DropUnsentStagedLog("Bad request.",
+                                       UnsentLogDropReason::kUploadBadRequest);
+  EXPECT_EQ(0U, unsent_log_store.size());
+  histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Ongoing.DropReason",
+                                      UnsentLogDropReason::kUploadBadRequest,
+                                      1);
+}
+
+// Verifies that Purge() records one drop for each log, including the staged
+// log, and emits nothing when the store is empty.
+TEST_F(UnsentLogStoreTest, DropMetrics_Purge) {
+  base::HistogramTester histogram_tester;
+  TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
+
+  unsent_log_store.Purge();
+  histogram_tester.ExpectTotalCount("UMA.UnsentLogs.Ongoing.DropReason", 0);
+
+  LogMetadata log_metadata;
+  unsent_log_store.StoreLog("one", log_metadata,
+                            MetricsLogsEventManager::CreateReason::kUnknown);
+  unsent_log_store.StoreLog("two", log_metadata,
+                            MetricsLogsEventManager::CreateReason::kUnknown);
+  unsent_log_store.StageNextLog();
+  unsent_log_store.Purge();
+
+  EXPECT_EQ(0U, unsent_log_store.size());
+  histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Ongoing.DropReason",
+                                      UnsentLogDropReason::kPurged, 2);
+}
+
+// Verifies that LoadPersistedUnsentLogs() records LIST_EMPTY on an empty pref
+// and RECALL_SUCCESS when loading persisted logs.
+TEST_F(UnsentLogStoreTest, LoadPersistedUnsentLogs_LogReadStatus) {
+  base::HistogramTester histogram_tester;
+  {
+    TestUnsentLogStore empty_store(&prefs_, kLogByteLimit);
+    empty_store.LoadPersistedUnsentLogs();
+    histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Ongoing.LogReadStatus",
+                                        UnsentLogStoreMetrics::LIST_EMPTY, 1);
+
+    empty_store.StoreLog("first", LogMetadata(),
+                         MetricsLogsEventManager::CreateReason::kUnknown);
+    empty_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+  }
+
+  TestUnsentLogStore reloaded_store(&prefs_, kLogByteLimit);
+  reloaded_store.LoadPersistedUnsentLogs();
+  EXPECT_EQ(1U, reloaded_store.size());
+  histogram_tester.ExpectBucketCount("UMA.UnsentLogs.Ongoing.LogReadStatus",
+                                     UnsentLogStoreMetrics::RECALL_SUCCESS, 1);
+  histogram_tester.ExpectTotalCount("UMA.UnsentLogs.Ongoing.LogReadStatus", 2);
+}
+
+// Verifies that a corrupt persisted log list records one drop for each
+// persisted entry, including entries parsed before the bad one.
+TEST_F(UnsentLogStoreTest, DropMetrics_PrefCorruption) {
+  {
+    TestUnsentLogStore writer_store(&prefs_, kLogByteLimit);
+    LogMetadata log_metadata;
+    writer_store.StoreLog("first", log_metadata,
+                          MetricsLogsEventManager::CreateReason::kUnknown);
+    writer_store.StoreLog("second", log_metadata,
+                          MetricsLogsEventManager::CreateReason::kUnknown);
+    writer_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+  }
+  {
+    ScopedListPrefUpdate update(&prefs_, kTestPrefName);
+    ASSERT_EQ(2U, update->size());
+    update->Insert(update->begin() + 1, base::Value(base::DictValue()));
+  }
+
+  base::HistogramTester histogram_tester;
+  TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);
+  unsent_log_store.LoadPersistedUnsentLogs();
+
+  EXPECT_EQ(0U, unsent_log_store.size());
+  histogram_tester.ExpectUniqueSample(
+      "UMA.UnsentLogs.Ongoing.LogReadStatus",
+      UnsentLogStoreMetrics::LOG_STRING_CORRUPTION, 1);
+  histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Ongoing.DropReason",
+                                      UnsentLogDropReason::kPrefCorruption, 3);
 }
 
 }  // namespace metrics

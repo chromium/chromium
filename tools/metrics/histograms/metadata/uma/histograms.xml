@@ -45,6 +45,17 @@ chromium-metrics-reviews@google.com.
       summary="For &quot;zygote&quot; process metrics."/>
 </variants>
 
+<!-- LINT.IfChange(UnsentLogQueue) -->
+
+<variants name="UnsentLogQueue">
+  <variant name="Initial" summary="initial stability log queue"/>
+  <variant name="Ongoing" summary="ongoing log queue"/>
+  <variant name="User"
+      summary="ChromeOS per-user ongoing log queue (ChromeOS only)"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/metrics/unsent_log_store_metrics_impl.h:UnsentLogQueue,//components/metrics/unsent_log_store_metrics_impl.cc:UnsentLogQueue) -->
+
 <histogram name="Histogram.BadConstructionArguments" enum="HistogramNameHash"
     expires_after="never">
 <!-- expires-never: Needed for tracking bad histogram data. -->
@@ -1158,6 +1169,64 @@ chromium-metrics-reviews@google.com.
     The percentage of the unsent samples over the total in the previous browser
     run; it is recorded on the browser start up.
   </summary>
+</histogram>
+
+<histogram name="UMA.UnsentLogs.{LogQueue}.DropReason"
+    enum="UnsentLogDropReason" expires_after="2027-05-02">
+  <owner>lburchard@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The reason why an unsent UMA log in the {LogQueue} was removed before a
+    successful upload. Emitted once for each removed log. A trim records a drop
+    only when the log is removed from memory. Logs past the queue limits record
+    Trimmed: queue limit without checking the individual log size limit. A trim
+    does not skip the staged log, so if a trim removes a staged log while its
+    upload is in flight and that upload still succeeds, the log is counted here
+    even though it was uploaded. See
+    UMA.UnsentLogs.{{LogQueue}}.TrimmedOnDiskOnly for logs that are removed only
+    from persistent storage.
+
+    When a persisted log list is corrupt at load time, every entry in that list
+    is counted as Persisted log list corrupt; if Chrome exits before the next
+    trim overwrites the pref, those entries are counted again on the next load.
+
+    The log that contains this sample can also be dropped, so the histogram can
+    under-report heavy loss.
+
+    The Purged bucket is expected and is not data loss. Chrome purges the logs
+    when metrics consent turns off (reporting then stops, so these samples
+    rarely upload) or when it detects a cloned install (reporting continues).
+  </summary>
+  <token key="LogQueue" variants="UnsentLogQueue"/>
+</histogram>
+
+<histogram name="UMA.UnsentLogs.{LogQueue}.LogReadStatus"
+    enum="PersistedLogsLogReadStatus" expires_after="2027-05-02">
+  <owner>lburchard@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The result of loading the saved unsent UMA logs of the {LogQueue} from
+    persistent storage. Emitted each time the queue loads its logs: at startup
+    for the Initial and Ongoing queues, and when a user logs in for the ChromeOS
+    User queue. For the number of logs lost to corruption, see
+    UMA.UnsentLogs.{{LogQueue}}.DropReason.
+  </summary>
+  <token key="LogQueue" variants="UnsentLogQueue"/>
+</histogram>
+
+<histogram name="UMA.UnsentLogs.{LogQueue}.TrimmedOnDiskOnly" units="logs"
+    expires_after="2027-05-02">
+  <owner>lburchard@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of unsent UMA logs in the {LogQueue} that a trim did not write to
+    persistent storage, but kept in memory so that they can still upload in the
+    current session. Emitted after each periodic ongoing log is stored, only
+    when the value is greater than 0. The same log can be counted again on the
+    next periodic trim. If the process ends before these logs upload, the logs
+    are lost.
+  </summary>
+  <token key="LogQueue" variants="UnsentLogQueue"/>
 </histogram>
 
 <histogram name="UMA.UserActionsCount" enum="Boolean"

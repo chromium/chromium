@@ -444,8 +444,10 @@ TEST_F(MetricsServiceObserverTest, UmaLogType) {
     // log store". This log store will read from the same persistent storage as
     // a "normal" ongoing log queue.
     auto alternate_ongoing_log_store = std::make_unique<UnsentLogStore>(
-        std::make_unique<UnsentLogStoreMetricsImpl>(), local_state(),
-        prefs::kMetricsOngoingLogs, prefs::kMetricsOngoingLogsMetadata,
+        std::make_unique<UnsentLogStoreMetricsImpl>(
+            UnsentLogStoreMetricsImpl::LogQueue::kUser),
+        local_state(), prefs::kMetricsOngoingLogs,
+        prefs::kMetricsOngoingLogsMetadata,
         storage_limits.ongoing_log_queue_limits, client.GetUploadSigningKey(),
         // |logs_event_manager| will be set by |test_log_store| directly in
         // MetricsLogStore::SetAlternateOngoingLogStore().

@@ -8,8 +8,10 @@
 
 #include <deque>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -22,6 +24,7 @@
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "crypto/obsolete/sha1.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -75,9 +78,14 @@ class TestLogStore : public LogStore {
       staged_log_hash_ = metrics::Sha1ForUnsentLogStore(logs_.front().log);
     }
   }
-  void DiscardStagedLogImpl(std::string_view reason) override {
+  void DiscardStagedLogImpl(
+      std::string_view reason,
+      std::optional<UnsentLogDropReason> drop_reason) override {
     if (!has_staged_log()) {
       return;
+    }
+    if (drop_reason.has_value()) {
+      drop_reasons_.push_back(drop_reason.value());
     }
     logs_.pop_front();
     staged_log_hash_.clear();
@@ -86,9 +94,15 @@ class TestLogStore : public LogStore {
   void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override {}
   void LoadPersistedUnsentLogs() override {}
 
+  // Returns the drop reasons of all logs that were dropped, in order.
+  const std::vector<UnsentLogDropReason>& drop_reasons() const {
+    return drop_reasons_;
+  }
+
  private:
   std::string staged_log_hash_;
   std::deque<TestLog> logs_;
+  std::vector<UnsentLogDropReason> drop_reasons_;
 };
 
 class TestReportingService : public ReportingService {
@@ -109,6 +123,9 @@ class TestReportingService : public ReportingService {
 
   void AddLog(const TestLog& log) { log_store_.AddLog(log); }
   bool HasUnsentLogs() { return log_store_.has_unsent_logs(); }
+  const std::vector<UnsentLogDropReason>& DropReasons() const {
+    return log_store_.drop_reasons();
+  }
 
  private:
   // ReportingService:
@@ -218,6 +235,15 @@ TEST_F(ReportingServiceTest, UserIdLogsNotUploadedIfUserNotConsented) {
   task_environment_.FastForwardBy(
       base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
   EXPECT_EQ(client_.uploader(), nullptr);
+  // Fast-forward to process the second log too; both discarded logs record the
+  // user-preference drop reason.
+  task_environment_.FastForwardBy(
+      MetricsUploadScheduler::GetUnsentLogsInterval());
+  EXPECT_EQ(client_.uploader(), nullptr);
+  EXPECT_FALSE(service.HasUnsentLogs());
+  EXPECT_THAT(service.DropReasons(),
+              testing::ElementsAre(UnsentLogDropReason::kUserPreference,
+                                   UnsentLogDropReason::kUserPreference));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -247,6 +273,49 @@ TEST_F(ReportingServiceTest, ForceDiscard) {
   EXPECT_FALSE(service.HasUnsentLogs());
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 0U);
   EXPECT_FALSE(client_.uploader()->is_uploading());
+  EXPECT_THAT(service.DropReasons(),
+              testing::ElementsAre(UnsentLogDropReason::kForceDiscard));
+}
+
+// Verifies that a successful upload does not record a drop, and that an HTTP
+// 400 response drops the log with the bad request reason.
+TEST_F(ReportingServiceTest, DropReasonForBadRequest) {
+  TestReportingService service(&client_, GetLocalState());
+  service.AddLog(TestLog("log1"));
+  service.AddLog(TestLog("log2"));
+  service.EnableReporting();
+
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
+  EXPECT_TRUE(client_.uploader()->is_uploading());
+  client_.uploader()->CompleteUpload(200);
+  EXPECT_TRUE(service.DropReasons().empty());
+
+  task_environment_.FastForwardBy(
+      MetricsUploadScheduler::GetUnsentLogsInterval());
+  EXPECT_TRUE(client_.uploader()->is_uploading());
+  client_.uploader()->CompleteUpload(400);
+  EXPECT_FALSE(service.HasUnsentLogs());
+  EXPECT_THAT(service.DropReasons(),
+              testing::ElementsAre(UnsentLogDropReason::kUploadBadRequest));
+}
+
+// Verifies that a failed upload of a log that is too large to send again drops
+// the log with the matching reason.
+TEST_F(ReportingServiceTest, DropReasonForLargeLog) {
+  TestReportingService service(&client_, GetLocalState());
+  // TestReportingService sets the maximum retransmit size to 100 bytes.
+  service.AddLog(TestLog(std::string(101, 'a')));
+  service.EnableReporting();
+
+  task_environment_.FastForwardBy(
+      base::Seconds(MetricsScheduler::GetInitialIntervalSeconds()));
+  EXPECT_TRUE(client_.uploader()->is_uploading());
+  client_.uploader()->CompleteUpload(500);
+  EXPECT_FALSE(service.HasUnsentLogs());
+  EXPECT_THAT(
+      service.DropReasons(),
+      testing::ElementsAre(UnsentLogDropReason::kUploadRejectedTooLarge));
 }
 
 TEST_F(ReportingServiceTest, BadRequestDoesNotBackoff) {

@@ -66,7 +66,8 @@ const char kBeforeForegroundHistogram[] = "Test.BeforeForeground";
 class TestUnsentLogStore : public UnsentLogStore {
  public:
   explicit TestUnsentLogStore(PrefService* service)
-      : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(),
+      : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(
+                           UnsentLogStoreMetricsImpl::LogQueue::kUser),
                        service,
                        kTestPrefName,
                        nullptr,

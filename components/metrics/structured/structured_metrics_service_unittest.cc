@@ -26,7 +26,7 @@
 #include "components/metrics/structured/test/test_key_data_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/metrics/unsent_log_store.h"
-#include "components/metrics/unsent_log_store_metrics_impl.h"
+#include "components/metrics/unsent_log_store_metrics.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -172,7 +172,7 @@ class StructuredMetricsServiceTest : public testing::Test {
   ChromeUserMetricsExtension GetPersistedLog() {
     EXPECT_THAT(GetPersistedLogCount(), 1);
     metrics::UnsentLogStore result_unsent_log_store(
-        std::make_unique<UnsentLogStoreMetricsImpl>(), &prefs_,
+        std::make_unique<UnsentLogStoreMetrics>(), &prefs_,
         prefs::kLogStoreName, /*metadata_pref_name=*/nullptr,
         // Set to 3 so logs are not dropped in the test.
         UnsentLogStore::UnsentLogStoreLimits{

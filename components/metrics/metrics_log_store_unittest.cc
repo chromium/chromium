@@ -4,6 +4,11 @@
 
 #include "components/metrics/metrics_log_store.h"
 
+#include <memory>
+#include <string>
+
+#include "base/test/metrics/histogram_tester.h"
+#include "components/metrics/log_store.h"
 #include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/test/test_metrics_service_client.h"
@@ -20,7 +25,8 @@ const char kTestPrefName[] = "TestPref";
 class TestUnsentLogStore : public UnsentLogStore {
  public:
   explicit TestUnsentLogStore(PrefService* service)
-      : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(),
+      : UnsentLogStore(std::make_unique<UnsentLogStoreMetricsImpl>(
+                           UnsentLogStoreMetricsImpl::LogQueue::kUser),
                        service,
                        kTestPrefName,
                        nullptr,
@@ -441,4 +447,50 @@ TEST_F(MetricsLogStoreTest, TrimLargeInitialStabilityLog) {
   EXPECT_EQ(0U, TypeCount(MetricsLog::INITIAL_STABILITY_LOG));
   EXPECT_EQ(1U, TypeCount(MetricsLog::ONGOING_LOG));
 }
+
+// Verifies that DropUnsentStagedLog() routes the drop reason to whichever
+// queue owns the staged log (initial, alternate user, or ongoing).
+TEST_F(MetricsLogStoreTest, DropUnsentStagedLogPerQueue) {
+  MetricsLogStore log_store(&pref_service_, client_.GetStorageLimits(),
+                            /*signing_key=*/std::string(),
+                            /*logs_event_manager=*/nullptr);
+  log_store.LoadPersistedUnsentLogs();
+
+  log_store.StoreLog("ongoing", MetricsLog::ONGOING_LOG, LogMetadata(),
+                     MetricsLogsEventManager::CreateReason::kUnknown);
+  log_store.SetAlternateOngoingLogStore(
+      std::make_unique<TestUnsentLogStore>(&pref_service_));
+  log_store.StoreLog("user", MetricsLog::ONGOING_LOG, LogMetadata(),
+                     MetricsLogsEventManager::CreateReason::kUnknown);
+  log_store.StoreLog("initial", MetricsLog::INITIAL_STABILITY_LOG,
+                     LogMetadata(),
+                     MetricsLogsEventManager::CreateReason::kUnknown);
+
+  base::HistogramTester histogram_tester;
+
+  // Initial stability logs are staged first.
+  log_store.StageNextLog();
+  log_store.DropUnsentStagedLog("Bad request.",
+                                UnsentLogDropReason::kUploadBadRequest);
+
+  // Alternate ongoing logs are staged before native ongoing logs.
+  log_store.StageNextLog();
+  log_store.DropUnsentStagedLog("Disallowed by user preference.",
+                                UnsentLogDropReason::kUserPreference);
+
+  // Native ongoing logs are staged last.
+  log_store.StageNextLog();
+  log_store.DropUnsentStagedLog("Force discard.",
+                                UnsentLogDropReason::kForceDiscard);
+
+  EXPECT_FALSE(log_store.has_unsent_logs());
+  histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Initial.DropReason",
+                                      UnsentLogDropReason::kUploadBadRequest,
+                                      1);
+  histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.User.DropReason",
+                                      UnsentLogDropReason::kUserPreference, 1);
+  histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Ongoing.DropReason",
+                                      UnsentLogDropReason::kForceDiscard, 1);
+}
+
 }  // namespace metrics

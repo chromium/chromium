@@ -4,15 +4,49 @@
 
 #include "components/metrics/unsent_log_store_metrics_impl.h"
 
+#include <limits>
+#include <string>
+
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/metrics/log_store.h"
+#include "components/metrics/unsent_log_store_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
 namespace {
 
+// Verifies that the base UnsentLogStoreMetrics implementation used by non-UMA
+// stores is a no-op and emits no UMA histograms.
+TEST(UnsentLogStoreMetricsImplTest, BaseMetricsNoOp) {
+  UnsentLogStoreMetrics base_metrics;
+  base::HistogramTester histogram_tester;
+
+  base_metrics.RecordLogReadStatus(UnsentLogStoreMetrics::RECALL_SUCCESS);
+  base_metrics.RecordCompressionRatio(50, 100);
+  base_metrics.RecordDroppedLog(UnsentLogDropReason::kTrimmedQueueLimit);
+  base_metrics.RecordCorruptLogRead(3);
+  base_metrics.RecordTrimmedLogs(/*queue_limit_count=*/0,
+                                 /*log_too_large_count=*/0,
+                                 /*removed_from_memory=*/true);
+  base_metrics.RecordTrimmedLogs(/*queue_limit_count=*/2,
+                                 /*log_too_large_count=*/1,
+                                 /*removed_from_memory=*/false);
+  base_metrics.RecordTrimmedLogs(/*queue_limit_count=*/2,
+                                 /*log_too_large_count=*/1,
+                                 /*removed_from_memory=*/true);
+  base_metrics.RecordLogsTrimmedOnDiskOnly(2);
+  base_metrics.RecordDroppedLogSize(1000);
+  base_metrics.RecordDroppedLogsNum(2);
+  base_metrics.RecordLastUnsentLogMetadataMetrics(10, 20, 1);
+
+  EXPECT_TRUE(histogram_tester.GetTotalCountsForPrefix("UMA.").empty());
+}
+
 TEST(UnsentLogStoreMetricsImplTest, RecordDroppedLogSize) {
-  UnsentLogStoreMetricsImpl impl;
+  UnsentLogStoreMetricsImpl impl(UnsentLogStoreMetricsImpl::LogQueue::kOngoing);
   base::HistogramTester histogram_tester;
 
   impl.RecordDroppedLogSize(99999);
@@ -20,7 +54,7 @@ TEST(UnsentLogStoreMetricsImplTest, RecordDroppedLogSize) {
 }
 
 TEST(UnsentLogStoreMetricsImplTest, RecordDroppedLogsNum) {
-  UnsentLogStoreMetricsImpl impl;
+  UnsentLogStoreMetricsImpl impl(UnsentLogStoreMetricsImpl::LogQueue::kOngoing);
   base::HistogramTester histogram_tester;
 
   impl.RecordDroppedLogsNum(17);
@@ -30,7 +64,7 @@ TEST(UnsentLogStoreMetricsImplTest, RecordDroppedLogsNum) {
 TEST(UnsentLogStoreMetricsImplTest, RecordLastUnsentLogMetadataMetrics) {
   base::test::ScopedFeatureList feature_override;
   feature_override.InitAndEnableFeature(kRecordLastUnsentLogMetadataMetrics);
-  UnsentLogStoreMetricsImpl impl;
+  UnsentLogStoreMetricsImpl impl(UnsentLogStoreMetricsImpl::LogQueue::kOngoing);
   base::HistogramTester histogram_tester;
 
   impl.RecordLastUnsentLogMetadataMetrics(99, 19999, 63);
@@ -42,7 +76,7 @@ TEST(UnsentLogStoreMetricsImplTest, RecordLastUnsentLogMetadataMetrics) {
 }
 
 TEST(UnsentLogStoreMetricsImplTest, DisableRecordLastUnsentLogMetadataMetrics) {
-  UnsentLogStoreMetricsImpl impl;
+  UnsentLogStoreMetricsImpl impl(UnsentLogStoreMetricsImpl::LogQueue::kOngoing);
   base::HistogramTester histogram_tester;
 
   impl.RecordLastUnsentLogMetadataMetrics(99, 19999, 63);
@@ -59,7 +93,7 @@ TEST(UnsentLogStoreMetricsImplTest, DisableRecordLastUnsentLogMetadataMetrics) {
 TEST(UnsentLogStoreMetricsImplTest, BothUnsentAndSentZeroSample) {
   base::test::ScopedFeatureList feature_override;
   feature_override.InitAndEnableFeature(kRecordLastUnsentLogMetadataMetrics);
-  UnsentLogStoreMetricsImpl impl;
+  UnsentLogStoreMetricsImpl impl(UnsentLogStoreMetricsImpl::LogQueue::kOngoing);
   base::HistogramTester histogram_tester;
 
   impl.RecordLastUnsentLogMetadataMetrics(0, 0, 63);
@@ -71,7 +105,7 @@ TEST(UnsentLogStoreMetricsImplTest, BothUnsentAndSentZeroSample) {
 TEST(UnsentLogStoreMetricsImplTest, ZeroUnsentSample) {
   base::test::ScopedFeatureList feature_override;
   feature_override.InitAndEnableFeature(kRecordLastUnsentLogMetadataMetrics);
-  UnsentLogStoreMetricsImpl impl;
+  UnsentLogStoreMetricsImpl impl(UnsentLogStoreMetricsImpl::LogQueue::kOngoing);
   base::HistogramTester histogram_tester;
 
   impl.RecordLastUnsentLogMetadataMetrics(0, 999999, 63);
@@ -83,13 +117,105 @@ TEST(UnsentLogStoreMetricsImplTest, ZeroUnsentSample) {
 TEST(UnsentLogStoreMetricsImplTest, ZeroSentSample) {
   base::test::ScopedFeatureList feature_override;
   feature_override.InitAndEnableFeature(kRecordLastUnsentLogMetadataMetrics);
-  UnsentLogStoreMetricsImpl impl;
+  UnsentLogStoreMetricsImpl impl(UnsentLogStoreMetricsImpl::LogQueue::kOngoing);
   base::HistogramTester histogram_tester;
 
   impl.RecordLastUnsentLogMetadataMetrics(999, 0, 63);
   histogram_tester.ExpectBucketCount("UMA.UnsentLogs.UnsentCount", 999, 1);
   histogram_tester.ExpectBucketCount("UMA.UnsentLogs.SentCount", 0, 1);
   histogram_tester.ExpectBucketCount("UMA.UnsentLogs.UnsentPercentage", 100, 1);
+}
+
+// Verifies that each log queue records per-queue metrics under its own
+// {LogQueue} variant.
+TEST(UnsentLogStoreMetricsImplTest, RecordDroppedLogsPerQueue) {
+  struct QueueCase {
+    UnsentLogStoreMetricsImpl::LogQueue log_queue;
+    const char* queue_name;
+  };
+  const QueueCase kCases[] = {
+      {UnsentLogStoreMetricsImpl::LogQueue::kInitial, "Initial"},
+      {UnsentLogStoreMetricsImpl::LogQueue::kOngoing, "Ongoing"},
+      {UnsentLogStoreMetricsImpl::LogQueue::kUser, "User"},
+  };
+
+  for (const QueueCase& test_case : kCases) {
+    SCOPED_TRACE(test_case.queue_name);
+    UnsentLogStoreMetricsImpl impl(test_case.log_queue);
+    base::HistogramTester histogram_tester;
+    const std::string prefix =
+        base::StrCat({"UMA.UnsentLogs.", test_case.queue_name, "."});
+
+    impl.RecordDroppedLogs(UnsentLogDropReason::kUploadBadRequest, 0);
+    impl.RecordDroppedLog(UnsentLogDropReason::kUploadBadRequest);
+    impl.RecordDroppedLogs(UnsentLogDropReason::kPurged, 4);
+    impl.RecordTrimmedLogs(/*queue_limit_count=*/2, /*log_too_large_count=*/1,
+                           /*removed_from_memory=*/false);
+    impl.RecordTrimmedLogs(/*queue_limit_count=*/2, /*log_too_large_count=*/1,
+                           /*removed_from_memory=*/true);
+    impl.RecordCorruptLogRead(3);
+
+    histogram_tester.ExpectBucketCount(
+        prefix + "DropReason", UnsentLogDropReason::kTrimmedQueueLimit, 2);
+    histogram_tester.ExpectBucketCount(
+        prefix + "DropReason", UnsentLogDropReason::kTrimmedLogTooLarge, 1);
+    histogram_tester.ExpectBucketCount(
+        prefix + "DropReason", UnsentLogDropReason::kUploadBadRequest, 1);
+    histogram_tester.ExpectBucketCount(prefix + "DropReason",
+                                       UnsentLogDropReason::kPurged, 4);
+    histogram_tester.ExpectBucketCount(prefix + "DropReason",
+                                       UnsentLogDropReason::kPrefCorruption, 3);
+    histogram_tester.ExpectTotalCount(prefix + "DropReason", 11);
+    histogram_tester.ExpectUniqueSample("UMA.UnsentLogs.Dropped", 3, 1);
+    histogram_tester.ExpectUniqueSample(prefix + "TrimmedOnDiskOnly", 3, 1);
+    histogram_tester.ExpectUniqueSample(
+        prefix + "LogReadStatus", UnsentLogStoreMetrics::LOG_STRING_CORRUPTION,
+        1);
+  }
+}
+
+// Verifies that `RecordDroppedLogs()` constructs `DropReason` with the exact
+// same bucket ranges as `base::UmaHistogramEnumeration()`.
+TEST(UnsentLogStoreMetricsImplTest,
+     RecordDroppedLogsMatchesUmaHistogramEnumeration) {
+  base::HistogramTester histogram_tester;
+
+  // First create via UmaHistogramEnumeration, then append via
+  // RecordDroppedLogs.
+  base::UmaHistogramEnumeration("UMA.UnsentLogs.Initial.DropReason",
+                                UnsentLogDropReason::kTrimmedQueueLimit);
+  UnsentLogStoreMetricsImpl initial_impl(
+      UnsentLogStoreMetricsImpl::LogQueue::kInitial);
+  initial_impl.RecordDroppedLogs(UnsentLogDropReason::kPurged, 2);
+
+  // Also test the reverse order: create via RecordDroppedLogs, then append via
+  // UmaHistogramEnumeration.
+  UnsentLogStoreMetricsImpl user_impl(
+      UnsentLogStoreMetricsImpl::LogQueue::kUser);
+  user_impl.RecordDroppedLogs(UnsentLogDropReason::kUserPreference, 3);
+  base::UmaHistogramEnumeration("UMA.UnsentLogs.User.DropReason",
+                                UnsentLogDropReason::kPurged);
+
+  histogram_tester.ExpectTotalCount("Histogram.BadConstructionArguments", 0);
+  histogram_tester.ExpectBucketCount("UMA.UnsentLogs.Initial.DropReason",
+                                     UnsentLogDropReason::kTrimmedQueueLimit,
+                                     1);
+  histogram_tester.ExpectBucketCount("UMA.UnsentLogs.Initial.DropReason",
+                                     UnsentLogDropReason::kPurged, 2);
+  histogram_tester.ExpectBucketCount("UMA.UnsentLogs.User.DropReason",
+                                     UnsentLogDropReason::kUserPreference, 3);
+  histogram_tester.ExpectBucketCount("UMA.UnsentLogs.User.DropReason",
+                                     UnsentLogDropReason::kPurged, 1);
+}
+
+TEST(UnsentLogStoreMetricsImplTest, RecordTrimmedLogsClampsOverflow) {
+  UnsentLogStoreMetricsImpl impl(UnsentLogStoreMetricsImpl::LogQueue::kOngoing);
+  base::HistogramTester histogram_tester;
+
+  impl.RecordTrimmedLogs(std::numeric_limits<size_t>::max(), 1,
+                         /*removed_from_memory=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "UMA.UnsentLogs.Ongoing.TrimmedOnDiskOnly", 100, 1);
 }
 
 }  // namespace

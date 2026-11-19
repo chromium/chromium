@@ -5,7 +5,9 @@
 #include "components/metrics/unsent_log_store.h"
 
 #include <cmath>
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -18,6 +20,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/metrics/log_store.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/unsent_log_store_metrics.h"
 #include "components/prefs/pref_service.h"
@@ -254,9 +257,14 @@ void UnsentLogStore::StageNextLog() {
   DCHECK(has_staged_log());
 }
 
-void UnsentLogStore::DiscardStagedLogImpl(std::string_view reason) {
+void UnsentLogStore::DiscardStagedLogImpl(
+    std::string_view reason,
+    std::optional<UnsentLogDropReason> drop_reason) {
   DCHECK(has_staged_log());
   DCHECK_LT(staged_log_index_.value(), list_.size());
+  if (drop_reason.has_value()) {
+    metrics_->RecordDroppedLog(drop_reason.value());
+  }
   NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogDiscarded,
                  current_log()->hash, reason);
   list_.erase(list_.begin() + staged_log_index_.value());
@@ -290,6 +298,9 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
   const bool trimming_enabled =
       base::FeatureList::IsEnabled(features::kMetricsLogTrimming);
 
+  size_t queue_limit_trimmed_count = 0;
+  size_t oversized_trimmed_count = 0;
+
   // Reverse order, so newest ones are prioritized.
   for (int i = list_.size() - 1; i >= 0; --i) {
     size_t log_size = list_[i]->compressed_log_data.length();
@@ -299,8 +310,9 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
       if (bytes_used >= log_store_limits_.min_queue_size_bytes &&
           writer.unsent_logs_count() >= log_store_limits_.min_log_count) {
         // The rest of the logs (including the current one) are trimmed.
+        queue_limit_trimmed_count = static_cast<size_t>(i + 1);
         if (overwrite_in_memory_store) {
-          NotifyLogsEvent(base::span(list_).first(static_cast<size_t>(i + 1)),
+          NotifyLogsEvent(base::span(list_).first(queue_limit_trimmed_count),
                           MetricsLogsEventManager::LogEvent::kLogTrimmed);
         }
         break;
@@ -309,6 +321,7 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
       if (log_store_limits_.max_log_size_bytes != 0 &&
           log_size > log_store_limits_.max_log_size_bytes) {
         metrics_->RecordDroppedLogSize(log_size);
+        ++oversized_trimmed_count;
         if (overwrite_in_memory_store) {
           NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogTrimmed,
                          list_[i]->hash, "Log size too large.");
@@ -337,11 +350,6 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
     // correct.
     std::ranges::reverse(trimmed_list);
 
-    size_t dropped_logs_count = list_.size() - trimmed_list.size();
-    if (dropped_logs_count > 0) {
-      metrics_->RecordDroppedLogsNum(dropped_logs_count);
-    }
-
     // Put the trimmed list in the correct place.
     list_.swap(trimmed_list);
 
@@ -357,6 +365,10 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
       staged_log_index_ = std::nullopt;
     }
   }
+
+  metrics_->RecordTrimmedLogs(queue_limit_trimmed_count,
+                              oversized_trimmed_count,
+                              overwrite_in_memory_store);
 
   WriteToMetricsPref(writer.unsent_samples_count(), total_samples_sent_,
                      writer.unsent_persisted_size());
@@ -422,10 +434,13 @@ std::string UnsentLogStore::ReplaceLogAtIndex(size_t index,
 }
 
 void UnsentLogStore::Purge() {
+  metrics_->RecordDroppedLogs(UnsentLogDropReason::kPurged, list_.size());
   NotifyLogsEvent(list_, MetricsLogsEventManager::LogEvent::kLogDiscarded,
                   "Purged.");
 
   if (has_staged_log()) {
+    // Do not call DropUnsentStagedLog(). The call above already recorded
+    // this log.
     DiscardStagedLog();
   }
   list_.clear();
@@ -465,8 +480,7 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::ListValue& list_value) {
         !GetString(*dict, kLogSignatureKey, info->signature)) {
       // Something is wrong, so we don't try to get any persisted logs.
       list_.clear();
-      metrics_->RecordLogReadStatus(
-          UnsentLogStoreMetrics::LOG_STRING_CORRUPTION);
+      metrics_->RecordCorruptLogRead(log_count);
       return;
     }
 

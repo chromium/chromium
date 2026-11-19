@@ -13,6 +13,32 @@
 
 namespace metrics {
 
+// Specifies why a log store removed a log before a successful upload.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(UnsentLogDropReason)
+enum class UnsentLogDropReason {
+  // The trim removed the log because the queue reached both of its limits.
+  kTrimmedQueueLimit = 0,
+  // The trim removed the log because the log is larger than the size limit.
+  kTrimmedLogTooLarge = 1,
+  // The upload failed and the log is too large to send again.
+  kUploadRejectedTooLarge = 2,
+  // The server returned HTTP 400. A new attempt cannot succeed.
+  kUploadBadRequest = 3,
+  // The uploader asked to discard the log (for example, no upload URL).
+  kForceDiscard = 4,
+  // The user preference does not allow metrics upload for this log.
+  kUserPreference = 5,
+  // The persisted log list was corrupt at load time.
+  kPrefCorruption = 6,
+  // The store removed all logs (for example, consent turned off or cloned
+  // install).
+  kPurged = 7,
+  kMaxValue = kPurged,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/uma/enums.xml:UnsentLogDropReason)
+
 // Interface for local storage of serialized logs to be reported.
 // It allows consumers to check if there are logs to consume, consume them one
 // at a time by staging and discarding logs, and persist/load the whole set.
@@ -56,13 +82,25 @@ class LogStore {
 
   // Discards the staged log. |reason| is the reason why the log was discarded
   // (used for debugging through chrome://metrics-internals).
-  void DiscardStagedLog() { DiscardStagedLogImpl(""); }
+  void DiscardStagedLog() { DiscardStagedLogImpl("", std::nullopt); }
   void DiscardStagedLog(std::string_view reason) {
-    DiscardStagedLogImpl(reason);
+    DiscardStagedLogImpl(reason, std::nullopt);
+  }
+
+  // Drops the staged log before a successful upload and records
+  // `drop_reason` in the drop metrics. `reason` is a message for
+  // chrome://metrics-internals.
+  void DropUnsentStagedLog(std::string_view reason,
+                           UnsentLogDropReason drop_reason) {
+    DiscardStagedLogImpl(reason, drop_reason);
   }
 
  protected:
-  virtual void DiscardStagedLogImpl(std::string_view reason) = 0;
+  // Discards the staged log. Records `drop_reason` in the drop metrics when
+  // `drop_reason` has a value (empty when popping an uploaded log).
+  virtual void DiscardStagedLogImpl(
+      std::string_view reason,
+      std::optional<UnsentLogDropReason> drop_reason) = 0;
 
  public:
   // Marks the staged log as sent, DiscardStagedLog() shall still be called if

@@ -28,7 +28,8 @@ MetricsLogStore::MetricsLogStore(PrefService* local_state,
     : unsent_logs_loaded_(false),
       logs_event_manager_(logs_event_manager),
       initial_log_queue_(
-          std::make_unique<UnsentLogStoreMetricsImpl>(),
+          std::make_unique<UnsentLogStoreMetricsImpl>(
+              UnsentLogStoreMetricsImpl::LogQueue::kInitial),
           local_state,
           prefs::kMetricsInitialLogs,
           prefs::kMetricsInitialLogsMetadata,
@@ -38,7 +39,8 @@ MetricsLogStore::MetricsLogStore(PrefService* local_state,
               storage_limits.initial_log_queue_limits.max_log_size_bytes},
           signing_key,
           logs_event_manager),
-      ongoing_log_queue_(std::make_unique<UnsentLogStoreMetricsImpl>(),
+      ongoing_log_queue_(std::make_unique<UnsentLogStoreMetricsImpl>(
+                             UnsentLogStoreMetricsImpl::LogQueue::kOngoing),
                          local_state,
                          prefs::kMetricsOngoingLogs,
                          prefs::kMetricsOngoingLogsMetadata,
@@ -211,14 +213,26 @@ void MetricsLogStore::StageNextLog() {
     ongoing_log_queue_.StageNextLog();
 }
 
-void MetricsLogStore::DiscardStagedLogImpl(std::string_view reason) {
+void MetricsLogStore::DiscardStagedLogImpl(
+    std::string_view reason,
+    std::optional<UnsentLogDropReason> drop_reason) {
   DCHECK(has_staged_log());
-  if (initial_log_queue_.has_staged_log())
-    initial_log_queue_.DiscardStagedLog(reason);
-  else if (alternate_ongoing_log_store_has_staged_log())
-    alternate_ongoing_log_queue_->DiscardStagedLog(reason);
-  else if (ongoing_log_queue_.has_staged_log())
-    ongoing_log_queue_.DiscardStagedLog(reason);
+  UnsentLogStore* staged_log_queue = nullptr;
+  if (initial_log_queue_.has_staged_log()) {
+    staged_log_queue = &initial_log_queue_;
+  } else if (alternate_ongoing_log_store_has_staged_log()) {
+    staged_log_queue = alternate_ongoing_log_queue_.get();
+  } else if (ongoing_log_queue_.has_staged_log()) {
+    staged_log_queue = &ongoing_log_queue_;
+  }
+
+  if (staged_log_queue) {
+    if (drop_reason.has_value()) {
+      staged_log_queue->DropUnsentStagedLog(reason, drop_reason.value());
+    } else {
+      staged_log_queue->DiscardStagedLog(reason);
+    }
+  }
 
   DCHECK(!has_staged_log());
 }

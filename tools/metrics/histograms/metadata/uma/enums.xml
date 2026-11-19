@@ -470,6 +470,21 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Machine ID unchanged"/>
 </enum>
 
+<!-- LINT.IfChange(UnsentLogDropReason) -->
+
+<enum name="UnsentLogDropReason">
+  <int value="0" label="Trimmed: queue limit"/>
+  <int value="1" label="Trimmed: log too large"/>
+  <int value="2" label="Upload failed: log too large to retransmit"/>
+  <int value="3" label="Upload failed: bad request (HTTP 400)"/>
+  <int value="4" label="Force discard (for example, no upload URL)"/>
+  <int value="5" label="Disallowed by user preference"/>
+  <int value="6" label="Persisted log list corrupt"/>
+  <int value="7" label="Purged"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/metrics/log_store.h:UnsentLogDropReason) -->
+
 </enums>
 
 </histogram-configuration>

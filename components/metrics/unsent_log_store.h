@@ -147,7 +147,9 @@ class UnsentLogStore : public LogStore {
   void StageNextLog() override;
 
  protected:
-  void DiscardStagedLogImpl(std::string_view reason) override;
+  void DiscardStagedLogImpl(
+      std::string_view reason,
+      std::optional<UnsentLogDropReason> drop_reason) override;
 
  public:
   void MarkStagedLogAsSent() override;

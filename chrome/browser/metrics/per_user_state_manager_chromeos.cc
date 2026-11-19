@@ -489,8 +489,10 @@ PrefService* PerUserStateManagerChromeOS::GetCurrentUserPrefs() const {
 
 void PerUserStateManagerChromeOS::AssignUserLogStore() {
   SetUserLogStore(std::make_unique<UnsentLogStore>(
-      std::make_unique<UnsentLogStoreMetricsImpl>(), GetCurrentUserPrefs(),
-      prefs::kMetricsUserMetricLogs, prefs::kMetricsUserMetricLogsMetadata,
+      std::make_unique<UnsentLogStoreMetricsImpl>(
+          UnsentLogStoreMetricsImpl::LogQueue::kUser),
+      GetCurrentUserPrefs(), prefs::kMetricsUserMetricLogs,
+      prefs::kMetricsUserMetricLogsMetadata,
       storage_limits_.ongoing_log_queue_limits, signing_key_,
       // |logs_event_manager| will be set by the metrics service directly in
       // MetricsLogStore::SetAlternateOngoingLogStore().

@@ -8,6 +8,7 @@
 
 #include <cstdio>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/base64.h"
@@ -293,7 +294,8 @@ void ReportingService::SendNextLogImpl(base::OnceClosure done_callback) {
   if (staged_user_id.has_value() &&
       !client_->ShouldUploadMetricsForUserId(staged_user_id.value())) {
     // Remove the log and update list to disk.
-    log_store()->DiscardStagedLog();
+    log_store()->DropUnsentStagedLog("Disallowed by user preference.",
+                                     UnsentLogDropReason::kUserPreference);
     log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
     // Notify the scheduler that the next log should be uploaded. If there are
@@ -381,33 +383,35 @@ void ReportingService::OnLogUploadComplete(
   // Staged log could have been removed already (such as by Purge() in some
   // implementations), otherwise we may remove it here.
   if (log_store()->has_staged_log()) {
-    // Provide boolean for error recovery (allow us to ignore response_code).
-    bool discard_log = false;
     std::string_view discard_reason;
+    // Has a value only when the log is discarded without a successful upload.
+    std::optional<UnsentLogDropReason> drop_reason;
 
     const std::string& staged_log = log_store()->staged_log();
     const size_t log_size = staged_log.length();
     if (upload_succeeded) {
       LogSuccessLogSize(log_size);
       LogSuccessMetadata(staged_log);
-      discard_log = true;
       discard_reason = "Log upload successful.";
     } else if (force_discard) {
-      discard_log = true;
       discard_reason = force_discard_reason;
+      drop_reason = UnsentLogDropReason::kForceDiscard;
     } else if (log_size > max_retransmit_size_) {
       LogLargeRejection(log_size);
-      discard_log = true;
       discard_reason =
           "Failed to upload, and log is too large. Will not attempt to "
           "retransmit.";
+      drop_reason = UnsentLogDropReason::kUploadRejectedTooLarge;
     } else if (response_code == 400) {
       // Bad syntax.  Retransmission won't work.
-      discard_log = true;
       discard_reason =
           "Failed to upload because log has bad syntax. Will not attempt to "
           "retransmit.";
+      drop_reason = UnsentLogDropReason::kUploadBadRequest;
     }
+
+    // Provide boolean for error recovery (allow us to ignore response_code).
+    const bool discard_log = upload_succeeded || drop_reason.has_value();
 
     if (!discard_log && logs_event_manager_) {
       // The log is not discarded, meaning that it has failed to upload. We will
@@ -423,9 +427,10 @@ void ReportingService::OnLogUploadComplete(
     if (discard_log) {
       if (upload_succeeded) {
         log_store()->MarkStagedLogAsSent();
+        log_store()->DiscardStagedLog(discard_reason);
+      } else {
+        log_store()->DropUnsentStagedLog(discard_reason, drop_reason.value());
       }
-
-      log_store()->DiscardStagedLog(discard_reason);
       // Store the updated list to disk now that the removed log is uploaded.
       log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
