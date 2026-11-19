@@ -13,7 +13,7 @@ import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interaction
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {getItemsInMenu, setupTestEnvironment} from './common.js';
+import {getItemsInMenu, setupTestEnvironment, stubAnimationFrame} from './common.js';
 import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
@@ -27,6 +27,13 @@ suite('SettingsMenuElement', () => {
   function queryLinksToggle(): HTMLButtonElement|null {
     const items = getItemsInMenu(settingsMenu.$.lazyMenu);
     return items.find(item => item.id === SettingsOption.LINKS) || null;
+  }
+
+  function reopenSettingsMenu() {
+    settingsMenu.close();
+    const anchor = document.createElement('div');
+    document.body.appendChild(anchor);
+    settingsMenu.open(anchor);
   }
 
   // Feature flags are read when the menu is built, so tests that flip a flag
@@ -49,6 +56,7 @@ suite('SettingsMenuElement', () => {
     contentBrowserProxy = result.contentBrowserProxy;
     metrics = result.metrics;
     visualBrowserProxy = result.visualBrowserProxy;
+    stubAnimationFrame();
     await createSettingsMenu();
   });
 
@@ -229,15 +237,139 @@ suite('SettingsMenuElement', () => {
     assertFalse(fired);
   });
 
-  test('moving the mouse removes keyboard-nav class', () => {
-    const actionMenu = settingsMenu.$.lazyMenu.get();
-    actionMenu.classList.add(KEYBOARD_NAV_CLASS);
-    assertTrue(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+  test(
+      'moving the mouse onto a menu row exits keyboard-nav and opens submenu',
+      () => {
+        reopenSettingsMenu();
+        const actionMenu = settingsMenu.$.lazyMenu.get();
+        assertTrue(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
 
-    window.dispatchEvent(new PointerEvent(
-        'pointermove', {clientX: 10, clientY: 10, bubbles: true}));
-    assertFalse(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
-  });
+        // Establish initial baseline outside the row.
+        window.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: 10,
+          clientY: 10,
+          screenX: 10,
+          screenY: 10,
+          bubbles: true,
+        }));
+        assertTrue(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+
+        const menuItems = getItemsInMenu(settingsMenu.$.lazyMenu);
+        const targetItem = menuItems[0]!;
+        let submenuEvents = 0;
+        settingsMenu.addEventListener(
+            ToolbarEvent.OPEN_SETTINGS_SUBMENU, () => submenuEvents++);
+
+        const timer = new MockTimer();
+        timer.install();
+        // Blink dispatches pointerenter before pointermove when moving into a
+        // row. pointerenter must not overwrite the established baseline.
+        targetItem.dispatchEvent(new PointerEvent('pointerenter', {
+          clientX: 20,
+          clientY: 20,
+          screenX: 20,
+          screenY: 20,
+          bubbles: true,
+          composed: true,
+        }));
+        targetItem.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: 20,
+          clientY: 20,
+          screenX: 20,
+          screenY: 20,
+          bubbles: true,
+          composed: true,
+        }));
+        assertFalse(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+
+        timer.tick(SUBMENU_SHOW_DELAY_MS + 10);
+        timer.uninstall();
+        assertEquals(1, submenuEvents);
+      });
+
+  test(
+      'initial pointermove after open does not remove keyboard-nav class',
+      () => {
+        const actionMenu = settingsMenu.$.lazyMenu.get();
+        // Establish a non-null pointer position and exit keyboard-nav first to
+        // verify reopen resets lastPointerPosition_.
+        window.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: 10,
+          clientY: 10,
+          screenX: 10,
+          screenY: 10,
+          bubbles: true,
+        }));
+        window.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: 20,
+          clientY: 20,
+          screenX: 20,
+          screenY: 20,
+          bubbles: true,
+        }));
+        assertFalse(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+
+        reopenSettingsMenu();
+        assertTrue(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+
+        // The first pointermove after reopen only records the baseline position
+        // even though its coordinates differ from before close().
+        window.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: 100,
+          clientY: 100,
+          screenX: 500,
+          screenY: 200,
+          bubbles: true,
+        }));
+        assertTrue(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+
+        // A subsequent pointermove at different screen coordinates exits
+        // keyboard-nav mode.
+        window.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: 110,
+          clientY: 100,
+          screenX: 510,
+          screenY: 200,
+          bubbles: true,
+        }));
+        assertFalse(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+      });
+
+  test(
+      'pointermove with unchanged screen coordinates keeps keyboard-nav class',
+      () => {
+        reopenSettingsMenu();
+        const actionMenu = settingsMenu.$.lazyMenu.get();
+        assertTrue(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+
+        // Establish baseline via initial pointermove (simulating a stationary
+        // cursor when the side panel begins sliding in).
+        window.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: 100,
+          clientY: 100,
+          screenX: 900,
+          screenY: 300,
+          bubbles: true,
+        }));
+
+        // Layout or animation shifts (such as the side panel sliding in) change
+        // clientX while the physical cursor's screen coordinates stay constant.
+        window.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: 150,
+          clientY: 100,
+          screenX: 900,
+          screenY: 300,
+          bubbles: true,
+        }));
+        window.dispatchEvent(new PointerEvent('pointermove', {
+          clientX: 200,
+          clientY: 100,
+          screenX: 900,
+          screenY: 300,
+          bubbles: true,
+        }));
+        assertTrue(actionMenu.classList.contains(KEYBOARD_NAV_CLASS));
+      });
 
   test('mouse leave clears open timer', () => {
     const actionMenu = settingsMenu.$.lazyMenu.get();
@@ -317,6 +449,8 @@ suite('SettingsMenuElement', () => {
         colorItem.dispatchEvent(new PointerEvent('pointerenter', {
           clientX: 15,
           clientY: 15,
+          screenX: 15,
+          screenY: 15,
           bubbles: true,
           cancelable: true,
           view: window,
@@ -338,6 +472,8 @@ suite('SettingsMenuElement', () => {
         colorItem.dispatchEvent(new PointerEvent('pointerenter', {
           clientX: 15,
           clientY: 15,
+          screenX: 15,
+          screenY: 15,
           bubbles: true,
           cancelable: true,
           view: window,
@@ -345,7 +481,10 @@ suite('SettingsMenuElement', () => {
         colorItem.dispatchEvent(new PointerEvent('pointermove', {
           clientX: 15,
           clientY: 15,
+          screenX: 15,
+          screenY: 15,
           bubbles: true,
+          composed: true,
         }));
 
         timer.tick(SUBMENU_SHOW_DELAY_MS + 10);

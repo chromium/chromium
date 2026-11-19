@@ -234,7 +234,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   // Used to prevent accidental triggers of other submenus after a submenu
   // has recently been opened.
   private lastMenuOpenTime_: number = 0;
-  private lastPointerPosition_: {x: number, y: number} = {x: -1, y: -1};
+  private lastPointerPosition_: {x: number, y: number}|null = null;
   private pointerEventCallback_: (e: Event) => void = () => {};
   private keyDownCallback_: (e: KeyboardEvent) => void = () => {};
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
@@ -509,10 +509,13 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   protected onPointerenter_(e: PointerEvent) {
-    this.lastPointerPosition_ = {x: e.clientX, y: e.clientY};
     if (this.$.lazyMenu.get().classList.contains(KEYBOARD_NAV_CLASS)) {
+      if (!this.lastPointerPosition_) {
+        this.lastPointerPosition_ = {x: e.screenX, y: e.screenY};
+      }
       return;
     }
+    this.lastPointerPosition_ = {x: e.screenX, y: e.screenY};
     this.handlePointerEnter_(e.currentTarget as HTMLElement);
   }
 
@@ -639,9 +642,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     const menu = this.$.lazyMenu.get();
     // Start in keyboard-nav mode so a stationary cursor resting where the menu
     // opens does not trigger hover behavior. This does not impact mouse users
-    // because moving the mouse into the menu immediately exits keyboard-nav
-    // mode, and clicking menu items works regardless.
+    // because moving the mouse exits keyboard-nav mode, and clicking menu
+    // items works regardless.
     menu.classList.add(KEYBOARD_NAV_CLASS);
+    this.lastPointerPosition_ = null;
     openMenu(menu, anchor);
     window.addEventListener('keydown', this.keyDownCallback_, {capture: true});
     this.interceptedEvents_.forEach(eventType => {
@@ -665,13 +669,24 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
           eventType, this.pointerEventCallback_, {capture: true});
     });
     this.currentOpenId_ = null;
+    this.lastPointerPosition_ = null;
     this.fire(ToolbarEvent.SETTINGS_CLOSED);
   }
 
   private handlePointerMove_(e: PointerEvent) {
-    const hasPointerMoved = e.clientX !== this.lastPointerPosition_.x ||
-        e.clientY !== this.lastPointerPosition_.y;
-    this.lastPointerPosition_ = {x: e.clientX, y: e.clientY};
+    // Use screen coordinates so layout or animation shifts (such as the side
+    // panel sliding in) under a stationary cursor are not treated as pointer
+    // movement. Also ignore the first pointermove after opening so a
+    // browser-synthesized move over a stationary cursor does not exit
+    // keyboard-nav mode.
+    const currentPosition = {x: e.screenX, y: e.screenY};
+    if (!this.lastPointerPosition_) {
+      this.lastPointerPosition_ = currentPosition;
+      return;
+    }
+    const hasPointerMoved = currentPosition.x !== this.lastPointerPosition_.x ||
+        currentPosition.y !== this.lastPointerPosition_.y;
+    this.lastPointerPosition_ = currentPosition;
     if (!hasPointerMoved) {
       return;
     }
