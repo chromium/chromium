@@ -370,7 +370,7 @@ mojom::ActionResultPtr MakeValueResult(v8::Isolate* isolate,
 void OnPromiseSettled(const v8::FunctionCallbackInfo<v8::Value>& info,
                       bool fulfilled) {
   std::optional<PendingPromise> pending_promise =
-      TakePendingPromise(info.DataV2().As<v8::Uint32>()->Value());
+      TakePendingPromise(info.Data().As<v8::Uint32>()->Value());
   if (!pending_promise) {
     // The tool already finished: it timed out or was cancelled.
     return;

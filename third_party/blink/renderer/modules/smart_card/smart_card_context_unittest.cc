@@ -160,7 +160,7 @@ class ConnectResolved final
 };
 
 void ReturnDataCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  info.GetReturnValue().Set(info.DataV2().As<v8::Value>());
+  info.GetReturnValue().Set(info.Data().As<v8::Value>());
 }
 
 void ReturnPendingPromiseCallback(

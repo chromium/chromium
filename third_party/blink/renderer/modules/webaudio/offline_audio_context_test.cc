@@ -447,7 +447,7 @@ void ThenGetterStartRenderingTwice(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   auto* state = static_cast<ReentrantStartRenderingState*>(
-      info.DataV2().As<v8::External>()->Value(
+      info.Data().As<v8::External>()->Value(
           v8::kExternalPointerTypeTagDefault));
   if (!state) {
     return;
@@ -483,7 +483,7 @@ void ThenGetterStartRenderingThenClose(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   auto* state =
-      static_cast<ReentrantCloseState*>(info.DataV2().As<v8::External>()->Value(
+      static_cast<ReentrantCloseState*>(info.Data().As<v8::External>()->Value(
           v8::kExternalPointerTypeTagDefault));
   if (!state) {
     return;

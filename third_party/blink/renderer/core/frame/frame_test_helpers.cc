@@ -1317,7 +1317,7 @@ void RunInScriptStack(ScriptState* script_state,
           context,
           [](const v8::FunctionCallbackInfo<v8::Value>& info) {
             (*static_cast<base::FunctionRef<void()>*>(
-                info.DataV2().As<v8::External>()->Value(
+                info.Data().As<v8::External>()->Value(
                     v8::kExternalPointerTypeTagDefault)))();
           },
           v8::External::New(isolate, &callback,

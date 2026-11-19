@@ -304,7 +304,7 @@ class ViewTransitionTest : public testing::Test,
     ScriptState* script_state = GetScriptState();
     ScriptState::Scope scope(script_state);
     auto remove_part = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-      static_cast<Document*>(info.DataV2().As<v8::External>()->Value(
+      static_cast<Document*>(info.Data().As<v8::External>()->Value(
                                  gin::kViewTransitionTestDocumentTag))
           ->getElementById(AtomicString("part"))
           ->remove();
@@ -614,7 +614,7 @@ TEST_P(ViewTransitionTest, StartTransitionElementsWantToBeComposited) {
   // This callback sets the elements for the start phase of the transition.
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-        auto* data = static_cast<Data*>(info.DataV2().As<v8::External>()->Value(
+        auto* data = static_cast<Data*>(info.Data().As<v8::External>()->Value(
             gin::kViewTransitionTestDataTag));
         data->document.getElementById(AtomicString("e1"))
             ->setAttribute(html_names::kStyleAttr, g_empty_atom);
@@ -1567,7 +1567,7 @@ TEST_P(ViewTransitionTest, PseudoAwareChildTraversal) {
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
         auto* document =
-            static_cast<Document*>(info.DataV2().As<v8::External>()->Value(
+            static_cast<Document*>(info.Data().As<v8::External>()->Value(
                 gin::kViewTransitionTestDocumentTag));
         document->documentElement()->classList().Add(
             AtomicString("transitioned"));
@@ -1907,7 +1907,7 @@ TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
         auto* callback_issued =
-            static_cast<bool*>(info.DataV2().As<v8::External>()->Value(
+            static_cast<bool*>(info.Data().As<v8::External>()->Value(
                 gin::kViewTransitionTestBoolTag));
         *callback_issued = true;
       };
@@ -2014,7 +2014,7 @@ TEST_P(ViewTransitionTest, ReplaceBody) {
   ScriptState::Scope scope(script_state);
 
   auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-    auto* doc = static_cast<Document*>(info.DataV2().As<v8::External>()->Value(
+    auto* doc = static_cast<Document*>(info.Data().As<v8::External>()->Value(
         gin::kViewTransitionTestDocumentTag));
     doc->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
       <body>
@@ -2820,7 +2820,7 @@ TEST_P(ViewTransitionTest, ContentVisibilityHiddenOnNewlyCreatedGroup) {
   auto start_setup_lambda =
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {
         auto* document =
-            static_cast<Document*>(info.DataV2().As<v8::External>()->Value(
+            static_cast<Document*>(info.Data().As<v8::External>()->Value(
                 gin::kViewTransitionTestDocumentTag));
         document->getElementById(AtomicString("b"))
             ->classList()
@@ -2898,9 +2898,8 @@ TEST_P(ViewTransitionTest,
   CallbackData data;
 
   auto record_lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-    auto* data =
-        static_cast<CallbackData*>(info.DataV2().As<v8::External>()->Value(
-            gin::kViewTransitionTestDataTag));
+    auto* data = static_cast<CallbackData*>(
+        info.Data().As<v8::External>()->Value(gin::kViewTransitionTestDataTag));
     data->ran = true;
     data->ran_during_lifecycle = ScriptForbiddenScope::WillBeScriptForbidden();
   };

@@ -1029,7 +1029,7 @@ class ProxyResolverV8::Context {
   static Context* ContextFromArgs(
       const v8::FunctionCallbackInfo<v8::Value>& args) {
     CHECK(v8::Locker::IsLocked(args.GetIsolate()));
-    v8::Local<v8::Data> data = args.DataV2();
+    v8::Local<v8::Data> data = args.Data();
     if (data.IsEmpty() || !data->IsValue() ||
         !data.As<v8::Value>()->IsUint32()) {
       return nullptr;

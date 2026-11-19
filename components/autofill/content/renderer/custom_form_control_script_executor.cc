@@ -124,7 +124,7 @@ CustomFormControlScriptExecutor* GetWaitingExecutor(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   raw_ref<CustomFormControlScriptExecutor>* executor = base::FindOrNull(
       GetCallsAwaitingPromise(),
-      static_cast<uint64_t>(info.DataV2().As<v8::Number>()->Value()));
+      static_cast<uint64_t>(info.Data().As<v8::Number>()->Value()));
   return executor ? &executor->get() : nullptr;
 }
 

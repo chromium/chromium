@@ -690,7 +690,7 @@ bool ThreadDebuggerCommonImpl::isInspectableHeapObject(
 
 static void ReturnDataCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  info.GetReturnValue().Set(info.DataV2().As<v8::Value>());
+  info.GetReturnValue().Set(info.Data().As<v8::Value>());
 }
 
 static v8::Maybe<bool> CreateDataProperty(v8::Local<v8::Context> context,
@@ -890,10 +890,9 @@ void ThreadDebuggerCommonImpl::SetMonitorEventsCallback(
   if (!event_target)
     return;
   Vector<String> types = NormalizeEventTypes(info);
-  DCHECK(!info.DataV2().IsEmpty() &&
-         info.DataV2().As<v8::Value>()->IsFunction());
+  DCHECK(!info.Data().IsEmpty() && info.Data().As<v8::Value>()->IsFunction());
   V8EventListener* event_listener =
-      V8EventListener::Create(info.DataV2().As<v8::Value>().As<v8::Function>());
+      V8EventListener::Create(info.Data().As<v8::Value>().As<v8::Function>());
   for (wtf_size_t i = 0; i < types.size(); ++i) {
     if (enabled)
       event_target->addEventListener(AtomicString(types[i]), event_listener);
@@ -957,7 +956,7 @@ void ThreadDebuggerCommonImpl::GetEventListenersCallback(
     return;
 
   ThreadDebuggerCommonImpl* debugger = static_cast<ThreadDebuggerCommonImpl*>(
-      v8::Local<v8::External>::Cast(callback_info.DataV2())
+      v8::Local<v8::External>::Cast(callback_info.Data())
           ->Value(gin::kThreadDebuggerCommonImplTag));
   DCHECK(debugger);
   v8::Isolate* isolate = callback_info.GetIsolate();
