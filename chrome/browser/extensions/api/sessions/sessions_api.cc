@@ -100,6 +100,7 @@ const char kRestoreInIncognitoError[] =
     "Can not restore sessions in incognito mode.";
 const char kNoLiveTabContextError[] = "Unable to determine live tab context.";
 const char kNoActiveTabError[] = "No active tab.";
+const char kRestoreForeignTabError[] = "Unable to restore the synced tab.";
 
 #if BUILDFLAG(IS_ANDROID)
 // Must match Java TabWindowManager.WINDOW_INVALID_ID.
@@ -984,6 +985,9 @@ SessionsRestoreFunction::RestoreForeignSession(
         SessionRestore::RestoreForeignSessionTab(
             contents, *tab,
             ui::mojom::WindowOpenDisposition::kNewForegroundTab);
+    if (!tab_contents) {
+      return RespondNow(Error(kRestoreForeignTabError));
+    }
     return RespondNow(GetRestoredTabResult(tab_contents));
   }
 

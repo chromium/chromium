@@ -89,10 +89,14 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
   // parent will ensure group state, position, etc. should be kept.
   if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     // This will never be a bulk session restore so we can select the tab here.
-    tab_model->CreateTab(current_tab, std::move(new_web_contents),
-                         TabModel::kInvalidIndex,
-                         TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
-                         /*should_pin=*/false);
+    // CreateTab() destroys the WebContents when it fails, so keep the current
+    // tab and report the failure.
+    if (!tab_model->CreateTab(
+            current_tab, std::move(new_web_contents), TabModel::kInvalidIndex,
+            TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
+            /*should_pin=*/false)) {
+      return nullptr;
+    }
     tab_model->CloseTab(current_tab->GetHandle());
     return raw_new_web_contents;
   }
@@ -104,9 +108,11 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
       disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab
           ? TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND
           : TabModel::TabLaunchType::FROM_RECENT_TABS;
-  tab_model->CreateTab(current_tab, std::move(new_web_contents),
-                       TabModel::kInvalidIndex, launch_type,
-                       /*should_pin=*/false);
+  if (!tab_model->CreateTab(current_tab, std::move(new_web_contents),
+                            TabModel::kInvalidIndex, launch_type,
+                            /*should_pin=*/false)) {
+    return nullptr;
+  }
   return raw_new_web_contents;
 }
 

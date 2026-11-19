@@ -281,6 +281,9 @@ sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(
   content::WebContents* web_contents = tab_model_->GetActiveWebContents();
   web_contents = SessionRestore::RestoreForeignSessionTab(
       web_contents, session_tab, ui::mojom::WindowOpenDisposition::kCurrentTab);
+  if (!web_contents) {
+    return nullptr;
+  }
   web_contents->GetController().LoadIfNecessary();
   return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
 }

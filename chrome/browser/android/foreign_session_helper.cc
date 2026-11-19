@@ -18,6 +18,8 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -79,6 +81,14 @@ const sessions::SessionTab* GetForeignSessionTab(OpenTabsUIDelegate* open_tabs,
   return session_tab;
 }
 
+// Returns the Android ID of the tab that owns `web_contents`, or
+// `TabAndroid::kInvalidTabId` if there is none.
+int32_t GetAndroidTabId(content::WebContents* web_contents) {
+  TabAndroid* tab =
+      web_contents ? TabAndroid::FromWebContents(web_contents) : nullptr;
+  return tab ? tab->GetAndroidId() : TabAndroid::kInvalidTabId;
+}
+
 static void JNI_ForeignSessionHelper_CopyTabToJava(
     JNIEnv* env,
     const sessions::SessionTab& tab,
@@ -94,7 +104,8 @@ static void JNI_ForeignSessionHelper_CopyTabToJava(
   Java_ForeignSessionHelper_pushTab(
       env, j_window, current_navigation.virtual_url(),
       current_navigation.title(), tab.timestamp.InMillisecondsSinceUnixEpoch(),
-      tab.last_active_time.InMillisecondsSinceUnixEpoch(), tab.tab_id.id());
+      tab.last_active_time.InMillisecondsSinceUnixEpoch(), tab.tab_id.id(),
+      tab.pinned);
 }
 
 static void JNI_ForeignSessionHelper_CopyWindowToJava(
@@ -378,52 +389,64 @@ void ForeignSessionHelper::SetInvalidationsForSessionsEnabled(bool enabled) {
   service->SetInvalidationsForSessionsEnabled(enabled);
 }
 
-int32_t ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
+std::vector<int32_t>
+ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
     TabAndroid* tab_android,
     const std::vector<int32_t>& session_tab_ids,
-    const std::string& session_tag) {
-  if (session_tab_ids.empty()) {
-    return 0;
+    const std::string& session_tag,
+    bool all_in_background) {
+  std::vector<int32_t> restored_tab_ids(session_tab_ids.size(),
+                                        TabAndroid::kInvalidTabId);
+  if (session_tab_ids.empty() || !tab_android) {
+    return restored_tab_ids;
   }
 
-  if (!tab_android) {
-    return 0;
+  // Restore only into a tab model that belongs to this helper's profile.
+  TabModel* tab_model =
+      TabModelList::GetTabModelForWebContents(tab_android->web_contents());
+  if (!tab_model || tab_model->GetProfile() != profile_) {
+    return restored_tab_ids;
   }
 
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
-    return 0;
+    return restored_tab_ids;
   }
 
-  // Open the first valid tab in the list with a renderer and web contents.
-  content::WebContents* web_contents = nullptr;
-  size_t first_tab_index = 0;
-  for (; first_tab_index < session_tab_ids.size(); ++first_tab_index) {
-    web_contents = RestoreTabWithRenderer(open_tabs, session_tag, tab_android,
-                                          session_tab_ids[first_tab_index]);
-    if (web_contents) {
-      break;
+  // Pick the WebContents that the background tabs restore next to. With
+  // `all_in_background`, that is `tab_android`, which stays in place and keeps
+  // the selection. Otherwise the first tab that restores replaces
+  // `tab_android` with a renderer and anchors the rest.
+  content::WebContents* anchor_web_contents = tab_android->web_contents();
+  size_t next_index = 0;
+  if (!all_in_background) {
+    anchor_web_contents = nullptr;
+    for (; next_index < session_tab_ids.size(); ++next_index) {
+      anchor_web_contents = RestoreTabWithRenderer(
+          open_tabs, session_tag, tab_android, session_tab_ids[next_index]);
+      if (anchor_web_contents) {
+        break;
+      }
     }
+    if (!anchor_web_contents) {
+      return restored_tab_ids;
+    }
+    restored_tab_ids[next_index++] = GetAndroidTabId(anchor_web_contents);
   }
-  if (!web_contents) {
-    return 0;
-  }
-  int num_tabs_restored = 1;
 
-  // Using the web contents of the first tab, load the rest of the tabs
-  // as background tabs without a renderer.
-  base::WeakPtr<content::WebContents> weak_web_contents =
-      web_contents->GetWeakPtr();
-  for (size_t i = first_tab_index + 1; i < session_tab_ids.size(); ++i) {
-    if (!weak_web_contents) {
+  // Restore the remaining tabs as background tabs without a renderer. Stop if
+  // the anchor goes away while a tab is created.
+  base::WeakPtr<content::WebContents> weak_anchor_web_contents =
+      anchor_web_contents->GetWeakPtr();
+  for (size_t i = next_index; i < session_tab_ids.size(); ++i) {
+    if (!weak_anchor_web_contents) {
       break;
     }
-    if (RestoreTabNoRenderer(open_tabs, session_tag, session_tab_ids[i],
-                             weak_web_contents.get())) {
-      num_tabs_restored++;
-    }
+    restored_tab_ids[i] = GetAndroidTabId(
+        RestoreTabNoRenderer(open_tabs, session_tag, session_tab_ids[i],
+                             weak_anchor_web_contents.get()));
   }
-  return num_tabs_restored;
+  return restored_tab_ids;
 }
 
 content::WebContents* ForeignSessionHelper::RestoreTabWithRenderer(
@@ -450,7 +473,7 @@ content::WebContents* ForeignSessionHelper::RestoreTabWithRenderer(
       ui::mojom::WindowOpenDisposition::kCurrentTab);
 }
 
-bool ForeignSessionHelper::RestoreTabNoRenderer(
+content::WebContents* ForeignSessionHelper::RestoreTabNoRenderer(
     sync_sessions::OpenTabsUIDelegate* open_tabs,
     const std::string& session_tag,
     int session_tab_id,
@@ -458,14 +481,13 @@ bool ForeignSessionHelper::RestoreTabNoRenderer(
   const sessions::SessionTab* background_session_tab =
       GetForeignSessionTab(open_tabs, session_tag, session_tab_id);
   if (!background_session_tab) {
-    return false;
+    return nullptr;
   }
 
-  SessionRestore::RestoreForeignSessionTab(
+  return SessionRestore::RestoreForeignSessionTab(
       web_contents, *background_session_tab,
       ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       /*skip_renderer_creation=*/true);
-  return true;
 }
 
 DEFINE_JNI(ForeignSessionHelper)

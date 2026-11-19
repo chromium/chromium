@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.recent_tabs;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -343,14 +344,14 @@ public class RestoreTabsFeatureHelperUnitTest {
         ForeignSession session =
                 new ForeignSession(
                         "tag", "John's iPhone 6", 32L, Collections.emptyList(), FormFactor.PHONE);
-        int result =
+        int[] result =
                 foreignSessionHelper.openForeignSessionTabsAsBackgroundTabs(
                         Collections.emptyList(), session, mTabCreatorManager);
 
-        Assert.assertEquals(0, result);
+        Assert.assertArrayEquals(new int[0], result);
         verify(mTabCreatorManager, never()).getTabCreator(/* incognito= */ false);
         verify(mForeignSessionHelperJniMock, never())
-                .openForeignSessionTabsAsBackgroundTabs(any(), any(), any(), any());
+                .openForeignSessionTabsAsBackgroundTabs(any(), any(), any(), any(), anyBoolean());
     }
 
     @Test
@@ -381,16 +382,17 @@ public class RestoreTabsFeatureHelperUnitTest {
                         eq(mNativeForeignSessionHelper),
                         eq(newTab),
                         eq(new int[] {101, 102}),
-                        eq("test_tag")))
-                .thenReturn(2);
+                        eq("test_tag"),
+                        eq(false)))
+                .thenReturn(new int[] {7, Tab.INVALID_TAB_ID});
 
         var userActionTester = new UserActionTester();
-        int result =
+        int[] result =
                 foreignSessionHelper.openForeignSessionTabsAsBackgroundTabs(
                         sessionTabs, session, mTabCreatorManager);
 
-        Assert.assertEquals(2, result);
-        Assert.assertEquals(2, userActionTester.getActionCount("MobileCrossDeviceTabJourney"));
+        Assert.assertArrayEquals(new int[] {7, Tab.INVALID_TAB_ID}, result);
+        Assert.assertEquals(1, userActionTester.getActionCount("MobileCrossDeviceTabJourney"));
         userActionTester.tearDown();
 
         verify(mForeignSessionHelperJniMock)
@@ -398,7 +400,32 @@ public class RestoreTabsFeatureHelperUnitTest {
                         eq(mNativeForeignSessionHelper),
                         eq(newTab),
                         eq(new int[] {101, 102}),
-                        eq("test_tag"));
+                        eq("test_tag"),
+                        eq(false));
+    }
+
+    @Test
+    public void testOpenForeignSessionTabsInBackground_returnsIdsForAnchor() {
+        ForeignSessionHelper foreignSessionHelper = new ForeignSessionHelper(mProfile);
+        Tab anchorTab = mock(Tab.class);
+        ForeignSessionTab tab1 =
+                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title1", 32L, 32L, 101);
+        ForeignSession session =
+                new ForeignSession(
+                        "test_tag",
+                        "John's iPhone 6",
+                        32L,
+                        Collections.emptyList(),
+                        FormFactor.PHONE);
+        when(mForeignSessionHelperJniMock.openForeignSessionTabsAsBackgroundTabs(
+                        mNativeForeignSessionHelper, anchorTab, new int[] {101}, "test_tag", true))
+                .thenReturn(new int[] {7});
+
+        int[] result =
+                foreignSessionHelper.openForeignSessionTabsInBackground(
+                        List.of(tab1), session, anchorTab);
+
+        Assert.assertArrayEquals(new int[] {7}, result);
     }
 
     @Test
@@ -422,13 +449,13 @@ public class RestoreTabsFeatureHelperUnitTest {
                         Collections.emptyList(),
                         FormFactor.PHONE);
 
-        int result =
+        int[] result =
                 foreignSessionHelper.openForeignSessionTabsAsBackgroundTabs(
                         sessionTabs, session, mTabCreatorManager);
 
-        Assert.assertEquals(0, result);
+        Assert.assertArrayEquals(new int[] {Tab.INVALID_TAB_ID}, result);
         verify(mForeignSessionHelperJniMock, never())
-                .openForeignSessionTabsAsBackgroundTabs(any(), any(), any(), any());
+                .openForeignSessionTabsAsBackgroundTabs(any(), any(), any(), any(), anyBoolean());
     }
 
     @Test
