@@ -8,9 +8,7 @@
 
 #import "base/test/allow_check_is_test_for_testing.h"
 #import "base/test/metrics/user_action_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
 #import "testing/gtest_mac.h"
@@ -173,10 +171,6 @@ TEST_F(OmniboxTextViewIOSTest, PlaceholderColor) {
 
 // Tests that key commands are registered for Composebox.
 TEST_F(OmniboxTextViewIOSTest, KeyCommandsForComposebox) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kComposeboxPhysicalKeyboardReturnKeys);
-
   NSArray<UIKeyCommand*>* commands = text_view_.keyCommands;
 
   BOOL hasReturn = NO;
@@ -217,40 +211,11 @@ TEST_F(OmniboxTextViewIOSTest, KeyCommandsForLocationBar) {
 
 // Tests canPerformAction for Shift+Return is always enabled.
 TEST_F(OmniboxTextViewIOSTest, CanPerformActionShiftReturn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kComposeboxPhysicalKeyboardReturnKeys);
-
   EXPECT_TRUE([text_view_
       canPerformAction:@selector(forwardKeyCommandShiftReturn:)
             withSender:nil]);
 }
 
-// Tests that key commands are not registered for Composebox when the feature is
-// disabled.
-TEST_F(OmniboxTextViewIOSTest, KeyCommandsDisabledByFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kComposeboxPhysicalKeyboardReturnKeys);
-
-  NSArray<UIKeyCommand*>* commands = text_view_.keyCommands;
-
-  for (UIKeyCommand* command in commands) {
-    EXPECT_NSNE(command.input, @"\r");
-  }
-}
-
-// Tests that canPerformAction returns NO for Return keys when the feature is
-// disabled.
-TEST_F(OmniboxTextViewIOSTest, CanPerformActionReturnDisabledByFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kComposeboxPhysicalKeyboardReturnKeys);
-
-  EXPECT_FALSE([text_view_
-      canPerformAction:@selector(forwardKeyCommandShiftReturn:)
-            withSender:nil]);
-}
 // Tests that Shift+Return inserts a newline.
 TEST_F(OmniboxTextViewIOSTest, ForwardShiftReturnKey) {
   base::UserActionTester user_action_tester;

@@ -85,13 +85,6 @@ bool IsComposeboxDriveOptionEnabled() {
       omnibox::kComposeboxDriveContextMenuOption);
 }
 
-BASE_FEATURE(kComposeboxPhysicalKeyboardReturnKeys,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsComposeboxPhysicalKeyboardReturnKeysEnabled() {
-  return base::FeatureList::IsEnabled(kComposeboxPhysicalKeyboardReturnKeys);
-}
-
 BASE_FEATURE(kComposeboxAimRichAPCExtraction, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsComposeboxAimRichAPCExtractionEnabled() {

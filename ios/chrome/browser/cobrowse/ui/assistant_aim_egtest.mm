@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/composebox/eg_tests/composebox_app_interface.h"
-#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/scene/ui/scene_ui_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -343,7 +342,6 @@ void RemoveSharedTab(NSString* title) {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kAimCobrowse);
   config.features_enabled.push_back(kAssistantContainer);
-  config.features_enabled.push_back(kComposeboxPhysicalKeyboardReturnKeys);
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
 
   if ([self isRunningTest:@selector(testMinimizedStateWhenFlagEnabled)]) {
