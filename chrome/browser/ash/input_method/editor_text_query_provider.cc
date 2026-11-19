@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -14,7 +13,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/manta_status.h"
@@ -24,22 +22,6 @@
 namespace ash::input_method {
 
 namespace {
-
-bool IsInternationalizeEnabled() {
-  return base::FeatureList::IsEnabled(features::kOrcaAfrikaans) ||
-         base::FeatureList::IsEnabled(features::kOrcaDanish) ||
-         base::FeatureList::IsEnabled(features::kOrcaDutch) ||
-         base::FeatureList::IsEnabled(features::kOrcaFinnish) ||
-         base::FeatureList::IsEnabled(features::kOrcaFrench) ||
-         base::FeatureList::IsEnabled(features::kOrcaGerman) ||
-         base::FeatureList::IsEnabled(features::kOrcaItalian) ||
-         base::FeatureList::IsEnabled(features::kOrcaJapanese) ||
-         base::FeatureList::IsEnabled(features::kOrcaNorwegian) ||
-         base::FeatureList::IsEnabled(features::kOrcaPolish) ||
-         base::FeatureList::IsEnabled(features::kOrcaPortugese) ||
-         base::FeatureList::IsEnabled(features::kOrcaSpanish) ||
-         base::FeatureList::IsEnabled(features::kOrcaSwedish);
-}
 
 std::string GetConfigLabelFromFieldTrialConfig() {
   return base::GetFieldTrialParamValue("OrcaEnabled", "config_label");
@@ -71,9 +53,7 @@ std::map<std::string, std::string> CreateProviderRequest(
     provider_request["config_label"] = config_label;
   }
 
-  if (IsInternationalizeEnabled()) {
-    provider_request["i18n"] = "true";
-  }
+  provider_request["i18n"] = "true";
 
   return provider_request;
 }

@@ -7,16 +7,13 @@
 #include <memory>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_context.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "editor_metrics_enums.h"
@@ -29,7 +26,6 @@ namespace ash::input_method {
 
 namespace {
 
-using base::test::ScopedFeatureList;
 using testing::IsEmpty;
 using UkmEntry = ukm::builders::InputMethod_Manta_Orca;
 
@@ -756,30 +752,7 @@ struct LanguageSegmentationCase {
 
 class EditorStateMetricsSegmentedByLanguage
     : public EditorMetricsRecorderTest,
-      public testing::WithParamInterface<LanguageSegmentationCase> {
- public:
-  void EnableEnglishFlagsOnly() {
-    feature_list_.InitWithFeatures(/*enabled_features=*/{},
-                                   /*disabled_features=*/{
-                                       features::kOrcaAfrikaans,
-                                       features::kOrcaDanish,
-                                       features::kOrcaDutch,
-                                       features::kOrcaFinnish,
-                                       features::kOrcaFrench,
-                                       features::kOrcaGerman,
-                                       features::kOrcaItalian,
-                                       features::kOrcaJapanese,
-                                       features::kOrcaNorwegian,
-                                       features::kOrcaPolish,
-                                       features::kOrcaPortugese,
-                                       features::kOrcaSpanish,
-                                       features::kOrcaSwedish,
-                                   });
-  }
-
- protected:
-  ScopedFeatureList feature_list_;
-};
+      public testing::WithParamInterface<LanguageSegmentationCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
     EditorMetricsRecorderTest,
@@ -896,52 +869,9 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
   histogram_tester_.ExpectTotalCount(expected_histogram, 3);
 }
 
-TEST_P(EditorStateMetricsSegmentedByLanguage, DoesntRecordIfFlagDisabled) {
-  const LanguageSegmentationCase& test_case = GetParam();
-  const std::string expected_histogram =
-      base::StrCat({test_case.expected_histogram_prefix, "Rewrite"});
-  EnableEnglishFlagsOnly();
-  FakeSystem system;
-  FakeContextObserver observer;
-  EditorContext context(
-      &observer, &system,
-      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
-  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
-
-  context.OnActivateIme(test_case.engine_id);
-  recorder.LogEditorState(EditorStates::kNativeUIShown);
-  recorder.LogEditorState(EditorStates::kNativeRequest);
-  recorder.LogEditorState(EditorStates::kDismiss);
-
-  histogram_tester_.ExpectTotalCount(expected_histogram, 0);
-}
-
 class EditorAuxiliaryMetricsSegmentedByEnglishAndOther
     : public EditorMetricsRecorderTest,
-      public testing::WithParamInterface<LanguageSegmentationCase> {
- public:
-  void EnableEnglishFlagsOnly() {
-    feature_list_.InitWithFeatures(/*enabled_features=*/{},
-                                   /*disabled_features=*/{
-                                       features::kOrcaAfrikaans,
-                                       features::kOrcaDanish,
-                                       features::kOrcaDutch,
-                                       features::kOrcaFinnish,
-                                       features::kOrcaFrench,
-                                       features::kOrcaGerman,
-                                       features::kOrcaItalian,
-                                       features::kOrcaJapanese,
-                                       features::kOrcaNorwegian,
-                                       features::kOrcaPolish,
-                                       features::kOrcaPortugese,
-                                       features::kOrcaSpanish,
-                                       features::kOrcaSwedish,
-                                   });
-  }
-
- protected:
-  ScopedFeatureList feature_list_;
-};
+      public testing::WithParamInterface<LanguageSegmentationCase> {};
 
 // Note that auxiliary metrics are not segmented by each language enabled, but
 // by two high level buckets; kEnglish and kOther. This is to prevent an
@@ -1049,25 +979,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
 }
 
 TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
-       NumberOfCharactersInsertedWithFlagDisabled) {
-  const LanguageSegmentationCase& test_case = GetParam();
-  const std::string expected_histogram = base::StrCat(
-      {test_case.expected_histogram_prefix, "CharactersInserted.Rewrite"});
-  EnableEnglishFlagsOnly();
-  FakeSystem system;
-  FakeContextObserver observer;
-  EditorContext context(
-      &observer, &system,
-      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
-  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
-
-  context.OnActivateIme(test_case.engine_id);
-  recorder.LogNumberOfCharactersInserted(100);
-
-  histogram_tester_.ExpectTotalCount(expected_histogram, 0);
-}
-
-TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
        CharactersSelectedForInsertWithWrite) {
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
@@ -1105,26 +1016,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
 
   histogram_tester_.ExpectBucketCount(expected_histogram, 100, 1);
   histogram_tester_.ExpectTotalCount(expected_histogram, 1);
-}
-
-TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
-       CharactersSelectedForInsertWithFlagDisabled) {
-  const LanguageSegmentationCase& test_case = GetParam();
-  const std::string expected_histogram =
-      base::StrCat({test_case.expected_histogram_prefix,
-                    "CharactersSelectedForInsert.Rewrite"});
-  EnableEnglishFlagsOnly();
-  FakeSystem system;
-  FakeContextObserver observer;
-  EditorContext context(
-      &observer, &system,
-      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
-  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
-
-  context.OnActivateIme(test_case.engine_id);
-  recorder.LogNumberOfCharactersSelectedForInsert(100);
-
-  histogram_tester_.ExpectTotalCount(expected_histogram, 0);
 }
 
 TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
@@ -1166,25 +1057,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
 }
 
 TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
-       NumberOfResponsesFromServerWithFlagDisabled) {
-  const LanguageSegmentationCase& test_case = GetParam();
-  const std::string expected_histogram = base::StrCat(
-      {test_case.expected_histogram_prefix, "NumResponses.Rewrite"});
-  EnableEnglishFlagsOnly();
-  FakeSystem system;
-  FakeContextObserver observer;
-  EditorContext context(
-      &observer, &system,
-      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
-  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
-
-  context.OnActivateIme(test_case.engine_id);
-  recorder.LogNumberOfResponsesFromServer(3);
-
-  histogram_tester_.ExpectTotalCount(expected_histogram, 0);
-}
-
-TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
        LengthOfLongestResponseWithWrite) {
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
@@ -1220,25 +1092,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
 
   histogram_tester_.ExpectBucketCount(expected_histogram, 2000, 1);
   histogram_tester_.ExpectTotalCount(expected_histogram, 1);
-}
-
-TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
-       LengthOfLongestResponseWithFlagDisabled) {
-  const LanguageSegmentationCase& test_case = GetParam();
-  const std::string expected_histogram = base::StrCat(
-      {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Rewrite"});
-  EnableEnglishFlagsOnly();
-  FakeSystem system;
-  FakeContextObserver observer;
-  EditorContext context(
-      &observer, &system,
-      std::make_unique<EditorGeolocationMockProvider>(kAllowedCountryCode));
-  EditorMetricsRecorder recorder(&context, EditorOpportunityMode::kRewrite);
-
-  context.OnActivateIme(test_case.engine_id);
-  recorder.LogLengthOfLongestResponseFromServer(2000);
-
-  histogram_tester_.ExpectTotalCount(expected_histogram, 0);
 }
 
 struct CriticalStateCase {

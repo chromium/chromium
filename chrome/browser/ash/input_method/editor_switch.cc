@@ -56,45 +56,19 @@ std::vector<std::string> AllowedInputMethods() {
   std::vector<std::string> input_methods =
       base::ToVector(EnglishInputMethods(), to_string);
 
-  if (base::FeatureList::IsEnabled(features::kOrcaAfrikaans)) {
-    base::Extend(input_methods, AfrikaansInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaDanish)) {
-    base::Extend(input_methods, DanishInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaDutch)) {
-    base::Extend(input_methods, DutchInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaFinnish)) {
-    base::Extend(input_methods, FinnishInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaFrench)) {
-    base::Extend(input_methods, FrenchInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaGerman)) {
-    base::Extend(input_methods, GermanInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaItalian)) {
-    base::Extend(input_methods, ItalianInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaJapanese)) {
-    base::Extend(input_methods, JapaneseInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaNorwegian)) {
-    base::Extend(input_methods, NorwegianInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaPolish)) {
-    base::Extend(input_methods, PolishInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaPortugese)) {
-    base::Extend(input_methods, PortugeseInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaSpanish)) {
-    base::Extend(input_methods, SpanishInputMethods(), to_string);
-  }
-  if (base::FeatureList::IsEnabled(features::kOrcaSwedish)) {
-    base::Extend(input_methods, SwedishInputMethods(), to_string);
-  }
+  base::Extend(input_methods, AfrikaansInputMethods(), to_string);
+  base::Extend(input_methods, DanishInputMethods(), to_string);
+  base::Extend(input_methods, DutchInputMethods(), to_string);
+  base::Extend(input_methods, FinnishInputMethods(), to_string);
+  base::Extend(input_methods, FrenchInputMethods(), to_string);
+  base::Extend(input_methods, GermanInputMethods(), to_string);
+  base::Extend(input_methods, ItalianInputMethods(), to_string);
+  base::Extend(input_methods, JapaneseInputMethods(), to_string);
+  base::Extend(input_methods, NorwegianInputMethods(), to_string);
+  base::Extend(input_methods, PolishInputMethods(), to_string);
+  base::Extend(input_methods, PortugeseInputMethods(), to_string);
+  base::Extend(input_methods, SpanishInputMethods(), to_string);
+  base::Extend(input_methods, SwedishInputMethods(), to_string);
 
   return input_methods;
 }
