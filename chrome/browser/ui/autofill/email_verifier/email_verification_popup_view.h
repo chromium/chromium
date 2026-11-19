@@ -59,6 +59,9 @@ class EmailVerificationPopupView {
 
   // Checks if the popup overlaps with a picture-in-picture window.
   virtual bool OverlapsWithPictureInPictureWindow() const = 0;
+
+  // Returns whether the popup has focus, i.e. whether its widget is active.
+  virtual bool IsActive() const = 0;
 };
 
 }  // namespace autofill

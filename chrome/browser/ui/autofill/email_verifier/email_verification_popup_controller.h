@@ -81,6 +81,10 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
 
   bool is_loading() const { return is_loading_; }
 
+  // Returns whether the popup is showing and has focus, i.e. whether its
+  // widget is active.
+  bool HasFocus() const;
+
   base::WeakPtr<EmailVerificationPopupController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

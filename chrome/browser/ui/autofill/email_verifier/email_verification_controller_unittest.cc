@@ -39,6 +39,7 @@ namespace autofill {
 namespace {
 
 using ::base::test::TestFuture;
+using ::testing::Return;
 using CompletionStatus = EmailVerificationController::CompletionStatus;
 using EmailVerificationPermissionUiStatus =
     AutofillClient::EmailVerificationPermissionUiStatus;
@@ -851,6 +852,18 @@ class EmailVerificationControllerFocusTest
 
   int focus_count() const { return browser_client_.focus_count(); }
 
+  // Shows the popup and confirms it, so that it enters the loading state.
+  // `mock_view_out` is set to the popup's mock view.
+  void ShowPopupInLoadingState(
+      std::unique_ptr<MockEmailVerificationPopupView>& mock_view_out) {
+    SetupMockViewFactory(mock_view_out);
+    controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                           kDefaultEmail, base::DoNothing());
+    ASSERT_TRUE(mock_view_out);
+    EXPECT_CALL(*mock_view_out, ShowLoadingState);
+    mock_view_out->RunDecisionCallback(/*confirmed=*/true);
+  }
+
  private:
   FocusRecordingContentBrowserClient browser_client_;
   std::unique_ptr<content::ScopedContentBrowserClientSetting>
@@ -858,20 +871,12 @@ class EmailVerificationControllerFocusTest
 };
 
 // Tests that dismissing the popup after it entered the loading state returns
-// focus to the WebContents, so that the form field regains focus instead of
-// the completion toast.
+// focus to the `WebContents` if the popup still has focus, so that the form
+// field regains focus instead of the completion toast.
 TEST_F(EmailVerificationControllerFocusTest,
-       HidePopupReturnsFocusToWebContentsWhenLoading) {
+       HidePopupWhileLoadingReturnsFocusWhenPopupHasFocus) {
   std::unique_ptr<MockEmailVerificationPopupView> mock_view;
-  SetupMockViewFactory(mock_view);
-
-  TestFuture<EmailVerificationPermissionUiStatus> future;
-  controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
-                         kDefaultEmail, future.GetCallback());
-
-  ASSERT_TRUE(mock_view);
-  EXPECT_CALL(*mock_view, ShowLoadingState);
-  mock_view->RunDecisionCallback(true);
+  ASSERT_NO_FATAL_FAILURE(ShowPopupInLoadingState(mock_view));
 
   // Let the minimum loading duration elapse so that HidePopup() dismisses the
   // popup immediately.
@@ -879,14 +884,56 @@ TEST_F(EmailVerificationControllerFocusTest,
       EmailVerificationController::kMinimumLoadingDuration);
 
   const int focus_count_before = focus_count();
+  EXPECT_CALL(*mock_view, IsActive).WillOnce(Return(true));
   EXPECT_CALL(*mock_view, Hide);
   controller().HidePopup();
   EXPECT_EQ(focus_count(), focus_count_before + 1);
 }
 
-// Tests that calling HidePopup() while the popup is showing (before the user
-// clicks Verify) dismisses the popup immediately without returning focus to
-// the WebContents, since the non-loading popup never took activation.
+// Tests that dismissing the popup after it entered the loading state doesn't
+// focus the `WebContents` if the popup no longer has focus. Regression test
+// for crbug.com/568438081.
+TEST_F(EmailVerificationControllerFocusTest,
+       HidePopupWhileLoadingDoesNotReturnFocusWhenPopupLostFocus) {
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+  ASSERT_NO_FATAL_FAILURE(ShowPopupInLoadingState(mock_view));
+
+  task_environment()->FastForwardBy(
+      EmailVerificationController::kMinimumLoadingDuration);
+
+  const int focus_count_before = focus_count();
+  EXPECT_CALL(*mock_view, IsActive).WillOnce(Return(false));
+  EXPECT_CALL(*mock_view, Hide);
+  controller().HidePopup();
+  EXPECT_EQ(focus_count(), focus_count_before);
+}
+
+// Tests that when `HidePopup()` is deferred until the minimum loading duration
+// has elapsed, whether the popup has focus is checked when the popup closes
+// rather than when `HidePopup()` is called. Regression test for
+// crbug.com/568438081.
+TEST_F(EmailVerificationControllerFocusTest,
+       DeferredHidePopupChecksFocusWhenPopupCloses) {
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+  ASSERT_NO_FATAL_FAILURE(ShowPopupInLoadingState(mock_view));
+
+  // A fast response defers the dismissal. The popup still has focus here.
+  ON_CALL(*mock_view, IsActive).WillByDefault(Return(true));
+  controller().HidePopup();
+  ASSERT_TRUE(test_api(controller()).is_hide_popup_timer_running());
+
+  // The popup loses focus before the minimum loading duration elapses.
+  EXPECT_CALL(*mock_view, IsActive).WillOnce(Return(false));
+  const int focus_count_before = focus_count();
+  EXPECT_CALL(*mock_view, Hide);
+  task_environment()->FastForwardBy(
+      EmailVerificationController::kMinimumLoadingDuration);
+  EXPECT_EQ(focus_count(), focus_count_before);
+}
+
+// Tests that calling `HidePopup()` while the popup is showing (before the user
+// clicks "Verify") dismisses the popup immediately without returning focus to
+// the `WebContents`, even if the popup has focus.
 TEST_F(EmailVerificationControllerFocusTest,
        HidePopupWhileShowingDismissesImmediatelyWithoutReturningFocus) {
   std::unique_ptr<MockEmailVerificationPopupView> mock_view;
@@ -896,6 +943,8 @@ TEST_F(EmailVerificationControllerFocusTest,
   controller().ShowPopup(kDefaultBounds, DefaultOrigin(), gfx::Image(),
                          kDefaultEmail, future.GetCallback());
   ASSERT_TRUE(mock_view);
+  // The popup is activatable, so it takes focus when it's shown.
+  ON_CALL(*mock_view, IsActive).WillByDefault(Return(true));
 
   const int focus_count_before = focus_count();
   EXPECT_CALL(*mock_view, Hide);

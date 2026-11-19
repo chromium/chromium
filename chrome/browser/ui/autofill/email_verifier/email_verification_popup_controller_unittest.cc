@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -37,6 +38,7 @@ namespace autofill {
 namespace {
 
 using ::base::test::TestFuture;
+using ::testing::Return;
 using EmailVerificationPermissionUiStatus =
     AutofillClient::EmailVerificationPermissionUiStatus;
 
@@ -116,6 +118,27 @@ TEST_F(EmailVerificationPopupControllerTest, ShowInvokesViewFactory) {
   // Dismiss to clean up cleanly before test tear down.
   EXPECT_CALL(*mock_view, Hide);
   controller().Dismiss();
+}
+
+// Tests that `HasFocus()` reports whether the popup view has focus while it is
+// showing, and returns false when no popup is showing.
+TEST_F(EmailVerificationPopupControllerTest, HasFocusReflectsViewFocus) {
+  EXPECT_FALSE(controller().HasFocus());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view =
+      SetupMockViewFactory();
+  controller().Show(kDefaultBounds, DefaultOrigin(), gfx::Image(),
+                    kDefaultEmail, base::DoNothing());
+
+  EXPECT_CALL(*mock_view, IsActive)
+      .WillOnce(Return(true))
+      .WillOnce(Return(false));
+  EXPECT_TRUE(controller().HasFocus());
+  EXPECT_FALSE(controller().HasFocus());
+
+  EXPECT_CALL(*mock_view, Hide);
+  controller().Dismiss();
+  EXPECT_FALSE(controller().HasFocus());
 }
 
 // Tests that calling Show with a `nullptr` WebContents resolves callback with

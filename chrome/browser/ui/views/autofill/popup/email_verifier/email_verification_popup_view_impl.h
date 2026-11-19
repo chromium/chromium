@@ -74,6 +74,7 @@ class EmailVerificationPopupViewImpl : public EmailVerificationPopupView,
   void Hide() override;
   void ShowLoadingState() override;
   bool OverlapsWithPictureInPictureWindow() const override;
+  bool IsActive() const override;
 
   // PopupBaseView:
   gfx::Size CalculatePreferredSize(

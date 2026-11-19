@@ -26,6 +26,7 @@ class MockEmailVerificationPopupView : public EmailVerificationPopupView {
   MOCK_METHOD(void, Hide, (), (override));
   MOCK_METHOD(void, ShowLoadingState, (), (override));
   MOCK_METHOD(bool, OverlapsWithPictureInPictureWindow, (), (const, override));
+  MOCK_METHOD(bool, IsActive, (), (const, override));
 
   base::WeakPtr<MockEmailVerificationPopupView> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

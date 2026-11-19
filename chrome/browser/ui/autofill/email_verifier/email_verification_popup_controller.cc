@@ -209,6 +209,10 @@ void EmailVerificationPopupController::Dismiss() {
   HideImpl(EmailVerificationPermissionUiStatus::kOther);
 }
 
+bool EmailVerificationPopupController::HasFocus() const {
+  return view_ && view_->IsActive();
+}
+
 void EmailVerificationPopupController::ViewDestroyed() {
   view_ = nullptr;
   // If the view is destroyed directly without `Hide()` being called first (e.g.

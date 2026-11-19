@@ -44,13 +44,16 @@ void EmailVerificationControllerDesktop::ShowPopupImpl(
 }
 
 void EmailVerificationControllerDesktop::HidePopupImpl() {
-  const bool was_loading = popup_controller_.is_loading();
+  // The popup is activatable and has focus when the user clicks "Verify". If it
+  // still has focus when it closes, give focus back to the page so it returns
+  // to the form field, rather than letting the platform hand activation to the
+  // completion toast (whose first focusable view is its menu button). If focus
+  // has moved elsewhere, leave it there. This is checked before `Dismiss()`
+  // closes the popup.
+  const bool return_focus =
+      popup_controller_.is_loading() && popup_controller_.HasFocus();
   popup_controller_.Dismiss();
-  if (was_loading && IsWebContentsVisible()) {
-    // The popup is activatable and took focus when the user clicked "Verify".
-    // Once it closes, give focus back to the page so it returns to the form
-    // field, rather than letting the platform hand activation to the
-    // completion toast (whose first focusable view is its menu button).
+  if (return_focus && IsWebContentsVisible()) {
     web_contents().Focus();
   }
 }

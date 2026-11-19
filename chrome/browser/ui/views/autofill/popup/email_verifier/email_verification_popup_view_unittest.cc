@@ -5,7 +5,11 @@
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_view.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
@@ -21,6 +25,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -136,6 +142,57 @@ TEST_F(EmailVerificationPopupViewTest, ShowLoadingStateRealView) {
   EXPECT_TRUE(view->throbber_for_testing()->GetVisible());
   EXPECT_EQ(view->throbber_for_testing()->GetColorId(),
             ui::kColorButtonForegroundProminent);
+
+  view->GetWidget()->CloseNow();
+}
+
+// An `EmailVerificationPopupController::ViewFactoryForTesting` that shows a
+// real popup view in `parent_widget` and stores it in `view_out`. The
+// controller's decision callback is stored in `decision_callback_out` instead
+// of being passed to the view, so that tests can confirm the popup directly.
+base::WeakPtr<EmailVerificationPopupView> ShowPopupViewForTesting(
+    views::Widget* parent_widget,
+    base::WeakPtr<EmailVerificationPopupViewImpl>* view_out,
+    base::OnceCallback<void(bool)>* decision_callback_out,
+    base::WeakPtr<EmailVerificationPopupController> controller,
+    views::Widget* /*web_contents_widget*/,
+    const url::Origin& issuer_origin,
+    const gfx::Image& issuer_logo,
+    const std::u16string& email,
+    base::OnceCallback<void(bool)> decision_callback) {
+  *decision_callback_out = std::move(decision_callback);
+  *view_out = EmailVerificationPopupViewImpl::Show(controller, parent_widget,
+                                                   issuer_origin, issuer_logo,
+                                                   email, base::DoNothing());
+  return *view_out;
+}
+
+// Tests that `IsActive()` reports whether the popup's widget is active. The
+// popup takes activation when it's shown, and loses it when another widget is
+// activated.
+TEST_F(EmailVerificationPopupViewTest, IsActiveReflectsWidgetActivation) {
+  EmailVerificationPopupController controller(web_contents());
+  base::WeakPtr<EmailVerificationPopupViewImpl> view;
+  base::OnceCallback<void(bool)> decision_callback;
+  controller.set_view_factory_for_testing(base::BindRepeating(
+      &ShowPopupViewForTesting, widget_.get(), &view, &decision_callback));
+  // The popup closes right away if the element it's anchored to is outside of
+  // the web contents, which isn't at the screen origin on every platform.
+  controller.Show(gfx::RectF(10, 10, 100, 20) +
+                      web_contents()->GetContainerBounds().OffsetFromOrigin(),
+                  url::Origin::Create(GURL("https://issuer.com")), gfx::Image(),
+                  u"user@example.com", base::DoNothing());
+  ASSERT_TRUE(view);
+  EXPECT_TRUE(view->IsActive());
+
+  // Confirm the popup so that it enters the loading state, in which it stays
+  // open when it loses focus.
+  std::move(decision_callback).Run(/*confirmed=*/true);
+  ASSERT_TRUE(controller.is_loading());
+
+  widget_->Activate();
+  ASSERT_TRUE(view);
+  EXPECT_FALSE(view->IsActive());
 
   view->GetWidget()->CloseNow();
 }

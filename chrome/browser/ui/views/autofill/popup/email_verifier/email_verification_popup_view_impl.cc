@@ -46,6 +46,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace autofill {
 
@@ -239,6 +240,11 @@ void EmailVerificationPopupViewImpl::Show() {
 bool EmailVerificationPopupViewImpl::OverlapsWithPictureInPictureWindow()
     const {
   return BoundsOverlapWithPictureInPictureWindow(GetBoundsInScreen());
+}
+
+bool EmailVerificationPopupViewImpl::IsActive() const {
+  const views::Widget* widget = GetWidget();
+  return widget && widget->IsActive();
 }
 
 gfx::Size EmailVerificationPopupViewImpl::CalculatePreferredSize(
