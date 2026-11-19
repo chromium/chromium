@@ -43,6 +43,7 @@ import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,6 +56,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -109,7 +111,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
-    ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR
+    ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR,
+    ChromeFeatureList.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS
 })
 public class EntityEditorModuleTest {
     private static final String USER_EMAIL = "example@gmail.com";
@@ -388,15 +391,38 @@ public class EntityEditorModuleTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
     public void testShowEditorDialogForNewWalletEntity() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(NEW_WALLET_PASSPORT);
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
         assertEquals(PASSPORT_TYPE.getAddEntityTypeString(), toolbar.getTitle());
         assertTrue(toolbar.getBrandingIconForTest().isVisible());
+        ImageView brandingIcon = (ImageView) toolbar.getBrandingIconForTest().getActionView();
         assertEquals(
                 mActivity.getString(R.string.autofill_google_wallet_title),
-                toolbar.getBrandingIconForTest().getActionView().getContentDescription());
+                brandingIcon.getContentDescription());
+        assertEquals(
+                R.drawable.googlewallet_icon_with_gradient,
+                Shadows.shadowOf(brandingIcon.getDrawable()).getCreatedFromResId());
+        assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
+    public void testShowEditorDialogForNewWalletEntityWithGradientGoogleLogosDisabled() {
+        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
+        showEditorDialog(NEW_WALLET_PASSPORT);
+        EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
+        assertEquals(PASSPORT_TYPE.getAddEntityTypeString(), toolbar.getTitle());
+        assertTrue(toolbar.getBrandingIconForTest().isVisible());
+        ImageView brandingIcon = (ImageView) toolbar.getBrandingIconForTest().getActionView();
+        assertEquals(
+                mActivity.getString(R.string.autofill_google_wallet_title),
+                brandingIcon.getContentDescription());
+        assertEquals(
+                R.drawable.google_wallet_24dp,
+                Shadows.shadowOf(brandingIcon.getDrawable()).getCreatedFromResId());
         assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
 

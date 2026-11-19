@@ -8,8 +8,9 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
-import androidx.annotation.LayoutRes;
+import androidx.annotation.DrawableRes;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.build.annotations.NullMarked;
@@ -19,7 +20,7 @@ import org.chromium.chrome.browser.autofill.R;
 @NullMarked
 public class EditorDialogToolbar extends Toolbar {
     private boolean mShowDeleteMenuItem = true;
-    private @LayoutRes int mBrandingIcon;
+    private @DrawableRes int mBrandingIcon;
 
     /** Constructor for when the toolbar is inflated from XML. */
     public EditorDialogToolbar(Context context, AttributeSet attrs) {
@@ -34,7 +35,7 @@ public class EditorDialogToolbar extends Toolbar {
         updateMenu();
     }
 
-    public void setBrandingIcon(@LayoutRes int brandingIcon) {
+    public void setBrandingIcon(@DrawableRes int brandingIcon) {
         mBrandingIcon = brandingIcon;
         updateMenu();
     }
@@ -52,7 +53,11 @@ public class EditorDialogToolbar extends Toolbar {
             brandingIcon.setVisible(false);
         } else {
             brandingIcon.setVisible(true);
-            brandingIcon.setActionView(mBrandingIcon);
+            brandingIcon.setActionView(R.layout.autofill_editor_toolbar_icon);
+            ImageView actionView = (ImageView) brandingIcon.getActionView();
+            if (actionView != null) {
+                actionView.setImageResource(mBrandingIcon);
+            }
         }
     }
 

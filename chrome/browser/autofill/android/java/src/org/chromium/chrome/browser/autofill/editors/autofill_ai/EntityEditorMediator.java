@@ -163,7 +163,7 @@ class EntityEditorMediator {
                 .with(OPEN_HELP_CALLBACK, this::onOpenHelpAndFeedback)
                 .with(
                         TOOLBAR_BRANDING_ICON_ID,
-                        isNewWalletEntity ? R.layout.autofill_editor_toolbar_icon : 0)
+                        isNewWalletEntity ? AutofillUiUtils.getGoogleWalletIconDrawableId() : 0)
                 .build();
     }
 
