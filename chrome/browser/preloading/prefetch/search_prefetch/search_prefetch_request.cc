@@ -41,6 +41,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/universal_optout/prefs.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/frame_accept_header.h"
 #include "content/public/browser/navigation_controller.h"
@@ -51,11 +52,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_features.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/global_privacy_control/global_privacy_control_util.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -298,6 +302,20 @@ bool SearchPrefetchRequest::StartPrefetchRequest(
   // requests, as described in
   // https://w3c.github.io/webappsec/specs/upgrade/#feature-detect
   resource_request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
+
+  if (base::FeatureList::IsEnabled(features::kPrefetchPrivacyHeaders)) {
+    if (profile->GetPrefs()->GetBoolean(prefs::kEnableDoNotTrack)) {
+      resource_request->headers.SetHeaderIfMissing(blink::kDoNotTrackHeader,
+                                                   "1");
+    }
+    if (profile->GetPrefs()->GetBoolean(
+            universal_optout::prefs::kUniversalOptOutEnabled)) {
+      resource_request->headers.SetHeaderIfMissing(
+          blink::kGlobalPrivacyControlHeader, "1");
+      blink::MaybeRecordGlobalPrivacyControlSourceMetric(
+          blink::GPCSignalSourceType::kPrefetch);
+    }
+  }
 
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kUserAgent,

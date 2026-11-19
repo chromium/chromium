@@ -197,6 +197,7 @@ if (!is_android) {
       "//components/privacy_sandbox:features",
       "//components/security_state/content",
       "//components/ukm:test_support",
+      "//components/universal_optout",
       "//ui/views",
     ]
   }
