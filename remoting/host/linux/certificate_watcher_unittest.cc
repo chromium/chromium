@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -82,7 +83,8 @@ class CertificateWatcherTest : public testing::Test {
   }
 
   void TouchFileTask(const char* filename) {
-    std::string testWriteString = base::NumberToString(rand());
+    std::string testWriteString =
+        base::NumberToString(base::RandIntInclusive(0, RAND_MAX));
     base::FilePath path = temp_dir_.GetPath().AppendASCII(filename);
 
     if (base::PathExists(path)) {

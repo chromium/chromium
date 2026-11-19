@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
+#include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
@@ -35,7 +36,7 @@ const int kPortRangeStart = 1024;
 const int kPortRangeEnd = 65535;
 
 double RandDouble() {
-  return static_cast<double>(std::rand()) / RAND_MAX;
+  return base::RandDouble();
 }
 
 double GetNormalRandom(double average, double stddev) {
