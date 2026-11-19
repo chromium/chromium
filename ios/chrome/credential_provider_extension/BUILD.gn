@@ -200,6 +200,7 @@ source_set("favicon_util") {
     "favicon_util.mm",
   ]
   deps = [
+    "//base",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/ui/favicon",
   ]

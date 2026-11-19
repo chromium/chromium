@@ -90,7 +90,8 @@ NSAttributedString* AsAttributedString(NSString* text,
   // The favicon view shown by this view controller's view.
   FaviconView* _faviconView;
 
-  // The favicon attributes, if a favicon is available. Nil otherwise.
+  // The favicon attributes to display. Defaults to the world icon until a
+  // favicon is fetched.
   FaviconAttributes* _faviconAttributes;
 
   // The gaia ID associated with the current account
@@ -125,11 +126,16 @@ NSAttributedString* AsAttributedString(NSString* text,
                 imageWithTintColor:[UIColor colorNamed:kTextQuaternaryColor]
                      renderingMode:UIImageRenderingModeAlwaysOriginal]];
 
-    // Attempt to fetch the favicon.
-    if (favicon) {
+    // Attempt to fetch the favicon. `FetchFaviconAsync` calls its completion
+    // on a background queue, so hop to the main queue before touching state
+    // that is read by the UI. GCD is used because Chromium task runners are
+    // not available in the extension.
+    if (favicon.length) {
       __weak __typeof(self) weakSelf = self;
       FetchFaviconAsync(favicon, ^(FaviconAttributes* attributes) {
-        [weakSelf setFaviconAttributes:attributes];
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [weakSelf setFaviconAttributes:attributes];
+        });
       });
     }
   }
@@ -212,9 +218,16 @@ NSAttributedString* AsAttributedString(NSString* text,
   return specificContentView;
 }
 
-// Sets the favicon attributes.
+// Sets the favicon attributes and refreshes the favicon view. A nil
+// `attributes` (e.g. the favicon file is missing or unreadable) is ignored so
+// that the default world icon remains visible. The fetch may complete after
+// `-viewDidLoad`, in which case the already created view must be updated.
 - (void)setFaviconAttributes:(FaviconAttributes*)attributes {
+  if (!attributes) {
+    return;
+  }
   _faviconAttributes = attributes;
+  [_faviconView configureWithAttributes:_faviconAttributes];
 }
 
 // Creates the favicon view for the passkey information view.
