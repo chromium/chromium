@@ -9,6 +9,7 @@
 #include "base/test/tracing/trace_event_analyzer.h"
 #include "base/test/tracing/trace_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -22,13 +23,18 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
@@ -1025,6 +1031,69 @@ TEST_F(ElementRuleCollectorTest, RuleUsageTracker) {
   EXPECT_EQ(4u, delta2.size());
 
   GetDocument().GetStyleEngine().SetRuleUsageTracker(nullptr);
+}
+
+namespace {
+Persistent<HTMLInputElement> g_target_input;
+bool g_callback_fired = false;
+}  // namespace
+
+TEST_F(ElementRuleCollectorTest, MutateClassDuringRuleMatching) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .c0:invalid { color: red; }
+    </style>
+    <input id="target" class="c0 c1 c2 c3 c4 c5" pattern="a+" value="b">
+  )HTML");
+  auto* input = To<HTMLInputElement>(GetElementById("target"));
+  ASSERT_TRUE(input);
+  g_target_input = input;
+  g_callback_fired = false;
+
+  v8::Isolate* isolate = GetDocument().GetExecutionContext()->GetIsolate();
+  {
+    v8::HandleScope handle_scope(isolate);
+    v8::Local<v8::Context> regexp_context =
+        V8PerIsolateData::From(isolate)->EnsureScriptRegexpContext();
+    v8::Context::Scope context_scope(regexp_context);
+    v8::MicrotasksScope microtasks_scope(
+        isolate, regexp_context->GetMicrotaskQueue(),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
+
+    auto callback = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+      g_callback_fired = true;
+      if (g_target_input) {
+        g_target_input->setAttribute(
+            html_names::kClassAttr, AtomicString("d0 d1 d2 d3 d4 d5 d6 d7 d8"));
+        ThreadState::Current()->CollectAllGarbageForTesting(
+            ThreadState::StackState::kMayContainHeapPointers);
+      }
+      info.GetReturnValue().SetNull();
+    };
+
+    v8::Local<v8::Object> global = regexp_context->Global();
+    v8::Local<v8::Value> regexp_val =
+        global->Get(regexp_context, V8String(isolate, "RegExp"))
+            .ToLocalChecked();
+    v8::Local<v8::Object> regexp_obj = regexp_val.As<v8::Object>();
+    v8::Local<v8::Value> proto_val =
+        regexp_obj->Get(regexp_context, V8String(isolate, "prototype"))
+            .ToLocalChecked();
+    v8::Local<v8::Object> proto = proto_val.As<v8::Object>();
+
+    v8::Local<v8::Function> hook_fn =
+        v8::Function::New(regexp_context, callback).ToLocalChecked();
+    proto->Set(regexp_context, V8String(isolate, "exec"), hook_fn).Check();
+  }
+
+  // Resolving style matches author rules through ElementRuleCollector.
+  // When matching .c0:invalid, the RegExp callback mutates className and
+  // forces garbage collection. The class loop must not use the freed memory.
+  GetDocument().GetStyleResolver().ResolveStyle(input, StyleRecalcContext());
+  EXPECT_TRUE(g_callback_fired);
+
+  g_target_input = nullptr;
+  V8PerIsolateData::From(isolate)->ClearScriptRegexpContext();
 }
 
 }  // namespace blink
