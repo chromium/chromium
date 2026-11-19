@@ -60,6 +60,10 @@ mojom("mojo_bindings") {
           cpp = "::context_hub::AutoTodosGenerationMetadata"
         },
         {
+          mojom = "browser.context_hub.mojom.LaunchpadTask"
+          cpp = "::launchpad::LaunchpadTask"
+        },
+        {
           mojom = "browser.context_hub.mojom.EntryType"
           cpp = "::context_hub::MemoryBankType"
         },
@@ -82,6 +86,7 @@ mojom("mojo_bindings") {
       ]
       traits_headers = [ "context_hub_mojom_traits.h" ]
       traits_sources = [ "context_hub_mojom_traits.cc" ]
+      traits_public_deps = [ "//chrome/browser/launchpad" ]
       traits_deps = [
         "//base",
         "//chrome/browser/context_hub/auto_todos",
@@ -114,6 +119,7 @@ source_set("context_hub_page_handler") {
     "//chrome/browser/context_hub",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
+    "//chrome/browser/launchpad",
     "//chrome/browser/page_image_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
@@ -196,6 +202,7 @@ source_set("unit_tests") {
     "//chrome/browser/context_hub",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
+    "//chrome/browser/launchpad",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/personal_context",
     "//chrome/browser/tab_group_sync:factories",

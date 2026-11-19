@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -26,6 +27,7 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/auto_todos/in_memory_auto_todos_store.h"
@@ -40,6 +42,9 @@
 #include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/launchpad/features.h"
+#include "chrome/browser/launchpad/launchpad_service_factory.h"
+#include "chrome/browser/launchpad/launchpad_task.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
@@ -137,6 +142,7 @@ using ::testing::Field;
 using ::testing::FieldsAre;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::VariantWith;
 
 #if !BUILDFLAG(IS_ANDROID)
 class MockTabProvider : public ContextHubPageHandler::TabProvider {
@@ -374,6 +380,7 @@ class ContextHubPageHandlerTest : public testing::Test {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(
         {features::kContextHub, features::kMemoryBanks,
+         launchpad::features::kLaunchpad,
          browser::context_hub::mojom::kAutoTabGroups,
          browser::context_hub::mojom::kAutoTodos,
          browser::context_hub::mojom::kSmartSearch,
@@ -410,7 +417,10 @@ class ContextHubPageHandlerTest : public testing::Test {
   base::CallbackListSubscription create_services_subscription_;
 
   struct EnsureFactories {
-    EnsureFactories() { ContextHubServiceFactory::GetInstance(); }
+    EnsureFactories() {
+      ContextHubServiceFactory::GetInstance();
+      LaunchpadServiceFactory::GetInstance();
+    }
   } ensure_factories_;
   // Declared before `profile_` so they outlive any `ContextHubService` bound
   // to `profile_`.
@@ -569,6 +579,217 @@ TEST_F(ContextHubPageHandlerTest, GenerateFirstPartyAutoTodos_Empty) {
   handler_->GenerateFirstPartyAutoTodos(future.GetCallback());
   EXPECT_TRUE(future.Get());
   mock_page_.Flush();
+}
+
+TEST_F(ContextHubPageHandlerTest, GenerateTasks_Success) {
+  personal_context::proto::AutoTodosResponse response;
+  personal_context::proto::AutoTodoItem* todo = response.add_todos();
+  todo->set_id("task-id-1");
+  todo->set_title("Test Task Title");
+  todo->set_description("Test Task Description");
+  todo->set_actionable_url("https://example.com/action");
+  todo->set_importance_score(0.85f);
+
+  personal_context::proto::Any any_response;
+  response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(std::move(any_response)))));
+
+  base::test::TestFuture<
+      const std::optional<std::vector<launchpad::LaunchpadTask>>&>
+      future;
+  handler_->GenerateTasks(future.GetCallback());
+
+  const std::optional<std::vector<launchpad::LaunchpadTask>>& tasks =
+      future.Get();
+  ASSERT_TRUE(tasks.has_value());
+  ASSERT_EQ(tasks->size(), 1u);
+  EXPECT_EQ((*tasks)[0].id, "task-id-1");
+  EXPECT_EQ((*tasks)[0].title, "Test Task Title");
+  EXPECT_EQ((*tasks)[0].description, "Test Task Description");
+  EXPECT_EQ((*tasks)[0].status, launchpad::LaunchpadTask::Status::kActive);
+  EXPECT_FLOAT_EQ((*tasks)[0].importance_score, 0.85f);
+  EXPECT_EQ((*tasks)[0].actionable_url, GURL("https://example.com/action"));
+  EXPECT_TRUE((*tasks)[0].source_references.empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, GenerateTasks_WithSourceReferences) {
+  personal_context::proto::AutoTodosResponse response;
+  personal_context::proto::AutoTodoItem* todo = response.add_todos();
+  todo->set_id("task-id-2");
+  todo->set_title("Test Task Title");
+  todo->set_description("Test Task Description");
+  todo->set_actionable_url("https://example.com/action2");
+
+  personal_context::proto::SourceReference* ref_gmail =
+      todo->add_source_references();
+  ref_gmail->mutable_gmail()->mutable_message_urls()->set_desktop_web_url(
+      "https://mail.google.com/mail/u/0/#inbox/123");
+  ref_gmail->mutable_gmail()->set_subject("Subject 1");
+
+  personal_context::proto::SourceReference* ref_history =
+      todo->add_source_references();
+  ref_history->mutable_chrome_history_entry()->set_url(
+      "https://example.com/history");
+  ref_history->mutable_chrome_history_entry()->set_title("History Title");
+  ref_history->mutable_chrome_history_entry()
+      ->mutable_visit_timestamp()
+      ->set_seconds(1700000000);
+
+  personal_context::proto::Any any_response;
+  response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(std::move(any_response)))));
+
+  base::test::TestFuture<
+      const std::optional<std::vector<launchpad::LaunchpadTask>>&>
+      future;
+  handler_->GenerateTasks(future.GetCallback());
+
+  const std::optional<std::vector<launchpad::LaunchpadTask>>& tasks =
+      future.Get();
+  ASSERT_TRUE(tasks.has_value());
+  ASSERT_EQ(tasks->size(), 1u);
+  EXPECT_EQ((*tasks)[0].id, "task-id-2");
+  EXPECT_EQ((*tasks)[0].actionable_url, GURL("https://example.com/action2"));
+  ASSERT_EQ((*tasks)[0].source_references.size(), 2u);
+  EXPECT_THAT(
+      (*tasks)[0].source_references[0],
+      VariantWith<launchpad::GmailReference>(FieldsAre(
+          GURL("https://mail.google.com/mail/u/0/#inbox/123"), "Subject 1")));
+  EXPECT_THAT((*tasks)[0].source_references[1],
+              VariantWith<launchpad::ChromeHistoryEntry>(FieldsAre(
+                  GURL("https://example.com/history"), "History Title",
+                  base::Time::FromSecondsSinceUnixEpoch(1700000000))));
+}
+
+TEST_F(ContextHubPageHandlerTest, GenerateTasks_Empty) {
+  personal_context::proto::AutoTodosResponse response;
+
+  personal_context::proto::Any any_response;
+  response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(std::move(any_response)))));
+
+  base::test::TestFuture<
+      const std::optional<std::vector<launchpad::LaunchpadTask>>&>
+      future;
+  handler_->GenerateTasks(future.GetCallback());
+
+  const std::optional<std::vector<launchpad::LaunchpadTask>>& tasks =
+      future.Get();
+  ASSERT_TRUE(tasks.has_value());
+  EXPECT_TRUE(tasks->empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, GenerateTasks_LaunchpadDisabled) {
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(launchpad::features::kLaunchpad);
+
+  TestingProfile disabled_profile;
+  ASSERT_EQ(LaunchpadServiceFactory::GetForProfile(&disabled_profile), nullptr);
+
+  MockPage disabled_page;
+  ContextHubPageHandler disabled_handler(
+      disabled_page.BindAndGetRemote(),
+      mojo::PendingReceiver<browser::context_hub::mojom::PageHandler>(),
+      &disabled_profile, nullptr, nullptr);
+
+  base::test::TestFuture<
+      const std::optional<std::vector<launchpad::LaunchpadTask>>&>
+      future;
+  disabled_handler.GenerateTasks(future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(ContextHubPageHandlerTest, GenerateTasks_Failure) {
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::unexpected(
+              personal_context::ContextMemoryError::FromExecutionError(
+                  personal_context::ContextMemoryError::ExecutionError::
+                      kUnknown)))));
+
+  base::test::TestFuture<
+      const std::optional<std::vector<launchpad::LaunchpadTask>>&>
+      future;
+  handler_->GenerateTasks(future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+TEST_F(ContextHubPageHandlerTest, GetTasks_Empty) {
+  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&> future;
+  handler_->GetTasks(future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, GetTasks_ReturnsCachedTasks) {
+  personal_context::proto::AutoTodosResponse response;
+  personal_context::proto::AutoTodoItem* todo = response.add_todos();
+  todo->set_id("task-id-1");
+  todo->set_title("Cached Task Title");
+  todo->set_description("Cached Task Description");
+
+  personal_context::proto::Any any_response;
+  response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      *GetMockService(),
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(std::move(any_response)))));
+
+  base::test::TestFuture<
+      const std::optional<std::vector<launchpad::LaunchpadTask>>&>
+      gen_future;
+  handler_->GenerateTasks(gen_future.GetCallback());
+  ASSERT_TRUE(gen_future.Get().has_value());
+
+  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&>
+      get_future;
+  handler_->GetTasks(get_future.GetCallback());
+  const std::vector<launchpad::LaunchpadTask>& tasks = get_future.Get();
+  ASSERT_EQ(tasks.size(), 1u);
+  EXPECT_EQ(tasks[0].id, "task-id-1");
+  EXPECT_EQ(tasks[0].title, "Cached Task Title");
+  EXPECT_EQ(tasks[0].description, "Cached Task Description");
+}
+
+TEST_F(ContextHubPageHandlerTest, GetTasks_LaunchpadDisabled) {
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(launchpad::features::kLaunchpad);
+
+  TestingProfile disabled_profile;
+  ASSERT_EQ(LaunchpadServiceFactory::GetForProfile(&disabled_profile), nullptr);
+
+  MockPage disabled_page;
+  ContextHubPageHandler disabled_handler(
+      disabled_page.BindAndGetRemote(),
+      mojo::PendingReceiver<browser::context_hub::mojom::PageHandler>(),
+      &disabled_profile, nullptr, nullptr);
+
+  base::test::TestFuture<const std::vector<launchpad::LaunchpadTask>&> future;
+  disabled_handler.GetTasks(future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 TEST_F(ContextHubPageHandlerTest, InitialStatePushedIfGenerationInFlight) {
@@ -1020,6 +1241,85 @@ TEST(ContextHubMojomTraitsTest, AutoTodoItemSerialization_ThirdPartyData) {
       base::Time::FromMillisecondsSinceUnixEpoch(1700000000000));
   EXPECT_EQ(std::get<context_hub::ThirdPartyData>(output.data).group_type,
             context_hub::ThirdPartyData::GroupType::kUnfinishedAction);
+}
+
+TEST(ContextHubMojomTraitsTest, LaunchpadTaskSerialization) {
+  for (auto status : {launchpad::LaunchpadTask::Status::kActive,
+                      launchpad::LaunchpadTask::Status::kCompleted,
+                      launchpad::LaunchpadTask::Status::kDismissed}) {
+    launchpad::LaunchpadTask::Status status_output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                browser::context_hub::mojom::AutoTodoStatus>(status,
+                                                             status_output));
+    EXPECT_EQ(status_output, status);
+  }
+
+  const base::Time visit_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(1700000000000);
+  launchpad::LaunchpadTask input;
+  input.id = "task_1";
+  input.title = "Review Document";
+  input.description = "Review the quarterly report";
+  input.importance_score = 0.95f;
+  input.status = launchpad::LaunchpadTask::Status::kCompleted;
+  input.actionable_url = GURL("https://docs.google.com/doc/123");
+  input.source_references.push_back(launchpad::GmailReference{
+      GURL("https://mail.google.com/mail/u/0/#inbox/123"), "Review Request"});
+  input.source_references.push_back(launchpad::ChromeHistoryEntry{
+      .url = GURL("https://example.com/history"),
+      .title = "History Page Title",
+      .visit_timestamp = visit_time,
+  });
+
+  launchpad::LaunchpadTask output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::LaunchpadTask>(input, output));
+
+  EXPECT_EQ(output.id, input.id);
+  EXPECT_EQ(output.title, input.title);
+  EXPECT_EQ(output.description, input.description);
+  EXPECT_EQ(output.status, launchpad::LaunchpadTask::Status::kCompleted);
+  EXPECT_FLOAT_EQ(output.importance_score, 0.95f);
+  EXPECT_EQ(output.actionable_url, GURL("https://docs.google.com/doc/123"));
+  ASSERT_EQ(output.source_references.size(), 2u);
+  EXPECT_THAT(output.source_references[0],
+              VariantWith<launchpad::GmailReference>(
+                  FieldsAre(GURL("https://mail.google.com/mail/u/0/#inbox/123"),
+                            "Review Request")));
+  EXPECT_THAT(output.source_references[1],
+              VariantWith<launchpad::ChromeHistoryEntry>(
+                  FieldsAre(GURL("https://example.com/history"),
+                            "History Page Title", visit_time)));
+
+  // Null `actionable_url` round-trip.
+  input.actionable_url = std::nullopt;
+  launchpad::LaunchpadTask null_url_output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<
+          browser::context_hub::mojom::LaunchpadTask>(input, null_url_output));
+  EXPECT_FALSE(null_url_output.actionable_url.has_value());
+
+  // Unsupported `SourceReference` union arms (`kPhotos`, `kDrive`,
+  // `kSearchQuery`) are rejected on deserialization.
+  auto raw_task = browser::context_hub::mojom::LaunchpadTask::New();
+  raw_task->id = "task_bad_ref";
+  raw_task->status = context_hub::AutoTodoEntry::Status::kActive;
+  raw_task->source_references.push_back(context_hub::SearchQuery{
+      .query = "test query",
+      .search_url = GURL("https://www.google.com/search?q=test"),
+  });
+  launchpad::LaunchpadTask rejected_output;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               browser::context_hub::mojom::LaunchpadTask>(raw_task,
+                                                           rejected_output));
+
+  auto photos_ref = browser::context_hub::mojom::SourceReference::NewPhotos(
+      browser::context_hub::mojom::PhotosReference::New(
+          GURL("https://photos.google.com/photo/1")));
+  launchpad::SourceReference rejected_ref;
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
+               browser::context_hub::mojom::SourceReference>(photos_ref,
+                                                             rejected_ref));
 }
 
 TEST(ContextHubMojomTraitsTest, EntryTypeSerialization) {

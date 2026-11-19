@@ -16,6 +16,7 @@
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_chat_types.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
+#include "chrome/browser/launchpad/launchpad_task.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-forward.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
@@ -252,6 +253,113 @@ struct StructTraits<
   static bool Read(
       browser::context_hub::mojom::AutoTodosGenerationMetadataDataView data,
       context_hub::AutoTodosGenerationMetadata* out);
+};
+
+// TODO(b/586296808): Remove duplicate `AutoTodoEntry` traits once
+// `AutoTodoItem` is phased out.
+template <>
+struct EnumTraits<browser::context_hub::mojom::AutoTodoStatus,
+                  launchpad::LaunchpadTask::Status> {
+  static browser::context_hub::mojom::AutoTodoStatus ToMojom(
+      launchpad::LaunchpadTask::Status input);
+  static launchpad::LaunchpadTask::Status FromMojom(
+      browser::context_hub::mojom::AutoTodoStatus input);
+};
+
+template <>
+struct StructTraits<browser::context_hub::mojom::GmailReferenceDataView,
+                    launchpad::GmailReference> {
+  static const GURL& message_url(const launchpad::GmailReference& ref) {
+    return ref.url;
+  }
+
+  static const std::string& subject(const launchpad::GmailReference& ref) {
+    return ref.subject;
+  }
+
+  static bool Read(browser::context_hub::mojom::GmailReferenceDataView data,
+                   launchpad::GmailReference* out);
+};
+
+template <>
+struct StructTraits<browser::context_hub::mojom::ChromeHistoryEntryDataView,
+                    launchpad::ChromeHistoryEntry> {
+  static const GURL& url(const launchpad::ChromeHistoryEntry& entry) {
+    return entry.url;
+  }
+
+  static const std::string& title(const launchpad::ChromeHistoryEntry& entry) {
+    return entry.title;
+  }
+
+  static base::Time visit_timestamp(
+      const launchpad::ChromeHistoryEntry& entry) {
+    return entry.visit_timestamp;
+  }
+
+  static bool Read(browser::context_hub::mojom::ChromeHistoryEntryDataView data,
+                   launchpad::ChromeHistoryEntry* out);
+};
+
+template <>
+struct UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
+                   launchpad::SourceReference> {
+  static browser::context_hub::mojom::SourceReferenceDataView::Tag GetTag(
+      const launchpad::SourceReference& ref);
+
+  static const launchpad::GmailReference& gmail(
+      const launchpad::SourceReference& ref) {
+    return std::get<launchpad::GmailReference>(ref);
+  }
+
+  static browser::context_hub::mojom::PhotosReferencePtr photos(
+      const launchpad::SourceReference& ref);
+
+  static browser::context_hub::mojom::DriveFilePtr drive(
+      const launchpad::SourceReference& ref);
+
+  static const launchpad::ChromeHistoryEntry& chrome_history_entry(
+      const launchpad::SourceReference& ref) {
+    return std::get<launchpad::ChromeHistoryEntry>(ref);
+  }
+
+  static context_hub::SearchQuery search_query(
+      const launchpad::SourceReference& ref);
+
+  static bool Read(browser::context_hub::mojom::SourceReferenceDataView data,
+                   launchpad::SourceReference* out);
+};
+
+template <>
+struct StructTraits<browser::context_hub::mojom::LaunchpadTaskDataView,
+                    launchpad::LaunchpadTask> {
+  static const std::string& id(const launchpad::LaunchpadTask& task) {
+    return task.id;
+  }
+  static const std::string& title(const launchpad::LaunchpadTask& task) {
+    return task.title;
+  }
+  static const std::string& description(const launchpad::LaunchpadTask& task) {
+    return task.description;
+  }
+  static launchpad::LaunchpadTask::Status status(
+      const launchpad::LaunchpadTask& task) {
+    return task.status;
+  }
+  static float score(const launchpad::LaunchpadTask& task) {
+    return task.importance_score;
+  }
+  static const std::vector<launchpad::SourceReference>& source_references(
+      const launchpad::LaunchpadTask& task) {
+    return task.source_references;
+  }
+  static const std::optional<GURL>& actionable_url(
+      const launchpad::LaunchpadTask& task) {
+    return task.actionable_url;
+  }
+
+  static bool Read(browser::context_hub::mojom::LaunchpadTaskDataView data,
+                   launchpad::LaunchpadTask* out);
 };
 
 template <>

@@ -49,6 +49,9 @@
 #include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/launchpad/launchpad_service.h"
+#include "chrome/browser/launchpad/launchpad_service_factory.h"
+#include "chrome/browser/launchpad/launchpad_task.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
@@ -65,6 +68,7 @@
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/clipboard/file_info.h"
@@ -1982,4 +1986,33 @@ void ContextHubPageHandler::StopSkillRecording(
   std::move(callback).Run(
       browser::context_hub::mojom::SkillRecordingSessionData::New());
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ContextHubPageHandler::GenerateTasks(GenerateTasksCallback callback) {
+  launchpad::LaunchpadService* service =
+      LaunchpadServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  service->GenerateTasks(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), std::nullopt));
+}
+
+void ContextHubPageHandler::GetTasks(GetTasksCallback callback) {
+  launchpad::LaunchpadService* service =
+      LaunchpadServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  service->GetAllTasks(base::BindOnce(
+      [](GetTasksCallback callback,
+         std::vector<launchpad::LaunchpadTask> tasks) {
+        std::move(callback).Run(tasks);
+      },
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback), std::vector<launchpad::LaunchpadTask>())));
 }

@@ -135,6 +135,10 @@ union AutoTodoData {
 };
 
 // Represents an item in the Auto Todo list.
+// TODO(b/586296808): Phase out `AutoTodoItem` in favor of `LaunchpadTask`.
+// Kept separate from `LaunchpadTask` during the migration so that updates to
+// `LaunchpadTask` do not require updating `ContextHubService` or callers of
+// `AutoTodoItem`.
 struct AutoTodoItem {
   string id;
   string title;
@@ -153,6 +157,30 @@ struct AutoTodosGenerationMetadata {
   mojo_base.mojom.Time last_generation_time;
   // Whether the last generation attempt failed.
   bool has_error;
+};
+
+// Represents a task in Launchpad, sent browser -> WebUI via
+// `PageHandler.GenerateTasks` and `PageHandler.GetTasks`. Values are fetched
+// from CMS, but may be derived from untrusted third-party content (that will
+// undergo a series of security and privacy checks).
+//
+// WARNING: All string fields must only be rendered as text (e.g. inside text
+// bindings or `textContent`), never interpreted as HTML markup.
+struct LaunchpadTask {
+  string id;
+  string title;
+  string description;
+  // Status of the task.
+  AutoTodoStatus status;
+  // Importance score between 0 and 1 for the task.
+  float score;
+  // Source references from which the task was generated.
+  array<SourceReference> source_references;
+  // The URL to navigate to when the user clicks to start the task. Null if
+  // using source references instead.
+  // TODO(crbug.com/586294506): Remove this in favor of structured actions
+  // once supported server-side.
+  url.mojom.Url? actionable_url;
 };
 
 enum EntryType {
@@ -912,4 +940,16 @@ interface PageHandler {
   // Stops a skill recording session and returns the recorded data.
   [RuntimeFeature=kRecordReplay]
   StopSkillRecording() => (SkillRecordingSessionData data);
+
+  // Generates Launchpad tasks and returns them, or null on failure.
+  // Guarded by `launchpad::features::kLaunchpad` flag as the LaunchpadService
+  // is not available otherwise.
+  // TODO(crbug.com/587521550): Add kLaunchpad flag to mojom features and guard.
+  GenerateTasks() => (array<LaunchpadTask>? tasks);
+
+  // Returns stored Launchpad tasks from the cache.
+  // Guarded by `launchpad::features::kLaunchpad` flag as the LaunchpadService
+  // is not available otherwise.
+  // TODO(crbug.com/587521550): Add kLaunchpad flag to mojom features and guard.
+  GetTasks() => (array<LaunchpadTask> tasks);
 };

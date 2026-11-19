@@ -264,6 +264,141 @@ bool StructTraits<
 }
 
 // static
+browser::context_hub::mojom::AutoTodoStatus EnumTraits<
+    browser::context_hub::mojom::AutoTodoStatus,
+    launchpad::LaunchpadTask::Status>::ToMojom(launchpad::LaunchpadTask::Status
+                                                   input) {
+  switch (input) {
+    case launchpad::LaunchpadTask::Status::kActive:
+      return browser::context_hub::mojom::AutoTodoStatus::kActive;
+    case launchpad::LaunchpadTask::Status::kCompleted:
+      return browser::context_hub::mojom::AutoTodoStatus::kCompleted;
+    case launchpad::LaunchpadTask::Status::kDismissed:
+      return browser::context_hub::mojom::AutoTodoStatus::kDismissed;
+  }
+  NOTREACHED();
+}
+
+// static
+launchpad::LaunchpadTask::Status
+EnumTraits<browser::context_hub::mojom::AutoTodoStatus,
+           launchpad::LaunchpadTask::Status>::
+    FromMojom(browser::context_hub::mojom::AutoTodoStatus input) {
+  switch (input) {
+    case browser::context_hub::mojom::AutoTodoStatus::kActive:
+      return launchpad::LaunchpadTask::Status::kActive;
+    case browser::context_hub::mojom::AutoTodoStatus::kCompleted:
+      return launchpad::LaunchpadTask::Status::kCompleted;
+    case browser::context_hub::mojom::AutoTodoStatus::kDismissed:
+      return launchpad::LaunchpadTask::Status::kDismissed;
+  }
+  NOTREACHED();
+}
+
+// static
+bool StructTraits<browser::context_hub::mojom::GmailReferenceDataView,
+                  launchpad::GmailReference>::
+    Read(browser::context_hub::mojom::GmailReferenceDataView data,
+         launchpad::GmailReference* out) {
+  return data.ReadMessageUrl(&out->url) && data.ReadSubject(&out->subject);
+}
+
+// static
+bool StructTraits<browser::context_hub::mojom::ChromeHistoryEntryDataView,
+                  launchpad::ChromeHistoryEntry>::
+    Read(browser::context_hub::mojom::ChromeHistoryEntryDataView data,
+         launchpad::ChromeHistoryEntry* out) {
+  return data.ReadUrl(&out->url) && data.ReadTitle(&out->title) &&
+         data.ReadVisitTimestamp(&out->visit_timestamp);
+}
+
+// static
+browser::context_hub::mojom::SourceReferenceDataView::Tag UnionTraits<
+    browser::context_hub::mojom::SourceReferenceDataView,
+    launchpad::SourceReference>::GetTag(const launchpad::SourceReference& ref) {
+  using Tag = browser::context_hub::mojom::SourceReferenceDataView::Tag;
+  return std::visit(
+      absl::Overload{
+          [](const launchpad::GmailReference&) { return Tag::kGmail; },
+          [](const launchpad::ChromeHistoryEntry&) {
+            return Tag::kChromeHistoryEntry;
+          },
+      },
+      ref);
+}
+
+// static
+browser::context_hub::mojom::PhotosReferencePtr UnionTraits<
+    browser::context_hub::mojom::SourceReferenceDataView,
+    launchpad::SourceReference>::photos(const launchpad::SourceReference& ref) {
+  NOTREACHED();
+}
+
+// static
+browser::context_hub::mojom::DriveFilePtr UnionTraits<
+    browser::context_hub::mojom::SourceReferenceDataView,
+    launchpad::SourceReference>::drive(const launchpad::SourceReference& ref) {
+  NOTREACHED();
+}
+
+// static
+context_hub::SearchQuery UnionTraits<
+    browser::context_hub::mojom::SourceReferenceDataView,
+    launchpad::SourceReference>::search_query(const launchpad::SourceReference&
+                                                  ref) {
+  NOTREACHED();
+}
+
+// static
+bool UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
+                 launchpad::SourceReference>::
+    Read(browser::context_hub::mojom::SourceReferenceDataView data,
+         launchpad::SourceReference* out) {
+  switch (data.tag()) {
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::kGmail: {
+      launchpad::GmailReference gmail;
+      if (!data.ReadGmail(&gmail)) {
+        return false;
+      }
+      *out = std::move(gmail);
+      return true;
+    }
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::
+        kChromeHistoryEntry: {
+      launchpad::ChromeHistoryEntry history_entry;
+      if (!data.ReadChromeHistoryEntry(&history_entry)) {
+        return false;
+      }
+      *out = std::move(history_entry);
+      return true;
+    }
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::kPhotos:
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::kDrive:
+    case browser::context_hub::mojom::SourceReferenceDataView::Tag::
+        kSearchQuery:
+      // Not supported for Launchpad.
+      return false;
+  }
+  return false;
+}
+
+// static
+bool StructTraits<browser::context_hub::mojom::LaunchpadTaskDataView,
+                  launchpad::LaunchpadTask>::
+    Read(browser::context_hub::mojom::LaunchpadTaskDataView data,
+         launchpad::LaunchpadTask* out) {
+  if (!data.ReadId(&out->id) || !data.ReadTitle(&out->title) ||
+      !data.ReadDescription(&out->description) ||
+      !data.ReadStatus(&out->status) ||
+      !data.ReadSourceReferences(&out->source_references) ||
+      !data.ReadActionableUrl(&out->actionable_url)) {
+    return false;
+  }
+  out->importance_score = data.score();
+  return true;
+}
+
+// static
 browser::context_hub::mojom::EntryType EnumTraits<
     browser::context_hub::mojom::EntryType,
     context_hub::MemoryBankType>::ToMojom(context_hub::MemoryBankType input) {

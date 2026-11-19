@@ -223,6 +223,8 @@ class ContextHubPageHandler
       SetBrowseMemoryBanksShortcutCallback callback) override;
   void StartSkillRecording() override;
   void StopSkillRecording(StopSkillRecordingCallback callback) override;
+  void GenerateTasks(GenerateTasksCallback callback) override;
+  void GetTasks(GetTasksCallback callback) override;
 
  private:
 #if !BUILDFLAG(IS_ANDROID)
