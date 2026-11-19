@@ -11502,6 +11502,7 @@ from previous Chrome versions.
   <int value="-1042723808"
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:enabled"/>
   <int value="-1042579955" label="ChromeOSParentalControlsSettings:enabled"/>
+  <int value="-1042102930" label="AndroidDesktopWebUiHistory:enabled"/>
   <int value="-1041724739" label="D3D12VideoEncodeAccelerator:disabled"/>
   <int value="-1041650038" label="enable-forced-migration-to-tabbed-mode"/>
   <int value="-1041643783" label="SingleTouchSelect:enabled"/>
@@ -21408,6 +21409,7 @@ from previous Chrome versions.
   <int value="1883670279" label="AndroidDeviceSignalsDisclaimer:enabled"/>
   <int value="1883856892" label="SupportToolCopyTokenButton:disabled"/>
   <int value="1883998150" label="WebAppsCrosapi:disabled"/>
+  <int value="1884076075" label="AndroidDesktopWebUiHistory:disabled"/>
   <int value="1885566305" label="EsbDownloadRowPromo:enabled"/>
   <int value="1885604289" label="PasswordFormGroupedAffiliations:enabled"/>
   <int value="1886462832" label="EnableTouchscreenMappingExperience:enabled"/>

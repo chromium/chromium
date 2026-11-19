@@ -11582,6 +11582,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidDesktopHistoryLayoutDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopHistoryLayout)},
 
+    {"android-desktop-webui-history",
+     flag_descriptions::kAndroidDesktopWebUiHistoryName,
+     flag_descriptions::kAndroidDesktopWebUiHistoryDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidDesktopWebUiHistory)},
+
     {"android-desktop-ua-model", flag_descriptions::kAndroidDesktopUAModelName,
      flag_descriptions::kAndroidDesktopUAModelDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kAndroidDesktopUAModel)},

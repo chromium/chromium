@@ -5467,6 +5467,11 @@ inline constexpr char kAndroidDesktopWebPrefsLargeDisplaysDescription[] =
     "Enables large display specific layout/renderer settings for "
     "Android large form factor devices";
 
+inline constexpr char kAndroidDesktopWebUiHistoryName[] =
+    "Android Desktop WebUI History";
+inline constexpr char kAndroidDesktopWebUiHistoryDescription[] =
+    "Enables the WebUI history manager on Android Desktop.";
+
 inline constexpr char kAndroidDesktopZoomScalingName[] =
     "Android Desktop Zoom Scaling";
 inline constexpr char kAndroidDesktopZoomScalingDescription[] =
