@@ -255,4 +255,84 @@ TEST_F(StyleTimelineCssTest,
   EXPECT_FALSE(weak_name);
 }
 
+TEST_F(StyleTimelineCssTest,
+       TimelineTriggerSourceInheritRetainedByTransitionAcrossGC) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { width: 10px; }
+        to { width: 20px; }
+      }
+      #scroller {
+        overflow: auto;
+        scroll-timeline-name: --tl;
+      }
+      #parent {
+        timeline-trigger-source: --tl;
+      }
+      #child {
+        animation: anim 1s both;
+        animation-trigger: --trigger;
+        timeline-trigger-name: --trigger;
+        timeline-trigger-source: auto;
+        transition: opacity 100s linear;
+        opacity: 0;
+      }
+      #child.inherit {
+        timeline-trigger-source: inherit;
+        opacity: 1;
+      }
+    </style>
+    <div id="scroller">
+      <div id="parent">
+        <div id="child"></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* parent = GetElementById("parent");
+  Element* child = GetElementById("child");
+  ASSERT_TRUE(parent);
+  ASSERT_TRUE(child);
+
+  child->setAttribute(html_names::kClassAttr, AtomicString("inherit"));
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(child->GetComputedStyle());
+  ASSERT_TRUE(child->GetComputedStyle()->Animations());
+  const HeapVector<StyleTimeline>& sources =
+      child->GetComputedStyle()->Animations()->TimelineTriggerSourceList();
+  ASSERT_EQ(1u, sources.size());
+  ASSERT_TRUE(sources[0].IsName());
+  EXPECT_EQ(AtomicString("--tl"), sources[0].GetName());
+
+  WeakPersistent<const ScopedCSSName> weak_name = sources[0].GetScopedName();
+  ASSERT_TRUE(weak_name);
+
+  ASSERT_TRUE(child->NamedTriggers());
+  EXPECT_FALSE(child->NamedTriggers()->empty());
+  ASSERT_TRUE(child->GetElementAnimations());
+  EXPECT_FALSE(child->GetElementAnimations()->Animations().empty());
+
+  parent->setAttribute(html_names::kStyleAttr,
+                       AtomicString("timeline-trigger-source: none"));
+  child->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("animation-name: none; timeline-trigger-source: none"));
+  UpdateAllLifecyclePhasesForTest();
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_TRUE(weak_name);
+
+  child->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("animation-name: none; timeline-trigger-source: none; "
+                   "display: none"));
+  UpdateAllLifecyclePhasesForTest();
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(weak_name);
+}
+
 }  // namespace blink
