@@ -45,15 +45,28 @@ void TabViewVerticalLayout::OnInstalled(views::View* host) {
                      /*expand=*/true)};
 }
 
+gfx::Size TabViewVerticalLayout::GetPreferredSize(
+    const views::View* host) const {
+  return GetPreferredSize(host, views::SizeBounds());
+}
+
+gfx::Size TabViewVerticalLayout::GetPreferredSize(
+    const views::View* host,
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(
+      available_size.width().value_or(
+          tabs::kVerticalTabStripUncollapsedMaxWidth),
+      GetLayoutConstant(TabView().pinned_
+                            ? LayoutConstant::kVerticalTabPinnedHeight
+                            : LayoutConstant::kVerticalTabHeight));
+}
+
 views::ProposedLayout TabViewVerticalLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
-  const int width =
-      size_bounds.width().value_or(tabs::kVerticalTabStripUncollapsedMaxWidth);
-  const int height = GetLayoutConstant(
-      TabView().pinned_ ? LayoutConstant::kVerticalTabPinnedHeight
-                        : LayoutConstant::kVerticalTabHeight);
   views::ProposedLayout layouts;
-  layouts.host_size = gfx::Size(width, height);
+  layouts.host_size = GetPreferredSize(host_view(), size_bounds);
+  const int width = layouts.host_size.width();
+  const int height = layouts.host_size.height();
 
   gfx::Rect bounds_remaining = gfx::Rect(layouts.host_size);
   bounds_remaining.Inset(TabView().tab_styling()->GetContentsInsets());

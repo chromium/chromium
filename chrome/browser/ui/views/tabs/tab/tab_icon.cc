@@ -364,8 +364,16 @@ gfx::ImageSkia TabIcon::GetIconToPaint() {
     return crashed_icon_;
   }
 
-  return themed_favicon_.isNull() ? favicon_.Rasterize(GetColorProvider())
-                                  : themed_favicon_;
+  if (!themed_favicon_.isNull()) {
+    return themed_favicon_;
+  }
+  if (favicon_.IsEmpty()) {
+    return gfx::ImageSkia();
+  }
+  if (favicon_.IsImage()) {
+    return favicon_.GetImage().AsImageSkia();
+  }
+  return favicon_.Rasterize(GetColorProvider());
 }
 
 void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,

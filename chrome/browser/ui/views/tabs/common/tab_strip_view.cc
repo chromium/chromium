@@ -1091,45 +1091,51 @@ bool TabStripView::ShouldDrawPinnedAboveUnpinned() const {
 }
 
 void TabStripView::UpdateScrollViewLayers() {
-  if (orientation_ == TabStripOrientation::kHorizontal) {
-    const int leading_opaque_thickness = std::clamp(
-        leading_overlap_, 0,
-        HorizontalTabStripOverflowIndicatorView::GetMaxOpaqueThickness());
-    const bool has_pinned =
-        pinned_tabs_scroll_view_ && pinned_tabs_scroll_view_->width() > 0;
-    const int container_overlap =
-        (has_pinned && unpinned_tabs_scroll_view_)
-            ? std::min(gfx::IntersectRects(pinned_tabs_scroll_view_->bounds(),
-                                           unpinned_tabs_scroll_view_->bounds())
-                           .width(),
-                       TabStyle::Get()->GetTabOverlap())
-            : 0;
-    const bool is_pinned_overflowing =
-        has_pinned && pinned_tabs_scroll_view_->GetDrawOverflowIndicator();
-    const bool unpinned_left_visible =
-        unpinned_left_overflow_indicator_ &&
-        unpinned_left_overflow_indicator_->GetVisible();
-    const int seam_pinned_opaque_thickness =
-        is_pinned_overflowing
-            ? container_overlap
-            : (unpinned_left_visible ? 0 : container_overlap / 2);
-    const int seam_unpinned_opaque_thickness =
-        container_overlap - seam_pinned_opaque_thickness;
-    if (pinned_left_overflow_indicator_) {
-      pinned_left_overflow_indicator_->SetOpaqueThickness(
-          leading_opaque_thickness);
-    }
-    if (pinned_right_overflow_indicator_) {
-      pinned_right_overflow_indicator_->SetOpaqueThickness(
-          seam_pinned_opaque_thickness);
-    }
-    if (unpinned_left_overflow_indicator_) {
-      unpinned_left_overflow_indicator_->SetOpaqueThickness(
-          has_pinned ? seam_unpinned_opaque_thickness
-                     : leading_opaque_thickness);
-    }
+  if (orientation_ != TabStripOrientation::kHorizontal) {
+    return;
   }
-  ReorderLayers();
+
+  const int leading_opaque_thickness = std::clamp(
+      leading_overlap_, 0,
+      HorizontalTabStripOverflowIndicatorView::GetMaxOpaqueThickness());
+  const bool has_pinned =
+      pinned_tabs_scroll_view_ && pinned_tabs_scroll_view_->width() > 0;
+  const int container_overlap =
+      (has_pinned && unpinned_tabs_scroll_view_)
+          ? std::min(gfx::IntersectRects(pinned_tabs_scroll_view_->bounds(),
+                                         unpinned_tabs_scroll_view_->bounds())
+                         .width(),
+                     TabStyle::Get()->GetTabOverlap())
+          : 0;
+  const bool is_pinned_overflowing =
+      has_pinned && pinned_tabs_scroll_view_->GetDrawOverflowIndicator();
+  const bool unpinned_left_visible =
+      unpinned_left_overflow_indicator_ &&
+      unpinned_left_overflow_indicator_->GetVisible();
+  const int seam_pinned_opaque_thickness =
+      is_pinned_overflowing
+          ? container_overlap
+          : (unpinned_left_visible ? 0 : container_overlap / 2);
+  const int seam_unpinned_opaque_thickness =
+      container_overlap - seam_pinned_opaque_thickness;
+  if (pinned_left_overflow_indicator_) {
+    pinned_left_overflow_indicator_->SetOpaqueThickness(
+        leading_opaque_thickness);
+  }
+  if (pinned_right_overflow_indicator_) {
+    pinned_right_overflow_indicator_->SetOpaqueThickness(
+        seam_pinned_opaque_thickness);
+  }
+  if (unpinned_left_overflow_indicator_) {
+    unpinned_left_overflow_indicator_->SetOpaqueThickness(
+        has_pinned ? seam_unpinned_opaque_thickness : leading_opaque_thickness);
+  }
+
+  const bool draw_pinned_above_unpinned = ShouldDrawPinnedAboveUnpinned();
+  if (draw_pinned_above_unpinned != is_drawing_pinned_above_unpinned_) {
+    is_drawing_pinned_above_unpinned_ = draw_pinned_above_unpinned;
+    ReorderLayers();
+  }
 }
 
 void TabStripView::OnContentsScrolled() {

@@ -950,7 +950,8 @@ gfx::Size TabView::GetMinimumSize() const {
 }
 
 void TabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (orientation_ == TabStripOrientation::kVertical) {
+  if (orientation_ == TabStripOrientation::kVertical &&
+      previous_bounds.size() != size()) {
     SetClipPath(GetPath());
   }
 }

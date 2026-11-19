@@ -20,6 +20,12 @@ class TabViewVerticalLayout : public TabView::LayoutManager {
   TabViewVerticalLayout& operator=(const TabViewVerticalLayout&) = delete;
   ~TabViewVerticalLayout() override;
 
+  // views::LayoutManagerBase:
+  gfx::Size GetPreferredSize(const views::View* host) const override;
+  gfx::Size GetPreferredSize(
+      const views::View* host,
+      const views::SizeBounds& available_size) const override;
+
  protected:
   // views::LayoutManagerBase:
   void OnInstalled(views::View* host) override;

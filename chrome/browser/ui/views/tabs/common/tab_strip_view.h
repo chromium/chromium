@@ -201,6 +201,7 @@ class TabStripView final : public views::View,
   bool is_first_window_presentation_ = true;
   bool is_collapsed_ = false;
   bool are_separators_hidden_ = false;
+  bool is_drawing_pinned_above_unpinned_ = false;
   int leading_overlap_ = 0;
   int trailing_overlap_ = 0;
 
