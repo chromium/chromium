@@ -398,8 +398,14 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonImmediateBrowserTest,
   }
 }
 
+// TODO(crbug.com/545897285): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_EnactModerateNewTabPrerender DISABLED_EnactModerateNewTabPrerender
+#else
+#define MAYBE_EnactModerateNewTabPrerender EnactModerateNewTabPrerender
+#endif
 IN_PROC_BROWSER_TEST_F(PreloadingDeciderBrowserTest,
-                       EnactModerateNewTabPrerender) {
+                       MAYBE_EnactModerateNewTabPrerender) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(NavigateToURL(
       shell(), GetTestURL("/preloading/preloading_decider_moderate.html")));
