@@ -49,12 +49,17 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/base_paths.h"
+#include "base/enterprise_util.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/win/windows_version.h"
 #include "chrome/updater/util/win_util.h"
+#elif BUILDFLAG(IS_MAC)
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #endif
 
 namespace updater {
@@ -766,6 +771,15 @@ TEST_F(RemoteEventLoggingTest, EventLoggerOutlivesRemoteEventLogging) {
 // `Configurator` alive (crbug.com/585592019).
 TEST(EventLoggerLifetimeTest, EventLoggerDoesNotRetainConfigurator) {
   static constexpr char kPermissionProvider[] = "EventLoggerLifetimeTest";
+#if BUILDFLAG(IS_WIN)
+  // Path overrides, so that the constructor of the `Configurator` doesn't need
+  // `SHGetFolderPath` while the registry is overridden. They are declared
+  // before the task environment, so that the tasks of the `Configurator`
+  // finish before the temporary directories are deleted.
+  base::ScopedPathOverride program_files_x86_override(
+      base::DIR_PROGRAM_FILESX86);
+  base::ScopedPathOverride local_app_data_override(base::DIR_LOCAL_APP_DATA);
+#endif
   base::test::TaskEnvironment task_environment;
   const UpdaterScope scope = GetUpdaterScopeForTesting();
 #if BUILDFLAG(IS_MAC)
@@ -773,19 +787,8 @@ TEST(EventLoggerLifetimeTest, EventLoggerDoesNotRetainConfigurator) {
     GTEST_SKIP() << "Enabling usage stats for the system scope writes to "
                     "/Library/Application Support, which requires root.";
   }
-#elif BUILDFLAG(IS_WIN)
-  registry_util::RegistryOverrideManager registry_override;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override.OverrideRegistry(UpdaterScopeToHKeyRoot(scope)));
 #endif
 
-  const absl::Cleanup clear_usage_stats = [scope] {
-    test::ClearAppAllowsUsageStats(scope, kPermissionProvider);
-  };
-  // Remote event logging is only allowed if the permission provider app
-  // enables usage stats.
-  ASSERT_NO_FATAL_FAILURE(test::SetAppAllowsUsageStats(
-      scope, kPermissionProvider, /*allowed=*/true));
   base::DictValue overrides;
   overrides.Set(kDevOverrideKeyEventLoggingPermissionProviderAppId,
                 kPermissionProvider);
@@ -799,11 +802,40 @@ TEST(EventLoggerLifetimeTest, EventLoggerDoesNotRetainConfigurator) {
   RegisterPersistedDataPrefs(pref->registry());
   scoped_refptr<UpdaterPrefs> prefs = base::MakeRefCounted<UpdaterPrefsImpl>(
       /*prefs_dir=*/base::FilePath(), /*lock=*/nullptr, std::move(pref));
-  scoped_refptr<Configurator> configurator = base::MakeRefCounted<Configurator>(
-      prefs,
-      base::MakeRefCounted<ExternalConstantsOverrider>(
-          std::move(overrides), CreateDefaultExternalConstants()),
-      scope);
+
+  // Remote event logging is only allowed if the permission provider app
+  // enables usage stats. Only the constructor of the `Configurator` checks
+  // this.
+  scoped_refptr<Configurator> configurator;
+  {
+#if BUILDFLAG(IS_WIN)
+    // The constructor of the `Configurator` queries whether the device is
+    // managed and the OS version, and `base` caches both for the lifetime of
+    // the process. Query them here, so that they are not computed from the
+    // overridden registry.
+    base::IsManagedOrEnterpriseDevice();
+    base::win::OSInfo::GetInstance();
+
+    // Override the registry only until the `Configurator` is constructed. When
+    // HKLM was still overridden while the network fetcher factory was created,
+    // socket creation failed in tests that ran after this one in the same
+    // process (crbug.com/587038399).
+    registry_util::RegistryOverrideManager registry_override;
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override.OverrideRegistry(UpdaterScopeToHKeyRoot(scope)));
+#else
+    const absl::Cleanup clear_usage_stats = [scope] {
+      test::ClearAppAllowsUsageStats(scope, kPermissionProvider);
+    };
+#endif
+    ASSERT_NO_FATAL_FAILURE(test::SetAppAllowsUsageStats(
+        scope, kPermissionProvider, /*allowed=*/true));
+    configurator = base::MakeRefCounted<Configurator>(
+        prefs,
+        base::MakeRefCounted<ExternalConstantsOverrider>(
+            std::move(overrides), CreateDefaultExternalConstants()),
+        scope);
+  }
   scoped_refptr<UpdaterEventLogger> event_logger =
       configurator->GetEventLogger();
   ASSERT_TRUE(event_logger);
