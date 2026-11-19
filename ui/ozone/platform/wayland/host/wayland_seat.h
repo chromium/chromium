@@ -47,6 +47,9 @@ class WaylandSeat : public wl::GlobalObjectRegistrar<WaylandSeat> {
   // Returns the current keyboard, which may be null.
   WaylandKeyboard* keyboard() const { return keyboard_.get(); }
 
+  // Returns the current tablet seat, which may be null.
+  WaylandTabletSeat* tablet_seat() const { return tablet_.get(); }
+
   // Creates or re-creates the keyboard object with the currently acquired
   // protocol objects, if possible.
   // Returns whether the object was created.

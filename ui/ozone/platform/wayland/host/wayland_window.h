@@ -151,6 +151,10 @@ class WaylandWindow : public PlatformWindow,
   bool HasPointerFocus() const;
   bool HasKeyboardFocus() const;
 
+  // Returns the cursor set with SetCursor(), or nullptr if there is none or it
+  // hasn't finished loading.
+  scoped_refptr<BitmapCursor> GetLoadedCursor() const;
+
   // The methods set or return whether this window has touch focus and should
   // dispatch touch events.
   void set_touch_focus(bool focus) { has_touch_focus_ = focus; }

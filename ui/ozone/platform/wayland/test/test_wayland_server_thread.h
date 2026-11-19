@@ -39,6 +39,7 @@
 #include "ui/ozone/platform/wayland/test/test_wp_linux_drm_syncobj.h"
 #include "ui/ozone/platform/wayland/test/test_wp_pointer_gestures.h"
 #include "ui/ozone/platform/wayland/test/test_xx_session_manager.h"
+#include "ui/ozone/platform/wayland/test/test_zwp_tablet.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_text_input_manager.h"
 #include "ui/ozone/platform/wayland/test/test_zxdg_output_manager.h"
 
@@ -78,6 +79,9 @@ struct ServerConfig {
   bool supports_session_management = false;
   // Whether to advertise the zxdg_output_manager_v1 global.
   bool supports_xdg_output = false;
+  // Whether to advertise the zwp_tablet_manager_v2 and
+  // wp_cursor_shape_manager_v1 globals.
+  bool supports_tablet = false;
 };
 
 class TestWaylandServerThread;
@@ -159,6 +163,7 @@ class TestWaylandServerThread : public base::Thread,
   }
   MockZwpLinuxDmabufV1* zwp_linux_dmabuf_v1() { return &zwp_linux_dmabuf_v1_; }
   TestWpColorManager* wp_color_manager() { return &wp_color_manager_; }
+  TestZwpTabletManager* zwp_tablet_manager() { return &zwp_tablet_manager_; }
 
   wl_display* display() const { return display_.get(); }
 
@@ -247,6 +252,8 @@ class TestWaylandServerThread : public base::Thread,
   TestWpColorManager wp_color_manager_;
   TestOrgKdeKwinAppmenuManager org_kde_kwin_appmenu_manager_;
   TestXxSessionManager xx_session_manager_;
+  TestZwpTabletManager zwp_tablet_manager_;
+  TestWpCursorShapeManager wp_cursor_shape_manager_;
   std::unique_ptr<TestSelectionDeviceManager> primary_selection_device_manager_;
 
   std::vector<std::unique_ptr<GlobalObject>> globals_;

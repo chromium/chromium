@@ -8,7 +8,9 @@
 #include <linux/input-event-codes.h>
 #include <tablet-unstable-v2-client-protocol.h>
 
+#include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/events/event.h"
+#include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
@@ -90,6 +92,33 @@ WaylandTabletTool::WaylandTabletTool(zwp_tablet_tool_v2* tool,
 }
 
 WaylandTabletTool::~WaylandTabletTool() = default;
+
+void WaylandTabletTool::SetCursor(const BitmapCursor* cursor) {
+  // Bitmap cursors aren't supported for tablet tools, so without the cursor
+  // shape protocol the compositor's cursor is left as is. In particular, it
+  // isn't hidden, as there would be no way to show it again.
+  // TODO(crbug.com/403365464): Draw bitmap cursors on a surface set with
+  // zwp_tablet_tool_v2.set_cursor.
+  if (!proximity_serial_ || !cursor_shape_device_) {
+    return;
+  }
+
+  if (cursor && cursor->type() == mojom::CursorType::kNone) {
+    zwp_tablet_tool_v2_set_cursor(tool_.get(), *proximity_serial_, nullptr, 0,
+                                  0);
+    return;
+  }
+
+  // Custom cursors fall back to the default shape.
+  // TODO(crbug.com/403365464): Draw custom cursors as bitmaps instead.
+  std::optional<uint32_t> shape;
+  if (cursor) {
+    shape = WaylandCursorShape::ShapeFromType(cursor->type());
+  }
+  wp_cursor_shape_device_v1_set_shape(
+      cursor_shape_device_.get(), *proximity_serial_,
+      shape.value_or(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT));
+}
 
 void WaylandTabletTool::DispatchBufferedEvents() {
   if (frame_data_.proximity_in && frame_data_.proximity_target.get()) {
@@ -199,16 +228,17 @@ void WaylandTabletTool::ProximityIn(void* data,
           shape->CreateTabletToolShapeDevice(self->tool_.get());
     }
   }
-  if (self->cursor_shape_device_) {
-    wp_cursor_shape_device_v1_set_shape(
-        self->cursor_shape_device_.get(), serial,
-        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT);
-  }
 
-  if (!surface) {
-    return;
-  }
-  WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
+  WaylandWindow* window =
+      surface ? wl::RootWindowFromWlSurface(surface) : nullptr;
+  self->proximity_serial_ = serial;
+  self->focused_window_ =
+      window ? window->AsWeakPtr() : base::WeakPtr<WaylandWindow>();
+
+  // The window updates the cursors of the tools in proximity whenever its
+  // cursor changes, but the tool still needs the window's current cursor.
+  self->SetCursor(window ? window->GetLoadedCursor().get() : nullptr);
+
   if (!window) {
     return;
   }
@@ -218,12 +248,13 @@ void WaylandTabletTool::ProximityIn(void* data,
   self->frame_data_.proximity_in = true;
   self->frame_data_.proximity_out = false;
   self->frame_data_.proximity_target = window->AsWeakPtr();
-  self->frame_data_.proximity_serial = serial;
 }
 
 // static
 void WaylandTabletTool::ProximityOut(void* data, zwp_tablet_tool_v2* tool) {
   auto* self = static_cast<WaylandTabletTool*>(data);
+  self->proximity_serial_.reset();
+  self->focused_window_.reset();
   self->frame_data_.proximity_out = true;
   self->frame_data_.proximity_in = false;
 }

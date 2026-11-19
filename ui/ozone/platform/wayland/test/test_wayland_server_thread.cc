@@ -121,6 +121,13 @@ bool TestWaylandServerThread::Start() {
     return false;
   }
 
+  if (config_.supports_tablet) {
+    if (!zwp_tablet_manager_.Initialize(display_.get()) ||
+        !wp_cursor_shape_manager_.Initialize(display_.get())) {
+      return false;
+    }
+  }
+
   if (!seat_.Initialize(display_.get()))
     return false;
 

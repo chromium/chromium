@@ -16,10 +16,12 @@ struct zwp_tablet_seat_v2;
 
 namespace ui {
 
+class BitmapCursor;
 class WaylandConnection;
+class WaylandEventSource;
 class WaylandTablet;
 class WaylandTabletTool;
-class WaylandEventSource;
+class WaylandWindow;
 
 // Wraps the zwp_tablet_seat_v2 object.
 class WaylandTabletSeat {
@@ -34,6 +36,10 @@ class WaylandTabletSeat {
   // Erases the tablet or tool object from the internal map.
   void OnTabletRemoved(WaylandTablet* tablet);
   void OnToolRemoved(WaylandTabletTool* tool);
+
+  // Applies `cursor` to the tools in proximity of `window`. A null `cursor`
+  // means the default cursor.
+  void UpdateCursor(const WaylandWindow* window, const BitmapCursor* cursor);
 
  private:
   // zwp_tablet_seat_v2_listener callbacks:

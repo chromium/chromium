@@ -60,6 +60,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
+#include "ui/ozone/platform/wayland/host/wayland_tablet_seat.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
@@ -474,6 +475,13 @@ bool WaylandWindow::HasPointerFocus() const {
 bool WaylandWindow::HasKeyboardFocus() const {
   return this ==
          connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
+}
+
+scoped_refptr<BitmapCursor> WaylandWindow::GetLoadedCursor() const {
+  if (!async_cursor_ || !async_cursor_->loaded()) {
+    return nullptr;
+  }
+  return async_cursor_->bitmap_cursor();
 }
 
 void WaylandWindow::RemoveEnteredOutput(uint32_t output_id) {
@@ -1551,8 +1559,16 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
 
 void WaylandWindow::OnCursorLoaded(scoped_refptr<WaylandAsyncCursor> cursor,
                                    scoped_refptr<BitmapCursor> bitmap_cursor) {
-  if (HasPointerFocus() && async_cursor_ == cursor && bitmap_cursor) {
+  if (async_cursor_ != cursor || !bitmap_cursor) {
+    return;
+  }
+  if (HasPointerFocus()) {
     UpdateCursorShape(bitmap_cursor);
+  }
+  // Tablet tools have cursors of their own, separate from wl_pointer's, and
+  // may be in proximity of this window while wl_pointer is elsewhere.
+  if (auto* seat = connection_->seat(); seat && seat->tablet_seat()) {
+    seat->tablet_seat()->UpdateCursor(this, bitmap_cursor.get());
   }
 }
 

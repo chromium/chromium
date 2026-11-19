@@ -64,4 +64,13 @@ void WaylandTabletSeat::OnToolRemoved(WaylandTabletTool* tool) {
   tools_.erase(tool->id());
 }
 
+void WaylandTabletSeat::UpdateCursor(const WaylandWindow* window,
+                                     const BitmapCursor* cursor) {
+  for (auto& [id, tool] : tools_) {
+    if (tool->focused_window() == window) {
+      tool->SetCursor(cursor);
+    }
+  }
+}
+
 }  // namespace ui

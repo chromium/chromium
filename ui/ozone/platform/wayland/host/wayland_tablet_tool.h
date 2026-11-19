@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TABLET_TOOL_H_
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -16,6 +17,7 @@
 
 namespace ui {
 
+class BitmapCursor;
 class WaylandConnection;
 class WaylandTabletSeat;
 class WaylandWindow;
@@ -34,6 +36,14 @@ class WaylandTabletTool {
   ~WaylandTabletTool();
 
   uint32_t id() const { return tool_.id(); }
+
+  // Returns the window the tool is in proximity of, if any.
+  WaylandWindow* focused_window() const { return focused_window_.get(); }
+
+  // Sets the tool's cursor while it is in proximity of a surface. A null
+  // `cursor` means the default cursor. Does nothing if the compositor lacks
+  // wp_cursor_shape_manager_v1.
+  void SetCursor(const BitmapCursor* cursor);
 
  private:
   // zwp_tablet_tool_v2_listener callbacks:
@@ -95,6 +105,12 @@ class WaylandTabletTool {
 
   wl::Object<wp_cursor_shape_device_v1> cursor_shape_device_;
 
+  // The serial of the last proximity_in event and the window it targeted,
+  // kept until the tool leaves proximity. The serial is needed to set the
+  // tool's cursor.
+  std::optional<uint32_t> proximity_serial_;
+  base::WeakPtr<WaylandWindow> focused_window_;
+
   // Stores the state of the current event frame.
   struct FrameData {
     FrameData();
@@ -104,7 +120,6 @@ class WaylandTabletTool {
     bool up = false;
     bool proximity_in = false;
     bool proximity_out = false;
-    uint32_t proximity_serial = 0;
     base::WeakPtr<WaylandWindow> proximity_target;
     std::vector<std::pair<uint32_t, bool>> button_states;
     PointerDetails pointer_details;
