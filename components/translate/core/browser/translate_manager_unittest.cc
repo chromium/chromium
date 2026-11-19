@@ -1919,6 +1919,68 @@ TEST_F(TranslateManagerTest, RevertTranslationTriggersRevertPdfTranslation) {
   translate_manager_->RevertTranslation();
 }
 
+TEST_F(TranslateManagerTest, CancelPendingTranslationRevertsTranslation) {
+  PrepareTranslateManager();
+  LanguageState* language_state = translate_manager_->GetLanguageState();
+  language_state->LanguageDetermined("fr", true);
+  // A translation is in progress, e.g. of a PDF in Reading Mode.
+  language_state->set_translation_pending(true);
+
+  translate_manager_->CancelPendingTranslation();
+
+  // Reverting stops the translation, which the renderer then reports as
+  // cancelled, so the page isn't marked as translated.
+  EXPECT_TRUE(driver_.RevertTranslation_is_called());
+  EXPECT_FALSE(language_state->translation_pending());
+  EXPECT_FALSE(language_state->IsPageTranslated());
+}
+
+TEST_F(TranslateManagerTest,
+       CancelPendingTranslationClearsPendingTranslationLanguages) {
+  PrepareTranslateManager();
+  LanguageState* language_state = translate_manager_->GetLanguageState();
+  // A PDF translation that's waiting for Reading Mode to open.
+  language_state->set_translation_pending(true);
+  language_state->SetPendingTranslationLanguages(GetKnownLanguageTag("fr"),
+                                                 GetKnownLanguageTag("en"));
+
+  translate_manager_->CancelPendingTranslation();
+
+  EXPECT_FALSE(language_state->translation_pending());
+  EXPECT_FALSE(language_state->pending_source_language().has_value());
+  EXPECT_FALSE(language_state->pending_target_language().has_value());
+}
+
+TEST_F(TranslateManagerTest,
+       CancelPendingTranslationDoesNothingWithoutPendingTranslation) {
+  PrepareTranslateManager();
+  LanguageState* language_state = translate_manager_->GetLanguageState();
+  language_state->LanguageDetermined("fr", true);
+  language_state->SetCurrentLanguage("en");
+
+  translate_manager_->CancelPendingTranslation();
+
+  // A translated page isn't reverted.
+  EXPECT_FALSE(driver_.RevertTranslation_is_called());
+  EXPECT_TRUE(language_state->IsPageTranslated());
+}
+
+TEST_F(TranslateManagerTest, TranslationAfterCancelledTranslationIsApplied) {
+  PrepareTranslateManager();
+  LanguageState* language_state = translate_manager_->GetLanguageState();
+  language_state->LanguageDetermined("fr", true);
+  language_state->set_translation_pending(true);
+  translate_manager_->CancelPendingTranslation();
+
+  // A later translation finishing isn't affected by the cancellation.
+  EXPECT_CALL(mock_translate_client_,
+              ShowTranslateUI(TRANSLATE_STEP_AFTER_TRANSLATE, "fr", "en",
+                              TranslateErrors::NONE, _))
+      .WillOnce(Return(true));
+  translate_manager_->PageTranslated("fr", "en", TranslateErrors::NONE);
+  EXPECT_TRUE(language_state->IsPageTranslated());
+}
+
 TEST_F(TranslateManagerTest, DisableTranslateTriggerFeature) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kTranslateTrigger);

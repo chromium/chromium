@@ -30,6 +30,11 @@ void MockTranslateDriver::TranslatePage(int page_seq_no,
 void MockTranslateDriver::Reset() {
   on_is_page_translated_changed_called_ = false;
   on_translate_enabled_changed_called_ = false;
+  revert_translation_is_called_ = false;
+}
+
+void MockTranslateDriver::RevertTranslation(int page_seq_no) {
+  revert_translation_is_called_ = true;
 }
 
 void MockTranslateDriver::OnIsPageTranslatedChanged() {

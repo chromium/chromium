@@ -523,6 +523,19 @@ void TranslateManager::RevertTranslation() {
   translate_client_->RevertPdfTranslation();
 }
 
+void TranslateManager::CancelPendingTranslation() {
+  if (!language_state_.translation_pending()) {
+    return;
+  }
+  // Reverting stops a translation that's in progress: the renderer cancels it
+  // and reports it as cancelled, so the page isn't marked as translated, and
+  // restores the original content. It does nothing for a translation that
+  // hasn't started yet. Clearing the pending state also clears the pending
+  // translation languages, so that such a translation won't start.
+  translate_driver_->RevertTranslation(page_seq_no_);
+  language_state_.set_translation_pending(false);
+}
+
 void TranslateManager::DoTranslatePage(std::string_view translate_script,
                                        std::string_view source_lang,
                                        std::string_view target_lang) {

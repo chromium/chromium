@@ -33,7 +33,7 @@ class MockTranslateDriver : public TranslateDriver {
                      std::string_view translate_script,
                      std::string_view source_lang,
                      std::string_view target_lang) override;
-  void RevertTranslation(int page_seq_no) override {}
+  void RevertTranslation(int page_seq_no) override;
   bool IsIncognito() const override;
   const std::string& GetContentsMimeType() override;
   const GURL& GetLastCommittedURL() const override;
@@ -54,6 +54,10 @@ class MockTranslateDriver : public TranslateDriver {
 
   bool TranslatePage_is_called() const { return translate_page_is_called_; }
 
+  bool RevertTranslation_is_called() const {
+    return revert_translation_is_called_;
+  }
+
   void SetLastCommittedURL(const GURL& url);
   void SetVisibleURL(const GURL& url);
 
@@ -64,6 +68,7 @@ class MockTranslateDriver : public TranslateDriver {
   bool on_is_page_translated_changed_called_;
   bool on_translate_enabled_changed_called_;
   bool translate_page_is_called_;
+  bool revert_translation_is_called_ = false;
   LanguageState language_state_;
   GURL last_committed_url_;
   std::string page_mime_type_ = "text/html";

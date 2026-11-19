@@ -162,6 +162,12 @@ class TranslateManager {
   // Reverts the contents of the page to its original language.
   void RevertTranslation();
 
+  // Cancels the translation that's pending, if any, e.g. for a PDF when Reading
+  // Mode closes while it's being translated in Reading Mode. A translation
+  // that's in progress is stopped and reverted, so the page isn't marked as
+  // translated, and one that hasn't started yet won't start.
+  void CancelPendingTranslation();
+
   // Global Callbacks
 
   // The three callbacks below (translate error, translate initialization, and

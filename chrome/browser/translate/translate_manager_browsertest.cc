@@ -10,7 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -50,6 +53,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
 #include "components/translate/core/browser/translate_error_details.h"
@@ -1512,6 +1516,37 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, NoAutoTranslateNoToast) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+// A translate script whose translation is only finished when the test calls
+// `window.finishTranslation()` in the translate isolated world.
+static const char kTestScriptFinishesOnRequest[] =
+    "var google = {};"
+    "window.isTranslationRestored = false;"
+    "google.translate = (function() {"
+    "  return {"
+    "    TranslateService: function() {"
+    "      return {"
+    "        isAvailable : function() {"
+    "          return true;"
+    "        },"
+    "        restore : function() {"
+    "          isTranslationRestored = true;"
+    "          return;"
+    "        },"
+    "        getDetectedLanguage : function() {"
+    "          return \"fr\";"
+    "        },"
+    "        translatePage : function(sourceLang, targetLang,"
+    "                                 onTranslateProgress) {"
+    "          window.finishTranslation = function() {"
+    "            onTranslateProgress(100, true, false);"
+    "          };"
+    "        }"
+    "      };"
+    "    }"
+    "  };"
+    "})();"
+    "cr.googleTranslate.onTranslateElementLoad();";
+
 // Tests the integration between ChromeTranslateClient and Reading Mode. These
 // tests only check whether Reading Mode is open or closed, not its content, so
 // Reading Mode is frozen to ignore distillation results. Otherwise, an empty
@@ -1554,6 +1589,54 @@ class TranslateManagerReadingModeBrowserTest
     raw_ptr<ReadAnythingController> controller_;
     std::vector<ReadAnythingCloseReason> reasons_;
   };
+
+  // Counts the translated pages that the translate driver notifies its
+  // observers about.
+  class PageTranslatedRecorder
+      : public ContentTranslateDriver::TranslationObserver {
+   public:
+    explicit PageTranslatedRecorder(ContentTranslateDriver* driver)
+        : driver_(driver) {
+      driver_->AddTranslationObserver(this);
+    }
+    ~PageTranslatedRecorder() override {
+      driver_->RemoveTranslationObserver(this);
+    }
+
+    int count() const { return count_; }
+
+    // ContentTranslateDriver::TranslationObserver:
+    void OnPageTranslated(std::string_view source_lang,
+                          std::string_view translated_lang,
+                          TranslateErrors error_type) override {
+      ++count_;
+    }
+
+   private:
+    raw_ptr<ContentTranslateDriver> driver_;
+    int count_ = 0;
+  };
+
+  // Waits until `condition` is true in the translate isolated world of
+  // `frame`.
+  [[nodiscard]] bool WaitInTranslateWorld(content::RenderFrameHost* frame,
+                                          std::string_view condition) {
+    return content::EvalJs(frame,
+                           base::StrCat({R"(
+                               new Promise(resolve => {
+                                 const check = () => {
+                                   if ()",
+                                         condition, R"() {
+                                     resolve(true);
+                                   } else {
+                                     setTimeout(check, 50);
+                                   }
+                                 };
+                                 check();
+                               }))"}),
+                           content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                           ISOLATED_WORLD_ID_TRANSLATE) == true;
+  }
 
   ReadAnythingController* GetActiveReadAnythingController() {
     return ReadAnythingController::From(
@@ -1890,6 +1973,87 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
   EXPECT_FALSE(language_state->pending_source_language().has_value());
   EXPECT_FALSE(language_state->pending_target_language().has_value());
   EXPECT_FALSE(language_state->IsPageTranslated());
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
+                       ClosingSidePanelCancelsInProgressPdfTranslation) {
+  ChromeTranslateClient* chrome_translate_client = OpenFrenchPage();
+  // Use a translate script that only finishes translating when asked to, so
+  // that the translation is still in progress when Reading Mode closes.
+  SetTranslateScript(kTestScriptFinishesOnRequest);
+  TranslateManager* manager = chrome_translate_client->GetTranslateManager();
+  ASSERT_TRUE(manager);
+  LanguageState* language_state = manager->GetLanguageState();
+
+  chrome_translate_client->TriggerPdfTranslation();
+  ASSERT_TRUE(WaitForReadingModeSidePanel());
+
+  // Observes the driver, which notifies observers about translated pages
+  // when the renderer reports the translation as done.
+  PageTranslatedRecorder page_translated_recorder(
+      chrome_translate_client->translate_driver());
+  manager->TranslatePage("fr", "en", /*triggered_from_menu=*/true);
+  content::RenderFrameHost* main_frame = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
+  ASSERT_TRUE(WaitInTranslateWorld(
+      main_frame, "typeof window.finishTranslation === 'function'"));
+  ASSERT_TRUE(language_state->translation_pending());
+
+  // Closing the side panel while the translation is in progress should cancel
+  // it. Reading Mode's contents stay alive while it's closed, so the
+  // translation is stopped by reverting it in the renderer.
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(side_panel_ui);
+  side_panel_ui->Close();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
+  EXPECT_FALSE(language_state->translation_pending());
+  ASSERT_TRUE(
+      WaitInTranslateWorld(main_frame, "window.isTranslationRestored"));
+
+  // Finishing the translation after it was cancelled shouldn't report it to
+  // the browser. Give the renderer time to check the translation's status,
+  // which it would do if the translation were still in progress.
+  ASSERT_TRUE(content::ExecJs(main_frame, "window.finishTranslation();",
+                              content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                              ISOLATED_WORLD_ID_TRANSLATE));
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
+  run_loop.Run();
+
+  // The page isn't marked as translated, and observers aren't told that it
+  // was translated.
+  EXPECT_FALSE(language_state->IsPageTranslated());
+  EXPECT_EQ(0, page_translated_recorder.count());
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
+                       ClosingSidePanelCancelsInProgressPdfRetranslation) {
+  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+  TranslateManager* manager = chrome_translate_client->GetTranslateManager();
+  ASSERT_TRUE(manager);
+  LanguageState* language_state = manager->GetLanguageState();
+  language_state->LanguageDetermined("fr", true);
+
+  chrome_translate_client->TriggerPdfTranslation();
+  ASSERT_TRUE(WaitForReadingModeSidePanel());
+  // The PDF was translated to English, and is being re-translated to German.
+  language_state->SetCurrentLanguage("en");
+  language_state->set_translation_pending(true);
+  ASSERT_TRUE(language_state->IsPageTranslated());
+
+  // Closing the side panel should both revert the translation and cancel the
+  // re-translation.
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(side_panel_ui);
+  side_panel_ui->Close();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
+  EXPECT_FALSE(language_state->IsPageTranslated());
+  EXPECT_FALSE(language_state->translation_pending());
 }
 
 IN_PROC_BROWSER_TEST_F(
