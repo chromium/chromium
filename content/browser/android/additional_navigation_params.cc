@@ -4,12 +4,12 @@
 
 #include "content/browser/android/additional_navigation_params.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/android/jni_string.h"
 #include "base/android/unguessable_token_android.h"
 #include "base/memory/scoped_refptr.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/android/child_process_id.h"
 #include "content/public/browser/initiator_navigation_state.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -33,18 +33,20 @@ namespace content {
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalNavigationParams(
     JNIEnv* env,
-    RenderFrameHost& initiator_frame_host) {
-  auto* rfhi = static_cast<RenderFrameHostImpl*>(&initiator_frame_host);
-  scoped_refptr<InitiatorNavigationState> initiator_navigation_state =
-      rfhi->GetCurrentInitiatorNavigationState();
+    const std::optional<blink::LocalFrameToken>& initiator_frame_token,
+    ChildProcessId initiator_process_id,
+    scoped_refptr<InitiatorNavigationState> initiator_navigation_state) {
   jni_zero::JniUniquePtr<InitiatorNavigationStateWrapper> wrapper;
   if (initiator_navigation_state) {
     wrapper = jni_zero::MakeUnique<InitiatorNavigationStateWrapper>(
         std::move(initiator_navigation_state));
   }
   return Java_AdditionalNavigationParamsImpl_Constructor(
-      env, initiator_frame_host.GetFrameToken().value(),
-      initiator_frame_host.GetProcess()->GetID(), std::move(wrapper));
+      env,
+      initiator_frame_token ? std::optional<base::UnguessableToken>(
+                                  initiator_frame_token->value())
+                            : std::nullopt,
+      initiator_process_id, std::move(wrapper));
 }
 
 std::optional<blink::LocalFrameToken>

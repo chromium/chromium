@@ -57,7 +57,9 @@ IN_PROC_BROWSER_TEST_F(AdditionalNavigationParamsBrowserTest,
 
   base::android::ScopedJavaLocalRef<jobject> java_params =
       CreateJavaAdditionalNavigationParams(
-          base::android::AttachCurrentThread(), *child_rfh);
+          base::android::AttachCurrentThread(), child_rfh->GetFrameToken(),
+          child_rfh->GetProcess()->GetID(),
+          child_rfh->GetCurrentInitiatorNavigationState());
   ASSERT_TRUE(java_params);
 
   // Detach the initiator frame while still holding the params.

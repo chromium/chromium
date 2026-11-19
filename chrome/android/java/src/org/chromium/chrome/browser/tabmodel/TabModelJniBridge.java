@@ -46,6 +46,7 @@ import org.chromium.components.split_tabs.SplitTabVisualData;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabStripCollection;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -401,8 +402,14 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             int disposition,
             boolean persistParentage,
             boolean isRendererInitiated,
-            boolean hasUserGesture) {
-        if (parent.isClosing()) return;
+            boolean hasUserGesture,
+            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        if (parent.isClosing()) {
+            if (additionalNavigationParams != null) {
+                additionalNavigationParams.destroy();
+            }
+            return;
+        }
 
         boolean incognito = parent.isIncognito();
         @TabLaunchType int tabLaunchType = TabLaunchType.FROM_LONGPRESS_FOREGROUND;
@@ -437,6 +444,13 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         loadUrlParams.setPostData(postData);
         loadUrlParams.setIsRendererInitiated(isRendererInitiated);
         loadUrlParams.setHasUserGesture(hasUserGesture);
+        if (additionalNavigationParams != null) {
+            if (incognito != parent.isIncognito()) {
+                additionalNavigationParams.destroy();
+            } else {
+                loadUrlParams.setAdditionalNavigationParams(additionalNavigationParams);
+            }
+        }
         getTabCreator(incognito)
                 .createNewTab(loadUrlParams, tabLaunchType, persistParentage ? parent : null);
     }

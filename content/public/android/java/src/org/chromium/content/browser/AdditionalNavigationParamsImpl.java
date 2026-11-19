@@ -25,7 +25,7 @@ public class AdditionalNavigationParamsImpl implements AdditionalNavigationParam
     @JniType("::content::InitiatorNavigationStateWrapper")
     interface NativeInitiatorNavigationStateWrapper extends JniTypeToken {}
 
-    private final UnguessableToken mInitiatorFrameToken;
+    private final @Nullable UnguessableToken mInitiatorFrameToken;
     private final ChildProcessId mInitiatorProcessId;
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private @Nullable JniUniquePtr<NativeInitiatorNavigationStateWrapper>
@@ -33,7 +33,8 @@ public class AdditionalNavigationParamsImpl implements AdditionalNavigationParam
 
     @CalledByNative
     AdditionalNavigationParamsImpl(
-            @JniType("base::UnguessableToken") UnguessableToken initiatorFrameToken,
+            @JniType("std::optional<base::UnguessableToken>")
+                    @Nullable UnguessableToken initiatorFrameToken,
             @JniType("content::ChildProcessId") ChildProcessId initiatorProcessId,
             @Nullable JniUniquePtr<NativeInitiatorNavigationStateWrapper>
                     initiatorNavigationStateWrapper) {
@@ -43,7 +44,7 @@ public class AdditionalNavigationParamsImpl implements AdditionalNavigationParam
     }
 
     @CalledByNative
-    private @JniType("std::optional<base::UnguessableToken>") UnguessableToken
+    private @JniType("std::optional<base::UnguessableToken>") @Nullable UnguessableToken
             getInitiatorFrameToken() {
         return mInitiatorFrameToken;
     }

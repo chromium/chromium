@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -75,7 +76,12 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionCause;
+import org.chromium.content_public.browser.AdditionalNavigationParams;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -284,6 +290,55 @@ public class TabCollectionTabModelImplUnitTest {
     @Test
     public void testGetTabCreator() {
         assertEquals(mRegularTabCreator, mTabModel.getTabCreator());
+    }
+
+    @Test
+    public void testOpenNewTabDestroysAdditionalNavigationParamsWhenDiscarded() {
+        MockTab parent = createMockTab(/* tabId= */ 1, mProfile);
+        ResourceRequestBody.setNativesForTesting(mock(ResourceRequestBody.Natives.class));
+        ResourceRequestBody postData = ResourceRequestBody.createFromBytes(new byte[0]);
+
+        // 1. Parent is closing: params are destroyed and no tab is created.
+        parent.setClosing(true);
+        AdditionalNavigationParams closingParams = mock(AdditionalNavigationParams.class);
+        mTabModel.openNewTab(
+                parent,
+                GURL.emptyGURL(),
+                /* initiatorOrigin= */ null,
+                /* extraHeaders= */ "",
+                postData,
+                WindowOpenDisposition.NEW_FOREGROUND_TAB,
+                /* persistParentage= */ false,
+                /* isRendererInitiated= */ false,
+                /* hasUserGesture= */ false,
+                closingParams);
+        verify(closingParams).destroy();
+        verify(mRegularTabCreator, never()).createNewTab(any(), anyInt(), any());
+
+        // 2. Crossing into incognito from a non-incognito parent: params are destroyed and not
+        // forwarded on LoadUrlParams.
+        parent.setClosing(false);
+        AdditionalNavigationParams otrParams = mock(AdditionalNavigationParams.class);
+        mTabModel.openNewTab(
+                parent,
+                GURL.emptyGURL(),
+                /* initiatorOrigin= */ null,
+                /* extraHeaders= */ "",
+                postData,
+                WindowOpenDisposition.OFF_THE_RECORD,
+                /* persistParentage= */ false,
+                /* isRendererInitiated= */ false,
+                /* hasUserGesture= */ false,
+                otrParams);
+        verify(otrParams).destroy();
+        ArgumentCaptor<LoadUrlParams> loadUrlParamsCaptor =
+                ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mIncognitoTabCreator)
+                .createNewTab(
+                        loadUrlParamsCaptor.capture(),
+                        eq(TabLaunchType.FROM_LONGPRESS_FOREGROUND),
+                        isNull());
+        assertNull(loadUrlParamsCaptor.getValue().getAdditionalNavigationParams());
     }
 
     @Test

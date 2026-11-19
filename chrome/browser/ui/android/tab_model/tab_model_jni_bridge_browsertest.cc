@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -34,7 +35,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -618,6 +622,56 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeDisabledBackgroundTabLoadingTest,
 
   // Should still need reload because background loading policy was not active.
   EXPECT_TRUE(tab2->GetContents()->GetController().NeedsReload());
+}
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest,
+                       HandlePopupNavigationPreservesInitiatorPolicyContainer) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != "/csp.html") {
+          return nullptr;
+        }
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->set_content_type("text/html");
+        response->AddCustomHeader("Content-Security-Policy",
+                                  "script-src 'self'");
+        response->set_content("<!doctype html><html><body></body></html>");
+        return response;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL url = embedded_test_server()->GetURL("a.test", "/csp.html");
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_TRUE(tab_list);
+  tabs::TabInterface* initial_tab = NavigateTab(tab_list->GetTab(0), url);
+  ASSERT_TRUE(initial_tab);
+
+  content::WebContentsAddedObserver new_tab_observer;
+  ASSERT_TRUE(content::ExecJs(initial_tab->GetContents(),
+                              R"(
+        const html = "<title>INITIAL</title>" +
+                     "<script>document.title='EXECUTED';</script>";
+        const blobUrl = URL.createObjectURL(
+            new Blob([html], {type: "text/html"}));
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        document.body.appendChild(a);
+        a.dispatchEvent(new MouseEvent("click", {
+          ctrlKey: true,
+          shiftKey: true,
+          bubbles: true,
+          cancelable: true
+        }));
+      )"));
+
+  content::WebContents* new_contents = new_tab_observer.GetWebContents();
+  ASSERT_TRUE(new_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(new_contents));
+
+  EXPECT_TRUE(new_contents->GetLastCommittedURL().SchemeIsBlob());
+  EXPECT_EQ(u"INITIAL", new_contents->GetTitle());
 }
 
 }  // namespace

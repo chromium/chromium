@@ -117,6 +117,12 @@ public class AsyncTabCreationParams implements AsyncTabParams {
 
     @Override
     public void destroy() {
+        mLoadUrlParams.destroyAdditionalNavigationParams();
+        destroyPreservingLoadUrlParams();
+    }
+
+    @Override
+    public void destroyPreservingLoadUrlParams() {
         if (mWebContents != null) mWebContents.destroy();
     }
 }

@@ -1485,7 +1485,8 @@ public class TabModelImplTest {
                             WindowOpenDisposition.NEW_WINDOW,
                             /* persistParentage= */ false,
                             /* isRendererInitiated= */ false,
-                            /* hasUserGesture= */ false);
+                            /* hasUserGesture= */ false,
+                            /* additionalNavigationParams= */ null);
                 });
         if (expectReparent) {
             CriteriaHelper.pollUiThread(

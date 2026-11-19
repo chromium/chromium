@@ -385,15 +385,7 @@ public class ChromeTabCreatorJUnitTest {
 
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         RedirectTabCreator redirectTabCreator =
-                new RedirectTabCreator(
-                        activity,
-                        mock(WindowAndroid.class),
-                        () -> mock(TabDelegateFactory.class),
-                        new OneshotSupplierImpl<>(),
-                        /* incognito= */ true,
-                        AsyncTabParamsManagerSingleton.getInstance(),
-                        SupplierUtils.ofNull(),
-                        SupplierUtils.ofNull());
+                createRedirectTabCreator(activity, /* incognito= */ true);
         redirectTabCreator.setTabModel(mock(TabModel.class));
 
         int tabId = 321;
@@ -422,18 +414,84 @@ public class ChromeTabCreatorJUnitTest {
     }
 
     @Test
+    public void testRedirectTabCreator_PreservesAdditionalNavigationParamsAcrossDestroy() {
+        MultiInstanceOrchestrator orchestrator = mock(MultiInstanceOrchestrator.class);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(orchestrator);
+
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        RedirectTabCreator redirectTabCreator =
+                createRedirectTabCreator(activity, /* incognito= */ true);
+
+        int tabId = 322;
+        LoadUrlParams loadUrlParams = new LoadUrlParams("https://example.com");
+        AdditionalNavigationParams additionalParams = mock(AdditionalNavigationParams.class);
+        loadUrlParams.setAdditionalNavigationParams(additionalParams);
+        AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(loadUrlParams);
+        AsyncTabParamsManagerSingleton.getInstance().add(tabId, asyncParams);
+
+        Intent intent = new Intent();
+        IntentHandler.setTabId(intent, tabId);
+
+        redirectTabCreator.createNewTabs(
+                loadUrlParams,
+                /* additionalUrls= */ null,
+                TabLaunchType.FROM_CHROME_UI,
+                /* parent= */ null,
+                /* openInTabGroup= */ false,
+                intent);
+
+        assertFalse(
+                "AsyncTabParams must be removed after RedirectTabCreator.createNewTabs",
+                AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId));
+        verify(additionalParams, never()).destroy();
+        assertEquals(additionalParams, loadUrlParams.getAdditionalNavigationParams());
+        verify(orchestrator)
+                .openUrlsInOtherWindow(
+                        eq(activity),
+                        eq(loadUrlParams),
+                        isNull(),
+                        eq(Tab.INVALID_TAB_ID),
+                        eq(false),
+                        eq(true),
+                        eq(false));
+    }
+
+    @Test
+    public void testAsyncTabCreationParams_DestroyDestroysAdditionalNavigationParams() {
+        LoadUrlParams destroyLoadUrlParams = new LoadUrlParams("https://example.com");
+        AdditionalNavigationParams destroyAdditionalParams = mock(AdditionalNavigationParams.class);
+        destroyLoadUrlParams.setAdditionalNavigationParams(destroyAdditionalParams);
+        WebContents destroyWebContents = mock(WebContents.class);
+        AsyncTabCreationParams destroyParams =
+                new AsyncTabCreationParams(destroyLoadUrlParams, destroyWebContents);
+
+        destroyParams.destroy();
+
+        verify(destroyAdditionalParams).destroy();
+        verify(destroyWebContents).destroy();
+        assertNull(destroyLoadUrlParams.getAdditionalNavigationParams());
+
+        LoadUrlParams preservedLoadUrlParams = new LoadUrlParams("https://example.com");
+        AdditionalNavigationParams preservedAdditionalParams =
+                mock(AdditionalNavigationParams.class);
+        preservedLoadUrlParams.setAdditionalNavigationParams(preservedAdditionalParams);
+        WebContents preservedWebContents = mock(WebContents.class);
+        AsyncTabCreationParams preservedParams =
+                new AsyncTabCreationParams(preservedLoadUrlParams, preservedWebContents);
+
+        preservedParams.destroyPreservingLoadUrlParams();
+
+        verify(preservedAdditionalParams, never()).destroy();
+        verify(preservedWebContents).destroy();
+        assertEquals(
+                preservedAdditionalParams, preservedLoadUrlParams.getAdditionalNavigationParams());
+    }
+
+    @Test
     public void testRedirectTabCreator_CreateFrozenTabReturnsNullAndDestroysAsyncParams() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         RedirectTabCreator redirectTabCreator =
-                new RedirectTabCreator(
-                        activity,
-                        mock(WindowAndroid.class),
-                        () -> mock(TabDelegateFactory.class),
-                        new OneshotSupplierImpl<>(),
-                        /* incognito= */ false,
-                        AsyncTabParamsManagerSingleton.getInstance(),
-                        SupplierUtils.ofNull(),
-                        SupplierUtils.ofNull());
+                createRedirectTabCreator(activity, /* incognito= */ false);
         TabModel tabModel = mock(TabModel.class);
         TabModelOrderController orderController = mock(TabModelOrderController.class);
         redirectTabCreator.setTabModel(tabModel);
@@ -456,6 +514,18 @@ public class ChromeTabCreatorJUnitTest {
                 AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId));
         verify(mockTab).destroy();
         verify(tabModel, never()).addTab(any(Tab.class), anyInt(), anyInt(), anyInt());
+    }
+
+    private RedirectTabCreator createRedirectTabCreator(Activity activity, boolean incognito) {
+        return new RedirectTabCreator(
+                activity,
+                mock(WindowAndroid.class),
+                () -> mock(TabDelegateFactory.class),
+                new OneshotSupplierImpl<>(),
+                incognito,
+                AsyncTabParamsManagerSingleton.getInstance(),
+                SupplierUtils.ofNull(),
+                SupplierUtils.ofNull());
     }
 
     private ChromeTabCreator createTabCreator(Activity activity, boolean incognito) {

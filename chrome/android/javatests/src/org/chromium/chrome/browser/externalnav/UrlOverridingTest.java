@@ -2225,7 +2225,8 @@ public class UrlOverridingTest {
                             WindowOpenDisposition.NEW_FOREGROUND_TAB,
                             true,
                             true,
-                            false);
+                            false,
+                            /* additionalNavigationParams= */ null);
                 });
 
         assertMessagePresent();

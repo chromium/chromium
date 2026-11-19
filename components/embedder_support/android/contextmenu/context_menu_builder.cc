@@ -12,6 +12,7 @@
 #include "content/public/browser/android/additional_navigation_params_android.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -39,7 +40,10 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
       (params.title_text.empty() ? params.alt_text : params.title_text);
 
   base::android::ScopedJavaLocalRef<jobject> additional_navigation_params =
-      content::CreateJavaAdditionalNavigationParams(env, initiator_frame_host);
+      content::CreateJavaAdditionalNavigationParams(
+          env, initiator_frame_host.GetFrameToken(),
+          initiator_frame_host.GetProcess()->GetID(),
+          initiator_frame_host.GetCurrentInitiatorNavigationState());
 
   ui::MenuModelBridge* menu_model_bridge =
       new ui::MenuModelBridge(menu_model ? menu_model->AsWeakPtr() : nullptr);

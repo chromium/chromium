@@ -60,9 +60,11 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
+#include "content/public/browser/android/additional_navigation_params_android.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/resource_request_body_android.h"
 #include "content/public/common/url_constants.h"
@@ -391,11 +393,21 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   ScopedJavaLocalRef<jobject> jpost_data =
       content::ConvertResourceRequestBodyToJavaObject(env, params->post_data);
+  ScopedJavaLocalRef<jobject> jadditional_navigation_params;
+  if (params->initiator_frame_token.has_value() ||
+      params->initiator_navigation_state) {
+    jadditional_navigation_params =
+        content::CreateJavaAdditionalNavigationParams(
+            env, params->initiator_frame_token,
+            content::ChildProcessId::FromUnsafeValue(
+                params->initiator_process_id),
+            params->initiator_navigation_state);
+  }
   Java_TabModelJniBridge_openNewTab(
       env, jobj, parent, url, params->initiator_origin, params->extra_headers,
       jpost_data, static_cast<int>(disposition),
       params->opened_by_another_window, params->is_renderer_initiated,
-      params->user_gesture);
+      params->user_gesture, jadditional_navigation_params);
 }
 
 WebContents* TabModelJniBridge::GetWebContentsAt(int index) const {

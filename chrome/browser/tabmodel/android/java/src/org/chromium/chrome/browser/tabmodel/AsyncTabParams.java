@@ -44,4 +44,13 @@ public interface AsyncTabParams {
 
     /** Destroy any internal fields if it is necessary. */
     void destroy();
+
+    /**
+     * Destroy any internal fields other than {@link #getLoadUrlParams()}, for callers that transfer
+     * ownership of {@link #getLoadUrlParams()} onward.
+     */
+    default void destroyPreservingLoadUrlParams() {
+        assert getLoadUrlParams() == null;
+        destroy();
+    }
 }
