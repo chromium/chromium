@@ -28,7 +28,6 @@
 #include <set>
 #include <string>
 
-#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
@@ -75,10 +74,6 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideBypassFormsClassificationAuth);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideBypassPasswordChangeAuth);
-
-// Whether on device models are downloaded in background prior to feature usage.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kOnDeviceModelBackgroundDownload);
 
 // Whether model sessions may be brokered to untrusted processes.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -234,47 +229,6 @@ GetPredictionModelVersionsInKillSwitch();
 // Whether on-device execution is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsOnDeviceExecutionEnabled();
-
-// Return the disk space required for on device model install.
-inline constexpr base::ByteSize GetDiskSpaceRequiredForOnDeviceModelInstall() {
-  return base::GiB(20);
-}
-
-// Return the disk space required to retain the on device model.
-inline constexpr base::ByteSize GetDiskSpaceRequiredForOnDeviceModelRetain() {
-  return base::GiB(5);
-}
-
-// Whether there is enough free disk space to allow on-device model
-// installation.
-inline constexpr bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-    base::ByteSize free_disk_space_bytes) {
-  return GetDiskSpaceRequiredForOnDeviceModelInstall() <= free_disk_space_bytes;
-}
-
-// Whether there is too little disk space to retain the on-device model
-// installation.
-inline constexpr bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
-    base::ByteSize free_disk_space_bytes) {
-  return GetDiskSpaceRequiredForOnDeviceModelRetain() >= free_disk_space_bytes;
-}
-
-// Whether on-device model session creation is gated on sufficient disk space to
-// build execution caches.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kOnDeviceModelCachesDiskSpaceCheck);
-
-// Whether there is too little disk space to build caches for the
-// on-device model installed.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
-    base::ByteSize free_disk_space_bytes);
-
-// Whether there is enough free disk space to allow on-device model
-// installation proactively in background.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
-    base::ByteSize free_disk_space_bytes);
 
 // Returns what the timeout for calls to GetAIPageContent should be for
 // subframes. An empty return value indicates no timeout should be applied.

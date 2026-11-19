@@ -7,11 +7,9 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -99,9 +97,6 @@ BASE_FEATURE(kAnnotatedPageContentWithActionableElements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnnotatedPageContentWithMediaData,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOnDeviceModelBackgroundDownload,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBrokerModelSessionsForUntrustedProcesses,
@@ -375,35 +370,6 @@ GetPredictionModelVersionsInKillSwitch() {
 bool IsOnDeviceExecutionEnabled() {
   return base::FeatureList::IsEnabled(
       features::kOptimizationGuideModelExecution);
-}
-
-BASE_FEATURE(kOnDeviceModelCachesDiskSpaceCheck,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
-    base::ByteSize free_disk_space_bytes) {
-  if (!base::FeatureList::IsEnabled(kOnDeviceModelCachesDiskSpaceCheck)) {
-    return false;
-  }
-  return base::MiB(base::saturated_cast<uint64_t>(
-             base::GetFieldTrialParamByFeatureAsInt(
-                 kOnDeviceModelCachesDiskSpaceCheck,
-                 "free_space_mb_required_to_build_caches",
-                 base::GiB(10).InMiB()))) >= free_disk_space_bytes;
-}
-
-base::ByteSize GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() {
-  return base::MiB(
-      base::saturated_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
-          features::kOnDeviceModelBackgroundDownload,
-          "on_device_model_free_space_mb_required_to_background_install",
-          base::GiB(50).InMiB())));
-}
-
-bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
-    base::ByteSize free_disk_space_bytes) {
-  return GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() <=
-         free_disk_space_bytes;
 }
 
 std::optional<base::TimeDelta> GetSubframeGetAIPageContentTimeout() {

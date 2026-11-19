@@ -4,19 +4,55 @@
 
 #include "components/optimization_guide/core/model_execution/manifest_broker/disk_space_status.h"
 
+#include <cstdint>
 #include <utility>
 
+#include "base/byte_size.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace optimization_guide {
+
+BASE_FEATURE(kOnDeviceModelBackgroundDownload,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOnDeviceModelCachesDiskSpaceCheck,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
 // TTL for disk space evaluation result.
 constexpr base::TimeDelta kDiskSpaceFreshnessThreshold = base::Seconds(10);
 
+base::ByteSize GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() {
+  return base::MiB(
+      base::saturated_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
+          kOnDeviceModelBackgroundDownload,
+          "on_device_model_free_space_mb_required_to_background_install",
+          base::GiB(50).InMiB())));
+}
+
 }  // namespace
+
+bool IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
+    base::ByteSize free_disk_space_bytes) {
+  if (!base::FeatureList::IsEnabled(kOnDeviceModelCachesDiskSpaceCheck)) {
+    return false;
+  }
+  return base::MiB(base::saturated_cast<uint64_t>(
+             base::GetFieldTrialParamByFeatureAsInt(
+                 kOnDeviceModelCachesDiskSpaceCheck,
+                 "free_space_mb_required_to_build_caches",
+                 base::GiB(10).InMiB()))) >= free_disk_space_bytes;
+}
+
+bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
+    base::ByteSize free_disk_space_bytes) {
+  return GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() <=
+         free_disk_space_bytes;
+}
 
 DiskSpaceStatus::DiskSpaceStatus(const ManifestMonitorDelegate& delegate)
     : delegate_(delegate) {}
@@ -48,13 +84,12 @@ bool DiskSpaceStatus::IsFresh() const {
 
 bool DiskSpaceStatus::IsSufficientForOnDemandInstall() const {
   return free_space_.has_value() &&
-         features::IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-             free_space_.value());
+         IsFreeDiskSpaceSufficientForOnDeviceModelInstall(free_space_.value());
 }
 
 bool DiskSpaceStatus::IsSufficientForBackgroundInstall() const {
   return free_space_.has_value() &&
-         features::IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
+         IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
              free_space_.value());
 }
 

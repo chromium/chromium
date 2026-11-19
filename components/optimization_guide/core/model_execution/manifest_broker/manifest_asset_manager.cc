@@ -13,6 +13,7 @@
 
 #include "base/byte_size.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -20,6 +21,7 @@
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
@@ -33,11 +35,11 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "components/optimization_guide/core/model_execution/component_download_observer.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/disk_space_status.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker_debug.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -802,8 +804,7 @@ void ManifestAssetManager::OnDiskSpaceEvaluated() {
 
 bool ManifestAssetManager::CanSupportProactiveDownload() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(
-          features::kOnDeviceModelBackgroundDownload)) {
+  if (!base::FeatureList::IsEnabled(kOnDeviceModelBackgroundDownload)) {
     return false;
   }
   if (!base::PowerMonitor::GetInstance()->IsInitialized() ||

@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -88,6 +89,39 @@ TEST(DiskSpaceStatusTest, EvaluatesDeduplicatesAndExpiresAfterTtl) {
   // After the 10s freshness TTL expires, EnsureEvaluated() queries again.
   task_environment.FastForwardBy(base::Seconds(11));
   EXPECT_FALSE(status.IsFresh());
+}
+
+TEST(DiskSpaceStatusTest, CachesBuildDiskSpaceCheckDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kOnDeviceModelCachesDiskSpaceCheck);
+
+  EXPECT_FALSE(
+      IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(base::ByteSize(0)));
+}
+
+TEST(DiskSpaceStatusTest, CachesBuildDiskSpaceCheckCustomParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kOnDeviceModelCachesDiskSpaceCheck,
+      {{"free_space_mb_required_to_build_caches", "2048"}});
+
+  EXPECT_TRUE(
+      IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(base::MiB(2048)));
+  EXPECT_FALSE(IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
+      base::MiB(2048) + base::ByteSize(1)));
+}
+
+TEST(DiskSpaceStatusTest, BackgroundInstallDiskSpaceCheckCustomParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kOnDeviceModelBackgroundDownload,
+      {{"on_device_model_free_space_mb_required_to_background_install",
+        "10240"}});
+
+  EXPECT_FALSE(IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
+      base::MiB(10240) - base::ByteSizeDelta(1)));
+  EXPECT_TRUE(IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
+      base::MiB(10240)));
 }
 
 }  // namespace

@@ -8,21 +8,24 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/disk_space_status.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -706,8 +709,7 @@ ManifestSolutionFactory::CreateSolutionForUseCase(
 
   if (!base_models_.at(base_model_id).has_caches &&
       free_disk_space_.has_value() &&
-      features::IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
-          *free_disk_space_)) {
+      IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(*free_disk_space_)) {
     return base::unexpected(
         OnDeviceModelEligibilityReason::kInsufficientDiskSpaceForCaches);
   }

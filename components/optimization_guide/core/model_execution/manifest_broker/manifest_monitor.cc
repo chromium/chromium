@@ -17,6 +17,7 @@
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/disk_space_status.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -156,7 +157,7 @@ void ManifestMonitor::OnInputsChanged() {
     return;
   }
   if (free_space_.has_value() &&
-      features::IsFreeDiskSpaceTooLowForOnDeviceModelInstall(*free_space_)) {
+      IsFreeDiskSpaceTooLowForOnDeviceModelInstall(*free_space_)) {
     UseUninstallManifest(Manifest::UninstallReason::kInsufficientDisk);
     return;
   }
@@ -218,16 +219,15 @@ std::vector<mojom::BrokerPropertyInfoPtr> ManifestMonitor::GetBrokerProperties()
   std::string disk_space_retain_string = "N/A";
   if (free_space_.has_value()) {
     base::ByteSize disk_space_install_required =
-        features::GetDiskSpaceRequiredForOnDeviceModelInstall();
+        GetDiskSpaceRequiredForOnDeviceModelInstall();
     base::ByteSize disk_space_retain_required =
-        features::GetDiskSpaceRequiredForOnDeviceModelRetain();
+        GetDiskSpaceRequiredForOnDeviceModelRetain();
     base::ByteSize disk_space_available = *free_space_;
 
     bool is_install_available =
-        features::IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-            *free_space_);
+        IsFreeDiskSpaceSufficientForOnDeviceModelInstall(*free_space_);
     bool is_retain_available =
-        !features::IsFreeDiskSpaceTooLowForOnDeviceModelInstall(*free_space_);
+        !IsFreeDiskSpaceTooLowForOnDeviceModelInstall(*free_space_);
 
     disk_space_install_string = base::StrCat(
         {is_install_available ? "true" : "false", " (",
