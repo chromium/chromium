@@ -5,7 +5,8 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory/memory_pressure_level.h"
+#include "base/memory_coordinator/scoped_memory_pressure_level_override.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,7 +57,7 @@ class AutocompleteDictionaryPreloadBrowserTest
   }
 
   void SendMemoryPressureToNetworkService() {
-    base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
+    memory_pressure_level_override_.SetLevel(
         base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     // To make sure that OnMemoryPressure has been received by the network
     // service, send a GetNetworkList IPC and wait for the result.
@@ -71,6 +72,8 @@ class AutocompleteDictionaryPreloadBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+
+  base::ScopedMemoryPressureLevelOverride memory_pressure_level_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutocompleteDictionaryPreloadBrowserTest,

@@ -20,8 +20,9 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory_coordinator/scoped_memory_pressure_level_override.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -472,8 +473,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceOutOfProcessBrowserTest,
   network_service_test->GetLatestMemoryPressureLevel(&memory_pressure_level);
   EXPECT_EQ(memory_pressure_level, base::MEMORY_PRESSURE_LEVEL_NONE);
 
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::ScopedMemoryPressureLevelOverride memory_pressure_level_override;
+  memory_pressure_level_override.SetLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
   FlushNetworkServiceInstanceForTesting();
 

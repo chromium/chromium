@@ -7,7 +7,8 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory/memory_pressure_level.h"
+#include "base/memory_coordinator/scoped_memory_pressure_level_override.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -930,7 +931,7 @@ class SharedDictionaryBrowserTest
   }
 
   void SendMemoryPressureToNetworkService() {
-    base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
+    memory_pressure_level_override_.SetLevel(
         base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     // To make sure that OnMemoryPressure has been received by the network
     // service, send a GetNetworkList IPC and wait for the result.
@@ -1036,6 +1037,8 @@ class SharedDictionaryBrowserTest
 
   raw_ptr<Shell> off_the_record_shell_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
+
+  base::ScopedMemoryPressureLevelOverride memory_pressure_level_override_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

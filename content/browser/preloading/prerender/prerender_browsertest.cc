@@ -16,10 +16,8 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/memory_coordinator/scoped_memory_pressure_level_override.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -158,6 +156,11 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/memory/memory_pressure_level.h"
+#include "base/memory_coordinator/scoped_memory_pressure_level_override.h"
 #endif
 
 using ::testing::Exactly;
@@ -13709,10 +13712,10 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
     AddPrerender(prerender_url);
   }
 
-  // Emulate moderate-level memory pressure event. This shouldn't cancel
+  // Emulate moderate-level memory pressure state. This shouldn't cancel
   // prerendering.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::ScopedMemoryPressureLevelOverride memory_pressure_level_override;
+  memory_pressure_level_override.SetLevel(base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   // Run the message loop to give a chance to unexpectedly cancel prerendering
   // due to some bug.
@@ -13743,10 +13746,10 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
         *web_contents(), host_id));
   }
 
-  // Emulate critical-level memory pressure event. This should cancel
+  // Emulate critical-level memory pressure state. This should cancel
   // prerendering.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::ScopedMemoryPressureLevelOverride memory_pressure_level_override;
+  memory_pressure_level_override.SetLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   for (auto& observer : observers) {
     observer->WaitForDestroyed();
   }
