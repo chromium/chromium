@@ -36,12 +36,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -49,7 +49,6 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.accessibility.testservice.EventMatcher;
 import org.chromium.ui.accessibility.testservice.IAccessibilityTestHelperService;
 import org.chromium.ui.accessibility.testservice.NodeMatcher;
-import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -185,17 +184,36 @@ public class WebContentsAccessibilityE2ETest {
     }
 
     private void setupTest(String html, NodeMatcher matcher) throws Throwable {
+        // The accessibility service is already enabled, so Android asks for the accessibility node
+        // provider as soon as the window appears, which creates the WebContentsAccessibilityImpl.
+        // Make that first instance the Mockito mock, rather than replacing a real instance after it
+        // has been created, so that there is only ever one instance and it receives all of the
+        // page's accessibility events. See crbug.com/556209534.
+        mActivityTestRule.installMockWebContentsAccessibilityFactory();
+
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         boolean windowActive = waitForActiveWindow();
         Assert.assertTrue("Window failed to become active after launch.", windowActive);
-        mActivityTestRule.mockWebContentsAccessibilityImpl();
-        mActivityTestRule.mWcax = mActivityTestRule.getWebContentsAccessibility();
-        mActivityTestRule.mWcax.setThrottleDelayForTesting(new java.util.HashMap<>());
 
-        if (matcher != null) {
-            boolean nodeFound = waitForNode(matcher);
-            Assert.assertTrue("Failed to find expected node after HTML setup.", nodeFound);
-        }
+        // Returns the instance that the factory created, or creates it if Android hasn't asked for
+        // it yet.
+        mActivityTestRule.mWcax = mActivityTestRule.getWebContentsAccessibility();
+        Assert.assertTrue(
+                "WebContentsAccessibilityImpl was not created by the test factory.",
+                Mockito.mockingDetails(mActivityTestRule.mWcax).isMock());
+
+        Assert.assertNotNull(matcher);
+        boolean nodeFound = waitForNode(matcher);
+        Assert.assertTrue("Failed to find expected node after HTML setup.", nodeFound);
+
+        // waitForNode() queried the web tree via ContentView.getAccessibilityNodeProvider(), so
+        // the provider is already connected to the renderer's accessibility tree.
+        mActivityTestRule.mNodeProvider =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.mWcax.getAccessibilityNodeProviderCompat());
+        Assert.assertNotNull(
+                "AccessibilityNodeProvider should be connected after waitForNode().",
+                mActivityTestRule.mNodeProvider);
     }
 
     private void enableAccessibilityService() throws IOException {
@@ -240,21 +258,6 @@ public class WebContentsAccessibilityE2ETest {
         }
     }
 
-    private void initializeMockWebContentsAccessibility() {
-        // Initialize mWcax as a Mockito mock so that we can verify performAction interactions on
-        // it.
-        mActivityTestRule.mockWebContentsAccessibilityImpl();
-        org.chromium.base.ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule.mWcax = mActivityTestRule.getWebContentsAccessibility();
-                });
-        org.chromium.base.test.util.CriteriaHelper.pollUiThread(
-                () -> mActivityTestRule.mWcax.getAccessibilityNodeProviderCompat() != null,
-                "AccessibilityNodeProvider is null");
-        mActivityTestRule.mNodeProvider =
-                mActivityTestRule.mWcax.getAccessibilityNodeProviderCompat();
-    }
-
     private Bundle createSelectionArgs(
             int startVvid,
             int startOffset,
@@ -277,7 +280,6 @@ public class WebContentsAccessibilityE2ETest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // crbug.com/529881530
     public void testAccessibilityServiceReceivesInitialEvent() throws Throwable {
         // Load a page.
         setupTest("<p>hello</p>", new NodeMatcherBuilder().setText("hello").build());
@@ -294,7 +296,6 @@ public class WebContentsAccessibilityE2ETest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
-    @DisabledTest(message = "crbug.com/529689125")
     public void testAccessibilityServiceReceivesInitialEvent_SdkBalklavaAndAbove()
             throws Throwable {
         Assume.assumeTrue(
@@ -845,7 +846,6 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @Test
     @SmallTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // crbug.com/542055199
     @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT) // API Level 19
     public void fireGeneratedEvent_ariaLabelChange_firesTextChangeType() throws Throwable {
         // Create an HTML document where there is a div tag with aria-label attribute set.
@@ -878,7 +878,6 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/534257179")
     @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT) // API Level 19
     public void fireGeneratedEvent_alertDisplayStyleChange_firesSubtreeChangeType()
             throws Throwable {
@@ -923,9 +922,6 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
                 <p id="p2">Paragraph2</p>
                 """;
         setupTest(html, new NodeMatcherBuilder().setClassName("android.webkit.WebView").build());
-
-        // Initialize the Mockito mock for WebContentsAccessibilityImpl.
-        initializeMockWebContentsAccessibility();
 
         // Find nodes.
         int rootVvid =
@@ -997,7 +993,6 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 
     @Test
     @SmallTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // crbug.com/542071685
     public void fireGeneratedEvent_defaultActionVerbChanged_firesContentChanged() throws Throwable {
         // Create an HTML document with a disabled button (default action verb of NONE).
         String html =

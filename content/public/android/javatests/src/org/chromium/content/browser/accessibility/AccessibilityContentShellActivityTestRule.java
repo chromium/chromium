@@ -36,6 +36,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -286,25 +287,50 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
         mNodeProvider = getAccessibilityNodeProvider();
     }
 
+    /**
+     * Installs a test factory on {@link WebContentsAccessibilityImpl} before Content Shell launches
+     * so that the first and only instance created for {@link WebContents} is the Mockito mock.
+     */
+    public void installMockWebContentsAccessibilityFactory() {
+        WebContentsAccessibilityImpl.setFactoryForTesting(
+                webContents -> {
+                    WebContentsAccessibilityImpl wcax =
+                            createMockWebContentsAccessibility(webContents);
+                    // Empty map to imply no throttle delay for events.
+                    wcax.setThrottleDelayForTesting(new HashMap<>());
+                    // To prevent flakes, do not auto-disable accessibility mid test.
+                    wcax.setIsAutoDisableAccessibilityCandidateForTesting(false);
+                    return wcax;
+                });
+    }
+
+    // TODO(crbug.com/556209534): Migrate remaining callers (e.g. setupTestFromFile() and
+    // WebContentsAccessibilityTest) to installMockWebContentsAccessibilityFactory() and remove the
+    // removeUserData() swap.
     public void mockWebContentsAccessibilityImpl() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    org.chromium.content_public.browser.WebContents webContents = getWebContents();
+                    WebContents webContents = getWebContents();
                     if (webContents.getOrSetUserData(WebContentsAccessibilityImpl.class, null)
                             != null) {
                         webContents.removeUserData(WebContentsAccessibilityImpl.class);
                     }
                     WebContentsAccessibilityImpl mockWcax =
-                            Mockito.mock(
-                                    WebContentsAccessibilityImpl.class,
-                                    Mockito.withSettings()
-                                            .useConstructor(
-                                                    new WebContentsAccessibilityDelegate(
-                                                            webContents))
-                                            .defaultAnswer(Mockito.CALLS_REAL_METHODS));
+                            createMockWebContentsAccessibility(webContents);
                     webContents.getOrSetUserData(
                             WebContentsAccessibilityImpl.class, (wc) -> mockWcax);
                 });
+    }
+
+    private static WebContentsAccessibilityImpl createMockWebContentsAccessibility(
+            WebContents webContents) {
+        // A Mockito mock that calls the real methods, so that it behaves like the real
+        // implementation while tests can still verify interactions on it (e.g. performAction()).
+        return Mockito.mock(
+                WebContentsAccessibilityImpl.class,
+                Mockito.withSettings()
+                        .useConstructor(new WebContentsAccessibilityDelegate(webContents))
+                        .defaultAnswer(Mockito.CALLS_REAL_METHODS));
     }
 
     /** Helper method to tear down our tests so we can start the next test clean. */

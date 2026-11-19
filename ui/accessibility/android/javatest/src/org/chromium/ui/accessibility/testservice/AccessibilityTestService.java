@@ -119,30 +119,29 @@ public class AccessibilityTestService extends AccessibilityService {
             Predicate<AccessibilityEvent> eventCheck,
             long timeoutMs,
             String timeoutLogMessage) {
-        synchronized (sLock) {
-            clearListenerLocked();
-        }
-
-        if (immediateCheck != null && immediateCheck.get()) {
-            return true;
-        }
-
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         AccessibilityServiceListener listener =
                 new AccessibilityServiceListener() {
                     @Override
                     public void onAccessibilityEvent(AccessibilityEvent event) {
-                        if (eventCheck.test(event)) {
+                        if (!future.isDone() && eventCheck.test(event)) {
                             future.complete(true);
                         }
                     }
                 };
 
+        // Register the listener *before* running the immediate check. The immediate check (e.g. a
+        // full tree walk in findNode()) can take a while, and any event that arrives while it is
+        // running would otherwise be missed, leaving us waiting for an event that never comes.
         synchronized (sLock) {
+            clearListenerLocked();
             setListenerLocked(listener);
         }
 
         try {
+            if (immediateCheck != null && immediateCheck.get()) {
+                return true;
+            }
             return future.get(timeoutMs, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             Log.w(TAG, timeoutLogMessage);

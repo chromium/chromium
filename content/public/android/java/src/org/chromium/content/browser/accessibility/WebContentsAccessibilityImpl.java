@@ -339,9 +339,25 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         private static final UserDataFactory<WebContentsAccessibilityImpl> INSTANCE = new Factory();
     }
 
+    private static @Nullable UserDataFactory<WebContentsAccessibilityImpl> sFactoryForTesting;
+
+    /**
+     * Overrides the factory that {@link #fromWebContents} uses to create the instance for a
+     * WebContents, so that a test can supply its own instance (e.g. a Mockito mock) from the very
+     * first creation, instead of replacing a real instance after it has been created.
+     */
+    public static void setFactoryForTesting(
+            @Nullable UserDataFactory<WebContentsAccessibilityImpl> factory) {
+        sFactoryForTesting = factory;
+        ResettersForTesting.register(() -> sFactoryForTesting = null);
+    }
+
     public static @Nullable WebContentsAccessibilityImpl fromWebContents(WebContents webContents) {
         return webContents.getOrSetUserData(
-                WebContentsAccessibilityImpl.class, UserDataFactoryLazyHolder.INSTANCE);
+                WebContentsAccessibilityImpl.class,
+                sFactoryForTesting != null
+                        ? sFactoryForTesting
+                        : UserDataFactoryLazyHolder.INSTANCE);
     }
 
     public static WebContentsAccessibilityImpl fromDelegate(AccessibilityDelegate delegate) {
