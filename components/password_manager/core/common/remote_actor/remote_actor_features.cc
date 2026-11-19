@@ -19,7 +19,12 @@ BASE_FEATURE(kRemoteActorCredentialSharing, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables sharing credentials with Search Agent (`RemoteActorType::kSearch`)
 // by uploading them to Passbox and granting the actor permission to use them.
 BASE_FEATURE(kRemoteActorCredentialSharingSearch,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Optional JSON dictionary overriding Gemini (`RemoteActorType::kGemini`)
 // configuration and origin allowlists. Supported keys:
