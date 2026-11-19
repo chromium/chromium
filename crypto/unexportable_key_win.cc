@@ -14,6 +14,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -174,18 +175,23 @@ SecurityStatusOr<T> GetNCryptProperty(NCRYPT_HANDLE handle, LPCWSTR property) {
   return base::ok(value);
 }
 
-// Sets a DWORD-valued property. NCryptSetProperty sends sizeof(value) bytes,
-// and the Platform Crypto Provider expects four for the properties set here.
-// `value` must be exactly a DWORD, so a wider or narrower integer fails to
-// compile instead of being silently converted.
+// Sets a property to a DWORD or to a wide string literal, which is sent with
+// its terminating null. NCryptSetProperty sends sizeof(value) bytes, and the
+// Platform Crypto Provider expects four for the DWORD properties set here.
+// `value` must be exactly a DWORD or a `wchar_t` array, so a wider or narrower
+// integer or a pointer fails to compile instead of being silently converted.
 template <typename T>
 SecurityStatusOr<void> SetNCryptProperty(NCRYPT_HANDLE handle,
                                          LPCWSTR property,
-                                         T value)
-  requires std::same_as<DWORD, T>
+                                         const T& value)
+  requires std::same_as<DWORD, T> ||
+           (std::is_bounded_array_v<T> &&
+            std::same_as<wchar_t, std::remove_extent_t<T>>)
 {
   SECURITY_STATUS status = NCryptSetProperty(
-      handle, property, reinterpret_cast<PBYTE>(&value), sizeof(value), 0);
+      handle, property,
+      const_cast<PBYTE>(reinterpret_cast<const BYTE*>(&value)), sizeof(value),
+      0);
   return SUCCEEDED(status) ? SecurityStatusOr<void>()
                            : base::unexpected(status);
 }
@@ -328,6 +334,82 @@ SecurityStatusOr<std::vector<uint8_t>> ExportKey(NCRYPT_KEY_HANDLE key,
   CHECK_EQ(output.size(), output_size);
 
   return output;
+}
+
+// Returns whether the provider of `provider_type` can create an ML-DSA-65 key
+// with `creation_flags` and sign with it, or the first step that failed.
+internal::WinMldsaSupport ProbeMldsaSupport(ProviderType provider_type,
+                                            DWORD creation_flags) {
+  using internal::WinMldsaSupport;
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  // Each provider loads its own DLLs, so boost on every call.
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
+
+  ScopedNCryptProvider provider;
+  if (FAILED(NCryptOpenStorageProvider(
+          ScopedNCryptProvider::Receiver(provider).get(),
+          GetWindowsIdentifierForProvider(provider_type), /*flags=*/0))) {
+    return WinMldsaSupport::kProviderUnavailable;
+  }
+  if (FAILED(NCryptIsAlgSupported(provider.get(), NCRYPT_MLDSA_ALGORITHM,
+                                  /*flags=*/0))) {
+    return WinMldsaSupport::kAlgorithmNotSupported;
+  }
+
+  // A null key name makes the key ephemeral, so the probe leaves nothing
+  // behind.
+  ScopedNCryptKey key;
+  if (FAILED(NCryptCreatePersistedKey(
+          provider.get(), ScopedNCryptKey::Receiver(key).get(),
+          NCRYPT_MLDSA_ALGORITHM, /*pszKeyName=*/nullptr,
+          /*dwLegacyKeySpec=*/0, creation_flags))) {
+    return WinMldsaSupport::kKeyCreationFailed;
+  }
+  if (!SetNCryptProperty(key.get(), NCRYPT_PARAMETER_SET_NAME_PROPERTY,
+                         BCRYPT_MLDSA_PARAMETER_SET_65) ||
+      FAILED(NCryptFinalizeKey(key.get(), NCRYPT_SILENT_FLAG))) {
+    return WinMldsaSupport::kKeyCreationFailed;
+  }
+
+  // ML-DSA signs the message itself, so `NCryptSignHash()` takes it in place of
+  // a hash. Null padding info selects pure ML-DSA with an empty context.
+  std::array<uint8_t, 4> message = {1, 2, 3, 4};
+  DWORD signature_size = 0;
+  if (FAILED(NCryptSignHash(key.get(), /*pPaddingInfo=*/nullptr, message.data(),
+                            message.size(), /*pbSignature=*/nullptr,
+                            /*cbSignature=*/0, &signature_size,
+                            NCRYPT_SILENT_FLAG))) {
+    return WinMldsaSupport::kSigningFailed;
+  }
+  std::vector<uint8_t> signature(signature_size);
+  if (FAILED(NCryptSignHash(key.get(), /*pPaddingInfo=*/nullptr, message.data(),
+                            message.size(), signature.data(), signature.size(),
+                            &signature_size, NCRYPT_SILENT_FLAG))) {
+    return WinMldsaSupport::kSigningFailed;
+  }
+  signature.resize(signature_size);
+
+  // The blob is a `BCRYPT_PQDSA_KEY_BLOB` header, followed by the parameter set
+  // name and the raw public key.
+  // https://learn.microsoft.com/en-us/windows/win32/seccng/bcrypt/ns-bcrypt-bcrypt_pqdsa_key_blob
+  ASSIGN_OR_RETURN(const std::vector<uint8_t> blob,
+                   ExportKey(key.get(), BCRYPT_PQDSA_PUBLIC_BLOB), [](auto) {
+                     return WinMldsaSupport::kPublicKeyExportFailed;
+                   });
+  base::SpanReader reader(base::span{blob});
+  const auto header = reader.ReadNativeEndian<BCRYPT_PQDSA_KEY_BLOB>();
+  if (!header || !reader.Skip(header->cbParameterSet)) {
+    return WinMldsaSupport::kPublicKeyExportFailed;
+  }
+  ASSIGN_OR_RETURN(
+      const keypair::PublicKey public_key,
+      keypair::PublicKey::FromMldsa65PublicKey(reader.remaining_span()),
+      [] { return WinMldsaSupport::kPublicKeyExportFailed; });
+
+  return sign::Verify(sign::MLDSA_65, public_key, message, signature)
+             ? WinMldsaSupport::kSupported
+             : WinMldsaSupport::kVerificationFailed;
 }
 
 std::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
@@ -1624,6 +1706,19 @@ internal::WinKeyHardwareSupport GetKeyHardwareSupportWin() {
 std::unique_ptr<UnexportableKeyProvider>
 GetMicrosoftSoftwareUnexportableKeyProviderWin() {
   return std::make_unique<UnexportableKeyProviderWin>(ProviderType::kSoftware);
+}
+
+internal::WinMldsaSupport GetTpmMldsaSupportWin() {
+  return ProbeMldsaSupport(ProviderType::kTPM, /*creation_flags=*/0);
+}
+
+internal::WinMldsaSupport GetMicrosoftSoftwareMldsaSupportWin() {
+  return ProbeMldsaSupport(ProviderType::kSoftware, /*creation_flags=*/0);
+}
+
+internal::WinMldsaSupport GetMicrosoftSoftwareVbsMldsaSupportWin() {
+  return ProbeMldsaSupport(ProviderType::kSoftware,
+                           NCRYPT_USE_VIRTUAL_ISOLATION_FLAG);
 }
 
 }  // namespace crypto

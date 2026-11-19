@@ -95,6 +95,30 @@ enum class WinKeyHardwareSupport {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/crypto/enums.xml:WinKeyHardwareSupport)
 
+// Whether a Windows key storage provider can create an ML-DSA-65 key and sign
+// with it, or the first step that failed. Recorded as
+// Crypto.MLDSASupport.Win.{Provider}.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(WinMldsaSupport)
+enum class WinMldsaSupport {
+  // The key storage provider could not be opened.
+  kProviderUnavailable = 0,
+  // The provider does not list ML-DSA among its algorithms.
+  kAlgorithmNotSupported = 1,
+  // The provider lists ML-DSA, but could not create an ML-DSA-65 key.
+  kKeyCreationFailed = 2,
+  kSigningFailed = 3,
+  // The public key could not be exported or parsed.
+  kPublicKeyExportFailed = 4,
+  // The signature did not verify against the exported public key.
+  kVerificationFailed = 5,
+  kSupported = 6,
+  kMaxValue = kSupported,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/crypto/enums.xml:WinMldsaSupport)
+
 // Whether a Mac has a Secure Enclave and the executable has the
 // keychain-access-groups entitlement that unexportable keys need, or which of
 // the two is missing. Recorded as Crypto.KeyHardwareSupport.Mac.

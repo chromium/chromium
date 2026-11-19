@@ -97,6 +97,12 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
 #if BUILDFLAG(IS_WIN)
   base::UmaHistogramEnumeration("Crypto.KeyHardwareSupport.Win",
                                 GetKeyHardwareSupportWin());
+  base::UmaHistogramEnumeration("Crypto.MLDSASupport.Win.TPM",
+                                GetTpmMldsaSupportWin());
+  base::UmaHistogramEnumeration("Crypto.MLDSASupport.Win.Software",
+                                GetMicrosoftSoftwareMldsaSupportWin());
+  base::UmaHistogramEnumeration("Crypto.MLDSASupport.Win.SoftwareVBS",
+                                GetMicrosoftSoftwareVbsMldsaSupportWin());
 #elif BUILDFLAG(IS_MAC)
   base::UmaHistogramEnumeration(
       "Crypto.KeyHardwareSupport.Mac",

@@ -14,6 +14,7 @@
 
 namespace crypto::internal {
 enum class WinKeyHardwareSupport;
+enum class WinMldsaSupport;
 }  // namespace crypto::internal
 
 namespace crypto {
@@ -42,6 +43,20 @@ internal::WinKeyHardwareSupport GetKeyHardwareSupportWin();
 // Key Storage Provider.
 std::unique_ptr<UnexportableKeyProvider>
 GetMicrosoftSoftwareUnexportableKeyProviderWin();
+
+// Returns whether the TPM-backed Platform Crypto Provider can create an
+// ML-DSA-65 key and sign with it, or the first step that failed. The key is
+// ephemeral. Blocks.
+internal::WinMldsaSupport GetTpmMldsaSupportWin();
+
+// Same as `GetTpmMldsaSupportWin()`, but for the Microsoft Software Key
+// Storage Provider.
+internal::WinMldsaSupport GetMicrosoftSoftwareMldsaSupportWin();
+
+// Same as `GetMicrosoftSoftwareMldsaSupportWin()`, but the key is isolated
+// with virtualization-based security (VBS). If the provider supports ML-DSA,
+// key creation still fails on machines without VBS.
+internal::WinMldsaSupport GetMicrosoftSoftwareVbsMldsaSupportWin();
 
 }  // namespace crypto
 

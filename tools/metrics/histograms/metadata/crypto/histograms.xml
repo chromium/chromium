@@ -135,6 +135,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Crypto.MLDSASupport.Win.{Provider}" enum="WinMldsaSupport"
+    expires_after="2027-05-18">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows at startup, together with Crypto.TPMSupport2 (same
+    delay and subsampling). Records whether {Provider} can create an ephemeral
+    ML-DSA-65 key and sign with it, or the first step that failed. For
+    SoftwareVBS, machines without VBS report KeyCreationFailed if the provider
+    supports ML-DSA, and AlgorithmNotSupported otherwise.
+  </summary>
+  <token key="Provider">
+    <variant name="Software"
+        summary="the Microsoft Software Key Storage Provider"/>
+    <variant name="SoftwareVBS"
+        summary="the Microsoft Software Key Storage Provider with
+                 virtualization-based security (VBS) key isolation"/>
+    <variant name="TPM"
+        summary="the TPM-backed Microsoft Platform Crypto Provider"/>
+  </token>
+</histogram>
+
 <histogram name="Crypto.SecureEnclaveOperation.Apple.{Operation}.Error"
     enum="MacSecurityFrameworkOSStatus" expires_after="2027-01-14">
   <owner>seblalancette@chromium.org</owner>

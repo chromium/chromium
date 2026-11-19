@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -27,12 +28,13 @@
 #include "base/check_deref.h"
 #include "base/strings/strcat.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace crypto {
 
 namespace {
+
+using ::testing::AnyOf;
 
 // Mock that wraps the stateless software unexportable key provider while
 // tracking key creation and removal. CHECKs if there are keys left that have
@@ -263,6 +265,34 @@ TEST(UnexportableKeyMetricNoProviderTest, RecordsKeyHardwareSupport) {
   histogram_tester.ExpectTotalCount("Crypto.KeyHardwareSupport.Mac", 0);
 #endif
 }
+
+#if BUILDFLAG(IS_WIN)
+// Crypto.MLDSASupport.Win.* doesn't depend on the key provider either.
+TEST(UnexportableKeyMetricNoProviderTest, RecordsMldsaSupport) {
+  using internal::WinMldsaSupport;
+  ScopedNullUnexportableKeyProvider null_provider;
+  base::HistogramTester histogram_tester;
+
+  internal::MeasureTpmOperationsInternalForTesting();
+
+  // The bucket depends on the machine.
+  histogram_tester.ExpectTotalCount("Crypto.MLDSASupport.Win.TPM", 1);
+  // The software provider is always there. Whether it lists ML-DSA depends on
+  // the Windows version, but if it does, every later step has to succeed.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Crypto.MLDSASupport.Win.Software"),
+      AnyOf(
+          BucketsAre(base::Bucket(WinMldsaSupport::kAlgorithmNotSupported, 1)),
+          BucketsAre(base::Bucket(WinMldsaSupport::kSupported, 1))));
+  // Same, except that key creation fails on machines without VBS.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Crypto.MLDSASupport.Win.SoftwareVBS"),
+      AnyOf(
+          BucketsAre(base::Bucket(WinMldsaSupport::kAlgorithmNotSupported, 1)),
+          BucketsAre(base::Bucket(WinMldsaSupport::kKeyCreationFailed, 1)),
+          BucketsAre(base::Bucket(WinMldsaSupport::kSupported, 1))));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
 constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
