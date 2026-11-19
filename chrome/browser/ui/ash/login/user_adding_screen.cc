@@ -4,23 +4,16 @@
 
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 
-#include <memory>
-#include <optional>
-
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_mojo.h"
-#include "chrome/browser/ui/ash/login/user_adding_screen_input_methods_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
-#include "components/account_id/account_id.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
@@ -31,47 +24,25 @@ namespace {
 
 UserAddingScreen* g_instance = nullptr;
 
-class UserAddingScreenImpl : public UserAddingScreen {
- public:
-  UserAddingScreenImpl();
-  UserAddingScreenImpl(const UserAddingScreenImpl&) = delete;
-  UserAddingScreenImpl& operator=(const UserAddingScreenImpl&) = delete;
-  ~UserAddingScreenImpl() override;
+}  // namespace
 
-  void Start() override;
-  void Cancel() override;
-  bool IsRunning() override;
-
-  void AddObserver(UserAddingScreen::Observer* observer) override;
-  void RemoveObserver(UserAddingScreen::Observer* observer) override;
-
- private:
-  void OnDisplayHostCompletion();
-
-  base::ObserverList<UserAddingScreen::Observer>::UncheckedAndDanglingUntriaged
-      observers_;
-  raw_ptr<LoginDisplayHost, DanglingUntriaged> display_host_ = nullptr;
-
-  UserAddingScreenInputMethodsController im_controller_;
-
-  // The user whose session the screen was opened on top of, so that Cancel()
-  // can put their wallpaper back and the input methods controller can tell
-  // whether a different user is active once the screen is gone. Empty when
-  // the screen was opened from the login screen, where no session exists.
-  std::optional<AccountId> interrupted_user_;
-};
-
-UserAddingScreenImpl::UserAddingScreenImpl() {
+UserAddingScreen::UserAddingScreen() {
   CHECK(!g_instance);
   g_instance = this;
 }
 
-UserAddingScreenImpl::~UserAddingScreenImpl() {
+UserAddingScreen::~UserAddingScreen() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
 
-void UserAddingScreenImpl::Start() {
+// static
+UserAddingScreen* UserAddingScreen::Get() {
+  CHECK(g_instance);
+  return g_instance;
+}
+
+void UserAddingScreen::Start() {
   // TODO(crbug.com/403154552): Avoid g_browser_process.
   PrefService* local_state = g_browser_process->local_state();
   ::metrics::MetricsService* metrics_service =
@@ -123,10 +94,10 @@ void UserAddingScreenImpl::Start() {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOGIN_SECONDARY);
   display_host_->StartUserAdding(base::BindOnce(
-      &UserAddingScreenImpl::OnDisplayHostCompletion, base::Unretained(this)));
+      &UserAddingScreen::OnDisplayHostCompletion, base::Unretained(this)));
 }
 
-void UserAddingScreenImpl::Cancel() {
+void UserAddingScreen::Cancel() {
   CHECK(IsRunning());
 
   display_host_->CancelUserAdding();
@@ -140,20 +111,19 @@ void UserAddingScreenImpl::Cancel() {
   }
 }
 
-bool UserAddingScreenImpl::IsRunning() {
+bool UserAddingScreen::IsRunning() const {
   return display_host_ != nullptr;
 }
 
-void UserAddingScreenImpl::AddObserver(UserAddingScreen::Observer* observer) {
+void UserAddingScreen::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void UserAddingScreenImpl::RemoveObserver(
-    UserAddingScreen::Observer* observer) {
+void UserAddingScreen::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void UserAddingScreenImpl::OnDisplayHostCompletion() {
+void UserAddingScreen::OnDisplayHostCompletion() {
   CHECK(IsRunning());
   display_host_ = nullptr;
 
@@ -171,22 +141,6 @@ void UserAddingScreenImpl::OnDisplayHostCompletion() {
   for (auto& observer : observers_) {
     observer.OnUserAddingFinished();
   }
-}
-
-}  // namespace
-
-UserAddingScreen::UserAddingScreen() = default;
-UserAddingScreen::~UserAddingScreen() = default;
-
-// static
-std::unique_ptr<UserAddingScreen> UserAddingScreen::Create() {
-  return std::make_unique<UserAddingScreenImpl>();
-}
-
-// static
-UserAddingScreen* UserAddingScreen::Get() {
-  CHECK(g_instance);
-  return g_instance;
 }
 
 }  // namespace ash

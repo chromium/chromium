@@ -1013,7 +1013,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // Enable per-user metrics support as soon as user_manager is created.
   g_browser_process->metrics_service()->InitPerUserMetrics();
 
-  user_adding_screen_ = UserAddingScreen::Create();
+  user_adding_screen_ = std::make_unique<UserAddingScreen>();
 
   screen_locker_controller_ = std::make_unique<ScreenLockerController>(
       g_browser_process->local_state(),

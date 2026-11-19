@@ -5,11 +5,18 @@
 #ifndef CHROME_BROWSER_UI_ASH_LOGIN_USER_ADDING_SCREEN_H_
 #define CHROME_BROWSER_UI_ASH_LOGIN_USER_ADDING_SCREEN_H_
 
-#include <memory>
+#include <optional>
+
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "chrome/browser/ui/ash/login/user_adding_screen_input_methods_controller.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
-// An interface that defines screen for adding users into multi-profile session.
+class LoginDisplayHost;
+
+// Screen for adding users into a multi-profile session.
 class UserAddingScreen {
  public:
   struct Observer {
@@ -18,25 +25,35 @@ class UserAddingScreen {
     virtual ~Observer() = default;
   };
 
+  // Only one instance may exist at a time.
+  UserAddingScreen();
   UserAddingScreen(const UserAddingScreen&) = delete;
   UserAddingScreen& operator=(const UserAddingScreen&) = delete;
-  virtual ~UserAddingScreen();
+  ~UserAddingScreen();
 
-  // Creates the global instance. Only one instance may exist at a time.
-  static std::unique_ptr<UserAddingScreen> Create();
-
-  // Returns the global instance created by `Create()`.
+  // Returns the global instance.
   static UserAddingScreen* Get();
 
-  virtual void Start() = 0;
-  virtual void Cancel() = 0;
-  virtual bool IsRunning() = 0;
+  void Start();
+  void Cancel();
+  bool IsRunning() const;
 
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
- protected:
-  UserAddingScreen();
+ private:
+  void OnDisplayHostCompletion();
+
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
+  raw_ptr<LoginDisplayHost, DanglingUntriaged> display_host_ = nullptr;
+
+  UserAddingScreenInputMethodsController im_controller_;
+
+  // The user whose session the screen was opened on top of, so that Cancel()
+  // can put their wallpaper back and the input methods controller can tell
+  // whether a different user is active once the screen is gone. Empty when
+  // the screen was opened from the login screen, where no session exists.
+  std::optional<AccountId> interrupted_user_;
 };
 
 }  // namespace ash

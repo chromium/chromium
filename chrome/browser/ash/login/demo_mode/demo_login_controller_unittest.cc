@@ -170,7 +170,7 @@ class DemoLoginControllerTest : public testing::Test {
         test_url_loader_factory_.GetSafeWeakWrapper());
 
     // Needed by `ExistingUserController::DeviceSettingsChanged()`.
-    user_adding_screen_ = UserAddingScreen::Create();
+    user_adding_screen_ = std::make_unique<UserAddingScreen>();
     existing_user_controller_ = std::make_unique<ExistingUserController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()

@@ -173,7 +173,7 @@ class ScreenLockerUnitTest : public testing::Test {
 
     // Initialize ScreenLocker dependencies:
     SystemSaltGetter::Initialize();
-    user_adding_screen_ = UserAddingScreen::Create();
+    user_adding_screen_ = std::make_unique<UserAddingScreen>();
     screen_locker_controller_ = std::make_unique<ScreenLockerController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
