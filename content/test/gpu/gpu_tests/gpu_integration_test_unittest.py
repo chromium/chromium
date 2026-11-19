@@ -394,7 +394,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
           'arch-x86_64',
           'target-cpu-64',
           'no-clang-coverage',
-          'graphite-disabled',
           'memory_ge_16gb',
         ]
       ),
@@ -431,7 +430,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
           'passthrough',
           'renderer-skia-gl',
           'no-clang-coverage',
-          'graphite-disabled',
           'memory_ge_16gb',
         ]
       ),
@@ -466,7 +464,6 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
           'no-passthrough',
           'renderer-skia-gl',
           'no-clang-coverage',
-          'graphite-disabled',
           'memory_ge_16gb',
         ]
       ),
