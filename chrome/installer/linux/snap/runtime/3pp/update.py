@@ -2,7 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Regenerates runtime.lock.json for the snap runtime (developer tool).
+"""Regenerates the snap runtime lock files (developer tool).
 
 Resolves the packages in config.json with apt-get at a snapshot.ubuntu.com
 timestamp, the way snapcraft resolves stage-packages on a core26 build host:
@@ -17,8 +17,12 @@ timestamp, the way snapcraft resolves stage-packages on a core26 build host:
 - Recommends and Suggests are not installed.
 
 apt downloads the selected .debs, and this script records their full URL, size
-and SHA256 in runtime.lock.json, together with the files that the gnome
+and SHA256 in runtime.lock.<arch>.json, together with the files that the gnome
 extension's cleanup parts would remove. build.py only reads the lock file.
+
+Every architecture in config.json gets its own lock file. snapshot.ubuntu.com
+serves all architectures, including the ones that the live archive only has on
+ports.ubuntu.com (e.g. arm64), so the same snapshot URL works for all of them.
 
 Needs apt-get, apt-cache and unsquashfs on the host.
 """
@@ -43,7 +47,6 @@ KEYRING_FILE = SCRIPT_DIR / 'ubuntu-archive-keyring.gpg'
 
 SNAPSHOT_URL = 'https://snapshot.ubuntu.com/ubuntu/{snapshot}'
 SNAP_STORE_INFO_URL = 'https://api.snapcraft.io/v2/snaps/info/{snap}'
-ARCH = 'amd64'
 
 # "Inst libnss3 (2:3.117-1ubuntu1 Ubuntu:26.04/resolute [amd64])", optionally
 # with the installed version in brackets after the name.
@@ -84,7 +87,7 @@ def parse_base_manifest(path):
 class Apt:
     """Runs apt-get and apt-cache in a private root under `root`."""
 
-    def __init__(self, root, base_url, suites, components):
+    def __init__(self, root, base_url, suites, components, arch):
         self.root = pathlib.Path(root)
         self.archives = self.root / 'var/cache/apt/archives'
         self.status = self.root / 'var/lib/dpkg/status'
@@ -105,7 +108,7 @@ class Apt:
             f'URIs: {base_url}\n'
             f'Suites: {" ".join(suites)}\n'
             f'Components: {" ".join(components)}\n'
-            f'Architectures: {ARCH}\n'
+            f'Architectures: {arch}\n'
             f'Signed-By: {KEYRING_FILE}\n'
         )
         self.config = self.root / 'apt.conf'
@@ -115,8 +118,8 @@ Dir::State::status "{self.status}";
 Dir::Cache "var/cache/apt/";
 Dir::Etc "etc/apt/";
 Dir::Log "log/";
-APT::Architecture "{ARCH}";
-APT::Architectures {{ "{ARCH}"; }};
+APT::Architecture "{arch}";
+APT::Architectures {{ "{arch}"; }};
 APT::Install-Recommends "false";
 APT::Install-Suggests "false";
 APT::Sandbox::User "";
@@ -182,8 +185,8 @@ Debug::NoLocking "true";
         )
 
 
-def download_snap(snap, workdir):
-    """Downloads latest/stable of `snap` from the store.
+def download_snap(snap, arch, workdir):
+    """Downloads latest/stable of `snap` for `arch` from the store.
 
     Returns (path, revision).
     """
@@ -196,7 +199,7 @@ def download_snap(snap, workdir):
     entry = next(
         c
         for c in info['channel-map']
-        if c['channel']['architecture'] == ARCH
+        if c['channel']['architecture'] == arch
         and c['channel']['track'] == 'latest'
         and c['channel']['risk'] == 'stable'
     )
@@ -217,10 +220,10 @@ def list_snap_files(snap_file):
     return {line.lstrip('/') for line in out.splitlines() if line.strip()}
 
 
-def fetch_base_manifest(snap, workdir):
+def fetch_base_manifest(snap, arch, workdir):
     """Returns ({name: version}, revision) of the base snap from the store."""
-    snap_file, revision = download_snap(snap, workdir)
-    out = pathlib.Path(workdir, 'base')
+    snap_file, revision = download_snap(snap, arch, workdir)
+    out = pathlib.Path(workdir, f'base-{arch}')
     subprocess.run(
         [
             'unsquashfs',
@@ -264,7 +267,7 @@ def is_shared_library(rel_path):
     return name.endswith('.so') or '.so.' in name
 
 
-def compute_cleanup(config, debs, cache_dir):
+def compute_cleanup(config, arch, debs, cache_dir):
     """Lists the files that the snapcraft gnome extension would remove.
 
     The extension's cleanup parts delete the libraries that the content snaps
@@ -276,7 +279,7 @@ def compute_cleanup(config, debs, cache_dir):
     so_files = set()
     revisions = {}
     for snap in cleanup['library_snaps']:
-        snap_file, revisions[snap] = download_snap(snap, cache_dir)
+        snap_file, revisions[snap] = download_snap(snap, arch, cache_dir)
         so_files |= {
             f for f in list_snap_files(snap_file) if is_shared_library(f)
         }
@@ -289,7 +292,7 @@ def compute_cleanup(config, debs, cache_dir):
         gpu_commit = json.load(r)['sha']
     with urllib.request.urlopen(
         f'https://raw.githubusercontent.com/{gpu["repo"]}/{gpu_commit}/'
-        f'{gpu["path"]}',
+        f'{gpu["path"].format(arch=arch)}',
         timeout=60,
     ) as r:
         gpu_globs = [
@@ -320,66 +323,40 @@ def next_version(snapshot, old_lock):
     return f'{date}.{counter}'
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawTextHelpFormatter
-    )
-    parser.add_argument(
-        '--snapshot',
-        help='snapshot.ubuntu.com timestamp, e.g. '
-        '20261103T000000Z. Defaults to now.',
-    )
-    parser.add_argument(
-        '--base-manifest',
-        help='Path to the base snap\'s '
-        'usr/share/snappy/dpkg.yaml. Downloaded from the snap '
-        'store by default.',
-    )
-    parser.add_argument(
-        '--cache-dir',
-        help='Directory for the apt root and downloaded snaps '
-        'and .debs. Defaults to a new temporary directory.',
-    )
-    args = parser.parse_args()
-
-    config = build.load_json(CONFIG_FILE)
-    old_lock = (
-        build.load_json(build.LOCK_FILE) if build.LOCK_FILE.exists() else None
-    )
-    snapshot = args.snapshot or datetime.datetime.now(
-        datetime.timezone.utc
-    ).strftime('%Y%m%dT%H%M%SZ')
+def update_lock(config, arch, snapshot, cache_dir, base_manifest=None):
+    """Resolves the packages for `arch` and writes its lock file."""
+    lock_file = build.lock_file(arch)
+    old_lock = build.load_json(lock_file) if lock_file.exists() else None
     base_url = SNAPSHOT_URL.format(snapshot=snapshot)
-    cache_dir = pathlib.Path(args.cache_dir or tempfile.mkdtemp())
-    cache_dir.mkdir(parents=True, exist_ok=True)
 
-    if args.base_manifest:
-        base_packages = parse_base_manifest(args.base_manifest)
+    if base_manifest:
+        base_packages = parse_base_manifest(base_manifest)
         base_revision = None
     else:
         base_packages, base_revision = fetch_base_manifest(
-            config['base_snap'], cache_dir
+            config['base_snap'], arch, cache_dir
         )
 
     apt = Apt(
-        cache_dir / f'apt-{snapshot}',
+        cache_dir / f'apt-{snapshot}-{arch}',
         base_url,
         config['suites'],
         config['components'],
+        arch,
     )
-    build.log(f'Updating the apt indices at {base_url}')
+    build.log(f'Updating the {arch} apt indices at {base_url}')
     apt.update()
     apt.mark_installed(base_packages)
 
     groups_of = {}
     for group, group_config in config['groups'].items():
         roots = group_config['packages']
-        for name, version, arch in apt.resolve(roots):
+        for name, version, pkg_arch in apt.resolve(roots):
             # apt may also reinstall or upgrade base packages. Like
             # craft-parts, drop every package that the base snap lists.
             if name in base_packages and name not in roots:
                 continue
-            groups_of.setdefault((name, version, arch), []).append(group)
+            groups_of.setdefault((name, version, pkg_arch), []).append(group)
         apt.download(roots)
 
     selected = sorted(groups_of)
@@ -390,10 +367,10 @@ def main():
         )
     packages = []
     debs = []
-    for (name, version, arch), stanza in zip(selected, stanzas):
+    for (name, version, pkg_arch), stanza in zip(selected, stanzas):
         if (stanza['Package'], stanza['Version']) != (name, version):
             raise RuntimeError(f'Unexpected stanza for {name} {version}')
-        path = apt.archive_path(name, version, arch)
+        path = apt.archive_path(name, version, pkg_arch)
         sha256 = build.sha256_file(path)
         if sha256 != stanza['SHA256']:
             raise RuntimeError(f'{path}: SHA256 mismatch')
@@ -402,11 +379,11 @@ def main():
             {
                 'name': name,
                 'version': version,
-                'architecture': arch,
+                'architecture': pkg_arch,
                 'url': f'{base_url}/{stanza["Filename"]}',
                 'sha256': sha256,
                 'size': int(stanza['Size']),
-                'groups': groups_of[(name, version, arch)],
+                'groups': groups_of[(name, version, pkg_arch)],
             }
         )
 
@@ -425,15 +402,54 @@ def main():
             }
             for group, group_config in config['groups'].items()
         },
-        'cleanup': compute_cleanup(config, debs, cache_dir),
+        'cleanup': compute_cleanup(config, arch, debs, cache_dir),
         'packages': packages,
     }
-    build.write_json(build.LOCK_FILE, lock)
+    build.write_json(lock_file, lock)
     total = sum(p['size'] for p in packages)
     build.log(
-        f'Wrote {build.LOCK_FILE.name}: version {lock["version"]}, '
+        f'Wrote {lock_file.name}: version {lock["version"]}, '
         f'{len(packages)} packages, {total / 1e6:.1f} MB of .debs'
     )
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument(
+        '--arch',
+        action='append',
+        choices=build.ARCHES,
+        help='Debian architecture to update (repeatable; default: all).',
+    )
+    parser.add_argument(
+        '--snapshot',
+        help='snapshot.ubuntu.com time, e.g. 20261103T000000Z (default: now).',
+    )
+    parser.add_argument(
+        '--base-manifest',
+        help='Path to the base snap\'s usr/share/snappy/dpkg.yaml. Downloaded '
+        'from the snap store by default. Needs a single --arch.',
+    )
+    parser.add_argument(
+        '--cache-dir',
+        help='Directory for apt, snaps, and .debs (default: temporary dir).',
+    )
+    args = parser.parse_args()
+    arches = args.arch or list(build.ARCHES)
+    if args.base_manifest and len(arches) != 1:
+        parser.error('--base-manifest needs a single --arch')
+
+    config = build.load_json(CONFIG_FILE)
+    snapshot = args.snapshot or datetime.datetime.now(
+        datetime.timezone.utc
+    ).strftime('%Y%m%dT%H%M%SZ')
+    cache_dir = pathlib.Path(args.cache_dir or tempfile.mkdtemp())
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    for arch in arches:
+        update_lock(config, arch, snapshot, cache_dir, args.base_manifest)
     return 0
 
 

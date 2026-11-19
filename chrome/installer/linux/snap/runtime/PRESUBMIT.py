@@ -6,7 +6,8 @@
 PRESUBMIT_VERSION = '2.0.0'
 
 _3PP_DIR = '3pp/'
-_LOCK_FILE = _3PP_DIR + 'runtime.lock.json'
+# One lock file per architecture: 3pp/runtime.lock.<arch>.json.
+_LOCK_FILE_RE = r'^3pp/runtime\.lock\.[^/]+\.json$'
 
 
 def CheckRuntimeUnittests(input_api, output_api):
@@ -20,41 +21,40 @@ def CheckRuntimeUnittests(input_api, output_api):
     )
 
 
+def _LockVersion(input_api, contents):
+    if not contents:
+        return None
+    return input_api.json.loads('\n'.join(contents))['version']
+
+
 def CheckVersionBumped(input_api, output_api):
-    """The 3pp builder only rebuilds when the version in the lock changes."""
+    """The 3pp builder only rebuilds when the version in a lock changes."""
     if input_api.no_diffs:
         return []
     local_path = input_api.PresubmitLocalPath()
     changed = False
-    lock = None
+    locks = []
     for f in input_api.AffectedFiles(include_deletes=False):
         rel = input_api.os_path.relpath(f.AbsoluteLocalPath(), local_path)
         rel = rel.replace(input_api.os_path.sep, '/')
         if not rel.startswith(_3PP_DIR) or rel.endswith('_unittest.py'):
             continue
         changed = True
-        if rel == _LOCK_FILE:
-            lock = f
+        if input_api.re.match(_LOCK_FILE_RE, rel):
+            locks.append(f)
     if not changed:
         return []
 
-    new_version = None
-    old_version = None
-    if lock:
-        new_version = input_api.json.loads('\n'.join(lock.NewContents()))[
-            'version'
-        ]
-        old_contents = lock.OldContents()
-        if old_contents:
-            old_version = input_api.json.loads('\n'.join(old_contents))[
-                'version'
-            ]
-    if lock and (old_version is None or new_version != old_version):
-        return []
+    for lock in locks:
+        old_version = _LockVersion(input_api, lock.OldContents())
+        new_version = _LockVersion(input_api, lock.NewContents())
+        if old_version is None or new_version != old_version:
+            return []
     return [
         output_api.PresubmitError(
             'Changes to chrome/installer/linux/snap/runtime/%s need a new '
-            '"version" in %s (run "update.py"), otherwise the 3pp builder does '
-            'not upload a new package.' % (_3PP_DIR, _LOCK_FILE)
+            '"version" in a %sruntime.lock.<arch>.json file (run '
+            '"update.py"), otherwise the 3pp builder does not upload a new '
+            'package.' % (_3PP_DIR, _3PP_DIR)
         )
     ]

@@ -2,7 +2,7 @@
   "_comment": [
     "Packages bundled into the snap package and the files kept from them.",
     "Mirrors the stage-packages/prime sections of snapcraft.yaml parts. After",
-    "editing, run update.py to regenerate runtime.lock.json."
+    "editing, run update.py to regenerate the lock files."
   ],
   "suites": ["resolute", "resolute-updates", "resolute-security"],
   "components": ["main", "restricted", "universe", "multiverse"],
@@ -13,7 +13,7 @@
     "gpu_list": {
       "repo": "canonical/gpu-snap",
       "ref": "main",
-      "path": "lists/mesa-2604.amd64.list"
+      "path": "lists/mesa-2604.{arch}.list"
     }
   },
   "groups": {

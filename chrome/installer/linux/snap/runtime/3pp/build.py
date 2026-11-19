@@ -7,18 +7,21 @@
 The snap package (//chrome/installer/linux/snap) is based on core26 and ships
 a few libraries from the Ubuntu 26.04 archive that are not part of the base
 snap (NSS, libsecret, opensc-pkcs11, Qt 6, ...). This script produces those
-files without snapcraft. Its only input is runtime.lock.json, which update.py
-generates with apt.
+files without snapcraft. Its only input is runtime.lock.<arch>.json, which
+update.py generates with apt.
+
+Each architecture has its own lock file, runtime.lock.<arch>.json. The
+architecture comes from $_3PP_PLATFORM (linux-amd64 or linux-arm64), which the
+3pp builder sets, or from --arch.
 
 Subcommands (run by the 3pp builder):
   latest              Prints the package version (source stage).
-  checkout <dir>      Downloads the .debs from the URLs in runtime.lock.json
-                      into <dir> and checks their sizes and SHA256s
-                      (source stage).
+  checkout <dir>      Downloads the .debs from the URLs in the lock file into
+                      <dir> and checks their sizes and SHA256s (source stage).
   install <prefix>    Extracts the .debs, applies the prime filters and the
-                      gnome extension's cleanup recorded in runtime.lock.json,
-                      and writes the result to <prefix> (build stage, run from
-                      the checkout directory).
+                      gnome extension's cleanup recorded in the lock file, and
+                      writes the result to <prefix> (build stage, run from the
+                      checkout directory).
 
 Output layout (the CIPD package):
   prime/              Files to copy into the root of the snap ($SNAP).
@@ -43,10 +46,28 @@ import time
 import urllib.request
 
 SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
-LOCK_FILE = SCRIPT_DIR / 'runtime.lock.json'
+
+# Debian architectures of the snap runtime. The CIPD platform of each is
+# linux-<arch>.
+ARCHES = ('amd64', 'arm64')
 
 # Directory with the downloaded .debs inside the 3pp checkout.
 DEBS_DIR = 'debs'
+
+
+def lock_file(arch):
+    return SCRIPT_DIR / f'runtime.lock.{arch}.json'
+
+
+def platform_arch():
+    """Returns the Debian architecture for $_3PP_PLATFORM."""
+    platform = os.environ.get('_3PP_PLATFORM', '')
+    os_name, _, arch = platform.partition('-')
+    if os_name != 'linux' or arch not in ARCHES:
+        raise RuntimeError(
+            f'Unsupported $_3PP_PLATFORM {platform!r}; use --arch'
+        )
+    return arch
 
 
 def log(msg):
@@ -253,21 +274,22 @@ def deb_path(root, pkg):
 def check_deb(path, pkg):
     if path.stat().st_size != pkg['size'] or sha256_file(path) != pkg['sha256']:
         raise RuntimeError(
-            f'{path}: size or SHA256 does not match {LOCK_FILE.name}'
+            f'{path}: size or SHA256 does not match the lock file'
         )
 
 
-def cmd_latest(_args):
-    print(load_json(LOCK_FILE)['version'])
+def cmd_latest(args):
+    print(load_json(lock_file(args.arch))['version'])
 
 
 def cmd_checkout(args):
-    lock = load_json(LOCK_FILE)
+    lock_path = lock_file(args.arch)
+    lock = load_json(lock_path)
     requested = os.environ.get('_3PP_VERSION')
     if requested and requested != lock['version']:
         raise RuntimeError(
             f'Requested version {requested} does not match '
-            f'{LOCK_FILE.name} version {lock["version"]}'
+            f'{lock_path.name} version {lock["version"]}'
         )
     root = pathlib.Path(args.checkout_dir)
     root.mkdir(parents=True, exist_ok=True)
@@ -275,13 +297,13 @@ def cmd_checkout(args):
         dest = deb_path(root, pkg)
         download(pkg['url'], dest)
         check_deb(dest, pkg)
-    shutil.copy2(LOCK_FILE, root / LOCK_FILE.name)
+    shutil.copy2(lock_path, root / lock_path.name)
 
 
 def cmd_install(args):
     root = pathlib.Path(args.checkout_dir or os.getcwd())
     prefix = pathlib.Path(args.prefix)
-    lock = load_json(LOCK_FILE)
+    lock = load_json(lock_file(args.arch))
     for pkg in lock['packages']:
         check_deb(deb_path(root, pkg), pkg)
 
@@ -328,6 +350,11 @@ def main():
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
+    parser.add_argument(
+        '--arch',
+        choices=ARCHES,
+        help='Debian architecture. Defaults to the one of $_3PP_PLATFORM.',
+    )
     sub = parser.add_subparsers(dest='command', required=True)
     sub.add_parser('latest').set_defaults(func=cmd_latest)
     checkout = sub.add_parser('checkout')
@@ -341,6 +368,8 @@ def main():
     )
     install.set_defaults(func=cmd_install)
     args = parser.parse_args()
+    if not args.arch:
+        args.arch = platform_arch()
     args.func(args)
     return 0
 

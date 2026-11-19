@@ -43,7 +43,7 @@ class CheckVersionBumpedTest(unittest.TestCase):
                     action='M',
                 ),
                 MockAffectedFile(
-                    os.path.join(_REL_DIR, '3pp', 'runtime.lock.json'),
+                    os.path.join(_REL_DIR, '3pp', 'runtime.lock.amd64.json'),
                     ['{"version": "20261103.3"}'],
                     old_contents=['{"version": "20261103.3"}'],
                     action='M',
@@ -64,7 +64,7 @@ class CheckVersionBumpedTest(unittest.TestCase):
                     action='M',
                 ),
                 MockAffectedFile(
-                    os.path.join(_REL_DIR, '3pp', 'runtime.lock.json'),
+                    os.path.join(_REL_DIR, '3pp', 'runtime.lock.amd64.json'),
                     ['{"version": "20261103.3"}'],
                     old_contents=['{"version": "20261103.3"}'],
                     action='M',
@@ -85,10 +85,30 @@ class CheckVersionBumpedTest(unittest.TestCase):
                     action='M',
                 ),
                 MockAffectedFile(
-                    os.path.join(_REL_DIR, '3pp', 'runtime.lock.json'),
+                    os.path.join(_REL_DIR, '3pp', 'runtime.lock.amd64.json'),
                     ['{"version": "20261103.4"}'],
                     old_contents=['{"version": "20261103.3"}'],
                     action='M',
+                ),
+            ]
+        )
+        errors = PRESUBMIT.CheckVersionBumped(input_api, MockOutputApi())
+        self.assertEqual([], errors)
+
+    def testNewLockPasses(self):
+        input_api = _make_input_api(
+            [
+                MockAffectedFile(
+                    os.path.join(_REL_DIR, '3pp', 'build.py'),
+                    ['# updated'],
+                    old_contents=['# old'],
+                    action='M',
+                ),
+                MockAffectedFile(
+                    os.path.join(_REL_DIR, '3pp', 'runtime.lock.arm64.json'),
+                    ['{"version": "20261103.1"}'],
+                    old_contents=[],
+                    action='A',
                 ),
             ]
         )

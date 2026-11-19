@@ -10,9 +10,32 @@ import sys
 import tarfile
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import build  # pylint: disable=wrong-import-position
+
+
+class ArchTest(unittest.TestCase):
+    def test_lock_file(self):
+        self.assertEqual(
+            build.lock_file('arm64').name, 'runtime.lock.arm64.json'
+        )
+        for arch in build.ARCHES:
+            self.assertTrue(build.lock_file(arch).is_file())
+
+    def test_platform_arch(self):
+        with mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'linux-arm64'}):
+            self.assertEqual(build.platform_arch(), 'arm64')
+        with mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'linux-amd64'}):
+            self.assertEqual(build.platform_arch(), 'amd64')
+        for platform in ('mac-arm64', 'linux-riscv64'):
+            with mock.patch.dict(os.environ, {'_3PP_PLATFORM': platform}):
+                with self.assertRaises(RuntimeError):
+                    build.platform_arch()
+        with mock.patch.dict(os.environ, clear=True):
+            with self.assertRaises(RuntimeError):
+                build.platform_arch()
 
 
 class FilterTest(unittest.TestCase):

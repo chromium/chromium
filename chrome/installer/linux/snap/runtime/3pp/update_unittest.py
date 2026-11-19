@@ -62,6 +62,7 @@ class AptTest(unittest.TestCase):
                 'https://example.com/ubuntu',
                 ['resolute', 'resolute-updates'],
                 ['main'],
+                'arm64',
             )
             config = pathlib.Path(tmp, 'apt.conf').read_text()
             self.assertIn(f'Dir "{tmp}/";', config)
@@ -71,6 +72,8 @@ class AptTest(unittest.TestCase):
             ).read_text()
             self.assertIn('Suites: resolute resolute-updates\n', sources)
             self.assertIn(f'Signed-By: {update.KEYRING_FILE}\n', sources)
+            self.assertIn('Architectures: arm64\n', sources)
+            self.assertIn('APT::Architectures { "arm64"; };', config)
             self.assertEqual(
                 apt.archive_path('libnss3', '2:3.117-1', 'amd64').name,
                 'libnss3_2%3a3.117-1_amd64.deb',

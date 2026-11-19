@@ -14,18 +14,20 @@ runtime/
   3pp/                   3pp spec (see //docs/cipd_and_3pp.md)
     3pp.pb
     config.json          Packages and prime filters; input to update.py.
-    update.py            Regenerates runtime.lock.json (developer tool).
-    runtime.lock.json    .deb URLs, sizes and SHA256s; the only input to
-                         build.py.
+    update.py            Regenerates the lock files (developer tool).
+    runtime.lock.<arch>.json
+                         .deb URLs, sizes and SHA256s for amd64 and arm64;
+                         the only input to build.py.
     build.py             Builds the CIPD package (3pp builder).
     ubuntu-archive-keyring.gpg
-  linux-amd64/           CIPD package checkout (not checked in).
+  linux-amd64/           CIPD package checkouts (not checked in).
+  linux-arm64/
 ```
 
 The pipeline is:
 
 ```
-Ubuntu archive -> update.py (apt) -> runtime.lock.json -> build.py -> CIPD
+Ubuntu archive -> update.py (apt) -> runtime.lock.<arch>.json -> build.py -> CIPD
 ```
 
 ## update.py
@@ -44,7 +46,10 @@ are marked as installed, and Recommends are not installed. `update.py` then
 lists the files that the snapcraft gnome extension's cleanup parts would
 remove because the content snaps (`gnome-core26-sdk`, `gtk-common-themes`,
 the mesa content snap) already provide them, and writes everything to
-`runtime.lock.json` with a new version.
+`runtime.lock.<arch>.json` with a new version. It does this for every
+architecture (`amd64` and `arm64`) unless `--arch` limits it.
+`snapshot.ubuntu.com/ubuntu` serves all architectures, including arm64, which
+the live archive only has on `ports.ubuntu.com`.
 
 It needs `apt-get`, `apt-cache` and `unsquashfs` on the host and downloads
 `core26`, `gnome-core26-sdk` and `gtk-common-themes` from the snap store
@@ -52,14 +57,17 @@ It needs `apt-get`, `apt-cache` and `unsquashfs` on the host and downloads
 
 ## build.py
 
-The `3pp-linux-amd64-packager` builder runs `build.py`, which:
+The 3pp packager builder of each platform (`linux-amd64`, `linux-arm64`) runs
+`build.py`, which takes the architecture from `$_3PP_PLATFORM` (or `--arch`),
+and:
 
-* downloads the `.deb`s listed in `runtime.lock.json` from `snapshot.ubuntu.com`
-  and checks their sizes and SHA256s against the lock file,
+* downloads the `.deb`s listed in `runtime.lock.<arch>.json` from
+  `snapshot.ubuntu.com` and checks their sizes and SHA256s against the lock
+  file,
 * extracts them, applies the prime filters and the cleanup list from the lock
   file, and
 * uploads the result to CIPD as
-  `chromium/chrome/installer/linux/snap/runtime/linux-amd64`.
+  `chromium/chrome/installer/linux/snap/runtime/linux-<arch>`.
 
 The package contains `prime/` (files for the root of the snap), `copyright/`
 (the `debian/copyright` file of every bundled package) and `manifest.json`.
@@ -88,5 +96,5 @@ For example, for Ubuntu security updates:
 
 1. Run `3pp/update.py [--snapshot <YYYYMMDDTHHMMSSZ>]`.
 2. Land the change. The `3pp-linux-amd64-packager` try builder checks it on the
-   CQ, and the CI builder uploads the new version within 6 hours.
+   CQ, and the CI builders upload the new versions within 6 hours.
 3. Update the version in `//DEPS`.
