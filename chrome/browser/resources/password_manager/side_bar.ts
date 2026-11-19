@@ -46,8 +46,11 @@ enum PasswordCheckReferrer {
 
 export interface PasswordManagerSideBarElement {
   $: {
-    menu: CrMenuSelectorElement,
+    checkup: HTMLAnchorElement,
     compromisedPasswords: HTMLElement,
+    menu: CrMenuSelectorElement,
+    passwords: HTMLAnchorElement,
+    settings: HTMLAnchorElement,
   };
 }
 

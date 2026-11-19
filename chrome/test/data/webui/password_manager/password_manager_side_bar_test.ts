@@ -33,30 +33,32 @@ suite('PasswordManagerSideBarTest', function() {
     assertEquals(3, sideBarEntries.length);
   });
 
-  [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS].forEach(
-      page => test(`clicking ${page} updates path`, function() {
-        const differentPage =
-            page === Page.PASSWORDS ? Page.CHECKUP : Page.PASSWORDS;
-        Router.getInstance().navigateTo(differentPage);
-        assertEquals(differentPage, Router.getInstance().currentRoute.page);
+  const sidebarPages = [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS] as const;
 
-        const element =
-            sidebar.shadowRoot.querySelector<HTMLElement>(`#${page}`)!;
-        element.click();
-        assertEquals(page, Router.getInstance().currentRoute.page);
-      }));
+  for (const page of sidebarPages) {
+    test(`clicking ${page} updates path`, function() {
+      const differentPage =
+          page === Page.PASSWORDS ? Page.CHECKUP : Page.PASSWORDS;
+      Router.getInstance().navigateTo(differentPage);
+      assertEquals(differentPage, Router.getInstance().currentRoute.page);
 
-  [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS].forEach(
-      page => test(`navigating to ${page} updates selected item`, async () => {
-        const whenSelected = eventToPromise('iron-select', sidebar.$.menu);
-        Router.getInstance().navigateTo(page);
-        await whenSelected;
-        assertEquals(page, Router.getInstance().currentRoute.page);
-        const selectedItem =
-            sidebar.$.menu.querySelector<HTMLElement>('.selected');
-        assertTrue(!!selectedItem);
-        assertEquals(page, selectedItem.id);
-      }));
+      sidebar.$[page].click();
+      assertEquals(page, Router.getInstance().currentRoute.page);
+    });
+  }
+
+  for (const page of sidebarPages) {
+    test(`navigating to ${page} updates selected item`, async () => {
+      const whenSelected = eventToPromise('iron-select', sidebar.$.menu);
+      Router.getInstance().navigateTo(page);
+      await whenSelected;
+      assertEquals(page, Router.getInstance().currentRoute.page);
+      const selectedItem =
+          sidebar.$.menu.querySelector<HTMLElement>('.selected');
+      assertTrue(!!selectedItem);
+      assertEquals(page, selectedItem.id);
+    });
+  }
 
   test('navigating to password details selects passwords tab', async () => {
     const whenSelected = eventToPromise('iron-select', sidebar.$.menu);

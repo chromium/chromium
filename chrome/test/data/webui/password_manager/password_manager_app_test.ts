@@ -64,22 +64,19 @@ suite('PasswordManagerAppTest', function() {
         'test', app.$.toolbar.$.mainToolbar.getSearchField().getValue());
   });
 
-  [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS].forEach(
-      page => test(`Clicking ${page} in the sidebar`, async () => {
-        const element =
-            app.$.sidebar.shadowRoot.querySelector<HTMLElement>(`#${page}`)!;
-        element.click();
-        await app.$.sidebar.$.menu.updateComplete;
-        const ironItem =
-            app.$.sidebar.shadowRoot.querySelector<HTMLElement>(`#${page}`)!;
-        assertTrue(ironItem.classList.contains('selected'));
-        if (page === Page.CHECKUP) {
-          assertEquals(
-              'true',
-              String(Router.getInstance().currentRoute.queryParameters.get(
-                  UrlParam.START_CHECK)));
-        }
-      }));
+  for (const page of [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS] as const) {
+    test(`Clicking ${page} in the sidebar`, async () => {
+      app.$.sidebar.$[page].click();
+      await app.$.sidebar.$.menu.updateComplete;
+      assertTrue(app.$.sidebar.$[page].classList.contains('selected'));
+      if (page === Page.CHECKUP) {
+        assertEquals(
+            'true',
+            String(Router.getInstance().currentRoute.queryParameters.get(
+                UrlParam.START_CHECK)));
+      }
+    });
+  }
 
   test('app drawer', async () => {
     assertEquals(null, app.shadowRoot.querySelector('#drawerSidebar'));
@@ -144,10 +141,7 @@ suite('PasswordManagerAppTest', function() {
   });
 
   test('Test help button', async function() {
-    const button =
-        app.$.toolbar.shadowRoot.querySelector<HTMLElement>('#helpButton');
-    assertTrue(!!button);
-    button.click();
+    app.$.toolbar.$.helpButton.click();
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('passwordManagerLearnMoreURL'));
   });
