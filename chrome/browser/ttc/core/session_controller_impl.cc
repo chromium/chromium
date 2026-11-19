@@ -470,17 +470,20 @@ void SessionControllerImpl::OnPageContextFetched(
 
   if (!result.has_value()) {
     // Replace the model's context with just the tab, so that it doesn't keep
-    // using context of a page that's no longer shown. Only share the origin of
-    // a page whose context may not be shared.
+    // using context of a page that's no longer shown, or whose content isn't
+    // available (e.g. a PDF). Only share the origin of a page whose context
+    // may not be shared.
     // TODO(b/555804152): Tell the model why there's no page content.
     content::RenderFrameHost& main_frame = page.GetMainDocument();
     const TabContextInfo tab =
         result.error() == page_content_annotations::FetchPageContextError::
                               kPageContextNotEligible
             ? TabContextInfo(main_frame.GetLastCommittedOrigin().GetURL(),
-                             /*title=*/std::string())
+                             /*title=*/std::string(),
+                             /*mime_type=*/std::string())
             : TabContextInfo(main_frame.GetLastCommittedURL(),
-                             base::UTF16ToUTF8(contents->GetTitle()));
+                             base::UTF16ToUTF8(contents->GetTitle()),
+                             page.GetContentsMimeType());
     conversation_->SendContextUpdate(tab, /*apc=*/{});
     return;
   }
@@ -488,7 +491,7 @@ void SessionControllerImpl::OnPageContextFetched(
       result->annotated_page_content->data;
   conversation_->SendContextUpdate(
       TabContextInfo(GURL(apc.main_frame_data().url()),
-                     apc.main_frame_data().title()),
+                     apc.main_frame_data().title(), page.GetContentsMimeType()),
       apc);
 }
 

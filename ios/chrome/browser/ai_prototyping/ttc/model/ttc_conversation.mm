@@ -271,7 +271,9 @@ void TtcConversation::SendContextUpdate(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_) {
     LogContextUpdateSent(url, title, apc);
-    backend_->SendContextUpdate(ttc::TabContextInfo(url, title), apc);
+    // TODO(crbug.com/585589352): Send the page's MIME type.
+    backend_->SendContextUpdate(
+        ttc::TabContextInfo(url, title, /*mime_type=*/std::string()), apc);
   }
 }
 

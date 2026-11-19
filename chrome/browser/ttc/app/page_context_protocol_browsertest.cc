@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -111,6 +112,7 @@ IN_PROC_BROWSER_TEST_F(TtcPageContextProtocolBrowserTest,
   proto::ContextUpdate initial_update = TakeNextContextUpdate();
   EXPECT_EQ(initial_update.active_tab().url(), first_url.spec());
   EXPECT_EQ(initial_update.active_tab().title(), "OK");
+  EXPECT_EQ(initial_update.active_tab().mime_type(), "text/html");
   ASSERT_TRUE(initial_update.has_annotated_page_content());
   EXPECT_THAT(CollectText(initial_update.annotated_page_content().root_node()),
               testing::Contains(testing::HasSubstr("Non empty simple page")));
@@ -188,6 +190,31 @@ IN_PROC_BROWSER_TEST_F(TtcPageContextProtocolBrowserTest,
           testing::Not(
               testing::Contains(testing::HasSubstr("First dynamic update")))));
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+// A PDF has no APC, so its context update carries just the tab, including its
+// MIME type.
+IN_PROC_BROWSER_TEST_F(TtcPageContextProtocolBrowserTest,
+                       PdfSendsContextUpdateWithMimeType) {
+  const GURL html_url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), html_url));
+
+  StartSession();
+
+  proto::ContextUpdate initial_update = TakeNextContextUpdate();
+  EXPECT_EQ(initial_update.active_tab().url(), html_url.spec());
+  EXPECT_EQ(initial_update.active_tab().mime_type(), "text/html");
+  EXPECT_TRUE(initial_update.has_annotated_page_content());
+
+  const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), pdf_url));
+
+  proto::ContextUpdate pdf_update = TakeNextContextUpdate();
+  EXPECT_EQ(pdf_update.active_tab().url(), pdf_url.spec());
+  EXPECT_EQ(pdf_update.active_tab().mime_type(), "application/pdf");
+  EXPECT_FALSE(pdf_update.has_annotated_page_content());
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 

@@ -9,8 +9,12 @@
 namespace ttc {
 
 TabContextInfo::TabContextInfo() = default;
-TabContextInfo::TabContextInfo(GURL url, std::string title)
-    : url(std::move(url)), title(std::move(title)) {}
+TabContextInfo::TabContextInfo(GURL url,
+                               std::string title,
+                               std::string mime_type)
+    : url(std::move(url)),
+      title(std::move(title)),
+      mime_type(std::move(mime_type)) {}
 TabContextInfo::TabContextInfo(const TabContextInfo&) = default;
 TabContextInfo& TabContextInfo::operator=(const TabContextInfo&) = default;
 TabContextInfo::TabContextInfo(TabContextInfo&&) noexcept = default;
@@ -19,7 +23,7 @@ TabContextInfo::~TabContextInfo() = default;
 
 std::ostream& operator<<(std::ostream& os, const TabContextInfo& info) {
   return os << "{url: \"" << info.url.possibly_invalid_spec() << "\", title: \""
-            << info.title << "\"}";
+            << info.title << "\", mime_type: \"" << info.mime_type << "\"}";
 }
 
 }  // namespace ttc

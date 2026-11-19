@@ -592,6 +592,7 @@ void TtcMesClient::SendContextUpdate(
   auto* active_tab = ctx->mutable_active_tab();
   active_tab->set_url(tab.url.spec());
   active_tab->set_title(tab.title);
+  active_tab->set_mime_type(tab.mime_type);
   if (apc.ByteSizeLong() > 0) {
     *ctx->mutable_annotated_page_content() = apc;
   }
@@ -844,6 +845,7 @@ void TtcMesClient::LogClientFrame(
       const auto& ctx = frame.context_update();
       details.Add("url", ctx.active_tab().url())
           .Add("title", ctx.active_tab().title())
+          .Add("mime_type", ctx.active_tab().mime_type())
           .Add("annotated_page_content_bytes",
                ctx.annotated_page_content().ByteSizeLong());
       break;

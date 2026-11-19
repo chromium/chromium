@@ -16,7 +16,7 @@ namespace ttc {
 // alongside the page's content.
 struct TabContextInfo {
   TabContextInfo();
-  TabContextInfo(GURL url, std::string title);
+  TabContextInfo(GURL url, std::string title, std::string mime_type);
   TabContextInfo(const TabContextInfo&);
   TabContextInfo& operator=(const TabContextInfo&);
   TabContextInfo(TabContextInfo&&) noexcept;
@@ -30,6 +30,11 @@ struct TabContextInfo {
   // The title of the tab's page. Empty if the page's context may not be
   // shared.
   std::string title;
+
+  // The MIME type of the tab's document, e.g. "text/html" or
+  // "application/pdf". Empty if unknown or if the page's context may not be
+  // shared.
+  std::string mime_type;
 };
 
 std::ostream& operator<<(std::ostream& os, const TabContextInfo& info);

@@ -23,6 +23,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
+#include "components/pdf/common/constants.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -60,6 +61,10 @@ blink::mojom::AIPageContentOptionsPtr CreateActionableOptions() {
     options->non_salient_content_config->exclude_ad_related = true;
   }
   return options;
+}
+
+bool IsPdf(const content::Page& page) {
+  return page.GetContentsMimeType() == pdf::kPDFMimeType;
 }
 
 }  // namespace
@@ -117,6 +122,12 @@ void TtcPageContextMonitor::RefreshPageContext() {
   }
 
   pending_cached_notification_.Cancel();
+
+  if (IsPdf(page)) {
+    PostPdfPageContext(page);
+    return;
+  }
+
   if (kTtcPageContentMode.Get() == TtcPageContentMode::kActionable) {
     optimization_guide::GetAIPageContent(
         web_contents(), CreateActionableOptions(),
@@ -162,6 +173,12 @@ void TtcPageContextMonitor::FetchPageContext() {
                      actor::JournalDetailsBuilder().Add("url", url).Build());
     return;
   }
+
+  if (IsPdf(page)) {
+    PostPdfPageContext(page);
+    return;
+  }
+
   // PCES may have a cached extraction for this page. If so, use it; if not,
   // fetch one async.
   if (std::optional<page_content_annotations::ExtractedPageContentResult>
@@ -204,6 +221,11 @@ void TtcPageContextMonitor::OnPageContentReset(content::Page& current_page,
   pending_cached_notification_.Cancel();
   weak_ptr_factory_.InvalidateWeakPtrs();
   on_page_context_invalidated_.Run();
+
+  // OnPageContentExtracted() ignores PDF text, so report the PDF now.
+  if (IsPdf(current_page)) {
+    PostPdfPageContext(current_page);
+  }
 }
 
 void TtcPageContextMonitor::OnPageContentExtracted(
@@ -256,6 +278,24 @@ void TtcPageContextMonitor::OnSpeakerChanged(Speaker speaker) {
 
 bool TtcPageContextMonitor::IsMonitoredPage(const content::Page& page) const {
   return web_contents() && &page == &web_contents()->GetPrimaryPage();
+}
+
+void TtcPageContextMonitor::PostPdfPageContext(content::Page& page) {
+  CHECK(IsPdf(page));
+  GetJournal().Log("TtcPageContextPdf",
+                   actor::JournalDetailsBuilder()
+                       .Add("url", page.GetMainDocument().GetLastCommittedURL())
+                       .Build());
+  // We do not extract APC for a PDF, so report it like a page whose content
+  // couldn't be extracted: the tab is still shared if the page's URL is
+  // supported.
+  pending_cached_notification_.Reset(base::BindOnce(
+      &TtcPageContextMonitor::MaybeNotifyPageContextFetched,
+      base::Unretained(this), page.GetWeakPtr(),
+      base::unexpected(
+          page_content_annotations::FetchPageContextError::kUnknown)));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, pending_cached_notification_.callback());
 }
 
 void TtcPageContextMonitor::MaybeNotifyPageContextFetched(

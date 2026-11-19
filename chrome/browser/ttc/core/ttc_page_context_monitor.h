@@ -48,6 +48,9 @@ class SessionJournalImpl;
 // Extracted page context is never emitted for a page whose URL is not
 // supported (see IsUrlSupportedForPageContext()). Instead, a
 // kPageContextNotEligible error is emitted.
+//
+// For a PDF, a kUnknown error is emitted instead (or kPageContextNotEligible if
+// its URL is not supported).
 // TODO(b/555804152): Monitor for additional non-navigation, in-page changes.
 class TtcPageContextMonitor
     : public page_content_annotations::PageContentExtractionService::Observer,
@@ -113,6 +116,10 @@ class TtcPageContextMonitor
   // Returns whether `page` is the primary page of the monitored WebContents.
   bool IsMonitoredPage(const content::Page& page) const;
 
+  // Asynchronously emits the result for `page`, a PDF, for which there is no
+  // APC, replacing any pending delivery of cached page context.
+  void PostPdfPageContext(content::Page& page);
+
   // Checks whether `page` has a supported URL and, if so and `page` is still
   // the monitored page, invokes `on_page_context_fetched_` with `result`.
   void MaybeNotifyPageContextFetched(base::WeakPtr<content::Page> page,
@@ -149,7 +156,8 @@ class TtcPageContextMonitor
   PageContextFetchedCallback on_page_context_fetched_;
 
   // Holds the posted task for delivering already-cached page content on
-  // construction. Cancelled if a navigation or fresh extraction supersedes it.
+  // construction, or the result for a PDF. Cancelled if a navigation or fresh
+  // extraction supersedes it.
   base::CancelableOnceClosure pending_cached_notification_;
 
   base::WeakPtrFactory<TtcPageContextMonitor> fetch_weak_ptr_factory_{this};

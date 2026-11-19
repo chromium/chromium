@@ -575,8 +575,8 @@ TEST_F(TtcMesClientTest, DebugSinkGetsClientFrames) {
   client().SendTextInput("hi");
   optimization_guide::proto::AnnotatedPageContent apc;
   apc.mutable_main_frame_data()->set_title("page");
-  client().SendContextUpdate(TabContextInfo(GURL("https://a.test/"), "title"),
-                             apc);
+  client().SendContextUpdate(
+      TabContextInfo(GURL("https://a.test/"), "title", "text/html"), apc);
   std::vector<ToolDefinition> tools(2);
   tools[0].name = "open_tab";
   tools[1].name = "scroll";
@@ -892,8 +892,9 @@ TEST_F(TtcMesClientTest, NullDebugSinkIsSafe) {
   const std::vector<int16_t> pcm = {1, 2};
   client.SendAudioChunk(pcm);
   client.SendTextInput("hi");
-  client.SendContextUpdate(TabContextInfo(GURL("https://a.test"), "title"),
-                           optimization_guide::proto::AnnotatedPageContent());
+  client.SendContextUpdate(
+      TabContextInfo(GURL("https://a.test"), "title", "text/html"),
+      optimization_guide::proto::AnnotatedPageContent());
   client.SendToolSetUpdate(std::vector<ToolDefinition>(1));
   client.ReportPlaybackStatus(base::Milliseconds(200),
                               /*playback_complete=*/false,
@@ -987,13 +988,14 @@ TEST_F(TtcMesClientTest, GetSessionIdTracksSessionStatusAndClose) {
 }
 
 TEST_F(TtcMesClientTest, SendContextUpdatePopulatesActiveTab) {
-  client().SendContextUpdate(
-      TabContextInfo(GURL("https://a.test/doc.pdf"), "doc.pdf"),
-      optimization_guide::proto::AnnotatedPageContent());
+  client().SendContextUpdate(TabContextInfo(GURL("https://a.test/doc.pdf"),
+                                            "doc.pdf", "application/pdf"),
+                             optimization_guide::proto::AnnotatedPageContent());
 
   const auto& update = last_sent_frame().context_update();
   EXPECT_EQ(update.active_tab().url(), "https://a.test/doc.pdf");
   EXPECT_EQ(update.active_tab().title(), "doc.pdf");
+  EXPECT_EQ(update.active_tab().mime_type(), "application/pdf");
   // Empty page content isn't sent.
   EXPECT_FALSE(update.has_annotated_page_content());
 }

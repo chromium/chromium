@@ -272,7 +272,8 @@ void AiOverlayDialogPageHandler::DidChangePage(
     if (pcm && pcm->last_page_content().has_value()) {
       ttc_mes_client_->SendContextUpdate(
           TabContextInfo(
-              url, title.has_value() ? base::UTF16ToUTF8(title.value()) : ""),
+              url, title.has_value() ? base::UTF16ToUTF8(title.value()) : "",
+              /*mime_type=*/std::string()),
           *pcm->last_page_content());
     }
   }

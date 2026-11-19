@@ -40,6 +40,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -394,9 +395,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     // Only the page's origin may be sent, without its title or content.
     auto& expectation = EXPECT_CALL(
         *conversation(),
-        SendContextUpdate(
-            TabContextIs(url::Origin::Create(url).GetURL(), std::string()),
-            IsEmptyPageContent()));
+        SendContextUpdate(TabContextIs(url::Origin::Create(url).GetURL(),
+                                       std::string(), std::string()),
+                          IsEmptyPageContent()));
     if (wait_for_context_update) {
       expectation.WillOnce(
           base::test::RunOnceClosure(context_updated.GetCallback()));
@@ -476,8 +477,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   StartSession();
   {
     base::test::TestFuture<void> sent;
-    EXPECT_CALL(*conversation(),
-                SendContextUpdate(TabContextIs(url, "OK"), testing::_))
+    EXPECT_CALL(
+        *conversation(),
+        SendContextUpdate(TabContextIs(url, "OK", "text/html"), testing::_))
         .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
     EXPECT_TRUE(sent.Wait());
     EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
@@ -544,8 +546,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     ASSERT_TRUE(conversation());
     // Only the page's origin may be sent, without its title or content.
     EXPECT_CALL(*conversation(),
-                SendContextUpdate(TabContextIs(testing::_, std::string()),
-                                  IsEmptyPageContent()))
+                SendContextUpdate(
+                    TabContextIs(testing::_, std::string(), std::string()),
+                    IsEmptyPageContent()))
         .Times(testing::AnyNumber());
     EXPECT_TRUE(ExpectPageChange().Wait());
   };
@@ -626,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   base::test::TestFuture<void> sent;
   EXPECT_CALL(*conversation(),
               SendContextUpdate(TabContextIs(url::Origin::Create(url).GetURL(),
-                                             std::string()),
+                                             std::string(), std::string()),
                                 IsEmptyPageContent()))
       .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
   content::CrashTab(web_contents());
@@ -654,8 +657,9 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
     ASSERT_TRUE(conversation());
     // Only the page's origin may be sent, without its title or content.
     EXPECT_CALL(*conversation(),
-                SendContextUpdate(TabContextIs(testing::_, std::string()),
-                                  IsEmptyPageContent()))
+                SendContextUpdate(
+                    TabContextIs(testing::_, std::string(), std::string()),
+                    IsEmptyPageContent()))
         .Times(testing::AnyNumber());
     EXPECT_TRUE(ExpectPageChange().Wait());
   };
@@ -708,9 +712,10 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
       actor::EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked);
   ASSERT_FALSE(IsUrlSupported(blocked_url, raw_checker));
 
-  EXPECT_CALL(*conversation(),
-              SendContextUpdate(TabContextIs(testing::_, std::string()),
-                                IsEmptyPageContent()))
+  EXPECT_CALL(
+      *conversation(),
+      SendContextUpdate(TabContextIs(testing::_, std::string(), std::string()),
+                        IsEmptyPageContent()))
       .Times(testing::AnyNumber());
   navigated = ExpectPageChange();
   ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
@@ -826,6 +831,71 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   EXPECT_THAT(CollectText(*button), testing::IsEmpty());
   EXPECT_EQ(button->content_attributes().label(), "Search");
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+// A PDF, for which PCES provides no APC, must send its URL, title and MIME
+// type without any content: when navigated to during a session, when the user
+// speaks, and when a session starts on it.
+IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, PdfSendsMimeType) {
+  const GURL html_url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), html_url));
+  StartSession();
+  {
+    base::test::TestFuture<void> sent;
+    EXPECT_CALL(*conversation(),
+                SendContextUpdate(TabContextIs(html_url, "OK", "text/html"),
+                                  testing::_))
+        .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
+    EXPECT_TRUE(sent.Wait());
+    EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+  }
+
+  const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  // test.pdf has no title in its metadata, so the PDF viewer titles the page
+  // with its file name.
+  constexpr char kPdfTitle[] = "test.pdf";
+  auto expect_pdf_context = [&](base::test::TestFuture<void>& sent,
+                                auto title_matcher) {
+    EXPECT_CALL(*conversation(),
+                SendContextUpdate(
+                    TabContextIs(pdf_url, title_matcher, "application/pdf"),
+                    IsEmptyPageContent()))
+        .WillOnce(base::test::RunOnceClosure(sent.GetCallback()));
+  };
+
+  // Navigating to a PDF invalidates the context and sends the PDF's. This is
+  // sent at commit, before the PDF viewer may have set the page's title.
+  {
+    auto navigated = ExpectPageChange();
+    base::test::TestFuture<void> sent;
+    expect_pdf_context(sent, testing::_);
+    ASSERT_TRUE(content::NavigateToURL(web_contents(), pdf_url));
+    EXPECT_TRUE(navigated.Wait());
+    EXPECT_TRUE(sent.Wait());
+    EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+  }
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return web_contents()->GetTitle() == u"test.pdf"; }));
+
+  // The user speaking refreshes it.
+  {
+    base::test::TestFuture<void> sent;
+    expect_pdf_context(sent, kPdfTitle);
+    ttc_service().session_controller()->OnSpeakerChanged(Speaker::kUser);
+    EXPECT_TRUE(sent.Wait());
+    EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+  }
+
+  // A new session started on the PDF sends it.
+  ttc_service().EndSession();
+  StartSession();
+  {
+    base::test::TestFuture<void> sent;
+    expect_pdf_context(sent, kPdfTitle);
+    EXPECT_TRUE(sent.Wait());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 }  // namespace ttc

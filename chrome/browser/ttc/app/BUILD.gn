@@ -167,6 +167,7 @@ if (!is_android) {
       "//content/public/browser",
       "//content/test:test_support",
       "//net:test_support",
+      "//pdf:buildflags",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/protobuf:protobuf_lite",
