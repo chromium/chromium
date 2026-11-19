@@ -18660,6 +18660,47 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ON_DEVICE_MODEL_CATEGORY_LIVE_TRANSCRIPTION_DETAIL_2" translateable="false" desc="Second detail bullet for the live transcription on-device AI capability in Settings.">
       Downloads separately for each language you use
     </message>
+
+    <!-- ChromeOS-specific strings -->
+    <if expr="is_chromeos">
+      <!-- Controlled settings bubble -->
+      <message name="IDS_CONTROLLED_SETTING_WITH_OWNER" desc="Text displayed in the controlled settings bubble when a setting's value can be edited only by the owner.">
+        This setting is managed by the device owner, <ph name="OWNER_EMAIL">$1<ex>john@google.com</ex></ph>.
+      </message>
+      <message name="IDS_CONTROLLED_SETTING_NO_OWNER" desc="Text displayed in the controlled settings bubble when a setting's value can be edited only by the owner.">
+        This setting is managed by the device owner.
+      </message>
+      <message name="IDS_CONTROLLED_SETTING_SHARED" desc="Text displayed in the controlled settings bubble when a setting's value belongs to the primary user but can be edited.">
+        This setting belongs to <ph name="OWNER_EMAIL">$1<ex>john@google.com</ex></ph>.
+      </message>
+      <message name="IDS_CONTROLLED_SETTING_DEMO_SESSION" desc="Text displayed in the controlled settings bubble when a setting's value is enforced by demo session.">
+        This setting can't be changed in a demo session.
+      </message>
+
+      <!-- About Chrome page -->
+      <message name="IDS_UPGRADE_NETWORK_LIST_CELLULAR_ALLOWED" desc="Status label: for updates you need to connect to an Ethernet, Wi-Fi or mobile data">
+        To check for updates, please use Ethernet, Wi-Fi or mobile data.
+      </message>
+      <message name="IDS_UPGRADE_NETWORK_LIST_CELLULAR_DISALLOWED" desc="Status label: for updates you need to connect to an Ethernet or Wi-Fi">
+        To check for updates, please use Ethernet or Wi-Fi.
+      </message>
+      <message name="IDS_UPGRADE_NETWORK_LIST_CELLULAR_ALLOWED_NOT_AUTOMATIC" desc="Status label: Shown when the user is connected to a network type that does not support automatic updates (e.g., could be a mobile network with limited data per month). In this case, users can still attempt an update manually.">
+        Automatic updates don't download on this network type, but you can check for updates manually.
+      </message>
+
+      <!-- About flags page -->
+      <message name="IDS_FLAGS_IGNORED_DUE_TO_CRASHY_CHROME" desc="Text on an info bar added when user flags are dropped when chrome crashed too many times in short time." translateable="false">
+        Flags are ignored because of too many consecutive startup crashes.
+      </message>
+      <message name="IDS_FLAGS_IGNORED_SECONDARY_USERS" desc="Text on an info bar added on flags UI of secondary users." translateable="false">
+        Flags will not be applied for secondary users.
+      </message>
+
+      <!-- Mojo service names (displayed in task manager) -->
+      <message name="IDS_UTILITY_PROCESS_PDF_SERVICE_NAME" desc="The name of the utility process used for PDF conversions.">
+        PDF Service
+      </message>
+    </if>
   </messages>
 </release>
 </grit>
