@@ -549,18 +549,15 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     private void mockMergeToGroup() {
         doAnswer(
                         invocation -> {
-                            Token tabGroupId = mTokenCaptor.getValue();
+                            TabGroupId tabGroupId = mTabGroupIdCaptor.getValue();
                             assertThat(tabGroupId).isNotNull();
-                            int count =
-                                    mModel.getTabCountForGroup(
-                                            TabGroupId.fromOptionalToken(tabGroupId));
-                            when(mModel.getTabCountForGroup(
-                                            TabGroupId.fromOptionalToken(tabGroupId)))
-                                    .thenReturn(count + 1);
+                            int count = mModel.getTabCountForGroup(tabGroupId);
+                            when(mModel.getTabCountForGroup(tabGroupId)).thenReturn(count + 1);
                             return null;
                         })
                 .when(mModel)
-                .mergeListOfTabsToExistingGroup(any(), mTokenCaptor.capture(), any(), anyInt());
+                .mergeListOfTabsToExistingGroup(
+                        any(), mTabGroupIdCaptor.capture(), any(), anyInt());
     }
 
     @SuppressWarnings("DirectInvocationOnMock")

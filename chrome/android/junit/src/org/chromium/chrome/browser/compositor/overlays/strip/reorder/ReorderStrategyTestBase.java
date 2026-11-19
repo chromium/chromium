@@ -107,7 +107,7 @@ public abstract class ReorderStrategyTestBase {
 
     // Captors
     @Captor ArgumentCaptor<List<Tab>> mTabListCaptor;
-    @Captor ArgumentCaptor<Token> mTokenCaptor;
+    @Captor ArgumentCaptor<TabGroupId> mTabGroupIdCaptor;
 
     protected void setup() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();

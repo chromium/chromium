@@ -189,13 +189,13 @@ public class UndoGroupRestorerUnitTest {
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         Collections.singletonList(mTab2),
-                        GROUP_A,
+                        TabGroupId.fromRawToken(GROUP_A),
                         /* indexInGroup= */ 0,
                         DONT_NOTIFY);
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         Collections.singletonList(mTab1),
-                        GROUP_A,
+                        TabGroupId.fromRawToken(GROUP_A),
                         /* indexInGroup= */ 2,
                         DONT_NOTIFY);
         inOrder.verify(mTabModel)
@@ -235,19 +235,19 @@ public class UndoGroupRestorerUnitTest {
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         Collections.singletonList(mTab3),
-                        GROUP_A,
+                        TabGroupId.fromRawToken(GROUP_A),
                         /* indexInGroup= */ 1,
                         DONT_NOTIFY);
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(mTab2)),
-                        eq(GROUP_A),
+                        eq(TabGroupId.fromRawToken(GROUP_A)),
                         isNull(),
                         eq(DONT_NOTIFY));
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(mTab1)),
-                        eq(GROUP_A),
+                        eq(TabGroupId.fromRawToken(GROUP_A)),
                         isNull(),
                         eq(DONT_NOTIFY));
         verify(mTabModel, never()).setTabGroupCollapsed(any(), anyBoolean(), anyBoolean());
@@ -566,13 +566,13 @@ public class UndoGroupRestorerUnitTest {
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         Collections.singletonList(mTab2),
-                        GROUP_REOPENED,
+                        TabGroupId.fromRawToken(GROUP_REOPENED),
                         /* indexInGroup= */ 0,
                         DONT_NOTIFY);
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         Collections.singletonList(mTab1),
-                        GROUP_REOPENED,
+                        TabGroupId.fromRawToken(GROUP_REOPENED),
                         /* indexInGroup= */ 2,
                         DONT_NOTIFY);
         inOrder.verify(mTabModel)
@@ -624,13 +624,13 @@ public class UndoGroupRestorerUnitTest {
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         Collections.singletonList(mTab2),
-                        GROUP_REOPENED,
+                        TabGroupId.fromRawToken(GROUP_REOPENED),
                         /* indexInGroup= */ 0,
                         DONT_NOTIFY);
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         Collections.singletonList(mTab1),
-                        GROUP_REOPENED,
+                        TabGroupId.fromRawToken(GROUP_REOPENED),
                         /* indexInGroup= */ 2,
                         DONT_NOTIFY);
         inOrder.verify(mTabModel)

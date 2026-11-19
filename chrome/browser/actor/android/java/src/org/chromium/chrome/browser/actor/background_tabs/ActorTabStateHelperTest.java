@@ -389,7 +389,7 @@ public class ActorTabStateHelperTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(mPlaceholderTab)),
-                        eq(groupId),
+                        eq(TabGroupId.fromRawToken(groupId)),
                         eq(1),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
     }

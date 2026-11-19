@@ -1478,16 +1478,20 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     public void mergeListOfTabsToExistingGroup(
             List<Tab> tabs,
-            Token destinationGroupId,
+            TabGroupId destinationGroupId,
             @Nullable Integer indexInGroup,
             @TabGroupMergeNotificationType int notify) {
-        if (tabs.isEmpty() || !containsTabGroup(TabGroupId.fromOptionalToken(destinationGroupId))) {
+        if (tabs.isEmpty() || !containsTabGroup(destinationGroupId)) {
             return;
         }
 
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
             mergeListOfTabsToGroupInternal(
-                    tabs, /* destinationTab= */ null, notify, indexInGroup, destinationGroupId);
+                    tabs,
+                    /* destinationTab= */ null,
+                    notify,
+                    indexInGroup,
+                    destinationGroupId.getToken());
         }
     }
 

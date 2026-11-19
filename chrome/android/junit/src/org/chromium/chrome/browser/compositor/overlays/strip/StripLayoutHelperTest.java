@@ -6945,7 +6945,7 @@ public class StripLayoutHelperTest {
         verify(mModel, times(1))
                 .mergeListOfTabsToExistingGroup(
                         mTabListCaptor.capture(),
-                        eq(TAB_GROUP_ID_1),
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID_1)),
                         eq(null),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         assertTrue(mTabListCaptor.getValue().contains(mModel.getTabById(4)));
@@ -6974,7 +6974,7 @@ public class StripLayoutHelperTest {
         verify(mModel, times(1))
                 .mergeListOfTabsToExistingGroup(
                         mTabListCaptor.capture(),
-                        eq(TAB_GROUP_ID_1),
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID_1)),
                         eq(0),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         assertTrue(mTabListCaptor.getValue().contains(mModel.getTabById(1)));
@@ -7788,7 +7788,7 @@ public class StripLayoutHelperTest {
         verify(mModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(newTab)),
-                        eq(TAB_GROUP_ID_1),
+                        eq(TabGroupId.fromRawToken(TAB_GROUP_ID_1)),
                         eq(expectedIndexInGroup),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
     }

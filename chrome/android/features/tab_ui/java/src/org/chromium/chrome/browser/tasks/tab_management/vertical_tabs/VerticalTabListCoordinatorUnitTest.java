@@ -3723,7 +3723,7 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(draggedTab)),
-                        eq(groupId),
+                        eq(TabGroupId.fromRawToken(groupId)),
                         eq(0),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
 
@@ -3991,7 +3991,7 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(draggedTab)),
-                        eq(destGroupId),
+                        eq(TabGroupId.fromRawToken(destGroupId)),
                         eq(0),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
 
@@ -4057,7 +4057,7 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(draggedTab)),
-                        eq(groupId),
+                        eq(TabGroupId.fromRawToken(groupId)),
                         eq(1),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
 
@@ -4123,7 +4123,7 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(draggedTab)),
-                        eq(groupId),
+                        eq(TabGroupId.fromRawToken(groupId)),
                         eq(2),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
 

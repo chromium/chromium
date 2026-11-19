@@ -6002,7 +6002,7 @@ public class StripLayoutHelper
         if (newTab == null || groupId == null) return;
         mModel.mergeListOfTabsToExistingGroup(
                 Collections.singletonList(newTab),
-                groupId,
+                TabGroupId.fromRawToken(groupId),
                 indexInGroup,
                 TabGroupMergeNotificationType.DONT_NOTIFY);
     }

@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Collections;
@@ -301,7 +302,7 @@ public class LiveBackgroundTabTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(mTab)),
-                        eq(groupId),
+                        eq(TabGroupId.fromRawToken(groupId)),
                         eq(1),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
     }

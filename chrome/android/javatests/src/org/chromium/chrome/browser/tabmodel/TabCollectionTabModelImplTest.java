@@ -2503,7 +2503,7 @@ public class TabCollectionTabModelImplTest {
                     // Merging into a non-existent group should no-op.
                     mCollectionModel.mergeListOfTabsToExistingGroup(
                             List.of(tab1),
-                            Token.createRandom(),
+                            TabGroupId.fromRawToken(Token.createRandom()),
                             /* indexInGroup= */ null,
                             TabGroupMergeNotificationType.DONT_NOTIFY);
                     assertNull(tab1.getTabGroupId());
@@ -2512,7 +2512,7 @@ public class TabCollectionTabModelImplTest {
                     // Append tab5 to the end of the existing group.
                     mCollectionModel.mergeListOfTabsToExistingGroup(
                             List.of(tab5),
-                            groupId,
+                            TabGroupId.fromRawToken(groupId),
                             /* indexInGroup= */ null,
                             TabGroupMergeNotificationType.DONT_NOTIFY);
                     assertEquals(groupId, tab5.getTabGroupId());
@@ -2521,7 +2521,7 @@ public class TabCollectionTabModelImplTest {
                     // Insert tab1 at index 1 in the existing group.
                     mCollectionModel.mergeListOfTabsToExistingGroup(
                             List.of(tab1),
-                            groupId,
+                            TabGroupId.fromRawToken(groupId),
                             /* indexInGroup= */ 1,
                             TabGroupMergeNotificationType.DONT_NOTIFY);
                     assertEquals(groupId, tab1.getTabGroupId());
@@ -2903,7 +2903,7 @@ public class TabCollectionTabModelImplTest {
                     // Merge tab1 and tab4 into the existing group at index 1.
                     mCollectionModel.mergeListOfTabsToExistingGroup(
                             List.of(tab1, tab4),
-                            groupId,
+                            TabGroupId.fromRawToken(groupId),
                             /* indexInGroup= */ 1,
                             /* notify= */ TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
 

@@ -328,7 +328,7 @@ final class UndoGroupRestorer {
             int indexInGroup = restoredTab.mClosedTab.indexInGroup;
             tabModel.mergeListOfTabsToExistingGroup(
                     Collections.singletonList(restoredTab.mTab),
-                    groupId,
+                    TabGroupId.fromRawToken(groupId),
                     indexInGroup == TabList.INVALID_TAB_INDEX ? null : indexInGroup,
                     TabGroupMergeNotificationType.DONT_NOTIFY);
         }

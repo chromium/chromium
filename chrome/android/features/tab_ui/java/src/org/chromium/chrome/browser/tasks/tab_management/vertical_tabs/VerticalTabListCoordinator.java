@@ -1741,7 +1741,7 @@ public class VerticalTabListCoordinator {
                     if (destGroupId != null) {
                         tabModel.mergeListOfTabsToExistingGroup(
                                 Collections.singletonList(tab),
-                                destGroupId,
+                                TabGroupId.fromRawToken(destGroupId),
                                 indexInGroup,
                                 TabGroupMergeNotificationType.DONT_NOTIFY);
                     }

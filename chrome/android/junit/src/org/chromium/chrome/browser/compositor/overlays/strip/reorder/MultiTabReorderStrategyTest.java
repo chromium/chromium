@@ -206,7 +206,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         verify(mModel)
                 .mergeListOfTabsToExistingGroup(
                         mTabListCaptor.capture(),
-                        eq(GROUP_ID1),
+                        eq(TabGroupId.fromRawToken(GROUP_ID1)),
                         /* indexInGroup= */ eq(1),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         assertEquals("Should merge 2 tabs.", 2, mTabListCaptor.getValue().size());
@@ -447,7 +447,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         verify(mModel)
                 .mergeListOfTabsToExistingGroup(
                         anyList(),
-                        eq(GROUP_ID1),
+                        eq(TabGroupId.fromRawToken(GROUP_ID1)),
                         /* indexInGroup= */ eq(0),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         verify(mAnimationHost, times(2)).startAnimations(anyList(), isNull());

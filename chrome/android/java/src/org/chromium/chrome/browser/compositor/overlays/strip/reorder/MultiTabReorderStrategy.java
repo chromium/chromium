@@ -492,7 +492,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                             .indexOf(primaryTab);
             mModel.mergeListOfTabsToExistingGroup(
                     convertStripTabsToTabs(mUnpinnedTabs),
-                    destinationGroupId,
+                    TabGroupId.fromRawToken(destinationGroupId),
                     /* indexInGroup= */ primaryTabIndexInGroup,
                     /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
         } else {
@@ -777,7 +777,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         RecordUserAction.record("MobileToolbarReorderTab.TabsAddedToGroup");
         mModel.mergeListOfTabsToExistingGroup(
                 convertStripTabsToTabs(mUnpinnedTabs),
-                adjTitle.getTabGroupId(),
+                TabGroupId.fromRawToken(adjTitle.getTabGroupId()),
                 /* indexInGroup= */ towardEnd ? 0 : null,
                 /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
         animateGroupIndicatorForTabReorder(adjTitle, /* isMovingOutOfGroup= */ false, towardEnd);

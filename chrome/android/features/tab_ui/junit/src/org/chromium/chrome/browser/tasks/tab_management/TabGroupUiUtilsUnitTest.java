@@ -259,7 +259,7 @@ public class TabGroupUiUtilsUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(tab)),
-                        eq(groupId),
+                        eq(TabGroupId.fromRawToken(groupId)),
                         /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();
@@ -677,7 +677,7 @@ public class TabGroupUiUtilsUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTab)),
-                        eq(restoredGroupId),
+                        eq(TabGroupId.fromRawToken(restoredGroupId)),
                         /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();
@@ -716,7 +716,7 @@ public class TabGroupUiUtilsUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTab)),
-                        eq(restoredGroupId),
+                        eq(TabGroupId.fromRawToken(restoredGroupId)),
                         /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();
@@ -1306,7 +1306,7 @@ public class TabGroupUiUtilsUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTabToAdd)),
-                        eq(reopenedGroupId),
+                        eq(TabGroupId.fromRawToken(reopenedGroupId)),
                         /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();
@@ -1370,7 +1370,7 @@ public class TabGroupUiUtilsUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTabToAdd)),
-                        eq(reopenedGroupId),
+                        eq(TabGroupId.fromRawToken(reopenedGroupId)),
                         /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();
@@ -2468,7 +2468,7 @@ public class TabGroupUiUtilsUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTabToAdd)),
-                        eq(reopenedGroupId),
+                        eq(TabGroupId.fromRawToken(reopenedGroupId)),
                         /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(callback).onTabMoved();

@@ -409,7 +409,7 @@ public class TabReorderStrategy extends ReorderStrategyBase {
         // TODO(crbug.com/451697001): Investigate if we still need to suppress the notifications.
         mModel.mergeListOfTabsToExistingGroup(
                 List.of(tabToMerge),
-                groupTitle.getTabGroupId(),
+                TabGroupId.fromRawToken(groupTitle.getTabGroupId()),
                 indexInGroup,
                 TabGroupMergeNotificationType.DONT_NOTIFY);
         RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 
 import java.util.ArrayList;
@@ -389,7 +390,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
         verify(mModel)
                 .mergeListOfTabsToExistingGroup(
                         mTabListCaptor.capture(),
-                        eq(GROUP_ID1),
+                        eq(TabGroupId.fromRawToken(GROUP_ID1)),
                         eq(expectedMergeIndex),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         List<Tab> mergedTabs = mTabListCaptor.getValue();

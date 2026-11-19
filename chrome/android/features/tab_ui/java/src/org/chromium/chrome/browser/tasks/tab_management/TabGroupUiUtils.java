@@ -711,7 +711,7 @@ public class TabGroupUiUtils {
             @Nullable TabMovedCallback tabMovedCallback) {
         sourceTabModel.mergeListOfTabsToExistingGroup(
                 tabs,
-                destinationGroupId,
+                TabGroupId.fromRawToken(destinationGroupId),
                 /* indexInGroup= */ null,
                 TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         if (tabMovedCallback != null) {

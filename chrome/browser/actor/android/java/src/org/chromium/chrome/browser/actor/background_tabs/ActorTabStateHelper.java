@@ -232,7 +232,7 @@ public class ActorTabStateHelper {
             int indexInGroup = model.getIndexOfTabInGroup(sourceTab);
             model.mergeListOfTabsToExistingGroup(
                     Collections.singletonList(destinationTab),
-                    tabGroupId,
+                    TabGroupId.fromRawToken(tabGroupId),
                     indexInGroup + 1,
                     TabGroupMergeNotificationType.DONT_NOTIFY);
         }

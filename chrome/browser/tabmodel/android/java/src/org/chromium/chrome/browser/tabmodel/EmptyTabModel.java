@@ -418,7 +418,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     @Override
     public void mergeListOfTabsToExistingGroup(
             List<Tab> tabs,
-            Token destinationGroupId,
+            TabGroupId destinationGroupId,
             @Nullable Integer indexInGroup,
             @TabGroupMergeNotificationType int notify) {}
 

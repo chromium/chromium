@@ -231,7 +231,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         int mergeIndex = dropIndex - mModel.indexOf(destinationTabList.get(0));
         mModel.mergeListOfTabsToExistingGroup(
                 tabsToMerge,
-                destinationTabGroupId,
+                TabGroupId.fromRawToken(destinationTabGroupId),
                 /* indexInGroup= */ mergeIndex,
                 TabGroupMergeNotificationType.DONT_NOTIFY);
 

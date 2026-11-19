@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Token;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -186,7 +185,7 @@ public class StubTabModel extends EmptyTabModel {
     @Override
     public void mergeListOfTabsToExistingGroup(
             List<Tab> tabs,
-            Token destinationGroupId,
+            TabGroupId destinationGroupId,
             @Nullable Integer indexInGroup,
             @TabGroupMergeNotificationType int notify) {
         throw error();

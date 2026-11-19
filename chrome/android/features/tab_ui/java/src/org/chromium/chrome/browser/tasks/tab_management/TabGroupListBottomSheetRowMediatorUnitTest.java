@@ -154,7 +154,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(mTabs),
-                        eq(mToken),
+                        eq(TabGroupId.fromRawToken(mToken)),
                         isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(mTabMovedCallback).onTabMoved();
@@ -244,7 +244,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(mTabs),
-                        eq(mToken),
+                        eq(TabGroupId.fromRawToken(mToken)),
                         isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(mTabMovedCallback).onTabMoved();

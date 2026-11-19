@@ -592,14 +592,14 @@ public interface TabModel extends TabList {
      * destinationGroupId}. No-ops if the group does not exist in the model.
      *
      * @param tabs List of {@link Tab}s to be merged. The ordering of this list is preserved.
-     * @param destinationGroupId The destination tab group ID {@link Token}.
+     * @param destinationGroupId The destination {@link TabGroupId}.
      * @param indexInGroup The index within the destination group to insert the tabs (clamped to the
      *     valid range [0, group_size]), or {@code null} to append at the end.
      * @param notify Whether or not to notify observers about the merging events.
      */
     void mergeListOfTabsToExistingGroup(
             List<Tab> tabs,
-            Token destinationGroupId,
+            TabGroupId destinationGroupId,
             @Nullable Integer indexInGroup,
             @TabGroupMergeNotificationType int notify);
 

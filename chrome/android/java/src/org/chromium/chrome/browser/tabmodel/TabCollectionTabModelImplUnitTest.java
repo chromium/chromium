@@ -532,7 +532,7 @@ public class TabCollectionTabModelImplUnitTest {
         // Merging into a non-existent group should no-op.
         mTabModel.mergeListOfTabsToExistingGroup(
                 List.of(tab1),
-                new Token(9L, 9L),
+                TabGroupId.fromRawToken(new Token(9L, 9L)),
                 /* indexInGroup= */ null,
                 TabGroupMergeNotificationType.DONT_NOTIFY);
         assertEquals(List.of(tab0, tab1, tab2, tab3, tab4, tab5), mTabs);
@@ -540,7 +540,7 @@ public class TabCollectionTabModelImplUnitTest {
         // Append tab5 to the end of the existing group.
         mTabModel.mergeListOfTabsToExistingGroup(
                 List.of(tab5),
-                groupId,
+                TabGroupId.fromRawToken(groupId),
                 /* indexInGroup= */ null,
                 TabGroupMergeNotificationType.DONT_NOTIFY);
         assertEquals(groupId, tab5.getTabGroupId());
@@ -549,7 +549,7 @@ public class TabCollectionTabModelImplUnitTest {
         // Insert tab1 at index 1 in the existing group.
         mTabModel.mergeListOfTabsToExistingGroup(
                 List.of(tab1),
-                groupId,
+                TabGroupId.fromRawToken(groupId),
                 /* indexInGroup= */ 1,
                 TabGroupMergeNotificationType.DONT_NOTIFY);
         assertEquals(groupId, tab1.getTabGroupId());

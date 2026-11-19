@@ -266,7 +266,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         verify(mTabModel)
                 .mergeListOfTabsToExistingGroup(
                         eq(List.of(mTab)),
-                        eq(groupId),
+                        eq(TabGroupId.fromRawToken(groupId)),
                         /* indexInGroup= */ isNull(),
                         eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         assertTrue(actionTester.getActions().contains("MobileMenuAddToExistingGroup"));
