@@ -566,7 +566,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool SetTargetSnapAreaElementIds(cc::TargetSnapAreaElementIds) override;
   void UpdateFocusDataForSnapAreas() override;
 
-  std::optional<cc::SnapPositionData> GetSnapPosition(
+  [[nodiscard]] std::optional<cc::SnapPositionData> GetSnapPosition(
       const cc::SnapSelectionStrategy& strategy) const override;
   std::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;

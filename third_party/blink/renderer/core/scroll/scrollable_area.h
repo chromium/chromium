@@ -206,18 +206,20 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       mojom::blink::ScrollDirectionPhysical direction) const;
   void SnapAfterLayout();
 
-  // Tries to find a target snap position. If found, returns the target
-  // position. This *does not* update the target snap area element id and should
-  // only be used when querying what the snap position would be. When scrolling
-  // to the snap position GetSnapPositionAndSetTarget should be used instead.
-  virtual std::optional<cc::SnapPositionData> GetSnapPosition(
+  // Tries to find a target snap position without updating the target snap
+  // area element IDs. Returns nullopt if snap data is missing or empty.
+  // Otherwise returns selection data, which may have type kNone.
+  // When scrolling, use GetSnapPositionAndSetTarget() or apply the returned
+  // IDs.
+  [[nodiscard]] virtual std::optional<cc::SnapPositionData> GetSnapPosition(
       const cc::SnapSelectionStrategy& strategy) const {
     return std::nullopt;
   }
 
   // Tries to find a target snap position. If found, returns the target position
   // and updates the last target snap area element id for the snap container's
-  // data. If not found, then clears the last target snap area element id.
+  // data. If snap data is missing or empty, leaves target IDs unchanged.
+  // Otherwise applies the returned IDs even when no snap position is found.
   //
   // NOTE: If a target position is found, then it is expected that this position
   // will be scrolled to.

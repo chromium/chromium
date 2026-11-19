@@ -2112,37 +2112,30 @@ void PaintLayerScrollableArea::SetImplSnapStrategy(
 
 std::optional<cc::SnapPositionData> PaintLayerScrollableArea::GetSnapPosition(
     const cc::SnapSelectionStrategy& strategy) const {
-  if (!RareData() || !RareData()->snap_container_data_)
+  const auto* data = GetSnapContainerData();
+  if (!data || data->size() == 0) {
     return std::nullopt;
-
-  const cc::SnapContainerData& data = RareData()->snap_container_data_.value();
-  if (!data.size())
-    return std::nullopt;
-
-  cc::SnapPositionData snap = data.FindSnapPosition(strategy);
-  return std::make_optional(snap);
+  }
+  return data->FindSnapPosition(strategy);
 }
 
 std::optional<gfx::PointF>
 PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
-  std::optional<cc::SnapPositionData> snap = GetSnapPosition(strategy);
-  if (!snap.has_value()) {
+  const auto& snap = GetSnapPosition(strategy);
+  if (!snap) {
     return std::nullopt;
   }
 
-  // Update the target element ids whether we found a snap position or not -
-  // as we may have to clear them if we are no longer snapped.
-  cc::SnapContainerData& data = RareData()->snap_container_data_.value();
-  if (data.SetTargetSnapAreaElementIds(snap->target_element_ids)) {
-    GetLayoutBox()->SetNeedsPaintPropertyUpdate();
-  }
+  // Apply IDs even for kNone: they may clear stale targets or preserve
+  // a target on the other axis.
+  SetTargetSnapAreaElementIds(snap->target_element_ids);
 
   if (snap->type == cc::SnapPositionData::Type::kNone) {
     return std::nullopt;
   }
 
-  return std::make_optional<gfx::PointF>(snap->position);
+  return snap->position;
 }
 
 bool PaintLayerScrollableArea::HasOverflowControls() const {
