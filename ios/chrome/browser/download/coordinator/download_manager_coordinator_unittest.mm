@@ -16,6 +16,8 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/download/model/confirm_download_closing_overlay.h"
 #import "ios/chrome/browser/download/model/confirm_download_replacing_overlay.h"
@@ -33,7 +35,9 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -1084,4 +1088,39 @@ TEST_F(DownloadManagerCoordinatorTest, OpenDownloadedFile) {
   EXPECT_FALSE([safeDecoded containsString:@"/.."] ||
                [safeDecoded containsString:@".."]);
   EXPECT_TRUE([safeDecoded containsString:@"%2e%2e%2f"]);
+}
+
+// Tests that starting a download presents the Auto-deletion action sheet when
+// enabled and that `clearPresentedState` dismisses it.
+TEST_F(DownloadManagerCoordinatorTest,
+       PresentsAndClearsAutoDeletionActionSheet) {
+  base::test::ScopedFeatureList feature_list(
+      kDownloadAutoDeletionFeatureEnabled);
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kDownloadAutoDeletionEnabled, true);
+
+  web_state_->WasShown();
+  tab_helper()->SetDelegate(coordinator_);
+  tab_helper()->SetCurrentDownload(CreateTestTask());
+
+  DownloadManagerViewController* view_controller =
+      base::apple::ObjCCastStrict<DownloadManagerViewController>(
+          base_view_controller_.childViewControllers.firstObject);
+  ASSERT_TRUE(view_controller);
+
+  @autoreleasepool {
+    [view_controller.delegate
+        downloadManagerViewControllerDidStartDownload:view_controller];
+  }
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return [base_view_controller_.presentedViewController
+        isKindOfClass:[UIAlertController class]];
+  }));
+
+  [coordinator_ clearPresentedState];
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return base_view_controller_.presentedViewController == nil;
+  }));
 }

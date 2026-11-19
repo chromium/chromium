@@ -10,7 +10,6 @@ source_set("commands") {
     "actor_overlay_commands.h",
     "add_contacts_commands.h",
     "app_bar_commands.h",
-    "auto_deletion_commands.h",
     "autofill_commands.h",
     "bookmarks_commands.h",
     "bring_android_tabs_commands.h",

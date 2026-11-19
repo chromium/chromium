@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_coordinator_delegate.h"
 #import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_commands.h"
 #import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_mutator.h"
 #import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_view_controller.h"
@@ -16,8 +17,6 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -35,8 +34,8 @@ class AutoDeletionCoordinatorTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     base_view_controller_ = [[UIViewController alloc] init];
     scoped_key_window_.Get().rootViewController = base_view_controller_;
-    auto_deletion_handler_mock_ =
-        OCMStrictProtocolMock(@protocol(AutoDeletionCommands));
+    delegate_mock_ =
+        OCMStrictProtocolMock(@protocol(AutoDeletionCoordinatorDelegate));
   }
 
   ~AutoDeletionCoordinatorTest() override {
@@ -49,7 +48,7 @@ class AutoDeletionCoordinatorTest : public PlatformTest {
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
       return base_view_controller_.presentedViewController == nil;
     }));
-    EXPECT_OCMOCK_VERIFY(auto_deletion_handler_mock_);
+    EXPECT_OCMOCK_VERIFY(delegate_mock_);
   }
 
   // Returns the testing local state `PrefService`.
@@ -67,12 +66,10 @@ class AutoDeletionCoordinatorTest : public PlatformTest {
     ProfileIOS* profile =
         incognito ? profile_->GetOffTheRecordProfile() : profile_.get();
     browser_ = std::make_unique<TestBrowser>(profile);
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:auto_deletion_handler_mock_
-                     forProtocol:@protocol(AutoDeletionCommands)];
     coordinator_ = [[AutoDeletionCoordinator alloc]
         initWithBaseViewController:base_view_controller ?: base_view_controller_
                            browser:browser_.get()];
+    coordinator_.delegate = delegate_mock_;
     return coordinator_;
   }
 
@@ -114,7 +111,7 @@ class AutoDeletionCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
-  id auto_deletion_handler_mock_;
+  id delegate_mock_;
   AutoDeletionCoordinator* coordinator_;
 };
 
@@ -129,27 +126,29 @@ TEST_F(AutoDeletionCoordinatorTest, PresentsActionSheetWhenEnabled) {
   EXPECT_TRUE(WaitForPresentedViewControllerOfClass([UIAlertController class]));
 }
 
-// Tests that the coordinator asks its owner to stop it when the action sheet
-// can't be presented because the base view controller isn't in a window.
+// Tests that the coordinator notifies the delegate to stop it when the action
+// sheet can't be presented because the base view controller isn't in a window.
 TEST_F(AutoDeletionCoordinatorTest, StopsWhenActionSheetCannotBePresented) {
   local_state()->SetBoolean(prefs::kDownloadAutoDeletionEnabled, true);
   UIViewController* detached_view_controller = [[UIViewController alloc] init];
   AutoDeletionCoordinator* coordinator = CreateCoordinator(
       /*incognito=*/false, detached_view_controller);
 
-  OCMExpect([auto_deletion_handler_mock_ dismissAutoDeletionActionSheet]);
+  OCMExpect(
+      [delegate_mock_ autoDeletionCoordinatorWantsToBeStopped:coordinator]);
   [coordinator start];
   EXPECT_EQ(nil, detached_view_controller.presentedViewController);
 }
 
 // Tests that starting the coordinator when auto-deletion is disabled and the
-// promo has already been shown asks its owner to stop immediately.
+// promo has already been shown notifies the delegate to stop immediately.
 TEST_F(AutoDeletionCoordinatorTest, StopsImmediatelyWhenDisabledAndPromoShown) {
   local_state()->SetBoolean(prefs::kDownloadAutoDeletionEnabled, false);
   local_state()->SetBoolean(prefs::kDownloadAutoDeletionIPHShown, true);
   AutoDeletionCoordinator* coordinator = CreateCoordinator();
 
-  OCMExpect([auto_deletion_handler_mock_ dismissAutoDeletionActionSheet]);
+  OCMExpect(
+      [delegate_mock_ autoDeletionCoordinatorWantsToBeStopped:coordinator]);
   [coordinator start];
   EXPECT_EQ(nil, base_view_controller_.presentedViewController);
 }
@@ -168,17 +167,19 @@ TEST_F(AutoDeletionCoordinatorTest, EnablingFromPromoTransitionsToActionSheet) {
   EXPECT_TRUE(WaitForPresentedViewControllerOfClass([UIAlertController class]));
 }
 
-// Tests that dismissing the promo asks its owner to stop the coordinator.
+// Tests that dismissing the promo notifies the delegate to stop the
+// coordinator.
 TEST_F(AutoDeletionCoordinatorTest, DismissingPromoStopsCoordinator) {
   AutoDeletionPromoViewController* promo_view_controller =
       StartCoordinatorPresentingPromo();
   ASSERT_NE(nil, promo_view_controller);
 
-  OCMExpect([auto_deletion_handler_mock_ dismissAutoDeletionActionSheet]);
+  OCMExpect(
+      [delegate_mock_ autoDeletionCoordinatorWantsToBeStopped:coordinator_]);
   [promo_view_controller.autoDeletionPromoHandler dismissAutoDeletion];
 }
 
-// Tests that swiping down the promo sheet asks its owner to stop the
+// Tests that swiping down the promo sheet notifies the delegate to stop the
 // coordinator.
 TEST_F(AutoDeletionCoordinatorTest, SwipingDownPromoStopsCoordinator) {
   AutoDeletionPromoViewController* promo_view_controller =
@@ -188,7 +189,8 @@ TEST_F(AutoDeletionCoordinatorTest, SwipingDownPromoStopsCoordinator) {
       promo_view_controller.navigationController.presentationController;
   ASSERT_NE(nil, presentation_controller.delegate);
 
-  OCMExpect([auto_deletion_handler_mock_ dismissAutoDeletionActionSheet]);
+  OCMExpect(
+      [delegate_mock_ autoDeletionCoordinatorWantsToBeStopped:coordinator_]);
   [presentation_controller.delegate
       presentationControllerDidDismiss:presentation_controller];
 }

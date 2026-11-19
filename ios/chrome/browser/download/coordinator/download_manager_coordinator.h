@@ -32,6 +32,9 @@ class DownloadTask;
 // Underlying UIViewController presented by this coordinator.
 @property(nonatomic, readonly) UIViewController* viewController;
 
+// Dismisses any modal UI presented by this coordinator.
+- (void)clearPresentedState;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_COORDINATOR_DOWNLOAD_MANAGER_COORDINATOR_H_

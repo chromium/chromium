@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_coordinator_delegate.h"
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_promo_mediator.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_promo_commands.h"
@@ -19,8 +20,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -240,11 +239,9 @@ constexpr CGFloat kLargeFileSizeThreshold = 20.0;
   [self dismiss];
 }
 
-// Asks the owner of this coordinator to stop it.
+// Notifies the delegate that this coordinator wants to be stopped.
 - (void)dismiss {
-  id<AutoDeletionCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), AutoDeletionCommands);
-  [handler dismissAutoDeletionActionSheet];
+  [self.delegate autoDeletionCoordinatorWantsToBeStopped:self];
 }
 
 // Checks if the Auto-deletion promo should be shown. The promo is shown if one

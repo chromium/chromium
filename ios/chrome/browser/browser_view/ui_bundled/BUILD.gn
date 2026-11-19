@@ -154,7 +154,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/dialogs/ui_bundled:dialogs_internal",
     "//ios/chrome/browser/docking_promo/coordinator",
     "//ios/chrome/browser/download/coordinator",
-    "//ios/chrome/browser/download/coordinator/auto_deletion",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/download/ui:features",
     "//ios/chrome/browser/drive_file_picker/coordinator",

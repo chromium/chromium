@@ -2,6 +2,7 @@ source_set("auto_deletion") {
   sources = [
     "auto_deletion_coordinator.h",
     "auto_deletion_coordinator.mm",
+    "auto_deletion_coordinator_delegate.h",
     "auto_deletion_promo_mediator.h",
     "auto_deletion_promo_mediator.mm",
     "auto_deletion_settings_mediator.h",
@@ -24,7 +25,6 @@ source_set("auto_deletion") {
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/utils",
-    "//ios/chrome/browser/shared/public/commands",
     "//ios/web/public/download",
     "//ui/base",
   ]
@@ -48,7 +48,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

@@ -94,7 +94,6 @@
 #import "ios/chrome/browser/default_browser/promo/non_modal/coordinator/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/default_browser/promo/non_modal/public/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/download/coordinator/ar_quick_look_coordinator.h"
-#import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/download_manager_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/safari_download_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/vcard_coordinator.h"
@@ -180,7 +179,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
-#import "ios/chrome/browser/shared/public/commands/auto_deletion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -298,7 +296,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 
 @interface BrowserCoordinator () <
     AppLauncherTabHelperBrowserPresentationProvider,
-    AutoDeletionCommands,
     AutofillAddCreditCardCoordinatorDelegate,
     AutofillSettingsNavigator,
     BrowserCoordinatorCommands,
@@ -504,7 +501,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
   PriceTrackingPromoCoordinator* _priceTrackingPromoCoordinator;
   TabGroupsPromoCoordinator* _tabGroupsPromoCoordinator;
-  AutoDeletionCoordinator* _autoDeletionCoordinator;
   SigninReauthCoordinator* _reauthCoordinator;
   SyncPresenterCompletionCallback _reauthCoordinatorCompletion;
 
@@ -948,7 +944,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   // starting any child coordinator, otherwise they won't be able to resolve
   // handlers.
   NSArray<Protocol*>* protocols = @[
-    @protocol(AutoDeletionCommands),
     @protocol(BrowserCoordinatorCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FindInPageCommands),
@@ -1428,7 +1423,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
   [self dismissPriceTrackingPromo];
-  [self dismissAutoDeletionActionSheet];
   [self dismissSearchWhatYouSeePromo];
   [self dismissTabGroupsPromo];
   [self dismissNotificationsOptIn];
@@ -1544,26 +1538,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   // openMatch.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(animationCompletion));
-}
-
-#pragma mark - AutoDeletionCommands
-
-- (void)presentAutoDeletionActionSheet {
-  // Do not present the action sheet if it is already being presented or the
-  // DownloadManagerCoordinator is null.
-  if (_autoDeletionCoordinator || !self.downloadManagerCoordinator) {
-    return;
-  }
-
-  _autoDeletionCoordinator = [[AutoDeletionCoordinator alloc]
-      initWithBaseViewController:self.downloadManagerCoordinator.viewController
-                         browser:self.browser];
-  [_autoDeletionCoordinator start];
-}
-
-- (void)dismissAutoDeletionActionSheet {
-  [_autoDeletionCoordinator stop];
-  _autoDeletionCoordinator = nil;
 }
 
 #pragma mark - BrowserCoordinatorCommands
@@ -2057,7 +2031,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
-  [self dismissAutoDeletionActionSheet];
+  [self.downloadManagerCoordinator clearPresentedState];
   [self dismissSearchWhatYouSeePromo];
   [self dismissPriceTrackingPromo];
   [self dismissTabGroupsPromo];
