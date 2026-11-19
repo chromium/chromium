@@ -10,20 +10,19 @@
 import './file_system_site_entry_item.js';
 import '../settings_page/settings_subpage.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {BaseMixin} from '../base_mixin.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
-import {RouteObserverMixin, Router} from '../router.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
-import {WebUiListenerMixin} from '../web_ui_listener_mixin.js';
+import {Router} from '../router.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
 import {ContentSettingsTypes} from './constants.js';
-import {getTemplate} from './file_system_site_details.html.js';
+import {getCss} from './file_system_site_details.css.js';
+import {getHtml} from './file_system_site_details.html.js';
 import type {FileSystemGrant, OriginFileSystemGrants} from './file_system_site_list.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -31,9 +30,8 @@ declare global {
   }
 }
 
-const FileSystemSiteDetailsElementBase =
-    WebUiListenerMixin(BaseMixin(RouteObserverMixin(
-        SettingsViewMixin(SiteSettingsMixin(I18nMixin(PolymerElement))))));
+const FileSystemSiteDetailsElementBase = WebUiListenerMixinLit(
+    SettingsViewMixinLit(SiteSettingsMixinLit(CrLitElement)));
 
 export class FileSystemSiteDetailsElement extends
     FileSystemSiteDetailsElementBase {
@@ -41,35 +39,40 @@ export class FileSystemSiteDetailsElement extends
     return 'file-system-site-details';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Use the string representing the origin or extension name as the page
        * title of the settings-subpage parent.
        */
-      pageTitle_: {
-        type: String,
-        notify: true,
-      },
-
-      /**
-       * The origin that this details page is showing information for.
-       */
-      origin_: String,
+      pageTitle_: {type: String},
 
       /**
        * An Object representing an origin and its associated permission grants.
        */
-      grantsPerOrigin: Object,
+      grantsPerOrigin_: {type: Object},
     };
   }
-  declare private pageTitle_: string;
-  declare private origin_: string;
-  declare grantsPerOrigin: OriginFileSystemGrants;
+
+  protected accessor pageTitle_: string = '';
+  protected accessor grantsPerOrigin_: OriginFileSystemGrants = {
+    origin: '',
+    viewGrants: [],
+    editGrants: [],
+  };
+
+  /**
+   * The origin that this details page is showing information for.
+   */
+  private origin_: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
@@ -83,7 +86,7 @@ export class FileSystemSiteDetailsElement extends
   }
 
   /**
-   * RouteObserverMixin
+   * SettingsViewMixinLit
    */
   override currentRouteChanged(route: Route, oldRoute?: Route) {
     super.currentRouteChanged(route, oldRoute);
@@ -119,20 +122,20 @@ export class FileSystemSiteDetailsElement extends
       Router.getInstance().navigateTo(routes.SITE_SETTINGS_FILE_SYSTEM_WRITE);
       return;
     }
-    this.grantsPerOrigin = originFileSystemGrantsObj;
+    this.grantsPerOrigin_ = originFileSystemGrantsObj;
   }
 
   /**
    * Revoke an individual permission grant for a given origin and filePath,
    * then update the list displayed on the UI.
    */
-  private onRevokeGrant_(e: CustomEvent<FileSystemGrant>) {
+  protected onRevokeGrant_(e: CustomEvent<FileSystemGrant>) {
     this.browserProxy.revokeFileSystemGrant(this.origin_, e.detail.filePath);
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

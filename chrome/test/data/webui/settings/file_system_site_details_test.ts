@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {FileSystemGrant, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
-import {FileSystemSiteDetailsElement, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import type {FileSystemGrant, FileSystemSiteDetailsElement, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
+import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
-
-// clang-format on
 
 suite('FileSystemSettings_EnablePersistentPermissions_SiteDetails', function() {
   let testElement: FileSystemSiteDetailsElement;
@@ -59,19 +56,19 @@ suite('FileSystemSettings_EnablePersistentPermissions_SiteDetails', function() {
     SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     browserProxy.setFileSystemGrants(FILE_SYSTEM_GRANTS);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement = new FileSystemSiteDetailsElement();
+    testElement = document.createElement('file-system-site-details');
     document.body.appendChild(testElement);
     const params = new URLSearchParams();
     params.append('site', origin);
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS, params);
     await browserProxy.whenCalled('getFileSystemGrants');
-    flush();
+    await microtasksFinished();
   });
 
   test('FileSystemSiteDetails_FileSystemSiteEntryItemsPopulated', function() {
     const fileSystemSiteDetailsElements =
-        testElement.shadowRoot!.querySelectorAll('file-system-site-entry-item');
+        testElement.shadowRoot.querySelectorAll('file-system-site-entry-item');
     assertEquals(fileSystemSiteDetailsElements.length, 2);
   });
 
@@ -82,7 +79,7 @@ suite('FileSystemSettings_EnablePersistentPermissions_SiteDetails', function() {
     webUIListenerCallback(
         'contentSettingChooserPermissionChanged', 'file-system-write');
     await browserProxy.whenCalled('getFileSystemGrants');
-    flush();
+    await microtasksFinished();
     assertEquals(
         Router.getInstance().getCurrentRoute(),
         routes.SITE_SETTINGS_FILE_SYSTEM_WRITE);

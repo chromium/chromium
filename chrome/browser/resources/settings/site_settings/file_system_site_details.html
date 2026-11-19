@@ -1,32 +1,21 @@
-<style>
-  .grants-list-header {
-    padding-inline-start: 20px;
-    padding-bottom: 20px;
-  }
-
-  .view-grants {
-    padding-top: 20px;
-  }
-</style>
-<settings-subpage page-title="[[pageTitle_]]" route-path$="[[routePath]]">
+<settings-subpage .pageTitle="${this.pageTitle_}"
+    route-path="${this.routePath}">
   <div class="grants-list-header"
-      hidden$="[[!grantsPerOrigin.editGrants.length]]">
+      ?hidden="${!this.grantsPerOrigin_.editGrants.length}">
     $i18n{siteSettingsFileSystemSiteListEditHeader}
   </div>
-  <template is="dom-repeat" items="[[grantsPerOrigin.editGrants]]"
-      as="editGrant">
-    <file-system-site-entry-item grant="[[editGrant]]"
-        on-revoke-grant="onRevokeGrant_">
+  ${this.grantsPerOrigin_.editGrants.map(item => html`
+    <file-system-site-entry-item .grant="${item}"
+        @revoke-grant="${this.onRevokeGrant_}">
     </file-system-site-entry-item>
-  </template>
+  `)}
   <div class="grants-list-header view-grants"
-      hidden$="[[!grantsPerOrigin.viewGrants.length]]">
+      ?hidden="${!this.grantsPerOrigin_.viewGrants.length}">
     $i18n{siteSettingsFileSystemSiteListViewHeader}
   </div>
-  <template is="dom-repeat" items="[[grantsPerOrigin.viewGrants]]"
-      as="viewGrant">
-    <file-system-site-entry-item grant="[[viewGrant]]"
-        on-revoke-grant="onRevokeGrant_">
+  ${this.grantsPerOrigin_.viewGrants.map(item => html`
+    <file-system-site-entry-item .grant="${item}"
+        @revoke-grant="${this.onRevokeGrant_}">
     </file-system-site-entry-item>
-  </template>
+  `)}
 </settings-subpage>
