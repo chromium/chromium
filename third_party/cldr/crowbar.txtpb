@@ -1,0 +1,17 @@
+upstream {
+  version: "44-0.1"
+  artifacts {
+    name: "unicode-cldr-core_44-0.1_all.deb"
+    http {
+      url: "https://snapshot.debian.org/file/7d943c77fbea7a8ebc78fc2993cc94e3708016a0"
+      digest: "sha256:72a93d50fb1239baf5c26e575cffa35000dde4e20fbe23bd273a31253824d49f"
+    }
+  }
+}
+stages {
+  input {
+    unpack {}
+    patch { copybara {} }
+  }
+  publish { git {} }
+}
