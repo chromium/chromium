@@ -336,6 +336,7 @@ absl_cc_test(
     absl::check
     absl::config
     absl::flat_hash_map
+    absl::hash
     absl::hash_generator_testing
     absl::hash_policy_testing
     absl::test_allocator
@@ -376,6 +377,7 @@ absl_cc_test(
     absl::check
     absl::config
     absl::container_memory
+    absl::core_headers
     absl::flat_hash_set
     absl::hash
     absl::hash_container_defaults
@@ -418,6 +420,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::config
+    absl::hash
     absl::hash_policy_testing
     absl::node_hash_map
     absl::tracked
@@ -489,6 +492,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
+    absl::canonical_hash
     absl::config
     absl::core_headers
     absl::hash
@@ -508,6 +512,7 @@ absl_cc_test(
   DEPS
     absl::config
     absl::container_memory
+    absl::hash
     absl::no_destructor
     absl::overload
     absl::string_view

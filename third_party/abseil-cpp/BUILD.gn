@@ -383,6 +383,7 @@ if (absl_build_tests) {
         "absl/functional:bind_front_test",
         "absl/functional:function_ref_test",
         "absl/functional:overload_test",
+        "absl/hash:canonical_hash_test",
         "absl/hash:city_test",
         "absl/hash:hash_instantiated_test",
         "absl/hash:hash_test",

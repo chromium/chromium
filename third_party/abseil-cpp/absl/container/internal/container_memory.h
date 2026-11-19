@@ -19,6 +19,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <functional>
 #include <memory>
 #include <new>
 #include <tuple>
@@ -28,6 +29,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/hash/hash.h"
+#include "absl/hash/internal/canonical_hash.h"
 #include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
 #include "absl/utility/utility.h"
@@ -351,23 +353,24 @@ inline void SanitizerUnpoisonObject(const T* object) {
 
 namespace memory_internal {
 
-// If Pair is a standard-layout type, OffsetOf<Pair>::kFirst and
-// OffsetOf<Pair>::kSecond are equivalent to offsetof(Pair, first) and
-// offsetof(Pair, second) respectively. Otherwise they are -1.
-//
-// The purpose of OffsetOf is to avoid calling offsetof() on non-standard-layout
-// type, which is non-portable.
-template <class Pair, class = std::true_type>
-struct OffsetOf {
-  static constexpr size_t kFirst = static_cast<size_t>(-1);
-  static constexpr size_t kSecond = static_cast<size_t>(-1);
-};
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+#endif
 
+// OffsetOf<Pair>::kFirst and OffsetOf<Pair>::kSecond are equivalent to
+// offsetof(Pair, first) and offsetof(Pair, second) respectively. `offsetof` on
+// a non-standard-layout type is conditionally-supported, but all the compilers
+// we care about support it for non-static data members.
 template <class Pair>
-struct OffsetOf<Pair, typename std::is_standard_layout<Pair>::type> {
+struct OffsetOf {
   static constexpr size_t kFirst = offsetof(Pair, first);
   static constexpr size_t kSecond = offsetof(Pair, second);
 };
+
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 template <class K, class V>
 struct IsLayoutCompatible {
@@ -592,20 +595,36 @@ struct HashElement {
   size_t seed;
 };
 
-// No arguments function hash function for a specific key.
-template <class Hash, class Key, bool kIsAbsl, size_t kSeedShift>
+using EncodedHashKey = absl::hash_internal::EncodedHashKey;
+using HashForKeyFn = absl::hash_internal::HashForKeyFn;
+
+// No arguments hash function for a specific key.
+// If `kUseCanonical` is true, `Hash` must hash `Key` identically to
+// `absl::Hash<Key>`, and `CanonicalHashKey` is used so that `get_hash_fn()` is
+// shared across key types with the same canonical hasher.
+template <class Hash, class Key, bool kIsAbsl, size_t kSeedShift,
+          bool kUseCanonical>
 struct HashKey {
-  size_t operator()(size_t seed) const {
-    return HashElement<Hash, kIsAbsl, kSeedShift>{hash, seed}(key);
+  static size_t GetHash(EncodedHashKey data, size_t seed) {
+    const auto& self = *data.ToPtr<HashKey>();
+    return HashElement<Hash, kIsAbsl, kSeedShift>{self.hash, seed}(self.key);
   }
 
-  // Static version of the above to pass to type erased functions.
-  static size_t GetHash(void* data, size_t seed) {
-    return (*static_cast<const HashKey*>(data))(seed);
-  }
+  // `data()` and `get_hash_fn()` are passed to type erased functions.
+  EncodedHashKey data() const { return EncodedHashKey::FromPtr(this); }
+  static constexpr HashForKeyFn get_hash_fn() { return &GetHash; }
+
   ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS
   type_traits_internal::AddConstRefIfExpensiveToCopy<Hash> hash;
   type_traits_internal::AddConstRefIfExpensiveToCopy<Key> key;
+};
+
+template <class Hash, class Key, bool kIsAbsl, size_t kSeedShift>
+struct HashKey<Hash, Key, kIsAbsl, kSeedShift, /*kUseCanonical=*/true>
+    : absl::hash_internal::CanonicalHashKey<Key> {
+  static_assert(kIsAbsl, "kUseCanonical requires kIsAbsl");
+  HashKey(const Hash&, const absl::remove_cvref_t<Key>& k)
+      : absl::hash_internal::CanonicalHashKey<Key>(k) {}
 };
 
 // Variadic arguments equality function that ignore the rest of the arguments.
@@ -621,6 +640,25 @@ struct EqualElement {
   type_traits_internal::AddConstRefIfExpensiveToCopy<KeyEqual> eq;
 };
 
+// Type-erased slot equality functor with the key at offset 0 of `slot` (or
+// `*slot` if `kDerefSlot` is true).
+template <class SlotKey, bool kDerefSlot>
+struct SlotEqFn {
+  using SlotKeyType = const SlotKey;
+
+  template <class Eq, class SearchKey>
+  bool operator()(const Eq& eq, const void* slot, const SearchKey& key) const {
+    if constexpr (kDerefSlot) {
+      const void* node;
+      // Copy the pointer to avoid strict aliasing issues.
+      std::memcpy(&node, slot, sizeof(node));
+      slot = node;
+    }
+    return EqualElement<SearchKey, Eq>{key,
+                                       eq}(*static_cast<const SlotKey*>(slot));
+  }
+};
+
 // Type erased function for computing hash of the slot.
 using HashSlotFn = size_t (*)(const void* hash_fn, void* slot, size_t seed);
 
@@ -631,6 +669,27 @@ size_t TypeErasedApplyToSlotFn(const void* fn, void* slot, size_t seed) {
   const auto* f = static_cast<const Fn*>(fn);
   return HashElement<Fn, kIsAbsl, kSeedShift>{
       *f, seed}(*static_cast<const T*>(slot));
+}
+
+// Type erased function to apply `CanonicalHasher` to data inside of the `slot`.
+template <class CanonicalHasher>
+size_t TypeErasedApplyAbslHashToSlotFn(const void*, void* slot, size_t seed) {
+  using T = typename CanonicalHasher::KeyType;
+  return absl::hash_internal::HashWithSeed().hash(
+      CanonicalHasher(), *static_cast<const T*>(slot), seed);
+}
+
+template <class Fn, class T, bool kIsAbsl, size_t kSeedShift>
+constexpr HashSlotFn GetTypeErasedApplyToSlotFn() {
+  using NonConstT = std::remove_const_t<T>;
+  // Use the canonical `absl::Hash<NonConstT>` implementation when `Fn` is
+  // `absl::Hash<NonConstT>` or a transparent hasher (such as `StringHash`)
+  // that hashes `NonConstT` identically.
+  if constexpr (kIsAbsl && std::is_invocable_v<Fn, const NonConstT&>) {
+    return &TypeErasedApplyAbslHashToSlotFn<
+        decltype(absl::hash_internal::CanonicalHasher<NonConstT>())>;
+  }
+  return &TypeErasedApplyToSlotFn<Fn, NonConstT, kIsAbsl, kSeedShift>;
 }
 
 // Type erased function to apply `Fn` to data inside of the `*slot_ptr`.
@@ -644,10 +703,33 @@ size_t TypeErasedDerefAndApplyToSlotFn(const void* fn, void* slot_ptr,
   // NodeHashMapPolicy::get_hash_slot_fn(). In that case, slot_ptr has type
   // `std::pair<const T, mapped_type>**`, which is not safe to dereference as
   // `const T**`. Note that it is safe to dereference `slot` afterwards because
-  // `IsLayoutCompatible` guarantees that `std::pair<const T, mapped_type>` is
-  // standard-layout.
+  // `std::pair<const T, mapped_type>::first` is at offset 0.
   std::memcpy(&slot, slot_ptr, sizeof(slot));
   return HashElement<Fn, kIsAbsl, kSeedShift>{*f, seed}(*slot);
+}
+
+// Type erased function to apply `CanonicalHasher` to data inside of the
+// `*slot_ptr`.
+template <class CanonicalHasher>
+size_t TypeErasedDerefAndApplyAbslHashToSlotFn(const void*, void* slot_ptr,
+                                               size_t seed) {
+  using T = typename CanonicalHasher::KeyType;
+  const T* slot;
+  // See comment in `TypeErasedDerefAndApplyToSlotFn`.
+  std::memcpy(&slot, slot_ptr, sizeof(slot));
+  return absl::hash_internal::HashWithSeed().hash(CanonicalHasher(), *slot,
+                                                  seed);
+}
+
+template <class Fn, class T, bool kIsAbsl, size_t kSeedShift>
+constexpr HashSlotFn GetTypeErasedDerefAndApplyToSlotFn() {
+  using NonConstT = std::remove_const_t<T>;
+  // See comment in `GetTypeErasedApplyToSlotFn`.
+  if constexpr (kIsAbsl && std::is_invocable_v<Fn, const NonConstT&>) {
+    return &TypeErasedDerefAndApplyAbslHashToSlotFn<
+        decltype(absl::hash_internal::CanonicalHasher<NonConstT>())>;
+  }
+  return &TypeErasedDerefAndApplyToSlotFn<Fn, NonConstT, kIsAbsl, kSeedShift>;
 }
 
 }  // namespace container_internal

@@ -95,8 +95,9 @@ using integer_sequence [[deprecated("Use std::integer_sequence instead.")]] =
     std::integer_sequence<T, I...>;
 
 template <class... T>
-using index_sequence_for ABSL_DEPRECATE_AND_INLINE() =
-    std::index_sequence_for<T...>;
+using index_sequence_for
+    [[deprecated("Use std::index_sequence_for instead.")]] =
+        std::index_sequence_for<T...>;
 
 template <class T, class Tuple>
 ABSL_DEPRECATE_AND_INLINE()

@@ -54,6 +54,7 @@ enum class CpuType {
   kArmNeoverseN3,
   kArmNeoverseN4,
   kNvidiaGrace,
+  kNvidiaVera,
 };
 
 // Returns the type of host CPU this code is running on.  Returns kUnknown if

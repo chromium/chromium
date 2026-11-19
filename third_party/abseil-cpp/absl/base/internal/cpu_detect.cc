@@ -316,6 +316,14 @@ CpuType GetCpuType() {
             return CpuType::kUnknown;
         }
         break;
+      case 0x4e:
+        switch (part_number) {
+          case 0x010:
+            return CpuType::kNvidiaVera;
+          default:
+            return CpuType::kUnknown;
+        }
+        break;
       case 0xc0:
         switch (part_number) {
           case 0xac3:

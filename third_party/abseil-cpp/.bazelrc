@@ -86,7 +86,6 @@ test:tsan --test_tag_filters=-benchmark,-notsan
 
 # Remote build configuration for CI.
 build:remote-cache --remote_cache=https://storage.googleapis.com/absl-bazel-remote-cache
-build:remote-cache --remote_timeout=1200 --bes_timeout=600s
 build:remote-cache --remote_download_minimal
 # cc_test puts Windows .pdb files in the pdb_file output group rather than
 # runfiles, so explicitly download symbolize_test.pdb when linking hits the
@@ -100,7 +99,7 @@ build:remote-cache --jobs=HOST_CPUS*4
 test:remote-cache --build_tests_only
 
 build:remote-base --define=EXECUTOR=remote
-build:remote-base --remote_timeout=1200 --bes_timeout=600s
+build:remote-base --remote_grpc_service_config=ci/rbe_grpc_service_config.json
 build:remote-base --jobs=50
 build:remote-base --remote_download_minimal
 # Retry up for up to 15 minutes under heavy load (exponential backoff).

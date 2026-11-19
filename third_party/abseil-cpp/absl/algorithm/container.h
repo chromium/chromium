@@ -52,6 +52,7 @@
 #include <vector>
 
 #include "absl/algorithm/algorithm.h"
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/hardening.h"
 #include "absl/base/internal/iterator_traits.h"
@@ -746,7 +747,9 @@ constexpr container_algorithm_internal::ContainerIter<C2> c_swap_ranges(
   auto last2 = container_algorithm_internal::c_end(c2);
 
   using std::swap;
-  for (; first1 != last1 && first2 != last2; ++first1, (void)++first2) {
+  // SAFETY: Legacy buffer usage.
+  for (; first1 != last1 && first2 != last2;
+       ABSL_UNSAFE_BUFFERS(++first1), (void)ABSL_UNSAFE_BUFFERS(++first2)) {
     swap(*first1, *first2);
   }
   return first2;
@@ -802,7 +805,10 @@ c_transform(const InputSequence1& input1, const InputSequence2& input2,
   auto first2 = container_algorithm_internal::c_begin(input2);
   auto last2 = container_algorithm_internal::c_end(input2);
   std::decay_t<OutputIterator> out = std::forward<OutputIterator>(output);
-  for (; first1 != last1 && first2 != last2; ++first1, (void)++first2, ++out) {
+  // SAFETY: Legacy buffer usage.
+  for (; first1 != last1 && first2 != last2;
+       ABSL_UNSAFE_BUFFERS(++first1), (void)ABSL_UNSAFE_BUFFERS(++first2),
+       ABSL_UNSAFE_BUFFERS(++out)) {
     *out = binary_op(*first1, *first2);
   }
   return out;

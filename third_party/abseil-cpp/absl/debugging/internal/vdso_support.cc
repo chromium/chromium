@@ -194,8 +194,8 @@ long VDSOSupport::InitAndGetCPU(unsigned *cpu,  // NOLINT(runtime/int)
 // GoogleOnceInit() and ::operator new.
 // The destination in VDSO is unknown to CFI and VDSO does not set MSAN
 // shadow for the return value.
-ABSL_ATTRIBUTE_NO_SANITIZE_CFI
 ABSL_ATTRIBUTE_NO_SANITIZE_MEMORY
+ABSL_ATTRIBUTE_NO_SANITIZE_CFI
 int GetCPU() {
   unsigned cpu;
   long ret_code =  // NOLINT(runtime/int)

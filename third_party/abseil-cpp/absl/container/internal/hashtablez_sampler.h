@@ -76,8 +76,7 @@ struct HashtablezInfo : public profiling_internal::Sample<HashtablezInfo> {
   // blocking for any readers that are currently sampling the object.
   void PrepareForSampling(int64_t stride, size_t inline_element_size_value,
                           size_t key_size, size_t value_size,
-                          uint16_t soo_capacity_value)
-      ABSL_EXCLUSIVE_LOCKS_REQUIRED(init_mu);
+                          uint16_t soo_capacity_value);
 
   // These fields are mutated by the various Record* APIs and need to be
   // thread-safe.

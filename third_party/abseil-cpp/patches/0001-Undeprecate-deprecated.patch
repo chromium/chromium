@@ -104,7 +104,7 @@ diff --git a/third_party/abseil-cpp/absl/utility/utility.h b/third_party/abseil-
 index 3cb6940f182e7..dd699d4900ad6 100644
 --- a/third_party/abseil-cpp/absl/utility/utility.h
 +++ b/third_party/abseil-cpp/absl/utility/utility.h
-@@ -88,17 +88,15 @@ template <class T>
+@@ -88,8 +88,7 @@ template <class T>
  using in_place_type_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_type_t<T>;
  
  template <size_t... I>
@@ -114,18 +114,7 @@ index 3cb6940f182e7..dd699d4900ad6 100644
  
  template <class T, T... I>
  using integer_sequence [[deprecated("Use std::integer_sequence instead.")]] =
-     std::integer_sequence<T, I...>;
- 
- template <class... T>
--using index_sequence_for
--    [[deprecated("Use std::index_sequence_for instead.")]] =
--        std::index_sequence_for<T...>;
-+using index_sequence_for ABSL_DEPRECATE_AND_INLINE() =
-+    std::index_sequence_for<T...>;
- 
- template <class T, class Tuple>
- ABSL_DEPRECATE_AND_INLINE()
-@@ -109,8 +107,7 @@ ABSL_DEPRECATE_AND_INLINE()
+@@ -109,8 +108,7 @@ ABSL_DEPRECATE_AND_INLINE()
  }
  
  template <size_t N>
@@ -217,3 +206,16 @@ index 5bccfc51db78f..00a3eb033aba4 100644
  
  // ABSL_ATTRIBUTE_HOT, ABSL_ATTRIBUTE_COLD
  //
+diff --git a/third_party/abseil-cpp/absl/base/attributes.h b/third_party/abseil-cpp/absl/base/attributes.h
+index 06b30a920c1dc..b96a3f19f76d7 100644
+--- a/third_party/abseil-cpp/absl/base/attributes.h
++++ b/third_party/abseil-cpp/absl/base/attributes.h
+@@ -450,8 +450,6 @@
+ // indicating alignment. If data fall under different alignments then you might
+ // get a compilation error indicating a `Section type conflict`.
+ #define ABSL_ATTRIBUTE_SECTION_VARIABLE(name)
+-#elif ABSL_HAVE_CPP_ATTRIBUTE(gnu::section)
+-#define ABSL_ATTRIBUTE_SECTION_VARIABLE(name) [[gnu::section(#name)]]
+ #else
+ #define ABSL_ATTRIBUTE_SECTION_VARIABLE(name) __attribute__((section(#name)))
+ #endif

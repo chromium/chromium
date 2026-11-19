@@ -930,6 +930,19 @@ H AbslHashValue(H state, CustomHashType<Tags...> t) {
                     t.value + static_cast<int>(InvokeTag::kHashValue));
 }
 
+struct NonTriviallyCopyableUniquelyRepresented {
+  uintptr_t v;
+  explicit NonTriviallyCopyableUniquelyRepresented(uintptr_t v) : v(v) {}
+  // NOLINTNEXTLINE(modernize-use-equals-default)
+  NonTriviallyCopyableUniquelyRepresented(
+      const NonTriviallyCopyableUniquelyRepresented& other)
+      : v(other.v) {}
+  friend bool operator==(const NonTriviallyCopyableUniquelyRepresented& a,
+                         const NonTriviallyCopyableUniquelyRepresented& b) {
+    return a.v == b.v;
+  }
+};
+
 }  // namespace
 
 namespace absl {
@@ -939,6 +952,10 @@ template <InvokeTag... Tags>
 struct is_uniquely_represented<
     CustomHashType<Tags...>,
     typename EnableIfContained<InvokeTag::kUniquelyRepresented, Tags...>::type>
+    : std::true_type {};
+
+template <>
+struct is_uniquely_represented<NonTriviallyCopyableUniquelyRepresented>
     : std::true_type {};
 }  // namespace hash_internal
 ABSL_NAMESPACE_END
@@ -1118,7 +1135,15 @@ TEST(IsUniquelyRepresentedTest, SanityTest) {
   EXPECT_TRUE(is_uniquely_represented<unsigned char>::value);
   EXPECT_TRUE(is_uniquely_represented<int>::value);
   EXPECT_FALSE(is_uniquely_represented<bool>::value);
-  EXPECT_FALSE(is_uniquely_represented<int*>::value);
+  EXPECT_TRUE(is_uniquely_represented<int*>::value);
+}
+
+TEST(IsUniquelyRepresentedTest, NonTriviallyCopyableInFlatHashMap) {
+  absl::flat_hash_map<NonTriviallyCopyableUniquelyRepresented, int> m;
+  m[NonTriviallyCopyableUniquelyRepresented{1}] = 10;
+  m.emplace(NonTriviallyCopyableUniquelyRepresented{2}, 20);
+  EXPECT_EQ(m.find(NonTriviallyCopyableUniquelyRepresented{1})->second, 10);
+  EXPECT_EQ(m[NonTriviallyCopyableUniquelyRepresented{2}], 20);
 }
 
 struct IntAndString {
