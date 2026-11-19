@@ -128,7 +128,9 @@ class TabTest : public ChromeViewsTestBase {
       }
       EXPECT_FALSE(tab.title_->GetVisible());
       EXPECT_FALSE(tab.showing_close_button_);
-    } else if (tab.IsActive()) {
+    } else if (tab.IsActive() &&
+               !(features::IsTabStripDeclutterEnabled() &&
+                 features::kTabStripDeclutterActiveTabCloseHideEnabled.Get())) {
       EXPECT_TRUE(tab.showing_close_button_);
       switch (VisibleIconCount(tab)) {
         case 1:
@@ -149,7 +151,7 @@ class TabTest : public ChromeViewsTestBase {
           EXPECT_TRUE(tab.data_.alert_state.has_value());
           break;
       }
-    } else {  // Tab not active and not pinned tab.
+    } else {
       switch (VisibleIconCount(tab)) {
         case 1:
           EXPECT_FALSE(tab.showing_close_button_);
@@ -165,13 +167,16 @@ class TabTest : public ChromeViewsTestBase {
           EXPECT_TRUE(tab.showing_icon_);
           if (tab.data_.alert_state.has_value()) {
             EXPECT_TRUE(tab.showing_alert_indicator_);
+            EXPECT_FALSE(tab.showing_close_button_);
           } else {
             EXPECT_FALSE(tab.showing_alert_indicator_);
+            EXPECT_TRUE(tab.showing_close_button_);
           }
           break;
         default:
           EXPECT_EQ(3, VisibleIconCount(tab));
           EXPECT_TRUE(tab.data_.alert_state.has_value());
+          break;
       }
     }
 
@@ -185,7 +190,9 @@ class TabTest : public ChromeViewsTestBase {
       gfx::Rect icon_bounds = tab.icon_->bounds();
       icon_bounds.Inset(tab.icon_->GetInsets());
       if (tab.center_icon_) {
-        EXPECT_LE(icon_bounds.x(), contents_bounds.x());
+        EXPECT_LE(std::abs(icon_bounds.CenterPoint().x() -
+                           tab.GetLocalBounds().CenterPoint().x()),
+                  1);
       } else {
         EXPECT_LE(contents_bounds.x(), icon_bounds.x());
       }
@@ -212,8 +219,9 @@ class TabTest : public ChromeViewsTestBase {
                   GetAlertIndicatorBounds(tab).x());
       }
       if (tab.center_icon_) {
-        EXPECT_LE(contents_bounds.right(),
-                  GetAlertIndicatorBounds(tab).right());
+        EXPECT_LE(std::abs(GetAlertIndicatorBounds(tab).CenterPoint().x() -
+                           tab.GetLocalBounds().CenterPoint().x()),
+                  1);
       } else {
         EXPECT_LE(GetAlertIndicatorBounds(tab).right(),
                   contents_bounds.right());
@@ -242,7 +250,8 @@ class TabTest : public ChromeViewsTestBase {
       }
 
       // The close button has a larger hit target than the content bounds.
-      const gfx::Rect close_bounds = tab.close_button_->GetContentsBounds();
+      const gfx::Rect close_bounds = tab.close_button_->ConvertRectToParent(
+          tab.close_button_->GetContentsBounds());
       EXPECT_LE(close_bounds.right(), tab.GetLocalBounds().right());
       EXPECT_LE(close_bounds.y(), contents_bounds.y());
       EXPECT_LE(contents_bounds.bottom(), close_bounds.bottom());
@@ -699,8 +708,15 @@ TEST_F(TabTest, SmallTabsHideCloseButton) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   Tab* tab = widget->SetContentsView(
       std::make_unique<Tab>(tabs::TabHandle(1), controller.get()));
-  const int width = tab->tab_style_views()->GetContentsInsets().width() +
-                    Tab::kMinimumContentsWidthForCloseButtons;
+  const bool use_declutter_threshold =
+      features::IsTabStripDeclutterEnabled() &&
+      features::kTabStripDeclutterInactiveTabCloseHideEnabled.Get();
+  const int width =
+      tab->tab_style_views()->GetContentsInsets().width() +
+      (use_declutter_threshold
+           ? gfx::kFaviconSize +
+                 features::kTabStripDeclutterMaxTabWidthForCloseHide.Get() + 1
+           : Tab::kMinimumContentsWidthForCloseButtons);
   tab->SetBounds(0, 0, width, 50);
   const views::View* close = GetCloseButton(tab);
   EXPECT_TRUE(close->GetVisible());
@@ -1029,19 +1045,40 @@ TEST_F(TabTest, ExtraAlertPaddingNotShownOnSmallActiveTab) {
   const views::View* alert = GetAlertIndicator(tab);
   const int original_spacing = close->x() - alert->bounds().right();
 
-  tab->SetBounds(0, 0, 90, 50);
-  EXPECT_FALSE(GetTabIcon(tab)->GetVisible());
+  if (features::IsTabStripDeclutterEnabled() &&
+      features::kTabStripDeclutterActiveTabCloseHideEnabled.Get()) {
+    tab->SetBounds(0, 0, 90, 50);
+    EXPECT_TRUE(GetTabIcon(tab)->GetVisible());
+    EXPECT_TRUE(close->GetVisible());
+    EXPECT_TRUE(alert->GetVisible());
 
-  tab->SetBounds(0, 0, 76, 50);
-  EXPECT_TRUE(close->GetVisible());
-  EXPECT_TRUE(alert->GetVisible());
+    // The alert indicator moves closer because the extra padding is gone.
+    EXPECT_LT(close->x() - alert->bounds().right(), original_spacing);
 
-  // The alert indicator moves closer because the extra padding is gone.
-  EXPECT_LT(close->x() - alert->bounds().right(), original_spacing);
+    tab->SetBounds(0, 0, 89, 50);
+    EXPECT_TRUE(GetTabIcon(tab)->GetVisible());
+    EXPECT_FALSE(close->GetVisible());
+    EXPECT_TRUE(alert->GetVisible());
 
-  tab->SetBounds(0, 0, 75, 50);
-  EXPECT_TRUE(close->GetVisible());
-  EXPECT_FALSE(alert->GetVisible());
+    tab->SetBounds(0, 0, 71, 50);
+    EXPECT_FALSE(GetTabIcon(tab)->GetVisible());
+    EXPECT_FALSE(close->GetVisible());
+    EXPECT_TRUE(alert->GetVisible());
+  } else {
+    tab->SetBounds(0, 0, 90, 50);
+    EXPECT_FALSE(GetTabIcon(tab)->GetVisible());
+
+    tab->SetBounds(0, 0, 76, 50);
+    EXPECT_TRUE(close->GetVisible());
+    EXPECT_TRUE(alert->GetVisible());
+
+    // The alert indicator moves closer because the extra padding is gone.
+    EXPECT_LT(close->x() - alert->bounds().right(), original_spacing);
+
+    tab->SetBounds(0, 0, 75, 50);
+    EXPECT_TRUE(close->GetVisible());
+    EXPECT_FALSE(alert->GetVisible());
+  }
 }
 
 TEST_F(TabTest, TitleTextHasSufficientContrast) {

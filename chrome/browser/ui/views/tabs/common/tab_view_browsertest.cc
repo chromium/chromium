@@ -2360,11 +2360,20 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest,
   const views::View* alert = GetAlertIndicator(tab_view);
   const int original_spacing = close->x() - alert->bounds().right();
 
-  tab_view->SetBounds(0, 0, 90, height);
+  const int insets_width = tab_view->GetInsets().width();
+  const int close_button_width =
+      GetLayoutConstant(LayoutConstant::kTabCloseButtonSize) +
+      GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding);
+  const int alert_icon_width = alert->GetPreferredSize().width();
+  const int min_width_for_close_and_alert =
+      insets_width + close_button_width + alert_icon_width;
+
+  tab_view->SetBounds(
+      0, 0, min_width_for_close_and_alert + gfx::kFaviconSize - 1, height);
   LayoutTab(tab_view);
   EXPECT_FALSE(tab_view->GetTabIconForTesting()->GetVisible());
 
-  tab_view->SetBounds(0, 0, 76, height);
+  tab_view->SetBounds(0, 0, min_width_for_close_and_alert, height);
   LayoutTab(tab_view);
   EXPECT_TRUE(close->GetVisible());
   EXPECT_TRUE(alert->GetVisible());
@@ -2372,7 +2381,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest,
   // The alert indicator moves closer because the extra padding is gone.
   EXPECT_LT(close->x() - alert->bounds().right(), original_spacing);
 
-  tab_view->SetBounds(0, 0, 75, height);
+  tab_view->SetBounds(0, 0, min_width_for_close_and_alert - 1, height);
   LayoutTab(tab_view);
   EXPECT_TRUE(close->GetVisible());
   EXPECT_FALSE(alert->GetVisible());

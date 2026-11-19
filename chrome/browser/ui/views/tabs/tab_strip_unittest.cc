@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_observer.h"
@@ -386,11 +387,19 @@ TEST_P(TabStripTest, RemoveTab) {
 // Tests that the tab close buttons of non-active tabs are hidden when
 // the tab sizes are shrunk into small sizes.
 TEST_P(TabStripTest, TabCloseButtonVisibility) {
-  // Set the tab strip width to be wide enough for three tabs to show all
-  // three icons, but not enough for five tabs to show all three icons.
-  // Touch-optimized UI requires a larger width for tabs to show close buttons.
-  const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
-  SetMaxTabStripWidth(touch_ui ? 442 : 346);
+  if (features::IsTabStripDeclutterEnabled()) {
+    // Set the tab strip width to be wide enough for three tabs to show all
+    // three icons, but not enough for four or five tabs to show all three
+    // icons.
+    SetMaxTabStripWidth(500);
+  } else {
+    // Set the tab strip width to be wide enough for three tabs to show all
+    // three icons, but not enough for five tabs to show all three icons.
+    // Touch-optimized UI requires a larger width for tabs to show close
+    // buttons.
+    const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
+    SetMaxTabStripWidth(touch_ui ? 442 : 346);
+  }
 
   controller_->AddTab(0, TabActive::kInactive);
   controller_->AddTab(1, TabActive::kActive);

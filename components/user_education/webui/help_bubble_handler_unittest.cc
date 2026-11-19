@@ -324,7 +324,8 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubble) {
   expected->body_text = base::UTF16ToUTF8(params.body_text);
   expected->close_button_alt_text =
       base::UTF16ToUTF8(params.close_button_alt_text);
-  expected->body_icon_name = "celebration_old";
+  expected->body_icon_name =
+      features::IsRoundedIconsEnabled() ? "celebration" : "celebration_old";
   expected->body_icon_alt_text = "Celebration";
   expected->position = help_bubble::mojom::HelpBubbleArrowPosition::TOP_CENTER;
   expected->timeout = base::Seconds(10);
@@ -414,7 +415,9 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubbleWithButtonsAndProgress) {
   expected->body_text = base::UTF16ToUTF8(params.body_text);
   expected->close_button_alt_text =
       base::UTF16ToUTF8(params.close_button_alt_text);
-  expected->body_icon_name = "lightbulb_outline_old";
+  expected->body_icon_name = features::IsRoundedIconsEnabled()
+                                 ? "lightbulb2"
+                                 : "lightbulb_outline_old";
   expected->body_icon_alt_text = "Body icon alt text.";
   expected->position = help_bubble::mojom::HelpBubbleArrowPosition::TOP_CENTER;
 

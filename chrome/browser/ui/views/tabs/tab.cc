@@ -603,10 +603,6 @@ void Tab::Layout(PassKey) {
   // Size the title to fill the remaining width and use all available height.
   bool show_title = ShouldRenderAsNormalTab();
 
-  if (features::IsTabStripDeclutterEnabled() && center_icon_) {
-    show_title = false;
-  }
-
   if (show_title) {
     int title_left = start;
     if (showing_icon_) {
@@ -626,7 +622,10 @@ void Tab::Layout(PassKey) {
       // Allow the title to overlay the close button's empty border padding.
       title_right = close_x - after_title_padding;
     }
-    const int title_width = std::max(title_right - title_left, 0);
+    const int title_width =
+        (features::IsTabStripDeclutterEnabled() && center_icon_)
+            ? 0
+            : std::max(title_right - title_left, 0);
     // The Label will automatically center the font's cap height within the
     // provided vertical space.
     const gfx::Rect title_bounds(title_left, GetLocalBounds().y(), title_width,

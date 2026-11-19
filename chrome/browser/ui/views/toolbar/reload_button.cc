@@ -195,7 +195,7 @@ std::unique_ptr<ui::SimpleMenuModel> ReloadButton::CreateMenuModel() {
 void ReloadButton::SetVisibleMode(Mode mode) {
   const bool play_animation = features::IsToolbarGlowUpReloadEnabled() &&
                               !ui::TouchUiController::Get()->touch_ui() &&
-                              animate_transitions_;
+                              animate_transitions_ && GetColorProvider();
 
   switch (mode) {
     case Mode::kReload:

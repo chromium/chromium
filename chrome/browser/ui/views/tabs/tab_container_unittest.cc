@@ -570,6 +570,7 @@ TEST_F(TabContainerTest, ClosingModeAffectsMinWidth) {
 // Should bring the subsequent tab to its place as expected in
 // tab closing mode.
 TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
+  SetTabContainerWidth(1600);
   AddTab(0, std::nullopt, TabActive::kActive);
 
   // Create enough tabs so tabs are not full size.
