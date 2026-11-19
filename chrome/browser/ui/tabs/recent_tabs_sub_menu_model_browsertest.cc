@@ -72,6 +72,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -204,11 +205,14 @@ class RecentTabsSubMenuModelTest : public InProcessBrowserTest {
   BrowserWindowInterface* AddBrowser(BrowserWindowInterface* browser,
                                      const GURL& url) {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    content::TestNavigationObserver navigation_observer(url);
+    navigation_observer.StartWatchingNewWebContents();
     ui_test_utils::NavigateToURLWithDisposition(
         browser, url, ui::mojom::WindowOpenDisposition::kNewWindow,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
     BrowserWindowInterface* new_browser = browser_created_observer.Wait();
     ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
+    navigation_observer.Wait();
     return new_browser;
   }
 
