@@ -9508,22 +9508,6 @@
             ]
         }
     ],
-    "FormInputAccessoryIOS27InputAssistantHostViewWorkaround": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20261005",
-                    "enable_features": [
-                        "FormInputAccessoryIOS27InputAssistantHostViewWorkaround"
-                    ],
-                    "min_os_version": "155"
-                }
-            ]
-        }
-    ],
     "FullscreenSignInPromoUseDate": [
         {
             "platforms": [
