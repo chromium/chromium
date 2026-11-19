@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/provider_features.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
@@ -48,9 +50,11 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/view.h"
 
 namespace glic {
 
@@ -291,6 +295,36 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
   }
 
   bool IsSelecting() const { return observer_->is_selecting_; }
+
+  bool HasFollowUpSelection() const {
+    return observer_->follow_up_selection_hash_.has_value();
+  }
+
+  // Processes `text` again, like a widget bounds retry does.
+  void ReprocessPendingSelection(const std::u16string& text) {
+    observer_->pending_selection_text_ = text;
+    observer_->ProcessPendingSelection();
+  }
+
+  void SimulateKeyEvent(blink::WebInputEvent::Type type,
+                        int modifiers,
+                        ui::KeyboardCode key_code) {
+    blink::WebKeyboardEvent event(
+        type, modifiers, blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.windows_key_code = key_code;
+    observer_->OnInputEvent(*GetRenderWidgetHost(), event,
+                            content::RenderWidgetHost::InputEventObserver::
+                                InputEventSource::kUnknown);
+  }
+
+  // Recreates the observer with the shake trigger counting wiggles.
+  void EnableWiggleCounting(base::test::ScopedFeatureList& feature_list) {
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kGlicShakeTrigger,
+        {{"should_trigger", "false"}, {"should_count", "true"}});
+    RecreateObserver();
+    NavigateAndCommit(GURL("https://example.com/"));
+  }
 
   void SimulateMouseMove(float x, float y) {
     blink::WebMouseEvent event(
@@ -1026,6 +1060,165 @@ TEST_F(GlicSelectionObserverTest,
 
   EXPECT_FALSE(observer->show_selection_affordance_called());
   EXPECT_FALSE(observer->send_context_called());
+}
+
+TEST_F(GlicSelectionObserverTest, WiggleFollowedUpBySelection) {
+  base::test::ScopedFeatureList feature_list;
+  EnableWiggleCounting(feature_list);
+  base::HistogramTester histogram_tester;
+
+  SimulateMouseShake();
+  histogram_tester.ExpectTotalCount("Glic.Wiggle.Detected", 1);
+
+  // Too short to count.
+  GetObserver()->OnTextSelectionChanged(nullptr, u"ab");
+  histogram_tester.ExpectTotalCount("Glic.Wiggle.FollowedUp.LegacyShake", 0);
+
+  // Counts even though it's too long for the inline cue.
+  GetObserver()->OnTextSelectionChanged(nullptr, std::u16string(1200, u'a'));
+  histogram_tester.ExpectUniqueSample("Glic.Wiggle.FollowedUp.LegacyShake",
+                                      true, 1);
+}
+
+TEST_F(GlicSelectionObserverTest, WiggleNotFollowedUpBySameSelection) {
+  base::test::ScopedFeatureList feature_list;
+  EnableWiggleCounting(feature_list);
+  base::HistogramTester histogram_tester;
+
+  GetObserver()->OnTextSelectionChanged(nullptr, u"Selected Text");
+  SimulateMouseShake();
+
+  // The same selection reported again isn't a new action.
+  GetObserver()->OnTextSelectionChanged(nullptr, u"Selected Text");
+  task_environment()->FastForwardBy(base::Seconds(10));
+  histogram_tester.ExpectUniqueSample("Glic.Wiggle.FollowedUp.LegacyShake",
+                                      false, 1);
+}
+
+TEST_F(GlicSelectionObserverTest, WiggleFollowedUpByEditableSelection) {
+  base::test::ScopedFeatureList feature_list;
+  EnableWiggleCounting(feature_list);
+  FocusWebContentsOnMainFrame();
+  content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+      ->SimulateFocusedElementChanged(/*is_editable_element=*/true,
+                                      /*is_richly_editable_element=*/false);
+  ASSERT_TRUE(web_contents()->IsFocusedElementEditable());
+  base::HistogramTester histogram_tester;
+
+  SimulateMouseShake();
+  // Counts even though the inline cue ignores editable selections.
+  GetObserver()->OnTextSelectionChanged(nullptr, u"Editable Text");
+  histogram_tester.ExpectUniqueSample("Glic.Wiggle.FollowedUp.LegacyShake",
+                                      true, 1);
+}
+
+TEST_F(GlicSelectionObserverTest, WiggleFollowedUpByReselectingSameText) {
+  base::test::ScopedFeatureList feature_list;
+  EnableWiggleCounting(feature_list);
+  base::HistogramTester histogram_tester;
+
+  GetObserver()->OnTextSelectionChanged(nullptr, u"Selected Text");
+  SimulateMouseShake();
+  GetObserver()->OnTextSelectionChanged(nullptr, u"");
+  GetObserver()->OnTextSelectionChanged(nullptr, u"Selected Text");
+  histogram_tester.ExpectUniqueSample("Glic.Wiggle.FollowedUp.LegacyShake",
+                                      true, 1);
+}
+
+TEST_F(GlicSelectionObserverTest, WiggleNotFollowedUpByReprocessedSelection) {
+  base::test::ScopedFeatureList feature_list;
+  EnableWiggleCounting(feature_list);
+  GetObserver()->set_call_base_update_selection_state(true);
+  base::HistogramTester histogram_tester;
+
+  GetObserver()->OnTextSelectionChanged(nullptr, u"Selected Text");
+  SimulateMouseShake();
+
+  // A widget bounds retry processes the same selection again.
+  ReprocessPendingSelection(u"Selected Text");
+  // So does Shift+Arrow when the selection doesn't change.
+  SimulateKeyEvent(blink::WebInputEvent::Type::kKeyDown,
+                   blink::WebInputEvent::kShiftKey, ui::VKEY_RIGHT);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return IsSelecting(); }));
+  SimulateKeyEvent(blink::WebInputEvent::Type::kKeyUp,
+                   blink::WebInputEvent::kNoModifiers, ui::VKEY_RIGHT);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsSelecting(); }));
+
+  task_environment()->FastForwardBy(base::Seconds(10));
+  histogram_tester.ExpectUniqueSample("Glic.Wiggle.FollowedUp.LegacyShake",
+                                      false, 1);
+}
+
+TEST_F(GlicSelectionObserverTest, NoFollowUpTrackingWithoutWiggleCounting) {
+  // Counting is off by default, so selections aren't hashed.
+  GetObserver()->OnTextSelectionChanged(nullptr, u"Selected Text");
+  EXPECT_FALSE(HasFollowUpSelection());
+}
+
+namespace {
+
+class FakeGlicSidePanelCoordinator : public GlicSidePanelCoordinator {
+ public:
+  explicit FakeGlicSidePanelCoordinator(tabs::TabInterface* tab)
+      : GlicSidePanelCoordinator(tab) {}
+
+  void Show(const ShowOptions& options) override {}
+  void Close(const CloseOptions& options) override {}
+  bool IsShowing() const override { return state_ == State::kShown; }
+  State state() override { return state_; }
+  bool SupportsPeek() const override { return false; }
+  base::CallbackListSubscription AddStateCallback(
+      base::RepeatingCallback<void(State state)> callback) override {
+    return state_callbacks_.Add(std::move(callback));
+  }
+  void SetContentsView(std::unique_ptr<views::View> contents_view) override {}
+  int GetPreferredWidth() override { return 0; }
+  bool IsGlicSidePanelActive() override { return state_ != State::kClosed; }
+
+  void SetState(State state) {
+    state_ = state;
+    state_callbacks_.Notify(state_);
+  }
+
+ private:
+  State state_ = State::kClosed;
+  base::RepeatingCallbackList<void(State)> state_callbacks_;
+};
+
+}  // namespace
+
+TEST_F(GlicSelectionObserverTest, WiggleFollowedUpByOpeningThisTabsPanel) {
+  base::test::ScopedFeatureList feature_list;
+  EnableWiggleCounting(feature_list);
+
+  tabs::MockTabInterface mock_tab;
+  ui::UnownedUserDataHost user_data_host;
+  EXPECT_CALL(mock_tab, GetUnownedUserDataHost())
+      .WillRepeatedly(ReturnRef(user_data_host));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  FakeGlicSidePanelCoordinator side_panel_coordinator(&mock_tab);
+  base::HistogramTester histogram_tester;
+
+  SimulateMouseShake();
+
+  // Closing or backgrounding doesn't count.
+  side_panel_coordinator.SetState(GlicSidePanelCoordinator::State::kClosed);
+  histogram_tester.ExpectTotalCount("Glic.Wiggle.FollowedUp.LegacyShake", 0);
+
+  // Opening this tab's side panel counts.
+  side_panel_coordinator.SetState(GlicSidePanelCoordinator::State::kShown);
+  histogram_tester.ExpectUniqueSample("Glic.Wiggle.FollowedUp.LegacyShake",
+                                      true, 1);
+
+  // Re-showing an already-open panel after a tab switch doesn't count.
+  SimulateMouseShake();
+  side_panel_coordinator.SetState(
+      GlicSidePanelCoordinator::State::kBackgrounded);
+  side_panel_coordinator.SetState(GlicSidePanelCoordinator::State::kShown);
+  task_environment()->FastForwardBy(base::Seconds(10));
+  histogram_tester.ExpectBucketCount("Glic.Wiggle.FollowedUp.LegacyShake",
+                                     false, 1);
 }
 
 TEST_F(GlicSelectionObserverTest, EligibleSelection) {

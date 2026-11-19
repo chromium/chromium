@@ -4,6 +4,10 @@
 
 #include "chrome/browser/glic/glic_selection_observer.h"
 
+#include <functional>
+#include <optional>
+#include <string_view>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -56,6 +60,19 @@ constexpr size_t kMaxSelectionLength = 1000;
 // The minimum length of the selection text sent as a suggested prompt.
 // Selections shorter than this are ignored.
 constexpr size_t kMinSelectionLength = 3;
+
+// Returns true if `text` has at least `kMinSelectionLength` non-whitespace
+// characters.
+bool HasMinSelectionLength(std::u16string_view text) {
+  size_t non_whitespace_count = 0;
+  for (char16_t c : text) {
+    if (!base::IsUnicodeWhitespace(c) &&
+        ++non_whitespace_count == kMinSelectionLength) {
+      return true;
+    }
+  }
+  return false;
+}
 
 bool IsListenedToInputEvent(blink::WebInputEvent::Type type) {
   switch (type) {
@@ -121,6 +138,7 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
     scoped_unowned_user_data_ =
         std::make_unique<ui::ScopedUnownedUserData<GlicSelectionObserver>>(
             tab_interface->GetUnownedUserDataHost(), *this);
+    EnsureSidePanelStateSubscription();
   }
   auto* helper = tab_interface
                      ? tabs::PageContextEligibilityHelper::From(tab_interface)
@@ -178,6 +196,18 @@ void GlicSelectionObserver::OnTextSelectionChanged(
     return;
   }
 
+  // Any selection counts as a wiggle follow-up, including the editable and
+  // long ones the inline cue ignores. Hashed, as these can be large.
+  if (shake_trigger_->IsCounting()) {
+    std::u16string_view follow_up_text =
+        base::TrimWhitespace(selected_text, base::TRIM_ALL);
+    follow_up_selection_hash_ =
+        HasMinSelectionLength(follow_up_text)
+            ? std::make_optional(
+                  std::hash<std::u16string_view>{}(follow_up_text))
+            : std::nullopt;
+  }
+
   if (web_contents()->IsFocusedElementEditable()) {
     selected_text = std::u16string_view();
   }
@@ -187,26 +217,11 @@ void GlicSelectionObserver::OnTextSelectionChanged(
   std::u16string_view trimmed_text =
       base::TrimWhitespace(selected_text, base::TRIM_ALL);
 
-  if (trimmed_text.length() > kMaxSelectionLength) {
+  if (trimmed_text.length() > kMaxSelectionLength ||
+      !HasMinSelectionLength(trimmed_text)) {
     pending_selection_text_ = std::u16string();
   } else {
-    size_t non_whitespace_count = 0;
-    bool exceeds_minimum_selection_length = false;
-    for (char16_t c : trimmed_text) {
-      if (!base::IsUnicodeWhitespace(c)) {
-        non_whitespace_count++;
-      }
-      if (non_whitespace_count == kMinSelectionLength) {
-        exceeds_minimum_selection_length = true;
-        break;
-      }
-    }
-
-    if (!exceeds_minimum_selection_length) {
-      pending_selection_text_ = std::u16string();
-    } else {
-      pending_selection_text_ = std::u16string(trimmed_text);
-    }
+    pending_selection_text_ = std::u16string(trimmed_text);
   }
   if (render_frame_host) {
     last_selection_frame_token_ = render_frame_host->GetGlobalFrameToken();
@@ -593,6 +608,12 @@ void GlicSelectionObserver::ProcessPendingSelection() {
 
   std::u16string selected_text = std::move(*pending_selection_text_);
   ResetPendingSelection();
+  // Bounds retries and keyboard re-seeds process the same selection again.
+  if (follow_up_selection_hash_ &&
+      follow_up_selection_hash_ != counted_follow_up_selection_hash_) {
+    shake_trigger_->OnFollowUpAction();
+  }
+  counted_follow_up_selection_hash_ = follow_up_selection_hash_;
 
   UpdateSelectionState(selected_text, /*is_pending_selection=*/true,
                        SelectionSource::kAutomatic);
@@ -602,12 +623,18 @@ void GlicSelectionObserver::ResetPendingSelection() {
   pending_selection_text_.reset();
 }
 
+void GlicSelectionObserver::ResetFollowUpSelection() {
+  follow_up_selection_hash_.reset();
+  counted_follow_up_selection_hash_.reset();
+}
+
 void GlicSelectionObserver::ProcessInputEvent(
     std::unique_ptr<blink::WebInputEvent> event) {
   if (!IsTextSelectionSharingEnabled() && !has_sent_selection_context_) {
     return;
   }
 
+  EnsureSidePanelStateSubscription();
   shake_trigger_->OnInputEvent(*event);
 
   switch (event->GetType()) {
@@ -639,6 +666,7 @@ void GlicSelectionObserver::ProcessInputEvent(
       if (is_left_click_or_touch) {
         is_selecting_ = true;
         ResetPendingSelection();
+        ResetFollowUpSelection();
         if (has_sent_selection_context_) {
           UpdateSelectionState(std::u16string(),
                                /*is_pending_selection=*/false,
@@ -723,6 +751,35 @@ void GlicSelectionObserver::OnGlobalPanelShowHide() {
                        SelectionSource::kAutomatic);
 }
 
+void GlicSelectionObserver::EnsureSidePanelStateSubscription() {
+  if (side_panel_state_subscription_ || !shake_trigger_->IsCounting()) {
+    return;
+  }
+  auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  auto* coordinator = tab_interface
+                          ? GlicSidePanelCoordinator::GetForTab(tab_interface)
+                          : nullptr;
+  if (coordinator) {
+    last_side_panel_state_ = coordinator->state();
+    side_panel_state_subscription_ = coordinator->AddStateCallback(
+        base::BindRepeating(&GlicSelectionObserver::OnSidePanelStateChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void GlicSelectionObserver::OnSidePanelStateChanged(
+    GlicSidePanelCoordinator::State state) {
+  GlicSidePanelCoordinator::State previous_state = last_side_panel_state_;
+  last_side_panel_state_ = state;
+  // TODO(b:583899691): Also count region capture while the panel is open.
+  if (state == GlicSidePanelCoordinator::State::kShown &&
+      previous_state != GlicSidePanelCoordinator::State::kShown &&
+      previous_state != GlicSidePanelCoordinator::State::kBackgrounded) {
+    shake_trigger_->OnFollowUpAction();
+  }
+}
+
 void GlicSelectionObserver::CreatePageContextEligibilityAPI(
     std::string account) {
   optimization_guide::PageContextEligibility::GetAsync(
@@ -756,6 +813,7 @@ void GlicSelectionObserver::ResetSelectionState() {
                        SelectionSource::kAutomatic);
   // This should clear the rest.
   ResetPendingSelection();
+  ResetFollowUpSelection();
 }
 
 bool GlicSelectionObserver::IsQuickAnswersEligible() const {

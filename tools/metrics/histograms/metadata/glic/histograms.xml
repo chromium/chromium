@@ -4429,6 +4429,61 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </token>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.Wiggle.ActiveMouseMinutes"
+    enum="BooleanHit" expires_after="M166">
+  <owner>liuwilliam@chromium.org</owner>
+  <owner>dtapuska@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Recorded on desktop with value true once for each minute in which the mouse
+    moved over a shareable tab in a Glic-enabled signed-in profile, while the
+    GlicShakeTrigger &quot;should_count&quot; param is on. A minute starts at
+    the first mouse move after the previous one ended, and is tracked per
+    profile. The total count is the denominator for Glic.Wiggle.Detected. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Wiggle.Detected"
+    enum="GlicWiggleDetectorType" expires_after="M166">
+  <owner>liuwilliam@chromium.org</owner>
+  <owner>dtapuska@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Recorded on desktop each time a mouse wiggle detector detects a wiggle over
+    a shareable tab in a Glic-enabled signed-in profile while the
+    GlicShakeTrigger &quot;should_count&quot; param is on, with the detector
+    that detected it. With that param, every available detector runs on the same
+    mouse movement only to count wiggles. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Wiggle.FollowedUp.{DetectorType}"
+    enum="Boolean" expires_after="M166">
+  <owner>liuwilliam@chromium.org</owner>
+  <owner>dtapuska@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Recorded on desktop once for each wiggle detected by the {DetectorType}
+    detector while the GlicShakeTrigger &quot;should_count&quot; param is on:
+    true if, within 10 seconds of the detection, the user opened this tab's glic
+    side panel or selected text in the tab where it was detected; false
+    otherwise, including when the tab closed first. Not recorded while the
+    wiggle trigger itself is enabled, since its region capture would count as a
+    follow-up. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+  <token key="DetectorType">
+    <variant name="LegacyShake" summary="Legacy shake"/>
+    <variant name="Level0" summary="Level 0"/>
+    <variant name="Level1" summary="Level 1"/>
+    <variant name="Level2" summary="Level 2"/>
+    <variant name="Level3" summary="Level 3"/>
+  </token>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.ZoomAction" enum="GlicZoomAction"
     expires_after="2027-03-28">
   <owner>cuianthony@chromium.org</owner>

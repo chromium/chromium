@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget_controller_delegate.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/shake_trigger.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "content/public/browser/render_widget_host.h"
@@ -163,9 +164,12 @@ class GlicSelectionObserver
 
   void ProcessPendingSelection();
   void ResetPendingSelection();
+  void ResetFollowUpSelection();
   void ProcessInputEvent(std::unique_ptr<blink::WebInputEvent> event);
 
   void OnGlobalPanelShowHide();
+  void EnsureSidePanelStateSubscription();
+  void OnSidePanelStateChanged(GlicSidePanelCoordinator::State state);
 
   void CreatePageContextEligibilityAPI(std::string account);
   void OnPageContextEligibilityAPILoaded(
@@ -177,6 +181,9 @@ class GlicSelectionObserver
 
   raw_ptr<GlicKeyedService> glic_keyed_service_;
   base::CallbackListSubscription panel_state_subscription_;
+  base::CallbackListSubscription side_panel_state_subscription_;
+  GlicSidePanelCoordinator::State last_side_panel_state_ =
+      GlicSidePanelCoordinator::State::kClosed;
   std::u16string last_selected_text_;
   gfx::Size last_web_contents_size_;
 
@@ -199,6 +206,10 @@ class GlicSelectionObserver
   // True during active user selection (mouse drag or key hold) to defer UI
   // updates until the input event completes.
   bool is_selecting_ = false;
+
+  // The latest selection, and the last one counted as a wiggle follow-up.
+  std::optional<size_t> follow_up_selection_hash_;
+  std::optional<size_t> counted_follow_up_selection_hash_;
 
   std::unique_ptr<ShakeTrigger> shake_trigger_;
 

@@ -6,13 +6,16 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/selection/wiggle_detector_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -299,6 +302,140 @@ TEST_F(ShakeTriggerTest, NoMouseMovesNeededWhenOff) {
   RecreateTrigger();
 
   EXPECT_FALSE(trigger_->ShouldObserveMouseMoves());
+}
+
+TEST_F(ShakeTriggerHarnessTest, NoWiggleMetricsWithoutCountOnly) {
+  base::HistogramTester histogram_tester;
+  SimulateMouseShake();
+  EXPECT_TRUE(trigger_->trigger_region_capture_called());
+  histogram_tester.ExpectTotalCount("Glic.Wiggle.Detected", 0);
+  histogram_tester.ExpectTotalCount("Glic.Wiggle.ActiveMouseMinutes", 0);
+}
+
+class ShakeTriggerCountOnlyTest : public ShakeTriggerTest {
+ public:
+  ShakeTriggerCountOnlyTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicShakeTrigger,
+        {{"should_trigger", "false"}, {"should_count", "true"}});
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ShakeTriggerCountOnlyTest, RecordsDetection) {
+  SimulateMouseShake();
+  EXPECT_FALSE(trigger_->trigger_region_capture_called());
+  histogram_tester_.ExpectUniqueSample("Glic.Wiggle.Detected",
+                                       WiggleDetectorType::kLegacyShake, 1);
+  histogram_tester_.ExpectUniqueSample("Glic.Consumer.Wiggle.Detected",
+                                       WiggleDetectorType::kLegacyShake, 1);
+}
+
+TEST_F(ShakeTriggerCountOnlyTest, RecordsActiveMouseMinutes) {
+  SimulateMouseMove(0.0f, 0.0f);
+  SimulateMouseMove(1.0f, 0.0f);
+  histogram_tester_.ExpectUniqueSample("Glic.Wiggle.ActiveMouseMinutes", true,
+                                       1);
+
+  Wait(base::Seconds(30));
+  SimulateMouseMove(2.0f, 0.0f);
+  histogram_tester_.ExpectTotalCount("Glic.Wiggle.ActiveMouseMinutes", 1);
+
+  Wait(base::Seconds(30));
+  SimulateMouseMove(3.0f, 0.0f);
+  histogram_tester_.ExpectTotalCount("Glic.Wiggle.ActiveMouseMinutes", 2);
+}
+
+TEST_F(ShakeTriggerCountOnlyTest, ActiveMouseMinutesSharedAcrossTabs) {
+  std::unique_ptr<content::WebContents> second_web_contents =
+      CreateTestWebContents();
+  TestShakeTrigger second_trigger(second_web_contents.get(), *this);
+
+  SimulateMouseMove(0.0f, 0.0f);
+  histogram_tester_.ExpectTotalCount("Glic.Wiggle.ActiveMouseMinutes", 1);
+
+  Wait(base::Seconds(30));
+  blink::WebMouseEvent event(
+      blink::WebInputEvent::Type::kMouseMove,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.SetPositionInWidget(1.0f, 0.0f);
+  second_trigger.OnInputEvent(event);
+  histogram_tester_.ExpectTotalCount("Glic.Wiggle.ActiveMouseMinutes", 1);
+
+  Wait(base::Seconds(30));
+  second_trigger.OnInputEvent(event);
+  histogram_tester_.ExpectTotalCount("Glic.Wiggle.ActiveMouseMinutes", 2);
+}
+
+TEST_F(ShakeTriggerCountOnlyTest, DetectionFollowedUp) {
+  SimulateMouseShake();
+  task_environment()->FastForwardBy(base::Seconds(5));
+  trigger_->OnFollowUpAction();
+  histogram_tester_.ExpectUniqueSample("Glic.Wiggle.FollowedUp.LegacyShake",
+                                       true, 1);
+
+  task_environment()->FastForwardBy(base::Seconds(10));
+  histogram_tester_.ExpectTotalCount("Glic.Wiggle.FollowedUp.LegacyShake", 1);
+}
+
+TEST_F(ShakeTriggerCountOnlyTest, DetectionNotFollowedUp) {
+  SimulateMouseShake();
+  task_environment()->FastForwardBy(base::Seconds(10));
+  histogram_tester_.ExpectUniqueSample("Glic.Wiggle.FollowedUp.LegacyShake",
+                                       false, 1);
+
+  trigger_->OnFollowUpAction();
+  histogram_tester_.ExpectTotalCount("Glic.Wiggle.FollowedUp.LegacyShake", 1);
+}
+
+TEST_F(ShakeTriggerCountOnlyTest, OverlappingFollowUpWindows) {
+  SimulateMouseShake();
+  Wait(base::Seconds(4));
+  SimulateMouseShake();
+
+  // Only the first window has ended.
+  Wait(base::Seconds(7));
+  histogram_tester_.ExpectUniqueSample("Glic.Wiggle.FollowedUp.LegacyShake",
+                                       false, 1);
+
+  trigger_->OnFollowUpAction();
+  histogram_tester_.ExpectBucketCount("Glic.Wiggle.FollowedUp.LegacyShake",
+                                      true, 1);
+
+  Wait(base::Seconds(10));
+  histogram_tester_.ExpectTotalCount("Glic.Wiggle.FollowedUp.LegacyShake", 2);
+}
+
+TEST_F(ShakeTriggerCountOnlyTest, PendingDetectionRecordedOnDestruction) {
+  SimulateMouseShake();
+  trigger_.reset();
+  histogram_tester_.ExpectUniqueSample("Glic.Wiggle.FollowedUp.LegacyShake",
+                                       false, 1);
+}
+
+// With the trigger on, its own region capture would count as a follow-up.
+TEST_F(ShakeTriggerTest, NoFollowUpWhileTriggerEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(features::kGlicShakeTrigger,
+                                                  {{"should_count", "true"}});
+  RecreateTrigger();
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
+  base::HistogramTester histogram_tester;
+
+  SimulateMouseShake();
+  EXPECT_TRUE(trigger_->trigger_region_capture_called());
+  histogram_tester.ExpectUniqueSample("Glic.Wiggle.Detected",
+                                      WiggleDetectorType::kLegacyShake, 1);
+
+  trigger_->OnFollowUpAction();
+  Wait(base::Seconds(10));
+  histogram_tester.ExpectTotalCount("Glic.Wiggle.FollowedUp.LegacyShake", 0);
 }
 
 }  // namespace glic

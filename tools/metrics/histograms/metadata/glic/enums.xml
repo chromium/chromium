@@ -1670,6 +1670,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/webview.ts:WebviewExitReason) -->
 
+<!-- LINT.IfChange(GlicWiggleDetectorType) -->
+
+<enum name="GlicWiggleDetectorType">
+  <int value="0" label="Level 0"/>
+  <int value="1" label="Level 1"/>
+  <int value="2" label="Level 2"/>
+  <int value="3" label="Level 3"/>
+  <int value="4" label="Legacy shake"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/selection/wiggle_detector_factory.h:GlicWiggleDetectorType) -->
+
 <!-- LINT.IfChange(GlicYoutubeSummarizeVideoZSSResult) -->
 
 <enum name="GlicYoutubeSummarizeVideoZSSResult">

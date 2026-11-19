@@ -95,6 +95,7 @@ source_set("shake_trigger") {
   public_deps = [
     ":wiggle_detector",
     "//base",
+    "//chrome/browser/glic/public:provider_metrics",
   ]
 }
 

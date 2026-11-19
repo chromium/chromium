@@ -14,6 +14,8 @@
 namespace glic {
 
 // Recorded in UMA (Glic.Wiggle.Detected). Don't renumber.
+// Lower levels are less sensitive.
+// LINT.IfChange(GlicWiggleDetectorType)
 enum class WiggleDetectorType {
   kLevel0 = 0,
   kLevel1 = 1,
@@ -22,6 +24,7 @@ enum class WiggleDetectorType {
   kLegacyShake = 4,
   kMaxValue = kLegacyShake,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWiggleDetectorType)
 
 // kLegacyShake, plus the levels in branded builds.
 base::span<const WiggleDetectorType> GetAvailableWiggleDetectorTypes();

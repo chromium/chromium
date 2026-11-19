@@ -6,14 +6,20 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
+#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/selection/selection_overlay_invocation_helper.h"
 #include "chrome/browser/glic/selection/wiggle_detector.h"
 #include "chrome/browser/glic/selection/wiggle_detector_factory.h"
@@ -29,6 +35,9 @@
 namespace glic {
 
 namespace {
+
+// How long after a count-only detection using glic counts as a follow-up.
+constexpr base::TimeDelta kFollowUpWindow = base::Seconds(10);
 
 constexpr base::FeatureParam<WiggleDetectorType>::Option kDetectorTypes[] = {
     {WiggleDetectorType::kLegacyShake, "legacy_shake"},
@@ -67,48 +76,101 @@ bool IsDragging(const blink::WebMouseEvent& mouse_event) {
   return mouse_event.GetModifiers() & kMouseButtonsDown;
 }
 
-std::unique_ptr<WiggleDetector> CreateTriggerDetector() {
+WiggleDetectorType GetTriggerDetectorType() {
   WiggleDetectorType type = kGlicShakeTriggerDetector.Get();
   // Finch can pick a detector this build doesn't have, e.g. a non-branded
   // build signed in to a Google account.
   if (!std::ranges::contains(GetAvailableWiggleDetectorTypes(), type)) {
-    type = WiggleDetectorType::kLegacyShake;
+    return WiggleDetectorType::kLegacyShake;
   }
-  return CreateWiggleDetector(type);
+  return type;
 }
 
-std::vector<std::unique_ptr<WiggleDetector>> CreateCountOnlyDetectors() {
-  std::vector<std::unique_ptr<WiggleDetector>> detectors;
+base::span<const WiggleDetectorType> GetCountOnlyDetectorTypes() {
   if (!base::FeatureList::IsEnabled(features::kGlicShakeTrigger) ||
       !features::kGlicShakeTriggerShouldCount.Get()) {
-    return detectors;
+    return {};
   }
-  for (WiggleDetectorType type : GetAvailableWiggleDetectorTypes()) {
-    detectors.push_back(CreateWiggleDetector(type));
-  }
-  return detectors;
+  return GetAvailableWiggleDetectorTypes();
 }
+
+std::string_view GetDetectorTypeName(WiggleDetectorType type) {
+  switch (type) {
+    case WiggleDetectorType::kLegacyShake:
+      return "LegacyShake";
+    case WiggleDetectorType::kLevel0:
+      return "Level0";
+    case WiggleDetectorType::kLevel1:
+      return "Level1";
+    case WiggleDetectorType::kLevel2:
+      return "Level2";
+    case WiggleDetectorType::kLevel3:
+      return "Level3";
+  }
+}
+
+const void* const kActiveMouseMinuteTrackerKey = &kActiveMouseMinuteTrackerKey;
+
+// Tracks the last counted active mouse minute across all tabs in a profile.
+class ActiveMouseMinuteTracker : public base::SupportsUserData::Data {
+ public:
+  static void Record(Profile* profile,
+                     base::TimeTicks timestamp,
+                     const GlicMetricReporter& metric_reporter) {
+    if (!profile) {
+      return;
+    }
+    auto* tracker = static_cast<ActiveMouseMinuteTracker*>(
+        profile->GetUserData(kActiveMouseMinuteTrackerKey));
+    if (!tracker) {
+      auto new_tracker = std::make_unique<ActiveMouseMinuteTracker>();
+      tracker = new_tracker.get();
+      profile->SetUserData(kActiveMouseMinuteTrackerKey,
+                           std::move(new_tracker));
+    }
+    if (!tracker->minute_start_.is_null() &&
+        timestamp - tracker->minute_start_ < base::Minutes(1)) {
+      return;
+    }
+    tracker->minute_start_ = timestamp;
+    metric_reporter.RecordBoolean("Wiggle.ActiveMouseMinutes", true);
+  }
+
+ private:
+  base::TimeTicks minute_start_;
+};
 
 }  // namespace
 
-ShakeTrigger::Detector::Detector(std::unique_ptr<WiggleDetector> detector)
-    : detector(std::move(detector)) {}
-ShakeTrigger::Detector::Detector(Detector&&) = default;
-ShakeTrigger::Detector& ShakeTrigger::Detector::operator=(Detector&&) = default;
+ShakeTrigger::Detector::Detector(WiggleDetectorType type)
+    : type(type), detector(CreateWiggleDetector(type)) {}
+ShakeTrigger::Detector::Detector(Detector&&) noexcept = default;
+ShakeTrigger::Detector& ShakeTrigger::Detector::operator=(Detector&&) noexcept =
+    default;
 ShakeTrigger::Detector::~Detector() = default;
+
+ShakeTrigger::PendingFollowUp::PendingFollowUp(WiggleDetectorType type)
+    : type(type) {}
+ShakeTrigger::PendingFollowUp::~PendingFollowUp() = default;
 
 ShakeTrigger::ShakeTrigger(content::WebContents* web_contents,
                            ShakeTriggerClient& client)
     : web_contents_(web_contents->GetWeakPtr()),
       client_(client),
+      metric_reporter_(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       timing_(GetWiggleTiming()),
-      trigger_detector_(CreateTriggerDetector()) {
-  for (auto& detector : CreateCountOnlyDetectors()) {
-    count_only_detectors_.emplace_back(std::move(detector));
+      trigger_detector_(GetTriggerDetectorType()) {
+  for (WiggleDetectorType type : GetCountOnlyDetectorTypes()) {
+    count_only_detectors_.emplace_back(type);
   }
 }
 
-ShakeTrigger::~ShakeTrigger() = default;
+ShakeTrigger::~ShakeTrigger() {
+  for (const PendingFollowUp& pending : pending_follow_ups_) {
+    RecordFollowedUp(pending.type, false);
+  }
+}
 
 void ShakeTrigger::OnInputEvent(const blink::WebInputEvent& event) {
   switch (event.GetType()) {
@@ -166,7 +228,18 @@ bool ShakeTrigger::IsEnabled() const {
 }
 
 bool ShakeTrigger::ShouldObserveMouseMoves() const {
-  return !count_only_detectors_.empty() || IsEnabled();
+  return IsCounting() || IsEnabled();
+}
+
+bool ShakeTrigger::IsCounting() const {
+  return !count_only_detectors_.empty();
+}
+
+void ShakeTrigger::OnFollowUpAction() {
+  for (const PendingFollowUp& pending : pending_follow_ups_) {
+    RecordFollowedUp(pending.type, true);
+  }
+  pending_follow_ups_.clear();
 }
 
 void ShakeTrigger::TriggerRegionCapture() {
@@ -189,6 +262,11 @@ void ShakeTrigger::ProcessMouseMove(const blink::WebMouseEvent& mouse_event) {
   }
 
   base::TimeTicks now = base::TimeTicks::Now();
+  if (!count_only_detectors_.empty() && web_contents_) {
+    ActiveMouseMinuteTracker::Record(
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()), now,
+        metric_reporter_);
+  }
   bool moved_after_pause = !last_move_time_.is_null() &&
                            now - last_move_time_ >= timing_.pause_threshold;
   last_move_time_ = now;
@@ -209,7 +287,9 @@ void ShakeTrigger::ProcessMouseMove(const blink::WebMouseEvent& mouse_event) {
 
   gfx::PointF position = mouse_event.PositionInWidget();
   for (Detector& detector : count_only_detectors_) {
-    AddSample(detector, position, now);
+    if (AddSample(detector, position, now)) {
+      RecordDetection(detector.type);
+    }
   }
   if (trigger_enabled && AddSample(trigger_detector_, position, now)) {
     TriggerRegionCapture();
@@ -234,6 +314,27 @@ void ShakeTrigger::ResetDetectors() {
   for (Detector& detector : count_only_detectors_) {
     detector.detector->Reset();
   }
+}
+
+void ShakeTrigger::RecordDetection(WiggleDetectorType type) {
+  metric_reporter_.RecordEnumeration("Wiggle.Detected", type);
+  // The trigger's own region capture would count as a follow-up.
+  if (IsEnabled()) {
+    return;
+  }
+  pending_follow_ups_.emplace_back(type).timer.Start(
+      FROM_HERE, kFollowUpWindow, this, &ShakeTrigger::OnFollowUpWindowExpired);
+}
+
+void ShakeTrigger::OnFollowUpWindowExpired() {
+  RecordFollowedUp(pending_follow_ups_.front().type, false);
+  pending_follow_ups_.pop_front();
+}
+
+void ShakeTrigger::RecordFollowedUp(WiggleDetectorType type, bool followed) {
+  metric_reporter_.RecordBoolean(
+      base::StrCat({"Wiggle.FollowedUp.", GetDetectorTypeName(type)}),
+      followed);
 }
 
 }  // namespace glic

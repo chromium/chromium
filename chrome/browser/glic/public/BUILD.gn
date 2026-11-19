@@ -69,3 +69,15 @@ source_set("provider") {
     "//content/public/browser",
   ]
 }
+
+# Records Glic histograms split by provider. Kept apart from
+# //chrome/browser/glic so that targets it depends on can record them too.
+source_set("provider_metrics") {
+  visibility = [ "//chrome/browser/glic/*" ]
+  sources = [
+    "glic_provider_metrics.cc",
+    "glic_provider_metrics.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ ":provider" ]
+}
