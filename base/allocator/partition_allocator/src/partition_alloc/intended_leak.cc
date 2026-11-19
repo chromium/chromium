@@ -43,7 +43,7 @@ InternalUnorderedMap<uint32_t, size_t>& GetLeakSizePerTypeIdMap() {
 void PartitionRoot::Zap(SlotStart slot_start,
                         SlotSpanMetadata* slot_span,
                         uint32_t type_id) {
-  void* object = reinterpret_cast<void*>(slot_start.value());
+  uint8_t* object = slot_start.ToObject<uint8_t>();
 
   uint64_t zap_value = internal::kIntendedLeakQuarantineMarker |
                        (static_cast<uint64_t>(type_id) << 8);
@@ -54,8 +54,7 @@ void PartitionRoot::Zap(SlotStart slot_start,
   // Note that if slot_size is cleanly divisible by sizeof(uint64_t), then
   // remainder_span will be empty.
   auto [object_span, remainder_span] =
-      PA_UNSAFE_TODO(
-          internal::base::span(static_cast<uint8_t*>(object), slot_size))
+      PA_UNSAFE_TODO(internal::base::span(object, slot_size))
           .split_at(remainder_offset);
   std::ranges::fill(
       internal::base::subtle::reinterpret_span<uint64_t>(object_span),
