@@ -1667,7 +1667,7 @@ class GlicNoWebviewGeicSsrOverlayBrowserTest
 // `GlicProviderSpec::SupportsSsr()`).
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewGeicSsrOverlayBrowserTest,
                        KeepsLoadingOverlayWithoutSsrSupport) {
-  ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*GetProfile()),
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*GetProfile()),
             GlicProvider::kGeminiEnterprise);
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
@@ -2388,7 +2388,7 @@ class GlicNoWebviewReloadFromErrorBrowserTest
 // panel must show a loading indicator instead of the blank guest.
 IN_PROC_BROWSER_TEST_P(GlicNoWebviewReloadFromErrorBrowserTest,
                        ReloadFromErrorStateShowsLoadingIndicator) {
-  ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*GetProfile()),
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*GetProfile()),
             GetParam().geic ? GlicProvider::kGeminiEnterprise
                             : GlicProvider::kGemini);
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());

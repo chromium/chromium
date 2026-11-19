@@ -61,7 +61,7 @@ class GlicProviderLatchTest : public testing::Test {
   // guest URL.
   void ExpectGeminiEnterprise(Profile* profile) {
     ASSERT_TRUE(profile);
-    EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile),
+    EXPECT_EQ(GlicProviderLatch::GetProvider(*profile),
               GlicProvider::kGeminiEnterprise);
     EXPECT_EQ(GetGlicProviderSpec(profile).GetGuestUrl(profile),
               GetLocalizedGuestURL(GURL(kGuestUrl)));
@@ -73,8 +73,8 @@ class GlicProviderLatchTest : public testing::Test {
     ASSERT_TRUE(profile);
     ASSERT_TRUE(profile->IsOffTheRecord());
     Profile* original_profile = profile->GetOriginalProfile();
-    EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile),
-              GlicProviderLatch::GetProviderForTesting(*original_profile));
+    EXPECT_EQ(GlicProviderLatch::GetProvider(*profile),
+              GlicProviderLatch::GetProvider(*original_profile));
     EXPECT_EQ(&GetGlicProviderSpec(profile),
               &GetGlicProviderSpec(original_profile));
     ExpectGeminiEnterprise(profile);
@@ -84,8 +84,7 @@ class GlicProviderLatchTest : public testing::Test {
   // because its original profile isn't latched.
   void ExpectDefaultLatch(Profile* profile) {
     ASSERT_TRUE(profile);
-    EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile),
-              GlicProvider::kGemini);
+    EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
     EXPECT_EQ(GetGlicProviderSpec(profile).GetSettingsSectionId(),
               kGeminiSettingsSectionId);
     EXPECT_NE(GetGlicProviderSpec(profile).GetGuestUrl(profile),
@@ -192,8 +191,7 @@ TEST(GlicProviderLatchDefaultTest, ProfileIsLatchedAsGemini) {
   helper.SetUp();
   Profile* profile = helper.regular_profile();
 
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile),
-            GlicProvider::kGemini);
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
   EXPECT_NE(GetGlicProviderSpec(profile).GetGuestUrl(profile),
             GetLocalizedGuestURL(GURL(kGuestUrl)));
 }

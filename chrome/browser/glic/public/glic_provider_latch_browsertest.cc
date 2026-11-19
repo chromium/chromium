@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchBrowserTest,
                        LatchesGeminiEnterpriseOnStartup) {
   Profile* profile = browser()->GetProfile();
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
-            GlicProviderLatch::GetProviderForTesting(*profile));
+            GlicProviderLatch::GetProvider(*profile));
   EXPECT_EQ(GetLocalizedGuestURL(GURL(kGuestUrl)),
             GetGlicProviderSpec(profile).GetGuestUrl(profile));
 }
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchBrowserTest,
       profiles::testing::CreateProfileSync(profile_manager, new_path);
 
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
-            GlicProviderLatch::GetProviderForTesting(second_profile));
+            GlicProviderLatch::GetProvider(second_profile));
   EXPECT_EQ(GetLocalizedGuestURL(GURL(kGuestUrl)),
             GetGlicProviderSpec(&second_profile).GetGuestUrl(&second_profile));
 }
@@ -123,8 +123,7 @@ class GlicProviderLatchGeicDisabledBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDisabledBrowserTest,
                        LatchesGeminiOnStartup) {
   Profile* profile = browser()->GetProfile();
-  EXPECT_EQ(GlicProvider::kGemini,
-            GlicProviderLatch::GetProviderForTesting(*profile));
+  EXPECT_EQ(GlicProvider::kGemini, GlicProviderLatch::GetProvider(*profile));
   EXPECT_NE(GetLocalizedGuestURL(GURL(kGuestUrl)),
             GetGlicProviderSpec(profile).GetGuestUrl(profile));
 }
@@ -138,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDisabledBrowserTest,
       profiles::testing::CreateProfileSync(profile_manager, new_path);
 
   EXPECT_EQ(GlicProvider::kGemini,
-            GlicProviderLatch::GetProviderForTesting(second_profile));
+            GlicProviderLatch::GetProvider(second_profile));
   EXPECT_NE(GetLocalizedGuestURL(GURL(kGuestUrl)),
             GetGlicProviderSpec(&second_profile).GetGuestUrl(&second_profile));
 }
@@ -176,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicPolicyBrowserTest,
                        LatchesGeminiEnterpriseOnStartup) {
   Profile* profile = browser()->GetProfile();
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
-            GlicProviderLatch::GetProviderForTesting(*profile));
+            GlicProviderLatch::GetProvider(*profile));
   EXPECT_EQ(GetLocalizedGuestURL(GURL(kCanonicalPolicyUrl)),
             GetGlicProviderSpec(profile).GetGuestUrl(profile));
   EXPECT_FALSE(GetGlicProviderSpec(profile).CanSwitchBetweenGeminiProviders());
@@ -191,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicPolicyBrowserTest,
       profiles::testing::CreateProfileSync(profile_manager, new_path);
 
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
-            GlicProviderLatch::GetProviderForTesting(second_profile));
+            GlicProviderLatch::GetProvider(second_profile));
   EXPECT_EQ(GetLocalizedGuestURL(GURL(kCanonicalPolicyUrl)),
             GetGlicProviderSpec(&second_profile).GetGuestUrl(&second_profile));
   EXPECT_FALSE(
@@ -238,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDevicePolicyBrowserTest,
                        PRE_PRE_UserOptOutLatchesGeminiOnNextLaunch) {
   Profile* profile = browser()->GetProfile();
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
-            GlicProviderLatch::GetProviderForTesting(*profile));
+            GlicProviderLatch::GetProvider(*profile));
   EXPECT_EQ(GetLocalizedGuestURL(GURL(kCanonicalPolicyUrl)),
             GetGlicProviderSpec(profile).GetGuestUrl(profile));
   EXPECT_TRUE(GetGlicProviderSpec(profile).CanSwitchBetweenGeminiProviders());
@@ -255,8 +254,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDevicePolicyBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDevicePolicyBrowserTest,
                        PRE_UserOptOutLatchesGeminiOnNextLaunch) {
   Profile* profile = browser()->GetProfile();
-  EXPECT_EQ(GlicProvider::kGemini,
-            GlicProviderLatch::GetProviderForTesting(*profile));
+  EXPECT_EQ(GlicProvider::kGemini, GlicProviderLatch::GetProvider(*profile));
   EXPECT_TRUE(GetGlicProviderSpec(profile).CanSwitchBetweenGeminiProviders());
 
   profile->GetPrefs()->SetInteger(
@@ -271,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(GlicProviderLatchGeicDevicePolicyBrowserTest,
                        UserOptOutLatchesGeminiOnNextLaunch) {
   Profile* profile = browser()->GetProfile();
   EXPECT_EQ(GlicProvider::kGeminiEnterprise,
-            GlicProviderLatch::GetProviderForTesting(*profile));
+            GlicProviderLatch::GetProvider(*profile));
   EXPECT_EQ(GetLocalizedGuestURL(GURL(kCanonicalPolicyUrl)),
             GetGlicProviderSpec(profile).GetGuestUrl(profile));
   EXPECT_TRUE(GetGlicProviderSpec(profile).CanSwitchBetweenGeminiProviders());

@@ -78,7 +78,7 @@ class GlicProviderChangeBrowserTestBase : public GlicBrowserTest {
     // pending change.
     ASSERT_EQ(initial_policy_url_ ? GlicProvider::kGeminiEnterprise
                                   : GlicProvider::kGemini,
-              GlicProviderLatch::GetProviderForTesting(*profile()));
+              GlicProviderLatch::GetProvider(*profile()));
     ASSERT_EQ(GlicProviderChange::kNone, pending_change());
     ASSERT_EQ(mojom::ProfileReadyState::kReady, ready_state());
   }

@@ -14,7 +14,8 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/glic/host/guest_util.h"
-#include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/profiles/profile.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
@@ -123,7 +124,8 @@ void GlicGeminiEnterpriseManager::Bind(
   // Off-the-record profiles share their original profile's provider, but auth
   // tabs are never opened for them (see `OpenAuthTabImpl()`).
   if (!profile_ || profile_->IsOffTheRecord() ||
-      !GetGlicProviderSpec(profile_).UsesGeicSignIn()) {
+      GlicProviderLatch::GetProvider(*profile_) !=
+          GlicProvider::kGeminiEnterprise) {
     return;
   }
   receiver_.reset();

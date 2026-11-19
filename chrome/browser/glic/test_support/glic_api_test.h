@@ -307,8 +307,8 @@ class GlicApiBrowserTestMixin : public T {
     Profile* profile =
         Profile::FromBrowserContext(glic_guest_frame->GetBrowserContext());
     init_dict.Set("isGeic",
-                  profile && GlicProviderLatch::GetProviderForTesting(
-                                 *profile) == GlicProvider::kGeminiEnterprise);
+                  profile && GlicProviderLatch::GetProvider(*profile) ==
+                                 GlicProvider::kGeminiEnterprise);
     std::string test_init_data = base::WriteJson(init_dict).value_or("");
     // Store `frame_id` early to avoid evaluation-order use-after-free if
     // `EvalJs` yields and the frame is destroyed.

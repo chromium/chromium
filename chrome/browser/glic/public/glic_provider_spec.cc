@@ -4,14 +4,7 @@
 
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 
-#include "base/check_is_test.h"
-
 namespace glic {
-
-GlicProviderKey GlicProviderSpec::GetProviderKeyForTesting() const {
-  CHECK_IS_TEST();
-  return GetProviderKeyImpl();
-}
 
 GlicSelectionInlineCueFeatureParams::GlicSelectionInlineCueFeatureParams() =
     default;

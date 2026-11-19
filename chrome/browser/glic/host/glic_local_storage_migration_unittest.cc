@@ -21,6 +21,8 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -258,6 +260,8 @@ class GlicLocalStorageMigrationGeicTest : public testing::Test {
 
 // GEiC never used the webview partition, so nothing is copied.
 TEST_F(GlicLocalStorageMigrationGeicTest, Skipped) {
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile_),
+            GlicProvider::kGeminiEnterprise);
   GlicClientDataStorage storage(
       profile_->GetPrefs(),
       GetGlicProviderSpec(profile_.get()).GetGuestUrlKey());

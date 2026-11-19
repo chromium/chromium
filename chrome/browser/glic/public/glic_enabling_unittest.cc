@@ -4238,8 +4238,7 @@ TEST_F(GlicEnablingProfileEligibilityTest, IsAnyEntryPointEnabled) {
 }
 
 TEST_F(GlicEnablingProfileEligibilityTest, Provider_GeminiWhenGeicDisabled) {
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
-            GlicProvider::kGemini);
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()), GlicProvider::kGemini);
   EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
 }
 
@@ -4295,15 +4294,14 @@ class GlicEnablingGeicPolicyGlicDisabledTest
 };
 
 TEST_F(GlicEnablingGeicPolicyTest, Provider_GeminiEnterpriseWithPolicyUrl) {
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
   EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
 }
 
 TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest,
        Provider_GeminiWhenGeicFeatureDisabledWithPolicyUrl) {
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
-            GlicProvider::kGemini);
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()), GlicProvider::kGemini);
   EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
 }
 
@@ -4311,7 +4309,7 @@ TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest,
 TEST_F(GlicEnablingGeicPolicyGlicDisabledTest,
        Provider_GeminiEnterpriseLatchedButIneligibleForGlic) {
   EXPECT_FALSE(GlicEnabling::IsProfileEligible(profile()));
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
   EXPECT_EQ(GlicKeyedService::Get(profile()), nullptr);
 }
@@ -4409,8 +4407,7 @@ void ExpectConsumerProviderAndEnablement(Profile* profile) {
   ASSERT_TRUE(IdentityManagerFactory::GetForProfile(profile)
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                   .IsEmpty());
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile),
-            GlicProvider::kGemini);
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
   EXPECT_TRUE(GetGlicProviderSpec(profile).RequiresGeminiAccountEligibility());
 
   GlicEnabling::ProfileEnablement enablement =
@@ -4453,7 +4450,7 @@ TEST_F(GlicEnablingGeicPolicyTest,
   ASSERT_TRUE(IdentityManagerFactory::GetForProfile(profile())
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                   .IsEmpty());
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
   EXPECT_FALSE(
       GetGlicProviderSpec(profile()).RequiresGeminiAccountEligibility());
@@ -4568,7 +4565,7 @@ TEST_F(GlicEnablingGeicPolicyTest, Provider_LatchedAtCreation) {
       profile()->GetPrefs())
       ->RemoveManagedPref(prefs::kGlicGeminiEnterpriseUrl);
 
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
   EXPECT_EQ(
       GetGlicProviderSpec(profile()).GetGuestUrl(profile()),
@@ -4583,7 +4580,7 @@ TEST_F(GlicEnablingGeicPolicyTest, Provider_LatchedAtCreation) {
 TEST_F(GlicEnablingGeicPolicyTest, KeyedServicesBuildForGeicProfile) {
   EXPECT_TRUE(GlicKeyedServiceFactory::GetGlicKeyedService(profile(),
                                                            /*create=*/true));
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
 }
 
@@ -4591,7 +4588,7 @@ TEST_F(GlicEnablingGeicPolicyTest, KeyedServicesBuildForGeicProfile) {
 // profile that never completed the consumer FRE is enabled, consented and
 // ready.
 TEST_F(GlicEnablingGeicPolicyTest, GeicEnabledWithoutConsumerAccountChecks) {
-  ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
   ASSERT_TRUE(identity_test_env_adaptor_->identity_test_env()
                   ->identity_manager()
@@ -4776,7 +4773,7 @@ class GlicEnablingGeicPolicyCountryCheckTest
 // (profile enablement, not the provider latch).
 TEST_F(GlicEnablingGeicPolicyCountryCheckTest, GeicUsesConsumerCountryFilter) {
   SetCountry("zz");
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
   EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
   GlicEnabling::ProfileEnablement enablement =
@@ -4821,7 +4818,7 @@ TEST_F(GlicEnablingGeicPolicyTest, GeicDoesNotSupportSkills) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kSkillsEnabled, ::features::kSkillsWebViewV2Enabled}, {});
-  ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
   EXPECT_FALSE(
       GetGlicProviderSpec(profile()).SupportsFeature(GlicFeature::kSkills));
@@ -4832,8 +4829,7 @@ TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest, ConsumerSupportsSkills) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kSkillsEnabled, ::features::kSkillsWebViewV2Enabled}, {});
-  ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
-            GlicProvider::kGemini);
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()), GlicProvider::kGemini);
   EXPECT_TRUE(
       GetGlicProviderSpec(profile()).SupportsFeature(GlicFeature::kSkills));
 }
@@ -4842,7 +4838,7 @@ TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest, ConsumerSupportsSkills) {
 // create the user status fetcher.
 TEST_F(GlicEnablingGeicPolicyTest, GeicDoesNotCreateUserStatusFetcher) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kGlicUserStatusCheck));
-  ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true);
@@ -4856,8 +4852,7 @@ TEST_F(GlicEnablingGeicPolicyTest, GeicDoesNotCreateUserStatusFetcher) {
 TEST_F(GlicEnablingGeicPolicyFeatureDisabledTest,
        ConsumerCreatesUserStatusFetcher) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kGlicUserStatusCheck));
-  ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
-            GlicProvider::kGemini);
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()), GlicProvider::kGemini);
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile(), /*create=*/true);
   ASSERT_TRUE(service);

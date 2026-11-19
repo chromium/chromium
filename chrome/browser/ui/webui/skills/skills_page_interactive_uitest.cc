@@ -323,6 +323,8 @@ IN_PROC_BROWSER_TEST_F(SkillsPageInteractiveUITest, DialogZoomModeDisabled) {
 IN_PROC_BROWSER_TEST_F(SkillsPageInteractiveUITest,
                        ConsumerErrorPageStatesNeverShowUnsupported) {
   Profile* profile = browser()->GetProfile();
+  ASSERT_EQ(glic::GlicProviderLatch::GetProvider(*profile),
+            glic::GlicProvider::kGemini);
 
   const InteractiveBrowserWindowTestApi::DeepQuery kErrorPageQuery{
       "skills-app", "error-page"};
@@ -404,7 +406,7 @@ class SkillsPageFeatureDisabledInteractiveUITest
 IN_PROC_BROWSER_TEST_F(SkillsPageFeatureDisabledInteractiveUITest,
                        SkillsDisabledAndPageInaccessible) {
   Profile* profile = browser()->GetProfile();
-  ASSERT_EQ(glic::GlicProviderLatch::GetProviderForTesting(*profile),
+  ASSERT_EQ(glic::GlicProviderLatch::GetProvider(*profile),
             glic::GlicProvider::kGemini);
 
   glic::GlicEnabling::ScopedBypassEnablementChecksForTesting scoped_glic_bypass;

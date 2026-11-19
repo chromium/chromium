@@ -122,7 +122,7 @@ class GlicProviderChangeGeminiLatchedTest : public GlicProviderChangeTest {
   void SetUp() override {
     InitFeatures();
     helper_.SetUp();
-    ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+    ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
               GlicProvider::kGemini);
   }
 };
@@ -188,8 +188,7 @@ TEST_F(GlicProviderChangeGeminiLatchedTest,
 
 TEST_F(GlicProviderChangeGeminiLatchedTest, LatchIsUnchanged) {
   SetPolicyUrl(kGeicAPolicyUrl);
-  EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
-            GlicProvider::kGemini);
+  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()), GlicProvider::kGemini);
 }
 
 TEST_F(GlicProviderChangeGeminiLatchedTest, UnlatchedProfilesAreNone) {
@@ -216,7 +215,7 @@ class GlicProviderChangeGeicLatchedTest : public GlicProviderChangeTest {
   void SetUp() override {
     InitFeatures(kGeicAUrl);
     helper_.SetUp();
-    ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+    ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
               GlicProvider::kGeminiEnterprise);
   }
 };
@@ -291,7 +290,7 @@ class GlicProviderChangeGeicRemovedTest : public GlicProviderChangeTest {
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         kGeicGuestUrlSwitch, kGeicAUrl);
     helper_.SetUp();
-    ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+    ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
               GlicProvider::kGeminiEnterprise);
   }
 };
@@ -329,7 +328,7 @@ class GlicProviderChangeGeicEnabledParamFalseTest
          {features::kGeicProviderChangePrompt, {}}},
         {});
     helper_.SetUp();
-    ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*profile()),
+    ASSERT_EQ(GlicProviderLatch::GetProvider(*profile()),
               GlicProvider::kGemini);
   }
 };

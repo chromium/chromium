@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,8 +44,7 @@ const GlicProviderLatch& GlicProviderLatch::Get(Profile& profile) {
 }
 
 // static
-GlicProvider GlicProviderLatch::GetProviderForTesting(Profile& profile) {
-  CHECK_IS_TEST();
+GlicProvider GlicProviderLatch::GetProvider(Profile& profile) {
   return Get(profile).provider_;
 }
 

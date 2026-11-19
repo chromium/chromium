@@ -27,9 +27,9 @@ class GlicProviderLatchFactory;
 //
 // The value is resolved once, eagerly, by `GlicProviderLatchFactory` while the
 // profile's keyed services are being created, and never changes for the
-// lifetime of the profile. Provider-specific behavior should come from the
-// latched `GlicProviderSpec` rather than from branching on the provider, which
-// is only exposed to tests.
+// lifetime of the profile. Glic code that needs the provider reads it with
+// `GetProvider()`. Code that needs provider-specific values should prefer
+// `GetGlicProviderSpec(profile)` over branching on the provider.
 //
 // Every regular user profile (`ProfileSelections::BuildForRegularProfile()`) is
 // latched by `GlicProviderLatchFactory`; other profiles are not. Lookups
@@ -52,15 +52,19 @@ class GlicProviderLatch final : public base::SupportsUserData::Data {
   static const GlicProviderLatch& Get(Profile& profile);
 
   // Returns the latched provider of the original profile of `profile`, or
-  // `GlicProvider::kGemini` if the original profile has not been latched. For
-  // tests that verify which provider was latched.
-  static GlicProvider GetProviderForTesting(Profile& profile);
+  // `GlicProvider::kGemini` if the original profile has not been latched.
+  // TODO(crbug.com/576351868): Consider exposing the appropriate spec or rules
+  // directly instead of `GetProvider`.
+  static GlicProvider GetProvider(Profile& profile);
 
   // Returns the latch stored on `context`, or nullptr. Unlike `Get()`, doesn't
   // resolve through the original profile or fall back to a default latch, so
   // off-the-record and other non-regular profiles return nullptr.
   static const GlicProviderLatch* GetIfLatched(
       const content::BrowserContext& context);
+
+  // Returns the latched provider.
+  GlicProvider provider() const { return provider_; }
 
   // Returns the latched `GlicProviderSpec`.
   const GlicProviderSpec& GetSpec() const;
