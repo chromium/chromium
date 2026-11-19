@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/containers/enum_set.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -150,14 +149,14 @@ class CONTENT_EXPORT DevToolsURLLoaderInterceptor {
     ~Pattern();
     Pattern(const Pattern& other);
     Pattern(const std::string& url_pattern,
-            base::flat_set<blink::mojom::ResourceType> resource_types,
+            base::EnumSet<blink::mojom::ResourceType> resource_types,
             InterceptionStage interception_stage);
 
     bool Matches(const std::string& url,
                  blink::mojom::ResourceType resource_type) const;
 
     const std::string url_pattern;
-    const base::flat_set<blink::mojom::ResourceType> resource_types;
+    const base::EnumSet<blink::mojom::ResourceType> resource_types;
     const InterceptionStage interception_stage;
   };
 

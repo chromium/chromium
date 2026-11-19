@@ -115,7 +115,7 @@ class DevToolsURLLoaderInterceptorTest : public testing::Test {
               }
             }));
     std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns;
-    patterns.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+    patterns.emplace_back("*", base::EnumSet<blink::mojom::ResourceType>(),
                           DevToolsURLLoaderInterceptor::kRequest);
     interceptor_->SetPatterns(std::move(patterns), /*handle_auth=*/false);
   }
@@ -262,7 +262,7 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
 
   // Configure interceptor to handle auth challenges.
   std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns;
-  patterns.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+  patterns.emplace_back("*", base::EnumSet<blink::mojom::ResourceType>(),
                         DevToolsURLLoaderInterceptor::kRequest);
   interceptor_->SetPatterns(std::move(patterns), /*handle_auth=*/true);
 
@@ -613,7 +613,7 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
   const GURL kRedirectUrl("http://cross-origin.test/manifest.json");
 
   std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns;
-  patterns.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+  patterns.emplace_back("*", base::EnumSet<blink::mojom::ResourceType>(),
                         DevToolsURLLoaderInterceptor::kRequest);
   interceptor_->SetPatterns(std::move(patterns), /*handle_auth=*/true);
 
@@ -678,7 +678,7 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
             loop1.Quit();
           }));
   std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns1;
-  patterns1.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+  patterns1.emplace_back("*", base::EnumSet<blink::mojom::ResourceType>(),
                          DevToolsURLLoaderInterceptor::kRequest);
   interceptor1->SetPatterns(std::move(patterns1), /*handle_auth=*/false);
 
@@ -698,7 +698,7 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
             }
           }));
   std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns2;
-  patterns2.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+  patterns2.emplace_back("*", base::EnumSet<blink::mojom::ResourceType>(),
                          DevToolsURLLoaderInterceptor::kRequest);
   interceptor2->SetPatterns(std::move(patterns2), /*handle_auth=*/true);
 
@@ -818,7 +818,7 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
             loop1.Quit();
           }));
   std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns1;
-  patterns1.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+  patterns1.emplace_back("*", base::EnumSet<blink::mojom::ResourceType>(),
                          DevToolsURLLoaderInterceptor::kRequest);
   interceptor1->SetPatterns(std::move(patterns1), /*handle_auth=*/false);
 
@@ -831,7 +831,7 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
             loop2.Quit();
           }));
   std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns2;
-  patterns2.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+  patterns2.emplace_back("*", base::EnumSet<blink::mojom::ResourceType>(),
                          DevToolsURLLoaderInterceptor::kRequest);
   interceptor2->SetPatterns(std::move(patterns2), /*handle_auth=*/false);
 
@@ -960,7 +960,7 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
             }
           }));
   std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns1;
-  patterns1.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+  patterns1.emplace_back("*", base::EnumSet<blink::mojom::ResourceType>(),
                          DevToolsURLLoaderInterceptor::kRequest);
   interceptor1->SetPatterns(std::move(patterns1), /*handle_auth=*/true);
 
@@ -980,7 +980,7 @@ TEST_F(DevToolsURLLoaderInterceptorTest,
             }
           }));
   std::vector<DevToolsURLLoaderInterceptor::Pattern> patterns2;
-  patterns2.emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+  patterns2.emplace_back("*", base::EnumSet<blink::mojom::ResourceType>(),
                          DevToolsURLLoaderInterceptor::kRequest);
   interceptor2->SetPatterns(std::move(patterns2), /*handle_auth=*/true);
 

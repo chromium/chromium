@@ -149,16 +149,16 @@ DevToolsURLLoaderInterceptor::Pattern::Pattern(const Pattern& other) = default;
 
 DevToolsURLLoaderInterceptor::Pattern::Pattern(
     const std::string& url_pattern,
-    base::flat_set<blink::mojom::ResourceType> resource_types,
+    base::EnumSet<blink::mojom::ResourceType> resource_types,
     InterceptionStage interception_stage)
     : url_pattern(url_pattern),
-      resource_types(std::move(resource_types)),
+      resource_types(resource_types),
       interception_stage(interception_stage) {}
 
 bool DevToolsURLLoaderInterceptor::Pattern::Matches(
     const std::string& url,
     blink::mojom::ResourceType resource_type) const {
-  if (!resource_types.empty() && !resource_types.contains(resource_type)) {
+  if (!resource_types.empty() && !resource_types.Has(resource_type)) {
     return false;
   }
   return base::MatchPattern(url, url_pattern);

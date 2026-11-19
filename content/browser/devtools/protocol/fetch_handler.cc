@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
@@ -74,31 +75,30 @@ RequestStageToInterceptorStage(const Fetch::RequestStage& stage) {
 
 bool AddInterceptedResourceType(
     const std::string& resource_type,
-    base::flat_set<blink::mojom::ResourceType>* intercepted_resource_types) {
+    base::EnumSet<blink::mojom::ResourceType>* intercepted_resource_types) {
   if (resource_type == protocol::Network::ResourceTypeEnum::Document) {
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kMainFrame);
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kSubFrame);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kMainFrame);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kSubFrame);
     return true;
   }
   if (resource_type == protocol::Network::ResourceTypeEnum::Stylesheet) {
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kStylesheet);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kStylesheet);
     return true;
   }
   if (resource_type == protocol::Network::ResourceTypeEnum::Image) {
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kImage);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kImage);
     return true;
   }
   if (resource_type == protocol::Network::ResourceTypeEnum::Media) {
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kMedia);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kMedia);
     return true;
   }
   if (resource_type == protocol::Network::ResourceTypeEnum::Font) {
-    intercepted_resource_types->insert(
-        blink::mojom::ResourceType::kFontResource);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kFontResource);
     return true;
   }
   if (resource_type == protocol::Network::ResourceTypeEnum::Script) {
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kScript);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kScript);
     return true;
   }
 
@@ -111,33 +111,30 @@ bool AddInterceptedResourceType(
   if (resource_type == protocol::Network::ResourceTypeEnum::XHR ||
       resource_type == protocol::Network::ResourceTypeEnum::Fetch ||
       resource_type == protocol::Network::ResourceTypeEnum::EventSource) {
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kXhr);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kXhr);
     if (resource_type == protocol::Network::ResourceTypeEnum::Fetch) {
-      intercepted_resource_types->insert(blink::mojom::ResourceType::kPrefetch);
+      intercepted_resource_types->Put(blink::mojom::ResourceType::kPrefetch);
     }
     return true;
   }
 
   if (resource_type ==
       protocol::Network::ResourceTypeEnum::CSPViolationReport) {
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kCspReport);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kCspReport);
     return true;
   }
   if (resource_type == protocol::Network::ResourceTypeEnum::Ping) {
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kPing);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kPing);
     return true;
   }
   if (resource_type == protocol::Network::ResourceTypeEnum::Other) {
-    intercepted_resource_types->insert(
-        blink::mojom::ResourceType::kSubResource);
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kObject);
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kWorker);
-    intercepted_resource_types->insert(
-        blink::mojom::ResourceType::kSharedWorker);
-    intercepted_resource_types->insert(blink::mojom::ResourceType::kFavicon);
-    intercepted_resource_types->insert(
-        blink::mojom::ResourceType::kServiceWorker);
-    intercepted_resource_types->insert(
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kSubResource);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kObject);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kWorker);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kSharedWorker);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kFavicon);
+    intercepted_resource_types->Put(blink::mojom::ResourceType::kServiceWorker);
+    intercepted_resource_types->Put(
         blink::mojom::ResourceType::kPluginResource);
     return true;
   }
@@ -149,12 +146,12 @@ Response ToInterceptionPatterns(
     std::vector<DevToolsURLLoaderInterceptor::Pattern>* result) {
   result->clear();
   if (!maybe_patterns) {
-    result->emplace_back("*", base::flat_set<blink::mojom::ResourceType>(),
+    result->emplace_back("*", base::EnumSet<blink::mojom::ResourceType>(),
                          DevToolsURLLoaderInterceptor::kRequest);
     return Response::Success();
   }
   for (const auto& pattern : *maybe_patterns) {
-    base::flat_set<blink::mojom::ResourceType> resource_types;
+    base::EnumSet<blink::mojom::ResourceType> resource_types;
     std::string resource_type = pattern->GetResourceType("");
     if (!resource_type.empty()) {
       if (!AddInterceptedResourceType(resource_type, &resource_types)) {
@@ -170,7 +167,7 @@ Response ToInterceptionPatterns(
           base::StringPrintf("Unsupported request stage '%s'",
                              pattern->GetRequestStage("").c_str()));
     }
-    result->emplace_back(pattern->GetUrlPattern("*"), std::move(resource_types),
+    result->emplace_back(pattern->GetUrlPattern("*"), resource_types,
                          stage.value());
   }
   return Response::Success();
