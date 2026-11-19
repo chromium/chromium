@@ -72,12 +72,14 @@ DesktopSessionLinux::DesktopSessionLinux(
     std::string_view client_id,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     DestroyedCallback on_destroyed,
+    bool curtain_required,
     bool is_greeter_allowed)
     : DesktopSession(daemon_process, id),
       required_username_(required_username),
       client_id_(client_id),
       io_task_runner_(io_task_runner),
       on_destroyed_(std::move(on_destroyed)),
+      curtain_required_(curtain_required),
       is_greeter_allowed_(is_greeter_allowed) {}
 
 DesktopSessionLinux::~DesktopSessionLinux() {
@@ -88,6 +90,13 @@ DesktopSessionLinux::~DesktopSessionLinux() {
   }
 }
 
+// static
+bool DesktopSessionLinux::IsSessionCompatibleWithCurtainMode(
+    const LoginSessionManager::SessionInfo& session_info) {
+  return session_info.is_remote ||
+         session_info.service == "chrome-remote-desktop";
+}
+
 void DesktopSessionLinux::SetSessionInfo(
     const LoginSessionManager::SessionInfo& session_info,
     const PasswdUserInfo& user_info) {
@@ -95,6 +104,7 @@ void DesktopSessionLinux::SetSessionInfo(
 
   current_session_id_ = session_info.session_id;
   current_uid_ = user_info.uid;
+  is_local_session_ = !IsSessionCompatibleWithCurtainMode(session_info);
 
   if (session_info.uid != user_info.uid) {
     TerminateSession(
@@ -132,6 +142,10 @@ void DesktopSessionLinux::SetSessionInfo(
         base::StringPrintf("Local login for user %s is disallowed by PAM.",
                            user_info.username.c_str()),
         FROM_HERE);
+    return;
+  }
+
+  if (!ValidateCurtainMode()) {
     return;
   }
 
@@ -180,6 +194,7 @@ void DesktopSessionLinux::ClearSessionInfo() {
   desktop_process_control_.reset();
   current_session_id_.clear();
   current_uid_.reset();
+  is_local_session_ = false;
 }
 
 void DesktopSessionLinux::TerminateSession(
@@ -220,6 +235,13 @@ void DesktopSessionLinux::ReconnectNetworkChannel(
   if (options.client_id != client_id_) {
     TerminateSession(ErrorCode::SESSION_REJECTED, "Client ID has changed.",
                      FROM_HERE);
+    return;
+  }
+
+  // `curtain_required` may change between connections when session policies
+  // change.
+  curtain_required_ = options.curtain_required;
+  if (!ValidateCurtainMode()) {
     return;
   }
 
@@ -371,6 +393,22 @@ bool DesktopSessionLinux::IsSessionUsernameAllowed(
   LOG(ERROR) << "User " << user_info.username
              << " does not match the required username: " << required_username_;
   return false;
+}
+
+bool DesktopSessionLinux::ValidateCurtainMode() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (curtain_required_ && is_local_session_) {
+    LOG(ERROR) << "Curtain mode is not supported for local session "
+               << current_session_id_;
+    // TODO: crbug.com/587093166 - Report a dedicated ErrorCode for uncurtained
+    // local sessions.
+    TerminateSession(ErrorCode::HOST_CONFIGURATION_ERROR,
+                     "Curtain mode is not supported for local sessions.",
+                     FROM_HERE);
+    return false;
+  }
+  return true;
 }
 
 }  // namespace remoting

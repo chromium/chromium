@@ -231,7 +231,7 @@ std::unique_ptr<DesktopSession> DaemonProcessWin::DoCreateDesktopSession(
     const mojom::DesktopSessionOptions& options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  if (options.is_curtained) {
+  if (options.curtain_required) {
     return DesktopSessionWin::CreateForVirtualTerminal(
         caller_task_runner(), io_task_runner(), this, terminal_id, options);
   } else {

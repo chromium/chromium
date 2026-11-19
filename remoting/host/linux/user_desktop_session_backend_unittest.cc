@@ -17,6 +17,7 @@
 #include "remoting/base/loggable.h"
 #include "remoting/base/passwd_utils.h"
 #include "remoting/host/linux/created_session_tracker.h"
+#include "remoting/host/linux/desktop_session_linux.h"
 #include "remoting/host/linux/login_session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -314,5 +315,83 @@ TEST_F(UserDesktopSessionBackendTest, DetectsNoSuchSessionError) {
       "Error invoking method: GDBus.Error:org.freedesktop.DBus.Error."
       "UnknownObject: Unknown object '/org/freedesktop/login1/session/_33'."));
 }
+
+struct CurtainModeCompatibilityTestCase {
+  std::string_view name;
+  std::string_view session_type;
+  std::string_view state;
+  std::string_view service;
+  bool is_remote;
+  bool expected_compatible;
+};
+
+class CurtainModeCompatibilityTest
+    : public testing::TestWithParam<CurtainModeCompatibilityTestCase> {};
+
+TEST_P(CurtainModeCompatibilityTest, ChecksCompatibility) {
+  const CurtainModeCompatibilityTestCase& test_case = GetParam();
+  EXPECT_EQ(
+      DesktopSessionLinux::IsSessionCompatibleWithCurtainMode(
+          CreateSession("1", "user", std::string(test_case.session_type),
+                        std::string(test_case.state),
+                        std::string(test_case.service), test_case.is_remote)),
+      test_case.expected_compatible);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CurtainModeCompatibilityTest,
+    testing::Values(
+        CurtainModeCompatibilityTestCase{
+            .name = "LocalWayland",
+            .session_type = "wayland",
+            .state = "active",
+            .service = "gdm-password",
+            .is_remote = false,
+            .expected_compatible = false,
+        },
+        CurtainModeCompatibilityTestCase{
+            .name = "RemoteWayland",
+            .session_type = "wayland",
+            .state = "active",
+            .service = "gdm-direct-login",
+            .is_remote = true,
+            .expected_compatible = true,
+        },
+        CurtainModeCompatibilityTestCase{
+            .name = "CrdServiceWayland",
+            .session_type = "wayland",
+            .state = "online",
+            .service = "chrome-remote-desktop",
+            .is_remote = false,
+            .expected_compatible = true,
+        },
+        CurtainModeCompatibilityTestCase{
+            .name = "LocalX11",
+            .session_type = "x11",
+            .state = "active",
+            .service = "gdm-password",
+            .is_remote = false,
+            .expected_compatible = false,
+        },
+        CurtainModeCompatibilityTestCase{
+            .name = "RemoteX11",
+            .session_type = "x11",
+            .state = "active",
+            .service = "gdm-direct-login",
+            .is_remote = true,
+            .expected_compatible = true,
+        },
+        CurtainModeCompatibilityTestCase{
+            .name = "CrdServiceX11",
+            .session_type = "x11",
+            .state = "online",
+            .service = "chrome-remote-desktop",
+            .is_remote = false,
+            .expected_compatible = true,
+        }),
+    [](const testing::TestParamInfo<CurtainModeCompatibilityTestCase>& info) {
+      return std::string(info.param.name);
+    });
 
 }  // namespace remoting

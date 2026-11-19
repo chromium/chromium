@@ -303,8 +303,8 @@ void PeerConnectionProcess::GetDesktopSession(
     return;
   }
 
-  // The rest of `options` (such as `client_id` and `is_curtained`) is already
-  // known by the network process and will be populated there.
+  // The rest of `options` (such as `client_id` and `curtain_required`) is
+  // already known by the network process and will be populated there.
   // TODO(crbug.com/552604892): Clean up the arguments of the GetDesktopSession
   // callback so it only takes the required parameters instead of full options.
   desktop_session_requester_remote_->RequestDesktopSession(

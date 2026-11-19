@@ -221,7 +221,7 @@ std::unique_ptr<DesktopSession> UserDesktopSessionBackend::CreateDesktopSession(
       io_task_runner_,
       base::BindOnce(&UserDesktopSessionBackend::RemoveDesktopSession,
                      weak_ptr_factory_.GetWeakPtr(), id),
-      /*is_greeter_allowed=*/false);
+      options.curtain_required, /*is_greeter_allowed=*/false);
 
   auto resolved_user = ValidateClientSession(options);
   if (!resolved_user.has_value()) {
@@ -417,6 +417,11 @@ void UserDesktopSessionBackend::OnListUserSessionsResult(
     desktop_session->TerminateSession(
         ErrorCode::SESSION_REJECTED,
         "No graphical user session found for user.", FROM_HERE);
+    return;
+  }
+  if (entry.creation_timeout && desktop_session->curtain_required() &&
+      !DesktopSessionLinux::IsSessionCompatibleWithCurtainMode(*best_session)) {
+    // Still waiting for the requested remote session to show up.
     return;
   }
   bool was_pending_creation = entry.creation_timeout != nullptr;

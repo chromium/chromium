@@ -49,11 +49,17 @@ class DesktopSessionLinux : public DesktopSession,
       std::string_view client_id,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       DestroyedCallback on_destroyed,
+      bool curtain_required,
       bool is_greeter_allowed = false);
   ~DesktopSessionLinux() override;
 
   DesktopSessionLinux(const DesktopSessionLinux&) = delete;
   DesktopSessionLinux& operator=(const DesktopSessionLinux&) = delete;
+
+  // Returns whether `session_info` is compatible with Curtain Mode. Local
+  // non-CRD sessions cannot be curtained and return false.
+  static bool IsSessionCompatibleWithCurtainMode(
+      const LoginSessionManager::SessionInfo& session_info);
 
   // Associates this session with a systemd login session and user credentials,
   // launching or re-launching the desktop process.
@@ -79,6 +85,10 @@ class DesktopSessionLinux : public DesktopSession,
   std::optional<uid_t> current_uid() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return current_uid_;
+  }
+  bool curtain_required() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return curtain_required_;
   }
 
   // DesktopSession implementation.
@@ -107,6 +117,10 @@ class DesktopSessionLinux : public DesktopSession,
   bool IsSessionUsernameAllowed(
       const LoginSessionManager::SessionInfo& session_info,
       const PasswdUserInfo& user_info);
+  // Returns true if the current session satisfies `curtain_required_`.
+  // Otherwise terminates the session (which deletes `this`) and returns
+  // false.
+  bool ValidateCurtainMode();
   void AttachProcessToSession(int32_t pid);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -116,12 +130,14 @@ class DesktopSessionLinux : public DesktopSession,
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
   DestroyedCallback on_destroyed_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool curtain_required_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_greeter_allowed_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   std::unique_ptr<WorkerProcessLauncher> launcher_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::string current_session_id_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::optional<uid_t> current_uid_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool is_local_session_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   mojo::AssociatedReceiver<mojom::DesktopSessionRequestHandler>
       desktop_session_request_handler_ GUARDED_BY_CONTEXT(sequence_checker_){

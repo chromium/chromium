@@ -276,7 +276,7 @@ void IpcDesktopEnvironmentFactory::Core::ConnectTerminal(
 
   mojom::DesktopSessionOptionsPtr options = mojom::DesktopSessionOptions::New();
   options->screen_resolution = resolution;
-  options->is_curtained = is_curtained;
+  options->curtain_required = is_curtained;
   options->required_username = required_username_;
   options->client_id = client_id;
 

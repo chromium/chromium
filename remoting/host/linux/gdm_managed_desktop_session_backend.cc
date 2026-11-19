@@ -111,7 +111,7 @@ GdmManagedDesktopSessionBackend::CreateDesktopSession(
       io_task_runner_,
       base::BindOnce(&GdmManagedDesktopSessionBackend::RemoveDesktopSession,
                      weak_ptr_factory_.GetWeakPtr(), display_name),
-      /*is_greeter_allowed=*/true);
+      options.curtain_required, /*is_greeter_allowed=*/true);
 
   if (auto* info =
           remote_display_session_manager_.GetRemoteDisplayInfo(display_name)) {

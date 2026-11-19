@@ -612,7 +612,7 @@ TEST_F(IpcPeerSessionTest,
       session_requested_future.Take();
   ASSERT_TRUE(received_options);
   EXPECT_EQ(received_options->client_id, "client_id_123@domain.com");
-  EXPECT_TRUE(received_options->is_curtained);
+  EXPECT_TRUE(received_options->curtain_required);
   EXPECT_EQ(received_options->screen_resolution.dimensions().width(), 1600);
   EXPECT_EQ(received_options->screen_resolution.dimensions().height(), 900);
 }

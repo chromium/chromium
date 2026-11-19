@@ -137,7 +137,7 @@ std::unique_ptr<DesktopSession> MockDaemonProcess::DoCreateDesktopSession(
 mojom::DesktopSessionOptionsPtr CreateSessionOptions() {
   auto options = mojom::DesktopSessionOptions::New();
   options->screen_resolution = ScreenResolution();
-  options->is_curtained = false;
+  options->curtain_required = false;
   return options;
 }
 

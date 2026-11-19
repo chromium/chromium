@@ -60,7 +60,7 @@ void IpcPeerSession::Start(
   desktop_session_options_ = mojom::DesktopSessionOptions::New();
   SplitSignalingIdResource(client_jid, &desktop_session_options_->client_id,
                            /*resource=*/nullptr);
-  desktop_session_options_->is_curtained =
+  desktop_session_options_->curtain_required =
       desktop_environment_options.enable_curtaining();
 
   DCHECK(!desktop_session_requester_receiver_.is_bound());

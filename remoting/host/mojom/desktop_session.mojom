@@ -263,9 +263,10 @@ struct DesktopSessionOptions {
   // The initial screen resolution.
   ScreenResolution screen_resolution;
 
-  // Whether the desktop session should be curtained. Note that Linux currently
-  // does not support non-curtained sessions, and this option will be ignored.
-  bool is_curtained;
+  // Whether Curtain Mode is required for the desktop session. On Linux, the
+  // daemon rejects local sessions (neither remote nor created by CRD) when
+  // this is set; `gdm-managed` sessions are always remote and curtained.
+  bool curtain_required;
 
   // If non-empty, the login user of the desktop session must match `username`.
   string required_username;
