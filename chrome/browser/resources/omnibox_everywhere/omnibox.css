@@ -384,7 +384,12 @@ cr-composebox-contextual-entrypoint-and-menu,
 }
 
 :host([is-fusebox-enabled][is-dragging-file]) {
+  border-color: transparent;
   --cr-searchbox-compose-button-z-index: 99;
+}
+
+#inputWrapper:has(search-animated-glow[animation-state='dragging'])::before {
+  background: transparent;
 }
 
 :host([is-fusebox-enabled][is-dragging-file])

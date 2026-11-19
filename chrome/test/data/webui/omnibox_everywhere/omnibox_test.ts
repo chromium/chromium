@@ -5454,6 +5454,70 @@ suite('OmniboxEverywhereContextMenuTest', () => {
               mvtStyle.getPropertyValue('--add-shortcut-foreground-color')
                   .trim());
 
+          // Drag-and-drop glow stays light-themed even in dark mode in both
+          // omnibox and composebox. Verify `omnibox` before `openComposebox()`
+          // detaches it from the DOM.
+          const verifyDragGlowLightMode =
+              async (host: typeof omnibox|typeof composebox) => {
+            host.animationState = GlowAnimationState.DRAGGING;
+            await microtasksFinished();
+            const glow = host.shadowRoot.querySelector('search-animated-glow');
+            assertTrue(!!glow);
+            assertEquals('dragging', glow.getAttribute('animation-state'));
+            const glowStyle = window.getComputedStyle(glow);
+            assertEquals(
+                'rgba(255,255,255,1)',
+                glowStyle
+                    .getPropertyValue('--color-search-animated-glow-background')
+                    .replace(/\s+/g, ''));
+            const dragDropPlaceholder =
+                glow.shadowRoot.querySelector<HTMLElement>(
+                    '#dragDropPlaceholder')!;
+            assertEquals(
+                'rgb(86, 89, 94)',
+                window.getComputedStyle(dragDropPlaceholder).color);
+            const glowBackground =
+                glow.shadowRoot.querySelector<HTMLElement>('.background')!;
+            assertEquals(
+                'rgb(255, 255, 255)',
+                window.getComputedStyle(glowBackground).backgroundColor);
+            assertEquals(
+                'rgb(240, 242, 245)',
+                window.getComputedStyle(glowBackground, '::before')
+                    .backgroundColor);
+            host.animationState = GlowAnimationState.NONE;
+            await microtasksFinished();
+            assertEquals(
+                'rgb(60, 60, 60)',
+                window.getComputedStyle(glow)
+                    .getPropertyValue('--cr-composebox-background-color')
+                    .trim());
+          };
+
+          await verifyDragGlowLightMode(omnibox);
+
+          app.setAttribute('energy-effect-enabled_', '');
+          omnibox.setAttribute('is-fusebox-enabled', '');
+          omnibox.isDraggingFile = true;
+          omnibox.animationState = GlowAnimationState.DRAGGING;
+          await microtasksFinished();
+          assertTrue(omnibox.hasAttribute('is-dragging-file'));
+          assertEquals(
+              'rgba(0, 0, 0, 0)', window.getComputedStyle(omnibox).borderColor);
+          assertEquals(
+              'rgba(0, 0, 0, 0)',
+              window.getComputedStyle(omnibox.$.inputWrapper, '::before')
+                  .backgroundColor);
+          omnibox.isDraggingFile = false;
+          omnibox.animationState = GlowAnimationState.NONE;
+          await microtasksFinished();
+          assertEquals(
+              'rgb(68, 71, 70)', window.getComputedStyle(omnibox).borderColor);
+          assertEquals(
+              'rgb(60, 60, 60)',
+              window.getComputedStyle(omnibox.$.inputWrapper, '::before')
+                  .backgroundColor);
+
           testEverywherePage.openComposebox({
             tool: ToolMode.kUnspecified,
             model: ModelMode.kUnspecified,
@@ -5490,6 +5554,8 @@ suite('OmniboxEverywhereContextMenuTest', () => {
               composeboxStyle
                   .getPropertyValue('--cr-composebox-input-placeholder-color')
                   .trim());
+
+          await verifyDragGlowLightMode(composebox);
         } finally {
           darkTokens.forEach(([k]) => rootStyle.removeProperty(k));
         }
