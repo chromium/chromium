@@ -113,6 +113,9 @@ source_set("impl") {
     "//components/user_education/webui",
     "//ui/base",
     "//ui/color",
+    "//ui/events",
+    "//ui/gfx/geometry",
+    "//ui/views",
   ]
 }
 

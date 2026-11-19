@@ -4692,6 +4692,20 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, RequestAccessButton) {
           container->request_access_sequence_number_ - 1));
   EXPECT_FALSE(container->IsRequestAccessButtonShowingConfirmation());
 
+  // Pressing the button right after it was shown, changed or moved, as would
+  // happen if a click was aimed at whatever occupied its spot a moment ago,
+  // does nothing.
+  container->request_access_input_protector_.MaybeUpdateViewProtectedTimeStamp(
+      /*force=*/true);
+  container->ExecuteUserAction(
+      extensions_bar::mojom::ExtensionActionId::NewRequestAccessButton(
+          container->request_access_sequence_number_));
+  EXPECT_FALSE(container->IsRequestAccessButtonShowingConfirmation());
+
+  // Clear the protection so that the following click isn't dropped for having
+  // been made too soon after the button appeared.
+  container->request_access_input_protector_.ResetForTesting();
+
   // Click on request access button in WebUI.
   LeftClickExtensionButton(web_contents,
                            kExtensionsRequestAccessButtonActionId);

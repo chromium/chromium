@@ -19,6 +19,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,6 +53,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -1094,6 +1099,8 @@ void WebUIToolbarExtensionsContainer::UpdateRequestAccessButton(
   if (model && !model->CanShowActionsInToolbar(*browser_)) {
     if (request_access_button_->is_visible) {
       request_access_button_->is_visible = false;
+      request_access_button_->force_visible = false;
+      request_access_input_protector_.VisibilityChanged(/*is_visible=*/false);
       NotifyOfOneAction(kExtensionsRequestAccessButtonActionId);
     }
     return;
@@ -1109,8 +1116,10 @@ void WebUIToolbarExtensionsContainer::UpdateRequestAccessButton(
   ExtensionsToolbarViewModel::RequestAccessButtonParams button_params =
       toolbar_view_model_.GetRequestAccessButtonParams(&web_contents);
 
-  if (request_access_extension_ids_ != button_params.extension_ids ||
-      request_access_origin_ != button_params.origin) {
+  const bool state_changed =
+      request_access_extension_ids_ != button_params.extension_ids ||
+      request_access_origin_ != button_params.origin;
+  if (state_changed) {
     // Invalidate presses of the button made while it showed the old state.
     ++request_access_sequence_number_;
     request_access_button_->id =
@@ -1124,7 +1133,19 @@ void WebUIToolbarExtensionsContainer::UpdateRequestAccessButton(
   const bool visibility_changed =
       (request_access_button_->is_visible != is_visible);
 
+  // Start (or restart) the unintended-interaction cooldown whenever the button
+  // appears or changes what it would grant (which also changes its text and so
+  // its size), like ExtensionsRequestAccessButton::VisibilityChanged() and
+  // OnBoundsChanged().
+  if (visibility_changed) {
+    request_access_input_protector_.VisibilityChanged(is_visible);
+  } else if (is_visible && state_changed) {
+    request_access_input_protector_.MaybeUpdateViewProtectedTimeStamp(
+        /*force=*/true);
+  }
+
   request_access_button_->is_visible = is_visible;
+  request_access_button_->force_visible = is_visible;
   request_access_button_->tooltip = button_params.tooltip_text;
   request_access_button_->text = l10n_util::GetStringFUTF16Int(
       IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,
@@ -1149,6 +1170,20 @@ void WebUIToolbarExtensionsContainer::OnRequestAccessButtonPressed(
   // before another extension requested access, so that access is only granted
   // to the extensions that the user saw.
   if (sequence_number != request_access_sequence_number_) {
+    return;
+  }
+
+  // Ignore presses made right after the button was shown or updated or moved,
+  // as they may have been aimed at whatever occupied this spot a moment ago.
+  // This mirrors ExtensionsRequestAccessButton::OnButtonPressed(). No input
+  // event is available here, so check a synthesized mouse press at the current
+  // time.
+  const ui::MouseEvent press(ui::EventType::kMousePressed, gfx::PointF(),
+                             gfx::PointF(), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  if (request_access_input_protector_.IsPossiblyUnintendedInteraction(
+          press, /*allow_key_events=*/false)) {
     return;
   }
 

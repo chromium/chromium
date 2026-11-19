@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/input_event_activation_protector.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget_observer.h"
 #include "url/origin.h"
@@ -353,6 +354,12 @@ class WebUIToolbarExtensionsContainer
 
   // Flag to not show confirmation message in tests.
   bool remove_confirmation_for_testing_ = false;
+
+  // Rejects possibly-unintended presses of the request access button: presses
+  // that arrive within the double-click interval of the button appearing or
+  // changing. Mirrors the protection ExtensionsRequestAccessButton has in the
+  // Views toolbar.
+  views::InputEventActivationProtector request_access_input_protector_;
 
   base::WeakPtrFactory<WebUIToolbarExtensionsContainer> weak_ptr_factory_{this};
 };
