@@ -429,6 +429,12 @@ public final class ChromePreferenceKeys {
     public static final String FIRST_RUN_SKIP_WELCOME_PAGE = "skip_welcome_page";
     public static final String FIRST_RUN_SKIPPED_BY_POLICY = "Chrome.FirstRun.SkippedByPolicy";
 
+    /**
+     * The First Run Experience page (as a MobileFreProgress value) the user last reached, used to
+     * resume the flow when the First Run Activity is relaunched or recreated (e.g. theme changes).
+     */
+    public static final String FIRST_RUN_RESUME_PAGE = "Chrome.FirstRun.ResumePage";
+
     /** See CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis(). */
     public static final String FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS =
             "Chrome.Flags.LastCachedMinimalBrowserFlagsTimeMillis";
@@ -1243,6 +1249,7 @@ public final class ChromePreferenceKeys {
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 EXTENSIONS_CHROME_PAGE_URL_OVERRIDE_ENABLED.pattern(),
                 FEED_PREVIOUS_WIDESCREEN_STATE,
+                FIRST_RUN_RESUME_PAGE,
                 FIRST_RUN_SKIPPED_BY_POLICY,
                 FIRST_CTA_START_TIMESTAMP,
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,

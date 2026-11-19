@@ -273,9 +273,9 @@ public class FirstRunActivity extends FirstRunActivityBase
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        // TODO(crbug.com/534388538): Resume the FRE where the user left off, including the
-        // carousel card. Returning from the launcher creates a new activity, so this bundle is
-        // dropped and progress has to be persisted outside the activity.
+        // TODO(crbug.com/534388538): Resume the Safety promo carousel on the card the user left
+        // off. Returning from the launcher creates a new activity, so this bundle is dropped and
+        // the selected card has to be persisted outside the activity.
         if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
             // Called by Android right before the First Run Activity is destroyed (toggle dark mode,
             // etc.). Before activity recreation, store which page the user was looking at.
@@ -682,6 +682,7 @@ public class FirstRunActivity extends FirstRunActivityBase
 
         if (!mPostNativeAndPolicyPagesCreated && areNativeAndPoliciesInitialized()) {
             createPostNativeAndPoliciesPageSequence();
+            if (maybeResumeFromPersistedPage()) return;
         }
 
         if (areNativeAndPoliciesInitialized()) {
@@ -706,7 +707,16 @@ public class FirstRunActivity extends FirstRunActivityBase
 
         mFirstRunFlowSequencer.updateFirstRunProperties(assumeNonNull(mFreProperties));
 
-        int position = mPager.getCurrentItem() + 1;
+        return jumpToFirstPageToShowFrom(mPager.getCurrentItem() + 1, smoothScroll);
+    }
+
+    /**
+     * Jumps to the first page at or after {@code position} that should be shown, or completes the
+     * FRE if there is none.
+     *
+     * @return Whether a page was shown.
+     */
+    private boolean jumpToFirstPageToShowFrom(int position, boolean smoothScroll) {
         while (position < mPagerAdapter.getItemCount() && !mPages.get(position).shouldShow()) {
             ++position;
         }
@@ -938,6 +948,10 @@ public class FirstRunActivity extends FirstRunActivityBase
             return false;
         }
 
+        // Persisted regardless of whether resuming is enabled, so that it is always in sync with
+        // the skip welcome page state above.
+        FirstRunStatus.setResumePage(mFreProgressStates.get(position));
+
         int oldPosition = mPager.getCurrentItem();
 
         // Set A11y focus if possible. See https://crbug.com/40699257 for more context.
@@ -1022,6 +1036,27 @@ public class FirstRunActivity extends FirstRunActivityBase
     private void skipPagesIfNecessary() {
         while (!mPages.get(mPager.getCurrentItem()).shouldShow()
                 && advanceToNextPageInternal(false)) {}
+    }
+
+    /**
+     * Jumps to the page the user last reached when the activity is created, e.g. after Chrome was
+     * reopened from the launcher, the process was killed, or the theme changed.
+     *
+     * @return Whether resuming was attempted, in which case no pages need to be skipped.
+     */
+    private boolean maybeResumeFromPersistedPage() {
+        // Resuming is only enabled with the Safety promo pages, which come after History Sync and
+        // the Default Browser Promo.
+        if (!FirstRunUtils.shouldShowSafetyFrePromo()) return false;
+
+        int targetIndex = mFreProgressStates.indexOf(FirstRunStatus.getResumePage());
+        if (targetIndex <= mPager.getCurrentItem()) return false;
+
+        // The persisted page might not be shown anymore (e.g. the Default Browser Promo after the
+        // role manager dialog was shown), so move on to the first page that should be shown, or
+        // complete the FRE if there is none.
+        jumpToFirstPageToShowFrom(targetIndex, /* smoothScroll= */ false);
+        return true;
     }
 
     @Override

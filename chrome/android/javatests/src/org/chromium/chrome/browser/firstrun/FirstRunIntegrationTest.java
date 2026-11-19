@@ -527,6 +527,103 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
+    public void testResumePage_UpdatedWhenNavigating_RestoredWhenRecreated() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+        initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos());
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+        FirstRunNavigationHelper navigationHelper =
+                new FirstRunNavigationHelper(firstRunActivity)
+                        .ensurePagesCreationSucceeded()
+                        .continueAndSignIn(TestAccounts.AADC_ADULT_ACCOUNT)
+                        .ensureDefaultSearchEnginePromoIsCurrentPage();
+        Assert.assertEquals(
+                MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN, FirstRunStatus.getResumePage());
+
+        navigationHelper.selectDefaultSearchEngine().ensureHistorySyncIsCurrentPage();
+        Assert.assertEquals(
+                MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN, FirstRunStatus.getResumePage());
+
+        navigationHelper.goBackToPreviousPage().ensureDefaultSearchEnginePromoIsCurrentPage();
+        Assert.assertEquals(
+                MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN, FirstRunStatus.getResumePage());
+
+        navigationHelper
+                .selectDefaultSearchEngine()
+                .dismissHistorySync()
+                .ensureSafetyPromoIsCurrentPage();
+        Assert.assertEquals(MobileFreProgress.SAFETY_PROMO_SHOWN, FirstRunStatus.getResumePage());
+
+        FirstRunActivity recreatedActivity =
+                ApplicationTestUtils.recreateActivity(firstRunActivity);
+        new FirstRunNavigationHelper(recreatedActivity)
+                .ensurePagesCreationSucceeded()
+                .ensureSafetyPromoIsCurrentPage();
+    }
+
+    @Test
+    @MediumTest
+    // Sign-in is not supported on automotive devices.
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
+    public void testResumeFromPersistedPage() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+        initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos());
+        // Simulate a relaunch after the user left the FRE on the Safety promo.
+        FirstRunStatus.setSkipWelcomePage(true);
+        FirstRunStatus.setResumePage(MobileFreProgress.SAFETY_PROMO_SHOWN);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+        new FirstRunNavigationHelper(firstRunActivity)
+                .ensurePagesCreationSucceeded()
+                .ensureSafetyPromoIsCurrentPage();
+
+        clickButton(firstRunActivity, R.id.fre_continue_button, "Failed to complete the FRE");
+        waitForActivity(BlankUiTestActivity.class);
+        Assert.assertEquals(FirstRunStatus.NO_RESUME_PAGE, FirstRunStatus.getResumePage());
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
+    public void testResumeFromPersistedPageNoLongerShown() throws Exception {
+        // Show the search engine page but not History Sync, so that the FRE would land on the
+        // search engine page without resuming.
+        initializePreferences(new FirstRunPagesTestCase().withSearchPromo());
+        FirstRunStatus.setSkipWelcomePage(true);
+        FirstRunStatus.setResumePage(MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+        new FirstRunNavigationHelper(firstRunActivity)
+                .ensurePagesCreationSucceeded()
+                .ensureSafetyPromoIsCurrentPage();
+        Assert.assertEquals(MobileFreProgress.SAFETY_PROMO_SHOWN, FirstRunStatus.getResumePage());
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_FRE_PROMO)
+    public void testNoResumeIfSafetyFrePromoDisabled() throws Exception {
+        initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos());
+        FirstRunStatus.setSkipWelcomePage(true);
+        FirstRunStatus.setResumePage(MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+        // Without resuming, the first page to show after the welcome page is shown.
+        new FirstRunNavigationHelper(firstRunActivity)
+                .ensurePagesCreationSucceeded()
+                .ensureDefaultSearchEnginePromoIsCurrentPage();
+        Assert.assertEquals(
+                "The current page should still be persisted",
+                MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN,
+                FirstRunStatus.getResumePage());
+    }
+
+    @Test
+    @MediumTest
+    // Sign-in is not supported on automotive devices.
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         initializePreferences(FirstRunPagesTestCase.createWithShowAllPromos().withCctTosDisabled());
@@ -1665,6 +1762,12 @@ public class FirstRunIntegrationTest {
             return waitForCurrentFragmentToMatch(
                     "History sync shouldn't be the current page",
                     Matchers.not(Matchers.instanceOf(HistorySyncFirstRunFragment.class)));
+        }
+
+        protected FirstRunNavigationHelper ensureSafetyPromoIsCurrentPage() {
+            return waitForCurrentFragmentToMatch(
+                    "Safety promo should be the current page",
+                    Matchers.instanceOf(SafetyPromoFirstRunFragment.class));
         }
 
         protected FirstRunNavigationHelper continueAndSignIn(AccountInfo accountInfo)

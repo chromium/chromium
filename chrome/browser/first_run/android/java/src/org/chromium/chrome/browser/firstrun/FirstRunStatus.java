@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 /** Gets and sets preferences related to the status of the first run experience. */
 @NullMarked
 public class FirstRunStatus {
+    static final int NO_RESUME_PAGE = -1;
+
     // Whether the first run flow is triggered in the current browser session.
     private static boolean sFirstRunTriggered;
 
@@ -112,5 +114,24 @@ public class FirstRunStatus {
     public static boolean isFirstRunSkippedByPolicy() {
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(ChromePreferenceKeys.FIRST_RUN_SKIPPED_BY_POLICY, false);
+    }
+
+    /**
+     * Persists the FRE page the user last reached, to resume from it when the FRE is relaunched or
+     * recreated (e.g. theme changes).
+     */
+    static void setResumePage(@MobileFreProgress int page) {
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.FIRST_RUN_RESUME_PAGE, page);
+    }
+
+    /** Returns the FRE page the user last reached, or {@link #NO_RESUME_PAGE} if none. */
+    static int getResumePage() {
+        return ChromeSharedPreferences.getInstance()
+                .readInt(ChromePreferenceKeys.FIRST_RUN_RESUME_PAGE, NO_RESUME_PAGE);
+    }
+
+    static void clearResumePage() {
+        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.FIRST_RUN_RESUME_PAGE);
     }
 }
