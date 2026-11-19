@@ -282,9 +282,11 @@
   <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_LINKED_SERVICES_DESC" desc="This is the subtitle of a setting that links to 'Linked Google services' in the Google Account's Data &#38; privacy settings. This subtitle appears in Chrome's Advanced Sync settings and is after the 'Linked Google services' string.">
     Link Chromium and other Google services for personalization and other purposes
   </message>
+  <if expr="is_chromeos">
     <message name="IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION" desc="Subtitle of settings page that indicates user must re-enter their sync password.">
-    To use and save Chromium data in your Google Account, enter your passphrase
-  </message>
+      To use and save Chromium data in your Google Account, enter your passphrase
+    </message>
+  </if>
   <message name="IDS_SETTINGS_ERROR_TRUSTED_VAULT_USER_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header of the settings page.">
     To use and save Chromium data in your Google Account, verify it's you
   </message>

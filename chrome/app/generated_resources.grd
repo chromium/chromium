@@ -1648,11 +1648,13 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_DEV_TOOLS_DEVICES" desc="The text label of the Inspect Devices menu item">
           &amp;Inspect devices
         </message>
-        <message name="IDS_TAKE_SCREENSHOT" desc="The text label of the Take Screenshot menu item">
-          T&amp;ake screenshot
-        </message>
         <message name="IDS_CHROMELABS" desc="The text label of the Chrome Labs menu item">
           Chrome &amp;Labs...
+        </message>
+      </if>
+      <if expr="is_chromeos">
+        <message name="IDS_TAKE_SCREENSHOT" desc="The text label of the Take Screenshot menu item">
+          T&amp;ake screenshot
         </message>
       </if>
       <!-- macOS Capitalization Policy (go/chrome-capitalization):
@@ -1694,9 +1696,6 @@ are declared in tools/grit/grit_args.gni.
         </message>
         <message name="IDS_DEV_TOOLS_ELEMENTS" desc="The text label of the Inspect Elements menu item">
           &amp;Inspect Elements
-        </message>
-        <message name="IDS_TAKE_SCREENSHOT" desc="The text label of the Take Screenshot menu item">
-          T&amp;ake Screenshot
         </message>
         <message name="IDS_REOPEN_WINDOW_MAC" desc="In Title Case: The text label of the Reopen Closed Window menu item">
           R&amp;eopen Closed Window
@@ -1811,11 +1810,13 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_HELP_PAGE" desc="The text label of the Help Center menu item">
           H&amp;elp center
         </message>
-        <message name="IDS_GET_HELP" desc="The text label of the Get Help menu item">
-          Get H&amp;elp
-        </message>
         <message name="IDS_EXIT" desc="The text label of the Exit menu item">
           E&amp;xit
+        </message>
+      </if>
+      <if expr="is_chromeos">
+        <message name="IDS_GET_HELP" desc="The text label of the Get Help menu item">
+          Get H&amp;elp
         </message>
       </if>
       <if expr="use_titlecase">
@@ -1853,9 +1854,6 @@ are declared in tools/grit/grit_args.gni.
         </message>
         <message name="IDS_HELP_PAGE" desc="The text label of the Help Center menu item">
           H&amp;elp center
-        </message>
-        <message name="IDS_GET_HELP" desc="The text label of the Get Help menu item">
-          Get H&amp;elp
         </message>
         <message name="IDS_EXIT" desc="In Title Case: The text label of the Exit menu item">
           E&amp;xit
@@ -13182,10 +13180,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </if>
 
       <!-- Clipboard History Menu feature. -->
-      <message name="IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD"
-          desc="Open the context menu submenu that shows clipboard history items the user can paste.">
+      <if expr="is_chromeos">
+        <message name="IDS_CONTEXT_MENU_PASTE_FROM_CLIPBOARD"
+            desc="Open the context menu submenu that shows clipboard history items the user can paste.">
           Paste from clipboard
-      </message>
+        </message>
+      </if>
 
       <!-- Sharing features. -->
       <message name="IDS_SHARING_REMOTE_COPY_NOTIFICATION_TITLE_TEXT_CONTENT_UNKNOWN_DEVICE" desc="Title text displayed in a Remote Copy (for text content) notification when the source device name is unknown.">
@@ -13412,10 +13412,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             desc="Accessibility label for a link labeled 'Learn more' that links to a help article about browsing as a guest.">
           Learn more about browsing as a guest
         </message>
-        <message name="IDS_NEW_TAB_ENTERPRISE_GUEST_SESSION_LEARN_MORE_ACCESSIBILITY_TEXT"
-            desc="Accessibility label for a link labeled 'Learn more' that links to a help article about enterprise enrolled devices.">
-          Learn more about enterprise enrolled devices
-        </message>
+        <if expr="is_chromeos">
+          <message name="IDS_NEW_TAB_ENTERPRISE_GUEST_SESSION_LEARN_MORE_ACCESSIBILITY_TEXT"
+              desc="Accessibility label for a link labeled 'Learn more' that links to a help article about enterprise enrolled devices.">
+            Learn more about enterprise enrolled devices
+          </message>
+        </if>
         <message name="IDS_NEW_TAB_MOST_VISITED"
                  desc="The name for the 'Most Visited' navigation control on the New Tab Page.">
           Most visited
@@ -15335,9 +15337,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <!-- App List. -->
 
       <!-- Translated apps strings -->
-      <message name="IDS_CHROME_SHORTCUT_DESCRIPTION" desc="Description for the Chrome app shortcut in the app launcher.">
-        A fast, simple, and secure web browser, built for the modern web.
-      </message>
+      <if expr="is_chromeos">
+        <message name="IDS_CHROME_SHORTCUT_DESCRIPTION" desc="Description for the Chrome app shortcut in the app launcher.">
+          A fast, simple, and secure web browser, built for the modern web.
+        </message>
+      </if>
       <message name="IDS_WEBSTORE_NAME_STORE" desc="Name for the WebStore app in the app launcher.">
         Web Store
       </message>
