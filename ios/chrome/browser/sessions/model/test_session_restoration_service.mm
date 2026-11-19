@@ -109,12 +109,6 @@ void TestSessionRestorationService::InvokeClosureWhenBackgroundProcessingDone(
   std::move(closure).Run();
 }
 
-void TestSessionRestorationService::PurgeUnassociatedData(
-    base::OnceClosure closure) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                           std::move(closure));
-}
-
 void TestSessionRestorationService::ParseDataForBrowserAsync(
     Browser* browser,
     WebStateStorageIterationCallback iter_callback,

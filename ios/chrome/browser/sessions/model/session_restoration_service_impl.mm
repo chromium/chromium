@@ -652,13 +652,6 @@ void SessionRestorationServiceImpl::InvokeClosureWhenBackgroundProcessingDone(
   task_runner_->PostTask(FROM_HERE, std::move(closure));
 }
 
-void SessionRestorationServiceImpl::PurgeUnassociatedData(
-    base::OnceClosure closure) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                           std::move(closure));
-}
-
 void SessionRestorationServiceImpl::ParseDataForBrowserAsync(
     Browser* browser,
     WebStateStorageIterationCallback iter_callback,

@@ -117,10 +117,6 @@ class SessionRestorationService : public KeyedService {
   virtual void InvokeClosureWhenBackgroundProcessingDone(
       base::OnceClosure closure) = 0;
 
-  // Removes any persisted data that is no longer needed and invokes
-  // `closure` on the calling sequence when done.
-  virtual void PurgeUnassociatedData(base::OnceClosure closure) = 0;
-
   // Asynchronously loads data for all WebStates in `browser`, invoking
   // `parse` for each of them in order to extract the interesting part.
   // The result is collected in a map which is passed to `done` when it

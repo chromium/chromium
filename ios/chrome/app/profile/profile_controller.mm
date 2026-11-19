@@ -121,9 +121,6 @@ using SessionIds = ProfileAttributesIOS::SessionIds;
 // The delay for cleaning external files.
 constexpr base::TimeDelta kExternalFilesCleanupDelay = base::Minutes(1);
 
-// Name of the block deleting the leftover session state files.
-NSString* const kStartupPurgeUnassociatedData = @"StartupPurgeUnassociatedData";
-
 // Name of the block creating the MailtoHandlerService instance.
 NSString* const kStartupCreateMailtoHandlerService =
     @"StartupCreateMailtoHandlerService";
@@ -724,7 +721,6 @@ void RemoveSessionsFromSessionsToDiscard(const SessionIds& session_ids,
   [self scheduleRemoveExternalFiles];
   [self scheduleCreateSearchEngineDataUpdater];
   [self scheduleClearingSessionCookies];
-  [self scheduleCleanupSessionStateCache];
   [self scheduleCreateMailtoHandlerService];
   [self scheduleCleanupReadingListOfflineData];
   [self scheduleResyncSpotlightIndex];
@@ -794,16 +790,6 @@ void RemoveSessionsFromSessionsToDiscard(const SessionIds& session_ids,
   }
 }
 
-// Schedules deleting leftover session state cache files.
-- (void)scheduleCleanupSessionStateCache {
-  DCHECK(_state.deferredRunner);
-  __weak ProfileController* weakSelf = self;
-  [_state.deferredRunner enqueueBlockNamed:kStartupPurgeUnassociatedData
-                                     block:^{
-                                       [weakSelf cleanupSessionStateCache];
-                                     }];
-}
-
 // Schedules creating the MailtoHandlerService instance.
 - (void)scheduleCreateMailtoHandlerService {
   DCHECK(_state.deferredRunner);
@@ -870,13 +856,6 @@ void RemoveSessionsFromSessionsToDiscard(const SessionIds& session_ids,
   DCHECK(_state.profile);
   _searchEngineDataUpdater = std::make_unique<ExtensionSearchEngineDataUpdater>(
       ios::TemplateURLServiceFactory::GetForProfile(_state.profile));
-}
-
-// Ensures obsolete session state cache files are deleted.
-- (void)cleanupSessionStateCache {
-  DCHECK(_state.profile);
-  SessionRestorationServiceFactory::GetForProfile(_state.profile)
-      ->PurgeUnassociatedData(base::DoNothing());
 }
 
 // Ensures the MailtoHandlerService is instantiated.

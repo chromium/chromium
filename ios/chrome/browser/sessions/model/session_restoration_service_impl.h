@@ -59,7 +59,6 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
                                       base::OnceClosure closure) final;
   void InvokeClosureWhenBackgroundProcessingDone(
       base::OnceClosure closure) final;
-  void PurgeUnassociatedData(base::OnceClosure closure) final;
   void ParseDataForBrowserAsync(
       Browser* browser,
       WebStateStorageIterationCallback iter_callback,

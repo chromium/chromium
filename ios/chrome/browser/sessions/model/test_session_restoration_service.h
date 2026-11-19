@@ -48,7 +48,6 @@ class TestSessionRestorationService : public SessionRestorationService {
                                       base::OnceClosure closure) override;
   void InvokeClosureWhenBackgroundProcessingDone(
       base::OnceClosure closure) override;
-  void PurgeUnassociatedData(base::OnceClosure closure) final;
   void ParseDataForBrowserAsync(
       Browser* browser,
       WebStateStorageIterationCallback iter_callback,

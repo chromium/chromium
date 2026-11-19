@@ -1324,30 +1324,6 @@ TEST_F(SessionRestorationServiceImplTest, DeleteDataForDiscardedSessions) {
   EXPECT_EQ(DeletedFiles(), browser_storage);
 }
 
-// Tests that PurgeUnassociatedData() can be called at any point as the
-// SessionRestorationServiceImpl version is a no-op.
-TEST_F(SessionRestorationServiceImplTest, PurgeUnassociatedData) {
-  // Test that the method can be called before any Browser has been
-  // registered.
-  {
-    base::RunLoop run_loop;
-    service()->PurgeUnassociatedData(run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  // Test that the method can be called after a Browser has been
-  // registered.
-  TestBrowser browser = TestBrowser(profile());
-  service()->SetSessionID(&browser, kIdentifier0);
-  {
-    base::RunLoop run_loop;
-    service()->PurgeUnassociatedData(run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  service()->Disconnect(&browser);
-}
-
 // Tests that LoadWebStateStorage(...) loads the data from disk.
 TEST_F(SessionRestorationServiceImplTest, LoadWebStateData) {
   // Insert a few WebState in a Browser, wait for the changes to be saved,
