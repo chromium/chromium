@@ -42,11 +42,9 @@ suite('PasswordChangeDetailsTest', function() {
     assertTrue(toggle.pref!.value);
     const fallbackDiv = element.shadowRoot.querySelector('.cr-row.first');
     assertFalse(!!fallbackDiv);
-    const header = element.shadowRoot.querySelector('#descriptionHeader');
-    assertTrue(!!header);
     assertEquals(
         loadTimeData.getString('columnHeadingWhenOn'),
-        header.textContent.trim());
+        element.$.descriptionHeader.textContent.trim());
   });
 
   test('pref-toggle-button reflects disabled pref value', async function() {
@@ -77,10 +75,8 @@ suite('PasswordChangeDetailsTest', function() {
     assertFalse(!!toggle);
     const fallbackDiv = element.shadowRoot.querySelector('.cr-row.first');
     assertTrue(!!fallbackDiv);
-    const header = element.shadowRoot.querySelector('#descriptionHeader');
-    assertTrue(!!header);
     assertEquals(
         loadTimeData.getString('columnHeadingWhenUsed'),
-        header.textContent.trim());
+        element.$.descriptionHeader.textContent.trim());
   });
 });

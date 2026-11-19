@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './checkup_list_item.js';
 import './prefs/pref_toggle_button.js';
 
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -18,7 +19,8 @@ import {Page, RouteObserverMixin, Router} from './router.js';
 
 export interface PasswordChangeDetailsElement {
   $: {
-    back: HTMLElement,
+    back: CrIconButtonElement,
+    descriptionHeader: HTMLElement,
   };
 }
 

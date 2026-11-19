@@ -18,7 +18,9 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createBlockedSiteEntry, createCredentialGroup, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
 // clang-format off
-import type { PrefToggleButtonElement } from 'chrome://password-manager/password_manager.js';
+// <if expr="is_win or is_macosx or is_chromeos">
+import type {PrefToggleButtonElement} from 'chrome://password-manager/password_manager.js';
+// </if>
 // <if expr="is_win or is_macosx">
 import { PasskeysBrowserProxyImpl } from 'chrome://password-manager/password_manager.js';
 
@@ -917,13 +919,11 @@ suite('SettingsSectionTest', function() {
     disconnectButton.click();
 
     await eventToPromise('cr-dialog-open', section);
-    const dialog = $$(section, '#disconnectCloudAuthenticatorDialog');
+    const dialog = section.shadowRoot.querySelector(
+        'disconnect-cloud-authenticator-dialog');
     assertTrue(!!dialog);
-
-    const confirmButton = $$(dialog, '#confirmButton')!;
-    assertTrue(isVisible(confirmButton));
-
-    confirmButton.click();
+    assertTrue(isVisible(dialog.$.confirmButton));
+    dialog.$.confirmButton.click();
     await passwordManager.whenCalled('disconnectCloudAuthenticator');
     await microtasksFinished();
 
@@ -946,10 +946,7 @@ suite('SettingsSectionTest', function() {
     document.body.appendChild(settings);
     await microtasksFinished();
 
-    const passkeyUpgradeToggle =
-        settings.shadowRoot.querySelector<PrefToggleButtonElement>(
-            '#passkeyUpgradeToggle');
-    assertTrue(!!passkeyUpgradeToggle);
+    const passkeyUpgradeToggle = settings.$.passkeyUpgradeToggle;
 
     assertTrue(
         prefService
@@ -972,10 +969,7 @@ suite('SettingsSectionTest', function() {
         document.body.appendChild(settings);
         await microtasksFinished();
 
-        const passkeyUpgradeToggle =
-            settings.shadowRoot.querySelector<PrefToggleButtonElement>(
-                '#passkeyUpgradeToggle');
-        assertTrue(!!passkeyUpgradeToggle);
+        const passkeyUpgradeToggle = settings.$.passkeyUpgradeToggle;
 
         assertTrue(settings.$.passwordToggle.checked);
         assertTrue(isVisible(passkeyUpgradeToggle));

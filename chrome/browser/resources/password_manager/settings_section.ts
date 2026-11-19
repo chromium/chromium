@@ -47,6 +47,7 @@ export interface SettingsSectionElement {
   $: {
     autosigninToggle: PrefToggleButtonElement,
     blockedSitesList: HTMLElement,
+    passkeyUpgradeToggle: PrefToggleButtonElement,
     passwordToggle: PrefToggleButtonElement,
     toast: CrToastElement,
     trustedVaultBanner: CrLinkRowElement,

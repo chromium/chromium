@@ -187,13 +187,13 @@ ${this.shouldShowActorLoginPermissions_() ? html`
   </div>
 </div>
 ${this.showDisconnectCloudAuthenticatorDialog_ ? html`
-  <disconnect-cloud-authenticator-dialog id="disconnectCloudAuthenticatorDialog"
+  <disconnect-cloud-authenticator-dialog
       @close="${this.onDisconnectCloudAuthenticatorDialogClose_}"
       @disconnect-cloud-authenticator="${this.onDisconnectCloudAuthenticator_}">
   </disconnect-cloud-authenticator-dialog>
 ` : ''}
 ${this.removeActorLoginPermissionSite_ ? html`
-  <remove-actor-login-permission-dialog id="removeActorLoginPermissionDialog"
+  <remove-actor-login-permission-dialog
       origin="${
           this.removeActorLoginPermissionSite_.domainInfo.humanReadableName}"
       @close="${this.onRemoveActorLoginPermissionDialogClose_}"
