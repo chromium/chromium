@@ -444,6 +444,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTcpPortReuseMetricsWin);
 // handler to be notified of completed reads and writes, instead of an event.
 NET_EXPORT BASE_DECLARE_FEATURE(kTcpSocketIoCompletionPortWin);
 
+// Runs all SSPI calls one at a time on one shared thread, off the network
+// thread (crbug.com/584383272). When disabled, each handler has its own
+// sequence.
+NET_EXPORT BASE_DECLARE_FEATURE(kSerializeSspiCalls);
+
 // Whether to defer the initial connection type computation from the
 // NetworkChangeNotifierWin constructor to an async call in
 // WatchForAddressChange(), avoiding a synchronous cross-process call that can

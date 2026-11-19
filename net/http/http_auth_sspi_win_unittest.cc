@@ -16,9 +16,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
@@ -110,6 +113,10 @@ class BlockingSSPILibrary : public MockSSPILibrary {
   void WaitUntilEntered() {
     base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
     entered_.Wait();
+  }
+  bool EntersWithin(base::TimeDelta timeout) {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+    return entered_.TimedWait(timeout);
   }
   void SetOnEntered(base::OnceClosure on_entered) {
     on_entered_ = std::move(on_entered);
@@ -549,6 +556,53 @@ TEST_F(HttpAuthSSPITest, GenerateAuthToken_DoesNotBlockCallingSequence) {
   mock_library->Release();
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_EQ("Negotiate ", auth_token.substr(0, 10));
+}
+
+// A handshake parked inside SSPI holds up other handlers' SSPI calls, NTLM
+// included, unless kSerializeSspiCalls is disabled (crbug.com/584383272).
+TEST_F(HttpAuthSSPITest, GenerateAuthToken_SspiCallsRunOneAtATime) {
+  for (bool serialize : {true, false}) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(features::kSerializeSspiCalls, serialize);
+
+    auto parked_library =
+        base::MakeRefCounted<BlockingSSPILibrary>(NEGOSSP_NAME);
+    HttpAuthSSPI parked(parked_library, HttpAuth::AUTH_SCHEME_NEGOTIATE);
+    HttpAuthChallengeTokenizer negotiate("Negotiate");
+    ASSERT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
+              parked.ParseChallenge(&negotiate));
+    std::string parked_token;
+    TestCompletionCallback parked_callback;
+    ASSERT_THAT(parked.GenerateAuthToken(nullptr, "HTTP/intranet.google.com",
+                                         std::string(), &parked_token,
+                                         NetLogWithSource(),
+                                         parked_callback.callback()),
+                IsError(ERR_IO_PENDING));
+    parked_library->WaitUntilEntered();
+
+    auto other_library = base::MakeRefCounted<BlockingSSPILibrary>(L"NTLM");
+    HttpAuthSSPI other(other_library, HttpAuth::AUTH_SCHEME_NTLM);
+    HttpAuthChallengeTokenizer ntlm("NTLM");
+    ASSERT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
+              other.ParseChallenge(&ntlm));
+    std::string other_token;
+    TestCompletionCallback other_callback;
+    ASSERT_THAT(
+        other.GenerateAuthToken(nullptr, "HTTP/intranet.google.com",
+                                std::string(), &other_token, NetLogWithSource(),
+                                other_callback.callback()),
+        IsError(ERR_IO_PENDING));
+    if (serialize) {
+      EXPECT_FALSE(other_library->EntersWithin(TestTimeouts::tiny_timeout()));
+    } else {
+      other_library->WaitUntilEntered();
+    }
+
+    parked_library->Release();
+    EXPECT_THAT(parked_callback.WaitForResult(), IsOk());
+    other_library->Release();
+    EXPECT_THAT(other_callback.WaitForResult(), IsOk());
+  }
 }
 
 TEST_F(HttpAuthSSPITest, NtlmHandlerGenerateAuthTokenIsAsync) {

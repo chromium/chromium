@@ -11,6 +11,7 @@
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -18,11 +19,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_multi_round_parse.h"
@@ -266,17 +269,25 @@ Error MapFreeContextBufferStatusToError(SECURITY_STATUS status) {
   }
 }
 
-// Each HttpAuthSSPI gets its own sequence so a handshake stalled inside
-// InitializeSecurityContext() does not delay unrelated handshakes.
-//
 // CONTINUE_ON_SHUTDOWN because shutdown must not wait on an unreachable KDC.
 // If shutdown lands mid-handshake, the SspiContext teardown posted by
 // base::SequenceBound may never run and the SSPI handles are leaked; that is
 // acceptable at process exit.
-scoped_refptr<base::SequencedTaskRunner> CreateSspiTaskRunner() {
-  return base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+constexpr base::TaskTraits kSspiTaskTraits = {
+    base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+    base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
+
+// One sequence for all handlers, Negotiate and NTLM alike, so SSPI calls run
+// one at a time, as they did on the network thread. Overlapping calls can fail
+// with SEC_E_INVALID_TOKEN (crbug.com/584383272).
+base::LazyThreadPoolSequencedTaskRunner g_sspi_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(kSspiTaskTraits);
+
+scoped_refptr<base::SequencedTaskRunner> GetSspiTaskRunner() {
+  if (base::FeatureList::IsEnabled(features::kSerializeSspiCalls)) {
+    return g_sspi_task_runner.Get();
+  }
+  return base::ThreadPool::CreateSequencedTaskRunner(kSspiTaskTraits);
 }
 
 }  // anonymous namespace
@@ -388,7 +399,7 @@ SECURITY_STATUS SSPILibraryDefault::FreeContextBuffer(PVOID pvContextBuffer) {
   return ::FreeContextBuffer(pvContextBuffer);
 }
 
-// Runs on a per-handler sequence from CreateSspiTaskRunner():
+// Runs on the task runner from GetSspiTaskRunner():
 // InitializeSecurityContext() can block for many seconds waiting on a domain
 // controller before Negotiate falls back to NTLM, which would otherwise stall
 // every socket in the network service.
@@ -583,8 +594,8 @@ int HttpAuthSSPI::GenerateAuthToken(const AuthCredentials* credentials,
   }
 
   if (context_.is_null()) {
-    context_ = base::SequenceBound<SspiContext>(CreateSspiTaskRunner(),
-                                                library_, scheme_);
+    context_ = base::SequenceBound<SspiContext>(GetSspiTaskRunner(), library_,
+                                                scheme_);
   }
 
   context_.AsyncCall(&SspiContext::GenerateToken)
