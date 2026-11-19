@@ -11,7 +11,9 @@ BCP-47-T IDs in `//third_party/rust/icu4x_data/src/data/`, avoiding shipping
 `icu_experimental::transliterate::RuleCollectionProvider` or Unicode
 property-name parsing tables in Chromium binaries.
 
-Multi-rule custom transliterators:
+While the legacy `!BUILDFLAG(BUILD_RUST_TRANSLIT)` ICU4C fallback remains in
+`//base/i18n/transliterator.cc`, keep these rules synchronized with
+`CustomRulesForBcp47Id`:
 
 - `de_normalize_for_address.txt` (`und-t-und-x0-afillde`):
   `DE_NormalizForAddress` in

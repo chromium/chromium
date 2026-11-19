@@ -25,8 +25,15 @@ class BASE_I18N_EXPORT Transliterator {
   virtual std::u16string Transliterate(std::u16string_view text) const = 0;
 };
 
+// Creates a transliterator for `id` (a supported ICU transform ID, `;`-chained
+// sequence of IDs, or one of Chromium's custom `und-t-und-x0-*` BCP-47-T IDs:
+// `und-t-und-x0-{afill,afillde,dropacc,xconf,rmhyph,diacstr}`). Hits `DCHECK`
+// and returns `nullptr` for unsupported IDs.
 BASE_I18N_EXPORT std::unique_ptr<Transliterator> CreateTransliterator(
     std::string_view id);
+
+// Deprecated: callers are migrating to `CreateTransliterator` with pre-baked
+// `und-t-und-x0-*` BCP-47-T IDs so this function can be removed.
 BASE_I18N_EXPORT std::unique_ptr<Transliterator> CreateTransliteratorFromRules(
     std::string_view id,
     std::string_view rules);

@@ -76,9 +76,11 @@ include = [
   "und-kana-t-und-hira",
 ]
 
-# Pre-compiled static UTS #35 rule sets for Chromium's custom transliterators.
-# Short single-line rules are specified inline (`rules`), while multi-rule sets
-# live in formatted `.txt` files under
+# Pre-compiled static UTS #35 rule sets for `base::i18n::CreateTransliterator`
+# callers across Chromium (duplicated in `CustomRulesForBcp47Id` in
+# `//base/i18n/transliterator.cc` while the legacy `!BUILDFLAG(BUILD_RUST_TRANSLIT)`
+# ICU4C fallback remains). Short single-line rules are specified inline
+# (`rules`), while multi-rule sets live in formatted `.txt` files under
 # `//third_party/rust/icu4x_data/transliterators/` (`rules_file`).
 
 # `NormalizeForAddress` (`//components/autofill/core/browser/data_model/transliterator.cc`)
