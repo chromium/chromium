@@ -31,6 +31,7 @@
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/actor/actor_critical_action_logger.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
@@ -1902,11 +1903,11 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
                               : std::nullopt;
 
   if (active_task && active_task->task_id != task_id) {
-    // The update is for an actor that isn't working on the current tab.
+    // The update is for an actor that isn't working on the current page.
     return;
   }
 
-  // The actor task on this tab has finished.
+  // The actor task on this page has finished.
   // TODO(crbug.com/472336281): The state changes leading to the task
   // completion should be issued before the `ActorTask` gets removed.
   if (actor::ActorTask::IsCompletedState(state)) {
@@ -1916,10 +1917,9 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
     return;
   }
 
-  const tabs::TabInterface* tab_interface = GetTabInterface();
-  if (tab_interface && !task.HasActorSurface(actor::ActorSurfaceHandle::From(
-                           tab_interface->GetHandle()))) {
-    // The status update is for an actor that isn't interacting with this tab.
+  // If the task isn't related to the web_contents, skip it.
+  if (!task.HasActorSurface(actor::ActorSurfaceHandle::From(web_contents()))) {
+    // The status update is for an actor that isn't interacting with this page.
     // The value of `is_actor_mode_` shouldn't be updated.
     return;
   }

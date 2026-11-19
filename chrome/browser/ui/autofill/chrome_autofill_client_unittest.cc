@@ -123,9 +123,13 @@
 #include "ui/android/window_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
+#include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -973,6 +977,54 @@ TEST_F(ChromeAutofillClientActorTaskSourceTest,
   EXPECT_FALSE(
       active_actor_task()->critical_action_logger_supports_task_source);
   EXPECT_TRUE(client()->IsTabInActorMode());
+}
+
+// Tests that `OnActorTaskStateChange()` on a page without a tab (a headless
+// actor page) only picks up tasks that act on that page.
+TEST_F(ChromeAutofillClientTestWithMockWindow,
+       OnActorTaskStateChange_HeadlessPageIgnoresTasksOnOtherPages) {
+  actor::ActorKeyedServiceFake* actor_service =
+      static_cast<actor::ActorKeyedServiceFake*>(
+          actor::ActorKeyedService::Get(profile()));
+  ASSERT_TRUE(actor_service);
+
+  actor::ScopedHeadlessActorSurface headless =
+      actor_service->CreateHeadlessActorSurface();
+  const actor::ActorSurfaceHandle headless_handle =
+      headless.actor_surface_handle();
+  content::WebContents* headless_contents =
+      headless_handle.Get()->GetWebContents();
+  TestChromeAutofillClient* headless_client = client(headless_contents);
+  ASSERT_TRUE(headless_client);
+  ASSERT_FALSE(tabs::TabInterface::MaybeGetFromContents(headless_contents));
+
+  // A task acting on the tab must not put the headless page in actor mode.
+  actor::TaskId tab_task_id = actor_service->CreateTaskForTesting();
+  actor::ActorTask* tab_task = actor_service->GetTask(tab_task_id);
+  ASSERT_TRUE(tab_task);
+  actor_service->GetSurfaceRegistry().OnTabCreated(mock_tab_interface());
+  tab_task->AddTab(mock_tab_interface().GetHandle(),
+                   /*stop_task_on_detach=*/true, base::DoNothing());
+  actor_service->NotifyTaskStateChanged(*tab_task);
+
+  EXPECT_TRUE(client()->IsTabInActorMode());
+  EXPECT_FALSE(headless_client->IsTabInActorMode());
+
+  // A task acting on the headless page puts it in actor mode.
+  actor::TaskId headless_task_id = actor_service->CreateTaskForTesting();
+  actor::ActorTask* headless_task = actor_service->GetTask(headless_task_id);
+  ASSERT_TRUE(headless_task);
+  headless_task->AddActorSurface(headless_handle,
+                                 /*stop_task_on_detach=*/false,
+                                 base::DoNothing());
+  actor_service->NotifyTaskStateChanged(*headless_task);
+
+  ASSERT_TRUE(headless_client->GetActorAutofillManager()->active_actor_task());
+  EXPECT_EQ(
+      headless_client->GetActorAutofillManager()->active_actor_task()->task_id,
+      headless_task_id);
+  EXPECT_EQ(client()->GetActorAutofillManager()->active_actor_task()->task_id,
+            tab_task_id);
 }
 
 #endif  //  !BUILDFLAG(IS_ANDROID)
