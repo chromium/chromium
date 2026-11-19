@@ -5676,6 +5676,39 @@ TEST_F(MenuControllerTest, MenuHostedTextfieldKeepsFocusWhenSiblingRowsChange) {
   menu_controller()->Cancel(MenuController::ExitType::kAll);
 }
 
+// Moving the selection off a Textfield confirms its IME composition. The
+// platform ends the IME session when the Textfield blurs. A composition left
+// in it would still be there when focus returns, and the menu would leave keys
+// such as Backspace to an IME that is no longer composing.
+TEST_F(MenuControllerTest, MenuHostedTextfieldBlurConfirmsComposition) {
+  CreateMenu({.show = false});
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  MenuItemView* const second_item = submenu->GetMenuItemAt(1);
+  Textfield* const textfield =
+      AddTextfieldToMenuItem(submenu->GetMenuItemAt(0));
+  menu_controller()->Run(owner(), /*button_controller=*/nullptr, menu_item(),
+                         gfx::Rect(), MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kNone);
+  textfield->RequestFocus();
+  ASSERT_TRUE(textfield->HasFocus());
+  ui::CompositionText composition;
+  composition.text = u"x";
+  textfield->SetCompositionText(composition);
+  ASSERT_TRUE(textfield->HasCompositionText());
+
+  const gfx::Point second_loc = second_item->bounds().CenterPoint();
+  ProcessMouseMoved(submenu,
+                    ui::MouseEvent(ui::EventType::kMouseMoved, second_loc,
+                                   second_loc, ui::EventTimeForNow(), 0, 0));
+
+  ASSERT_EQ(second_item, pending_state_item());
+  EXPECT_FALSE(textfield->HasFocus());
+  EXPECT_FALSE(textfield->HasCompositionText());
+  EXPECT_EQ(u"x", textfield->GetText());
+
+  menu_controller()->Cancel(MenuController::ExitType::kAll);
+}
+
 namespace {
 
 class MultiDisplayTestScreen : public display::ScreenBase {
