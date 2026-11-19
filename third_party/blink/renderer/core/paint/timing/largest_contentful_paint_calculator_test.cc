@@ -10,7 +10,6 @@
 #include "base/test/tracing/trace_event_analyzer.h"
 #include "base/test/tracing/trace_test_utils.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -570,9 +569,6 @@ TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, ClipboardPaintIgnored) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kPaintTimingIngnoreOutOfLifecyclePaints);
   auto* client = MakeGarbageCollected<PaintTimingRecordObserverClient>();
   GetPaintTiming().AddClient(client);
   SetMainFrameBodyContent(R"HTML(

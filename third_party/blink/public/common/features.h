@@ -1271,11 +1271,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPath2DPaintCache);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPaintHolding);
 
-// When enabled, paint timing ignores all out-of-lifecycle paints, e.g. printing
-// paint preview, etc.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kPaintTimingIngnoreOutOfLifecyclePaints);
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,

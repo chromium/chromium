@@ -269,7 +269,6 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -2167,29 +2166,18 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
                                             bool include_linked_destinations,
                                             bool skip_accelerated_content,
                                             bool allow_scrollbars) {
-  bool success = false;
-  {
-    // Ignore paint timing while capturing a paint preview as it can change LCP
-    // see crbug.com/1323073.
-    IgnorePaintTimingScope scope;
-    if (!base::FeatureList::IsEnabled(
-            features::kPaintTimingIngnoreOutOfLifecyclePaints)) {
-      IgnorePaintTimingScope::IncrementIgnoreDepth();
-    }
-
-    Document::PaintPreviewScope paint_preview(
-        *GetFrame()->GetDocument(),
-        skip_accelerated_content
-            ? Document::kPaintingPreviewSkipAcceleratedContent
-            : Document::kPaintingPreview,
-        allow_scrollbars);
-    GetFrame()->StartPaintPreview();
-    PaintPreviewContext* paint_preview_context =
-        MakeGarbageCollected<PaintPreviewContext>(GetFrame());
-    success = paint_preview_context->Capture(canvas, bounds,
-                                             include_linked_destinations);
-    GetFrame()->EndPaintPreview();
-  }
+  Document::PaintPreviewScope paint_preview(
+      *GetFrame()->GetDocument(),
+      skip_accelerated_content
+          ? Document::kPaintingPreviewSkipAcceleratedContent
+          : Document::kPaintingPreview,
+      allow_scrollbars);
+  GetFrame()->StartPaintPreview();
+  PaintPreviewContext* paint_preview_context =
+      MakeGarbageCollected<PaintPreviewContext>(GetFrame());
+  bool success = paint_preview_context->Capture(canvas, bounds,
+                                                include_linked_destinations);
+  GetFrame()->EndPaintPreview();
   return success;
 }
 

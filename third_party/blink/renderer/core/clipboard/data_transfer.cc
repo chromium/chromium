@@ -29,9 +29,7 @@
 #include <memory>
 #include <optional>
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
@@ -137,10 +135,7 @@ class NodeImageBuilder {
     // cause spurious element timings (see crbug.com/40838402 and
     // crbug.com/547997751).
     IgnorePaintTimingScope ignore_paint_timing;
-    if (base::FeatureList::IsEnabled(
-            features::kPaintTimingIngnoreOutOfLifecyclePaints)) {
-      IgnorePaintTimingScope::IncrementIgnoreDepth();
-    }
+    IgnorePaintTimingScope::IncrementIgnoreDepth();
 
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kInPaint);

@@ -4730,10 +4730,7 @@ void LocalFrameView::PaintOutsideOfLifecycle(GraphicsContext& context,
   // element timings to be reported (see crbug.com/40838402 and
   // crbug.com/547997751).
   IgnorePaintTimingScope ignore_paint_timing;
-  if (base::FeatureList::IsEnabled(
-          features::kPaintTimingIngnoreOutOfLifecyclePaints)) {
-    IgnorePaintTimingScope::IncrementIgnoreDepth();
-  }
+  IgnorePaintTimingScope::IncrementIgnoreDepth();
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);
