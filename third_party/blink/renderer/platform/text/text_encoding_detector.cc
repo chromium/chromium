@@ -30,9 +30,13 @@
 
 #include "third_party/blink/renderer/platform/text/text_encoding_detector.h"
 
+#include <string>
+
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/ced/src/compact_enc_det/compact_enc_det.h"
 
@@ -60,12 +64,25 @@ bool DetectTextEncoding(base::span<const uint8_t> bytes,
   Language language = UNKNOWN_LANGUAGE;
   if (hint_url.Protocol() == "file")
     LanguageFromCode(hint_user_language, &language);
+
+  // crbug.com/578671521: We'd like to pass only TLD rather than the full URL to
+  // avoid spoofing.
+  std::string url_or_tld_hint;
+  if (RuntimeEnabledFeatures::TextEncodingDetectorTldHintEnabled()) {
+    StringView host = hint_url.Host();
+    if (wtf_size_t dot_index = host.rfind('.'); dot_index != kNotFound) {
+      url_or_tld_hint = host.substr(dot_index + 1).Utf8();
+    }
+  } else {
+    url_or_tld_hint = hint_url.GetString().Ascii();
+  }
+
   int consumed_bytes;
   bool is_reliable;
   auto chars = base::as_chars(bytes);
   Encoding encoding = CompactEncDet::DetectEncoding(
       chars.data(), base::checked_cast<int>(chars.size()),
-      hint_url.GetString().Ascii().c_str(), nullptr, nullptr,
+      url_or_tld_hint.c_str(), nullptr, nullptr,
       EncodingNameAliasToEncoding(hint_encoding_name), language,
       CompactEncDet::WEB_CORPUS,
       false,  // Include 7-bit encodings to detect ISO-2022-JP
