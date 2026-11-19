@@ -3659,9 +3659,13 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
   }
 }
 
-void BrowserView::OnTabBlockedStateChanged(tabs::TabInterface* tab) {
+void BrowserView::OnTabBlockedStateChanged(tabs::TabHandle tab) {
+  tabs::TabInterface* tab_interface = tab.Get();
+  if (!tab_interface) {
+    return;
+  }
   if (auto* container = multi_contents_view_->GetContentsContainerViewFor(
-          tab->GetContents())) {
+          tab_interface->GetContents())) {
     container->contents_view()->UpdateIsBlockedByModal();
   }
 }

@@ -122,8 +122,7 @@ void TabStripModelEventBridge::OnTabChangedAt(tabs::TabInterface* tab,
   Notify(events::ToEvent(*tab_strip_model_adapter_, tab, change_type));
 }
 
-void TabStripModelEventBridge::OnTabBlockedStateChanged(
-    tabs::TabInterface* tab) {
+void TabStripModelEventBridge::OnTabBlockedStateChanged(tabs::TabHandle tab) {
   Notify(events::ToBlockedStateChangedEvent(*tab_strip_model_adapter_, tab));
 }
 

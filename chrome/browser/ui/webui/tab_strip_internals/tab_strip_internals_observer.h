@@ -51,7 +51,7 @@ class TabStripInternalsObserver : public BrowserCollectionObserver,
   void OnTabChangedAt(tabs::TabInterface* tab,
                       TabChangeType change_type) override;
   void OnTabPinnedStateChanged(tabs::TabHandle tab) override;
-  void OnTabBlockedStateChanged(tabs::TabInterface* tab) override;
+  void OnTabBlockedStateChanged(tabs::TabHandle tab) override;
   void OnTabAudioChanged(tabs::TabInterface* tab) override;
   void TabGroupedStateChanged(TabStripModel* tab_strip_model,
                               std::optional<tab_groups::TabGroupId> old_group,

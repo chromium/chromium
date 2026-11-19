@@ -152,7 +152,7 @@ void TabStripInternalsObserver::OnTabPinnedStateChanged(
 }
 
 void TabStripInternalsObserver::OnTabBlockedStateChanged(
-    tabs::TabInterface* /*tab*/) {
+    tabs::TabHandle /*tab*/) {
   FireUpdate();
 }
 

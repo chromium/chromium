@@ -660,7 +660,7 @@ class BrowserView : public BrowserWindow,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabBlockedStateChanged(tabs::TabInterface* tab) override;
+  void OnTabBlockedStateChanged(tabs::TabHandle tab) override;
   void OnSplitTabChanged(const SplitTabChange& change) override;
   void TabStripEmpty() override;
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;

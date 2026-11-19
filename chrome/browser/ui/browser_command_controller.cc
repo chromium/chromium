@@ -607,8 +607,7 @@ void BrowserCommandController::TabGroupedStateChanged(
   UpdateCommandsForTabStripStateChanged();
 }
 
-void BrowserCommandController::OnTabBlockedStateChanged(
-    tabs::TabInterface* tab) {
+void BrowserCommandController::OnTabBlockedStateChanged(tabs::TabHandle tab) {
   PrintingStateChanged();
   FullscreenStateChanged();
   UpdateCommandsForFind();

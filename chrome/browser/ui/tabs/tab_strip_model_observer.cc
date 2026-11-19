@@ -365,7 +365,7 @@ void TabStripModelObserver::OnTabChangedAt(tabs::TabInterface* tab,
 
 void TabStripModelObserver::OnTabPinnedStateChanged(tabs::TabHandle tab) {}
 
-void TabStripModelObserver::OnTabBlockedStateChanged(tabs::TabInterface* tab) {}
+void TabStripModelObserver::OnTabBlockedStateChanged(tabs::TabHandle tab) {}
 
 void TabStripModelObserver::OnTabAudioChanged(tabs::TabInterface* tab) {}
 

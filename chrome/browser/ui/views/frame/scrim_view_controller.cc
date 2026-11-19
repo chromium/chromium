@@ -30,7 +30,7 @@ void ScrimViewController::OnTabStripModelChanged(
   }
 }
 
-void ScrimViewController::OnTabBlockedStateChanged(tabs::TabInterface* tab) {
+void ScrimViewController::OnTabBlockedStateChanged(tabs::TabHandle tab) {
   UpdateScrimViews();
 }
 

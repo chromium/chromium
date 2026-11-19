@@ -126,10 +126,9 @@ mojom::OnDataChangedEventPtr ToEvent(
 
 mojom::OnDataChangedEventPtr ToBlockedStateChangedEvent(
     const tabs_api::TabStripModelAdapter& adapter,
-    tabs::TabInterface* tab) {
+    tabs::TabHandle handle) {
   auto tab_change = mojom::TabChange::New();
-  if (tab) {
-    tabs::TabHandle handle = tab->GetHandle();
+  if (tabs::TabInterface* tab = handle.Get()) {
     const ui::ColorProvider& color_provider = adapter.GetColorProvider();
 
     tab_change->data = tabs_api::converters::BuildMojoTab(

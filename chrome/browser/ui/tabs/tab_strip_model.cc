@@ -1595,7 +1595,7 @@ void TabStripModel::SetTabBlocked(tabs::TabHandle tab, bool blocked) {
   }
   tab_model->SetBlocked(blocked);
   for (auto& observer : observers_) {
-    observer.OnTabBlockedStateChanged(tab_model);
+    observer.OnTabBlockedStateChanged(tab);
   }
 }
 

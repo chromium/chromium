@@ -408,8 +408,8 @@ class MockTabStripModelObserver : public TabStripModelObserver {
     states_.emplace_back(tab.Get()->GetContents(), std::nullopt, PINNED);
   }
 
-  void OnTabBlockedStateChanged(tabs::TabInterface* tab) override {
-    states_.emplace_back(tab->GetContents(), std::nullopt, BLOCKED);
+  void OnTabBlockedStateChanged(tabs::TabHandle tab) override {
+    states_.emplace_back(tab.Get()->GetContents(), std::nullopt, BLOCKED);
   }
 
   void OnTabAudioChanged(tabs::TabInterface* tab) override {

@@ -147,7 +147,7 @@ class BrowserCommandController : public CommandUpdater,
                               std::optional<tab_groups::TabGroupId> old_group,
                               std::optional<tab_groups::TabGroupId> new_group,
                               tabs::TabHandle tab) override;
-  void OnTabBlockedStateChanged(tabs::TabInterface* tab) override;
+  void OnTabBlockedStateChanged(tabs::TabHandle tab) override;
   void OnTabPinnedStateChanged(tabs::TabHandle tab) override;
 
   // Overridden from TabRestoreServiceObserver:

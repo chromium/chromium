@@ -565,7 +565,7 @@ class TabStripModelObserver {
   virtual void OnTabPinnedStateChanged(tabs::TabHandle tab);
 
   // Invoked when the blocked state of a tab changes.
-  virtual void OnTabBlockedStateChanged(tabs::TabInterface* tab);
+  virtual void OnTabBlockedStateChanged(tabs::TabHandle tab);
 
   // Invoked when the audio state of a tab changes.
   virtual void OnTabAudioChanged(tabs::TabInterface* tab);
