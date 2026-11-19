@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceController;
+import org.chromium.chrome.browser.actor.notifications.ActorNotificationConfig.TaskSnapshot;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
@@ -54,8 +55,7 @@ public class ActorNotificationFactory {
         NotificationCategory.PAUSED,
         NotificationCategory.USER_INPUT,
         NotificationCategory.SUCCESS,
-        NotificationCategory.STOPPED,
-        NotificationCategory.WARNING
+        NotificationCategory.STOPPED
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface NotificationCategory {
@@ -64,7 +64,6 @@ public class ActorNotificationFactory {
         int USER_INPUT = 2;
         int SUCCESS = 3;
         int STOPPED = 4;
-        int WARNING = 5;
     }
 
     /**
@@ -98,46 +97,24 @@ public class ActorNotificationFactory {
             boolean isSilent,
             boolean isWarning,
             boolean isLive) {
-        int notificationId = task.getId();
-        Context context = ContextUtils.getApplicationContext();
-        NotificationWrapperBuilder builder =
-                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                                ChromeChannelDefinitions.ChannelId.ACTOR,
-                                new NotificationMetadata(
-                                        NotificationUmaTracker.SystemNotificationType.ACTOR,
-                                        /* notificationTag= */ null,
-                                        notificationId))
-                        .setSmallIcon(R.drawable.ic_chrome)
-                        .setLocalOnly(true)
-                        .setSilent(isSilent);
-
-        if (ActorUtils.isOngoingNotification(isLive)) {
-            Bundle extras = new Bundle();
-            extras.putBoolean(EXTRA_REQUEST_PROMOTED_ONGOING, true);
-            String chipText = getStatusChipText(context, state, isWarning);
-            if (chipText != null) {
-                extras.putCharSequence(EXTRA_SHORT_CRITICAL_TEXT, chipText);
-            }
-            builder.addExtras(extras);
-        } else {
-            // A non-live notification replaces a notification that was already shown, so it must
-            // not alert again.
-            builder.setOnlyAlertOnce(true);
-        }
-
-        if (isWarning) {
-            return buildWarningNotification(builder, context, task, notificationId, state);
-        } else if (ActorUtils.isRunningState(state)) {
-            return buildRunningNotification(builder, context, task, notificationId);
-        } else if (ActorUtils.isPausedState(state)) {
-            return buildPausedNotification(builder, context, task, notificationId);
-        } else if (state == ActorTaskState.WAITING_ON_USER) {
-            return buildUserInputNotification(builder, context, task, notificationId);
-        } else if (state == ActorTaskState.FINISHED) {
-            return buildSuccessNotification(builder, context, task, notificationId, isLive);
-        } else {
-            return buildStoppedNotification(builder, context, task, notificationId, isLive);
-        }
+        TaskSnapshot snapshot =
+                TaskSnapshot.of(
+                        task,
+                        state,
+                        ChromeFeatureList.sActorStepProgressNotification.isEnabled()
+                                        && ActorUtils.isRunningState(state)
+                                ? task.getCurrentActionName()
+                                : null,
+                        /* isExperimentalTriggeringSilenceEnabled= */ false);
+        return buildNotification(
+                ActorNotificationConfig.forResolvedTask(
+                        ContextUtils.getApplicationContext(),
+                        snapshot,
+                        isWarning,
+                        isLive,
+                        ActorUtils.isLiveNotificationEnabled(),
+                        isSilent),
+                task);
     }
 
     /**
@@ -167,129 +144,70 @@ public class ActorNotificationFactory {
         return NotificationCategory.STOPPED;
     }
 
-    private static NotificationWrapper buildWarningNotification(
+    /**
+     * Builds the notification described by {@code config}.
+     *
+     * @param config The resolved {@link ActorNotificationConfig} of the notification.
+     * @param task The task whose tab the notification routes to.
+     * @return The built {@link NotificationWrapper}.
+     */
+    static NotificationWrapper buildNotification(ActorNotificationConfig config, ActorTask task) {
+        Context context = ContextUtils.getApplicationContext();
+        NotificationWrapperBuilder builder =
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                                ChromeChannelDefinitions.ChannelId.ACTOR,
+                                new NotificationMetadata(
+                                        NotificationUmaTracker.SystemNotificationType.ACTOR,
+                                        config.getNotificationTag(),
+                                        config.getNotificationId()))
+                        .setSmallIcon(R.drawable.ic_chrome)
+                        .setSilent(config.isSilent())
+                        .setContentTitle(context.getString(config.getTitleRes()));
+        if (config.isOnlyAlertOnce()) {
+            builder.setOnlyAlertOnce(true);
+        }
+        if (config.isHighPriority()) {
+            builder.setPriorityBeforeO(Notification.PRIORITY_HIGH);
+        }
+        String body = config.getBody();
+        builder.setContentText(body).setBigTextStyle(body);
+        addTaskContent(builder, context, config, task);
+        return builder.buildNotificationWrapper();
+    }
+
+    private static void addTaskContent(
             NotificationWrapperBuilder builder,
             Context context,
-            ActorTask task,
-            int id,
-            @ActorTaskState int state) {
-        int bodyResId =
-                (state == ActorTaskState.WAITING_ON_USER)
-                        ? R.string.actor_notification_body_will_stop_task_no_response
-                        : R.string.actor_notification_body_will_stop_task_long_running;
-
-        String body = context.getString(bodyResId, task.getTitle());
-        builder.setOngoing(true)
-                .setPriorityBeforeO(Notification.PRIORITY_HIGH)
-                .setContentTitle(
-                        context.getString(R.string.actor_notification_title_will_stop_task))
-                .setContentText(body)
-                .setBigTextStyle(body)
-                .setContentIntent(createTabRoutingIntent(context, id, task));
-        addViewAction(builder, context, id, task);
-        return builder.buildNotificationWrapper();
-    }
-
-    private static NotificationWrapper buildRunningNotification(
-            NotificationWrapperBuilder builder, Context context, ActorTask task, int id) {
-        String actionName =
-                ChromeFeatureList.sActorStepProgressNotification.isEnabled()
-                        ? task.getCurrentActionName()
-                        : null;
-        String body =
-                (actionName != null && !actionName.isEmpty())
-                        ? context.getString(
-                                R.string.actor_notification_body_working_with_step_info,
-                                task.getTitle(),
-                                actionName)
-                        : context.getString(
-                                R.string.actor_notification_body_working, task.getTitle());
-        builder.setOngoing(true)
-                .setContentTitle(
-                        context.getString(R.string.actor_notification_title_working_on_task))
-                .setContentText(body)
-                .setBigTextStyle(body)
-                .setContentIntent(createTabRoutingIntent(context, id, task));
-        addViewAction(builder, context, id, task);
-        return builder.buildNotificationWrapper();
-    }
-
-    private static NotificationWrapper buildPausedNotification(
-            NotificationWrapperBuilder builder, Context context, ActorTask task, int id) {
-        String body = context.getString(R.string.actor_notification_body_paused, task.getTitle());
-        builder.setOngoing(true)
-                .setContentTitle(context.getString(R.string.actor_notification_title_task_paused))
-                .setContentText(body)
-                .setBigTextStyle(body)
-                .setContentIntent(createTabRoutingIntent(context, id, task));
-        addViewAction(builder, context, id, task);
-        return builder.buildNotificationWrapper();
-    }
-
-    private static NotificationWrapper buildUserInputNotification(
-            NotificationWrapperBuilder builder, Context context, ActorTask task, int id) {
-        String body =
-                context.getString(R.string.actor_notification_body_user_input, task.getTitle());
-        builder.setPriorityBeforeO(Notification.PRIORITY_HIGH)
-                .setOngoing(true)
-                .setContentTitle(
-                        context.getString(R.string.actor_notification_title_check_your_task))
-                .setContentText(body)
-                .setBigTextStyle(body)
-                .setContentIntent(createTabRoutingIntent(context, id, task));
-        addViewAction(builder, context, id, task);
-        return builder.buildNotificationWrapper();
-    }
-
-    private static NotificationWrapper buildSuccessNotification(
-            NotificationWrapperBuilder builder,
-            Context context,
-            ActorTask task,
-            int id,
-            boolean isLive) {
-        String body = context.getString(R.string.actor_notification_body_complete, task.getTitle());
-        boolean isOngoing = ActorUtils.isOngoingNotification(isLive);
-        builder.setAutoCancel(true)
-                .setOngoing(isOngoing)
-                .setContentTitle(context.getString(R.string.actor_notification_title_task_complete))
-                .setContentText(body)
-                .setBigTextStyle(body)
-                .setContentIntent(createTabRoutingIntent(context, id, task));
-        addViewAction(builder, context, id, task);
-        return builder.buildNotificationWrapper();
-    }
-
-    private static NotificationWrapper buildStoppedNotification(
-            NotificationWrapperBuilder builder,
-            Context context,
-            ActorTask task,
-            int id,
-            boolean isLive) {
-        String body = context.getString(R.string.actor_notification_body_stopped, task.getTitle());
-        boolean isOngoing = ActorUtils.isOngoingNotification(isLive);
-        builder.setAutoCancel(true)
-                .setOngoing(isOngoing)
-                .setContentTitle(context.getString(R.string.actor_notification_title_task_stopped))
-                .setContentText(body)
-                .setBigTextStyle(body)
-                .setContentIntent(createTabRoutingIntent(context, id, task));
-        addViewAction(builder, context, id, task);
-        return builder.buildNotificationWrapper();
-    }
-
-    private static void addViewAction(
-            NotificationWrapperBuilder builder,
-            Context context,
-            int notificationId,
+            ActorNotificationConfig config,
             ActorTask task) {
-        @Nullable PendingIntentProvider intent =
-                createTabRoutingIntent(context, notificationId, task);
-        if (intent == null) return;
+        builder.setLocalOnly(true);
+        boolean isOngoing = config.isOngoing();
+        if (isOngoing) {
+            Bundle extras = new Bundle();
+            extras.putBoolean(EXTRA_REQUEST_PROMOTED_ONGOING, true);
+            if (config.getChipRes() != 0) {
+                extras.putCharSequence(
+                        EXTRA_SHORT_CRITICAL_TEXT, context.getString(config.getChipRes()));
+            }
+            builder.addExtras(extras);
+        }
+        if (config.isTerminal()) {
+            builder.setAutoCancel(true).setOngoing(isOngoing);
+        } else {
+            builder.setOngoing(true);
+        }
 
+        int notificationId = config.getNotificationId();
+        // TODO(crbug.com/564644170): Reuse one routing intent for the content and the action once
+        // tests stop expecting one createTrustedBringTabToFrontIntent() call for each.
+        builder.setContentIntent(createTabRoutingIntent(context, notificationId, task));
+        @Nullable PendingIntentProvider actionIntent =
+                createTabRoutingIntent(context, notificationId, task);
+        if (actionIntent == null) return;
         builder.addAction(
                 R.drawable.ic_chrome,
                 context.getString(R.string.actor_notification_button_go_to_chrome),
-                intent,
+                actionIntent,
                 NotificationUmaTracker.ActionType.ACTOR_VIEW);
     }
 
@@ -300,44 +218,6 @@ public class ActorNotificationFactory {
         if (intent == null) return null;
         return PendingIntentProvider.getActivity(
                 context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-    }
-
-    /**
-     * Determines the status chip text based on the task's state and warning mode.
-     *
-     * @param context The application context.
-     * @param state The {@link ActorTaskState}.
-     * @param isWarning Whether the task is in a warning state.
-     * @return The status chip text ("Review", "Done", "Stopped", "Paused"), or null for icon-only
-     *     chip.
-     */
-    public static @Nullable String getStatusChipText(
-            Context context, @ActorTaskState int state, boolean isWarning) {
-        if (isWarning) {
-            return context.getString(R.string.actor_notification_live_status_review);
-        }
-        if (state == ActorTaskState.FINISHED) {
-            return context.getString(R.string.actor_notification_live_status_done);
-        } else if (ActorUtils.isStoppedState(state)) {
-            return context.getString(R.string.actor_notification_live_status_stopped);
-        } else if (state == ActorTaskState.WAITING_ON_USER) {
-            return context.getString(R.string.actor_notification_live_status_review);
-        } else if (ActorUtils.isPausedState(state)) {
-            return context.getString(R.string.actor_notification_live_status_paused);
-        }
-        return null;
-    }
-
-    /**
-     * Determines the status chip text based on the task's state.
-     *
-     * @param context The application context.
-     * @param state The {@link ActorTaskState}.
-     * @return The status chip text ("Review", "Done", "Stopped", "Paused"), or null for icon-only
-     *     chip.
-     */
-    public static @Nullable String getStatusChipText(Context context, @ActorTaskState int state) {
-        return getStatusChipText(context, state, /* isWarning= */ false);
     }
 
     /**

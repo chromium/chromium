@@ -226,6 +226,40 @@ final class ActorNotificationConfig {
         return showsLoudWorking ? config.withHasShownLoudWorking() : config;
     }
 
+    /**
+     * Resolves a task notification whose warning, liveness and silence the caller already decided,
+     * for callers that track them outside of a config.
+     *
+     * @param context The context used to resolve the body text.
+     * @param task The task facts to show.
+     * @param isWarning Whether the notification shows a timeout warning.
+     * @param isLive Whether the task holds the single live (promoted ongoing) slot.
+     * @param isLiveUpdatesEnabled Whether {@link ActorUtils#isLiveNotificationEnabled()} is true.
+     * @param isSilent Whether the notification must not alert.
+     */
+    static ActorNotificationConfig forResolvedTask(
+            Context context,
+            TaskSnapshot task,
+            boolean isWarning,
+            boolean isLive,
+            boolean isLiveUpdatesEnabled,
+            boolean isSilent) {
+        @NotificationState
+        int state = isWarning ? warningStateForTask(task.taskState) : stateForTask(task.taskState);
+        boolean isOngoing = isLive && isLiveUpdatesEnabled;
+        return new ActorNotificationConfig(
+                task,
+                isWarning ? Trigger.TIMEOUT_WARNING : Trigger.TASK_STATE_CHANGED,
+                state,
+                getBody(context, state, task),
+                isOngoing,
+                isSilent,
+                /* isOnlyAlertOnce= */ !isOngoing,
+                isWarning,
+                /* notificationTag= */ null,
+                /* hasShownLoudWorking= */ false);
+    }
+
     // The warning follows the current task state, since the timeout that triggered it depends on
     // whether the task was waiting on the user.
     private static @NotificationState int warningStateForTask(@ActorTaskState int taskState) {
