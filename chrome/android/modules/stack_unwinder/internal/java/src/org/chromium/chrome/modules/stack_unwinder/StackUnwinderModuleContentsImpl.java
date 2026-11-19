@@ -6,8 +6,6 @@ package org.chromium.chrome.modules.stack_unwinder;
 
 import org.chromium.build.annotations.NullMarked;
 
-/**
- * Provides access to the stack unwinder native code functions within the dynamic feature module.
- */
+/** Empty implementation of {@link StackUnwinderModuleContents}. */
 @NullMarked
 public class StackUnwinderModuleContentsImpl implements StackUnwinderModuleContents {}

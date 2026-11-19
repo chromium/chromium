@@ -23,7 +23,6 @@ source_set("module") {
   sources = [ "module.cc" ]
   deps = [
     "//base",
-    "//chrome/android/features/stack_unwinder/public:native",
     "//chrome/android/modules/stack_unwinder/provider:jni_headers",
   ]
 }

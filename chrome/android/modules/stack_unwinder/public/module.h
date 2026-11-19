@@ -9,7 +9,6 @@
 
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
 #include "base/profiler/unwinder.h"
-#include "chrome/android/features/stack_unwinder/public/function_types.h"
 
 namespace stack_unwinder {
 
@@ -28,11 +27,6 @@ class Module {
 
   // Attempts to load the module. May be invoked only if IsInstalled().
   static std::unique_ptr<Module> Load();
-
-  // Stub function
-  // TODO(crbug.com/398885436): Remove this function and clean up the support
-  // machinery for executing native code.
-  void DoNothing();
 
  private:
   Module() = default;

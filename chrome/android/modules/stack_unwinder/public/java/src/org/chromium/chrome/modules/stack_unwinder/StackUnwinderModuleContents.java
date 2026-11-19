@@ -8,7 +8,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 
 /**
- * Provides access to the stack unwinder native code functions within the dynamic feature module.
+ * Interface for the stack_unwinder dynamic feature module. The module contains no native code; it
+ * exists to deliver the unwind tables used for stack unwinding on 32-bit Android.
  */
 @ModuleInterface(
         module = "stack_unwinder",

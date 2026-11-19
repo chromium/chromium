@@ -148,8 +148,9 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders() {
   return unwinders;
 }
 
-// Manages installation of the module prerequisite for unwinding. Android, in
-// particular, requires a dynamic feature module to provide the native unwinder.
+// Manages installation of the module prerequisite for unwinding. 32-bit
+// Android, in particular, requires a dynamic feature module to provide the
+// unwind tables.
 class ModuleUnwindPrerequisitesDelegate : public UnwindPrerequisitesDelegate {
  public:
   void RequestInstallation(version_info::Channel /* unused */) override {
