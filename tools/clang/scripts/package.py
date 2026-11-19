@@ -354,6 +354,7 @@ def main():
         'bin/clang-cl.exe',
         'bin/lld-link.exe',
         'bin/llvm-ml.exe',
+        'bin/llvm-rc.exe',
       ]
     )
   else:
@@ -366,6 +367,8 @@ def main():
         'bin/llvm-ar',
         # llvm-ml for Windows cross builds.
         'bin/llvm-ml',
+        # llvm-rc for Windows cross builds.
+        'bin/llvm-rc',
         # Add llvm-readobj (symlinked from llvm-readelf) for extracting SONAMEs.
         'bin/llvm-readobj',
       ]
