@@ -200,8 +200,7 @@ bool EditorSwitch::IsAllowedForUse() const {
     return true;
   }
 
-  return base::FeatureList::IsEnabled(ash::features::kOrcaSupportDemoMode) &&
-                 ash::demo_mode::IsDeviceInDemoMode()
+  return ash::demo_mode::IsDeviceInDemoMode()
              ? IsAllowedForUseInDemoMode(context_->active_country_code())
              : IsAllowedForUseInNonDemoMode(profile_, manta_service_,
                                             context_->active_country_code());
