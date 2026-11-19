@@ -80,6 +80,24 @@ class TestWPTServe(LoggingTestCase):
 
         self.assertEqual(server._start_cmd, expected_start_cmd)
 
+    def test_websocket_h3_opt_in(self):
+        self.port.set_option('enable_websocket_h3', True)
+        server = WPTServe(self.port, '/foo')
+        self.assertEqual(
+            server._start_cmd[-2:], ['--webtransport-h3', '--websocket-h3']
+        )
+        self.assertEqual(
+            server._mappings[-2:],
+            [
+                {'port': 11001, 'scheme': 'websocket-h3'},
+                {
+                    'port': 11001,
+                    'scheme': 'websocket-h3-https',
+                    'sslcert': True,
+                },
+            ],
+        )
+
     def test_init_env(self):
         server = WPTServe(self.port, '/foo')
         self.assertEqual(

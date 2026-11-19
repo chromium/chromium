@@ -30,6 +30,7 @@ class WPTServe(server_base.ServerBase):
         ws_port = 9001
         wss_port = 9444
         webtransport_h3_port = 11000
+        websocket_h3_port = 11001
 
         self._name = 'wptserve'
         self._log_prefixes = ('wptserve_stderr',)
@@ -87,6 +88,18 @@ class WPTServe(server_base.ServerBase):
             {'port': webtransport_h3_port, 'scheme': 'webtransport-h3'}
         )
         start_cmd.append('--webtransport-h3')
+        if self._port_obj.get_option('enable_websocket_h3'):
+            self._mappings.extend(
+                [
+                    {'port': websocket_h3_port, 'scheme': 'websocket-h3'},
+                    {
+                        'port': websocket_h3_port,
+                        'scheme': 'websocket-h3-https',
+                        'sslcert': True,
+                    },
+                ]
+            )
+            start_cmd.append('--websocket-h3')
 
         # TODO(burnik): We should stop setting the CWD once WPT can be run without it.
         self._cwd = finder.path_from_web_tests()

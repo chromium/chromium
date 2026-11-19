@@ -4,6 +4,7 @@
 
 import platform
 import unittest
+from unittest import mock
 
 from blinkpy.web_tests.servers import cli_wrapper
 
@@ -45,6 +46,28 @@ class CliWrapperTest(unittest.TestCase):
         cli_wrapper.main(mock_server_constructor, sleep_fn=raise_exit, argv=[])
         self.assertTrue(self.server.start_called)
         self.assertTrue(self.server.stop_called)
+
+    @unittest.skipIf(
+        platform.mac_ver()[0].startswith('12'),
+        "Failing on macOS 12; see crbug.com/474036848",
+    )
+    def test_main_websocket_h3_opt_in(self):
+        for websocket_h3_enabled in (False, True):
+            with self.subTest(websocket_h3_enabled=websocket_h3_enabled):
+                server_constructor = mock.Mock(return_value=MockServer())
+                cli_wrapper.main(
+                    server_constructor,
+                    sleep_fn=mock.Mock(side_effect=SystemExit),
+                    argv=['--enable-websocket-h3']
+                    if websocket_h3_enabled
+                    else [],
+                )
+                server_constructor.assert_called_once()
+                port = server_constructor.call_args.args[0]
+                self.assertEqual(
+                    port.get_option('enable_websocket_h3'),
+                    websocket_h3_enabled,
+                )
 
     @unittest.skipIf(
         platform.mac_ver()[0].startswith('12'),

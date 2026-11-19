@@ -39,6 +39,26 @@ class TestLoaderTestCase(unittest.TestCase):
                                 ['variant.html?foo=bar/abc', {}],
                                 ['variant.html?foo=baz', {}],
                             ],
+                            'websockets': {
+                                'binary': {
+                                    '001.html': [
+                                        'abcdef',
+                                        [
+                                            'websockets/binary/001.html?default',
+                                            {},
+                                        ],
+                                        ['websockets/binary/001.html?wss', {}],
+                                        [
+                                            'websockets/binary/001.html?wpt_flags=h2',
+                                            {},
+                                        ],
+                                        [
+                                            'websockets/binary/001.html?wpt_flags=websocket-h3',
+                                            {},
+                                        ],
+                                    ],
+                                },
+                            },
                             'long.html': [
                                 'abcdef',
                                 [None, {'timeout': 'long'}],
@@ -451,6 +471,39 @@ class TestLoaderTestCase(unittest.TestCase):
             self.assertEqual(base_test.id, '/reftest.html')
             self.assertEqual(virtual_test.id, '/variant.html?foo=baz')
             self.assertEqual(loader.disabled_tests, {'': {}, 'fake-vts': {}})
+
+    def test_websocket_h3_disabled_by_default(self):
+        subsuites = {'': Subsuite('', config={})}
+        prefix = '/websockets/binary/001.html?'
+        variants = [
+            f'{prefix}default',
+            f'{prefix}wss',
+            f'{prefix}wpt_flags=h2',
+            f'{prefix}wpt_flags=websocket-h3',
+        ]
+        with self._make_loader(subsuites=subsuites, include=variants) as loader:
+            self.assertEqual(
+                [test.id for test in loader.tests['']['testharness']],
+                variants[:-1],
+            )
+            self.assertEqual(
+                [test.id for test in loader.disabled_tests['']['testharness']],
+                variants[-1:],
+            )
+
+    def test_websocket_h3_enabled_on_opt_in(self):
+        subsuites = {'': Subsuite('', config={})}
+        test_url = '/websockets/binary/001.html?wpt_flags=websocket-h3'
+        with self._make_loader(
+            subsuites=subsuites,
+            include=[test_url],
+            include_websocket_h3=True,
+        ) as loader:
+            self.assertEqual(
+                [test.id for test in loader.tests['']['testharness']],
+                [test_url],
+            )
+            self.assertEqual(loader.disabled_tests[''], {})
 
     def test_load_no_tests(self):
         subsuites = {'': Subsuite('', config={})}

@@ -287,12 +287,16 @@ class WebTestFinder(object):
         tests_to_skip = set()
         tests_always_skipped = set()
         for test in all_tests:
-            # Manual tests and virtual tests skipped by platform config are
-            # always skipped and not affected by the --skip parameter
+            # Tests requiring an opt-in and virtual tests skipped by platform
+            # config are always skipped and not affected by --skipped.
             if (
                 self._port.skipped_due_to_manual_test(test)
                 or self._port.virtual_test_skipped_due_to_platform_config(test)
                 or self._port.skipped_due_to_exclusive_virtual_tests(test)
+                or (
+                    not self._port.get_option('enable_websocket_h3')
+                    and Port.is_wpt_websocket_h3_test(test)
+                )
             ):
                 tests_always_skipped.update({test})
                 continue

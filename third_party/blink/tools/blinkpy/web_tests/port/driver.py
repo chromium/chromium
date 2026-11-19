@@ -190,6 +190,7 @@ class TestURIMapper:
     HTTP_HOST_AND_PORTS = ('127.0.0.1', 8000, 8443)
     WPT_HOST_AND_PORTS = ('web-platform.test', 8001, 8444)
     WPT_H2_PORT = 9000
+    WPT_WEBSOCKET_H3_PORT = 11001
 
     def is_http_test(self, test_name):
         return test_name.startswith(self.HTTP_DIR) and not test_name.startswith(
@@ -205,8 +206,11 @@ class TestURIMapper:
         http/tests/security/mixedContent/https/test1.html
         http/tests/security/mixedContent/test1.https.html
         external/wpt/encoding/idlharness.any.serviceworker.html
+
+        WebSocket/H3 WPTs use their paired HTTPS endpoint on port 11001.
         """
         using_wptserve = self._port.should_use_wptserve(test_name)
+        websocket_h3_test = self._port.is_wpt_websocket_h3_test(test_name)
 
         if not self.is_http_test(test_name) and not using_wptserve:
             return path.abspath_to_uri(
@@ -229,7 +233,9 @@ class TestURIMapper:
             hostname, insecure_port, secure_port = self.WPT_HOST_AND_PORTS
             if '.www.' in test_name:
                 hostname = "www.%s" % hostname
-            if '.h2.' in test_name:
+            if websocket_h3_test:
+                secure_port = self.WPT_WEBSOCKET_H3_PORT
+            elif '.h2.' in test_name:
                 secure_port = self.WPT_H2_PORT
         else:
             test_dir_prefix = self.HTTP_DIR
@@ -239,7 +245,8 @@ class TestURIMapper:
         relative_path = test_name[len(test_dir_prefix) :]
 
         if (
-            '/https/' in test_name
+            websocket_h3_test
+            or '/https/' in test_name
             or '.https.' in test_name
             or '.h2.' in test_name
             or '.serviceworker.' in test_name
@@ -284,7 +291,12 @@ class TestURIMapper:
         for prefix in self._get_uri_prefixes(*self.HTTP_HOST_AND_PORTS):
             if uri.startswith(prefix):
                 return self.HTTP_DIR + uri[len(prefix) :]
-        for prefix in self._get_uri_prefixes(*self.WPT_HOST_AND_PORTS):
+        wpt_uri_prefixes = self._get_uri_prefixes(*self.WPT_HOST_AND_PORTS)
+        wpt_hostname = self.WPT_HOST_AND_PORTS[0]
+        wpt_uri_prefixes.append(
+            f'https://{wpt_hostname}:{self.WPT_WEBSOCKET_H3_PORT}/'
+        )
+        for prefix in wpt_uri_prefixes:
             if uri.startswith(prefix):
                 url_path = '/' + uri[len(prefix) :]
                 for wpt_path, url_prefix in self._wpt_dirs.items():

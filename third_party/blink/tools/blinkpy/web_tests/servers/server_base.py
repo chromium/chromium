@@ -40,28 +40,43 @@ from blinkpy.common.system.filesystem import FileLockError
 
 _log = logging.getLogger(__name__)
 
-# This module is dynamically imported when the WebTransport over HTTP/3 server
-# is enabled. It only works with python3.
+# These modules are imported only when their HTTP/3 servers are enabled.
 webtransport_h3_server = None
+websocket_h3_server = None
+
+
+def _load_wpt_h3_server(module_name):
+    from blinkpy.common.path_finder import get_wpt_tools_wpt_dir
+
+    wpt_tools_path = get_wpt_tools_wpt_dir()
+    if wpt_tools_path not in sys.path:
+        sys.path.insert(0, wpt_tools_path)
+
+    from importlib import import_module
+
+    return import_module(module_name)
 
 
 def _is_webtransport_h3_server_running(port):
-    # Import the WebTransport server module from wpt tools.
     global webtransport_h3_server
     if webtransport_h3_server is None:
-        from blinkpy.common.path_finder import get_wpt_tools_wpt_dir
-
-        wpt_tools_path = get_wpt_tools_wpt_dir()
-        if wpt_tools_path not in sys.path:
-            sys.path.insert(0, wpt_tools_path)
-
-        from importlib import import_module
-
-        webtransport_h3_server = import_module(
+        webtransport_h3_server = _load_wpt_h3_server(
             'tools.webtransport.h3.webtransport_h3_server'
         )
 
     return webtransport_h3_server.server_is_running(
+        host='127.0.0.1', port=port, timeout=1
+    )
+
+
+def _is_websocket_h3_server_running(port):
+    global websocket_h3_server
+    if websocket_h3_server is None:
+        websocket_h3_server = _load_wpt_h3_server(
+            'tools.websocket.h3.websocket_h3_server'
+        )
+
+    return websocket_h3_server.server_is_running(
         host='127.0.0.1', port=port, timeout=1
     )
 
@@ -430,6 +445,21 @@ class ServerBase(object):
                     port,
                 )
                 continue
+            if scheme == 'websocket-h3':
+                if not _is_websocket_h3_server_running(port):
+                    _log.log(
+                        failure_log_level,
+                        'WebSocketH3 server NOT running on '
+                        'https://localhost:%d',
+                        port,
+                    )
+                    return False
+                _log.log(
+                    success_log_level,
+                    'WebSocketH3 server running on https://localhost:%d',
+                    port,
+                )
+                continue
             s = socket.socket()
             try:
                 s.connect(('localhost', port))
@@ -457,7 +487,7 @@ class ServerBase(object):
     def _check_that_all_ports_are_available(self):
         for mapping in self._mappings:
             scheme = mapping['scheme']
-            if scheme == 'webtransport-h3':
+            if scheme in ('webtransport-h3', 'websocket-h3'):
                 socket_type = socket.SOCK_DGRAM
             else:
                 socket_type = socket.SOCK_STREAM

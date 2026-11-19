@@ -13,7 +13,8 @@
     "h2": [9000],
     "ws": [9001],
     "wss": [9444],
-    "webtransport-h3": [11000]
+    "webtransport-h3": [11000],
+    "websocket-h3": [11001]
   },
   "ssl": {
     "type": "pregenerated",

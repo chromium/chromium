@@ -116,7 +116,13 @@ class TestLoader(testloader.TestLoader):
                         # requiring an upstream, cross-browser timeout marker.
                         test_cls = wpttest.manifest_test_cls[item.item_type]
                         test.timeout = max(test.timeout, test_cls.long_timeout)
-                tests = self.disabled_tests if test.disabled() else self.tests
+                enabled = not test.disabled()
+                if (
+                    not self.include_websocket_h3
+                    and test.environment['protocol'] == 'websocket-h3-https'
+                ):
+                    enabled = False
+                tests = self.tests if enabled else self.disabled_tests
                 tests[subsuite_name][item.item_type].append(test)
 
     def _load_items_by_url(self) -> Mapping[str, ManifestItem]:

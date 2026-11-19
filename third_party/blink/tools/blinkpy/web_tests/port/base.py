@@ -58,7 +58,7 @@ from typing import (
     get_args,
 )
 
-from urllib.parse import urljoin
+from urllib.parse import parse_qs, urljoin, urlsplit
 
 from blinkpy.common import exit_codes
 from blinkpy.common import find_files
@@ -2545,6 +2545,14 @@ class Port(object):
     def is_wpt_test(test):
         """Whether a test is considered a web-platform-tests test."""
         return Port.WPT_REGEX.match(test)
+
+    @staticmethod
+    def is_wpt_websocket_h3_test(test):
+        match = Port.WPT_REGEX.match(test)
+        if not match:
+            return False
+        url = urlsplit(match.group(2))
+        return 'websocket-h3' in parse_qs(url.query).get('wpt_flags', [])
 
     @staticmethod
     def is_wpt_idlharness_test(test_file):

@@ -88,6 +88,12 @@ def configuration_options():
             default=True,
             help='Do not run tests with Xvfb',
         ),
+        optparse.make_option(
+            '--enable-websocket-h3',
+            action='store_true',
+            default=False,
+            help='Start the WebSocket/H3 server.',
+        ),
     ]
 
 
@@ -122,6 +128,11 @@ def add_common_wpt_options(parser: argparse.ArgumentParser):
             'Do not update the web-platform-tests '
             'MANIFEST.json unless it does not exist.'
         ),
+    )
+    parser.add_argument(
+        '--enable-websocket-h3',
+        action='store_true',
+        help='Start the WebSocket/H3 server and run WebSocket/H3 WPT variants.',
     )
 
 

@@ -33,6 +33,7 @@ from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests.command_line import command_wrapper
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.port.driver import Driver
+from blinkpy.web_tests.port.driver import TestURIMapper
 from blinkpy.web_tests.port.driver import coalesce_repeated_switches
 from blinkpy.web_tests.port.server_process_mock import MockServerProcess
 
@@ -111,6 +112,26 @@ class DriverTest(unittest.TestCase):
             driver.test_to_uri('wpt_internal/foo/bar.serviceworker.html'),
             'https://web-platform.test:8444/wpt_internal/foo/bar.serviceworker.html',
         )
+
+    def test_websocket_h3_uri_mapping(self):
+        mapper = TestURIMapper(self.make_port())
+        for wpt_dir, url_prefix in (
+            ('external/wpt/', '/'),
+            ('wpt_internal/', '/wpt_internal/'),
+        ):
+            for test_path in (
+                'websockets/test.html?wpt_flags=websocket-h3',
+                'websockets/test.html?foo=bar&wpt_flags=websocket-h3',
+            ):
+                with self.subTest(wpt_dir=wpt_dir, test_path=test_path):
+                    test_name = wpt_dir + test_path
+                    uri = (
+                        'https://web-platform.test:11001'
+                        + url_prefix
+                        + test_path
+                    )
+                    self.assertEqual(mapper.test_to_uri(test_name), uri)
+                    self.assertEqual(mapper.uri_to_test(uri), test_name)
 
     def test_uri_to_test(self):
         port = self.make_port()

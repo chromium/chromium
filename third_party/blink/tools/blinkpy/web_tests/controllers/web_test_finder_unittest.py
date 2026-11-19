@@ -165,6 +165,65 @@ class WebTestFinderTests(unittest.TestCase):
         tests = finder.skip_tests([idlharness_test_1], all_tests, expectations)
         self.assertEqual(tests, set([idlharness_test_2]))
 
+    def test_skip_websocket_h3_requires_opt_in(self):
+        host = MockHost()
+        options = optparse.Values(
+            {
+                'no_expectations': False,
+                'enable_sanitizer': False,
+                'enable_websocket_h3': False,
+                'skipped': 'default',
+                'skip_timeouts': False,
+                'skip_failing_tests': False,
+            }
+        )
+        port = host.port_factory.get('test-win-win7', options=options)
+        finder = web_test_finder.WebTestFinder(port, options)
+        prefix = 'external/wpt/websockets/'
+        h3_tests = {
+            prefix + 'test.html?wpt_flags=websocket-h3',
+            prefix + 'test.html?foo=bar&wpt_flags=websocket-h3',
+            prefix + 'test.websocket-h3.html?wpt_flags=websocket-h3',
+            'virtual/fake/' + prefix + 'test.html?wpt_flags=websocket-h3',
+        }
+        other_tests = {
+            prefix + 'test.html',
+            prefix + 'test.websocket-h3.html',
+            prefix + 'test.websocket-h3.html?wpt_flags=h2',
+            prefix + 'test.html?wpt_flags=h2',
+            prefix + 'test.html?foo=websocket-h3',
+            prefix + 'test.html?wpt_flags=websocket-h3-other',
+            'fast/test.html?wpt_flags=websocket-h3',
+        }
+        all_tests = h3_tests | other_tests
+        for websocket_h3_enabled in (False, True):
+            port.set_option('enable_websocket_h3', websocket_h3_enabled)
+            for skipped in ('default', 'ignore', 'only', 'always'):
+                options.skipped = skipped
+                with self.subTest(
+                    websocket_h3_enabled=websocket_h3_enabled,
+                    skipped=skipped,
+                ):
+                    options.no_expectations = True
+                    self.assertEqual(
+                        finder.skip_tests(list(all_tests), all_tests, None),
+                        all_tests
+                        if skipped == 'only'
+                        else (set() if websocket_h3_enabled else h3_tests),
+                    )
+
+        options.no_expectations = False
+        options.skipped = 'default'
+        port.set_option('enable_websocket_h3', True)
+        expectations = test_expectations.TestExpectations(port)
+        self.assertEqual(finder.skip_tests([], all_tests, expectations), set())
+        test = prefix + 'test.html?wpt_flags=websocket-h3'
+        expectations = test_expectations.TestExpectations(port)
+        expectations.merge_raw_expectations(
+            f'# results: [ Skip ]\n{test} [ Skip ]\n'
+        )
+        self.assertEqual(finder.skip_tests([], all_tests, expectations), {test})
+
     def test_find_fastest_tests(self):
         host = MockHost()
         port = host.port_factory.get('test-win-win7', None)

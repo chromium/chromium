@@ -63,7 +63,13 @@ class WPTAdapterTest(unittest.TestCase):
                         'name': 'fake-flag',
                         'args': ['--enable-features=FakeFeature'],
                         'smoke_file': 'TestLists/fake-flag',
-                    }
+                    },
+                    {
+                        'name': 'websocket-h3',
+                        'args': [
+                            '--enable-features=EnableWebsocketsOverHttp3',
+                        ],
+                    },
                 ]
             ),
         )
@@ -448,6 +454,72 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertEqual(sorted(options.include), (['dir/reftest.html']))
             run_info = self._read_run_info(options)
             self.assertEqual(run_info['flag_specific'], 'fake-flag')
+
+    def test_websocket_h3_opt_in(self):
+        self.fs.write_text_file(
+            self.finder.path_from_wpt_tests('MANIFEST.json'),
+            json.dumps(
+                {
+                    'version': 9,
+                    'items': {
+                        'testharness': {
+                            'websockets': {
+                                'test.html': [
+                                    'c3f2fb6f436da59d43aeda0a7e8a018084557033',
+                                    [None, {}],
+                                    ['websockets/test.html?wpt_flags=h2', {}],
+                                    [
+                                        'websockets/test.html?wpt_flags=websocket-h3',
+                                        {},
+                                    ],
+                                ],
+                            },
+                        },
+                    },
+                }
+            ),
+        )
+        h3_test = 'external/wpt/websockets/test.html?wpt_flags=websocket-h3'
+        other_tests = {
+            'external/wpt/websockets/test.html',
+            'external/wpt/websockets/test.html?wpt_flags=h2',
+        }
+        feature_arg = '--enable-features=EnableWebsocketsOverHttp3'
+        for websocket_h3_enabled in (False, True):
+            with self.subTest(websocket_h3_enabled=websocket_h3_enabled):
+                args = ['--no-manifest-update', 'external/wpt/websockets/']
+                if websocket_h3_enabled:
+                    args += [
+                        '--enable-websocket-h3',
+                        '--flag-specific=websocket-h3',
+                    ]
+                adapter = WPTAdapter.from_args(
+                    self.host, args, 'test-linux-trusty'
+                )
+                tests_to_run, tests_to_skip = adapter._collect_tests()
+                self.assertEqual(
+                    set(tests_to_run),
+                    other_tests
+                    | ({h3_test} if websocket_h3_enabled else set()),
+                )
+                self.assertEqual(
+                    tests_to_skip,
+                    set() if websocket_h3_enabled else {h3_test},
+                )
+                with adapter.test_env() as options:
+                    self.assertEqual(
+                        options.enable_websocket_h3, websocket_h3_enabled
+                    )
+                    self.assertEqual(
+                        feature_arg in options.binary_args, websocket_h3_enabled
+                    )
+                    self.assertEqual(
+                        set(options.include),
+                        {
+                            test.removeprefix('external/wpt/')
+                            for test in other_tests | {h3_test}
+                        },
+                    )
 
     def test_run_virtual_tests(self):
         adapter = WPTAdapter.from_args(

@@ -26,7 +26,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import socket
 import unittest
+from unittest import mock
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.web_tests.port import test
@@ -34,6 +36,38 @@ from blinkpy.web_tests.servers.server_base import ServerBase
 
 
 class TestServerBase(unittest.TestCase):
+    @mock.patch(
+        'blinkpy.web_tests.servers.server_base._is_websocket_h3_server_running',
+        return_value=True,
+    )
+    @mock.patch('blinkpy.web_tests.servers.server_base.socket.socket')
+    def test_websocket_h3_checks_udp_and_tcp(self, socket_mock, h3_probe):
+        host = MockHost()
+        server = ServerBase(test.TestPort(host), '/tmp')
+        server._pid = 42
+        server._mappings = [
+            {'port': 11001, 'scheme': 'websocket-h3'},
+            {'port': 11001, 'scheme': 'websocket-h3-https'},
+        ]
+        with mock.patch.object(
+            server._executive, 'check_running_pid', return_value=True
+        ):
+            self.assertTrue(server._is_server_running_on_all_ports())
+        h3_probe.assert_called_once_with(11001)
+        socket_mock.return_value.connect.assert_called_once_with(
+            ('localhost', 11001)
+        )
+
+        server._check_that_all_ports_are_available()
+        self.assertIn(
+            mock.call(socket.AF_INET, socket.SOCK_DGRAM),
+            socket_mock.call_args_list,
+        )
+        self.assertIn(
+            mock.call(socket.AF_INET, socket.SOCK_STREAM),
+            socket_mock.call_args_list,
+        )
+
     def test_corrupt_pid_file(self):
         # This tests that if the pid file is corrupt or invalid,
         # both start() and stop() deal with it correctly and delete the file.

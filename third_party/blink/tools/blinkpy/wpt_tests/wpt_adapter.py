@@ -189,6 +189,7 @@ class WPTAdapter:
         runner_options = parser.parse_args(['--product', self.product.name])
         runner_options.include = []
         runner_options.exclude = []
+        runner_options.enable_websocket_h3 = self.options.enable_websocket_h3
 
         # TODO(crbug/1316055): Enable tombstone with '--stackwalk-binary' and
         # '--symbols-path'.
