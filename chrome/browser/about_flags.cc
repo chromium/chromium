@@ -13937,7 +13937,8 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"payment-handler-custom-size",
      flag_descriptions::kPaymentHandlerCustomSizeName,
-     flag_descriptions::kPaymentHandlerCustomSizeDescription, kOsDesktop,
+     flag_descriptions::kPaymentHandlerCustomSizeDescription,
+     kOsDesktop | kOsAndroid,
      MULTI_VALUE_TYPE(kPaymentHandlerCustomSizeChoices)},
 
 #if BUILDFLAG(IS_ANDROID)
