@@ -681,42 +681,12 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                   OverlayBaseController::State::kOverlay));
 }
 
-// A session started on a text selection with the panel already open isn't
-// handed off: the panel already has the text, and syncing it again would add
-// a screenshot of the same text (b:575500214).
+// A text session started with the panel open is handed off right away, so the
+// panel's capture button shows it, but the text bounds aren't sent as a region:
+// `GlicSelectionObserver` sends the text (b:575500214). Drawing a region sends
+// only that region, and deleting it sends the empty list to clear its chip.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
-                       TextSessionWithPanelOpenNotHandedOff) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-  const DeepQuery kRenderer = {"selection-overlay-app",
-                               "glic-selection-overlay",
-                               "post-selection-renderer"};
-  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
-  const DeepQuery kContextResult = {"#additionalContextResult"};
-
-  RunTestSequence(LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
-                    ShowWithSelection(selection::InteractionOptions::New(
-                        /*hide_handles=*/true, /*skip_intro_animation=*/true));
-                  }),
-                  WaitForShow(OverlayBaseController::kOverlayId),
-                  InstrumentNonTabWebView(kOverlayWebContentsId,
-                                          OverlayBaseController::kOverlayId),
-                  WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
-                                    "el => el.selectedRegions.length === 1"),
-                  CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
-                                  "el => !el.hasAttribute('pressed')"),
-                  CheckJsResultAt(kGlicContentsElementId, kContextResult,
-                                  "el => el.innerText.trim() === ''"),
-                  CheckResult([this]() { return GetController()->state(); },
-                              OverlayBaseController::State::kOverlay));
-}
-
-// Drawing a region in a text session while the panel is open hands the session
-// to the panel and sends only the drawn region, not the initial text region.
-// Deleting the drawn region keeps the overlay open with the text selection and
-// sends the empty region list to the panel to clear its chip.
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
-                       TextSessionWithPanelOpenHandedOffAfterDrawingRegion) {
+                       TextSessionWithPanelOpenHandedOff) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kRenderer = {"selection-overlay-app",
@@ -736,6 +706,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
+      WaitForJsResultAt(kGlicContentsElementId, kCaptureButton,
+                        "el => el.hasAttribute('pressed')"),
       WaitForPageContext(kOverlayWebContentsId), Do([this, region_id]() {
         static_cast<selection::SelectionOverlayPageHandler*>(GetController())
             ->AdjustRegion(
@@ -746,8 +718,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       }),
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 2"),
-      WaitForJsResultAt(kGlicContentsElementId, kCaptureButton,
-                        "el => el.hasAttribute('pressed')"),
       WaitForJsResultAt(kGlicContentsElementId, kContextResult,
                         "el => el.innerText.includes('Region: ')"),
       CheckJsResultAt(kGlicContentsElementId, kContextResult,
@@ -770,11 +740,11 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                   OverlayBaseController::State::kOverlay));
 }
 
-// Opening the panel mid-session on a text selection does not hand off either:
-// `GlicSelectionObserver` sends the text to the panel when it opens
-// (b:575500214).
+// Opening the panel mid-session on a text selection hands the session off, so
+// the panel's capture button shows it, but doesn't send the text bounds as a
+// region: `GlicSelectionObserver` sends the text (b:575500214).
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
-                       TextSessionNotHandedOffWhenPanelOpensMidSession) {
+                       TextSessionHandedOffWhenPanelOpensMidSession) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kRenderer = {"selection-overlay-app",
@@ -793,10 +763,28 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                   WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                                     "el => el.selectedRegions.length === 1"),
                   OpenGlic(),
-                  CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
-                                  "el => !el.hasAttribute('pressed')"),
+                  WaitForJsResultAt(kGlicContentsElementId, kCaptureButton,
+                                    "el => el.hasAttribute('pressed')"),
+                  // Draw a region so the panel gets exactly one context; an
+                  // earlier text region or empty list would add another.
+                  WaitForPageContext(kOverlayWebContentsId), Do([this]() {
+                    static_cast<selection::SelectionOverlayPageHandler*>(
+                        GetController())
+                        ->AdjustRegion(
+                            selection::SelectedRegion::New(
+                                base::UnguessableToken::Create(),
+                                selection::RegionShape::NewRect(
+                                    gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+                            /*is_using_keyboard=*/true);
+                  }),
+                  WaitForJsResultAt(kGlicContentsElementId, kContextResult,
+                                    "el => el.innerText.includes('Region: ')"),
                   CheckJsResultAt(kGlicContentsElementId, kContextResult,
-                                  "el => !el.innerText.includes('Region: ')"),
+                                  "el => el.innerText.split('Region: ')"
+                                  ".length === 2"),
+                  CheckJsResultAt(kGlicContentsElementId, kContextResult,
+                                  "el => el.innerText.split('Tab Context: "
+                                  "present').length === 2"),
                   CheckResult([this]() { return GetController()->state(); },
                               OverlayBaseController::State::kOverlay));
 }
@@ -2708,9 +2696,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
                       "el => el.textContent.includes('pendingRegion')"));
 }
 
-// When the panel is already open, drawing a region in a text session hands the
-// session to the panel, so submitting a prompt afterwards keeps the overlay up
-// and does not re-send the region with the prompt.
+// When the panel is already open, a text session is handed to the panel, so
+// submitting a prompt after drawing a region keeps the overlay up and does not
+// re-send the region with the prompt.
 IN_PROC_BROWSER_TEST_F(
     SelectionOverlayInteractiveTestWithPrompt,
     SubmitPromptAfterDrawingOnTextSelectionWithPanelOpenKeepsSession) {

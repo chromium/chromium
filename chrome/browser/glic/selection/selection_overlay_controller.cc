@@ -418,13 +418,8 @@ void SelectionOverlayController::OnSidePanelStateChanged(
 }
 
 void SelectionOverlayController::PostHandSessionToPanel() {
-  // Don't hand off a text selection: `GlicSelectionObserver` already sends the
-  // text to the panel, and adopting the session would add a duplicate
-  // screenshot chip.
-  // TODO(b:579078690): Clean this up once text and region selections use one
-  // path.
   if (session_->owner != Session::Owner::kDirect ||
-      session_->handoff_to_panel_pending || HasOnlyTextSelection()) {
+      session_->handoff_to_panel_pending) {
     return;
   }
   session_->handoff_to_panel_pending = true;
@@ -1317,8 +1312,7 @@ void SelectionOverlayController::AdjustRegion(
   }
 
   if (GlicSidePanelCoordinator::IsShowing(tab_)) {
-    // A text session with the panel open wasn't handed off at the start. Hand
-    // it off once the user draws a region.
+    // Retry in case the panel hasn't taken the session yet.
     PostHandSessionToPanel();
   }
   SyncRegions(/*should_focus_panel=*/!is_using_keyboard);
