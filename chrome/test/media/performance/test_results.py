@@ -333,10 +333,13 @@ class TestReporter(contextlib.AbstractContextManager):
                 int(result.duration_secs * 1000),
                 None,  # test_log
                 None,  # test_file
+                # The "flat" module scheme takes the whole case name as one
+                # component with no coarse or fine name. ResultDB rejects
+                # results that do not fit the scheme.
                 test_id_structured={
-                    'coarseName': None,
-                    'fineName': None,
-                    'caseNameComponents': result.name.split('/'),
+                    'coarseName': '',
+                    'fineName': '',
+                    'caseNameComponents': [result.name],
                 },
                 failure_reason=result.reason if is_failure else None,
                 html_artifact=(

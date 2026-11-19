@@ -122,7 +122,12 @@ class TestReporterTest(ReporterTestCase):
         self.assertTrue(post['expected'])
         self.assertNotIn('failureReason', post)
         self.assertEqual(
-            post['testIdStructured']['caseNameComponents'], ['H264', 'a.mp4']
+            post['testIdStructured'],
+            {
+                'coarseName': '',
+                'fineName': '',
+                'caseNameComponents': ['H264/a.mp4'],
+            },
         )
         self.assertEqual(
             self.read_output()['tests']['H264']['a.mp4']['time'], 2.5
