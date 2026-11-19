@@ -42,6 +42,15 @@ BASE_DECLARE_FEATURE(kOnDeviceModelGpuWeightCache);
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
 BASE_DECLARE_FEATURE(kOnDeviceModelSpeculativeDecoding);
 
+// Overrides the number of threads used by the audio encoder when it runs on
+// CPU.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+BASE_DECLARE_FEATURE(kOnDeviceModelAudioCpuThreads);
+
+// The number of audio encoder CPU threads. 0 keeps the backend default.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+extern const base::FeatureParam<int> kOnDeviceModelAudioCpuNumThreads;
+
 // Controls the decoder prefill setting for on-device ASR stream.
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
 BASE_DECLARE_FEATURE(kOnDeviceModelAsrDecoderPrefill);

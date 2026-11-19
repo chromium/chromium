@@ -124,6 +124,10 @@ struct ChromeMLModelDescriptor {
 
   // The estimated device VRAM capacity in MB (0 if unknown/unqueried).
   uint64_t vram_mb = 0;
+
+  // The number of XNNPACK threads to use when the audio encoder runs on CPU.
+  // 0 keeps the backend default.
+  uint32_t audio_cpu_num_threads = 0;
 };
 
 // Describes an adaptation for a model.

@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
@@ -76,6 +77,19 @@ const base::FeatureParam<bool> kAllowFp16{
 const base::FeatureParam<bool> kUseGpuIrModel{
     &optimization_guide::features::kOptimizationGuideModelExecution,
     "on_device_model_use_gpu_ir_model", false};
+
+// Returns the audio encoder CPU thread count to pass to ChromeML, or 0 to keep
+// the backend default.
+uint32_t GetAudioCpuNumThreads() {
+  static constexpr int kMaxAudioCpuNumThreads = 16;
+  if (!base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelAudioCpuThreads)) {
+    return 0;
+  }
+  return base::checked_cast<uint32_t>(std::clamp(
+      on_device_model::features::kOnDeviceModelAudioCpuNumThreads.Get(), 0,
+      kMaxAudioCpuNumThreads));
+}
 
 // Helper to bind object methods as weak task-posting callback functions.
 template <typename R, typename C, typename... Args>
@@ -921,6 +935,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .use_gpu_ir_model = kUseGpuIrModel.Get(),
       .performance_hint = params->performance_hint,
       .vram_mb = params->vram_mb,
+      .audio_cpu_num_threads = GetAudioCpuNumThreads(),
   };
 
   // `SessionCreateModel` may take a long time to load the model. Deactivate

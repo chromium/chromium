@@ -22,6 +22,11 @@ BASE_FEATURE(kOnDeviceModelGpuWeightCache, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kOnDeviceModelSpeculativeDecoding,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnDeviceModelAudioCpuThreads, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kOnDeviceModelAudioCpuNumThreads{
+    &kOnDeviceModelAudioCpuThreads, "num_threads", 0};
+
 BASE_FEATURE(kOnDeviceModelAsrDecoderPrefill,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
