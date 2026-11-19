@@ -5,6 +5,8 @@
 #ifndef REMOTING_BASE_CRASH_CRASHPAD_WIN_H_
 #define REMOTING_BASE_CRASH_CRASHPAD_WIN_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -32,6 +34,9 @@ inline constexpr wchar_t kCrashpadRegistryKeyPath[] =
 #endif
 inline constexpr wchar_t kCrashpadUploadUrlValue[] = L"UploadUrl";
 inline constexpr wchar_t kCrashpadDisableRateLimitValue[] = L"DisableRateLimit";
+// Maximum length (excluding trailing NUL) of an UploadUrl override, matching
+// base::win::RegKey::ReadValue's 1024-wchar limit.
+inline constexpr size_t kMaxCrashpadUploadUrlChars = 1023;
 
 class CrashpadWin : CrashpadDatabaseManager::Logger {
  public:

@@ -481,10 +481,9 @@ CrashpadWin::RegistryConfig CrashpadWin::ReadRegistryConfig() {
     return config;
   }
 
-  // Matches base::win::RegKey::ReadValue's 1024-wchar limit; longer values
-  // return ERROR_MORE_DATA and are rejected below.
-  constexpr size_t kMaxUploadUrlLength = 1024;
-  std::array<wchar_t, kMaxUploadUrlLength> raw_url;
+  // Matches base::win::RegKey::ReadValue's 1024-wchar limit (including NUL);
+  // longer values return ERROR_MORE_DATA and are rejected below.
+  std::array<wchar_t, kMaxCrashpadUploadUrlChars + 1> raw_url;
   DWORD url_bytes = sizeof(raw_url);
   DWORD url_type = 0;
   const LONG url_res = crashpad_reg_key.ReadValue(
