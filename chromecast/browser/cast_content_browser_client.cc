@@ -111,11 +111,14 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "base/byte_size.h"
+#include "base/system/sys_info.h"
 #include "chromecast/media/audio/cast_audio_manager_android.h"  // nogncheck
 #include "components/crash/core/app/crashpad.h"
 #include "components/input/features.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/audio/audio_features.h"
+#include "third_party/blink/public/common/switches.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(USE_ALSA)
@@ -417,6 +420,23 @@ void CastContentBrowserClient::AppendExtraCommandLineSwitches(
         switches::kCastAssetsDir,
         switches::kHomeEnvOverride};
     command_line->CopySwitchesFrom(*browser_command_line, kForwardSwitches);
+#if BUILDFLAG(IS_ANDROID)
+    // Matches Blink's GetGpuMemoryPolicy() <2000 MiB cutoff for nominal 2GB
+    // Android devices (~1484-1833 MiB kernel-visible RAM). Cap visible GPU
+    // tile memory from Blink's 96 MiB default down to 32 MiB (~4 full-screen
+    // 1920x1080 RGBA_8888 + AFBC tile backings at ~8.3 MiB each).
+    constexpr base::ByteSize kLowRamDeviceThreshold = base::MiB(2000);
+    constexpr char kLowRamGpuTileMemoryLimitMb[] = "32";
+    if (!browser_command_line->HasSwitch(
+            blink::switches::kForceGpuMemAvailableMb) &&
+        !command_line->HasSwitch(blink::switches::kForceGpuMemAvailableMb) &&
+        (base::SysInfo::IsLowEndDevice() ||
+         base::SysInfo::AmountOfTotalPhysicalMemory() <
+             kLowRamDeviceThreshold)) {
+      command_line->AppendSwitchASCII(blink::switches::kForceGpuMemAvailableMb,
+                                      kLowRamGpuTileMemoryLimitMb);
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
   } else if (process_type == switches::kUtilityProcess) {
     if (browser_command_line->HasSwitch(switches::kAudioOutputChannels)) {
       command_line->AppendSwitchASCII(switches::kAudioOutputChannels,
