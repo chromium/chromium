@@ -114,8 +114,9 @@ class CommitQueueProxy : public CommitQueue {
 void MaybeAdaptClientTagIfMissing(DataType data_type,
                                   syncer::EntityData& data) {
   CHECK(!data.specifics.has_encrypted());
-  if (!data.client_tag_hash.value().empty()) {
-    // Client tag hash is already set, nothing to do.
+  if (!data.client_tag_hash.value().empty() || data.is_deleted()) {
+    // Client tag hash is already set, or the entity is a deletion (which has
+    // no specifics from which to infer a client tag).
     return;
   }
   // Server does not send any client tags for wallet data entities or valuable
@@ -213,6 +214,10 @@ bool DecryptSpecifics(const Cryptographer& cryptographer,
 
   if (!cryptographer.Decrypt(in.encrypted(), out)) {
     DLOG(ERROR) << "Failed to decrypt a decryptable specifics";
+    return false;
+  }
+  if (out->has_encrypted()) {
+    DLOG(ERROR) << "Decrypted specifics still has encrypted field set";
     return false;
   }
   if (GetDataTypeFromSpecifics(*out) != data_type) {

@@ -2011,6 +2011,42 @@ TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
 }
 
 TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
+     WalletDataTombstoneWithMissingClientTagHash) {
+  UpdateResponseData response_data;
+
+  sync_pb::SyncEntity entity;
+  entity.set_deleted(true);
+  entity.mutable_specifics()->mutable_autofill_wallet();
+
+  EXPECT_EQ(
+      DataTypeWorker::SUCCESS,
+      DataTypeWorker::PopulateUpdateResponseData(
+          FakeCryptographer(), AUTOFILL_WALLET_DATA, entity, &response_data));
+  EXPECT_TRUE(response_data.entity.is_deleted());
+  EXPECT_TRUE(response_data.entity.client_tag_hash.value().empty());
+}
+
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
+     DoublyEncryptedSpecificsFailsToDecrypt) {
+  auto cryptographer =
+      FakeCryptographer::FromSinglePrimaryKey(GetNthKeyName(1));
+
+  sync_pb::EntitySpecifics inner_encrypted = GenerateSpecifics(kTag1, kValue1);
+  ASSERT_TRUE(cryptographer->Encrypt(GenerateSpecifics(kTag1, kValue1),
+                                     inner_encrypted.mutable_encrypted()));
+
+  sync_pb::SyncEntity entity;
+  entity.mutable_specifics()->mutable_preference();
+  ASSERT_TRUE(cryptographer->Encrypt(
+      inner_encrypted, entity.mutable_specifics()->mutable_encrypted()));
+
+  UpdateResponseData response_data;
+  EXPECT_EQ(DataTypeWorker::FAILED_TO_DECRYPT,
+            DataTypeWorker::PopulateUpdateResponseData(
+                *cryptographer, PREFERENCES, entity, &response_data));
+}
+
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      WalletDataIncludingClientTagHash) {
   const ClientTagHash kTestClientTagHash =
       ClientTagHash::FromUnhashed(AUTOFILL_WALLET_DATA, "12345");
