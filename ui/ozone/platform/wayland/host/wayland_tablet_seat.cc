@@ -65,7 +65,7 @@ void WaylandTabletSeat::OnToolRemoved(WaylandTabletTool* tool) {
 }
 
 void WaylandTabletSeat::UpdateCursor(const WaylandWindow* window,
-                                     const BitmapCursor* cursor) {
+                                     BitmapCursor* cursor) {
   for (auto& [id, tool] : tools_) {
     if (tool->focused_window() == window) {
       tool->SetCursor(cursor);

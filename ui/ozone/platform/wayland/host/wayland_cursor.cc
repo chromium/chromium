@@ -16,14 +16,11 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_pointer.h"
-#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
 namespace ui {
 
-WaylandCursor::WaylandCursor(WaylandPointer* pointer,
-                             WaylandConnection* connection)
-    : pointer_(pointer),
+WaylandCursor::WaylandCursor(Device* device, WaylandConnection* connection)
+    : device_(device),
       connection_(connection),
       pointer_surface_(connection->CreateSurface()) {}
 
@@ -39,8 +36,9 @@ void WaylandCursor::OnBufferRelease(void* data, wl_buffer* buffer) {
 void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
                                  const gfx::Point& hotspot_in_dips,
                                  int buffer_scale) {
-  if (!pointer_)
+  if (!device_) {
     return;
+  }
 
   if (!cursor_image.size())
     return HideCursor();
@@ -77,8 +75,9 @@ void WaylandCursor::UpdateBitmap(const std::vector<SkBitmap>& cursor_image,
 }
 
 void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data, int buffer_scale) {
-  if (!pointer_)
+  if (!device_) {
     return;
+  }
 
   animation_timer_.Stop();
 
@@ -94,17 +93,22 @@ void WaylandCursor::SetPlatformShape(wl_cursor* cursor_data, int buffer_scale) {
     listener_->OnCursorBufferAttached(cursor_data);
 }
 
+void WaylandCursor::SetStaticPlatformShape(wl_cursor* cursor_data,
+                                           int buffer_scale) {
+  SetPlatformShape(cursor_data, buffer_scale);
+  animation_timer_.Stop();
+  cursor_data_ = nullptr;
+}
+
 void WaylandCursor::HideCursor() {
-  auto pointer_enter_serial =
-      connection_->serial_tracker().GetSerial(wl::SerialType::kMouseEnter);
-  if (!pointer_enter_serial) {
-    VLOG(1) << "Failed to hide cursor. No mouse enter serial found.";
+  CHECK(device_, base::NotFatalUntil::M163);
+  auto serial = device_->GetCursorSerial();
+  if (!serial) {
+    VLOG(1) << "Failed to hide cursor. No serial found.";
     return;
   }
 
-  CHECK(pointer_, base::NotFatalUntil::M163);
-  wl_pointer_set_cursor(pointer_->wl_object(), pointer_enter_serial->value,
-                        nullptr, 0, 0);
+  device_->SetCursorSurface(*serial, nullptr, 0, 0);
 
   wl_surface_attach(pointer_surface_.get(), nullptr, 0, 0);
   wl_surface_commit(pointer_surface_.get());
@@ -154,14 +158,12 @@ void WaylandCursor::AttachAndCommit(wl_buffer* buffer,
                                     uint32_t buffer_height,
                                     uint32_t hotspot_x_dip,
                                     uint32_t hotspot_y_dip) {
-  auto pointer_enter_serial =
-      connection_->serial_tracker().GetSerial(wl::SerialType::kMouseEnter);
-  if (!pointer_enter_serial) {
-    VLOG(1) << "Failed to hide cursor. No mouse enter serial found.";
+  CHECK(device_, base::NotFatalUntil::M163);
+  auto serial = device_->GetCursorSerial();
+  if (!serial) {
+    VLOG(1) << "Failed to set cursor. No serial found.";
     return;
   }
-
-  CHECK(pointer_, base::NotFatalUntil::M163);
 
   wl_surface_damage(pointer_surface_.get(), 0, 0, buffer_width, buffer_height);
   // Note: should the offset be non-zero, use wl_surface_offset() to set it.
@@ -177,8 +179,8 @@ void WaylandCursor::AttachAndCommit(wl_buffer* buffer,
   // Gnome in particular made a change which expects a role to be set, or it
   // will throw a protocol error when the size is not divisible by the scale:
   // https://gitlab.gnome.org/GNOME/mutter/-/commit/98c8c03729fd3fe72980d55fc3dccd8a0e9702e9
-  wl_pointer_set_cursor(pointer_->wl_object(), pointer_enter_serial->value,
-                        pointer_surface_.get(), hotspot_x_dip, hotspot_y_dip);
+  device_->SetCursorSurface(*serial, pointer_surface_.get(), hotspot_x_dip,
+                            hotspot_y_dip);
   wl_surface_commit(pointer_surface_.get());
 
   connection_->Flush();

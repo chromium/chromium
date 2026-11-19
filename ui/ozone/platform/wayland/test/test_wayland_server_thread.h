@@ -82,6 +82,8 @@ struct ServerConfig {
   // Whether to advertise the zwp_tablet_manager_v2 and
   // wp_cursor_shape_manager_v1 globals.
   bool supports_tablet = false;
+  // Whether `supports_tablet` advertises wp_cursor_shape_manager_v1 too.
+  bool supports_cursor_shape = true;
 };
 
 class TestWaylandServerThread;

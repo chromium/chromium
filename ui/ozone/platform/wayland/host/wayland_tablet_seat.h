@@ -39,7 +39,7 @@ class WaylandTabletSeat {
 
   // Applies `cursor` to the tools in proximity of `window`. A null `cursor`
   // means the default cursor.
-  void UpdateCursor(const WaylandWindow* window, const BitmapCursor* cursor);
+  void UpdateCursor(const WaylandWindow* window, BitmapCursor* cursor);
 
  private:
   // zwp_tablet_seat_v2_listener callbacks:

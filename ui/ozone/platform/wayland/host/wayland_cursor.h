@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_CURSOR_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_CURSOR_H_
 
+#include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -25,7 +27,6 @@ class Point;
 namespace ui {
 
 class WaylandConnection;
-class WaylandPointer;
 
 // Interface through which WaylandCursor notifies the listener that it has
 // attached another buffer to the pointer surface.  The listener may free the
@@ -48,7 +49,26 @@ class WaylandCursorBufferListener {
 // Wayland protocol calls.
 class WaylandCursor {
  public:
-  WaylandCursor(WaylandPointer* pointer, WaylandConnection* connection);
+  // The input device whose cursor this is, e.g. wl_pointer or
+  // zwp_tablet_tool_v2.
+  class Device {
+   public:
+    // Returns the serial to set the cursor with, or nullopt if the device
+    // can't set its cursor now.
+    virtual std::optional<uint32_t> GetCursorSerial() const = 0;
+
+    // Makes `surface` the device's cursor, or hides the cursor if `surface` is
+    // null.
+    virtual void SetCursorSurface(uint32_t serial,
+                                  wl_surface* surface,
+                                  int32_t hotspot_x_dip,
+                                  int32_t hotspot_y_dip) = 0;
+
+   protected:
+    virtual ~Device() = default;
+  };
+
+  WaylandCursor(Device* device, WaylandConnection* connection);
 
   WaylandCursor(const WaylandCursor&) = delete;
   WaylandCursor& operator=(const WaylandCursor&) = delete;
@@ -68,6 +88,11 @@ class WaylandCursor {
   // Takes data managed by the platform (without taking ownership).
   void SetPlatformShape(wl_cursor* cursor_data,
                         int buffer_scale);
+
+  // Like SetPlatformShape(), but shows only the first frame and doesn't keep
+  // `cursor_data`, which belongs to a cursor theme that may be unloaded at any
+  // time. For cursors that don't report to a WaylandCursorBufferListener.
+  void SetStaticPlatformShape(wl_cursor* cursor_data, int buffer_scale);
 
   void set_listener(WaylandCursorBufferListener* listener) {
     listener_ = listener;
@@ -89,7 +114,7 @@ class WaylandCursor {
                        uint32_t hotspot_x_dip,
                        uint32_t hotspot_y_dip);
 
-  const raw_ptr<WaylandPointer> pointer_;
+  const raw_ptr<Device> device_;
   const raw_ptr<WaylandConnection> connection_;
   const wl::Object<wl_surface> pointer_surface_;
 

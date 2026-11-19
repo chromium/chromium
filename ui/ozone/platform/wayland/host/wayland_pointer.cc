@@ -68,6 +68,23 @@ WaylandPointer::~WaylandPointer() {
   delegate_->ReleasePressedPointerButtons(nullptr, EventTimeForNow());
 }
 
+std::optional<uint32_t> WaylandPointer::GetCursorSerial() const {
+  auto serial =
+      connection_->serial_tracker().GetSerial(wl::SerialType::kMouseEnter);
+  if (!serial) {
+    return std::nullopt;
+  }
+  return serial->value;
+}
+
+void WaylandPointer::SetCursorSurface(uint32_t serial,
+                                      wl_surface* surface,
+                                      int32_t hotspot_x_dip,
+                                      int32_t hotspot_y_dip) {
+  wl_pointer_set_cursor(obj_.get(), serial, surface, hotspot_x_dip,
+                        hotspot_y_dip);
+}
+
 // static
 void WaylandPointer::OnEnter(void* data,
                              wl_pointer* pointer,

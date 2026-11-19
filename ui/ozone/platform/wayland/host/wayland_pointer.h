@@ -12,6 +12,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 
 namespace base {
 class TimeTicks;
@@ -33,7 +34,7 @@ class WaylandWindow;
 
 // Wraps the wl_pointer object and injects event data through
 // |WaylandPointer::Delegate| interface.
-class WaylandPointer {
+class WaylandPointer : public WaylandCursor::Device {
  public:
   class Delegate;
 
@@ -44,10 +45,17 @@ class WaylandPointer {
   WaylandPointer(const WaylandPointer&) = delete;
   WaylandPointer& operator=(const WaylandPointer&) = delete;
 
-  virtual ~WaylandPointer();
+  ~WaylandPointer() override;
 
   uint32_t id() const { return obj_.id(); }
   wl_pointer* wl_object() const { return obj_.get(); }
+
+  // WaylandCursor::Device:
+  std::optional<uint32_t> GetCursorSerial() const override;
+  void SetCursorSurface(uint32_t serial,
+                        wl_surface* surface,
+                        int32_t hotspot_x_dip,
+                        int32_t hotspot_y_dip) override;
 
  private:
   // wl_pointer_listener callbacks:

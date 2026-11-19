@@ -8,8 +8,11 @@
 #include <linux/input-event-codes.h>
 #include <tablet-unstable-v2-client-protocol.h>
 
+#include <cmath>
+
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -93,31 +96,72 @@ WaylandTabletTool::WaylandTabletTool(zwp_tablet_tool_v2* tool,
 
 WaylandTabletTool::~WaylandTabletTool() = default;
 
-void WaylandTabletTool::SetCursor(const BitmapCursor* cursor) {
-  // Bitmap cursors aren't supported for tablet tools, so without the cursor
-  // shape protocol the compositor's cursor is left as is. In particular, it
-  // isn't hidden, as there would be no way to show it again.
-  // TODO(crbug.com/403365464): Draw bitmap cursors on a surface set with
-  // zwp_tablet_tool_v2.set_cursor.
-  if (!proximity_serial_ || !cursor_shape_device_) {
+void WaylandTabletTool::SetCursor(BitmapCursor* cursor) {
+  if (!proximity_serial_) {
     return;
   }
 
   if (cursor && cursor->type() == mojom::CursorType::kNone) {
-    zwp_tablet_tool_v2_set_cursor(tool_.get(), *proximity_serial_, nullptr, 0,
-                                  0);
+    if (cursor_) {
+      // Also detaches the buffer from the cursor surface and flushes.
+      cursor_->UpdateBitmap({}, gfx::Point(), 1);
+    } else {
+      zwp_tablet_tool_v2_set_cursor(tool_.get(), *proximity_serial_, nullptr, 0,
+                                    0);
+    }
     return;
   }
 
-  // Custom cursors fall back to the default shape.
-  // TODO(crbug.com/403365464): Draw custom cursors as bitmaps instead.
+  // As with wl_pointer, prefer the compositor's cursor shapes.
   std::optional<uint32_t> shape;
   if (cursor) {
     shape = WaylandCursorShape::ShapeFromType(cursor->type());
   }
-  wp_cursor_shape_device_v1_set_shape(
-      cursor_shape_device_.get(), *proximity_serial_,
-      shape.value_or(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT));
+  if (cursor_shape_device_ && (shape || !cursor)) {
+    wp_cursor_shape_device_v1_set_shape(
+        cursor_shape_device_.get(), *proximity_serial_,
+        shape.value_or(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT));
+    return;
+  }
+  if (!cursor) {
+    return;
+  }
+  if (!cursor->platform_data() && cursor->bitmaps().empty()) {
+    if (cursor_shape_device_) {
+      wp_cursor_shape_device_v1_set_shape(
+          cursor_shape_device_.get(), *proximity_serial_,
+          WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT);
+    }
+    return;
+  }
+
+  // Otherwise, draw the cursor on a surface of the tool's own. Round the scale
+  // up, as wl_surface.set_buffer_scale accepts only integers.
+  if (!cursor_) {
+    cursor_ = std::make_unique<WaylandCursor>(this, connection_);
+  }
+  const int buffer_scale = std::ceil(cursor->cursor_image_scale_factor());
+  if (cursor->platform_data()) {
+    cursor_->SetStaticPlatformShape(
+        static_cast<wl_cursor*>(cursor->platform_data()), buffer_scale);
+  } else {
+    // Translate physical pixels to DIPs.
+    gfx::Point hotspot_in_dips = gfx::ScaleToRoundedPoint(
+        cursor->hotspot(), 1.0f / cursor->cursor_image_scale_factor());
+    cursor_->UpdateBitmap(cursor->bitmaps(), hotspot_in_dips, buffer_scale);
+  }
+}
+
+std::optional<uint32_t> WaylandTabletTool::GetCursorSerial() const {
+  return proximity_serial_;
+}
+
+void WaylandTabletTool::SetCursorSurface(uint32_t serial,
+                                         wl_surface* surface,
+                                         int32_t hotspot_x_dip,
+                                         int32_t hotspot_y_dip) {
+  zwp_tablet_tool_v2_set_cursor(tool_.get(), serial, surface, hotspot_x_dip,
+                                hotspot_y_dip);
 }
 
 void WaylandTabletTool::DispatchBufferedEvents() {

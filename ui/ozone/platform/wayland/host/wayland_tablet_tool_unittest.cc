@@ -30,6 +30,7 @@
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using ::testing::_;
+using ::testing::NotNull;
 
 namespace ui {
 
@@ -48,11 +49,25 @@ wl::MockWpCursorShapeDevice* GetShapeDevice(
   return GetTool(server)->cursor_shape_device();
 }
 
+// Returns a cursor of `type` with a 10x10 bitmap at `scale` and its hotspot at
+// (2, 3) in DIPs.
+scoped_refptr<BitmapCursor> CreateBitmapCursor(mojom::CursorType type,
+                                               int scale = 1) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10 * scale, 10 * scale);
+  bitmap.eraseColor(SK_ColorRED);
+  return base::MakeRefCounted<BitmapCursor>(
+      type, bitmap, gfx::Point(2 * scale, 3 * scale), scale);
+}
+
 }  // namespace
 
 class WaylandTabletToolTest : public WaylandTestSimple {
  public:
-  WaylandTabletToolTest() : WaylandTestSimple({.supports_tablet = true}) {}
+  explicit WaylandTabletToolTest(bool supports_cursor_shape = true)
+      : WaylandTestSimple({.supports_tablet = true,
+                           .supports_cursor_shape = supports_cursor_shape}),
+        supports_cursor_shape_(supports_cursor_shape) {}
 
   void SetUp() override {
     WaylandTestSimple::SetUp();
@@ -63,7 +78,7 @@ class WaylandTabletToolTest : public WaylandTestSimple {
                                 WL_SEAT_CAPABILITY_POINTER);
     });
     ASSERT_TRUE(connection_->seat()->tablet_seat());
-    ASSERT_TRUE(connection_->wayland_cursor_shape());
+    ASSERT_EQ(!!connection_->wayland_cursor_shape(), supports_cursor_shape_);
 
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       auto* tablet_seat = GetTabletSeat(server);
@@ -117,9 +132,35 @@ class WaylandTabletToolTest : public WaylandTestSimple {
   void VerifyAndClearExpectations() {
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       ::testing::Mock::VerifyAndClearExpectations(GetTool(server));
-      ::testing::Mock::VerifyAndClearExpectations(GetShapeDevice(server));
+      if (auto* shape_device = GetShapeDevice(server)) {
+        ::testing::Mock::VerifyAndClearExpectations(shape_device);
+      }
     });
   }
+
+  // Gives `window_` pointer focus, so that it applies cursors as they load.
+  void SendPointerEnter() {
+    PostToServerAndWait([surface_id =
+                             window_->root_surface()->get_surface_id()](
+                            wl::TestWaylandServerThread* server) {
+      auto* surface =
+          server->GetObject<wl::MockSurface>(surface_id)->resource();
+      auto* pointer = server->seat()->pointer()->resource();
+      wl_pointer_send_enter(pointer, server->GetNextSerial(), surface, 0, 0);
+      wl_pointer_send_frame(pointer);
+    });
+    ASSERT_TRUE(window_->HasPointerFocus());
+  }
+
+ private:
+  const bool supports_cursor_shape_;
+};
+
+// For compositors without wp_cursor_shape_manager_v1, e.g. GNOME 46.
+class WaylandTabletToolNoCursorShapeTest : public WaylandTabletToolTest {
+ public:
+  WaylandTabletToolNoCursorShapeTest()
+      : WaylandTabletToolTest(/*supports_cursor_shape=*/false) {}
 };
 
 // Regression test for crbug.com/447172706: "cursor: none" must hide the cursor
@@ -197,8 +238,8 @@ TEST_F(WaylandTabletToolTest, SetCursorWithoutPointerFocus) {
   VerifyAndClearExpectations();
 }
 
-// Custom cursors need bitmaps, which tablet tools don't support yet.
-TEST_F(WaylandTabletToolTest, SetCursorUsesDefaultShapeForCustomCursors) {
+// Cursors without a shape are drawn on a surface of the tool's own.
+TEST_F(WaylandTabletToolTest, SetCursorUsesBitmapForCustomCursors) {
   uint32_t proximity_serial = 0;
   SendProximityIn(base::BindLambdaForTesting(
       [&](wl::TestWaylandServerThread*, uint32_t serial) {
@@ -206,12 +247,10 @@ TEST_F(WaylandTabletToolTest, SetCursorUsesDefaultShapeForCustomCursors) {
       }));
 
   PostToServerAndWait([proximity_serial](wl::TestWaylandServerThread* server) {
-    EXPECT_CALL(
-        *GetShapeDevice(server),
-        SetShape(proximity_serial, WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT));
+    EXPECT_CALL(*GetTool(server), SetCursor(proximity_serial, NotNull(), 2, 3));
+    EXPECT_CALL(*GetShapeDevice(server), SetShape(_, _)).Times(0);
   });
-  SetCursor(base::MakeRefCounted<BitmapCursor>(mojom::CursorType::kCustom,
-                                               SkBitmap(), gfx::Point(), 1.0f));
+  SetCursor(CreateBitmapCursor(mojom::CursorType::kCustom));
   VerifyAndClearExpectations();
 }
 
@@ -265,6 +304,56 @@ TEST_F(WaylandTabletToolTest, NoCursorUpdatesAfterProximityOut) {
   });
   SetCursor(mojom::CursorType::kNone);
   SetCursor(mojom::CursorType::kCross);
+  VerifyAndClearExpectations();
+}
+
+// Regression test for crbug.com/403365464: without the cursor shape protocol,
+// a tool entering proximity must still get a cursor.
+TEST_F(WaylandTabletToolNoCursorShapeTest, ProximityInAppliesWindowCursor) {
+  SendPointerEnter();
+  SetCursor(CreateBitmapCursor(mojom::CursorType::kPointer));
+
+  SendProximityIn(
+      base::BindOnce([](wl::TestWaylandServerThread* server, uint32_t serial) {
+        EXPECT_CALL(*GetTool(server), SetCursor(serial, NotNull(), 2, 3));
+      }));
+  VerifyAndClearExpectations();
+}
+
+TEST_F(WaylandTabletToolNoCursorShapeTest, SetCursorUsesBitmap) {
+  uint32_t proximity_serial = 0;
+  SendProximityIn(base::BindLambdaForTesting(
+      [&](wl::TestWaylandServerThread*, uint32_t serial) {
+        proximity_serial = serial;
+      }));
+
+  PostToServerAndWait([proximity_serial](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*GetTool(server), SetCursor(proximity_serial, NotNull(), 2, 3));
+  });
+  SetCursor(CreateBitmapCursor(mojom::CursorType::kCross));
+  VerifyAndClearExpectations();
+
+  // The cursor can be hidden and shown again.
+  PostToServerAndWait([proximity_serial](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*GetTool(server), SetCursor(proximity_serial, nullptr, 0, 0));
+  });
+  SetCursor(mojom::CursorType::kNone);
+  VerifyAndClearExpectations();
+
+  // The hotspot is in DIPs.
+  PostToServerAndWait([proximity_serial](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*GetTool(server), SetCursor(proximity_serial, NotNull(), 2, 3));
+  });
+  SetCursor(CreateBitmapCursor(mojom::CursorType::kHand, /*scale=*/2));
+  VerifyAndClearExpectations();
+}
+
+// Without a window cursor, the compositor's cursor is left as is.
+TEST_F(WaylandTabletToolNoCursorShapeTest, ProximityInWithoutWindowCursor) {
+  SendProximityIn(
+      base::BindOnce([](wl::TestWaylandServerThread* server, uint32_t) {
+        EXPECT_CALL(*GetTool(server), SetCursor(_, _, _, _)).Times(0);
+      }));
   VerifyAndClearExpectations();
 }
 

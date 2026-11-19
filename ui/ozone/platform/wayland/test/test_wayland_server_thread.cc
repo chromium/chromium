@@ -122,7 +122,10 @@ bool TestWaylandServerThread::Start() {
   }
 
   if (config_.supports_tablet) {
-    if (!zwp_tablet_manager_.Initialize(display_.get()) ||
+    if (!zwp_tablet_manager_.Initialize(display_.get())) {
+      return false;
+    }
+    if (config_.supports_cursor_shape &&
         !wp_cursor_shape_manager_.Initialize(display_.get())) {
       return false;
     }
