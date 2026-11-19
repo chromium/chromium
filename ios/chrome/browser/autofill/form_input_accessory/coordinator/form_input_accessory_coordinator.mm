@@ -208,10 +208,6 @@ void UndoInSessionSuppressedEntity(
 @property(nonatomic, strong)
     UITapGestureRecognizer* formInputAccessoryTapRecognizer;
 
-// The layout guide installed in the base view controller on which to anchor the
-// potential IPH bubble.
-@property(nonatomic, strong) UILayoutGuide* layoutGuide;
-
 @end
 
 @implementation FormInputAccessoryCoordinator {
@@ -301,10 +297,6 @@ void UndoInSessionSuppressedEntity(
       _formInputAccessoryMediator;
   _formInputAccessoryViewController.contextMenuHandler = self;
 
-  self.layoutGuide =
-      [layoutGuideCenter makeLayoutGuideNamed:kAutofillFirstSuggestionGuide];
-  [self.baseViewController.view addLayoutGuide:self.layoutGuide];
-
   auto autofillProviderGetter = base::BindRepeating(
       [](web::WebState* webState) -> id<FormSuggestionProvider> {
         if (auto* tabHelper = AutofillTabHelper::FromWebState(webState);
@@ -330,7 +322,6 @@ void UndoInSessionSuppressedEntity(
   // seems to cause watchdog kills. See crbug.com/40918951.
   if (SceneState* sceneState = self.browser->GetSceneState();
       sceneState.activationLevel > SceneActivationLevelDisconnected) {
-    [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
     [self.formInputAccessoryTapRecognizer.view
         removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
     [_formInputAccessoryMediator reloadFirstResponderInputViews];
@@ -344,8 +335,6 @@ void UndoInSessionSuppressedEntity(
 
   [_brandingCoordinator stop];
   _brandingCoordinator = nil;
-
-  self.layoutGuide = nil;
 }
 
 - (void)reset {
@@ -1228,18 +1217,24 @@ void UndoInSessionSuppressedEntity(
 
 // Checks if the bubble should be presented and acts on it.
 - (void)tryPresentingBubbleFor:(SuggestionFeatureForIPH)featureForIPH {
+  UIView* baseView = self.baseViewController.view;
+  CGRect anchorFrame = [LayoutGuideCenterForBrowser(self.browser)
+      frameOfReferencedViewUnderName:kAutofillFirstSuggestionGuide
+                     convertedToView:baseView];
+  // The first suggestion is no longer on screen (e.g. it was accepted or the
+  // keyboard was dismissed), so there is nothing to anchor the IPH to.
+  if (CGRectIsEmpty(anchorFrame)) {
+    return;
+  }
+
   BubbleViewControllerPresenter* bubblePresenter =
       [self newBubbleViewControllerPresenterFor:featureForIPH];
-
-  // Get the anchor point for the bubble.
-  CGRect anchorFrame = self.layoutGuide.layoutFrame;
   CGPoint anchorPoint =
       CGPointMake(CGRectGetMidX(anchorFrame),
                   CGRectGetMinY(anchorFrame) + kIPHVerticalOffset);
 
   // Discard if it doesn't fit in the view as it is currently shown.
-  if (![bubblePresenter canPresentInView:self.baseViewController.view
-                             anchorPoint:anchorPoint]) {
+  if (![bubblePresenter canPresentInView:baseView anchorPoint:anchorPoint]) {
     return;
   }
 
