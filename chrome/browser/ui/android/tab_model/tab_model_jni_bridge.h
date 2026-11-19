@@ -89,6 +89,12 @@ class TabModelJniBridge : public TabModel {
       int index,
       TabLaunchType type,
       bool should_pin) override;
+  tabs::TabInterface* CreateFrozenTab(
+      int index,
+      const base::android::JavaRef<jobject>& web_contents_state_buffer,
+      int web_contents_state_version,
+      TabLaunchType type,
+      bool should_pin) override;
   void HandlePopupNavigation(TabAndroid* parent,
                              NavigateParams* params) override;
 

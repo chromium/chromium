@@ -1203,12 +1203,14 @@ public class TabCollectionTabModelImplUnitTest {
 
     @Test
     public void testRestoreClosedTabsForUndo_unrestorableStateNotRestored() {
+        // An archived snapshot with INVALID_TAB_RESTORE_ENTRY_ID is not restored.
         UndoClosureSnapshot archivedSnapshot =
                 UndoClosureSnapshot.forArchived(
                         List.of(createClosedTab(/* id= */ 5, /* wasSelected= */ false)),
                         List.of("sync_id"),
                         /* savedGroupTitle= */ null,
-                        /* savedGroupTabCount= */ 0);
+                        /* savedGroupTabCount= */ 0,
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
         assertArrayEquals(
                 new int[] {Tab.INVALID_TAB_ID},
                 mTabModel.restoreClosedTabsForUndo(
@@ -1387,6 +1389,50 @@ public class TabCollectionTabModelImplUnitTest {
         verify(mTabModelObserver, never())
                 .didSelectTab(any(), eq(TabSelectionType.FROM_UNDO), anyInt());
         verifyBatchedAndReset();
+    }
+
+    @Test
+    public void testRestoreClosedTabsForUndo_archivedModel() {
+        TabCollectionTabModelImpl archivedModel = createArchivedModel();
+        archivedModel.addObserver(mTabModelObserver);
+
+        // Even when a snapshot carries reopenable hidden groups, an archived model with
+        // INVALID_TAB_RESTORE_ENTRY_ID returns invalid IDs without opening a storage batch.
+        UndoClosureSnapshot invalidEntrySnapshot =
+                createHidingGroupSnapshot(
+                        /* collapsed= */ false,
+                        TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
+                        createClosedTab(
+                                /* id= */ 10,
+                                HIDDEN_GROUP_ID,
+                                /* indexInGroup= */ 0,
+                                /* modelIndex= */ 0,
+                                /* wasSelected= */ false));
+        int batchGetCountBefore = mBatchGetCount;
+        assertArrayEquals(
+                new int[] {Tab.INVALID_TAB_ID},
+                archivedModel.restoreClosedTabsForUndo(
+                        invalidEntrySnapshot, /* reselect= */ true, mTabGroupUiActionHandler));
+        assertEquals(batchGetCountBefore, mBatchGetCount);
+        verify(mScopedStorageBatch, never()).close();
+
+        UndoClosureSnapshot snapshot =
+                UndoClosureSnapshot.forArchived(
+                        List.of(createClosedTab(/* id= */ 10, /* wasSelected= */ true)),
+                        /* savedTabGroupSyncIds= */ Collections.emptyList(),
+                        /* savedGroupTitle= */ null,
+                        /* savedGroupTabCount= */ 0,
+                        ENTRY_ID);
+        stubRestoreForUndo(snapshot, createArchivedMockTab(/* tabId= */ 100));
+
+        assertArrayEquals(
+                new int[] {100},
+                archivedModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, mTabGroupUiActionHandler));
+        verifyBatchedAndReset();
+        verify(mTabGroupUiActionHandler, never()).openTabGroup(any());
+        verify(mTabModelObserver, never())
+                .didSelectTab(any(), eq(TabSelectionType.FROM_UNDO), anyInt());
     }
 
     @Test
@@ -1763,7 +1809,10 @@ public class TabCollectionTabModelImplUnitTest {
                         mAsyncTabParamsManager,
                         mTabRemover,
                         mTabUngrouper,
-                        () -> mScopedStorageBatch,
+                        () -> {
+                            mBatchGetCount++;
+                            return mScopedStorageBatch;
+                        },
                         /* supportUndo= */ false);
         return mTabModel;
     }

@@ -27,10 +27,12 @@
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/restore_type.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
@@ -240,7 +242,6 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
 
   std::unique_ptr<content::WebContents> web_contents =
       CreateRestoredWebContents(profile, tab);
-  content::WebContents* raw_web_contents = web_contents.get();
 
   // Create new tab. Ownership is passed into java, which in turn creates a new
   // TabAndroid instance to own the WebContents. Only select the restored tab
@@ -256,13 +257,17 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
        (!is_restoring_group_or_window && select))
           ? TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND
           : TabModel::TabLaunchType::FROM_RECENT_TABS;
-  tab_model_->CreateTab(nullptr, std::move(web_contents), tab.tabstrip_index,
-                        type, tab.pinned);
+  tabs::TabInterface* created_tab = tab_model_->CreateTab(
+      nullptr, std::move(web_contents), tab.tabstrip_index, type, tab.pinned);
   // Don't load the tab yet. This prevents a renderer from starting which keeps
   // the tab restore lightweight as the tab is opened in the background only.
   // The tab will be in a "renderer was lost" state. This is recovered from when
   // the tab is made active.
-  return sessions::ContentLiveTab::GetOrCreateForWebContents(raw_web_contents);
+  content::WebContents* created_contents =
+      created_tab ? created_tab->GetContents() : nullptr;
+  return created_contents ? sessions::ContentLiveTab::GetOrCreateForWebContents(
+                                created_contents)
+                          : nullptr;
 }
 
 sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(

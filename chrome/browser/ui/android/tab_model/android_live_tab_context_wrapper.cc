@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
@@ -15,10 +17,14 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/glic/glic_tab_restore_helper.h"
+#include "chrome/browser/tab/web_contents_state.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/sessions/content/content_live_tab.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 std::optional<int> GetOldTabIdFromExtraData(
@@ -180,7 +186,7 @@ sessions::LiveTab* AndroidLiveTabContextRestoreWrapper::AddRestoredTab(
   auto* live_tab = AndroidLiveTabContext::AddRestoredTab(
       tab, tab_index, select, is_restoring_group_or_window,
       original_session_type);
-  if (tab.group) {
+  if (live_tab && tab.group) {
     TabAndroid* restored_tab = TabAndroid::FromWebContents(
         &static_cast<sessions::ContentLiveTab*>(live_tab)->GetWebContents());
     CHECK(restored_tab, base::NotFatalUntil::M162);
@@ -245,12 +251,6 @@ sessions::LiveTab* AndroidLiveTabContextUndoRestoreWrapper::AddRestoredTab(
     bool select,
     bool is_restoring_group_or_window,
     sessions::tab_restore::Type original_session_type) {
-  Profile* profile = tab_model()->GetProfile();
-
-  std::unique_ptr<content::WebContents> new_web_contents =
-      CreateRestoredWebContents(profile, tab);
-  content::WebContents* web_contents_ptr = new_web_contents.get();
-
   std::optional<size_t> placement_index =
       ResolvePlacementIndex(tab.extra_data, placement_index_by_old_tab_id_,
                             restored_tab_ids_, original_session_type);
@@ -262,7 +262,7 @@ sessions::LiveTab* AndroidLiveTabContextUndoRestoreWrapper::AddRestoredTab(
   int insertion_index;
   bool restore_pinned;
   if (placement_index.has_value()) {
-    const ClosedTab& closed_tab = closed_tabs_[placement_index.value()];
+    const ClosedTab& closed_tab = closed_tabs_[*placement_index];
     insertion_index = closed_tab.model_index;
     restore_pinned = closed_tab.pinned;
   } else {
@@ -271,24 +271,39 @@ sessions::LiveTab* AndroidLiveTabContextUndoRestoreWrapper::AddRestoredTab(
     restore_pinned = false;
   }
 
-  if (!tab_model()->CreateTab(
-          nullptr, std::move(new_web_contents), insertion_index,
-          TabModel::TabLaunchType::FROM_UNDO_CLOSURE, restore_pinned)) {
+  tabs::TabInterface* created_tab = nullptr;
+  if (tab_model()->GetTabModelType() == TabModel::TabModelType::kArchived) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    base::android::ScopedJavaLocalRef<jobject> state_buffer =
+        WebContentsState::CreateContentsStateAsByteBuffer(
+            env, tab_model()->IsOffTheRecord(), tab.navigations,
+            tab.normalized_navigation_index());
+    if (state_buffer) {
+      created_tab = tab_model()->CreateFrozenTab(
+          insertion_index, state_buffer, WebContentsState::kCurrentVersion,
+          TabModel::TabLaunchType::FROM_UNDO_CLOSURE, restore_pinned);
+    }
+  } else {
+    std::unique_ptr<content::WebContents> new_web_contents =
+        CreateRestoredWebContents(tab_model()->GetProfile(), tab);
+    created_tab = tab_model()->CreateTab(
+        nullptr, std::move(new_web_contents), insertion_index,
+        TabModel::TabLaunchType::FROM_UNDO_CLOSURE, restore_pinned);
+  }
+  if (!created_tab) {
     return nullptr;
   }
 
-  sessions::LiveTab* live_tab =
-      sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents_ptr);
-
   if (placement_index.has_value()) {
-    TabAndroid* restored_tab = TabAndroid::FromWebContents(web_contents_ptr);
-    if (restored_tab) {
-      // Record the new tab id to map it back to its placement index.
-      restored_tab_ids_[placement_index.value()] = restored_tab->GetAndroidId();
-    }
+    // Record the new tab id to map it back to its placement index.
+    restored_tab_ids_[*placement_index] =
+        TabAndroid::FromTabInterface(created_tab)->GetAndroidId();
   }
 
-  return live_tab;
+  content::WebContents* created_contents = created_tab->GetContents();
+  return created_contents ? sessions::ContentLiveTab::GetOrCreateForWebContents(
+                                created_contents)
+                          : nullptr;
 }
 
 const std::vector<int>&

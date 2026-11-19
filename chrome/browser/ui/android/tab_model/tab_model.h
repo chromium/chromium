@@ -302,10 +302,26 @@ class TabModel : public TabListInterface {
   std::unique_ptr<content::WebContents> DetachWebContents(
       tabs::TabHandle tab) override = 0;
 
+  // Creates a tab at `index` owning `web_contents`. Returns nullptr for
+  // non-standard models (`GetTabModelType() != TabModelType::kStandard`) or on
+  // failure, and may return a tab with no `WebContents`.
   virtual tabs::TabInterface* CreateTab(
       TabAndroid* parent,
       std::unique_ptr<content::WebContents> web_contents,
       int index,
+      TabLaunchType type,
+      bool should_pin) = 0;
+
+  // Creates a frozen tab at `index` from a serialized `WebContentsState` direct
+  // `ByteBuffer` (`web_contents_state_buffer`, version
+  // `web_contents_state_version`) without instantiating a
+  // `content::WebContents`. Only supported on archived
+  // (`TabModelType::kArchived`) non-off-the-record models; returns nullptr
+  // otherwise, if `web_contents_state_buffer` is null, or if creation fails.
+  virtual tabs::TabInterface* CreateFrozenTab(
+      int index,
+      const base::android::JavaRef<jobject>& web_contents_state_buffer,
+      int web_contents_state_version,
       TabLaunchType type,
       bool should_pin) = 0;
 

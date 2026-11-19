@@ -83,6 +83,10 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
   const gfx::Rect GetRestoredBounds() const override;
   ui::mojom::WindowShowState GetRestoredState() const override;
   std::string GetWorkspace() const override;
+  // Restores `tab` into `tab_model_` via `TabModel::CreateTab`. Returns nullptr
+  // if `CreateTab` returns nullptr (e.g., for non-standard tab models or on
+  // failure) or returns a tab with no `WebContents` (i.e.,
+  // `created_tab->GetContents()` is null).
   sessions::LiveTab* AddRestoredTab(
       const sessions::tab_restore::Tab& tab,
       int tab_index,

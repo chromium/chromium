@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -55,6 +56,12 @@ class TestTabModel : public TabModel {
       TabAndroid* parent,
       std::unique_ptr<content::WebContents> web_contents,
       int index,
+      TabLaunchType type,
+      bool should_pin) override;
+  tabs::TabInterface* CreateFrozenTab(
+      int index,
+      const base::android::JavaRef<jobject>& web_contents_state_buffer,
+      int web_contents_state_version,
       TabLaunchType type,
       bool should_pin) override;
   void HandlePopupNavigation(TabAndroid* parent,
@@ -207,6 +214,12 @@ class OwningTestTabModel : public TabModel {
       TabAndroid* parent,
       std::unique_ptr<content::WebContents> web_contents,
       int index,
+      TabLaunchType type,
+      bool should_pin) override;
+  tabs::TabInterface* CreateFrozenTab(
+      int index,
+      const base::android::JavaRef<jobject>& web_contents_state_buffer,
+      int web_contents_state_version,
       TabLaunchType type,
       bool should_pin) override;
   bool IsActiveModel() const override;

@@ -293,13 +293,15 @@ public final class UndoClosureSnapshot {
      * @param savedTabGroupSyncIds The list of closed archived saved tab group sync identifiers.
      * @param savedGroupTitle The title of the archived saved group, if applicable.
      * @param savedGroupTabCount The tab count of the archived saved group, if applicable.
+     * @param entryId The TabRestoreService entry id.
      * @return The immutable snapshot.
      */
     public static UndoClosureSnapshot forArchived(
             List<ClosedTab> tabs,
             List<String> savedTabGroupSyncIds,
             @Nullable String savedGroupTitle,
-            int savedGroupTabCount) {
+            int savedGroupTabCount,
+            @TabRestoreEntryId int entryId) {
         return new UndoClosureSnapshot(
                 ClosureKind.ARCHIVED,
                 tabs,
@@ -309,7 +311,7 @@ public final class UndoClosureSnapshot {
                 savedTabGroupSyncIds,
                 savedGroupTitle,
                 savedGroupTabCount,
-                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
+                entryId,
                 /* closingSource= */ TabClosingSource.UNKNOWN,
                 /* undoRunnable= */ null);
     }

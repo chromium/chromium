@@ -169,6 +169,11 @@ public final class UndoClosureSnapshotFactory {
             }
         }
 
-        return forArchived(closedTabs, syncIds, savedGroupTitle, savedGroupTabCount);
+        return forArchived(
+                closedTabs,
+                syncIds,
+                savedGroupTitle,
+                savedGroupTabCount,
+                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
     }
 }

@@ -85,6 +85,17 @@ class WebContentsState {
   static base::android::ScopedJavaLocalRef<jobject>
   GetContentsStateAsByteBuffer(JNIEnv* env, content::WebContents* web_contents);
 
+  // Serializes `navigations` and `current_entry` into a direct Java ByteBuffer
+  // in the current WebContentsState format without instantiating a WebContents.
+  // Returns nullptr if `navigations` is empty or `current_entry` is out of
+  // bounds.
+  static base::android::ScopedJavaLocalRef<jobject>
+  CreateContentsStateAsByteBuffer(
+      JNIEnv* env,
+      bool is_off_the_record,
+      base::span<const sessions::SerializedNavigationEntry> navigations,
+      int current_entry);
+
   // Serializes the WebContents navigation history into a heap-allocated Pickle.
   // Returns nullptr if serialization was not possible (e.g. if `web_contents`
   // is null or on the initial navigation entry).

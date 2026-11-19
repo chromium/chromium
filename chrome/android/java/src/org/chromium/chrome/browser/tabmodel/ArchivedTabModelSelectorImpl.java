@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -66,6 +67,7 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase {
         TabCreator tabCreator = getTabCreatorManager().getTabCreator(false);
         TabModelOrderController orderController = new TabModelOrderControllerImpl(this);
         TabRemover tabRemover = new PassthroughTabRemover(() -> getModel(/* incognito= */ false));
+        mRecentlyClosedBridge = new RecentlyClosedBridge(mProfile, this);
 
         TabModelInternal normalModel =
                 TabModelFactory.createTabModel(

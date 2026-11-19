@@ -346,7 +346,8 @@ public class UndoBarContentFactoryTest {
                         Collections.emptyList(),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
                         /* savedGroupTitle= */ "Group 1",
-                        /* savedGroupTabCount= */ 2);
+                        /* savedGroupTabCount= */ 2,
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
 
         UndoBarContent content =
                 UndoBarContentFactory.create(
@@ -394,7 +395,8 @@ public class UndoBarContentFactoryTest {
                         Collections.emptyList(),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
                         /* savedGroupTitle= */ "",
-                        /* savedGroupTabCount= */ 3);
+                        /* savedGroupTabCount= */ 3,
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
 
         UndoBarContent content =
                 UndoBarContentFactory.create(
@@ -412,7 +414,8 @@ public class UndoBarContentFactoryTest {
                         Collections.emptyList(),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
                         /* savedGroupTitle= */ null,
-                        /* savedGroupTabCount= */ 0);
+                        /* savedGroupTabCount= */ 0,
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
 
         UndoBarContent content =
                 UndoBarContentFactory.create(
@@ -432,7 +435,8 @@ public class UndoBarContentFactoryTest {
                         List.of(createClosedTab(1, "Tab 1", /* groupId= */ null)),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
                         /* savedGroupTitle= */ null,
-                        /* savedGroupTabCount= */ 0);
+                        /* savedGroupTabCount= */ 0,
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
 
         UndoBarContent content =
                 UndoBarContentFactory.create(
@@ -458,7 +462,8 @@ public class UndoBarContentFactoryTest {
                         Collections.emptyList(),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1", "sync-id-2"),
                         /* savedGroupTitle= */ null,
-                        /* savedGroupTabCount= */ 0);
+                        /* savedGroupTabCount= */ 0,
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
 
         UndoBarContent content =
                 UndoBarContentFactory.create(
@@ -477,7 +482,8 @@ public class UndoBarContentFactoryTest {
                         List.of(createClosedTab(1, "Tab 1", /* groupId= */ null)),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1"),
                         /* savedGroupTitle= */ "Group 1",
-                        /* savedGroupTabCount= */ 2);
+                        /* savedGroupTabCount= */ 2,
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
 
         UndoBarContent content =
                 UndoBarContentFactory.create(
@@ -505,7 +511,8 @@ public class UndoBarContentFactoryTest {
                                 createClosedTab(2, "Tab 2", /* groupId= */ null)),
                         /* savedTabGroupSyncIds= */ List.of("sync-id-1", "sync-id-2"),
                         /* savedGroupTitle= */ null,
-                        /* savedGroupTabCount= */ 0);
+                        /* savedGroupTabCount= */ 0,
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
 
         UndoBarContent content =
                 UndoBarContentFactory.create(

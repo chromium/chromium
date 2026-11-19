@@ -369,6 +369,28 @@ tabs::TabInterface* TabModelJniBridge::CreateTab(
   return new_tab;
 }
 
+tabs::TabInterface* TabModelJniBridge::CreateFrozenTab(
+    int index,
+    const base::android::JavaRef<jobject>& web_contents_state_buffer,
+    int web_contents_state_version,
+    TabLaunchType type,
+    bool should_pin) {
+  if (GetTabModelType() != TabModelType::kArchived || IsOffTheRecord() ||
+      !web_contents_state_buffer) {
+    return nullptr;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  if (jobj.is_null()) {
+    return nullptr;
+  }
+
+  return Java_TabModelJniBridge_createFrozenTab(
+      env, jobj, web_contents_state_buffer, web_contents_state_version, index,
+      static_cast<int>(type), should_pin);
+}
+
 void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
                                               NavigateParams* params) {
   CHECK_EQ(params->source_contents, parent->web_contents(),

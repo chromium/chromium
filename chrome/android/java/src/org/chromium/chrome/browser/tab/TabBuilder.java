@@ -191,11 +191,15 @@ public class TabBuilder {
             if (!mFromFrozenState) {
                 assert mCreationType != TabCreationState.FROZEN_ON_RESTORE;
             } else {
-                assert mLaunchType == TabLaunchType.FROM_RESTORE
+                assert (mLaunchType == TabLaunchType.FROM_RESTORE
+                                || mLaunchType == TabLaunchType.FROM_UNDO_CLOSURE)
                         && mCreationType == TabCreationState.FROZEN_ON_RESTORE;
             }
         } else {
-            if (mFromFrozenState) assert mLaunchType == TabLaunchType.FROM_RESTORE;
+            if (mFromFrozenState) {
+                assert mLaunchType == TabLaunchType.FROM_RESTORE
+                        || mLaunchType == TabLaunchType.FROM_UNDO_CLOSURE;
+            }
         }
 
         TabImpl tab = new TabImpl(mId, mProfile, mLaunchType);

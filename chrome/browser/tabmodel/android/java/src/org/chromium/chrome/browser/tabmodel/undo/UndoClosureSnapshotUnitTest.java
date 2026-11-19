@@ -108,7 +108,8 @@ public class UndoClosureSnapshotUnitTest {
                                         /* wasSelected= */ false)),
                         /* savedTabGroupSyncIds= */ List.of("sync-1"),
                         /* savedGroupTitle= */ "Saved 1",
-                        /* savedGroupTabCount= */ 3);
+                        /* savedGroupTabCount= */ 3,
+                        /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID);
 
         assertEquals(ClosureKind.ARCHIVED, snapshot.kind);
         assertTrue(snapshot.groups.isEmpty());

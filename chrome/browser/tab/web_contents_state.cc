@@ -85,7 +85,7 @@ bool ReadStateHeaderFromPickle(base::PickleIterator* iter,
 // deep-copy it.
 void WriteSerializedNavigationsIntoPickle(
     bool is_off_the_record,
-    const std::vector<sessions::SerializedNavigationEntry>& navigations,
+    base::span<const sessions::SerializedNavigationEntry> navigations,
     int current_entry,
     base::Pickle& pickle) {
   WriteStateHeaderToPickle({.is_off_the_record = is_off_the_record,
@@ -107,7 +107,7 @@ void WriteSerializedNavigationsIntoPickle(
 ScopedJavaLocalRef<jobject> WriteSerializedNavigationsAsByteBuffer(
     JNIEnv* env,
     bool is_off_the_record,
-    const std::vector<sessions::SerializedNavigationEntry>& navigations,
+    base::span<const sessions::SerializedNavigationEntry> navigations,
     int current_entry) {
   base::Pickle pickle;
   WriteSerializedNavigationsIntoPickle(is_off_the_record, navigations,
@@ -251,6 +251,20 @@ ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
     buffer_span.copy_from(pickle);
   }
   return buffer;
+}
+
+// static
+ScopedJavaLocalRef<jobject> WebContentsState::CreateContentsStateAsByteBuffer(
+    JNIEnv* env,
+    bool is_off_the_record,
+    base::span<const sessions::SerializedNavigationEntry> navigations,
+    int current_entry) {
+  if (navigations.empty() || current_entry < 0 ||
+      static_cast<size_t>(current_entry) >= navigations.size()) {
+    return nullptr;
+  }
+  return WriteSerializedNavigationsAsByteBuffer(env, is_off_the_record,
+                                                navigations, current_entry);
 }
 
 ScopedJavaLocalRef<jobject>

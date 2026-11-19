@@ -102,6 +102,15 @@ tabs::TabInterface* TestTabModel::CreateTab(
   return nullptr;
 }
 
+tabs::TabInterface* TestTabModel::CreateFrozenTab(
+    int index,
+    const base::android::JavaRef<jobject>& web_contents_state_buffer,
+    int web_contents_state_version,
+    TabLaunchType type,
+    bool should_pin) {
+  return nullptr;
+}
+
 void TestTabModel::HandlePopupNavigation(TabAndroid* parent,
                                          NavigateParams* params) {}
 
@@ -565,6 +574,16 @@ tabs::TabInterface* OwningTestTabModel::CreateTab(
   return AddTabFromWebContents(std::move(web_contents), insertion_index,
                                select_tab,
                                TabModel::TabLaunchType::FROM_RESTORE);
+}
+
+tabs::TabInterface* OwningTestTabModel::CreateFrozenTab(
+    int index,
+    const base::android::JavaRef<jobject>& web_contents_state_buffer,
+    int web_contents_state_version,
+    TabLaunchType type,
+    bool should_pin) {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 bool OwningTestTabModel::IsActiveModel() const {

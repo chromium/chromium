@@ -34,7 +34,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -55,6 +57,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -360,6 +363,36 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                         type,
                         index,
                         /* addTabToModel= */ CompletableFuture.completedFuture(true));
+    }
+
+    /**
+     * Creates a frozen Tab in an archived TabModel from a serialized {@link WebContentsState}
+     * buffer without instantiating a {@link WebContents}.
+     *
+     * @param buffer Direct {@link ByteBuffer} containing the serialized {@link WebContentsState}.
+     * @param stateVersion Version of the serialized {@link WebContentsState} format.
+     * @param index The index to create the tab at.
+     * @param type The launch type of the tab.
+     * @param shouldPin Whether the tab should be pinned.
+     * @return The newly created {@link Tab}, or null if creation failed.
+     */
+    @CalledByNative
+    protected @JniType("TabAndroid*") @Nullable Tab createFrozenTab(
+            ByteBuffer buffer,
+            int stateVersion,
+            int index,
+            @TabLaunchType int type,
+            boolean shouldPin) {
+        assert getTabModelType() == TabModelType.ARCHIVED;
+        assert !isIncognito();
+
+        TabState state = new TabState();
+        state.contentsState = new WebContentsState(buffer, stateVersion);
+        state.timestampMillis = System.currentTimeMillis();
+        state.tabLaunchTypeAtCreation = type;
+        state.isPinned = shouldPin;
+        return getTabCreator(/* isIncognito= */ false)
+                .createFrozenTab(state, Tab.INVALID_TAB_ID, index, type);
     }
 
     /**
