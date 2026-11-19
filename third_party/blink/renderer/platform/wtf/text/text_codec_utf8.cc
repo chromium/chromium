@@ -37,8 +37,10 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/types/to_address.h"
 #include "third_party/blink/public/common/features.h"
@@ -57,6 +59,13 @@ namespace {
 // inline-buffered scalar path (InlinedStringBuffer uses a 128-byte stack
 // buffer) to avoid fast-path setup overhead on tiny chunks.
 constexpr size_t kSimdutfMinInputBytes = 256;
+
+// Minimum input size and subsampling rate (0.1%) for recording
+// Blink.TextCodecUtf8.DecodeTime. Skipping < 4 KiB inputs avoids timer
+// quantization noise and per-call subsampler overhead on tight small-buffer
+// loops.
+constexpr size_t kDecodeMetricsMinInputBytes = 4096;
+constexpr double kDecodeMetricsSubsampleProbability = 0.001;
 
 // Returns true if `bytes` contains any byte >= 0xC4.
 // In valid UTF-8, ASCII bytes are 0x00..0x7F, continuation bytes are
@@ -592,6 +601,12 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
                              FlushBehavior flush,
                              bool stop_on_error,
                              bool& saw_error) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS_SUBSAMPLED(
+      "Blink.TextCodecUtf8.DecodeTime",
+      bytes.size() >= kDecodeMetricsMinInputBytes &&
+          base::ShouldRecordSubsampledMetric(
+              kDecodeMetricsSubsampleProbability));
+
   const bool do_flush = flush != FlushBehavior::kDoNotFlush;
   if (bytes.size() >= kSimdutfMinInputBytes && IsSimdutfEnabled()) {
     if (std::optional<String> decoded = TryDecodeWithSimdutf(bytes, do_flush)) {

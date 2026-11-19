@@ -38,7 +38,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/features.h"
+#include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -735,6 +738,52 @@ TEST(SimdutfTextCodecUtf8Test, MalformedUtf8MatchesScalarDecoder) {
                                      FlushBehavior::kDataEof, false, saw_error);
     EXPECT_TRUE(saw_error);
     EXPECT_FALSE(valid_out.empty());
+  }
+}
+
+TEST(SimdutfTextCodecUtf8Test, DecodeTimeHistogramRecordedAtLeast4KiB) {
+  constexpr char kHistogramName[] = "Blink.TextCodecUtf8.DecodeTime";
+
+  {
+    base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
+    base::HistogramTester histogram_tester;
+
+    for (size_t small_size : {size_t{0}, size_t{256}, size_t{4095}}) {
+      const std::string small_input(small_size, 'a');
+      const auto bytes = base::as_bytes(base::span(small_input));
+      DecodeWithSimdutfFlag(bytes, FlushBehavior::kDataEof, false, false);
+      DecodeWithSimdutfFlag(bytes, FlushBehavior::kDataEof, false, true);
+    }
+    histogram_tester.ExpectTotalCount(kHistogramName, 0);
+
+    const std::string ascii_4k(4096, 'a');
+    DecodeWithSimdutfFlag(base::as_bytes(base::span(ascii_4k)),
+                          FlushBehavior::kDataEof, false, false);
+    DecodeWithSimdutfFlag(base::as_bytes(base::span(ascii_4k)),
+                          FlushBehavior::kDataEof, false, true);
+
+    const std::string utf8_multibyte =
+        ascii_4k + "\xE2\x82\x82\xF0\x9F\x98\x80";
+    DecodeWithSimdutfFlag(base::as_bytes(base::span(utf8_multibyte)),
+                          FlushBehavior::kDataEof, false, false);
+    DecodeWithSimdutfFlag(base::as_bytes(base::span(utf8_multibyte)),
+                          FlushBehavior::kDataEof, false, true);
+
+    const std::string malformed_4k = ascii_4k + "\xFF";
+    DecodeWithSimdutfFlag(base::as_bytes(base::span(malformed_4k)),
+                          FlushBehavior::kDataEof, false, true);
+
+    histogram_tester.ExpectTotalCount(
+        kHistogramName, base::TimeTicks::IsHighResolution() ? 5 : 0);
+  }
+
+  {
+    base::MetricsSubSampler::ScopedNeverSampleForTesting never_sample;
+    base::HistogramTester histogram_tester;
+    const std::string ascii_4k(4096, 'a');
+    DecodeWithSimdutfFlag(base::as_bytes(base::span(ascii_4k)),
+                          FlushBehavior::kDataEof, false, true);
+    histogram_tester.ExpectTotalCount(kHistogramName, 0);
   }
 }
 

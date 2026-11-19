@@ -5097,6 +5097,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.TextCodecUtf8.DecodeTime" units="microseconds"
+    expires_after="2027-06-01">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Wall-clock time spent in blink::TextCodecUtf8::Decode for inputs of at least
+    4 KiB. Recorded on a 0.1% random subsample of calls with at least 4096 input
+    bytes across all renderer threads (main thread, worker threads, and
+    background body/script decoding threads).
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.TextEncoder.Encode.FastPathResult"
     enum="TextEncoderFastPathResult" expires_after="2027-11-01">
   <owner>tjaneczko@google.com</owner>
