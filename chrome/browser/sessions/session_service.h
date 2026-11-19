@@ -223,11 +223,14 @@ class SessionService : public SessionServiceBase {
   // shares our profile.
   bool IsOnlyOneTabLeft() const;
 
-  // Returns true if there are open trackable browser windows whose ids do
+  // Returns true if there are open trackable browser windows whose ids do not
   // match |window_id| with our profile. A trackable window is a window from
-  // which |ShouldRestoreWindowOfType| returns true. See
-  // |ShouldRestoreWindowOfType| for details.
-  bool HasOpenTrackableBrowsers(SessionID window_id) const;
+  // which |ShouldRestoreWindowOfType| returns true. If
+  // |only_committed_pending_closes| is non-null, sets it to true when the only
+  // other open trackable windows are in |committed_pending_window_close_ids_|.
+  bool HasOpenTrackableBrowsers(
+      SessionID window_id,
+      bool* only_committed_pending_closes = nullptr) const;
 
   // Will rebuild session commands if rebuild_on_next_save_ is true.
   void RebuildCommandsIfRequired() override;
@@ -264,6 +267,10 @@ class SessionService : public SessionServiceBase {
   // pending_window_close_ids) is closed, the id is added to this set.
   using WindowClosingIDs = std::set<SessionID>;
   WindowClosingIDs window_closing_ids_;
+
+  // Windows whose pending closes were committed while they were still tracked
+  // and finishing asynchronous teardown.
+  std::set<SessionID> committed_pending_window_close_ids_;
 
   // Are there any open trackable browsers?
   bool has_open_trackable_browsers_ = false;

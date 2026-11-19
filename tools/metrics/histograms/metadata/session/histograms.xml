@@ -1378,6 +1378,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.WindowClosing.CommittedPendingCloseCountedAsOpen"
+    enum="Boolean" expires_after="2027-11-09">
+  <owner>dljames@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <summary>
+    Recorded once per tracked browser window when it starts closing in
+    SessionService::WindowClosing(). Records true when closing the last open
+    browser window is misidentified as a non-last window close because a
+    different window whose pending close was already committed is still in the
+    process of closing, causing both windows to be marked closed and not
+    restorable in the next session. Records false on all other tracked browser
+    window closes.
+  </summary>
+</histogram>
+
 <histogram name="Session.ZeroWindowDuration" units="ms"
     expires_after="2027-04-11">
   <owner>victortan@chromium.org</owner>

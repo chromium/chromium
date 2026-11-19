@@ -353,3 +353,57 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, NoRewriteOnSecondNavigation) {
   histogram_tester.ExpectUniqueSample(
       "Session.Counterfactual.FullRewriteAvoided", true, 2);
 }
+
+IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
+                       CommittedPendingCloseCountedAsOpenMetric) {
+  constexpr char kHistogram[] =
+      "Session.WindowClosing.CommittedPendingCloseCountedAsOpen";
+  base::HistogramTester histogram_tester;
+  Profile* profile = browser()->GetProfile();
+
+  // Closing a normal non-last window records a single `false` baseline sample
+  // even though `BrowserView::OnWindowCloseRequested()` invokes
+  // `WindowClosing()` twice (before and after `CloseAllTabs()`).
+  BrowserWindowInterface* extra_browser = CreateBrowser(profile);
+  CloseBrowserSynchronously(extra_browser);
+  histogram_tester.ExpectUniqueSample(kHistogram, false, 1);
+
+  // Window 1 starts closing as the last window (`pending_window_close_ids_`),
+  // recording a `false` baseline sample, but has not finished asynchronous
+  // teardown (`WindowClosed()`) yet.
+  service()->WindowClosing(browser()->GetSessionID());
+  histogram_tester.ExpectUniqueSample(kHistogram, false, 2);
+
+  // Window 2 opens while Window 1 is still alive, committing Window 1's
+  // pending close (`CommitPendingCloses()`).
+  BrowserWindowInterface* browser2 = CreateBrowser(profile);
+  histogram_tester.ExpectUniqueSample(kHistogram, false, 2);
+
+  // Window 2 now closes before Window 1's `WindowClosed()` runs. Because
+  // Window 1 is still in the browser collection and not in
+  // `window_closing_ids_`, `HasOpenTrackableBrowsers()` counts Window 1 as
+  // open. Even though `BrowserView::OnWindowCloseRequested()` invokes
+  // `WindowClosing()` twice, only a single `true` sample should be recorded.
+  CloseBrowserSynchronously(browser2);
+  histogram_tester.ExpectBucketCount(kHistogram, false, 2);
+  histogram_tester.ExpectBucketCount(kHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kHistogram, 3);
+
+  // Closing an untracked window (e.g. `omit_from_session_restore` or
+  // `TYPE_DEVTOOLS`) while Window 1 is still in
+  // `committed_pending_window_close_ids_` invokes `WindowClosed()` ->
+  // `HasOpenTrackableBrowsers()`, which must not record an extra sample.
+  BrowserWindowCreateParams untracked_params(profile, true);
+  untracked_params.omit_from_session_restore = true;
+  BrowserWindowInterface* untracked_browser =
+      CreateBrowserWindow(std::move(untracked_params));
+  CloseBrowserSynchronously(untracked_browser);
+  histogram_tester.ExpectTotalCount(kHistogram, 3);
+
+  // Finishing teardown of Window 1 (already in
+  // `committed_pending_window_close_ids_`) must not record another sample.
+  CloseBrowserSynchronously(browser());
+  histogram_tester.ExpectBucketCount(kHistogram, false, 2);
+  histogram_tester.ExpectBucketCount(kHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kHistogram, 3);
+}
