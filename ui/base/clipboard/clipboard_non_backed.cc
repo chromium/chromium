@@ -36,6 +36,7 @@
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
@@ -45,6 +46,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/barrier_closure.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "ui/ozone/public/platform_clipboard.h"
 #endif
 
@@ -148,8 +150,9 @@ class ClipboardInternal {
       *result = data->text();
     else if (HasFormat(ClipboardInternalFormat::kHtml))
       *result = data->markup_data();
-    else if (HasFormat(ClipboardInternalFormat::kBookmark))
-      *result = data->bookmark_url();
+    else if (HasFormat(ClipboardInternalFormat::kBookmark)) {
+      *result = data->BookmarkUrlsAsText();
+    }
   }
 
   // Reads HTML from the ClipboardData.
@@ -263,20 +266,11 @@ class ClipboardInternal {
     return GetData()->filenames();
   }
 
-  // Reads bookmark from the ClipboardData.
-  void ReadBookmark(std::u16string* title, std::string* url) const {
-    if (title)
-      title->clear();
-    if (url)
-      url->clear();
-    if (!HasFormat(ClipboardInternalFormat::kBookmark))
-      return;
-
-    const ClipboardData* data = GetData();
-    if (title)
-      *title = base::UTF8ToUTF16(data->bookmark_title());
-    if (url)
-      *url = data->bookmark_url();
+  // Reads bookmarks from the ClipboardData.
+  std::vector<ClipboardUrlInfo> ReadBookmarks() const {
+    return HasFormat(ClipboardInternalFormat::kBookmark)
+               ? GetData()->bookmarks()
+               : std::vector<ClipboardUrlInfo>();
   }
 
   void ReadData(const ClipboardFormatType& type, std::string* result) const {
@@ -411,10 +405,10 @@ class ClipboardDataBuilder {
     data->set_filenames(std::move(filenames));
   }
 
-  static void WriteBookmark(std::string_view title, std::string_view url) {
+  static void WriteBookmarks(base::span<const ClipboardUrlInfo> bookmarks) {
     ClipboardData* data = GetCurrentData();
-    data->set_bookmark_title(std::string(title));
-    data->set_bookmark_url(std::string(url));
+    data->set_bookmarks(
+        std::vector<ClipboardUrlInfo>(bookmarks.begin(), bookmarks.end()));
   }
 
   static void WriteWebSmartPaste() {
@@ -932,6 +926,20 @@ void ClipboardNonBacked::ReadFilenames(
 void ClipboardNonBacked::ReadURL(
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadUrlCallback callback) const {
+  ReadURLs(data_dst,
+           base::BindOnce(
+               [](ReadUrlCallback callback,
+                  std::vector<ClipboardUrlInfo> url_infos) {
+                 std::move(callback).Run(url_infos.empty()
+                                             ? ClipboardUrlInfo()
+                                             : std::move(url_infos.front()));
+               },
+               std::move(callback)));
+}
+
+void ClipboardNonBacked::ReadURLs(
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadUrlsCallback callback) const {
   CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal =
@@ -939,7 +947,7 @@ void ClipboardNonBacked::ReadURL(
 
   if (!clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
                                         ClipboardInternalFormat::kBookmark)) {
-    std::move(callback).Run(ClipboardUrlInfo());
+    std::move(callback).Run({});
     return;
   }
 
@@ -948,13 +956,7 @@ void ClipboardNonBacked::ReadURL(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kUrl);
-  std::u16string title;
-  std::string url;
-  clipboard_internal.ReadBookmark(&title, &url);
-  ClipboardUrlInfo url_info;
-  url_info.url = GURL(url);
-  url_info.title = std::move(title);
-  std::move(callback).Run(std::move(url_info));
+  std::move(callback).Run(clipboard_internal.ReadBookmarks());
 
 #if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
@@ -1051,11 +1053,7 @@ void ClipboardNonBacked::WriteFilenames(std::vector<ui::FileInfo> filenames) {
 
 void ClipboardNonBacked::WriteURLs(
     base::span<const ClipboardUrlInfo> url_infos) {
-  // TODO(crbug.com/563067141): Write all URLs. Only the first one is written
-  // for now.
-  const auto& url_info = url_infos.front();
-  ClipboardDataBuilder::WriteBookmark(base::UTF16ToUTF8(url_info.title),
-                                      url_info.url.spec());
+  ClipboardDataBuilder::WriteBookmarks(url_infos);
 }
 
 void ClipboardNonBacked::WriteWebSmartPaste() {
@@ -1154,11 +1152,20 @@ void ClipboardNonBacked::SyncToPlatform(ClipboardBuffer buffer,
           base::MakeRefCounted<base::RefCountedBytes>(std::move(png_bytes));
     }
   }
-  if (!data.bookmark_url().empty()) {
-    std::u16string bookmark =
-        base::StrCat({base::UTF8ToUTF16(data.bookmark_url()), u"\n",
-                      base::UTF8ToUTF16(data.bookmark_title())});
-    data_map[kMimeTypeMozillaUrl] = to_refcounted_bytes(bookmark);
+  if (!data.bookmarks().empty()) {
+    std::u16string bookmarks;
+    for (const auto& bookmark_info : data.bookmarks()) {
+      if (!bookmarks.empty()) {
+        bookmarks += u"\n";
+      }
+      base::StrAppend(
+          &bookmarks,
+          {base::UTF8ToUTF16(bookmark_info.url.possibly_invalid_spec()), u"\n",
+           base::CollapseWhitespace(
+               bookmark_info.title,
+               /*trim_sequences_with_line_breaks=*/false)});
+    }
+    data_map[kMimeTypeMozillaUrl] = to_refcounted_bytes(bookmarks);
   }
 
   platform_clipboard_->OfferClipboardData(buffer, data_map);

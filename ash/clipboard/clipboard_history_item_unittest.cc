@@ -6,6 +6,7 @@
 
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
@@ -20,6 +21,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -164,6 +166,18 @@ TEST_F(ClipboardHistoryItemTest, DisplayText) {
   // In the absence of web smart paste data, file system data takes precedence.
   // NOTE: File system data is the only kind of custom data currently supported.
   EXPECT_EQ(builder.Build().display_text(), u"Third File.txt");
+}
+
+TEST_F(ClipboardHistoryItemTest, MultipleLinks) {
+  base::test::ScopedRestoreICUDefaultLocale locale("en_US");
+
+  ui::ClipboardData data;
+  data.set_bookmarks({{.url = GURL("https://a.test/"), .title = u"A"},
+                      {.url = GURL("https://b.test/"), .title = u"B"}});
+  ClipboardHistoryItem item(std::move(data));
+  EXPECT_EQ(item.display_text(), u"2 links");
+  ASSERT_TRUE(item.icon());
+  EXPECT_EQ(item.icon()->GetVectorIcon().vector_icon(), &kTwoFilesIcon);
 }
 
 // Base class for tests parameterized by the type of item being tested, based on

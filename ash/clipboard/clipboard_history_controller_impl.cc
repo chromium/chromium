@@ -1006,7 +1006,10 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
   if (paste_plain_text) {
     data_to_paste = std::make_unique<ui::ClipboardData>();
     data_to_paste->set_commit_time(item.data().commit_time());
-    data_to_paste->set_text(item.data().text());
+    data_to_paste->set_text(item.main_format() ==
+                                    ui::ClipboardInternalFormat::kBookmark
+                                ? item.data().BookmarkUrlsAsText()
+                                : item.data().text());
     auto data_src = item.data().source();
     if (data_src) {
       data_to_paste->set_source(data_src);

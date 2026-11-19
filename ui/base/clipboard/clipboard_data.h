@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
@@ -99,17 +100,18 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
     format_ |= static_cast<int>(ClipboardInternalFormat::kHtml);
   }
 
-  const std::string& bookmark_title() const { return bookmark_title_; }
-  void set_bookmark_title(std::string bookmark_title) {
-    bookmark_title_ = std::move(bookmark_title);
-    format_ |= static_cast<int>(ClipboardInternalFormat::kBookmark);
+  const std::vector<ClipboardUrlInfo>& bookmarks() const { return bookmarks_; }
+  void set_bookmarks(std::vector<ClipboardUrlInfo> bookmarks) {
+    bookmarks_ = std::move(bookmarks);
+    if (!bookmarks_.empty()) {
+      format_ |= static_cast<int>(ClipboardInternalFormat::kBookmark);
+    } else {
+      format_ &= ~static_cast<int>(ClipboardInternalFormat::kBookmark);
+    }
   }
 
-  const std::string& bookmark_url() const { return bookmark_url_; }
-  void set_bookmark_url(std::string bookmark_url) {
-    bookmark_url_ = std::move(bookmark_url);
-    format_ |= static_cast<int>(ClipboardInternalFormat::kBookmark);
-  }
+  // Returns the valid bookmark URLs, one per line.
+  std::string BookmarkUrlsAsText() const;
 
   // Returns an encoded PNG, or std::nullopt if either there is no image on the
   // clipboard or there is an image which has not yet been encoded to a PNG.
@@ -194,9 +196,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   // RTF data.
   std::string rtf_data_;
 
-  // Bookmark title in UTF8 format.
-  std::string bookmark_title_;
-  std::string bookmark_url_;
+  // Bookmark URLs and titles.
+  std::vector<ClipboardUrlInfo> bookmarks_;
 
   // Image data can take the form of PNGs or bitmaps. Strongly prefer PNGs where
   // possible, since images can only be read out of this interface as PNGs. This

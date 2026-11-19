@@ -10,6 +10,8 @@
 #include <string_view>
 #include <vector>
 
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/gfx/skia_util.h"
@@ -27,8 +29,7 @@ ClipboardData::ClipboardData(const ClipboardData& other) {
   rtf_data_ = other.rtf_data_;
   maybe_png_ = other.maybe_png_;
   maybe_bitmap_ = other.maybe_bitmap_;
-  bookmark_title_ = other.bookmark_title_;
-  bookmark_url_ = other.bookmark_url_;
+  bookmarks_ = other.bookmarks_;
   custom_data_ = other.custom_data_;
   web_smart_paste_ = other.web_smart_paste_;
   svg_data_ = other.svg_data_;
@@ -56,9 +57,7 @@ bool ClipboardData::operator==(const ClipboardData& that) const {
   bool equal_except_images =
       format_ == that.format() && text_ == that.text() &&
       markup_data_ == that.markup_data() && url_ == that.url() &&
-      rtf_data_ == that.rtf_data() &&
-      bookmark_title_ == that.bookmark_title() &&
-      bookmark_url_ == that.bookmark_url() &&
+      rtf_data_ == that.rtf_data() && bookmarks_ == that.bookmarks() &&
       custom_data_ == that.custom_data_ &&
       web_smart_paste_ == that.web_smart_paste() &&
       svg_data_ == that.svg_data() && filenames_ == that.filenames() &&
@@ -118,9 +117,15 @@ std::optional<size_t> ClipboardData::CalculateSize(
     total_size += rtf_data_.size();
   }
   if (format_ & static_cast<int>(ClipboardInternalFormat::kBookmark)) {
-    if (format.has_value() && *format == ClipboardInternalFormat::kBookmark)
-      return bookmark_title_.size() + bookmark_url_.size();
-    total_size += bookmark_title_.size() + bookmark_url_.size();
+    size_t bookmark_size = 0;
+    for (const auto& entry : bookmarks_) {
+      bookmark_size += base::UTF16ToUTF8(entry.title).size() +
+                       entry.url.possibly_invalid_spec().size();
+    }
+    if (format.has_value() && *format == ClipboardInternalFormat::kBookmark) {
+      return bookmark_size;
+    }
+    total_size += bookmark_size;
   }
   if (format_ & static_cast<int>(ClipboardInternalFormat::kPng)) {
     // If there is an unencoded image, use the bitmap's size. This will be
@@ -208,6 +213,17 @@ void ClipboardData::SetCustomData(const ClipboardFormatType& format,
                                   std::string_view data) {
   custom_data_[format] = std::string(data);
   format_ |= static_cast<int>(ClipboardInternalFormat::kCustom);
+}
+
+std::string ClipboardData::BookmarkUrlsAsText() const {
+  std::vector<std::string_view> specs;
+  specs.reserve(bookmarks_.size());
+  for (const auto& bookmark : bookmarks_) {
+    if (bookmark.url.is_valid()) {
+      specs.push_back(bookmark.url.spec());
+    }
+  }
+  return base::JoinString(specs, "\n");
 }
 
 }  // namespace ui

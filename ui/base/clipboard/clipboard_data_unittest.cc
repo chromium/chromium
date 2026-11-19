@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/clipboard_util.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -77,6 +78,40 @@ TEST(ClipboardDataTest, Equivalence) {
   EXPECT_NE(data2, data3);
   // Comparing clipboards with the same encoded PNG succeeds as expected.
   EXPECT_EQ(data1, data3);
+}
+
+TEST(ClipboardDataTest, Bookmarks) {
+  const GURL a("https://a.test/");
+  const GURL b("https://b.test/path");
+  ClipboardData data;
+  EXPECT_EQ("", data.BookmarkUrlsAsText());
+
+  data.set_bookmarks({{.url = a, .title = u"A"}, {.url = b, .title = u"B"}});
+  EXPECT_EQ("https://a.test/\nhttps://b.test/path", data.BookmarkUrlsAsText());
+
+  ClipboardData copy(data);
+  EXPECT_EQ(data, copy);
+
+  ClipboardData different;
+  different.set_bookmarks({{.url = a, .title = u"A"}});
+  EXPECT_NE(data, different);
+
+  EXPECT_EQ(a.spec().size() + 1u + b.spec().size() + 1u,
+            data.CalculateSize(ClipboardInternalFormat::kBookmark,
+                               /*custom_data_format=*/std::nullopt));
+}
+
+TEST(ClipboardDataTest, ClearBookmarksClearsFormat) {
+  ClipboardData data;
+  data.set_bookmarks({{.url = GURL("https://a.test/"), .title = u"A"},
+                      {.url = GURL("https://b.test/"), .title = u"B"}});
+  EXPECT_TRUE(data.format() &
+              static_cast<int>(ClipboardInternalFormat::kBookmark));
+
+  data.set_bookmarks({});
+  EXPECT_FALSE(data.format() &
+               static_cast<int>(ClipboardInternalFormat::kBookmark));
+  EXPECT_TRUE(data.bookmarks().empty());
 }
 
 }  // namespace ui

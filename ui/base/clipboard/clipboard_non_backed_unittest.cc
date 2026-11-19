@@ -18,12 +18,14 @@
 #include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "base/command_line.h"
@@ -259,8 +261,8 @@ TEST_F(ClipboardNonBackedTest, PlainText) {
 // IsFormatAvailable('text/uri-list') is only true for files.
 TEST_F(ClipboardNonBackedTest, BookmarkURL) {
   auto data = std::make_unique<ClipboardData>();
-  data->set_bookmark_title("Example Page");
-  data->set_bookmark_url("http://example.com");
+  data->set_bookmarks(
+      {{.url = GURL("http://example.com"), .title = u"Example Page"}});
   clipboard()->WriteClipboardData(std::move(data));
 
   // Bookmark data returns available type 'text/plain'.
@@ -291,9 +293,43 @@ TEST_F(ClipboardNonBackedTest, BookmarkURL) {
                                     &url);
   EXPECT_EQ(u"Example Page", title);
   EXPECT_EQ("http://example.com/", url);
-  EXPECT_EQ(u"http://example.com", clipboard_test_util::ReadText(
-                                       clipboard(), ClipboardBuffer::kCopyPaste,
-                                       /*data_dst=*/nullptr));
+  EXPECT_EQ(
+      u"http://example.com/",
+      clipboard_test_util::ReadText(clipboard(), ClipboardBuffer::kCopyPaste,
+                                    /*data_dst=*/nullptr));
+}
+
+TEST_F(ClipboardNonBackedTest, WriteURLsKeepsEveryLink) {
+  const GURL a("https://a.test/");
+  const GURL b("https://b.test/");
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteURLs({{.url = a, .title = u"A"}, {.url = b, .title = u"B"}});
+  }
+
+  EXPECT_EQ(
+      u"https://a.test/\nhttps://b.test/",
+      clipboard_test_util::ReadText(clipboard(), ClipboardBuffer::kCopyPaste,
+                                    /*data_dst=*/nullptr));
+  EXPECT_EQ(
+      std::vector<std::string>({"text/plain"}),
+      UTF8Types(clipboard_test_util::ReadAvailableTypes(
+          clipboard(), ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr)));
+
+  std::u16string title;
+  std::string url;
+  clipboard_test_util::ReadBookmark(clipboard(), /*data_dst=*/nullptr, &title,
+                                    &url);
+  EXPECT_EQ("https://a.test/", url);
+  EXPECT_EQ(u"A", title);
+
+  const std::vector<ClipboardUrlInfo> url_infos =
+      clipboard_test_util::ReadURLs(clipboard(), /*data_dst=*/nullptr);
+  ASSERT_EQ(2u, url_infos.size());
+  EXPECT_EQ(a, url_infos[0].url);
+  EXPECT_EQ(u"A", url_infos[0].title);
+  EXPECT_EQ(b, url_infos[1].url);
+  EXPECT_EQ(u"B", url_infos[1].title);
 }
 
 // Filenames data uses mime type 'text/uri-list'.

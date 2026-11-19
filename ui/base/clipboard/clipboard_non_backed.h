@@ -133,6 +133,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
                      ReadFilenamesCallback callback) const override;
   void ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
                ReadUrlCallback callback) const override;
+  void ReadURLs(const std::optional<DataTransferEndpoint>& data_dst,
+                ReadUrlsCallback callback) const override;
   void ReadData(const ClipboardFormatType& format,
                 const std::optional<DataTransferEndpoint>& data_dst,
                 ReadDataCallback callback) const override;

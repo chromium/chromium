@@ -5,6 +5,8 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_UTIL_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_UTIL_H_
 
+#include <stddef.h>
+
 #include <list>
 #include <optional>
 #include <string>
@@ -178,9 +180,10 @@ ASH_EXPORT bool IsEnabledInCurrentMode();
 // Returns whether the clipboard history is enabled by an enteprise policy.
 ASH_EXPORT bool IsEnabledByPolicy();
 
-// Returns an image icon for the file clipboard item.
-ASH_EXPORT ui::ImageModel GetIconForFileClipboardItem(
-    const ClipboardHistoryItem& item);
+// Returns the numbered icon for a clipboard history item that holds `count`
+// entries (files or links). Requires `count` >= 2, and counts above 9 share
+// `kMoreThanNineFilesIcon`.
+ASH_EXPORT ui::ImageModel GetIconForItemCount(size_t count);
 
 // Returns a placeholder image to display for HTML items while their previews
 // render.

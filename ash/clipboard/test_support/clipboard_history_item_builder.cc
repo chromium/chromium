@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -35,8 +36,9 @@ ui::ClipboardData ClipboardHistoryItemBuilder::BuildData() const {
     data.SetRTFData(rtf_.value());
   if (!filenames_.empty())
     data.set_filenames(filenames_);
-  if (bookmark_title_.has_value())
-    data.set_bookmark_title(bookmark_title_.value());
+  if (bookmark_title_.has_value()) {
+    data.set_bookmarks({{.title = base::UTF8ToUTF16(bookmark_title_.value())}});
+  }
   if (png_.has_value())
     data.SetPngData(png_.value());
   if (custom_format_.has_value() && custom_data_.has_value())

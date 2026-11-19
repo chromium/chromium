@@ -131,8 +131,14 @@ std::u16string DetermineDisplayText(const ClipboardHistoryItem& item) {
       return base::UTF8ToUTF16(item.data().svg_data());
     case ui::ClipboardInternalFormat::kRtf:
       return l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_RTF_CONTENT);
-    case ui::ClipboardInternalFormat::kBookmark:
-      return base::UTF8ToUTF16(item.data().bookmark_title());
+    case ui::ClipboardInternalFormat::kBookmark: {
+      const auto& bookmarks = item.data().bookmarks();
+      if (bookmarks.size() == 1u) {
+        return bookmarks.front().title;
+      }
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_ASH_CLIPBOARD_HISTORY_LINK_COUNT, bookmarks.size());
+    }
     case ui::ClipboardInternalFormat::kWeb:
       return l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_WEB_SMART_PASTE);
     case ui::ClipboardInternalFormat::kFilenames:
@@ -157,6 +163,11 @@ std::optional<size_t> DetermineDisplayTextMaxLines(
 }
 
 std::optional<ui::ImageModel> DetermineIcon(const ClipboardHistoryItem& item) {
+  const size_t link_count = item.data().bookmarks().size();
+  if (item.main_format() == ui::ClipboardInternalFormat::kBookmark &&
+      link_count > 1u) {
+    return clipboard_history_util::GetIconForItemCount(link_count);
+  }
   return chromeos::clipboard_history::GetIconForDescriptor(
       clipboard_history_util::ItemToDescriptor(item));
 }

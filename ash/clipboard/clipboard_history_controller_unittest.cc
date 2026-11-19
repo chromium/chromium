@@ -32,6 +32,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
@@ -47,6 +48,7 @@
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/image_model.h"
@@ -65,6 +67,7 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
+#include "url/gurl.h"
 
 namespace ash {
 using chromeos::clipboard_history::ShowSource;
@@ -902,6 +905,37 @@ TEST_F(ClipboardHistoryControllerWithTextfieldTest, PasteClipboardItemById) {
         "Ash.ClipboardHistory.ContextMenu.MenuOptionSelected",
         paste_data_index + 1, /*expected_count=*/1);
   }
+}
+
+TEST_F(ClipboardHistoryControllerWithTextfieldTest,
+       PasteMultiLinkItemAsPlainText) {
+  const GURL url1("https://a.com/title1.html");
+  const GURL url2("https://b.com/title2.html");
+  std::vector<ui::ClipboardUrlInfo> urls = {
+      {.url = url1, .title = u"Title 1"},
+      {.url = url2, .title = u"Title 2"},
+  };
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteURLs(urls);
+  }
+  WaitForOperationConfirmed();
+
+  const std::vector<ClipboardHistoryItem> items = GetHistoryValues();
+  ASSERT_EQ(items.size(), 1u);
+
+  GetClipboardHistoryController()->set_buffer_restoration_delay_for_test(
+      base::TimeDelta());
+
+  textfield_->SetText(std::u16string());
+  ClipboardHistoryController::Get()->PasteClipboardItemById(
+      items[0].id().ToString(), ui::EF_SHIFT_DOWN,
+      chromeos::clipboard_history::ShowSource::kRenderViewContextMenu);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !textfield_->GetText().empty(); }));
+
+  EXPECT_EQ(u"https://a.com/title1.html\nhttps://b.com/title2.html",
+            textfield_->GetText());
 }
 
 // Regression test for crbug.com/541925193: verifies that clicking an unselected
