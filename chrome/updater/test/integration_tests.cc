@@ -69,6 +69,7 @@
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/test/json_matchers.h"
 #include "chrome/updater/test/request_matcher.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/test/test_scope.h"
@@ -362,21 +363,17 @@ void ExpectReportsActiveUpdateCheck(ScopedServer& test_server) {
        request::GetUpdaterUserAgentMatcher(),
        request::GetScopeMatcher(GetUpdaterScopeForTesting()),
        request::GetUpdaterEnableUpdatesMatcher(),
-       request::GetAppJSONContentMatcher(
-           base::DictValue()
-               .Set("appid", "test1")
-               .Set("enabled", true)
-               .Set("installdate", -1)
-               .Set("ping", base::DictValue().Set("ad", -1))),
-       // The null values require `test2` to send neither `ad` nor `a`.
-       request::GetAppJSONContentMatcher(
-           base::DictValue()
-               .Set("appid", "test2")
-               .Set("enabled", true)
-               .Set("installdate", -1)
-               .Set("ping", base::DictValue()
-                                .Set("ad", base::Value())
-                                .Set("a", base::Value())))},
+       request::GetJSONContentMatcher(testing::AllOf(
+           json::HasApp("test1", testing::AllOf(json::HasKey("enabled", true),
+                                                json::HasKey("installdate", -1),
+                                                json::HasPath("ping.ad", -1))),
+           json::HasApp("test2",
+                        testing::AllOf(
+                            json::HasKey("enabled", true),
+                            json::HasKey("installdate", -1),
+                            json::HasKey("ping", testing::AllOf(
+                                                     json::LacksKey("ad"),
+                                                     json::LacksKey("a")))))))},
       R"()]}')"
       "\n"
       R"({"response":{"protocol":"4.0","daystart":{"elapsed_)"
