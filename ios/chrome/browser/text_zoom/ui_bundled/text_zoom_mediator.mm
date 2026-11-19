@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_consumer.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
@@ -191,6 +192,9 @@
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigation {
+  if (!navigation->HasCommitted()) {
+    return;
+  }
   [_commandHandler closeTextZoom];
 }
 

@@ -98,13 +98,13 @@ void SearchEngineTabHelper::OnFaviconUpdated(
 
 // When the page is loaded, checks if `searchable_url_` has a value generated
 // from the <form> submission before the navigation. If true, and the navigation
-// is successful, adds a TemplateURL by `searchable_url_`. `searchable_url_`
-// will be set to empty in the end.
+// committed successfully, adds a TemplateURL by `searchable_url_`.
+// `searchable_url_` will be set to empty in the end.
 void SearchEngineTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (!searchable_url_.is_empty()) {
-    if (!navigation_context->GetError() &&
+    if (navigation_context->HasCommitted() && !navigation_context->GetError() &&
         !navigation_context->IsSameDocument()) {
       AddTemplateURLBySearchableURL(searchable_url_);
     }

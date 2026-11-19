@@ -138,7 +138,8 @@ void FindTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void FindTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (navigation_context->IsSameDocument()) {
+  if (!navigation_context->HasCommitted() ||
+      navigation_context->IsSameDocument()) {
     return;
   }
 

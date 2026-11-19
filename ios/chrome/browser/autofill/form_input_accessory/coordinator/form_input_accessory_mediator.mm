@@ -632,11 +632,11 @@ bool IsStateless() {
     didFinishNavigation:(web::NavigationContext*)navigation {
   DCHECK_EQ(_webState, webState);
 
-  // The keyboard accessory shouldn't be reset if the finished navigation
-  // happened within the same document. If reset, the keyboard accessory
-  // suggestions can suddenly disappear if a form field is still focused.
-  // See crbug.com/339851686.
-  if (navigation->IsSameDocument()) {
+  // The keyboard accessory shouldn't be reset if the finished navigation did
+  // not commit or happened within the same document. If reset, the keyboard
+  // accessory suggestions can suddenly disappear if a form field is still
+  // focused. See crbug.com/339851686.
+  if (!navigation->HasCommitted() || navigation->IsSameDocument()) {
     return;
   }
   [self reset];

@@ -89,6 +89,7 @@ TEST_F(ManualFillVirtualCardCacheTest, ClearsOnNewDocumentNavigation) {
 
   // Simulate a navigation to a new page.
   web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
   context.SetIsSameDocument(false);  // New document
 
   // Trigger the observer method manually.
@@ -110,7 +111,28 @@ TEST_F(ManualFillVirtualCardCacheTest, PersistsOnSameDocumentNavigation) {
 
   // Simulate a same-document navigation (e.g. #fragment change).
   web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
   context.SetIsSameDocument(true);  // Same document
+
+  static_cast<web::WebStateObserver*>(cache())->DidFinishNavigation(&web_state_,
+                                                                    &context);
+
+  // Verify cache still exists.
+  EXPECT_NE(nullptr, cache()->GetUnmaskedCard(card.server_id(), origin));
+}
+
+// Tests that the cache PERSISTS when a navigation finishes without committing.
+TEST_F(ManualFillVirtualCardCacheTest, PersistsOnUncommittedNavigation) {
+  CreditCard card = GetVirtualCard();
+  card.set_server_id("test_server_id");
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  cache()->CacheUnmaskedCard(card, origin);
+  ASSERT_NE(nullptr, cache()->GetUnmaskedCard(card.server_id(), origin));
+
+  // Simulate an uncommitted navigation (e.g. download or 204 response).
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(false);
+  context.SetIsSameDocument(false);
 
   static_cast<web::WebStateObserver*>(cache())->DidFinishNavigation(&web_state_,
                                                                     &context);

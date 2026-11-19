@@ -345,6 +345,7 @@ TEST_F(FormInputAccessoryMediatorTest,
 
   OCMExpect([handler_ resetFormInputView]);
   web::FakeNavigationContext navigation_context;
+  navigation_context.SetHasCommitted(true);
   GetActiveFakeWebState()->OnNavigationFinished(&navigation_context);
 
   EXPECT_FALSE(received_suggestions_.count);
@@ -366,7 +367,31 @@ TEST_F(FormInputAccessoryMediatorTest,
 
   [[handler_ reject] resetFormInputView];
   web::FakeNavigationContext navigation_context;
+  navigation_context.SetHasCommitted(true);
   navigation_context.SetIsSameDocument(true);
+  GetActiveFakeWebState()->OnNavigationFinished(&navigation_context);
+
+  EXPECT_EQ(received_suggestions_.count, initial_suggestion_count);
+}
+
+// Tests that the suggestions are not reset when a finished navigation did not
+// commit.
+TEST_F(FormInputAccessoryMediatorTest,
+       UncommittedNavigationShouldNotResetKeyboardAccessorySuggestions) {
+  CaptureAccessorySuggestions();
+  FormActivityParams params =
+      CreateFormActivityParams(FormActivityParams::FieldType::kText);
+  SetUpProviderWithSuggestions(params, @[ CreateFormSuggestion(@"foo") ]);
+
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  NSUInteger initial_suggestion_count = received_suggestions_.count;
+  ASSERT_TRUE(initial_suggestion_count);
+
+  [[handler_ reject] resetFormInputView];
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetHasCommitted(false);
+  navigation_context.SetIsSameDocument(false);
   GetActiveFakeWebState()->OnNavigationFinished(&navigation_context);
 
   EXPECT_EQ(received_suggestions_.count, initial_suggestion_count);

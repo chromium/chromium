@@ -42,6 +42,7 @@ class OmniboxShortcutsHelperTest
   void UseAutocompleteMatch(const std::u16string& input_text,
                             const AutocompleteMatch& match);
   void FinishCurrentNavigationSuccessfully();
+  void FinishUncommittedNavigation();
   void FailCurrentNavigation();
   void RedirectNavigationWithBackButton();
 
@@ -135,11 +136,19 @@ void OmniboxShortcutsHelperTest::UseAutocompleteMatch(
 }
 
 void OmniboxShortcutsHelperTest::FinishCurrentNavigationSuccessfully() {
+  navigation_context_->SetHasCommitted(true);
+  navigation_context_->SetError(nil);
+  web_state_->OnNavigationFinished(navigation_context_.get());
+}
+
+void OmniboxShortcutsHelperTest::FinishUncommittedNavigation() {
+  navigation_context_->SetHasCommitted(false);
   navigation_context_->SetError(nil);
   web_state_->OnNavigationFinished(navigation_context_.get());
 }
 
 void OmniboxShortcutsHelperTest::FailCurrentNavigation() {
+  navigation_context_->SetHasCommitted(true);
   navigation_context_->SetError(
       testing::NSErrorWithLocalizedDescription(@"error"));
   web_state_->OnNavigationFinished(navigation_context_.get());
@@ -271,4 +280,27 @@ TEST_F(OmniboxShortcutsHelperTest,
     ASSERT_TRUE(ShortcutExists(search_terms));
     i++;
   }
+}
+
+// Tests that uncommitted navigations are not added to the shortcuts database.
+TEST_F(OmniboxShortcutsHelperTest, UncommittedNavigationDoesNotAddShortcut) {
+  InitShortcutsBackend();
+
+  scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
+      base::MakeRefCounted<FakeAutocompleteProvider>(
+          AutocompleteProvider::Type::kBookmark);
+  AutocompleteMatch bookmark_match(
+      bookmark_provider.get(), 400, true,
+      omnibox::AutocompleteMatchType::kBookmarkTitle);
+
+  std::u16string search_terms = u"input";
+  UseAutocompleteMatch(search_terms, bookmark_match);
+
+  ASSERT_FALSE(changed_notified());
+  ASSERT_FALSE(ShortcutExists(search_terms));
+
+  FinishUncommittedNavigation();
+
+  ASSERT_FALSE(ShortcutExists(search_terms));
+  ASSERT_FALSE(changed_notified());
 }

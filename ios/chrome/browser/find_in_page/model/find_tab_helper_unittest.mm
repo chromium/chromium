@@ -131,3 +131,21 @@ TEST_F(FindTabHelperTest, DismissAndStopWhenActiveRecordUKM) {
   entries = test_ukm_recorder_.GetEntriesByName(FindInPageUkmEntry::kEntryName);
   EXPECT_EQ(2u, entries.size());
 }
+
+// Tests that an uncommitted navigation keeps Find in Page UI active, whereas a
+// committed cross-document navigation stops finding.
+TEST_F(FindTabHelperTest, UncommittedNavigationDoesNotStopFinding) {
+  NavigateToPage();
+  find_tab_helper()->SetFindUIActive(true);
+  ASSERT_TRUE(find_tab_helper()->IsFindUIActive());
+
+  web::FakeNavigationContext uncommitted_context;
+  uncommitted_context.SetHasCommitted(false);
+  uncommitted_context.SetIsSameDocument(false);
+  web_state_.OnNavigationStarted(&uncommitted_context);
+  web_state_.OnNavigationFinished(&uncommitted_context);
+  EXPECT_TRUE(find_tab_helper()->IsFindUIActive());
+
+  NavigateToPage();
+  EXPECT_FALSE(find_tab_helper()->IsFindUIActive());
+}

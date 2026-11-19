@@ -52,3 +52,19 @@ source_set("constants") {
     "text_zoom_constants.mm",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "text_zoom_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

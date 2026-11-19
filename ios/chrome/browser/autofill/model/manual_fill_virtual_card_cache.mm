@@ -34,7 +34,8 @@ void ManualFillVirtualCardCache::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   // Clear the sensitive cache whenever the user navigates to a new document.
-  if (!navigation_context->IsSameDocument()) {
+  if (navigation_context->HasCommitted() &&
+      !navigation_context->IsSameDocument()) {
     server_id_to_unmasked_card_map_.clear();
   }
 }

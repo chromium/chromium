@@ -49,8 +49,9 @@ void OmniboxShortcutsHelper::DidFinishNavigation(
   web_state_tracker_.erase(it);
   scoped_observations_.RemoveObservation(web_state);
 
-  // Add the shortcut if the navigation from the omnibox was successful.
-  if (!navigation_context->GetError() && shortcuts_backend_ &&
+  // Add the shortcut if the navigation from the omnibox committed successfully.
+  if (navigation_context->HasCommitted() && !navigation_context->GetError() &&
+      shortcuts_backend_ &&
       (navigation_context->GetPageTransition() &
        ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
     shortcuts_backend_->AddOrUpdateShortcut(shortcut.text, shortcut.match);
