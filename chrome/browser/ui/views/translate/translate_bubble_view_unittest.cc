@@ -513,6 +513,9 @@ TEST_F(TranslateBubbleViewTest, SourceResetButton) {
 }
 
 TEST_F(TranslateBubbleViewTest, TargetResetButton) {
+  // This test exercises the legacy target language combobox.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(translate::kTranslateLanguageSearchUI);
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
 
@@ -560,6 +563,9 @@ TEST_F(TranslateBubbleViewTest, MAYBE_LazyViewInitialization) {
 }
 
 TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
+  // This test exercises the legacy target language combobox.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(translate::kTranslateLanguageSearchUI);
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
   bubble_->target_language_combobox_->SetSelectedIndex(20);
@@ -581,6 +587,9 @@ TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
 }
 
 TEST_F(TranslateBubbleViewTest, TargetDoneButton) {
+  // This test exercises the legacy target language combobox.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(translate::kTranslateLanguageSearchUI);
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
   bubble_->source_language_combobox_->SetSelectedIndex(10);

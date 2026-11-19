@@ -13,7 +13,7 @@ BASE_FEATURE(kEnableTranslatePdf, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTranslateSimplifiedHindi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTranslateLanguageSearchUI, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTranslateLanguageSearchUI, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTranslateElementExperimentFeatures,
              base::FEATURE_DISABLED_BY_DEFAULT);
