@@ -535,6 +535,31 @@ class SimulatorTestRunnerTest(TestCase):
         iossim_util.SIMULATOR_XCTEST_DEVICES_PATH
       )
 
+  @mock.patch('test_runner.SimulatorTestRunner.tear_down')
+  @mock.patch('test_runner.SimulatorTestRunner.set_up')
+  @mock.patch('test_runner.SimulatorTestRunner.shutdown_and_restart')
+  @mock.patch('test_runner.TestRunner._run')
+  def test_startup_crash_retry_passes_clones(
+    self, mock_run, mock_restart, _1, _2
+  ):
+    """Passes `clones` to `_run()` when retrying after a startup crash."""
+    crash_result = ResultCollection()
+    crash_result.crashed = True
+    pass_result = ResultCollection(
+      test_results=[TestResult('test1', TestStatus.PASS)]
+    )
+    mock_run.side_effect = [crash_result, pass_result]
+
+    tr = test_runner.SimulatorTestRunner(
+      'fake-app', 'iPhone X', '11.4', 'out-dir', clones=2
+    )
+    tr.launch()
+
+    self.assertEqual(mock_run.call_count, 2)
+    mock_restart.assert_called_once()
+    for _, kwargs in mock_run.call_args_list:
+      self.assertEqual(kwargs.get('clones'), 2)
+
   def test_non_simulator_runner_does_not_watch_clones(self):
     """Uses nullcontext on base `TestRunner` and `DeviceTestRunner`."""
     fake_proc = mock.MagicMock(returncode=0)

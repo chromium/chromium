@@ -874,7 +874,7 @@ class TestRunner(object):
         cmd = self.get_launch_command(
           test_app, out_dir, destination, self.clones
         )
-        result = self._run(cmd)
+        result = self._run(cmd=cmd, clones=self.clones or 1)
 
       result.report_to_result_sink()
 
