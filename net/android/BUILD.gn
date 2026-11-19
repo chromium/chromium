@@ -4,6 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//components/cronet/android/cronet_test_templates.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("net_java") {
@@ -189,7 +190,15 @@ shared_library_with_jni("net_java_test_native_support") {
   java_targets = [ ":net_test_support_apk" ]
 }
 
-android_apk("net_test_support_apk") {
+# Cronet smoketest relies on this APK but in Cronet builds Jni Zero classes
+# are renamed. See https://crbug.com/353534209 for additional context.
+if (is_cronet_build) {
+  _test_support_apk_type = "cronet_android_apk"
+} else {
+  _test_support_apk_type = "android_apk"
+}
+
+target(_test_support_apk_type, "net_test_support_apk") {
   testonly = true
 
   deps = [

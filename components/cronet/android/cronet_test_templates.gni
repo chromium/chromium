@@ -54,6 +54,23 @@ template("cronet_instrumentation_test_apk") {
   }
 }
 
+# Drop in replacement for the android_apk() template that renames java classes
+# in the same way the classes shipped in cronet jars are renamed.
+template("cronet_android_apk") {
+  _single_jar_target_name = "${target_name}_single_jar_java"
+
+  cronet_renamed_jar(_single_jar_target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    deps = invoker.deps
+  }
+
+  android_apk(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    deps += [ ":$_single_jar_target_name" ]
+  }
+}
+
 # Drop in replacement for the test() template that renames java classes in the
 # same way the classes shipped in  cronet jars are renamed.
 template("cronet_test") {
