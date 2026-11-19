@@ -319,7 +319,7 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesMigrationFailures) {
       });
 
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
-      std::make_unique<MockMigrationNotificationManager>(profile());
+      std::make_unique<MockMigrationNotificationManager>(user());
 
   LocalFilesMigrationManager manager(
       local_state(), user(), pref_service(),
@@ -368,7 +368,7 @@ TEST_F(LocalFilesMigrationManagerTest, RetriesIfAllowed) {
       });
 
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
-      std::make_unique<MockMigrationNotificationManager>(profile());
+      std::make_unique<MockMigrationNotificationManager>(user());
 
   LocalFilesMigrationManager manager(
       local_state(), user(), pref_service(),
@@ -411,7 +411,7 @@ TEST_F(LocalFilesMigrationManagerTest, DoesNotRetryWhenFatal) {
       });
 
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
-      std::make_unique<MockMigrationNotificationManager>(profile());
+      std::make_unique<MockMigrationNotificationManager>(user());
 
   LocalFilesMigrationManager manager(
       local_state(), user(), pref_service(),
@@ -457,7 +457,7 @@ TEST_F(LocalFilesMigrationManagerTest, UsesExistingStartTimeFromPrefs) {
   profile()->GetPrefs()->SetTime(
       ash::prefs::kSkyVaultMigrationScheduledStartTime, start_time);
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
-      std::make_unique<MockMigrationNotificationManager>(profile());
+      std::make_unique<MockMigrationNotificationManager>(user());
   EXPECT_CALL(*notification_manager.get(),
               ShowMigrationInfoDialog(MigrationDestination::kOneDrive,
                                       start_time, testing::_))
@@ -484,7 +484,7 @@ TEST_F(LocalFilesMigrationManagerTest, InformUserShortTimeJumpsToSecond) {
   profile()->GetPrefs()->SetTime(
       ash::prefs::kSkyVaultMigrationScheduledStartTime, start_time);
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
-      std::make_unique<MockMigrationNotificationManager>(profile());
+      std::make_unique<MockMigrationNotificationManager>(user());
   EXPECT_CALL(*notification_manager.get(),
               ShowMigrationInfoDialog(MigrationDestination::kOneDrive,
                                       start_time, testing::_))
@@ -508,7 +508,7 @@ TEST_F(LocalFilesMigrationManagerTest, StoresScheduledTimeToPrefs) {
   CreateTestFile(kTestFile);
 
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
-      std::make_unique<MockMigrationNotificationManager>(profile());
+      std::make_unique<MockMigrationNotificationManager>(user());
   EXPECT_CALL(*notification_manager.get(), ShowMigrationInfoDialog).Times(1);
 
   SetPrefs(State::kPending);
@@ -536,7 +536,7 @@ TEST_F(LocalFilesMigrationManagerTest, StartsNowIfStartTimePast) {
   profile()->GetPrefs()->SetTime(
       ash::prefs::kSkyVaultMigrationScheduledStartTime, start_time);
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
-      std::make_unique<MockMigrationNotificationManager>(profile());
+      std::make_unique<MockMigrationNotificationManager>(user());
   EXPECT_CALL(*notification_manager.get(), ShowMigrationInfoDialog).Times(0);
 
   SetPrefs(State::kPending, /*local_user_files_allowed=*/false,
@@ -567,7 +567,7 @@ TEST_F(LocalFilesMigrationManagerTest, StopsWhenLocalStorageAllowed) {
           ReplyWith(::user_data_auth::SetUserDataStorageWriteEnabledReply()));
 
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
-      std::make_unique<MockMigrationNotificationManager>(profile());
+      std::make_unique<MockMigrationNotificationManager>(user());
   std::unique_ptr<MockMigrationCoordinator> coordinator =
       std::make_unique<MockMigrationCoordinator>(user());
   base::test::TestFuture<void> run_future;
@@ -641,7 +641,7 @@ TEST_F(LocalFilesMigrationManagerTest, RetriesDeleteOnSessionStart) {
   SetRetryCount(kMaxRetryCount);
 
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
-      std::make_unique<MockMigrationNotificationManager>(profile());
+      std::make_unique<MockMigrationNotificationManager>(user());
   EXPECT_CALL(*notification_manager, ShowDeletionCompletedNotification)
       .Times(1);
   std::unique_ptr<MockCleanupHandler> cleanup_handler =
@@ -675,7 +675,7 @@ TEST_P(LocalFilesMigrationManagerStateTest, InitializeFromState) {
   SetPrefs(state);
 
   std::unique_ptr<MockMigrationNotificationManager> notification_manager =
-      std::make_unique<MockMigrationNotificationManager>(profile());
+      std::make_unique<MockMigrationNotificationManager>(user());
   std::unique_ptr<MockMigrationCoordinator> coordinator =
       std::make_unique<MockMigrationCoordinator>(user());
   base::test::TestFuture<void> run_future;

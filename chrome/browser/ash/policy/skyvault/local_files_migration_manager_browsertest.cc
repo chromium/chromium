@@ -129,8 +129,8 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
 
     manager()->AddObserver(&observer_);
 
-    notification_manager_ = std::make_unique<MockMigrationNotificationManager>(
-        browser()->GetProfile());
+    notification_manager_ =
+        std::make_unique<MockMigrationNotificationManager>(user());
     manager()->SetNotificationManagerForTesting(notification_manager_.get());
 
     ash::UserDataAuthClient::OverrideGlobalInstanceForTesting(&userdataauth_);

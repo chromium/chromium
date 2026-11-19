@@ -13,7 +13,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -45,7 +45,8 @@ class MigrationNotificationManager : public KeyedService {
   using SignInCallback = base::OnceCallback<void(base::File::Error)>;
   using SignInCallbacks = base::OnceCallbackList<void(base::File::Error)>;
 
-  explicit MigrationNotificationManager(content::BrowserContext* context);
+  // `user` must not be null and must outlive this instance.
+  explicit MigrationNotificationManager(user_manager::User* user);
   ~MigrationNotificationManager() override;
 
   // Shows a dialog informing the user that the migration will happen at
@@ -94,7 +95,6 @@ class MigrationNotificationManager : public KeyedService {
 
  private:
   Profile* profile();
-  const user_manager::User& user();
 
   // Closes the notification and, if the button is clicked, opens `path` in the
   // Files App.
@@ -112,8 +112,8 @@ class MigrationNotificationManager : public KeyedService {
   // successfully (base::File::Error::FILE_ERROR_OK).
   void OnSignInResponse(base::File::Error error);
 
-  // Context for which this instance was created.
-  raw_ptr<content::BrowserContext> context_;
+  // The user for which this instance was created.
+  const raw_ref<user_manager::User> user_;
 
   // List of sign-in result callbacks, mapped to a single sign-in notification.
   // This ensures that all callers who requested the sign-in receive the final

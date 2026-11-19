@@ -14,6 +14,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -97,8 +98,8 @@ std::u16string CloudProviderToString(MigrationDestination destination) {
 }  // namespace
 
 MigrationNotificationManager::MigrationNotificationManager(
-    content::BrowserContext* context)
-    : context_(context) {}
+    user_manager::User* user)
+    : user_(CHECK_DEREF(user)) {}
 
 MigrationNotificationManager::~MigrationNotificationManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -134,7 +135,7 @@ void MigrationNotificationManager::ShowMigrationProgressNotification(
       /*offset=*/nullptr);
 
   message_center::MessageCenter::Get()->AddNotification(
-      CreateNotificationPtr(user(), title, message));
+      CreateNotificationPtr(*user_, title, message));
 }
 
 void MigrationNotificationManager::ShowMigrationCompletedNotification(
@@ -160,7 +161,7 @@ void MigrationNotificationManager::ShowMigrationCompletedNotification(
       /*offset=*/nullptr);
 
   auto notification = CreateNotificationPtr(
-      user(), title, message,
+      *user_, title, message,
       base::BindRepeating(
           &MigrationNotificationManager::HandleCompletedNotificationClick,
           weak_factory_.GetWeakPtr(), destination_path));
@@ -176,7 +177,7 @@ void MigrationNotificationManager::ShowDeletionCompletedNotification() {
   std::u16string message =
       l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_DELETION_COMPLETED_MESSAGE);
   message_center::MessageCenter::Get()->AddNotification(
-      CreateNotificationPtr(user(), title, message));
+      CreateNotificationPtr(*user_, title, message));
 }
 
 void MigrationNotificationManager::ShowMigrationErrorNotification(
@@ -200,7 +201,7 @@ void MigrationNotificationManager::ShowMigrationErrorNotification(
       l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_BUTTON);
 
   auto notification = CreateNotificationPtr(
-      user(), title, message,
+      *user_, title, message,
       base::BindRepeating(
           &MigrationNotificationManager::HandleErrorNotificationClick,
           weak_factory_.GetWeakPtr(), error_log_path));
@@ -228,7 +229,7 @@ void MigrationNotificationManager::ShowConfigurationErrorNotification(
       /*offset=*/nullptr);
 
   message_center::MessageCenter::Get()->AddNotification(
-      CreateNotificationPtr(user(), title, message));
+      CreateNotificationPtr(*user_, title, message));
 }
 
 base::CallbackListSubscription
@@ -238,8 +239,7 @@ MigrationNotificationManager::ShowOneDriveSignInNotification(
 
   if (sign_in_callbacks_.empty()) {
     policy::skyvault_ui_utils::ShowSignInNotification(
-        Profile::FromBrowserContext(context_), /*id=*/0,
-        UploadTrigger::kMigration,
+        profile(), /*id=*/0, UploadTrigger::kMigration,
         /*file_path=*/base::FilePath(),
         base::BindOnce(&MigrationNotificationManager::OnSignInResponse,
                        weak_factory_.GetWeakPtr()));
@@ -255,7 +255,7 @@ void MigrationNotificationManager::CloseNotifications() {
   // (otherwise upload might fail before it's cancelled) and/or post this to
   // same sequence & fail new requests that come in (if closing exactly when an
   // upload job was getting paused for sign in).
-  CloseNotification(user());
+  CloseNotification(*user_);
 }
 
 void MigrationNotificationManager::CloseDialog() {
@@ -266,12 +266,8 @@ void MigrationNotificationManager::CloseDialog() {
 }
 
 Profile* MigrationNotificationManager::profile() {
-  return Profile::FromBrowserContext(context_);
-}
-
-const user_manager::User& MigrationNotificationManager::user() {
-  return CHECK_DEREF(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context_));
+  return Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(&user_.get()));
 }
 
 void MigrationNotificationManager::HandleCompletedNotificationClick(
@@ -284,7 +280,7 @@ void MigrationNotificationManager::HandleCompletedNotificationClick(
         ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
         ash::NewWindowDelegate::Disposition::kNewForegroundTab);
   }
-  CloseNotification(user());
+  CloseNotification(*user_);
 }
 
 void MigrationNotificationManager::HandleErrorNotificationClick(
@@ -296,7 +292,7 @@ void MigrationNotificationManager::HandleErrorNotificationClick(
         ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
         ash::NewWindowDelegate::Disposition::kNewForegroundTab);
   }
-  CloseNotification(user());
+  CloseNotification(*user_);
 }
 
 void MigrationNotificationManager::OnSignInResponse(base::File::Error error) {
@@ -329,9 +325,10 @@ MigrationNotificationManagerFactory::MigrationNotificationManagerFactory()
           "MigrationNotificationManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              // Ash Internals profiles (sign-in/lock-screen) are never
+              // associated with a logged-in user, so migration never
+              // happens for them.
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {}
 
 MigrationNotificationManagerFactory::~MigrationNotificationManagerFactory() =
@@ -344,7 +341,12 @@ bool MigrationNotificationManagerFactory::ServiceIsNULLWhileTesting() const {
 std::unique_ptr<KeyedService>
 MigrationNotificationManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<MigrationNotificationManager>(context);
+  // Regular profiles -- the only one left, per the ctor's
+  // ProfileSelections -- always have an associated logged-in user.
+  user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context);
+  CHECK(user);
+  return std::make_unique<MigrationNotificationManager>(user);
 }
 
 }  // namespace policy::local_user_files

@@ -43,7 +43,7 @@ class MockMigrationObserver : public LocalFilesMigrationManager::Observer {
 // Mock implementation of MigrationNotificationManager.
 class MockMigrationNotificationManager : public MigrationNotificationManager {
  public:
-  explicit MockMigrationNotificationManager(content::BrowserContext* context);
+  explicit MockMigrationNotificationManager(user_manager::User* user);
   ~MockMigrationNotificationManager() override;
 
   MOCK_METHOD(void,

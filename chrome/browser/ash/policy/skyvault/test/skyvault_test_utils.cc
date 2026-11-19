@@ -15,8 +15,8 @@ MockMigrationObserver::MockMigrationObserver() = default;
 MockMigrationObserver::~MockMigrationObserver() = default;
 
 MockMigrationNotificationManager::MockMigrationNotificationManager(
-    content::BrowserContext* context)
-    : MigrationNotificationManager(context) {}
+    user_manager::User* user)
+    : MigrationNotificationManager(user) {}
 MockMigrationNotificationManager::~MockMigrationNotificationManager() = default;
 
 MockMigrationCoordinator::MockMigrationCoordinator(user_manager::User* user)
