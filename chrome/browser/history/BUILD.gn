@@ -135,6 +135,7 @@ if (is_android) {
       "java/src/org/chromium/chrome/browser/history/FilterSheetViewBinder.java",
       "java/src/org/chromium/chrome/browser/history/HistoryTabHelper.java",
       "java/src/org/chromium/chrome/browser/history/IncognitoHistoryDisclaimerCoordinator.java",
+      "java/src/org/chromium/chrome/browser/history/InfoHeaderPref.java",
     ]
 
     deps = [

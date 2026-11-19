@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.history;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 

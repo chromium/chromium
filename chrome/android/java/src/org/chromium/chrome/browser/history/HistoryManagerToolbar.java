@@ -28,18 +28,6 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
     private HistoryManager mManager;
     private HistoryManagerMenuDelegate mMenuDelegate;
 
-    /**
-     * Interface to the Chrome preference storage used to keep the last visibility state of the info
-     * header.
-     */
-    public interface InfoHeaderPref {
-        default boolean isVisible() {
-            return false;
-        }
-
-        default void setVisible(boolean visible) {}
-    }
-
     /** Delegate for menu capabilities of history management. */
     public interface HistoryManagerMenuDelegate {
         /** Return whether deleting history is currently supported. */
