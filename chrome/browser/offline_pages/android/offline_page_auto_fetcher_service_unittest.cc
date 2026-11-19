@@ -47,8 +47,9 @@ SavePageRequest TestRequest(ClientId client_id = TestClientId()) {
 
 class MockDelegate : public OfflinePageAutoFetcherService::Delegate {
  public:
-  MOCK_METHOD5(ShowAutoFetchCompleteNotification,
-               void(const std::u16string& pageTitle,
+  MOCK_METHOD6(ShowAutoFetchCompleteNotification,
+               void(Profile* profile,
+                    const std::u16string& pageTitle,
                     const std::string& original_url,
                     const std::string& final_url,
                     int android_tab_id,
@@ -243,9 +244,10 @@ TEST_F(OfflinePageAutoFetcherServiceTest, NotifyOnAutoFetchCompleted) {
   EXPECT_CALL(offline_page_model_,
               GetPageByOfflineId_(kTestRequest.request_id()))
       .WillOnce(testing::Return(&returned_item));
-  EXPECT_CALL(delegate_, ShowAutoFetchCompleteNotification(
-                             returned_item.title, kTestRequest.url().spec(),
-                             kTestRequest.url().spec(), kTabId, kOfflineId));
+  EXPECT_CALL(delegate_,
+              ShowAutoFetchCompleteNotification(
+                  &profile_, returned_item.title, kTestRequest.url().spec(),
+                  kTestRequest.url().spec(), kTabId, kOfflineId));
   service_->OnCompleted(kTestRequest,
                         RequestNotifier::BackgroundSavePageResult::SUCCESS);
   task_environment_.RunUntilIdle();

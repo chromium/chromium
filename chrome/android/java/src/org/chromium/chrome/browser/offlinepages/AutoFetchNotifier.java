@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileTokenUtils;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
@@ -102,8 +103,8 @@ public class AutoFetchNotifier {
     }
 
     /**
-     * Dismisses the in-progress notification and cancels request, triggered when the notification
-     * is swiped away or the cancel button is tapped.
+     * Dismisses the in-progress notification and cancels the requests of its profile, triggered
+     * when the notification is swiped away or the cancel button is tapped.
      */
     public static class InProgressCancelReceiver extends BroadcastReceiver {
         @Override
@@ -122,47 +123,80 @@ public class AutoFetchNotifier {
             // the cancellation if Chrome is running in full browser. If Chrome isn't running in
             // full browser, runNowOrAfterFullBrowserStarted() will never call our runnable, so set
             // a pref to remember to cancel on next startup.
+            // TODO(crbug.com/587417706): Scope this cancellation pref per profile. Currently it is
+            // app-wide and only consumed by the initial profile on next startup.
             ChromeSharedPreferences.getInstance()
                     .writeInt(
                             ChromePreferenceKeys.OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS,
                             action);
             // This will call us back with cancellationComplete().
             ChromeBrowserInitializer.getInstance()
-                    .runNowOrAfterFullBrowserStarted(AutoFetchNotifier::cancelInProgress);
+                    .runNowOrAfterFullBrowserStarted(() -> cancelInProgress(intent));
             // Finally, whether chrome is running or not, remove the notification.
-            closeInProgressNotification();
+            @Nullable String tag =
+                    ProfileTokenUtils.getNotificationTagFromIntent(
+                            IN_PROGRESS_NOTIFICATION_TAG, intent);
+            // TODO(crbug.com/585922618): Remove this fallback in M163 once notifications posted
+            // before notifications were per-profile have expired.
+            closeInProgressNotification(tag != null ? tag : IN_PROGRESS_NOTIFICATION_TAG);
         }
     }
 
-    // Called by native when the number of in-progress requests changes.
+    private static String getInProgressNotificationTag(Profile profile) {
+        return ProfileTokenUtils.getNotificationTag(IN_PROGRESS_NOTIFICATION_TAG, profile);
+    }
+
+    // Called by native when the number of in-progress requests of a profile changes.
+    @VisibleForTesting
     @CalledByNative
-    private static void updateInProgressNotificationCountIfShowing(int inProgressCount) {
+    static void updateInProgressNotificationCountIfShowing(
+            @JniType("Profile*") Profile profile, int inProgressCount) {
         if (inProgressCount == 0) {
-            closeInProgressNotification();
+            closeInProgressNotification(getInProgressNotificationTag(profile));
+            if (profile.isInitialProfile()) {
+                // TODO(crbug.com/585922618): Remove in M163 once notifications posted before
+                // in-progress notifications were per-profile have expired. Only the initial
+                // profile could have posted one.
+                closeInProgressNotification(IN_PROGRESS_NOTIFICATION_TAG);
+            }
             return;
         }
 
         if (isShowingInProgressNotification()) {
             // Since the notification is already showing, don't increment the notification action
             // UMA.
-            showInProgressNotification(inProgressCount);
+            showInProgressNotification(profile, inProgressCount);
         }
     }
 
+    /**
+     * Shows the in-progress notification of a profile. Each profile has its own notification,
+     * tagged with {@link ProfileTokenUtils#getNotificationTag}.
+     *
+     * @param profile The profile whose auto-fetch requests are in progress.
+     * @param inProgressCount The number of in-progress requests of {@code profile}.
+     */
+    @VisibleForTesting
     @CalledByNative
-    private static void showInProgressNotification(int inProgressCount) {
+    static void showInProgressNotification(
+            @JniType("Profile*") Profile profile, int inProgressCount) {
         Context context = ContextUtils.getApplicationContext();
 
-        // Create intents for cancellation, both by pressing 'cancel', and swiping away.
+        // Create intents for cancellation, both by pressing 'cancel', and swiping away. The
+        // profile-scoped identity makes the PendingIntents distinct per profile.
         Intent cancelButtonIntent = new Intent(context, InProgressCancelReceiver.class);
         cancelButtonIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         cancelButtonIntent.putExtra(EXTRA_ACTION, NotificationAction.CANCEL_PRESSED);
         cancelButtonIntent.setPackage(context.getPackageName());
+        ProfileTokenUtils.addProfileToIntent(profile, cancelButtonIntent);
+        ProfileTokenUtils.setProfileScopedIdentity(profile, cancelButtonIntent);
 
         Intent deleteIntent = new Intent(context, InProgressCancelReceiver.class);
         deleteIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         deleteIntent.putExtra(EXTRA_ACTION, NotificationAction.DISMISSED);
         deleteIntent.setPackage(context.getPackageName());
+        ProfileTokenUtils.addProfileToIntent(profile, deleteIntent);
+        ProfileTokenUtils.setProfileScopedIdentity(profile, deleteIntent);
 
         String title =
                 context.getResources()
@@ -174,7 +208,7 @@ public class AutoFetchNotifier {
         NotificationMetadata metadata =
                 new NotificationMetadata(
                         NotificationUmaTracker.SystemNotificationType.OFFLINE_PAGES,
-                        IN_PROGRESS_NOTIFICATION_TAG,
+                        getInProgressNotificationTag(profile),
                         /* notificationId= */ 0);
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
@@ -210,12 +244,12 @@ public class AutoFetchNotifier {
         }
     }
 
-    public static void closeInProgressNotification() {
+    private static void closeInProgressNotification(String tag) {
         NotificationManager manager =
                 (NotificationManager)
                         ContextUtils.getApplicationContext()
                                 .getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.cancel(IN_PROGRESS_NOTIFICATION_TAG, 0);
+        manager.cancel(tag, 0);
         setIsShowingInProgressNotification(false);
     }
 
@@ -236,18 +270,25 @@ public class AutoFetchNotifier {
     }
 
     /**
-     * Returns true if all auto-fetch requests should be canceled due to user interaction with the
-     * in-progress notification.
+     * Returns true if all auto-fetch requests of {@code profile} should be canceled due to user
+     * interaction with the in-progress notification while Chrome wasn't running.
+     *
+     * <p>The cancellation pref is app-wide. Before notifications were per-profile, only the initial
+     * profile could post one, so only it consumes the pref.
      */
+    // TODO(crbug.com/587417706): Honor cancellations of non-initial profiles made while Chrome
+    // isn't running, via per-profile SharedPreferences.
     @VisibleForTesting
     @CalledByNative
-    public static boolean autoFetchInProgressNotificationCanceled() {
-        return ChromeSharedPreferences.getInstance()
-                        .readInt(
-                                ChromePreferenceKeys
-                                        .OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS,
-                                NotificationAction.NUM_ENTRIES)
-                != NotificationAction.NUM_ENTRIES;
+    public static boolean autoFetchInProgressNotificationCanceled(
+            @JniType("Profile*") Profile profile) {
+        return profile.isInitialProfile()
+                && ChromeSharedPreferences.getInstance()
+                                .readInt(
+                                        ChromePreferenceKeys
+                                                .OFFLINE_AUTO_FETCH_USER_CANCEL_ACTION_IN_PROGRESS,
+                                        NotificationAction.NUM_ENTRIES)
+                        != NotificationAction.NUM_ENTRIES;
     }
 
     /** Handles interaction with the complete notification. */
@@ -284,6 +325,7 @@ public class AutoFetchNotifier {
      * Creates a system notification that informs the user when an auto-fetched page is ready. If
      * the notification is tapped, it opens the offline page in Chrome.
      *
+     * @param profile The profile that auto-fetched the page.
      * @param pageTitle The title of the page. This is displayed on the notification.
      * @param originalUrl The requested URL before any redirection.
      * @param finalUrl The requested URL after any redirection.
@@ -291,28 +333,30 @@ public class AutoFetchNotifier {
      *     open the offline page when the notification is tapped.
      * @param offlineId The offlineID for the offline page that was just saved.
      */
+    @VisibleForTesting
     @CalledByNative
-    private static void showCompleteNotification(
+    static void showCompleteNotification(
+            @JniType("Profile*") Profile profile,
             @JniType("std::u16string") String pageTitle,
             @JniType("std::string") String originalUrl,
             @JniType("std::string") String finalUrl,
             int tabId,
             long offlineId) {
-        // Since offline pages are only available in regular mode, any downloaded content should be
-        // triggered by regular mode. Hence, it is correct to pass always regular profile.
         OfflinePageUtils.getLoadUrlParamsForOpeningOfflineVersion(
                 finalUrl,
                 offlineId,
                 LaunchLocation.NOTIFICATION,
                 (params) -> {
                     assert params != null;
+                    if (profile.shutdownStarted()) return;
                     showCompleteNotificationWithParams(
-                            pageTitle, tabId, offlineId, originalUrl, finalUrl, params);
+                            profile, pageTitle, tabId, offlineId, originalUrl, finalUrl, params);
                 },
-                ProfileManager.getLastUsedRegularProfile());
+                profile);
     }
 
     private static void showCompleteNotificationWithParams(
+            Profile profile,
             String pageTitle,
             int tabId,
             long offlineId,
@@ -332,6 +376,10 @@ public class AutoFetchNotifier {
         clickIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         clickIntent.putExtra(EXTRA_ACTION, NotificationAction.TAPPED);
         IntentHandler.setTabLaunchType(clickIntent, TabLaunchType.FROM_CHROME_UI);
+        // TODO(crbug.com/40254448): Honor the profile token when IntentHandler routes ACTION_VIEW
+        // intents.
+        ProfileTokenUtils.addProfileToIntent(profile, clickIntent);
+        ProfileTokenUtils.setProfileScopedIdentity(profile, clickIntent);
 
         clickIntent.setPackage(context.getPackageName());
 
@@ -386,6 +434,7 @@ public class AutoFetchNotifier {
         }
     }
 
+    // TODO(crbug.com/587416933): Scope this pref per profile (and update the notification count).
     private static boolean isShowingInProgressNotification() {
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(ChromePreferenceKeys.OFFLINE_AUTO_FETCH_SHOWING_IN_PROGRESS, false);
@@ -396,9 +445,29 @@ public class AutoFetchNotifier {
                 .writeBoolean(ChromePreferenceKeys.OFFLINE_AUTO_FETCH_SHOWING_IN_PROGRESS, showing);
     }
 
-    private static void cancelInProgress() {
-        // Using regular profile here, since this function is only called in regular mode.
-        AutoFetchNotifierJni.get().cancelInProgress(ProfileManager.getLastUsedRegularProfile());
+    /**
+     * Cancels the requests of the profile of an in-progress notification. Requires native.
+     *
+     * @param intent The intent of the notification's cancel button or delete action.
+     */
+    private static void cancelInProgress(Intent intent) {
+        if (!ProfileTokenUtils.hasProfileToken(intent)) {
+            // TODO(crbug.com/585922618): Remove this fallback in M163 once notifications posted
+            // before profile tokens were added have expired.
+            AutoFetchNotifierJni.get().cancelInProgress(ProfileManager.getLastUsedRegularProfile());
+            return;
+        }
+        ProfileTokenUtils.retrieveProfileFromIntent(
+                intent,
+                (profile) -> {
+                    if (profile == null) {
+                        // The profile no longer exists, so there is nothing to cancel. Clear the
+                        // pref so that no other profile cancels its requests on next startup.
+                        cancellationComplete();
+                        return;
+                    }
+                    AutoFetchNotifierJni.get().cancelInProgress(profile);
+                });
     }
 
     @NativeMethods

@@ -435,7 +435,8 @@ public class OfflinePageAutoFetchTest {
 
         waitForRequestCount(0);
         // Ensure the cancellation preference is cleared.
-        Assert.assertEquals(false, AutoFetchNotifier.autoFetchInProgressNotificationCanceled());
+        Assert.assertEquals(
+                false, AutoFetchNotifier.autoFetchInProgressNotificationCanceled(mProfile));
     }
 
     private void waitForRequestCount(int requestCount) {

@@ -1083,6 +1083,7 @@ if (is_android) {
     resources_package = "org.chromium.chrome"
 
     sources = [
+      "src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifierUnitTest.java",
       "src/org/chromium/chrome/browser/offlinepages/BackgroundSchedulerTest.java",
       "src/org/chromium/chrome/browser/offlinepages/ClientIdTest.java",
       "src/org/chromium/chrome/browser/offlinepages/OfflineBackgroundTaskTest.java",

@@ -17,13 +17,15 @@ namespace offline_pages {
 
 class OfflinePageAutoFetcherServiceFactory::ServiceDelegate final
     : public OfflinePageAutoFetcherService::Delegate {
-  void ShowAutoFetchCompleteNotification(const std::u16string& pageTitle,
+  void ShowAutoFetchCompleteNotification(Profile* profile,
+                                         const std::u16string& pageTitle,
                                          const std::string& original_url,
                                          const std::string& final_url,
                                          int android_tab_id,
                                          int64_t offline_id) override {
     offline_pages::ShowAutoFetchCompleteNotification(
-        pageTitle, original_url, final_url, android_tab_id, offline_id);
+        profile, pageTitle, original_url, final_url, android_tab_id,
+        offline_id);
   }
 };
 

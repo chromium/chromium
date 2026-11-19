@@ -67,6 +67,7 @@ class OfflinePageAutoFetcherService : public KeyedService,
    public:
     // Calls |offline_pages::ShowAutoFetchCompleteNotification()|.
     virtual void ShowAutoFetchCompleteNotification(
+        Profile* profile,
         const std::u16string& pageTitle,
         const std::string& original_url,
         const std::string& final_url,
@@ -114,6 +115,7 @@ class OfflinePageAutoFetcherService : public KeyedService,
   void CancelAllDone(base::OnceClosure callback,
                      const MultipleItemStatuses& result);
 
+  raw_ptr<Profile> profile_;
   std::unique_ptr<AutoFetchNotifier> notifier_;
   AutoFetchPageLoadWatcher page_load_watcher_;
   raw_ptr<RequestCoordinator> request_coordinator_;

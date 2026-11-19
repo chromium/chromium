@@ -7,24 +7,30 @@
 
 #include <string>
 
+class Profile;
 
 namespace offline_pages {
 
 // Functions for calling into AutoFetchNotifier.java.
 
-// Functions to show, remove, and update the in-progress notification.
-// See AutoFetchNotifier.java.
-void ShowAutoFetchInProgressNotification(int in_progress_count);
-void UpdateAutoFetchInProgressNotificationCountIfShowing(int in_progress_count);
+// Functions to show, remove, and update the in-progress notification of
+// `profile`. Each profile has its own notification. See AutoFetchNotifier.java.
+void ShowAutoFetchInProgressNotification(Profile* profile,
+                                         int in_progress_count);
+void UpdateAutoFetchInProgressNotificationCountIfShowing(Profile* profile,
+                                                         int in_progress_count);
 
 // Returns true if the user canceled the in-progress notification while
-// Chrome wasn't running. If true, the active requests should be canceled,
-// and then |AutoFetchCancellationComplete()| should be called.
-bool AutoFetchInProgressNotificationCanceled();
+// Chrome wasn't running, and `profile` should cancel its requests. If true, the
+// active requests should be canceled, and then
+// |AutoFetchCancellationComplete()| should be called.
+bool AutoFetchInProgressNotificationCanceled(Profile* profile);
 void AutoFetchCancellationComplete();
 
-// Triggers the auto-fetch complete notification. See AutoFetchNotifier.java.
-void ShowAutoFetchCompleteNotification(const std::u16string& page_title,
+// Triggers the auto-fetch complete notification of `profile`. See
+// AutoFetchNotifier.java.
+void ShowAutoFetchCompleteNotification(Profile* profile,
+                                       const std::u16string& page_title,
                                        const std::string& original_url,
                                        const std::string& final_url,
                                        int android_tab_id,

@@ -34,21 +34,25 @@ static void JNI_AutoFetchNotifier_CancelInProgress(JNIEnv* env,
 // C++ -> Java
 //
 
-void ShowAutoFetchInProgressNotification(int in_progress_count) {
+void ShowAutoFetchInProgressNotification(Profile* profile,
+                                         int in_progress_count) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutoFetchNotifier_showInProgressNotification(env, in_progress_count);
+  Java_AutoFetchNotifier_showInProgressNotification(env, profile,
+                                                    in_progress_count);
 }
 
 void UpdateAutoFetchInProgressNotificationCountIfShowing(
+    Profile* profile,
     int in_progress_count) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AutoFetchNotifier_updateInProgressNotificationCountIfShowing(
-      env, in_progress_count);
+      env, profile, in_progress_count);
 }
 
-bool AutoFetchInProgressNotificationCanceled() {
+bool AutoFetchInProgressNotificationCanceled(Profile* profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_AutoFetchNotifier_autoFetchInProgressNotificationCanceled(env);
+  return Java_AutoFetchNotifier_autoFetchInProgressNotificationCanceled(
+      env, profile);
 }
 
 void AutoFetchCancellationComplete() {
@@ -56,14 +60,16 @@ void AutoFetchCancellationComplete() {
   Java_AutoFetchNotifier_cancellationComplete(env);
 }
 
-void ShowAutoFetchCompleteNotification(const std::u16string& pageTitle,
+void ShowAutoFetchCompleteNotification(Profile* profile,
+                                       const std::u16string& pageTitle,
                                        const std::string& original_url,
                                        const std::string& final_url,
                                        int android_tab_id,
                                        int64_t offline_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutoFetchNotifier_showCompleteNotification(
-      env, pageTitle, original_url, final_url, android_tab_id, offline_id);
+  Java_AutoFetchNotifier_showCompleteNotification(env, profile, pageTitle,
+                                                  original_url, final_url,
+                                                  android_tab_id, offline_id);
 }
 
 }  // namespace offline_pages

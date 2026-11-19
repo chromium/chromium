@@ -33,18 +33,23 @@ constexpr int kMaximumInFlight = 3;
 
 class AutoFetchNotifierImpl : public AutoFetchNotifier {
  public:
+  explicit AutoFetchNotifierImpl(Profile* profile) : profile_(profile) {}
   ~AutoFetchNotifierImpl() override = default;
   // Ensures that the in-progress notification is showing with the appropriate
   // request count.
   void NotifyInProgress(int in_flight_count) override {
-    ShowAutoFetchInProgressNotification(in_flight_count);
+    ShowAutoFetchInProgressNotification(profile_, in_flight_count);
   }
   // Update the request count if the in-progress notification is already
   // showing. This won't trigger showing the notification if it's not already
   // shown. If |in_flight_count| is 0, the notification will be hidden.
   void InProgressCountChanged(int in_flight_count) override {
-    UpdateAutoFetchInProgressNotificationCountIfShowing(in_flight_count);
+    UpdateAutoFetchInProgressNotificationCountIfShowing(profile_,
+                                                        in_flight_count);
   }
+
+ private:
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace
@@ -54,13 +59,14 @@ OfflinePageAutoFetcherService::OfflinePageAutoFetcherService(
     RequestCoordinator* request_coordinator,
     OfflinePageModel* offline_page_model,
     Delegate* delegate)
-    : notifier_(std::make_unique<AutoFetchNotifierImpl>()),
+    : profile_(profile),
+      notifier_(std::make_unique<AutoFetchNotifierImpl>(profile)),
       page_load_watcher_(profile, notifier_.get(), request_coordinator),
       request_coordinator_(request_coordinator),
       offline_page_model_(offline_page_model),
       delegate_(delegate) {
   request_coordinator_->AddObserver(this);
-  if (AutoFetchInProgressNotificationCanceled()) {
+  if (AutoFetchInProgressNotificationCanceled(profile)) {
     CancelAll(base::BindOnce(&AutoFetchCancellationComplete));
   }
 }
@@ -193,7 +199,7 @@ void OfflinePageAutoFetcherService::AutoFetchComplete(
     return;
 
   delegate_->ShowAutoFetchCompleteNotification(
-      page->title, page->GetOriginalUrl().spec(), page->url.spec(),
+      profile_, page->title, page->GetOriginalUrl().spec(), page->url.spec(),
       metadata.value().android_tab_id, page->offline_id);
 }
 
