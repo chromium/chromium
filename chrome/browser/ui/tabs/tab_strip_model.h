@@ -1077,7 +1077,8 @@ class TabStripModel {
       split_tabs::SplitTabId split_id,
       const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
       SplitTabChange::SplitTabAddReason reason,
-      const split_tabs::SplitTabVisualData& visual_data);
+      const split_tabs::SplitTabVisualData& visual_data,
+      std::optional<split_tabs::SplitTabCreatedSource> source = std::nullopt);
 
   // Notify observers that visual data for a split has changed.
   void NotifySplitTabVisualsChanged(
@@ -1301,7 +1302,8 @@ class TabStripModel {
       const std::vector<int>& indices,
       int pivot_index,
       split_tabs::SplitTabVisualData visual_data,
-      SplitTabChange::SplitTabAddReason reasons);
+      SplitTabChange::SplitTabAddReason reasons,
+      std::optional<split_tabs::SplitTabCreatedSource> source = std::nullopt);
 
   void RemoveSplitImpl(split_tabs::SplitTabId split_id,
                        SplitTabChange::SplitTabRemoveReason reason);

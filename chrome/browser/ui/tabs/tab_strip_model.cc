@@ -2215,7 +2215,7 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
   split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
 
   AddToSplitImpl(split_id, indices, pivot_index, visual_data,
-                 SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
+                 SplitTabChange::SplitTabAddReason::kNewSplitTabAdded, source);
   split_tabs::LogSplitViewCreatedUKM(this, split_id);
 
   if (auto* const user_ed = BrowserUserEducationInterface::From(
@@ -2259,7 +2259,7 @@ void TabStripModel::RestoreSplit(split_tabs::SplitTabId split_id,
   // and split is the last step, the API should be resilient to potential
   // changes.
   AddToSplitImpl(split_id, indices, indices[0], visual_data,
-                 SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
+                 SplitTabChange::SplitTabAddReason::kSplitTabRestored);
 
   CompleteModelUpdateTransaction();
 }
@@ -2887,10 +2887,11 @@ void TabStripModel::NotifySplitTabCreated(
     split_tabs::SplitTabId split_id,
     const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
     SplitTabChange::SplitTabAddReason reason,
-    const split_tabs::SplitTabVisualData& visual_data) {
-  SplitTabChange change(
-      this, split_id,
-      SplitTabChange::AddedChange(tabs_with_indices, reason, visual_data));
+    const split_tabs::SplitTabVisualData& visual_data,
+    std::optional<split_tabs::SplitTabCreatedSource> source) {
+  SplitTabChange change(this, split_id,
+                        SplitTabChange::AddedChange(tabs_with_indices, reason,
+                                                    visual_data, source));
 
   for (auto& observer : observers_) {
     observer.OnSplitTabChanged(change);
@@ -5074,7 +5075,8 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
     const std::vector<int>& indices,
     int pivot_index,
     split_tabs::SplitTabVisualData visual_data,
-    SplitTabChange::SplitTabAddReason reason) {
+    SplitTabChange::SplitTabAddReason reason,
+    std::optional<split_tabs::SplitTabCreatedSource> source) {
   std::vector<tabs::TabInterface*> tabs = {};
   for (int i : indices) {
     tabs::TabInterface* tab = GetTabAtIndex(i);
@@ -5121,7 +5123,8 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
              selection);
   }
 
-  NotifySplitTabCreated(split_id, tabs_with_indices, reason, visual_data);
+  NotifySplitTabCreated(split_id, tabs_with_indices, reason, visual_data,
+                        source);
   return split_id;
 }
 

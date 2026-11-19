@@ -244,8 +244,12 @@ SplitTabChange::SplitTabChange(TabStripModel* model,
 SplitTabChange::AddedChange::AddedChange(
     const std::vector<std::pair<tabs::TabInterface*, int>>& tabs,
     SplitTabAddReason reason,
-    const split_tabs::SplitTabVisualData& visual_data)
-    : tabs_(tabs), reason_(reason), visual_data_(visual_data) {}
+    const split_tabs::SplitTabVisualData& visual_data,
+    std::optional<split_tabs::SplitTabCreatedSource> source)
+    : tabs_(tabs),
+      reason_(reason),
+      visual_data_(visual_data),
+      source_(source) {}
 SplitTabChange::AddedChange::~AddedChange() = default;
 SplitTabChange::AddedChange::AddedChange(const SplitTabChange::AddedChange&) =
     default;

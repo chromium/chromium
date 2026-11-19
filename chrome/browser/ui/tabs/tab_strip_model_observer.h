@@ -32,6 +32,10 @@ namespace content {
 class WebContents;
 }
 
+namespace split_tabs {
+enum class SplitTabCreatedSource;
+}  // namespace split_tabs
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // TabStripModelChange / TabStripSelectionChange
@@ -345,7 +349,8 @@ struct SplitTabChange {
   enum class SplitTabAddReason {
     kNewSplitTabAdded,
     kSplitTabUpdated,
-    kInsertedFromAnotherTabstrip
+    kInsertedFromAnotherTabstrip,
+    kSplitTabRestored,
   };
 
   enum class SplitTabRemoveReason {
@@ -365,9 +370,11 @@ struct SplitTabChange {
   };
 
   struct AddedChange : public Delta {
-    AddedChange(const std::vector<std::pair<tabs::TabInterface*, int>>& tabs,
-                SplitTabAddReason reason,
-                const split_tabs::SplitTabVisualData& visual_data);
+    AddedChange(
+        const std::vector<std::pair<tabs::TabInterface*, int>>& tabs,
+        SplitTabAddReason reason,
+        const split_tabs::SplitTabVisualData& visual_data,
+        std::optional<split_tabs::SplitTabCreatedSource> source = std::nullopt);
     ~AddedChange() override;
     AddedChange(const AddedChange&);
 
@@ -378,11 +385,15 @@ struct SplitTabChange {
       return visual_data_;
     }
     SplitTabAddReason reason() const { return reason_; }
+    std::optional<split_tabs::SplitTabCreatedSource> source() const {
+      return source_;
+    }
 
    private:
     std::vector<std::pair<tabs::TabInterface*, int>> tabs_;
     SplitTabAddReason reason_;
     split_tabs::SplitTabVisualData visual_data_;
+    std::optional<split_tabs::SplitTabCreatedSource> source_;
   };
 
   struct VisualsChange : public Delta {

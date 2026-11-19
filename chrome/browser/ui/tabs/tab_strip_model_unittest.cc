@@ -4007,6 +4007,39 @@ TEST_F(TabStripModelTest, RestoreSplit) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
+TEST_F(TabStripModelTest, SplitAddedChangeReportsReasonAndSource) {
+  struct SplitAddedObserver : public TabStripModelObserver {
+    void OnSplitTabChanged(const SplitTabChange& change) override {
+      if (change.type == SplitTabChange::Type::kAdded) {
+        reason = change.GetAddedChange()->reason();
+        source = change.GetAddedChange()->source();
+      }
+    }
+    std::optional<SplitTabChange::SplitTabAddReason> reason;
+    std::optional<split_tabs::SplitTabCreatedSource> source;
+  } observer;
+  tabstrip()->AddObserver(&observer);
+
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 4, 0, {0}));
+  tabstrip()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kBookmarkContextMenu);
+  EXPECT_EQ(observer.reason,
+            SplitTabChange::SplitTabAddReason::kNewSplitTabAdded);
+  EXPECT_EQ(observer.source,
+            split_tabs::SplitTabCreatedSource::kBookmarkContextMenu);
+
+  tabstrip()->RestoreSplit(split_tabs::SplitTabId::GenerateNew(), {2, 3},
+                           split_tabs::SplitTabVisualData());
+  EXPECT_EQ(observer.reason,
+            SplitTabChange::SplitTabAddReason::kSplitTabRestored);
+  EXPECT_EQ(observer.source, std::nullopt);
+
+  tabstrip()->RemoveObserver(&observer);
+  tabstrip()->CloseAllTabs();
+}
+
 TEST_F(TabStripModelTest, AddToSplitInGroup) {
   // Create five tabs with two pinned.
   ASSERT_NO_FATAL_FAILURE(
