@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
@@ -81,13 +82,9 @@ bool BrowserFocusControllerViews::
 
   // TODO: this fixes https://crbug.com/40668249 and https://crbug.com/40674460,
   // but a more general solution should be desirable to find any bubbles
-  // anchored in the views hierarchy.
-  // TODO(crbug.com/585053540): This misses bubbles whose anchor isn't one of
-  // those checked below, e.g. the permission prompt anchored to the permission
-  // chip, with both the Views and the WebUI location bar. For anchors that
-  // aren't Views, consider looking the bubbles up through
-  // ui::AnchoredDialogRegistry, which already knows about them for Tab
-  // traversal.
+  // anchored in the views hierarchy. For anchors that aren't Views, consider
+  // looking the bubbles up through ui::AnchoredDialogRegistry, which already
+  // knows about them for Tab traversal.
   views::DialogDelegate* bubble = nullptr;
   if (auto* control = toolbar_button_provider_->GetAppMenuControl()) {
     auto* dialog = control->GetDialogDelegate();
@@ -117,9 +114,16 @@ bool BrowserFocusControllerViews::
       download_anchor =
           pinned_toolbar_actions->GetBubbleAnchor(kActionShowDownloads);
     }
+    // The permission prompt and the page info bubble anchor to the permission
+    // chips. The Views and the WebUI location bars register their chips under
+    // the same identifiers, so this covers both.
     for (const views::BubbleAnchor& anchor : std::to_array<views::BubbleAnchor>(
              {views::BubbleAnchor(
                   browser_elements_->GetElement(kLocationBarElementId)),
+              views::BubbleAnchor(browser_elements_->GetElement(
+                  PermissionChipView::kPermissionRequestChipElementId)),
+              views::BubbleAnchor(browser_elements_->GetElement(
+                  PermissionChipView::kIndicatorChipElementId)),
               download_anchor,
               views::BubbleAnchor(GetViewForId(kTopContainerElementId)),
               views::BubbleAnchor(
@@ -151,6 +155,16 @@ bool BrowserFocusControllerViews::
         widget->Activate();
       }
 #endif
+      return true;
+    }
+
+    // Some bubbles have neither an initially focused view nor a cancel button,
+    // e.g. the one-time permission prompt, whose buttons aren't dialog
+    // buttons. Focus their first focusable view, like Tab from the anchor does.
+    if (views::BubbleDialogDelegate* const bubble_delegate =
+            bubble->AsBubbleDialogDelegate();
+        bubble_delegate &&
+        bubble_delegate->FocusFromAnchor(/*reverse=*/false)) {
       return true;
     }
   }

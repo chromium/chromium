@@ -40,6 +40,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/infobars",
     "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/permissions/chip",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/user_education",
     "//components/feature_engagement/public",
