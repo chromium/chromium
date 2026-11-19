@@ -1871,7 +1871,10 @@ config("tot_warnings") {
   # Entries should generally require both is_clang and llvm_force_head_revision,
   # but may have additional constraints as well (e.g. only some OSes)
   if (is_clang && llvm_force_head_revision) {
-    cflags += []
+    cflags += [
+      # TODO(crbug.com/587465567): Clean up violations and remove.
+      "-Wno-unsequenced-volatile",
+    ]
   }
 }
 
