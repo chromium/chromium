@@ -169,6 +169,22 @@ omnibox::InputType InputTypeForAttachmentOption(
       return omnibox::INPUT_TYPE_DRIVE;
   }
 }
+
+// Returns the server `InputType` corresponding to an attached `item_type`.
+omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
+  using enum ComposeboxInputItemType;
+  switch (item_type) {
+    case kComposeboxInputItemTypeImage:
+      return omnibox::INPUT_TYPE_LENS_IMAGE;
+    case kComposeboxInputItemTypePDF:
+    case kComposeboxInputItemTypeRawFile:
+      return omnibox::INPUT_TYPE_LENS_FILE;
+    case kComposeboxInputItemTypeTab:
+      return omnibox::INPUT_TYPE_BROWSER_TAB;
+    case kComposeboxInputItemTypeDrive:
+      return omnibox::INPUT_TYPE_DRIVE;
+  }
+}
 }  // namespace
 
 @interface ComposeboxInputStateManager () <IdentityManagerObserving,
@@ -674,7 +690,7 @@ omnibox::InputType InputTypeForAttachmentOption(
 }
 
 // Returns items (attachments) that are invalid (incompatible with the current
-// tool mode) and pending deletion.
+// tool mode or active tool rule) and pending deletion.
 - (NSArray<ComposeboxInputItem*>*)invalidItemsInActiveMode {
   NSMutableArray<ComposeboxInputItem*>* invalidatedItems =
       [NSMutableArray array];
@@ -700,6 +716,13 @@ omnibox::InputType InputTypeForAttachmentOption(
       [invalidatedItems addObject:item];
     }
     return invalidatedItems;
+  }
+
+  for (ComposeboxInputItem* item in containedItems) {
+    if (![self
+            isInputTypeAllowedByActiveTool:InputTypeForItemType(item.type)]) {
+      [invalidatedItems addObject:item];
+    }
   }
 
   return invalidatedItems;
@@ -884,6 +907,21 @@ omnibox::InputType InputTypeForAttachmentOption(
   return YES;
 }
 
+// Whether `inputType` is compatible with the active tool's `ToolConfig` rule,
+// ignoring attachment count limits and model restrictions.
+- (BOOL)isInputTypeAllowedByActiveTool:(omnibox::InputType)inputType {
+  if ([self isRegularSearch]) {
+    return NO;
+  }
+  const omnibox::ToolConfig* config =
+      [self toolConfigForToolMode:self.activeToolMode];
+  if (!config || !config->has_rule() ||
+      config->rule().allow_all_input_types()) {
+    return YES;
+  }
+  return std::ranges::contains(config->rule().allowed_input_types(), inputType);
+}
+
 // Whether the given `toolMode` can be selected.
 - (BOOL)canSelectToolMode:(omnibox::ToolMode)toolMode {
   if (toolMode == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED ||
@@ -909,6 +947,25 @@ omnibox::InputType InputTypeForAttachmentOption(
     default:
       return std::ranges::contains(_inputState->allowed_tools, toolMode);
   }
+}
+
+// Returns the server `ToolConfig` matching `toolMode`, or `nullptr` if absent.
+- (const omnibox::ToolConfig*)toolConfigForToolMode:
+    (omnibox::ToolMode)toolMode {
+  if (!_inputState.has_value() ||
+      toolMode == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED ||
+      toolMode == omnibox::ToolMode::TOOL_MODE_AIM) {
+    // Plain AI Mode (`TOOL_MODE_AIM`) has no server `ToolConfig`; its input
+    // type limits and compatibility rules (`RuleSet` counts and active
+    // `ModelRule` restrictions) are still enforced via `_inputState`.
+    return nullptr;
+  }
+  for (const omnibox::ToolConfig& candidate : _inputState->tool_configs) {
+    if (candidate.tool() == toolMode) {
+      return &candidate;
+    }
+  }
+  return nullptr;
 }
 
 // Whether the given `toolMode` is disabled.
@@ -938,6 +995,13 @@ omnibox::InputType InputTypeForAttachmentOption(
   return std::ranges::contains(_inputState->allowed_models, model);
 }
 
+// Whether the active tool's `ToolConfig` disables active model selection.
+- (BOOL)isModelSelectionDisabledByActiveTool {
+  const omnibox::ToolConfig* activeToolConfig =
+      [self toolConfigForToolMode:self.activeToolMode];
+  return activeToolConfig && activeToolConfig->disable_active_model_selection();
+}
+
 // Whether the given `model` is disabled.
 - (BOOL)isModelDisabled:(omnibox::ModelMode)model {
   if (!_inputState.has_value()) {
@@ -954,6 +1018,7 @@ omnibox::InputType InputTypeForAttachmentOption(
     return @[];
   }
   omnibox::ModelMode activeModel = self.activeModel;
+  BOOL disableModelSelection = [self isModelSelectionDisabledByActiveTool];
 
   NSMutableArray<ComposeboxModelItem*>* items = [NSMutableArray array];
   for (const omnibox::ModelConfig& config : _inputState->model_configs) {
@@ -969,8 +1034,9 @@ omnibox::InputType InputTypeForAttachmentOption(
         initWithModelMode:model
                     title:title
                      icon:[self iconForModelConfig:config]
-                 selected:model == activeModel
-                 disabled:[self isModelDisabled:model]];
+                 selected:!disableModelSelection && model == activeModel
+                 disabled:disableModelSelection ||
+                          [self isModelDisabled:model]];
     [items addObject:item];
   }
   return items;

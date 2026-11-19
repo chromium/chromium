@@ -1646,3 +1646,106 @@ TEST_F(ComposeboxInputStateManagerTest,
   EXPECT_EQ(manager_.inputState->active_tool,
             omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
 }
+
+// Tests that `setActiveToolMode:` invalidates attached items whose input types
+// are disallowed by the selected tool's server `ToolRule`.
+TEST_F(ComposeboxInputStateManagerTest,
+       SetActiveToolModeInvalidatesAttachmentsDisallowedByToolRule) {
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set()->set_max_total_inputs(5);
+  omnibox::ToolConfig* deep_browse_config = config.add_tool_configs();
+  deep_browse_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+  deep_browse_config->set_menu_label("Browse deeply");
+  omnibox::ToolRule* tool_rule = deep_browse_config->mutable_rule();
+  tool_rule->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+  tool_rule->set_allow_all_input_types(false);
+  tool_rule->add_allowed_input_types(omnibox::INPUT_TYPE_LENS_IMAGE);
+  tool_rule->set_allow_all_models(true);
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+
+  ComposeboxInputItem* image_item = [[ComposeboxInputItem alloc]
+      initWithComposeboxInputItemType:ComposeboxInputItemType::
+                                          kComposeboxInputItemTypeImage
+                               source:ComposeboxInputItemSource::
+                                          kGalleryPicker];
+  ComposeboxInputItem* pdf_item = [[ComposeboxInputItem alloc]
+      initWithComposeboxInputItemType:ComposeboxInputItemType::
+                                          kComposeboxInputItemTypePDF
+                               source:ComposeboxInputItemSource::kFilePicker];
+  ComposeboxInputItemCollection* collection =
+      [[ComposeboxInputItemCollection alloc] init];
+  [collection addItem:image_item];
+  [collection addItem:pdf_item];
+  manager_.items = collection;
+
+  FakeComposeboxInputStateManagerDelegate* delegate =
+      [[FakeComposeboxInputStateManagerDelegate alloc] init];
+  manager_.delegate = delegate;
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE];
+
+  EXPECT_TRUE(delegate.didChangeModeCalled);
+  ASSERT_EQ(delegate.lastInvalidatedItems.count, 1u);
+  EXPECT_EQ(delegate.lastInvalidatedItems[0], pdf_item);
+}
+
+// Tests that `modelItems` disables models and hides the active model
+// checkmark when the active tool's `ToolConfig` specifies
+// `disable_active_model_selection`, then restores them on tool exit.
+TEST_F(ComposeboxInputStateManagerTest,
+       DisableActiveModelSelectionDisablesAndPreservesModel) {
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set();
+  omnibox::ModelConfig* regular_config = config.add_model_configs();
+  regular_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  regular_config->set_menu_label("Regular");
+  regular_config->mutable_rule()->set_allow_all_input_types(true);
+  regular_config->mutable_rule()->set_allow_all_tools(true);
+
+  omnibox::ModelConfig* pro_config = config.add_model_configs();
+  pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  pro_config->set_menu_label("Thinking");
+  pro_config->mutable_rule()->set_allow_all_input_types(true);
+  pro_config->mutable_rule()->set_allow_all_tools(true);
+
+  omnibox::ToolConfig* deep_browse_config = config.add_tool_configs();
+  deep_browse_config->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+  deep_browse_config->set_menu_label("Browse deeply");
+  deep_browse_config->set_disable_active_model_selection(true);
+  omnibox::ToolRule* tool_rule = deep_browse_config->mutable_rule();
+  tool_rule->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE);
+  tool_rule->set_allow_all_input_types(true);
+  tool_rule->set_allow_all_models(true);
+
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  ASSERT_TRUE(aim_eligibility_callback_);
+  aim_eligibility_callback_.Run();
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
+  [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
+        explicitUserAction:YES];
+  ASSERT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE];
+
+  ComposeboxUIInputState* disabledState =
+      [manager_ computeUIInputStateWithFavicon:nil attachedWebStateIDs:{}];
+  ASSERT_EQ(disabledState.modelItems.count, 2u);
+  EXPECT_FALSE(disabledState.modelItems[0].selected);
+  EXPECT_TRUE(disabledState.modelItems[0].disabled);
+  EXPECT_FALSE(disabledState.modelItems[1].selected);
+  EXPECT_TRUE(disabledState.modelItems[1].disabled);
+
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
+  ComposeboxUIInputState* restoredState =
+      [manager_ computeUIInputStateWithFavicon:nil attachedWebStateIDs:{}];
+  ASSERT_EQ(restoredState.modelItems.count, 2u);
+  EXPECT_FALSE(restoredState.modelItems[0].selected);
+  EXPECT_FALSE(restoredState.modelItems[0].disabled);
+  EXPECT_TRUE(restoredState.modelItems[1].selected);
+  EXPECT_FALSE(restoredState.modelItems[1].disabled);
+}
