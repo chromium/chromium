@@ -1916,12 +1916,7 @@ public class TabListMediator implements TabListNotificationHandler {
         }
 
         if (mThumbnailProvider != null && mDefaultGridCardSize != null) {
-            if (!mDefaultGridCardSize.equals(tabInfo.get(TabProperties.GRID_CARD_SIZE))) {
-                tabInfo.set(
-                        TabProperties.GRID_CARD_SIZE,
-                        new Size(
-                                mDefaultGridCardSize.getWidth(), mDefaultGridCardSize.getHeight()));
-            }
+            tabInfo.set(TabProperties.GRID_CARD_SIZE, mDefaultGridCardSize);
         }
 
         return tabInfo;
@@ -2053,9 +2048,7 @@ public class TabListMediator implements TabListNotificationHandler {
         updateTabGroupColorViewProvider(
                 EitherGroupId.createSyncId(syncId), tabGroupInfo, savedTabGroup.color);
         assumeNonNull(mDefaultGridCardSize);
-        tabGroupInfo.set(
-                TabProperties.GRID_CARD_SIZE,
-                new Size(mDefaultGridCardSize.getWidth(), mDefaultGridCardSize.getHeight()));
+        tabGroupInfo.set(TabProperties.GRID_CARD_SIZE, mDefaultGridCardSize);
 
         updateThumbnailFetcherForSavedTabGroup(tabGroupInfo, savedTabGroup);
     }

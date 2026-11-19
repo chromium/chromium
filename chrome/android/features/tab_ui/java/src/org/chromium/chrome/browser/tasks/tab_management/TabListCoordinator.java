@@ -705,8 +705,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             // pre-selected tab group divider and the large price tracking message span the width of
             // the recycler view.
             if (TabProperties.isTabOrTabGroup(tabPropertyModel)) {
-                tabPropertyModel.set(
-                        TabProperties.GRID_CARD_SIZE, new Size(cardWidthPx, cardHeightPx));
+                tabPropertyModel.set(TabProperties.GRID_CARD_SIZE, newDefaultSize);
             }
         }
 
