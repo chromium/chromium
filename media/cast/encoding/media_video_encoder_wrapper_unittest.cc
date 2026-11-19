@@ -101,6 +101,9 @@ class MediaVideoEncoderWrapperTest : public TestWithCastEnvironment {
     sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     mock_gpu_factories_ =
         std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
+    // By default, the GPU's supported encode profiles are already known.
+    ON_CALL(*mock_gpu_factories_, IsEncoderSupportKnown())
+        .WillByDefault(testing::Return(true));
 
     EXPECT_CALL(status_change_cb_, Run(STATUS_INITIALIZED))
         .Times(testing::AtLeast(1));
@@ -406,6 +409,92 @@ TEST_F(MediaVideoEncoderWrapperTest, CanSetBitRate) {
   RunUntilQuit();
 
   EXPECT_NE(EncodeVideoFrame(second_frame_info), nullptr);
+}
+
+// The media::VideoEncoder contract forbids calling Encode() or ChangeOptions()
+// before Initialize() reports completion. Frames and bitrate changes that
+// arrive earlier must wait, then run in order.
+TEST_F(MediaVideoEncoderWrapperTest, WaitsForInitializeBeforeUsingEncoder) {
+  constexpr uint32_t kNewBitRate = 1234567;
+  bool initialized = false;
+  media::VideoEncoder::EncoderStatusCB initialize_done_cb;
+  EXPECT_CALL(*mock_encoder_, Initialize(kProfile, _, _, _, _))
+      .WillOnce([&](VideoCodecProfile profile,
+                    const media::VideoEncoder::Options& options,
+                    media::VideoEncoder::EncoderInfoCB info,
+                    media::VideoEncoder::OutputCB output,
+                    media::VideoEncoder::EncoderStatusCB done) {
+        std::move(info).Run(VideoEncoderInfo());
+        output_cb_ = output;
+        initialize_done_cb = std::move(done);
+      });
+  EXPECT_CALL(*mock_encoder_, DisablePostedCallbacks());
+
+  testing::InSequence sequence;
+  const FrameInfo frame_info = CreateFrameInfo(FrameType::kKey);
+  ExpectVideoFrameEncoded(frame_info);
+  EXPECT_CALL(*mock_encoder_, ChangeOptions(_, _, _))
+      .WillOnce([&](const media::VideoEncoder::Options& options,
+                    media::VideoEncoder::OutputCB output,
+                    media::VideoEncoder::EncoderStatusCB done_cb) {
+        EXPECT_TRUE(initialized);
+        EXPECT_EQ(options.bitrate, Bitrate::ConstantBitrate(kNewBitRate));
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
+      });
+
+  std::unique_ptr<SenderEncodedFrame> encoded_frame;
+  EXPECT_TRUE(encoder_->EncodeVideoFrame(
+      CreateVideoFrame(frame_info), frame_info.reference_time,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<SenderEncodedFrame> frame) {
+            EXPECT_TRUE(initialized);
+            encoded_frame = std::move(frame);
+          })));
+  RunUntilIdle();
+  encoder_->SetBitRate(kNewBitRate);
+  RunUntilIdle();
+  ASSERT_TRUE(initialize_done_cb);
+  EXPECT_EQ(encoded_frame, nullptr);
+
+  initialized = true;
+  std::move(initialize_done_cb).Run(EncoderStatus::Codes::kOk);
+  RunUntilIdle();
+  EXPECT_NE(encoded_frame, nullptr);
+}
+
+// The GPU reports its supported encode profiles asynchronously. A hardware
+// encoder must not be initialized until they are known, or it fails with an
+// unsupported profile error and Cast falls back to software encoding.
+TEST_F(MediaVideoEncoderWrapperTest, HardwareEncoderWaitsForEncoderSupport) {
+  config_.use_hardware_encoder = true;
+  RecreateEncoder();
+
+  base::OnceClosure encoder_support_known_cb;
+  EXPECT_CALL(*mock_gpu_factories_, IsEncoderSupportKnown())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*mock_gpu_factories_, NotifyEncoderSupportKnown(_))
+      .WillOnce([&](base::OnceClosure cb) {
+        encoder_support_known_cb = std::move(cb);
+      });
+  EXPECT_CALL(*mock_encoder_, Initialize(_, _, _, _, _)).Times(0);
+
+  const FrameInfo frame_info = CreateFrameInfo(FrameType::kKey);
+  std::unique_ptr<SenderEncodedFrame> encoded_frame;
+  EXPECT_TRUE(encoder_->EncodeVideoFrame(
+      CreateVideoFrame(frame_info), frame_info.reference_time,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<SenderEncodedFrame> frame) {
+            encoded_frame = std::move(frame);
+          })));
+  RunUntilIdle();
+  ASSERT_TRUE(encoder_support_known_cb);
+  testing::Mock::VerifyAndClearExpectations(mock_encoder_);
+
+  ExpectEncoderInitialized();
+  ExpectVideoFrameEncoded(frame_info);
+  std::move(encoder_support_known_cb).Run();
+  RunUntilIdle();
+  EXPECT_NE(encoded_frame, nullptr);
 }
 
 // Test that we still call `frame_encoded_callback` even if the backing encoder

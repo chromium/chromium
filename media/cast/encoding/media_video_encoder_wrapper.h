@@ -6,6 +6,7 @@
 #define MEDIA_CAST_ENCODING_MEDIA_VIDEO_ENCODER_WRAPPER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/queue.h"
 #include "base/task/sequenced_task_runner.h"
@@ -113,6 +114,15 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // can then construct the encoder.
   void ConstructEncoder();
 
+  // Calls `encoder_->Initialize()` for `encoder_version`. For hardware
+  // encoders this runs only after `gpu_factories_` knows which profiles the
+  // GPU supports, since the encoder cannot pick a profile before then.
+  void InitializeEncoder(int encoder_version);
+
+  // Called when `encoder_->Initialize()` completes. Runs the encoder calls
+  // that were queued while the encoder was initializing.
+  void OnEncoderInitialized(int encoder_version, EncoderStatus status);
+
   // Debounced reconstruction helper.
   void ReconstructEncoderForNewSize(const gfx::Size& new_size);
 
@@ -153,6 +163,11 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // method is used to ensure we invoke the encoder method on the correct
   // thread. Any usage of `encoder_` should be wrapped in this method.
   void CallEncoderOnCorrectThread(base::OnceClosure closure);
+
+  // The media::VideoEncoder contract forbids any other encoder call before
+  // Initialize() reports completion. Queues `closure` while the encoder is
+  // initializing, and otherwise calls CallEncoderOnCorrectThread().
+  void CallEncoderWhenInitialized(base::OnceClosure closure);
 
   // Called every time a frame encode request is completed. The encoder only
   // calls OnEncodedFrame() if the frame encoding was completed, however
@@ -231,6 +246,13 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // `frame_complexity_estimator_`), new frames skip
   // `frame_complexity_estimator_` and use the encoder's real QP.
   bool encoder_reports_qp_ = false;
+
+  // True from the time a new encoder is constructed until its Initialize()
+  // call completes.
+  bool encoder_initializing_ = false;
+
+  // Encoder calls, in order, that were made while `encoder_initializing_`.
+  std::vector<base::OnceClosure> pending_encoder_calls_;
 
   // Timer to debounce encoder reconstruction during active resizing.
   base::OneShotTimer resize_debounce_timer_;

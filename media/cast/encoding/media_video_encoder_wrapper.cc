@@ -346,7 +346,7 @@ void MediaVideoEncoderWrapper::EnqueueFrameForEncode(
   }
   last_frame_timestamp_ = video_frame->timestamp();
 
-  CallEncoderOnCorrectThread(base::BindOnce(
+  CallEncoderWhenInitialized(base::BindOnce(
       &CallEncodeVideoFrame, std::ref(*encoder_), std::move(video_frame),
       encode_options,
       CreateCallback(&MediaVideoEncoderWrapper::OnFrameEncodeDone,
@@ -365,7 +365,7 @@ void MediaVideoEncoderWrapper::SetBitRate(uint32_t new_bit_rate) {
   // If this method is called before the encoder_ is constructed, the bitrate
   // will be set as part of construction.
   if (encoder_) {
-    CallEncoderOnCorrectThread(base::BindOnce(
+    CallEncoderWhenInitialized(base::BindOnce(
         &CallChangeOptions, std::ref(*encoder_), options_,
         CreateCallback(&MediaVideoEncoderWrapper::OnEncoderStatus,
                        encoder_version_)));
@@ -568,6 +568,12 @@ void MediaVideoEncoderWrapper::ConstructEncoder() {
   encoder_version_++;
   encoder_reports_qp_ = false;
 
+  // Calls queued for the old encoder must not run, since they reference it.
+  // The new encoder is initialized with the current `options_`, and frames
+  // queued for the old encoder are reported as dropped below.
+  pending_encoder_calls_.clear();
+  encoder_initializing_ = true;
+
   // Clear metadata and run callbacks with nullptr for any frames that were
   // in-flight to the old encoder, as the old encoder will be deleted and will
   // not emit them.
@@ -595,14 +601,58 @@ void MediaVideoEncoderWrapper::ConstructEncoder() {
   metrics_provider_->Initialize(profile, options_.frame_size,
                                 is_hardware_encoder_);
 
+  // The hardware encoder picks its profile from the GPU's supported profiles,
+  // which arrive asynchronously after `gpu_factories_` is created. The first
+  // frame often arrives before that, so wait instead of failing with an
+  // unsupported profile error and falling back to software encoding.
+  if (is_hardware_encoder_ && gpu_factories_ &&
+      !gpu_factories_->IsEncoderSupportKnown()) {
+    gpu_factories_->NotifyEncoderSupportKnown(
+        base::BindOnce(&MediaVideoEncoderWrapper::InitializeEncoder,
+                       weak_factory_.GetWeakPtr(), encoder_version_));
+    return;
+  }
+  InitializeEncoder(encoder_version_);
+}
+
+void MediaVideoEncoderWrapper::InitializeEncoder(int encoder_version) {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
+  if (encoder_version != encoder_version_) {
+    return;
+  }
+  CHECK(encoder_);
+
   CallEncoderOnCorrectThread(base::BindOnce(
-      &CallInitializeEncoder, std::ref(*encoder_), profile, options_,
+      &CallInitializeEncoder, std::ref(*encoder_),
+      encoding_support::ToProfile(codec_), options_,
       CreateCallback(&MediaVideoEncoderWrapper::OnEncoderInfo,
                      encoder_version_),
       CreateCallback(&MediaVideoEncoderWrapper::OnEncodedFrame,
                      encoder_version_),
-      CreateCallback(&MediaVideoEncoderWrapper::OnEncoderStatus,
+      CreateCallback(&MediaVideoEncoderWrapper::OnEncoderInitialized,
                      encoder_version_)));
+}
+
+void MediaVideoEncoderWrapper::OnEncoderInitialized(int encoder_version,
+                                                    EncoderStatus status) {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
+  if (encoder_version != encoder_version_) {
+    return;
+  }
+  encoder_initializing_ = false;
+
+  // Run queued calls even if initialization failed, so that each queued frame
+  // reports an error and its callback runs.
+  std::vector<base::OnceClosure> pending_calls =
+      std::move(pending_encoder_calls_);
+  pending_encoder_calls_.clear();
+  for (auto& call : pending_calls) {
+    CallEncoderOnCorrectThread(std::move(call));
+  }
+
+  // Running the status change callback may delete `this`, so this should be
+  // done last.
+  OnEncoderStatus(encoder_version, status);
 }
 
 void MediaVideoEncoderWrapper::SetEncoder(
@@ -642,6 +692,16 @@ void MediaVideoEncoderWrapper::CallEncoderOnCorrectThread(
     cast_environment_->PostTask(CastEnvironment::ThreadId::kVideo, FROM_HERE,
                                 std::move(closure));
   }
+}
+
+void MediaVideoEncoderWrapper::CallEncoderWhenInitialized(
+    base::OnceClosure closure) {
+  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
+  if (encoder_initializing_) {
+    pending_encoder_calls_.push_back(std::move(closure));
+    return;
+  }
+  CallEncoderOnCorrectThread(std::move(closure));
 }
 
 void MediaVideoEncoderWrapper::OnFrameEncodeDone(int encoder_version,

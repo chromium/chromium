@@ -112,6 +112,8 @@ class VideoEncoderTest : public ::testing::TestWithParam<VideoEncoderTestParam>,
       EXPECT_CALL(*mock_gpu_factories_,
                   GetVideoEncodeAcceleratorSupportedProfiles())
           .WillRepeatedly([&]() { return kDefaultSupportedProfiles; });
+      EXPECT_CALL(*mock_gpu_factories_, IsEncoderSupportKnown())
+          .WillRepeatedly(testing::Return(true));
     }
 
     // Ensure that all of the software video encoders are enabled for testing.
