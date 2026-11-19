@@ -59,6 +59,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 import java.util.function.DoubleConsumer;
@@ -434,7 +435,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
         if (removalReason != DidRemoveTabGroupReason.CLOSE) return;
 
         TabModel tabModel = mTabModelSupplier.get();
-        if (!tabModel.isTabGroupHiding(oldTabGroupId)) return;
+        if (!tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(oldTabGroupId))) return;
 
         @Nullable PaneHubController paneHubController = getPaneHubController();
         if (paneHubController == null) return;

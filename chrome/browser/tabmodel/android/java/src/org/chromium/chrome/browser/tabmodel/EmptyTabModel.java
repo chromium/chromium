@@ -444,7 +444,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public boolean isTabGroupHiding(@Nullable Token tabGroupId) {
+    public boolean isTabGroupHiding(@Nullable TabGroupId tabGroupId) {
         return false;
     }
 

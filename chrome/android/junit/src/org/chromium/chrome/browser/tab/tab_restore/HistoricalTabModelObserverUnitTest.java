@@ -404,7 +404,7 @@ public class HistoricalTabModelObserverUnitTest {
         @TabGroupColorId int color = TabGroupColorId.GREY;
         Token tabGroupId = new Token(3L, 4L);
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab0});
-        when(mTabModel.isTabGroupHiding(tabGroupId)).thenReturn(true);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
                 .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<>()));
 
@@ -427,7 +427,7 @@ public class HistoricalTabModelObserverUnitTest {
         @TabGroupColorId int color = TabGroupColorId.GREY;
         Token tabGroupId = new Token(3L, 4L);
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab0, mockTab1});
-        when(mTabModel.isTabGroupHiding(tabGroupId)).thenReturn(true);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
                 .thenReturn(LazyOneshotSupplier.fromValue(Set.of(tabGroupId)));
 
@@ -461,7 +461,7 @@ public class HistoricalTabModelObserverUnitTest {
         @TabGroupColorId int color = TabGroupColorId.GREY;
         Token tabGroupId = new Token(3L, 4L);
         createGroup(tabGroupId, title, color, new MockTab[] {mockTab0, mockTab1, mockTab2});
-        when(mTabModel.isTabGroupHiding(tabGroupId)).thenReturn(true);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(tabGroupId))).thenReturn(true);
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
                 .thenReturn(LazyOneshotSupplier.fromValue(Set.of(tabGroupId)));
 
@@ -728,7 +728,8 @@ public class HistoricalTabModelObserverUnitTest {
             Token tabGroupId, String syncId, @Nullable String collaborationId, boolean isHiding) {
         MockTab mockTab0 = createMockTab(10);
         createGroup(tabGroupId, "Group", TabGroupColorId.BLUE, new MockTab[] {mockTab0});
-        when(mTabModel.isTabGroupHiding(tabGroupId)).thenReturn(isHiding);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(tabGroupId)))
+                .thenReturn(isHiding);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
         mSavedTabGroup.syncId = syncId;
         mSavedTabGroup.collaborationId = collaborationId;

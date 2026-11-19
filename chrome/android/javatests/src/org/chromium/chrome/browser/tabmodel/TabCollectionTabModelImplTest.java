@@ -4138,7 +4138,9 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(hidingInWillClose.get());
-                    assertTrue(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertTrue(
+                            mCollectionModel.isTabGroupHiding(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     assertTrue(mCollectionModel.detachedTabGroupExists(tabGroupId));
                     assertFalse(
                             mCollectionModel.containsTabGroup(
@@ -4163,7 +4165,9 @@ public class TabCollectionTabModelImplTest {
                             tab1.getId(),
                             mCollectionModel.getGroupLastShownTabId(
                                     TabGroupId.fromOptionalToken(tabGroupId)));
-                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertFalse(
+                            mCollectionModel.isTabGroupHiding(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
                     assertFalse(mCollectionModel.isClosurePending(tab0.getId()));
                     assertFalse(mCollectionModel.isClosurePending(tab1.getId()));
@@ -4217,7 +4221,9 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(hidingInWillClose.get());
-                    assertTrue(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertTrue(
+                            mCollectionModel.isTabGroupHiding(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     assertTrue(mCollectionModel.detachedTabGroupExists(tabGroupId));
                 });
 
@@ -4230,7 +4236,9 @@ public class TabCollectionTabModelImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertFalse(
+                            mCollectionModel.isTabGroupHiding(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
                     assertFalse(mCollectionModel.isClosurePending(tab0.getId()));
                     assertFalse(mCollectionModel.isClosurePending(tab1.getId()));
@@ -4283,7 +4291,9 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(hidingInWillClose.get());
-                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertFalse(
+                            mCollectionModel.isTabGroupHiding(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
                     assertTrue(tab0.isDestroyed());
                     assertTrue(tab1.isDestroyed());
@@ -4328,7 +4338,9 @@ public class TabCollectionTabModelImplTest {
                 () -> {
                     assertTrue(mCollectionModel.isClosurePending(tab0.getId()));
                     assertTrue(mCollectionModel.isClosurePending(tab1.getId()));
-                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertFalse(
+                            mCollectionModel.isTabGroupHiding(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     assertTrue(
                             mCollectionModel.containsTabGroup(
                                     TabGroupId.fromOptionalToken(tabGroupId)));
@@ -4385,7 +4397,9 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertFalse(hidingInWillClose.get());
-                    assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
+                    assertFalse(
+                            mCollectionModel.isTabGroupHiding(
+                                    TabGroupId.fromOptionalToken(tabGroupId)));
                     // A detached group is still created for undo.
                     assertTrue(mCollectionModel.detachedTabGroupExists(tabGroupId));
 

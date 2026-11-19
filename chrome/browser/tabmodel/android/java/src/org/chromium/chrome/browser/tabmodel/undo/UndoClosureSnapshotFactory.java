@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,7 +93,8 @@ public final class UndoClosureSnapshotFactory {
                 String groupTitle = tabModel.getTabGroupTitle(groupId);
                 int groupColor = tabModel.getTabGroupColorWithFallback(groupId);
                 boolean groupCollapsed = tabModel.getTabGroupCollapsed(groupId);
-                boolean groupIsHiding = tabModel.isTabGroupHiding(groupId);
+                boolean groupIsHiding =
+                        tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(groupId));
 
                 boolean survivesInModel = false;
                 Set<Token> lazySet = lazyGroupIds.get();

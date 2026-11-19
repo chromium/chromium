@@ -41,6 +41,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Collections;
 import java.util.List;
@@ -217,8 +218,8 @@ public class UndoClosureSnapshotFactoryUnitTest {
 
         when(tabModel.getTabGroupTitle(GROUP_1)).thenReturn("Group 1");
         when(tabModel.getTabGroupTitle(GROUP_2)).thenReturn(null);
-        when(tabModel.isTabGroupHiding(GROUP_1)).thenReturn(true);
-        when(tabModel.isTabGroupHiding(GROUP_2)).thenReturn(false);
+        when(tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(GROUP_1))).thenReturn(true);
+        when(tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(GROUP_2))).thenReturn(false);
         when(mLazySupplier.get()).thenReturn(Collections.emptySet());
         when(tabModel.getLazyAllTabGroupIds(any(), eq(true))).thenReturn(mLazySupplier);
 
@@ -294,7 +295,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(tabModel.getTabGroupTitle(GROUP_1)).thenReturn("Group 1");
         when(tabModel.getTabGroupColorWithFallback(GROUP_1)).thenReturn(5);
         when(tabModel.getTabGroupCollapsed(GROUP_1)).thenReturn(true);
-        when(tabModel.isTabGroupHiding(GROUP_1)).thenReturn(false);
+        when(tabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(GROUP_1))).thenReturn(false);
         when(mLazySupplier.get()).thenReturn(Set.of(GROUP_1));
         when(tabModel.getLazyAllTabGroupIds(any(), eq(true))).thenReturn(mLazySupplier);
 

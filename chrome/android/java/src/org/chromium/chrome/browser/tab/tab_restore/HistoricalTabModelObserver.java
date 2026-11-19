@@ -200,7 +200,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             // group ID. If the entry is still present in the comprehensive model, the tab group is
             // not fully closing and we can proceed with the process of saving an event to recent
             // tabs.
-            if ((mTabModel.isTabGroupHiding(tabGroupId)
+            if ((mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(tabGroupId))
                             || isCollaborationTabGroup(tabGroupSyncService, tabGroupId))
                     && !assumeNonNull(tabGroupIdsInComprehensiveModel.get()).contains(tabGroupId)) {
                 continue;
@@ -312,7 +312,8 @@ public class HistoricalTabModelObserver implements TabModelObserver {
     private boolean hasHidingTabGroup(List<Tab> tabs) {
         for (Tab tab : tabs) {
             @Nullable Token groupId = tab.getTabGroupId();
-            if (groupId != null && mTabModel.isTabGroupHiding(groupId)) {
+            if (groupId != null
+                    && mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(groupId))) {
                 return true;
             }
         }

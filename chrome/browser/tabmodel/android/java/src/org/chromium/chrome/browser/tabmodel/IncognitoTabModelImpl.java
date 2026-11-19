@@ -674,7 +674,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public boolean isTabGroupHiding(@Nullable Token tabGroupId) {
+    public boolean isTabGroupHiding(@Nullable TabGroupId tabGroupId) {
         return mDelegateModel.isTabGroupHiding(tabGroupId);
     }
 

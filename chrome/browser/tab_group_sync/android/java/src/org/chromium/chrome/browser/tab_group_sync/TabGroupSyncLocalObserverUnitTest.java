@@ -330,7 +330,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testWillCloseTabs_SingleTab() {
-        when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(false);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(false);
         mTabModelObserverCaptor
                 .getValue()
                 .willCloseTabs(List.of(mTab1), /* isAllTabs= */ false, /* allowUndo= */ true);
@@ -341,7 +341,7 @@ public class TabGroupSyncLocalObserverUnitTest {
     public void testWillCloseTabs_GroupDeleted() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
 
-        when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(false);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(false);
         mTabModelObserverCaptor
                 .getValue()
                 .willCloseTabs(tabs, /* isAllTabs= */ false, /* allowUndo= */ true);
@@ -355,7 +355,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1));
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
                 .thenReturn(LazyOneshotSupplier.fromValue(Set.of(TOKEN_1)));
-        when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(true);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(true);
         mTabModelObserverCaptor
                 .getValue()
                 .willCloseTabs(tabs, /* isAllTabs= */ false, /* allowUndo= */ true);
@@ -368,7 +368,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
                 .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<>()));
-        when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(true);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(true);
         mTabModelObserverCaptor
                 .getValue()
                 .willCloseTabs(tabs, /* isAllTabs= */ false, /* allowUndo= */ true);
@@ -378,7 +378,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testWillCloseTabs_AllTabs() {
-        when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(false);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(false);
         List<Tab> tabs = List.of(mTab1, mTab2);
         mTabModelObserverCaptor
                 .getValue()
@@ -445,7 +445,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         savedTabGroup.savedTabs.add(savedTab2);
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
         boolean hiding = true;
-        when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(hiding);
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
                 .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<>()));
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TOKEN_1)))
@@ -484,7 +484,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         savedTabGroup.savedTabs.add(savedTab2);
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
         boolean hiding = true;
-        when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(hiding);
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
                 .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<>()));
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TOKEN_1)))
@@ -527,7 +527,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         savedTabGroup.savedTabs.add(savedTab2);
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
         boolean hiding = true;
-        when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(hiding);
         when(mTabModel.getLazyAllTabGroupIds(any(), anyBoolean()))
                 .thenReturn(LazyOneshotSupplier.fromValue(new HashSet<>()));
         TabModelObserver modelObserver = mTabModelObserverCaptor.getValue();
@@ -562,7 +562,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         savedTabGroup.savedTabs.add(savedTab2);
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
         boolean hiding = false;
-        when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(hiding);
         TabModelObserver modelObserver = mTabModelObserverCaptor.getValue();
         TabGroupObserver groupObserver = mTabGroupObserverCaptor.getValue();
 
@@ -600,7 +600,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         savedTabGroup.savedTabs.add(savedTab2);
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
         boolean hiding = false;
-        when(mTabModel.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(TOKEN_1))).thenReturn(hiding);
         TabModelObserver modelObserver = mTabModelObserverCaptor.getValue();
         TabGroupObserver groupObserver = mTabGroupObserverCaptor.getValue();
 

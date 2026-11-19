@@ -112,6 +112,7 @@ import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
@@ -976,7 +977,7 @@ public class TabSwitcherPaneUnitTest {
         verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
 
         Token groupId = Token.createRandom();
-        when(mTabModel.isTabGroupHiding(groupId)).thenReturn(true);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mPaneHubController.getPaneButton(anyInt())).thenReturn(mAnchorView);
 
@@ -992,7 +993,7 @@ public class TabSwitcherPaneUnitTest {
         verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
 
         Token groupId = Token.createRandom();
-        when(mTabModel.isTabGroupHiding(groupId)).thenReturn(true);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mPaneHubController.getPaneButton(anyInt())).thenReturn(null);
 
@@ -1008,7 +1009,7 @@ public class TabSwitcherPaneUnitTest {
         verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
 
         Token groupId = Token.createRandom();
-        when(mTabModel.isTabGroupHiding(groupId)).thenReturn(true);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         mTabSwitcherPane.setPaneHubController(null);
         when(mPaneHubController.getPaneButton(anyInt())).thenReturn(mAnchorView);
 
@@ -1024,7 +1025,7 @@ public class TabSwitcherPaneUnitTest {
         verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
 
         Token groupId = Token.createRandom();
-        when(mTabModel.isTabGroupHiding(groupId)).thenReturn(false);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(groupId))).thenReturn(false);
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mPaneHubController.getPaneButton(anyInt())).thenReturn(mAnchorView);
 
@@ -1040,7 +1041,7 @@ public class TabSwitcherPaneUnitTest {
         verify(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
 
         Token groupId = Token.createRandom();
-        when(mTabModel.isTabGroupHiding(groupId)).thenReturn(true);
+        when(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         mTabSwitcherPane.setPaneHubController(mPaneHubController);
         when(mPaneHubController.getPaneButton(anyInt())).thenReturn(null);
 

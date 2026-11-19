@@ -818,7 +818,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                 TabClosureParams.closeTabs(groupTabs).allowUndo(true).hideTabGroups(true).build());
 
         assertEquals(List.of(true), hidingDuringRemoval);
-        assertFalse(mTabModel.isTabGroupHiding(groupId));
+        assertFalse(mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(groupId)));
     }
 
     @Test
@@ -1041,7 +1041,9 @@ public class TabCollectionsTabModelObserversUnitTest {
         List<Boolean> hidingDuringRemoval = new ArrayList<>();
         doAnswer(
                         invocation -> {
-                            hidingDuringRemoval.add(mTabModel.isTabGroupHiding(groupId));
+                            hidingDuringRemoval.add(
+                                    mTabModel.isTabGroupHiding(
+                                            TabGroupId.fromOptionalToken(groupId)));
                             return null;
                         })
                 .when(mTabGroupObserver)

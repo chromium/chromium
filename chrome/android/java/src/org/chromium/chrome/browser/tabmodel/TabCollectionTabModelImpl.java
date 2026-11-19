@@ -1535,11 +1535,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public boolean isTabGroupHiding(@Nullable Token tabGroupId) {
+    public boolean isTabGroupHiding(@Nullable TabGroupId tabGroupId) {
         assertOnUiThread();
         if (tabGroupId == null) return false;
 
-        return mHidingTabGroups.contains(tabGroupId);
+        return mHidingTabGroups.contains(tabGroupId.getToken());
     }
 
     @Override

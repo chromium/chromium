@@ -300,7 +300,7 @@ public class RemoteTabGroupMutationHelper {
             // where isTabGroupHiding might be set incorrectly we also check that the tab model does
             // not still contain any tabs for the tab group as that would indicate only a subset of
             // the group is being closed.
-            if (mTabModel.isTabGroupHiding(localTabGroupId.tabGroupId)
+            if (mTabModel.isTabGroupHiding(TabGroupId.fromOptionalToken(localTabGroupId.tabGroupId))
                     && !assumeNonNull(tabGroupIds.get()).contains(localTabGroupId.tabGroupId)) {
                 continue;
             }

@@ -630,7 +630,7 @@ public interface TabModel extends TabList {
     boolean isTabStateInitialized();
 
     /** Returns whether the tab group is being hidden. */
-    boolean isTabGroupHiding(@Nullable Token tabGroupId);
+    boolean isTabGroupHiding(@Nullable TabGroupId tabGroupId);
 
     /**
      * Returns a lazy oneshot supplier that generates all the tab group IDs except those requested
