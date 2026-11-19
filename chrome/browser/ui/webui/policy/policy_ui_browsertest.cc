@@ -1195,7 +1195,9 @@ std::vector<std::string> EvalStringVec(content::WebContents* web_contents,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(PolicyUITest, FilterPoliciesViaUrlAndSearchSync) {
+// TODO(crbug.com/587108581): Flaky timeouts on Linux and ChromeOS.
+IN_PROC_BROWSER_TEST_P(PolicyUITest,
+                       DISABLED_FilterPoliciesViaUrlAndSearchSync) {
   SetHomepageAndUrlBlocklistPolicies(provider_);
 
   const GURL initial_url =
@@ -2062,8 +2064,10 @@ namespace {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(PolicyUITest,
-                       SmallScreenDefaultValueColumnAndManualOverride) {
+// TODO(crbug.com/587108581): Flaky on Linux and Mac.
+IN_PROC_BROWSER_TEST_P(
+    PolicyUITest,
+    DISABLED_SmallScreenDefaultValueColumnAndManualOverride) {
   SetHomepageAndUrlBlocklistPolicies(provider_);
 
   // Start at a narrow viewport (`<= 768px`) to verify that `value` is the only
