@@ -3577,6 +3577,7 @@ suite('NewTabPageAppTest', () => {
       }
 
       async function clickOutside() {
+        getComposebox()!.getInputElement().inputElement.blur();
         getScrim()!.click();
         await microtasksFinished();
       }
@@ -3648,6 +3649,8 @@ suite('NewTabPageAppTest', () => {
         const input = composebox.getInputElement().inputElement;
         input.blur();
         input.focus();
+        app.shadowRoot.getElementById('searchboxContainer')!.dispatchEvent(
+            new Event('focusin', {bubbles: true}));
         await microtasksFinished();
         assertPageBlocked(true);
         input.dispatchEvent(new KeyboardEvent('keydown', {
