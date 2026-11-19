@@ -23,7 +23,6 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
@@ -162,16 +161,15 @@ omnibox::InputType InputTypeForAttachmentOption(
 }
 }  // namespace
 
-@interface ComposeboxInputStateManager () <ComposeboxModeObserver,
-                                           IdentityManagerObserving,
+@interface ComposeboxInputStateManager () <IdentityManagerObserving,
                                            SearchEngineObserving>
 @end
 
 @implementation ComposeboxInputStateManager {
   // The entrypoint from which the composebox was opened.
   ComposeboxEntrypoint _entrypoint;
-  // The mode holder to read the active mode.
-  ComposeboxModeHolder* _modeHolder;
+  // The active composebox mode.
+  ComposeboxMode _activeMode;
   // The active model, or `MODEL_MODE_UNSPECIFIED` when no model is explicitly
   // selected (e.g. in regular search). Unlike `InputStateModel`, which only
   // models AIM state and always keeps a concrete active model, this manager
@@ -218,7 +216,6 @@ omnibox::InputType InputTypeForAttachmentOption(
 
 - (instancetype)
      initWithWebStateList:(WebStateList*)webStateList
-               modeHolder:(ComposeboxModeHolder*)modeHolder
               prefService:(PrefService*)prefService
     aimEligibilityService:(AimEligibilityService*)aimEligibilityService
           identityManager:(signin::IdentityManager*)identityManager
@@ -233,10 +230,6 @@ omnibox::InputType InputTypeForAttachmentOption(
     // when server-side config becomes available via the input state model.
     _cachedUIConfig = [ComposeboxUIConfig localFallbackUIConfig];
     _webStateList = webStateList;
-    _entrypoint = entrypoint;
-    _modeHolder = modeHolder;
-    _modeHolder.mode = [self defaultTool];
-    [_modeHolder addObserver:self];
     _prefService = prefService;
     _aimEligibilityService = aimEligibilityService;
     _identityManager = identityManager;
@@ -250,6 +243,8 @@ omnibox::InputType InputTypeForAttachmentOption(
     if (sessionHandle) {
       _sessionHandle = sessionHandle->AsWeakPtr();
     }
+    _entrypoint = entrypoint;
+    _activeMode = [self defaultTool];
     _isIncognito = isIncognito;
 
     if (_templateURLService) {
@@ -285,8 +280,6 @@ omnibox::InputType InputTypeForAttachmentOption(
   _identityManager = nullptr;
   _templateURLService = nullptr;
   _sessionHandle.reset();
-  [_modeHolder removeObserver:self];
-  _modeHolder = nil;
   _searchEngineObserver.reset();
   _aimEligibilitySubscription = {};
   _metricsRecorder = nil;
@@ -301,11 +294,11 @@ omnibox::InputType InputTypeForAttachmentOption(
     return;
   }
   if (toolMode == omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
-    _modeHolder.mode = [self defaultTool];
+    [self setActiveMode:[self defaultTool]];
     return;
   }
   if (std::optional<ComposeboxMode> mode = ModeForToolMode(toolMode)) {
-    _modeHolder.mode = *mode;
+    [self setActiveMode:*mode];
   }
 }
 
@@ -360,7 +353,8 @@ omnibox::InputType InputTypeForAttachmentOption(
 
   // Only when the user explicitly picked the advanced model in regular mode
   // do the switch to AIM.
-  BOOL switchToAIM = explicitUserAction && _modeHolder.isRegularSearch;
+  BOOL switchToAIM =
+      explicitUserAction && [self activeMode] == ComposeboxMode::kRegularSearch;
   if (switchToAIM) {
     [self setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
     [self.metricsRecorder
@@ -384,8 +378,8 @@ omnibox::InputType InputTypeForAttachmentOption(
 
 - (void)onItemsUpdated {
   // AI mode is implicitly enabled by items attachment.
-  BOOL shouldSwitchToAIM =
-      self.items && !self.items.empty && _modeHolder.isRegularSearch;
+  BOOL shouldSwitchToAIM = self.items && !self.items.empty &&
+                           [self activeMode] == ComposeboxMode::kRegularSearch;
   if (shouldSwitchToAIM) {
     [self setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
     [self.metricsRecorder
@@ -645,14 +639,18 @@ omnibox::InputType InputTypeForAttachmentOption(
   }
 }
 
-#pragma mark - ComposeboxModeObserver
+#pragma mark - Mode Management
 
-- (void)composeboxModeDidChange:(ComposeboxMode)mode {
+// Sets the active composebox `mode` if eligible, falling back to `[self
+// defaultTool]` when `mode` is disallowed.
+- (void)setActiveMode:(ComposeboxMode)mode {
   if (![self canSelectTool:mode]) {
-    _modeHolder.mode = [self defaultTool];
-    // Return early as setting mode triggers a new call.
+    mode = [self defaultTool];
+  }
+  if (_activeMode == mode) {
     return;
   }
+  _activeMode = mode;
 
   // Set active tool mode triggers input state update.
   omnibox::ToolMode toolMode = ToolModeForComposeboxMode(mode);
@@ -672,7 +670,7 @@ omnibox::InputType InputTypeForAttachmentOption(
 
 /// Updates the active model on mode change.
 - (void)updateModelOnModeChange {
-  if ([_modeHolder isRegularSearch]) {
+  if ([self activeMode] == ComposeboxMode::kRegularSearch) {
     // Clear the model selection when switching to regular search.
     [self setActiveModel:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
         explicitUserAction:NO];
@@ -833,7 +831,7 @@ omnibox::InputType InputTypeForAttachmentOption(
     [self setActiveToolInInputState:targetToolMode];
   } else {
     // Local is not valid, reset to default.
-    _modeHolder.mode = [self defaultTool];
+    [self setActiveMode:[self defaultTool]];
   }
 }
 
@@ -1047,9 +1045,9 @@ omnibox::InputType InputTypeForAttachmentOption(
 
 #pragma mark - InputState Helpers
 
-// Returns the current active mode from the mode holder.
+// Returns the current active mode.
 - (ComposeboxMode)activeMode {
-  return _modeHolder.mode;
+  return _activeMode;
 }
 
 // Sets the active model in input state model.

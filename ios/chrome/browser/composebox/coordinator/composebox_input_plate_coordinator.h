@@ -14,7 +14,6 @@
 @class ComposeboxInputPlateViewController;
 @class ComposeboxFocusParams;
 enum class ComposeboxEntrypoint;
-@class ComposeboxModeHolder;
 @class ComposeboxTheme;
 @protocol ComposeboxURLLoader;
 class Browser;
@@ -42,7 +41,6 @@ class Browser;
                                focusParams:(ComposeboxFocusParams*)focusParams
                                  URLLoader:(id<ComposeboxURLLoader>)URLLoader
                                      theme:(ComposeboxTheme*)theme
-                                modeHolder:(ComposeboxModeHolder*)modeHolder
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

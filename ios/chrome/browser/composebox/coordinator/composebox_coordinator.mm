@@ -7,7 +7,6 @@
 #import "base/ios/ios_util.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_navigation_mediator.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_coordinator.h"
 #import "ios/chrome/browser/composebox/public/composebox_animation_base.h"
@@ -60,8 +59,6 @@
   ComposeboxViewController* _viewController;
   // The base of the composebox animations.
   __weak id<ComposeboxAnimationBase> _animationBase;
-  // The holder for the composebox mode.
-  ComposeboxModeHolder* _modeHolder;
   // Coordinator for the debugging UI of the composebox.
   ComposeboxDebuggerCoordinator* _debuggerCoordinator;
   // Parameters used to focus and initialize the composebox.
@@ -77,7 +74,6 @@
   if (self) {
     _entrypoint = focusParams.entrypoint;
     _animationBase = animationBase;
-    _modeHolder = [[ComposeboxModeHolder alloc] init];
     _focusParams = focusParams;
   }
   return self;
@@ -121,8 +117,7 @@
                          browser:self.browser
                      focusParams:_focusParams
                        URLLoader:_navigationMediator
-                           theme:[self createTheme]
-                      modeHolder:_modeHolder];
+                           theme:[self createTheme]];
   _aimComposeboxCoordinator.omniboxPopupPresenterDelegate = _viewController;
   _aimComposeboxCoordinator.debugLogger = _debuggerCoordinator;
   [_aimComposeboxCoordinator start];
@@ -196,7 +191,6 @@
 
   [_navigationMediator disconnect];
   _navigationMediator = nil;
-  _modeHolder = nil;
 }
 
 - (BOOL)isPresented {

@@ -27,7 +27,6 @@ source_set("coordinator") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/composebox/coordinator:input_state_manager",
-    "//ios/chrome/browser/composebox/coordinator:mode_holder",
     "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
     "//ios/chrome/browser/composebox/menu/ui",
     "//ios/chrome/browser/composebox/model",

@@ -174,7 +174,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/composebox/coordinator",
     "//ios/chrome/browser/composebox/coordinator:input_state_manager",
-    "//ios/chrome/browser/composebox/coordinator:mode_holder",
     "//ios/chrome/browser/composebox/menu/coordinator",
     "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/composebox/public",

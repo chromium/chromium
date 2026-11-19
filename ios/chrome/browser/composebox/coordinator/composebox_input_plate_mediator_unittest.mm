@@ -48,7 +48,6 @@
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator+testing.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_event.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
@@ -299,9 +298,9 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
  protected:
   explicit ComposeboxInputPlateMediatorTest(
       web::WebTaskEnvironment::TimeSource time_source)
-      : task_environment_(time_source),
-        scoped_variations_ids_provider_(
-            variations::VariationsIdsProvider::Mode::kUseSignedInState) {}
+      : scoped_variations_ids_provider_(
+            variations::VariationsIdsProvider::Mode::kUseSignedInState),
+        task_environment_(time_source) {}
   void SetUp() override {
     PlatformTest::SetUp();
     omnibox::RegisterProfilePrefs(pref_service_.registry());
@@ -525,6 +524,24 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     return web_state_ptr;
   }
 
+  // Returns the `omnibox::ToolMode` corresponding to `mode`.
+  omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
+    switch (mode) {
+      case ComposeboxMode::kAIM:
+        return omnibox::ToolMode::TOOL_MODE_AIM;
+      case ComposeboxMode::kImageGeneration:
+        return omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
+      case ComposeboxMode::kCanvas:
+        return omnibox::ToolMode::TOOL_MODE_CANVAS;
+      case ComposeboxMode::kDeepSearch:
+        return omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
+      case ComposeboxMode::kPTM:
+        return omnibox::ToolMode::TOOL_MODE_GEMINI_PRO;
+      case ComposeboxMode::kRegularSearch:
+        return omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+    }
+  }
+
   // Creates a `ComposeboxInputPlateMediator` configured with `session`,
   // `entrypoint`, and `mode`. The caller is responsible for calling
   // `-disconnect` on the returned mediator before teardown.
@@ -535,7 +552,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
       CobrowseBrowserAgent* cobrowse_browser_agent = nullptr,
       id<BrowserCoordinatorCommands> browser_coordinator_handler = nil,
       id<SceneCommands> scene_handler = nil) {
-    ComposeboxModeHolder* mode_holder = [[ComposeboxModeHolder alloc] init];
     ComposeboxInputPlateMediator* mediator =
         [[ComposeboxInputPlateMediator alloc]
             initWithContextualSearchSession:std::move(session)
@@ -543,7 +559,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
                               faviconLoader:nullptr
                      persistTabContextAgent:nullptr
                                 isIncognito:NO
-                                 modeHolder:mode_holder
                          templateURLService:template_url_service()
                       aimEligibilityService:aim_eligibility_service_.get()
                                 prefService:&pref_service_
@@ -555,18 +570,29 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     [mediator
         setPageContextWrapperFactoryForTesting:page_context_wrapper_factory_];
     if (mode != ComposeboxMode::kRegularSearch) {
-      mode_holder.mode = mode;
+      [mediator setToolMode:ToolModeForComposeboxMode(mode)];
+      EXPECT_EQ([mediator composeboxMode], mode);
     }
     return mediator;
   }
 
-  // Creates a `ComposeboxInputPlateMediator` without a contextual search
-  // session, configured with `entrypoint` and `mode`. The caller is responsible
-  // for calling `-disconnect` on the returned mediator before teardown.
+  // Creates a `ComposeboxInputPlateMediator` configured with `entrypoint` and
+  // `mode`. Creates a backing contextual search session when `mode` requires
+  // server input state initialization. The caller is responsible for calling
+  // `-disconnect` on the returned mediator before teardown.
   ComposeboxInputPlateMediator* CreateMediator(
       ComposeboxEntrypoint entrypoint = ComposeboxEntrypoint::kCobrowse,
       ComposeboxMode mode = ComposeboxMode::kRegularSearch) {
-    return CreateMediator(/*session=*/nullptr, entrypoint, mode);
+    std::unique_ptr<contextual_search::ContextualSearchSessionHandle> session;
+    if (mode != ComposeboxMode::kRegularSearch) {
+      auto config_params = std::make_unique<
+          contextual_search::ContextualSearchContextController::ConfigParams>();
+      session = service_->CreateSession(
+          std::move(config_params),
+          contextual_search::ContextualSearchSource::kUnknown, std::nullopt);
+      session->CheckSearchContentSharingSettings(&pref_service_);
+    }
+    return CreateMediator(std::move(session), entrypoint, mode);
   }
 
   void SetCreateImageEligible(bool createImagesEligible,
@@ -633,6 +659,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_;
   web::WebTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   base::RepeatingClosure aim_eligibility_callback_;
@@ -658,7 +685,6 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   ComposeboxInputPlateMediator* mediator_;
   base::test::ScopedFeatureList scoped_feature_list_;
   omnibox::SearchboxConfig searchbox_config_;
-  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_;
 };
 
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithAttachments) {
@@ -1176,6 +1202,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   NewTabPageTabHelper::FromWebState(active_web_state)
       ->SetShowStartSurface(false);
 
+  SetAIMEligible(true);
   ComposeboxInputPlateMediator* test_mediator =
       CreateMediator(ComposeboxEntrypoint::kNTPFakebox, ComposeboxMode::kAIM);
   FakeComposeboxURLLoader* fake_loader = [[FakeComposeboxURLLoader alloc] init];
@@ -1188,6 +1215,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
                        destinationURL:GURL("https://google.com")
                         URLLoadParams:load_params
                          isSearchType:YES];
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return fake_loader.loadedURL.is_valid(); }));
 
   histogram_tester.ExpectUniqueSample(
       kActionOnHomeHistogram, static_cast<int>(IOSHomeActionType::kOmnibox), 1);
@@ -1316,6 +1345,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   ON_CALL(*raw_mock, GetController())
       .WillByDefault(testing::Return(real_controller));
 
+  SetAIMEligible(true);
   ComposeboxInputPlateMediator* test_mediator =
       CreateMediator(std::move(mock_session), ComposeboxEntrypoint::kOther,
                      ComposeboxMode::kAIM);

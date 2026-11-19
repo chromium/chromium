@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_coordinator.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_event.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
@@ -114,7 +113,6 @@ class AssistantAIMUIStateProvider
   AssistantAIMMediator* _mediator;
   ComposeboxInputPlateCoordinator* _inputPlateCoordinator;
   ComposeboxDebuggerCoordinator* _debuggerCoordinator;
-  ComposeboxModeHolder* _modeHolder;
   AlertCoordinator* _tabSharingConsentAlertCoordinator;
   std::unique_ptr<AssistantAIMUIStateProvider> _uiStateProvider;
   AssistantContainerDetent _currentDetent;
@@ -201,7 +199,6 @@ class AssistantAIMUIStateProvider
   }
 
   CobrowseContext* context = agent ? agent->GetCobrowseContext() : nil;
-  _modeHolder = [[ComposeboxModeHolder alloc] init];
   ComposeboxTheme* theme = [[ComposeboxTheme alloc]
       initWithInputPlatePosition:ComposeboxInputPlatePosition::kBottomSheet
                        incognito:NO
@@ -221,8 +218,7 @@ class AssistantAIMUIStateProvider
                          browser:self.browser
                      focusParams:focusParams
                        URLLoader:_mediator
-                           theme:theme
-                      modeHolder:_modeHolder];
+                           theme:theme];
   _inputPlateCoordinator.debugLogger = _debuggerCoordinator;
   [_inputPlateCoordinator start];
 
@@ -290,7 +286,6 @@ class AssistantAIMUIStateProvider
 
   [_inputPlateCoordinator stop];
   _inputPlateCoordinator = nil;
-  _modeHolder = nil;
 
   if (_viewController) {
     _viewController = nil;

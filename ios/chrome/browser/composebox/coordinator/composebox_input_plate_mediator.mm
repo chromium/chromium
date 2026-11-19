@@ -248,8 +248,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   // The observer bridge for context upload status.
   std::unique_ptr<ComposeboxContextUploadObserverBridge>
       _composeboxObserverBridge;
-  // The different modes for the composebox.
-  ComposeboxModeHolder* _modeHolder;
   // The latest computed UI input state snapshot.
   ComposeboxUIInputState* _uiInputState;
   // The web state list.
@@ -372,7 +370,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
              persistTabContextAgent:
                  (PersistTabContextBrowserAgent*)persistTabContextAgent
                         isIncognito:(BOOL)isIncognito
-                         modeHolder:(ComposeboxModeHolder*)modeHolder
                  templateURLService:(TemplateURLService*)templateURLService
               aimEligibilityService:
                   (AimEligibilityService*)aimEligibilityService
@@ -437,7 +434,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     _webStateDeferredExecutor.delegate = self;
     _persistTabContextAgent = persistTabContextAgent;
     _isIncognito = isIncognito;
-    _modeHolder = modeHolder;
     _templateURLService = templateURLService;
     _searchEngineObserver =
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
@@ -449,7 +445,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
         _profile ? IdentityManagerFactory::GetForProfile(_profile) : nullptr;
     _stateManager = [[ComposeboxInputStateManager alloc]
          initWithWebStateList:_webStateList
-                   modeHolder:_modeHolder
                   prefService:_prefService
         aimEligibilityService:_aimEligibilityService
               identityManager:identityManager
@@ -460,7 +455,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     _stateManager.delegate = self;
     _stateManager.items = _items;
     _uiInputState = [self computeUIInputState];
-    _previousMode = _modeHolder.mode;
+    _previousMode = _uiInputState.activeTool;
 
     contextual_tasks::ContextualTasksService* tasksService =
         IOSContextualTasksServiceFactory::GetForProfile(_profile);
@@ -484,7 +479,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 - (void)disconnect {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self recordSessionEndMetrics];
-  _modeHolder = nil;
   _uiInputState = nil;
   _faviconLoader = nullptr;
   _webStateDeferredExecutor = nil;
@@ -858,7 +852,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   // If the session is null, or if this is a regular search with no attachments,
   // the contextual session is bypassed and a standard search URL is generated.
   BOOL isRegularSearchWithoutContext =
-      [_modeHolder isRegularSearch] && (!_items || _items.empty);
+      _uiInputState.activeTool == ComposeboxMode::kRegularSearch &&
+      (!_items || _items.empty);
   if (!_contextualSearchSession || isRegularSearchWithoutContext) {
     if (_templateURLService) {
       GURL URL = GetDefaultSearchURLForSearchTerms(_templateURLService,
@@ -882,7 +877,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->search_url_type =
-      [_modeHolder isRegularSearch]
+      _uiInputState.activeTool == ComposeboxMode::kRegularSearch
           ? contextual_search::ContextualSearchContextController::
                 SearchUrlType::kStandard
           : contextual_search::ContextualSearchContextController::
@@ -2151,7 +2146,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 // Returns YES if an AIM query should invoke the Assistant directly
 // instead of routing through the standard search navigation flow.
 - (BOOL)shouldInvokeAssistantForAIMQuery {
-  return _modeHolder.mode == ComposeboxMode::kAIM && !_isIncognito &&
+  return _uiInputState.activeTool == ComposeboxMode::kAIM && !_isIncognito &&
          IsAimCobrowseAddTabEligible(_aimEligibilityService, _prefService) &&
          [self isActiveTabAttached];
 }
@@ -2197,9 +2192,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [self.URLLoader loadURLParams:params];
 }
 
-// Returns the current AutocompleteRequestType based on _modeHolder.mode
+// Returns the current AutocompleteRequestType based on the UI input state.
 - (AutocompleteRequestType)currentAutocompleteRequestType {
-  switch (_modeHolder.mode) {
+  switch (_uiInputState.activeTool) {
     case ComposeboxMode::kRegularSearch:
       return AutocompleteRequestType::kSearch;
     case ComposeboxMode::kAIM:
@@ -2275,7 +2270,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                                   mimeTypes:types];
 }
 
-// Reloads the displayed suggestions based on the attachments/modeHolder.
+// Reloads the displayed suggestions based on the attachments and active tool.
 - (void)reloadSuggestions {
   if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
     return;
@@ -2586,7 +2581,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 
   BOOL alwaysExpandedForCurrentMode =
-      !modesAllowingCompact.contains(_modeHolder.mode);
+      !modesAllowingCompact.contains(_uiInputState.activeTool);
 
   BOOL requiresExpansion = _isMultiline || alwaysExpandedForCurrentMode;
   return !requiresExpansion;
@@ -2630,7 +2625,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
 
-  switch (_modeHolder.mode) {
+  switch (_uiInputState.activeTool) {
     case ComposeboxMode::kRegularSearch:
       [self recordNavigationInitiated];
       [self.URLLoader loadURLParams:URLLoadParams];
@@ -2670,7 +2665,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 - (ComposeboxMode)composeboxMode {
-  return _modeHolder.mode;
+  return _uiInputState.activeTool;
 }
 
 #pragma mark - Private helpers
@@ -2743,8 +2738,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   // plus button is hidden, the user can still use multimodal actions from other
   // sources such as drag and drop.
   BOOL hidePlusButton = NO;
+  BOOL isRegularSearch =
+      _uiInputState.activeTool == ComposeboxMode::kRegularSearch;
   if (IsComposeboxConditionalPlusButtonEnabled() && !self.isCobrowse &&
-      _modeHolder.isRegularSearch && compactMode) {
+      isRegularSearch && compactMode) {
     BOOL isPreEditURL = !_userInputInProgress && _hasText;
     BOOL isURLQuery = _userInputInProgress && _hasText && !_isSearchQuery;
     hidePlusButton = isURLQuery;
@@ -2770,7 +2767,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       showLeadingImage ? kLeadingImage : kNone;
 
   ComposeboxInputPlateControls modeSwitchButton;
-  switch (_modeHolder.mode) {
+  switch (_uiInputState.activeTool) {
     case ComposeboxMode::kAIM:
       modeSwitchButton = allowsAIMControl ? kAIM : kNone;
       break;
@@ -2813,7 +2810,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
        trailingAction);
 
   [self.consumer updateVisibleControls:visibleControls];
-  BOOL shouldDisableSending = !_modeHolder.isRegularSearch && !canSend;
+  BOOL shouldDisableSending = !isRegularSearch && !canSend;
   [self.consumer disableSending:shouldDisableSending];
 }
 

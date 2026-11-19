@@ -18,7 +18,6 @@
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_state_manager.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_mediator.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_context_menu_builder.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_shared_tabs_view_controller.h"
@@ -150,8 +149,6 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
           _sessionHandle->GetMetricsRecorder();
     }
 
-    ComposeboxModeHolder* modeHolder = [[ComposeboxModeHolder alloc] init];
-
     AimEligibilityService* aimEligibilityService =
         IOSChromeAimEligibilityServiceFactory::GetForProfile(profile);
 
@@ -163,7 +160,6 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
 
     _stateManager = [[ComposeboxInputStateManager alloc]
          initWithWebStateList:self.browser->GetWebStateList()
-                   modeHolder:modeHolder
                   prefService:profile->GetPrefs()
         aimEligibilityService:aimEligibilityService
               identityManager:identityManager

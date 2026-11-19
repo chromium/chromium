@@ -16,7 +16,6 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
@@ -36,7 +35,6 @@
 
 @interface ComposeboxInputStateManager (Testing)
 - (void)didUpdateInputState:(const contextual_search::InputState&)inputState;
-- (ComposeboxMode)defaultTool;
 - (omnibox::ModelMode)defaultModel;
 - (BOOL)isAttachmentAllowed:(ComposeboxAttachmentOption)attachmentOption;
 @end
@@ -79,7 +77,6 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
 
     session_handle_ = std::make_unique<
         contextual_search::MockContextualSearchSessionHandle>();
-    mode_holder_ = [[ComposeboxModeHolder alloc] init];
     mock_aim_service_ = std::make_unique<MockAimEligibilityService>(
         pref_service_, nullptr, nullptr, identity_test_env_.identity_manager());
 
@@ -91,7 +88,6 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
 
     manager_ = [[ComposeboxInputStateManager alloc]
          initWithWebStateList:&web_state_list_
-                   modeHolder:mode_holder_
                   prefService:&pref_service_
         aimEligibilityService:mock_aim_service_.get()
               identityManager:identity_test_env_.identity_manager()
@@ -116,7 +112,6 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
   signin::IdentityTestEnvironment identity_test_env_;
 
   std::unique_ptr<MockAimEligibilityService> mock_aim_service_;
-  ComposeboxModeHolder* mode_holder_;
   ComposeboxInputStateManager* manager_;
   base::RepeatingClosure aim_eligibility_callback_;
 };
@@ -125,8 +120,8 @@ class ComposeboxInputStateManagerTest : public PlatformTest {
 TEST_F(ComposeboxInputStateManagerTest, Initialization) {
   // Expect manager to be created.
   EXPECT_NE(manager_, nil);
-  // Expect default active mode to be regular search.
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kRegularSearch);
+  // Expect default active tool mode to be none.
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
   // Expect default active model to be none.
   EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
 }
@@ -161,13 +156,13 @@ TEST_F(ComposeboxInputStateManagerTest, StateObservation) {
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
 
   // Changing active mode should trigger another state update.
-  mode_holder_.mode = ComposeboxMode::kCanvas;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
 
   // Verify delegate was notified and state was updated.
   EXPECT_TRUE(delegate.didUpdateUIStateCalled);
   EXPECT_TRUE(delegate.didChangeModeCalled);
   EXPECT_EQ(delegate.lastMode, ComposeboxMode::kCanvas);
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_CANVAS);
 }
 
 // Tests that the manager correctly notifies its delegate when the searchbox
@@ -230,8 +225,8 @@ TEST_F(ComposeboxInputStateManagerTest, Preselection) {
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
 
   // User selects a tool.
-  mode_holder_.mode = ComposeboxMode::kCanvas;
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_CANVAS);
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
 
   // Reload same config.
@@ -241,11 +236,10 @@ TEST_F(ComposeboxInputStateManagerTest, Preselection) {
     aim_eligibility_callback_.Run();
   }
 
-  // Verify that the user's choice is preserved (preselected).
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
-  // Verify delegate was notified and state was updated.
+  // Verify that the user's choice is preserved (preselected) and the delegate
+  // was notified.
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_CANVAS);
   EXPECT_TRUE(delegate.didUpdateUIStateCalled);
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
 }
 
 // Tests that the manager falls back to default state when a previously
@@ -273,7 +267,7 @@ TEST_F(ComposeboxInputStateManagerTest, PreselectionRestricted) {
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
 
   // User selects Canvas.
-  mode_holder_.mode = ComposeboxMode::kCanvas;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
   EXPECT_EQ(manager_.inputState->active_tool,
             omnibox::ToolMode::TOOL_MODE_CANVAS);
   delegate.didUpdateUIStateCalled = NO;  // Reset flag
@@ -288,7 +282,7 @@ TEST_F(ComposeboxInputStateManagerTest, PreselectionRestricted) {
 
   // Verify that the tool falls back to regular search because it's no longer
   // allowed.
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kRegularSearch);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
   // Verify delegate was notified with the correct state.
   EXPECT_TRUE(delegate.didUpdateUIStateCalled);
   EXPECT_TRUE(delegate.didChangeModeCalled);
@@ -362,7 +356,7 @@ TEST_F(ComposeboxInputStateManagerTest,
       .WillRepeatedly(testing::Return(&config));
   ASSERT_TRUE(aim_eligibility_callback_);
   aim_eligibility_callback_.Run();
-  mode_holder_.mode = ComposeboxMode::kImageGeneration;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
   ASSERT_TRUE(manager_.inputState.has_value());
   ASSERT_EQ(manager_.inputState->active_tool,
             omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
@@ -454,6 +448,7 @@ TEST_F(ComposeboxInputStateManagerTest,
       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  tool_config->mutable_rule()->set_allow_all_input_types(true);
   EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
       .WillRepeatedly(testing::Return(&config));
   if (aim_eligibility_callback_) {
@@ -461,7 +456,7 @@ TEST_F(ComposeboxInputStateManagerTest,
   }
 
   // Set active mode to image generation.
-  mode_holder_.mode = ComposeboxMode::kImageGeneration;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
 
   // Add an image to the collection.
   ComposeboxInputItemCollection* collection =
@@ -654,13 +649,14 @@ TEST_F(ComposeboxInputStateManagerTest,
       omnibox::ToolMode::TOOL_MODE_CANVAS);
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  tool_config->mutable_rule()->set_allow_all_input_types(true);
   EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
       .WillRepeatedly(testing::Return(&config));
   if (aim_eligibility_callback_) {
     aim_eligibility_callback_.Run();
   }
 
-  mode_holder_.mode = ComposeboxMode::kCanvas;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
 
   ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
                                                        attachedWebStateIDs:{}];
@@ -684,11 +680,12 @@ TEST_F(ComposeboxInputStateManagerTest,
       omnibox::ToolMode::TOOL_MODE_GEMINI_PRO);
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_GEMINI_PRO);
+  tool_config->mutable_rule()->set_allow_all_input_types(true);
   EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
       .WillRepeatedly(testing::Return(&config));
   ASSERT_TRUE(aim_eligibility_callback_);
   aim_eligibility_callback_.Run();
-  mode_holder_.mode = ComposeboxMode::kPTM;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_GEMINI_PRO];
 
   ComposeboxUIInputState* updated_state =
       [manager_ computeUIInputStateWithFavicon:nil attachedWebStateIDs:{}];
@@ -715,7 +712,7 @@ TEST_F(ComposeboxInputStateManagerTest,
     aim_eligibility_callback_.Run();
   }
 
-  mode_holder_.mode = ComposeboxMode::kAIM;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
   [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
 
@@ -799,7 +796,7 @@ TEST_F(ComposeboxInputStateManagerTest, ComputeUIInputState_ModelItems) {
     aim_eligibility_callback_.Run();
   }
 
-  mode_holder_.mode = ComposeboxMode::kAIM;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
   [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
 
@@ -1053,7 +1050,6 @@ TEST_F(ComposeboxInputStateManagerTest,
   [manager_ disconnect];
   manager_ = [[ComposeboxInputStateManager alloc]
        initWithWebStateList:&web_state_list_
-                 modeHolder:mode_holder_
                 prefService:&pref_service_
       aimEligibilityService:mock_aim_service_.get()
             identityManager:identity_test_env_.identity_manager()
@@ -1112,12 +1108,12 @@ TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_SwitchesToAIM) {
     aim_eligibility_callback_.Run();
   }
 
-  mode_holder_.mode = ComposeboxMode::kRegularSearch;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED];
 
   [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
 
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kAIM);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
 }
 
 // Tests that the manager falls back to the default model when attempting
@@ -1135,7 +1131,7 @@ TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_FallbackToDefault) {
     aim_eligibility_callback_.Run();
   }
 
-  mode_holder_.mode = ComposeboxMode::kAIM;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
 
   [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
@@ -1153,6 +1149,7 @@ TEST_F(ComposeboxInputStateManagerTest, Reconcile_NoOpWhenMatching) {
       omnibox::ToolMode::TOOL_MODE_CANVAS);
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  tool_config->mutable_rule()->set_allow_all_input_types(true);
   EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
       .WillRepeatedly(testing::Return(&config));
   if (aim_eligibility_callback_) {
@@ -1160,8 +1157,8 @@ TEST_F(ComposeboxInputStateManagerTest, Reconcile_NoOpWhenMatching) {
   }
 
   // Set mode to Canvas, which sets tool to Canvas.
-  mode_holder_.mode = ComposeboxMode::kCanvas;
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_CANVAS);
 
   FakeComposeboxInputStateManagerDelegate* delegate =
       [[FakeComposeboxInputStateManagerDelegate alloc] init];
@@ -1190,14 +1187,15 @@ TEST_F(ComposeboxInputStateManagerTest,
       omnibox::ToolMode::TOOL_MODE_CANVAS);
   omnibox::ToolConfig* tool_config = config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  tool_config->mutable_rule()->set_allow_all_input_types(true);
   EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
       .WillRepeatedly(testing::Return(&config));
   if (aim_eligibility_callback_) {
     aim_eligibility_callback_.Run();
   }
 
-  mode_holder_.mode = ComposeboxMode::kCanvas;
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_CANVAS);
 
   FakeComposeboxInputStateManagerDelegate* delegate =
       [[FakeComposeboxInputStateManagerDelegate alloc] init];
@@ -1213,7 +1211,7 @@ TEST_F(ComposeboxInputStateManagerTest,
 
   // Reconciliation should have updated the mode to Canvas,
   // which triggers another update.
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_CANVAS);
 }
 
 // Tests that reconciliation resets internal mode to default when tool
@@ -1226,14 +1224,15 @@ TEST_F(ComposeboxInputStateManagerTest,
       omnibox::ToolMode::TOOL_MODE_CANVAS);
   omnibox::ToolConfig* tool_config = allow_config.add_tool_configs();
   tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  tool_config->mutable_rule()->set_allow_all_input_types(true);
   EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
       .WillRepeatedly(testing::Return(&allow_config));
   if (aim_eligibility_callback_) {
     aim_eligibility_callback_.Run();
   }
 
-  mode_holder_.mode = ComposeboxMode::kCanvas;
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kCanvas);
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS];
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_CANVAS);
 
   // 2. Load config that DOES NOT allow Canvas.
   omnibox::SearchboxConfig deny_config;
@@ -1248,7 +1247,7 @@ TEST_F(ComposeboxInputStateManagerTest,
   // TOOL_MODE_UNSPECIFIED. Reconciliation should see mismatch and invalid
   // state, and fallback to default mode!
 
-  EXPECT_EQ(mode_holder_.mode, [manager_ defaultTool]);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
 }
 // Tests that reconciliation updates external state when model mismatches but
 // internal state is valid.
@@ -1265,7 +1264,7 @@ TEST_F(ComposeboxInputStateManagerTest,
     aim_eligibility_callback_.Run();
   }
 
-  mode_holder_.mode = ComposeboxMode::kAIM;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
   [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
   EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
@@ -1303,7 +1302,7 @@ TEST_F(ComposeboxInputStateManagerTest,
     aim_eligibility_callback_.Run();
   }
 
-  mode_holder_.mode = ComposeboxMode::kAIM;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
   [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
   EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
@@ -1333,7 +1332,7 @@ TEST_F(ComposeboxInputStateManagerTest,
     aim_eligibility_callback_.Run();
   }
 
-  mode_holder_.mode = ComposeboxMode::kRegularSearch;
+  [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED];
   EXPECT_EQ(manager_.activeModel, omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
 
   FakeComposeboxInputStateManagerDelegate* delegate =
@@ -1364,7 +1363,6 @@ TEST_F(ComposeboxInputStateManagerTest, TestDriveNotAllowedInIncognito) {
   ComposeboxInputStateManager* incognitoManager =
       [[ComposeboxInputStateManager alloc]
            initWithWebStateList:&web_state_list_
-                     modeHolder:mode_holder_
                     prefService:&pref_service_
           aimEligibilityService:mock_aim_service_.get()
                 identityManager:nullptr
@@ -1478,10 +1476,10 @@ TEST_F(ComposeboxInputStateManagerTest,
   aim_eligibility_callback_.Run();
 
   [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_AIM];
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kAIM);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
 
   [manager_ setActiveToolMode:omnibox::ToolMode::TOOL_MODE_UNSPECIFIED];
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kRegularSearch);
+  EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
 }
 
 // Tests that `toggleToolMode:activationSource:` activates an eligible tool,
@@ -1510,7 +1508,6 @@ TEST_F(ComposeboxInputStateManagerTest,
   [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_AIM
           activationSource:AiModeActivationSource::kDedicatedButton];
   EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kAIM);
   histogram_tester.ExpectUniqueSample(
       "Omnibox.MobileFusebox.AiModeActivationSource",
       static_cast<int>(AiModeActivationSource::kDedicatedButton), 1);
@@ -1528,7 +1525,6 @@ TEST_F(ComposeboxInputStateManagerTest,
   [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS
           activationSource:AiModeActivationSource::kToolMenu];
   EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kRegularSearch);
 
   recorder.contextualSearchMetricsRecorder = nullptr;
 }
@@ -1538,11 +1534,8 @@ TEST_F(ComposeboxInputStateManagerTest,
 TEST_F(ComposeboxInputStateManagerTest,
        CobrowseInitializesActiveToolModeToAIM) {
   [manager_ disconnect];
-  ComposeboxModeHolder* cobrowse_mode_holder =
-      [[ComposeboxModeHolder alloc] init];
   manager_ = [[ComposeboxInputStateManager alloc]
        initWithWebStateList:&web_state_list_
-                 modeHolder:cobrowse_mode_holder
                 prefService:&pref_service_
       aimEligibilityService:mock_aim_service_.get()
             identityManager:identity_test_env_.identity_manager()
@@ -1552,7 +1545,6 @@ TEST_F(ComposeboxInputStateManagerTest,
                 isIncognito:NO];
 
   EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
-  EXPECT_EQ(cobrowse_mode_holder.mode, ComposeboxMode::kAIM);
 }
 
 // Tests that toggling off an active tool in Cobrowse returns to plain AI Mode
@@ -1562,7 +1554,6 @@ TEST_F(ComposeboxInputStateManagerTest,
   [manager_ disconnect];
   manager_ = [[ComposeboxInputStateManager alloc]
        initWithWebStateList:&web_state_list_
-                 modeHolder:mode_holder_
                 prefService:&pref_service_
       aimEligibilityService:mock_aim_service_.get()
             identityManager:identity_test_env_.identity_manager()
@@ -1588,5 +1579,4 @@ TEST_F(ComposeboxInputStateManagerTest,
   [manager_ toggleToolMode:omnibox::ToolMode::TOOL_MODE_CANVAS
           activationSource:AiModeActivationSource::kToolMenu];
   EXPECT_EQ(manager_.activeToolMode, omnibox::ToolMode::TOOL_MODE_AIM);
-  EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kAIM);
 }

@@ -46,7 +46,6 @@ class WebStateID;
 @class ComposeboxInputItem;
 @class ComposeboxUIInputState;
 @class UIImage;
-@class ComposeboxModeHolder;
 @class ComposeboxInputItemCollection;
 @class ComposeboxMetricsRecorder;
 
@@ -95,7 +94,6 @@ class WebStateID;
 // Initializes the manager.
 - (instancetype)
      initWithWebStateList:(WebStateList*)webStateList
-               modeHolder:(ComposeboxModeHolder*)modeHolder
               prefService:(PrefService*)prefService
     aimEligibilityService:(AimEligibilityService*)aimEligibilityService
           identityManager:(signin::IdentityManager*)identityManager
@@ -149,9 +147,6 @@ class WebStateID;
 
 // Checks if the Default Search Engine is Google.
 - (BOOL)isDSEGoogle;
-
-// Whether the given tool mode can be selected.
-- (BOOL)canSelectTool:(ComposeboxMode)mode;
 
 // Whether the given `model` can be selected.
 - (BOOL)canSelectModel:(omnibox::ModelMode)model;

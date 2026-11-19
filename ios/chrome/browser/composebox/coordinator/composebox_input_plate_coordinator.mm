@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_cobrowse_omnibox_client.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client.h"
 #import "ios/chrome/browser/composebox/debugger/composebox_debugger_logger.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
@@ -47,6 +46,7 @@
 #import "ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller_delegate.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -182,7 +182,6 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
   raw_ptr<contextual_search::ContextualSearchService> _contextualService;
   ComposeboxTheme* _theme;
   ComposeboxMetricsRecorder* _metricsRecorder;
-  ComposeboxModeHolder* _modeHolder;
   ComposeboxSnackbarPresenter* _snackbarPresenter;
 
   // The coordinator for the bottom sheet menu.
@@ -199,8 +198,7 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
                                    browser:(Browser*)browser
                                focusParams:(ComposeboxFocusParams*)focusParams
                                  URLLoader:(id<ComposeboxURLLoader>)URLLoader
-                                     theme:(ComposeboxTheme*)theme
-                                modeHolder:(ComposeboxModeHolder*)modeHolder {
+                                     theme:(ComposeboxTheme*)theme {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _entrypoint = focusParams.entrypoint;
@@ -212,7 +210,6 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
     _metricsRecorder = focusParams.metricsRecorder
                            ?: [[ComposeboxMetricsRecorder alloc]
                                   initWithEntrypoint:_entrypoint];
-    _modeHolder = modeHolder;
     _focusParams = focusParams;
   }
   return self;
@@ -286,7 +283,6 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
                persistTabContextAgent:PersistTabContextBrowserAgent::
                                           FromBrowser(self.browser)
                           isIncognito:self.isOffTheRecord
-                           modeHolder:_modeHolder
                    templateURLService:templateURLService
                 aimEligibilityService:aimEligibilityService
                           prefService:self.profile->GetPrefs()
@@ -388,7 +384,6 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
   _omniboxCoordinator = nil;
   _metricsRecorder = nil;
   _theme = nil;
-  _modeHolder = nil;
   _contextualService = nullptr;
 
   _locationBar = nullptr;
@@ -579,7 +574,7 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
 - (void)didFailToAttachDueToIneligibleAttachments:
     (ComposeboxInputPlateViewController*)composeboxViewController {
   CHECK_EQ(_viewController, composeboxViewController);
-  switch (_modeHolder.mode) {
+  switch ([_mediator currentUIInputState].activeTool) {
     case ComposeboxMode::kRegularSearch:
     case ComposeboxMode::kAIM:
     case ComposeboxMode::kCanvas:

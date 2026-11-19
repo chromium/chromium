@@ -57,7 +57,6 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_availability.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_state_manager.h"
-#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
@@ -934,11 +933,8 @@
         lens::LensOverlayInvocationSource::kNtpContextualQuery);
   }
 
-  ComposeboxModeHolder* composeboxModeHolder =
-      [[ComposeboxModeHolder alloc] init];
   _composeboxInputStateManager = [[ComposeboxInputStateManager alloc]
        initWithWebStateList:self.browser->GetWebStateList()
-                 modeHolder:composeboxModeHolder
                 prefService:self.prefService
       aimEligibilityService:_aimEligibilityService
             identityManager:_identityManager

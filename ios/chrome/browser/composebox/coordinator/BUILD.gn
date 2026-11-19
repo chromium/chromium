@@ -16,7 +16,6 @@ source_set("coordinator") {
     ":common_deps",
     ":input_plate",
     ":lens_deps",
-    ":mode_holder",
     ":ntp_deps",
     ":omnibox_deps",
     ":search_deps",
@@ -70,7 +69,7 @@ source_set("input_plate") {
   ]
   public_deps = [
     ":availability",
-    ":mode_holder",
+    ":constants",
     "//third_party/omnibox_proto",
   ]
   deps = [
@@ -266,24 +265,6 @@ group("bookmarks_deps") {
   ]
 }
 
-source_set("mode_holder") {
-  visibility = [
-    ":*",
-    "//ios/chrome/browser/composebox/menu/coordinator:*",
-    "//ios/chrome/browser/ntp/ui_bundled:*",
-  ]
-  sources = [
-    "composebox_mode_holder.h",
-    "composebox_mode_holder.mm",
-  ]
-  public_deps = [ ":constants" ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
-  ]
-}
-
 source_set("constants") {
   sources = [
     "composebox_constants.h",
@@ -314,7 +295,6 @@ source_set("input_state_manager") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//ios/chrome/browser/composebox/coordinator:constants",
-    "//ios/chrome/browser/composebox/coordinator:mode_holder",
     "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
     "//ios/chrome/browser/composebox/public:attachment_options",
     "//ios/chrome/browser/composebox/public:composebox_mode",
@@ -347,7 +327,6 @@ source_set("unit_tests") {
     ":input_plate",
     ":input_state_manager",
     ":lens_deps",
-    ":mode_holder",
     ":ntp_deps",
     ":url_loading_deps",
     "//base",
