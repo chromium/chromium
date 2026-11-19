@@ -13,6 +13,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -16846,6 +16847,47 @@ class UnboundedElementTest : public LayerTreeHostImplTest {
     settings.enable_unbounded_element = true;
     return settings;
   }
+
+ protected:
+  struct FramePassIds {
+    std::vector<viz::CompositorRenderPassId> main;
+    std::vector<viz::CompositorRenderPassId> unbounded;
+  };
+
+  // Adds a layer under `parent` that draws a quad into its own render surface.
+  LayerImpl* AddSurfaceLayer(LayerImpl* parent, RenderSurfaceReason reason) {
+    auto* layer = AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
+    layer->SetBounds(gfx::Size(10, 10));
+    layer->SetDrawsContent(true);
+    layer->SetBackgroundColor(SkColors::kRed);
+    CopyProperties(parent, layer);
+    CreateEffectNode(layer).render_surface_reason = reason;
+    return layer;
+  }
+
+  static viz::CompositorRenderPassId PassId(LayerImpl* layer) {
+    return GetRenderSurface(layer)->render_pass_id();
+  }
+
+  // Draws a frame and returns the render pass ids of the main and unbounded
+  // frames, in draw order.
+  FramePassIds DrawFrameAndGetPassIds() {
+    UpdateDrawProperties(host_impl_->active_tree());
+    auto args = viz::CreateBeginFrameArgsForTesting(
+        BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
+        base::TimeTicks() + base::Milliseconds(1));
+    host_impl_->WillBeginImplFrame(args);
+    TestFrameData frame;
+    EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
+    FramePassIds ids{
+        base::ToVector(frame.render_passes, &viz::CompositorRenderPass::id),
+        base::ToVector(frame.unbounded_render_passes,
+                       &viz::CompositorRenderPass::id)};
+    host_impl_->DrawLayers(&frame);
+    host_impl_->DidDrawAllLayers(frame);
+    host_impl_->DidFinishImplFrame(args);
+    return ids;
+  }
 };
 INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(UnboundedElementTest,
                                        CommitToActiveTree,
@@ -17071,6 +17113,49 @@ TEST_P(UnboundedFrameDamageTest,
   EXPECT_EQ(gfx::Rect(0, 0, 50, 50), LastUnboundedRootPass().output_rect);
   EXPECT_EQ(gfx::Rect(), LastUnboundedRootPass().damage_rect);
   EXPECT_FALSE(LastUnboundedRootPass().has_damage_from_contributing_content);
+}
+
+// A render surface inside an unbounded element (e.g. for a pressed button's
+// ripple) draws into the unbounded frame, so its render pass must be in that
+// frame too. Viz rejects a frame whose CompositorRenderPassDrawQuad references
+// a render pass it doesn't contain.
+TEST_P(UnboundedElementTest, DescendantRenderSurfaceInUnboundedFrame) {
+  auto* root = SetupDefaultRootLayer(gfx::Size(100, 100));
+  auto* unbounded =
+      AddSurfaceLayer(root, RenderSurfaceReason::kUnboundedElement);
+  auto* child = AddSurfaceLayer(unbounded, RenderSurfaceReason::kTest);
+  // Two levels down, so the whole render target chain is walked.
+  auto* grandchild = AddSurfaceLayer(child, RenderSurfaceReason::kTest);
+  auto* sibling = AddSurfaceLayer(root, RenderSurfaceReason::kTest);
+
+  FramePassIds ids = DrawFrameAndGetPassIds();
+  EXPECT_THAT(ids.unbounded, ElementsAre(PassId(grandchild), PassId(child),
+                                         PassId(unbounded)));
+  // A surface outside the unbounded element stays in the main frame.
+  EXPECT_THAT(ids.main, ElementsAre(PassId(sibling), PassId(root)));
+}
+
+// When only a surface inside the unbounded element draws a pass (here for a
+// copy request, while the element itself is transparent), the pass stays in
+// the main frame and the unbounded frame is empty.
+TEST_P(UnboundedElementTest,
+       CopyRequestInsideHiddenUnboundedElementStaysInMainFrame) {
+  auto* root = SetupDefaultRootLayer(gfx::Size(100, 100));
+  auto* unbounded =
+      AddSurfaceLayer(root, RenderSurfaceReason::kUnboundedElement);
+  GetEffectNode(unbounded)->opacity = 0.f;
+  auto* child = AddSurfaceLayer(unbounded, RenderSurfaceReason::kCopyRequest);
+  EffectNode* child_node = GetEffectNode(child);
+  child_node->has_copy_request = true;
+  host_impl_->active_tree()
+      ->property_trees()
+      ->effect_tree_mutable()
+      .AddCopyRequest(child_node->id,
+                      viz::CopyOutputRequest::CreateStubForTesting());
+
+  FramePassIds ids = DrawFrameAndGetPassIds();
+  EXPECT_THAT(ids.unbounded, IsEmpty());
+  EXPECT_THAT(ids.main, ElementsAre(PassId(child), PassId(root)));
 }
 
 TEST_P(LayerTreeHostImplTest, CollectTrackedElementRects) {
