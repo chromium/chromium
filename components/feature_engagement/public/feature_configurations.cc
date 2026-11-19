@@ -3684,6 +3684,58 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHAccountSwitchingPromoFeature.name == feature->name) {
+    // Allows the Smart Account Switching startup promo with a 1-day trigger
+    // cooldown, a 7-day cooldown and permanent cap of 5 when ignored, and a
+    // 28-day cooldown after signing into / switching the primary account or
+    // explicitly dismissing the promo.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+
+    // On iOS, guard spacing against other fullscreen promos via
+    // `kiOSFullscreenPromosGroup`.
+    config.groups.push_back(kiOSFullscreenPromosGroup.name);
+    // If the promo is displayed once, it must not be displayed a second time
+    // the same day.
+    config.trigger = EventConfig("account_switching_promo_trigger",
+                                 Comparator(EQUAL, 0), 1, kMaxStoragePeriod);
+    // The IPH wants to highlight the switch option in the promo itself. So
+    // there is no limitation related to this action, as they would be redundant
+    // with other limitations.
+    config.used = EventConfig("account_switching_promo_used", kAlwaysTrue, 0,
+                              kMaxStoragePeriod);
+
+    // 28-day grace period after signing into or switching to the primary
+    // account.
+    config.event_configs.insert(
+        EventConfig(events::kAccountSwitchingPrimaryAccountChanged,
+                    Comparator(EQUAL, 0), 28, kMaxStoragePeriod));
+
+    // 7-day cooldown after ignoring the promo without explicit action, and a
+    // permanent global cap of 5 ignores.
+    config.event_configs.insert(
+        EventConfig(events::kAccountSwitchingPromoIgnored, Comparator(EQUAL, 0),
+                    7, kMaxStoragePeriod));
+    // The promo is shown at most five times.
+    config.event_configs.insert(EventConfig(
+        events::kAccountSwitchingPromoIgnored, Comparator(LESS_THAN, 5),
+        kMaxStoragePeriod, kMaxStoragePeriod));
+
+    // 28-day global cooldown after explicitly dismissing the promo ("Not now")
+    // across any account pair.
+    // Note: Dynamic per-(primary_gaia, target_gaia) pair rules (2 explicit
+    // dismissals per pair and permanent reverse-switch suppression) are
+    // evaluated via `signin::CanShowAccountSwitchingPromo()` before querying
+    // `Tracker::ShouldTriggerHelpUI()` (on iOS, when registering/deregistering
+    // the promo with `PromosManager`).
+    config.event_configs.insert(
+        EventConfig(events::kAccountSwitchingPromoExplicitlyDismissed,
+                    Comparator(EQUAL, 0), 28, kMaxStoragePeriod));
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

@@ -25,6 +25,8 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/browser/account_switching_promo_metrics.h"
+#import "components/signin/public/browser/account_switching_promo_prefs.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -34,8 +36,6 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
-#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_metrics.h"
-#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_prefs.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
@@ -192,9 +192,10 @@ class AccountSwitchingPromoSceneAgentTest : public PlatformTest {
 TEST_F(AccountSwitchingPromoSceneAgentTest,
        NotifiesFeatureEngagementOnPrimarySigninAndRegistersPromoOnce) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(*mock_tracker_,
-              NotifyEvent(feature_engagement::events::
-                              kIOSAccountSwitchingPrimaryAccountChanged))
+  EXPECT_CALL(
+      *mock_tracker_,
+      NotifyEvent(
+          feature_engagement::events::kAccountSwitchingPrimaryAccountChanged))
       .Times(1);
   SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
                         [FakeSystemIdentity fakeIdentity2]);
@@ -220,9 +221,10 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
        DoesNotNotifyFeatureEngagementOnSignout) {
   SetUpEligibleAccounts([FakeSystemIdentity fakeIdentity1],
                         [FakeSystemIdentity fakeIdentity2]);
-  EXPECT_CALL(*mock_tracker_,
-              NotifyEvent(feature_engagement::events::
-                              kIOSAccountSwitchingPrimaryAccountChanged))
+  EXPECT_CALL(
+      *mock_tracker_,
+      NotifyEvent(
+          feature_engagement::events::kAccountSwitchingPrimaryAccountChanged))
       .Times(0);
   authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest);
 }
@@ -232,9 +234,10 @@ TEST_F(AccountSwitchingPromoSceneAgentTest,
 TEST_F(AccountSwitchingPromoSceneAgentTest,
        DoesNotNotifyFeatureEngagementAfterUIDisabled) {
   scene_state_.UIEnabled = NO;
-  EXPECT_CALL(*mock_tracker_,
-              NotifyEvent(feature_engagement::events::
-                              kIOSAccountSwitchingPrimaryAccountChanged))
+  EXPECT_CALL(
+      *mock_tracker_,
+      NotifyEvent(
+          feature_engagement::events::kAccountSwitchingPrimaryAccountChanged))
       .Times(0);
   FakeSystemIdentity* primary = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentityManager::FromSystemIdentityManager(

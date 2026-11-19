@@ -234,13 +234,13 @@ const char kDefaultBrowserPromoContextualGeminiUsed[] =
     "default_browser_promo_contextual_gemini_used";
 const char kGeminiSessionTerminated[] = "gemini_session_terminated";
 const char kIOSBottomOmniboxUsed[] = "ios_bottom_omnibox_used";
-const char kIOSAccountSwitchingPromoIgnored[] =
-    "ios_account_switching_promo_ignored";
-const char kIOSAccountSwitchingPromoExplicitlyDismissed[] =
-    "ios_account_switching_promo_explicitly_dismissed";
-const char kIOSAccountSwitchingPrimaryAccountChanged[] =
-    "ios_account_switching_primary_account_changed";
 #endif  // BUILDFLAG(IS_IOS)
+
+const char kAccountSwitchingPromoIgnored[] = "account_switching_promo_ignored";
+const char kAccountSwitchingPromoExplicitlyDismissed[] =
+    "account_switching_promo_explicitly_dismissed";
+const char kAccountSwitchingPrimaryAccountChanged[] =
+    "account_switching_primary_account_changed";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kPwaInstallMenuSelected[] = "pwa_install_menu_clicked";

@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_prefs.h"
+#include "components/signin/public/browser/account_switching_promo_prefs.h"
 
-#import "base/memory/raw_ptr.h"
-#import "base/test/metrics/histogram_tester.h"
-#import "base/test/task_environment.h"
-#import "base/time/time.h"
-#import "components/prefs/pref_service.h"
-#import "google_apis/gaia/gaia_id.h"
-#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/web/public/test/web_task_environment.h"
-#import "testing/gtest/include/gtest/gtest.h"
-#import "testing/platform_test.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "testing/platform_test.h"
 
 namespace signin {
 
@@ -29,20 +25,16 @@ constexpr char kSwitchedAwayHistogram[] =
 class AccountSwitchingPromoPrefsTest : public PlatformTest {
  public:
   AccountSwitchingPromoPrefsTest() {
-    personal_profile_ =
-        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+    RegisterAccountSwitchingPromoProfilePrefs(pref_service_.registry());
   }
 
  protected:
-  // Returns the `PrefService` of `personal_profile_`.
-  PrefService& pref_service() { return *personal_profile_->GetPrefs(); }
+  // Returns the test `PrefService`.
+  PrefService& pref_service() { return pref_service_; }
 
-  web::WebTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  TestProfileManagerIOS profile_manager_;
-  // The personal profile.
-  raw_ptr<TestProfileIOS> personal_profile_;
+  TestingPrefServiceSimple pref_service_;
   const GaiaId account_a_ = GaiaId("gaia_a");
   const GaiaId account_b_ = GaiaId("gaia_b");
   const GaiaId account_c_ = GaiaId("gaia_c");

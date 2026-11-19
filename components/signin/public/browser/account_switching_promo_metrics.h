@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_ACCOUNT_SWITCHING_PROMO_MODEL_ACCOUNT_SWITCHING_PROMO_METRICS_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_ACCOUNT_SWITCHING_PROMO_MODEL_ACCOUNT_SWITCHING_PROMO_METRICS_H_
+#ifndef COMPONENTS_SIGNIN_PUBLIC_BROWSER_ACCOUNT_SWITCHING_PROMO_METRICS_H_
+#define COMPONENTS_SIGNIN_PUBLIC_BROWSER_ACCOUNT_SWITCHING_PROMO_METRICS_H_
 
 namespace signin {
 
@@ -17,8 +17,8 @@ inline constexpr char kAccountSwitchingPromoEventsHistogram[] =
 // numeric values should never be reused.
 // LINT.IfChange(AccountSwitchingPromoEvent)
 enum class AccountSwitchingPromoEvent {
-  // Emitted at startup by `AccountSwitchingPromoSceneAgent` when the promo is
-  // eligible and registered with `PromosManager`.
+  // Emitted at startup when the promo is eligible for display (on iOS, when
+  // registered with `PromosManager`).
   kEligibleOnStartup = 0,
 
   kMaxValue = kEligibleOnStartup,
@@ -27,4 +27,4 @@ enum class AccountSwitchingPromoEvent {
 
 }  // namespace signin
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_ACCOUNT_SWITCHING_PROMO_MODEL_ACCOUNT_SWITCHING_PROMO_METRICS_H_
+#endif  // COMPONENTS_SIGNIN_PUBLIC_BROWSER_ACCOUNT_SWITCHING_PROMO_METRICS_H_

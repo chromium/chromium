@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Eligible on startup"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_metrics.h:AccountSwitchingPromoEvent) -->
+<!-- LINT.ThenChange(//components/signin/public/browser/account_switching_promo_metrics.h:AccountSwitchingPromoEvent) -->
 
 <!-- LINT.IfChange(AccountSwitchingSelectionOutcome) -->
 

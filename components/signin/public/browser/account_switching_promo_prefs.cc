@@ -2,38 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_prefs.h"
+#include "components/signin/public/browser/account_switching_promo_prefs.h"
 
-#import <optional>
-#import <string>
+#include <optional>
+#include <string>
 
-#import "base/check.h"
-#import "base/check_op.h"
-#import "base/containers/flat_set.h"
-#import "base/json/values_util.h"
-#import "base/metrics/histogram_functions.h"
-#import "base/not_fatal_until.h"
-#import "base/time/time.h"
-#import "base/values.h"
-#import "components/prefs/pref_registry_simple.h"
-#import "components/prefs/pref_service.h"
-#import "components/prefs/scoped_user_pref_update.h"
-#import "components/signin/public/base/signin_switches.h"
-#import "google_apis/gaia/gaia_id.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/flat_set.h"
+#include "base/json/values_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
+#include "base/time/time.h"
+#include "base/values.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace signin {
 
 namespace {
 
 // Schema of the profile dictionary preference `kAccountSwitchingPromoStatePref`
-// (stored on the personal profile only, see its declaration). Global cooldowns
-// and caps are enforced by Feature Engagement Tracker rules in
-// `ios_promo_feature_configuration.cc`, so this preference stores only
-// per-account-pair state and 24-hour retention state for an accepted switch:
+// (on iOS, stored on the personal profile only; see its declaration). Global
+// cooldowns and caps are enforced by Feature Engagement Tracker rules in
+// `feature_configurations.cc`, so this preference stores only per-account-pair
+// state and 24-hour retention state for an accepted switch:
 //
 // {
 //   // Information about the last accepted switch, removed once retention is
@@ -74,17 +69,6 @@ constexpr base::TimeDelta kRetentionWindow = base::Hours(24);
 // accepting the promo.
 constexpr char kSwitchedAwayWithin24HoursHistogram[] =
     "Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours";
-
-// Checks that `profile_prefs` is the `PrefService` of the personal profile.
-void CheckIsPersonalProfilePrefs(const PrefService& profile_prefs) {
-  ProfileManagerIOS* profile_manager =
-      GetApplicationContext()->GetProfileManager();
-  CHECK(profile_manager);
-  ProfileIOS* personal_profile = profile_manager->GetProfileWithName(
-      profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName());
-  CHECK(personal_profile);
-  CHECK_EQ(&profile_prefs, personal_profile->GetPrefs());
-}
 
 // Ensures and returns the mutable per-pair dictionary for
 // `(primary_gaia_id, target_gaia_id)`.
@@ -155,8 +139,6 @@ void RegisterAccountSwitchingPromoProfilePrefs(PrefRegistrySimple* registry) {
 bool CanShowAccountSwitchingPromo(const PrefService& profile_prefs,
                                   const GaiaId& primary_gaia_id,
                                   const GaiaId& target_gaia_id) {
-  CheckIsPersonalProfilePrefs(profile_prefs);
-
   const base::DictValue& state_dict =
       profile_prefs.GetDict(kAccountSwitchingPromoStatePref);
   return !IsSuppressedByPairRules(state_dict.FindDict(kPairsDictKey),
@@ -166,7 +148,6 @@ bool CanShowAccountSwitchingPromo(const PrefService& profile_prefs,
 void SuppressAccountSwitchingReversePair(PrefService& profile_prefs,
                                          const GaiaId& previous_primary_gaia_id,
                                          const GaiaId& new_primary_gaia_id) {
-  CheckIsPersonalProfilePrefs(profile_prefs);
   CHECK(!previous_primary_gaia_id.empty(), base::NotFatalUntil::M170);
   CHECK(!new_primary_gaia_id.empty(), base::NotFatalUntil::M170);
   CHECK_NE(previous_primary_gaia_id, new_primary_gaia_id,
@@ -187,8 +168,6 @@ void SuppressAccountSwitchingReversePair(PrefService& profile_prefs,
 void DeleteAccountSwitchingPromoStateForRemovedAccounts(
     PrefService& profile_prefs,
     const base::flat_set<GaiaId>& active_gaia_ids) {
-  CheckIsPersonalProfilePrefs(profile_prefs);
-
   ScopedDictPrefUpdate update(&profile_prefs, kAccountSwitchingPromoStatePref);
   // Drops the pending retention evaluation if the switched target account was
   // removed.
@@ -219,7 +198,6 @@ void RecordAccountSwitchingPromoExplicitlyDismissed(
     PrefService& profile_prefs,
     const GaiaId& primary_gaia_id,
     const GaiaId& target_gaia_id) {
-  CheckIsPersonalProfilePrefs(profile_prefs);
   CHECK(!primary_gaia_id.empty(), base::NotFatalUntil::M170);
   CHECK(!target_gaia_id.empty(), base::NotFatalUntil::M170);
   CHECK_NE(primary_gaia_id, target_gaia_id, base::NotFatalUntil::M170);
@@ -239,16 +217,14 @@ void RecordAccountSwitchingPromoExplicitlyDismissed(
 void RecordAccountSwitchingPromoAccepted(
     PrefService& profile_prefs,
     const GaiaId& switched_target_gaia_id) {
-  CheckIsPersonalProfilePrefs(profile_prefs);
   CHECK(!switched_target_gaia_id.empty(), base::NotFatalUntil::M170);
   if (switched_target_gaia_id.empty()) {
     return;
   }
-  // `AuthenticationFlow` updates the primary account before invoking this
-  // function, so `AccountSwitchingPromoSceneAgent`'s
-  // `-primaryAccountDidChange:` has already run
-  // `MaybeRecordAccountSwitchingRetention()` and cleared any prior pending
-  // entry. Overwriting any remaining entry (e.g. in unit tests) is intentional.
+  // The caller updates the primary account before invoking this function, so
+  // `MaybeRecordAccountSwitchingRetention()` has already evaluated and cleared
+  // any prior pending entry. Overwriting any remaining entry (e.g. in unit
+  // tests) is intentional.
   ScopedDictPrefUpdate update(&profile_prefs, kAccountSwitchingPromoStatePref);
   base::DictValue* accepted_switch_dict =
       update->EnsureDict(kAcceptedSwitchInfoDictKey);
@@ -263,7 +239,6 @@ void RecordAccountSwitchingPromoAccepted(
 void MaybeRecordAccountSwitchingRetention(
     PrefService& profile_prefs,
     const GaiaId& current_primary_gaia_id) {
-  CheckIsPersonalProfilePrefs(profile_prefs);
   const base::DictValue* accepted_switch_dict =
       profile_prefs.GetDict(kAccountSwitchingPromoStatePref)
           .FindDict(kAcceptedSwitchInfoDictKey);

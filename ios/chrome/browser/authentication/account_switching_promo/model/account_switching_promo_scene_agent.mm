@@ -26,6 +26,8 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/browser/account_switching_promo_metrics.h"
+#import "components/signin/public/browser/account_switching_promo_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -36,8 +38,6 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
-#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_metrics.h"
-#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_prefs.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
@@ -286,7 +286,7 @@ constexpr base::TimeDelta kMinDaysSinceLastSignin = base::Days(28);
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kSet) {
     _featureEngagementTracker->NotifyEvent(
-        feature_engagement::events::kIOSAccountSwitchingPrimaryAccountChanged);
+        feature_engagement::events::kAccountSwitchingPrimaryAccountChanged);
   }
   [self maybeRecordRetentionMetrics];
   [self deregisterPromoIfIneligible];
@@ -383,7 +383,7 @@ constexpr base::TimeDelta kMinDaysSinceLastSignin = base::Days(28);
   }
 
   // TODO(crbug.com/571565524): This check is redundant with the Feature
-  // Engagement Tracker `kIOSAccountSwitchingPrimaryAccountChanged` rule and can
+  // Engagement Tracker `kAccountSwitchingPrimaryAccountChanged` rule and can
   // be removed once this code has been on stable for more than 28 days (plus a
   // safety margin for people who do not update regularly).
   if (base::Time::Now() - _prefService->GetTime(prefs::kLastSigninTimestamp) <

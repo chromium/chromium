@@ -19,6 +19,18 @@ source_set("browser") {
     "//components/signin/public/identity_manager",
     "//google_apis",
   ]
+
+  if (is_ios) {
+    sources += [
+      "account_switching_promo_metrics.h",
+      "account_switching_promo_prefs.cc",
+      "account_switching_promo_prefs.h",
+    ]
+    deps += [
+      "//base",
+      "//components/prefs",
+    ]
+  }
 }
 
 if (is_android) {
@@ -49,5 +61,13 @@ source_set("unit_tests") {
 
   if (is_chromeos) {
     deps += [ "//components/account_manager_core:test_support" ]
+  }
+
+  if (is_ios) {
+    sources += [ "account_switching_promo_prefs_unittest.cc" ]
+    deps += [
+      "//components/prefs",
+      "//components/prefs:test_support",
+    ]
   }
 }

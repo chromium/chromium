@@ -161,6 +161,7 @@ const base::Feature* const kAllFeatures[] = {
 
 #if BUILDFLAG(IS_IOS)
     // keep-sorted start case=no
+    &kIPHAccountSwitchingPromoFeature,
     &kIPHBadgedReaderModeFeature,
     &kIPHBadgedReadingListFeature,
     &kIPHBadgedTranslateManualTriggerFeature,
@@ -203,7 +204,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPageInfoRevampFeature,
     &kIPHiOSPinMostVisitedSiteFeature,
     &kIPHiOSPostDefaultAbandonmentPromoFeature,
-    &kIPHiOSPromoAccountSwitchingFeature,
     &kIPHiOSPromoAllTabsFeature,
     &kIPHiOSPromoAppStoreFeature,
     &kIPHiOSPromoBackgroundCustomizationFeature,

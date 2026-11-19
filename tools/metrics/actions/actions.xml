@@ -232,6 +232,8 @@ should be able to be added at any place in this file.
   <variant name="" summary="aggregated"/>
   <variant name="_AccountSettingsHistorySync"
       summary="For the history opt-in toggle in account settings on Android."/>
+  <variant name="_AccountSwitchingPromo"
+      summary="For AccountSwitchingPromo feature."/>
   <variant name="_AdaptiveButtonInTopToolbarCustomization_AddToBookmarks"
       summary="For AdaptiveButtonInTopToolbarCustomization add to bookmarks
                feature."/>
@@ -652,8 +654,6 @@ should be able to be added at any place in this file.
       summary="For iOSPostDefaultAbandonmentPromo feature"/>
   <variant name="_iOSPriceTrackingDesktop"
       summary="For iOSPriceTrackingDesktopFeature"/>
-  <variant name="_iOSPromoAccountSwitching"
-      summary="For iOSPromoAccountSwitching feature"/>
   <variant name="_iOSPromoAllTabs"
       summary="For All Tabs default browser promo."/>
   <variant name="_iOSPromoAppStore" summary="For iOSPromoAppStore feature"/>

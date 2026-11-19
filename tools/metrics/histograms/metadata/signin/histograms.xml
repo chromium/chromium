@@ -907,10 +907,10 @@ to monitor/debug fetching OAuth2 Token issues. -->
   <owner>arthurmilchior@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
-    Records lifecycle events for the iOS smart account switching full-screen
-    startup promo. Emitted at startup when eligible for display (reflecting
-    account and pair eligibility when registering with PromosManager, prior to
-    Feature Engagement throttling).
+    Records lifecycle events for the smart account switching full-screen startup
+    promo. Emitted at startup when eligible for display (reflecting account and
+    pair eligibility prior to Feature Engagement throttling; on iOS, when
+    registering with PromosManager).
   </summary>
 </histogram>
 
@@ -920,19 +920,19 @@ to monitor/debug fetching OAuth2 Token issues. -->
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
     Recorded at most once per account switch accepted via the smart account
-    switching startup promo. Evaluated on app startup, scene activation, and
-    changes to the personal profile's primary account. True is recorded when an
-    evaluation within 24 hours of the switch observes that the personal
-    profile's primary account changed away from the switched target account
-    (back to the previous account, to another personal account, or to signed
-    out). Because there is no background timer, False is recorded on the first
-    evaluation after 24 hours have elapsed without a switch being recorded
-    during the window (which may occur much later, once Chrome runs again). On
-    iOS, switching to a managed account switches profiles without changing the
-    personal profile's primary account, so it does not count as switching away.
-    Usually not recorded if the target account is removed from the device before
-    the outcome is evaluated, or if the system clock moves backwards before the
-    acceptance timestamp. iOS only.
+    switching startup promo. Evaluated on app startup, foregrounding (e.g. scene
+    activation on iOS), and changes to the primary account (on iOS, the personal
+    profile's primary account). True is recorded when an evaluation within 24
+    hours of the switch observes that the primary account changed away from the
+    switched target account (back to the previous account, to another personal
+    account, or to signed out). Because there is no background timer, False is
+    recorded on the first evaluation after 24 hours have elapsed without a
+    switch being recorded during the window (which may occur much later, once
+    Chrome runs again). On iOS, switching to a managed account switches profiles
+    without changing the personal profile's primary account, so it does not
+    count as switching away. Usually not recorded if the target account is
+    removed from the device before the outcome is evaluated, or if the system
+    clock moves backwards before the acceptance timestamp.
   </summary>
 </histogram>
 
