@@ -259,60 +259,18 @@ bool ImageBitmapRenderingContext::PrepareTransferableResource(
 
   const bool gpu_compositing = SharedGpuContext::IsGpuCompositingEnabled();
 
-  if (gpu_compositing) {
-    gpu::SyncToken sync_token;
-    auto shared_image = PrepareGpuSharedImage(sync_token, out_release_callback);
-    if (!shared_image) {
-      return false;
-    }
-
-    *out_resource = viz::TransferableResource::Make(
-        shared_image,
-        viz::TransferableResource::ResourceSource::kImageLayerBridge,
-        sync_token);
-  } else {
-    image_ = image_->MakeUnaccelerated();
-    if (!image_) {
-      return false;
-    }
-
-    sk_sp<SkImage> sk_image =
-        image_->PaintImageForCurrentFrame().GetSwSkImage();
-    if (!sk_image) {
-      return false;
-    }
-
-    const gfx::Size size(image_->width(), image_->height());
-
-    SoftwareResource resource =
-        CreateOrRecycleSoftwareResource(size, image_->GetColorSpace());
-    if (!resource.shared_image) {
-      return false;
-    }
-
-    SkImageInfo dst_info =
-        SkImageInfo::Make(size.width(), size.height(),
-                          ToClosestSkColorType(resource.shared_image->format()),
-                          kPremul_SkAlphaType, sk_image->refColorSpace());
-
-    // Copy from SkImage into SharedMemory owned by |resource|.
-    auto dst_mapping = resource.shared_image->Map();
-    if (!sk_image->readPixels(/*context=*/nullptr,
-                              dst_mapping->GetSkPixmapForPlane(0, dst_info), 0,
-                              0)) {
-      return false;
-    }
-
-    *out_resource = viz::TransferableResource::Make(
-        resource.shared_image,
-        viz::TransferableResource::ResourceSource::kImageLayerBridge,
-        resource.sync_token);
-    auto func =
-        blink::BindOnce(&ImageBitmapRenderingContext::ResourceReleasedSoftware,
-                        WrapWeakPersistent(this), std::move(resource));
-    *out_release_callback = std::move(func);
+  gpu::SyncToken sync_token;
+  auto shared_image =
+      gpu_compositing
+          ? PrepareGpuSharedImage(sync_token, out_release_callback)
+          : PrepareSoftwareSharedImage(sync_token, out_release_callback);
+  if (!shared_image) {
+    return false;
   }
 
+  *out_resource = viz::TransferableResource::Make(
+      shared_image,
+      viz::TransferableResource::ResourceSource::kImageLayerBridge, sync_token);
   return true;
 }
 
@@ -398,6 +356,49 @@ ImageBitmapRenderingContext::CreateOrRecycleSoftwareResource(
   shared_image_interface->VerifySyncToken(resource.sync_token);
 
   return resource;
+}
+
+scoped_refptr<gpu::ClientSharedImage>
+ImageBitmapRenderingContext::PrepareSoftwareSharedImage(
+    gpu::SyncToken& sync_token,
+    viz::ReleaseCallback* out_release_callback) {
+  image_ = image_->MakeUnaccelerated();
+  if (!image_) {
+    return nullptr;
+  }
+
+  sk_sp<SkImage> sk_image = image_->PaintImageForCurrentFrame().GetSwSkImage();
+  if (!sk_image) {
+    return nullptr;
+  }
+
+  const gfx::Size size(image_->width(), image_->height());
+
+  SoftwareResource resource =
+      CreateOrRecycleSoftwareResource(size, image_->GetColorSpace());
+  if (!resource.shared_image) {
+    return nullptr;
+  }
+
+  SkImageInfo dst_info =
+      SkImageInfo::Make(size.width(), size.height(),
+                        ToClosestSkColorType(resource.shared_image->format()),
+                        kPremul_SkAlphaType, sk_image->refColorSpace());
+
+  // Copy from SkImage into SharedMemory owned by |resource|.
+  auto dst_mapping = resource.shared_image->Map();
+  if (!sk_image->readPixels(/*context=*/nullptr,
+                            dst_mapping->GetSkPixmapForPlane(0, dst_info), 0,
+                            0)) {
+    return nullptr;
+  }
+
+  auto shared_image = resource.shared_image;
+  sync_token = resource.sync_token;
+  *out_release_callback =
+      blink::BindOnce(&ImageBitmapRenderingContext::ResourceReleasedSoftware,
+                      WrapWeakPersistent(this), std::move(resource));
+  return shared_image;
 }
 
 void ImageBitmapRenderingContext::ResourceReleasedSoftware(

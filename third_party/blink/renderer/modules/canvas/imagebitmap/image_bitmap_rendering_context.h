@@ -155,6 +155,9 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   SoftwareResource CreateOrRecycleSoftwareResource(
       const gfx::Size& size,
       const gfx::ColorSpace& color_space);
+  scoped_refptr<gpu::ClientSharedImage> PrepareSoftwareSharedImage(
+      gpu::SyncToken& sync_token,
+      viz::ReleaseCallback* out_release_callback);
 
   void ResourceReleasedSoftware(SoftwareResource resource,
                                 const gpu::SyncToken&,
