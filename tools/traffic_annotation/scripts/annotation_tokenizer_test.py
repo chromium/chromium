@@ -7,6 +7,7 @@
 Unit tests for annotation_tokenizer.py.
 """
 
+import pickle
 import unittest
 
 from annotation_tokenizer import Tokenizer, SourceCodeParsingError
@@ -89,6 +90,19 @@ class AnnotationTokenizerTest(unittest.TestCase):
     ):
       # Not a valid token at all.
       tokenizer.advance('string_literal')
+
+  def testErrorIsPicklable(self):
+    # auditor.py parses files in worker processes, so the error has to survive
+    # a round trip through pickle.
+    tokenizer = Tokenizer('  hello , world', 'foo.txt', 33)
+    tokenizer.advance('symbol')
+    with self.assertRaises(SourceCodeParsingError) as cm:
+      tokenizer.advance('symbol')
+    unpickled = pickle.loads(pickle.dumps(cm.exception))
+    self.assertIsInstance(unpickled, SourceCodeParsingError)
+    self.assertEqual(str(cm.exception), str(unpickled))
+    self.assertRegex(str(unpickled), 'Expected symbol.+at foo.txt:33')
+    self.assertIn("near ', world'", str(unpickled))
 
   def testMaybeAdvance(self):
     tokenizer = Tokenizer('"hello", world', 'foo.txt', 33)

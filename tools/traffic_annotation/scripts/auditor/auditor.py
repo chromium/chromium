@@ -807,6 +807,68 @@ def is_cog() -> bool:
   return SRC_DIR.as_posix().startswith('/google/cog/cloud')
 
 
+# How Auditor.run_extractor() parallelizes reading and parsing source files:
+# several worker processes (for the CPU-bound parsing), with a few threads in
+# each (to wait on reads in parallel). Files are sent to the workers in small
+# chunks, so that the work is spread evenly.
+#
+# The threads matter most on Cog, where reading a file takes much longer than
+# on a local disk. On a local disk, they help when the files aren't in the page
+# cache, and cost some CPU time when they are.
+MAX_EXTRACTOR_PROCESSES = 16
+EXTRACTOR_THREADS_PER_PROCESS = 4
+EXTRACTOR_CHUNK_SIZE = 50
+
+# A thread pool for the files of each chunk, in the worker processes of
+# Auditor.run_extractor(). It's created once per worker process, by
+# _init_extractor_worker(), rather than once per chunk.
+_extractor_thread_pool: Optional[concurrent.futures.ThreadPoolExecutor] = None
+
+
+def _init_extractor_worker(num_threads: int) -> None:
+  """Initializes a worker process of Auditor.run_extractor()."""
+  global _extractor_thread_pool
+  _extractor_thread_pool = concurrent.futures.ThreadPoolExecutor(
+    max_workers=num_threads
+  )
+
+
+def _extract_annotations_from_file(
+  absolute_path: Path, no_filtering: bool
+) -> Optional[List[extractor.Annotation]]:
+  """Reads a source file, and returns the annotations it contains."""
+  # Pre-filter files based on their content, using a fast regex. When files
+  # are already in memory from the disk cache, this saves ~10 seconds.
+  file_contents = absolute_path.read_text(encoding="utf-8")
+  if not no_filtering and not extractor.may_contain_annotations(file_contents):
+    return None
+
+  return extractor.extract_annotations(absolute_path, file_contents)
+
+
+def _extract_annotations_from_files(
+  absolute_paths: List[Path], no_filtering: bool
+) -> List[extractor.Annotation]:
+  """Returns the annotations in a chunk of source files.
+
+  This runs in the worker processes of Auditor.run_extractor(), which read the
+  files of a chunk in parallel, with the thread pool that
+  _init_extractor_worker() created. It's a module-level function that only
+  takes absolute paths and scalars, so that nothing large gets pickled for the
+  workers, and so that it doesn't depend on module globals like SRC_DIR (which
+  the workers don't inherit under the "spawn" and "forkserver" start
+  methods)."""
+  assert _extractor_thread_pool is not None
+  all_annotations = []
+  for annotations in _extractor_thread_pool.map(
+    partial(_extract_annotations_from_file, no_filtering=no_filtering),
+    absolute_paths,
+  ):
+    if annotations:
+      all_annotations.extend(annotations)
+  return all_annotations
+
+
 class FileFilter:
   """Provides the list of files to scan via extractor.py.
 
@@ -1881,36 +1943,30 @@ class Auditor:
       return True
     return any(r.match(posix_path) for r in safe_list[exception_type])
 
-  def process_file(
+  def _get_path_to_read(
     self,
     relative_path: Path,
-    compdb_files: Set[str],
+    compdb_files: Optional[Set[str]],
     path_filters: List[SimplePathFilter],
-  ) -> Optional[List[extractor.Annotation]]:
-    absolute_path = SRC_DIR / relative_path
+  ) -> Optional[Path]:
+    """Returns the absolute path of a file to extract annotations from, or None
+    if compdb or path_filters rule it out. This doesn't read the file."""
+    # Check path_filters first, since it doesn't need the absolute path.
+    if path_filters and not self._path_filters_match(
+      path_filters, relative_path
+    ):
+      return None
 
-    # Skip files based on compdb and path_filters. Java and header files aren't
-    # in compile_commands.json, so don't check those.
+    # Skip files based on compdb. Java and header files aren't in
+    # compile_commands.json, so don't check those.
+    absolute_path = SRC_DIR / relative_path
     if (
       absolute_path.suffix not in [".java", ".h"]
       and compdb_files is not None
       and str(absolute_path) not in compdb_files
     ):
       return None
-    if path_filters and not self._path_filters_match(
-      path_filters, relative_path
-    ):
-      return None
-
-    # Pre-filter files based on their content, using a fast regex. When files
-    # are already in memory from the disk cache, this saves ~10 seconds.
-    file_contents = absolute_path.read_text(encoding="utf-8")
-    if not self.no_filtering and not extractor.may_contain_annotations(
-      file_contents
-    ):
-      return None
-
-    return extractor.extract_annotations(absolute_path, file_contents)
+    return absolute_path
 
   def _get_gn_file_mtime_max(self, build_path: Path) -> float:
     """Returns the maximum mtime of the files that `gn gen` read.
@@ -2026,33 +2082,40 @@ class Auditor:
 
     all_annotations = []
     start_time = time.perf_counter()
-    process_files_with_args = partial(
-      self.process_file, compdb_files=compdb_files, path_filters=path_filters
-    )
-    if is_cog():
-      # On Cog (FUSE), file reads are network/RPC-bound rather than CPU-bound,
-      # and ThreadPoolExecutor avoids pickling compdb_files across processes.
-      num_workers = 32
-      with concurrent.futures.ThreadPoolExecutor(
-        max_workers=num_workers
-      ) as executor:
-        for annotations in executor.map(process_files_with_args, files):
-          if annotations:
-            all_annotations.extend(annotations)
-    else:
-      num_workers = 5
-      chunksize = len(files) // num_workers if len(files) > num_workers else 1
+
+    # Filter the files here rather than in the workers, so that the workers
+    # only need to be sent paths (not compdb_files), and so that a short list
+    # of files doesn't start more workers than it has chunks.
+    files_to_read = []
+    for relative_path in files:
+      absolute_path = self._get_path_to_read(
+        relative_path, compdb_files, path_filters
+      )
+      if absolute_path is not None:
+        files_to_read.append(absolute_path)
+    chunks = [
+      files_to_read[i : i + EXTRACTOR_CHUNK_SIZE]
+      for i in range(0, len(files_to_read), EXTRACTOR_CHUNK_SIZE)
+    ]
+
+    if chunks:
+      num_processes = min(MAX_EXTRACTOR_PROCESSES, os.cpu_count() or 1)
       with concurrent.futures.ProcessPoolExecutor(
-        max_workers=num_workers
+        max_workers=min(num_processes, len(chunks)),
+        initializer=_init_extractor_worker,
+        initargs=(EXTRACTOR_THREADS_PER_PROCESS,),
       ) as executor:
         for annotations in executor.map(
-          process_files_with_args, files, chunksize=chunksize
+          partial(
+            _extract_annotations_from_files, no_filtering=self.no_filtering
+          ),
+          chunks,
         ):
-          if annotations:
-            all_annotations.extend(annotations)
+          all_annotations.extend(annotations)
 
     logger.debug(
-      "Parsing %d %s files took %.3f seconds",
+      "Parsing %d of %d %s files took %.3f seconds",
+      len(files_to_read),
       len(files),
       suffixes,
       time.perf_counter() - start_time,

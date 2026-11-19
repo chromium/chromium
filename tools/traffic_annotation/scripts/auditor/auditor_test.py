@@ -1407,6 +1407,69 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
     self.assertEqual(ErrorType.HEADER_ANNOTATION, errors[0].type)
     self.assertTrue("not header files" in str(errors[0]))
 
+  def _run_extractor_on_files(
+    self, file_paths: List[Path]
+  ) -> List[extractor.Annotation]:
+    """Runs Auditor.run_extractor() on file_paths."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+      git_list_path = Path(tmpdir) / "git_list.txt"
+      git_list_path.write_text(
+        "".join(f"{p}\n" for p in file_paths), encoding="utf-8"
+      )
+      auditor = Auditor(get_current_platform())
+      auditor.file_filter.git_file_for_testing = git_list_path
+      return auditor.run_extractor(Path(tmpdir), [], skip_compdb=True)
+
+  def test_run_extractor_parallelism(self):
+    """Check that run_extractor() returns the annotations of all files, in
+    order, when the files are split into several chunks for worker
+    processes."""
+    sample_files = [
+      TEST_DATA_DIR / "test_sample_annotations.cc",
+      TEST_DATA_DIR / "valid_file.cc",
+      TEST_DATA_DIR / "objective_cpp.mm",
+    ]
+    # Enough files for several chunks.
+    num_files = 2 * EXTRACTOR_CHUNK_SIZE + 20
+    file_paths = [sample_files[i % len(sample_files)] for i in range(num_files)]
+
+    expected = []
+    for path in file_paths:
+      for annotation in extractor.extract_annotations(
+        path, path.read_text(encoding="utf-8")
+      ):
+        expected.append(
+          (annotation.file_path, annotation.line_number, annotation.unique_id)
+        )
+    self.assertTrue(expected)
+
+    annotations = self._run_extractor_on_files(file_paths)
+    self.assertEqual(
+      expected,
+      [(a.file_path, a.line_number, a.unique_id) for a in annotations],
+    )
+
+  def test_run_extractor_parse_error(self):
+    """Check that a parsing error in one of the files, which are parsed in
+    worker processes, is raised by run_extractor() as-is: AuditorUI's caller
+    relies on its type."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+      good_path = Path(tmpdir) / "good.cc"
+      good_path.write_text("int main() { return 0; }\n", encoding="utf-8")
+      bad_path = Path(tmpdir) / "bad.cc"
+      bad_path.write_text(
+        'auto tag = net::DefineNetworkTrafficAnnotation("id", 12345 oops;\n',
+        encoding="utf-8",
+      )
+      # Enough files for several chunks, with the bad one last.
+      num_good_files = 2 * EXTRACTOR_CHUNK_SIZE + 19
+      file_paths = [good_path] * num_good_files + [bad_path]
+
+      with self.assertRaisesRegex(
+        extractor.SourceCodeParsingError, r"bad\.cc:1"
+      ):
+        self._run_extractor_on_files(file_paths)
+
   def test_check_annotations_cli_length_threshold(self):
     """Check that long file-path lists trigger a full run ([]), staying below
     Windows cmd.exe's 8191-character command-line limit."""

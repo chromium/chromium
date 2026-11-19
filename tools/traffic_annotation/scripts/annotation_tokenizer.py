@@ -50,14 +50,10 @@ def _process_backslashes(string):
 
 
 class SourceCodeParsingError(Exception):
-  """An error during C++ or Java parsing/tokenizing."""
+  """An error during C++ or Java parsing/tokenizing.
 
-  def __init__(self, expected_type, body, pos, file_path, line_number):
-    context = body[pos : pos + CONTEXT_LENGTH]
-    msg = (
-      "Expected {} in annotation definition at {}:{}.\n" + "near '{}'"
-    ).format(expected_type, file_path, line_number, context)
-    Exception.__init__(self, msg)
+  auditor.py pickles this error to send it between processes, so keep it a
+  plain Exception(msg)."""
 
 
 class Tokenizer:
@@ -79,9 +75,11 @@ class Tokenizer:
       return
     # Skip whitespace to make the error message more useful.
     pos = self._skip_whitespace()
-    raise SourceCodeParsingError(
-      expected_type, self.body, pos, self.file_path, self.line_number
+    context = self.body[pos : pos + CONTEXT_LENGTH]
+    msg = ("Expected {} in annotation definition at {}:{}.\nnear '{}'").format(
+      expected_type, self.file_path, self.line_number, context
     )
+    raise SourceCodeParsingError(msg)
 
   def _skip_whitespace(self):
     """Return the position of the first non-whitespace character from here."""
