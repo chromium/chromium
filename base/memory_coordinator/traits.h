@@ -302,6 +302,44 @@ struct BASE_EXPORT MemoryConsumerTraits {
     kDefaultValue = kCheap,
   };
 
+  // Indicates whether the consumer is affected by its process being
+  // backgrounded, and if so, how long to wait after backgrounding before asking
+  // it to release memory. The memory limit itself drops as soon as the process
+  // is backgrounded. If the process is about to be frozen, the remaining delay
+  // is skipped.
+  //
+  // Together with AffectedByMemoryPressure, this allows consumers that today
+  // only release memory when backgrounded to migrate to the memory coordinator
+  // without also starting to respond to memory pressure. A consumer can't set
+  // both traits to kNo, since it would never be asked to release memory.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
+  enum class AffectedByBackgrounding : uint8_t {
+    kNo,
+    // ~10 seconds.
+    kAfterShortDelay,
+    // ~1 minute.
+    kAfterMediumDelay,
+    // ~5 minutes (e.g. for state that is expensive to recreate).
+    kAfterLongDelay,
+
+    kMaxValue = kAfterLongDelay,
+    kDefaultValue = kNo,
+  };
+
+  // Indicates whether the consumer is affected by memory pressure. If kNo, the
+  // consumer's memory limit is not lowered and it is not asked to release
+  // memory when under memory pressure. See AffectedByBackgrounding.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
+  enum class AffectedByMemoryPressure : uint8_t {
+    kYes,
+    kNo,
+
+    kMaxValue = kNo,
+    kDefaultValue = kYes,
+  };
+
   // ---- End of traits --------------------------------------------------------
 
   using RequiredTraitsList = base::ParameterPack<EstimatedMemoryUsage,
@@ -317,10 +355,16 @@ struct BASE_EXPORT MemoryConsumerTraits {
                                                  IsStateful,
                                                  RecoveryBehavior,
                                                  ReleaseMemoryCpuCost,
+                                                 AffectedByBackgrounding,
+                                                 AffectedByMemoryPressure,
                                                  ConsumerType>;
 
   using PassiveOptionalTraitsList =
-      base::ParameterPack<SupportsMemoryLimit, InProcess, ReleaseGCReferences>;
+      base::ParameterPack<SupportsMemoryLimit,
+                          InProcess,
+                          ReleaseGCReferences,
+                          AffectedByBackgrounding,
+                          AffectedByMemoryPressure>;
 
   using AllTraitsList =
       base::ConcatParameterPacks<RequiredTraitsList, OptionalTraitsList>;
@@ -333,7 +377,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   // to kNA or passive-safe defaults and cannot be customized.
   //
   // A limited subset of optional traits that are relevant for passive consumers
-  // (SupportsMemoryLimit, InProcess, and ReleaseGCReferences) can be optionally
+  // (SupportsMemoryLimit, InProcess, ReleaseGCReferences,
+  // AffectedByBackgrounding and AffectedByMemoryPressure) can be optionally
   // specified.
   //
   // Examples:
@@ -369,8 +414,16 @@ struct BASE_EXPORT MemoryConsumerTraits {
         garbage_collects_v8_heap(GarbageCollectsV8Heap::kNo),
         is_stateful(IsStateful::kYes),
         recovery_behavior(RecoveryBehavior::kNA),
-        release_memory_cpu_cost(ReleaseMemoryCpuCost::kNA) {
+        release_memory_cpu_cost(ReleaseMemoryCpuCost::kNA),
+        affected_by_backgrounding(
+            internal::GetTraitOrDefault<AffectedByBackgrounding>(args...)),
+        affected_by_memory_pressure(
+            internal::GetTraitOrDefault<AffectedByMemoryPressure>(args...)) {
     CHECK_EQ(consumer_type, ConsumerType::kPassive);
+    // A consumer affected by neither memory pressure nor backgrounding makes no
+    // sense.
+    CHECK(affected_by_backgrounding != AffectedByBackgrounding::kNo ||
+          affected_by_memory_pressure != AffectedByMemoryPressure::kNo);
   }
 
   // Constructs a MemoryConsumerTraits for an active consumer with the specified
@@ -420,8 +473,16 @@ struct BASE_EXPORT MemoryConsumerTraits {
         recovery_behavior(
             internal::GetTraitOrDefault<RecoveryBehavior>(args...)),
         release_memory_cpu_cost(
-            internal::GetTraitOrDefault<ReleaseMemoryCpuCost>(args...)) {
+            internal::GetTraitOrDefault<ReleaseMemoryCpuCost>(args...)),
+        affected_by_backgrounding(
+            internal::GetTraitOrDefault<AffectedByBackgrounding>(args...)),
+        affected_by_memory_pressure(
+            internal::GetTraitOrDefault<AffectedByMemoryPressure>(args...)) {
     CHECK_EQ(consumer_type, ConsumerType::kActive);
+    // A consumer affected by neither memory pressure nor backgrounding makes no
+    // sense.
+    CHECK(affected_by_backgrounding != AffectedByBackgrounding::kNo ||
+          affected_by_memory_pressure != AffectedByMemoryPressure::kNo);
   }
 
   // Mojo-specific constructor used for deserialization.
@@ -456,6 +517,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   IsStateful is_stateful;
   RecoveryBehavior recovery_behavior;
   ReleaseMemoryCpuCost release_memory_cpu_cost;
+  AffectedByBackgrounding affected_by_backgrounding;
+  AffectedByMemoryPressure affected_by_memory_pressure;
   // LINT.ThenChange(//content/common/memory_coordinator/mojom/memory_coordinator.mojom,
   // //base/android/java/src/org/chromium/base/memory_coordinator/MemoryConsumerTraits.java:MemoryConsumerTraits,
   // //base/memory_coordinator/memory_consumer_android.cc:TraitsFromJava)

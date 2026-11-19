@@ -30,6 +30,10 @@ using GarbageCollectsV8Heap = base::MemoryConsumerTraits::GarbageCollectsV8Heap;
 using IsStateful = base::MemoryConsumerTraits::IsStateful;
 using RecoveryBehavior = base::MemoryConsumerTraits::RecoveryBehavior;
 using ReleaseMemoryCpuCost = base::MemoryConsumerTraits::ReleaseMemoryCpuCost;
+using AffectedByBackgrounding =
+    base::MemoryConsumerTraits::AffectedByBackgrounding;
+using AffectedByMemoryPressure =
+    base::MemoryConsumerTraits::AffectedByMemoryPressure;
 
 // Helper to determine the maximum value among all trait enums in a
 // ParameterPack.
@@ -104,7 +108,9 @@ TEST_F(MemoryConsumerTraitsTest, EchoAllTraits) {
         GenerateValue<ReleaseGCReferences>(i),
         GenerateValue<GarbageCollectsV8Heap>(i), GenerateValue<IsStateful>(i),
         GenerateValue<RecoveryBehavior>(i),
-        GenerateValue<ReleaseMemoryCpuCost>(i));
+        GenerateValue<ReleaseMemoryCpuCost>(i),
+        GenerateValue<AffectedByBackgrounding>(i),
+        GenerateValue<AffectedByMemoryPressure>(i));
 
     base::test::TestFuture<base::MemoryConsumerTraits> future;
     remote()->EchoMemoryConsumerTraits(test_case, future.GetCallback());
@@ -121,6 +127,23 @@ TEST_F(MemoryConsumerTraitsTest, OutOfRange) {
   base::RunLoop run_loop;
   SetDisconnectHandler(run_loop.QuitClosure());
   remote()->EchoMemoryConsumerTraits(kTestCase, base::DoNothing());
+  run_loop.Run();
+}
+
+// Tests that a consumer affected by neither memory pressure nor backgrounding
+// is rejected.
+TEST_F(MemoryConsumerTraitsTest, NeverReleased) {
+  // The constructor CHECKs against this combination, so set the fields after
+  // the fact.
+  base::MemoryConsumerTraits test_case(
+      EstimatedMemoryUsage::kSmall, ReleaseMemoryDataAccess::kReads,
+      InformationRetention::kLossless, ExecutionType::kSynchronous);
+  test_case.affected_by_backgrounding = AffectedByBackgrounding::kNo;
+  test_case.affected_by_memory_pressure = AffectedByMemoryPressure::kNo;
+
+  base::RunLoop run_loop;
+  SetDisconnectHandler(run_loop.QuitClosure());
+  remote()->EchoMemoryConsumerTraits(test_case, base::DoNothing());
   run_loop.Run();
 }
 

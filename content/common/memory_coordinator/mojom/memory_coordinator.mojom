@@ -54,6 +54,8 @@ struct MemoryConsumerTraits {
   uint8 is_stateful;
   uint8 recovery_behavior;
   uint8 release_memory_cpu_cost;
+  uint8 affected_by_backgrounding;
+  uint8 affected_by_memory_pressure;
 };
 
 // The registration of a single MemoryConsumer. Used by RegisterMany().

@@ -159,6 +159,47 @@ TEST_F(MemoryPressureListenerPolicyTest, IgnoreOtherProcesses) {
   policy_manager_.RemoveMemoryConsumerGroupHost(kRemoteChildId);
 }
 
+TEST_F(MemoryPressureListenerPolicyTest, IgnoreAffectedByMemoryPressureNo) {
+  static constexpr base::MemoryConsumerTraits kBackgroundOnlyTraits(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      base::MemoryConsumerTraits::AffectedByBackgrounding::kAfterShortDelay,
+      base::MemoryConsumerTraits::AffectedByMemoryPressure::kNo);
+
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId;  // Current process
+
+  policy_manager_.AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                             &host);
+
+  const std::string kConsumerName1 = "consumer1";
+  const uint32_t kConsumerId1 = base::PersistentHash(kConsumerName1);
+  const std::string kConsumerName2 = "consumer2";
+  const uint32_t kConsumerId2 = base::PersistentHash(kConsumerName2);
+
+  policy_manager_.OnConsumerGroupAdded(kConsumerId1, kConsumerName1,
+                                       kTestTraits, kChildId);
+  policy_manager_.OnConsumerGroupAdded(kConsumerId2, kConsumerName2,
+                                       kBackgroundOnlyTraits, kChildId);
+
+  MemoryPressureListenerPolicy policy(policy_manager_);
+  MemoryCoordinatorPolicyRegistration registration(policy_manager_, policy);
+
+  // Only the consumer that responds to memory pressure is updated.
+  EXPECT_CALL(host,
+              UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
+                  kConsumerId1, base::MemoryLimit::FromPercent(50), true})));
+  memory_pressure_source_.SetMemoryPressureLevel(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  Mock::VerifyAndClearExpectations(&host);
+
+  policy_manager_.OnConsumerGroupRemoved(kConsumerId1, kChildId);
+  policy_manager_.OnConsumerGroupRemoved(kConsumerId2, kChildId);
+  policy_manager_.RemoveMemoryConsumerGroupHost(kChildId);
+}
+
 TEST_F(MemoryPressureListenerPolicyTest, Persistence) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;  // Current process

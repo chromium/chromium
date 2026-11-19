@@ -57,17 +57,25 @@ base::MemoryConsumerTraits TraitsFromJava(int32_t packed) {
   const auto recovery_behavior =
       static_cast<base::MemoryConsumerTraits::RecoveryBehavior>((packed >> 18) &
                                                                 0x3);
+  const auto affected_by_backgrounding =
+      static_cast<base::MemoryConsumerTraits::AffectedByBackgrounding>(
+          (packed >> 20) & 0x3);
+  const auto affected_by_memory_pressure =
+      static_cast<base::MemoryConsumerTraits::AffectedByMemoryPressure>(
+          (packed >> 22) & 0x1);
 
   if (consumer_type == base::MemoryConsumerTraits::ConsumerType::kPassive) {
-    return base::MemoryConsumerTraits(consumer_type, supports_memory_limit,
-                                      in_process, release_gc_references);
+    return base::MemoryConsumerTraits(
+        consumer_type, supports_memory_limit, in_process, release_gc_references,
+        affected_by_backgrounding, affected_by_memory_pressure);
   }
 
   return base::MemoryConsumerTraits(
       estimated_memory_usage, release_memory_data_access, information_retention,
       execution_type, supports_memory_limit, in_process, recreate_memory_cost,
       release_gc_references, garbage_collects_v8_heap, is_stateful,
-      recovery_behavior, release_memory_cpu_cost);
+      recovery_behavior, release_memory_cpu_cost, affected_by_backgrounding,
+      affected_by_memory_pressure);
 }
 // LINT.ThenChange(//base/android/java/src/org/chromium/base/memory_coordinator/MemoryConsumerTraits.java)
 

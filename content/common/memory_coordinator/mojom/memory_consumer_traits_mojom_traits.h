@@ -69,34 +69,58 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
       const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.release_memory_cpu_cost);
   }
+  static uint8_t affected_by_backgrounding(
+      const base::MemoryConsumerTraits& input) {
+    return std::to_underlying(input.affected_by_backgrounding);
+  }
+  static uint8_t affected_by_memory_pressure(
+      const base::MemoryConsumerTraits& input) {
+    return std::to_underlying(input.affected_by_memory_pressure);
+  }
   static uint8_t consumer_type(const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.consumer_type);
   }
 
   static bool Read(content::mojom::MemoryConsumerTraitsDataView input,
                    base::MemoryConsumerTraits* output) {
-    return ConvertToEnum(input.consumer_type(), &output->consumer_type) &&
-           ConvertToEnum(input.estimated_memory_usage(),
-                         &output->estimated_memory_usage) &&
-           ConvertToEnum(input.release_memory_data_access(),
-                         &output->release_memory_data_access) &&
-           ConvertToEnum(input.information_retention(),
-                         &output->information_retention) &&
-           ConvertToEnum(input.execution_type(), &output->execution_type) &&
-           ConvertToEnum(input.supports_memory_limit(),
-                         &output->supports_memory_limit) &&
-           ConvertToEnum(input.in_process(), &output->in_process) &&
-           ConvertToEnum(input.recreate_memory_cost(),
-                         &output->recreate_memory_cost) &&
-           ConvertToEnum(input.release_gc_references(),
-                         &output->release_gc_references) &&
-           ConvertToEnum(input.garbage_collects_v8_heap(),
-                         &output->garbage_collects_v8_heap) &&
-           ConvertToEnum(input.is_stateful(), &output->is_stateful) &&
-           ConvertToEnum(input.recovery_behavior(),
-                         &output->recovery_behavior) &&
-           ConvertToEnum(input.release_memory_cpu_cost(),
-                         &output->release_memory_cpu_cost);
+    if (!(ConvertToEnum(input.consumer_type(), &output->consumer_type) &&
+          ConvertToEnum(input.estimated_memory_usage(),
+                        &output->estimated_memory_usage) &&
+          ConvertToEnum(input.release_memory_data_access(),
+                        &output->release_memory_data_access) &&
+          ConvertToEnum(input.information_retention(),
+                        &output->information_retention) &&
+          ConvertToEnum(input.execution_type(), &output->execution_type) &&
+          ConvertToEnum(input.supports_memory_limit(),
+                        &output->supports_memory_limit) &&
+          ConvertToEnum(input.in_process(), &output->in_process) &&
+          ConvertToEnum(input.recreate_memory_cost(),
+                        &output->recreate_memory_cost) &&
+          ConvertToEnum(input.release_gc_references(),
+                        &output->release_gc_references) &&
+          ConvertToEnum(input.garbage_collects_v8_heap(),
+                        &output->garbage_collects_v8_heap) &&
+          ConvertToEnum(input.is_stateful(), &output->is_stateful) &&
+          ConvertToEnum(input.recovery_behavior(),
+                        &output->recovery_behavior) &&
+          ConvertToEnum(input.release_memory_cpu_cost(),
+                        &output->release_memory_cpu_cost) &&
+          ConvertToEnum(input.affected_by_backgrounding(),
+                        &output->affected_by_backgrounding) &&
+          ConvertToEnum(input.affected_by_memory_pressure(),
+                        &output->affected_by_memory_pressure))) {
+      return false;
+    }
+
+    // Reject consumers affected by neither memory pressure nor backgrounding.
+    // This is CHECKed by the MemoryConsumerTraits constructors.
+    if (output->affected_by_backgrounding ==
+            base::MemoryConsumerTraits::AffectedByBackgrounding::kNo &&
+        output->affected_by_memory_pressure ==
+            base::MemoryConsumerTraits::AffectedByMemoryPressure::kNo) {
+      return false;
+    }
+    return true;
   }
 };
 

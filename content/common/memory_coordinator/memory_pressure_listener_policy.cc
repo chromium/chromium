@@ -31,6 +31,12 @@ bool IsTargetConsumer(uint32_t consumer_id,
     return false;
   }
 
+  // Skip consumers that opted out of memory pressure signals.
+  if (traits.affected_by_memory_pressure ==
+      base::MemoryConsumerTraits::AffectedByMemoryPressure::kNo) {
+    return false;
+  }
+
   // TODO(pmonette): MemoryCache is temporarily singled out here
   // because releasing strong references on generic memory
   // pressure is disabled on Mac and Windows. Remove this string

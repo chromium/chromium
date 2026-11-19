@@ -27,6 +27,8 @@ public class MemoryConsumerTraitsTest {
                         .setIsStateful(IsStateful.YES)
                         .setRecoveryBehavior(RecoveryBehavior.IMMEDIATE)
                         .setReleaseMemoryCpuCost(ReleaseMemoryCpuCost.EXPENSIVE)
+                        .setAffectedByBackgrounding(AffectedByBackgrounding.AFTER_MEDIUM_DELAY)
+                        .setAffectedByMemoryPressure(AffectedByMemoryPressure.NO)
                         .build();
 
         assertEquals(ConsumerType.ACTIVE, traits.getConsumerType());
@@ -39,6 +41,9 @@ public class MemoryConsumerTraitsTest {
         assertEquals(IsStateful.YES, traits.getIsStateful());
         assertEquals(RecoveryBehavior.IMMEDIATE, traits.getRecoveryBehavior());
         assertEquals(ReleaseMemoryCpuCost.EXPENSIVE, traits.getReleaseMemoryCpuCost());
+        assertEquals(
+                AffectedByBackgrounding.AFTER_MEDIUM_DELAY, traits.getAffectedByBackgrounding());
+        assertEquals(AffectedByMemoryPressure.NO, traits.getAffectedByMemoryPressure());
     }
 
     @Test
@@ -55,6 +60,8 @@ public class MemoryConsumerTraitsTest {
         assertEquals(ReleaseGCReferences.NO, passive.getReleaseGCReferences());
         assertEquals(RecoveryBehavior.NA, passive.getRecoveryBehavior());
         assertEquals(ReleaseMemoryCpuCost.NA, passive.getReleaseMemoryCpuCost());
+        assertEquals(AffectedByBackgrounding.NO, passive.getAffectedByBackgrounding());
+        assertEquals(AffectedByMemoryPressure.YES, passive.getAffectedByMemoryPressure());
     }
 
     @Test
@@ -102,6 +109,8 @@ public class MemoryConsumerTraitsTest {
                         .setIsStateful(IsStateful.YES)
                         .setRecoveryBehavior(RecoveryBehavior.IMMEDIATE)
                         .setReleaseMemoryCpuCost(ReleaseMemoryCpuCost.EXPENSIVE)
+                        .setAffectedByBackgrounding(AffectedByBackgrounding.AFTER_MEDIUM_DELAY)
+                        .setAffectedByMemoryPressure(AffectedByMemoryPressure.NO)
                         .build();
 
         int packed = traits.getPackedTraits();
@@ -118,5 +127,7 @@ public class MemoryConsumerTraitsTest {
         assertEquals(IsStateful.YES, (packed >> 15) & 0x1);
         assertEquals(ReleaseMemoryCpuCost.EXPENSIVE, (packed >> 16) & 0x3);
         assertEquals(RecoveryBehavior.IMMEDIATE, (packed >> 18) & 0x3);
+        assertEquals(AffectedByBackgrounding.AFTER_MEDIUM_DELAY, (packed >> 20) & 0x3);
+        assertEquals(AffectedByMemoryPressure.NO, (packed >> 22) & 0x1);
     }
 }

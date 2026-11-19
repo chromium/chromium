@@ -218,6 +218,10 @@ TEST(MemoryConsumerTraitsTest, PassiveConsumerTraitsValidation) {
             MemoryConsumerTraits::RecoveryBehavior::kNA);
   EXPECT_EQ(kDefaultPassive.release_memory_cpu_cost,
             MemoryConsumerTraits::ReleaseMemoryCpuCost::kNA);
+  EXPECT_EQ(kDefaultPassive.affected_by_backgrounding,
+            MemoryConsumerTraits::AffectedByBackgrounding::kNo);
+  EXPECT_EQ(kDefaultPassive.affected_by_memory_pressure,
+            MemoryConsumerTraits::AffectedByMemoryPressure::kYes);
 
   // 2. Custom passive traits
   constexpr MemoryConsumerTraits kCustomPassive(
@@ -265,6 +269,18 @@ TEST(MemoryConsumerTraitsTest, ActiveConsumerWithPassiveTraitsFails) {
                                                 &consumer);
       },
       "Active MemoryConsumer registered with Passive traits");
+}
+
+TEST(MemoryConsumerTraitsTest, NeverReleasedFails) {
+  EXPECT_CHECK_DEATH({
+    MemoryConsumerTraits traits(
+        MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+        MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
+        MemoryConsumerTraits::InformationRetention::kLossless,
+        MemoryConsumerTraits::ExecutionType::kSynchronous,
+        MemoryConsumerTraits::AffectedByBackgrounding::kNo,
+        MemoryConsumerTraits::AffectedByMemoryPressure::kNo);
+  });
 }
 
 #endif

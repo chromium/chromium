@@ -24,6 +24,8 @@ public final class MemoryConsumerTraits {
     private final @IsStateful int mIsStateful;
     private final @RecoveryBehavior int mRecoveryBehavior;
     private final @ReleaseMemoryCpuCost int mReleaseMemoryCpuCost;
+    private final @AffectedByBackgrounding int mAffectedByBackgrounding;
+    private final @AffectedByMemoryPressure int mAffectedByMemoryPressure;
 
     private MemoryConsumerTraits(
             @ConsumerType int consumerType,
@@ -38,7 +40,9 @@ public final class MemoryConsumerTraits {
             @GarbageCollectsV8Heap int garbageCollectsV8Heap,
             @IsStateful int isStateful,
             @RecoveryBehavior int recoveryBehavior,
-            @ReleaseMemoryCpuCost int releaseMemoryCpuCost) {
+            @ReleaseMemoryCpuCost int releaseMemoryCpuCost,
+            @AffectedByBackgrounding int affectedByBackgrounding,
+            @AffectedByMemoryPressure int affectedByMemoryPressure) {
         mConsumerType = consumerType;
         mEstimatedMemoryUsage = estimatedMemoryUsage;
         mReleaseMemoryDataAccess = releaseMemoryDataAccess;
@@ -52,18 +56,31 @@ public final class MemoryConsumerTraits {
         mIsStateful = isStateful;
         mRecoveryBehavior = recoveryBehavior;
         mReleaseMemoryCpuCost = releaseMemoryCpuCost;
+        mAffectedByBackgrounding = affectedByBackgrounding;
+        mAffectedByMemoryPressure = affectedByMemoryPressure;
     }
 
     /** Creates default passive traits. */
     public static MemoryConsumerTraits createPassive() {
-        return createPassive(SupportsMemoryLimit.YES, InProcess.NA, ReleaseGCReferences.NO);
+        return createPassive(
+                SupportsMemoryLimit.YES,
+                InProcess.NA,
+                ReleaseGCReferences.NO,
+                AffectedByBackgrounding.NO,
+                AffectedByMemoryPressure.YES);
     }
 
     /** Creates passive traits with customized optional values. */
     public static MemoryConsumerTraits createPassive(
             @SupportsMemoryLimit int supportsMemoryLimit,
             @InProcess int inProcess,
-            @ReleaseGCReferences int releaseGCReferences) {
+            @ReleaseGCReferences int releaseGCReferences,
+            @AffectedByBackgrounding int affectedByBackgrounding,
+            @AffectedByMemoryPressure int affectedByMemoryPressure) {
+        assert affectedByBackgrounding != AffectedByBackgrounding.NO
+                        || affectedByMemoryPressure != AffectedByMemoryPressure.NO
+                : "A consumer affected by neither memory pressure nor backgrounding would"
+                        + " never be notified.";
         return new MemoryConsumerTraits(
                 ConsumerType.PASSIVE,
                 EstimatedMemoryUsage.NA,
@@ -77,7 +94,9 @@ public final class MemoryConsumerTraits {
                 GarbageCollectsV8Heap.NO,
                 IsStateful.YES,
                 RecoveryBehavior.NA,
-                ReleaseMemoryCpuCost.NA);
+                ReleaseMemoryCpuCost.NA,
+                affectedByBackgrounding,
+                affectedByMemoryPressure);
     }
 
     /** Returns all traits packed into a single 32-bit integer for efficient JNI transfer. */
@@ -94,7 +113,9 @@ public final class MemoryConsumerTraits {
                 | ((mGarbageCollectsV8Heap & 0x1) << 14)
                 | ((mIsStateful & 0x1) << 15)
                 | ((mReleaseMemoryCpuCost & 0x3) << 16)
-                | ((mRecoveryBehavior & 0x3) << 18);
+                | ((mRecoveryBehavior & 0x3) << 18)
+                | ((mAffectedByBackgrounding & 0x3) << 20)
+                | ((mAffectedByMemoryPressure & 0x1) << 22);
     }
 
     // LINT.ThenChange(//base/memory_coordinator/memory_consumer_android.cc)
@@ -151,6 +172,14 @@ public final class MemoryConsumerTraits {
         return mReleaseMemoryCpuCost;
     }
 
+    public @AffectedByBackgrounding int getAffectedByBackgrounding() {
+        return mAffectedByBackgrounding;
+    }
+
+    public @AffectedByMemoryPressure int getAffectedByMemoryPressure() {
+        return mAffectedByMemoryPressure;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
@@ -168,7 +197,9 @@ public final class MemoryConsumerTraits {
                 && mGarbageCollectsV8Heap == other.mGarbageCollectsV8Heap
                 && mIsStateful == other.mIsStateful
                 && mRecoveryBehavior == other.mRecoveryBehavior
-                && mReleaseMemoryCpuCost == other.mReleaseMemoryCpuCost;
+                && mReleaseMemoryCpuCost == other.mReleaseMemoryCpuCost
+                && mAffectedByBackgrounding == other.mAffectedByBackgrounding
+                && mAffectedByMemoryPressure == other.mAffectedByMemoryPressure;
     }
 
     @Override
@@ -205,6 +236,10 @@ public final class MemoryConsumerTraits {
                 + mRecoveryBehavior
                 + ", releaseMemoryCpuCost="
                 + mReleaseMemoryCpuCost
+                + ", affectedByBackgrounding="
+                + mAffectedByBackgrounding
+                + ", affectedByMemoryPressure="
+                + mAffectedByMemoryPressure
                 + '}';
     }
 
@@ -223,6 +258,9 @@ public final class MemoryConsumerTraits {
         private @IsStateful int mIsStateful = IsStateful.YES;
         private @RecoveryBehavior int mRecoveryBehavior = RecoveryBehavior.NONE;
         private @ReleaseMemoryCpuCost int mReleaseMemoryCpuCost = ReleaseMemoryCpuCost.CHEAP;
+        private @AffectedByBackgrounding int mAffectedByBackgrounding = AffectedByBackgrounding.NO;
+        private @AffectedByMemoryPressure int mAffectedByMemoryPressure =
+                AffectedByMemoryPressure.YES;
 
         public Builder(
                 @EstimatedMemoryUsage int estimatedMemoryUsage,
@@ -275,7 +313,23 @@ public final class MemoryConsumerTraits {
             return this;
         }
 
+        public Builder setAffectedByBackgrounding(
+                @AffectedByBackgrounding int affectedByBackgrounding) {
+            mAffectedByBackgrounding = affectedByBackgrounding;
+            return this;
+        }
+
+        public Builder setAffectedByMemoryPressure(
+                @AffectedByMemoryPressure int affectedByMemoryPressure) {
+            mAffectedByMemoryPressure = affectedByMemoryPressure;
+            return this;
+        }
+
         public MemoryConsumerTraits build() {
+            assert mAffectedByBackgrounding != AffectedByBackgrounding.NO
+                            || mAffectedByMemoryPressure != AffectedByMemoryPressure.NO
+                    : "A consumer affected by neither memory pressure nor backgrounding"
+                            + " would never be notified.";
             return new MemoryConsumerTraits(
                     ConsumerType.ACTIVE,
                     mEstimatedMemoryUsage,
@@ -289,7 +343,9 @@ public final class MemoryConsumerTraits {
                     mGarbageCollectsV8Heap,
                     mIsStateful,
                     mRecoveryBehavior,
-                    mReleaseMemoryCpuCost);
+                    mReleaseMemoryCpuCost,
+                    mAffectedByBackgrounding,
+                    mAffectedByMemoryPressure);
         }
     }
 }
