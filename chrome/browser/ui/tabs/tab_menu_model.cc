@@ -599,10 +599,13 @@ void TabMenuModel::Build(tabs::TabHandle context_tab) {
   }
 
   const bool display_read_later = tab_strip_->delegate()->SupportsReadLater();
+  const bool display_copy_links =
+      base::FeatureList::IsEnabled(features::kTabCopyLinks);
   const bool display_send_to_self =
       send_tab_to_self::ShouldDisplayEntryPoint(context_tab_ptr->GetContents());
 
-  if ((display_read_later || display_send_to_self) && !glic_displayed) {
+  if ((display_read_later || display_copy_links || display_send_to_self) &&
+      !glic_displayed) {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
@@ -617,6 +620,21 @@ void TabMenuModel::Build(tabs::TabHandle context_tab) {
                                              kTabMenuIconSize));
     SetEnabledAt(GetItemCount() - 1,
                  tab_strip_->IsReadLaterSupportedForAny(tabs));
+  }
+
+  if (display_copy_links) {
+    AddItem(
+        TabStripModel::CommandCopyLinks,
+        l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_COPY_LINKS, num_tabs));
+    if (features::IsMenuSimplificationEnabled()) {
+      SetIconForCommandId(
+          TabStripModel::CommandCopyLinks,
+          ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kContentCopyIcon
+                  : vector_icons::kContentCopyOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
+    }
   }
 
   if (show_glic_items && !glic_displayed) {

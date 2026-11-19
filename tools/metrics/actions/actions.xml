@@ -39891,6 +39891,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabContextMenu_CopyLinks">
+  <owner>jackgeng@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User selected 'Copy link' or 'Copy links' from the tab context menu.
+  </description>
+</action>
+
 <action name="TabContextMenu_CopyURL">
   <owner>loubrett@google.com</owner>
   <owner>pwa-team@google.com</owner>

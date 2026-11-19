@@ -74,6 +74,10 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/test/mock_base_window.h"
@@ -9829,6 +9833,113 @@ TEST_F(TabStripModelTest, GroupSplitFocusHandleOverloads) {
   EXPECT_EQ(ephemeral_group, tabstrip()->GetFocusedGroup());
   EXPECT_TRUE(tabstrip()->IsEphemeralTabGroup(ephemeral_group));
   tabstrip()->ExitFocusMode();
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, CommandCopyLinks) {
+  struct ScopedTestClipboard {
+    ScopedTestClipboard() { ui::TestClipboard::CreateForCurrentThread(); }
+    ~ScopedTestClipboard() {
+      ui::Clipboard::DestroyClipboardForCurrentThread();
+    }
+  } scoped_test_clipboard;
+
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  // Tab 0 has an internal URL that cannot be copied.
+  std::unique_ptr<content::WebContents> tab0 = CreateWebContents();
+  content::WebContentsTester::For(tab0.get())
+      ->NavigateAndCommit(GURL("chrome://version"));
+  tabstrip()->AppendWebContents(std::move(tab0), true);
+
+  // Tab 1 and 2 have valid URLs.
+  std::unique_ptr<content::WebContents> tab1 = CreateWebContents();
+  content::WebContentsTester::For(tab1.get())
+      ->NavigateAndCommit(GURL("https://example.com/one"));
+  tabstrip()->AppendWebContents(std::move(tab1), false);
+
+  std::unique_ptr<content::WebContents> tab2 = CreateWebContents();
+  content::WebContentsTester::For(tab2.get())
+      ->NavigateAndCommit(GURL("https://example.com/two"));
+  tabstrip()->AppendWebContents(std::move(tab2), false);
+
+  // When the feature is disabled, the command should be disabled and execution
+  // should return early without modifying clipboard or recording metrics.
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(features::kTabCopyLinks);
+
+    tabstrip()->ActivateTabAt(1);
+    EXPECT_FALSE(tabstrip()->IsContextMenuCommandEnabled(
+        1, TabStripModel::CommandCopyLinks));
+
+    tabstrip()->ExecuteContextMenuCommand(1, TabStripModel::CommandCopyLinks);
+    EXPECT_EQ(0, user_action_tester.GetActionCount("TabContextMenu_CopyLinks"));
+    histogram_tester.ExpectTotalCount(
+        "Tab.ContextMenu.CopyLinks.SelectedTabsCount", 0);
+    EXPECT_TRUE(ui::clipboard_test_util::ReadURLs(
+                    ui::Clipboard::GetForCurrentThread(), /*data_dst=*/nullptr)
+                    .empty());
+  }
+
+  base::test::ScopedFeatureList feature_list(features::kTabCopyLinks);
+
+  // Command should be disabled when only tab 0 (chrome://version) is selected.
+  tabstrip()->ActivateTabAt(0);
+  EXPECT_FALSE(tabstrip()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandCopyLinks));
+
+  // Mixed selection of chrome:// + https:// (tabs 0 and 1) -> enabled.
+  {
+    ui::ListSelectionModel mixed_selection;
+    mixed_selection.AddIndexToSelection(0);
+    mixed_selection.AddIndexToSelection(1);
+    mixed_selection.set_active(1);
+    tabstrip()->SetSelectionFromModel(mixed_selection);
+
+    EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
+        1, TabStripModel::CommandCopyLinks));
+
+    tabstrip()->ExecuteContextMenuCommand(1, TabStripModel::CommandCopyLinks);
+
+    EXPECT_EQ(1, user_action_tester.GetActionCount("TabContextMenu_CopyLinks"));
+    histogram_tester.ExpectUniqueSample(
+        "Tab.ContextMenu.CopyLinks.SelectedTabsCount", 2, 1);
+
+    // Executing copies only the valid https link.
+    const std::vector<ui::ClipboardUrlInfo> single_urls =
+        ui::clipboard_test_util::ReadURLs(ui::Clipboard::GetForCurrentThread(),
+                                          /*data_dst=*/nullptr);
+    ASSERT_EQ(single_urls.size(), 1u);
+    EXPECT_EQ(single_urls[0].url, GURL("https://example.com/one"));
+  }
+
+  // Select tabs 1 and 2.
+  ui::ListSelectionModel selection;
+  selection.AddIndexToSelection(1);
+  selection.AddIndexToSelection(2);
+  selection.set_active(1);
+  tabstrip()->SetSelectionFromModel(selection);
+
+  EXPECT_TRUE(tabstrip()->IsContextMenuCommandEnabled(
+      1, TabStripModel::CommandCopyLinks));
+
+  tabstrip()->ExecuteContextMenuCommand(1, TabStripModel::CommandCopyLinks);
+
+  // Check metrics.
+  EXPECT_EQ(2, user_action_tester.GetActionCount("TabContextMenu_CopyLinks"));
+  histogram_tester.ExpectBucketCount(
+      "Tab.ContextMenu.CopyLinks.SelectedTabsCount", 2, 2);
+
+  // Check clipboard contents.
+  const std::vector<ui::ClipboardUrlInfo> urls =
+      ui::clipboard_test_util::ReadURLs(ui::Clipboard::GetForCurrentThread(),
+                                        /*data_dst=*/nullptr);
+  ASSERT_EQ(urls.size(), 2u);
+  EXPECT_EQ(urls[0].url, GURL("https://example.com/one"));
+  EXPECT_EQ(urls[1].url, GURL("https://example.com/two"));
 
   tabstrip()->CloseAllTabs();
 }

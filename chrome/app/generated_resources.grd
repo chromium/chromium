@@ -11373,6 +11373,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_TAB_CXMENU_SOUND_UNMUTE_SITE" desc="The label of the tab context menu item for unmuting one or more sites. NOTE: If having no explicit # makes the phrasing awkward, feel free to add a # as necessary. [ICU Syntax]">
           {NUM_TABS, plural, =1 {Unmute site} other {Unmute sites}}
         </message>
+        <message name="IDS_TAB_CXMENU_COPY_LINKS" desc="The label of the tab context menu item for copying one or more links. [ICU Syntax]">
+          {NUM_TABS, plural, =1 {Copy link} other {Copy links}}
+        </message>
         <message name="IDS_TAB_CXMENU_READ_LATER" desc="The label of the tab context menu item for adding one or more tabs to Read later.">
           {NUM_TABS, plural,
           =1 {Add tab to reading list}
@@ -11491,6 +11494,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_TAB_CXMENU_SOUND_UNMUTE_SITE" desc="In Title Case: The label of the tab context menu item for unmuting one or more sites. NOTE: If having no explicit # makes the phrasing awkward, feel free to add a # as necessary. [ICU Syntax]">
           {NUM_TABS, plural, =1 {Unmute Site} other {Unmute Sites}}
+        </message>
+        <message name="IDS_TAB_CXMENU_COPY_LINKS" desc="In Title Case: The label of the tab context menu item for copying one or more links. [ICU Syntax]">
+          {NUM_TABS, plural, =1 {Copy Link} other {Copy Links}}
         </message>
         <message name="IDS_TAB_CXMENU_READ_LATER" desc="In Title Case: The label of the tab context menu item for adding one or more tabs to Read later.">
           {NUM_TABS, plural,

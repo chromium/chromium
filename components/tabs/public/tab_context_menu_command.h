@@ -42,6 +42,7 @@ enum TabContextMenuCommand {
   CommandAiModeCreateNewThread,
   CommandAiModeUnshare,
   CommandToggleFocusGroup,
+  CommandCopyLinks,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabContextMenuCommand)
 

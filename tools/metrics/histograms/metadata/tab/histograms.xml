@@ -114,6 +114,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CloseTab" summary="the Close Tab command"/>
   <variant name="CloseTabsToRight"
       summary="the Close Tabs to the Right command"/>
+  <variant name="CopyLinks" summary="the Copy links command"/>
   <variant name="CopyURL" summary="the Copy URL command"/>
   <variant name="Duplicate" summary="the Duplicate command"/>
   <variant name="GlicCreateNewChat"

@@ -37,6 +37,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/list_selection_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
@@ -887,4 +888,80 @@ TEST_F(TabMenuModelTest, AiModeUnshareShownWhenTabInContext) {
   alert_controller1.reset();
   tab_strip_model.CloseAllTabs();
   delegate.SetBrowserWindowInterface(nullptr);
+}
+
+TEST_F(TabMenuModelTest, CopyLinks_FeatureDisabled) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extensions::MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(), base::BindOnce([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+        return std::make_unique<extensions::MenuManager>(context, nullptr);
+      }));
+#endif
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip_model(&delegate, profile());
+  tab_strip_model.AppendWebContents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile())),
+      true);
+
+  TabMenuModel model(&delegate_, &menu_model_delegate(), &tab_strip_model, 0);
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(TabStripModel::CommandCopyLinks).has_value());
+}
+
+TEST_F(TabMenuModelTest, CopyLinks_FeatureEnabled_SingleAndMultipleTabs) {
+  base::test::ScopedFeatureList feature_list(features::kTabCopyLinks);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extensions::MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(), base::BindOnce([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+        return std::make_unique<extensions::MenuManager>(context, nullptr);
+      }));
+#endif
+
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip_model(&delegate, profile());
+  tab_strip_model.AppendWebContents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile())),
+      true);
+  tab_strip_model.AppendWebContents(
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile())),
+      true);
+
+  // Single tab selected.
+  {
+    TabMenuModel model(&delegate_, &menu_model_delegate(), &tab_strip_model, 0);
+    std::optional<size_t> copy_index =
+        model.GetIndexOfCommandId(TabStripModel::CommandCopyLinks);
+    std::optional<size_t> read_later_index =
+        model.GetIndexOfCommandId(TabStripModel::CommandAddToReadLater);
+    ASSERT_TRUE(copy_index.has_value());
+    ASSERT_TRUE(read_later_index.has_value());
+    EXPECT_EQ(model.GetLabelAt(copy_index.value()),
+              l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_COPY_LINKS, 1));
+    EXPECT_EQ(copy_index.value(), read_later_index.value() + 1);
+  }
+
+  // Multiple tabs selected.
+  {
+    ui::ListSelectionModel selection_model;
+    selection_model.SetSelectedIndex(0);
+    selection_model.AddIndexToSelection(1);
+    tab_strip_model.SetSelectionFromModel(selection_model);
+
+    TabMenuModel model(&delegate_, &menu_model_delegate(), &tab_strip_model, 0);
+    std::optional<size_t> copy_index =
+        model.GetIndexOfCommandId(TabStripModel::CommandCopyLinks);
+    std::optional<size_t> read_later_index =
+        model.GetIndexOfCommandId(TabStripModel::CommandAddToReadLater);
+    ASSERT_TRUE(copy_index.has_value());
+    ASSERT_TRUE(read_later_index.has_value());
+    EXPECT_EQ(model.GetLabelAt(copy_index.value()),
+              l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_COPY_LINKS, 2));
+    EXPECT_EQ(copy_index.value(), read_later_index.value() + 1);
+  }
 }

@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_close_types_data.h"
+#include "chrome/browser/ui/tabs/tab_copy_links_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -231,6 +232,7 @@ bool ShouldActivateWindowForContextMenuCommand(
     case TabStripModel::CommandAiModeCreateNewThread:
     case TabStripModel::CommandAiModeUnshare:
     case TabStripModel::CommandToggleFocusGroup:
+    case TabStripModel::CommandCopyLinks:
       return true;
   }
 }
@@ -3171,6 +3173,21 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       });
     }
 
+    case CommandCopyLinks: {
+      if (!base::FeatureList::IsEnabled(features::kTabCopyLinks)) {
+        return false;
+      }
+      std::vector<tabs::TabHandle> tabs = GetTabsForCommand(context_tab);
+      for (tabs::TabHandle tab : tabs) {
+        tabs::TabInterface* tab_ptr = tab.Get();
+        if (tab_ptr && tab_ptr->GetContents() &&
+            !tabs::GetURLForTabCopy(tab_ptr->GetContents()).is_empty()) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     case CommandCopyURL:
       CHECK(delegate()->IsForWebApp(), base::NotFatalUntil::M162);
       return true;
@@ -3608,6 +3625,28 @@ void TabStripModel::ExecuteContextMenuCommand(tabs::TabHandle context_tab,
       base::UmaHistogramCounts100("Glic.TabContextMenu.UnpinnedTabs",
                                   tabs.size());
       delegate_->GlicUnpinTabsFromAllConversations(tabs);
+      break;
+    }
+
+    case CommandCopyLinks: {
+      if (!IsContextMenuCommandEnabled(context_tab, CommandCopyLinks)) {
+        return;
+      }
+      base::UmaHistogramCounts1000(
+          "Tab.ContextMenu.CopyLinks.SelectedTabsCount",
+          selection_model_.size());
+      base::RecordAction(UserMetricsAction("TabContextMenu_CopyLinks"));
+
+      std::vector<tabs::TabHandle> tabs = GetTabsForCommand(context_tab);
+      std::vector<content::WebContents*> web_contents;
+      for (tabs::TabHandle tab : tabs) {
+        tabs::TabInterface* tab_ptr = tab.Get();
+        if (tab_ptr && tab_ptr->GetContents()) {
+          web_contents.push_back(tab_ptr->GetContents());
+        }
+      }
+
+      tabs::CopyLinks(delegate()->GetBrowserWindowInterface(), web_contents);
       break;
     }
 
