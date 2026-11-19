@@ -116,9 +116,8 @@ public class WebViewCachedFlags {
                     Map.entry(AwFeatures.WEBVIEW_EARLY_TRACING_INIT, DefaultState.DISABLED),
                     Map.entry(AwFeatures.WEBVIEW_BACKGROUND_TRACING_INIT, DefaultState.DISABLED),
                     Map.entry(AwFeatures.WEBVIEW_EARLY_STARTUP_TRACING, DefaultState.DISABLED),
-                    Map.entry(AwFeatures.WEBVIEW_REDUCED_SEED_EXPIRATION, DefaultState.DISABLED),
-                    Map.entry(
-                            AwFeatures.WEBVIEW_REDUCED_SEED_REQUEST_PERIOD, DefaultState.DISABLED),
+                    Map.entry(AwFeatures.WEBVIEW_REDUCED_SEED_EXPIRATION, DefaultState.ENABLED),
+                    Map.entry(AwFeatures.WEBVIEW_REDUCED_SEED_REQUEST_PERIOD, DefaultState.ENABLED),
                     Map.entry(
                             TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
                             DefaultState.DISABLED),

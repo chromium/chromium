@@ -394,13 +394,13 @@ BASE_FEATURE(kWebViewRecordAppCacheHistograms,
 
 // Reduce when the app's copy of the finch seed expires. This makes WebView more
 // aggressive in requesting a new copy of its finch seed.
-BASE_FEATURE(kWebViewReducedSeedExpiration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebViewReducedSeedExpiration, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This flag reduces the minimum amount of time before WebView can request a new
 // seed. This, in conjunction with kWebViewReducedSeedExpiration, should mean
 // more up-to-date copies of finch seeds.
 BASE_FEATURE(kWebViewReducedSeedRequestPeriod,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This enables reducing webview user-agent android version and device model.
 BASE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel,

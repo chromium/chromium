@@ -22382,22 +22382,6 @@
             ]
         }
     ],
-    "WebViewReducedFinchTime": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "BothEnabled",
-                    "enable_features": [
-                        "WebViewReducedSeedExpiration",
-                        "WebViewReducedSeedRequestPeriod"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewRemoveInstantAppSupport": [
         {
             "platforms": [
