@@ -16,6 +16,8 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
+import org.chromium.components.split_tabs.SplitTabId;
+import org.chromium.components.split_tabs.SplitTabVisualData;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupId;
 
@@ -257,6 +259,11 @@ public class StubTabModel extends EmptyTabModel {
 
     @Override
     public @Nullable Tab getHierarchicalNextTab(Tab closingTab, List<Tab> closingTabs) {
+        throw error();
+    }
+
+    @Override
+    public @Nullable SplitTabId createSplit(List<Tab> tabs, SplitTabVisualData visualData) {
         throw error();
     }
 }

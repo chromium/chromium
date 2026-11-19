@@ -51,6 +51,9 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/sessions/core/session_id.h"
+#include "components/split_tabs/android/split_tab_id_jni_conversion.h"
+#include "components/split_tabs/android/split_tab_visual_data_jni_conversion.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/android/tab_group_id_jni_conversion.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -817,10 +820,9 @@ std::vector<tab_groups::TabGroupId> TabModelJniBridge::ListTabGroups() {
 }
 
 std::set<split_tabs::SplitTabId> TabModelJniBridge::ListSplits() {
-  // TODO(https://crbug.com/480192698): Implement this once split tabs are
-  // supported on Desktop Android.
-  NOTIMPLEMENTED();
-  return {};
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  return Java_TabModelJniBridge_listSplits(env, jobj);
 }
 
 std::optional<TabGroupVisualData> TabModelJniBridge::GetTabGroupVisualData(
@@ -849,10 +851,9 @@ std::optional<TabGroupVisualData> TabModelJniBridge::GetTabGroupVisualData(
 
 std::optional<split_tabs::SplitTabVisualData>
 TabModelJniBridge::GetSplitTabVisualData(split_tabs::SplitTabId split_id) {
-  // TODO(https://crbug.com/480192698): Implement this once split tabs are
-  // supported on Desktop Android.
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  return Java_TabModelJniBridge_getSplitTabVisualData(env, jobj, split_id);
 }
 
 gfx::Range TabModelJniBridge::GetTabGroupTabIndices(
@@ -884,10 +885,15 @@ std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateTabGroup(
 std::optional<split_tabs::SplitTabId> TabModelJniBridge::CreateSplit(
     const std::vector<tabs::TabHandle>& tabs,
     const split_tabs::SplitTabVisualData& visual_data) {
-  // TODO(https://crbug.com/480192698): Implement this once split tabs are
-  // supported on Desktop Android.
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  std::vector<TabAndroid*> tabs_in_split = GetAllTabsFromHandles(tabs);
+  if (tabs_in_split.size() != tabs.size()) {
+    return std::nullopt;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  return Java_TabModelJniBridge_createSplit(env, jobj, tabs_in_split,
+                                            visual_data);
 }
 
 void TabModelJniBridge::SetTabGroupVisualData(

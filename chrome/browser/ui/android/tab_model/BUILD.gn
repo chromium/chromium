@@ -69,6 +69,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl",
     "//components/content_settings/core/browser",
     "//components/performance_manager",
+    "//components/split_tabs",
     "//content/public/browser",
     "//content/public/common",
     "//ui/android",

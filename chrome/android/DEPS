@@ -62,6 +62,7 @@ include_rules = [
   "+components/signin/public/android",
   "+components/site_engagement/content/android",
   "+components/spellcheck/browser",
+  "+components/split_tabs/android/java",
   "+components/strictmode/android",
   "+components/subresource_filter/android",
   "+components/supervised_user/android",

@@ -41,6 +41,8 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.split_tabs.SplitTabId;
+import org.chromium.components.split_tabs.SplitTabVisualData;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabStripCollection;
@@ -781,6 +783,24 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     /** Returns whether the model is currently in the process of closing all of its tabs. */
     @CalledByNative
     protected abstract boolean isClosingAllTabs();
+
+    @Override
+    @CalledByNative
+    public abstract @JniType("std::optional<split_tabs::SplitTabId>") @Nullable SplitTabId
+            createSplit(
+                    @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
+                    @JniType("split_tabs::SplitTabVisualData") SplitTabVisualData visualData);
+
+    @CalledByNative
+    private @JniType("std::optional<split_tabs::SplitTabVisualData>") @Nullable SplitTabVisualData
+            getSplitTabVisualData(@JniType("split_tabs::SplitTabId") SplitTabId splitTabId) {
+        SplitTabData splitTabData = getSplitTabData(splitTabId);
+        return splitTabData == null ? null : splitTabData.visualData;
+    }
+
+    @Override
+    @CalledByNative
+    public abstract @JniType("std::set<split_tabs::SplitTabId>") Set<SplitTabId> listSplits();
 
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

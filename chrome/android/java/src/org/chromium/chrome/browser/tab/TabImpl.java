@@ -107,6 +107,7 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.sensitive_content.SensitiveContentClient;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
+import org.chromium.components.split_tabs.SplitTabId;
 import org.chromium.components.tabs.DetachReason;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -2916,6 +2917,12 @@ class TabImpl implements Tab {
         if (mNativeTabAndroid != 0) {
             TabImplJni.get().notifyTabGroupChanged(mNativeTabAndroid, tabGroupId);
         }
+    }
+
+    @Override
+    public @Nullable SplitTabId getSplitTabId() {
+        // TODO(crbug.com/585322243): Implement this.
+        return null;
     }
 
     @CalledByNative

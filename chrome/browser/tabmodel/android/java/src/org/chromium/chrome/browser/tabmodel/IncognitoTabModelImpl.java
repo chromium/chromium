@@ -25,11 +25,14 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
+import org.chromium.components.split_tabs.SplitTabId;
+import org.chromium.components.split_tabs.SplitTabVisualData;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -726,5 +729,23 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {
         mDelegateModel.moveTabOutOfGroupInDirection(sourceTabId, trailing);
+    }
+
+    @Override
+    public @Nullable SplitTabId createSplit(List<Tab> tabs, SplitTabVisualData visualData) {
+        // TODO(crbug.com/585322243): Implement this.
+        return null;
+    }
+
+    @Override
+    public @Nullable SplitTabData getSplitTabData(SplitTabId splitTabId) {
+        // TODO(crbug.com/585322243): Implement this.
+        return null;
+    }
+
+    @Override
+    public Set<SplitTabId> listSplits() {
+        // TODO(crbug.com/585322243): Implement this.
+        return Collections.emptySet();
     }
 }

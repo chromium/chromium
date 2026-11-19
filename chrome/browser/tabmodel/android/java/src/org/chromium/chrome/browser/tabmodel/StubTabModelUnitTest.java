@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
@@ -16,11 +17,15 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.split_tabs.SplitTabId;
+import org.chromium.components.split_tabs.SplitTabLayout;
+import org.chromium.components.split_tabs.SplitTabVisualData;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Tests for {@link StubTabModel} to ensure all mutating methods are overridden. */
@@ -77,6 +82,8 @@ public class StubTabModelUnitTest {
                             "getTabGroupColor",
                             "getTabGroupColorWithFallback",
                             "getTabGroupCollapsed",
+                            "getSplitTabData",
+                            "listSplits",
                             "isTabGroupHiding",
                             "isTabStateInitialized",
                             "associateWithBrowserWindow",
@@ -202,5 +209,22 @@ public class StubTabModelUnitTest {
         assertThrows(
                 UnsupportedOperationException.class,
                 () -> remover.removeTab(mockTab, /* allowDialog= */ false));
+    }
+
+    @Test
+    public void testSplitViewMethods() {
+        var stubTabModel = new StubTabModel(/* isIncognito= */ false, /* profile= */ null);
+        var firstTab = mock(Tab.class);
+        var secondTab = mock(Tab.class);
+        var tabs = List.of(firstTab, secondTab);
+        var splitTabVisualData =
+                new SplitTabVisualData(
+                        SplitTabLayout.SIDE_BY_SIDE, SplitTabVisualData.DEFAULT_SPLIT_RATIO);
+
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> stubTabModel.createSplit(tabs, splitTabVisualData));
+        assertNull(stubTabModel.getSplitTabData(SplitTabId.generateNew()));
+        assertTrue(stubTabModel.listSplits().isEmpty());
     }
 }

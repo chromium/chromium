@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.components.split_tabs.SplitTabId;
+import org.chromium.components.split_tabs.SplitTabVisualData;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tabs.TabStripCollection;
@@ -487,4 +489,19 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
 
     @Override
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {}
+
+    @Override
+    public @Nullable SplitTabId createSplit(List<Tab> tabs, SplitTabVisualData visualData) {
+        return null;
+    }
+
+    @Override
+    public @Nullable SplitTabData getSplitTabData(SplitTabId splitTabId) {
+        return null;
+    }
+
+    @Override
+    public Set<SplitTabId> listSplits() {
+        return Collections.emptySet();
+    }
 }

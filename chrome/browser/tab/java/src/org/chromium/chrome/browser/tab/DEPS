@@ -39,6 +39,7 @@ specific_include_rules = {
   'Tab\\.java': [
     "-components",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view",
+    "+components/split_tabs/android/java/src/org/chromium/components/split_tabs/SplitTabId.java",
   ],
 
   'TabDelegateFactory\\.java': [

@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
+import org.chromium.components.split_tabs.SplitTabId;
+import org.chromium.components.split_tabs.SplitTabVisualData;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupId;
@@ -401,10 +403,6 @@ public interface TabModel extends TabList {
     /** Duplicates the given tab. */
     @Nullable Tab duplicateTab(Tab tab);
 
-    // ---------------------------------------------------------------------------------------------
-    // Tab group methods.
-    // ---------------------------------------------------------------------------------------------
-
     /**
      * Subscribes a {@link TabModelObserver} to be notified about changes to a {@link TabModel}.
      *
@@ -686,4 +684,24 @@ public interface TabModel extends TabList {
 
     /** Sets whether the tab group is expanded or collapsed, with optional animation. */
     void setTabGroupCollapsed(TabGroupId tabGroupId, boolean isCollapsed, boolean animate);
+
+    /**
+     * Creates a new Split View with the given {@code tabs} and {@code visualData}.
+     *
+     * @param tabs The existing {@link Tab}s in this {@link TabModel} to pair into Split View, in
+     *     pane order (for example, left/top to right/bottom).
+     * @param visualData Initial {@link SplitTabVisualData}.
+     * @return The {@link SplitTabId} for the new Split View, or {@code null} if a new Split View
+     *     can't be created.
+     */
+    @Nullable SplitTabId createSplit(List<Tab> tabs, SplitTabVisualData visualData);
+
+    /**
+     * Returns the {@link SplitTabData} for {@code splitTabId}, or {@code null} if {@code
+     * splitTabId} does not exist in this {@link TabModel}.
+     */
+    @Nullable SplitTabData getSplitTabData(SplitTabId splitTabId);
+
+    /** Returns the set of {@link SplitTabId}s in this {@link TabModel}. */
+    Set<SplitTabId> listSplits();
 }

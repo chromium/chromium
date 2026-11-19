@@ -71,6 +71,8 @@ import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabC
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosureKind;
+import org.chromium.components.split_tabs.SplitTabId;
+import org.chromium.components.split_tabs.SplitTabVisualData;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -1656,6 +1658,24 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
             moveTabOutOfGroupInDirectionInternal(sourceTabId, trailing);
         }
+    }
+
+    @Override
+    public @Nullable SplitTabId createSplit(List<Tab> tabs, SplitTabVisualData visualData) {
+        // TODO(crbug.com/585322243): Implement this.
+        return null;
+    }
+
+    @Override
+    public @Nullable SplitTabData getSplitTabData(SplitTabId splitTabId) {
+        // TODO(crbug.com/585322243): Implement this.
+        return null;
+    }
+
+    @Override
+    public Set<SplitTabId> listSplits() {
+        // TODO(crbug.com/585322243): Implement this.
+        return Collections.emptySet();
     }
 
     protected void maybeAssertTabHasWebContents(Tab tab) {

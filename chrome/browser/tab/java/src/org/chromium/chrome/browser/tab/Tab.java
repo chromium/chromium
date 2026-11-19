@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.split_tabs.SplitTabId;
 import org.chromium.components.tabs.DetachReason;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -472,6 +473,12 @@ public interface Tab extends TabLifecycle {
      *     group.
      */
     void setTabGroupId(@Nullable Token tabGroupId);
+
+    /**
+     * Returns the {@link SplitTabId} of the Split View this tab belongs to, or {@code null} if this
+     * tab is not part of a Split View.
+     */
+    @Nullable SplitTabId getSplitTabId();
 
     /** Returns the user agent type for the {@link Tab} */
     @TabUserAgent
