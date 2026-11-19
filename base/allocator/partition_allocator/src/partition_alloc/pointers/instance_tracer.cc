@@ -16,6 +16,7 @@
 #include "partition_alloc/partition_alloc_base/debug/stack_trace.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/slot_address_and_size.h"
+#include "partition_alloc/tagging.h"
 
 namespace base::internal {
 
@@ -88,7 +89,7 @@ InstanceTracer::GetStackTracesForDanglingRefs(uintptr_t allocation) {
 std::vector<std::array<const void*, 32>>
 InstanceTracer::GetStackTracesForAddressForTest(const void* address) {
   const auto slot_and_size = partition_alloc::SlotAddressAndSize::FromBRPPool(
-      reinterpret_cast<uintptr_t>(address));
+      partition_alloc::UntagPtr(address));
   const uintptr_t slot_count = reinterpret_cast<uintptr_t>(
       partition_alloc::internal::InSlotMetadata::From(slot_and_size));
   return GetStackTracesForDanglingRefs(slot_count);
