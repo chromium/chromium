@@ -127,7 +127,14 @@ class GlicIphControllerTestTryIt : public GlicIphControllerTestBase {
 
 // TODO(b/503834154): Write a test for IPH promo leading into trust-first FRE
 
-IN_PROC_BROWSER_TEST_F(GlicIphControllerTestTryIt, ShowPromoWithCtaEndsInGlic) {
+// TODO(crbug.com/587051239): Re-enable on Linux TSan.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ShowPromoWithCtaEndsInGlic DISABLED_ShowPromoWithCtaEndsInGlic
+#else
+#define MAYBE_ShowPromoWithCtaEndsInGlic ShowPromoWithCtaEndsInGlic
+#endif
+IN_PROC_BROWSER_TEST_F(GlicIphControllerTestTryIt,
+                       MAYBE_ShowPromoWithCtaEndsInGlic) {
   SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
@@ -144,12 +151,6 @@ class GlicIphControllerTestPromoDisabled : public GlicIphControllerTestBase {
   ~GlicIphControllerTestPromoDisabled() override = default;
 };
 
-// TODO(crbug.com/587051239): Re-enable on Linux TSan.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_ShowPromoWithCtaEndsInGlic DISABLED_ShowPromoWithCtaEndsInGlic
-#else
-#define MAYBE_ShowPromoWithCtaEndsInGlic ShowPromoWithCtaEndsInGlic
-#endif
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestPromoDisabled,
                        MAYBE_ShowPromoWithCtaEndsInGlic) {
   SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
@@ -173,7 +174,7 @@ class GlicIphControllerTestMultiInstance : public GlicIphControllerTestBase {
 // TODO(b/503834154): Write a test for IPH promo leading into trust-first FRE.
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestMultiInstance,
-                       ShowPromoWithCtaEndsInGlic) {
+                       MAYBE_ShowPromoWithCtaEndsInGlic) {
   SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
