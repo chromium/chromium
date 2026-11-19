@@ -22,6 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Mediator controlling the property model of the download toolbar button. */
 @NullMarked
 class DownloadButtonMediator implements ThemeColorProvider.ThemeColorObserver {
+    private final Context mContext;
     private final PropertyModel mModel;
     private final ThemeColorProvider mThemeColorProvider;
     private final ColorStateList mAccentTint;
@@ -44,6 +45,7 @@ class DownloadButtonMediator implements ThemeColorProvider.ThemeColorObserver {
             PropertyModel model,
             ThemeColorProvider themeColorProvider,
             Runnable onClickRunnable) {
+        mContext = context;
         mModel = model;
         mThemeColorProvider = themeColorProvider;
         // Same accent as other "on" toolbar icons, e.g. the filled bookmark star.
@@ -52,6 +54,7 @@ class DownloadButtonMediator implements ThemeColorProvider.ThemeColorObserver {
         mActiveTint = mAccentTint;
         mModel.set(DownloadButtonProperties.ON_CLICK, v -> onClickRunnable.run());
         updateIconAndRing();
+        updateContentDescription();
         mThemeColorProvider.addThemeColorObserver(this);
         onThemeColorChanged(themeColorProvider.getThemeColor(), /* shouldAnimate= */ false);
         onTintChanged(
@@ -71,6 +74,7 @@ class DownloadButtonMediator implements ThemeColorProvider.ThemeColorObserver {
         updateButtonVisibility();
         updateTint();
         updateIconAndRing();
+        updateContentDescription();
     }
 
     /**
@@ -150,5 +154,23 @@ class DownloadButtonMediator implements ThemeColorProvider.ThemeColorObserver {
         mModel.set(
                 DownloadButtonProperties.BADGE_COUNT,
                 mState.isActive && mState.downloadCount >= 2 ? mState.downloadCount : 0);
+    }
+
+    /** Mirrors desktop's tooltip logic in {@code DownloadToolbarUIController::UpdateIcon}. */
+    private void updateContentDescription() {
+        String description;
+        if (mState.downloadCount > 0) {
+            description =
+                    mContext.getResources()
+                            .getQuantityString(
+                                    R.plurals.download_button_tooltip_in_progress_count,
+                                    mState.downloadCount,
+                                    mState.downloadCount);
+        } else if (mState.isActive) {
+            description = mContext.getString(R.string.tooltip_download_icon_new_download);
+        } else {
+            description = mContext.getString(R.string.menu_downloads);
+        }
+        mModel.set(DownloadButtonProperties.CONTENT_DESCRIPTION, description);
     }
 }

@@ -410,6 +410,41 @@ public class DownloadButtonCoordinatorTest {
     }
 
     @Test
+    public void testContentDescriptionAndTooltip_followState() {
+        // Paused downloads still count as in progress, as on desktop.
+        DownloadButtonView view = showAndGetView();
+        assertDescriptionAndTooltip("1 download in progress", view);
+
+        mStateSupplier.set(
+                state(
+                        IconState.PROGRESS,
+                        /* isActive= */ true,
+                        /* downloadCount= */ 3,
+                        /* progressPercent= */ 50,
+                        /* progressCertain= */ true));
+        assertDescriptionAndTooltip("3 downloads in progress", view);
+
+        // An unactioned completion is called out until the icon goes inactive.
+        mStateSupplier.set(
+                state(
+                        IconState.COMPLETE,
+                        /* isActive= */ true,
+                        /* downloadCount= */ 0,
+                        /* progressPercent= */ 0,
+                        /* progressCertain= */ true));
+        assertDescriptionAndTooltip("New download available", view);
+
+        mStateSupplier.set(
+                state(
+                        IconState.COMPLETE,
+                        /* isActive= */ false,
+                        /* downloadCount= */ 0,
+                        /* progressPercent= */ 0,
+                        /* progressCertain= */ true));
+        assertDescriptionAndTooltip("Downloads", view);
+    }
+
+    @Test
     public void testRingColors_followTintAndThemeColor() {
         DownloadButtonView view = showAndGetView();
         view.setRingForTesting(mRing);
@@ -466,6 +501,11 @@ public class DownloadButtonCoordinatorTest {
 
     private static void assertIcon(int expectedResId, DownloadButtonView view) {
         assertEquals(expectedResId, shadowOf(view.getButton().getDrawable()).getCreatedFromResId());
+    }
+
+    private static void assertDescriptionAndTooltip(String expected, DownloadButtonView view) {
+        assertEquals(expected, view.getButton().getContentDescription());
+        assertEquals(expected, view.getButton().getTooltipText());
     }
 
     private static void assertIconRingAndBadge(

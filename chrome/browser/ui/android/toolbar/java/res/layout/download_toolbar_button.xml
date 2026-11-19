@@ -20,7 +20,6 @@ found in the LICENSE file.
         style="@style/ToolbarHoverableButton.AdaptiveDensity"
         android:src="@drawable/ic_download"
         android:contentDescription="@string/menu_downloads"
-        android:tooltipText="@string/menu_downloads"
         android:layout_gravity="center"
         app:tint="@color/default_icon_color_tint_list" />
 

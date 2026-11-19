@@ -2837,6 +2837,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DOWNLOAD_TRAY_FULL_HISTORY" desc="Label in the download tray for the button that opens a full list of download history.">
         Full download history
       </message>
+      <message name="IDS_DOWNLOAD_BUTTON_TOOLTIP_IN_PROGRESS_COUNT" desc="Tooltip and accessibility text for the download toolbar button, displayed when there are one or more downloads in progress. [ICU Syntax]">
+        {COUNT, plural, =1 {# download in progress} other {# downloads in progress}}
+      </message>
 
       <message name="IDS_INCOGNITO_DOWNLOAD_MESSAGE_TITLE" desc="Download title displayed in a prompt message when the user downloads a file in Incognito mode.">
         Download file?

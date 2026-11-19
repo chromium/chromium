@@ -58,6 +58,10 @@ final class DownloadButtonProperties {
     public static final WritableIntPropertyKey BADGE_BACKGROUND_COLOR =
             new WritableIntPropertyKey("badge_background_color");
 
+    /** Content description and hover tooltip for the download button. */
+    public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>("content_description");
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 SHOULD_SHOW,
@@ -69,6 +73,7 @@ final class DownloadButtonProperties {
                 RING_STATUS,
                 PROGRESS_PERCENT,
                 BADGE_COUNT,
-                BADGE_BACKGROUND_COLOR
+                BADGE_BACKGROUND_COLOR,
+                CONTENT_DESCRIPTION
             };
 }

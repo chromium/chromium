@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.download_button;
 
 import android.view.View;
 
+import androidx.appcompat.widget.TooltipCompat;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.download_button.DownloadProgressRingDrawable.RingStatus;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -42,6 +44,10 @@ final class DownloadButtonViewBinder {
         } else if (DownloadButtonProperties.BADGE_BACKGROUND_COLOR.equals(propertyKey)) {
             view.setBadgeBackgroundColor(
                     model.get(DownloadButtonProperties.BADGE_BACKGROUND_COLOR));
+        } else if (DownloadButtonProperties.CONTENT_DESCRIPTION.equals(propertyKey)) {
+            String description = model.get(DownloadButtonProperties.CONTENT_DESCRIPTION);
+            view.getButton().setContentDescription(description);
+            TooltipCompat.setTooltipText(view.getButton(), description);
         }
     }
 }
