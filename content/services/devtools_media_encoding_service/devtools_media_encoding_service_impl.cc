@@ -4,6 +4,7 @@
 
 #include "content/services/devtools_media_encoding_service/devtools_media_encoding_service_impl.h"
 
+#include <ranges>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -41,10 +42,7 @@ DevToolsMediaEncodingServiceImpl::~DevToolsMediaEncodingServiceImpl() {
 void DevToolsMediaEncodingServiceImpl::StartRecording(
     mojo::PendingRemote<devtools_media_encoding_service::mojom::
                             DevToolsMediaEncodingServiceClient> client,
-    uint32_t max_width,
-    uint32_t max_height,
-    uint32_t frame_rate,
-    bool has_audio) {
+    devtools_media_encoding_service::mojom::RecordingOptionsPtr options) {
 #if !BUILDFLAG(ENABLE_LIBAOM)
   receiver_.ReportBadMessage("Video encoding is not supported");
 #else
@@ -52,43 +50,82 @@ void DevToolsMediaEncodingServiceImpl::StartRecording(
     receiver_.ReportBadMessage("Recording is already active");
     return;
   }
-  if (frame_rate == 0) {
-    frame_rate = 30;
+  if (options->output ==
+          devtools_media_encoding_service::mojom::Output::kEncodedFrames &&
+      options->record_audio) {
+    receiver_.ReportBadMessage("Audio is not supported with kEncodedFrames");
+    return;
   }
+
+  output_ = options->output;
+  latency_mode_ = options->latency_mode;
+  screencast_frame_rate_ =
+      options->frame_rate != 0
+          ? options->frame_rate
+          : (output_ == devtools_media_encoding_service::mojom::Output::kMp4
+                 ? 30
+                 : 60);
+  record_audio_ = options->record_audio;
+  keyframe_interval_ =
+      options->keyframe_interval != 0
+          ? options->keyframe_interval
+          : (output_ == devtools_media_encoding_service::mojom::Output::kMp4
+                 ? screencast_frame_rate_ * 2
+                 : 60);
+
   client_.Bind(std::move(client));
-  screencast_frame_rate_ = frame_rate;
-  has_audio_ = has_audio;
   stopping_ = false;
   wait_for_queues_to_finish_ = false;
   last_video_frame_ = nullptr;
+  video_encoder_initializing_ = false;
   video_encoder_flushing_ = false;
+  last_surface_size_ = gfx::Size();
+  screencast_mp4_muxer_.reset();
+  screencast_video_encoder_.reset();
 
-  auto delegate = std::make_unique<media::Mp4MuxerDelegate>(
-      media::AudioCodec::kOpus, media::VideoCodec::kAV1,
-      media::AV1PROFILE_PROFILE_MAIN, media::kNoVideoCodecLevel, false,
-      base::BindRepeating(
-          [](base::WeakPtr<DevToolsMediaEncodingServiceImpl> self,
-             base::span<const uint8_t> data) {
-            if (self && self->client_.is_bound()) {
-              self->client_->OnData(
-                  std::vector<uint8_t>(data.begin(), data.end()));
-            }
-          },
-          weak_factory_.GetWeakPtr()));
+  if (output_ == devtools_media_encoding_service::mojom::Output::kMp4) {
+    auto delegate = std::make_unique<media::Mp4MuxerDelegate>(
+        media::AudioCodec::kOpus, media::VideoCodec::kAV1,
+        media::AV1PROFILE_PROFILE_MAIN, media::kNoVideoCodecLevel, false,
+        base::BindRepeating(
+            [](base::WeakPtr<DevToolsMediaEncodingServiceImpl> self,
+               base::span<const uint8_t> data) {
+              if (self && self->client_.is_bound()) {
+                self->client_->OnData(
+                    std::vector<uint8_t>(std::from_range, data));
+              }
+            },
+            weak_factory_.GetWeakPtr()));
 
-  screencast_mp4_muxer_ = std::make_unique<media::MuxerTimestampAdapter>(
-      std::make_unique<media::Mp4Muxer>(media::AudioCodec::kOpus, true,
-                                        has_audio, std::move(delegate),
-                                        std::nullopt),
-      true, has_audio);
+    screencast_mp4_muxer_ = std::make_unique<media::MuxerTimestampAdapter>(
+        std::make_unique<media::Mp4Muxer>(media::AudioCodec::kOpus, true,
+                                          record_audio_, std::move(delegate),
+                                          std::nullopt),
+        true, record_audio_);
+  }
+#endif
+}
 
-  last_surface_size_ = gfx::Size(max_width, max_height);
+void DevToolsMediaEncodingServiceImpl::InitializeVideoEncoder() {
+#if BUILDFLAG(ENABLE_LIBAOM)
+  video_encoder_initializing_ = true;
   screencast_video_encoder_ = std::make_unique<media::OffloadingVideoEncoder>(
       std::make_unique<media::Av1VideoEncoder>());
+#endif
+  if (!screencast_video_encoder_) {
+    return;
+  }
+
   media::VideoEncoder::Options options;
   options.frame_size = last_surface_size_;
-  options.framerate = frame_rate;
-  options.keyframe_interval = frame_rate * 2;
+  options.framerate = screencast_frame_rate_;
+  options.keyframe_interval = keyframe_interval_;
+  options.latency_mode =
+      latency_mode_ ==
+              devtools_media_encoding_service::mojom::LatencyMode::kQuality
+          ? media::VideoEncoder::LatencyMode::Quality
+          : media::VideoEncoder::LatencyMode::Realtime;
+  options.content_hint = media::VideoEncoder::ContentHint::Screen;
 
   screencast_video_encoder_->Initialize(
       media::AV1PROFILE_PROFILE_MAIN, options, base::DoNothing(),
@@ -98,7 +135,11 @@ void DevToolsMediaEncodingServiceImpl::StartRecording(
       base::BindOnce(
           [](base::WeakPtr<DevToolsMediaEncodingServiceImpl> self,
              media::EncoderStatus status) {
-            if (!self || !self->screencast_mp4_muxer_ || self->stopping_) {
+            if (!self) {
+              return;
+            }
+            self->video_encoder_initializing_ = false;
+            if (!self->client_.is_bound() || self->stopping_) {
               return;
             }
             if (!status.is_ok()) {
@@ -111,14 +152,12 @@ void DevToolsMediaEncodingServiceImpl::StartRecording(
             self->ProcessVideoFrameQueue();
           },
           weak_factory_.GetWeakPtr()));
-
-#endif
 }
 
 void DevToolsMediaEncodingServiceImpl::RecordVideoFrame(
     const scoped_refptr<media::VideoFrame>& frame) {
-  if (!screencast_mp4_muxer_ || stopping_ || wait_for_queues_to_finish_ ||
-      !screencast_video_encoder_ || !frame) {
+  if (!client_.is_bound() || stopping_ || wait_for_queues_to_finish_ ||
+      !frame) {
     return;
   }
   last_video_frame_ = frame;
@@ -128,16 +167,21 @@ void DevToolsMediaEncodingServiceImpl::RecordVideoFrame(
 }
 
 void DevToolsMediaEncodingServiceImpl::ProcessVideoFrameQueue() {
-  if (!screencast_mp4_muxer_ || stopping_) {
+  if (!client_.is_bound() || stopping_) {
     return;
   }
 
   while (!video_frame_queue_.empty()) {
-    if (stopping_ || !screencast_video_encoder_ || video_encoder_flushing_) {
+    if (stopping_ || video_encoder_flushing_ || video_encoder_initializing_) {
       break;
     }
     auto frame = video_frame_queue_.front();
     const gfx::Size surface_size = frame->visible_rect().size();
+    if (!screencast_video_encoder_) {
+      last_surface_size_ = surface_size;
+      InitializeVideoEncoder();
+      return;
+    }
     if (surface_size != last_surface_size_) {
       last_surface_size_ = surface_size;
       video_encoder_flushing_ = true;
@@ -180,47 +224,21 @@ void DevToolsMediaEncodingServiceImpl::OnVideoEncoderFlushedAndRecreate(
   }
 
   if (!status.is_ok()) {
+    wait_for_queues_to_finish_ = false;
+    last_video_frame_ = nullptr;
+    video_frame_queue_.clear();
+    screencast_video_encoder_.reset();
     StopRecording();
     return;
   }
 
-#if BUILDFLAG(ENABLE_LIBAOM)
-  screencast_video_encoder_ = std::make_unique<media::OffloadingVideoEncoder>(
-      std::make_unique<media::Av1VideoEncoder>());
-
-  media::VideoEncoder::Options options;
-  options.frame_size = last_surface_size_;
-  options.framerate = screencast_frame_rate_;
-  options.keyframe_interval = screencast_frame_rate_ * 2;
-
-  screencast_video_encoder_->Initialize(
-      media::AV1PROFILE_PROFILE_MAIN, options, base::DoNothing(),
-      base::BindRepeating(
-          &DevToolsMediaEncodingServiceImpl::OnScreencastEncodedFrame,
-          weak_factory_.GetWeakPtr()),
-      base::BindOnce(
-          [](base::WeakPtr<DevToolsMediaEncodingServiceImpl> self,
-             media::EncoderStatus status) {
-            if (!self || !self->screencast_mp4_muxer_ || self->stopping_) {
-              return;
-            }
-            if (!status.is_ok()) {
-              self->wait_for_queues_to_finish_ = false;
-              self->last_video_frame_ = nullptr;
-              self->video_frame_queue_.clear();
-              self->StopRecording();
-              return;
-            }
-            self->ProcessVideoFrameQueue();
-          },
-          weak_factory_.GetWeakPtr()));
-#endif
+  InitializeVideoEncoder();
 }
 
 void DevToolsMediaEncodingServiceImpl::RecordAudioBuffer(
     media::mojom::AudioBufferPtr buffer) {
   if (!screencast_mp4_muxer_ || stopping_ || wait_for_queues_to_finish_ ||
-      !buffer || !has_audio_) {
+      !buffer || !record_audio_) {
     return;
   }
 
@@ -278,7 +296,8 @@ void DevToolsMediaEncodingServiceImpl::TryFlushEncoders() {
   if (!wait_for_queues_to_finish_) {
     return;
   }
-  if (!video_frame_queue_.empty() || video_encoder_flushing_) {
+  if (!video_frame_queue_.empty() || video_encoder_flushing_ ||
+      video_encoder_initializing_) {
     return;
   }
 
@@ -322,11 +341,12 @@ void DevToolsMediaEncodingServiceImpl::TryFlushEncoders() {
 }
 
 void DevToolsMediaEncodingServiceImpl::StopRecording() {
-  if (!screencast_mp4_muxer_ || stopping_ || wait_for_queues_to_finish_) {
+  if (!client_.is_bound() || stopping_ || wait_for_queues_to_finish_) {
     return;
   }
 
-  if (last_video_frame_) {
+  if (output_ == devtools_media_encoding_service::mojom::Output::kMp4 &&
+      last_video_frame_) {
     base::TimeDelta delay =
         base::TimeTicks::Now() - last_video_frame_receive_time_;
     if (delay.is_positive()) {
@@ -385,7 +405,18 @@ void DevToolsMediaEncodingServiceImpl::OnScreencastEncodedAudio(
 void DevToolsMediaEncodingServiceImpl::OnScreencastEncodedFrame(
     media::VideoEncoderOutput output,
     std::optional<media::VideoEncoder::CodecDescription> description) {
-  if (!screencast_mp4_muxer_ || output.data.empty()) {
+  if (!client_.is_bound() || output.data.empty()) {
+    return;
+  }
+
+  if (output_ ==
+      devtools_media_encoding_service::mojom::Output::kEncodedFrames) {
+    client_->OnEncodedVideoFrame(
+        std::vector<uint8_t>(std::from_range, output.data), output.key_frame,
+        output.timestamp);
+    return;
+  }
+  if (!screencast_mp4_muxer_) {
     return;
   }
 

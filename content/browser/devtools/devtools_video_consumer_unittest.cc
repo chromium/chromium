@@ -274,6 +274,12 @@ TEST_F(DevToolsVideoConsumerTest, CallbacksAreCalledWhenBufferValid) {
   ASSERT_TRUE(region.IsValid());
   SimulateFrameCapture(std::move(region));
   base::RunLoop().RunUntilIdle();
+
+  auto frame = receiver_.TakeFrameAt(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->storage_type(), media::VideoFrame::STORAGE_SHMEM);
+  ASSERT_TRUE(frame->shm_region());
+  EXPECT_TRUE(frame->shm_region()->IsValid());
 }
 
 // Tests that the OnFrameFromVideoConsumer callback is not called when

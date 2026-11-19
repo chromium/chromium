@@ -169,6 +169,9 @@ class CONTENT_EXPORT MediaRecorder
 
   // devtools_media_encoding_service::mojom::DevToolsMediaEncodingServiceClient:
   void OnData(const std::vector<uint8_t>& data) override;
+  void OnEncodedVideoFrame(const std::vector<uint8_t>& data,
+                           bool key_frame,
+                           base::TimeDelta timestamp) override;
   void OnClosed() override;
 
   raw_ptr<DevToolsIOContext> io_context_;

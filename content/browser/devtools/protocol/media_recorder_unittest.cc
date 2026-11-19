@@ -249,10 +249,8 @@ class FakeEncodingService : public EncodingService {
   void StartRecording(
       mojo::PendingRemote<devtools_media_encoding_service::mojom::
                               DevToolsMediaEncodingServiceClient> client,
-      uint32_t max_width,
-      uint32_t max_height,
-      uint32_t frame_rate,
-      bool has_audio) override {}
+      devtools_media_encoding_service::mojom::RecordingOptionsPtr options)
+      override {}
   void RecordVideoFrame(
       const scoped_refptr<media::VideoFrame>& frame) override {}
   void RecordAudioBuffer(media::mojom::AudioBufferPtr buffer) override {

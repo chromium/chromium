@@ -14,13 +14,18 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/tracing.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/tracing_controller.h"
+#include "content/services/devtools_media_encoding_service/public/mojom/devtools_media_encoding_service.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-forward.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
@@ -50,7 +55,10 @@ class TracingProcessSetMonitor;
 
 namespace protocol {
 
-class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
+class TracingHandler : public DevToolsDomainHandler,
+                       public Tracing::Backend,
+                       public devtools_media_encoding_service::mojom::
+                           DevToolsMediaEncodingServiceClient {
  public:
   CONTENT_EXPORT TracingHandler(DevToolsAgentHostImpl* host,
                                 DevToolsIOContext* io_context,
@@ -62,7 +70,15 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
 
   CONTENT_EXPORT ~TracingHandler() override;
 
-  static std::vector<TracingHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
+  CONTENT_EXPORT static std::vector<TracingHandler*> ForAgentHost(
+      DevToolsAgentHostImpl* host);
+
+  gfx::Size last_video_frame_size_for_testing() const {
+    return last_video_frame_size_for_testing_;
+  }
+  bool is_video_encoding_active_for_testing() const {
+    return video_encoding_service_.is_bound();
+  }
 
   // DevToolsDomainHandler implementation.
   void WillInitiatePrerender(FrameTreeNode* ftn);
@@ -128,6 +144,24 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
       memory_instrumentation::mojom::RequestOutcome outcome,
       uint64_t dump_id);
   void OnFrameFromVideoConsumer(scoped_refptr<media::VideoFrame> frame);
+  struct PendingFrameMetadata {
+    base::TimeDelta timestamp;
+    base::TimeTicks capture_time;
+    base::TimeTicks expected_display_time;
+    uint64_t frame_sequence = 0;
+    uint64_t source_id = 0;
+    scoped_refptr<media::VideoFrame> frame;
+  };
+
+  // devtools_media_encoding_service::mojom::DevToolsMediaEncodingServiceClient:
+  void OnData(const std::vector<uint8_t>& data) override {}
+  void OnEncodedVideoFrame(const std::vector<uint8_t>& data,
+                           bool key_frame,
+                           base::TimeDelta timestamp) override;
+  void OnClosed() override;
+
+  bool EncodeVideoScreenshot(scoped_refptr<media::VideoFrame> frame);
+  void ResetVideoEncodingService();
   // Assuming that the input is a potentially incomplete string representation
   // of a comma separated list of JSON objects, return the longest prefix that
   // is a valid list and store the rest to be used in subsequent calls.
@@ -193,6 +227,18 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   // `Tracing.start` (or their defaults), after clamping.
   gfx::Size screenshot_max_frame_size_;
   int screenshot_max_count_ = 0;
+  bool bitmap_screenshot_enabled_ = false;
+  mojo::Remote<
+      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
+      video_encoding_service_;
+  scoped_refptr<TracingController::TraceDataEndpoint>
+      pending_disable_tracing_endpoint_;
+  base::circular_deque<PendingFrameMetadata> pending_video_frames_;
+  gfx::Size last_video_frame_size_for_testing_;
+  mojo::Receiver<devtools_media_encoding_service::mojom::
+                     DevToolsMediaEncodingServiceClient>
+      video_encoding_client_receiver_{this};
+  base::OneShotTimer video_encoding_stop_timer_;
   perfetto::TraceConfig trace_config_;
   std::unique_ptr<PerfettoTracingSession> session_;
   std::unique_ptr<TracingProcessSetMonitor> process_set_monitor_;

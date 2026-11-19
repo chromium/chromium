@@ -50,15 +50,14 @@ class CONTENT_EXPORT DevToolsMediaEncodingServiceImpl
   void StartRecording(
       mojo::PendingRemote<devtools_media_encoding_service::mojom::
                               DevToolsMediaEncodingServiceClient> client,
-      uint32_t max_width,
-      uint32_t max_height,
-      uint32_t frame_rate,
-      bool has_audio) override;
+      devtools_media_encoding_service::mojom::RecordingOptionsPtr options)
+      override;
   void RecordVideoFrame(const scoped_refptr<media::VideoFrame>& frame) override;
   void RecordAudioBuffer(media::mojom::AudioBufferPtr buffer) override;
   void StopRecording() override;
 
  private:
+  void InitializeVideoEncoder();
   void OnScreencastEncodedFrame(
       media::VideoEncoderOutput output,
       std::optional<media::VideoEncoder::CodecDescription> description);
@@ -80,14 +79,20 @@ class CONTENT_EXPORT DevToolsMediaEncodingServiceImpl
       devtools_media_encoding_service::mojom::DevToolsMediaEncodingServiceClient>
       client_;
 
+  devtools_media_encoding_service::mojom::Output output_ =
+      devtools_media_encoding_service::mojom::Output::kMp4;
+  devtools_media_encoding_service::mojom::LatencyMode latency_mode_ =
+      devtools_media_encoding_service::mojom::LatencyMode::kRealtime;
+  uint32_t keyframe_interval_ = 0;
   uint32_t screencast_frame_rate_ = 0;
-  bool has_audio_ = false;
+  bool record_audio_ = false;
   gfx::Size last_surface_size_;
 
   std::unique_ptr<media::VideoEncoder> screencast_video_encoder_;
   std::unique_ptr<media::AudioEncoder> screencast_audio_encoder_;
   std::unique_ptr<media::MuxerTimestampAdapter> screencast_mp4_muxer_;
 
+  bool video_encoder_initializing_ = false;
   bool video_encoder_flushing_ = false;
   bool stopping_ = false;
   bool wait_for_queues_to_finish_ = false;

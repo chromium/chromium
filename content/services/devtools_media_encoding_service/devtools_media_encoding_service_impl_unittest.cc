@@ -39,6 +39,12 @@ class DummyClient : public devtools_media_encoding_service::mojom::
     raw_data_.insert(raw_data_.end(), data.begin(), data.end());
   }
 
+  void OnEncodedVideoFrame(const std::vector<uint8_t>& data,
+                           bool key_frame,
+                           base::TimeDelta timestamp) override {
+    encoded_frames_.push_back({data, key_frame, timestamp});
+  }
+
   void OnClosed() override {
     is_closed_ = true;
     if (quit_closure_) {
@@ -64,8 +70,17 @@ class DummyClient : public devtools_media_encoding_service::mojom::
     return str.find(box_type) != std::string_view::npos;
   }
 
+  struct EncodedFrame {
+    std::vector<uint8_t> data;
+    bool key_frame = false;
+    base::TimeDelta timestamp;
+  };
+
   size_t data_received() const { return data_received_; }
   bool is_closed() const { return is_closed_; }
+  const std::vector<EncodedFrame>& encoded_frames() const {
+    return encoded_frames_;
+  }
 
  private:
   mojo::Receiver<
@@ -74,6 +89,7 @@ class DummyClient : public devtools_media_encoding_service::mojom::
   size_t data_received_ = 0;
   bool is_closed_ = false;
   std::vector<uint8_t> raw_data_;
+  std::vector<EncodedFrame> encoded_frames_;
   base::OnceClosure quit_closure_;
 };
 
@@ -82,6 +98,24 @@ class DevToolsMediaEncodingServiceImplTest : public testing::Test {
   DevToolsMediaEncodingServiceImplTest() = default;
 
  protected:
+  devtools_media_encoding_service::mojom::RecordingOptionsPtr MakeOptions(
+      devtools_media_encoding_service::mojom::Output output =
+          devtools_media_encoding_service::mojom::Output::kMp4,
+      uint32_t frame_rate = 30,
+      bool record_audio = false,
+      devtools_media_encoding_service::mojom::LatencyMode latency_mode =
+          devtools_media_encoding_service::mojom::LatencyMode::kRealtime,
+      uint32_t keyframe_interval = 0) {
+    auto options =
+        devtools_media_encoding_service::mojom::RecordingOptions::New();
+    options->output = output;
+    options->frame_rate = frame_rate;
+    options->record_audio = record_audio;
+    options->latency_mode = latency_mode;
+    options->keyframe_interval = keyframe_interval;
+    return options;
+  }
+
   BrowserTaskEnvironment task_environment_;
 };
 
@@ -99,7 +133,7 @@ TEST_F(DevToolsMediaEncodingServiceImplTest, StartAndStopRecording) {
       client_remote;
   DummyClient client(client_remote.BindNewPipeAndPassReceiver());
 
-  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, false);
+  server_remote->StartRecording(client_remote.Unbind(), MakeOptions());
   server_remote->StopRecording();
 
   client.WaitUntilClosed();
@@ -123,10 +157,10 @@ TEST_F(DevToolsMediaEncodingServiceImplTest, StartRecordingWhileActive_Rejects) 
       client_remote2;
   DummyClient client2(client_remote2.BindNewPipeAndPassReceiver());
 
-  server_remote->StartRecording(client_remote1.Unbind(), 800, 600, 30, false);
+  server_remote->StartRecording(client_remote1.Unbind(), MakeOptions());
 
   mojo::test::BadMessageObserver bad_message_observer;
-  server_remote->StartRecording(client_remote2.Unbind(), 800, 600, 30, false);
+  server_remote->StartRecording(client_remote2.Unbind(), MakeOptions());
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Recording is already active");
@@ -144,7 +178,7 @@ TEST_F(DevToolsMediaEncodingServiceImplTest, RecordVideoFrame) {
       client_remote;
   DummyClient client(client_remote.BindNewPipeAndPassReceiver());
 
-  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, false);
+  server_remote->StartRecording(client_remote.Unbind(), MakeOptions());
 
   gfx::Size size(800, 600);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -179,7 +213,7 @@ TEST_F(DevToolsMediaEncodingServiceImplTest,
       client_remote;
   DummyClient client(client_remote.BindNewPipeAndPassReceiver());
 
-  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, false);
+  server_remote->StartRecording(client_remote.Unbind(), MakeOptions());
 
   gfx::Size size(800, 600);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -218,7 +252,7 @@ TEST_F(DevToolsMediaEncodingServiceImplTest,
       client_remote;
   DummyClient client(client_remote.BindNewPipeAndPassReceiver());
 
-  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, false);
+  server_remote->StartRecording(client_remote.Unbind(), MakeOptions());
 
   gfx::Size size(800, 600);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -257,7 +291,7 @@ TEST_F(DevToolsMediaEncodingServiceImplTest,
       client_remote;
   DummyClient client(client_remote.BindNewPipeAndPassReceiver());
 
-  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, false);
+  server_remote->StartRecording(client_remote.Unbind(), MakeOptions());
 
   gfx::Size size(800, 600);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -296,7 +330,10 @@ TEST_F(DevToolsMediaEncodingServiceImplTest, RecordAudioBuffer) {
       client_remote;
   DummyClient client(client_remote.BindNewPipeAndPassReceiver());
 
-  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, true);
+  server_remote->StartRecording(
+      client_remote.Unbind(),
+      MakeOptions(devtools_media_encoding_service::mojom::Output::kMp4, 30,
+                  true));
 
   for (int i = 0; i < 5; ++i) {
     auto buffer = media::MakeAudioBuffer<float>(
@@ -329,7 +366,10 @@ TEST_F(DevToolsMediaEncodingServiceImplTest, RecordVideoAndAudio) {
       client_remote;
   DummyClient client(client_remote.BindNewPipeAndPassReceiver());
 
-  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, true);
+  server_remote->StartRecording(
+      client_remote.Unbind(),
+      MakeOptions(devtools_media_encoding_service::mojom::Output::kMp4, 30,
+                  true));
 
   gfx::Size size(800, 600);
   base::TimeTicks timestamp = base::TimeTicks::Now();
@@ -368,7 +408,7 @@ TEST_F(DevToolsMediaEncodingServiceImplTest, ChangeVideoSurfaceSize) {
       client_remote;
   DummyClient client(client_remote.BindNewPipeAndPassReceiver());
 
-  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, false);
+  server_remote->StartRecording(client_remote.Unbind(), MakeOptions());
 
   base::TimeTicks timestamp = base::TimeTicks::Now();
 
@@ -397,6 +437,76 @@ TEST_F(DevToolsMediaEncodingServiceImplTest, ChangeVideoSurfaceSize) {
   EXPECT_TRUE(client.ContainsBox("moov"));
 }
 
+TEST_F(DevToolsMediaEncodingServiceImplTest, StartRecordingEncodedFrames) {
+  mojo::Remote<
+      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
+      server_remote;
+  DevToolsMediaEncodingServiceImpl server(
+      server_remote.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<devtools_media_encoding_service::mojom::
+                   DevToolsMediaEncodingServiceClient>
+      client_remote;
+  DummyClient client(client_remote.BindNewPipeAndPassReceiver());
+
+  server_remote->StartRecording(
+      client_remote.Unbind(),
+      MakeOptions(
+          devtools_media_encoding_service::mojom::Output::kEncodedFrames, 60,
+          false, devtools_media_encoding_service::mojom::LatencyMode::kQuality,
+          60));
+
+  for (int i = 0; i < 3; ++i) {
+    auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(320, 240));
+    frame->set_timestamp(base::Milliseconds(i * 16));
+    server_remote->RecordVideoFrame(frame);
+  }
+  for (int i = 3; i < 5; ++i) {
+    auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(160, 120));
+    frame->set_timestamp(base::Milliseconds(i * 16));
+    server_remote->RecordVideoFrame(frame);
+  }
+
+  server_remote->StopRecording();
+
+  client.WaitUntilClosed();
+  EXPECT_TRUE(client.is_closed());
+  EXPECT_EQ(client.data_received(), 0u);
+  ASSERT_EQ(client.encoded_frames().size(), 5u);
+  EXPECT_TRUE(client.encoded_frames()[0].key_frame);
+  EXPECT_FALSE(client.encoded_frames()[1].key_frame);
+  EXPECT_TRUE(client.encoded_frames()[3].key_frame);
+  for (int i = 0; i < 5; ++i) {
+    EXPECT_FALSE(client.encoded_frames()[i].data.empty());
+    EXPECT_EQ(client.encoded_frames()[i].timestamp, base::Milliseconds(i * 16));
+  }
+}
+
+TEST_F(DevToolsMediaEncodingServiceImplTest,
+       StartRecordingEncodedFramesWithAudio_Rejects) {
+  mojo::Remote<
+      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
+      server_remote;
+  DevToolsMediaEncodingServiceImpl server(
+      server_remote.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<devtools_media_encoding_service::mojom::
+                   DevToolsMediaEncodingServiceClient>
+      client_remote;
+  DummyClient client(client_remote.BindNewPipeAndPassReceiver());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  server_remote->StartRecording(
+      client_remote.Unbind(),
+      MakeOptions(
+          devtools_media_encoding_service::mojom::Output::kEncodedFrames, 60,
+          true, devtools_media_encoding_service::mojom::LatencyMode::kQuality,
+          60));
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Audio is not supported with kEncodedFrames");
+}
+
 #else
 
 TEST_F(DevToolsMediaEncodingServiceImplTest, VideoEncodingNotSupported) {
@@ -412,7 +522,7 @@ TEST_F(DevToolsMediaEncodingServiceImplTest, VideoEncodingNotSupported) {
   DummyClient client(client_remote.BindNewPipeAndPassReceiver());
 
   mojo::test::BadMessageObserver bad_message_observer;
-  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, false);
+  server_remote->StartRecording(client_remote.Unbind(), MakeOptions());
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Video encoding is not supported");

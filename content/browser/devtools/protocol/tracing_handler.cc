@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -24,7 +25,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -46,8 +46,12 @@
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_host.h"
+#include "content/public/browser/service_process_host.h"
 #include "content/public/browser/tracing_service.h"
 #include "content/public/browser/web_contents.h"
+#include "media/base/video_frame.h"
+#include "media/media_buildflags.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-shared.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
@@ -103,6 +107,11 @@ constexpr int64_t kScreenshotMemoryBudgetBytes =
     static_cast<int64_t>(kDefaultMaxFrameSize.width()) *
     kDefaultMaxFrameSize.height() * 4 *
     DevToolsTraceableScreenshot::kDefaultMaximumNumberOfScreenshots;
+
+// Maximum time to wait for the DevTools Media Encoding Service to flush and
+// close when stopping tracing. 5 seconds bounds the in-flight encode backlog
+// plus the utility process Mojo round-trip on slow devices.
+constexpr base::TimeDelta kVideoEncodingStopTimeout = base::Seconds(5);
 
 // Convert from camel case to separator + lowercase.
 std::string ConvertFromCamelCase(const std::string& in_str, char separator) {
@@ -976,6 +985,10 @@ Response TracingHandler::End() {
   if (session_->HasTracingFailed())
     return Response::ServerError("Tracing failed");
 
+  if (pending_disable_tracing_endpoint_) {
+    return Response::ServerError("Tracing is already being stopped");
+  }
+
   scoped_refptr<TracingController::TraceDataEndpoint> endpoint;
   if (return_as_stream_) {
     endpoint = new DevToolsStreamEndpoint(
@@ -1033,13 +1046,52 @@ void TracingHandler::OnRecordingEnabled(std::unique_ptr<StartCallback> callback,
 
   SetupTimer(buffer_usage_reporting_interval_);
 
-  bool screenshot_enabled;
+  bitmap_screenshot_enabled_ = false;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(
-      TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"), &screenshot_enabled);
-  if (screenshot_enabled) {
+      TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"),
+      &bitmap_screenshot_enabled_);
+  bool capture_video = bitmap_screenshot_enabled_;
+  bool video_screenshot_enabled = false;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(
+      TRACE_DISABLED_BY_DEFAULT("devtools.video_screenshot"),
+      &video_screenshot_enabled);
+  ResetVideoEncodingService();
+  WebContents* wc = host_ ? host_->GetWebContents() : nullptr;
+  if (video_screenshot_enabled) {
+#if BUILDFLAG(ENABLE_LIBAOM)
+    if (wc) {
+      video_encoding_service_ = content::ServiceProcessHost::Launch<
+          devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>(
+          ServiceProcessHost::Options()
+              .WithDisplayName("DevTools Media Encoding Service")
+#if BUILDFLAG(IS_MAC)
+              .WithChildFlags(ChildProcessHost::CHILD_RENDERER)
+#endif
+              .Pass());
+      auto options =
+          devtools_media_encoding_service::mojom::RecordingOptions::New();
+      options->output =
+          devtools_media_encoding_service::mojom::Output::kEncodedFrames;
+      options->frame_rate = 60;
+      options->latency_mode =
+          devtools_media_encoding_service::mojom::LatencyMode::kQuality;
+      options->keyframe_interval = 60;
+      video_encoding_service_->StartRecording(
+          video_encoding_client_receiver_.BindNewPipeAndPassRemote(),
+          std::move(options));
+      video_encoding_client_receiver_.set_disconnect_handler(base::BindOnce(
+          &TracingHandler::OnClosed, weak_factory_.GetWeakPtr()));
+      capture_video = true;
+    }
+#else
+    // disabled-by-default-devtools.video_screenshot requires libaom.
+#endif
+  }
+
+  if (capture_video) {
     // Reset number of screenshots received, each time tracing begins.
     number_of_screenshots_from_video_consumer_ = 0;
-    if (WebContents* wc = host_ ? host_->GetWebContents() : nullptr) {
+    if (wc) {
       auto* frame_host =
           static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
       video_consumer_->SetFrameSinkId(
@@ -1121,29 +1173,115 @@ void TracingHandler::OnMemoryDumpFinished(
 
 void TracingHandler::OnFrameFromVideoConsumer(
     scoped_refptr<media::VideoFrame> frame) {
-  if (!IsTracing()) {
+  if (!IsTracing() || !did_initiate_recording_) {
     return;
   }
-  const SkBitmap skbitmap = DevToolsVideoConsumer::GetSkBitmapFromFrame(frame);
-  // This reference_time is an ESTIMATE. It is set by the compositor frame sink
-  // from the `expected_display_time`, which is based on a previously known
-  // frame start PLUS the vsync interval (eg 16.6ms)
-  base::TimeTicks expected_display_time = *frame->metadata().reference_time;
 
-  uint64_t frame_sequence = *frame->metadata().frame_sequence;
-  uint64_t source_id = *frame->metadata().source_id;
+  bool captured = false;
+  if (video_encoding_service_) {
+    captured = EncodeVideoScreenshot(frame);
+  }
 
-  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"),
-                      "Screenshot", "expected_display_time",
-                      expected_display_time, "frame_sequence", frame_sequence,
-                      "source_id", source_id, "snapshot",
-                      std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
+  if (bitmap_screenshot_enabled_) {
+    const SkBitmap skbitmap =
+        DevToolsVideoConsumer::GetSkBitmapFromFrame(frame);
+    // This reference_time is an ESTIMATE. It is set by the compositor frame
+    // sink from the `expected_display_time`, which is based on a previously
+    // known frame start PLUS the vsync interval (eg 16.6ms)
+    base::TimeTicks expected_display_time = *frame->metadata().reference_time;
+
+    uint64_t frame_sequence = *frame->metadata().frame_sequence;
+    uint64_t source_id = *frame->metadata().source_id;
+
+    TRACE_EVENT_INSTANT(
+        TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"), "Screenshot",
+        "expected_display_time", expected_display_time, "frame_sequence",
+        frame_sequence, "source_id", source_id, "snapshot",
+        std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
+    captured = true;
+  }
+
+  if (!captured) {
+    return;
+  }
 
   ++number_of_screenshots_from_video_consumer_;
   CHECK(video_consumer_, base::NotFatalUntil::M159);
   if (number_of_screenshots_from_video_consumer_ >= screenshot_max_count_) {
     video_consumer_->StopCapture();
   }
+}
+
+bool TracingHandler::EncodeVideoScreenshot(
+    scoped_refptr<media::VideoFrame> frame) {
+  // Cap in-flight frames holding STORAGE_SHMEM buffers so slow encoding on
+  // low-end devices cannot exhaust FrameSinkVideoCapturerImpl's buffer pool.
+  constexpr size_t kMaxInFlightVideoFrames = 4;
+  if (pending_video_frames_.size() >= kMaxInFlightVideoFrames) {
+    return false;
+  }
+  last_video_frame_size_for_testing_ = frame->visible_rect().size();
+  base::TimeDelta timestamp = frame->timestamp();
+  base::TimeTicks capture_time = TRACE_TIME_TICKS_NOW();
+  pending_video_frames_.push_back({
+      timestamp,
+      capture_time,
+      frame->metadata().reference_time.value_or(capture_time),
+      frame->metadata().frame_sequence.value_or(0),
+      frame->metadata().source_id.value_or(0),
+      frame,
+  });
+
+  video_encoding_service_->RecordVideoFrame(std::move(frame));
+  return true;
+}
+
+void TracingHandler::OnEncodedVideoFrame(const std::vector<uint8_t>& data,
+                                         bool key_frame,
+                                         base::TimeDelta timestamp) {
+  if (!session_) {
+    return;
+  }
+  while (!pending_video_frames_.empty() &&
+         pending_video_frames_.front().timestamp < timestamp) {
+    pending_video_frames_.pop_front();
+  }
+  if (pending_video_frames_.empty() ||
+      pending_video_frames_.front().timestamp != timestamp) {
+    return;
+  }
+  PendingFrameMetadata meta = pending_video_frames_.front();
+  pending_video_frames_.pop_front();
+
+  if (data.empty()) {
+    return;
+  }
+
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("devtools.video_screenshot"), "Screenshot",
+      meta.capture_time, "expected_display_time", meta.expected_display_time,
+      "frame_sequence", meta.frame_sequence, "source_id", meta.source_id,
+      "key_frame", key_frame, "av1_chunk", base::Base64Encode(data));
+}
+
+void TracingHandler::OnClosed() {
+  auto endpoint = std::move(pending_disable_tracing_endpoint_);
+  if (!bitmap_screenshot_enabled_ && video_consumer_) {
+    video_consumer_->StopCapture();
+  }
+  ResetVideoEncodingService();
+  if (endpoint && session_) {
+    session_->DisableTracing(std::move(endpoint));
+  }
+}
+
+void TracingHandler::ResetVideoEncodingService() {
+  video_encoding_stop_timer_.Stop();
+  video_encoding_service_.reset();
+  video_encoding_client_receiver_.reset();
+  pending_disable_tracing_endpoint_.reset();
+  pending_video_frames_.clear();
+  last_video_frame_size_for_testing_ = gfx::Size();
 }
 
 Response TracingHandler::RecordClockSyncMarker(const std::string& sync_id) {
@@ -1179,14 +1317,25 @@ void TracingHandler::StopTracing(
   CHECK(session_, base::NotFatalUntil::M159);
   buffer_usage_poll_timer_.reset();
   process_set_monitor_.reset();
+  did_initiate_recording_ = false;
+  bitmap_screenshot_enabled_ = false;
+  video_consumer_->StopCapture();
+
+  if (video_encoding_service_ && endpoint) {
+    pending_disable_tracing_endpoint_ = endpoint;
+    video_encoding_stop_timer_.Start(FROM_HERE, kVideoEncodingStopTimeout, this,
+                                     &TracingHandler::OnClosed);
+    video_encoding_service_->StopRecording();
+    return;
+  }
+  ResetVideoEncodingService();
+
   if (endpoint) {
     // Will delete |session_|.
     session_->DisableTracing(std::move(endpoint));
   } else {
     session_.reset();
   }
-  did_initiate_recording_ = false;
-  video_consumer_->StopCapture();
 }
 
 bool TracingHandler::IsTracing() const {

@@ -185,6 +185,11 @@ void DevToolsVideoConsumer::OnFrameCaptured(
     DLOG(ERROR) << "Unable to create VideoFrame wrapper around the shmem.";
     return;
   }
+  // The destruction observer below owns `data`, so `data->region` outlives
+  // `frame` and the raw pointer remains valid. Consumers of this
+  // STORAGE_SHMEM frame must keep `frame` alive until they finish reading
+  // its pixels, as destroying `frame` releases the buffer back to Viz.
+  frame->BackWithSharedMemory(&shmem_region);
   frame->AddDestructionObserver(base::BindOnce(
       [](media::mojom::VideoBufferHandlePtr data,
          base::ReadOnlySharedMemoryMapping mapping,

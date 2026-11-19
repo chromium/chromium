@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <cstddef>
 #include <map>
 #include <memory>
@@ -49,6 +50,7 @@
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/devtools/protocol/system_info.h"
+#include "content/browser/devtools/protocol/tracing_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
@@ -136,6 +138,10 @@
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/perfetto/system_test_utils.h"
+#endif
+
+#if BUILDFLAG(ENABLE_LIBAOM) && !BUILDFLAG(IS_ANDROID)
+#include "content/public/browser/service_process_host.h"
 #endif
 
 #define EXPECT_SIZE_EQ(expected, actual)               \
@@ -890,9 +896,138 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     SendCommandSync("Emulation.clearDeviceMetricsOverride");
   }
 
+#if BUILDFLAG(ENABLE_LIBAOM)
+  protocol::TracingHandler* GetTracingHandler() {
+    auto handlers = protocol::TracingHandler::ForAgentHost(
+        static_cast<DevToolsAgentHostImpl*>(agent_host_.get()));
+    return handlers.empty() ? nullptr : handlers[0];
+  }
+
+  void RepaintUntilVideoFrameSize(
+      base::FunctionRef<bool(const gfx::Size&)> predicate) {
+    protocol::TracingHandler* handler = GetTracingHandler();
+    ASSERT_TRUE(handler);
+    RenderFrameSubmissionObserver observer(shell()->web_contents());
+    while (!predicate(handler->last_video_frame_size_for_testing())) {
+      ++repaint_color_step_;
+      observer.SetWaitForNextFrame();
+      ASSERT_TRUE(content::ExecJs(
+          shell()->web_contents(),
+          base::StringPrintf(
+              "document.body.style.backgroundColor = 'rgb(%d, %d, %d)';",
+              (repaint_color_step_ * 37) % 256,
+              (repaint_color_step_ * 73) % 256,
+              (repaint_color_step_ * 109) % 256)));
+      observer.WaitForNextFrameSubmission();
+      ForceNewCompositorFrameFromBrowser(shell()->web_contents());
+      WaitForBrowserCompositorFramePresented(shell()->web_contents());
+      if (!predicate(handler->last_video_frame_size_for_testing())) {
+        base::RunLoop loop;
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, loop.QuitClosure(), base::Milliseconds(15));
+        loop.Run();
+      }
+    }
+  }
+
+  void TriggerRepaintsForTracing() {
+    constexpr auto kColors = std::to_array<std::string_view>(
+        {"#654321", "#abcdef", "#fedcba", "#112233"});
+    RenderFrameSubmissionObserver observer(shell()->web_contents());
+    for (std::string_view color : kColors) {
+      observer.SetWaitForNextFrame();
+      ASSERT_TRUE(content::ExecJs(
+          shell()->web_contents(),
+          base::StringPrintf("document.body.style.backgroundColor = '%.*s';",
+                             static_cast<int>(color.size()), color.data())));
+      observer.WaitForNextFrameSubmission();
+      ForceNewCompositorFrameFromBrowser(shell()->web_contents());
+      WaitForBrowserCompositorFramePresented(shell()->web_contents());
+    }
+  }
+
+  void VerifyVideoScreenshotEvents(
+      const std::vector<base::DictValue>& screenshot_events,
+      size_t min_key_frames = 1) {
+    ASSERT_GE(screenshot_events.size(), 2u)
+        << "Expected >= 2 video screenshot events, got "
+        << screenshot_events.size();
+
+    double last_display_time = 0.0;
+    size_t key_frame_count = 0;
+    for (size_t i = 0; i < screenshot_events.size(); ++i) {
+      const base::DictValue* args = screenshot_events[i].FindDict("args");
+      ASSERT_TRUE(args) << "Event " << i << " missing args";
+
+      const std::string* av1_chunk = args->FindString("av1_chunk");
+      ASSERT_TRUE(av1_chunk) << "Event " << i << " missing av1_chunk";
+      std::string decoded_chunk;
+      EXPECT_TRUE(base::Base64Decode(*av1_chunk, &decoded_chunk))
+          << "Event " << i << " av1_chunk is not valid base64";
+      EXPECT_FALSE(decoded_chunk.empty());
+
+      std::optional<bool> key_frame = args->FindBool("key_frame");
+      ASSERT_NE(key_frame, std::nullopt)
+          << "Event " << i << " missing key_frame";
+      if (i == 0) {
+        EXPECT_TRUE(*key_frame);
+      }
+      if (*key_frame) {
+        ++key_frame_count;
+      }
+
+      std::optional<double> display_time =
+          args->FindDouble("expected_display_time");
+      ASSERT_NE(display_time, std::nullopt)
+          << "Event " << i << " missing expected_display_time";
+      EXPECT_GT(*display_time, 0.0);
+      EXPECT_GE(*display_time, last_display_time);
+      last_display_time = *display_time;
+
+      EXPECT_NE(args->FindDouble("frame_sequence"), std::nullopt);
+      EXPECT_NE(args->FindDouble("source_id"), std::nullopt);
+    }
+    EXPECT_GE(key_frame_count, min_key_frames)
+        << "Expected >= " << min_key_frames << " keyframes, got "
+        << key_frame_count;
+  }
+
+  void CollectScreenshotEvents(
+      std::vector<base::DictValue>* video_events,
+      std::vector<base::DictValue>* bitmap_events = nullptr) {
+    while (HasExistingNotification("Tracing.dataCollected")) {
+      base::DictValue notification =
+          WaitForNotification("Tracing.dataCollected", /*allow_existing=*/true);
+      const base::ListValue* value_list = notification.FindList("value");
+      if (!value_list) {
+        continue;
+      }
+      for (const auto& item : *value_list) {
+        const base::DictValue* dict = item.GetIfDict();
+        if (!dict) {
+          continue;
+        }
+        const std::string* name = dict->FindString("name");
+        const std::string* cat = dict->FindString("cat");
+        if (!name || *name != "Screenshot" || !cat) {
+          continue;
+        }
+        if (video_events &&
+            *cat == "disabled-by-default-devtools.video_screenshot") {
+          video_events->push_back(dict->Clone());
+        } else if (bitmap_events &&
+                   *cat == "disabled-by-default-devtools.screenshot") {
+          bitmap_events->push_back(dict->Clone());
+        }
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+
   bool IsTrusted() override { return is_trusted_; }
 
   bool is_trusted_ = true;
+  int repaint_color_step_ = 0;
 
  private:
 #if !BUILDFLAG(IS_ANDROID)
@@ -1739,6 +1874,133 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, StartStopScreenRecording) {
   ASSERT_TRUE(read_response);
   const std::string* data = read_response->FindString("data");
   ASSERT_TRUE(data);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TracingVideoScreenshots) {
+  shell()->LoadURL(
+      GURL("data:text/html,<body style='background:#123456;'></body>"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  Attach();
+
+  base::DictValue start_params;
+  start_params.Set("categories",
+                   "-*,disabled-by-default-devtools.video_screenshot");
+  const base::DictValue* start_result =
+      SendCommandSync("Tracing.start", std::move(start_params));
+  ASSERT_TRUE(start_result);
+
+  // Repaint until at least one pre-resize frame is accepted for encoding.
+  RepaintUntilVideoFrameSize(
+      [](const gfx::Size& size) { return !size.IsEmpty(); });
+  const gfx::Size initial_size =
+      GetTracingHandler()->last_video_frame_size_for_testing();
+
+  // Resize viewport mid-trace and repaint until a frame at the new dimensions
+  // is accepted for encoding, triggering encoder flush + recreate (keyframe).
+  SetDeviceMetricsOverride(320, 240, 1.0f, false, std::nullopt);
+  RepaintUntilVideoFrameSize([&](const gfx::Size& size) {
+    return !size.IsEmpty() && size != initial_size;
+  });
+
+  // Stop tracing; verify that a second Tracing.end while the encoder flush is
+  // pending is rejected with "Tracing is already being stopped".
+  ASSERT_TRUE(SendCommandSync("Tracing.end"));
+  SendCommandSync("Tracing.end");
+  ASSERT_TRUE(error());
+  EXPECT_EQ(*error()->FindString("message"),
+            "Tracing is already being stopped");
+  WaitForNotification("Tracing.tracingComplete", /*allow_existing=*/true);
+
+  std::vector<base::DictValue> screenshot_events;
+  CollectScreenshotEvents(&screenshot_events);
+
+  VerifyVideoScreenshotEvents(screenshot_events, /*min_key_frames=*/2);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Sandboxed utility services on Android run under isolated UIDs, so
+// base::Process::Terminate() from the browser process fails with EPERM.
+IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
+                       TracingVideoScreenshotsServiceCrash) {
+  class EncodingServiceLaunchObserver : public ServiceProcessHost::Observer {
+   public:
+    EncodingServiceLaunchObserver() { ServiceProcessHost::AddObserver(this); }
+    ~EncodingServiceLaunchObserver() override {
+      ServiceProcessHost::RemoveObserver(this);
+    }
+
+    void OnServiceProcessLaunched(const ServiceProcessInfo& info) override {
+      if (info.IsService<devtools_media_encoding_service::mojom::
+                             DevToolsMediaEncodingService>() &&
+          !process_.IsReady()) {
+        process_.SetValue(info.GetProcess().Duplicate());
+      }
+    }
+
+    base::Process WaitForProcess() { return process_.Take(); }
+
+   private:
+    base::test::TestFuture<base::Process> process_;
+  };
+
+  shell()->LoadURL(
+      GURL("data:text/html,<body style='background:#123456;'></body>"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  Attach();
+
+  EncodingServiceLaunchObserver launch_observer;
+  base::DictValue start_params;
+  start_params.Set("categories",
+                   "-*,disabled-by-default-devtools.video_screenshot");
+  ASSERT_TRUE(SendCommandSync("Tracing.start", std::move(start_params)));
+  base::Process service_process = launch_observer.WaitForProcess();
+  ASSERT_TRUE(service_process.IsValid());
+  RepaintUntilVideoFrameSize(
+      [](const gfx::Size& size) { return !size.IsEmpty(); });
+
+  ASSERT_TRUE(service_process.Terminate(/*exit_code=*/1, /*wait=*/false));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !GetTracingHandler()->is_video_encoding_active_for_testing();
+  }));
+
+  ASSERT_TRUE(SendCommandSync("Tracing.end"));
+  WaitForNotification("Tracing.tracingComplete", /*allow_existing=*/true);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
+                       TracingVideoScreenshotsConcurrentWithBitmap) {
+  shell()->LoadURL(
+      GURL("data:text/html,<body style='background:#123456;'></body>"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  Attach();
+
+  base::DictValue start_params;
+  start_params.Set("categories",
+                   "-*,disabled-by-default-devtools.screenshot,"
+                   "disabled-by-default-devtools.video_screenshot");
+  const base::DictValue* start_result =
+      SendCommandSync("Tracing.start", std::move(start_params));
+  ASSERT_TRUE(start_result);
+
+  TriggerRepaintsForTracing();
+
+  SendCommandSync("Tracing.end");
+  WaitForNotification("Tracing.tracingComplete", /*allow_existing=*/true);
+
+  std::vector<base::DictValue> video_events;
+  std::vector<base::DictValue> bitmap_events;
+  CollectScreenshotEvents(&video_events, &bitmap_events);
+
+  VerifyVideoScreenshotEvents(video_events);
+  ASSERT_GE(bitmap_events.size(), 2u);
+  for (size_t i = 0; i < bitmap_events.size(); ++i) {
+    const base::DictValue* args = bitmap_events[i].FindDict("args");
+    ASSERT_TRUE(args) << "Bitmap event " << i << " missing args";
+    const std::string* snapshot = args->FindString("snapshot");
+    ASSERT_TRUE(snapshot);
+    EXPECT_FALSE(snapshot->empty());
+  }
 }
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
 

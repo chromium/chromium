@@ -515,8 +515,15 @@ void MediaRecorder::StartEncodingService(int max_width,
 #endif
               .Pass());
 
-  remote->StartRecording(client_receiver_.BindNewPipeAndPassRemote(), max_width,
-                         max_height, frame_rate, has_audio);
+  auto options =
+      devtools_media_encoding_service::mojom::RecordingOptions::New();
+  options->output = devtools_media_encoding_service::mojom::Output::kMp4;
+  options->frame_rate = frame_rate;
+  options->record_audio = has_audio;
+  options->latency_mode =
+      devtools_media_encoding_service::mojom::LatencyMode::kRealtime;
+  remote->StartRecording(client_receiver_.BindNewPipeAndPassRemote(),
+                         std::move(options));
   client_receiver_.set_disconnect_handler(
       base::BindOnce(&MediaRecorder::OnClosed, base::Unretained(this)));
   service_ = mojo::SharedRemote<
@@ -736,6 +743,10 @@ void MediaRecorder::OnData(const std::vector<uint8_t>& data) {
         reinterpret_cast<const char*>(data.data()), data.size()));
   }
 }
+
+void MediaRecorder::OnEncodedVideoFrame(const std::vector<uint8_t>& data,
+                                        bool key_frame,
+                                        base::TimeDelta timestamp) {}
 
 void MediaRecorder::OnClosed() {
   // The service does not accept more audio.
