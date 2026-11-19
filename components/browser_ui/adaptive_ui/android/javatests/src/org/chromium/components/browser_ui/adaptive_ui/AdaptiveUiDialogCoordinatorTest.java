@@ -1371,6 +1371,9 @@ public class AdaptiveUiDialogCoordinatorTest {
         assertEquals(
                 DialogDismissalCause.TAB_DESTROYED,
                 coordinator.toDialogDismissalCause(DismissReason.TAB_CLOSED));
+        assertEquals(
+                DialogDismissalCause.DISMISSED_BY_NATIVE,
+                coordinator.toDialogDismissalCause(DismissReason.DISMISSED_BY_FEATURE));
     }
 
     @Test

@@ -421,6 +421,8 @@ final class AdaptiveUiDialogCoordinator
                 return DialogDismissalCause.TAB_SWITCHED;
             case DismissReason.TAB_CLOSED:
                 return DialogDismissalCause.TAB_DESTROYED;
+            case DismissReason.DISMISSED_BY_FEATURE:
+                return DialogDismissalCause.DISMISSED_BY_NATIVE;
             default:
                 return DialogDismissalCause.UNKNOWN;
         }

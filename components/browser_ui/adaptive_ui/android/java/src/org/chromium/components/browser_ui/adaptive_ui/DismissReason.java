@@ -30,6 +30,7 @@ import java.lang.annotation.RetentionPolicy;
     DismissReason.NAVIGATION,
     DismissReason.TAB_SWITCHED,
     DismissReason.TAB_CLOSED,
+    DismissReason.DISMISSED_BY_FEATURE,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface DismissReason {
@@ -63,7 +64,10 @@ public @interface DismissReason {
      */
     int TAB_CLOSED = 8;
 
-    int COUNT = 9;
+    /** The feature closed the entry itself, e.g. because the page aborted the flow. */
+    int DISMISSED_BY_FEATURE = 9;
+
+    int COUNT = 10;
 }
 // LINT.ThenChange(//components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiDialogCoordinator.java:DialogDismissReasonMapping,
 // //components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiSheetCoordinator.java:SheetDismissReasonMapping,

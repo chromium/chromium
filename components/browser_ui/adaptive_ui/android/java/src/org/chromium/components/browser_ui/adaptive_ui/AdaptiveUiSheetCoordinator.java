@@ -503,6 +503,7 @@ final class AdaptiveUiSheetCoordinator
             case DismissReason.NAVIGATION:
             case DismissReason.TAB_SWITCHED:
             case DismissReason.TAB_CLOSED:
+            case DismissReason.DISMISSED_BY_FEATURE:
             default:
                 return StateChangeReason.NONE;
         }

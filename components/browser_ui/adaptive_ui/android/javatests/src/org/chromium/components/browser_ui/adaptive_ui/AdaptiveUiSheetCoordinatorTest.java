@@ -1460,6 +1460,9 @@ public class AdaptiveUiSheetCoordinatorTest {
         assertEquals(
                 StateChangeReason.NONE,
                 AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.TAB_CLOSED));
+        assertEquals(
+                StateChangeReason.NONE,
+                AdaptiveUiSheetCoordinator.toStateChangeReason(DismissReason.DISMISSED_BY_FEATURE));
     }
 
     @Test
