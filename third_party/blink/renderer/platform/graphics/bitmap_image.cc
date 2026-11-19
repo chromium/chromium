@@ -164,7 +164,6 @@ PaintImage BitmapImage::CreatePaintImage(
       CreatePaintImageBuilder(paint_id)
           .set_paint_image_generator(std::move(generator))
           .set_repetition_count(image_animation_repetition_count)
-          .set_is_high_bit_depth(decoder_->ImageIsHighBitDepth())
           .set_completion_state(completion_state)
           .set_reset_animation_sequence_id(reset_animation_sequence_id)
           .set_sync_animation_target_id(sync_animation_id)

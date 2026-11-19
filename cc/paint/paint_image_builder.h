@@ -105,10 +105,6 @@ class CC_PAINT_EXPORT PaintImageBuilder {
     paint_image_.is_multipart_ = is_multipart;
     return std::move(*this);
   }
-  PaintImageBuilder&& set_is_high_bit_depth(bool is_high_bit_depth) {
-    paint_image_.is_high_bit_depth_ = is_high_bit_depth;
-    return std::move(*this);
-  }
   PaintImageBuilder&& set_no_cache(bool no_cache) {
     paint_image_.no_cache_ = no_cache;
     return std::move(*this);

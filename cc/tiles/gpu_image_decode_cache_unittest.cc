@@ -1402,7 +1402,6 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToHdr) {
   bitmap.allocPixels(info);
   PaintImage image = PaintImageBuilder::WithDefault()
                          .set_id(PaintImage::kInvalidId)
-                         .set_is_high_bit_depth(true)
                          .set_image(SkImages::RasterFromBitmap(bitmap),
                                     PaintImage::GetNextContentId())
                          .TakePaintImage();
@@ -1457,7 +1456,6 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToSdr) {
   bitmap.allocPixels(info);
   PaintImage image = PaintImageBuilder::WithDefault()
                          .set_id(PaintImage::kInvalidId)
-                         .set_is_high_bit_depth(true)
                          .set_image(SkImages::RasterFromBitmap(bitmap),
                                     PaintImage::GetNextContentId())
                          .TakePaintImage();

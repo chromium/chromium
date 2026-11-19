@@ -128,7 +128,6 @@ TEST(PaintImageTest, SrgbImage) {
   PaintImage image = PaintImageBuilder::WithDefault()
                          .set_id(PaintImage::GetNextId())
                          .set_paint_image_generator(generator)
-                         .set_is_high_bit_depth(true)
                          .TakePaintImage();
   EXPECT_TRUE(image.is_high_bit_depth());
   EXPECT_EQ(image.GetContentColorUsage(), gfx::ContentColorUsage::kSRGB);
@@ -141,7 +140,6 @@ TEST(PaintImageTest, HbdImage) {
   PaintImage image = PaintImageBuilder::WithDefault()
                          .set_id(PaintImage::GetNextId())
                          .set_paint_image_generator(generator)
-                         .set_is_high_bit_depth(true)
                          .TakePaintImage();
   EXPECT_TRUE(image.is_high_bit_depth());
   EXPECT_EQ(image.GetContentColorUsage(),
@@ -155,7 +153,6 @@ TEST(PaintImageTest, PqHdrImage) {
   PaintImage image = PaintImageBuilder::WithDefault()
                          .set_id(PaintImage::GetNextId())
                          .set_paint_image_generator(generator)
-                         .set_is_high_bit_depth(true)
                          .TakePaintImage();
   EXPECT_TRUE(image.is_high_bit_depth());
   EXPECT_EQ(image.GetContentColorUsage(), gfx::ContentColorUsage::kHDR);
@@ -168,7 +165,6 @@ TEST(PaintImageTest, HlgHdrImage) {
   PaintImage image = PaintImageBuilder::WithDefault()
                          .set_id(PaintImage::GetNextId())
                          .set_paint_image_generator(generator)
-                         .set_is_high_bit_depth(true)
                          .TakePaintImage();
 
   EXPECT_TRUE(image.is_high_bit_depth());

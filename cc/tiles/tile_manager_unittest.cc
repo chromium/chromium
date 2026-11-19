@@ -4172,7 +4172,6 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     bitmap.allocPixels(info);
     PaintImage hdr_image = PaintImageBuilder::WithDefault()
                                .set_id(PaintImage::kInvalidId)
-                               .set_is_high_bit_depth(true)
                                .set_image(SkImages::RasterFromBitmap(bitmap),
                                           PaintImage::GetNextContentId())
                                .TakePaintImage();

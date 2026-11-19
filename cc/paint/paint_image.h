@@ -307,7 +307,9 @@ class CC_PAINT_EXPORT PaintImage {
   AnimationType animation_type() const { return animation_type_; }
   CompletionState completion_state() const { return completion_state_; }
   bool is_multipart() const { return is_multipart_; }
-  bool is_high_bit_depth() const { return is_high_bit_depth_; }
+  bool is_high_bit_depth() const {
+    return GetColorType() == kRGBA_F16_SkColorType;
+  }
   bool no_cache() const { return no_cache_; }
   // Returns true if pixel readback of this image is disallowed (e.g., cross-
   // origin images without CORS access).
@@ -479,8 +481,6 @@ class CC_PAINT_EXPORT PaintImage {
   // Whether the data fetched for this image is a part of a multpart response.
   bool is_multipart_ = false;
 
-  // Whether this image has more than 8 bits per color channel.
-  bool is_high_bit_depth_ = false;
 
   // Indicates that the image is unlikely to be re-used past the first frame it
   // appears in. Used as a hint to avoid caching it downstream, but is not a
