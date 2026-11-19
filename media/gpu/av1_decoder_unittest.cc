@@ -163,6 +163,7 @@ class MockAV1Accelerator : public AV1Decoder::AV1Accelerator {
                       const libgav1::Vector<libgav1::TileBuffer>&,
                       base::span<const uint8_t>));
   MOCK_METHOD1(OutputPicture, bool(const AV1Picture&));
+  MOCK_METHOD(bool, SupportsSpatialLayers, (), (const, override));
 };
 
 }  // namespace
@@ -183,6 +184,12 @@ class AV1DecoderTest : public ::testing::Test {
   std::vector<scoped_refptr<DecoderBuffer>> ReadWebm(const std::string& fname);
 
  protected:
+  // Decodes `buffers`, read from av1-svc-L2T2.ivf, with an accelerator
+  // that supports spatial layers, and checks that both layers of every
+  // temporal unit are decoded and only the top one is output.
+  void DecodeL2T2WithSpatialLayerSupport(
+      const std::vector<scoped_refptr<DecoderBuffer>>& buffers);
+
   base::FilePath GetTestFilePath(const std::string& fname) {
     base::FilePath file_path(
         base::FilePath(base::FilePath::kCurrentDirectory).AppendASCII(fname));
@@ -620,6 +627,163 @@ TEST_F(AV1DecoderTest, DecodeStreamWithSpatialLayersSideData) {
   EXPECT_CALL(*mock_accelerator_, OutputPicture(_)).Times(0);
   std::vector<DecodeResult> expected = {DecodeResult::kDecodeError};
   EXPECT_EQ(Decode(i_frame_buffer), expected);
+}
+
+void AV1DecoderTest::DecodeL2T2WithSpatialLayerSupport(
+    const std::vector<scoped_refptr<DecoderBuffer>>& buffers) {
+  std::vector<DecodeResult> expected = {DecodeResult::kConfigChange};
+  std::vector<DecodeResult> results;
+  for (const scoped_refptr<DecoderBuffer>& buffer : buffers) {
+    // Set inside the loop: VerifyAndClearExpectations() also clears defaults.
+    ON_CALL(*mock_accelerator_, SupportsSpatialLayers())
+        .WillByDefault(Return(true));
+    // Each temporal unit holds a 640x360 frame and a 1280x720 frame. Both are
+    // decoded, and only the 1280x720 one is output, once the whole buffer has
+    // been decoded.
+    ::testing::InSequence sequence;
+    auto base_layer = base::MakeRefCounted<AV1Picture>();
+    auto top_layer = base::MakeRefCounted<AV1Picture>();
+    EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(/*apply_grain=*/false))
+        .WillOnce(Return(base_layer));
+    EXPECT_CALL(
+        *mock_accelerator_,
+        SubmitDecode(MatchesFrameSizeAndRenderSize(gfx::Size(640, 360),
+                                                   gfx::Size(640, 360)),
+                     _, _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
+        .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
+    EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(/*apply_grain=*/false))
+        .WillOnce(Return(top_layer));
+    EXPECT_CALL(
+        *mock_accelerator_,
+        SubmitDecode(MatchesFrameSizeAndRenderSize(gfx::Size(1280, 720),
+                                                   gfx::Size(1280, 720)),
+                     _, _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
+        .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
+    EXPECT_CALL(*mock_accelerator_,
+                OutputPicture(SameAV1PictureInstance(top_layer)))
+        .WillOnce(Return(true));
+    for (DecodeResult r : Decode(buffer)) {
+      results.push_back(r);
+    }
+    expected.push_back(DecodeResult::kRanOutOfStreamData);
+    testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
+  }
+  EXPECT_EQ(results, expected);
+}
+
+TEST_F(AV1DecoderTest, DecodeSVCStreamWithSpatialLayerSupport) {
+  std::vector<scoped_refptr<DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L2T2.ivf");
+  ASSERT_EQ(buffers.size(), 8u);
+  DecodeL2T2WithSpatialLayerSupport(buffers);
+}
+
+// The RTP wildcard operating point does not say whether the stream has spatial
+// layers, so the base layer must not be output before the rest of the temporal
+// unit is decoded.
+TEST_F(AV1DecoderTest,
+       DecodeSVCStreamWithRtpWildcardOperatingPointAndSpatialLayerSupport) {
+  constexpr uint16_t kRtpWildcardOperatingPointIdc = 0b1111'1111'1111;
+  std::vector<scoped_refptr<DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L2T2.ivf");
+  ASSERT_EQ(buffers.size(), 8u);
+  buffers[0] = RewriteAv1SequenceHeaderOperatingPoint(
+      *buffers[0], kRtpWildcardOperatingPointIdc, /*seq_level_idx=*/0);
+  DecodeL2T2WithSpatialLayerSupport(buffers);
+}
+
+// operating_point_idc[0] = 0 does not say whether the stream has spatial
+// layers either, and without side data nothing else does before the second
+// frame of the temporal unit is parsed.
+TEST_F(AV1DecoderTest,
+       DecodeSVCStreamWithZeroOperatingPointIdcAndSpatialLayerSupport) {
+  std::vector<scoped_refptr<DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L2T2.ivf");
+  ASSERT_EQ(buffers.size(), 8u);
+  buffers[0] = RewriteAv1SequenceHeaderOperatingPoint(
+      *buffers[0], /*operating_point_idc=*/0, /*seq_level_idx=*/8);
+  for (const scoped_refptr<DecoderBuffer>& buffer : buffers) {
+    ASSERT_FALSE(buffer->side_data());
+  }
+  DecodeL2T2WithSpatialLayerSupport(buffers);
+}
+
+TEST_F(AV1DecoderTest,
+       DecodeStreamWithSpatialLayersSideDataAndSpatialLayerSupport) {
+  scoped_refptr<DecoderBuffer> i_frame_buffer =
+      ReadDecoderBuffer("av1-I-frame-320x240");
+  ASSERT_TRUE(!!i_frame_buffer);
+  i_frame_buffer->WritableSideData().spatial_layers = {1, 2};
+  ON_CALL(*mock_accelerator_, SupportsSpatialLayers())
+      .WillByDefault(Return(true));
+  auto av1_picture = base::MakeRefCounted<AV1Picture>();
+  EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(_))
+      .WillOnce(Return(av1_picture));
+  EXPECT_CALL(*mock_accelerator_, SubmitDecode)
+      .WillOnce(Return(AV1Decoder::AV1Accelerator::Status::kOk));
+  EXPECT_CALL(*mock_accelerator_,
+              OutputPicture(SameAV1PictureInstance(av1_picture)))
+      .WillOnce(Return(true));
+  std::vector<DecodeResult> expected = {DecodeResult::kConfigChange,
+                                        DecodeResult::kRanOutOfStreamData};
+  EXPECT_EQ(Decode(i_frame_buffer), expected);
+}
+
+namespace {
+
+// Returns a buffer holding `first` followed by `second`, as a malformed
+// DecoderBuffer carrying two temporal units would.
+scoped_refptr<DecoderBuffer> ConcatenateBuffers(const DecoderBuffer& first,
+                                                const DecoderBuffer& second) {
+  std::vector<uint8_t> data(base::span(first).begin(), base::span(first).end());
+  data.insert(data.end(), base::span(second).begin(), base::span(second).end());
+  return DecoderBuffer::CopyFrom(data);
+}
+
+// Expects every frame to be submitted and none to be output.
+void ExpectSubmitsWithoutOutput(MockAV1Accelerator& accelerator,
+                                int num_frames) {
+  EXPECT_CALL(accelerator, CreateAV1Picture(/*apply_grain=*/false))
+      .Times(num_frames)
+      .WillRepeatedly([] { return base::MakeRefCounted<AV1Picture>(); });
+  EXPECT_CALL(accelerator, SubmitDecode)
+      .Times(num_frames)
+      .WillRepeatedly(Return(AV1Decoder::AV1Accelerator::Status::kOk));
+  EXPECT_CALL(accelerator, OutputPicture(_)).Times(0);
+}
+
+}  // namespace
+
+// Spec 7.5 allows at most one shown frame per spatial layer in a temporal unit,
+// so a second shown base-layer frame must not silently replace the first.
+TEST_F(AV1DecoderTest,
+       RejectTwoShownFramesInOneSpatialLayerWithSpatialLayerSupport) {
+  std::vector<scoped_refptr<DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L1T2.ivf");
+  ASSERT_GE(buffers.size(), 2u);
+  ON_CALL(*mock_accelerator_, SupportsSpatialLayers())
+      .WillByDefault(Return(true));
+  ExpectSubmitsWithoutOutput(*mock_accelerator_, /*num_frames=*/2);
+  std::vector<DecodeResult> expected = {DecodeResult::kConfigChange,
+                                        DecodeResult::kDecodeError};
+  EXPECT_EQ(Decode(ConcatenateBuffers(*buffers[0], *buffers[1])), expected);
+}
+
+// Spec 7.5: "OBUs with obu_extension_flag equal to 1 must appear within a
+// temporal unit in non-decreasing order of spatial_id values."
+TEST_F(AV1DecoderTest,
+       RejectDecreasingSpatialIdInTemporalUnitWithSpatialLayerSupport) {
+  std::vector<scoped_refptr<DecoderBuffer>> buffers =
+      ReadIVF("av1-svc-L2T2.ivf");
+  ASSERT_EQ(buffers.size(), 8u);
+  ON_CALL(*mock_accelerator_, SupportsSpatialLayers())
+      .WillByDefault(Return(true));
+  // Both layers of the first temporal unit are submitted; the base layer of the
+  // second one is rejected once parsed.
+  ExpectSubmitsWithoutOutput(*mock_accelerator_, /*num_frames=*/2);
+  std::vector<DecodeResult> expected = {DecodeResult::kConfigChange,
+                                        DecodeResult::kDecodeError};
+  EXPECT_EQ(Decode(ConcatenateBuffers(*buffers[0], *buffers[1])), expected);
 }
 
 TEST_F(AV1DecoderTest, Decode8bProfile1) {

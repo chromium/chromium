@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -127,6 +128,14 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
     // current implementation).
     virtual Status SetStream(base::span<const uint8_t> stream,
                              const DecryptConfig* decrypt_config);
+
+    // Returns true if the accelerator can decode streams whose operating point
+    // has more than one spatial layer (e.g. WebRTC L2T2 or L3T3). For such
+    // streams AV1Decoder submits every frame of a temporal unit but calls
+    // OutputPicture() at most once per DecoderBuffer, for the last shown frame,
+    // which is the highest spatial layer present (Spec 7.18). Default
+    // implementation returns false, which makes AV1Decoder reject such streams.
+    virtual bool SupportsSpatialLayers() const;
   };
 
   AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,
@@ -157,6 +166,9 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   AV1Accelerator::Status DecodeAndOutputPicture(
       scoped_refptr<AV1Picture> pic,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);
+  // Outputs |pic| now, or, if the accelerator supports spatial layers, holds
+  // it in |spatial_layer_output_pic_| until the DecoderBuffer is fully decoded.
+  bool OutputOrHoldPicture(scoped_refptr<AV1Picture> pic);
   void UpdateReferenceFrames(scoped_refptr<AV1Picture> pic);
   void ClearReferenceFrames();
   // Checks that |ref_frames_| is consistent with libgav1's reference frame
@@ -204,6 +216,20 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
 
   // Pending picture for decode when accelerator returns kTryAgain.
   scoped_refptr<AV1Picture> pending_pic_;
+
+  // If the accelerator supports spatial layers, the last shown picture of the
+  // current DecoderBuffer, output once the whole buffer has been decoded. Only
+  // the highest spatial layer received is displayed, which depends on what the
+  // sender or an SFU forwarded rather than on the operating point.
+  scoped_refptr<AV1Picture> spatial_layer_output_pic_;
+  // The spatial_id of |spatial_layer_output_pic_|, valid while it is set.
+  int spatial_layer_output_pic_spatial_id_ = 0;
+
+  // If the accelerator supports spatial layers, the highest spatial_id among
+  // the OBUs with an extension header parsed so far from the current
+  // DecoderBuffer, if any. Used to reject temporal units whose OBUs are not in
+  // non-decreasing spatial_id order (Spec 7.5).
+  std::optional<int> temporal_unit_spatial_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

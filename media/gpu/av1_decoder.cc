@@ -55,6 +55,13 @@ VideoCodecProfile AV1ProfileToVideoCodecProfile(
   }
 }
 
+// Returns the spatial_id of the frame whose OBUs are `obu_headers`, as parsed
+// by one ObuParser::ParseOneFrame() call: that of the last OBU, which carries
+// the frame (or show_existing_frame) header or its last tile group.
+int GetFrameSpatialId(const libgav1::Vector<libgav1::ObuHeader>& obu_headers) {
+  return obu_headers.empty() ? 0 : obu_headers.back().spatial_id;
+}
+
 bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
   // Spec 6.4.1.
   switch (profile) {
@@ -156,6 +163,10 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::AV1Accelerator::SetStream(
   return Status::kOk;
 }
 
+bool AV1Decoder::AV1Accelerator::SupportsSpatialLayers() const {
+  return false;
+}
+
 AV1Decoder::AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,
                        VideoCodecProfile profile,
                        const VideoColorSpace& container_color_space)
@@ -223,6 +234,10 @@ void AV1Decoder::SetStream(int32_t id,
   decoder_buffer_ = std::move(decoder_buffer);
   stream_id_ = id;
   ClearCurrentFrame();
+  // A picture still held from an aborted decode must not be output for this
+  // buffer.
+  spatial_layer_output_pic_.reset();
+  temporal_unit_spatial_id_.reset();
 
   parser_ = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
       base::span(*decoder_buffer_).data(), decoder_buffer_->size(),
@@ -294,7 +309,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
     }
     if (!current_frame_header_) {
       if (decoder_buffer_->side_data() &&
-          decoder_buffer_->side_data()->spatial_layers.size() > 1) {
+          decoder_buffer_->side_data()->spatial_layers.size() > 1 &&
+          !accelerator_->SupportsSpatialLayers()) {
         DVLOG(1) << "Spatial layer decoding is not supported";
         return kDecodeError;
       }
@@ -312,14 +328,33 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       }
 
       current_frame_header_ = parser_->frame_header();
-      if (HasAV1SpatialLayerObu(parser_->obu_headers())) {
+      if (HasAV1SpatialLayerObu(parser_->obu_headers()) &&
+          !accelerator_->SupportsSpatialLayers()) {
         DVLOG(1) << "Spatial layer decoding is not supported";
         return kDecodeError;
+      }
+      if (accelerator_->SupportsSpatialLayers()) {
+        // Spec 7.5: "OBUs with obu_extension_flag equal to 1 must appear
+        // within a temporal unit in non-decreasing order of spatial_id values."
+        for (const libgav1::ObuHeader& header : parser_->obu_headers()) {
+          if (!header.has_extension) {
+            continue;
+          }
+          if (temporal_unit_spatial_id_.has_value() &&
+              header.spatial_id < *temporal_unit_spatial_id_) {
+            DVLOG(1) << "OBU spatial_id " << int{header.spatial_id}
+                     << " follows spatial_id " << *temporal_unit_spatial_id_
+                     << " in the same temporal unit";
+            return kDecodeError;
+          }
+          temporal_unit_spatial_id_ = header.spatial_id;
+        }
       }
 
       // Detects if a new coded video sequence is starting.
       if (parser_->sequence_header_changed()) {
-        if (IsAV1SpatialLayerSequence(parser_->sequence_header())) {
+        if (IsAV1SpatialLayerSequence(parser_->sequence_header()) &&
+            !accelerator_->SupportsSpatialLayers()) {
           constexpr size_t kOperatingPointIdcBits = 12;
           DVLOG(1) << "Spatial layer decoding is not supported: "
                    << "operating_point_idc="
@@ -491,7 +526,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       pic->set_bitstream_id(stream_id_);
       pic->SetDynamicHdrMetadata(hdr_metadata_bitstream_,
                                  decoder_buffer_.get());
-      if (!accelerator_->OutputPicture(*pic)) {
+      if (!OutputOrHoldPicture(pic)) {
         return kDecodeError;
       }
 
@@ -577,7 +612,39 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       return kTryAgain;
     }
   }
+  if (spatial_layer_output_pic_) {
+    const scoped_refptr<AV1Picture> pic = std::move(spatial_layer_output_pic_);
+    if (!accelerator_->OutputPicture(*pic)) {
+      return kDecodeError;
+    }
+  }
   return kRanOutOfStreamData;
+}
+
+bool AV1Decoder::OutputOrHoldPicture(scoped_refptr<AV1Picture> pic) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!accelerator_->SupportsSpatialLayers()) {
+    return accelerator_->OutputPicture(*pic);
+  }
+  // A temporal unit carries at most one shown frame per spatial layer, in
+  // increasing spatial_id order, and only the highest one is meant for display
+  // (Spec 7.5). Whether a DecoderBuffer has spatial layers cannot be told in
+  // advance: neither the RTP wildcard operating point nor an
+  // operating_point_idc of 0 says, and side data may be absent. So always hold
+  // the last shown picture and output it once the buffer is decoded; for a
+  // single-layer temporal unit that is its only shown frame.
+  const int spatial_id = GetFrameSpatialId(parser_->obu_headers());
+  if (spatial_layer_output_pic_ &&
+      spatial_id <= spatial_layer_output_pic_spatial_id_) {
+    // A second shown frame in the same spatial layer is a malformed temporal
+    // unit, not a layer to display instead of the first.
+    DVLOG(1) << "More than one shown frame with spatial_id " << spatial_id
+             << " in the same temporal unit";
+    return false;
+  }
+  spatial_layer_output_pic_ = std::move(pic);
+  spatial_layer_output_pic_spatial_id_ = spatial_id;
+  return true;
 }
 
 void AV1Decoder::UpdateReferenceFrames(scoped_refptr<AV1Picture> pic) {
@@ -600,6 +667,7 @@ void AV1Decoder::ClearReferenceFrames() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_);
   ref_frames_.fill(nullptr);
+  spatial_layer_output_pic_.reset();
   // If AV1Decoder has decided to clear the reference frames, then ObuParser
   // must have also decided to do so.
   DCHECK_EQ(std::ranges::count(state_->reference_frame, nullptr),
@@ -660,8 +728,9 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
     return status;
   }
 
-  if (pic->frame_header.show_frame && !accelerator_->OutputPicture(*pic))
+  if (pic->frame_header.show_frame && !OutputOrHoldPicture(pic)) {
     return AV1Accelerator::Status::kFail;
+  }
 
   // |current_frame_header_->refresh_frame_flags| should be 0xff if the frame is
   // either a SWITCH_FRAME or a visible KEY_FRAME (Spec 5.9.2).
