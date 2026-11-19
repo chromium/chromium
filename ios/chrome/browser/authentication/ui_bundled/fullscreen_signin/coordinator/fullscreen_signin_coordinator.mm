@@ -43,8 +43,8 @@
   SigninContextStyle _contextStyle;
   signin_metrics::AccessPoint _accessPoint;
   std::unique_ptr<SigninInProgress> _signinInProgress;
-  // Primary account when the account switching promo is started. Empty for
-  // other context styles.
+  // Primary account when the coordinator is started if `canSwitchAccount` is
+  // `YES`. Empty otherwise.
   GaiaId _initialPrimaryGaiaId;
 }
 
@@ -82,7 +82,7 @@
   CHECK(self.canSwitchAccount ||
         !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   _signinInProgress = [self.sceneState createSigninInProgress];
-  if (_contextStyle == SigninContextStyle::kAccountSwitchingPromo) {
+  if (self.canSwitchAccount) {
     _initialPrimaryGaiaId =
         identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
             .gaia;
@@ -198,10 +198,7 @@
     //  The user is signed-out. Sign-in was canceled.
     return base::unexpected(SigninCoordinatorResultCanceledByUser);
   }
-  // TODO(crbug.com/586620889): For `DeeplinkSigninCoordinator`, if the identity
-  // did not change, it’s also a cancelation.
-  if (_contextStyle == SigninContextStyle::kAccountSwitchingPromo &&
-      identity.gaiaId == _initialPrimaryGaiaId) {
+  if (identity.gaiaId == _initialPrimaryGaiaId) {
     // The primary identity is not changed, thus the user canceled the switch.
     return base::unexpected(SigninCoordinatorResultCanceledByUser);
   }
@@ -210,8 +207,7 @@
 }
 
 // Finishes with `SigninCoordinatorResultCanceledByUser` if there is no primary
-// identity, or if the account switching promo did not switch the primary
-// account.
+// identity, or if the primary account did not change.
 - (void)finish {
   [self finishWithResult:[self finishResult]];
 }

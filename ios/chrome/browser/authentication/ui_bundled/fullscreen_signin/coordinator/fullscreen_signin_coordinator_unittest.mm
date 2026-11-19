@@ -273,4 +273,73 @@ TEST_F(FullscreenSigninCoordinatorTest,
   EXPECT_EQ(result.error(), SigninCoordinatorResultCanceledByUser);
 }
 
+// Tests that `FullscreenSigninCoordinator` reports the signed-in identity when
+// a deeplink sign-in flow starts signed out and signs in.
+TEST_F(FullscreenSigninCoordinatorTest,
+       DeeplinkSigninCompletesWithIdentityWhenSignedOut) {
+  StartCoordinator(SigninContextStyle::kDeeplinkSignin,
+                   signin_metrics::AccessPoint::kDeepLinkDefault,
+                   fake_identity_, /*can_switch_account=*/YES);
+
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile_);
+  auth_service->SignIn(fake_identity_,
+                       signin_metrics::AccessPoint::kDeepLinkDefault);
+  OCMExpect([fullscreen_signin_screen_coordinator_mock_ stop]);
+
+  [static_cast<id<FirstRunScreenDelegate>>(coordinator_)
+      firstRunScreenCoordinatorWantsToBeStopped:
+          fullscreen_signin_screen_coordinator_mock_];
+
+  SigninCoordinatorResultOrIdentity result = [delegate_ waitForResult];
+  ASSERT_TRUE(result.has_value());
+  EXPECT_NSEQ(result.value(), fake_identity_);
+}
+
+// Tests that `FullscreenSigninCoordinator` reports the new primary identity
+// when a deeplink sign-in flow switches the primary account.
+TEST_F(FullscreenSigninCoordinatorTest,
+       DeeplinkSigninCompletesWithNewIdentityAfterSwitch) {
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile_);
+  auth_service->SignIn(fake_identity_, signin_metrics::AccessPoint::kStartPage);
+  StartCoordinator(SigninContextStyle::kDeeplinkSignin,
+                   signin_metrics::AccessPoint::kDeepLinkDefault,
+                   other_identity_, /*can_switch_account=*/YES);
+
+  auth_service->SignOut(signin_metrics::ProfileSignout::kTest);
+  auth_service->SignIn(other_identity_,
+                       signin_metrics::AccessPoint::kDeepLinkDefault);
+  OCMExpect([fullscreen_signin_screen_coordinator_mock_ stop]);
+
+  [static_cast<id<FirstRunScreenDelegate>>(coordinator_)
+      firstRunScreenCoordinatorWantsToBeStopped:
+          fullscreen_signin_screen_coordinator_mock_];
+
+  SigninCoordinatorResultOrIdentity result = [delegate_ waitForResult];
+  ASSERT_TRUE(result.has_value());
+  EXPECT_NSEQ(result.value(), other_identity_);
+}
+
+// Tests that `FullscreenSigninCoordinator` reports a cancelation when a
+// deeplink sign-in flow is dismissed without switching the primary account.
+TEST_F(FullscreenSigninCoordinatorTest, DeeplinkSigninCanceledWithoutSwitch) {
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile_);
+  auth_service->SignIn(fake_identity_, signin_metrics::AccessPoint::kStartPage);
+  StartCoordinator(SigninContextStyle::kDeeplinkSignin,
+                   signin_metrics::AccessPoint::kDeepLinkDefault,
+                   other_identity_, /*can_switch_account=*/YES);
+
+  OCMExpect([fullscreen_signin_screen_coordinator_mock_ stop]);
+
+  [static_cast<id<FirstRunScreenDelegate>>(coordinator_)
+      firstRunScreenCoordinatorWantsToBeStopped:
+          fullscreen_signin_screen_coordinator_mock_];
+
+  SigninCoordinatorResultOrIdentity result = [delegate_ waitForResult];
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), SigninCoordinatorResultCanceledByUser);
+}
+
 }  // namespace
