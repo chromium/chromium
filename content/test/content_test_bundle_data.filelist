@@ -2750,6 +2750,10 @@ data/accessibility/aria/ariaControlsElements-expected-blink.txt
 data/accessibility/aria/ariaControlsElements-internals-expected-blink.txt
 data/accessibility/aria/ariaControlsElements-internals.html
 data/accessibility/aria/ariaControlsElements.html
+data/accessibility/aria/ariaOwnsElements-expected-blink.txt
+data/accessibility/aria/ariaOwnsElements-internals-expected-blink.txt
+data/accessibility/aria/ariaOwnsElements-internals.html
+data/accessibility/aria/ariaOwnsElements.html
 data/accessibility/aria/disabled-aria-combobox-has-value-expected-blink.txt
 data/accessibility/aria/disabled-aria-combobox-has-value.html
 data/accessibility/aria/dpub-roles-computed-expected-blink.txt
@@ -4730,6 +4734,8 @@ data/accessibility/html/custom-element-with-aria-owns-inside-slot.html
 data/accessibility/html/custom-element-with-aria-owns-inside.html
 data/accessibility/html/custom-element-with-aria-owns-outside-expected-blink.txt
 data/accessibility/html/custom-element-with-aria-owns-outside.html
+data/accessibility/html/custom-element-with-ariaOwnsElements-cross-shadow-expected-blink.txt
+data/accessibility/html/custom-element-with-ariaOwnsElements-cross-shadow.html
 data/accessibility/html/custom-element.html
 data/accessibility/html/custom-select-button-value-expected-auralinux.txt
 data/accessibility/html/custom-select-button-value-expected-blink.txt

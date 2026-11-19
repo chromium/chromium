@@ -80,8 +80,9 @@ void AXRelationCache::DoInitialDocumentScan(Document& document) {
       CacheRelations(*element);
 
       // Caching aria-owns requires creating target AXObjects.
-      // TODO(crbug.com/41469336): Support aria-owns relations set via
-      // explicitly set attr-elements on element or element internals.
+      // This also covers owners that use ariaOwnsElements, on the element or
+      // on ElementInternals: the setters leave an empty aria-owns attribute
+      // behind, and the owners are resolved in UpdateAriaOwnsWithCleanLayout().
       if (AXObject::HasAriaAttribute(*element, html_names::kAriaOwnsAttr)) {
         owner_axids_to_update_.insert(element->GetDomNodeId());
       }
@@ -877,6 +878,13 @@ bool AXRelationCache::IsValidOwnsRelation(AXObject* owner,
     return false;
   }
 
+  Element* owner_element = owner->GetElement();
+  Element* child_element = DynamicTo<Element>(&child_node);
+  if (!owner_element || !child_element ||
+      !IsOwnsCandidateInOwnerScope(*owner_element, *child_element)) {
+    return false;
+  }
+
   // If this child is already aria-owned by a different owner, continue.
   // It's an author error if this happens and we don't worry about which of
   // the two owners wins ownership, as long as only one of them does.
@@ -1085,38 +1093,18 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
   }
 }
 
-void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
-    AXObject* owner,
-    const GCedHeapVector<Member<Element>>& attr_associated_elements,
-    HeapVector<Member<AXObject>>& validated_owned_children_result,
-    bool force) {
-  CHECK(!object_cache_->IsFrozen());
-
-  // attr-associated elements have already had their scope validated, but they
-  // need to be further validated to determine if they introduce a cycle or are
-  // already owned by another element.
-
-  Vector<DOMNodeId> owned_dom_node_ids;
-  for (const auto& element : attr_associated_elements) {
-    CHECK(element);
-    if (!IsValidOwnsRelation(const_cast<AXObject*>(owner), *element)) {
-      continue;
-    }
-    AXObject* child = GetOrCreate(element, owner);
-    if (!child) {
-      return;
-    }
-    owned_dom_node_ids.push_back(element->GetDomNodeId());
-    validated_owned_children_result.push_back(child);
-  }
-
-  // Track reverse relations for future tree updates.
-  UpdateReverseElementAttributeRelations(aria_owns_node_map_, owner->GetNode(),
-                                         owned_dom_node_ids);
-
-  // Update the internal mappings of owned children.
-  UpdateAriaOwnerToChildrenMappingWithCleanLayout(
-      owner, validated_owned_children_result, force);
+// static
+bool AXRelationCache::IsOwnsCandidateInOwnerScope(const Element& owner,
+                                                  const Element& candidate) {
+  // Element references set via ariaOwnsElements may point into any
+  // shadow-including ancestor tree, and references set via ElementInternals
+  // are not scope-checked at all. Only same-scope references are honored for
+  // now, which matches aria-owns IDs (resolved in the owner's TreeScope) and
+  // Reference Target, which also leaves out aria-owns. Allowing an owner to
+  // pull children across a shadow boundary would require working out how the
+  // owned child's subtree interacts with slotting and the host's own
+  // children. See crbug.com/406816521 for shipping ariaOwnsElements.
+  return owner.GetTreeScope() == candidate.GetTreeScope();
 }
 
 void AXRelationCache::ValidatedAriaOwnedChildren(
@@ -1170,37 +1158,54 @@ bool AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
 
   HeapVector<Member<AXObject>> owned_children;
 
-  // We first check if the element has an explicitly set aria-owns association.
-  // Explicitly set elements are validated when they are read (that they are in
-  // a valid scope etc). The content attribute can contain ids that are not
-  // legally ownable.
   if (!is_valid_owner) {
     DCHECK(force) << "Should not reach here except when an AXObject was "
                      "invalidated and is being refreshed: "
                   << owner;
-  } else if (element && element->HasExplicitlySetAttrAssociatedElements(
-                            html_names::kAriaOwnsAttr)) {
-    // TODO (crbug.com/41469336): Also check ElementInternals here.
-    UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
-        owner,
-        *element->GetAttrAssociatedElementsResolvingReferenceTarget(
-            html_names::kAriaOwnsAttr),
-        owned_children, force);
   } else {
-    // Figure out the ids that actually correspond to children that exist
-    // and that we can legally own (not cyclical, not already owned, etc.) and
-    // update the maps and |validated_owned_children_result| based on that.
-    //
-    // Figure out the children that are owned by this object and are in the
-    // tree.
-    TreeScope& scope = element->GetTreeScope();
-    SpaceSplitString owned_id_vector(
-        AXObject::AriaAttribute(*element, html_names::kAriaOwnsAttr));
+    // Collect the candidate owned elements. They come from one of:
+    // * The aria-owns content attribute, or the ElementInternals string
+    //   attribute, when it contains IDs. These are resolved in the owner's
+    //   TreeScope.
+    // * Explicitly set element references (ariaOwnsElements on the element),
+    //   which take precedence over references set via ElementInternals. See
+    //   Element::ElementsFromAttributeOrInternals().
+    // All candidates then go through the same validation below: legally
+    // ownable (not cyclical, not already owned, etc.), not already mapped to a
+    // different owner, and so on.
+    HeapVector<Member<Element>> candidate_elements;
+    const AtomicString& owned_ids =
+        AXObject::AriaAttribute(*element, html_names::kAriaOwnsAttr);
+    if (!owned_ids.empty()) {
+      TreeScope& scope = element->GetTreeScope();
+      SpaceSplitString owned_id_vector(owned_ids);
+      for (AtomicString id_name : owned_id_vector) {
+        if (Element* child_element = scope.getElementById(id_name)) {
+          candidate_elements.push_back(child_element);
+        }
+      }
+    } else if (const GCedHeapVector<Member<Element>>* referenced_elements =
+                   element->ElementsFromAttributeOrInternals(
+                       html_names::kAriaOwnsAttr)) {
+      for (const Member<Element>& child_element : *referenced_elements) {
+        CHECK(child_element);
+        if (!IsOwnsCandidateInOwnerScope(*element, *child_element)) {
+          continue;
+        }
+        // ElementInternals does not de-duplicate element references.
+        if (candidate_elements.Contains(child_element)) {
+          continue;
+        }
+        candidate_elements.push_back(child_element);
+      }
+    }
+
+    // Figure out the candidates that we can legally own (not cyclical, not
+    // already owned, etc.) and update the maps and |owned_children| based on
+    // that.
     HeapVector<Member<Element>> valid_owned_child_elements;
-    for (AtomicString id_name : owned_id_vector) {
-      Element* child_element = scope.getElementById(id_name);
-      if (!child_element ||
-          !IsValidOwnsRelation(const_cast<AXObject*>(owner), *child_element)) {
+    for (Element* child_element : candidate_elements) {
+      if (!IsValidOwnsRelation(const_cast<AXObject*>(owner), *child_element)) {
         continue;
       }
       AXID future_child_axid = child_element->GetDomNodeId();
@@ -1508,8 +1513,21 @@ AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
   HeapVector<Member<AXObject>> related_sources;
   GetRelationSourcesById(element->GetIdAttribute(), aria_owns_id_map_,
                          related_sources);
+  // Owners that reference this element via ariaOwnsElements (on the element
+  // or on ElementInternals) can only own it from the same TreeScope, see
+  // IsOwnsCandidateInOwnerScope(). Owners in other scopes are not queued for
+  // an update, since nothing about their owned children can change.
+  HeapVector<Member<AXObject>> element_reference_sources;
   GetRelationSourcesByElementReference(DOMNodeIds::ExistingIdForNode(element),
-                                       aria_owns_node_map_, related_sources);
+                                       aria_owns_node_map_,
+                                       element_reference_sources);
+  for (AXObject* source : element_reference_sources) {
+    Element* source_element = source->GetElement();
+    if (source_element &&
+        IsOwnsCandidateInOwnerScope(*source_element, *element)) {
+      related_sources.push_back(source);
+    }
+  }
 
   // First check for an existing aria-owns relation to the related AXObject.
   AXObject* ax_new_owner = nullptr;
@@ -1876,8 +1894,18 @@ void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXID removed_child_axid) {
     if (Element* child_element = DynamicTo<Element>(child_node)) {
       GetRelationSourcesById(child_element->GetIdAttribute(), aria_owns_id_map_,
                              other_potential_owners);
+      GetRelationSourcesByElementReference(
+          DOMNodeIds::ExistingIdForNode(child_element), aria_owns_node_map_,
+          other_potential_owners);
       for (AXObject* other_potential_owner : other_potential_owners) {
-        owner_axids_to_update_.insert(other_potential_owner->AXObjectID());
+        if (!other_potential_owner) {
+          continue;
+        }
+        Element* owner_element = other_potential_owner->GetElement();
+        if (owner_element &&
+            IsOwnsCandidateInOwnerScope(*owner_element, *child_element)) {
+          owner_axids_to_update_.insert(other_potential_owner->AXObjectID());
+        }
       }
     }
   }

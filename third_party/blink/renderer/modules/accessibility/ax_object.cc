@@ -8853,13 +8853,37 @@ bool AXObject::HasARIAOwns(Element* element) {
   // from all users does not actually get to own anything, per
   // AXRelationCache::IsValidOwner().
 
+  // An aria-owns content attribute on the element takes precedence over
+  // ElementInternals, even when it is empty. This matches
+  // Element::ElementsFromAttributeOrInternals(), which is what
+  // AXRelationCache::UpdateAriaOwnsWithCleanLayout() uses to resolve the owned
+  // children. FastGetAttribute() is used rather than AriaAttribute() because
+  // the latter falls back to ElementInternals.
   const AtomicString& aria_owns =
-      AriaAttribute(*element, html_names::kAriaOwnsAttr);
+      element->FastGetAttribute(html_names::kAriaOwnsAttr);
+  if (!aria_owns.IsNull()) {
+    // Either IDs, or element references set via ariaOwnsElements on the
+    // element. The ariaOwnsElements setter leaves an empty aria-owns content
+    // attribute behind.
+    return !aria_owns.empty() ||
+           element->HasExplicitlySetAttrAssociatedElements(
+               html_names::kAriaOwnsAttr);
+  }
 
-  // TODO(accessibility): do we need to check !AriaOwnsElements.empty() ? Is
-  // that fundamentally different from HasExplicitlySetAttrAssociatedElements()?
-  return !aria_owns.empty() || element->HasExplicitlySetAttrAssociatedElements(
-                                   html_names::kAriaOwnsAttr);
+  const ElementInternals* internals = element->GetElementInternals();
+  if (!internals) {
+    return false;
+  }
+
+  // IDs set via ElementInternals.
+  if (!GetInternalsAttribute(*element, html_names::kAriaOwnsAttr).empty()) {
+    return true;
+  }
+
+  // Element references set via ariaOwnsElements on ElementInternals.
+  const FrozenArray<Element>* internals_owns_elements =
+      internals->GetElementArrayAttribute(html_names::kAriaOwnsAttr);
+  return internals_owns_elements && !internals_owns_elements->empty();
 }
 
 // static
