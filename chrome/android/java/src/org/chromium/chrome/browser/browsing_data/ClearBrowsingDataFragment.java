@@ -987,9 +987,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         // other fragments there, including a dialog, in place. Shown synchronously, so that a
         // second click sees it.
         ConfirmImportantSitesDialogFragment.newInstance(
-                        mFetcher.getSortedImportantDomains(),
-                        mFetcher.getSortedImportantDomainReasons(),
-                        mFetcher.getSortedExampleOrigins())
+                        mFetcher.getSortedImportantDomains(), mFetcher.getSortedExampleOrigins())
                 .showNow(
                         getChildFragmentManager(),
                         ConfirmImportantSitesDialogFragment.FRAGMENT_TAG);

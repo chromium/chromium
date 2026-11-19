@@ -54,8 +54,8 @@ import java.util.Set;
 /**
  * Modal dialog that shows a list of important domains to the user which they can uncheck. Used to
  * allow the user to exclude domains from being cleared by the clear browsing data function. We use
- * proper bundle construction (through the {@link #newInstance(String[], int[], String[])} method),
- * and report the user's confirmation as a fragment result under {@link #REQUEST_KEY}.
+ * proper bundle construction (through the {@link #newInstance(String[], String[])} method), and
+ * report the user's confirmation as a fragment result under {@link #REQUEST_KEY}.
  */
 @NullMarked
 public class ConfirmImportantSitesDialogFragment extends DialogFragment
@@ -159,20 +159,17 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment
 
     /**
      * Constructs a new instance of the important sites dialog fragment.
+     *
      * @param importantDomains The list of important domains to display.
-     * @param importantDomainReasons The reasons for choosing each important domain.
      * @param faviconURLs The list of favicon urls that correspond to each importantDomains.
      * @return An instance of ConfirmImportantSitesDialogFragment with the bundle arguments set.
      */
     public static ConfirmImportantSitesDialogFragment newInstance(
-            String @Nullable [] importantDomains,
-            int @Nullable [] importantDomainReasons,
-            String @Nullable [] faviconURLs) {
+            String @Nullable [] importantDomains, String @Nullable [] faviconURLs) {
         ConfirmImportantSitesDialogFragment dialogFragment =
                 new ConfirmImportantSitesDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putStringArray(IMPORTANT_DOMAINS_TAG, importantDomains);
-        bundle.putIntArray(IMPORTANT_DOMAIN_REASONS_TAG, importantDomainReasons);
         bundle.putStringArray(FAVICON_URLS_TAG, faviconURLs);
         dialogFragment.setArguments(bundle);
         return dialogFragment;
@@ -202,9 +199,6 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment
 
     /** The tag used to store the important domains in the bundle. */
     private static final String IMPORTANT_DOMAINS_TAG = "ImportantDomains";
-
-    /** The tag used to store the important domain reasons in the bundle. */
-    private static final String IMPORTANT_DOMAIN_REASONS_TAG = "ImportantDomainReasons";
 
     /** The tag used to store the favicon urls corresponding to each important domain. */
     private static final String FAVICON_URLS_TAG = "FaviconURLs";
