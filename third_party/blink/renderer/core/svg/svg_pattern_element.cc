@@ -224,6 +224,7 @@ const SVGPatternElement* SVGPatternElement::ReferencedElement() const {
 PatternAttributes SVGPatternElement::CollectPatternAttributes() const {
   HeapHashSet<Member<const SVGPatternElement>> processed_patterns;
   const SVGPatternElement* current = this;
+  bool is_in_canvas_subtree = IsInCanvasSubtree();
 
   PatternAttributes attributes;
   while (true) {
@@ -234,12 +235,17 @@ PatternAttributes SVGPatternElement::CollectPatternAttributes() const {
     // from that element to override values this pattern didn't set.
     current = current->ReferencedElement();
 
-    // Ignore the referenced pattern element if it is not attached.
-    if (!current || !current->GetLayoutObject())
+    // Ignore the referenced pattern element if it is not attached or if we
+    // are following a reference chain that started inside the canvas subtree
+    // and an element outside the subtree is found.
+    if (!current || !current->GetLayoutObject() ||
+        (is_in_canvas_subtree && !current->IsInCanvasSubtree())) {
       break;
+    }
     // Cycle detection.
-    if (processed_patterns.Contains(current))
+    if (processed_patterns.Contains(current)) {
       break;
+    }
   }
 
   // Fill out any ("complex") empty fields with values from this element (where

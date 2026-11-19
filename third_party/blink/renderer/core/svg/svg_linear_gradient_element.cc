@@ -111,6 +111,7 @@ LinearGradientAttributes SVGLinearGradientElement::CollectGradientAttributes()
 
   VisitedSet visited;
   const SVGGradientElement* current = this;
+  bool is_in_canvas_subtree = IsInCanvasSubtree();
 
   LinearGradientAttributes attributes;
   while (true) {
@@ -120,12 +121,17 @@ LinearGradientAttributes SVGLinearGradientElement::CollectGradientAttributes()
 
     current = current->ReferencedElement();
 
-    // Ignore the referenced gradient element if it is not attached.
-    if (!current || !current->GetLayoutObject())
+    // Ignore the referenced gradient element if it is not attached or if we
+    // are following a reference chain that started inside the canvas subtree
+    // and an element outside the subtree is found.
+    if (!current || !current->GetLayoutObject() ||
+        (is_in_canvas_subtree && !current->IsInCanvasSubtree())) {
       break;
+    }
     // Cycle detection.
-    if (visited.Contains(current))
+    if (visited.Contains(current)) {
       break;
+    }
   }
 
   // Fill out any ("complex") empty fields with values from this element (where
