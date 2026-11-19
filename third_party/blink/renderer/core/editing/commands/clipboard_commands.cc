@@ -31,7 +31,11 @@
 
 #include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
@@ -99,6 +103,7 @@ class ExecutionContextClipboardEventState
         event_type = nullptr;
     std::optional<EditorCommandSource> source;
     std::optional<absl::uint128> sequence_number = 0;
+    std::optional<String> synthetic_paste_text;
   };
 
   base::AutoReset<State> SetState(
@@ -109,7 +114,14 @@ class ExecutionContextClipboardEventState
     new_state.event_type = &event_type;
     new_state.source = source;
     new_state.sequence_number = sequence_number;
-    return base::AutoReset<State>(&state_, new_state);
+    return base::AutoReset<State>(&state_, std::move(new_state));
+  }
+
+  base::AutoReset<State> SetSyntheticPasteState(const String& text) {
+    State new_state;
+    new_state.event_type = &event_type_names::kPaste;
+    new_state.synthetic_paste_text = text;
+    return base::AutoReset<State>(&state_, std::move(new_state));
   }
 
   const State& GetState() const { return state_; }
@@ -196,6 +208,37 @@ ClipboardCommands::GetSequenceNumberForExecutingPaste(
   const ExecutionContextClipboardEventState::State& event_state =
       ExecutionContextClipboardEventState::From(context).GetState();
   return event_state.sequence_number;
+}
+
+bool ClipboardCommands::DispatchSyntheticPasteEvent(Element& target,
+                                                    const String& text) {
+  ExecutionContext* context = target.GetExecutionContext();
+  CHECK(context);
+
+  DataTransfer* const data_transfer = DataTransfer::Create(
+      DataTransfer::kCopyAndPaste, DataTransferAccessPolicy::kReadable,
+      DataObject::CreateFromString(text));
+
+  Event* const evt =
+      ClipboardEvent::Create(event_type_names::kPaste, data_transfer);
+  {
+    base::AutoReset<ExecutionContextClipboardEventState::State> reset =
+        ExecutionContextClipboardEventState::From(*context)
+            .SetSyntheticPasteState(text);
+    target.DispatchEvent(*evt);
+  }
+  const bool no_default_processing = evt->defaultPrevented();
+
+  // Invalidate clipboard here for security.
+  data_transfer->SetAccessPolicy(DataTransferAccessPolicy::kNumb);
+  return !no_default_processing;
+}
+
+std::optional<String> ClipboardCommands::GetSyntheticPasteText(
+    ExecutionContext& context) {
+  const ExecutionContextClipboardEventState::State& event_state =
+      ExecutionContextClipboardEventState::From(context).GetState();
+  return event_state.synthetic_paste_text;
 }
 
 bool ClipboardCommands::CanSmartReplaceInClipboard(LocalFrame& frame) {

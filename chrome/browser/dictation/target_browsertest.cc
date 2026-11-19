@@ -9,10 +9,16 @@
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/test_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -234,6 +240,114 @@ IN_PROC_BROWSER_TEST_P(DictationTargetShowPartialsBrowserTest,
   RunTestSequence(
     InstrumentTab(kWebContentsElementId),
     NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#contenteditable"),
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kPartial, "* one"),
+    RoundTrip(kWebContentsElementId),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kFinal, "* one\n* two"),
+    RoundTrip(kWebContentsElementId),
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete)
+  );
+  // clang-format on
+
+  EXPECT_EDITABLE_TEXT_EQ("#contenteditable", "* one\n* two");
+}
+
+// Some sites handle paste events in contenteditables by cancelling the event
+// and reading the clipboard directly via the Async Clipboard API instead of
+// using `event.clipboardData`. When dictation falls back to a synthetic paste
+// for multiline text, the clipboard read either fails (if the site lacks
+// permission) or reads unrelated clipboard content.
+IN_PROC_BROWSER_TEST_P(DictationTargetShowPartialsBrowserTest,
+                       ClipboardReadingPasteContentEditable) {
+  content::BrowserTestClipboardScope clipboard;
+  clipboard.SetText("unrelated clipboard content");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url = embedded_test_server()->GetURL(
+      "/dictation/clipboard_reading_paste_contenteditable.html");
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    Do([this] {
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost()->Focus();
+    }),
+    StartSessionWithTarget(kWebContentsElementId, "#contenteditable"),
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kPartial, "* one"),
+    RoundTrip(kWebContentsElementId),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kFinal, "* one\n* two"),
+    RoundTrip(kWebContentsElementId),
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete)
+  );
+  // clang-format on
+
+  EXPECT_EDITABLE_TEXT_EQ("#contenteditable", "* one\n* two");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTargetShowPartialsBrowserTest,
+                       ClipboardReadingPasteContentEditableWithPermission) {
+  content::BrowserTestClipboardScope clipboard;
+  clipboard.SetText("unrelated clipboard content");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url = embedded_test_server()->GetURL(
+      "/dictation/clipboard_reading_paste_contenteditable.html");
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(url, url,
+                                      ContentSettingsType::CLIPBOARD_READ_WRITE,
+                                      CONTENT_SETTING_ALLOW);
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    Do([this] {
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost()->Focus();
+    }),
+    StartSessionWithTarget(kWebContentsElementId, "#contenteditable"),
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kPartial, "* one"),
+    RoundTrip(kWebContentsElementId),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kFinal, "* one\n* two"),
+    RoundTrip(kWebContentsElementId),
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete)
+  );
+  // clang-format on
+
+  EXPECT_EDITABLE_TEXT_EQ("#contenteditable", "* one\n* two");
+
+  // Verify a subsequent normal paste reads from the system clipboard rather
+  // than the earlier synthetic paste content.
+  web_contents()->Paste();
+  EXPECT_EDITABLE_TEXT_EQ("#contenteditable",
+                          "* one\n* twounrelated clipboard content");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationTargetShowPartialsBrowserTest,
+                       ClipboardReadingPasteContentEditableUsingRead) {
+  content::BrowserTestClipboardScope clipboard;
+  clipboard.SetText("unrelated clipboard content");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url = embedded_test_server()->GetURL(
+      "/dictation/clipboard_reading_paste_contenteditable.html?mode=read");
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    Do([this] {
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost()->Focus();
+    }),
     StartSessionWithTarget(kWebContentsElementId, "#contenteditable"),
     ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
     ExtensionAPIUpdateTranscription(

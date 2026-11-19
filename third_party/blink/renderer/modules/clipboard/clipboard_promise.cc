@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -46,6 +48,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 // There are 2 clipboard permissions defined in the spec:
@@ -289,6 +292,11 @@ void ClipboardPromise::HandleReadWithPermission(
   if (!GetExecutionContext()) {
     return;
   }
+  if (synthetic_paste_text_.has_value()) {
+    CHECK_EQ(status->status, mojom::blink::PermissionStatus::GRANTED);
+    ResolveSyntheticRead(*synthetic_paste_text_);
+    return;
+  }
   if (status->status != mojom::blink::PermissionStatus::GRANTED) {
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError, "Read permission denied.");
@@ -360,6 +368,29 @@ void ClipboardPromise::ResolveRead() {
     }
     clipboard_items = {MakeGarbageCollected<ClipboardItem>(items)};
   }
+  script_promise_resolver_->DowncastTo<IDLSequence<ClipboardItem>>()->Resolve(
+      clipboard_items);
+}
+
+void ClipboardPromise::ResolveSyntheticRead(const String& text) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(GetExecutionContext());
+
+  ScriptState* script_state = GetScriptState();
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+  ScriptState::Scope scope(script_state);
+  StringUtf8Adaptor utf8_text(text);
+  Blob* blob =
+      Blob::Create(base::as_byte_span(utf8_text), ui::kMimeTypePlainText);
+  HeapVector<std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>> items;
+  items.emplace_back(
+      String(ui::kMimeTypePlainText),
+      ToResolvedPromise<V8UnionBlobOrString>(
+          script_state, MakeGarbageCollected<V8UnionBlobOrString>(blob)));
+  HeapVector<Member<ClipboardItem>> clipboard_items = {
+      MakeGarbageCollected<ClipboardItem>(items)};
   script_promise_resolver_->DowncastTo<IDLSequence<ClipboardItem>>()->Resolve(
       clipboard_items);
 }
@@ -442,6 +473,11 @@ void ClipboardPromise::HandleReadTextWithPermission(
     mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!GetExecutionContext()) {
+    return;
+  }
+  if (synthetic_paste_text_.has_value()) {
+    CHECK_EQ(status->status, mojom::blink::PermissionStatus::GRANTED);
+    OnReadPlainText(*synthetic_paste_text_);
     return;
   }
   if (status->status != mojom::blink::PermissionStatus::GRANTED) {
@@ -681,9 +717,16 @@ void ClipboardPromise::ValidatePreconditions(
   DCHECK(context);
   DCHECK(context->IsSecureContext());  // [SecureContext] in IDL
 
+  std::optional<String> synthetic_paste_text =
+      permission == mojom::blink::PermissionName::CLIPBOARD_READ
+          ? ClipboardCommands::GetSyntheticPasteText(*context)
+          : std::nullopt;
+
   // A worker has no document, so the focus requirement cannot apply to one.
+  // Synthetic pastes never touch the system clipboard, so they do not require
+  // document focus.
   if (IsA<LocalDOMWindow>(context)) {
-    if (RejectIfDocumentNotFocused()) {
+    if (!synthetic_paste_text.has_value() && RejectIfDocumentNotFocused()) {
       return;
     }
   } else {
@@ -713,6 +756,18 @@ void ClipboardPromise::ValidatePreconditions(
       context->IsWorkerGlobalScope()) {
     script_promise_resolver_->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError, "Read not supported in Worker");
+    return;
+  }
+
+  // Serve synthetic paste payloads directly without touching permissions or
+  // the system clipboard, even if the page already has clipboard permission.
+  if (synthetic_paste_text.has_value()) {
+    synthetic_paste_text_ = std::move(*synthetic_paste_text);
+    GetClipboardTaskRunner()->PostTask(
+        FROM_HERE,
+        blink::BindOnce(std::move(callback),
+                        mojom::blink::PermissionStatusWithDetails::New(
+                            mojom::blink::PermissionStatus::GRANTED, nullptr)));
     return;
   }
 

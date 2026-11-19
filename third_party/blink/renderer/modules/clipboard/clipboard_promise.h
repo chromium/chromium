@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/sequence_checker.h"
@@ -177,6 +178,10 @@ class MODULES_EXPORT ClipboardPromise final
   // Resolves the read promise.
   void ResolveRead();
 
+  // Resolves a `read()` promise directly from synthetic paste text without
+  // accessing the system clipboard.
+  void ResolveSyntheticRead(const String& text);
+
   // Callback for the asynchronous SystemClipboard::ReadPlainText used by
   // navigator.clipboard.readText(). Resolves `script_promise_resolver_`.
   void OnReadPlainText(const String& text);
@@ -211,6 +216,10 @@ class MODULES_EXPORT ClipboardPromise final
   bool will_read_unprocessed_html_ = false;
   // Plain text data to be written to the clipboard.
   String plain_text_;
+  // Synthetic plain text payload captured when `read()` / `readText()` is
+  // invoked synchronously during a synthetic paste event. When set, the read
+  // resolves from this value without touching the system clipboard.
+  std::optional<String> synthetic_paste_text_;
   // Clipboard sequence number as of the start of the paste event whose implicit
   // permission grant this read is riding.
   std::optional<absl::uint128> sequence_number_at_paste_start_;

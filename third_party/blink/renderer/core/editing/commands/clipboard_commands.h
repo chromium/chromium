@@ -32,6 +32,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_CLIPBOARD_COMMANDS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_CLIPBOARD_COMMANDS_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -112,6 +114,14 @@ class CORE_EXPORT ClipboardCommands {
   // Returns the clipboard sequence number at the start of executing paste.
   static std::optional<absl::uint128> GetSequenceNumberForExecutingPaste(
       ExecutionContext&);
+
+  // Dispatches a synthetic "paste" event carrying `text` without reading the
+  // system clipboard. Returns true if default processing should continue (i.e.
+  // the event was not canceled).
+  static bool DispatchSyntheticPasteEvent(Element& target, const String& text);
+  // Returns the synthetic plain-text payload if `context` is currently
+  // dispatching a synthetic "paste" event via `DispatchSyntheticPasteEvent`.
+  static std::optional<String> GetSyntheticPasteText(ExecutionContext&);
 
  private:
   static bool CanSmartReplaceInClipboard(LocalFrame&);

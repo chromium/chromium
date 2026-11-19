@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <!-- Disable spellcheck to avoid flakiness related to dictionary init on
+         Windows. -->
+    <p>Contenteditable element that handles paste by reading the clipboard:</p>
+    <div id="contenteditable" contenteditable="true" spellcheck="false"></div>
+    <script>
+      const contenteditable = document.getElementById('contenteditable');
+      const mode = new URLSearchParams(window.location.search).get('mode');
+      // Prevent the default paste behaviour and instead perform our own read
+      // of the clipboard via the Async Clipboard API.
+      contenteditable.addEventListener('paste', (e) => {
+        const readPromise = mode === 'read'
+            ? navigator.clipboard.read().then((items) =>
+                items[0].getType('text/plain').then((blob) => blob.text()))
+            : navigator.clipboard.readText();
+        readPromise.then(
+            (text) => {
+              document.execCommand('insertText', false, text);
+            },
+            () => {
+              // Ignore clipboard read failures; nothing is inserted.
+            });
+        e.preventDefault();
+      });
+    </script>
+  </body>
+</html>

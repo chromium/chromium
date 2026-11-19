@@ -55,12 +55,12 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
-#include "third_party/blink/renderer/core/events/clipboard_event.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -443,23 +443,31 @@ void WebElement::PasteText(const WebString& text,
   // Simulates a paste command, except that it does not access the system
   // clipboard but instead pastes `text`. This block is a stripped-down version
   // of ClipboardCommands::Paste() that's limited to pasting plain text.
+  // Because the page may cancel the paste event and perform its own read of
+  // the clipboard, clipboard reads initiated during the paste event are also
+  // configured to return the synthetic content.
   Element* target = FindEventTargetFrom(
       *frame, frame->Selection().ComputeVisibleSelectionInDomTree());
-  auto create_data_transfer = [](const WebString& text) {
-    return DataTransfer::Create(DataTransfer::kCopyAndPaste,
-                                DataTransferAccessPolicy::kReadable,
-                                DataObject::CreateFromString(text));
-  };
+  if (!target) {
+    return;
+  }
   // Fires "paste" event.
-  if (target->DispatchEvent(*ClipboardEvent::Create(
-          event_type_names::kPaste, create_data_transfer(text))) !=
-      DispatchEventResult::kNotCanceled) {
+  if (!ClipboardCommands::DispatchSyntheticPasteEvent(*target, text)) {
+    return;
+  }
+  if (is_destroyed(*frame)) {
     return;
   }
   // Fires "beforeinput" event.
+  DataTransfer* data_transfer = DataTransfer::Create(
+      DataTransfer::kCopyAndPaste, DataTransferAccessPolicy::kReadable,
+      DataObject::CreateFromString(text));
   if (DispatchBeforeInputDataTransfer(
-          target, InputEvent::InputType::kInsertFromPaste,
-          create_data_transfer(text)) != DispatchEventResult::kNotCanceled) {
+          target, InputEvent::InputType::kInsertFromPaste, data_transfer) !=
+      DispatchEventResult::kNotCanceled) {
+    return;
+  }
+  if (is_destroyed(*frame)) {
     return;
   }
   // No DOM mutation if EditContext is active.
