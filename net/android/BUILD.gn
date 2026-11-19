@@ -68,8 +68,16 @@ android_aidl("embedded_test_server_aidl") {
 
 android_library("embedded_test_server_aidl_java") {
   testonly = true
-  deps = []
-  srcjar_deps = [ ":embedded_test_server_aidl" ]
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  srcjar_deps = [
+    ":embedded_test_server_aidl",
+    ":embedded_test_server_enums_srcjar",
+  ]
+}
+
+java_cpp_enum("embedded_test_server_enums_srcjar") {
+  sources =
+      [ "../test/embedded_test_server/android/embedded_test_server_android.h" ]
 }
 
 generate_jni("net_test_support_jni") {

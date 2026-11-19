@@ -22,10 +22,14 @@ namespace net::test_server {
 // The C++ side of the Java EmbeddedTestServer.
 class EmbeddedTestServerAndroid {
  public:
+  // Below line is for //net/android:embedded_test_server_enums_srcjar
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net.test
+  enum class ServerProtocol { kHttp, kHttps, kHttpsWithHttp2 };
+
   EmbeddedTestServerAndroid(
       JNIEnv* env,
       const base::android::JavaRef<JEmbeddedTestServerImpl>& obj,
-      bool jhttps);
+      ServerProtocol protocol);
 
   EmbeddedTestServerAndroid(const EmbeddedTestServerAndroid&) = delete;
   EmbeddedTestServerAndroid& operator=(const EmbeddedTestServerAndroid&) =

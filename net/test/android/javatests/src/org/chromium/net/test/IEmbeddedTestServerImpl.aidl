@@ -8,8 +8,11 @@ import org.chromium.net.test.IConnectionListener;
 
 interface IEmbeddedTestServerImpl {
 
-    /** Initialize the native object. */
-    boolean initializeNative(boolean https);
+    /** Initialize the native object.
+     *
+     *  @param protocol The protocol to serve, one of the ServerProtocol values.
+     */
+    boolean initializeNative(int protocol);
 
     /** Start the server.
      *

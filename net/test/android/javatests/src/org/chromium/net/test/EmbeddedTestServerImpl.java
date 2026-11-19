@@ -61,13 +61,14 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
         return null;
     }
 
-    /** Initialize the native EmbeddedTestServer object.
+    /**
+     * Initialize the native EmbeddedTestServer object.
      *
-     *  @param https True if the server should use HTTPS, and false otherwise.
-     *  @return Whether the native object was successfully initialized.
+     * @param protocol The protocol the server should serve.
+     * @return Whether the native object was successfully initialized.
      */
     @Override
-    public boolean initializeNative(final boolean https) {
+    public boolean initializeNative(final @ServerProtocol int protocol) {
         // This is necessary as EmbeddedTestServerImpl is in a different process than the tests
         // using it, so it needs to initialize its own application context.
         ContextUtils.initApplicationContext(mContext.getApplicationContext());
@@ -87,7 +88,7 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
                                     .init(
                                             EmbeddedTestServerImpl.this,
                                             UrlUtils.getIsolatedTestRoot(),
-                                            https);
+                                            protocol);
                         }
                         assert mNativeEmbeddedTestServer != 0;
                         return null;
@@ -381,7 +382,11 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
 
     @NativeMethods
     interface Natives {
-        void init(EmbeddedTestServerImpl obj, String testDataDir, boolean https);
+        void init(
+                EmbeddedTestServerImpl obj,
+                String testDataDir,
+                @JniType("net::test_server::EmbeddedTestServerAndroid::ServerProtocol")
+                        int protocol);
 
         void destroy(long nativeEmbeddedTestServerAndroid);
 

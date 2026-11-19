@@ -4,6 +4,7 @@
 
 #include "net/test/embedded_test_server/android/embedded_test_server_android.h"
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -11,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/test/test_support_android.h"
 #include "base/trace_event/trace_event.h"
+#include "net/test/embedded_test_server/http_connection.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/android/net_test_support_provider_jni/EmbeddedTestServerImpl_jni.h"
@@ -42,10 +44,14 @@ void EmbeddedTestServerAndroid::ConnectionListener::ReadFromSocket(
 EmbeddedTestServerAndroid::EmbeddedTestServerAndroid(
     JNIEnv* env,
     const JavaRef<JEmbeddedTestServerImpl>& jobj,
-    bool jhttps)
+    ServerProtocol protocol)
     : java_server_(jobj),
-      test_server_(jhttps ? EmbeddedTestServer::TYPE_HTTPS
-                          : EmbeddedTestServer::TYPE_HTTP),
+      test_server_(protocol == ServerProtocol::kHttp
+                       ? EmbeddedTestServer::TYPE_HTTP
+                       : EmbeddedTestServer::TYPE_HTTPS,
+                   protocol == ServerProtocol::kHttpsWithHttp2
+                       ? HttpConnection::Protocol::kHttp2
+                       : HttpConnection::Protocol::kHttp1),
       connection_listener_(this) {
   test_server_.SetConnectionListener(&connection_listener_);
   java_server_->setNativePtr(env, reinterpret_cast<intptr_t>(this));
@@ -174,7 +180,7 @@ static void JNI_EmbeddedTestServerImpl_Init(
     JNIEnv* env,
     const JavaRef<JEmbeddedTestServerImpl>& jobj,
     const JavaRef<jstring>& jtest_data_dir,
-    bool jhttps) {
+    EmbeddedTestServerAndroid::ServerProtocol protocol) {
   TRACE_EVENT0("native", "EmbeddedTestServerAndroid::Init");
   base::FilePath test_data_dir(
       base::android::ConvertJavaStringToUTF8(env, jtest_data_dir));
@@ -183,7 +189,7 @@ static void JNI_EmbeddedTestServerImpl_Init(
   // Bare new does not leak here because the instance deletes itself when it
   // receives a Destroy() call its Java counterpart. The Java counterpart owns
   // the instance created here.
-  new EmbeddedTestServerAndroid(env, jobj, jhttps);
+  new EmbeddedTestServerAndroid(env, jobj, protocol);
 }
 
 void EmbeddedTestServerAndroid::MonitorResourceRequest(

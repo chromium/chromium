@@ -84,6 +84,7 @@ public class EmbeddedTestServer {
     public enum ServerHTTPSSetting {
         USE_HTTP,
         USE_HTTPS,
+        USE_HTTPS_HTTP2,
     }
 
     /** Exception class raised on failure in the EmbeddedTestServer. */
@@ -167,9 +168,16 @@ public class EmbeddedTestServer {
                 Log.i(TAG, "Still waiting for EmbeddedTestServer service connection.");
             }
             Log.i(TAG, "EmbeddedTestServer service connected.");
+            @ServerProtocol
+            int protocol =
+                    switch (httpsSetting) {
+                        case USE_HTTP -> ServerProtocol.HTTP;
+                        case USE_HTTPS -> ServerProtocol.HTTPS;
+                        case USE_HTTPS_HTTP2 -> ServerProtocol.HTTPS_WITH_HTTP2;
+                    };
             boolean initialized = false;
             try {
-                initialized = mImpl.initializeNative(httpsSetting == ServerHTTPSSetting.USE_HTTPS);
+                initialized = mImpl.initializeNative(protocol);
             } catch (RemoteException e) {
                 Log.e(TAG, "Failed to initialize native server.", e);
                 initialized = false;
@@ -182,7 +190,7 @@ public class EmbeddedTestServer {
                 ResettersForTesting.register(this::stopAndDestroyServer);
             }
 
-            if (httpsSetting == ServerHTTPSSetting.USE_HTTPS) {
+            if (httpsSetting != ServerHTTPSSetting.USE_HTTP) {
                 try {
                     String rootCertPemPath = mImpl.getRootCertPemPath();
                     X509Util.addTestRootCertificate(CertTestUtil.pemToDer(rootCertPemPath));
