@@ -447,6 +447,49 @@ TEST(AudioBufferTest, CreateFromExternalMemoryPlanarF32OddFrames) {
   }
 }
 
+// Makes sure bitstream buffers created with `CreateFromExternalMemory()`
+// populate `bitstream_data()` and can be copied into an `AudioBus`.
+TEST(AudioBufferTest, CreateFromExternalMemoryBitstream) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr int kChannelCount = 2;
+  constexpr int kFrameCount = 128;
+  std::array<uint8_t, 8> payload = {0x0b, 0x77, 0x01, 0x02,
+                                    0x03, 0x04, 0x05, 0x06};
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateFromExternalMemory(
+      kSampleFormatAc3, kChannelLayout, kChannelCount, kSampleRate, kFrameCount,
+      kNoTimestamp,
+      std::make_unique<AudioBuffer::ExternalMemory>(base::span(payload)));
+
+  EXPECT_TRUE(buffer->IsBitstreamFormat());
+  EXPECT_EQ(buffer->data_size(), payload.size());
+  EXPECT_EQ(buffer->bitstream_data().data(), payload.data());
+
+  std::unique_ptr<AudioBus> bus = AudioBuffer::WrapOrCopyToAudioBus(buffer);
+  EXPECT_TRUE(bus->is_bitstream_format());
+  EXPECT_EQ(bus->GetBitstreamFrames(), kFrameCount);
+  EXPECT_EQ(bus->bitstream_data(), base::span(payload));
+
+  // IEC-61937 DTS bitstreams use a fixed `frames * channels * 4` burst size, so
+  // trailing capacity in `ExternalMemory` should be excluded.
+  constexpr size_t kIecDtsBytes =
+      kFrameCount * kChannelCount *
+      SampleFormatToBytesPerChannel(kSampleFormatIECDts);
+  constexpr size_t kTrailingBytes = 16;
+  std::vector<uint8_t> iec_dts_backing(kIecDtsBytes + kTrailingBytes, 0x5a);
+  scoped_refptr<AudioBuffer> iec_dts = AudioBuffer::CreateFromExternalMemory(
+      kSampleFormatIECDts, kChannelLayout, kChannelCount, kSampleRate,
+      kFrameCount, kNoTimestamp,
+      std::make_unique<AudioBuffer::ExternalMemory>(
+          base::span(iec_dts_backing)));
+  EXPECT_EQ(iec_dts->data_size(), kIecDtsBytes);
+  EXPECT_EQ(iec_dts->bitstream_data().size(), kIecDtsBytes);
+
+  std::unique_ptr<AudioBus> iec_dts_bus =
+      AudioBuffer::WrapOrCopyToAudioBus(iec_dts);
+  EXPECT_EQ(iec_dts_bus->bitstream_data().size(), kIecDtsBytes);
+}
+
 TEST(AudioBufferTest, CreateBitstreamBufferIECDts) {
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_MONO;
   const int kChannelCount = ChannelLayoutToChannelCount(kChannelLayout);
@@ -1352,6 +1395,39 @@ TEST(AudioBufferDeathTest, IncompatibleAccessors) {
   EXPECT_CHECK_DEATH(empty->planar_data());
   EXPECT_CHECK_DEATH(empty->planar_channel(0));
   EXPECT_CHECK_DEATH(empty->bitstream_data());
+}
+
+// Makes sure `CreateFromExternalMemory()` rejects buffers that are not aligned
+// to the sample format's byte size.
+TEST(AudioBufferDeathTest, CreateFromExternalMemoryMisaligned) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr int kChannelCount = 2;
+  constexpr int kFrameCount = 16;
+  constexpr size_t kMisalignedOffset = 1;
+  constexpr size_t kPayloadBytes = kChannelCount * kFrameCount * sizeof(float);
+
+  alignas(float) std::array<uint8_t, kPayloadBytes + kMisalignedOffset>
+      backing = {};
+  const base::span<uint8_t> misaligned =
+      base::span(backing).subspan(kMisalignedOffset);
+
+  auto create_misaligned = [&](SampleFormat format) {
+    return AudioBuffer::CreateFromExternalMemory(
+        format, kChannelLayout, kChannelCount, kSampleRate, kFrameCount,
+        kNoTimestamp,
+        std::make_unique<AudioBuffer::ExternalMemory>(misaligned));
+  };
+
+  // Byte-sized and bitstream formats do not require multi-byte alignment.
+  EXPECT_EQ(create_misaligned(kSampleFormatU8)->interleaved_data().data(),
+            misaligned.data());
+  EXPECT_EQ(create_misaligned(kSampleFormatIECDts)->bitstream_data().data(),
+            misaligned.data());
+
+  // Multi-byte interleaved and planar formats require sample alignment.
+  EXPECT_CHECK_DEATH(create_misaligned(kSampleFormatS16));
+  EXPECT_CHECK_DEATH(create_misaligned(kSampleFormatF32));
+  EXPECT_CHECK_DEATH(create_misaligned(kSampleFormatPlanarF32));
 }
 #endif  // GTEST_HAS_DEATH_TEST
 

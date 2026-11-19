@@ -15,8 +15,10 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/aligned_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/pass_key.h"
 #include "media/base/audio_bus.h"
@@ -276,9 +278,7 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
       adjusted_frame_count_(frame_count),
       end_of_stream_(false),
       timestamp_(timestamp),
-      duration_(end_of_stream_
-                    ? base::TimeDelta()
-                    : CalculateDuration(adjusted_frame_count_, sample_rate_)),
+      duration_(CalculateDuration(adjusted_frame_count_, sample_rate_)),
       data_(std::move(external_memory)) {
   CHECK_GE(channel_count_, 0);
   CHECK_LE(channel_count_, limits::kMaxChannels);
@@ -289,17 +289,28 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
   CHECK(channel_layout == CHANNEL_LAYOUT_DISCRETE ||
         ChannelLayoutToChannelCount(channel_layout) == channel_count);
 
+  const size_t bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
+
   if (IsBitstreamFormat()) {
     data_size_ = data_->span().size();
+    if (sample_format == kSampleFormatIECDts) {
+      data_size_ =
+          base::CheckMul(frame_count, bytes_per_channel, channel_count_)
+              .ValueOrDie<size_t>();
+      CHECK_GE(data_->span().size(), data_size_);
+    }
     CHECK_GT(data_size_, 0u);
+    channel_spans_.push_back(data_->span().first(data_size_));
     return;
   }
 
-  const size_t bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
-  const size_t data_size_per_channel = frame_count * bytes_per_channel;
+  const size_t data_size_per_channel =
+      base::CheckMul(frame_count, bytes_per_channel).ValueOrDie<size_t>();
 
-  data_size_ = channel_count_ * data_size_per_channel;
+  data_size_ = base::CheckMul(channel_count_, data_size_per_channel)
+                   .ValueOrDie<size_t>();
   CHECK_GE(data_->span().size(), data_size_);
+  CHECK(base::IsAligned(data_->span().data(), bytes_per_channel));
 
   if (IsInterleaved(sample_format)) {
     channel_spans_.push_back(data_->span().first(data_size_));
