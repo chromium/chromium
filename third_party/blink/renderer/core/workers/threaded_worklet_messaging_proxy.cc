@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/script/script.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/outside_settings_csp_violation_reporter.h"
 #include "third_party/blink/renderer/core/workers/threaded_worklet_object_proxy.h"
@@ -158,7 +159,11 @@ void ThreadedWorkletMessagingProxy::Initialize(
           BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
           window->GetAgentClusterID(), ukm::kInvalidSourceId,
           window->GetExecutionContextToken(),
-          window->CrossOriginIsolatedCapability(), window->IsIsolatedContext());
+          window->CrossOriginIsolatedCapability(), window->IsIsolatedContext(),
+          // Match window.performance's time origin directly; after
+          // LocalDOMWindow reuse, DocumentLoader's reference time can advance
+          // ahead of it.
+          DOMWindowPerformance::performance(*window)->GetTimeOriginInternal());
 
   // Worklets share the pre-initialized backing thread so that we don't have to
   // specify the backing thread startup data.

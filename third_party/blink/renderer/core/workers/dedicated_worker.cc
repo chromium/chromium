@@ -565,6 +565,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->GetExecutionContextToken(),
       execution_context->CrossOriginIsolatedCapability(),
       execution_context->IsIsolatedContext(),
+      /*time_origin=*/base::TimeTicks(),
       /*direct_sockets_force_enabled_in_parent=*/
       execution_context->GetRuntimeFeatureStateOverrideContext()
           ->IsDirectSocketsForceEnabled(),

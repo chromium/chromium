@@ -243,6 +243,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       /*cross_origin_isolated_capability=*/
       worker_start_data->is_cross_origin_isolated,
       /*parent_is_isolated_context=*/false,
+      /*time_origin=*/base::TimeTicks(),
       /*direct_sockets_enabled=*/false, interface_registry,
       /*agent_group_scheduler_compositor_task_runner=*/nullptr,
       /*top_level_frame_security_origin=*/nullptr,

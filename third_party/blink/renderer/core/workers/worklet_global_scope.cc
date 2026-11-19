@@ -112,6 +112,7 @@ WorkletGlobalScope::WorkletGlobalScope(
       parent_cross_origin_isolated_capability_(
           creation_params->cross_origin_isolated_capability),
       parent_is_isolated_context_(creation_params->parent_is_isolated_context),
+      time_origin_(creation_params->time_origin),
       browser_interface_broker_proxy_(this) {
   DCHECK((thread_type_ == ThreadType::kMainThread && frame_) ||
          (thread_type_ == ThreadType::kOffMainThread && worker_thread_));

@@ -51,6 +51,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     const std::optional<ExecutionContextToken>& parent_context_token,
     bool cross_origin_isolated_capability,
     bool parent_is_isolated_context,
+    base::TimeTicks time_origin,
     bool direct_sockets_force_enabled_in_parent,
     InterfaceRegistry* interface_registry,
     scoped_refptr<base::SingleThreadTaskRunner>
@@ -105,6 +106,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       parent_context_token(parent_context_token),
       cross_origin_isolated_capability(cross_origin_isolated_capability),
       parent_is_isolated_context(parent_is_isolated_context),
+      time_origin(time_origin),
       direct_sockets_force_enabled_in_parent(
           direct_sockets_force_enabled_in_parent),
       interface_registry(interface_registry),

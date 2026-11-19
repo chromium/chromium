@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/storage_access_api/status.h"
@@ -85,6 +86,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
           std::nullopt,
       bool cross_origin_isolated_capability = false,
       bool parent_is_isolated_context = false,
+      base::TimeTicks time_origin = base::TimeTicks(),
       bool direct_sockets_force_enabled_in_parent = false,
       InterfaceRegistry* interface_registry = nullptr,
       scoped_refptr<base::SingleThreadTaskRunner>
@@ -244,6 +246,10 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // false when no parent exists.
   // https://wicg.github.io/isolated-web-apps/isolated-contexts.html
   const bool parent_is_isolated_context;
+
+  // Parent document's time origin for WorkletGlobalScope (HTML spec "set up a
+  // worklet environment settings object").
+  const base::TimeTicks time_origin;
 
   // Direct Sockets might be enabled outside of Isolated Context in selected
   // scenarios.

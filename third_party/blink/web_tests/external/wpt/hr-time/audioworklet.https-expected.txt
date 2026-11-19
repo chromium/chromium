@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] performance.now() returns positive, monotonically non-decreasing values in AudioWorkletGlobalScope
-  assert_greater_than: performance.now() returns a positive number during module evaluation expected a number greater than 0 but got 0
-[FAIL] High resolution time in AudioWorkletGlobalScope has approximately the right relative magnitude
-  assert_greater_than: performance.now() advances over time expected a number greater than 0 but got 0
-[FAIL] Multiple AudioWorklet contexts and Window share the same time origin and monotonic clock
-Harness: the test ran to completion.
-

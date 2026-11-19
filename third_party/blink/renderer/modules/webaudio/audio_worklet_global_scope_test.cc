@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 
+#include <cmath>
+#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -11,9 +13,12 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -25,6 +30,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_performance.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_param_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_worklet_node_options.h"
@@ -40,6 +46,9 @@
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/time_clamper.h"
+#include "third_party/blink/renderer/core/timing/worklet_performance.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
@@ -65,6 +74,7 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
@@ -95,6 +105,11 @@ constexpr char kThrowingConstructorProcessorScript[] = R"JS(
 // strict real-time constraint.
 class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
  public:
+  AudioWorkletGlobalScopeTest() = default;
+  explicit AudioWorkletGlobalScopeTest(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : PageTestBase(time_source) {}
+
   void SetUp() override {
     ModuleTestBase::SetUp();
     PageTestBase::SetUp(gfx::Size());
@@ -107,32 +122,34 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     ModuleTestBase::TearDown();
   }
 
-  std::unique_ptr<OfflineAudioWorkletThread> CreateAudioWorkletThread() {
+  std::unique_ptr<OfflineAudioWorkletThread> CreateAudioWorkletThread(
+      bool cross_origin_isolated_capability = false,
+      base::TimeTicks time_origin = base::TimeTicks()) {
     std::unique_ptr<OfflineAudioWorkletThread> thread =
         std::make_unique<OfflineAudioWorkletThread>(*reporting_proxy_);
     LocalDOMWindow* window = GetFrame().DomWindow();
-    thread->Start(
-        std::make_unique<GlobalScopeCreationParams>(
-            window->Url(), mojom::blink::ScriptType::kModule, "AudioWorklet",
-            window->UserAgent(),
-            window->GetFrame()->Loader().UserAgentMetadata(),
-            nullptr /* web_worker_fetch_context */,
-            Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-            /*outside_settings_reporter=*/mojo::NullRemote(),
-            window->GetReferrerPolicy(), window->GetSecurityOrigin(),
-            window->IsSecureContext(), window->GetHttpsState(),
-            nullptr /* worker_clients */, nullptr /* content_settings_client */,
-            OriginTrialContext::GetInheritedTrialFeatures(window).get(),
-            base::UnguessableToken::Create(), nullptr /* worker_settings */,
-            mojom::blink::V8CacheOptions::kDefault,
-            MakeGarbageCollected<WorkletModuleResponsesMap>(),
-            mojo::NullRemote() /* browser_interface_broker */,
-            window->GetFrame()->Loader().CreateWorkerCodeCacheHost(),
-            window->GetFrame()->GetBlobUrlStorePendingRemote(),
-            BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
-            window->GetAgentClusterID(), ukm::kInvalidSourceId,
-            window->GetExecutionContextToken()),
-        std::nullopt, std::make_unique<WorkerDevToolsParams>());
+    auto creation_params = std::make_unique<GlobalScopeCreationParams>(
+        window->Url(), mojom::blink::ScriptType::kModule, "AudioWorklet",
+        window->UserAgent(), window->GetFrame()->Loader().UserAgentMetadata(),
+        nullptr /* web_worker_fetch_context */,
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        /*outside_settings_reporter=*/mojo::NullRemote(),
+        window->GetReferrerPolicy(), window->GetSecurityOrigin(),
+        window->IsSecureContext(), window->GetHttpsState(),
+        nullptr /* worker_clients */, nullptr /* content_settings_client */,
+        OriginTrialContext::GetInheritedTrialFeatures(window).get(),
+        base::UnguessableToken::Create(), nullptr /* worker_settings */,
+        mojom::blink::V8CacheOptions::kDefault,
+        MakeGarbageCollected<WorkletModuleResponsesMap>(),
+        mojo::NullRemote() /* browser_interface_broker */,
+        window->GetFrame()->Loader().CreateWorkerCodeCacheHost(),
+        window->GetFrame()->GetBlobUrlStorePendingRemote(),
+        BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
+        window->GetAgentClusterID(), ukm::kInvalidSourceId,
+        window->GetExecutionContextToken(), cross_origin_isolated_capability,
+        /*parent_is_isolated_context=*/false, time_origin);
+    thread->Start(std::move(creation_params), std::nullopt,
+                  std::make_unique<WorkerDevToolsParams>());
     return thread;
   }
 
@@ -330,6 +347,42 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     thread->WaitForShutdownForTesting();
     CHECK(error);
     return *std::move(error);
+  }
+
+  template <typename Callback>
+  void RunWithWorkletPerformance(
+      bool enabled,
+      Callback callback,
+      bool cross_origin_isolated_capability = false,
+      base::TimeTicks time_origin = base::TimeTicks()) {
+    ScopedAudioWorkletPerformanceForTest scoped_feature(enabled);
+    std::unique_ptr<OfflineAudioWorkletThread> thread =
+        CreateAudioWorkletThread(cross_origin_isolated_capability, time_origin);
+    base::WaitableEvent waitable_event;
+    PostCrossThreadTask(
+        *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(
+            [](WorkerThread* worker_thread, Callback* cb,
+               base::WaitableEvent* wait_event) {
+              // Signal on every exit path so a failed ASSERT_* does not hang.
+              absl::Cleanup signal_on_exit = [wait_event] {
+                wait_event->Signal();
+              };
+              EXPECT_TRUE(worker_thread->IsCurrentThread());
+              auto* global_scope =
+                  To<AudioWorkletGlobalScope>(worker_thread->GlobalScope());
+              ScriptState* script_state =
+                  global_scope->ScriptController()->GetScriptState();
+              ScriptState::Scope scope(script_state);
+              V8DoNotRunMicrotasksScope microtasks_scope(script_state);
+              (*cb)(global_scope, script_state);
+            },
+            CrossThreadUnretained(thread.get()),
+            CrossThreadUnretained(&callback),
+            CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
+    thread->Terminate();
+    thread->WaitForShutdownForTesting();
   }
 
  private:
@@ -1142,6 +1195,84 @@ TEST_F(AudioWorkletGlobalScopeTest, MalformedOptionsDeserializationError) {
   EXPECT_TRUE(error.source_url.empty());
   EXPECT_EQ(error.line_number, 0);
   EXPECT_EQ(error.column_number, 0);
+}
+
+class AudioWorkletGlobalScopeMockTimeTest : public AudioWorkletGlobalScopeTest {
+ public:
+  AudioWorkletGlobalScopeMockTimeTest()
+      : AudioWorkletGlobalScopeTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+// Clamp arithmetic is covered by TimeClamperTest. This checks that
+// AudioWorkletGlobalScope constructs WorkletPerformance with the scope's
+// time origin and clamps to the resolution selected by its cross-origin
+// isolated capability.
+TEST_F(AudioWorkletGlobalScopeMockTimeTest,
+       WorkletPerformanceResolutionFollowsCrossOriginIsolation) {
+  // On neither resolution grid and more than two coarse steps, so the
+  // expectations below hold for every clamper secret and origin alignment.
+  constexpr base::TimeDelta kElapsed = base::Microseconds(252);
+
+  const base::TimeTicks origin =
+      DOMWindowPerformance::performance(*GetFrame().DomWindow())
+          ->GetTimeOriginInternal();
+  ASSERT_FALSE(origin.is_null());
+
+  AdvanceClock(kElapsed);
+
+  auto read_now_us = [&](bool cross_origin_isolated) {
+    DOMHighResTimeStamp now_ms = -1.0;
+    RunWithWorkletPerformance(
+        /*enabled=*/true,
+        [&](AudioWorkletGlobalScope* global_scope, ScriptState*) {
+          ASSERT_TRUE(global_scope->performance());
+          now_ms = global_scope->performance()->now();
+        },
+        cross_origin_isolated, origin);
+    return std::llround(now_ms * base::Time::kMicrosecondsPerMillisecond);
+  };
+
+  const int64_t isolated_us = read_now_us(/*cross_origin_isolated=*/true);
+  const int64_t non_isolated_us = read_now_us(/*cross_origin_isolated=*/false);
+  EXPECT_EQ(isolated_us % TimeClamper::kFineResolutionMicroseconds, 0);
+  EXPECT_NE(isolated_us % TimeClamper::kCoarseResolutionMicroseconds, 0);
+  EXPECT_EQ(non_isolated_us % TimeClamper::kCoarseResolutionMicroseconds, 0);
+  EXPECT_GT(non_isolated_us, 0);
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, WorkletPerformanceWrapperIdentity) {
+  RunWithWorkletPerformance(
+      /*enabled=*/true,
+      [](AudioWorkletGlobalScope* global_scope, ScriptState* script_state) {
+        WorkletPerformance* cpp_perf = global_scope->performance();
+        ASSERT_NE(cpp_perf, nullptr);
+        v8::Isolate* isolate = script_state->GetIsolate();
+        v8::Local<v8::Context> context = script_state->GetContext();
+        v8::Local<v8::Value> js_perf;
+        ASSERT_TRUE(context->Global()
+                        ->Get(context, V8AtomicString(isolate, "performance"))
+                        .ToLocal(&js_perf));
+        EXPECT_EQ(V8WorkletPerformance::ToWrappable(isolate, js_perf),
+                  cpp_perf);
+      });
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, WorkletPerformanceDisabled) {
+  RunWithWorkletPerformance(
+      /*enabled=*/false,
+      [](AudioWorkletGlobalScope* global_scope, ScriptState* script_state) {
+        EXPECT_FALSE(global_scope->performance());
+        v8::Isolate* isolate = script_state->GetIsolate();
+        v8::Local<v8::Context> context = script_state->GetContext();
+        v8::Local<v8::Object> global = context->Global();
+        EXPECT_FALSE(
+            global->Has(context, V8AtomicString(isolate, "performance"))
+                .FromMaybe(true));
+        EXPECT_FALSE(
+            global->Has(context, V8AtomicString(isolate, "WorkletPerformance"))
+                .FromMaybe(true));
+      });
 }
 
 }  // namespace blink

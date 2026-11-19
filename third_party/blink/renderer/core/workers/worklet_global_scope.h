@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -161,6 +162,9 @@ class CORE_EXPORT WorkletGlobalScope : public WorkerOrWorkletGlobalScope {
     return frame_token_;
   }
 
+ protected:
+  base::TimeTicks TimeOrigin() const { return time_origin_; }
+
  private:
   enum class ThreadType {
     // Indicates this global scope lives on the main thread.
@@ -229,6 +233,8 @@ class CORE_EXPORT WorkletGlobalScope : public WorkerOrWorkletGlobalScope {
   //
   // TODO(crbug.com/1206150): We need a spec for this capability.
   const bool parent_is_isolated_context_;
+
+  const base::TimeTicks time_origin_;
 
   // This is the interface that handles generated code cache
   // requests both to fetch code cache when loading resources

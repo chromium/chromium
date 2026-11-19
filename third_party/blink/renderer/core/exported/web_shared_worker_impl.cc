@@ -340,6 +340,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
       ukm_source_id,
       /*parent_context_token=*/std::nullopt, is_cross_origin_isolated,
       /*parent_is_isolated_context=*/false,
+      /*time_origin=*/base::TimeTicks(),
       /*direct_sockets_force_enabled_in_parent=*/false,
       /*interface_registry=*/nullptr,
       /*agent_group_scheduler_compositor_task_runner=*/nullptr,

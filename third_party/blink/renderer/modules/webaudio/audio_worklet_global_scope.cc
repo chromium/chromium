@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -46,10 +45,8 @@ AudioWorkletGlobalScope::AudioWorkletGlobalScope(
   GetThread()->GetWorkerBackingThread().SetForegrounded();
 
   if (RuntimeEnabledFeatures::AudioWorkletPerformanceEnabled()) {
-    // TODO(crbug.com/392542574): Plumb the document's time origin through
-    // GlobalScopeCreationParams; until then now() returns 0.
     performance_ = MakeGarbageCollected<WorkletPerformance>(
-        base::TimeTicks(), CrossOriginIsolatedCapability());
+        TimeOrigin(), CrossOriginIsolatedCapability());
   }
 }
 
