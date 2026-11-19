@@ -75,7 +75,6 @@ import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -424,15 +423,12 @@ public class TabsTest {
     @Test
     @SmallTest
     public void testNewTabSetsContentViewSize() throws TimeoutException {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-
-        // Make sure we're on the NTP
-        Tab tab = mActivityTestRule.getActivityTab();
-        NewTabPageTestUtils.waitForNtpLoaded(tab);
-
-        mActivityTestRule.loadUrl(INITIAL_SIZE_TEST_URL);
+        Tab tab =
+                mActivityTestRule
+                        .startOnBlankPage()
+                        .openNewTabFast()
+                        .loadWebPageProgrammatically(INITIAL_SIZE_TEST_URL)
+                        .getTab();
 
         final WebContents webContents = tab.getWebContents();
         String innerText =
@@ -561,10 +557,9 @@ public class TabsTest {
         mActivityTestRule
                 .getActivity()
                 .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        mActivityTestRule.loadUrl(RESIZE_TEST_URL);
-        final WebContents webContents = mActivityTestRule.getWebContents();
+        WebPageStation page =
+                mActivityTestRule.startOnBlankPage().openWebPageInNewTab(RESIZE_TEST_URL);
+        final WebContents webContents = page.getTab().getWebContents();
 
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 mActivityTestRule.getWebContents(), "resizeHappened = false;");
@@ -1000,11 +995,9 @@ public class TabsTest {
     @Test
     @MediumTest
     public void testTabModelSelectorCloseTabInUndoableState() {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        Tab tab = mActivityTestRule.startOnBlankPage().openNewTabFast().getTab();
         TabModelSelectorImpl selector =
                 (TabModelSelectorImpl) mActivityTestRule.getActivity().getTabModelSelector();
-        Tab tab = mActivityTestRule.getActivityTab();
 
         // Start undoable tab closure.
         runOnUiThreadBlocking(

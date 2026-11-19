@@ -55,7 +55,6 @@ import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -240,8 +239,7 @@ public class TabStripTest {
     public void testNewTabFromMenu() throws Exception {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         compareAllTabStripsWithModel();
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mActivityTestRule.startOnBlankPage().openNewTabFast();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "Expected two tabs to exist",
@@ -289,8 +287,7 @@ public class TabStripTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"TabStrip"})
     public void testSelectWithTwoTabs() throws Exception {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mActivityTestRule.startOnBlankPage().openNewTabFast();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "The second tab is not selected",
@@ -357,8 +354,7 @@ public class TabStripTest {
     @Feature({"TabStrip"})
     @DisabledTest(message = "crbug.com/40855224")
     public void testCloseTabWithTwoTabs() throws Exception {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mActivityTestRule.startOnBlankPage().openNewTabFast();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "There are not two tabs present",
@@ -451,8 +447,7 @@ public class TabStripTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"TabStrip"})
     public void testCloseSelectedTab() throws Exception {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mActivityTestRule.startOnBlankPage().openNewTabFast();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertEquals(
                 "There are not two tabs present",
@@ -871,9 +866,9 @@ public class TabStripTest {
         // Open enough regular tabs to cause the strip to scroll.
         StripLayoutHelper tabStrip =
                 TabStripUtils.getStripLayoutHelper(mActivityTestRule.getActivity(), false);
+        CtaPageStation page = mActivityTestRule.startOnBlankPage();
         while (tabStrip.getScrollOffsetLimitForTesting() >= 0) {
-            ChromeTabUtils.newTabFromMenu(
-                    InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+            page = page.openNewTabFast();
         }
 
         // In RTL the expectation for left/right fade opacities is swapped.
@@ -920,15 +915,13 @@ public class TabStripTest {
         checkTabStrips();
 
         // Open enough regular tabs to hide the tab at index 0.
-        TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        CtaPageStation page = mActivityTestRule.startOnBlankPage();
+        Tab tab0 = page.getTab();
         final StripLayoutTab tab =
                 TabStripUtils.findStripLayoutTab(
-                        mActivityTestRule.getActivity(),
-                        false,
-                        ThreadUtils.runOnUiThreadBlocking(() -> model.getTabAt(0).getId()));
+                        mActivityTestRule.getActivity(), false, tab0.getId());
         while (tab.isVisible()) {
-            ChromeTabUtils.newTabFromMenu(
-                    InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+            page = page.openNewTabFast();
         }
 
         // Assert the tab at index 0 is not visible.
@@ -949,7 +942,7 @@ public class TabStripTest {
                 });
 
         // Select tab 0.
-        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
+        page.selectTabFast(tab0, WebPageStation::newBuilder);
 
         // Tab should now be visible.
         helper.waitForCallback(0);

@@ -44,10 +44,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -71,8 +70,8 @@ import java.util.concurrent.TimeoutException;
 public class KeyboardFocusRowManagerTest {
 
     @Rule
-    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
-            ChromeTransitTestRules.blankPageStartReusedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule
     public OverrideContextWrapperTestRule mOverrideContextRule =
@@ -80,7 +79,7 @@ public class KeyboardFocusRowManagerTest {
 
     @Rule public MockitoRule mockito = MockitoJUnit.rule(); // todo delete if not needed
 
-    private WebPageStation mPage;
+    private CtaPageStation mPage;
     private ChromeTabbedActivity mActivity;
     private KeyboardFocusRowManager mKeyboardFocusRowManager;
     private TabbedRootUiCoordinator mTabbedRootUiCoordinator;
@@ -92,7 +91,7 @@ public class KeyboardFocusRowManagerTest {
 
     @Before
     public void setUp() {
-        mPage = mActivityTestRule.start();
+        mPage = mActivityTestRule.startOnBlankPage();
         mActivity = mPage.getActivity();
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting();
@@ -481,8 +480,7 @@ public class KeyboardFocusRowManagerTest {
     // Helper methods for readability
 
     private void openNewTabAndFocusContent() {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
+        mPage = mPage.openNewTabFast();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity

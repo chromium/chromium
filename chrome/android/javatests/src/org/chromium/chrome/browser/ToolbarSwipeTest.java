@@ -222,7 +222,7 @@ public class ToolbarSwipeTest {
     @Restriction(DeviceFormFactor.PHONE)
     @Feature({"Android-TabSwitcher"})
     public void testOSKIsNotShownDuringSwipe() throws InterruptedException {
-        mActivityTestRule.startOnBlankPage();
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
         final View urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         final LayoutManagerChrome layoutManager = updateTabsViewSize();
         final SwipeHandler swipeHandler = layoutManager.getToolbarSwipeHandler();
@@ -240,8 +240,7 @@ public class ToolbarSwipeTest {
                 () -> !mActivityTestRule.getKeyboardDelegate().isKeyboardObscuring(urlBar),
                 "Keyboard should be hidden after clearing UrlBar focus");
 
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        page.openNewTabFast();
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
         CriteriaHelper.pollUiThread(

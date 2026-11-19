@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -62,18 +63,20 @@ public class TabObserverTest {
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
+    private WebPageStation mPage;
     private ChromeTabbedActivity mActivity;
     private Tab mTab;
     private TestTabObserver mTabObserver;
 
     @Before
     public void setUp() throws Exception {
+        mPage = mActivityTestRule.startOnBlankPage();
+        mActivity = mPage.getActivity();
+        mTab = mPage.getTab();
         mTabObserver = new TestTabObserver();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTab = mActivityTestRule.getActivity().getActivityTab();
                     mTab.addObserver(mTabObserver);
-                    mActivity = mActivityTestRule.getActivity();
                 });
     }
 
@@ -120,7 +123,7 @@ public class TabObserverTest {
         int interactableCallCount = interactabilityHelper.getCallCount();
 
         // Launch a new tab in the foreground.
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), mActivity);
+        mPage.openNewTabFast();
 
         // The original tab should be hidden.
         interactabilityHelper.waitForCallback(interactableCallCount);

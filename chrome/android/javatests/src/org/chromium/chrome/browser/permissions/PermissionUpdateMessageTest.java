@@ -29,6 +29,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ChromeTriggers;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -52,7 +54,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -69,6 +70,8 @@ public class PermissionUpdateMessageTest {
 
     @Rule
     public RuleChain mRuleChain = RuleChain.outerRule(mActivityTestRule).around(mPermissionRule);
+
+    private CtaPageStation mPage;
 
     /**
      * Utility delegate to provide the permissions to be requested for triggering a permission
@@ -124,7 +127,7 @@ public class PermissionUpdateMessageTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     /**
@@ -217,8 +220,7 @@ public class PermissionUpdateMessageTest {
             final int contentSettingsType,
             final boolean switchContent)
             throws IllegalArgumentException, TimeoutException, ExecutionException {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mPage = mPage.openNewTabFast();
 
         WindowAndroid windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
         windowAndroid.setAndroidPermissionDelegate(
@@ -226,7 +228,7 @@ public class PermissionUpdateMessageTest {
         final String url = mPermissionRule.getURL(testPage);
         try {
             setNativeContentSetting(contentSettingsType, url, ContentSetting.ALLOW);
-            mActivityTestRule.loadUrl(mPermissionRule.getURL(testPage));
+            mPage = mPage.loadWebPageProgrammatically(mPermissionRule.getURL(testPage));
 
             if (javascriptToExecute != null && !javascriptToExecute.isEmpty()) {
                 mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(javascriptToExecute);
@@ -345,8 +347,7 @@ public class PermissionUpdateMessageTest {
     @MediumTest
     public void testMessageShutsDownCleanlyForGeolocation()
             throws IllegalArgumentException, TimeoutException {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mPage = mPage.openNewTabFast();
 
         final var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
         final String locationUrl = mPermissionRule.getURL(GEOLOCATION_PAGE);
@@ -363,7 +364,7 @@ public class PermissionUpdateMessageTest {
 
         try {
             setNativeContentSetting(getGeolocationType(), locationUrl, ContentSetting.ALLOW);
-            mActivityTestRule.loadUrl(mPermissionRule.getURL(GEOLOCATION_PAGE));
+            mPage = mPage.loadWebPageProgrammatically(mPermissionRule.getURL(GEOLOCATION_PAGE));
             mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                     "initiate_geolocation()");
             CriteriaHelper.pollUiThread(
@@ -380,21 +381,10 @@ public class PermissionUpdateMessageTest {
                         Assert.assertEquals(1, MessagesTestHelper.getMessageCount(windowAndroid));
                     });
 
-            final WebContents webContents =
-                    ThreadUtils.runOnUiThreadBlocking(
-                            new Callable<>() {
-                                @Override
-                                public WebContents call() {
-                                    return mActivityTestRule
-                                            .getActivity()
-                                            .getActivityTab()
-                                            .getWebContents();
-                                }
-                            });
+            final WebContents webContents = mPage.getTab().getWebContents();
             Assert.assertFalse(webContents.isDestroyed());
 
-            ChromeTabUtils.closeCurrentTab(
-                    InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+            mPage = mPage.closeCurrentTabFast(WebPageStation.newBuilder());
             CriteriaHelper.pollUiThread(() -> webContents.isDestroyed());
 
             CriteriaHelper.pollUiThread(
