@@ -334,7 +334,23 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
   if (is_target_frame) {
     new_entry = frame_navigation_entry;
   } else if (clone_policy == ClonePolicy::kShareFrameEntries) {
-    new_entry = frame_entry;
+    if (current_frame_tree_node &&
+        base::FeatureList::IsEnabled(
+            features::kSessionHistoryUseFrameCommittedEntry)) {
+      // Share what is committed in the frame. This differs from `frame_entry`
+      // while a cross-document history navigation is pending in this frame or
+      // one of its ancestors: `this` belongs to the target NavigationEntry,
+      // while the frame still displays its previous document.
+      new_entry = current_frame_tree_node->current_frame_host()
+                      ->last_committed_frame_entry();
+    }
+    // Otherwise, keep this entry's FrameNavigationEntry. This happens when:
+    // - NavigationEntryImpl::Clone() passes no frame tree.
+    // - The frame has not committed yet, e.g. a subframe recreated by a reload
+    //   or a history navigation of its parent.
+    if (!new_entry) {
+      new_entry = frame_entry;
+    }
   } else {
     if (restore_context) {
       // If |restore_context| is given and already has a FrameNavigationEntry

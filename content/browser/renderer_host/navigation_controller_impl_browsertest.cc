@@ -7,12 +7,15 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <map>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/linear_find.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -23,6 +26,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -44,6 +49,7 @@
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_type.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/renderer_cancellation_throttle.h"
@@ -151,6 +157,102 @@ class DataURLOriginToCommitObserver : public WebContentsObserver {
   }
 
   std::optional<url::Origin> origin_to_commit_;
+};
+
+// Removes the first and last lines, and the common indentation, of a raw string
+// literal. This lets the expected text be indented with the code:
+//
+//   EXPECT_EQ(Dedent(R"(
+//       line 1
+//         line 2
+//   )"), "line 1\n  line 2\n");
+std::string Dedent(std::string_view text) {
+  std::vector<std::string_view> lines = base::SplitStringPiece(
+      text, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  CHECK_GE(lines.size(), 2u);
+  CHECK(base::TrimWhitespaceASCII(lines.front(), base::TRIM_ALL).empty());
+  CHECK(base::TrimWhitespaceASCII(lines.back(), base::TRIM_ALL).empty());
+  lines = std::vector(lines.begin() + 1, lines.end() - 1);
+  size_t indent = std::string_view::npos;
+  for (std::string_view line : lines) {
+    indent = std::min(indent, line.find_first_not_of(' '));
+  }
+  std::string result;
+  for (std::string_view line : lines) {
+    result += line.substr(std::min(indent, line.size()));
+    result += "\n";
+  }
+  return result;
+}
+
+// Depicts the session history and the frames as ASCII art, using names given
+// to FrameNavigationEntries (FNE). Only follows the first child at each level,
+// along root -- child -- grandchild. For example:
+//
+//   [0]  a1 -- b
+//   [1]* a1 -- c -- d
+//   frames: a1 -- e (c pending) -- f1
+//
+// `*` marks the last committed entry. The "frames:" line shows the last
+// committed FNE of each frame, and the FNE its pending history navigation is
+// going to, if any. FNEs without a name are shown as "?".
+class SessionHistoryDepicter {
+ public:
+  explicit SessionHistoryDepicter(NavigationControllerImpl& controller)
+      : controller_(controller) {}
+
+  // Names `fne`, after checking its URL.
+  void Name(FrameNavigationEntry* fne, std::string name, const GURL& url) {
+    EXPECT_EQ(url, fne->url()) << name;
+    names_.emplace(fne, std::move(name));
+  }
+
+  // The FNEs of the entry at `index`, along root -- child -- grandchild.
+  std::vector<FrameNavigationEntry*> EntryFnes(int index) {
+    std::vector<FrameNavigationEntry*> fnes;
+    for (auto* node = controller_->GetEntryAtIndex(index)->root_node(); node;
+         node = node->children.empty() ? nullptr : node->children[0].get()) {
+      fnes.push_back(node->frame_entry.get());
+    }
+    return fnes;
+  }
+
+  std::string Depict() {
+    std::string result;
+    for (int i = 0; i < controller_->GetEntryCount(); ++i) {
+      std::vector<std::string> names = base::ToVector(
+          EntryFnes(i), [&](FrameNavigationEntry* fne) { return NameOf(fne); });
+      bool current = i == controller_->GetLastCommittedEntryIndex();
+      result += base::StringPrintf("[%d]%s %s\n", i, current ? "*" : " ",
+                                   base::JoinString(names, " -- ").c_str());
+    }
+    std::vector<std::string> frames;
+    for (FrameTreeNode* node = controller_->frame_tree().root(); node;
+         node = node->child_count() ? node->child_at(0) : nullptr) {
+      frames.push_back(
+          NameOf(node->current_frame_host()->last_committed_frame_entry()));
+      if (NavigationRequest* request = node->navigation_request()) {
+        NavigationEntryImpl* entry =
+            controller_->GetEntryWithUniqueID(request->nav_entry_id());
+        frames.back() += " (" +
+                         NameOf(entry ? entry->GetFrameEntry(node) : nullptr) +
+                         " pending)";
+      }
+    }
+    return result + "frames: " + base::JoinString(frames, " -- ") + "\n";
+  }
+
+ private:
+  std::string NameOf(FrameNavigationEntry* fne) const {
+    auto it = names_.find(fne);
+    return it == names_.end() ? "?" : it->second;
+  }
+
+  const raw_ref<NavigationControllerImpl> controller_;
+  // Keys hold a reference, so the address of a named FNE can't be reused by a
+  // new FNE.
+  std::map<scoped_refptr<FrameNavigationEntry>, std::string, std::less<>>
+      names_;
 };
 
 }  // namespace
@@ -6741,6 +6843,209 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(
       root->current_frame_host()->GetSiteInstance(),
       root->child_at(0)->child_at(0)->current_frame_host()->GetSiteInstance());
+}
+
+// A frame can navigate same-document while a cross-document history navigation
+// in its parent is still pending. The new NavigationEntry must use the
+// FrameNavigationEntries of the documents still displayed, not the ones from
+// the history entry being navigated to. That history entry must be left
+// untouched, so the pending navigation still loads the right subframes. See
+// https://crbug.com/560754831.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    FrameNavigationEntry_SameDocumentDuringPendingHistoryNavigation) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSessionHistoryUseFrameCommittedEntry)) {
+    GTEST_SKIP() << "Test requires kSessionHistoryUseFrameCommittedEntry";
+  }
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  NavigationControllerImpl& controller = web_contents->GetController();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  SessionHistoryDepicter history(controller);
+
+  GURL main_url(
+      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html"));
+  GURL child_url_0(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html?0"));
+  GURL child_url_1(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html?1"));
+  GURL csp_url(embedded_test_server()->GetURL(
+      "/set-header?Content-Security-Policy: img-src 'none'"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* child = root->child_at(0);
+
+  // 1. Navigate the child to a page with a grandchild.
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, child_url_0));
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  // 2. Navigate the child to another document, and give the grandchild a CSP.
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, child_url_1));
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  FrameTreeNode* grandchild = child->child_at(0);
+  {
+    FrameNavigateParamsCapturer capturer(grandchild);
+    EXPECT_TRUE(
+        ExecJs(child, JsReplace("frames[0].location.replace($1)", csp_url)));
+    capturer.Wait();
+  }
+
+  // 3. Same-document navigation in the main frame.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(ExecJs(root, "history.pushState({}, '', '#3')"));
+    capturer.Wait();
+  }
+
+  // FrameNavigationEntries (FNE):
+  //   a1: main_url     b: baz.com         d: simple_page_1   f1: csp_url
+  //   a2: main_url#3   c: child_url_0     e: child_url_1     f2: csp_url#foo
+  //
+  // Session history, as root -- child -- grandchild.
+  // (* is last committed)
+  // ---------------------------------------------------------------------------
+  ASSERT_EQ(4, controller.GetEntryCount());
+  history.Name(history.EntryFnes(0)[0], "a1", main_url);
+  history.Name(history.EntryFnes(3)[0], "a2", GURL(main_url.spec() + "#3"));
+  history.Name(history.EntryFnes(0)[1], "b",
+               embedded_test_server()->GetURL("baz.com", "/title1.html"));
+  history.Name(history.EntryFnes(1)[1], "c", child_url_0);
+  history.Name(history.EntryFnes(1)[2], "d",
+               embedded_test_server()->GetURL(
+                   "/navigation_controller/simple_page_1.html"));
+  history.Name(history.EntryFnes(2)[1], "e", child_url_1);
+  history.Name(history.EntryFnes(2)[2], "f1", csp_url);
+  EXPECT_EQ(Dedent(R"(
+      [0]  a1 -- b
+      [1]  a1 -- c -- d
+      [2]  a1 -- e -- f1
+      [3]* a2 -- e -- f1
+      frames: a2 -- e -- f1
+  )"),
+            history.Depict());
+
+  // 4. Go back to after step 1. The main frame commits its same-document
+  // navigation right away, while the child's cross-document navigation is
+  // held, keeping the grandchild frame in place as well. Entry 1 says the
+  // child is on `c`, but it is still on `e`.
+  TestNavigationManager child_navigation(web_contents, child_url_0);
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    capturer.set_wait_for_load(false);
+    controller.GoToOffset(-2);
+    capturer.Wait();
+  }
+  ASSERT_TRUE(child_navigation.WaitForRequestStart());
+  EXPECT_EQ(Dedent(R"(
+      [0]  a1 -- b
+      [1]* a1 -- c -- d
+      [2]  a1 -- e -- f1
+      [3]  a2 -- e -- f1
+      frames: a1 -- e (c pending) -- f1
+  )"),
+            history.Depict());
+
+  // 5. Same-document navigation in the grandchild. Entry 1 is cloned into a
+  // new entry 2, pruning the forward entries. `d` is replaced by the new `f2`,
+  // and `c` by `e`, the child's own FNE. Entry 1 is left untouched.
+  {
+    FrameNavigateParamsCapturer capturer(grandchild);
+    capturer.set_wait_for_load(false);
+    EXPECT_TRUE(ExecJs(grandchild, "location.hash = 'foo'"));
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
+  }
+  FrameNavigationEntry* f2 =
+      grandchild->current_frame_host()->last_committed_frame_entry();
+  history.Name(f2, "f2", GURL(csp_url.spec() + "#foo"));
+  EXPECT_EQ(Dedent(R"(
+      [0]  a1 -- b
+      [1]  a1 -- c -- d
+      [2]* a1 -- e -- f2
+      frames: a1 -- e (c pending) -- f2
+  )"),
+            history.Depict());
+  // `f2` keeps the grandchild's CSP.
+  ASSERT_TRUE(f2->policy_container_policies());
+  EXPECT_EQ(1u,
+            f2->policy_container_policies()->content_security_policies.size());
+
+  // 6. Let the child's history navigation finish. The child goes back to
+  // entry 1, and its new grandchild loads `d`, not `f2`.
+  ASSERT_TRUE(child_navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(child_navigation.was_committed());
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(Dedent(R"(
+      [0]  a1 -- b
+      [1]* a1 -- c -- d
+      [2]  a1 -- e -- f2
+      frames: a1 -- c -- d
+  )"),
+            history.Depict());
+  // `d` is loaded without the CSP of `f2`.
+  EXPECT_TRUE(child->child_at(0)
+                  ->current_frame_host()
+                  ->policy_container_host()
+                  ->policies()
+                  .content_security_policies.empty());
+}
+
+// A subframe recreated by a reload has no committed FrameNavigationEntry until
+// its own navigation commits. If another frame adds a NavigationEntry in the
+// meantime, the new entry keeps the FrameNavigationEntry the subframe had in
+// the previous one.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    FrameNavigationEntry_SameDocumentBeforeRecreatedSubframeCommits) {
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  NavigationControllerImpl& controller = web_contents->GetController();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+
+  GURL main_url(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_iframe_simple.html"));
+  GURL child_url(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  scoped_refptr<FrameNavigationEntry> child_entry =
+      controller.GetLastCommittedEntry()->GetFrameEntry(root->child_at(0));
+  ASSERT_TRUE(child_entry);
+  EXPECT_EQ(child_url, child_entry->url());
+
+  // 1. Reload, and hold the navigation of the recreated child.
+  TestNavigationManager child_navigation(web_contents, child_url);
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    capturer.set_wait_for_load(false);
+    controller.Reload(ReloadType::NORMAL, false);
+    capturer.Wait();
+  }
+  ASSERT_TRUE(child_navigation.WaitForRequestStart());
+  FrameTreeNode* child = root->child_at(0);
+  EXPECT_FALSE(child->current_frame_host()->last_committed_frame_entry());
+
+  // 2. Same-document navigation in the main frame. The new entry shares the
+  // child's FrameNavigationEntry with the previous one.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    capturer.set_wait_for_load(false);
+    EXPECT_TRUE(ExecJs(root, "history.pushState({}, '', '#foo')"));
+    capturer.Wait();
+  }
+  ASSERT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(child_entry.get(),
+            controller.GetEntryAtIndex(0)->GetFrameEntry(child));
+  EXPECT_EQ(child_entry.get(),
+            controller.GetEntryAtIndex(1)->GetFrameEntry(child));
+
+  // 3. Let the child commit. It ends up on that FrameNavigationEntry.
+  ASSERT_TRUE(child_navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(child_navigation.was_committed());
+  EXPECT_EQ(child_entry.get(),
+            child->current_frame_host()->last_committed_frame_entry());
+  EXPECT_EQ(child_url, child_entry->url());
 }
 
 // Verify the tree of FrameNavigationEntries when a nested iframe commits after

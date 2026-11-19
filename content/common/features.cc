@@ -876,6 +876,16 @@ BASE_FEATURE(kServiceWorkerSoftUpdateOnFunctionalEvent,
 BASE_FEATURE(kServiceWorkerStrictContextValidation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, NavigationControllerImpl reads a frame's FrameNavigationEntry
+// from its own last_committed_frame_entry() instead of from
+// GetLastCommittedEntry(), when updating session history. The two differ while
+// a multi-frame history navigation is partially committed. This acts as a kill
+// switch for https://crbug.com/560754831.
+// Owner: arthursonzogni@chromium.org
+// TODO(crbug.com/560754831): Expires after the M163 branch cut. Remove it then.
+BASE_FEATURE(kSessionHistoryUseFrameCommittedEntry,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, the browser process will derive the secure context state of a
 // SharedWorker connection from its own authoritative ground truth
 // (PolicyContainerHost) instead of trusting the renderer-supplied parameter.

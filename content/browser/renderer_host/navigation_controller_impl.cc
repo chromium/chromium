@@ -2591,8 +2591,16 @@ NavigationControllerImpl::RendererDidNavigateToNewEntry(
   // entry instead of looking at the pending entry, because the pending entry
   // does not have any subframe history items.
   if (is_same_document) {
+    // Use the actual last committed FrameNavigationEntry from the frame, rather
+    // than assuming GetLastCommittedEntry() refers to the same one. During
+    // session history navigations affecting multiple frames,
+    // GetLastCommittedEntry() may be updated before all affected frames have
+    // finished.
     FrameNavigationEntry* previous_frame_entry =
-        GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
+        base::FeatureList::IsEnabled(
+            features::kSessionHistoryUseFrameCommittedEntry)
+            ? rfh->last_committed_frame_entry()
+            : GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
     auto frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
         rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
         params.document_sequence_number, params.navigation_api_key,
@@ -2991,8 +2999,15 @@ NavigationControllerImpl::RendererDidNavigateNewSubframe(
                                                   request->GetURL());
   bool protect_url_in_navigation_api = false;
   if (is_same_document) {
+    // Use the frame's own last committed FrameNavigationEntry, rather than the
+    // one in GetLastCommittedEntry(). During session history navigations
+    // affecting multiple frames, GetLastCommittedEntry() may be updated before
+    // this frame has finished, and would then refer to another document.
     FrameNavigationEntry* previous_frame_entry =
-        GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
+        base::FeatureList::IsEnabled(
+            features::kSessionHistoryUseFrameCommittedEntry)
+            ? rfh->last_committed_frame_entry()
+            : GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
     // Try to preserve protect_url_in_navigation_api from the previous
     // FrameNavigationEntry.
     protect_url_in_navigation_api =
@@ -5558,9 +5573,17 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
   }
 
   if (is_same_document) {
-    DCHECK(GetLastCommittedEntry());
+    // Same-document navigations keep the policies of the current document.
+    // Take them from the frame's own last committed FrameNavigationEntry, not
+    // from GetLastCommittedEntry(). During session history navigations
+    // affecting multiple frames, GetLastCommittedEntry() may be updated before
+    // this frame has finished, and would then hold another document's
+    // policies.
     FrameNavigationEntry* previous_frame_entry =
-        GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
+        base::FeatureList::IsEnabled(
+            features::kSessionHistoryUseFrameCommittedEntry)
+            ? rfh->last_committed_frame_entry()
+            : GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
 
     // TODO(crbug.com/40467594): Remove this nullptr check when we can
     // ensure we always have a FrameNavigationEntry here.
@@ -5970,7 +5993,15 @@ bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory(
 void NavigationControllerImpl::DidChangeReferrerPolicy(
     FrameTreeNode* node,
     network::mojom::ReferrerPolicy referrer_policy) {
-  FrameNavigationEntry* entry = GetLastCommittedEntry()->GetFrameEntry(node);
+  // Update the FrameNavigationEntry of the document currently in the frame.
+  // During session history navigations affecting multiple frames,
+  // GetLastCommittedEntry() may be updated before this frame has finished, so
+  // its FrameNavigationEntry for `node` may belong to another document.
+  FrameNavigationEntry* entry =
+      base::FeatureList::IsEnabled(
+          features::kSessionHistoryUseFrameCommittedEntry)
+          ? node->current_frame_host()->last_committed_frame_entry()
+          : GetLastCommittedEntry()->GetFrameEntry(node);
   if (!entry) {
     return;
   }
