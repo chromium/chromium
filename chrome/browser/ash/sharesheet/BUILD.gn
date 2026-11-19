@@ -15,7 +15,6 @@ static_library("sharesheet") {
   deps = [
     "//ash",
     "//base",
-    "//chrome/app:generated_resources_grit",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fusebox",
@@ -23,6 +22,7 @@ static_library("sharesheet") {
     "//chrome/browser/sharesheet",
     "//chrome/browser/ui/ash/sharesheet",
     "//chromeos/components/sharesheet:constants",
+    "//chromeos/resources:strings",
     "//components/services/app_service",
     "//storage/browser",
     "//ui/chromeos/strings",

@@ -100,7 +100,6 @@ chrome/app/resources/generated_resources_zu.xtb
 chrome/app/settings_search_tag_strings.grdp
 chrome/app/settings_strings.grdp
 chrome/app/shared_settings_strings.grdp
-chrome/app/sharesheet_strings.grdp
 chrome/app/shortcut_input_strings.grdp
 chrome/app/skills_strings.grdp
 chrome/app/support_tool_strings.grdp

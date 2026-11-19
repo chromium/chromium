@@ -27,7 +27,6 @@ static_library("sharesheet") {
     "//ash",
     "//ash/public/cpp",
     "//base",
-    "//chrome/app:generated_resources",
     "//chrome/browser:flags",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/file_manager",
@@ -36,6 +35,7 @@ static_library("sharesheet") {
     "//chrome/browser/ui/color:color_headers",
     "//chromeos/components/sharesheet:constants",
     "//chromeos/constants",
+    "//chromeos/resources:strings",
     "//extensions/browser",
     "//ui/accessibility",
     "//ui/chromeos/styles:cros_styles_views_generator",
@@ -58,6 +58,7 @@ source_set("unit_tests") {
     "//chrome/browser/sharesheet:test_support",
     "//chrome/test:test_support_unit",
     "//chromeos/components/sharesheet:constants",
+    "//chromeos/resources:strings",
     "//ui/base/clipboard:clipboard_test_support",
   ]
 }
