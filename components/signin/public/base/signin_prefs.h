@@ -270,19 +270,37 @@ class SigninPrefs {
   std::optional<int> GetBatchUploadLastUploadRemainingLocalDataCount(
       const GaiaId& gaia_id) const;
 
-  // Note: `callback` will be notified on every change in the main dictionary
-  // and sub-dictionries (account dictionaries).
+  // Multi-account Smart Account Switching promo state (stored in the
+  // `signin.multiple_accounts_metadata_list` pref). State is keyed
+  // bi-directionally by the unordered pair `{gaia_id_1, gaia_id_2}` (so
+  // swapping the arguments accesses the same entry; both IDs must be non-empty
+  // and distinct). All entries referencing a removed account are automatically
+  // pruned by `RemoveAllAccountPrefsExcept()`.
+  int IncrementAccountSwitchingPromoExplicitDismissalCount(
+      const GaiaId& gaia_id_1,
+      const GaiaId& gaia_id_2);
+  int GetAccountSwitchingPromoExplicitDismissalCount(
+      const GaiaId& gaia_id_1,
+      const GaiaId& gaia_id_2) const;
+  void SetAccountSwitchingPromoSuppressedBySwitch(const GaiaId& gaia_id_1,
+                                                  const GaiaId& gaia_id_2);
+  bool IsAccountSwitchingPromoSuppressedBySwitch(const GaiaId& gaia_id_1,
+                                                 const GaiaId& gaia_id_2) const;
+
+  // Note: `callback` will be notified on every change in the single-account
+  // dictionary and multi-account metadata list.
   static void ObserveSigninPrefsChanges(PrefChangeRegistrar& registrar,
                                         base::RepeatingClosure callback);
 
-  // Checks if the an account pref with the given `gaia_id` exists.
+  // Checks if single-account prefs exist for the given `gaia_id`.
   bool HasAccountPrefs(const GaiaId& gaia_id) const;
 
   // Keeps all prefs with the gaia ids given in `gaia_ids_to_keep`.
   // This is done this way since we usually are not aware of the accounts that
   // are not there anymore, so we remove all accounts that should not be kept
-  // instead of removing a specific account. Returns the number of accounts
-  // that were removed.
+  // instead of removing a specific account. Also prunes any multi-account
+  // entries referencing removed accounts. Returns the number of single-account
+  // dictionaries that were removed.
   size_t RemoveAllAccountPrefsExcept(
       const base::flat_set<GaiaId>& gaia_ids_to_keep);
 

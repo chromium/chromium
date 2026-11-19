@@ -155,10 +155,53 @@ TEST_F(AccountSwitchingManagerTest, GlobalExplicitDismissalCooldown) {
   EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
   EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_c_));
 
-  // At 28 days: eligible again.
+  // At 28 days: eligible again (pair dismissal count is only 1 < 2).
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
   EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
+}
+
+TEST_F(AccountSwitchingManagerTest, PairExplicitDismissalCapOfTwo) {
+  // First dismissal of `(A, B)`.
+  manager_->RecordPromoExplicitlyDismissed(account_a_, account_b_);
+  task_environment_.FastForwardBy(
+      AccountSwitchingManager::kGlobalExplicitDismissalCooldown);
+  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_b_));
+  EXPECT_TRUE(manager_->CanShowPromo(account_b_, account_a_));
+
+  // Second dismissal in the opposite direction `(B, A)` hits the shared
+  // per-pair cap of 2 for `{A, B}`.
+  manager_->RecordPromoExplicitlyDismissed(account_b_, account_a_);
+  task_environment_.FastForwardBy(
+      AccountSwitchingManager::kGlobalExplicitDismissalCooldown);
+
+  // `{A, B}` stays permanently blocked in both directions even after 365 days.
+  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
+  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
+  task_environment_.FastForwardBy(base::Days(365));
+  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
+  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
+
+  // Unrelated pairs remain eligible.
+  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
+  EXPECT_TRUE(manager_->CanShowPromo(account_c_, account_a_));
+}
+
+TEST_F(AccountSwitchingManagerTest, SymmetricPairSuppression) {
+  // Suppressing `{A, B}` blocks switching prompts in both directions while
+  // both accounts remain in the profile.
+  SigninPrefs(*profile_->GetPrefs())
+      .SetAccountSwitchingPromoSuppressedBySwitch(account_b_, account_a_);
+
+  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
+  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
+  // Other pairs remain eligible.
+  EXPECT_TRUE(manager_->CanShowPromo(account_a_, account_c_));
+
+  // Suppression persists indefinitely while both accounts remain.
+  task_environment_.FastForwardBy(base::Days(365));
+  EXPECT_FALSE(manager_->CanShowPromo(account_a_, account_b_));
+  EXPECT_FALSE(manager_->CanShowPromo(account_b_, account_a_));
 }
 
 TEST_F(AccountSwitchingManagerTest,
@@ -300,12 +343,15 @@ TEST_F(AccountSwitchingManagerTest,
       {{switches::kEnableAccountPreviewSwitchingAccountSkipCooldown.name,
         "true"}});
 
-  // Trigger global throttling rules and leave Account D without
-  // `ChromeLastSigninTime`.
+  // Trigger every throttling / cooldown / pair-suppression rule and leave
+  // Account D without `ChromeLastSigninTime`.
   for (int i = 0; i < AccountSwitchingManager::kMaxGlobalIgnores; ++i) {
     manager_->RecordPromoIgnored();
   }
   manager_->RecordPromoExplicitlyDismissed(account_d_, account_b_);
+  manager_->RecordPromoExplicitlyDismissed(account_d_, account_b_);
+  SigninPrefs(*profile_->GetPrefs())
+      .SetAccountSwitchingPromoSuppressedBySwitch(account_b_, account_d_);
 
   EXPECT_TRUE(manager_->CanShowPromo(account_d_, account_b_));
 

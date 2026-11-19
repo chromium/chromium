@@ -62,22 +62,38 @@ class SigninPrefsRegistry {
     }
   };
 
-  // Returns all registered per-account preferences.
+  // Returns all registered single-account preferences
+  // (`signin.accounts_metadata_dict`).
   static base::span<const PrefDescriptor> GetAll(PassKey);
 
-  // Returns the descriptor for `(parents, key)`, or null if it is not
-  // registered. The returned pointer points into static storage.
+  // Returns the single-account descriptor for `(parents, key)`, or null if it
+  // is not registered. The returned pointer points into static storage.
   static const PrefDescriptor* Find(PassKey,
                                     base::span<const std::string_view> parents,
                                     std::string_view key);
 
-  // Returns true if `(parents, key)` is a registered leaf preference (not a
-  // `DICT` container), `value` matches its `base::Value::Type`, and `value`
-  // parses as a `base::Time` when `is_timestamp` is true.
+  // Returns true if `(parents, key)` is a registered single-account leaf
+  // preference (not a `DICT` container), `value` matches its
+  // `base::Value::Type`, and `value` parses as a `base::Time` when
+  // `is_timestamp` is true.
   static bool IsValidValue(PassKey,
                            base::span<const std::string_view> parents,
                            std::string_view key,
                            const base::Value& value);
+
+  // Separate queries for multi-account preferences stored in
+  // `signin.multiple_accounts_metadata_list`, keeping them isolated from
+  // single-account registry consumers (`GetAll()`, `Find()`, `IsValidValue()`).
+  static base::span<const PrefDescriptor> GetAllMultipleAccounts(PassKey);
+  static const PrefDescriptor* FindMultipleAccounts(
+      PassKey,
+      base::span<const std::string_view> parents,
+      std::string_view key);
+  static bool IsValidMultipleAccountsValue(
+      PassKey,
+      base::span<const std::string_view> parents,
+      std::string_view key,
+      const base::Value& value);
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_PREFS_REGISTRY_H_

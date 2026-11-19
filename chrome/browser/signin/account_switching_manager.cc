@@ -90,10 +90,11 @@ bool AccountSwitchingManager::CanShowPromo(const GaiaId& primary_gaia_id,
   }
 
   const base::Time now = base::Time::Now();
+  const SigninPrefs signin_prefs(*prefs_);
 
   // 28-day primary-account sign-in/switch grace period.
   std::optional<base::Time> last_signin_time =
-      SigninPrefs(*prefs_).GetChromeLastSigninTime(primary_gaia_id);
+      signin_prefs.GetChromeLastSigninTime(primary_gaia_id);
   if (!last_signin_time.has_value() || last_signin_time->is_null() ||
       now - *last_signin_time < kPrimaryAccountSigninGracePeriod) {
     return false;
@@ -118,11 +119,18 @@ bool AccountSwitchingManager::CanShowPromo(const GaiaId& primary_gaia_id,
     return false;
   }
 
-  // TODO(crbug.com/585130538): Check per-pair `(primary_gaia_id,
-  // target_gaia_id)` suppression rules (explicit dismissal cap of 2 and
-  // reverse-switch suppression) stored in `SigninPrefs`.
+  // Bi-directional per-pair `{primary_gaia_id, target_gaia_id}` suppression
+  // rules in `SigninPrefs`.
+  if (signin_prefs.IsAccountSwitchingPromoSuppressedBySwitch(primary_gaia_id,
+                                                             target_gaia_id)) {
+    return false;
+  }
+  if (signin_prefs.GetAccountSwitchingPromoExplicitDismissalCount(
+          primary_gaia_id, target_gaia_id) >= kMaxPairExplicitDismissals) {
+    return false;
+  }
 
-  // TODO(crbug.com/585130538): Check profile-level post-acceptance
+  // TODO(crbug.com/585132231): Check profile-level post-acceptance
   // suppression or post-new-profile-creation cooldown here once product
   // confirms re-prompting rules.
   return true;
@@ -147,8 +155,10 @@ void AccountSwitchingManager::RecordPromoExplicitlyDismissed(
   update->Set(kLastExplicitDismissalTimeKey,
               base::TimeToValue(base::Time::Now()));
 
-  // TODO(crbug.com/585130538): Increment the per-pair explicit dismissal count
-  // for `(primary_gaia_id, target_gaia_id)` in `SigninPrefs`.
+  // Stored bi-directionally in `SigninPrefs` for
+  // `{primary_gaia_id, target_gaia_id}`.
+  SigninPrefs(*prefs_).IncrementAccountSwitchingPromoExplicitDismissalCount(
+      primary_gaia_id, target_gaia_id);
 }
 
 bool AccountSwitchingManager::StartSwitching(
@@ -162,11 +172,13 @@ bool AccountSwitchingManager::StartSwitching(
   switching_in_progress_ = true;
   on_switch_finished_callback_ = std::move(on_switch_finished);
 
-  // TODO(crbug.com/585130538): Persist profile-level post-acceptance
+  // TODO(crbug.com/585132231): Persist profile-level post-acceptance
   // suppression or post-new-profile-creation cooldown once product confirms
   // re-prompting rules.
   // TODO(crbug.com/585131182, crbug.com/585132335): Execute the in-profile
-  // primary-account switch or async new-profile creation here, calling
+  // primary-account switch (which also starts a fresh 28-day grace period,
+  // bi-directionally suppresses the pair via `SigninPrefs`, and activates the
+  // 7-day switch-back window) or async new-profile creation here, calling
   // `OnSwitchFinished()` when the switch completes or aborts.
   return true;
 }

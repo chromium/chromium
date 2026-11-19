@@ -459,6 +459,84 @@ TEST_F(GAIAInfoUpdateServiceTest,
   EXPECT_FALSE(HasAccountPrefs(gaia_id));
 }
 
+TEST_F(GAIAInfoUpdateServiceTest,
+       AccountSwitchingPromoPairPrefsRemovedOnAccountRemoval) {
+  const GaiaId primary_gaia_id("primary_gaia_id");
+  const GaiaId secondary_gaia_id("secondary_gaia_id");
+  const GaiaId other_gaia_id("other_gaia_id");
+
+  AccountInfo primary_info = signin::MakeAccountAvailable(
+      identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithGaiaId(primary_gaia_id)
+          .WithCookie()
+          .Build("primary@example.com"));
+  AccountInfo secondary_info = signin::MakeAccountAvailable(
+      identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithGaiaId(secondary_gaia_id)
+          .WithCookie()
+          .Build("secondary@example.com"));
+  AccountInfo other_info = signin::MakeAccountAvailable(
+      identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithGaiaId(other_gaia_id)
+          .WithCookie()
+          .Build("other@example.com"));
+
+  SigninPrefs(pref_service_)
+      .SetAccountSwitchingPromoSuppressedBySwitch(secondary_gaia_id,
+                                                  primary_gaia_id);
+  SigninPrefs(pref_service_)
+      .SetAccountSwitchingPromoSuppressedBySwitch(other_gaia_id,
+                                                  primary_gaia_id);
+  ASSERT_TRUE(SigninPrefs(pref_service_)
+                  .IsAccountSwitchingPromoSuppressedBySwitch(
+                      primary_gaia_id, secondary_gaia_id));
+  ASSERT_TRUE(SigninPrefs(pref_service_)
+                  .IsAccountSwitchingPromoSuppressedBySwitch(secondary_gaia_id,
+                                                             primary_gaia_id));
+  ASSERT_TRUE(SigninPrefs(pref_service_)
+                  .IsAccountSwitchingPromoSuppressedBySwitch(primary_gaia_id,
+                                                             other_gaia_id));
+
+  // Remove `secondary_gaia_id` from cookies and refresh tokens while keeping
+  // `primary_gaia_id` and `other_gaia_id`.
+  signin::SetCookieAccounts(
+      identity_manager(), test_url_loader_factory(),
+      {{std::string(primary_info.GetEmail()), primary_info.GetGaiaId(),
+        /*signed_out=*/false},
+       {std::string(other_info.GetEmail()), other_info.GetGaiaId(),
+        /*signed_out=*/false}});
+  signin::RemoveRefreshTokenForAccount(identity_manager(),
+                                       secondary_info.GetAccountId());
+
+  // Pair state referencing `secondary_gaia_id` is pruned automatically via
+  // `SigninPrefs`, while `{primary, other}` remains suppressed.
+  EXPECT_FALSE(SigninPrefs(pref_service_)
+                   .IsAccountSwitchingPromoSuppressedBySwitch(
+                       primary_gaia_id, secondary_gaia_id));
+  EXPECT_FALSE(SigninPrefs(pref_service_)
+                   .IsAccountSwitchingPromoSuppressedBySwitch(secondary_gaia_id,
+                                                              primary_gaia_id));
+  EXPECT_TRUE(SigninPrefs(pref_service_)
+                  .IsAccountSwitchingPromoSuppressedBySwitch(primary_gaia_id,
+                                                             other_gaia_id));
+
+  // Remove `primary_gaia_id` as well: `{primary, other}` is wiped too.
+  signin::SetCookieAccounts(
+      identity_manager(), test_url_loader_factory(),
+      {{std::string(other_info.GetEmail()), other_info.GetGaiaId(),
+        /*signed_out=*/false}});
+  signin::ClearPrimaryAccount(identity_manager());
+  signin::RemoveRefreshTokenForAccount(identity_manager(),
+                                       primary_info.GetAccountId());
+  EXPECT_FALSE(SigninPrefs(pref_service_)
+                   .IsAccountSwitchingPromoSuppressedBySwitch(primary_gaia_id,
+                                                              other_gaia_id));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 class GAIAInfoUpdateServiceWithGlicEnablingTest
     : public GAIAInfoUpdateServiceTest {

@@ -22,13 +22,15 @@ class PrefRegistrySimple;
 class PrefService;
 class SigninPrefs;
 
-// Privileged generic accessor for the per-account signin preference dictionary
-// (`"signin.accounts_metadata_dict"`).
+// Privileged generic accessor for the single-account metadata dictionary
+// (`"signin.accounts_metadata_dict"`) and multi-account metadata list
+// (`"signin.multiple_accounts_metadata_list"`).
 //
-// Every per-account key-based read, write, and clear is `CHECK`-validated
+// Every key-based read, write, and clear is `CHECK`-validated
 // against `SigninPrefsRegistry` (except `SetDeprecatedPrefForTesting` and
-// `GetDeprecatedPrefForTesting`). `GetAccountPrefsDict` and `HasAccountPrefs`
-// inspect the raw account dictionary directly.
+// `GetDeprecatedPrefForTesting`). `GetAccountPrefsDict`,
+// `GetMultipleAccountsPrefsList`, and `HasAccountPrefs` inspect the raw
+// single-account dictionary or multi-account list directly.
 //
 // On writes, missing or non-dict intermediate entries along `parents` are
 // created/overwritten via `EnsureDict`; on reads, missing or non-dict
@@ -50,28 +52,41 @@ class SigninPrefsAccessor {
   SigninPrefsAccessor& operator=(const SigninPrefsAccessor&) = delete;
   ~SigninPrefsAccessor();
 
-  // Registers the profile-level dictionary holding all account prefs.
+  // Registers the profile-level single-account and multi-account metadata
+  // prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry, PassKey);
 
-  // Subscribes `callback` to changes in the account metadata pref dictionary.
+  // Subscribes `callback` to changes in the single-account and multi-account
+  // metadata prefs.
   static void ObserveChanges(PrefChangeRegistrar& registrar,
                              base::RepeatingClosure callback,
                              PassKey);
 
-  // Cleans up obsolete per-account preference keys across all accounts.
-  // Corrupted account entries that are not dictionaries are removed.
+  // Cleans up obsolete single-account preference keys across all accounts in
+  // `signin.accounts_metadata_dict`. Corrupted account entries that are not
+  // dictionaries are removed.
   void MigrateObsoleteAccountPrefs();
 
-  // Returns the root dictionary containing all account preferences.
+  // Cleans up obsolete or invalid multi-account entries in
+  // `signin.multiple_accounts_metadata_list`.
+  void MigrateObsoleteMultipleAccountsPrefs();
+
+  // Returns the root dictionary containing all single-account preferences.
   // Note: the returned reference and any pointers into it are invalidated by
   // subsequent pref mutations.
   const base::DictValue& GetAccountPrefsDict() const;
 
-  // Returns true if any preferences are stored for `gaia_id`.
+  // Returns the list containing all multi-account preferences.
+  // Note: the returned reference and any pointers into it are invalidated by
+  // subsequent pref mutations.
+  const base::ListValue& GetMultipleAccountsPrefsList() const;
+
+  // Returns true if any single-account preferences are stored for `gaia_id`.
   bool HasAccountPrefs(const GaiaId& gaia_id) const;
 
-  // Removes all account dictionaries except those in `gaia_ids_to_keep`.
-  // Returns the number of removed account dictionaries.
+  // Removes all single-account dictionaries except those in `gaia_ids_to_keep`,
+  // and prunes any multi-account entries referencing removed accounts. Returns
+  // the number of removed single-account dictionaries.
   size_t RemoveAllAccountPrefsExcept(
       const base::flat_set<GaiaId>& gaia_ids_to_keep);
 
@@ -154,6 +169,21 @@ class SigninPrefsAccessor {
   size_t ClearPrefForAllAccounts(
       std::string_view key,
       base::span<const std::string_view> parents = {});
+
+  // Multi-account preference accessors for entries registered with
+  // `is_multiple_accounts == true`. Keys each entry by a canonical sorted set
+  // of at least two distinct, non-empty `GaiaId`s so input ordering never
+  // creates duplicate entries. `CHECK`-enforces valid IDs and registry
+  // validation.
+  int IncrementMultipleAccountsIntPref(const base::flat_set<GaiaId>& gaia_ids,
+                                       std::string_view key);
+  int GetMultipleAccountsIntPref(const base::flat_set<GaiaId>& gaia_ids,
+                                 std::string_view key) const;
+  void SetMultipleAccountsBooleanPref(const base::flat_set<GaiaId>& gaia_ids,
+                                      std::string_view key,
+                                      bool value);
+  bool GetMultipleAccountsBooleanPref(const base::flat_set<GaiaId>& gaia_ids,
+                                      std::string_view key) const;
 
   void SetDeprecatedPrefForTesting(const GaiaId& gaia_id);
   std::optional<int> GetDeprecatedPrefForTesting(const GaiaId& gaia_id) const;

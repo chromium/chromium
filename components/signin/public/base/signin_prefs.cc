@@ -38,6 +38,7 @@ void SigninPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void SigninPrefs::MigrateObsoleteSigninPrefs() {
   accessor_.MigrateObsoleteAccountPrefs();
+  accessor_.MigrateObsoleteMultipleAccountsPrefs();
 }
 
 bool SigninPrefs::HasAccountPrefs(const GaiaId& gaia_id) const {
@@ -658,6 +659,38 @@ SigninPrefs::GetCrossDeviceHistoryPromoLastDismissedTime(
   return accessor_.GetTimePref(
       gaia_id, signin::internal::kCrossDevicePromoLastDismissedTimeKey,
       signin::internal::kCrossDeviceHistoryPromoParents);
+}
+
+int SigninPrefs::IncrementAccountSwitchingPromoExplicitDismissalCount(
+    const GaiaId& gaia_id_1,
+    const GaiaId& gaia_id_2) {
+  return accessor_.IncrementMultipleAccountsIntPref(
+      {gaia_id_1, gaia_id_2},
+      signin::internal::kAccountSwitchingPromoExplicitDismissalCount);
+}
+
+int SigninPrefs::GetAccountSwitchingPromoExplicitDismissalCount(
+    const GaiaId& gaia_id_1,
+    const GaiaId& gaia_id_2) const {
+  return accessor_.GetMultipleAccountsIntPref(
+      {gaia_id_1, gaia_id_2},
+      signin::internal::kAccountSwitchingPromoExplicitDismissalCount);
+}
+
+void SigninPrefs::SetAccountSwitchingPromoSuppressedBySwitch(
+    const GaiaId& gaia_id_1,
+    const GaiaId& gaia_id_2) {
+  accessor_.SetMultipleAccountsBooleanPref(
+      {gaia_id_1, gaia_id_2},
+      signin::internal::kAccountSwitchingPromoSuppressedBySwitch, true);
+}
+
+bool SigninPrefs::IsAccountSwitchingPromoSuppressedBySwitch(
+    const GaiaId& gaia_id_1,
+    const GaiaId& gaia_id_2) const {
+  return accessor_.GetMultipleAccountsBooleanPref(
+      {gaia_id_1, gaia_id_2},
+      signin::internal::kAccountSwitchingPromoSuppressedBySwitch);
 }
 
 void SigninPrefs::SetDeprecatedPrefForTesting(const GaiaId& gaia_id) {

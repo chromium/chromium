@@ -32,6 +32,7 @@ class AccountSwitchingManager : public KeyedService {
   static constexpr base::TimeDelta kGlobalIgnoreCooldown = base::Days(7);
   static constexpr base::TimeDelta kGlobalExplicitDismissalCooldown =
       base::Days(28);
+  static constexpr int kMaxPairExplicitDismissals = 2;
 
   static bool IsFeatureEnabled();
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -51,11 +52,14 @@ class AccountSwitchingManager : public KeyedService {
   // `primary_gaia_id` to `target_gaia_id` is currently allowed. Checks
   // feature enablement, account validity, whether a switch is in progress or
   // a switch-back window is active, and (unless the skip-cooldown param is
-  // enabled) the sign-in grace period and global ignore/dismissal limits.
+  // enabled) the sign-in grace period, global ignore/dismissal limits, and
+  // bi-directional per-pair suppression in `SigninPrefs`.
   bool CanShowPromo(const GaiaId& primary_gaia_id,
                     const GaiaId& target_gaia_id) const;
 
   void RecordPromoIgnored();
+  // Records an explicit dismissal, updating the global cooldown and
+  // incrementing the bi-directional per-pair count in `SigninPrefs`.
   void RecordPromoExplicitlyDismissed(const GaiaId& primary_gaia_id,
                                       const GaiaId& target_gaia_id);
 

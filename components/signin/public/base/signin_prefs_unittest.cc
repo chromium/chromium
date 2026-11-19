@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/test/gtest_util.h"
@@ -30,6 +31,8 @@
 namespace {
 
 constexpr char kSigninAccountPrefs[] = "signin.accounts_metadata_dict";
+constexpr char kMultipleAccountsMetadataList[] =
+    "signin.multiple_accounts_metadata_list";
 
 }  // namespace
 
@@ -1007,6 +1010,31 @@ TEST_F(SigninPrefsTest, RegisteredPrefsAreNonEmptyAndValid) {
                   signin::internal::kCrossDevicePromoHistoryDictKey}},
                 signin::internal::kCrossDevicePromoShownCountKey),
             nullptr);
+
+  // Multi-account prefs live in a separate registry so single-account
+  // consumers (`GetAll()`, `Find()`) never surface them.
+  EXPECT_EQ(SigninPrefsRegistry::Find(
+                pass_key, {},
+                signin::internal::kAccountSwitchingPromoExplicitDismissalCount),
+            nullptr);
+  EXPECT_EQ(SigninPrefsRegistry::Find(
+                pass_key, {},
+                signin::internal::kAccountSwitchingPromoSuppressedBySwitch),
+            nullptr);
+
+  base::span<const SigninPrefsRegistry::PrefDescriptor> multi_prefs =
+      SigninPrefsRegistry::GetAllMultipleAccounts(pass_key);
+  EXPECT_FALSE(multi_prefs.empty());
+  for (const auto& pref : multi_prefs) {
+    EXPECT_FALSE(pref.key.empty());
+    EXPECT_NE(pref.type, base::Value::Type::NONE);
+    EXPECT_EQ(SigninPrefsRegistry::FindMultipleAccounts(
+                  pass_key, pref.parent_keys(), pref.key),
+              &pref);
+  }
+  EXPECT_EQ(SigninPrefsRegistry::FindMultipleAccounts(
+                pass_key, {}, signin::internal::kPasswordSignInPromoShownCount),
+            nullptr);
 }
 
 TEST_F(SigninPrefsTest, IsValidValueValidatesTypesAndTimestamps) {
@@ -1067,9 +1095,29 @@ TEST_F(SigninPrefsTest, IsValidValueValidatesTypesAndTimestamps) {
       signin::internal::kCrossDevicePromoHistoryDictKey,
       base::Value(base::Value::Type::DICT)));
 
-  // Unknown preference key: always rejected.
+  // Unknown preference key or multi-account key: always rejected on the
+  // single-account validator.
   EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(pass_key, {}, "UnknownPrefKey",
                                                  base::Value(1)));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {},
+      signin::internal::kAccountSwitchingPromoExplicitDismissalCount,
+      base::Value(1)));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidValue(
+      pass_key, {}, signin::internal::kAccountSwitchingPromoSuppressedBySwitch,
+      base::Value(true)));
+
+  EXPECT_TRUE(SigninPrefsRegistry::IsValidMultipleAccountsValue(
+      pass_key, {},
+      signin::internal::kAccountSwitchingPromoExplicitDismissalCount,
+      base::Value(1)));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidMultipleAccountsValue(
+      pass_key, {},
+      signin::internal::kAccountSwitchingPromoExplicitDismissalCount,
+      base::Value(true)));
+  EXPECT_FALSE(SigninPrefsRegistry::IsValidMultipleAccountsValue(
+      pass_key, {}, signin::internal::kPasswordSignInPromoShownCount,
+      base::Value(1)));
 }
 
 namespace {
@@ -1079,26 +1127,33 @@ using PrefPath = std::pair<std::vector<std::string>, std::string>;
 void VerifyAndCollectDictEntriesAreRegistered(
     const base::DictValue& dict,
     std::vector<std::string_view> parents,
+    bool is_multiple_accounts,
     std::set<PrefPath>* observed_paths) {
   auto pass_key = SigninPrefsRegistry::CreatePassKeyForTesting();
   for (const auto [key, value] : dict) {
     observed_paths->insert(
         {std::vector<std::string>(parents.begin(), parents.end()), key});
+    const SigninPrefsRegistry::PrefDescriptor* pref_desc =
+        is_multiple_accounts
+            ? SigninPrefsRegistry::FindMultipleAccounts(pass_key, parents, key)
+            : SigninPrefsRegistry::Find(pass_key, parents, key);
     if (value.is_dict()) {
-      const SigninPrefsRegistry::PrefDescriptor* pref_desc =
-          SigninPrefsRegistry::Find(pass_key, parents, key);
       EXPECT_NE(pref_desc, nullptr) << "Unregistered dict: " << key;
       if (pref_desc) {
         EXPECT_EQ(pref_desc->type, base::Value::Type::DICT);
       }
       std::vector<std::string_view> child_parents = parents;
       child_parents.push_back(key);
-      VerifyAndCollectDictEntriesAreRegistered(value.GetDict(), child_parents,
-                                               observed_paths);
+      VerifyAndCollectDictEntriesAreRegistered(
+          value.GetDict(), child_parents, is_multiple_accounts, observed_paths);
     } else {
-      EXPECT_TRUE(
-          SigninPrefsRegistry::IsValidValue(pass_key, parents, key, value))
-          << "Unregistered or type-mismatched key: " << key;
+      const bool valid =
+          is_multiple_accounts
+              ? SigninPrefsRegistry::IsValidMultipleAccountsValue(
+                    pass_key, parents, key, value)
+              : SigninPrefsRegistry::IsValidValue(pass_key, parents, key,
+                                                  value);
+      EXPECT_TRUE(valid) << "Unregistered or type-mismatched key: " << key;
     }
   }
 }
@@ -1160,6 +1215,13 @@ TEST_F(SigninPrefsTest, AllWrittenPrefsAreRegisteredWithMatchingType) {
   signin_prefs().IncrementAvatarButtonSigninPromoShownCount(gaia_id);
   signin_prefs().IncrementAvatarButtonSigninPromoUsedCount(gaia_id);
   signin_prefs().SetAvatarButtonSigninPromoLastShownTime(gaia_id, now);
+
+  // Multi-account AccountSwitchingPromo prefs via typed SigninPrefs accessors.
+  const GaiaId second_gaia_id("gaia_id_all_prefs_second");
+  signin_prefs().IncrementAccountSwitchingPromoExplicitDismissalCount(
+      gaia_id, second_gaia_id);
+  signin_prefs().SetAccountSwitchingPromoSuppressedBySwitch(gaia_id,
+                                                            second_gaia_id);
 
   // CrossDevicePromoPrefs.history prefs via typed SigninPrefs accessors.
   signin_prefs().SetCrossDeviceHistoryPromoShownCount(gaia_id, 2);
@@ -1247,6 +1309,12 @@ TEST_F(SigninPrefsTest, AllWrittenPrefsAreRegisteredWithMatchingType) {
   EXPECT_EQ(signin_prefs().GetAvatarButtonSigninPromoLastShownTime(gaia_id),
             now);
 
+  EXPECT_EQ(signin_prefs().GetAccountSwitchingPromoExplicitDismissalCount(
+                second_gaia_id, gaia_id),
+            1);
+  EXPECT_TRUE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      second_gaia_id, gaia_id));
+
   EXPECT_EQ(signin_prefs().GetCrossDeviceHistoryPromoShownCount(gaia_id), 2);
   EXPECT_EQ(
       signin_prefs().GetCrossDeviceHistoryPromoLastDismissedTime(gaia_id), now);
@@ -1258,19 +1326,38 @@ TEST_F(SigninPrefsTest, AllWrittenPrefsAreRegisteredWithMatchingType) {
   const base::DictValue* account_dict =
       accessor.GetAccountPrefsDict().FindDict(gaia_id.ToString());
   ASSERT_NE(account_dict, nullptr);
-  std::set<PrefPath> observed_paths;
+  std::set<PrefPath> observed_single_paths;
   VerifyAndCollectDictEntriesAreRegistered(*account_dict, /*parents=*/{},
-                                           &observed_paths);
+                                           /*is_multiple_accounts=*/false,
+                                           &observed_single_paths);
+
+  ASSERT_EQ(accessor.GetMultipleAccountsPrefsList().size(), 1u);
+  const base::DictValue* multi_account_prefs =
+      accessor.GetMultipleAccountsPrefsList()[0].GetDict().FindDict("prefs");
+  ASSERT_NE(multi_account_prefs, nullptr);
+  std::set<PrefPath> observed_multi_paths;
+  VerifyAndCollectDictEntriesAreRegistered(*multi_account_prefs, /*parents=*/{},
+                                           /*is_multiple_accounts=*/true,
+                                           &observed_multi_paths);
+
+  auto collect_registered =
+      [](base::span<const SigninPrefsRegistry::PrefDescriptor> prefs) {
+        std::set<PrefPath> paths;
+        for (const auto& pref : prefs) {
+          base::span<const std::string_view> parents = pref.parent_keys();
+          paths.insert(
+              {std::vector<std::string>(parents.begin(), parents.end()),
+               std::string(pref.key)});
+        }
+        return paths;
+      };
 
   auto pass_key = SigninPrefsRegistry::CreatePassKeyForTesting();
-  std::set<PrefPath> registered_paths;
-  for (const auto& pref : SigninPrefsRegistry::GetAll(pass_key)) {
-    base::span<const std::string_view> parents = pref.parent_keys();
-    registered_paths.insert(
-        {std::vector<std::string>(parents.begin(), parents.end()),
-         std::string(pref.key)});
-  }
-  EXPECT_EQ(observed_paths, registered_paths);
+  EXPECT_EQ(observed_single_paths,
+            collect_registered(SigninPrefsRegistry::GetAll(pass_key)));
+  EXPECT_EQ(observed_multi_paths,
+            collect_registered(
+                SigninPrefsRegistry::GetAllMultipleAccounts(pass_key)));
 }
 
 TEST_F(SigninPrefsTest, EmptyGaiaInterceptionUserChoice) {
@@ -1775,4 +1862,272 @@ TEST_F(SigninPrefsTest, SigninPrefsAccessorCheckFailures) {
   // Empty GaiaId.
   EXPECT_CHECK_DEATH(accessor.SetIntPref(
       GaiaId(), signin::internal::kChromeSigninInterceptionDismissCount, 1));
+}
+
+TEST_F(SigninPrefsTest, MultipleAccountsPrefsAndRemovalCleanup) {
+  const GaiaId account_a("gaia_a");
+  const GaiaId account_b("gaia_b");
+  const GaiaId account_c("gaia_c");
+  const GaiaId account_d("gaia_d");
+
+  // Lazy read returns defaults without creating list entries.
+  EXPECT_EQ(signin_prefs().GetAccountSwitchingPromoExplicitDismissalCount(
+                account_a, account_b),
+            0);
+  EXPECT_FALSE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a, account_b));
+  EXPECT_TRUE(pref_service().GetList(kMultipleAccountsMetadataList).empty());
+
+  // Updating `{B, A}` then `{A, B}` resolves to the same canonical sorted
+  // entry instead of creating duplicates.
+  signin_prefs().SetChromeLastSigninTime(account_a, base::Time::Now());
+  EXPECT_EQ(signin_prefs().IncrementAccountSwitchingPromoExplicitDismissalCount(
+                account_b, account_a),
+            1);
+  EXPECT_EQ(signin_prefs().IncrementAccountSwitchingPromoExplicitDismissalCount(
+                account_a, account_b),
+            2);
+  signin_prefs().SetAccountSwitchingPromoSuppressedBySwitch(account_c,
+                                                            account_a);
+  signin_prefs().SetAccountSwitchingPromoSuppressedBySwitch(account_d,
+                                                            account_c);
+
+  // Pair state is symmetric across argument order, scoped to `{A, B}`, and
+  // isolated from `signin.accounts_metadata_dict`.
+  EXPECT_EQ(signin_prefs().GetAccountSwitchingPromoExplicitDismissalCount(
+                account_a, account_b),
+            2);
+  EXPECT_EQ(signin_prefs().GetAccountSwitchingPromoExplicitDismissalCount(
+                account_b, account_a),
+            2);
+  EXPECT_FALSE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a, account_b));
+  EXPECT_TRUE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a, account_c));
+  EXPECT_TRUE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      account_c, account_a));
+  EXPECT_FALSE(HasAccountPrefs(account_b));
+  EXPECT_FALSE(HasAccountPrefs(account_c));
+  ASSERT_EQ(pref_service().GetList(kMultipleAccountsMetadataList).size(), 3u);
+
+  // Verify the canonical sorted `gaia_ids` list on disk even though `(B, A)`
+  // was passed first.
+  const base::DictValue& first_entry =
+      pref_service().GetList(kMultipleAccountsMetadataList)[0].GetDict();
+  EXPECT_FALSE(first_entry.contains("primary_gaia_id"));
+  EXPECT_FALSE(first_entry.contains("target_gaia_ids"));
+  const base::ListValue* first_gaia_ids = first_entry.FindList("gaia_ids");
+  ASSERT_NE(first_gaia_ids, nullptr);
+  ASSERT_EQ(first_gaia_ids->size(), 2u);
+  EXPECT_EQ((*first_gaia_ids)[0].GetString(), account_a.ToString());
+  EXPECT_EQ((*first_gaia_ids)[1].GetString(), account_b.ToString());
+
+  // Verify unordered 3-account sets canonicalize to a single sorted entry.
+  SigninPrefsAccessor accessor(pref_service(),
+                               SigninPrefsAccessor::CreatePassKeyForTesting());
+  EXPECT_EQ(accessor.IncrementMultipleAccountsIntPref(
+                {account_c, account_a, account_b},
+                signin::internal::kAccountSwitchingPromoExplicitDismissalCount),
+            1);
+  EXPECT_EQ(accessor.IncrementMultipleAccountsIntPref(
+                {account_b, account_c, account_a},
+                signin::internal::kAccountSwitchingPromoExplicitDismissalCount),
+            2);
+  EXPECT_EQ(accessor.GetMultipleAccountsIntPref(
+                {account_a, account_b, account_c},
+                signin::internal::kAccountSwitchingPromoExplicitDismissalCount),
+            2);
+  ASSERT_EQ(pref_service().GetList(kMultipleAccountsMetadataList).size(), 4u);
+  const base::ListValue* triple_gaia_ids =
+      pref_service()
+          .GetList(kMultipleAccountsMetadataList)[3]
+          .GetDict()
+          .FindList("gaia_ids");
+  ASSERT_NE(triple_gaia_ids, nullptr);
+  ASSERT_EQ(triple_gaia_ids->size(), 3u);
+  EXPECT_EQ((*triple_gaia_ids)[0].GetString(), account_a.ToString());
+  EXPECT_EQ((*triple_gaia_ids)[1].GetString(), account_b.ToString());
+  EXPECT_EQ((*triple_gaia_ids)[2].GetString(), account_c.ToString());
+
+  // Append a malformed entry and an entry missing a `prefs` dict (even with
+  // kept accounts) to verify cleanup drops invalid entries consistently.
+  {
+    ScopedListPrefUpdate update(&pref_service(), kMultipleAccountsMetadataList);
+    update->Append(base::Value("malformed_entry"));
+
+    base::DictValue missing_prefs_entry;
+    base::ListValue kept_gaia_ids;
+    kept_gaia_ids.Append(account_a.ToString());
+    kept_gaia_ids.Append(account_c.ToString());
+    missing_prefs_entry.Set("gaia_ids", std::move(kept_gaia_ids));
+    update->Append(std::move(missing_prefs_entry));
+  }
+  ASSERT_EQ(pref_service().GetList(kMultipleAccountsMetadataList).size(), 6u);
+
+  base::MockRepeatingClosure mock_observer;
+  SigninPrefs::ObserveSigninPrefsChanges(pref_change_registrar(),
+                                         mock_observer.Get());
+
+  // Removing account B prunes `{A, B}`, `{A, B, C}`, and both invalid entries
+  // in one update without touching A's single-account prefs or
+  // `signin.accounts_metadata_dict`.
+  EXPECT_CALL(mock_observer, Run()).Times(1);
+  EXPECT_EQ(signin_prefs().RemoveAllAccountPrefsExcept(
+                {account_a, account_c, account_d}),
+            0u);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_EQ(signin_prefs().GetAccountSwitchingPromoExplicitDismissalCount(
+                account_a, account_b),
+            0);
+  EXPECT_EQ(pref_service().GetList(kMultipleAccountsMetadataList).size(), 2u);
+  EXPECT_TRUE(HasAccountPrefs(account_a));
+  EXPECT_TRUE(signin_prefs().GetChromeLastSigninTime(account_a).has_value());
+  EXPECT_TRUE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a, account_c));
+  EXPECT_TRUE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      account_c, account_d));
+
+  // Subsequent cleanup with the same active set is a no-op and does not notify.
+  EXPECT_CALL(mock_observer, Run()).Times(0);
+  EXPECT_EQ(signin_prefs().RemoveAllAccountPrefsExcept(
+                {account_a, account_c, account_d}),
+            0u);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Removing account D prunes `{C, D}` while keeping `{A, C}`.
+  EXPECT_CALL(mock_observer, Run()).Times(1);
+  EXPECT_EQ(signin_prefs().RemoveAllAccountPrefsExcept({account_a, account_c}),
+            0u);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  EXPECT_FALSE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      account_c, account_d));
+  EXPECT_TRUE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a, account_c));
+  EXPECT_EQ(pref_service().GetList(kMultipleAccountsMetadataList).size(), 1u);
+
+  // Removing account A deletes A's single-account dict and `{A, C}`, firing an
+  // update per modified root pref (`signin.accounts_metadata_dict` and
+  // `signin.multiple_accounts_metadata_list`).
+  EXPECT_CALL(mock_observer, Run()).Times(2);
+  EXPECT_EQ(signin_prefs().RemoveAllAccountPrefsExcept({account_c}), 1u);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  EXPECT_FALSE(HasAccountPrefs(account_a));
+  EXPECT_FALSE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      account_a, account_c));
+  EXPECT_TRUE(pref_service().GetList(kMultipleAccountsMetadataList).empty());
+}
+
+TEST_F(SigninPrefsTest, MigrateObsoleteMultipleAccountsPrefs) {
+  const GaiaId account_a("gaia_a");
+  const GaiaId account_b("gaia_b");
+  const GaiaId account_c("gaia_c");
+  const GaiaId account_d("gaia_d");
+  signin_prefs().SetAccountSwitchingPromoSuppressedBySwitch(account_a,
+                                                            account_b);
+
+  // Inject a deprecated key into the valid entry's `prefs` dict, an entry
+  // containing only a deprecated key, an unsorted `gaia_ids` entry, a
+  // single-account `gaia_ids` entry, and a malformed non-dict entry.
+  {
+    ScopedListPrefUpdate update(&pref_service(), kMultipleAccountsMetadataList);
+    base::DictValue* valid_prefs = (*update)[0].GetDict().FindDict("prefs");
+    ASSERT_NE(valid_prefs, nullptr);
+    valid_prefs->Set(signin::internal::kDeprecatedTestingPref, 123);
+
+    base::DictValue deprecated_only_entry;
+    base::ListValue valid_gaia_ids;
+    valid_gaia_ids.Append(account_c.ToString());
+    valid_gaia_ids.Append(account_d.ToString());
+    deprecated_only_entry.Set("gaia_ids", std::move(valid_gaia_ids));
+    base::DictValue deprecated_prefs;
+    deprecated_prefs.Set(signin::internal::kDeprecatedTestingPref, 456);
+    deprecated_only_entry.Set("prefs", std::move(deprecated_prefs));
+    update->Append(std::move(deprecated_only_entry));
+
+    base::DictValue unsorted_entry;
+    base::ListValue unsorted_gaia_ids;
+    unsorted_gaia_ids.Append(account_b.ToString());
+    unsorted_gaia_ids.Append(account_a.ToString());
+    unsorted_entry.Set("gaia_ids", std::move(unsorted_gaia_ids));
+    base::DictValue unsorted_prefs;
+    unsorted_prefs.Set(
+        signin::internal::kAccountSwitchingPromoSuppressedBySwitch, true);
+    unsorted_entry.Set("prefs", std::move(unsorted_prefs));
+    update->Append(std::move(unsorted_entry));
+
+    base::DictValue too_few_entry;
+    base::ListValue single_gaia_id;
+    single_gaia_id.Append(account_a.ToString());
+    too_few_entry.Set("gaia_ids", std::move(single_gaia_id));
+    base::DictValue too_few_prefs;
+    too_few_prefs.Set(
+        signin::internal::kAccountSwitchingPromoSuppressedBySwitch, true);
+    too_few_entry.Set("prefs", std::move(too_few_prefs));
+    update->Append(std::move(too_few_entry));
+
+    update->Append(base::Value("malformed_entry"));
+  }
+  ASSERT_EQ(pref_service().GetList(kMultipleAccountsMetadataList).size(), 5u);
+
+  signin_prefs().MigrateObsoleteSigninPrefs();
+
+  const base::ListValue& migrated_list =
+      pref_service().GetList(kMultipleAccountsMetadataList);
+  ASSERT_EQ(migrated_list.size(), 1u);
+  EXPECT_TRUE(signin_prefs().IsAccountSwitchingPromoSuppressedBySwitch(
+      account_b, account_a));
+  const base::DictValue* remaining_prefs =
+      migrated_list[0].GetDict().FindDict("prefs");
+  ASSERT_NE(remaining_prefs, nullptr);
+  EXPECT_FALSE(
+      remaining_prefs->contains(signin::internal::kDeprecatedTestingPref));
+
+  // Re-running multi-account migration when all entries are valid and contain
+  // no deprecated keys must be a side-effect-free no-op.
+  base::MockRepeatingClosure mock_observer;
+  SigninPrefs::ObserveSigninPrefsChanges(pref_change_registrar(),
+                                         mock_observer.Get());
+  EXPECT_CALL(mock_observer, Run()).Times(0);
+  SigninPrefsAccessor(pref_service(),
+                      SigninPrefsAccessor::CreatePassKeyForTesting())
+      .MigrateObsoleteMultipleAccountsPrefs();
+}
+
+TEST_F(SigninPrefsTest, MultipleAccountsCheckFailures) {
+  const GaiaId account_a("gaia_a");
+  const GaiaId account_b("gaia_b");
+  SigninPrefsAccessor accessor(pref_service(),
+                               SigninPrefsAccessor::CreatePassKeyForTesting());
+
+  // Empty GaiaIds, fewer than two distinct GaiaIds, or duplicate inputs.
+  EXPECT_CHECK_DEATH(
+      signin_prefs().IncrementAccountSwitchingPromoExplicitDismissalCount(
+          GaiaId(), account_a));
+  EXPECT_CHECK_DEATH(
+      signin_prefs().GetAccountSwitchingPromoExplicitDismissalCount(account_a,
+                                                                    GaiaId()));
+  EXPECT_CHECK_DEATH(signin_prefs().SetAccountSwitchingPromoSuppressedBySwitch(
+      account_a, account_a));
+  EXPECT_CHECK_DEATH(accessor.GetMultipleAccountsIntPref(
+      /*gaia_ids=*/{},
+      signin::internal::kAccountSwitchingPromoExplicitDismissalCount));
+  EXPECT_CHECK_DEATH(accessor.IncrementMultipleAccountsIntPref(
+      {account_b},
+      signin::internal::kAccountSwitchingPromoExplicitDismissalCount));
+  EXPECT_CHECK_DEATH(accessor.IncrementMultipleAccountsIntPref(
+      {account_b, account_b},
+      signin::internal::kAccountSwitchingPromoExplicitDismissalCount));
+
+  // Cross-scope misuse is rejected.
+  EXPECT_CHECK_DEATH(accessor.IncrementMultipleAccountsIntPref(
+      {account_a, account_b},
+      signin::internal::kChromeSigninInterceptionDismissCount));
+  EXPECT_CHECK_DEATH(accessor.IncrementIntPref(
+      account_a,
+      signin::internal::kAccountSwitchingPromoExplicitDismissalCount));
+  EXPECT_CHECK_DEATH(accessor.ClearPref(
+      account_a, signin::internal::kAccountSwitchingPromoSuppressedBySwitch));
+  EXPECT_CHECK_DEATH(accessor.ClearPrefForAllAccounts(
+      signin::internal::kAccountSwitchingPromoSuppressedBySwitch));
 }

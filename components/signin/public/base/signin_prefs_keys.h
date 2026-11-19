@@ -26,8 +26,9 @@ namespace signin::internal {
 // API.
 //
 // IMPORTANT: Every active key added here must also be registered in
-// `kRegisteredSigninPrefs` (`signin_prefs_registry.cc`) with its enclosing
-// parent path and `base::Value::Type`, and exercised in
+// `kRegisteredSigninPrefs` (or `kRegisteredMultipleAccountsSigninPrefs` for
+// multi-account prefs) in `signin_prefs_registry.cc` with its enclosing parent
+// path and `base::Value::Type`, and exercised in
 // `SigninPrefsTest.AllWrittenPrefsAreRegisteredWithMatchingType` under every
 // feature state that selects it.
 //
@@ -242,6 +243,17 @@ inline constexpr std::string_view kAvatarButtonSigninPromoLastShownTime =
     "AvatarButtonSigninPromoLastShownTime";
 
 // LINT.ThenChange(//components/signin/public/base/signin_prefs_registry.cc:SigninPrefsKeys)
+
+// Multi-account Smart Account Switching promo preferences (registered in
+// `kRegisteredMultipleAccountsSigninPrefs` and stored in
+// `signin.multiple_accounts_metadata_list`), keyed bi-directionally by the
+// unordered account pair.
+// LINT.IfChange(MultipleAccountsSigninPrefsKeys)
+inline constexpr std::string_view kAccountSwitchingPromoExplicitDismissalCount =
+    "AccountSwitchingPromoExplicitDismissalCount";
+inline constexpr std::string_view kAccountSwitchingPromoSuppressedBySwitch =
+    "AccountSwitchingPromoSuppressedBySwitch";
+// LINT.ThenChange(//components/signin/public/base/signin_prefs_registry.cc:MultipleAccountsSigninPrefsKeys)
 
 // -----------------------------------------------------------------------------
 // DEPRECATED prefs: Check `SigninPrefs::MigrateObsoleteSigninPrefs()`.

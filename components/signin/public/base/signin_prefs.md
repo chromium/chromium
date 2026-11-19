@@ -1,7 +1,8 @@
 # Per-Account Preferences (`SigninPrefs`)
 
-`SigninPrefs` manages per-account sign-in preferences stored in a dictionary
-preference (`signin.accounts_metadata_dict`) keyed by `GaiaId`:
+`SigninPrefs` manages single-account sign-in preferences stored in a dictionary
+preference (`signin.accounts_metadata_dict`) keyed by `GaiaId` (and
+multi-account preferences stored in `signin.multiple_accounts_metadata_list`):
 
 * [`signin_prefs_keys.h`](signin_prefs_keys.h): Dictionary key constants and
   parent key paths (`namespace signin::internal`).
@@ -97,3 +98,17 @@ When a per-account preference is no longer used:
    `DEPRECATED prefs` section and add it to `kDeprecatedSigninPrefs` (for
    top-level account keys) so `SigninPrefs::MigrateObsoleteSigninPrefs()`
    automatically removes it from existing user profiles.
+
+## Multi-Account Preferences
+
+Preferences keyed by an unordered set of at least two distinct `GaiaId`s
+follow the exact same pipeline (`signin_prefs_keys.h` ->
+`kRegisteredMultipleAccountsSigninPrefs` in `SigninPrefsRegistry` ->
+`SigninPrefsAccessor` -> `SigninPrefs`),
+backed by the separate `signin.multiple_accounts_metadata_list` list
+preference. Entries store their `gaia_ids` in sorted canonical order so
+input ordering never creates duplicate entries and accesses are
+bi-directional. `SigninPrefsAccessor`
+automatically validates keys/types, observes changes, cleans up deprecated or
+invalid entries during `MigrateObsoleteMultipleAccountsPrefs()`, and prunes any entry
+referencing a removed account in `RemoveAllAccountPrefsExcept()`.

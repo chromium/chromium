@@ -169,6 +169,17 @@ constexpr PrefDescriptor kRegisteredSigninPrefs[] = {
 };
 // LINT.ThenChange(//components/signin/public/base/signin_prefs_keys.h:SigninPrefsKeys)
 
+// Registry of all active multi-account preferences stored in
+// `signin.multiple_accounts_metadata_list`.
+// LINT.IfChange(MultipleAccountsSigninPrefsKeys)
+constexpr PrefDescriptor kRegisteredMultipleAccountsSigninPrefs[] = {
+    {.key = signin::internal::kAccountSwitchingPromoExplicitDismissalCount,
+     .type = base::Value::Type::INTEGER},
+    {.key = signin::internal::kAccountSwitchingPromoSuppressedBySwitch,
+     .type = base::Value::Type::BOOLEAN},
+};
+// LINT.ThenChange(//components/signin/public/base/signin_prefs_keys.h:MultipleAccountsSigninPrefsKeys)
+
 constexpr bool SamePath(base::span<const std::string_view> parents_a,
                         std::string_view key_a,
                         base::span<const std::string_view> parents_b,
@@ -250,13 +261,12 @@ constexpr bool NoDottedKeyShadowsDict(base::span<const PrefDescriptor> prefs) {
       continue;
     }
     for (const auto& other : prefs) {
-      if (&dict == &other ||
-          !std::ranges::equal(dict.parent_keys(), other.parent_keys())) {
+      if (&dict == &other || other.key.size() <= dict.key.size() ||
+          !other.key.starts_with(dict.key) ||
+          other.key[dict.key.size()] != '.') {
         continue;
       }
-      if (other.key.size() > dict.key.size() &&
-          other.key.starts_with(dict.key) &&
-          other.key[dict.key.size()] == '.') {
+      if (std::ranges::equal(dict.parent_keys(), other.parent_keys())) {
         return false;
       }
     }
@@ -291,15 +301,38 @@ constexpr bool ParentKeysStorageHasNoGaps(
   return true;
 }
 
-static_assert(HasNonEmptyUniqueKeys(kRegisteredSigninPrefs));
-static_assert(TypesAreSet(kRegisteredSigninPrefs));
-static_assert(ParentKeysStorageHasNoGaps(kRegisteredSigninPrefs));
-static_assert(TimestampsAreStrings(kRegisteredSigninPrefs));
-static_assert(ParentsAreRegisteredDicts(kRegisteredSigninPrefs));
-static_assert(
-    DeprecatedPrefsAreUnregistered(kRegisteredSigninPrefs,
-                                   signin::internal::kDeprecatedSigninPrefs));
-static_assert(NoDottedKeyShadowsDict(kRegisteredSigninPrefs));
+#define VALIDATE_SIGNIN_PREFS_REGISTRY(registry)            \
+  static_assert(HasNonEmptyUniqueKeys(registry));           \
+  static_assert(TypesAreSet(registry));                     \
+  static_assert(ParentKeysStorageHasNoGaps(registry));      \
+  static_assert(TimestampsAreStrings(registry));            \
+  static_assert(ParentsAreRegisteredDicts(registry));       \
+  static_assert(DeprecatedPrefsAreUnregistered(             \
+      registry, signin::internal::kDeprecatedSigninPrefs)); \
+  static_assert(NoDottedKeyShadowsDict(registry))
+
+VALIDATE_SIGNIN_PREFS_REGISTRY(kRegisteredSigninPrefs);
+VALIDATE_SIGNIN_PREFS_REGISTRY(kRegisteredMultipleAccountsSigninPrefs);
+
+#undef VALIDATE_SIGNIN_PREFS_REGISTRY
+
+bool IsValidValueForRegistry(base::span<const PrefDescriptor> prefs,
+                             base::span<const std::string_view> parents,
+                             std::string_view key,
+                             const base::Value& value) {
+  // Intermediate container dictionaries cannot be set as leaf values.
+  if (value.is_dict()) {
+    return false;
+  }
+  const PrefDescriptor* pref_def = FindPrefDescriptor(prefs, parents, key);
+  if (!pref_def || pref_def->type != value.type()) {
+    return false;
+  }
+  if (pref_def->is_timestamp && !base::ValueToTime(&value).has_value()) {
+    return false;
+  }
+  return true;
+}
 
 }  // namespace
 
@@ -322,17 +355,30 @@ bool SigninPrefsRegistry::IsValidValue(
     base::span<const std::string_view> parents,
     std::string_view key,
     const base::Value& value) {
-  // Intermediate container dictionaries cannot be set as leaf values.
-  if (value.is_dict()) {
-    return false;
-  }
-  const PrefDescriptor* pref_def =
-      FindPrefDescriptor(kRegisteredSigninPrefs, parents, key);
-  if (!pref_def || pref_def->type != value.type()) {
-    return false;
-  }
-  if (pref_def->is_timestamp && !base::ValueToTime(&value).has_value()) {
-    return false;
-  }
-  return true;
+  return IsValidValueForRegistry(kRegisteredSigninPrefs, parents, key, value);
+}
+
+// static
+base::span<const PrefDescriptor> SigninPrefsRegistry::GetAllMultipleAccounts(
+    PassKey) {
+  return kRegisteredMultipleAccountsSigninPrefs;
+}
+
+// static
+const PrefDescriptor* SigninPrefsRegistry::FindMultipleAccounts(
+    PassKey,
+    base::span<const std::string_view> parents,
+    std::string_view key) {
+  return FindPrefDescriptor(kRegisteredMultipleAccountsSigninPrefs, parents,
+                            key);
+}
+
+// static
+bool SigninPrefsRegistry::IsValidMultipleAccountsValue(
+    PassKey,
+    base::span<const std::string_view> parents,
+    std::string_view key,
+    const base::Value& value) {
+  return IsValidValueForRegistry(kRegisteredMultipleAccountsSigninPrefs,
+                                 parents, key, value);
 }

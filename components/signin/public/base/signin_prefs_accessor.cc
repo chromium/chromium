@@ -4,6 +4,7 @@
 
 #include "components/signin/public/base/signin_prefs_accessor.h"
 
+#include <cstddef>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -25,11 +26,25 @@
 
 namespace {
 
-// Name of the main pref dictionary holding the account dictionaries of the
-// underlying prefs, with the key as the GaiaIds. The prefs stored through
-// this dict here are information not directly related to the account itself,
-// only metadata.
+// Name of the pref dictionary holding single-account metadata dictionaries,
+// keyed by individual `GaiaId`s. The prefs stored through this dict are
+// information not directly related to the account itself, only metadata.
+// Multi-account metadata is stored separately in
+// `kMultipleAccountsMetadataList`.
 constexpr char kSigninAccountPrefs[] = "signin.accounts_metadata_dict";
+
+// Name of the list pref holding metadata keyed by an unordered set of at
+// least two distinct `GaiaId`s (stored sorted by `GaiaId` to avoid duplicates).
+// Each entry is a dictionary:
+// {
+//   "gaia_ids": ["<gaia_id_1>", "<gaia_id_2>", ...],
+//   "prefs": { "<pref_key>": <value>, ... }
+// }
+constexpr char kMultipleAccountsMetadataList[] =
+    "signin.multiple_accounts_metadata_list";
+
+constexpr char kMultiAccountGaiaIdsKey[] = "gaia_ids";
+constexpr char kMultiAccountPrefsKey[] = "prefs";
 
 std::string FormatPrefPathForCheck(base::span<const std::string_view> parents,
                                    std::string_view key) {
@@ -39,20 +54,47 @@ std::string FormatPrefPathForCheck(base::span<const std::string_view> parents,
   return base::StrCat({base::JoinString(parents, "/"), "/", key});
 }
 
+const SigninPrefsRegistry::PrefDescriptor* RequireRegisteredPref(
+    SigninPrefsRegistry::PassKey pass_key,
+    base::span<const std::string_view> parents,
+    std::string_view key,
+    bool expected_is_multiple_accounts) {
+  const auto* pref_def =
+      expected_is_multiple_accounts
+          ? SigninPrefsRegistry::FindMultipleAccounts(pass_key, parents, key)
+          : SigninPrefsRegistry::Find(pass_key, parents, key);
+  const bool exists_in_other_scope =
+      !pref_def && (expected_is_multiple_accounts
+                        ? SigninPrefsRegistry::Find(pass_key, parents, key)
+                        : SigninPrefsRegistry::FindMultipleAccounts(
+                              pass_key, parents, key)) != nullptr;
+  CHECK(pref_def) << (exists_in_other_scope
+                          ? "Scope mismatch for SigninPrefs key: "
+                          : "Unregistered SigninPrefs key: ")
+                  << FormatPrefPathForCheck(parents, key);
+  return pref_def;
+}
+
 void CheckRegisteredPrefType(SigninPrefsRegistry::PassKey pass_key,
                              base::span<const std::string_view> parents,
                              std::string_view key,
                              base::Value::Type expected_type,
-                             bool expected_is_timestamp = false) {
-  const auto* pref_def = SigninPrefsRegistry::Find(pass_key, parents, key);
-  CHECK(pref_def) << "Unregistered SigninPrefs key: "
-                  << FormatPrefPathForCheck(parents, key);
+                             bool expected_is_timestamp = false,
+                             bool expected_is_multiple_accounts = false) {
+  const auto* pref_def = RequireRegisteredPref(pass_key, parents, key,
+                                               expected_is_multiple_accounts);
   CHECK_EQ(pref_def->type, expected_type)
       << "Type mismatch for SigninPrefs key: "
       << FormatPrefPathForCheck(parents, key);
   CHECK_EQ(pref_def->is_timestamp, expected_is_timestamp)
       << "Timestamp mismatch for SigninPrefs key: "
       << FormatPrefPathForCheck(parents, key);
+}
+
+int IncrementIntInDict(base::DictValue& dict, std::string_view key) {
+  int new_value = base::ClampAdd(dict.FindInt(key).value_or(0), 1);
+  dict.Set(key, new_value);
+  return new_value;
 }
 
 base::DictValue* EnsureNestedDict(base::DictValue& account_dict,
@@ -77,6 +119,172 @@ const base::DictValue* FindNestedDict(
   return dict;
 }
 
+void ValidateMultipleAccountsKey(const base::flat_set<GaiaId>& gaia_ids) {
+  CHECK_GE(gaia_ids.size(), 2u);
+  for (const GaiaId& gaia_id : gaia_ids) {
+    CHECK(!gaia_id.empty());
+  }
+}
+
+bool IsValidMultipleAccountsGaiaIdsList(const base::ListValue* gaia_ids_list) {
+  if (!gaia_ids_list || gaia_ids_list->size() < 2) {
+    return false;
+  }
+  const std::string* previous = nullptr;
+  for (const base::Value& entry : *gaia_ids_list) {
+    const std::string* current = entry.GetIfString();
+    if (!current || current->empty() || (previous && *previous >= *current)) {
+      return false;
+    }
+    previous = current;
+  }
+  return true;
+}
+
+bool MatchesMultipleAccountsEntry(const base::DictValue& entry_dict,
+                                  const base::flat_set<GaiaId>& gaia_ids) {
+  const base::ListValue* entry_gaia_ids =
+      entry_dict.FindList(kMultiAccountGaiaIdsKey);
+  if (!entry_gaia_ids || entry_gaia_ids->size() != gaia_ids.size()) {
+    return false;
+  }
+  auto it = gaia_ids.begin();
+  for (const base::Value& entry_value : *entry_gaia_ids) {
+    const std::string* entry_gaia_id = entry_value.GetIfString();
+    if (!entry_gaia_id || *entry_gaia_id != it->ToString()) {
+      return false;
+    }
+    ++it;
+  }
+  return true;
+}
+
+const base::DictValue* FindMultipleAccountsPrefsDict(
+    const PrefService& pref_service,
+    const base::flat_set<GaiaId>& gaia_ids) {
+  for (const base::Value& entry_value :
+       pref_service.GetList(kMultipleAccountsMetadataList)) {
+    const base::DictValue* entry_dict = entry_value.GetIfDict();
+    if (entry_dict && MatchesMultipleAccountsEntry(*entry_dict, gaia_ids)) {
+      return entry_dict->FindDict(kMultiAccountPrefsKey);
+    }
+  }
+  return nullptr;
+}
+
+base::DictValue* EnsureMultipleAccountsPrefsDict(
+    base::ListValue& entries,
+    const base::flat_set<GaiaId>& gaia_ids) {
+  for (base::Value& entry_value : entries) {
+    base::DictValue* entry_dict = entry_value.GetIfDict();
+    if (entry_dict && MatchesMultipleAccountsEntry(*entry_dict, gaia_ids)) {
+      return entry_dict->EnsureDict(kMultiAccountPrefsKey);
+    }
+  }
+  base::DictValue new_entry;
+  base::ListValue gaia_id_list;
+  for (const GaiaId& gaia_id : gaia_ids) {
+    gaia_id_list.Append(gaia_id.ToString());
+  }
+  new_entry.Set(kMultiAccountGaiaIdsKey, std::move(gaia_id_list));
+  new_entry.Set(kMultiAccountPrefsKey, base::DictValue());
+  entries.Append(std::move(new_entry));
+  return entries.back().GetDict().FindDict(kMultiAccountPrefsKey);
+}
+
+bool IsValidMultipleAccountsEntry(const base::Value& entry_value) {
+  const base::DictValue* entry_dict = entry_value.GetIfDict();
+  return entry_dict &&
+         IsValidMultipleAccountsGaiaIdsList(
+             entry_dict->FindList(kMultiAccountGaiaIdsKey)) &&
+         entry_dict->FindDict(kMultiAccountPrefsKey);
+}
+
+bool ShouldKeepMultipleAccountsEntry(
+    const base::Value& entry_value,
+    const base::flat_set<GaiaId>& gaia_ids_to_keep) {
+  if (!IsValidMultipleAccountsEntry(entry_value)) {
+    return false;
+  }
+  const base::ListValue* entry_gaia_ids =
+      entry_value.GetDict().FindList(kMultiAccountGaiaIdsKey);
+  for (const base::Value& entry : *entry_gaia_ids) {
+    if (!gaia_ids_to_keep.contains(GaiaId(entry.GetString()))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool HasAnyPrunableMultipleAccountsEntry(
+    const base::ListValue& entries,
+    const base::flat_set<GaiaId>& gaia_ids_to_keep) {
+  for (const base::Value& entry_value : entries) {
+    if (!ShouldKeepMultipleAccountsEntry(entry_value, gaia_ids_to_keep)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool HasDeprecatedSigninPref(const base::DictValue& prefs_dict) {
+  for (std::string_view deprecated_pref :
+       signin::internal::kDeprecatedSigninPrefs) {
+    if (prefs_dict.contains(deprecated_pref)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool NeedsMultipleAccountsMigration(const base::ListValue& entries) {
+  for (const base::Value& entry_value : entries) {
+    if (!IsValidMultipleAccountsEntry(entry_value)) {
+      return true;
+    }
+    const base::DictValue* prefs_dict =
+        entry_value.GetDict().FindDict(kMultiAccountPrefsKey);
+    if (prefs_dict->empty() || HasDeprecatedSigninPref(*prefs_dict)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+size_t PruneSingleAccountPrefs(PrefService& pref_service,
+                               const base::flat_set<GaiaId>& gaia_ids_to_keep) {
+  std::vector<std::string> accounts_prefs_to_remove;
+  for (const auto [account_key, _] :
+       pref_service.GetDict(kSigninAccountPrefs)) {
+    if (!gaia_ids_to_keep.contains(GaiaId(account_key))) {
+      accounts_prefs_to_remove.push_back(account_key);
+    }
+  }
+  if (accounts_prefs_to_remove.empty()) {
+    return 0;
+  }
+  ScopedDictPrefUpdate scoped_update(&pref_service, kSigninAccountPrefs);
+  for (std::string_view account_prefs_to_remove : accounts_prefs_to_remove) {
+    scoped_update->Remove(account_prefs_to_remove);
+  }
+  return accounts_prefs_to_remove.size();
+}
+
+void PruneMultipleAccountsPrefs(
+    PrefService& pref_service,
+    const base::flat_set<GaiaId>& gaia_ids_to_keep) {
+  if (!HasAnyPrunableMultipleAccountsEntry(
+          pref_service.GetList(kMultipleAccountsMetadataList),
+          gaia_ids_to_keep)) {
+    return;
+  }
+  ScopedListPrefUpdate scoped_update(&pref_service,
+                                     kMultipleAccountsMetadataList);
+  scoped_update->EraseIf([&gaia_ids_to_keep](const base::Value& entry_value) {
+    return !ShouldKeepMultipleAccountsEntry(entry_value, gaia_ids_to_keep);
+  });
+}
+
 }  // namespace
 
 SigninPrefsAccessor::SigninPrefsAccessor(PrefService& pref_service, PassKey)
@@ -88,13 +296,15 @@ SigninPrefsAccessor::~SigninPrefsAccessor() = default;
 void SigninPrefsAccessor::RegisterProfilePrefs(PrefRegistrySimple* registry,
                                                PassKey) {
   registry->RegisterDictionaryPref(kSigninAccountPrefs);
+  registry->RegisterListPref(kMultipleAccountsMetadataList);
 }
 
 // static
 void SigninPrefsAccessor::ObserveChanges(PrefChangeRegistrar& registrar,
                                          base::RepeatingClosure callback,
                                          PassKey) {
-  registrar.Add(kSigninAccountPrefs, std::move(callback));
+  registrar.Add(kSigninAccountPrefs, callback);
+  registrar.Add(kMultipleAccountsMetadataList, std::move(callback));
 }
 
 void SigninPrefsAccessor::MigrateObsoleteAccountPrefs() {
@@ -118,8 +328,41 @@ void SigninPrefsAccessor::MigrateObsoleteAccountPrefs() {
   }
 }
 
+void SigninPrefsAccessor::MigrateObsoleteMultipleAccountsPrefs() {
+  if (!pref_service_->FindPreference(kMultipleAccountsMetadataList)
+           ->IsUserControlled() ||
+      !NeedsMultipleAccountsMigration(
+          pref_service_->GetList(kMultipleAccountsMetadataList))) {
+    return;
+  }
+  ScopedListPrefUpdate multi_update(&pref_service_.get(),
+                                    kMultipleAccountsMetadataList);
+  for (base::Value& entry_value : *multi_update) {
+    if (!IsValidMultipleAccountsEntry(entry_value)) {
+      continue;
+    }
+    base::DictValue* prefs_dict =
+        entry_value.GetDict().FindDict(kMultiAccountPrefsKey);
+    for (std::string_view deprecated_pref :
+         signin::internal::kDeprecatedSigninPrefs) {
+      prefs_dict->Remove(deprecated_pref);
+    }
+  }
+  // Remove corrupted entries and entries left with no active prefs after
+  // iteration, avoiding manual iterator erasure during the loop above.
+  multi_update->EraseIf([](const base::Value& entry_value) {
+    return !IsValidMultipleAccountsEntry(entry_value) ||
+           entry_value.GetDict().FindDict(kMultiAccountPrefsKey)->empty();
+  });
+}
+
 const base::DictValue& SigninPrefsAccessor::GetAccountPrefsDict() const {
   return pref_service_->GetDict(kSigninAccountPrefs);
+}
+
+const base::ListValue& SigninPrefsAccessor::GetMultipleAccountsPrefsList()
+    const {
+  return pref_service_->GetList(kMultipleAccountsMetadataList);
 }
 
 bool SigninPrefsAccessor::HasAccountPrefs(const GaiaId& gaia_id) const {
@@ -129,23 +372,10 @@ bool SigninPrefsAccessor::HasAccountPrefs(const GaiaId& gaia_id) const {
 
 size_t SigninPrefsAccessor::RemoveAllAccountPrefsExcept(
     const base::flat_set<GaiaId>& gaia_ids_to_keep) {
-  std::vector<std::string> accounts_prefs_to_remove;
-  for (const auto [account_key, _] :
-       pref_service_->GetDict(kSigninAccountPrefs)) {
-    if (!gaia_ids_to_keep.contains(GaiaId(account_key))) {
-      accounts_prefs_to_remove.push_back(account_key);
-    }
-  }
-  if (accounts_prefs_to_remove.empty()) {
-    return 0;
-  }
-
-  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
-  for (std::string_view account_prefs_to_remove : accounts_prefs_to_remove) {
-    scoped_update->Remove(account_prefs_to_remove);
-  }
-
-  return accounts_prefs_to_remove.size();
+  const size_t removed_single_accounts_count =
+      PruneSingleAccountPrefs(*pref_service_, gaia_ids_to_keep);
+  PruneMultipleAccountsPrefs(*pref_service_, gaia_ids_to_keep);
+  return removed_single_accounts_count;
 }
 
 int SigninPrefsAccessor::IncrementIntPref(
@@ -158,9 +388,7 @@ int SigninPrefsAccessor::IncrementIntPref(
   ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
   base::DictValue* dict =
       EnsureNestedDict(*scoped_update->EnsureDict(gaia_id.ToString()), parents);
-  int new_value = base::ClampAdd(dict->FindInt(key).value_or(0), 1);
-  dict->Set(key, new_value);
-  return new_value;
+  return IncrementIntInDict(*dict, key);
 }
 
 int SigninPrefsAccessor::GetIntPref(
@@ -262,6 +490,8 @@ void SigninPrefsAccessor::SetValue(const GaiaId& gaia_id,
                                    base::Value value,
                                    base::span<const std::string_view> parents) {
   CHECK(!gaia_id.empty());
+  RequireRegisteredPref(base::PassKey<SigninPrefsAccessor>(), parents, key,
+                        /*expected_is_multiple_accounts=*/false);
   CHECK(SigninPrefsRegistry::IsValidValue(base::PassKey<SigninPrefsAccessor>(),
                                           parents, key, value))
       << "Invalid value for SigninPrefs key: "
@@ -277,10 +507,8 @@ bool SigninPrefsAccessor::ClearPref(
     std::string_view key,
     base::span<const std::string_view> parents) {
   CHECK(!gaia_id.empty());
-  CHECK(SigninPrefsRegistry::Find(base::PassKey<SigninPrefsAccessor>(), parents,
-                                  key))
-      << "Unregistered SigninPrefs key: "
-      << FormatPrefPathForCheck(parents, key);
+  RequireRegisteredPref(base::PassKey<SigninPrefsAccessor>(), parents, key,
+                        /*expected_is_multiple_accounts=*/false);
   // Check whether the target key exists before opening `ScopedDictPrefUpdate`
   // so that clearing an absent key or account does not dirty the pref store or
   // fire `PrefChangeRegistrar` notifications. Only a value controlled by the
@@ -315,10 +543,8 @@ bool SigninPrefsAccessor::ClearPref(
 size_t SigninPrefsAccessor::ClearPrefForAllAccounts(
     std::string_view key,
     base::span<const std::string_view> parents) {
-  CHECK(SigninPrefsRegistry::Find(base::PassKey<SigninPrefsAccessor>(), parents,
-                                  key))
-      << "Unregistered SigninPrefs key: "
-      << FormatPrefPathForCheck(parents, key);
+  RequireRegisteredPref(base::PassKey<SigninPrefsAccessor>(), parents, key,
+                        /*expected_is_multiple_accounts=*/false);
   if (!pref_service_->FindPreference(kSigninAccountPrefs)->IsUserControlled()) {
     return 0;
   }
@@ -347,6 +573,63 @@ size_t SigninPrefsAccessor::ClearPrefForAllAccounts(
     CHECK(dict->Remove(key));
   }
   return accounts_to_clear.size();
+}
+
+int SigninPrefsAccessor::IncrementMultipleAccountsIntPref(
+    const base::flat_set<GaiaId>& gaia_ids,
+    std::string_view key) {
+  ValidateMultipleAccountsKey(gaia_ids);
+  CheckRegisteredPrefType(base::PassKey<SigninPrefsAccessor>(), {}, key,
+                          base::Value::Type::INTEGER,
+                          /*expected_is_timestamp=*/false,
+                          /*expected_is_multiple_accounts=*/true);
+  ScopedListPrefUpdate scoped_update(&pref_service_.get(),
+                                     kMultipleAccountsMetadataList);
+  base::DictValue* dict =
+      EnsureMultipleAccountsPrefsDict(*scoped_update, gaia_ids);
+  return IncrementIntInDict(*dict, key);
+}
+
+int SigninPrefsAccessor::GetMultipleAccountsIntPref(
+    const base::flat_set<GaiaId>& gaia_ids,
+    std::string_view key) const {
+  ValidateMultipleAccountsKey(gaia_ids);
+  CheckRegisteredPrefType(base::PassKey<SigninPrefsAccessor>(), {}, key,
+                          base::Value::Type::INTEGER,
+                          /*expected_is_timestamp=*/false,
+                          /*expected_is_multiple_accounts=*/true);
+  const base::DictValue* dict =
+      FindMultipleAccountsPrefsDict(*pref_service_, gaia_ids);
+  return dict ? dict->FindInt(key).value_or(0) : 0;
+}
+
+void SigninPrefsAccessor::SetMultipleAccountsBooleanPref(
+    const base::flat_set<GaiaId>& gaia_ids,
+    std::string_view key,
+    bool value) {
+  ValidateMultipleAccountsKey(gaia_ids);
+  CheckRegisteredPrefType(base::PassKey<SigninPrefsAccessor>(), {}, key,
+                          base::Value::Type::BOOLEAN,
+                          /*expected_is_timestamp=*/false,
+                          /*expected_is_multiple_accounts=*/true);
+  ScopedListPrefUpdate scoped_update(&pref_service_.get(),
+                                     kMultipleAccountsMetadataList);
+  base::DictValue* dict =
+      EnsureMultipleAccountsPrefsDict(*scoped_update, gaia_ids);
+  dict->Set(key, value);
+}
+
+bool SigninPrefsAccessor::GetMultipleAccountsBooleanPref(
+    const base::flat_set<GaiaId>& gaia_ids,
+    std::string_view key) const {
+  ValidateMultipleAccountsKey(gaia_ids);
+  CheckRegisteredPrefType(base::PassKey<SigninPrefsAccessor>(), {}, key,
+                          base::Value::Type::BOOLEAN,
+                          /*expected_is_timestamp=*/false,
+                          /*expected_is_multiple_accounts=*/true);
+  const base::DictValue* dict =
+      FindMultipleAccountsPrefsDict(*pref_service_, gaia_ids);
+  return dict ? dict->FindBool(key).value_or(false) : false;
 }
 
 void SigninPrefsAccessor::SetDeprecatedPrefForTesting(const GaiaId& gaia_id) {
