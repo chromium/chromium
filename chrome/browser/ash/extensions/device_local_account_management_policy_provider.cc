@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/extensions/device_local_account_management_policy_provider.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/extensions/extensions_permissions_tracker.h"
-#include "chrome/grit/generated_resources.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
