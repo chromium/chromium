@@ -1139,8 +1139,9 @@ SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap) {
   if ((source_bitmap.width() != kIconScaleFactor * kOldAvatarIconWidth) ||
       (source_bitmap.height() != kIconScaleFactor * kOldAvatarIconHeight)) {
     // It's not an old avatar icon, the image should be square.
-    CHECK_EQ(source_bitmap.width(), source_bitmap.height(),
-             base::NotFatalUntil::M162);
+    // TODO(crbug.com/579578807): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(source_bitmap.width(), source_bitmap.height());
     return source_bitmap;
   }
 
