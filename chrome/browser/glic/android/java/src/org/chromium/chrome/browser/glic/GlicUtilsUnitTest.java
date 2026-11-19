@@ -79,6 +79,15 @@ public class GlicUtilsUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.GLIC_ANDROID_TABLET)
+    public void testIsSidePanelFormFactor_Foldable_DisabledEvenWithTabletFlag() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        DeviceInfo.setIsFoldableForTesting(true);
+        assertFalse(GlicUtils.isSidePanelFormFactor(mContext));
+    }
+
+    @Test
     public void testIsSidePanelFormFactor_TestingOverride() {
         GlicUtils.setIsSidePanelFormFactorForTesting(true);
         assertTrue(GlicUtils.isSidePanelFormFactor(mContext));

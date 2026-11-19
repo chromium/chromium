@@ -28,7 +28,7 @@ public class GlicUtils {
      * bottom sheet.
      *
      * <p>Desktop always uses the side panel when the side panel framework is enabled. Tablets only
-     * use it when {@code GlicAndroidTablet} is enabled. Phones never use it.
+     * use it when {@code GlicAndroidTablet} is enabled. Phones and foldables never use it.
      *
      * @param context An Android context used to determine the form factor. Must be an Activity, or
      *     a context wrapping one, since only those are meaningfully associated with a display. See
@@ -40,6 +40,11 @@ public class GlicUtils {
             return sIsSidePanelFormFactorForTesting;
         }
         if (!AndroidSidePanelEnabledFn.isEnabled()) {
+            return false;
+        }
+        // TODO(crbug.com/519677400): Foldables stay on the bottom sheet until posture-aware
+        // container switching is supported.
+        if (DeviceInfo.isFoldable()) {
             return false;
         }
         if (DeviceInfo.isDesktop()) {

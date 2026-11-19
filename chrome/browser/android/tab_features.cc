@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/android/android_info.h"
+#include "base/android/device_info.h"
 #include "base/check_is_test.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -398,8 +399,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   glic_web_drag_observer_ = std::make_unique<glic::GlicWebDragObserver>(*tab);
 
   bool use_glic_side_panel = false;
+  // TODO(crbug.com/519677400): Foldables stay on the bottom sheet until
+  // posture-aware container switching is supported.
   if (base::FeatureList::IsEnabled(features::kGlicAndroidSidePanel) &&
-      AndroidSidePanelEnabledFn::IsEnabled()) {
+      AndroidSidePanelEnabledFn::IsEnabled() &&
+      !base::android::device_info::is_foldable()) {
     const ui::DeviceFormFactor form_factor = ui::GetDeviceFormFactor();
     use_glic_side_panel =
         form_factor == ui::DEVICE_FORM_FACTOR_DESKTOP ||
