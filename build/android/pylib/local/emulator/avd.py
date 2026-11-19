@@ -1731,7 +1731,7 @@ def _EnsureSystemSettings(device):
 
     logging.info('Sync the device date.')
     timezone = device.RunShellCommand(
-        ['date', '+"%Z"'], single_line=True, check_return=True
+        ['date', '+%Z'], single_line=True, check_return=True
     )
     timezone_property = device.GetProp('persist.sys.timezone', cache=False)
     if timezone != 'UTC' or timezone_property != 'Etc/UTC':

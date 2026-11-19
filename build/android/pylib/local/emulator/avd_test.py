@@ -392,7 +392,7 @@ class AvdEnsureSystemSettingsTest(unittest.TestCase):
             self.commands.append((command, kwargs))
             if command == ['settings', 'get', 'secure', 'long_press_timeout']:
                 return avd._LONG_PRESS_TIMEOUT
-            if command == ['date', '+"%Z"']:
+            if command == ['date', '+%Z']:
                 return self._timezone
             return ''
 
