@@ -30,8 +30,8 @@ static_library("sync") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/app:generated_resources",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui:chrome_pages",

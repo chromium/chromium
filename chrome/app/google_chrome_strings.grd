@@ -1450,19 +1450,6 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
-      <!-- Sync/sign-in error messages -->
-      <if expr="is_chromeos">
-        <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error bubble view when the user needs to enter their sync passphrase.">
-          To use and save Chrome data in your Google Account, enter your passphrase
-        </message>
-        <message name="IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys and resume sync.">
-          To use and save Chrome data in your Google Account, verify it's you
-        </message>
-        <message name="IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error notification when the user needs to reauth to add recovery options, affecting all sync data.">
-          To make sure you can always use and save Chrome data in your Google Account, verify it's you
-        </message>
-      </if>
-
       <!-- Profile Menu -->
       <message name="IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON" meaning="Button" desc="Text for the button in the sign-in promo in the profile menu when the used is signed out.">
         Sign in to Chrome

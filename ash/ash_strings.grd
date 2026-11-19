@@ -12329,6 +12329,83 @@ You can manage this account’s settings by installing the Family Link app on yo
       <message name="IDS_A11Y_ALERT_WORKSPACE_FULLSCREEN_STATE_EXITED" desc="The accessible text read when the current workspace state changes from fullscreen to others, which means the window in current workspace is not fullscreen.">
         Exited full screen
       </message>
+
+      <!-- Sync error messages -->
+      <message name="IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification.">
+        Sync isn't working
+      </message>
+      <message name="IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE_2" desc="Title in the sync error bubble view/notification.">
+        Verify it's you
+      </message>
+      <message name="IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification for the case where the error only affects sync-ed passwords.">
+        Password sync isn't working
+      </message>
+      <message name="IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification for the case where sync needs to verify the user.">
+        Sync needs to verify it's you
+      </message>
+      <message name="IDS_SYNC_DASHBOARD_DISABLED_BUBBLE_VIEW_TITLE" desc="Title in the notification shown when sync has been reset from the Google Dashboard.">
+        ChromeOS data no longer synced
+      </message>
+      <message name="IDS_SYNC_DASHBOARD_DISABLED_BUBBLE_VIEW_MESSAGE" desc="Message in the notification shown when sync has been reset from the Google Dashboard.">
+        To get your apps, settings, and Wi-Fi networks on all your devices, turn on sync in your ChromeOS settings
+      </message>
+      <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error bubble view when the user needs to enter their sync passphrase.">
+        To start sync, enter your passphrase
+      </message>
+      <message name="IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys, required to resume syncing of passwords specifically (other sync data works normally).">
+        To sync your passwords, verify it's you
+      </message>
+      <message name="IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys, required to resume syncing of passwords specifically (other sync data works normally).">
+        To use and save passwords in your Google Account, verify it's you
+      </message>
+      <message name="IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys and resume sync.">
+        To start sync, verify it's you
+      </message>
+      <message name="IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to add recovery options, affecting all sync data.">
+        To make sure you can always access your sync data, verify it's you
+      </message>
+      <message name="IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to add recovery options, affecting passwords only.">
+        To make sure you can always access your saved passwords, verify it's you
+      </message>
+      <message name="IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error notification when the user needs to reauth to add recovery options, affecting passwords only.">
+        To make sure you can always use the passwords in your Google Account, verify it's you
+      </message>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error bubble view when the user needs to enter their sync passphrase.">
+            To use and save Chrome data in your Google Account, enter your passphrase
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error bubble view when the user needs to enter their sync passphrase.">
+            To use and save Chromium data in your Google Account, enter your passphrase
+          </message>
+        </else>
+      </if>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys and resume sync.">
+            To use and save Chrome data in your Google Account, verify it's you
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys and resume sync.">
+            To use and save Chromium data in your Google Account, verify it's you
+          </message>
+        </else>
+      </if>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error notification when the user needs to reauth to add recovery options, affecting all sync data.">
+            To make sure you can always use and save Chrome data in your Google Account, verify it's you
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE_2" desc="Message in the sync error notification when the user needs to reauth to add recovery options, affecting all sync data.">
+            To make sure you can always use and save Chromium data in your Google Account, verify it's you
+          </message>
+        </else>
+      </if>
     </messages>
   </release>
 </grit>
