@@ -5,7 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 
+#import <map>
 #import <memory>
+#import <set>
+#import <string>
 
 #import "base/gtest_prod_util.h"
 #import "base/memory/raw_ptr.h"
@@ -171,10 +174,6 @@ class AutofillBottomSheetTabHelper
   void DetachPasswordGenerationListenersForAllFrames();
 
   // Detach the payments listeners, which will deactivate the payments bottom
-  // sheet on the provided frame.
-  void DetachPaymentsListeners(const std::string& frame_id);
-
-  // Detach the payments listeners, which will deactivate the payments bottom
   // sheet on all frames.
   void DetachPaymentsListenersForAllFrames();
 
@@ -199,6 +198,8 @@ class AutofillBottomSheetTabHelper
   // web::WebFramesManager::Observer:
   void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
                                web::WebFrame* web_frame) override;
+  void WebFrameBecameUnavailable(web::WebFramesManager* web_frames_manager,
+                                 const std::string& frame_id) override;
 
   // autofill::AutofillManager::Observer:
   void OnAutofillManagerStateChanged(
@@ -256,6 +257,9 @@ class AutofillBottomSheetTabHelper
                            DidStartNavigationCancelsPendingCallbacks);
   FRIEND_TEST_ALL_PREFIXES(AutofillBottomSheetTabHelperTest,
                            RenderProcessGoneClearsState);
+  FRIEND_TEST_ALL_PREFIXES(
+      AutofillBottomSheetTabHelperTest,
+      UpdateListenersForPaymentsForm_ListenersInvalidation_SkipsEmptyDetaches);
 
   explicit AutofillBottomSheetTabHelper(web::WebState* web_state);
 
@@ -267,15 +271,19 @@ class AutofillBottomSheetTabHelper
   // too many times by the user.
   bool HasReachedPasswordGenerationDismissLimit();
 
-  // Prepare bottom sheet using data from the form prediction.
+  // Prepares the bottom sheet using data from the form prediction. Does nothing
+  // if `renderer_ids` is empty or `frame_id` does not resolve to a live frame.
   void AttachListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
-      std::set<autofill::FieldRendererId>& registered_renderer_ids,
+      std::map<std::string, std::set<autofill::FieldRendererId>>&
+          registered_renderer_ids_by_frame,
       const std::string& frame_id,
       bool allow_autofocus,
       bool only_new);
 
-  // Detach listeners, which will deactivate the associated bottom sheet.
+  // Detaches focus listeners for `renderer_ids` in `frame_id`, deactivating the
+  // associated bottom sheet. Does nothing if `frame_id` does not resolve to a
+  // live frame, or if `renderer_ids` is empty and `refocus` is false.
   void DetachListenersForFrame(
       const std::string& frame_id,
       const std::set<autofill::FieldRendererId>& renderer_ids,

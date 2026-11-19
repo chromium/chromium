@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 
+#import "base/check.h"
 #import "base/feature_list.h"
 #import "base/time/time.h"
 #import "base/values.h"
@@ -73,10 +74,11 @@ void AutofillBottomSheetJavaScriptFeature::AttachListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     web::WebFrame* frame,
     bool allow_autofocus) {
-  // TODO(crbug.com/40061699): Properly handle WebFrame destruction.
-  if (!frame) {
+  CHECK(frame, base::NotFatalUntil::M164);
+  if (!frame || renderer_ids.empty()) {
     return;
   }
+
   base::ListValue renderer_id_list =
       base::ListValue::with_capacity(renderer_ids.size());
   for (auto renderer_id : renderer_ids) {
@@ -95,8 +97,11 @@ void AutofillBottomSheetJavaScriptFeature::DetachListeners(
     const std::set<autofill::FieldRendererId>& renderer_ids,
     web::WebFrame* frame,
     bool refocus) {
-  // TODO(crbug.com/40061699): Properly handle WebFrame destruction.
-  if (!frame) {
+  CHECK(frame, base::NotFatalUntil::M164);
+  // Skip evaluating JavaScript if there are no listeners to detach and
+  // refocusing is not requested (`detachListeners` in `bottom_sheet.ts` is a
+  // no-op in that case).
+  if (!frame || (renderer_ids.empty() && !refocus)) {
     return;
   }
   base::ListValue renderer_id_list =

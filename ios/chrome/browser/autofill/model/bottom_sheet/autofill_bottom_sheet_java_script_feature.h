@@ -17,18 +17,19 @@ class AutofillBottomSheetJavaScriptFeature : public web::JavaScriptFeature {
  public:
   static AutofillBottomSheetJavaScriptFeature* GetInstance();
 
-  // This function sends the relevant renderer IDs to the bottom_sheet.ts
-  // script, which will result in attaching listeners for the focus events
-  // on these fields.
+  // Sends the relevant `renderer_ids` to the `bottom_sheet.ts` script,
+  // attaching listeners for focus events on these fields in `frame`. `frame`
+  // must be non-null. Does nothing if `renderer_ids` is empty.
   void AttachListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       web::WebFrame* frame,
       bool allow_autofocus);
 
-  // This function will result in detaching listeners from the provided renderer
-  // ids, which will prevent the associated bottom sheet from showing up until
-  // the form reloads.
-  // - If "refocus" is true, it will also re-trigger a focus event on the field
+  // Detaches focus event listeners from the provided `renderer_ids` in `frame`,
+  // preventing the associated bottom sheet from showing up until the form
+  // reloads. `frame` must be non-null. Does nothing if `renderer_ids` is empty
+  // and `refocus` is false.
+  // - If `refocus` is true, it will also re-trigger a focus event on the field
   // that had originally triggered the bottom sheet.
   void DetachListeners(const std::set<autofill::FieldRendererId>& renderer_ids,
                        web::WebFrame* frame,
