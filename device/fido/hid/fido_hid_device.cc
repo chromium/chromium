@@ -14,6 +14,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -153,14 +154,14 @@ void FidoHidDevice::Transition(std::optional<State> next_state) {
       break;
     case State::kDeviceError:
     case State::kMsgError:
-      base::WeakPtr<FidoHidDevice> self = weak_factory_.GetWeakPtr();
-      // Executing callbacks may free |this|. Check |self| first.
-      while (self && !pending_transactions_.empty()) {
-        // Respond to any pending requests.
+      while (!pending_transactions_.empty()) {
+        // Respond to any pending requests asynchronously so `DeviceTransact`
+        // never hairpins its callback.
         DeviceCallback pending_cb =
             std::move(pending_transactions_.front().callback);
         pending_transactions_.pop_front();
-        std::move(pending_cb).Run(std::nullopt);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(pending_cb), std::nullopt));
       }
       break;
   }
