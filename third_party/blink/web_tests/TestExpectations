@@ -8743,3 +8743,13 @@ crbug.com/583314298 external/wpt/css/css-pseudo/marker-text-combine-upright-002.
 
 # Gardener 2026-11-11
 crbug.com/581870108 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-set-currenttime-negative.html [ Failure Pass ]
+crbug.com/570220095 [ Mac ] external/wpt/css/css-contain/content-visibility/content-visibility-with-top-layer-005.html [ Failure Pass ]
+crbug.com/570216210 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-007.html [ Failure Pass ]
+crbug.com/570225823 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-rtl-001.html [ Failure Pass ]
+crbug.com/580335041 [ Mac ] external/wpt/resize-observer/scrollbars.html [ Failure Pass ]
+
+# Gardener 2026-11-12
+# The iframe src (helloWorld.html) does not exist; the pixel snapshot races the
+# commit of the net::ERR_FILE_NOT_FOUND error page. Fix pending in crrev.com/c/8677279.
+crbug.com/566257733 tables/mozilla/bugs/bug137388-1.html [ Failure Pass ]
+crbug.com/566257733 tables/mozilla/bugs/bug137388-2.html [ Failure Pass ]
