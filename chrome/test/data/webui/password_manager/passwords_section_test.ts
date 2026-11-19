@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import type {AddPasswordDialogElement, AuthTimedOutDialogElement, MovePasswordsDialogElement, PasswordListItemElement, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
+import type {AddPasswordDialogElement, AuthTimedOutDialogElement, MovePasswordsDialogElement, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerActionableError, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, PrefsBrowserProxy, PrefService, Router, SyncBrowserProxyImpl, TrustedVaultUnlockDialogSource, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -143,8 +143,7 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    const listEntry =
-        section.shadowRoot.querySelector<HTMLElement>('password-list-item');
+    const listEntry = section.shadowRoot.querySelector('password-list-item');
     assertTrue(!!listEntry);
     listEntry.click();
     assertEquals(
@@ -168,8 +167,7 @@ suite('PasswordsSectionTest', function() {
 
     const section = await createPasswordsSection();
 
-    const listEntry =
-        section.shadowRoot.querySelector<HTMLElement>('password-list-item');
+    const listEntry = section.shadowRoot.querySelector('password-list-item');
     assertTrue(!!listEntry);
     listEntry.click();
     // Without setRequestCredentialsDetailsResponse auth is considered failed.
@@ -202,8 +200,7 @@ suite('PasswordsSectionTest', function() {
     await microtasksFinished();
 
     const listEntries =
-        section.shadowRoot.querySelectorAll<PasswordListItemElement>(
-            'password-list-item');
+        section.shadowRoot.querySelectorAll('password-list-item');
     assertEquals(2, listEntries.length);
 
     // Since there is only 1 PasswordUIEntry in the group number of accounts is
@@ -598,7 +595,7 @@ suite('PasswordsSectionTest', function() {
         const section = await createPasswordsSection();
 
         const listEntry =
-            section.shadowRoot.querySelector<HTMLElement>('password-list-item');
+            section.shadowRoot.querySelector('password-list-item');
         assertTrue(!!listEntry);
         listEntry.click();
         assertEquals(
@@ -647,8 +644,7 @@ suite('PasswordsSectionTest', function() {
         const listEntry =
             section.shadowRoot.querySelector('password-list-item');
         assertTrue(!!listEntry);
-        assertFalse(isVisible(listEntry.shadowRoot.querySelector<HTMLElement>(
-            '#cloudUploadButton')));
+        assertFalse(isVisible(listEntry.$.cloudUploadButton));
       });
 
   test('Should show upload icon', async function() {
@@ -663,8 +659,7 @@ suite('PasswordsSectionTest', function() {
     const section = await createPasswordsSection();
     const listEntry = section.shadowRoot.querySelector('password-list-item');
     assertTrue(!!listEntry);
-    assertTrue(isVisible(
-        listEntry.shadowRoot.querySelector<HTMLElement>('#cloudUploadButton')));
+    assertTrue(isVisible(listEntry.$.cloudUploadButton));
   });
 
   test('Clicking upload icon opens dialog', async function() {
@@ -688,10 +683,7 @@ suite('PasswordsSectionTest', function() {
             '#movePasswordsDialog'));
 
     // Click the button to open the dialog.
-    const cloudUploadButton =
-        listEntry.shadowRoot.querySelector<HTMLElement>('#cloudUploadButton');
-    assertTrue(!!cloudUploadButton);
-    cloudUploadButton.click();
+    listEntry.$.cloudUploadButton.click();
     await microtasksFinished();
 
     // Now the dialog should have opened.
@@ -727,8 +719,7 @@ suite('PasswordsSectionTest', function() {
                                 'cr-tooltip')!.textContent.trim());
     assertEquals(
         'Save bar.com password in your Google Account',
-        listEntry.shadowRoot.querySelector<HTMLElement>(
-                                '#cloudUploadButton')!.ariaLabel);
+        listEntry.$.cloudUploadButton.ariaLabel);
   });
 
   test('Dialog closes when account storage is disabled', async function() {
@@ -744,8 +735,7 @@ suite('PasswordsSectionTest', function() {
         passwordManager.data.groups[0]!.entries.slice());
 
     const section = await createPasswordsSection();
-    const listEntry = section.shadowRoot.querySelector<PasswordListItemElement>(
-        'password-list-item');
+    const listEntry = section.shadowRoot.querySelector('password-list-item');
     assertTrue(!!listEntry);
 
     // Initially, the dialog should not exist.
@@ -754,8 +744,7 @@ suite('PasswordsSectionTest', function() {
             '#movePasswordsDialog'));
 
     // Click the button to open the dialog.
-    listEntry.shadowRoot.querySelector<HTMLElement>(
-                            '#cloudUploadButton')!.click();
+    listEntry.$.cloudUploadButton.click();
     await microtasksFinished();
 
     // Now the dialog should have opened.

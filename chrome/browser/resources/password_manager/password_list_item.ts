@@ -8,6 +8,7 @@ import './site_favicon.js';
 import './searchable_label.js';
 import './dialogs/move_passwords_dialog.js';
 
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -19,12 +20,14 @@ import {getCss} from './password_list_item.css.js';
 import {getHtml} from './password_list_item.html.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 import {Page, Router, UrlParam} from './router.js';
+import type {SearchableLabelElement} from './searchable_label.js';
 
 export interface PasswordListItemElement {
   $: {
-    displayedName: HTMLElement,
+    cloudUploadButton: CrIconButtonElement,
+    displayedName: SearchableLabelElement,
     numberOfAccounts: HTMLElement,
-    seePasswordDetails: HTMLElement,
+    seePasswordDetails: CrIconButtonElement,
   };
 }
 const PasswordListItemElementBase = I18nMixinLit(CrLitElement);
