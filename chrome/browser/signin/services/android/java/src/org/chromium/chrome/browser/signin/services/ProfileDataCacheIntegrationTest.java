@@ -37,9 +37,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -48,10 +46,8 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -135,10 +131,11 @@ public class ProfileDataCacheIntegrationTest {
 
         // Adding an account triggers an onAccountsUpdated(), which caused a cache rebuild and
         // trigger onAccountsUpdated() and onProfileDataUpdated() for that account.
-        // AccountTrackerService triggers two onExtendedAccountInfoUpdated() for each added account
-        // - one for the account info, another for the avatar image.
+        // AccountTrackerService triggers three onExtendedAccountInfoUpdated() for each added
+        // account - one for the account info, one for the avatar image, and one for the
+        // capabilities.
         assertAccountsUpdatedCount(1);
-        assertProfileDataUpdatedCount(3);
+        assertProfileDataUpdatedCount(4);
     }
 
     @Test
@@ -152,8 +149,8 @@ public class ProfileDataCacheIntegrationTest {
         mSigninTestRule.addAccount(account);
         waitForCachedAccounts(List.of(account));
 
-        // Both onExtendedAccountInfoUpdated() calls for the new account (account info and avatar
-        // image) arrive before its refresh token and are ignored. The following
+        // All three onExtendedAccountInfoUpdated() calls for the new account (account info, avatar
+        // image, and capabilities) arrive before its refresh token and are ignored. The following
         // onRefreshTokenUpdatedForAccount() adds the account and notifies about it once.
         assertAccountsUpdatedCount(1);
         assertProfileDataUpdatedCount(1);
@@ -178,12 +175,12 @@ public class ProfileDataCacheIntegrationTest {
         // account has been changed.
         // LARGE_ACCOUNTS_LIST_SIZE + 1 is triggered by the cache rebuild caused by
         // onAccountsUpdated.
-        // +2 is triggered by the onExtendedAccountInfoUpdated, caused by the double notification
+        // +3 is triggered by the onExtendedAccountInfoUpdated, caused by the triple notification
         // triggered by AccountTrackerService. One notification for the newly added account, second
-        // for the account's avatar image.
+        // for the account's avatar image, and third for its capabilities.
         assertAccountsUpdatedCount(1);
         // TODO(crbug.com/569949003): Limit number of onProfileDataUpdated callbacks
-        assertProfileDataUpdatedCount((LARGE_ACCOUNTS_LIST_SIZE + 1) + 2);
+        assertProfileDataUpdatedCount((LARGE_ACCOUNTS_LIST_SIZE + 1) + 3);
     }
 
     @Test
@@ -200,8 +197,8 @@ public class ProfileDataCacheIntegrationTest {
         expectedAccounts.add(newAccount);
         waitForCachedAccounts(expectedAccounts);
 
-        // Both onExtendedAccountInfoUpdated() calls for the new account (account info and avatar
-        // image) arrive before its refresh token and are ignored. The following
+        // All three onExtendedAccountInfoUpdated() calls for the new account (account info, avatar
+        // image, and capabilities) arrive before its refresh token and are ignored. The following
         // onRefreshTokenUpdatedForAccount() adds the account and notifies about it once. The
         // refresh token updates of the other accounts are ignored, as they are already known.
         assertAccountsUpdatedCount(1);
@@ -481,24 +478,13 @@ public class ProfileDataCacheIntegrationTest {
         return accounts;
     }
 
-    /** Creates an account with an avatar image and all the capabilities known. */
+    /** Creates an account with an avatar image. */
     private static AccountInfo createAccount(int index) {
         final String email = "account" + index + "@gmail.com";
-        Map<String, Boolean> capabilities = new HashMap<>();
-        // Known capabilities prevent the native AccountFetcherService from fetching them
-        // asynchronously. Such a fetch would update the account info at an arbitrary point in time
-        // and make the number of observer calls non-deterministic.
-        // TODO(crbug.com/569918576): Remove setting capabilities when AccountCapabilitiesFetcher
-        // implementation is fixed.
-        for (String capabilityName :
-                AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES) {
-            capabilities.put(capabilityName, false);
-        }
         return new AccountInfo.Builder(email, FakeAccountManagerFacade.toGaiaId(email))
                 .fullName("Account" + index + " Full")
                 .givenName("Account" + index + " Given")
                 .accountImage(TestAccounts.ACCOUNT1.getAccountImage())
-                .accountCapabilities(new AccountCapabilities(capabilities))
                 .build();
     }
 

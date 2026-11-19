@@ -37,13 +37,13 @@ public class AccountCapabilitiesFetcher {
 
     @CalledByNative
     public void startFetchingAccountCapabilities() {
-        // TODO(crbug.com/569918576): Execute onCapabilitiesFetchComplete instantly if fulfilled
-        AccountManagerFacadeProvider.getInstance()
-                .getAccountCapabilities(mCoreAccountInfo)
-                .then(
-                        accountCapabilities -> {
-                            onCapabilitiesFetchComplete(accountCapabilities);
-                        });
+        var accountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        var capabilitiesPromise = accountManagerFacade.getAccountCapabilities(mCoreAccountInfo);
+        if (capabilitiesPromise.isFulfilled()) {
+            onCapabilitiesFetchComplete(capabilitiesPromise.getResult());
+        } else {
+            capabilitiesPromise.then(this::onCapabilitiesFetchComplete);
+        }
     }
 
     @CalledByNative
