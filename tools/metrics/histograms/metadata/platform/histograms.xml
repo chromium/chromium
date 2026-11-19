@@ -764,16 +764,6 @@ chromium-metrics-reviews@google.com.
   <token key="FirmwareType" variants="FirmwareTypes"/>
 </histogram>
 
-<histogram name="Platform.Featured.BootAttemptsSinceLastSafeSeed"
-    units="number of boot attempts" expires_after="2025-10-06">
-  <owner>shraash@google.com</owner>
-  <owner>chromeos-data-eng@google.com</owner>
-  <summary>
-    Records number of boot attempts on a device since receiving a variations
-    safe seed from Chrome. This value is reported every time a device boots.
-  </summary>
-</histogram>
-
 <histogram name="Platform.FileDescriptors.Count" units="count"
     expires_after="2027-03-07">
   <owner>keiichiw@google.com</owner>
