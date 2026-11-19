@@ -19,7 +19,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -39,9 +38,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reader_mode.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -62,7 +61,6 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.web_distiller.mojom.Theme;
@@ -78,7 +76,8 @@ import java.util.function.Supplier;
  * loading.
  */
 @NullMarked
-public class ReaderModeManager implements TabObserver, UserData, NightModeStateProvider.Observer {
+public class ReaderModeManager extends TabWebContentsUserData
+        implements NightModeStateProvider.Observer {
 
     // LINT.IfChange(ReaderModeEntryPoint)
 
@@ -192,9 +191,6 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
     /** The distillability observer attached to the tab. */
     private @Nullable DistillabilityObserver mDistillabilityObserver;
 
-    /** Whether this manager and tab have been destroyed. */
-    private boolean mIsDestroyed;
-
     /** The tab this manager is attached to. */
     private final Tab mTab;
 
@@ -228,10 +224,10 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
     // Used to keep track of the browser theme.
     private final NightModeStateProvider mNightModeStateProvider;
 
-    ReaderModeManager(Tab tab, Supplier<@Nullable MessageDispatcher> messageDispatcherSupplier) {
-        super();
+    private ReaderModeManager(
+            Tab tab, Supplier<@Nullable MessageDispatcher> messageDispatcherSupplier) {
+        super(tab);
         mTab = tab;
-        mTab.addObserver(this);
         mMessageDispatcherSupplier = messageDispatcherSupplier;
 
         mNightModeStateProvider = GlobalNightModeStateProviderHolder.getInstance();
@@ -244,20 +240,28 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
      * @param tab The tab that will have a manager instance attached to it.
      */
     public static void createForTab(Tab tab) {
-        tab.getUserDataHost()
-                .setUserData(
-                        USER_DATA_KEY,
-                        new ReaderModeManager(
-                                tab, () -> MessageDispatcherProvider.from(tab.getWindowAndroid())));
+        attachToTab(
+                USER_DATA_KEY,
+                new ReaderModeManager(
+                        tab, () -> MessageDispatcherProvider.from(tab.getWindowAndroid())));
     }
 
-    /** Clear the status map and references to other objects. */
+    static ReaderModeManager createForTabForTesting(
+            Tab tab, Supplier<@Nullable MessageDispatcher> messageDispatcherSupplier) {
+        return attachToTab(USER_DATA_KEY, new ReaderModeManager(tab, messageDispatcherSupplier));
+    }
+
     @Override
-    public void destroy() {
-        if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
-        mHasBeenNotifiedOfCpa = false;
-        mIsReaderModeButtonShowingOnToolbar = false;
-        mIsDestroyed = true;
+    protected void destroyInternal() {
+        if (!mShowPromptRecorded) {
+            recordPromptVisibilityForNavigation(/* visible= */ false);
+        }
+        if (mIsViewingReaderModePage) {
+            onExitReaderMode();
+        }
+        // TabDistillabilityProvider#destroyInternal() clears its ObserverList during Tab
+        // UserDataHost destruction, so no UserDataHost lookup or cached provider ref is needed.
+        mDistillabilityObserver = null;
         mNightModeStateProvider.removeObserver(this);
     }
 
@@ -288,10 +292,6 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
             onStartedReaderMode();
         }
 
-        // Make sure there is a WebContentsObserver on this tab's WebContents.
-        if (mWebContentsObserver == null && mTab.getWebContents() != null) {
-            mWebContentsObserver = createWebContentsObserver();
-        }
         tryShowingPrompt(/* resetRestorePrompt= */ true);
     }
 
@@ -303,65 +303,35 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
     }
 
     @Override
-    public void onDestroyed(Tab tab) {
+    public void initWebContents(WebContents webContents) {
         mHasBeenNotifiedOfCpa = false;
         mIsReaderModeButtonShowingOnToolbar = false;
-        if (tab == null) return;
-
-        // If the prompt was not shown for the previous navigation, record it now.
-        if (!mShowPromptRecorded) {
-            recordPromptVisibilityForNavigation(false);
-        }
-        if (mIsViewingReaderModePage) {
-            onExitReaderMode();
-        }
-        if (mDistillabilityObserver != null) {
-            var provider = TabDistillabilityProvider.get(tab);
-            assumeNonNull(provider).removeObserver(mDistillabilityObserver);
-        }
-
-        removeTabState();
-    }
-
-    @Override
-    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-        // Intentionally do nothing to prevent automatic observer removal on detachment.
-    }
-
-    /** Clear the reader mode state for this manager. */
-    private void removeTabState() {
-        if (mWebContentsObserver != null) mWebContentsObserver.observe(null);
-        mDistillationStatus = DistillationStatus.POSSIBLE;
-        mIsDismissed = false;
-        mMessageRequestedForNavigation = false;
-        mDistillerUrl = null;
-        mShowPromptRecorded = false;
-        mIsViewingReaderModePage = false;
-        mHasBeenNotifiedOfCpa = false;
-        mIsReaderModeButtonShowingOnToolbar = false;
-        mDistillabilityObserver = null;
-    }
-
-    @Override
-    public void onContentChanged(Tab tab) {
-        mHasBeenNotifiedOfCpa = false;
-        mIsReaderModeButtonShowingOnToolbar = false;
-        // If the content change was because of distiller switching web contents or Reader Mode has
-        // already been dismissed for this tab do nothing.
-        if (mIsDismissed && !WebDistillerUrlUtils.isDistilledPage(tab.getUrl())) return;
-
-        // If the tab state already existed, only reset the relevant data. Things like view duration
-        // need to be preserved.
+        assert mWebContentsObserver == null;
+        mWebContentsObserver = createWebContentsObserver(webContents);
+        setDefaultThemeAsBrowserTheme(webContents);
+        GURL url = mTab.getUrl();
+        boolean isDistilledPage = WebDistillerUrlUtils.isDistilledPage(url);
+        if (mIsDismissed && !isDistilledPage) return;
         mDistillationStatus = DistillationStatus.NOT_POSSIBLE;
-        mDistillerUrl = tab.getUrl();
+        mDistillerUrl = url;
+        if (isDistilledPage) {
+            mDistillationStatus = DistillationStatus.STARTED;
+            mReaderModePageUrl = url;
+        }
+    }
 
-        if (tab.getWebContents() != null) {
-            mWebContentsObserver = createWebContentsObserver();
-            setDefaultThemeAsBrowserTheme(tab.getWebContents());
-            if (WebDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
-                mDistillationStatus = DistillationStatus.STARTED;
-                mReaderModePageUrl = tab.getUrl();
-            }
+    @Override
+    public void cleanupWebContents(WebContents webContents) {
+        if (mWebContentsObserver != null) {
+            mWebContentsObserver.observe(/* webContents= */ null);
+            mWebContentsObserver = null;
+        }
+        mHasBeenNotifiedOfCpa = false;
+        mIsReaderModeButtonShowingOnToolbar = false;
+        GURL url = mTab.getUrl();
+        if (!mIsDismissed || WebDistillerUrlUtils.isDistilledPage(url)) {
+            mDistillationStatus = DistillationStatus.NOT_POSSIBLE;
+            mDistillerUrl = url;
         }
     }
 
@@ -402,8 +372,8 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
         mIsDismissed = true;
     }
 
-    private WebContentsObserver createWebContentsObserver() {
-        return new WebContentsObserver(mTab.getWebContents()) {
+    private WebContentsObserver createWebContentsObserver(WebContents webContents) {
+        return new WebContentsObserver(webContents) {
             /** Whether or not the previous navigation should be removed. */
             private boolean mShouldRemovePreviousNavigation;
 
@@ -425,8 +395,6 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
                     mShouldRemovePreviousNavigation = true;
                     mLastDistillerPageIndex = index;
                 }
-
-                if (mIsDestroyed) return;
 
                 mDistillerUrl = navigation.getUrl();
                 if (WebDistillerUrlUtils.isDistilledPage(navigation.getUrl())) {
@@ -452,8 +420,6 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
                     }
                 }
 
-                if (mIsDestroyed) return;
-
                 mDistillationStatus = DistillationStatus.POSSIBLE;
                 if (mReaderModePageUrl == null
                         || !navigation
@@ -475,7 +441,6 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
 
             @Override
             public void navigationEntryCommitted(LoadCommittedDetails details) {
-                if (mIsDestroyed) return;
                 // Reset closed state of reader mode in this tab once we know a navigation is
                 // happening.
                 mIsDismissed = false;
@@ -802,8 +767,7 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
                         tryShowingPrompt(/* resetRestorePrompt= */ true);
                     }
                 };
-        var provider = TabDistillabilityProvider.get(tabToObserve);
-        assumeNonNull(provider).addObserver(mDistillabilityObserver);
+        TabDistillabilityProvider.from(tabToObserve).addObserver(mDistillabilityObserver);
     }
 
     // Navigates away from reader mode. This is intended for in-app distillation, not for CCT.

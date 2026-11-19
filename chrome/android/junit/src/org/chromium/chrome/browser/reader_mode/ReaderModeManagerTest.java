@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -24,6 +25,7 @@ import android.util.Pair;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -67,6 +69,8 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.components.web_distiller.core.DistilledPagePrefs;
+import org.chromium.components.web_distiller.core.WebDistillerService;
 import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
 import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.LoadCommittedDetails;
@@ -95,6 +99,7 @@ public class ReaderModeManagerTest {
     @Mock private Tab mTab;
     @Mock private ActorUiTabController mActorUiTabController;
     @Mock private MockWebContents mWebContents;
+    @Mock private MockWebContents mSecondWebContents;
     @Mock private TabDistillabilityProvider mDistillabilityProvider;
     @Mock private NavigationController mNavController;
     @Mock private ReaderModeTabUtils.Natives mDistillerTabUtilsJniMock;
@@ -107,6 +112,9 @@ public class ReaderModeManagerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private LoadCommittedDetails mLoadCommitedDetails;
+    @Mock private ReaderModeServiceFactory.Natives mReaderModeServiceFactoryJni;
+    @Mock private WebDistillerService mWebDistillerService;
+    @Mock private DistilledPagePrefs mDistilledPagePrefs;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     private TabObserver mTabObserver;
@@ -146,6 +154,11 @@ public class ReaderModeManagerTest {
         when(mTab.getUrl()).thenReturn(MOCK_URL);
         when(mTab.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
         when(mTab.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        Profile.setProfileFromWebContentsForTesting(mProfile);
+        ReaderModeServiceFactoryJni.setInstanceForTesting(mReaderModeServiceFactoryJni);
+        when(mWebDistillerService.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefs);
+        when(mReaderModeServiceFactoryJni.getForProfile(any())).thenReturn(mWebDistillerService);
         when(mWebContents.getNavigationController()).thenReturn(mNavController);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWebContents.getTitle()).thenReturn("Test Title");
@@ -167,7 +180,7 @@ public class ReaderModeManagerTest {
         Activity activity = Robolectric.buildActivity(Activity.class).get();
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
 
-        mManager = new ReaderModeManager(mTab, () -> mMessageDispatcher);
+        mManager = ReaderModeManager.createForTabForTesting(mTab, () -> mMessageDispatcher);
 
         // Ensure the tab observer is attached when the manager is created.
         verify(mTab).addObserver(mTabObserverCaptor.capture());
@@ -183,6 +196,17 @@ public class ReaderModeManagerTest {
         mWebContentsObserver = mWebContentsObserverCaptor.getValue();
         mManager.clearSavedSitesForTesting();
         mButtonVisibilitySupplier = new OneshotSupplierImpl<Boolean>();
+    }
+
+    @After
+    public void tearDown() {
+        if (mUserDataHost != null) {
+            // mDistillabilityProvider is a Mockito mock whose final TabWebContentsUserData#destroy
+            // has a null mTab; remove it before destroying real UserData entries.
+            mUserDataHost.removeUserData(TabDistillabilityProvider.USER_DATA_KEY);
+            mUserDataHost.destroy();
+            mUserDataHost = null;
+        }
     }
 
     @Test
@@ -631,13 +655,15 @@ public class ReaderModeManagerTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord("DomDistiller.Time.ViewingReaderModePage")
+                        .expectBooleanRecord("DomDistiller.ReaderShownForPageLoad", false)
                         .build();
 
         mManager.navigateToReaderMode();
-        mTabObserver.onDestroyed(mTab);
+        tearDown();
 
         assertEquals(
                 1, userActionTester.getActionCount("DomDistiller.Android.OnStoppedReaderMode"));
+        verify(mWebContents).removeObserver(mWebContentsObserver);
         watcher.assertExpected();
     }
 
@@ -707,6 +733,50 @@ public class ReaderModeManagerTest {
         verify(mActorUiTabController).showTaskAbortConfirmationDialog(any());
         verify(mDistillerTabUtilsJniMock, never())
                 .distillCurrentPageAndViewIfSuccessful(any(), any());
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testOnContentChanged_deduplicatesAndDetachesWebContentsObserver() {
+        when(mTab.isCustomTab()).thenReturn(true);
+        mDistillabilityObserver.onIsPageDistillableResult(
+                mTab,
+                /* isDistillable= */ true,
+                /* isLast= */ true,
+                /* isMobileOptimized= */ false);
+        assertEquals(DistillationStatus.POSSIBLE, mManager.getDistillationStatus());
+        clearInvocations(mWebContents, mDistilledPagePrefs);
+
+        // Calling onContentChanged with the same WebContents already observed in setUp() should not
+        // attach a duplicate observer, set the default theme again, or reset mDistillationStatus.
+        mTabObserver.onContentChanged(mTab);
+        assertEquals(DistillationStatus.POSSIBLE, mManager.getDistillationStatus());
+        verify(mWebContents, never()).addObserver(any());
+        verify(mDistilledPagePrefs, never()).setDefaultTheme(anyInt());
+
+        // Switching to a new WebContents should detach the old observer, attach a new observer,
+        // and set the default theme once.
+        when(mTab.getWebContents()).thenReturn(mSecondWebContents);
+        mTabObserver.onContentChanged(mTab);
+        assertEquals(DistillationStatus.NOT_POSSIBLE, mManager.getDistillationStatus());
+        verify(mWebContents).removeObserver(mWebContentsObserver);
+        ArgumentCaptor<WebContentsObserver> secondObserverCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(mSecondWebContents).addObserver(secondObserverCaptor.capture());
+        verify(mDistilledPagePrefs).setDefaultTheme(anyInt());
+
+        // Repeated onContentChanged with the same WebContents should be a no-op for the observer
+        // and default theme.
+        clearInvocations(mSecondWebContents, mDistilledPagePrefs);
+        mTabObserver.onContentChanged(mTab);
+        verify(mSecondWebContents, never()).addObserver(any());
+        verify(mDistilledPagePrefs, never()).setDefaultTheme(anyInt());
+
+        // Clearing WebContents should detach the observer.
+        when(mTab.getWebContents()).thenReturn(null);
+        mTabObserver.onContentChanged(mTab);
+        verify(mSecondWebContents).removeObserver(secondObserverCaptor.getValue());
+        verify(mDistilledPagePrefs, never()).setDefaultTheme(anyInt());
     }
 
     private NavigationEntry createNavigationEntry(int index, GURL url) {

@@ -5,15 +5,13 @@
 package org.chromium.chrome.browser.reader_mode;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.components.web_distiller.content.DistillablePageUtils;
 import org.chromium.components.web_distiller.content.DistillablePageUtils.PageDistillableDelegate;
 import org.chromium.components.web_distiller.core.WebDistillerUrlUtils;
@@ -27,7 +25,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /** A mechanism for clients interested in the distillability of a page to receive updates. */
 @NullMarked
-public class TabDistillabilityProvider implements TabObserver, PageDistillableDelegate, UserData {
+public class TabDistillabilityProvider extends TabWebContentsUserData
+        implements PageDistillableDelegate {
     public static final Class<TabDistillabilityProvider> USER_DATA_KEY =
             TabDistillabilityProvider.class;
 
@@ -64,13 +63,10 @@ public class TabDistillabilityProvider implements TabObserver, PageDistillableDe
     private final ObserverList<DistillabilityObserver> mObserverList;
 
     /** The tab this provider represents. */
-    private Tab mTab;
+    private final Tab mTab;
 
     /** Whether the distillability has been determined for the tab in its current state. */
     private boolean mDistillabilityDetermined;
-
-    /** The last web contents that the distillability delegate was attached to. */
-    private @Nullable WebContents mWebContents;
 
     /** Cached results from the last result from native. */
     private boolean mIsDistillable;
@@ -87,31 +83,28 @@ public class TabDistillabilityProvider implements TabObserver, PageDistillableDe
      * doesn't already exist.
      *
      * @param tab The Tab to get the helper for.
-     * @return The {@link TabDistillabilityProvider}, or null if UserDataHost is null.
+     * @return The {@link TabDistillabilityProvider}.
      */
-    public static @Nullable TabDistillabilityProvider from(Tab tab) {
-        if (tab.getUserDataHost() == null || tab.getWebContents() == null) return null;
+    public static TabDistillabilityProvider from(Tab tab) {
+        assert !tab.isDestroyed();
         TabDistillabilityProvider provider = get(tab);
         if (provider == null) {
-            provider =
-                    tab.getUserDataHost()
-                            .setUserData(USER_DATA_KEY, new TabDistillabilityProvider(tab));
+            provider = attachToTab(USER_DATA_KEY, new TabDistillabilityProvider(tab));
         }
         return provider;
     }
 
     /** Returns the TabDistillabilityProvider for the given tab if it exists. */
     public static @Nullable TabDistillabilityProvider get(Tab tab) {
-        if (tab.getUserDataHost() == null) return null;
+        if (tab.isDestroyed()) return null;
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
-    @VisibleForTesting
-    TabDistillabilityProvider(Tab tab) {
+    private TabDistillabilityProvider(Tab tab) {
+        super(tab);
         mTab = tab;
         mObserverList = new ObserverList<>();
-        resetState();
-        mTab.addObserver(this);
+        resetDistillabilityState();
     }
 
     /**
@@ -161,38 +154,20 @@ public class TabDistillabilityProvider implements TabObserver, PageDistillableDe
         return mIsMobileOptimized;
     }
 
-    /**
-     * Reset any of the cached values from native distiller and reattach the delegate if necessary.
-     */
-    @SuppressWarnings("NullAway")
-    private void resetState() {
+    /** Resets any of the cached values from native distiller. */
+    private void resetDistillabilityState() {
         mDistillabilityDetermined = false;
         mDistillationResultUrl = null;
         mIsDistillable = false;
         mIsLast = false;
         mIsLongArticle = false;
         mIsMobileOptimized = false;
-
-        if (mTab == null) return;
-        WebContents webContents = mTab.getWebContents();
-        if (webContents == null) {
-            if (mWebContents != null) {
-                DistillablePageUtils.setDelegate(mWebContents, null);
-                mWebContents = null;
-            }
-        } else if (webContents != mWebContents) {
-            if (mWebContents != null) {
-                DistillablePageUtils.setDelegate(mWebContents, null);
-            }
-            mWebContents = webContents;
-            DistillablePageUtils.setDelegate(mWebContents, this);
-        }
     }
 
     /** Records the Content.Classification metric if the distillability has been determined. */
     private void recordContentClassificationMetric() {
         // If the distillability was determined, record the Content Classification. Should be called
-        // before #resetState().
+        // before #resetDistillabilityState().
         if (isDistillabilityDetermined()) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Content.Classification",
@@ -225,14 +200,28 @@ public class TabDistillabilityProvider implements TabObserver, PageDistillableDe
     }
 
     @Override
-    public void onContentChanged(Tab tab) {
-        resetState();
+    public void initWebContents(WebContents webContents) {
+        resetDistillabilityState();
+        DistillablePageUtils.setDelegate(webContents, this);
+    }
+
+    @Override
+    public void cleanupWebContents(WebContents webContents) {
+        DistillablePageUtils.setDelegate(webContents, /* delegate= */ null);
+        resetDistillabilityState();
+    }
+
+    @Override
+    protected void destroyInternal() {
+        mObserverList.clear();
+        resetDistillabilityState();
     }
 
     @Override
     public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-        if (window != null) return;
-        resetState();
+        if (window == null) {
+            resetDistillabilityState();
+        }
     }
 
     @Override
@@ -243,21 +232,6 @@ public class TabDistillabilityProvider implements TabObserver, PageDistillableDe
     @Override
     public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
         resetStateIfUrlHasChanged(tab);
-    }
-
-    @Override
-    @SuppressWarnings("NullAway")
-    public void destroy() {
-        mObserverList.clear();
-        if (mTab != null) {
-            mTab.removeObserver(this);
-        }
-        if (mWebContents != null) {
-            DistillablePageUtils.setDelegate(mWebContents, null);
-            mWebContents = null;
-        }
-        mTab = null;
-        resetState();
     }
 
     private void resetStateIfUrlHasChanged(Tab tab) {
@@ -274,6 +248,6 @@ public class TabDistillabilityProvider implements TabObserver, PageDistillableDe
                 }
             }
         }
-        resetState();
+        resetDistillabilityState();
     }
 }

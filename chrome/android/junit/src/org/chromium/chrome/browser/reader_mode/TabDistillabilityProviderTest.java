@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,6 +45,7 @@ public class TabDistillabilityProviderTest {
     @Mock private WebContents mWebContents;
     @Mock private Profile mProfile;
 
+    private final UserDataHost mUserDataHost = new UserDataHost();
     private TabDistillabilityProvider mProvider;
 
     @Before
@@ -51,12 +53,13 @@ public class TabDistillabilityProviderTest {
         DistillablePageUtilsJni.setInstanceForTesting(mDistillablePageUtilsJni);
         WebDistillerUrlUtilsJni.setInstanceForTesting(mWebDistillerUrlUtilsJni);
 
+        when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mTab.getUrl()).thenReturn(URL_1);
         when(mProfile.isOffTheRecord()).thenReturn(false);
 
-        mProvider = new TabDistillabilityProvider(mTab);
+        mProvider = TabDistillabilityProvider.from(mTab);
         verify(mDistillablePageUtilsJni).setDelegate(any(), eq(mProvider));
         // Reset the mocks so tests don't have to take this registration into account.
         Mockito.reset(mDistillablePageUtilsJni);
@@ -113,18 +116,22 @@ public class TabDistillabilityProviderTest {
     public void differentWebContentsReregistersDelegate() {
         WebContents webContents = Mockito.mock(WebContents.class);
         when(mTab.getWebContents()).thenReturn(webContents);
-        when(mTab.getUrl()).thenReturn(URL_2);
-        mProvider.onDidFinishNavigationInPrimaryMainFrame(mTab, null);
-        verify(mDistillablePageUtilsJni).setDelegate(any(), eq(mProvider));
+        mProvider.onContentChanged(mTab);
+        verify(mDistillablePageUtilsJni).setDelegate(eq(mWebContents), eq(null));
+        verify(mDistillablePageUtilsJni).setDelegate(eq(webContents), eq(mProvider));
+
+        mUserDataHost.destroy();
+        verify(mDistillablePageUtilsJni).setDelegate(eq(webContents), eq(null));
     }
 
     @Test
     public void testLazyInitialization() {
         // Start with null WebContents (simulating frozen tab)
+        mUserDataHost.removeUserData(TabDistillabilityProvider.USER_DATA_KEY).destroy();
         Mockito.reset(mDistillablePageUtilsJni);
         when(mTab.getWebContents()).thenReturn(null);
 
-        mProvider = new TabDistillabilityProvider(mTab);
+        mProvider = TabDistillabilityProvider.from(mTab);
 
         // Provider should exist, but delegate should not be set
         verify(mDistillablePageUtilsJni, Mockito.never()).setDelegate(any(), any());
@@ -149,6 +156,24 @@ public class TabDistillabilityProviderTest {
 
         // Delegate should be cleared on the old WebContents
         verify(mDistillablePageUtilsJni).setDelegate(eq(mWebContents), eq(null));
+    }
+
+    @Test
+    public void testOnContentChanged_sameWebContentsDoesNotResetState() {
+        mProvider.onIsPageDistillableResult(
+                /* url= */ URL_1,
+                /* isDistillable= */ true,
+                /* isLast= */ true,
+                /* isLongArticle= */ false,
+                /* isMobileOptimized= */ true);
+        assertTrue(mProvider.isDistillabilityDetermined());
+        assertTrue(mProvider.isDistillable());
+
+        mProvider.onContentChanged(mTab);
+
+        assertTrue(mProvider.isDistillabilityDetermined());
+        assertTrue(mProvider.isDistillable());
+        verify(mDistillablePageUtilsJni, Mockito.never()).setDelegate(any(), any());
     }
 
     @Test
