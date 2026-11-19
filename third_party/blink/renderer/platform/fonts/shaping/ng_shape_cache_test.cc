@@ -130,7 +130,7 @@ TEST_F(NGShapeCacheTest, NotDefIsNotCached) {
   ASSERT_FALSE(mapped_first->HasNotDefGlyph());
   EXPECT_EQ(mapped_first, GetOrCreate(mapped_character));
 
-  const String unmapped_character(u"\u0378");
+  const String unmapped_character(u"\uFDD0");
   const ShapeResult* unmapped_first = GetOrCreate(unmapped_character);
   ASSERT_TRUE(unmapped_first->HasNotDefGlyph());
   EXPECT_NE(unmapped_first, GetOrCreate(unmapped_character));
