@@ -623,7 +623,17 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
   // TODO(crbug.com/453705243): Call OptionInserted on the ancestor datalist if
   // it changed.
 
-  if (Selected() && nearest_ancestor_select_) {
+  if (RuntimeEnabledFeatures::SelectedcontentSpec3Enabled()) {
+    // The pending selectedcontent update is checked in
+    // DidNotifySubtreeInsertionsToDocument() rather than here because it may
+    // be set after this point but before the post-insertion steps run, e.g. by
+    // a script element earlier in the same inserted subtree.
+    if (nearest_ancestor_select_ &&
+        !GetDocument().StatePreservingAtomicMoveInProgress()) {
+      return InsertionNotificationRequest::
+          kInsertionShouldCallDidNotifySubtreeInsertions;
+    }
+  } else if (Selected() && nearest_ancestor_select_) {
     if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
       return InsertionNotificationRequest::
           kInsertionShouldCallDidNotifySubtreeInsertions;
@@ -640,6 +650,12 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
 }
 
 void HTMLOptionElement::DidNotifySubtreeInsertionsToDocument() {
+  if (RuntimeEnabledFeatures::SelectedcontentSpec3Enabled()) {
+    if (nearest_ancestor_select_) {
+      nearest_ancestor_select_->UpdateAllSelectedcontentsIfPending();
+    }
+    return;
+  }
   if (Selected() && nearest_ancestor_select_) {
     if (nearest_ancestor_select_->IsMultiple()) {
       nearest_ancestor_select_->UpdateAllSelectedcontentsMultiple();

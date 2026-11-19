@@ -42,6 +42,7 @@ class CORE_EXPORT HTMLSelectedContentElement : public HTMLElement {
 
  private:
   void UpdateFromAncestorSelect();
+  void UpdateDisabledFlagAndNearestAncestorSelect();
 
   // When this is true, cloning is disabled.
   bool disabled_ = false;

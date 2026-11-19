@@ -400,6 +400,12 @@ class CORE_EXPORT HTMLSelectElement final
   // elements into the provided selectedcontent element. This is called when the
   // provided selectedcontent is added to the subtree of this select element.
   void UpdateIndividualSelectedcontent(HTMLSelectedContentElement&);
+  // Queues a microtask which will run UpdateAllSelectedcontentsIfPending(),
+  // unless an update is already pending.
+  void QueueSelectedcontentUpdate();
+  // Runs UpdateAllSelectedcontents() if an update was queued by
+  // QueueSelectedcontentUpdate() and hasn't run yet.
+  void UpdateAllSelectedcontentsIfPending();
 
   // Returns the localized "X selected" text used for MenuList multiple select
   // elements.
@@ -600,6 +606,11 @@ class CORE_EXPORT HTMLSelectElement final
   // called, and never gets set back to false again. It is used for parsing
   // <input> in <select>.
   bool was_option_inserted_ = false;
+  // Tracks whether an update to all descendant <selectedcontent> elements has
+  // been queued (when <option> or <selectedcontent> elements are inserted,
+  // removed, or moved), so that multiple mutations coalesce into a single
+  // update of all descendant <selectedcontent> elements.
+  bool has_pending_selectedcontent_update_ = false;
 
   friend class ListBoxSelectType;
   friend class MenuListSelectType;

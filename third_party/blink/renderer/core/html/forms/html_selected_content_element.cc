@@ -139,21 +139,7 @@ void HTMLSelectedContentElement::CloneMultipleOptionsFromSelectElement(
   ReplaceChildren(nodes, ASSERT_NO_EXCEPTION);
 }
 
-Node::InsertionNotificationRequest HTMLSelectedContentElement::InsertedInto(
-    ContainerNode& insertion_point) {
-  HTMLElement::InsertedInto(insertion_point);
-
-  // We need to call SelectedContentElementInserted in InsertedInto instead of
-  // DidNotifySubtreeInsertionsToDocument because
-  // DidNotifySubtreeInsertionsToDocument calls other methods which iterate
-  // through all descendant selectedcontent elements within the nearest
-  // ancestor select element, which we optimize with a TreeOrderedList which
-  // gets updated in SelectedContentElementInserted.
-  //
-  // The disabled state is also calculated here instead of the post-connection
-  // steps to avoid having time in between insertion and post-insertion where
-  // the element isn't considered disabled yet.
-
+void HTMLSelectedContentElement::UpdateDisabledFlagAndNearestAncestorSelect() {
   disabled_ = false;
   HTMLSelectElement* first_ancestor_select = nullptr;
   for (auto* ancestor = parentNode(); ancestor;
@@ -176,10 +162,67 @@ Node::InsertionNotificationRequest HTMLSelectedContentElement::InsertedInto(
   }
 
   if (nearest_ancestor_select_ != first_ancestor_select) {
-    CHECK(!nearest_ancestor_select_);
+    if (nearest_ancestor_select_) {
+      CHECK(RuntimeEnabledFeatures::SelectedcontentSpec3Enabled());
+      nearest_ancestor_select_->SelectedContentElementRemoved(this);
+    }
     nearest_ancestor_select_ = first_ancestor_select;
-    nearest_ancestor_select_->SelectedContentElementInserted(this);
+    if (nearest_ancestor_select_) {
+      nearest_ancestor_select_->SelectedContentElementInserted(this);
+    }
   }
+}
+
+Node::InsertionNotificationRequest HTMLSelectedContentElement::InsertedInto(
+    ContainerNode& insertion_point) {
+  HTMLElement::InsertedInto(insertion_point);
+
+  if (RuntimeEnabledFeatures::SelectedcontentSpec3Enabled()) {
+    // Unlike normal insertions, post-insertion steps
+    // (DidNotifySubtreeInsertionsToDocument) are not run during atomic moves
+    // (Node.moveBefore()). In both cases, we queue a microtask here to update
+    // the ancestor <select>'s descendant <selectedcontent> elements, and for
+    // normal insertions, DidNotifySubtreeInsertionsToDocument() performs the
+    // pending update synchronously.
+    //
+    // Because RemovedFrom() skips updating `disabled_` and
+    // `nearest_ancestor_select_` during atomic moves, we can compare them
+    // against their pre-move values here and avoid queuing a redundant update
+    // if the <selectedcontent> was moved within the same <select> and wasn't
+    // previously disabled.
+    const bool is_move = GetDocument().StatePreservingAtomicMoveInProgress();
+    const InsertionNotificationRequest request =
+        is_move ? kInsertionDone
+                : kInsertionShouldCallDidNotifySubtreeInsertions;
+    HTMLSelectElement* old_select = nearest_ancestor_select_;
+    bool was_disabled = disabled_;
+    UpdateDisabledFlagAndNearestAncestorSelect();
+    if (!isConnected()) {
+      return request;
+    }
+    if (disabled_ || !nearest_ancestor_select_ ||
+        (nearest_ancestor_select_->IsMultiple() &&
+         !RuntimeEnabledFeatures::SelectedcontentMultipleEnabled())) {
+      return request;
+    }
+    if (is_move && !was_disabled && nearest_ancestor_select_ == old_select) {
+      return request;
+    }
+    nearest_ancestor_select_->QueueSelectedcontentUpdate();
+    return request;
+  }
+
+  // We need to call SelectedContentElementInserted in InsertedInto instead of
+  // DidNotifySubtreeInsertionsToDocument because
+  // DidNotifySubtreeInsertionsToDocument calls other methods which iterate
+  // through all descendant selectedcontent elements within the nearest
+  // ancestor select element, which we optimize with a TreeOrderedList which
+  // gets updated in SelectedContentElementInserted.
+  //
+  // The disabled state is also calculated here instead of the post-connection
+  // steps to avoid having time in between insertion and post-insertion where
+  // the element isn't considered disabled yet.
+  UpdateDisabledFlagAndNearestAncestorSelect();
 
   return Node::InsertionNotificationRequest::
       kInsertionShouldCallDidNotifySubtreeInsertions;
@@ -191,11 +234,32 @@ void HTMLSelectedContentElement::DidNotifySubtreeInsertionsToDocument() {
   // TODO(crbug.com/40236878): Use a flat tree traversal here.
   DCHECK_EQ(nearest_ancestor_select_,
             Traversal<HTMLSelectElement>::FirstAncestor(*this));
+  if (RuntimeEnabledFeatures::SelectedcontentSpec3Enabled()) {
+    // Perform the pending update queued in InsertedInto() (or by another
+    // mutation) synchronously. When <option> and <selectedcontent> elements are
+    // inserted together, whichever post-insertion steps run first perform the
+    // update, and the others do nothing.
+    if (nearest_ancestor_select_) {
+      nearest_ancestor_select_->UpdateAllSelectedcontentsIfPending();
+    }
+    return;
+  }
   UpdateFromAncestorSelect();
 }
 
 void HTMLSelectedContentElement::RemovedFrom(ContainerNode& removed_from) {
   HTMLElement::RemovedFrom(removed_from);
+  if (RuntimeEnabledFeatures::SelectedcontentSpec3Enabled()) {
+    // Do not update `disabled_` and `nearest_ancestor_select_` during atomic
+    // move steps (Node.moveBefore()) because InsertedInto() runs immediately
+    // after RemovedFrom() and needs to compare the new `disabled_` and
+    // `nearest_ancestor_select_` values against the pre-move values to avoid
+    // redundant updates when moving within the same <select>.
+    if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
+      UpdateDisabledFlagAndNearestAncestorSelect();
+    }
+    return;
+  }
   auto* new_nearest_ancestor_select =
       Traversal<HTMLSelectElement>::FirstAncestor(*this);
   if (new_nearest_ancestor_select == nearest_ancestor_select_) {
@@ -210,6 +274,9 @@ void HTMLSelectedContentElement::RemovedFrom(ContainerNode& removed_from) {
 
 void HTMLSelectedContentElement::MovedFrom(ContainerNode& old_parent) {
   HTMLElement::MovedFrom(old_parent);
+  if (RuntimeEnabledFeatures::SelectedcontentSpec3Enabled()) {
+    return;
+  }
   GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
       BindOnce(&HTMLSelectedContentElement::UpdateFromAncestorSelect,
                WrapWeakPersistent(this)));

@@ -976,6 +976,7 @@ void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,
                                        bool option_is_selected) {
   DCHECK_EQ(option.OwnerSelectElement(), this);
   SetRecalcListItems();
+  bool did_change = false;
   if (option_is_selected) {
     SelectOption(&option, kDontUpdateSelectedcontentFlag |
                               (IsMultiple() ? 0 : kDeselectOtherOptionsFlag));
@@ -992,8 +993,12 @@ void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,
     //
     // https://html.spec.whatwg.org/multipage/form-elements.html#selectedness-setting-algorithm
     if (size_ <= 1 && !option.IsDisabledFormControl()) {
-      ResetToDefaultSelection(kResetReasonOptionInsertedOrRemoved);
+      did_change = ResetToDefaultSelection(kResetReasonOptionInsertedOrRemoved);
     }
+  }
+  if (RuntimeEnabledFeatures::SelectedcontentSpec3Enabled() &&
+      option.isConnected() && (option_is_selected || did_change)) {
+    QueueSelectedcontentUpdate();
   }
   SetNeedsValidityCheck();
   select_type_->ClearLastOnChangeSelection();
@@ -1014,7 +1019,28 @@ void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,
       .SelectFieldOptionsChanged(*this);
 }
 
+void HTMLSelectElement::QueueSelectedcontentUpdate() {
+  DCHECK(RuntimeEnabledFeatures::SelectedcontentSpec3Enabled());
+  if (has_pending_selectedcontent_update_ ||
+      !HasDescendantSelectedcontentElements()) {
+    return;
+  }
+  has_pending_selectedcontent_update_ = true;
+  GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
+      BindOnce(&HTMLSelectElement::UpdateAllSelectedcontentsIfPending,
+               WrapWeakPersistent(this)));
+}
+
+void HTMLSelectElement::UpdateAllSelectedcontentsIfPending() {
+  DCHECK(RuntimeEnabledFeatures::SelectedcontentSpec3Enabled());
+  if (!has_pending_selectedcontent_update_) {
+    return;
+  }
+  UpdateAllSelectedcontents();
+}
+
 void HTMLSelectElement::UpdateAllSelectedcontents() {
+  has_pending_selectedcontent_update_ = false;
   if (IsMultiple()) {
     UpdateAllSelectedcontentsMultiple();
   } else if (HasDescendantSelectedcontentElements()) {
@@ -1046,9 +1072,13 @@ void HTMLSelectElement::OptionRemoved(HTMLOptionElement& option,
     }
   }
 
-  if (RuntimeEnabledFeatures::SelectedcontentSpec2Enabled() &&
-      (option.Selected() || did_change) &&
-      HasDescendantSelectedcontentElements()) {
+  if (RuntimeEnabledFeatures::SelectedcontentSpec3Enabled()) {
+    if (option.Selected() || did_change) {
+      QueueSelectedcontentUpdate();
+    }
+  } else if (RuntimeEnabledFeatures::SelectedcontentSpec2Enabled() &&
+             (option.Selected() || did_change) &&
+             HasDescendantSelectedcontentElements()) {
     GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
         BindOnce(&HTMLSelectElement::UpdateAllSelectedcontents,
                  WrapWeakPersistent(this)));
@@ -2167,6 +2197,7 @@ void HTMLSelectElement::setSelectedContentElement(
 
 void HTMLSelectElement::UpdateAllSelectedcontentsSingle(
     HTMLOptionElement* selected_option) {
+  has_pending_selectedcontent_update_ = false;
   CHECK(!IsMultiple());
   // SelectedOption() can be slow, so callers are required to pass it in, and
   // we have a DCHECK() that they did so correctly.
@@ -2198,6 +2229,7 @@ void HTMLSelectElement::UpdateAllSelectedcontentsSingle(
 }
 
 void HTMLSelectElement::UpdateAllSelectedcontentsMultiple() {
+  has_pending_selectedcontent_update_ = false;
   CHECK(IsMultiple());
   if (!RuntimeEnabledFeatures::SelectedcontentMultipleEnabled()) {
     return;
