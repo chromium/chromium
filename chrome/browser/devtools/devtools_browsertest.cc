@@ -508,17 +508,21 @@ class DevToolsTest : public PlatformBrowserTest {
     ASSERT_TRUE(content::NavigateToURL(GetInspectedTab(), url));
   }
 
-  void OpenDevToolsWindow(content::WebContents* web_contents, bool is_docked) {
-    window_ =
-        DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents, is_docked);
+  void OpenDevToolsWindow(content::WebContents* web_contents,
+                          bool is_docked,
+                          bool is_under_test = true) {
+    window_ = DevToolsWindowTesting::OpenDevToolsWindowSync(
+        web_contents, is_docked, is_under_test);
     DevToolsWindowTesting::Get(window_.get())
         ->SetCloseCallback(
             base::BindLambdaForTesting([this]() { window_ = nullptr; }));
   }
 
-  void OpenDevToolsWindow(const std::string& test_page, bool is_docked) {
+  void OpenDevToolsWindow(const std::string& test_page,
+                          bool is_docked,
+                          bool is_under_test = true) {
     LoadTestPage(test_page);
-    OpenDevToolsWindow(GetInspectedTab(), is_docked);
+    OpenDevToolsWindow(GetInspectedTab(), is_docked, is_under_test);
   }
 
   WebContents* GetInspectedTab() { return GetWebContentsAt(0); }
@@ -2840,7 +2844,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_testShowCertificate) {
 
 // Tests that settings are stored in profile correctly.
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestSettings) {
-  OpenDevToolsWindow("about:blank", true);
+  // When isUnderTest=="true", localSettings are fully reset every time,
+  // making it impossible to check that storage persists.
+  OpenDevToolsWindow("about:blank", /*is_docked*/ true,
+                     /*is_under_test*/ false);
   RunTestFunction(window_, "testSettings");
   CloseDevToolsWindow();
 }

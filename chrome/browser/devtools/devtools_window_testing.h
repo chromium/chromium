@@ -31,10 +31,12 @@ class DevToolsWindowTesting {
   static DevToolsWindow* OpenDevToolsWindowSync(
       content::WebContents* inspected_web_contents,
       Profile* profile,
-      bool is_docked);
+      bool is_docked,
+      bool is_under_test = true);
   static DevToolsWindow* OpenDevToolsWindowSync(
       content::WebContents* inspected_web_contents,
-      bool is_docked);
+      bool is_docked,
+      bool is_under_test = true);
   static DevToolsWindow* OpenDevToolsWindowSync(BrowserWindowInterface* browser,
                                                 bool is_docked);
   static DevToolsWindow* OpenDevToolsWindowSync(

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
@@ -140,10 +141,11 @@ void DevToolsWindowTesting::WaitForDevToolsWindowLoad(DevToolsWindow* window) {
 DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
     content::WebContents* inspected_web_contents,
     Profile* profile,
-    bool is_docked) {
-  std::string settings = is_docked ?
-      "{\"isUnderTest\": true, \"currentDockState\":\"\\\"bottom\\\"\"}" :
-      "{\"isUnderTest\": true, \"currentDockState\":\"\\\"undocked\\\"\"}";
+    bool is_docked,
+    bool is_under_test) {
+  std::string settings = base::StringPrintf(
+      R"({"isUnderTest":"%s","currentDockState":"\"%s\""})",
+      is_under_test ? "true" : "false", is_docked ? "bottom" : "undocked");
   scoped_refptr<content::DevToolsAgentHost> agent(
       content::DevToolsAgentHost::GetOrCreateForTab(inspected_web_contents));
   DevToolsWindow::ToggleDevToolsWindow(inspected_web_contents, profile, true,
@@ -156,11 +158,12 @@ DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
 // static
 DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
     content::WebContents* inspected_web_contents,
-    bool is_docked) {
+    bool is_docked,
+    bool is_under_test) {
   return OpenDevToolsWindowSync(
       inspected_web_contents,
       DevToolsWindow::GetProfileForDevToolsWindow(inspected_web_contents),
-      is_docked);
+      is_docked, is_under_test);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
