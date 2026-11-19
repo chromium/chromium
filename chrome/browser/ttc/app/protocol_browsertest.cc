@@ -133,6 +133,9 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
   EXPECT_LE(client_timestamp_ms,
             base::Time::Now().InMillisecondsSinceUnixEpoch());
 
+  // The session sends more frames later, e.g. when it ends.
+  testing::Mock::VerifyAndClearExpectations(model_execution_session());
+
   const base::Time client_send_time =
       base::Time::UnixEpoch() + base::Milliseconds(client_timestamp_ms);
   constexpr base::TimeDelta kServerOffset = base::Seconds(-10);
@@ -180,6 +183,9 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, SetupResponseSendsToolSet) {
 
   ASSERT_TRUE(tool_set_frame.IsReady());
   EXPECT_TRUE(tool_set_frame.Get().has_toolset_update());
+
+  // The session sends more frames later, e.g. when it ends.
+  testing::Mock::VerifyAndClearExpectations(model_execution_session());
 }
 
 IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, RejectedSessionSetup) {
@@ -392,19 +398,34 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest,
   EXPECT_FALSE(visit.visit_row.consider_for_ntp_most_visited);
 }
 
-// TODO(amyasinghal): Also verify that ending the session sends a
-// CloseSessionRequest to the server.
+IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, EndSessionSendsCloseRequest) {
+  StartSessionAndConnectBackend();
+  RespondSessionStatus(proto::SessionStatusResponse::STATE_CONNECTED,
+                       "session_1");
+
+  TestFuture<proto::TtcClientFrame> sent_frame;
+  EXPECT_CLIENT_FRAME(Send, sent_frame);
+
+  ttc_service().EndSession();
+
+  ASSERT_TRUE(sent_frame.IsReady());
+  EXPECT_TRUE(sent_frame.Get().has_close_request());
+}
+
 IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, CloseVoiceInterfaceEndsSession) {
   TestFuture<proto::ToolResponse> tool_response;
+  TestFuture<proto::CloseSessionRequest> close_request;
   ON_CALL(*model_execution_session(), Send)
-      .WillByDefault(
-          [&tool_response](const google::protobuf::MessageLite& message) {
-            proto::TtcClientFrame frame;
-            CHECK(frame.ParseFromString(message.SerializeAsString()));
-            if (frame.has_tool_response() && !tool_response.IsReady()) {
-              tool_response.SetValue(frame.tool_response());
-            }
-          });
+      .WillByDefault([&tool_response, &close_request](
+                         const google::protobuf::MessageLite& message) {
+        proto::TtcClientFrame frame;
+        CHECK(frame.ParseFromString(message.SerializeAsString()));
+        if (frame.has_tool_response() && !tool_response.IsReady()) {
+          tool_response.SetValue(frame.tool_response());
+        } else if (frame.has_close_request() && !close_request.IsReady()) {
+          close_request.SetValue(frame.close_request());
+        }
+      });
 
   StartSessionAndConnectBackend();
   RespondSessionStatus(proto::SessionStatusResponse::STATE_CONNECTED,
@@ -428,9 +449,12 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, CloseVoiceInterfaceEndsSession) {
   EXPECT_EQ(session_controller()->GetSessionLifecycle(),
             SessionLifecycle::kFinished);
   EXPECT_TRUE(ttc_service().is_session_active());
+  // The close request is sent when the session is torn down.
+  EXPECT_FALSE(close_request.IsReady());
 
   ASSERT_TRUE(WaitForServiceState(ServiceState::kSessionInactive));
   EXPECT_EQ(session_controller(), nullptr);
+  EXPECT_TRUE(close_request.IsReady());
 }
 
 }  // namespace ttc

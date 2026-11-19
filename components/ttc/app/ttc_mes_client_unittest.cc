@@ -488,6 +488,37 @@ TEST_F(TtcMesClientTest, CloseStopsSetupTimeout) {
   EXPECT_EQ(observer_.last_error(), std::nullopt);
 }
 
+TEST_F(TtcMesClientTest, CloseSendsCloseSessionRequestWhenConnected) {
+  client().OnConnectionStateChanged(
+      optimization_guide::RemoteModelExecutionSession::ConnectionState::
+          kConnected,
+      /*disconnect_reason=*/std::nullopt);
+
+  client().Close();
+
+  EXPECT_TRUE(last_sent_frame().has_close_request());
+  EXPECT_THAT(debug_sink_.client_frames,
+              testing::ElementsAre("setup_request", "close_request:"));
+}
+
+TEST_F(TtcMesClientTest, CloseBeforeConnectedSendsNoCloseSessionRequest) {
+  client().Close();
+
+  EXPECT_THAT(debug_sink_.client_frames, testing::ElementsAre("setup_request"));
+}
+
+TEST_F(TtcMesClientTest, CloseAfterDisconnectSendsNoCloseSessionRequest) {
+  using Session = optimization_guide::RemoteModelExecutionSession;
+  client().OnConnectionStateChanged(Session::ConnectionState::kConnected,
+                                    /*disconnect_reason=*/std::nullopt);
+  client().OnConnectionStateChanged(Session::ConnectionState::kDisconnected,
+                                    Session::DisconnectReason::kServerClosed);
+
+  client().Close();
+
+  EXPECT_THAT(debug_sink_.client_frames, testing::ElementsAre("setup_request"));
+}
+
 TEST_F(TtcMesClientTest, MapsStreamingErrorsAndStopsSetupTimer) {
   using Error = optimization_guide::OptimizationGuideModelExecutionError;
   ASSERT_TRUE(streaming_callback_);

@@ -1036,6 +1036,15 @@ void TtcMesClient::Log(std::string_view event_name,
 void TtcMesClient::Close() {
   setup_timer_.Stop();
   if (session_) {
+    // Let the server know the client is ending the session, unless the
+    // connection is already gone.
+    if (is_transport_connected_) {
+      optimization_guide::proto::TtcClientFrame frame;
+      frame.set_client_timestamp_ms(
+          base::Time::Now().InMillisecondsSinceUnixEpoch());
+      frame.mutable_close_request();
+      SendFrame(frame);
+    }
     session_->RemoveObserver(this);
     session_.reset();
   }
