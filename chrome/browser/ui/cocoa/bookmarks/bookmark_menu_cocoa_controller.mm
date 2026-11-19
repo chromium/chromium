@@ -54,18 +54,6 @@ NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
   return nil;
 }
 
-const BookmarkNode* GetNodeByUuid(const BookmarkModel* model,
-                                  const base::Uuid& guid) {
-  CHECK(model);
-  const BookmarkNode* node = model->GetNodeByUuid(
-      guid, BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
-  if (!node) {
-    node = model->GetNodeByUuid(
-        guid, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
-  }
-  return node;
-}
-
 void DoOpenBookmark(Profile* profile,
                     ui::mojom::WindowOpenDisposition disposition,
                     const BookmarkNode* node) {
@@ -137,7 +125,8 @@ BookmarkRestorer::BookmarkRestorer(Profile* profile,
 
 void BookmarkRestorer::BookmarkMergedSurfaceServiceLoaded() {
   const BookmarkModel* model = bookmark_service_->bookmark_model();
-  if (const BookmarkNode* node = GetNodeByUuid(model, guid_)) {
+  if (const BookmarkNode* node =
+          BookmarkMenuBridge::FindNodeByUuid(model, guid_)) {
     DoOpenBookmark(profile_, disposition_, node);
   }
   delete this;
@@ -168,8 +157,8 @@ void OpenBookmarkByGUID(ui::mojom::WindowOpenDisposition disposition,
     return;
   }
 
-  const BookmarkNode* node =
-      GetNodeByUuid(bookmark_service->bookmark_model(), guid);
+  const BookmarkNode* node = BookmarkMenuBridge::FindNodeByUuid(
+      bookmark_service->bookmark_model(), guid);
   if (!node) {
     // Bookmark not known, ignore.
     return;
@@ -185,6 +174,7 @@ void OpenBookmarkByGUID(ui::mojom::WindowOpenDisposition disposition,
 @implementation BookmarkMenuCocoaController {
   raw_ptr<BookmarkMenuBridge, AcrossTasksDanglingUntriaged>
       _bridge;  // Weak. Owns |self|.
+  int _menuTrackingDepth;
 }
 
 + (NSString*)tooltipForNode:(const BookmarkNode*)node {
@@ -201,8 +191,38 @@ void OpenBookmarkByGUID(ui::mojom::WindowOpenDisposition disposition,
   if ((self = [super init])) {
     _bridge = bridge;
     CHECK(_bridge, base::NotFatalUntil::M162);
+    if (base::FeatureList::IsEnabled(kBookmarkMenuOptimizations)) {
+      NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
+      [center addObserver:self
+                 selector:@selector(menuDidBeginTracking:)
+                     name:NSMenuDidBeginTrackingNotification
+                   object:nil];
+      [center addObserver:self
+                 selector:@selector(menuDidEndTracking:)
+                     name:NSMenuDidEndTrackingNotification
+                   object:nil];
+    }
   }
   return self;
+}
+
+- (void)dealloc {
+  [NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+- (void)menuDidBeginTracking:(NSNotification*)notification {
+  if (notification.object == [NSApp mainMenu] ||
+      notification.object == _bridge->BookmarkMenu()) {
+    _menuTrackingDepth++;
+  }
+}
+
+- (void)menuDidEndTracking:(NSNotification*)notification {
+  if ((notification.object == [NSApp mainMenu] ||
+       notification.object == _bridge->BookmarkMenu()) &&
+      _menuTrackingDepth > 0) {
+    _menuTrackingDepth--;
+  }
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem {
@@ -223,13 +243,20 @@ void OpenBookmarkByGUID(ui::mojom::WindowOpenDisposition disposition,
     return;
   }
 
+  // Submenus populated during a non-interactive traversal (e.g. an
+  // accessibility walk) retain their delegate until OnMenuWillOpen() finalizes
+  // their items.
+  if (_bridge->IsSubmenuBuilt(menu)) {
+    return;
+  }
+
   // Find the bookmark node corresponding to this menu.
   const BookmarkModel* model =
       BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)
           ->bookmark_model();
   NSMenuItem* item = GetItemWithSubmenu(menu);
   base::Uuid guid = _bridge->TagToGUID([item tag]);
-  const BookmarkNode* node = GetNodeByUuid(model, guid);
+  const BookmarkNode* node = BookmarkMenuBridge::FindNodeByUuid(model, guid);
 
   if (!(node && node->is_folder())) {
     // TODO(crbug.com/417269167): every non-root menu must correspond to a
@@ -243,6 +270,12 @@ void OpenBookmarkByGUID(ui::mojom::WindowOpenDisposition disposition,
   }
 
   _bridge->UpdateNonRootMenu(menu, BookmarkParentFolder::FromFolderNode(node));
+}
+
+- (void)menuWillOpen:(NSMenu*)menu {
+  if (_menuTrackingDepth > 0) {
+    _bridge->OnMenuWillOpen(menu);
+  }
 }
 
 - (BOOL)menuHasKeyEquivalent:(NSMenu*)menu

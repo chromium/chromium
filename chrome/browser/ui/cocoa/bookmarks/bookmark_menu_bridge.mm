@@ -39,8 +39,12 @@ namespace {
 // Recursively clear any delegates from |menu| and its unbuilt submenus.
 void ClearDelegatesFromSubmenu(NSMenu* menu) {
   CHECK(menu);
-  // Either the delegate has been cleared, or items were never added.
-  CHECK(![menu delegate] || [menu numberOfItems] == 0);
+  if (!base::FeatureList::IsEnabled(kBookmarkMenuOptimizations)) {
+    // Either the delegate has been cleared, or items were never added.
+    // Not checked when kBookmarkMenuOptimizations is enabled because populated
+    // submenus retain their delegate until OnMenuWillOpen() finalizes them.
+    CHECK(![menu delegate] || [menu numberOfItems] == 0);
+  }
   [menu setDelegate:nil];
   NSArray* items = [menu itemArray];
   for (NSMenuItem* item in items) {
@@ -55,6 +59,20 @@ NSString* MenuTitleForNode(const BookmarkNode* node) {
 }
 
 }  // namespace
+
+// static
+const BookmarkNode* BookmarkMenuBridge::FindNodeByUuid(
+    const BookmarkModel* model,
+    const base::Uuid& guid) {
+  CHECK(model);
+  const BookmarkNode* node = model->GetNodeByUuid(
+      guid, BookmarkModel::NodeTypeForUuidLookup::kAccountNodes);
+  if (!node) {
+    node = model->GetNodeByUuid(
+        guid, BookmarkModel::NodeTypeForUuidLookup::kLocalOrSyncableNodes);
+  }
+  return node;
+}
 
 BookmarkMenuBridge::BookmarkMenuBridge(Profile* profile, NSMenu* menu_root)
     : profile_(profile),
@@ -110,8 +128,10 @@ void BookmarkMenuBridge::UpdateNonRootMenu(NSMenu* menu,
 
   AddChildrenToMenu(folder, menu, /*recurse=*/false);
 
-  // Clear the delegate to prevent further refreshes.
-  [menu setDelegate:nil];
+  if (!base::FeatureList::IsEnabled(kBookmarkMenuOptimizations)) {
+    // Clear the delegate to prevent further refreshes.
+    [menu setDelegate:nil];
+  }
 }
 
 bool BookmarkMenuBridge::HasContent(const BookmarkParentFolder& folder) {
@@ -204,7 +224,11 @@ void BookmarkMenuBridge::BookmarkNodeMoved(
 void BookmarkMenuBridge::BookmarkNodeChanged(const BookmarkNode* node) {
   NSMenuItem* item = MenuItemForNode(node);
   if (item) {
-    ConfigureMenuItem(node, item, /*load_favicon=*/true);
+    const bool finalize =
+        !base::FeatureList::IsEnabled(kBookmarkMenuOptimizations) ||
+        IsMenuFinalized([item menu]);
+    ConfigureMenuItem(node, item,
+                      finalize ? ItemConfig::kFinal : ItemConfig::kDeferred);
   }
 }
 
@@ -214,7 +238,7 @@ void BookmarkMenuBridge::BookmarkNodeFaviconChanged(const BookmarkNode* node) {
     if (base::FeatureList::IsEnabled(kBookmarkMenuOptimizations)) {
       UpdateMenuItemFavicon(node, item, /*load_if_missing=*/true);
     } else {
-      ConfigureMenuItem(node, item, /*load_favicon=*/true);
+      ConfigureMenuItem(node, item, ItemConfig::kFinal);
     }
   }
 }
@@ -249,6 +273,7 @@ void BookmarkMenuBridge::ClearBookmarkMenu() {
   InvalidateMenu();
   bookmark_nodes_.clear();
   tag_to_guid_.clear();
+  is_root_menu_finalized_ = false;
 
   // Recursively delete all menus that look like a bookmark. Also delete all
   // separator items since we explicitly add them back in. This deletes
@@ -293,7 +318,10 @@ void BookmarkMenuBridge::AddSubmenu(NSMenu* menu,
   if (@available(macOS 27, *)) {
     item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
   }
-  ConfigureMenuItem(node, item, /*load_favicon=*/!recurse);
+  ConfigureMenuItem(node, item,
+                    !optimize ? ItemConfig::kFinal
+                              : (recurse ? ItemConfig::kDeferredTeardown
+                                         : ItemConfig::kDeferred));
   if (!recurse || !optimize) {
     bookmark_nodes_[node] = item;
   }
@@ -301,9 +329,10 @@ void BookmarkMenuBridge::AddSubmenu(NSMenu* menu,
   NSMenu* submenu = [[NSMenu alloc] initWithTitle:[item title]];
   [menu setSubmenu:submenu forItem:item];
 
-  // Set a delegate and a tag on the item so that the submenu can be populated
-  // when (and if) Cocoa asks for it.
-  if (!recurse) {
+  // Set a delegate on unbuilt submenus so they populate on demand, and on
+  // recursively built submenus when optimized so OnMenuWillOpen() can still
+  // elide their titles after OnProfileWillBeDestroyed().
+  if (!recurse || optimize) {
     [submenu setDelegate:controller_];
   }
 
@@ -353,15 +382,20 @@ void BookmarkMenuBridge::AddNodeToMenu(const BookmarkNode* node,
     if (!recurse || !optimize) {
       bookmark_nodes_[node] = item;
     }
-    ConfigureMenuItem(node, item, /*load_favicon=*/!recurse);
+    ConfigureMenuItem(node, item,
+                      !optimize ? ItemConfig::kFinal
+                                : (recurse ? ItemConfig::kDeferredTeardown
+                                           : ItemConfig::kDeferred));
     [menu addItem:item];
   }
 }
 
 void BookmarkMenuBridge::ConfigureMenuItem(const BookmarkNode* node,
                                            NSMenuItem* item,
-                                           bool load_favicon) {
-  [item setTitle:MenuTitleForNode(node)];
+                                           ItemConfig config) {
+  [item setTitle:config == ItemConfig::kFinal
+                     ? MenuTitleForNode(node)
+                     : base::SysUTF16ToNSString(node->GetTitle())];
   [item setTag:node->id()];
   tag_to_guid_[node->id()] = node->uuid();
 
@@ -373,11 +407,34 @@ void BookmarkMenuBridge::ConfigureMenuItem(const BookmarkNode* node,
 
   [item setTarget:controller_];
   [item setAction:@selector(openBookmarkMenuItem:)];
-  [item setToolTip:[BookmarkMenuCocoaController tooltipForNode:node]];
+  if (config != ItemConfig::kDeferred) {
+    [item setToolTip:[BookmarkMenuCocoaController tooltipForNode:node]];
+  }
 
-  const bool load_if_missing =
-      load_favicon || !base::FeatureList::IsEnabled(kBookmarkMenuOptimizations);
-  UpdateMenuItemFavicon(node, item, load_if_missing);
+  UpdateMenuItemFavicon(node, item,
+                        /*load_if_missing=*/config == ItemConfig::kFinal);
+}
+
+// Non-root folder submenu lifecycle states are derived directly from NSMenu:
+//   not built yet:        [menu delegate] != nil && [menu numberOfItems] == 0
+//   built, not finalized: [menu delegate] != nil && [menu numberOfItems] > 0
+//   finalized:            [menu delegate] == nil
+// Every populated submenu has >= 1 item (empty folders add "(empty)" and
+// permanent folders CHECK non-empty in AddChildrenToMenu()), and only
+// OnMenuWillOpen() (flag on), UpdateNonRootMenu() (flag off), or
+// ClearDelegatesFromSubmenu() clear a submenu's delegate.
+bool BookmarkMenuBridge::IsSubmenuBuilt(NSMenu* submenu) const {
+  CHECK(submenu);
+  CHECK_NE(submenu, menu_root_);
+  return [submenu delegate] != nil && [submenu numberOfItems] > 0;
+}
+
+bool BookmarkMenuBridge::IsMenuFinalized(NSMenu* menu) const {
+  CHECK(menu);
+  if (menu == menu_root_) {
+    return is_root_menu_finalized_;
+  }
+  return [menu delegate] == nil;
 }
 
 void BookmarkMenuBridge::UpdateMenuItemFavicon(const BookmarkNode* node,
@@ -432,6 +489,8 @@ NSMenuItem* BookmarkMenuBridge::MenuItemForNodeForTest(
 
 void BookmarkMenuBridge::OnProfileWillBeDestroyed() {
   // Recursively populate the menu before the bookmark service is destroyed.
+  // `tag_to_guid_` is intentionally retained so items can still be finalized on
+  // interactive open and opened after profile destruction.
   BuildRootMenu(/*recurse=*/true);
 
   bookmark_service_observation_.Reset();
@@ -446,4 +505,45 @@ void BookmarkMenuBridge::OnProfileWillBeDestroyed() {
 base::Uuid BookmarkMenuBridge::TagToGUID(int64_t tag) const {
   const auto& it = tag_to_guid_.find(tag);
   return it == tag_to_guid_.end() ? base::Uuid() : it->second;
+}
+
+void BookmarkMenuBridge::OnMenuWillOpen(NSMenu* menu) {
+  CHECK(menu);
+  if (!base::FeatureList::IsEnabled(kBookmarkMenuOptimizations)) {
+    return;
+  }
+
+  const bool is_root = IsMenuRoot(menu);
+  if (is_root) {
+    if (!IsMenuValid() || is_root_menu_finalized_) {
+      return;
+    }
+    is_root_menu_finalized_ = true;
+  } else if (!IsSubmenuBuilt(menu)) {
+    return;
+  }
+
+  BookmarkModel* model = (bookmark_service_ && bookmark_service_->loaded())
+                             ? bookmark_service_->bookmark_model()
+                             : nullptr;
+  NSArray<NSMenuItem*>* items = [menu itemArray];
+  for (NSMenuItem* item in items) {
+    const base::Uuid guid = TagToGUID([item tag]);
+    if (!guid.is_valid()) {
+      continue;
+    }
+    [item setTitle:base::SysUTF16ToNSString(gfx::ElideMenuItemTitle(
+                       base::SysNSStringToUTF16([item title])))];
+    if (![item hasSubmenu] && model) {
+      if (const BookmarkNode* node = FindNodeByUuid(model, guid);
+          node && node->is_url()) {
+        [item setToolTip:[BookmarkMenuCocoaController tooltipForNode:node]];
+        UpdateMenuItemFavicon(node, item, /*load_if_missing=*/true);
+      }
+    }
+  }
+
+  if (!is_root) {
+    [menu setDelegate:nil];
+  }
 }

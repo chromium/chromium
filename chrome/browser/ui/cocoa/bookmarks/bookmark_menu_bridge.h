@@ -51,6 +51,11 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
 
   ~BookmarkMenuBridge() override;
 
+  // Looks up a BookmarkNode by |guid| across account and local/syncable nodes.
+  static const bookmarks::BookmarkNode* FindNodeByUuid(
+      const bookmarks::BookmarkModel* model,
+      const base::Uuid& guid);
+
   // BookmarkMergedSurfaceServiceObserver:
   void BookmarkMergedSurfaceServiceLoaded() override;
   void BookmarkMergedSurfaceServiceBeingDeleted() override;
@@ -102,12 +107,29 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
   // an NSMenuItem in this menu, returns the invalid GUID.
   base::Uuid TagToGUID(int64_t tag) const;
 
+  // Returns true if |submenu| has been populated and still retains its
+  // delegate awaiting OnMenuWillOpen().
+  bool IsSubmenuBuilt(NSMenu* submenu) const;
+
+  // Idempotently elides item titles, sets tooltips, and requests favicons for
+  // |menu| when opened during interactive menu tracking.
+  void OnMenuWillOpen(NSMenu* menu);
+
   // Returns the NSMenuItem for a given BookmarkNode, exposed publicly for
   // testing.
   NSMenuItem* MenuItemForNodeForTest(const bookmarks::BookmarkNode* node);
 
  private:
   friend class BookmarkMenuBridgeTest;
+
+  enum class ItemConfig {
+    // Raw title, no tooltip, already-loaded/default favicon only.
+    kDeferred,
+    // Raw title, eager tooltip, already-loaded/default favicon only.
+    kDeferredTeardown,
+    // Elided title, tooltip, and async favicon load if missing.
+    kFinal,
+  };
 
   // Returns true if the parent folder has at least one child.
   bool HasContent(const BookmarkParentFolder& folder);
@@ -150,17 +172,19 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
                      NSMenu* menu,
                      bool enabled);
 
-  // This configures an NSMenuItem with all the data from a BookmarkNode. This
-  // is used to update existing menu items, as well as to configure newly
-  // created ones, like in AddNodeToMenu(). When |load_favicon| is false (e.g.
-  // during OnProfileWillBeDestroyed), only already-loaded favicons are used.
+  // Configures an NSMenuItem with the data from a BookmarkNode according to
+  // |config|.
   void ConfigureMenuItem(const bookmarks::BookmarkNode* node,
                          NSMenuItem* item,
-                         bool load_favicon);
+                         ItemConfig config);
+
+  // Returns true if |menu|'s items have already been finalized via
+  // OnMenuWillOpen().
+  bool IsMenuFinalized(NSMenu* menu) const;
 
   // Updates |item|'s favicon image from |node| without re-eliding the title or
-  // rebuilding the tooltip. When |load_if_missing| is false (e.g. during
-  // OnProfileWillBeDestroyed), only already-loaded favicons are used.
+  // rebuilding the tooltip. When |load_if_missing| is false, only
+  // already-loaded favicons (or the default favicon) are used.
   void UpdateMenuItemFavicon(const bookmarks::BookmarkNode* node,
                              NSMenuItem* item,
                              bool load_if_missing);
@@ -191,6 +215,8 @@ class BookmarkMenuBridge : public BookmarkMergedSurfaceServiceObserver {
   // Tags are NSIntegers, so they're not necessarily large enough to hold a
   // GUID. Instead, map the tags to the corresponding GUIDs.
   std::map<int64_t, base::Uuid> tag_to_guid_;
+
+  bool is_root_menu_finalized_ = false;
 
   base::ScopedObservation<BookmarkMergedSurfaceService,
                           BookmarkMergedSurfaceServiceObserver>
