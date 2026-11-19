@@ -1941,7 +1941,8 @@ void BrowserView::UpdateTitleBar() {
     web_app_window_title_->SetText(GetWindowTitle());
     InvalidateLayout();
   }
-  if (!IsLoadingAnimationRunning() && CanChangeWindowIcon()) {
+  if ((!IsLoadingAnimationRunning() || GetIsFloatingType()) &&
+      CanChangeWindowIcon()) {
     browser_widget_->UpdateWindowIcon();
   }
 }
@@ -2474,6 +2475,9 @@ void BrowserView::UpdateToolbar(content::WebContents* contents) {
   // We may end up here during destruction.
   if (toolbar_) {
     toolbar_->Update(contents);
+  }
+  if (GetIsFloatingType() && browser_widget_) {
+    browser_widget_->UpdateWindowIcon();
   }
   for (ContentsContainerView* contents_container :
        multi_contents_view_->contents_container_views()) {

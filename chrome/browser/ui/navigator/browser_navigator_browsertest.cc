@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -48,6 +49,8 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -94,6 +97,8 @@
 #include "ui/display/screen_base.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/views/controls/label.h"
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -3253,6 +3258,78 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
                 popup_contents,
                 "try { window.resizeBy(10, 10); 'ok'; } catch (e) { e.name; }",
                 content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
+// Regression test for crbug.com/581893387: Always-on-top popups navigated to
+// blob: or about:blank URLs with attacker-controlled fragments must display
+// the precursor origin's host (and never the fragment or blob UUID), and update
+// the title bar elide behavior when navigating between HTTP/HTTPS and other
+// schemes.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
+                       AlwaysOnTopPopupTitleBarPreventsBlobFragmentSpoof) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL opener_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
+
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(opener_url, opener_url,
+                                      ContentSettingsType::WINDOW_MANAGEMENT,
+                                      CONTENT_SETTING_ALLOW);
+
+  content::WebContents* opener_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ui_test_utils::BrowserCreatedObserver observer;
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+  ASSERT_TRUE(content::ExecJs(
+      opener_contents,
+      "const b = new Blob(['<h1>hi</h1>'], {type: 'text/html'});"
+      "const u = URL.createObjectURL(b) + "
+      "'#________________________________________accounts.google.com';"
+      "window.open(u, 'spoof_popup', "
+      "'alwaysontop=true,width=340,height=420');"));
+  BrowserWindowInterface* popup_browser = observer.Wait();
+  ASSERT_TRUE(popup_browser);
+  nav_observer.Wait();
+
+  EXPECT_EQ(popup_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_FLOATING);
+
+  BrowserView* popup_browser_view =
+      BrowserView::GetBrowserViewForBrowser(popup_browser);
+  ASSERT_TRUE(popup_browser_view);
+  auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
+      popup_browser_view->browser_widget()->GetFrameView());
+  ASSERT_TRUE(pip_frame_view);
+  views::Label* title_label = pip_frame_view->GetWindowTitleForTesting();
+  ASSERT_TRUE(title_label);
+
+  const std::u16string expected_origin_host = base::UTF8ToUTF16(
+      base::StrCat({opener_url.GetHost(), ":", opener_url.GetPort()}));
+  EXPECT_EQ(expected_origin_host, title_label->GetText());
+  EXPECT_EQ(gfx::ELIDE_HEAD, title_label->GetElideBehavior());
+
+  // Live fragment mutations on the blob: URL must also keep showing only the
+  // precursor host.
+  content::WebContents* popup_contents =
+      popup_browser->GetActiveTabInterface()->GetContents();
+  ASSERT_TRUE(popup_contents);
+  ASSERT_TRUE(content::ExecJs(
+      popup_contents,
+      "location.hash = "
+      "'________________________________________login.microsoftonline.com';"));
+  EXPECT_EQ(expected_origin_host, title_label->GetText());
+  EXPECT_EQ(gfx::ELIDE_HEAD, title_label->GetElideBehavior());
+
+  // Navigating the popup to a standalone about:blank URL with a fragment
+  // (browser-initiated, opaque origin without precursor) must strip the
+  // fragment and switch to tail-elision.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      popup_browser,
+      GURL("about:blank#________________________________________example.com")));
+  EXPECT_EQ(u"about:blank", title_label->GetText());
+  EXPECT_EQ(gfx::ELIDE_TAIL, title_label->GetElideBehavior());
 }
 
 }  // namespace

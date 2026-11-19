@@ -32,11 +32,10 @@
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
-#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
-#include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,6 +59,10 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/frame_background.h"
 #include "ui/views/window/window_shape.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/win/hwnd_metrics.h"
@@ -71,9 +74,6 @@
 #include "ui/aura/window.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "extensions/common/constants.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace {
 
 constexpr int kWindowIconImageSize = 16;
@@ -187,6 +187,17 @@ void DefinitelyExitPictureInPicture(
   }
 }
 
+gfx::ElideBehavior GetWindowTitleElideBehavior(const GURL& url) {
+  // Only head-elide hierarchical HTTP/HTTPS URLs, where kFormatUrlTrimAfterHost
+  // strips everything after the host/port and the registrable domain is at the
+  // end. For all other schemes (e.g. file:, chrome:, chrome-extension:,
+  // isolated-app:, about:), elide the tail so that a crafted suffix cannot
+  // spoof an origin.
+  return (url.SchemeIsHTTPOrHTTPS() && !url.GetHost().empty())
+             ? gfx::ELIDE_HEAD
+             : gfx::ELIDE_TAIL;
+}
+
 }  // namespace
 
 PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
@@ -226,23 +237,6 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
       views::kMarginsKey, gfx::Insets::TLBR(KIconViewVerticalMargin, 8,
                                             KIconViewVerticalMargin, 4));
 
-  // For file URLs, we want to elide the tail, since the file name and/or query
-  // part of the file URL can be made to look like an origin for spoofing. For
-  // HTTPS URLs, we elide the head to prevent spoofing via long origins, since
-  // in the HTTPS case everything besides the origin is removed for display.
-  auto elide_behavior = location_bar_model_->GetURL().SchemeIsFile()
-                            ? gfx::ELIDE_TAIL
-                            : gfx::ELIDE_HEAD;
-
-  // Similarly for extension URLs and isolated-app URLs, the tail is more
-  // important to elide.
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (location_bar_model_->GetURL().SchemeIs(extensions::kExtensionScheme) ||
-      location_bar_model_->GetURL().SchemeIs(webapps::kIsolatedAppScheme)) {
-    elide_behavior = gfx::ELIDE_TAIL;
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
   // TODO(crbug.com/424715850): use IWA app name in title (plus why registrar
   // based on browser_view->GetProfile doesn't know about the app).
 
@@ -255,7 +249,8 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
               gfx::DirectionalityMode::DIRECTIONALITY_AS_URL))
           .CopyAddressTo(&window_title_)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetElideBehavior(elide_behavior)
+          .SetElideBehavior(
+              GetWindowTitleElideBehavior(location_bar_model_->GetURL()))
           .SetProperty(
               views::kFlexBehaviorKey,
               views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -503,6 +498,8 @@ void PictureInPictureBrowserFrameView::UpdateWindowIcon() {
   // This will be called after WebContents in PictureInPictureWindowManager is
   // set, so that we can update the icon and title based on WebContents.
   location_icon_view_->Update(/*suppress_animations=*/false);
+  window_title_->SetElideBehavior(
+      GetWindowTitleElideBehavior(location_bar_model_->GetURL()));
   window_title_->SetText(location_bar_model_->GetURLForDisplay());
 }
 
@@ -702,11 +699,46 @@ content::WebContents* PictureInPictureBrowserFrameView::GetActiveWebContents()
 
 bool PictureInPictureBrowserFrameView::GetURL(GURL* url) const {
   CHECK(url, base::NotFatalUntil::M162);
-  if (GetActiveWebContents()) {
-    *url = GetActiveWebContents()->GetLastCommittedURL();
+  content::WebContents* const web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  const GURL& committed_url = web_contents->GetLastCommittedURL();
+  if (committed_url.IsStandard() && !committed_url.SchemeIsFileSystem()) {
+    *url = committed_url;
     return true;
   }
-  return false;
+
+  // For non-standard URLs (such as blob: or about:blank) and filesystem: URLs,
+  // kFormatUrlTrimAfterHost does not trim the path, query, or fragment. Use the
+  // committed origin's tuple (or precursor tuple if opaque) so the title bar
+  // displays the responsible origin rather than untrimmed URL content.
+  if (content::RenderFrameHost* const main_frame =
+          web_contents->GetPrimaryMainFrame()) {
+    const url::SchemeHostPort& tuple =
+        main_frame->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque();
+    if (tuple.IsValid()) {
+      *url = tuple.GetURL();
+      return true;
+    }
+  }
+
+  const url::Origin committed_origin = url::Origin::Create(committed_url);
+  const url::SchemeHostPort& url_tuple =
+      committed_origin.GetTupleOrPrecursorTupleIfOpaque();
+  if (url_tuple.IsValid()) {
+    *url = url_tuple.GetURL();
+    return true;
+  }
+
+  if (committed_url.is_empty()) {
+    *url = GURL();
+    return true;
+  }
+  *url = GURL(committed_url.IsAboutSrcdoc() ? url::kAboutSrcdocURL
+                                            : url::kAboutBlankURL);
+  return true;
 }
 
 bool PictureInPictureBrowserFrameView::ShouldPreventElision() {

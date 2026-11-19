@@ -37,10 +37,9 @@
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "components/webapps/isolated_web_apps/scheme.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
-#include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
@@ -75,10 +74,9 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/window_shape.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "extensions/common/constants.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "url/origin.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_pin_button.h"
@@ -276,11 +274,46 @@ class DocumentPipFrameView::LocationBarModelDelegateImpl
 bool DocumentPipFrameView::LocationBarModelDelegateImpl::GetURL(
     GURL* url) const {
   CHECK(url);
-  if (content::WebContents* const web_contents = GetActiveWebContents()) {
-    *url = web_contents->GetLastCommittedURL();
+  content::WebContents* const web_contents = GetActiveWebContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  const GURL& committed_url = web_contents->GetLastCommittedURL();
+  if (committed_url.IsStandard() && !committed_url.SchemeIsFileSystem()) {
+    *url = committed_url;
     return true;
   }
-  return false;
+
+  // For non-standard URLs (such as blob: or about:blank) and filesystem: URLs,
+  // kFormatUrlTrimAfterHost does not trim the path, query, or fragment. Use the
+  // committed origin's tuple (or precursor tuple if opaque) so the title bar
+  // displays the responsible origin rather than untrimmed URL content.
+  if (content::RenderFrameHost* const main_frame =
+          web_contents->GetPrimaryMainFrame()) {
+    const url::SchemeHostPort& tuple =
+        main_frame->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque();
+    if (tuple.IsValid()) {
+      *url = tuple.GetURL();
+      return true;
+    }
+  }
+
+  const url::Origin committed_origin = url::Origin::Create(committed_url);
+  const url::SchemeHostPort& url_tuple =
+      committed_origin.GetTupleOrPrecursorTupleIfOpaque();
+  if (url_tuple.IsValid()) {
+    *url = url_tuple.GetURL();
+    return true;
+  }
+
+  if (committed_url.is_empty()) {
+    *url = GURL();
+    return true;
+  }
+  *url = GURL(committed_url.IsAboutSrcdoc() ? url::kAboutSrcdocURL
+                                            : url::kAboutBlankURL);
+  return true;
 }
 
 bool DocumentPipFrameView::LocationBarModelDelegateImpl::
@@ -869,22 +902,14 @@ void DocumentPipFrameView::UpdateOriginAndSecurity() {
   window_title_->SetText(url_text);
   origin_chip_->GetViewAccessibility().SetDescription(url_text);
 
-  // Pick the elision direction by scheme, mirroring
-  // PictureInPictureBrowserFrameView. For file URLs we elide the tail, since
-  // the file name/query can be crafted to look like an origin (spoofing). For
-  // HTTPS URLs we elide the head, since everything but the origin is removed
-  // for display, so a long origin could otherwise be pushed out of view.
-  gfx::ElideBehavior elide_behavior =
-      url.SchemeIsFile() ? gfx::ELIDE_TAIL : gfx::ELIDE_HEAD;
-  // Extension and isolated-app URLs are like file URLs: the tail is the
-  // spoofable part, so elide it.
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (url.SchemeIs(extensions::kExtensionScheme) ||
-      url.SchemeIs(webapps::kIsolatedAppScheme)) {
-    elide_behavior = gfx::ELIDE_TAIL;
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  window_title_->SetElideBehavior(elide_behavior);
+  // Only head-elide hierarchical HTTP/HTTPS URLs, where kFormatUrlTrimAfterHost
+  // strips everything after the host/port and the registrable domain is at the
+  // end. For all other schemes (e.g. file:, chrome:, chrome-extension:,
+  // isolated-app:, about:), elide the tail so that a crafted suffix cannot
+  // spoof an origin. Mirrors PictureInPictureBrowserFrameView.
+  window_title_->SetElideBehavior(
+      (url.SchemeIsHTTPOrHTTPS() && !url.GetHost().empty()) ? gfx::ELIDE_HEAD
+                                                            : gfx::ELIDE_TAIL);
 
   const security_state::SecurityLevel security_level =
       location_bar_model_->GetSecurityLevel();

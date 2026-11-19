@@ -172,6 +172,8 @@ if (!is_android) {
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/tabs:features",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view",
       "//chrome/browser/ui/window_feature_controller",
       "//chrome/test:test_support",
       "//components/captive_portal/content",

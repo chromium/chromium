@@ -679,6 +679,38 @@ TEST_F(DocumentPipFrameViewTest, FileUrlTailElidesAndChipSaysFile) {
             GetOriginChip(frame_view)->GetText());
 }
 
+// Non-standard URLs with precursor origins (such as blob: URLs) display the
+// precursor origin's host without any path, query, or fragment
+// (crbug.com/581893387).
+TEST_F(DocumentPipFrameViewTest, BlobUrlShowsPrecursorHostAndIgnoresFragment) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("blob:https://www.example.com/"
+           "00000000-0000-0000-0000-000000000000#"
+           "________________________________________accounts.google.com"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  EXPECT_EQ(std::u16string(u"example.com"),
+            GetWindowTitle(frame_view)->GetText());
+  EXPECT_EQ(gfx::ELIDE_HEAD, GetWindowTitle(frame_view)->GetElideBehavior());
+}
+
+// Non-HTTP/HTTPS URLs without precursor origins (such as standalone about:blank
+// with a fragment) strip the fragment and tail-elide so that trailing text
+// cannot spoof the origin (crbug.com/581893387).
+TEST_F(DocumentPipFrameViewTest, AboutBlankStripsFragmentAndTailElides) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("about:blank#________________________________________example.com"));
+
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+
+  EXPECT_EQ(std::u16string(u"about:blank"),
+            GetWindowTitle(frame_view)->GetText());
+  EXPECT_EQ(gfx::ELIDE_TAIL, GetWindowTitle(frame_view)->GetElideBehavior());
+}
+
 // A secure HTTPS page shows no security chip text (the lock icon alone conveys
 // the secure state), mirroring the omnibox.
 TEST_F(DocumentPipFrameViewTest, HttpsSecureUrlHasEmptyChipText) {
