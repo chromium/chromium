@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/settings/password/public/passwords_table_view_constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 @class GREYElementInteraction;

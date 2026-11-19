@@ -8,7 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/settings/password/public/passwords_table_view_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"

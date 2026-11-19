@@ -9,11 +9,11 @@ include_rules = [
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/reading_list/ui_bundled",
+  "+ios/chrome/browser/settings/password/public",
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells",
   "+ios/chrome/browser/settings/ui_bundled/cells",
   "+ios/chrome/browser/settings/ui_bundled/elements",
-  "+ios/chrome/browser/settings/ui_bundled/password",
   "+ios/chrome/browser/signin/model",
   # keep-sorted end
 ]

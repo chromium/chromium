@@ -52,7 +52,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/popup_menu/public",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:factory",
-    "//ios/chrome/browser/settings/ui_bundled/password:password_constants",
+    "//ios/chrome/browser/settings/password/public:password_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/password_checkup:password_checkup_constants",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",

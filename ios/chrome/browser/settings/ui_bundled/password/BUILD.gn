@@ -13,7 +13,6 @@ source_set("password") {
   ]
   deps = [
     ":common",
-    ":password_constants",
     ":password_utils",
     ":ui",
     "//components/application_locale_storage",
@@ -39,6 +38,7 @@ source_set("password") {
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/passwords/model/metrics",
     "//ios/chrome/browser/settings/password/public:features",
+    "//ios/chrome/browser/settings/password/public:password_constants",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/password/password_checkup",
     "//ios/chrome/browser/settings/ui_bundled/password/password_details",
@@ -97,8 +97,9 @@ source_set("ui") {
     "passwords_consumer.h",
     "passwords_settings_commands.h",
   ]
+  public_deps =
+      [ "//ios/chrome/browser/settings/password/public:password_constants" ]
   deps = [
-    ":password_constants",
     ":password_utils",
     ":title_view",
     "//base",
@@ -142,19 +143,6 @@ source_set("ui") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
     "//url",
-  ]
-}
-
-source_set("password_constants") {
-  sources = [
-    "passwords_table_view_constants.h",
-    "passwords_table_view_constants.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/ui/image",
-    "//ios/chrome/browser/shared/ui/list_model",
-    "//ios/chrome/browser/shared/ui/symbols",
   ]
 }
 
@@ -202,7 +190,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":password",
-    ":password_constants",
     ":password_utils",
     ":ui",
     "//base",
@@ -230,6 +217,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/settings/password/public:features",
+    "//ios/chrome/browser/settings/password/public:password_constants",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication",
     "//ios/chrome/browser/settings/ui_bundled/utils",
@@ -269,13 +257,14 @@ source_set("eg_test_support") {
     "password_manager_egtest_utils.h",
     "password_manager_egtest_utils.mm",
   ]
+  public_deps =
+      [ "//ios/chrome/browser/settings/password/public:password_constants" ]
   deps = [
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
-    "//ios/chrome/browser/settings/ui_bundled/password:password_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/password_checkup:password_checkup_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/password_details:password_details_table_view_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/password_settings:password_settings_constants",
@@ -339,7 +328,6 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support",
     ":eg_test_support+eg2",
-    ":password_constants",
     "//base",
     "//base/test:test_support",
     "//components/feature_engagement/public",
@@ -357,6 +345,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/passwords/model/metrics",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/settings/manage_sync/public",
+    "//ios/chrome/browser/settings/password/public:password_constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/password_checkup:password_checkup_constants",
     "//ios/chrome/browser/settings/ui_bundled/password/password_details:password_details_table_view_constants",
