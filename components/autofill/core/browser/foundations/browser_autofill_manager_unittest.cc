@@ -122,7 +122,9 @@
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/mock_single_field_fill_router.h"
+#include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
@@ -1066,6 +1068,19 @@ class BrowserAutofillManagerTest : public testing::Test,
       mock_autocomplete_history_manager_ =
           std::make_unique<NiceMock<MockAutocompleteHistoryManager>>(
               mock_web_data_service_);
+      ON_CALL(*mock_autocomplete_history_manager_, OnGetSingleFieldSuggestions)
+          .WillByDefault(
+              [this](const FormData& form, const FormStructure* form_structure,
+                     const FormFieldData& field,
+                     const AutofillField* autofill_field,
+                     AutofillClient& client,
+                     SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                         on_suggestions_returned) {
+                mock_autocomplete_history_manager_
+                    ->AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
+                        form, form_structure, field, autofill_field, client,
+                        std::move(on_suggestions_returned));
+              });
       ON_CALL(autofill_client(), GetAutocompleteHistoryManager)
           .WillByDefault(Return(mock_autocomplete_history_manager_.get()));
     }
@@ -1796,9 +1811,120 @@ TEST_P(BrowserAutofillManagerTrustedVaultTest,
 
   OnAskForValuesToFill(form, form.fields()[0]);
 
-  EXPECT_THAT(
-      external_delegate()->suggestions(),
-      Contains(Suggestion(SuggestionType::kPendingStateTrustedVaultError)));
+  external_delegate()->CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion(u"buddy@gmail.com", u"", Suggestion::Icon::kEmail,
+                  SuggestionType::kAddressEntry),
+       Suggestion(u"theking@gmail.com", u"", Suggestion::Icon::kEmail,
+                  SuggestionType::kAddressEntry),
+       Suggestion(SuggestionType::kSeparator),
+       Suggestion(SuggestionType::kPendingStateTrustedVaultError),
+       CreateManageAddressesSuggestion()});
+}
+
+TEST_P(BrowserAutofillManagerTrustedVaultTest,
+       TrustedVaultUnlockSuggestionInAutocompleteAddsStaticSeparator) {
+  personal_data().test_address_data_manager().ClearProfiles();
+  FormData form =
+      test::GetFormData({.fields = {{.role = EMAIL_ADDRESS,
+                                     .name = u"username",
+                                     .autocomplete_attribute = "username"}}});
+  FormsSeen({form});
+
+  EXPECT_CALL(password_delegate(),
+              GetTrustedVaultUnlockSuggestion(form.fields()[0].global_id()))
+      .WillOnce(
+          Return(Suggestion(SuggestionType::kPendingStateTrustedVaultError)));
+  MockAutocompleteSuggestions(form.fields()[0].name(), {u"one", u"two"});
+
+  OnAskForValuesToFill(
+      form, form.fields()[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  external_delegate()->CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion(u"one", SuggestionType::kAutocompleteEntry),
+       Suggestion(u"two", SuggestionType::kAutocompleteEntry),
+       Suggestion(SuggestionType::kSeparator),
+       Suggestion(SuggestionType::kPendingStateTrustedVaultError)});
+  ASSERT_EQ(external_delegate()->suggestions().size(), 4u);
+  EXPECT_EQ(external_delegate()->suggestions()[2].filtration_policy,
+            Suggestion::FiltrationPolicy::kStatic);
+}
+
+TEST_P(BrowserAutofillManagerTrustedVaultTest,
+       TrustedVaultUnlockSuggestionStandaloneHasNoLeadingSeparator) {
+  personal_data().test_address_data_manager().ClearProfiles();
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS,
+                   .autocomplete_attribute = "username"}}});
+  FormsSeen({form});
+
+  ON_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillByDefault([](const FormData&, const FormStructure*,
+                        const FormFieldData& field, const AutofillField*,
+                        const AutofillClient&,
+                        SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                            on_suggestions_returned) {
+        std::move(on_suggestions_returned).Run(field.global_id(), {});
+      });
+  EXPECT_CALL(password_delegate(),
+              GetTrustedVaultUnlockSuggestion(form.fields()[0].global_id()))
+      .WillOnce(
+          Return(Suggestion(SuggestionType::kPendingStateTrustedVaultError)));
+
+  OnAskForValuesToFill(
+      form, form.fields()[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  external_delegate()->CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion(SuggestionType::kPendingStateTrustedVaultError)});
+}
+
+TEST_P(BrowserAutofillManagerTrustedVaultTest,
+       TrustedVaultUnlockAndWebauthnSuggestionsOrderedAboveManageAddress) {
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+
+  ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
+  EXPECT_CALL(password_delegate(),
+              GetTrustedVaultUnlockSuggestion(form.fields()[0].global_id()))
+      .WillOnce(
+          Return(Suggestion(SuggestionType::kPendingStateTrustedVaultError)));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  external_delegate()->CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion(u"buddy@gmail.com", u"", Suggestion::Icon::kEmail,
+                  SuggestionType::kAddressEntry),
+       Suggestion(u"theking@gmail.com", u"", Suggestion::Icon::kEmail,
+                  SuggestionType::kAddressEntry),
+       Suggestion(SuggestionType::kSeparator),
+       Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice),
+       Suggestion(SuggestionType::kPendingStateTrustedVaultError),
+       CreateManageAddressesSuggestion()});
+}
+
+TEST_P(BrowserAutofillManagerTrustedVaultTest,
+       TrustedVaultUnlockSuggestion_SelectAndAccept) {
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+  Suggestion suggestion(SuggestionType::kPendingStateTrustedVaultError);
+
+  EXPECT_CALL(password_delegate(),
+              GetTrustedVaultUnlockSuggestion(form.fields()[0].global_id()))
+      .WillOnce(Return(suggestion));
+  EXPECT_CALL(password_delegate(), SelectSuggestion(suggestion));
+  EXPECT_CALL(password_delegate(), AcceptSuggestion(suggestion, _));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  external_delegate()->DidSelectSuggestion(suggestion);
+  external_delegate()->DidAcceptSuggestion(suggestion, {.multi_index = {0}});
 }
 
 // Tests that passkey and Trusted Vault footer merges are skipped when

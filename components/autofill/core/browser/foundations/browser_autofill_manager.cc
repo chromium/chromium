@@ -729,16 +729,16 @@ void LogSuggestionGenerationMetrics(
   autofill_metrics::LogSuggestionsCount(suggestions);
 }
 
-// Classifies suggestions for `ReorderWebAuthnSuggestionsToFooter()`, which
-// moves merged WebAuthn items from the end of `suggestions` to the top of the
-// popup's footer section.
+// Classifies suggestions for `ReorderWebAuthnAndPasswordSuggestionsToFooter()`,
+// which moves merged WebAuthn and Password Manager items from the end of
+// `suggestions` to the top of the popup's footer section.
 enum class FooterReorderRole {
   // Body and structural items (e.g. `kSeparator`) that stay above the footer
   // section.
   kNone,
   // Merged items appended in `GenerateFooter()` (e.g. WebAuthn hybrid sign-in
-  // items) that should be placed at the top of the footer section, above
-  // `kTrailingFooterItem` items.
+  // or Trusted Vault unlock items) that should be placed at the top of the
+  // footer section, above `kTrailingFooterItem` items.
   kLeadingFooterItem,
   // Pre-existing footer items (e.g. "Manage...", "Undo", "Scan card") that
   // stay below `kLeadingFooterItem` items.
@@ -747,6 +747,7 @@ enum class FooterReorderRole {
 
 FooterReorderRole GetFooterReorderRole(const Suggestion& suggestion) {
   switch (suggestion.type) {
+    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kWebauthnPasskeyQrCode:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       return FooterReorderRole::kLeadingFooterItem;
@@ -818,7 +819,6 @@ FooterReorderRole GetFooterReorderRole(const Suggestion& suggestion) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
-    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kSeparator:
@@ -833,10 +833,11 @@ FooterReorderRole GetFooterReorderRole(const Suggestion& suggestion) {
 }
 
 // Finds the trailing footer section (or adds a static separator to start one
-// when none exists) and moves WebAuthn fallback items directly above any
-// existing footer options, preserving their relative order from generation
-// (e.g., inline QR code before text fallback).
-void ReorderWebAuthnSuggestionsToFooter(std::vector<Suggestion>& suggestions) {
+// when none exists) and moves merged WebAuthn and Password Manager items
+// directly above any existing footer items, preserving their relative order
+// from generation (e.g., inline QR code before text fallback / unlock item).
+void ReorderWebAuthnAndPasswordSuggestionsToFooter(
+    std::vector<Suggestion>& suggestions) {
   if (suggestions.size() < 2) {
     return;
   }
@@ -853,7 +854,7 @@ void ReorderWebAuthnSuggestionsToFooter(std::vector<Suggestion>& suggestions) {
         return GetFooterReorderRole(s) == FooterReorderRole::kLeadingFooterItem;
       });
   if (merged_footer_end == footer_pos) {
-    return;  // Nothing to reorder (no WebAuthn fallback items found).
+    return;  // Nothing to reorder (no merged WebAuthn/password items found).
   }
 
   auto create_static_separator = [] {
@@ -2031,7 +2032,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
     bool show_suggestions,
     std::vector<Suggestion> suggestions,
     base::ScopedClosureRunner scoped_on_after) {
-  ReorderWebAuthnSuggestionsToFooter(suggestions);
+  ReorderWebAuthnAndPasswordSuggestionsToFooter(suggestions);
 
   auto [form_structure, autofill_field] =
       FindMutableFormAndField(form_id, trigger_field.global_id());

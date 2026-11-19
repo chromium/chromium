@@ -62,7 +62,8 @@ bool ShouldOfferUndoOnField(const AutofillField& field);
 Suggestion CreateUndoSuggestion();
 
 // Returns true if `suggestion` is a management footer option (e.g., "Manage
-// addresses...", "Manage payment methods...", etc.).
+// addresses...", "Manage payment methods...", etc.) or a merged WebAuthn /
+// Password Manager footer item excluded from fillable suggestion counts.
 bool IsManagementFooterOption(const Suggestion& suggestion);
 
 // Extend the list of suggestions by inserting the new suggestions just
