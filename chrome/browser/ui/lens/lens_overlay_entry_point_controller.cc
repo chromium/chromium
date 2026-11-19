@@ -12,6 +12,7 @@
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
+#include "chrome/browser/lens/region_search/lens_region_search_helper.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -108,7 +109,7 @@ bool LensOverlayEntryPointController::IsEnabledOnInit(Profile* profile) {
 
   // Lens Overlay is only enabled if the user's default search engine is Google.
   if (lens::features::IsLensOverlayGoogleDseRequired() &&
-      !search::DefaultSearchProviderIsGoogle(profile)) {
+      !lens::IsDefaultSearchProviderGoogleForLens(profile)) {
     return false;
   }
 

@@ -383,6 +383,7 @@ class RenderViewContextMenu
   void AppendGlicShareImageItem();
   void AppendIndigoItem();
   bool CanAppendRegionSearchItem() const;
+  bool CanAppendSearchWebForImageItem() const;
   bool CanAppendGlicShareImageItem() const;
   bool CanAppendIndigoItem() const;
   void AppendLensGeminiSection();

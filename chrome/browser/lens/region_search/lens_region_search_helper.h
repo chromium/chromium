@@ -12,6 +12,12 @@ class TemplateURLService;
 
 namespace lens {
 
+// Returns whether `profile`'s default search engine resolves to Google
+// (`SEARCH_ENGINE_GOOGLE`) for Lens entry-point gating, without enforcing
+// `TemplateURL::IsTrustedGoogleEngine()`'s omnibox/suggest endpoint checks.
+// Returns false if `profile` is null.
+bool IsDefaultSearchProviderGoogleForLens(Profile* profile);
+
 bool IsRegionSearchEnabled(BrowserWindowInterface* browser,
                            Profile* profile,
                            TemplateURLService* service,

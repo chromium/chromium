@@ -81,6 +81,7 @@
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
+#include "chrome/browser/lens/region_search/lens_region_search_helper.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
@@ -1675,20 +1676,20 @@ Profile* RenderViewContextMenu::GetProfile() const {
 
 int RenderViewContextMenu::GetSearchForImageIdc() const {
   if (base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
-      search::DefaultSearchProviderIsGoogle(GetProfile())) {
+      lens::IsDefaultSearchProviderGoogleForLens(GetProfile())) {
     return IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE;
   }
   return IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE;
 }
 
 int RenderViewContextMenu::GetRegionSearchIdc() const {
-  return search::DefaultSearchProviderIsGoogle(GetProfile())
+  return lens::IsDefaultSearchProviderGoogleForLens(GetProfile())
              ? IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH
              : IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH;
 }
 
 int RenderViewContextMenu::GetSearchForVideoFrameIdc() const {
-  return search::DefaultSearchProviderIsGoogle(GetProfile())
+  return lens::IsDefaultSearchProviderGoogleForLens(GetProfile())
              ? IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME
              : IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME;
 }
@@ -1723,7 +1724,7 @@ const TemplateURL* RenderViewContextMenu::GetImageSearchProvider() const {
 
 std::u16string RenderViewContextMenu::GetImageSearchProviderName(
     const TemplateURL* provider) const {
-  if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
+  if (lens::IsDefaultSearchProviderGoogleForLens(GetProfile())) {
     // The image search branding label should always be 'Google'.
     return provider->short_name();
   }
@@ -2427,11 +2428,6 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
     return;
   }
 
-  const auto* provider = GetImageSearchProvider();
-  if (!provider) {
-    return;
-  }
-
   const int search_for_image_idc = GetSearchForImageIdc();
   auto* entry_point_controller =
       GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
@@ -2447,6 +2443,10 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
         search_for_image_idc, IDS_LENS_OVERLAY_IMAGE_ENTRYPOINT_LABEL_ALT3,
         icon);
   } else {
+    const auto* provider = GetImageSearchProvider();
+    if (!provider) {
+      return;
+    }
     menu_model_.AddItemWithIcon(
         search_for_image_idc,
         l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
@@ -3525,7 +3525,7 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
     const int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
 
     ui::ImageModel fallback_icon = icon;
-    if (!search::DefaultSearchProviderIsGoogle(GetProfile())) {
+    if (!lens::IsDefaultSearchProviderGoogleForLens(GetProfile())) {
       fallback_icon = ui::ImageModel();
     }
 
@@ -6268,7 +6268,7 @@ bool RenderViewContextMenu::CanPartiallyTranslate() {
 }
 
 void RenderViewContextMenu::MaybePrepareForLensQuery() {
-  if (!search::DefaultSearchProviderIsGoogle(GetProfile())) {
+  if (!lens::IsDefaultSearchProviderGoogleForLens(GetProfile())) {
     return;
   }
 
@@ -6408,6 +6408,22 @@ bool RenderViewContextMenu::CanAppendRegionSearchItem() const {
   return GetImageSearchProvider() != nullptr;
 }
 
+bool RenderViewContextMenu::CanAppendSearchWebForImageItem() const {
+  if (!params_.has_image_contents || !IsSearchAllowedByPolicy()) {
+    return false;
+  }
+
+  auto* entry_point_controller =
+      GetBrowser() ? lens::LensOverlayEntryPointController::From(GetBrowser())
+                   : nullptr;
+  if (entry_point_controller && entry_point_controller->IsEnabled() &&
+      lens::features::UseLensOverlayForImageSearch()) {
+    return entry_point_controller->AreVisible();
+  }
+
+  return GetImageSearchProvider() != nullptr;
+}
+
 bool RenderViewContextMenu::CanAppendGlicShareImageItem() const {
   if (!IsNormalBrowser() || glic_item_shown_ ||
       !params_.selection_text.empty()) {
@@ -6464,8 +6480,7 @@ void RenderViewContextMenu::AppendLensGeminiSection() {
   bool can_image_search =
       content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE) &&
-      params_.has_image_contents && IsSearchAllowedByPolicy() &&
-      GetImageSearchProvider() != nullptr;
+      CanAppendSearchWebForImageItem();
 
   if (!can_region && !can_glic && !can_indigo && !can_image_search) {
     return;

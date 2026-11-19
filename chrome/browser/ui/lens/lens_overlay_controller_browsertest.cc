@@ -32,6 +32,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/companion/text_finder/text_highlighter.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
@@ -49,10 +50,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -106,6 +109,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/base32/base32.h"
@@ -134,6 +138,10 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/search.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -167,6 +175,7 @@
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "ui/actions/actions.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
@@ -11182,4 +11191,95 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, MediaStayPaused) {
   EXPECT_TRUE(content::EvalJs(tab_contents,
                               "document.getElementById('test_media').paused")
                   .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       CustomGoogleDseKeepsToolbarEntryPointVisible) {
+  WaitForPaint();
+
+  TemplateURLService* const template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+  actions::ActionItem* const toolbar_entry_point =
+      actions::ActionManager::Get().FindAction(
+          kActionSidePanelShowLensOverlayResults,
+          BrowserActions::From(browser())->root_action_item());
+  ASSERT_NE(toolbar_entry_point, nullptr);
+  EXPECT_TRUE(toolbar_entry_point->GetEnabled());
+  EXPECT_TRUE(toolbar_entry_point->GetVisible());
+
+  // 1. Custom HTTP Google search URL (e.g. OpenSearch auto-discovered or
+  // user-added entry) fails strict `search::DefaultSearchProviderIsGoogle()`
+  // for suggest security, but should still keep Lens entry points enabled.
+  TemplateURLData http_google_data;
+  http_google_data.SetShortName(u"Custom Google HTTP");
+  http_google_data.SetKeyword(u"ghttp");
+  http_google_data.SetURL("http://www.google.com/search?q={searchTerms}");
+  TemplateURL* const http_google_turl = template_url_service->Add(
+      std::make_unique<TemplateURL>(http_google_data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(http_google_turl);
+
+  EXPECT_FALSE(search::DefaultSearchProviderIsGoogle(template_url_service));
+  EXPECT_TRUE(toolbar_entry_point->GetEnabled());
+  EXPECT_TRUE(toolbar_entry_point->GetVisible());
+  EXPECT_TRUE(
+      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
+          IDC_CONTENT_CONTEXT_LENS_OVERLAY));
+  EXPECT_TRUE(
+      GetContextMenu()->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+
+  // Verify the image context menu item is also present even though the custom
+  // Google entry has an empty `image_url`.
+  content::WebContents* const web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::ContextMenuParams image_params;
+  image_params.page_url = web_contents->GetLastCommittedURL();
+  image_params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+  image_params.has_image_contents = true;
+  image_params.src_url = GURL("https://example.com/image.png");
+  TestRenderViewContextMenu image_menu(*web_contents->GetPrimaryMainFrame(),
+                                       image_params);
+  image_menu.Init();
+  EXPECT_TRUE(image_menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
+
+  // 2. Custom HTTPS Google search URL with a subdomain or third-party
+  // suggestion URL (e.g. `clients1.google.com` or `suggestqueries.google.com`)
+  // also keeps Lens entry points enabled while strict suggest checks stay off.
+  TemplateURLData subdomain_suggest_data;
+  subdomain_suggest_data.SetShortName(u"Custom Google Suggest Subdomain");
+  subdomain_suggest_data.SetKeyword(u"gsug");
+  subdomain_suggest_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  subdomain_suggest_data.suggestions_url =
+      "https://suggestqueries.google.com/complete/search?q={searchTerms}";
+  TemplateURL* const subdomain_suggest_turl = template_url_service->Add(
+      std::make_unique<TemplateURL>(subdomain_suggest_data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(
+      subdomain_suggest_turl);
+
+  EXPECT_FALSE(search::DefaultSearchProviderIsGoogle(template_url_service));
+  EXPECT_TRUE(toolbar_entry_point->GetEnabled());
+  EXPECT_TRUE(toolbar_entry_point->GetVisible());
+
+  // 3. A non-Google default search engine disables and hides Lens entry points.
+  TemplateURLData non_google_data;
+  non_google_data.SetShortName(u"Example Search");
+  non_google_data.SetKeyword(u"example");
+  non_google_data.SetURL("https://example.com/search?q={searchTerms}");
+  TemplateURL* const non_google_turl =
+      template_url_service->Add(std::make_unique<TemplateURL>(non_google_data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(non_google_turl);
+
+  EXPECT_FALSE(toolbar_entry_point->GetEnabled());
+  EXPECT_FALSE(toolbar_entry_point->GetVisible());
+  EXPECT_FALSE(
+      chrome::BrowserCommandController::From(browser())->IsCommandEnabled(
+          IDC_CONTENT_CONTEXT_LENS_OVERLAY));
+
+  // 4. Switching back to custom HTTP Google re-enables and shows the toolbar
+  // entry point.
+  template_url_service->SetUserSelectedDefaultSearchProvider(http_google_turl);
+  EXPECT_TRUE(toolbar_entry_point->GetEnabled());
+  EXPECT_TRUE(toolbar_entry_point->GetVisible());
 }

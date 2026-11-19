@@ -6,11 +6,13 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
@@ -19,6 +21,21 @@
 #include "url/gurl.h"
 
 namespace lens {
+
+bool IsDefaultSearchProviderGoogleForLens(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+  const TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return false;
+  }
+  const TemplateURL* default_provider = service->GetDefaultSearchProvider();
+  return default_provider &&
+         default_provider->GetEngineType(service->search_terms_data()) ==
+             SEARCH_ENGINE_GOOGLE;
+}
 
 bool IsRegionSearchEnabled(BrowserWindowInterface* browser,
                            Profile* profile,

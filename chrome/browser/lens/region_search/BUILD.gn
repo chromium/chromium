@@ -21,6 +21,7 @@ static_library("region_search") {
     "//base",
     "//chrome/browser/image_editor",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs:tab_strip",
