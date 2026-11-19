@@ -622,11 +622,9 @@ suite('PasswordsSectionTest', function() {
     })];
 
     const section = await createPasswordsSection();
-    const listEntry =
-        section.shadowRoot.querySelector<HTMLElement>('password-list-item');
+    const listEntry = section.shadowRoot.querySelector('password-list-item');
     assertTrue(!!listEntry);
-    assertFalse(isVisible(
-        section.shadowRoot.querySelector<HTMLElement>('#cloudUploadButton')));
+    assertFalse(isVisible(listEntry.$.cloudUploadButton));
   });
 
   test(
