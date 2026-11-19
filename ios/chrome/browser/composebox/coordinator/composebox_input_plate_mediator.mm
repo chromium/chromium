@@ -250,6 +250,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       _composeboxObserverBridge;
   // The different modes for the composebox.
   ComposeboxModeHolder* _modeHolder;
+  // The latest computed UI input state snapshot.
+  ComposeboxUIInputState* _uiInputState;
   // The web state list.
   raw_ptr<WebStateList> _webStateList;
   // The observer bridge for the WebStateList.
@@ -457,6 +459,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                   isIncognito:_isIncognito];
     _stateManager.delegate = self;
     _stateManager.items = _items;
+    _uiInputState = [self computeUIInputState];
     _previousMode = _modeHolder.mode;
 
     contextual_tasks::ContextualTasksService* tasksService =
@@ -482,6 +485,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self recordSessionEndMetrics];
   _modeHolder = nil;
+  _uiInputState = nil;
   _faviconLoader = nullptr;
   _webStateDeferredExecutor = nil;
   _persistTabContextAgent = nullptr;
@@ -538,7 +542,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     [self extractFaviconForCurrentTab];
   }
 
-  [self commitUIUpdates];
+  [self updateUIInputState];
 }
 
 - (BOOL)canAddMoreAttachments {
@@ -707,6 +711,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 - (ComposeboxUIInputState*)currentUIInputState {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return _uiInputState;
+}
+
+// Computes a fresh UI input state snapshot from `_stateManager`.
+- (ComposeboxUIInputState*)computeUIInputState {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   return [_stateManager
       computeUIInputStateWithFavicon:_currentTabFavicon
@@ -1591,10 +1601,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       /*fallback_to_google_server=*/true, faviconLoadedBlock);
 }
 
-// Updates the cached favicon image and commits UI updates.
+// Updates the cached favicon image and refreshes the UI input state.
 - (void)setCachedCurrentTabFavicon:(UIImage*)image {
   _currentTabFavicon = image;
-  [self commitUIUpdates];
+  [self updateUIInputState];
 }
 
 // Attaches the active WebState's tab content to the input plate upon explicit
@@ -2309,6 +2319,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     item.leadingIconImage = faviconImage;
     [self.consumer updateState:item.state
          forItemWithIdentifier:item.identifier];
+    [self updateUIInputState];
   }
 }
 
@@ -2822,13 +2833,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   _compact = compact;
 }
 
-/// Updates the consumer UI input state.
+/// Recomputes `_uiInputState` and pushes updated controls and state to the
+/// consumer. Does not notify `self.delegate` so favicon, item, and WebState
+/// refreshes don't recreate `ComposeboxMenuCoordinator` while a menu is open.
 - (void)updateUIInputState {
-  ComposeboxUIInputState* state = [_stateManager
-      computeUIInputStateWithFavicon:_currentTabFavicon
-                 attachedWebStateIDs:[self
-                                         attachedWebStateIDsInCurrentContext]];
-  [self.consumer setUIInputState:state];
+  _uiInputState = [self computeUIInputState];
+  [self commitUIUpdates];
+  [self.consumer setUIInputState:_uiInputState];
 }
 
 // Pushes the batched UI updates to the consumer.
@@ -2837,7 +2848,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   [self updateButtonsVisibility];
   [self updateCompactMode];
-  [self updateUIInputState];
 
   _isUpdatingCompactMode = NO;
 }
@@ -2875,13 +2885,16 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
         recordTextEditedBeforeAiMode:(_userInputInProgress && _hasText)];
   }
   _previousMode = mode;
+  _uiInputState = [self computeUIInputState];
   [self reloadSuggestions];
 }
 
 - (void)inputStateManagerDidUpdateUIState:
     (ComposeboxInputStateManager*)manager {
+  _uiInputState = [self computeUIInputState];
   [self.delegate inputStateManagerDidUpdateUIState];
   [self commitUIUpdates];
+  [self.consumer setUIInputState:_uiInputState];
 }
 
 #pragma mark - SearchEngineObserving
@@ -2916,8 +2929,14 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 - (void)composeboxInputItemCollectionDidUpdateItems:
     (ComposeboxInputItemCollection*)composeboxInputItemCollection {
   [self updateConsumerItems];
-  [self commitUIUpdates];
+  ComposeboxUIInputState* previousState = _uiInputState;
   [_stateManager onItemsUpdated];
+  // `_stateManager` may synchronously switch tool mode and replace
+  // `_uiInputState` via `-inputStateManagerDidUpdateUIState:`. Refresh now
+  // only if it didn't.
+  if (_uiInputState == previousState) {
+    [self updateUIInputState];
+  }
   [self maybeRunPendingSendCallback];
 }
 
@@ -3014,6 +3033,26 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 #pragma mark - WebStateListObserving
 
+// Refreshes the current-tab favicon, auto-attached tab item, and cached UI
+// input state after the active WebState changes, navigates, or finishes
+// loading.
+- (void)handleActiveWebStateUpdatedResettingFavicon:(BOOL)resetFavicon {
+  if (resetFavicon) {
+    _currentTabFavicon = nil;
+  }
+  if (!_currentTabFavicon && [self canAttachActiveTab]) {
+    [self extractFaviconForCurrentTab];
+  }
+  ComposeboxUIInputState* previousState = _uiInputState;
+  [self updateAutoAttachedCurrentTabIfNeeded];
+  // Auto-attaching or detaching the current tab may synchronously replace
+  // `_uiInputState` via the item-collection update callback. Refresh now only
+  // if it didn't.
+  if (_uiInputState == previousState) {
+    [self updateUIInputState];
+  }
+}
+
 - (void)didChangeWebStateList:(WebStateList*)webStateList
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
@@ -3023,7 +3062,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 
   if (status.active_web_state_change()) {
-    [self updateAutoAttachedCurrentTabIfNeeded];
+    [self handleActiveWebStateUpdatedResettingFavicon:YES];
   }
 
   switch (change.type()) {
@@ -3056,12 +3095,14 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
     return;
   }
-  if (!navigationContext || (navigationContext->HasCommitted() &&
-                             !navigationContext->IsSameDocument())) {
+  BOOL committedCrossDocument =
+      !navigationContext || (navigationContext->HasCommitted() &&
+                             !navigationContext->IsSameDocument());
+  if (committedCrossDocument) {
     [self handleNavigatedWebState:webState];
   }
   if (_webStateList && webState == _webStateList->GetActiveWebState()) {
-    [self updateAutoAttachedCurrentTabIfNeeded];
+    [self handleActiveWebStateUpdatedResettingFavicon:committedCrossDocument];
   }
 }
 
@@ -3070,7 +3111,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
   if (_webStateList && webState == _webStateList->GetActiveWebState()) {
-    [self updateAutoAttachedCurrentTabIfNeeded];
+    [self handleActiveWebStateUpdatedResettingFavicon:NO];
   }
 }
 

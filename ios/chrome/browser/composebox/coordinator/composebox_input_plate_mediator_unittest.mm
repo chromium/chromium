@@ -115,6 +115,9 @@
 @property(nonatomic, assign) BOOL showedSnackbarForItemUploadDidFail;
 @property(nonatomic, assign) NSUInteger reloadAutocompleteCallCount;
 @property(nonatomic, assign) BOOL lastReloadAutocompleteRestarting;
+@property(nonatomic, weak) ComposeboxInputPlateMediator* mediator;
+@property(nonatomic, strong) ComposeboxUIInputState* lastDelegateUIInputState;
+@property(nonatomic, assign) NSUInteger uiStateUpdateCallCount;
 @end
 
 @implementation TestComposeboxInputPlateMediatorDelegate
@@ -130,6 +133,8 @@
   _showedSnackbarForItemUploadDidFail = YES;
 }
 - (void)inputStateManagerDidUpdateUIState {
+  _uiStateUpdateCallCount++;
+  _lastDelegateUIInputState = [self.mediator currentUIInputState];
 }
 @end
 
@@ -3778,6 +3783,95 @@ TEST_F(ComposeboxInputPlateMediatorTest, ApplyFocusParamsSelectsToolMode) {
   [mediator_ applyFocusParams:params];
 
   EXPECT_EQ([mediator_ composeboxMode], ComposeboxMode::kImageGeneration);
+}
+
+// Tests that `currentUIInputState` returns the cached `ComposeboxUIInputState`
+// snapshot and updates it before notifying the delegate.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       CurrentUIInputStateReturnsCachedSnapshotUpdatedBeforeDelegateCallback) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  SetCreateImageEligible(true);
+  TestComposeboxInputPlateMediatorDelegate* delegate =
+      [[TestComposeboxInputPlateMediatorDelegate alloc] init];
+  delegate.mediator = mediator_;
+  mediator_.delegate = delegate;
+  ComposeboxUIInputState* initial_state = [mediator_ currentUIInputState];
+  ASSERT_EQ(initial_state, [mediator_ currentUIInputState]);
+  ASSERT_EQ(initial_state.activeTool, ComposeboxMode::kRegularSearch);
+
+  [mediator_ setToolMode:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN];
+
+  ComposeboxUIInputState* updated_state = [mediator_ currentUIInputState];
+  EXPECT_EQ(updated_state, [mediator_ currentUIInputState]);
+  EXPECT_EQ(delegate.lastDelegateUIInputState, updated_state);
+  EXPECT_EQ(updated_state.activeTool, ComposeboxMode::kImageGeneration);
+}
+
+// Tests that omnibox text changes update input-plate controls without
+// recomputing `currentUIInputState` or re-notifying the delegate.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       CurrentUIInputStatePreservedAcrossOmniboxTextUpdates) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  TestComposeboxInputPlateMediatorDelegate* delegate =
+      [[TestComposeboxInputPlateMediatorDelegate alloc] init];
+  delegate.mediator = mediator_;
+  mediator_.delegate = delegate;
+  ComposeboxUIInputState* initial_state = [mediator_ currentUIInputState];
+  ASSERT_EQ(delegate.uiStateUpdateCallCount, 0u);
+
+  SetOmniboxText(u"some text");
+
+  EXPECT_EQ([mediator_ currentUIInputState], initial_state);
+  EXPECT_EQ(delegate.uiStateUpdateCallCount, 0u);
+  EXPECT_FALSE(
+      [consumer_ showsControls:ComposeboxInputPlateControls::kLeadingImage]);
+}
+
+// Tests that `currentUIInputState` refreshes current-tab attachment eligibility
+// when switching the active tab in Cobrowse while unfocused.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       CurrentUIInputStateRefreshesOnUnfocusedCobrowseActiveTabSwitch) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  searchbox_config_.mutable_rule_set()->add_allowed_input_types(
+      omnibox::INPUT_TYPE_BROWSER_TAB);
+  ForwardSearchboxConfig();
+
+  auto config_params = std::make_unique<
+      contextual_search::ContextualSearchContextController::ConfigParams>();
+  auto session = service_->CreateSession(
+      std::move(config_params),
+      contextual_search::ContextualSearchSource::kUnknown, std::nullopt);
+  session->CheckSearchContentSharingSettings(&pref_service_);
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(session), ComposeboxEntrypoint::kCobrowse,
+                     ComposeboxMode::kAIM);
+  mediator.consumer = consumer_;
+  ForwardSearchboxConfig();
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::FakeWebState* ntp_tab =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(ntp_tab);
+  ntp_tab->SetVisibleURL(GURL("chrome://newtab/"));
+  web::FakeNavigationContext ntp_nav;
+  ntp_nav.SetHasCommitted(true);
+  ntp_tab->OnNavigationFinished(&ntp_nav);
+  ASSERT_TRUE([[mediator currentUIInputState]
+      isAttachmentHidden:ComposeboxAttachmentOption::kCurrentTab]);
+
+  auto extractable_tab = std::make_unique<web::FakeWebState>();
+  PrepareForAutoAttachment(extractable_tab.get());
+  web_state_list_->InsertWebState(
+      std::move(extractable_tab),
+      WebStateList::InsertionParams::AtIndex(1).Activate());
+
+  EXPECT_FALSE([[mediator currentUIInputState]
+      isAttachmentHidden:ComposeboxAttachmentOption::kCurrentTab]);
 }
 
 }  // namespace
