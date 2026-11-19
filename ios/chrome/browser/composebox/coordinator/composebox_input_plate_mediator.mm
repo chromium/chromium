@@ -808,46 +808,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [self removeItemInternal:item];
 }
 
-// Internal helper to remove an item from the collection and session without
-// marking it as explicitly user-removed.
-- (void)removeItemInternal:(ComposeboxInputItem*)item {
-  // `item` can be nil if an asynchronous operation finishes after the item has
-  // already been deleted by the user or closed. Early return to prevent null
-  // pointer dereferencing or double deletion.
-  if (!item) {
-    return;
-  }
-
-  // Cancels the page context extraction of the item's tab, if in flight.
-  _pageContextWrappers.erase(item.identifier);
-  _latestTabSelectionMapping.erase(item.identifier);
-
-  [self.debugLogger
-      logEvent:[ComposeboxDebuggerEvent
-                   queryAttachmentEvent:composebox_debugger::event::
-                                            QueryAttachment::kRemoved
-                               withType:[self attachmentEventTypeForItem:item]
-                                  title:[self
-                                            attachmentEventTitleForItem:item]]];
-
-  // Delete the item's server-side file before removing the item, as removing it
-  // can synchronously send a pending query (see
-  // `-composeboxInputItemCollectionDidUpdateItems:`), which must not reference
-  // the file. Attachments removed before their server upload starts have no
-  // server token, and so no server-side file to delete.
-  if (_contextualSearchSession && !item.serverToken.is_empty()) {
-    _contextualSearchSession->DeleteFile(item.serverToken);
-  }
-
-  [_items removeItem:item];
-
-  if (_contextualSearchSession) {
-    [self reloadSuggestions];
-  }
-
-  [self notifyContextChanged];
-}
-
 - (void)sendText:(NSString*)text {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self sendText:text additionalParams:{}];
@@ -1196,6 +1156,46 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 #pragma mark - Private
+
+// Internal helper to remove an item from the collection and session without
+// marking it as explicitly user-removed.
+- (void)removeItemInternal:(ComposeboxInputItem*)item {
+  // `item` can be nil if an asynchronous operation finishes after the item has
+  // already been deleted by the user or closed. Early return to prevent null
+  // pointer dereferencing or double deletion.
+  if (!item) {
+    return;
+  }
+
+  // Cancels the page context extraction of the item's tab, if in flight.
+  _pageContextWrappers.erase(item.identifier);
+  _latestTabSelectionMapping.erase(item.identifier);
+
+  [self.debugLogger
+      logEvent:[ComposeboxDebuggerEvent
+                   queryAttachmentEvent:composebox_debugger::event::
+                                            QueryAttachment::kRemoved
+                               withType:[self attachmentEventTypeForItem:item]
+                                  title:[self
+                                            attachmentEventTitleForItem:item]]];
+
+  // Delete the item's server-side file before removing the item, as removing it
+  // can synchronously send a pending query (see
+  // `-composeboxInputItemCollectionDidUpdateItems:`), which must not reference
+  // the file. Attachments removed before their server upload starts have no
+  // server token, and so no server-side file to delete.
+  if (_contextualSearchSession && !item.serverToken.is_empty()) {
+    _contextualSearchSession->DeleteFile(item.serverToken);
+  }
+
+  [_items removeItem:item];
+
+  if (_contextualSearchSession) {
+    [self reloadSuggestions];
+  }
+
+  [self notifyContextChanged];
+}
 
 // Returns whether `item` represents the current visible URL of the WebState
 // matching `webStateID` in `_webStateList`.
