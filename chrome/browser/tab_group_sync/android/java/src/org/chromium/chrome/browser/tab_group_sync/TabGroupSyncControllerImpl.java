@@ -137,6 +137,7 @@ public final class TabGroupSyncControllerImpl
 
     @Override
     public void destroy() {
+        mTabGroupSyncService.removeObserver(mSyncInitObserver);
         mCallbackController.destroy();
         if (mLocalObserver != null) mLocalObserver.destroy();
         if (mRemoteObserver != null) mRemoteObserver.destroy();

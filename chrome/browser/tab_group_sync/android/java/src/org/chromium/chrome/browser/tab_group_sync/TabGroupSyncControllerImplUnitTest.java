@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -96,6 +97,10 @@ public class TabGroupSyncControllerImplUnitTest {
     @After
     public void tearDown() {
         mController.destroy();
+        for (TabGroupSyncService.Observer observer :
+                mTabGroupSyncServiceObserverCaptor.getAllValues()) {
+            verify(mTabGroupSyncService, atLeastOnce()).removeObserver(observer);
+        }
     }
 
     private void createController() {
