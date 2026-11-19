@@ -27,6 +27,7 @@
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/browser/webshare/store_files_task.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -179,11 +180,15 @@ void SharesheetClient::Share(
   }
 
   // Previously, shared files were stored in MyFiles/.WebShare. We remove this
-  // obsolete directory.
-  PrepareDirectoryTask::ScheduleSharedFileDeletion(
-      {file_manager::util::GetMyFilesFolderForProfile(profile).Append(
-          kWebShareDirname)},
-      /*delay=*/base::TimeDelta());
+  // obsolete directory. Ash internal Profiles, such as the Profile of the
+  // Shimless RMA 3rd party diagnostics app, are not associated with any user,
+  // so they don't have MyFiles.
+  if (ash::IsUserBrowserContext(profile)) {
+    PrepareDirectoryTask::ScheduleSharedFileDeletion(
+        {file_manager::util::GetMyFilesFolderForProfile(profile).Append(
+            kWebShareDirname)},
+        /*delay=*/base::TimeDelta());
+  }
 
   current_share_->prepare_directory_task =
       std::make_unique<PrepareDirectoryTask>(

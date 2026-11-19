@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
@@ -660,6 +661,38 @@ TEST(DownloadPrefsTest, DefaultDownloadPathPrefMigrationFromOldFormat) {
       profile.GetTestingPrefService()->GetFilePath(
           prefs::kDownloadDefaultDirectory),
       base::FilePath("/home/chronos/u-0123456789abcdef/MyFiles/Downloads"));
+}
+
+// Ash internal Profiles, such as the sign-in Profile, are not associated with
+// any user. DownloadPrefs always uses the legacy default download directory
+// under the Profile directory for them, for backward compatibility.
+TEST(DownloadPrefsTest, AshInternalProfile) {
+  content::BrowserTaskEnvironment task_environment;
+  const base::FilePath profile_path =
+      base::FilePath("/home/chronos")
+          .Append(ash::kSigninBrowserContextBaseName);
+  TestingProfile profile(profile_path);
+  ASSERT_FALSE(ash::IsUserBrowserContext(&profile));
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
+
+  DownloadPrefs prefs(&profile);
+  const base::FilePath default_dir =
+      profile_path.Append("MyFiles").Append("Downloads");
+  EXPECT_EQ(default_dir, prefs.GetDefaultDownloadDirectoryForProfile());
+  EXPECT_EQ(default_dir, prefs.DownloadPath());
+  EXPECT_EQ(default_dir, prefs.SaveFilePath());
+
+  // Any other paths fall back to the default directory.
+  for (const base::FilePath& path :
+       {default_dir.Append("testdir"), base::FilePath("testdir"),
+        base::FilePath("/home/chronos"),
+        ash::CrosDisksClient::GetRemovableDiskMountPoint().Append(
+            "MY_USB_KEY")}) {
+    SCOPED_TRACE(path);
+    prefs.SetDownloadPath(path);
+    EXPECT_EQ(default_dir, prefs.DownloadPath());
+    EXPECT_EQ(default_dir, prefs.SaveFilePath());
+  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

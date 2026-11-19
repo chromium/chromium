@@ -568,6 +568,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/policy/skyvault",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/policy/dlp/test:test_support",
+      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/disks:test_support",
     ]
   }

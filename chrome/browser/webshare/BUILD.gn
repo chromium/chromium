@@ -94,6 +94,7 @@ if (is_win || is_chromeos || is_mac) {
         "//chrome/browser/ash/file_manager",
         "//chrome/browser/profiles",
         "//chrome/browser/sharesheet",
+        "//chromeos/ash/components/browser_context_helper",
         "//components/prefs",
         "//components/services/app_service",
         "//components/visibility_timer",

@@ -82,6 +82,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
@@ -381,6 +382,20 @@ bool BelongsToOtherProfile(Profile* current_profile,
       return true;
     }
 
+    const base::FilePath& path = file_system_url.path();
+    const base::FilePath other_profile_path = other_profile->GetPath();
+    if (!other_profile_path.empty() &&
+        (other_profile_path == path || other_profile_path.IsParent(path))) {
+      return true;
+    }
+
+    // Ash internal Profiles, such as the sign-in Profile, are not associated
+    // with any user, so they don't have the mount points or the folders of the
+    // user below.
+    if (!ash::IsUserBrowserContext(other_profile)) {
+      continue;
+    }
+
     if (file_system_url.filesystem_id() ==
             file_manager::util::GetDownloadsMountPointName(other_profile) ||
         file_system_url.filesystem_id() ==
@@ -389,13 +404,6 @@ bool BelongsToOtherProfile(Profile* current_profile,
             file_manager::util::GetCrostiniMountPointName(other_profile) ||
         file_manager::util::IsBruschettaMountPointName(
             file_system_url.filesystem_id(), other_profile)) {
-      return true;
-    }
-
-    const base::FilePath& path = file_system_url.path();
-    const base::FilePath other_profile_path = other_profile->GetPath();
-    if (!other_profile_path.empty() &&
-        (other_profile_path == path || other_profile_path.IsParent(path))) {
       return true;
     }
 

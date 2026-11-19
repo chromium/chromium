@@ -25,6 +25,9 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/ash/file_manager" ]
+    deps += [
+      "//chrome/browser/ash/file_manager",
+      "//chromeos/ash/components/browser_context_helper",
+    ]
   }
 }

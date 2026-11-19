@@ -55,6 +55,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #endif
 
@@ -138,6 +139,25 @@ DefaultDownloadDirectory& GetDefaultDownloadDirectorySingleton() {
   return *instance;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Returns the default download directory for `profile`, which is an Ash
+// internal Profile, such as the sign-in Profile.
+// Ash internal Profiles are not associated with any user, so they don't have
+// the folders of the user, such as MyFiles. However, DownloadPrefs is created
+// for them, too, e.g. when a download is attempted in the GAIA webview on the
+// login screen, even if the download is denied later.
+// This returns the path that had been used for them, as
+// file_manager::util::GetDownloadsFolderForProfile() returned it for Profiles
+// without users. It is kept only for backward compatibility.
+// TODO(crbug.com/579585875): Revisit the download directory for Ash internal
+// Profiles.
+base::FilePath GetLegacyDefaultDownloadDirectoryForAshInternalProfile(
+    Profile* profile) {
+  CHECK(!ash::IsUserBrowserContext(profile));
+  return profile->GetPath().AppendASCII("MyFiles").AppendASCII("Downloads");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -216,6 +236,11 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
     // Update the download directory if the pref is from user pref store or
     // default pref.
     if (pref->IsUserControlled()) {
+      // The migration is only for the folders of the user, which Ash internal
+      // Profiles don't have.
+      if (!ash::IsUserBrowserContext(profile_)) {
+        continue;
+      }
       const base::FilePath current = prefs->GetFilePath(path_pref);
       base::FilePath migrated;
       if (!current.empty() &&
@@ -396,6 +421,9 @@ void DownloadPrefs::RegisterProfilePrefs(
 
 base::FilePath DownloadPrefs::GetDefaultDownloadDirectoryForProfile() const {
 #if BUILDFLAG(IS_CHROMEOS)
+  if (!ash::IsUserBrowserContext(profile_)) {
+    return GetLegacyDefaultDownloadDirectoryForAshInternalProfile(profile_);
+  }
   return file_manager::util::GetDownloadsFolderForProfile(profile_);
 #else
   return GetDefaultDownloadDirectory();
@@ -640,6 +668,14 @@ base::FilePath DownloadPrefs::SanitizeDownloadTargetPath(
     return path;
 
 #if BUILDFLAG(IS_CHROMEOS)
+  if (!ash::IsUserBrowserContext(profile_)) {
+    // Ash internal Profiles don't have the folders of the user, and their
+    // download directories are not configurable, as it requires a file picker,
+    // which is not available outside of user sessions. Always use the default
+    // download directory.
+    return GetDefaultDownloadDirectoryForProfile();
+  }
+
   base::FilePath migrated_drive_path;
   // Managed prefs may force a legacy Drive path as the download path. Ensure
   // the path is valid when DriveFS is enabled.
