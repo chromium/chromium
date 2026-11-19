@@ -28,7 +28,6 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -169,7 +168,6 @@
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "pdf/pdf_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
@@ -5964,12 +5962,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserFullscreenDisabled,
   }));
 }
 
-class LensOverlayControllerBrowserPDFTest
-    : public base::test::WithFeatureOverride,
-      public PDFExtensionTestBase {
+class LensOverlayControllerBrowserPDFTest : public PDFExtensionTestBase {
  public:
-  LensOverlayControllerBrowserPDFTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {
+  LensOverlayControllerBrowserPDFTest() {
     lens_search_controller_override_ = UseFakeLensSearchController();
   }
 
@@ -5982,8 +5977,6 @@ class LensOverlayControllerBrowserPDFTest
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
     prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
   }
-
-  bool UseOopif() const override { return GetParam(); }
 
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
@@ -6077,7 +6070,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                   ->GetAs<lens::LensSidePanelUntrustedUI>());
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFTest,
                        ContextMenuOpensOverlay) {
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
@@ -6108,7 +6101,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
 }
 
 // TODO(crbug.com/440876016): Re-enable this test
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFTest,
                        DISABLED_PdfBytesExcludedInRequest) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
@@ -6152,7 +6145,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
   EXPECT_EQ(0u, entries.size());
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFTest,
                        OnScrollToMessage_PDFNotOnMainTab) {
   // State should start in off.
   auto* controller = GetLensOverlayController();
@@ -6199,7 +6192,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
 // This test is wrapped in this BUILDFLAG block because the fallback region
 // search functionality will not be enabled if the flag is unset.
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFTest,
                        ContextMenuViaKeyboardDoesNotOpenOverlay) {
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
@@ -6257,7 +6250,7 @@ class LensOverlayControllerBrowserPDFContextualizationTest
   static constexpr uint32_t kFileSizeLimitBytes = 10000;
 };
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        PdfBytesIncludedInRequest) {
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
@@ -6298,7 +6291,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
                   .last_received_should_show_contextual_searchbox_);
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        PdfBytesNotExtractedForEmbeddedPdfIframe) {
   // Open an HTML page embedding a PDF in an iframe.
   const GURL url = embedded_test_server()->GetURL("/pdf/test-iframe.html");
@@ -6334,7 +6327,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        PartialPdfIncludedInRequest) {
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
@@ -6365,7 +6358,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
           0));
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        PageUrlIncludedInRequest) {
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
@@ -6391,7 +6384,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       [&]() { return fake_query_controller->last_sent_page_url() == url; }));
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        CurrentPageIncludedInRequest) {
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
@@ -6418,7 +6411,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
                    .pdf_page_number());
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        PdfBytesInFollowUpRequest) {
   base::HistogramTester histogram_tester;
 
@@ -6498,7 +6491,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       /*expected_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        LargePdfNotIncludedInRequest) {
   base::HistogramTester histogram_tester;
 
@@ -6554,7 +6547,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        QueryFlowRestartsOnSearchboxFocus) {
   base::HistogramTester histogram_tester;
 
@@ -6645,7 +6638,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 #else
 #define MAYBE_Histograms Histograms
 #endif
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        MAYBE_Histograms) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histogram_tester;
@@ -6790,7 +6783,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       static_cast<int64_t>(lens::MimeType::kPdf));
 }
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        RecordSearchboxFocusedInSessionNavigationHistograms) {
   base::HistogramTester histogram_tester;
 
@@ -6877,7 +6870,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 // TODO(crbug.com/413042395): This test is not testing overlay logic, but
 // instead the side panel logic. Therefore, this test should be moved to a side
 // panel browsertest file.
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFContextualizationTest,
                        SidePanel_SameTabCrossOriginLinkClick_PdfWithFragment) {
   const GURL pdf_url = embedded_test_server()->GetURL(kMultiPagePdf);
   LoadPdfGetExtensionHost(pdf_url);
@@ -6968,7 +6961,7 @@ class LensOverlayControllerBrowserPDFUpdatedContentFieldsTest
   static constexpr uint32_t kFileSizeLimitBytes = 10000;
 };
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFUpdatedContentFieldsTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFUpdatedContentFieldsTest,
                        PartialPdfIncludedInRequest) {
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
@@ -7026,7 +7019,7 @@ class LensOverlayControllerBrowserPDFIncreaseLimitTest
   static constexpr uint32_t kFileSizeLimitBytes = 200000;
 };
 
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFIncreaseLimitTest,
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserPDFIncreaseLimitTest,
                        PartialPdfCharacterLimitReached_IncludedInRequest) {
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kMultiPagePdf);
@@ -7061,16 +7054,6 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFIncreaseLimitTest,
       fake_query_controller->last_sent_partial_content().pages(1).text_segments(
           0));
 }
-
-// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
-// launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LensOverlayControllerBrowserPDFTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    LensOverlayControllerBrowserPDFContextualizationTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    LensOverlayControllerBrowserPDFUpdatedContentFieldsTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    LensOverlayControllerBrowserPDFIncreaseLimitTest);
 
 // Test with --enable-pixel-output-in-tests enabled, required to actually grab
 // screenshots for color extraction.

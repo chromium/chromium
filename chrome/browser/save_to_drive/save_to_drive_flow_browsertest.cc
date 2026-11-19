@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -99,17 +98,13 @@ class MockContentReader : public ContentReader {
   MOCK_METHOD(void, Close, (), (override));
 };
 
-class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
-                                   public PDFExtensionTestBase {
+class SaveToDriveFlowBrowserTest : public PDFExtensionTestBase {
  public:
-  SaveToDriveFlowBrowserTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+  SaveToDriveFlowBrowserTest() = default;
   SaveToDriveFlowBrowserTest(const SaveToDriveFlowBrowserTest&) = delete;
   SaveToDriveFlowBrowserTest& operator=(const SaveToDriveFlowBrowserTest&) =
       delete;
   ~SaveToDriveFlowBrowserTest() override = default;
-
-  bool UseOopif() const override { return GetParam(); }
 
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
@@ -232,7 +227,7 @@ class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
   raw_ptr<MockHatsService> hats_service_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, AccountChooserCanceled) {
+IN_PROC_BROWSER_TEST_F(SaveToDriveFlowBrowserTest, AccountChooserCanceled) {
   SimulateAccountChooserAction(std::nullopt);
   EXPECT_CALL(event_dispatcher(),
               Notify(AllOf(Field(&SaveToDriveProgress::status,
@@ -248,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, AccountChooserCanceled) {
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
 }
 
-IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, ContentReadFails) {
+IN_PROC_BROWSER_TEST_F(SaveToDriveFlowBrowserTest, ContentReadFails) {
   AccountInfo account_info = CreateAccountInfo(/*is_managed=*/false);
   account_info =
       AccountInfo::Builder(account_info).SetHostedDomain("example.com").Build();
@@ -281,12 +276,12 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, ContentReadFails) {
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
 }
 
-IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
+IN_PROC_BROWSER_TEST_F(SaveToDriveFlowBrowserTest,
                        CreatesMultipartUploaderForSmallFile) {
   TestCreateMultipartUploaderForSmallFile(/*is_managed=*/false);
 }
 
-IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
+IN_PROC_BROWSER_TEST_F(SaveToDriveFlowBrowserTest,
                        CreatesResumableUploaderForLargeFile) {
   SimulateAccountChooserAction(CreateAccountInfo(/*is_managed=*/false));
   EXPECT_CALL(event_dispatcher(),
@@ -324,7 +319,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
 }
 
-IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
+IN_PROC_BROWSER_TEST_F(SaveToDriveFlowBrowserTest,
                        ShowConsumerSurveyAfterUpload) {
   EXPECT_CALL(
       *hats_service_,
@@ -332,7 +327,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
   TestCreateMultipartUploaderForSmallFile(/*is_managed=*/false);
 }
 
-IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
+IN_PROC_BROWSER_TEST_F(SaveToDriveFlowBrowserTest,
                        ShowEnterpriseSurveyAfterUpload) {
   EXPECT_CALL(
       *hats_service_,
@@ -340,7 +335,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
   TestCreateMultipartUploaderForSmallFile(/*is_managed=*/true);
 }
 
-IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, FailsForDisallowedAccounts) {
+IN_PROC_BROWSER_TEST_F(SaveToDriveFlowBrowserTest, FailsForDisallowedAccounts) {
   g_browser_process->local_state()->SetString(
       prefs::kRestrictPdfSaveToGoogleDriveAccountsToPattern, ".*@google.com");
   SimulateAccountChooserAction(CreateAccountInfo(/*is_managed=*/false));
@@ -360,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, FailsForDisallowedAccounts) {
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
 }
 
-IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, SucceedsForAllowedAccounts) {
+IN_PROC_BROWSER_TEST_F(SaveToDriveFlowBrowserTest, SucceedsForAllowedAccounts) {
   g_browser_process->local_state()->SetString(
       prefs::kRestrictPdfSaveToGoogleDriveAccountsToPattern, ".*@mail.com");
 
@@ -368,7 +363,5 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, SucceedsForAllowedAccounts) {
   // pref set.
   TestCreateMultipartUploaderForSmallFile(/*is_managed=*/false);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SaveToDriveFlowBrowserTest);
 
 }  // namespace save_to_drive

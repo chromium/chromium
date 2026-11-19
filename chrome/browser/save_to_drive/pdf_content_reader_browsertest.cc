@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -21,9 +20,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/common/constants.h"
-#include "pdf/pdf_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -41,22 +38,9 @@ void VerifyMagicString(base::span<const uint8_t> block) {
 
 }  // namespace
 
-class PDFContentReaderBrowserTest : public base::test::WithFeatureOverride,
-                                    public PDFExtensionTestBase {
- public:
-  PDFContentReaderBrowserTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+using PDFContentReaderBrowserTest = PDFExtensionTestBase;
 
-  PDFContentReaderBrowserTest(const PDFContentReaderBrowserTest&) = delete;
-  PDFContentReaderBrowserTest& operator=(const PDFContentReaderBrowserTest&) =
-      delete;
-
-  ~PDFContentReaderBrowserTest() override = default;
-
-  bool UseOopif() const override { return GetParam(); }
-};
-
-IN_PROC_BROWSER_TEST_P(PDFContentReaderBrowserTest, ReadFullPDF) {
+IN_PROC_BROWSER_TEST_F(PDFContentReaderBrowserTest, ReadFullPDF) {
   GURL page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("pdf/accessibility")),
       base::FilePath(FILE_PATH_LITERAL("hello-world-in-image.pdf")));
@@ -80,7 +64,7 @@ IN_PROC_BROWSER_TEST_P(PDFContentReaderBrowserTest, ReadFullPDF) {
   VerifyMagicString(base::span(block));
 }
 
-IN_PROC_BROWSER_TEST_P(PDFContentReaderBrowserTest, ReadInChunks) {
+IN_PROC_BROWSER_TEST_F(PDFContentReaderBrowserTest, ReadInChunks) {
   GURL page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("pdf/accessibility")),
       base::FilePath(FILE_PATH_LITERAL("hello-world-in-image.pdf")));
@@ -109,7 +93,5 @@ IN_PROC_BROWSER_TEST_P(PDFContentReaderBrowserTest, ReadInChunks) {
     }
   }
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFContentReaderBrowserTest);
 
 }  // namespace save_to_drive

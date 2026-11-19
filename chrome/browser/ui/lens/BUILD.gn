@@ -436,7 +436,6 @@ if (!is_android) {
       "//content/test:test_support",
       "//mojo/public/cpp/bindings",
       "//net",
-      "//pdf:features",
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//ui/base",
       "//ui/base:types",
@@ -452,9 +451,6 @@ if (!is_android) {
       "//ui/views/controls/webview",
       "//url",
     ]
-    if (enable_pdf) {
-      deps += [ "//chrome/browser/pdf" ]
-    }
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.

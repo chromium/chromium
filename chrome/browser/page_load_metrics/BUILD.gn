@@ -385,7 +385,7 @@ if (!is_android) {
       "//components/webui/chrome_urls",
       "//content/test:browsertest_support",
       "//content/test:test_support",
-      "//pdf:features",
+      "//pdf:buildflags",
       "//testing/gtest",
       "//third_party/fuzztest",
     ]

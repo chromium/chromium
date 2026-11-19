@@ -79,7 +79,6 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
-#include "pdf/pdf_features.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -711,13 +710,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  if (chrome_pdf::features::IsOopifPdfEnabled()) {
-    EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false))
-        .Times(1);
-  } else {
-    EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false))
-        .Times(2);
-  }
+  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false)).Times(1);
   ui::AXTreeID notified_pdf_tree_id;
   EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true))
       .WillOnce(testing::SaveArg<0>(&notified_pdf_tree_id));
@@ -752,88 +745,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   // PDFs never use Readability.
   EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
   handler_ = CreateHandler();
-}
-
-// Uses PDFs in the PDF extension's GuestView by disabling kPdfOopif, which has
-// the same effect as setting the PdfViewerOutOfProcessIframeEnabled enterprise
-// policy to false.
-class ReadAnythingUntrustedPageHandlerGuestViewPdfTest
-    : public ReadAnythingUntrustedPageHandlerTest {
- public:
-  ReadAnythingUntrustedPageHandlerGuestViewPdfTest()
-      : ReadAnythingUntrustedPageHandlerTest(
-            {features::kReadAnythingImprovedUi},
-            {chrome_pdf::features::kPdfOopif}) {}
-
- protected:
-  void LoadPdfAndCreateHandler() {
-    ASSERT_FALSE(chrome_pdf::features::IsOopifPdfEnabled());
-    ASSERT_TRUE(embedded_test_server()->Start());
-    ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-    handler_ = CreateHandler();
-    page_.receiver_.FlushForTesting();
-  }
-};
-
-// After the tab leaves a PDF, Reading Mode is told about each next page, not
-// an unknown tree.
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerGuestViewPdfTest,
-                       LeavePdf_NotifiesOfNextPages) {
-  ASSERT_NO_FATAL_FAILURE(LoadPdfAndCreateHandler());
-
-  std::vector<std::pair<ui::AXTreeID, ukm::SourceId>> notified_pages;
-  EXPECT_CALL(page_,
-              OnActiveAXTreeIDChanged(testing::Ne(ui::AXTreeIDUnknown()), _,
-                                      /*is_pdf=*/false))
-      .WillRepeatedly([&](const ui::AXTreeID& tree_id,
-                          ukm::SourceId ukm_source_id, bool is_pdf) {
-        notified_pages.emplace_back(tree_id, ukm_source_id);
-      });
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), _, _))
-      .Times(0);
-
-  for (const char* path : {"/title1.html", "/title2.html"}) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL(path)));
-    content::RenderFrameHost* rfh =
-        GetReadAnythingWebContents()->GetPrimaryMainFrame();
-    const std::pair<ui::AXTreeID, ukm::SourceId> page(
-        rfh->GetAXTreeID(), rfh->GetPageUkmSourceId());
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return std::ranges::contains(notified_pages, page);
-    })) << path;
-  }
-}
-
-// After the tab leaves a PDF for another PDF, Reading Mode is told about the
-// second PDF, not an unknown tree.
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerGuestViewPdfTest,
-                       LeavePdfForAnotherPdf_NotifiesOfSecondPdf) {
-  ASSERT_NO_FATAL_FAILURE(LoadPdfAndCreateHandler());
-
-  std::vector<ui::AXTreeID> notified_pdf_trees;
-  // The second PDF's outer frame can be announced before its PDF frame.
-  EXPECT_CALL(page_,
-              OnActiveAXTreeIDChanged(testing::Ne(ui::AXTreeIDUnknown()), _,
-                                      /*is_pdf=*/false))
-      .Times(testing::AnyNumber());
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true))
-      .WillRepeatedly(
-          [&](const ui::AXTreeID& tree_id, ukm::SourceId ukm_source_id,
-              bool is_pdf) { notified_pdf_trees.push_back(tree_id); });
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown(), _, _))
-      .Times(0);
-
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf?second")));
-  handler_->DidStopLoading();
-  content::RenderFrameHost* pdf_rfh =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(
-          GetReadAnythingWebContents());
-  ASSERT_TRUE(pdf_rfh);
-  const ui::AXTreeID pdf_tree_id = pdf_rfh->GetAXTreeID();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return std::ranges::contains(notified_pdf_trees, pdf_tree_id);
-  }));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -1738,19 +1649,17 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   AccessibilityEventReceived(plugin_details);
   page_.receiver_.FlushForTesting();
 
-  if (chrome_pdf::features::IsOopifPdfEnabled()) {
-    content::RenderFrameHost* pdf_extension_host =
-        pdf_frame_util::FindFullPagePdfExtensionHost(web_contents);
-    ASSERT_TRUE(pdf_extension_host);
+  content::RenderFrameHost* pdf_extension_host =
+      pdf_frame_util::FindFullPagePdfExtensionHost(web_contents);
+  ASSERT_TRUE(pdf_extension_host);
 
-    ui::AXUpdatesAndEvents extension_details;
-    extension_details.ax_tree_id = pdf_extension_host->GetAXTreeID();
-    EXPECT_CALL(page_,
-                AccessibilityEventReceived(extension_details.ax_tree_id, _, _))
-        .Times(testing::AtLeast(1));
-    AccessibilityEventReceived(extension_details);
-    page_.receiver_.FlushForTesting();
-  }
+  ui::AXUpdatesAndEvents extension_details;
+  extension_details.ax_tree_id = pdf_extension_host->GetAXTreeID();
+  EXPECT_CALL(page_,
+              AccessibilityEventReceived(extension_details.ax_tree_id, _, _))
+      .Times(testing::AtLeast(1));
+  AccessibilityEventReceived(extension_details);
+  page_.receiver_.FlushForTesting();
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -3288,13 +3197,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   // Verify that navigating to a normal page correctly resets the PDF waiting
   // state. If the state isn't reset, we would return early and be stuck in a
   // waiting state.
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
-    EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false))
-        .Times(1);
-  } else {
-    EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false))
-        .Times(2);
-  }
+  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false)).Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 }
 
@@ -3317,32 +3220,20 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
-    // Regression test for crbug.com/487308693. With kPdfOopif enabled, RM
-    // receives 3 sequential signals about the current page when it's a pdf.
-    // 1) Page is not a pdf
-    // 2) Page is a pdf but the frame is not loaded
-    // 3) Page is a pdf with the frame loaded
-    // OnReadabilityDistillationStateChanged should only be called on non-pdfs.
-    // Previously we were calling it in step 2 above, but we know it's a pdf at
-    // that point, so we shouldn't be. Now, Chrome
-    // detects the PDF frame immediately via MimeHandlerStreamManager which
-    // triggers an early return in `OnActiveAXTreeIDChanged`, bypassing the
-    // Readability distillation block entirely. The 2 expected calls come solely
-    // from the initial test setup on `about:blank` (once for
-    // kDistillationInProgress, once for kDistillationEmpty).
-    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(2);
-  } else {
-    // When kPdfOopif is disabled, Chrome goes through a transient loading
-    // state where it briefly thinks the PDF is a regular webpage before
-    // the inner PDF frame initializes. During this transient phase, the
-    // Readability distillation block is (incorrectly) executed. The 5 expected
-    // calls are: 2 calls from the initial `about:blank` setup + 3 calls during
-    // the transient phase (kDistillationInProgress in OnActiveAXTreeIDChanged,
-    // the second kDistillationInProgress in MaybeStartReadabilityDistillation,
-    // and finally kDistillationEmpty).
-    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(5);
-  }
+  // Regression test for crbug.com/487308693. RM receives 3 sequential signals
+  // about the current page when it's a pdf.
+  // 1) Page is not a pdf
+  // 2) Page is a pdf but the frame is not loaded
+  // 3) Page is a pdf with the frame loaded
+  // OnReadabilityDistillationStateChanged should only be called on non-pdfs.
+  // Previously we were calling it in step 2 above, but we know it's a pdf at
+  // that point, so we shouldn't be. Now, Chrome
+  // detects the PDF frame immediately via MimeHandlerStreamManager which
+  // triggers an early return in `OnActiveAXTreeIDChanged`, bypassing the
+  // Readability distillation block entirely. The 2 expected calls come solely
+  // from the initial test setup on `about:blank` (once for
+  // kDistillationInProgress, once for kDistillationEmpty).
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(2);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
@@ -4197,8 +4088,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // The renderer starts Readability distillation, so the browser never
-  // sends distillation state changes on its own. This includes the transient
-  // non-PDF phase seen when kPdfOopif is disabled.
+  // sends distillation state changes on its own.
   EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

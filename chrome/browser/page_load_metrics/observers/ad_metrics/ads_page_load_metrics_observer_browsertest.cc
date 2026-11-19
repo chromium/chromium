@@ -78,10 +78,6 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
-
 namespace {
 
 using OriginStatus = page_load_metrics::OriginStatus;
@@ -2714,38 +2710,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 #if BUILDFLAG(ENABLE_PDF)
 
-class AdsPageLoadMetricsObserverRecordedUKMMetricsTest
-    : public AdsPageLoadMetricsObserverResourceBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  static std::string DescribeParams(const testing::TestParamInfo<bool>& info) {
-    return info.param ? "OopifPdf" : "GuestViewPdf";
-  }
-
-  bool UseOopif() const { return GetParam(); }
-
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      const override {
-    auto enabled =
-        AdsPageLoadMetricsObserverResourceBrowserTest::GetEnabledFeatures();
-    if (UseOopif()) {
-      enabled.push_back({chrome_pdf::features::kPdfOopif, {}});
-    }
-    return enabled;
-  }
-
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    auto disabled =
-        AdsPageLoadMetricsObserverResourceBrowserTest::GetDisabledFeatures();
-    if (!UseOopif()) {
-      disabled.push_back(chrome_pdf::features::kPdfOopif);
-    }
-    return disabled;
-  }
-};
-
 // Verify that UKM metrics are recorded correctly.
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverRecordedUKMMetricsTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        RecordedUKMMetrics) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -2761,8 +2727,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverRecordedUKMMetricsTest,
   contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
       u"createAdFrame('multiple_mimes.html', 'test');", base::NullCallback(),
       content::ISOLATED_WORLD_ID_GLOBAL);
-  const int kExpectedNumAdResources = UseOopif() ? 9 : 8;
-  waiter->AddMinimumAdResourceExpectation(kExpectedNumAdResources);
+  waiter->AddMinimumAdResourceExpectation(9);
   waiter->Wait();
 
   // Close all tabs to report metrics.
@@ -2788,14 +2753,6 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverRecordedUKMMetricsTest,
                 entries.front(), ukm::builders::AdPageLoad::kAdVideoBytesName),
             0);
 }
-
-// TODO(crbug.com/324635792): Stop testing GuestView PDF viewer after OOPIF PDF
-// viewer launches.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AdsPageLoadMetricsObserverRecordedUKMMetricsTest,
-    testing::Bool(),
-    &AdsPageLoadMetricsObserverRecordedUKMMetricsTest::DescribeParams);
 
 #endif  // BUILDFLAG(ENABLE_PDF)
 
