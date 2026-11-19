@@ -165,9 +165,11 @@ enum Commands {
         #[arg(long, default_value = "third_party/icu/filters")]
         icu_filters_dir: PathBuf,
 
-        /// Path to the TOML configuration file for marker filter overrides and
-        /// default patches (`patches` are still applied when `--unfiltered` is
-        /// set, while filter rules and `resource_filters` are ignored).
+        /// Path to the TOML configuration file for marker filter overrides,
+        /// custom UTS #35 transliterators, and default patches (`patches` and
+        /// `transliterators.custom` are still applied when `--unfiltered` is
+        /// set, while filter rules, `resource_filters`, and
+        /// `transliterators.include` are ignored).
         #[arg(long, default_value = "tools/crates/icu4x_datagen/config.toml")]
         config: PathBuf,
 
@@ -183,12 +185,13 @@ enum Commands {
         #[arg(long, num_args = 1.., default_value = "chromium")]
         markers: Vec<String>,
 
-        /// Ignore ICU4C filter files and `config.toml` filter rules, exporting
-        /// upstream CLDR recommended locales (`Modern`, `Moderate`, and `Basic`
-        /// coverage levels) for all selected markers while still applying
-        /// patches. Useful for measuring the size reduction of Chromium's
-        /// locale filters or testing upstream data before updating filter
-        /// rules.
+        /// Ignore ICU4C filter files, `config.toml` filter rules, and
+        /// `transliterators.include`, exporting upstream CLDR recommended
+        /// locales (`Modern`, `Moderate`, and `Basic` coverage levels) for all
+        /// selected markers while still applying `patches` and compiling
+        /// `transliterators.custom`. Useful for measuring the size reduction of
+        /// Chromium's locale filters or testing upstream data before updating
+        /// filter rules.
         #[arg(long)]
         unfiltered: bool,
 
@@ -368,16 +371,22 @@ fn main() -> Result<()> {
             // Keep the temporary overlay directory alive for the duration of
             // the export across all target platforms.
             let patched_overlay = if !all_patches.is_empty() {
-                let work_overlay =
-                    prepare_patched_overlay(&provider, fallbacker.clone(), &all_patches)?;
-                log::info!(
-                    "Using patched ICU4X-json overlay from {}",
-                    work_overlay.path().display()
-                );
-                Some(work_overlay)
+                Some(prepare_patched_overlay(&provider, fallbacker.clone(), &all_patches)?)
+            } else if !toml_cfg.transliterators.custom.is_empty() {
+                Some(overlay::TempDir::new("icu4x_datagen_custom_overlay")?)
             } else {
                 None
             };
+            overlay::validate_and_compile_transliterators(
+                &provider,
+                &toml_cfg.transliterators,
+                &src_root,
+                !unfiltered && toml_cfg.resource_filters.filter_transliterators,
+                patched_overlay.as_ref().map(|d| d.path()),
+            )?;
+            if let Some(ref work_overlay) = patched_overlay {
+                log::info!("Using ICU4X-json overlay from {}", work_overlay.path().display());
+            }
 
             let src_dir = icu4x_data_dir.join("src");
             let data_root = src_dir.join("data");

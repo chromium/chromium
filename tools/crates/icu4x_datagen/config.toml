@@ -20,8 +20,8 @@ patches = [
 ]
 
 [resource_filters]
-# Restrict `TransliteratorRulesV1` (`transliterator/rules/v1`) to transliterators
-# enabled in ICU4C `resourceFilters` (`translit`).
+# Restrict `TransliteratorRulesV1` (`transliterator/rules/v1`) to the upstream
+# and custom transliterators configured under `[transliterators]`.
 filter_transliterators = true
 
 # Restrict `CurrencyDisplaynameV1`, `CurrencyExtendedDataV1`, and `CurrencySymbolsV1`
@@ -56,3 +56,12 @@ abridge_non_ui_locales = true
 # [[rules]]
 # pattern = "plurals/*"
 # locales = ["und", "en", "fr", "ja"]
+
+[transliterators]
+# Upstream CLDR `TransliteratorRulesV1` IDs exported into `icu4x_data`.
+include = [
+  "und-t-und-latn-d0-ascii",
+  "und-hira-t-und-kana",
+  "und-kana-t-und-hira",
+  "de-t-de-d0-ascii",
+]

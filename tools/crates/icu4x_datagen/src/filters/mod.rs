@@ -26,8 +26,10 @@ use icu_provider_export::prelude::*;
 use std::collections::{BTreeMap, HashSet};
 use std::path::{Path, PathBuf};
 
-/// Map an ICU4X `DataMarkerInfo` to its corresponding ICU4C `featureFilters` /
-/// `resourceFilters` category in `//third_party/icu/filters/*.json`.
+/// Map an ICU4X `DataMarkerInfo` to its baseline ICU4C `featureFilters` /
+/// `resourceFilters` category in `//third_party/icu/filters/*.json` (prior to
+/// any `[[rules]]` overrides in `config.toml`, such as routing
+/// `transliterator/*` to `locales_tree`).
 ///
 /// We do not need to add branches here for ICU4C `featureFilters` that
 /// correspond to singleton ICU4X markers (markers with no locale dependence).
@@ -91,7 +93,8 @@ pub(crate) fn resolve_default_marker_filter(
     filter_file.resolve_category(cat, abridge_non_ui_locales, autonym_only)
 }
 
-/// Print `selected` markers grouped by their default ICU4C filter category.
+/// Print `selected` markers grouped by their baseline ICU4C filter category
+/// (ignoring `config.toml` `[[rules]]` overrides).
 pub(crate) fn print_markers_by_category(selected: &[MarkerEntry]) {
     let mut by_cat: BTreeMap<&'static str, Vec<MarkerEntry>> = BTreeMap::new();
     for &m in selected {
@@ -146,6 +149,21 @@ pub(crate) fn inspect_filters(icu_filters_dir: &Path) -> Result<()> {
     Ok(())
 }
 
+/// Resolve the active `TransliteratorRulesV1` attribute allowlist from
+/// `toml_cfg`, combining `transliterators.include` with any configured
+/// `transliterators.custom` IDs.
+fn effective_allowed_transliterators(toml_cfg: &DatagenTomlConfig) -> Option<HashSet<String>> {
+    if !toml_cfg.resource_filters.filter_transliterators {
+        return None;
+    }
+    let include = toml_cfg.transliterators.include.as_ref().expect(
+        "validated: `transliterators.include` is set when `filter_transliterators` is true",
+    );
+    let mut set: HashSet<String> = include.iter().cloned().collect();
+    set.extend(toml_cfg.transliterators.custom.iter().map(|c| c.bcp47_id.clone()));
+    Some(set)
+}
+
 /// Export `selected_markers` for `plat` into `baked_exporter` using the
 /// platform's ICU4C filter file and `toml_cfg` overrides.
 pub(crate) fn export_platform_filtered<P>(
@@ -166,11 +184,7 @@ where
 
     let mut exportable = FilteredDataProvider {
         inner: provider,
-        allowed_transliterators: if toml_cfg.resource_filters.filter_transliterators {
-            filter_file.allowed_transliterators()
-        } else {
-            None
-        },
+        allowed_transliterators: effective_allowed_transliterators(toml_cfg),
         allowed_currencies: if toml_cfg.resource_filters.filter_currencies {
             filter_file.allowed_currencies()
         } else {

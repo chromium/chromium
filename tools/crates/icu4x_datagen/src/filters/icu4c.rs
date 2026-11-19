@@ -434,40 +434,6 @@ impl ParsedIcu4cFilterFile {
         Some(set)
     }
 
-    /// Extract allowed transliterator BCP-47 IDs from `translit`
-    /// `resourceFilters` (`+/RuleBasedTransliteratorIDs/<id>`).
-    pub(super) fn allowed_transliterators(&self) -> Option<HashSet<String>> {
-        let rules = self.rules_for("translit", "-/*")?;
-        let mut set = HashSet::new();
-        for r in rules {
-            if let Some(id) = r.strip_prefix("+/RuleBasedTransliteratorIDs/") {
-                match id {
-                    "Latin-ASCII" => {
-                        set.insert("und-t-und-latn-d0-ascii".to_string());
-                        set.insert("und-latn-t-und-latn-d0-ascii".to_string());
-                        set.insert("de-t-de-d0-ascii".to_string());
-                    }
-                    "Katakana-Hiragana" | "Hira-Kana" => {
-                        set.insert("und-hira-t-und-kana".to_string());
-                    }
-                    "Hiragana-Katakana" | "Kana-Hira" => {
-                        set.insert("und-kana-t-und-hira".to_string());
-                    }
-                    "Any-Accents" => {
-                        set.insert("und-t-und-x0-accents".to_string());
-                    }
-                    "Accents-Any" => {
-                        set.insert("und-x0-accents-t-und".to_string());
-                    }
-                    other => {
-                        set.insert(other.to_ascii_lowercase());
-                    }
-                }
-            }
-        }
-        Some(set)
-    }
-
     /// Parse a `featureFilters` entry (`"exclude"` / `"include"` or a filter
     /// object) into a `ResolvedLocaleFilter`.
     fn parse_filter_node_or_string(node: &RawFilterNodeOrString) -> Result<ResolvedLocaleFilter> {
@@ -883,14 +849,6 @@ mod tests {
         assert!(abridged_lang.contains("zu"));
         assert!(!abridged_lang.contains("en"));
         assert!(!abridged_lang.contains("fr"));
-
-        let translit = common.allowed_transliterators().unwrap();
-        assert!(translit.contains("und-t-und-latn-d0-ascii"));
-        assert!(translit.contains("und-latn-t-und-latn-d0-ascii"));
-        assert!(translit.contains("de-t-de-d0-ascii"));
-        assert!(translit.contains("und-hira-t-und-kana"));
-        assert!(translit.contains("und-kana-t-und-hira"));
-        assert_eq!(translit.len(), 5);
 
         let currencies = common.allowed_currencies().unwrap();
         assert!(currencies.contains("USD"));
