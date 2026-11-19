@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="PrivateInsightsPopulation">
+  <variant name="ContextualCueEvents" summary="Contextual Cues events"/>
+  <variant name="StorageAccessEvents"
+      summary="Storage Access API request-outcome events"/>
+</variants>
+
 <histogram name="PrivateMetrics.DataUploadConfig.DownloadSize" units="KiB"
     expires_after="2026-09-01">
   <owner>zhouzj@google.com</owner>
@@ -71,72 +77,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PrivateMetrics.PrivateInsights.ContextualCueEvents.Logging.OnShutdownCount"
-    units="events" expires_after="2027-06-01">
-  <owner>kjarosz@google.com</owner>
-  <owner>private-metrics@google.com</owner>
-  <summary>
-    The number of in-memory queued contextual cue events when the
-    PrivateInsightsService is shutting down. Logged once during service
-    shutdown.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivateMetrics.PrivateInsights.ContextualCueEvents.Logging.QueuedCount"
-    units="events" expires_after="2027-06-01">
-  <owner>kjarosz@google.com</owner>
-  <owner>private-metrics@google.com</owner>
-  <summary>
-    The number of in-memory queued contextual cue events immediately after
-    logging a new contextual cue event. Logged each time LogContextualCueEvent
-    is called.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivateMetrics.PrivateInsights.ContextualCueEvents.Logging.RemovedCount"
-    units="events" expires_after="2027-06-01">
-  <owner>kjarosz@google.com</owner>
-  <owner>private-metrics@google.com</owner>
-  <summary>
-    The number of contextual cue events removed from the queue due to exceeding
-    the maximum configured queue limit. Logged when events are removed during
-    LogContextualCueEvent.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivateMetrics.PrivateInsights.ContextualCueEvents.Requeuing.DroppedCount"
-    units="events" expires_after="2027-06-01">
-  <owner>kjarosz@google.com</owner>
-  <owner>private-metrics@google.com</owner>
-  <summary>
-    The number of contextual cue events dropped when attempting to requeue them
-    due to exceeding the maximum configured queue limit. Logged during
-    RequeueEvents.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivateMetrics.PrivateInsights.ContextualCueEvents.Requeuing.RequeuedCount"
-    units="events" expires_after="2027-06-01">
-  <owner>kjarosz@google.com</owner>
-  <owner>private-metrics@google.com</owner>
-  <summary>
-    The number of contextual cue events successfully prepended back to the queue
-    after a failed upload attempt. Logged during RequeueEvents.
-  </summary>
-</histogram>
-
 <histogram name="PrivateMetrics.PrivateInsights.ContributedTaskCount"
     units="tasks" expires_after="2027-06-01">
   <owner>kjarosz@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
     The number of contributed tasks in a Private Insights federated computation
-    attempt. Logged when federated computation completes.
+    attempt. Logged when each population's federated computation completes.
   </summary>
 </histogram>
 
@@ -240,7 +187,7 @@ chromium-metrics-reviews@google.com.
   <owner>private-metrics@google.com</owner>
   <summary>
     The outcome of a Private Insights federated computation attempt. Logged when
-    federated computation completes.
+    each population's federated computation completes.
   </summary>
 </histogram>
 
@@ -259,8 +206,9 @@ chromium-metrics-reviews@google.com.
   <owner>kjarosz@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
-    The time between when TriggerUpload was called and when UploadBlocking
-    started running on the background thread. Logged when UploadBlocking starts.
+    The time between when a population's upload was triggered and when its
+    upload task started running on the background thread. Logged when the task
+    starts.
   </summary>
 </histogram>
 
@@ -269,8 +217,8 @@ chromium-metrics-reviews@google.com.
   <owner>kjarosz@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
-    The time spent running UploadBlocking on the background thread. Logged when
-    UploadBlocking finishes. Note that this histogram only covers up to 10
+    The time spent running a population's upload task on the background thread.
+    Logged when the task finishes. Note that this histogram only covers up to 10
     seconds; see PrivateMetrics.PrivateInsights.Upload.Time2 for a version with
     a wider range.
   </summary>
@@ -281,10 +229,77 @@ chromium-metrics-reviews@google.com.
   <owner>kjarosz@google.com</owner>
   <owner>private-metrics@google.com</owner>
   <summary>
-    The time spent running UploadBlocking on the background thread. Logged when
-    UploadBlocking finishes. Same as PrivateMetrics.PrivateInsights.Upload.Time,
-    but covers up to 3 minutes.
+    The time spent running a population's upload task on the background thread.
+    Logged when the task finishes. Same as
+    PrivateMetrics.PrivateInsights.Upload.Time, but covers up to 3 minutes.
   </summary>
+</histogram>
+
+<histogram
+    name="PrivateMetrics.PrivateInsights.{Population}.Logging.OnShutdownCount"
+    units="events" expires_after="2027-06-01">
+  <owner>nclliu@google.com</owner>
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The number of in-memory queued {Population} when the PrivateInsightsService
+    is shutting down. Logged once during service shutdown.
+  </summary>
+  <token key="Population" variants="PrivateInsightsPopulation"/>
+</histogram>
+
+<histogram
+    name="PrivateMetrics.PrivateInsights.{Population}.Logging.QueuedCount"
+    units="events" expires_after="2027-06-01">
+  <owner>nclliu@google.com</owner>
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The number of in-memory queued {Population} immediately after logging a new
+    event. Logged each time an event is logged.
+  </summary>
+  <token key="Population" variants="PrivateInsightsPopulation"/>
+</histogram>
+
+<histogram
+    name="PrivateMetrics.PrivateInsights.{Population}.Logging.RemovedCount"
+    units="events" expires_after="2027-06-01">
+  <owner>nclliu@google.com</owner>
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The number of {Population} removed from the queue due to exceeding the
+    maximum configured queue limit. Logged when events are removed while logging
+    a new event.
+  </summary>
+  <token key="Population" variants="PrivateInsightsPopulation"/>
+</histogram>
+
+<histogram
+    name="PrivateMetrics.PrivateInsights.{Population}.Requeuing.DroppedCount"
+    units="events" expires_after="2027-06-01">
+  <owner>nclliu@google.com</owner>
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The number of {Population} dropped when attempting to requeue them after a
+    failed upload due to exceeding the maximum configured queue limit. Logged
+    each time a batch is requeued.
+  </summary>
+  <token key="Population" variants="PrivateInsightsPopulation"/>
+</histogram>
+
+<histogram
+    name="PrivateMetrics.PrivateInsights.{Population}.Requeuing.RequeuedCount"
+    units="events" expires_after="2027-06-01">
+  <owner>nclliu@google.com</owner>
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The number of {Population} successfully prepended back to the queue after a
+    failed upload attempt. Logged each time a batch is requeued.
+  </summary>
+  <token key="Population" variants="PrivateInsightsPopulation"/>
 </histogram>
 
 <histogram name="PrivateMetrics.ProtoCompressionRatio" units="%"
