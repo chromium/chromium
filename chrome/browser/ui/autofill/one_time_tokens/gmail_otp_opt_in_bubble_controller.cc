@@ -155,11 +155,8 @@ GmailOtpOptInBubbleController::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void GmailOtpOptInBubbleController::DoShowBubble() {
-  if (AutofillBubbleBase* bubble =
-          bubble_view_factory_.Run(web_contents(), this)) {
-    SetBubbleView(*bubble);
-  }
+AutofillBubbleBase* GmailOtpOptInBubbleController::DoShowBubble() {
+  return bubble_view_factory_.Run(web_contents(), this);
 }
 
 }  // namespace autofill

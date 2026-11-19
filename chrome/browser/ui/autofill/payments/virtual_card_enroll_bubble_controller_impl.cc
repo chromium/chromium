@@ -328,7 +328,8 @@ bool VirtualCardEnrollBubbleControllerImpl::ShouldShowPageAction() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
+AutofillBubbleBase* VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
+  AutofillBubbleBase* bubble = nullptr;
 #if BUILDFLAG(IS_ANDROID)
   auto delegate_mobile =
       std::make_unique<AutofillVirtualCardEnrollmentBottomSheetDelegateMobile>(
@@ -345,28 +346,27 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 
   is_icon_visible_ = true;
   if (!IsWebContentsActive()) {
-    return;
+    return nullptr;
   }
 
   AutofillBubbleHandler* autofill_bubble_handler = GetAutofillBubbleHandler();
   if (enrollment_status_ == EnrollmentStatus::kCompleted) {
-    SetBubbleView(
-        *autofill_bubble_handler->ShowVirtualCardEnrollConfirmationBubble(
-            web_contents(), this));
+    bubble = autofill_bubble_handler->ShowVirtualCardEnrollConfirmationBubble(
+        web_contents(), this);
   } else {
     // For reprompts after link clicks, `is_user_gesture` is set to false.
     bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;
 
-    SetBubbleView(*autofill_bubble_handler->ShowVirtualCardEnrollBubble(
-        web_contents(), this, user_gesture_reprompt));
+    bubble = autofill_bubble_handler->ShowVirtualCardEnrollBubble(
+        web_contents(), this, user_gesture_reprompt);
   }
-  CHECK(bubble_view(), base::NotFatalUntil::M162);
+  CHECK(bubble, base::NotFatalUntil::M162);
 
   // Metrics for showing virtual card enroll bubble are logged once when
   // enrollment is offered, do not log the same metrics again while showing
   // confirmation bubble.
   if (enrollment_status_ == EnrollmentStatus::kCompleted) {
-    return;
+    return bubble;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -384,6 +384,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   if (bubble_shown_closure_for_testing_) {
     bubble_shown_closure_for_testing_.Run();
   }
+  return bubble;
 }
 
 bool VirtualCardEnrollBubbleControllerImpl::CanBeReshown() const {

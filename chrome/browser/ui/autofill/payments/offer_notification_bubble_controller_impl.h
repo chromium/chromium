@@ -81,7 +81,6 @@ class OfferNotificationBubbleControllerImpl
 
   // AutofillBubbleControllerBase:
   void OnVisibilityChanged(content::Visibility visibility) override;
-  void DoShowBubble() override;
 #if !BUILDFLAG(IS_ANDROID)
   bool ShouldShowPageAction() override;
 #endif  //! BUILDFLAG(IS_ANDROID)
@@ -94,6 +93,9 @@ class OfferNotificationBubbleControllerImpl
       OfferNotificationBubbleControllerImpl>;
   friend class OfferNotificationBubbleControllerImplTest;
   friend class OfferNotificationBubbleViewsTestBase;
+
+  // AutofillBubbleControllerBase:
+  AutofillBubbleBase* DoShowBubble() override;
 
   // Configures the controller's state for displaying an offer notification.
   void SetupOfferNotification(AutofillOfferData offer);

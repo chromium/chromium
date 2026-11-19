@@ -37,9 +37,10 @@ class TestMandatoryReauthBubbleControllerImpl
       content::WebContents* web_contents)
       : MandatoryReauthBubbleControllerImpl(web_contents) {}
 
-  void DoShowBubble() override { SetBubbleView(dummy_bubble_); }
-
  private:
+  // AutofillBubbleControllerBase:
+  AutofillBubbleBase* DoShowBubble() override { return &dummy_bubble_; }
+
   TestAutofillBubble dummy_bubble_;
 };
 

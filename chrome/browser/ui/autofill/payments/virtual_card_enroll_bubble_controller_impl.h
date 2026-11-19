@@ -88,9 +88,8 @@ class VirtualCardEnrollBubbleControllerImpl
   explicit VirtualCardEnrollBubbleControllerImpl(
       content::WebContents* web_contents);
 
-  // AutofillBubbleControllerBase::
-  void DoShowBubble() override;
 #if !BUILDFLAG(IS_ANDROID)
+  // AutofillBubbleControllerBase:
   bool ShouldShowPageAction() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -99,6 +98,9 @@ class VirtualCardEnrollBubbleControllerImpl
 
   friend class content::WebContentsUserData<
       VirtualCardEnrollBubbleControllerImpl>;
+
+  // AutofillBubbleControllerBase:
+  AutofillBubbleBase* DoShowBubble() override;
 
   // Initializes the controller for showing the virtual card enrollment bubble.
   // Sets up the UI model with enrollment fields and stores the callbacks for

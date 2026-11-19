@@ -198,33 +198,32 @@ PaymentsChurnedUsersBubbleController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void PaymentsChurnedUsersBubbleController::DoShowBubble() {
+AutofillBubbleBase* PaymentsChurnedUsersBubbleController::DoShowBubble() {
 #if !BUILDFLAG(IS_ANDROID)
   AutofillBubbleHandler* const handler = GetAutofillBubbleHandler();
   if (!handler) {
-    return;
+    return nullptr;
   }
   switch (state_) {
     case BubbleState::kInactive:
     case BubbleState::kPendingConfirmation:
       NOTREACHED();
-    case BubbleState::kPrompt:
-      if (AutofillBubbleBase* const created_bubble =
-              handler->ShowPaymentsChurnedUsersBubble(web_contents(), this,
-                                                      is_reshow_)) {
-        SetBubbleView(*created_bubble);
+    case BubbleState::kPrompt: {
+      AutofillBubbleBase* const created_bubble =
+          handler->ShowPaymentsChurnedUsersBubble(web_contents(), this,
+                                                  is_reshow_);
+      if (created_bubble) {
         autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
             autofill_metrics::PaymentsChurnedUsersUiShowResult::kShown);
       }
-      return;
+      return created_bubble;
+    }
     case BubbleState::kConfirmation:
-      if (AutofillBubbleBase* const created_bubble =
-              handler->ShowPaymentsChurnedUsersConfirmationBubble(
-                  web_contents(), this)) {
-        SetBubbleView(*created_bubble);
-      }
-      return;
+      return handler->ShowPaymentsChurnedUsersConfirmationBubble(web_contents(),
+                                                                 this);
   }
+#else
+  return nullptr;
 #endif
 }
 

@@ -457,14 +457,15 @@ IbanBubbleControllerImpl::GetPageActionTooltipText() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void IbanBubbleControllerImpl::DoShowBubble() {
+AutofillBubbleBase* IbanBubbleControllerImpl::DoShowBubble() {
   AutofillBubbleHandler* const autofill_bubble_handler =
       GetAutofillBubbleHandler();
   CHECK(autofill_bubble_handler);
   if (current_bubble_type_ == IbanBubbleType::kUploadCompleted) {
-    SetBubbleView(*autofill_bubble_handler->ShowSaveIbanConfirmationBubble(
-        web_contents(), this));
-    CHECK(bubble_view());
+    AutofillBubbleBase* const bubble =
+        autofill_bubble_handler->ShowSaveIbanConfirmationBubble(web_contents(),
+                                                                this);
+    CHECK(bubble);
     if (confirmation_ui_params_->is_success) {
       auto_close_confirmation_timer_.Start(
           FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
@@ -472,13 +473,13 @@ void IbanBubbleControllerImpl::DoShowBubble() {
                          weak_ptr_factory_.GetWeakPtr(),
                          /*initiated_by_bubble_manager=*/false));
     }
-    return;
+    return bubble;
   }
 
-  SetBubbleView(*autofill_bubble_handler->ShowIbanBubble(
+  AutofillBubbleBase* const bubble = autofill_bubble_handler->ShowIbanBubble(
       web_contents(), this,
-      /*is_user_gesture=*/is_reshow_, current_bubble_type_));
-  CHECK(bubble_view());
+      /*is_user_gesture=*/is_reshow_, current_bubble_type_);
+  CHECK(bubble);
   CHECK(current_bubble_type_ != IbanBubbleType::kInactive);
 
   switch (current_bubble_type_) {
@@ -505,6 +506,7 @@ void IbanBubbleControllerImpl::DoShowBubble() {
   if (observer_for_testing_) {
     observer_for_testing_->OnBubbleShown();
   }
+  return bubble;
 }
 
 bool IbanBubbleControllerImpl::CanBeReshown() const {

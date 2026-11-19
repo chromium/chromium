@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
@@ -121,7 +122,11 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
 void AutofillBubbleControllerBase::ShowBubble() {
   was_bubble_shown_ = true;
   UpdatePageActionIcon();
-  DoShowBubble();
+  if (AutofillBubbleBase* const shown_bubble = DoShowBubble()) {
+    CHECK(!bubble_view_);
+    bubble_view_ = shown_bubble;
+    SetActionItemIsShowingBubble(true);
+  }
   UpdatePageActionIcon();
 }
 
@@ -174,12 +179,6 @@ void AutofillBubbleControllerBase::QueueOrShowBubble(bool force_show) {
 #endif
 
   ShowBubble();
-}
-
-void AutofillBubbleControllerBase::SetBubbleView(
-    AutofillBubbleBase& bubble_view) {
-  bubble_view_ = &bubble_view;
-  SetActionItemIsShowingBubble(true);
 }
 
 void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager() {

@@ -113,7 +113,6 @@ class IbanBubbleControllerImpl
   explicit IbanBubbleControllerImpl(content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
-  void DoShowBubble() override;
   using AutofillBubbleControllerBase::HideBubble;
 #if !BUILDFLAG(IS_ANDROID)
   std::optional<std::u16string> GetPageActionTooltipText() override;
@@ -121,6 +120,9 @@ class IbanBubbleControllerImpl
 
  private:
   friend class content::WebContentsUserData<IbanBubbleControllerImpl>;
+
+  // AutofillBubbleControllerBase:
+  AutofillBubbleBase* DoShowBubble() override;
 
   Profile* GetProfile();
 

@@ -83,9 +83,6 @@ class AutofillAiImportDataControllerImpl
       content::WebContents* web_contents,
       const std::string& app_locale);
 
-  // AutofillBubbleControllerBase::
-  void DoShowBubble() override;
-
  private:
   friend class content::WebContentsUserData<AutofillAiImportDataControllerImpl>;
   friend class AutofillAiImportDataControllerImplTest;
@@ -126,6 +123,9 @@ class AutofillAiImportDataControllerImpl
   // needed at the moment, it serves as a marker to indicate that the controller
   // is handling a local save notification.
   struct LocalSaveNotificationState {};
+
+  // AutofillBubbleControllerBase:
+  AutofillBubbleBase* DoShowBubble() override;
 
   // Helpers for determining whether the controller is currently showing a
   // save or update prompt and accessing its data.

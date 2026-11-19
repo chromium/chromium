@@ -73,10 +73,10 @@ class OmniboxAutofillBubbleController : public AutofillBubbleControllerBase {
 
   bool ShouldShowGooglePayLogo() const;
 
- protected:
-  void DoShowBubble() override;
-
  private:
+  // AutofillBubbleControllerBase:
+  AutofillBubbleBase* DoShowBubble() override;
+
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);

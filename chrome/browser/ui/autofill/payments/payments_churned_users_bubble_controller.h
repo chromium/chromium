@@ -69,10 +69,8 @@ class PaymentsChurnedUsersBubbleController
   void PrimaryPageChanged(content::Page& page) override;
 
  protected:
-  // AutofillBubbleControllerBase:
-  void DoShowBubble() override;
-
 #if !BUILDFLAG(IS_ANDROID)
+  // AutofillBubbleControllerBase:
   bool ShouldShowPageAction() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -90,6 +88,9 @@ class PaymentsChurnedUsersBubbleController
     // Configured for the post-acceptance confirmation bubble.
     kConfirmation,
   };
+
+  // AutofillBubbleControllerBase:
+  AutofillBubbleBase* DoShowBubble() override;
 
   void OnConfirmationBubbleClosed(PaymentsUiClosedReason closed_reason);
 

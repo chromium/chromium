@@ -67,7 +67,6 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   void QueueOrShowBubble(bool force_show = false);
 
   // BubbleControllerBase:
-  void ShowBubble() override;
   void HideBubble(bool initiated_by_bubble_manager) override;
   bool CanBeReshown() const override;
   bool ShouldReshowOnTabVisible() const override;
@@ -114,10 +113,6 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
 
   bool IsBubbleManagerEnabled();
 
-  // Subclasses should implement this method to actually show the bubble and
-  // potentially log metrics.
-  virtual void DoShowBubble() = 0;
-
   // Updates page action visibility.
   void UpdatePageActionIcon();
 
@@ -131,9 +126,6 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
 
   // Returns `false` if a bubble is already queued to be shown.
   [[nodiscard]] bool MaySetUpBubble();
-
-  // Setter for `bubble_view`.
-  void SetBubbleView(AutofillBubbleBase& bubble_view);
 
   // Resets the `bubble_view` and informs the bubble manager about it.
   void ResetBubbleViewAndInformBubbleManager();
@@ -154,6 +146,14 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   bool bubble_hide_initiated_by_bubble_manager_ = false;
 
  private:
+  // BubbleControllerBase:
+  // Private so subclasses must use `QueueOrShowBubble()`.
+  void ShowBubble() final;
+
+  // Creates and shows the bubble view, returning a pointer to it (or `nullptr`
+  // if no `AutofillBubbleBase` view was shown), and logs any show metrics.
+  [[nodiscard]] virtual AutofillBubbleBase* DoShowBubble() = 0;
+
   void WillDiscardContents(tabs::TabInterface* tab,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);

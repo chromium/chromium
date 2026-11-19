@@ -59,8 +59,10 @@ class TestBubbleController : public AutofillBubbleControllerBase {
       : AutofillBubbleControllerBase(tab, page_action_config),
         bubble_(bubble),
         bubble_type_(bubble_type) {
-    bubble_->set_on_hide(base::BindRepeating(&TestBubbleController::CloseBubble,
-                                             weak_ptr_factory_.GetWeakPtr()));
+    if (bubble_) {
+      bubble_->set_on_hide(base::BindRepeating(
+          &TestBubbleController::CloseBubble, weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   TestBubbleController(content::WebContents* web_contents,
@@ -70,8 +72,10 @@ class TestBubbleController : public AutofillBubbleControllerBase {
       : AutofillBubbleControllerBase(web_contents, page_action_config),
         bubble_(bubble),
         bubble_type_(bubble_type) {
-    bubble_->set_on_hide(base::BindRepeating(&TestBubbleController::CloseBubble,
-                                             weak_ptr_factory_.GetWeakPtr()));
+    if (bubble_) {
+      bubble_->set_on_hide(base::BindRepeating(
+          &TestBubbleController::CloseBubble, weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
   ~TestBubbleController() override = default;
@@ -93,7 +97,7 @@ class TestBubbleController : public AutofillBubbleControllerBase {
 
  private:
   // AutofillBubbleControllerBase:
-  void DoShowBubble() override { SetBubbleView(*bubble_); }
+  AutofillBubbleBase* DoShowBubble() override { return bubble_; }
 
   const raw_ptr<FakeAutofillBubble> bubble_;
   const BubbleType bubble_type_;
@@ -369,6 +373,25 @@ TEST_F(AutofillBubbleControllerBaseTest, DefaultFlags_NoOpOnPageActions) {
 
   controller.CloseBubble();
   EXPECT_FALSE(controller.IsShowingBubble());
+}
+
+// Tests that returning `nullptr` from `DoShowBubble()` leaves `bubble_view_`
+// unset and neither shows the page action nor marks the `ActionItem` as showing
+// a bubble.
+TEST_F(AutofillBubbleControllerBaseTest,
+       DoShowBubbleReturnsNull_DoesNotMarkBubbleShowing) {
+  TestBubbleController controller(
+      &tab_interface(), /*bubble=*/nullptr, BubbleType::kGmailOtpOptIn,
+      AutofillBubbleControllerBase::PageActionConfig{
+          .action_id = kActionGmailOtpOptIn,
+          .should_manage_visibility = true,
+          .should_sync_bubble_showing_state = true});
+
+  EXPECT_CALL(page_action_controller(), Show).Times(0);
+
+  controller.QueueOrShowBubble();
+  EXPECT_FALSE(controller.IsShowingBubble());
+  EXPECT_FALSE(managed_action_item().GetIsShowingBubble());
 }
 
 }  // namespace

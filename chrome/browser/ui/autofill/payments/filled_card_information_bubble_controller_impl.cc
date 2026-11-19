@@ -393,18 +393,19 @@ bool FilledCardInformationBubbleControllerImpl::ShouldShowPageAction() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void FilledCardInformationBubbleControllerImpl::DoShowBubble() {
+AutofillBubbleBase* FilledCardInformationBubbleControllerImpl::DoShowBubble() {
   if (!IsWebContentsActive()) {
-    return;
+    return nullptr;
   }
 
   // Cancel the posted task. This would be useful for cases where the user
   // clicks the icon during the delay.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  SetBubbleView(*GetAutofillBubbleHandler()->ShowFilledCardInformationBubble(
-      web_contents(), this, is_user_gesture_));
-  CHECK(bubble_view(), base::NotFatalUntil::M162);
+  AutofillBubbleBase* const bubble =
+      GetAutofillBubbleHandler()->ShowFilledCardInformationBubble(
+          web_contents(), this, is_user_gesture_);
+  CHECK(bubble, base::NotFatalUntil::M162);
   bubble_has_been_shown_ = true;
 
   autofill_metrics::LogFilledCardInformationBubbleShown(is_user_gesture_);
@@ -412,6 +413,7 @@ void FilledCardInformationBubbleControllerImpl::DoShowBubble() {
   if (observer_for_test_) {
     observer_for_test_->OnBubbleShown();
   }
+  return bubble;
 }
 
 bool FilledCardInformationBubbleControllerImpl::IsWebContentsActive() {

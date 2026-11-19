@@ -170,9 +170,8 @@ class SaveCardBubbleControllerImpl
   // Opens the Payments settings page.
   virtual void ShowPaymentsSettingsPage();
 
-  // AutofillBubbleControllerBase::
-  void DoShowBubble() override;
 #if !BUILDFLAG(IS_ANDROID)
+  // AutofillBubbleControllerBase:
   std::optional<std::u16string> GetPageActionTooltipText() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -180,6 +179,9 @@ class SaveCardBubbleControllerImpl
   friend class content::WebContentsUserData<SaveCardBubbleControllerImpl>;
   friend class SaveCardBubbleControllerImplTest;
   friend class SaveCardBubbleViewsFullFormBrowserTest;
+
+  // AutofillBubbleControllerBase:
+  AutofillBubbleBase* DoShowBubble() override;
 
   // Prepares the controller to offer a local credit card save. This sets all
   // the necessary state for the bubble, including the card details and the

@@ -60,7 +60,6 @@ class MandatoryReauthBubbleControllerImpl
       content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
-  void DoShowBubble() override;
 #if !BUILDFLAG(IS_ANDROID)
   bool ShouldShowPageAction() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -68,6 +67,9 @@ class MandatoryReauthBubbleControllerImpl
  private:
   friend class content::WebContentsUserData<
       MandatoryReauthBubbleControllerImpl>;
+
+  // AutofillBubbleControllerBase:
+  AutofillBubbleBase* DoShowBubble() override;
 
   // Sets up the controller to show the mandatory re-authentication bubble. It
   // configures the callbacks for user actions (accept, cancel, close) and sets

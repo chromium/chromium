@@ -870,16 +870,17 @@ SaveCardBubbleControllerImpl::GetPageActionTooltipText() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void SaveCardBubbleControllerImpl::DoShowBubble() {
+AutofillBubbleBase* SaveCardBubbleControllerImpl::DoShowBubble() {
   if (!IsWebContentsActive()) {
-    return;
+    return nullptr;
   }
 
   AutofillBubbleHandler* autofill_bubble_handler = GetAutofillBubbleHandler();
   CHECK(autofill_bubble_handler);
+  AutofillBubbleBase* bubble = nullptr;
   if (current_bubble_type_ == PaymentsBubbleType::kUploadComplete) {
-    SetBubbleView(*autofill_bubble_handler->ShowSaveCardConfirmationBubble(
-        web_contents(), this));
+    bubble = autofill_bubble_handler->ShowSaveCardConfirmationBubble(
+        web_contents(), this);
     // Auto close confirmation bubble when card saved is successful.
     if (confirmation_ui_params_->is_success) {
       auto_close_confirmation_timer_.Start(
@@ -888,17 +889,17 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
                          weak_ptr_factory_.GetWeakPtr()));
     }
   } else {
-    SetBubbleView(*autofill_bubble_handler->ShowSaveCreditCardBubble(
-        web_contents(), this, is_triggered_by_user_gesture_));
+    bubble = autofill_bubble_handler->ShowSaveCreditCardBubble(
+        web_contents(), this, is_triggered_by_user_gesture_);
   }
-  CHECK(bubble_view());
+  CHECK(bubble);
 
   // Do not log metrics for re-shows triggered by link clicks.
   // TODO(issuetracker.google.com/316391673): Determine whether we should log
   // metrics when using `was_url_opened_`.
   if (was_url_opened_) {
     was_url_opened_ = false;
-    return;
+    return bubble;
   }
 
   switch (current_bubble_type_) {
@@ -946,6 +947,7 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
     case PaymentsBubbleType::kInactive:
       NOTREACHED();
   }
+  return bubble;
 }
 
 bool SaveCardBubbleControllerImpl::CanBeReshown() const {

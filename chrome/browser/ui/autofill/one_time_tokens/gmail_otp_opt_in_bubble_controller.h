@@ -77,11 +77,10 @@ class GmailOtpOptInBubbleController : public AutofillBubbleControllerBase {
   bool ShouldReshowOnTabVisible() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
- protected:
-  // AutofillBubbleControllerBase:
-  void DoShowBubble() override;
-
  private:
+  // AutofillBubbleControllerBase:
+  AutofillBubbleBase* DoShowBubble() override;
+
   ui::ScopedUnownedUserData<GmailOtpOptInBubbleController>
       scoped_unowned_user_data_;
 

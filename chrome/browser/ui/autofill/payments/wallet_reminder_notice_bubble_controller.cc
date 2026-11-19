@@ -141,24 +141,25 @@ WalletReminderNoticeBubbleController::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void WalletReminderNoticeBubbleController::DoShowBubble() {
+AutofillBubbleBase* WalletReminderNoticeBubbleController::DoShowBubble() {
   BrowserWindowInterface* browser =
       GetTabInterface()->GetBrowserWindowInterface();
   if (!browser) {
-    return;
+    return nullptr;
   }
   AutofillBubbleHandler* autofill_bubble_handler =
       AutofillBubbleHandler::Get(browser->GetUnownedUserDataHost());
   if (!autofill_bubble_handler) {
-    return;
+    return nullptr;
   }
-  if (AutofillBubbleBase* bubble_view =
-          autofill_bubble_handler->ShowWalletReminderNoticeBubble(
-              web_contents(), this, is_reshow_)) {
+  AutofillBubbleBase* const bubble_view =
+      autofill_bubble_handler->ShowWalletReminderNoticeBubble(web_contents(),
+                                                              this, is_reshow_);
+  if (bubble_view) {
     logged_accept_button_clicked_ = false;
     logged_link_clicked_ = false;
-    SetBubbleView(*bubble_view);
   }
+  return bubble_view;
 }
 
 void WalletReminderNoticeBubbleController::WillDiscardContents(

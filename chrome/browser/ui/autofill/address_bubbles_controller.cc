@@ -250,14 +250,14 @@ AddressBubblesController::GetPageActionTooltipText() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void AddressBubblesController::DoShowBubble() {
+AutofillBubbleBase* AddressBubblesController::DoShowBubble() {
   CHECK(!bubble_view());
   CHECK(show_bubble_view_callback_);
 
-  SetBubbleView(*show_bubble_view_callback_.Run(
-      web_contents(), shown_by_user_gesture_, GetWeakPtr()));
-
-  CHECK(bubble_view());
+  AutofillBubbleBase* const bubble = show_bubble_view_callback_.Run(
+      web_contents(), shown_by_user_gesture_, GetWeakPtr());
+  CHECK(bubble);
+  return bubble;
 }
 
 bool AddressBubblesController::CanBeReshown() const {

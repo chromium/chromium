@@ -117,21 +117,18 @@ OmniboxAutofillBubbleController::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void OmniboxAutofillBubbleController::DoShowBubble() {
+AutofillBubbleBase* OmniboxAutofillBubbleController::DoShowBubble() {
   BrowserWindowInterface* browser =
       GetTabInterface()->GetBrowserWindowInterface();
   if (!browser) {
-    return;
+    return nullptr;
   }
   BrowserWindow* browser_window = BrowserWindow::FromBrowser(browser);
   if (!browser_window) {
-    return;
+    return nullptr;
   }
-  if (AutofillBubbleBase* bubble_view =
-          browser_window->GetAutofillBubbleHandler()->ShowOmniboxAutofillBubble(
-              web_contents(), this)) {
-    SetBubbleView(*bubble_view);
-  }
+  return browser_window->GetAutofillBubbleHandler()->ShowOmniboxAutofillBubble(
+      web_contents(), this);
 }
 
 AutofillBubbleBase* OmniboxAutofillBubbleController::GetBubbleView() const {

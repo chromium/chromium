@@ -243,23 +243,20 @@ void AutofillAiImportDataControllerImpl::OnBubbleDiscarded() {
   MaybeRunSaveUpdateCallback(was_bubble_shown_ ? kNotInteracted : kUnknown);
 }
 
-void AutofillAiImportDataControllerImpl::DoShowBubble() {
-  auto get_bubble = [this]() -> AutofillBubbleBase& {
-    auto* bubble_handler = GetAutofillBubbleHandler();
-    if (IsSaveUpdatePrompt()) {
-      return *bubble_handler->ShowSaveAutofillAiDataBubble(web_contents(),
-                                                           this);
-    }
-    if (IsLocalSaveNotification()) {
-      return *bubble_handler->ShowAutofillAiLocalSaveNotification(
-          web_contents(), this);
-    }
-    NOTREACHED();
-  };
-
+AutofillBubbleBase* AutofillAiImportDataControllerImpl::DoShowBubble() {
   reopen_bubble_when_web_contents_becomes_visible_ = false;
-  SetBubbleView(get_bubble());
-  CHECK(bubble_view());
+  AutofillBubbleHandler* const bubble_handler = GetAutofillBubbleHandler();
+  AutofillBubbleBase* bubble = nullptr;
+  if (IsSaveUpdatePrompt()) {
+    bubble = bubble_handler->ShowSaveAutofillAiDataBubble(web_contents(), this);
+  } else if (IsLocalSaveNotification()) {
+    bubble = bubble_handler->ShowAutofillAiLocalSaveNotification(web_contents(),
+                                                                 this);
+  } else {
+    NOTREACHED();
+  }
+  CHECK(bubble);
+  return bubble;
 }
 
 BubbleType AutofillAiImportDataControllerImpl::GetBubbleType() const {

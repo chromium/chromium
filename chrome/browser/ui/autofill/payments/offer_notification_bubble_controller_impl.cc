@@ -167,26 +167,28 @@ bool OfferNotificationBubbleControllerImpl::ShouldShowPageAction() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void OfferNotificationBubbleControllerImpl::DoShowBubble() {
+AutofillBubbleBase* OfferNotificationBubbleControllerImpl::DoShowBubble() {
   is_icon_visible_ = true;
   UpdatePageActionIcon();
 
   // Don't show bubble yet if web content is not active (bubble will instead be
   // shown when web content become visible and active).
   if (!IsWebContentsActive()) {
-    return;
+    return nullptr;
   }
 
   AutofillBubbleHandler* autofill_bubble_handler = GetAutofillBubbleHandler();
-  SetBubbleView(*autofill_bubble_handler->ShowOfferNotificationBubble(
-      web_contents(), this, is_user_gesture_));
-  CHECK(bubble_view(), base::NotFatalUntil::M162);
+  AutofillBubbleBase* const bubble =
+      autofill_bubble_handler->ShowOfferNotificationBubble(web_contents(), this,
+                                                           is_user_gesture_);
+  CHECK(bubble, base::NotFatalUntil::M162);
 
   bubble_shown_timestamp_ = AutofillClock::Now();
 
   if (observer_for_testing_) {
     observer_for_testing_->OnBubbleShown();
   }
+  return bubble;
 }
 
 BubbleType OfferNotificationBubbleControllerImpl::GetBubbleType() const {

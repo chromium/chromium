@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 
+#include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -276,24 +277,26 @@ bool MandatoryReauthBubbleControllerImpl::ShouldShowPageAction() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
+AutofillBubbleBase* MandatoryReauthBubbleControllerImpl::DoShowBubble() {
 #if BUILDFLAG(IS_ANDROID)
   // The Android view's lifecycle is managed by this controller. We also
   // register it as a raw pointer in the base class to use its closing logic
   // when this controller wants to close it.
+
+  // Keep `java_controller_bridge_` alive when `CreateAndShow()` returns null
+  // (for example, when `BottomSheetController` queues the sheet behind
+  // another closing sheet) so `~MandatoryReauthBubbleControllerImpl()` still
+  // calls `destroy()` to clear its native pointer on `WebContents` teardown.
   view_android_ =
       MandatoryReauthOptInViewAndroid::CreateAndShow(web_contents(), this);
-  if (!view_android_) {
-    // Keep `java_controller_bridge_` alive when `CreateAndShow()` returns null
-    // (for example, when `BottomSheetController` queues the sheet behind
-    // another closing sheet) so `~MandatoryReauthBubbleControllerImpl()` still
-    // calls `destroy()` to clear its native pointer on `WebContents` teardown.
-    return;
-  }
-  SetBubbleView(*view_android_.get());
+  return view_android_.get();
 #else
-  SetBubbleView(*GetAutofillBubbleHandler()->ShowMandatoryReauthBubble(
-      web_contents(), this, /*is_user_gesture=*/false, current_bubble_type_));
+  AutofillBubbleBase* const bubble =
+      GetAutofillBubbleHandler()->ShowMandatoryReauthBubble(
+          web_contents(), this, /*is_user_gesture=*/false,
+          current_bubble_type_);
+  CHECK(bubble);
+  return bubble;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
