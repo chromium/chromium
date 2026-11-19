@@ -52,6 +52,7 @@ reports:
     queue immediately.
 * Include the version number and OS used to reproduce the bug and please
   consider including a bisection.
+* The bug must also reproduce on HEAD.
 
 ### Proof of Concept (PoC)
 
@@ -141,6 +142,7 @@ reports:
   * For a full reward,  please consider performing a full bisection, detailing
     the commit that introduced the issue and / or all the active release
     channels impacted by the bug.
+* Bugs must also reproduce on HEAD.
 * Focus your report: the robots which perform our initial triage work best when
   provided with a concise report that clearly describes a security bug.
 * Empty initial comments will lead to your report being closed and may lead to

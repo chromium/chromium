@@ -338,6 +338,8 @@ When reporting a bug:
   which attached files to use. Follow the format in
   [`repro_config.md`](../../agents/skills/vuln-report-check/references/repro_config.md)
   exactly.
+* The issue must not be fixed on HEAD. Providing bisect information on when a bug
+  was introduced, or other affected Chrome versions, is useful.
 * Do not log _anything_ as part of your proof of concept. If your bug is
   legitimate, it must have external, observable consequences as described above.
   Log messages can be misleading, and we will ignore them when assessing your
