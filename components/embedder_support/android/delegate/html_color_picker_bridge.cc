@@ -35,7 +35,8 @@ HtmlColorPickerBridge::HtmlColorPickerBridge(
 
   // Create a bridge to communicate with Java-side code.
   j_color_chooser_.Reset(Java_HtmlColorPickerBridge_create(
-      env, jni_zero::MakeRaw(this), window_android));
+      env, jni_zero::MakeRaw(this), window_android,
+      web_contents->GetJavaWebContents()));
 
   // End with the initial color if the bridge creation failed.
   if (j_color_chooser_.is_null()) {

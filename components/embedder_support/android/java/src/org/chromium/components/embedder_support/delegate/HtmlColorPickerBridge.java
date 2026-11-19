@@ -19,6 +19,8 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -35,11 +37,13 @@ public class HtmlColorPickerBridge {
 
     private @Nullable JniRawPtr<NativeHtmlColorPickerBridge> mNativeColorPicker;
     private final HtmlColorPickerCoordinator mHtmlColorPickerCoordinator;
+    private final WebContentsObserver mWebContentsObserver;
 
     @CalledByNative
     static @Nullable HtmlColorPickerBridge create(
             JniRawPtr<NativeHtmlColorPickerBridge> nativeColorPicker,
-            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
+            WebContents webContents) {
         @Nullable JniRawPtr<NativeHtmlColorPickerBridge> ptrToRelease = nativeColorPicker;
         try {
             if (windowAndroid == null) return null;
@@ -47,7 +51,8 @@ public class HtmlColorPickerBridge {
             if (ContextUtils.activityFromContext(context) == null) return null;
             assumeNonNull(context);
             ptrToRelease = null;
-            return new HtmlColorPickerBridge(nativeColorPicker, context);
+            return new HtmlColorPickerBridge(
+                    nativeColorPicker, context, windowAndroid, webContents);
         } finally {
             if (ptrToRelease != null) {
                 ptrToRelease.release();
@@ -56,14 +61,30 @@ public class HtmlColorPickerBridge {
     }
 
     private HtmlColorPickerBridge(
-            JniRawPtr<NativeHtmlColorPickerBridge> nativeColorPicker, Context context) {
+            JniRawPtr<NativeHtmlColorPickerBridge> nativeColorPicker,
+            Context context,
+            WindowAndroid windowAndroid,
+            WebContents webContents) {
         mNativeColorPicker = nativeColorPicker;
         mHtmlColorPickerCoordinator =
                 HtmlColorPickerCoordinator.create(context, this::onDialogDismissed);
+        mWebContentsObserver =
+                new WebContentsObserver(webContents) {
+                    @Override
+                    public void onTopLevelNativeWindowChanged(
+                            @Nullable WindowAndroid newWindowAndroid) {
+                        // The dialog belongs to the window it was shown in, so cancel it once
+                        // the WebContents leaves that window, e.g. for a new Activity.
+                        if (newWindowAndroid != windowAndroid) {
+                            mHtmlColorPickerCoordinator.cancel();
+                        }
+                    }
+                };
     }
 
     @CalledByNative
     private void detach() {
+        mWebContentsObserver.observe(null);
         if (mNativeColorPicker != null) {
             mNativeColorPicker.release();
             mNativeColorPicker = null;

@@ -18,6 +18,7 @@ import android.content.Context;
 import android.graphics.Color;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -37,6 +38,8 @@ import java.util.List;
  */
 @NullMarked
 public class HtmlColorPickerCoordinator {
+    private static final String TAG = "HtmlColorPicker";
+
     // Default color suggestions, overridden if a single suggestion is provided by the web.
     private static final int[] DEFAULT_COLORS = {
         Color.RED,
@@ -123,8 +126,20 @@ public class HtmlColorPickerCoordinator {
         DialogTypeRecorder.recordDialogType(DialogTypeRecorder.DialogType.COLOR_PICKER);
     }
 
+    /** Dismisses the dialog without choosing a color, like the Cancel button does. */
+    void cancel() {
+        close();
+        handleMakeChoice(false);
+    }
+
     void close() {
-        mHtmlColorPickerDialogView.dismiss();
+        try {
+            mHtmlColorPickerDialogView.dismiss();
+        } catch (IllegalArgumentException e) {
+            // The dialog's window is already gone if its Activity was destroyed while the dialog
+            // was showing.
+            Log.w(TAG, "Ignoring exception from dialog.dismiss", e);
+        }
     }
 
     public void addColorSuggestion(int color, String label) {

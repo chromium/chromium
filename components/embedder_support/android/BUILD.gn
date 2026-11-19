@@ -381,6 +381,7 @@ if (current_toolchain == default_toolchain) {
     sources = [
       "junit/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParamsUnitTest.java",
       "junit/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUtilsUnitTest.java",
+      "junit/src/org/chromium/components/embedder_support/delegate/HtmlColorPickerBridgeUnitTest.java",
       "junit/src/org/chromium/components/embedder_support/util/ExtensionUrlUtilUnitTest.java",
       "junit/src/org/chromium/components/embedder_support/util/OriginTest.java",
       "junit/src/org/chromium/components/embedder_support/view/ContentViewTest.java",
@@ -388,6 +389,8 @@ if (current_toolchain == default_toolchain) {
     deps = [
       ":content_view_java",
       ":util_java",
+      ":web_contents_delegate_java",
+      ":web_contents_delegate_jni_java",
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
