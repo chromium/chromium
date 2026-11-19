@@ -6,13 +6,12 @@
     const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
     const storageKey =
         (await dp.Storage.getStorageKey({frameId})).result.storageKey;
-    const bucketPromise = (async () => {
-      dp.Storage.setStorageBucketTracking({ storageKey, enable: true });
-      const { params: { bucketInfo: { bucket } } } =
-        await dp.Storage.onceStorageBucketCreatedOrUpdated(
-          e => e.params.bucketInfo.bucket.name === bucketName);
-      return bucket;
-    })();
+    const bucketPromise =
+        dp.Storage
+            .onceStorageBucketCreatedOrUpdated(
+                e => e.params.bucketInfo.bucket.name === bucketName)
+            .then(e => e.params.bucketInfo.bucket);
+    await dp.Storage.setStorageBucketTracking({storageKey, enable: true});
 
     testRunner.log(`Open some databases for ${bucketName ?? 'default'} bucket`);
 
@@ -28,7 +27,7 @@
         request.onsuccess = (event) => {
           databaseNames.push("test-database" + i);
           if (databaseNames.length === 5) {
-            resolve(databaseNames);
+            resolve(databaseNames.sort());
           }
         }
       }

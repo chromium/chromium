@@ -12,8 +12,6 @@
     testRunner.log(`size${size}   ${node.callFrame.functionName}:${node.callFrame.lineNumber}:${node.callFrame.columnNumber}`);
   }
 
-  await dp.HeapProfiler.startSampling();
-  testRunner.log('Sampling started');
   await session.evaluate(`
 
 
@@ -46,7 +44,12 @@ function junkGenerator()
 }
 
 testMain();
+window.junkArray = null;
   `);
+
+  await dp.HeapProfiler.startSampling();
+  testRunner.log('Sampling started');
+  await session.evaluate('testMain();');
 
   var message = await dp.HeapProfiler.stopSampling();
   testRunner.log('Sampling stopped');

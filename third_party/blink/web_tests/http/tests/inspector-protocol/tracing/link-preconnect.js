@@ -12,13 +12,15 @@
   await tracingHelper.startTracing('disabled-by-default-devtools.timeline');
 
   // Load the page and wait for LCP, which means the page is loaded and we can stop tracing.
-  dp.Page.navigate(
-      {url: 'http://127.0.0.1:8000/inspector-protocol/resources/link-preconnect.html'});
+  await dp.Page.navigate({
+    url:
+        'http://127.0.0.1:8000/inspector-protocol/resources/link-preconnect.html'
+  });
   await session.evaluateAsync(`
     new Promise((res) => {
       new PerformanceObserver(function() {
           setTimeout(res, 100);
-      }).observe({entryTypes: ['largest-contentful-paint']});
+      }).observe({type: 'largest-contentful-paint', buffered: true});
     })`);
   const events = await tracingHelper.stopTracing(/devtools\.timeline/);
   const preconnects = events.filter(e => e.name === "LinkPreconnect")
