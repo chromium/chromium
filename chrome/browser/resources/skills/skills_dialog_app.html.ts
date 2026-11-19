@@ -99,8 +99,7 @@ ${this.shouldShowErrorPage_ ? html`
                 maxlength="${MAX_PROMPT_CHAR_COUNT}"
                 placeholder="$i18n{instructionsPlaceholder}"
                 .value="${this.skill_.prompt}"
-                @input="${this.onInstructionsInput_}">
-            </textarea>
+                @input="${this.onInstructionsInput_}"></textarea>
           `}
           ${this.isRefinementEnabled_() ? html`
             <div class="textarea-actions">

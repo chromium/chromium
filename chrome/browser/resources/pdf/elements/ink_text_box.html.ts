@@ -10,8 +10,7 @@ export function getHtml(this: InkTextBoxElement) {
   return html`<!--_html_template_start_-->
 <div class="textbox-wrapper">
   <textarea id="textbox" .value="${this.textValue_}" rows="1"
-      @input="${this.onTextValueInput_}">
-  </textarea>
+      @input="${this.onTextValueInput_}"></textarea>
   <div class="handle top left"></div>
   <div class="handle top center"></div>
   <div class="handle top right"></div>

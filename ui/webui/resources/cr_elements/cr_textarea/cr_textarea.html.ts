@@ -20,8 +20,7 @@ export function getHtml(this: CrTextareaElement) {
       @blur="${this.onBlur_}" @change="${this.onInputChange_}"
       ?disabled="${this.disabled}" maxlength="${this.maxlength}"
       ?readonly="${this.readonly}" ?required="${this.required}"
-      placeholder="${this.placeholder || nothing}">
-  </textarea>
+      placeholder="${this.placeholder || nothing}"></textarea>
   <div id="underline-base"></div>
   <div id="underline"></div>
 </div>

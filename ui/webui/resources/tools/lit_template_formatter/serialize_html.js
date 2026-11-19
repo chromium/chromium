@@ -4,7 +4,7 @@
 
 import assert from 'node:assert';
 
-import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getDepthForTagName, getIndentationPrefix, INDENT_SIZE, LINE_LENGTH_LIMIT, PROP_PREFIX, RESTRICTED_TAGS, TEMPLATE_PREFIX, TRAILING_NEWLINE_REGEX, VOID_ELEMENTS, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
+import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getDepthForTagName, getIndentationPrefix, INDENT_SIZE, isRcdataElement, LINE_LENGTH_LIMIT, PROP_PREFIX, RESTRICTED_TAGS, TEMPLATE_PREFIX, TRAILING_NEWLINE_REGEX, VOID_ELEMENTS, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
 
 const PREFIX_REGEX = /^[?.]/;
 
@@ -119,6 +119,12 @@ function analyzeChildNodes(node, tagName, placeholderMap) {
     const newlineIdx = content.indexOf('\n');
     hasNewline = newlineIdx !== -1;
     firstLineLength += hasNewline ? newlineIdx : content.length;
+  }
+
+  if (isRcdataElement(node)) {
+    const inlineChildLength =
+        hasNewline ? firstLineLength : firstLineLength + tagName.length + 3;
+    return {hasChildElement: false, inlineChildLength};
   }
 
   // If the element has non-whitespace text on a single line with no child
@@ -557,7 +563,7 @@ export function serializeNode(
                                              tagIsMultiline || exceedsLineLimit;
 
   if (shouldWrap) {
-    if (lastChildSuppressesWhitespace) {
+    if (lastChildSuppressesWhitespace || isRcdataElement(node)) {
       return `${startTag}${childrenHtml}${endTag}`;
     }
 

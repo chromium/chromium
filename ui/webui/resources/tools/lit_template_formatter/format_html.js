@@ -6,7 +6,7 @@ import assert from 'node:assert';
 
 import {parseFragment} from '../../../../../third_party/node/node_modules/parse5/lib/index.js';
 
-import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getIndentationPrefix, INDENT_SIZE, PROP_PREFIX, RESTRICTED_TAGS, TEMPLATE_PREFIX, TRAILING_NEWLINE_REGEX, VOID_ELEMENTS} from './html_utils.js';
+import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getIndentationPrefix, INDENT_SIZE, isRcdataElement, PROP_PREFIX, RESTRICTED_TAGS, TEMPLATE_PREFIX, TRAILING_NEWLINE_REGEX, VOID_ELEMENTS} from './html_utils.js';
 
 const COMMENT_OR_ENTITY_REGEX =
     /(<!--[\s\S]*?-->)|(&(?:#\d+|#x[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);)/g;
@@ -94,6 +94,53 @@ function processComment(child, rawHtml) {
 }
 
 /**
+ * Formats an HTML RCDATA element (<textarea> or <title>). Because whitespace
+ * inside RCDATA elements is significant and HTML comments are parsed as literal
+ * text rather than comments, empty wrapped elements are collapsed and non-empty
+ * text is preserved verbatim instead of being re-indented.
+ * @param {Object} node The RCDATA AST node to format.
+ * @param {number} depth The current nesting depth.
+ * @param {Map<string, Object>} placeholderMap Map of placeholders to update
+ *     in-place.
+ * @param {string} rawHtml Raw HTML string before parsing.
+ */
+function formatRcdataElement(node, depth, placeholderMap, rawHtml) {
+  const startTag = node.sourceCodeLocation?.startTag;
+  const endTag = node.sourceCodeLocation?.endTag;
+  assert.ok(startTag, `<${node.tagName}> missing startTag location`);
+
+  // endTag is only undefined for unclosed or self-closing tags without a
+  // closing tag; only collapse or restore leading newlines when endTag exists.
+  const rawContent =
+      endTag ? rawHtml.slice(startTag.endOffset, endTag.startOffset) : '';
+  if (endTag && (rawContent === '' || /^\r?\n[ \t]*$/.test(rawContent))) {
+    node.childNodes = [];
+    return;
+  }
+
+  // HTML5 RCDATA elements can contain at most one #text child node.
+  if (node.childNodes.length === 0) {
+    return;
+  }
+  assert.strictEqual(node.childNodes.length, 1);
+  const textChild = node.childNodes[0];
+  assert.strictEqual(textChild.nodeName, '#text');
+
+  if (node.tagName === 'textarea' && /^\r?\n/.test(rawContent)) {
+    // Restore the single leading newline stripped by the HTML5 parser at the
+    // start of <textarea> so multiline layout and intentional leading blank
+    // lines are preserved idempotently.
+    textChild.value = '\n' + textChild.value;
+  }
+  const matches = textChild.value.match(new RegExp(`${EXPR_PREFIX}-\\d+`, 'g'));
+  if (matches) {
+    for (const match of matches) {
+      recordMetadata(placeholderMap, match, depth);
+    }
+  }
+}
+
+/**
  * Walks the AST tree from `node` and applies indentation and newlines
  * as needed. Updates `placeholderMap` with metadata.
  * @param {Object} node The AST node to format.
@@ -105,6 +152,14 @@ function processComment(child, rawHtml) {
 function format(node, depth, placeholderMap, rawHtml = '') {
   assert.ok(placeholderMap, 'placeholderMap must be provided to format');
   if (!node.childNodes) {
+    return;
+  }
+
+  // Handle HTML RCDATA elements (<textarea> and <title>) separately because
+  // their whitespace is significant and HTML comments inside them are parsed as
+  // literal text rather than comments.
+  if (isRcdataElement(node)) {
+    formatRcdataElement(node, depth, placeholderMap, rawHtml);
     return;
   }
 

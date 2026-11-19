@@ -47,8 +47,7 @@ export function getHtml(this: ChromeFindsInternalsAppElement) {
   <h2>History Dump</h2>
   <div id="history-dump-container">
     <textarea id="history-json-output" rows="10" readonly
-        .value="${this.historyJson_}">
-    </textarea>
+        .value="${this.historyJson_}"></textarea>
     <div class="button-row">
       <cr-button id="copy-history-btn" @click="${this.onCopyHistoryClick_}">
         Copy to Clipboard

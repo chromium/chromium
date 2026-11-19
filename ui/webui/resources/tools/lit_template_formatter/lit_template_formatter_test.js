@@ -313,4 +313,78 @@ suite('lit_template_formatter', () => {
 </div>`;
     assert.strictEqual(entitySerialized, expectedEntities);
   });
+
+  test('preserveRcdataElements', () => {
+    const rcdataTemplate = [
+      '<div>',
+      '  <textarea id="short"></textarea>',
+      '  <textarea id="wrap-for-end-tag" ' +
+          'class="thirty-eight-char-class-pushes-over-80"></textarea>',
+      '  <textarea id="multiline" autocomplete="off" spellcheck="false" ' +
+          `placeholder="Enter text" @paste="${EXPR_PREFIX}-1" ` +
+          `@scroll="${EXPR_PREFIX}-2"></textarea>`,
+      '  <textarea id="previously-wrapped" rows="4"',
+      '      cols="60">',
+      '  </textarea>',
+      '  <textarea id="preset-multiline">',
+      'Line 1',
+      '  Indented line 2</textarea>',
+      '  <textarea id="leading-blank-line">',
+      '',
+      'After blank line</textarea>',
+      '  <title id="page-title" ' +
+          `class="medium-class-name-to-wrap-attrs">${EXPR_PREFIX}-3</title>`,
+      '  <svg viewBox="0 0 24 24">',
+      '    <title id="svg-title" ' +
+          'class="svg-title-is-not-rcdata-and-wraps-across-lines">Icon</title>',
+      '  </svg>',
+      '</div>',
+    ].join('\n');
+    const rcdataMap = new Map([
+      [`${EXPR_PREFIX}-1`, {code: '${this.onInputPaste_}'}],
+      [`${EXPR_PREFIX}-2`, {code: '${this.onInputScroll_}'}],
+      [`${EXPR_PREFIX}-3`, {code: '${this.pageTitle}'}],
+    ]);
+    const rcdataAst = prepareHtmlAst(rcdataTemplate, rcdataMap);
+    const rcdataSerialized = serializeHtmlAst(rcdataAst, rcdataMap, false);
+    const expectedRcdata = `
+<div>
+  <textarea id="short"></textarea>
+  <textarea id="wrap-for-end-tag"
+      class="thirty-eight-char-class-pushes-over-80"></textarea>
+  <textarea id="multiline" autocomplete="off" spellcheck="false"
+      placeholder="Enter text" @paste="\${this.onInputPaste_}"
+      @scroll="\${this.onInputScroll_}"></textarea>
+  <textarea id="previously-wrapped" rows="4" cols="60"></textarea>
+  <textarea id="preset-multiline">
+Line 1
+  Indented line 2</textarea>
+  <textarea id="leading-blank-line">
+
+After blank line</textarea>
+  <title id="page-title"
+      class="medium-class-name-to-wrap-attrs">\${this.pageTitle}</title>
+  <svg viewBox="0 0 24 24">
+    <title id="svg-title"
+        class="svg-title-is-not-rcdata-and-wraps-across-lines">
+      Icon
+    </title>
+  </svg>
+</div>`;
+    assert.strictEqual(rcdataSerialized, expectedRcdata);
+
+    // Re-parse and re-serialize to verify idempotency.
+    const secondMap = new Map([
+      [`${EXPR_PREFIX}-1`, {code: '${this.onInputPaste_}'}],
+      [`${EXPR_PREFIX}-2`, {code: '${this.onInputScroll_}'}],
+      [`${EXPR_PREFIX}-3`, {code: '${this.pageTitle}'}],
+    ]);
+    const reSubstituted =
+        expectedRcdata.replace('${this.onInputPaste_}', `${EXPR_PREFIX}-1`)
+            .replace('${this.onInputScroll_}', `${EXPR_PREFIX}-2`)
+            .replace('${this.pageTitle}', `${EXPR_PREFIX}-3`);
+    const secondAst = prepareHtmlAst(reSubstituted, secondMap);
+    assert.strictEqual(
+        serializeHtmlAst(secondAst, secondMap, false), expectedRcdata);
+  });
 });

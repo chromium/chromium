@@ -11,8 +11,7 @@ export function getHtml(this: AppElement) {
 <div id="content-pane" class="content">
   <p id="free-form-text">$i18n{freeFormText}</p>
   <textarea id="description-text" aria-labelledby="free-form-text"
-      aria-required="true">
-  </textarea>
+      aria-required="true"></textarea>
   <div id="questionnaire-notification" aria-live="polite" class="off-screen">
   </div>
   <p id="description-empty-error" class="description-empty-notification"

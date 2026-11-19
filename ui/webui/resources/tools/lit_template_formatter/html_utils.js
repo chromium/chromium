@@ -40,6 +40,25 @@ export const VOID_ELEMENTS = [
   'wbr',
 ];
 
+const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+const RCDATA_ELEMENTS = new Set([
+  'textarea',
+  'title',
+]);
+
+/**
+ * Returns whether `node` is an HTML RCDATA element (`<textarea>` or HTML
+ * `<title>`), where HTML comments are parsed as literal text and whitespace
+ * changes alter text content. SVG `<title>` elements are in the SVG namespace
+ * and are not RCDATA.
+ * @param {Object} node The AST node.
+ * @return {boolean}
+ */
+export function isRcdataElement(node) {
+  return RCDATA_ELEMENTS.has(node.tagName) &&
+      (!node.namespaceURI || node.namespaceURI === HTML_NAMESPACE);
+}
+
 export const INDENT_SIZE = 2;
 export const LINE_LENGTH_LIMIT = 80;
 export const WRAPPED_LINE_INDENT_SIZE = 4;

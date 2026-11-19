@@ -16,8 +16,7 @@ export function getHtml(this: ComposeTextareaElement) {
  • $i18n{inputPlaceholderLine3}"
       .value="${this.value}" @input="${this.onInput_}" required autofocus
       aria-invalid="${this.invalidInput_}" aria-errormessage="error"
-      @change="${this.onTextAreaChange_}">
-  </textarea>
+      @change="${this.onTextAreaChange_}"></textarea>
   <div id="error" class="error" role="region" aria-live="assertive"
       ?hidden="${!this.invalidInput_}">
     <div id="tooShortError" ?hidden="${!this.tooShort_}">

@@ -50,8 +50,8 @@ export function getHtml(this: CastFeedbackUiElement) {
         </span>
       </div>
       <textarea placeholder="$i18n{yourAnswer}" rows="8" cols="60"
-          .value="${this.comments_}" @input="${this.onCommentsInput_}">
-      </textarea>
+          .value="${this.comments_}"
+          @input="${this.onCommentsInput_}"></textarea>
     </div>
     ${this.showMirroringQualitySection_() ? html`
       <div class="question">
@@ -149,8 +149,8 @@ export function getHtml(this: CastFeedbackUiElement) {
           </span>
         </div>
         <textarea placeholder="$i18n{yourAnswer}" rows="8" cols="60"
-            .value="${this.comments_}" @input="${this.onCommentsInput_}">
-        </textarea>
+            .value="${this.comments_}"
+            @input="${this.onCommentsInput_}"></textarea>
       </div>
     ` : ''}
     ${this.showDiscoverySection_() ? html`
@@ -211,8 +211,7 @@ export function getHtml(this: CastFeedbackUiElement) {
           </span>
         </div>
         <textarea placeholder="$i18n{yourAnswer}" rows="8" cols="60"
-            value="{{comments_::input}}">
-        </textarea>
+            value="{{comments_::input}}"></textarea>
       </div>
     ` : ''}
     <div class="question">

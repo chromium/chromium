@@ -175,6 +175,11 @@ class LitTemplateFormatterTest(unittest.TestCase):
   def testHtmlEntities(self):
     self._run_test("test_html_entities.html.ts")
 
+  def testRcdataElements(self):
+    self._run_test(
+      "test_rcdata_elements.html.ts", "test_rcdata_elements.html.ts"
+    )
+
   def testDryRunModeFormatted(self):
     filename = "test_basic_expressions.html.ts"
     expected_path = os.path.join(
