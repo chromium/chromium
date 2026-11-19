@@ -12,9 +12,6 @@
 // The maximum number of attachments that can be added to a prompt.
 extern const NSUInteger kAttachmentLimit;
 
-// The maximum number of attachments that can be added to a prompt.
-extern const NSUInteger kAttachmentLimitForImageGeneration;
-
 // The maximum allowed size for file uploads.
 extern const NSUInteger kMaxFileAttachmentSize;
 

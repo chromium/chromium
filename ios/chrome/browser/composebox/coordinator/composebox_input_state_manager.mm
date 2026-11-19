@@ -479,12 +479,6 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
     availableSlots = totalLimit - items.count;
   }
 
-  if (self.activeToolMode == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
-    // For ImageGeneration, allow 1 image if no images are present, otherwise 0.
-    return self.items.hasImage
-               ? 0
-               : MIN(availableSlots, kAttachmentLimitForImageGeneration);
-  }
   return availableSlots;
 }
 
@@ -701,20 +695,6 @@ omnibox::InputType InputTypeForItemType(ComposeboxInputItemType item_type) {
     // Invalidate all items.
     if (containedItems) {
       [invalidatedItems addObjectsFromArray:containedItems];
-    }
-    return invalidatedItems;
-  }
-
-  if (self.activeToolMode == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
-    // Image generation only accepts one image, invalidate the other items.
-    ComposeboxInputItem* imageToKeep = nil;
-    for (ComposeboxInputItem* item in containedItems) {
-      if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage &&
-          !imageToKeep) {
-        imageToKeep = item;
-        continue;
-      }
-      [invalidatedItems addObject:item];
     }
     return invalidatedItems;
   }

@@ -437,8 +437,8 @@ TEST_F(ComposeboxInputStateManagerTest, RemainingAttachmentCapacity_WithItems) {
   EXPECT_EQ([manager_ remainingAttachmentCapacity], 3u);
 }
 
-// Tests that the remaining attachment capacity is reduced to 0 in image
-// generation mode if an image is already attached.
+// Tests that the remaining attachment capacity in image generation mode uses
+// the server limit without a hardcoded single-image cap.
 TEST_F(ComposeboxInputStateManagerTest,
        RemainingAttachmentCapacity_ImageGenerationMode) {
   // Set a max total inputs limit in the config.
@@ -470,8 +470,9 @@ TEST_F(ComposeboxInputStateManagerTest,
 
   manager_.items = collection;
 
-  // Verify that capacity is 0 because an image is already present.
-  EXPECT_EQ([manager_ remainingAttachmentCapacity], 0u);
+  // Verify that capacity uses the server limit (5 - 1 = 4) rather than a
+  // hardcoded image-generation cap.
+  EXPECT_EQ([manager_ remainingAttachmentCapacity], 4u);
 }
 
 #pragma mark - Image Limits

@@ -574,19 +574,7 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
 - (void)didFailToAttachDueToIneligibleAttachments:
     (ComposeboxInputPlateViewController*)composeboxViewController {
   CHECK_EQ(_viewController, composeboxViewController);
-  switch ([_mediator currentUIInputState].activeTool) {
-    case ComposeboxMode::kRegularSearch:
-    case ComposeboxMode::kAIM:
-    case ComposeboxMode::kCanvas:
-    case ComposeboxMode::kDeepSearch:
-    case ComposeboxMode::kPTM:
-      [self showMaxAttachmentSnackbarError];
-      return;
-    case ComposeboxMode::kImageGeneration:
-      [self showMaxAttachmentForImageGenerationSnackbarError];
-      return;
-  }
-  NOTREACHED();
+  [self showMaxAttachmentSnackbarError];
 }
 
 - (UIMenu*)composeboxViewControllerPlusButtonMenu:
@@ -798,19 +786,6 @@ omnibox::ToolMode ToolModeForComposeboxMode(ComposeboxMode mode) {
     offset += _viewController.inputHeight + kSnackbarBottomMargin;
   }
   [_snackbarPresenter showUnableToAddAttachmentSnackbarWithBottomOffset:offset];
-}
-
-/// Displays a snackbar error indicating the maximum number of attachments has
-/// been reached.
-- (void)showMaxAttachmentForImageGenerationSnackbarError {
-  [self createSnackbarPresenterIfNeeded];
-  CGFloat offset = _viewController.keyboardHeight;
-  if (_theme.isBottomInputPlate) {
-    offset += _viewController.inputHeight + kSnackbarBottomMargin;
-  }
-  [_snackbarPresenter showAttachmentLimitForImageGenerationSnackbar:
-                          kAttachmentLimitForImageGeneration
-                                                   withBottomOffset:offset];
 }
 
 - (void)createSnackbarPresenterIfNeeded {
