@@ -957,12 +957,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.IOS.PasskeyParsingError"
-    enum="PasskeysParsingError" expires_after="2026-07-14">
+    enum="PasskeysParsingError" expires_after="2027-11-19">
+  <owner>rgod@google.com</owner>
   <owner>sinhasourav@google.com</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
     Records the specific error type encountered when the JavaScript shim fails
     to parse a WebAuthn request.
+
+    Warning: this histogram was expired from 2026-07-14 to 2026-11-19; data may
+    be missing.
   </summary>
 </histogram>
 
