@@ -580,17 +580,22 @@ void BrowserControllerImpl::OnTabStripModelChanged(
   }
 }
 
-void BrowserControllerImpl::OnTabChangedAt(tabs::TabInterface* tab,
-                                           TabChangeType change_type) {
+void BrowserControllerImpl::OnTabChanged(tabs::TabHandle tab,
+                                         TabChangeType change_type) {
   // Every loading state change is reported synchronously as kLoadingOnly (see
   // BrowserUiController::ScheduleUIUpdate). kAll is the deferred notification
   // for tab, title and audio changes, so there is no need to forward it.
   if (change_type != TabChangeType::kLoadingOnly) {
     return;
   }
-  BrowserDelegate* browser = GetDelegate(tab->GetBrowserWindowInterface());
+  tabs::TabInterface* tab_interface = tab.Get();
+  if (!tab_interface) {
+    return;
+  }
+  BrowserDelegate* browser =
+      GetDelegate(tab_interface->GetBrowserWindowInterface());
   for (auto& observer : tab_observers_) {
-    observer.OnTabLoadingStateChanged(browser, tab->GetContents());
+    observer.OnTabLoadingStateChanged(browser, tab_interface->GetContents());
   }
 }
 

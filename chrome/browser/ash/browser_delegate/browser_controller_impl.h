@@ -90,8 +90,7 @@ class BrowserControllerImpl : public BrowserController,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override;
+  void OnTabChanged(tabs::TabHandle tab, TabChangeType change_type) override;
 
  private:
   // Waits for the tab restore service to finish loading before restoring; see
