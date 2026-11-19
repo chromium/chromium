@@ -108,11 +108,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
           forKey:metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey];
 
   [_appState startInitialization];
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(sceneWillConnect:)
-             name:UISceneWillConnectNotification
-           object:nil];
   // UIApplicationWillResignActiveNotification is delivered before the last
   // scene has entered the background.
   [[NSNotificationCenter defaultCenter]
@@ -273,25 +268,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 }
 
 #pragma mark - Scenes lifecycle
-
-- (NSInteger)foregroundSceneCount {
-  NSInteger foregroundSceneCount = 0;
-  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
-    if ((scene.activationState == UISceneActivationStateForegroundInactive) ||
-        (scene.activationState == UISceneActivationStateForegroundActive)) {
-      foregroundSceneCount++;
-    }
-  }
-  return foregroundSceneCount;
-}
-
-- (void)sceneWillConnect:(NSNotification*)notification {
-  if (self.foregroundSceneCount == 0) {
-    [_mainController
-        applicationWillEnterForeground:UIApplication.sharedApplication
-                          memoryHelper:_memoryHelper];
-  }
-}
 
 - (void)lastSceneWillEnterBackground:(NSNotification*)notification {
   [_mainController applicationWillResignActive:UIApplication.sharedApplication];

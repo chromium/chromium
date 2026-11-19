@@ -923,10 +923,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // The documentation says that if the application is not running when the OS
   // decides to discard the sessions, then it will call this method the next
   // time the application starts up. As seen by crbug.com/1292641, this call
-  // happens before -[UIApplicationDelegate sceneWillConnect:] which means
-  // that it can happen before Chrome has properly initialized. In that case,
-  // record the list of sessions to discard and clean them once Chrome is
-  // initialized.
+  // happens before the first scene connects, which means that it can happen
+  // before Chrome has properly initialized. In that case, record the list of
+  // sessions to discard and clean them once Chrome is initialized.
   ApplicationContext* applicationContext = GetApplicationContext();
   if (!applicationContext) {
     if (!_sceneSessionsToDiscard) {
@@ -1762,7 +1761,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     const SceneActivationLevel savedLevel = sceneState.activationLevel;
     ChromeConnectionOptions* savedOptions = sceneState.connectionOptions;
 
-    // Destroy the old SceneState and recreate it.
+    // Disconnect the old SceneState and reconnect the scene with
+    // the saved options. This will attach a profile based on the
+    // information stored in the ProfileAttributesStorageIOS.
     [sceneDelegate sceneDidDisconnect:scene];
     [sceneDelegate scene:scene
         willConnectToSession:scene.session
@@ -1770,12 +1771,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
     sceneState = sceneDelegate.sceneState;
     DCHECK(sceneState);
-
-    // Reconnect the scene. This will attach a profile automatically based
-    // on the information stored in the ProfileAttributesStorageIOS.
-    [[NSNotificationCenter defaultCenter]
-        postNotificationName:UISceneWillConnectNotification
-                      object:scene];
     DCHECK(sceneState.profileState);
 
     while (sceneState.activationLevel < savedLevel) {
