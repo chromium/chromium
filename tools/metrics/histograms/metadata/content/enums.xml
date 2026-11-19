@@ -31,16 +31,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Long article"/>
 </enum>
 
-<enum name="ContentClassificationOpenGraph">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Website"/>
-  <int value="2" label="Music"/>
-  <int value="3" label="Video"/>
-  <int value="4" label="Article"/>
-  <int value="5" label="Book"/>
-  <int value="6" label="Profile"/>
-</enum>
-
 <enum name="ContentNotificationActionType">
   <int value="0" label="Notification Received and Displayed by the OS."/>
   <int value="1" label="Notification opened."/>

@@ -49,17 +49,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Content.Classification.OpenGraph"
-    enum="ContentClassificationOpenGraph" expires_after="2024-04-28">
-  <owner>sophey@chromium.org</owner>
-  <owner>chrome-sherlock@google.com</owner>
-  <summary>
-    What the Open Graph Protocol classification of the page is. This is logged
-    when the user navigates to the current page. It is only logged if there is
-    an 'og:type' property in the HTML of the page.
-  </summary>
-</histogram>
-
 <histogram name="Content.FileChooser.CancelledByWindowResize" enum="Boolean"
     expires_after="2026-12-25">
   <owner>elkurin@chromium.org</owner>

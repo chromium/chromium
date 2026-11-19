@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -640,52 +639,12 @@ void HTMLMetaElement::ProcessHttpEquiv() {
                      InDocumentHead(this), is_sync_parser_, this);
 }
 
-// Open Graph Protocol Content Classification types used for logging.
-enum class ContentClassificationOpenGraph {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  kUnknown = 0,
-  kWebsite = 1,
-  kMusic = 2,
-  kVideo = 3,
-  kArticle = 4,
-  kBook = 5,
-  kProfile = 6,
-  kMaxValue = kProfile
-};
-
-ContentClassificationOpenGraph GetContentClassification(
-    const AtomicString& open_graph_type) {
-  const AtomicString lowercase_type(open_graph_type.ToAsciiLower());
-  if (lowercase_type.starts_with("website")) {
-    return ContentClassificationOpenGraph::kWebsite;
-  } else if (lowercase_type.starts_with("music")) {
-    return ContentClassificationOpenGraph::kMusic;
-  } else if (lowercase_type.starts_with("video")) {
-    return ContentClassificationOpenGraph::kVideo;
-  } else if (lowercase_type.starts_with("article")) {
-    return ContentClassificationOpenGraph::kArticle;
-  } else if (lowercase_type.starts_with("book")) {
-    return ContentClassificationOpenGraph::kBook;
-  } else if (lowercase_type.starts_with("profile")) {
-    return ContentClassificationOpenGraph::kProfile;
-  }
-  return ContentClassificationOpenGraph::kUnknown;
-}
-
 void HTMLMetaElement::ProcessContent() {
   if (!IsInDocumentTree())
     return;
 
-  const AtomicString& property_value =
-      FastGetAttribute(html_names::kPropertyAttr);
   const AtomicString& content_value =
       FastGetAttribute(html_names::kContentAttr);
-
-  if (EqualIgnoringAsciiCase(property_value, "og:type")) {
-    UMA_HISTOGRAM_ENUMERATION("Content.Classification.OpenGraph",
-                              GetContentClassification(content_value));
-  }
 
   const AtomicString& name_value = FastGetAttribute(html_names::kNameAttr);
   if (name_value.empty())
