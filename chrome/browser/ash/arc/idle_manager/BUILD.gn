@@ -25,6 +25,7 @@ static_library("idle_manager") {
   deps = [
     "//ash",
     "//base",
+    "//chrome/browser/ash/arc/instance_throttle",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/patchpanel",
     "//chromeos/ash/components/throttle",
