@@ -47,7 +47,7 @@ public abstract class SuggestionsPopupWindow
     private final Context mContext;
     protected final TextSuggestionHost mTextSuggestionHost;
     private final View mParentView;
-    private @Nullable WindowAndroid mWindowAndroid;
+    private final @Nullable WindowAndroid mWindowAndroid;
 
     private @Nullable Activity mActivity;
     private @Nullable DisplayMetrics mDisplayMetrics;
@@ -177,11 +177,6 @@ public abstract class SuggestionsPopupWindow
     /** Used by TextSuggestionHost to determine if the text suggestion menu is currently visible. */
     public boolean isShowing() {
         return mPopupWindow.isShowing();
-    }
-
-    /** Used by TextSuggestionHost to update {@link WindowAndroid} to the current one. */
-    public void updateWindowAndroid(@Nullable WindowAndroid windowAndroid) {
-        mWindowAndroid = windowAndroid;
     }
 
     private void addToDictionary() {
