@@ -15,11 +15,13 @@ import android.webkit.WebView;
 
 import androidx.annotation.Nullable;
 import androidx.test.espresso.AppNotIdleException;
+import androidx.test.espresso.InjectEventSecurityException;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.CoordinatesProvider;
 import androidx.test.espresso.action.GeneralLocation;
+import androidx.test.espresso.action.MotionEvents;
 import androidx.test.espresso.action.PrecisionDescriber;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Tap;
@@ -30,6 +32,7 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.Log;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -41,6 +44,62 @@ public class ForgivingClickAction implements ViewAction {
     private static final String TAG = "ForgivingClickAction";
     private static final String MOTION_EVENTS_CLASS = "androidx.test.espresso.action.MotionEvents";
 
+    // Dispatches ACTION_DOWN and ACTION_UP in one sequence with a 1ms delta so slow frames or
+    // active animations cannot delay ACTION_UP past ViewConfiguration#getLongPressTimeout().
+    private static final Tapper ATOMIC_SINGLE_TAP =
+            new Tapper() {
+                @Override
+                public Status sendTap(
+                        UiController uiController, float[] coordinates, float[] precision) {
+                    return sendTap(
+                            uiController,
+                            coordinates,
+                            precision,
+                            InputDevice.SOURCE_UNKNOWN,
+                            MotionEvent.BUTTON_PRIMARY);
+                }
+
+                @Override
+                public Status sendTap(
+                        UiController uiController,
+                        float[] coordinates,
+                        float[] precision,
+                        int inputDevice,
+                        int buttonState) {
+                    MotionEvent downEvent =
+                            MotionEvents.obtainDownEvent(
+                                    coordinates, precision, inputDevice, buttonState);
+                    MotionEvent upEvent =
+                            MotionEvents.obtainUpEvent(
+                                    downEvent, downEvent.getDownTime() + 1, coordinates);
+                    boolean injected = false;
+                    try {
+                        boolean success =
+                                uiController.injectMotionEventSequence(List.of(downEvent, upEvent));
+                        injected = true;
+                        if (!success) {
+                            MotionEvents.sendCancel(uiController, downEvent);
+                        }
+                        return success ? Status.SUCCESS : Status.FAILURE;
+                    } catch (InjectEventSecurityException e) {
+                        injected = true;
+                        throw new RuntimeException(e);
+                    } finally {
+                        // Skip recycle() if injectMotionEventSequence() threw while
+                        // keyEventExecutor may still be injecting these events.
+                        if (injected) {
+                            downEvent.recycle();
+                            upEvent.recycle();
+                        }
+                    }
+                }
+
+                @Override
+                public String toString() {
+                    return "ATOMIC_SINGLE_TAP";
+                }
+            };
+
     private final CoordinatesProvider mCoordinatesProvider;
     private final Tapper mTapper;
     private final PrecisionDescriber mPrecisionDescriber;
@@ -49,17 +108,14 @@ public class ForgivingClickAction implements ViewAction {
     @Nullable private final ViewAction mRollbackAction;
 
     public static ForgivingClickAction forgivingClick() {
-        return new ForgivingClickAction(
-                Tap.SINGLE,
-                GeneralLocation.VISIBLE_CENTER,
-                Press.FINGER,
-                InputDevice.SOURCE_UNKNOWN,
-                MotionEvent.BUTTON_PRIMARY);
+        return forgivingClick(/* rollbackAction= */ null);
     }
 
     public static ForgivingClickAction forgivingClick(@Nullable ViewAction rollbackAction) {
         return new ForgivingClickAction(
-                Tap.SINGLE,
+                // ATOMIC_SINGLE_TAP cannot return Status.WARNING, so use Tap.SINGLE when a
+                // rollback action is provided.
+                rollbackAction != null ? Tap.SINGLE : ATOMIC_SINGLE_TAP,
                 GeneralLocation.VISIBLE_CENTER,
                 Press.FINGER,
                 InputDevice.SOURCE_UNKNOWN,
@@ -102,7 +158,7 @@ public class ForgivingClickAction implements ViewAction {
 
     @Override
     public String getDescription() {
-        if (mTapper == Tap.SINGLE) {
+        if (isSingleTap()) {
             return "click";
         } else if (mTapper == Tap.LONG) {
             return "long click";
@@ -210,12 +266,16 @@ public class ForgivingClickAction implements ViewAction {
                     .build();
         }
 
-        if (mTapper == Tap.SINGLE && view instanceof WebView) {
+        if (isSingleTap() && view instanceof WebView) {
             // WebViews will not process click events until double tap
             // timeout. Not the best place for this - but good for now.
             loopMainThreadForAtLeastForgivingly(
                     uiController, ViewConfiguration.getDoubleTapTimeout());
         }
+    }
+
+    private boolean isSingleTap() {
+        return mTapper == ATOMIC_SINGLE_TAP || mTapper == Tap.SINGLE;
     }
 
     /**
@@ -260,6 +320,7 @@ public class ForgivingClickAction implements ViewAction {
                 String message = t.getMessage();
                 return message != null
                         && message.contains("MAIN_LOOPER_HAS_IDLED")
+                        && !message.contains("MOTION_INJECTION_HAS_COMPLETED")
                         && isRaisedAfterUpEvent(t);
             }
             t = t.getCause();
@@ -279,7 +340,7 @@ public class ForgivingClickAction implements ViewAction {
         // absence of a sendDown() frame is enough to conclude the tap completed. Tap.LONG cannot
         // use the same deduction: it holds the press by waiting *before* calling sendUp(), so an
         // exception with no sendUp() frame may well mean the UP was never sent.
-        if (mTapper != Tap.SINGLE) {
+        if (!isSingleTap()) {
             return false;
         }
         return !hasStackFrame(t, MOTION_EVENTS_CLASS, "sendDown")
