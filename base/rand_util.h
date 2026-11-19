@@ -23,7 +23,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/boringssl/src/include/openssl/rand.h"
+#include "third_party/boringssl/src/include/openssl/rand.h"  // nocheck
 
 namespace memory_simulator {
 class MemoryHolder;

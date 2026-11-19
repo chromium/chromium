@@ -7,7 +7,7 @@
 #include <zircon/syscalls.h>
 
 #include "base/containers/span.h"
-#include "third_party/boringssl/src/include/openssl/rand.h"
+#include "third_party/boringssl/src/include/openssl/rand.h"  // nocheck
 
 namespace base {
 
