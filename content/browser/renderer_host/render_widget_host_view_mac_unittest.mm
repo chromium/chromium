@@ -16,6 +16,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_nsautorelease_pool.h"
@@ -2187,7 +2188,7 @@ TEST_F(RenderWidgetHostViewMacTest, EventLatencyOSMouseWheelHistogram) {
 // different variations of RWHVMac::SelectChanged updates.
 TEST_F(RenderWidgetHostViewMacTest, SelectedText) {
   std::u16string sample_text;
-  base::UTF8ToUTF16("hello world!", 12, &sample_text);
+  std::ignore = base::UTF8ToUTF16("hello world!", &sample_text);
   gfx::Range range(6, 11);
 
   // Send a valid selection for the word 'World'.

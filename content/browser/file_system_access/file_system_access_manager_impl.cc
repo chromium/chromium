@@ -2705,7 +2705,7 @@ bool FileSystemAccessManagerImpl::IsSafePathComponent(
   component16.assign(component.value().begin(), component.value().end());
 #else
   std::string component8 = component.AsUTF8Unsafe();
-  if (!base::UTF8ToUTF16(component8.c_str(), component8.size(), &component16)) {
+  if (!base::UTF8ToUTF16(component8, &component16)) {
     return false;
   }
 #endif

@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
+#include <tuple>
 
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -61,7 +63,9 @@ HRESULT FontFallback::MapCharacters(IDWriteTextAnalysisSource* source,
     return E_FAIL;
   }
   std::u16string text_chunk;
-  base::WideToUTF16(text, std::min(chunk_length, text_length), &text_chunk);
+  std::ignore = base::WideToUTF16(
+      std::wstring_view(text, std::min(chunk_length, text_length)),
+      &text_chunk);
 
   if (text_chunk.size() == 0) {
     DCHECK(false);
