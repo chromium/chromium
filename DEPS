@@ -2841,7 +2841,7 @@ deps = {
     Var('chromium_git') + '/chromium/third_party/openh264rs.git' + '@' + Var('openh264rs_revision'),
 
   'src/third_party/openscreen/src':
-    Var('chromium_git') + '/openscreen' + '@' + '61ba1e2d7024da6f92b76a788ca32c5c6ecf38f5',
+    Var('chromium_git') + '/openscreen' + '@' + '2250c44abbd712443783bdeba4b1fd7c669a5055',
 
   'src/third_party/openxr/src': {
     'url': Var('chromium_git') + '/external/github.com/KhronosGroup/OpenXR-SDK' + '@' + '75c53b6e853dc12c7b3c771edc9c9c841b15faaa',
