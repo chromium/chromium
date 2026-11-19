@@ -52,5 +52,15 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "//content/test:test_support",
       "//testing/gtest",
     ]
+    if (!is_chromeos) {
+      deps += [
+        "//chrome/browser/lifetime",
+        "//chrome/browser/profiles/keep_alive",
+        "//chrome/browser/ui/browser_window",
+        "//chrome/browser/ui/browser_window:create_browser_window",
+        "//chrome/browser/ui/profiles",
+        "//chrome/browser/ui/profiles:test_support",
+      ]
+    }
   }
 }

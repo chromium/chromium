@@ -20,12 +20,14 @@
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/enterprise/signin/signals_disclaimer_metrics.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_active_state_manager/browser_active_state_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -493,6 +495,10 @@ IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerStartupInteractiveTest,
   // Wait for all browsers to close and for the profile picker to be shown.
   browsers_closed_waiter.Wait();
   WaitForPickerWidgetCreated();
+  EXPECT_FALSE(browser_shutdown::HasShutdownStarted());
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kOk,
+            GetBrowserWindowCreationStatusForProfile(
+                *profile_keep_alive_->profile()));
   histogram_tester_.ExpectBucketCount(kEnterpriseSignalsDisclaimerModalShown,
                                       true, 1);
   histogram_tester_.ExpectUniqueSample(

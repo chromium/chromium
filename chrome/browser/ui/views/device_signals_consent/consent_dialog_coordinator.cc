@@ -167,11 +167,11 @@ void ConsentDialogCoordinator::OnConsentDialogAccept() {
 
 void ConsentDialogCoordinator::OnConsentDialogCancel() {
   base::RecordAction(base::UserMetricsAction("DeviceSignalsConsent_Cancelled"));
-  profiles::CloseProfileWindows(profile_);
 #if !BUILDFLAG(IS_CHROMEOS)
   ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       ProfilePicker::EntryPoint::kProfileLocked));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+  profiles::CloseProfileWindows(profile_);
 }
 
 void ConsentDialogCoordinator::OnConsentDialogClose() {

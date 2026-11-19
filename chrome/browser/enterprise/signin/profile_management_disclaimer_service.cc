@@ -498,9 +498,9 @@ void ProfileManagementDisclaimerService::HandleDeviceSignalsDisclaimerChoice(
       // If the dialog was also opened in another window this function will be
       // called with kDismissed for each such dialog.
       opened_device_signals_disclaimers_.clear();
-      chrome::CloseAllBrowsersWithProfile(&profile_.get());
       ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
           ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+      chrome::CloseAllBrowsersWithProfile(&profile_.get());
       break;
     case signin::DeviceSignalsDisclaimerResult::kDismissed:
       // This case means the dialog in `source_browser` was not closed by
