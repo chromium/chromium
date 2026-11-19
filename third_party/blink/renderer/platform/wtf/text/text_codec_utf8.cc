@@ -789,6 +789,100 @@ upConvertTo16Bit:
   return std::move(buffer16).ToString(characters_decoded);
 }
 
+// static
+TextCodecUtf8::DecodedBufferResult TextCodecUtf8::DecodeToBuffer(
+    base::span<const uint8_t> bytes,
+    base::span<LChar> dest8,
+    base::span<UChar> dest16,
+    bool stop_on_error) {
+  DCHECK_GE(dest8.size(), bytes.size());
+  DCHECK_GE(dest16.size(), bytes.size());
+
+  base::span<const uint8_t> source = bytes;
+  base::span<LChar> dest8_available = dest8;
+
+  while (!source.empty()) {
+    if (IsAscii(source[0])) {
+      size_t ascii_len =
+          base::FindFirstNonASCII(base::as_string_view(base::as_chars(source)));
+      dest8_available.take_first(ascii_len).copy_from(
+          source.take_first(ascii_len));
+      if (source.empty()) {
+        break;
+      }
+    }
+    size_t count = kNonAsciiSequenceLength[source[0]];
+    int character;
+    if (count == 0) {
+      character = kNonCharacter1;
+    } else if (count > source.size()) {
+      if (stop_on_error) {
+        return {0, false, true};
+      }
+      goto upConvertTo16Bit;
+    } else {
+      character = DecodeNonAsciiSequence(source.first(count));
+    }
+    if (IsNonCharacter(character)) {
+      if (stop_on_error) {
+        return {0, false, true};
+      }
+      goto upConvertTo16Bit;
+    }
+    if (character > 0xff) {
+      goto upConvertTo16Bit;
+    }
+    source = source.subspan(count);
+    dest8_available.take_first<1u>()[0] = static_cast<LChar>(character);
+  }
+
+  return {dest8.size() - dest8_available.size(),
+          /*is_8bit=*/true, /*saw_error=*/false};
+
+upConvertTo16Bit:
+  const size_t characters_converted = dest8.size() - dest8_available.size();
+  base::span<UChar> dest16_available = dest16;
+  StringImpl::CopyChars(dest16_available.take_first(characters_converted),
+                        dest8.first(characters_converted));
+  bool saw_error = false;
+
+  while (!source.empty()) {
+    if (IsAscii(source[0])) {
+      size_t ascii_len =
+          base::FindFirstNonASCII(base::as_string_view(base::as_chars(source)));
+      StringImpl::CopyChars(dest16_available.take_first(ascii_len),
+                            source.take_first(ascii_len));
+      if (source.empty()) {
+        break;
+      }
+    }
+    size_t count = kNonAsciiSequenceLength[source[0]];
+    int character;
+    if (count == 0) {
+      character = kNonCharacter1;
+    } else if (count > source.size()) {
+      std::array<uint8_t, U8_MAX_LENGTH> padded = {};
+      base::span(padded).first(source.size()).copy_from(source);
+      character = DecodeNonAsciiSequence(base::span(padded).first(count));
+    } else {
+      character = DecodeNonAsciiSequence(source.first(count));
+    }
+    if (IsNonCharacter(character)) {
+      saw_error = true;
+      if (stop_on_error) {
+        break;
+      }
+      count = LengthOfNonCharacter(character);
+      character = uchar::kReplacementCharacter;
+    }
+    source = source.subspan(count);
+    dest16_available = AppendCharacter(dest16_available, character);
+  }
+
+  return {dest16.size() - dest16_available.size(),
+          /*is_8bit=*/false, saw_error};
+}
+
 template <typename CharType>
 std::string TextCodecUtf8::EncodeCommon(base::span<const CharType> characters) {
   // The maximum number of UTF-8 bytes needed per UTF-16 code unit is 3.

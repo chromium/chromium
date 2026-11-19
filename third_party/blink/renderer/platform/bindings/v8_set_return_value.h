@@ -92,6 +92,18 @@ void V8SetReturnValue(const CallbackInfo& info,
   info.GetReturnValue().Set(value);
 }
 
+template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo,
+          typename S,
+          typename... ExtraArgs>
+void V8SetReturnValue(const CallbackInfo& info,
+                      const v8::MaybeLocal<S> value,
+                      ExtraArgs... extra_args) {
+  v8::Local<S> local_value;
+  if (value.ToLocal(&local_value)) {
+    info.GetReturnValue().Set(local_value);
+  }
+}
+
 // Property descriptor
 PLATFORM_EXPORT v8::Local<v8::Object> CreatePropertyDescriptorObject(
     v8::Isolate* isolate,

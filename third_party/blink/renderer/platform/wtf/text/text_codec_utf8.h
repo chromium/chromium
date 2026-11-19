@@ -33,16 +33,32 @@
 #include <optional>
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace blink {
 
 class TextCodecUtf8 : public TextCodec {
  public:
+  struct DecodedBufferResult {
+    size_t length = 0;
+    bool is_8bit = true;
+    bool saw_error = false;
+  };
+
   static void RegisterEncodingNames(EncodingNameRegistrar);
   static void RegisterCodecs(TextCodecRegistrar);
   // Returns true if the given `canonical_name` is supported.
   // This function ignores ASCII cases.
   static bool IsSupported(StringView canonical_name);
+
+  // Decodes a complete (non-streaming) UTF-8 byte span into `dest8` (if all
+  // code points fit in Latin-1) or `dest16` (otherwise). Callers must ensure
+  // `dest8.size() >= bytes.size()` and `dest16.size() >= bytes.size()`.
+  WTF_EXPORT static DecodedBufferResult DecodeToBuffer(
+      base::span<const uint8_t> bytes,
+      base::span<LChar> dest8,
+      base::span<UChar> dest16,
+      bool stop_on_error);
 
  protected:
   TextCodecUtf8() = default;

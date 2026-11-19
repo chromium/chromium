@@ -952,7 +952,13 @@ def bind_return_value(code_node, cg_context, overriding_args=None):
                     branches.append(T(assignment))
 
             if not is_return_type_void:
-                nodes.append(F("{} ${return_value};", return_type))
+                if (
+                    cg_context.class_like.identifier == "TextDecoder"
+                    and cg_context.property_.identifier == "decode"
+                ):
+                    nodes.append(T("v8::MaybeLocal<v8::String> ${return_value};"))
+                else:
+                    nodes.append(F("{} ${return_value};", return_type))
             nodes.append(CxxBreakableBlockNode(branches))
 
         if cg_context.may_throw_exception:

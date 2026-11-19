@@ -239,6 +239,16 @@ inline constexpr bool IsReturnTypeCompatible<IDLStringType, String> = true;
 
 template <typename IDLStringType>
   requires std::derived_from<IDLStringType, IDLStringTypeBase>
+inline constexpr bool
+    IsReturnTypeCompatible<IDLStringType, v8::Local<v8::String>> = true;
+
+template <typename IDLStringType>
+  requires std::derived_from<IDLStringType, IDLStringTypeBase>
+inline constexpr bool
+    IsReturnTypeCompatible<IDLStringType, v8::MaybeLocal<v8::String>> = true;
+
+template <typename IDLStringType>
+  requires std::derived_from<IDLStringType, IDLStringTypeBase>
 inline constexpr bool IsReturnTypeCompatible<IDLStringType, AtomicString> =
     true;
 

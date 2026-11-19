@@ -34,6 +34,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_decoder_options.h"
@@ -44,6 +45,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+MODULES_EXPORT BASE_DECLARE_FEATURE(kTextDecoderFastPath);
 
 class ExceptionState;
 
@@ -62,18 +65,26 @@ class MODULES_EXPORT TextDecoder final : public ScriptWrappable {
   String encoding() const;
   bool fatal() const { return fatal_; }
   bool ignoreBOM() const { return ignore_bom_; }
-  String decode(std::optional<base::span<const uint8_t>> input,
-                const TextDecodeOptions* options,
-                ExceptionState& exception_state);
-  String decode(ExceptionState&);
+  v8::MaybeLocal<v8::String> decode(
+      v8::Isolate* isolate,
+      std::optional<base::span<const uint8_t>> input,
+      const TextDecodeOptions* options,
+      ExceptionState& exception_state);
+  v8::MaybeLocal<v8::String> decode(
+      v8::Isolate* isolate,
+      std::optional<base::span<const uint8_t>> input,
+      ExceptionState& exception_state);
+  v8::MaybeLocal<v8::String> decode(v8::Isolate* isolate, ExceptionState&);
 
  private:
-  String Decode(base::span<const uint8_t> input,
-                const TextDecodeOptions*,
-                ExceptionState&);
+  v8::MaybeLocal<v8::String> Decode(v8::Isolate* isolate,
+                                    base::span<const uint8_t> input,
+                                    bool stream,
+                                    ExceptionState&);
 
   TextEncoding encoding_;
   std::unique_ptr<TextCodec> codec_;
+  const bool is_utf8_;
   bool do_not_flush_ = false;
   bool fatal_;
   bool ignore_bom_;
