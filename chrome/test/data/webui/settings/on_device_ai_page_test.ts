@@ -257,4 +257,27 @@ suite('OnDeviceAiPage', function() {
     assertEquals(0, getModelEntries().length);
     assertTrue(isVisible(page.shadowRoot.querySelector('#noModels')));
   });
+
+  test('deleting model shows removed toast', async function() {
+    testBrowserProxy.reset();
+    testBrowserProxy.setGetOnDeviceAiCapabilitiesResponse(
+        [createGemmaCapability(), createAsrCapability()]);
+    await createPage();
+    assertFalse(page.$.toast.open);
+
+    testBrowserProxy.setDeleteOnDeviceAiCapabilityResponse([
+      createGemmaCapability(),
+      {...createAsrCapability(), status: OnDeviceModelStatus.DOWNLOADABLE},
+    ]);
+    getModelEntries()[1]!.$.delete.click();
+    await testBrowserProxy.whenCalled('deleteOnDeviceAiCapability');
+    await microtasksFinished();
+
+    assertTrue(page.$.toast.open);
+    assertEquals(
+        loadTimeData.getStringF(
+            'onDeviceAiModelRemovedToastLabel',
+            createAsrCapability().categoryTitle),
+        page.$.toast.textContent.trim());
+  });
 });

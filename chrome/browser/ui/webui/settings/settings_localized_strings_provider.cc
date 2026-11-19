@@ -533,6 +533,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"onDeviceAiModelDeleteA11yLabel",
        IDS_SETTINGS_ON_DEVICE_AI_MODEL_DELETE_A11Y_LABEL},
       {"onDeviceAiModelMetadata", IDS_SETTINGS_ON_DEVICE_AI_MODEL_METADATA},
+      {"onDeviceAiModelRemovedToastLabel",
+       IDS_SETTINGS_ON_DEVICE_AI_MODEL_REMOVED_TOAST_LABEL},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

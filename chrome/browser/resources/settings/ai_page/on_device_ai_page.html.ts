@@ -83,5 +83,8 @@ export function getHtml(this: SettingsOnDeviceAiPageElement) {
     `}
   </div>
 </settings-subpage>
+<cr-toast id="toast" duration="5000">
+  <div>${this.toastLabel_}</div>
+</cr-toast>
 <!--_html_template_end_-->`;
 }

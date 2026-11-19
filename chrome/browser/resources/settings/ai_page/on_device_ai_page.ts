@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../controls/settings_toggle_button.js';
 import '../focus_list_container.js';
 import '../icons.html.js';
@@ -11,6 +12,8 @@ import '../simple_confirmation_dialog.js';
 import './on_device_ai_page_entry.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -31,11 +34,12 @@ const ON_DEVICE_AI_PREF_KEY = 'synthetic.settings.on_device_ai_enabled';
 export interface SettingsOnDeviceAiPageElement {
   $: {
     onDeviceAiToggle: SettingsToggleButtonElement,
+    toast: CrToastElement,
   };
 }
 
 const SettingsOnDeviceAiPageElementBase =
-    WebUiListenerMixinLit(SettingsViewMixinLit(CrLitElement));
+    WebUiListenerMixinLit(SettingsViewMixinLit(I18nMixinLit(CrLitElement)));
 
 export class SettingsOnDeviceAiPageElement extends
     SettingsOnDeviceAiPageElementBase {
@@ -55,11 +59,13 @@ export class SettingsOnDeviceAiPageElement extends
     return {
       capabilities_: {type: Array},
       showTurnOffDialog_: {type: Boolean},
+      toastLabel_: {type: String},
     };
   }
 
   protected accessor capabilities_: OnDeviceAiCapability[] = [];
   protected accessor showTurnOffDialog_: boolean = false;
+  protected accessor toastLabel_: string = '';
 
   private onDeviceAiBrowserProxy_: OnDeviceAiBrowserProxy =
       OnDeviceAiBrowserProxyImpl.getInstance();
@@ -127,8 +133,17 @@ export class SettingsOnDeviceAiPageElement extends
 
   protected onEntryDeleteClick_(e: CustomEvent<number>) {
     e.stopPropagation();
+    // Look up the model now, since it is no longer in `capabilities_` once the
+    // browser has deleted it.
+    const capability = this.capabilities_.find(item => item.id === e.detail);
+    assert(capability);
     this.onDeviceAiBrowserProxy_.deleteOnDeviceAiCapability(e.detail).then(
-        capabilities => this.updateCapabilities_(capabilities));
+        capabilities => {
+          this.updateCapabilities_(capabilities);
+          this.toastLabel_ = this.i18n(
+              'onDeviceAiModelRemovedToastLabel', capability.categoryTitle);
+          this.$.toast.show();
+        });
   }
 
   private updateCapabilities_(capabilities: OnDeviceAiCapability[]) {

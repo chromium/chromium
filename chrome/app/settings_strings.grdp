@@ -3716,6 +3716,9 @@
     <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_METADATA" translateable="false" desc="Metadata line under an on-device AI capability row showing the model name and size separated by a middle dot (·).">
       <ph name="MODEL_NAME">$1<ex>Gemini Nano</ex></ph> · <ph name="SIZE">$2<ex>2.0 GB</ex></ph>
     </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_MODEL_REMOVED_TOAST_LABEL" desc="Label of the toast shown in the On-device AI settings subpage after the user deletes a downloaded on-device AI model.">
+      '<ph name="MODEL_CATEGORY">$1<ex>General-purpose writing</ex></ph>' removed
+    </message>
 
     <message name="IDS_PAGE_NOT_AVAILABLE_FOR_GUEST_HEADING" desc="This is the heading for the page not available for guest.">
       <ph name="PAGE_NAME">$1<ex>Bookmarks</ex></ph> is not available to Guest users.
