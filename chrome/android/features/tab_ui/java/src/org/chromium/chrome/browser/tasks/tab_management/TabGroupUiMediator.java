@@ -70,7 +70,6 @@ import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -163,13 +162,13 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     private final LayoutStateObserver mLayoutStateObserver;
     private final TabGroupObserver mTabGroupObserver;
+    private final TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private final Callback<Boolean> mOmniboxFocusObserver;
     private final Callback<Boolean> mDialogBackPressObserver;
 
     private CallbackController mCallbackController = new CallbackController();
     private @Nullable NonNullObservableSupplier<Boolean> mDialogBackPressSupplier;
     private @Nullable LayoutStateProvider mLayoutStateProvider;
-    private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
     private @Nullable Token mCurrentTabGroupId;
     private boolean mIsShowingHub;
     private boolean mIsToolbarSwipeActive;
@@ -335,17 +334,6 @@ public class TabGroupUiMediator implements BackPressHandler {
 
                         RecordHistogram.recordCount1MHistogram(
                                 "TabStrip.TabCountOnPageLoad", numTabs);
-                    }
-
-                    @Override
-                    public void onActivityAttachmentChanged(
-                            Tab tab, @Nullable WindowAndroid window) {
-                        // Remove this when tab is detached since the TabModelSelectorTabObserver is
-                        // not properly destroyed when there is a normal/night mode switch.
-                        if (window == null) {
-                            this.destroy();
-                            mTabModelSelectorTabObserver = null;
-                        }
                     }
                 };
 
@@ -609,9 +597,7 @@ public class TabGroupUiMediator implements BackPressHandler {
             }
         }
 
-        if (mTabModelSelectorTabObserver != null) {
-            mTabModelSelectorTabObserver.destroy();
-        }
+        mTabModelSelectorTabObserver.destroy();
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
         }

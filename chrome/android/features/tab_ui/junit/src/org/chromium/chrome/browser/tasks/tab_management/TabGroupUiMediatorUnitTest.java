@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
@@ -52,6 +53,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -63,6 +65,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
@@ -106,6 +109,7 @@ import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1133,20 +1137,42 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void testTabModelSelectorTabObserverDestroyWhenDetach() {
-        InOrder tabObserverDestroyInOrder = inOrder(mTab1);
-        initAndAssertProperties(mTab1);
+    public void testSingleTabDetachKeepsObservingRemainingTabs() {
+        ObserverList<TabObserver> tab2Observers = new ObserverList<>();
+        doAnswer(
+                        inv -> {
+                            tab2Observers.addObserver(inv.getArgument(0));
+                            return null;
+                        })
+                .when(mTab2)
+                .addObserver(any());
+        doAnswer(
+                        inv -> {
+                            tab2Observers.removeObserver(inv.getArgument(0));
+                            return null;
+                        })
+                .when(mTab2)
+                .removeObserver(any());
+
+        initAndAssertProperties(mTab2);
         mTabModelSupplier.set(mTabModel);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertFalse(tab2Observers.isEmpty());
 
-        mTabObserverCaptor.getValue().onActivityAttachmentChanged(mTab1, null);
+        // Detach only mTab1, e.g. to reparent it to another window. mTab2 stays in this window.
+        TabObserver tabObserver = mTabObserverCaptor.getValue();
+        tabObserver.onActivityAttachmentChanged(mTab1, null);
+        verify(mTab1).removeObserver(tabObserver);
 
-        tabObserverDestroyInOrder.verify(mTab1).removeObserver(mTabObserverCaptor.capture());
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("TabStrip.TabCountOnPageLoad", 2);
+        for (TabObserver observer : tab2Observers) {
+            observer.onPageLoadStarted(mTab2, JUnitTestGURLs.EXAMPLE_URL);
+        }
+        histogramWatcher.assertExpected();
 
         mTabGroupUiMediator.destroy();
-
-        tabObserverDestroyInOrder
-                .verify(mTab1, never())
-                .removeObserver(mTabObserverCaptor.capture());
+        assertTrue(tab2Observers.isEmpty());
     }
 
     @Test
