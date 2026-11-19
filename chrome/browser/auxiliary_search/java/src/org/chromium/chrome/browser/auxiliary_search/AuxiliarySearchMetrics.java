@@ -23,8 +23,9 @@ import java.lang.annotation.RetentionPolicy;
 /** This class collects a variety of different Omnibox related metrics. */
 @NullMarked
 public class AuxiliarySearchMetrics {
-    // This enum is used to record UMA histograms, and should sync with AuxiliarySearchRequestStatus
-    // in enums.xml.
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(RequestStatus)
     @IntDef({
         RequestStatus.SENT,
         RequestStatus.SUCCESSFUL,
@@ -49,6 +50,11 @@ public class AuxiliarySearchMetrics {
         int NUM_ENTRIES = 4;
     }
 
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:AuxiliarySearchRequestStatus)
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(ClickInfo)
     @IntDef({
         ClickInfo.OPT_IN,
         ClickInfo.OPT_OUT,
@@ -70,6 +76,8 @@ public class AuxiliarySearchMetrics {
         int TURN_ON = 3;
         int NUM_ENTRIES = 4;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:ClickInfo)
 
     public static final String CLICKED_ENTRY_TYPE = "com.android.chrome.clicked_data_type";
     public static final String CLICKED_ENTRY_POSITION = "com.android.chrome.clicked_data_position";

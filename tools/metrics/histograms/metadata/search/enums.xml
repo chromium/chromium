@@ -87,12 +87,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_metrics.h:AmbientSearchEntryPoint) -->
 
+<!-- LINT.IfChange(AuxiliarySearchRequestStatus) -->
+
 <enum name="AuxiliarySearchRequestStatus">
   <int value="0" label="Sent (overall number of requests issued)"/>
   <int value="1" label="Processed, Successful (data accepted by recipient)"/>
   <int value="2" label="Processed, Unsuccessful (recipient failure)"/>
   <int value="3" label="Not Processed (e.g. device not eligible)"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/auxiliary_search/java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMetrics.java:RequestStatus) -->
 
 <enum name="BooleanBottomSearchKind">
   <int value="0" label="Contextual Search"/>
@@ -136,6 +140,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_metrics.h:CameraResult) -->
 
+<!-- LINT.IfChange(ClickInfo) -->
+
 <enum name="ClickInfo">
   <summary>
     The type of the button that users clicked on the auxiliary search module
@@ -146,6 +152,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Go to settings"/>
   <int value="3" label="Turn on"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/auxiliary_search/java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMetrics.java:ClickInfo) -->
 
 <enum name="ContextualSearchCardTag">
   <int value="0" label="None"/>
@@ -225,11 +233,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h:CurrentDefaultPropagationOutcome) -->
 
+<!-- LINT.IfChange(DonateResult) -->
+
 <enum name="DonateResult">
   <int value="0" label="No favicons available"/>
   <int value="1" label="Failed"/>
   <int value="2" label="Succeed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/auxiliary_search/java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBackgroundTask.java:DonateResult) -->
 
 <enum name="EntryClickedPosition">
   <int value="0" label="1st position"/>

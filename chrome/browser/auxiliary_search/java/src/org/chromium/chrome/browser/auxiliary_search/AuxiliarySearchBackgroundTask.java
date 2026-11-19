@@ -43,6 +43,7 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
     // The result of a donation.
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
+    // LINT.IfChange(DonateResult)
     @IntDef({
         DonateResult.NO_DATA,
         DonateResult.FAILED,
@@ -55,6 +56,8 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         int SUCCEED = 2;
         int MAX_COUNT = 3;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:DonateResult)
 
     private Context mContext;
     private int mTaskFinishedCount;
