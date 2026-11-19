@@ -116,6 +116,18 @@ public final class ContextualTasksUtils {
         ContextualTasksUtilsJni.get().toggleAskGoogleSidePanel(webContents, invocationSource);
     }
 
+    /**
+     * Fulfills a contextual omnibox suggestion with the given tab attached as context. On Desktop
+     * Android the AI Mode answer is shown in the Contextual Tasks side panel; when the contextual
+     * flow is unavailable the suggestion URL is loaded in the tab instead.
+     *
+     * @param webContents The {@link WebContents} of the tab the suggestion was issued for.
+     * @param suggestionUrl The search URL of the contextual suggestion.
+     */
+    public static void issueOmniboxContextualQuery(WebContents webContents, GURL suggestionUrl) {
+        ContextualTasksUtilsJni.get().issueOmniboxContextualQuery(webContents, suggestionUrl);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isContextualTasksUiEnabled();
@@ -134,5 +146,9 @@ public final class ContextualTasksUtils {
                 @JniType("content::WebContents*") WebContents webContents,
                 @JniType("lens::LensOverlayInvocationSource") @LensOverlayInvocationSource
                         int invocationSource);
+
+        void issueOmniboxContextualQuery(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("GURL") GURL suggestionUrl);
     }
 }

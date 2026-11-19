@@ -542,6 +542,12 @@ const base::FeatureParam<bool> kContextualTasksEntryPointsOmnibox(
     "omnibox",
     true);
 
+const base::FeatureParam<bool>
+    kContextualTasksEntryPointsOmniboxContextualSuggestions(
+        &kContextualTasksEntryPoints,
+        "omnibox_contextual_suggestions",
+        false);
+
 bool IsContextualTasksEntryPointsEnabled() {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(kContextualTasksEntryPoints) &&

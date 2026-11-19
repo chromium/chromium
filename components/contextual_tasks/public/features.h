@@ -223,6 +223,11 @@ extern const base::FeatureParam<bool>
     kContextualTasksEntryPointsImageContextMenu;
 extern const base::FeatureParam<bool> kContextualTasksEntryPointsToolbarButton;
 extern const base::FeatureParam<bool> kContextualTasksEntryPointsOmnibox;
+// Whether contextual zero-prefix suggestions are requested without Lens and
+// fulfilled in the Contextual Tasks side panel. Separate from `omnibox`, which
+// controls the static "Ask Google about this page" action.
+extern const base::FeatureParam<bool>
+    kContextualTasksEntryPointsOmniboxContextualSuggestions;
 
 // Returns whether Contextual Search entry points are enabled on Desktop
 // Android.
