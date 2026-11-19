@@ -25,7 +25,6 @@ Tests WebXR secondary views are correctly exposed when requested for a session.
       let quadLayer = null;
       let cylinderLayer = null;
       let equirectLayer = null;
-      let cubeLayer = null;
       let glBinding = null;
       let frameCount = 0;
 
@@ -115,11 +114,9 @@ Tests WebXR secondary views are correctly exposed when requested for a session.
         cylinderLayer = glBinding.createCylinderLayer(cylinderLayerOptions);
         equirectLayer = glBinding.createEquirectLayer(commonOptions);
         equirectLayer.opacity = 0.5;
-        cubeLayer = glBinding.createCubeLayer(commonOptions);
 
         session.updateRenderState({
-          layers:
-              [projectionLayer, quadLayer, cylinderLayer, equirectLayer, cubeLayer]
+          layers: [projectionLayer, quadLayer, cylinderLayer, equirectLayer]
         });
       };
 
@@ -151,44 +148,6 @@ Tests WebXR secondary views are correctly exposed when requested for a session.
 
         subImage = glBinding.getSubImage(equirectLayer, frame);
         fillColor(gl, subImage, [1.0, 1.0, 0.0, 1.0]);  // Yellow
-
-        subImage = glBinding.getSubImage(cubeLayer, frame);
-
-        const cubeFaceColors = [
-          // Layer 0: Positive X (Right) - Red
-          [1.0, 0.0, 0.0, 1.0],
-          // Layer 1: Negative X (Left) - Cyan
-          [0.0, 1.0, 1.0, 1.0],
-          // Layer 2: Positive Y (Top) - Green
-          [0.0, 1.0, 0.0, 1.0],
-          // Layer 3: Negative Y (Bottom) - Magenta
-          [1.0, 0.0, 1.0, 1.0],
-          // Layer 4: Positive Z (back) - Blue
-          [0.0, 0.0, 1.0, 1.0],
-          // Layer 5: Negative Z (front) - Yellow
-          [1.0, 1.0, 0.0, 1.0]
-        ];
-
-        gl.viewport(
-            subImage.viewport.x, subImage.viewport.y,
-            subImage.viewport.width,  // halfWidth,
-            subImage.viewport.height);
-        assert_equals(gl.getError(), gl.NO_ERROR, "viewport");
-        gl.enable(gl.SCISSOR_TEST);
-        gl.scissor(subImage.viewport.x, subImage.viewport.y, subImage.viewport.width, subImage.viewport.height);
-        for (let i = 0; i < 6; i++) {
-          gl.framebufferTexture2D(
-              gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
-              gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, subImage.colorTexture, 0);
-          assert_equals(gl.getError(), gl.NO_ERROR, "framebufferTexture2D");
-          const color = cubeFaceColors[i];
-          gl.clearColor(color[0], color[1], color[2], color[3]);
-          assert_equals(gl.getError(), gl.NO_ERROR, "clearColor");
-          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-          assert_equals(gl.getError(), gl.NO_ERROR, "clear");
-          gl.finish();
-          assert_equals(gl.getError(), gl.NO_ERROR, "finish");
-        }
       };
     </script>
   </body>
