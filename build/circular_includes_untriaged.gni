@@ -104,7 +104,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/preferences:preferences",
   "//chrome/browser/ash/printing:printing",
   "//chrome/browser/ash/profiles:signin_profile_handler",
-  "//chrome/browser/ash/quick_pair:quick_pair",
   "//chrome/browser/ash/system_web_apps/apps/help_app:help_app",
   "//chrome/browser/ash/system_web_apps/apps/personalization_app:personalization_app",
   "//chrome/browser/ash/system_web_apps:system_web_apps",
