@@ -59,6 +59,7 @@ class TransportSessionRegistryImpl : public TransportSessionRegistry {
   void DestroySession(std::string_view session_id) override;
 
   // Concrete methods for session lookup and management.
+  bool CanCreateSession(std::string_view session_id);
   TransportSessionImpl* GetSessionImpl(std::string_view session_id);
   std::vector<TransportSessionImpl*> GetAllSessionImpls();
 

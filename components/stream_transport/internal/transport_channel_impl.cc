@@ -11,11 +11,15 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
@@ -302,18 +306,51 @@ void TransportChannelImpl::SendUpstreamMessage(
       *responding_to_sequence_number >= 0) {
     validated_responding_to_seq = *responding_to_sequence_number;
   }
-  // SendUpstreamMessage can invoke its callback synchronously on immediate
-  // OAuth failure before returning `upstream`, so SyncSendState buffers the
-  // status code to guarantee `http_response_code = 0` is notified first.
+  DispatchUpstreamMessage(session_id, client_sequence_number,
+                          validated_responding_to_seq, payload_type, message,
+                          base::DoNothing());
+}
+
+void TransportChannelImpl::SendInitialUpstreamMessage(
+    std::string_view session_id,
+    PayloadType payload_type,
+    const google::protobuf::MessageLite& message,
+    InitialSendCompleteCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!session_id.empty());
+  CHECK_LE(session_id.size(),
+           TransportSessionRegistryImpl::kMaxSessionIdLength);
+  CHECK(!session_registry_->GetSessionImpl(session_id));
+  // Initial message for a client-initiated session always has client sequence 1
+  // and no `responding_to_sequence_number`.
+  DispatchUpstreamMessage(session_id, /*client_sequence_number=*/1,
+                          /*responding_to_sequence_number=*/std::nullopt,
+                          payload_type, message, std::move(callback));
+}
+
+void TransportChannelImpl::DispatchUpstreamMessage(
+    std::string_view session_id,
+    int64_t client_sequence_number,
+    std::optional<int64_t> responding_to_sequence_number,
+    PayloadType payload_type,
+    const google::protobuf::MessageLite& message,
+    InitialSendCompleteCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // `SendUpstreamMessage()` can invoke its callback synchronously on immediate
+  // OAuth failure before returning `upstream`, so `SyncSendState` buffers the
+  // response code and retains `callback` to guarantee `http_response_code = 0`
+  // is notified first.
   struct SyncSendState {
     bool in_sync_call = true;
     std::optional<int> response_code;
+    UpstreamMessageClient::SendCompleteCallback callback;
   };
   auto sync_state = base::MakeRefCounted<base::RefCountedData<SyncSendState>>();
+  sync_state->data.callback = std::move(callback);
 
   browser_actuator::ActuatorUpstreamMessage upstream =
       upstream_message_client_->SendUpstreamMessage(
-          session_id, client_sequence_number, validated_responding_to_seq,
+          session_id, client_sequence_number, responding_to_sequence_number,
           payload_type, message,
           base::BindOnce(
               [](base::WeakPtr<TransportChannelImpl> self,
@@ -324,8 +361,6 @@ void TransportChannelImpl::SendUpstreamMessage(
                   VLOG(1) << "Failed to send upstream message for session "
                           << session_id << " (response code: " << response_code
                           << ")";
-                  // TODO(crbug.com/532661039): Consider adding retry buffering
-                  // or closing the channel.
                 }
                 if (sync_state->data.in_sync_call) {
                   sync_state->data.response_code = response_code;
@@ -334,6 +369,9 @@ void TransportChannelImpl::SendUpstreamMessage(
                 if (self) {
                   self->NotifyUpstreamResponse(
                       session_id, client_sequence_number, response_code);
+                }
+                if (sync_state->data.callback) {
+                  std::move(sync_state->data.callback).Run(response_code);
                 }
               },
               weak_ptr_factory_.GetWeakPtr(), sync_state,
@@ -344,8 +382,14 @@ void TransportChannelImpl::SendUpstreamMessage(
                     std::string_view(upstream.session_id()), upstream,
                     /*http_response_code=*/0);
   if (sync_state->data.response_code.has_value()) {
+    const int response_code = *sync_state->data.response_code;
     NotifyUpstreamResponse(upstream.session_id(), client_sequence_number,
-                           *sync_state->data.response_code);
+                           response_code);
+    if (sync_state->data.callback) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(sync_state->data.callback), response_code));
+    }
   }
 }
 

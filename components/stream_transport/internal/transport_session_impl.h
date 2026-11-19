@@ -66,6 +66,17 @@ class TransportSessionImpl : public TransportSession,
       std::string_view session_id,
       const browser_actuator::ActuatorDownstreamMessage& message)>;
 
+  // Creates a `TransportSessionImpl` configured for `ingress_source`.
+  // Sessions graduated from `InitIngressSource::kLocalChromeIngest` start with
+  // `client_sequence_number_` seeded at 1 because sequence 1 was dispatched
+  // during the client-initiated handshake.
+  static std::unique_ptr<TransportSessionImpl> Create(
+      std::string_view session_id,
+      base::WeakPtr<TransportChannel> channel,
+      InitIngressSource ingress_source,
+      DownstreamMessageCallback on_downstream_message =
+          DownstreamMessageCallback());
+
   TransportSessionImpl(std::string_view session_id,
                        base::WeakPtr<TransportChannel> channel,
                        DownstreamMessageCallback on_downstream_message =

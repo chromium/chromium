@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -16,6 +17,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/sharing_message/proto/actuator_downstream_message.pb.h"
@@ -69,6 +71,22 @@ bool HasTerminatingControlCommand(
 }
 
 }  // namespace
+
+// static
+std::unique_ptr<TransportSessionImpl> TransportSessionImpl::Create(
+    std::string_view session_id,
+    base::WeakPtr<TransportChannel> channel,
+    InitIngressSource ingress_source,
+    DownstreamMessageCallback on_downstream_message) {
+  auto session = std::make_unique<TransportSessionImpl>(
+      session_id, std::move(channel), std::move(on_downstream_message));
+  if (ingress_source == InitIngressSource::kLocalChromeIngest) {
+    // Sequence 1 was already dispatched during the client-initiated handshake,
+    // so seed the sequence cursor at 1 and start subsequent sends at 2.
+    session->IncrementClientSequenceNumber();
+  }
+  return session;
+}
 
 TransportSessionImpl::TransportSessionImpl(
     std::string_view session_id,

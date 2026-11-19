@@ -4,13 +4,16 @@
 
 #include "components/stream_transport/internal/transport_session_registry_impl.h"
 
+#include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/stream_transport/internal/features.h"
 #include "components/stream_transport/internal/metrics_utils.h"
@@ -123,6 +126,19 @@ void TransportSessionRegistryImpl::EvictIdleSessions() {
   }
 }
 
+bool TransportSessionRegistryImpl::CanCreateSession(
+    std::string_view session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (session_id.empty() || session_id.size() > kMaxSessionIdLength) {
+    return false;
+  }
+  EvictIdleSessions();
+  if (GetSessionImpl(session_id)) {
+    return false;
+  }
+  return sessions_.size() < max_concurrent_sessions_;
+}
+
 TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
     std::string_view session_id,
     InitIngressSource ingress_source) {
@@ -152,9 +168,8 @@ TransportSessionImpl* TransportSessionRegistryImpl::CreateSession(
     return nullptr;
   }
   RecordInitIngressSource(ingress_source);
-  std::unique_ptr<TransportSessionImpl> session =
-      std::make_unique<TransportSessionImpl>(session_id, channel_,
-                                             on_downstream_message_);
+  std::unique_ptr<TransportSessionImpl> session = TransportSessionImpl::Create(
+      session_id, channel_, ingress_source, on_downstream_message_);
   TransportSessionImpl* session_ptr = session.get();
   sessions_.emplace(std::string(session_id), std::move(session));
   for (auto& observer : observers_) {

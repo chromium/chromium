@@ -565,5 +565,42 @@ TEST(TransportSessionRegistryImplTest, RejectsEmptyOrOversizedSessionId) {
       nullptr);
 }
 
+TEST(TransportSessionRegistryImplTest, CanCreateSessionValidatesIdAndLimit) {
+  MockTransportChannel channel;
+  TransportSessionRegistryImpl registry(channel.GetWeakPtr(),
+                                        /*max_concurrent_sessions=*/1);
+
+  EXPECT_FALSE(registry.CanCreateSession(""));
+  EXPECT_FALSE(registry.CanCreateSession(
+      std::string(TransportSessionRegistryImpl::kMaxSessionIdLength + 1, 'a')));
+  EXPECT_TRUE(registry.CanCreateSession("session_1"));
+
+  TransportSessionImpl* session1 =
+      registry.CreateSession("session_1", InitIngressSource::kUnspecified);
+  ASSERT_NE(session1, nullptr);
+
+  // Duplicate session ID is rejected.
+  EXPECT_FALSE(registry.CanCreateSession("session_1"));
+  // Capacity reached is rejected.
+  EXPECT_FALSE(registry.CanCreateSession("session_2"));
+}
+
+TEST(TransportSessionRegistryImplTest,
+     CreateSessionWithLocalChromeIngestSeedsSequenceOne) {
+  MockTransportChannel channel;
+  TransportSessionRegistryImpl registry(channel.GetWeakPtr());
+
+  TransportSessionImpl* session = registry.CreateSession(
+      "session_graduated", InitIngressSource::kLocalChromeIngest);
+  ASSERT_NE(session, nullptr);
+  EXPECT_EQ(session->client_sequence_number(), 1);
+
+  // Normal sessions start at sequence 0.
+  TransportSessionImpl* normal_session =
+      registry.CreateSession("session_normal", InitIngressSource::kUnspecified);
+  ASSERT_NE(normal_session, nullptr);
+  EXPECT_EQ(normal_session->client_sequence_number(), 0);
+}
+
 }  // namespace
 }  // namespace stream_transport

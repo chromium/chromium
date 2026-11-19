@@ -1678,5 +1678,33 @@ TEST(TransportSessionImplTest, CloseSendsCloseSessionAndDestroysSession) {
   EXPECT_EQ(session_registry.GetSession("s1"), nullptr);
 }
 
+TEST(TransportSessionImplTest, CreateSeedsSequenceNumberByIngressSource) {
+  MockTransportChannel channel;
+
+  std::unique_ptr<TransportSessionImpl> local_session =
+      TransportSessionImpl::Create("s_local", channel.GetWeakPtr(),
+                                   InitIngressSource::kLocalChromeIngest);
+  ASSERT_NE(local_session, nullptr);
+  EXPECT_EQ(local_session->client_sequence_number(), 1);
+
+  std::unique_ptr<TransportSessionImpl> fcm_session =
+      TransportSessionImpl::Create("s_fcm", channel.GetWeakPtr(),
+                                   InitIngressSource::kFcmPush);
+  ASSERT_NE(fcm_session, nullptr);
+  EXPECT_EQ(fcm_session->client_sequence_number(), 0);
+
+  std::unique_ptr<TransportSessionImpl> stream_session =
+      TransportSessionImpl::Create("s_stream", channel.GetWeakPtr(),
+                                   InitIngressSource::kWatchSessionsStream);
+  ASSERT_NE(stream_session, nullptr);
+  EXPECT_EQ(stream_session->client_sequence_number(), 0);
+
+  std::unique_ptr<TransportSessionImpl> unspecified_session =
+      TransportSessionImpl::Create("s_unspecified", channel.GetWeakPtr(),
+                                   InitIngressSource::kUnspecified);
+  ASSERT_NE(unspecified_session, nullptr);
+  EXPECT_EQ(unspecified_session->client_sequence_number(), 0);
+}
+
 }  // namespace
 }  // namespace stream_transport

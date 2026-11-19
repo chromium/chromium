@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/stream_transport/internal/control_transport_handler.h"
 #include "components/stream_transport/internal/downstream_message_sequencer.h"
@@ -166,16 +167,19 @@ std::string SerializedDownstream(std::string_view session_id, int64_t seq) {
 class TransportChannelImplTestBase : public testing::Test {
  protected:
   explicit TransportChannelImplTestBase(
-      base::test::TaskEnvironment::TimeSource time_source)
+      base::test::TaskEnvironment::TimeSource time_source,
+      bool sign_in_primary_account = true)
       : task_environment_(time_source),
         identity_test_env_(&test_url_loader_factory_) {
     test_shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
-    identity_test_env_.MakePrimaryAccountAvailable(
-        "test@gmail.com", signin::ConsentLevel::kSignin);
-    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+    if (sign_in_primary_account) {
+      identity_test_env_.MakePrimaryAccountAvailable(
+          "test@gmail.com", signin::ConsentLevel::kSignin);
+      identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+    }
 
     auto client = std::make_unique<FakeMessageStreamClient>();
     fake_client_ = client->GetWeakPtr();
@@ -222,6 +226,14 @@ class TransportChannelImplTest : public TransportChannelImplTestBase {
   TransportChannelImplTest()
       : TransportChannelImplTestBase(
             base::test::TaskEnvironment::TimeSource::DEFAULT) {}
+};
+
+class TransportChannelImplNoAuthTest : public TransportChannelImplTestBase {
+ protected:
+  TransportChannelImplNoAuthTest()
+      : TransportChannelImplTestBase(
+            base::test::TaskEnvironment::TimeSource::DEFAULT,
+            /*sign_in_primary_account=*/false) {}
 };
 
 class TransportChannelImplTestWithMockTime
@@ -556,7 +568,8 @@ TEST_F(TransportChannelImplTest,
 
 TEST_F(TransportChannelImplTest,
        OnSessionRegisteredUpdatesDownstreamConnectionStateToConnecting) {
-  channel_->OnSessionRegistered(nullptr);
+  GetSessionRegistryImpl()->CreateSession("s1",
+                                          InitIngressSource::kUnspecified);
 
   EXPECT_EQ(channel_->downstream_connection_state(),
             DownstreamConnectionState::kConnecting);
@@ -1384,6 +1397,79 @@ TEST_F(TransportChannelImplTest,
   EXPECT_EQ(fake_client_->connect_count(), 3);
   EXPECT_EQ(channel_->downstream_connection_state(),
             DownstreamConnectionState::kDisconnected);
+}
+
+TEST_F(TransportChannelImplTest,
+       SendInitialUpstreamMessageSendsSequenceOneAndDeliversResult) {
+  test_url_loader_factory_.AddResponse(kTestSendSessionMessageEndpoint, "OK",
+                                       net::HTTP_OK);
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  channel_->SendInitialUpstreamMessage("client_s1", PayloadType::kControl,
+                                       command, future.GetCallback());
+
+  int response_code = future.Get();
+  EXPECT_EQ(response_code, net::HTTP_OK);
+}
+
+TEST_F(TransportChannelImplTest, SendInitialUpstreamMessageNotifiesObservers) {
+  test_url_loader_factory_.AddResponse(kTestSendSessionMessageEndpoint, "OK",
+                                       net::HTTP_OK);
+
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  channel_->SendInitialUpstreamMessage("client_s1", PayloadType::kControl,
+                                       command, future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  // The observer is notified twice: first when the message is sent
+  // (`http_response_code = 0`) and second when the HTTP response arrives
+  // (`http_response_code = net::HTTP_OK`).
+  ASSERT_EQ(observer.received.size(), 2u);
+  EXPECT_EQ(observer.received[0].first, "client_s1");
+  EXPECT_EQ(observer.received[0].second.session_id(), "client_s1");
+  EXPECT_EQ(observer.received[0].second.client_sequence_number(), 1);
+  ASSERT_EQ(observer.received_http_response_codes.size(), 2u);
+  EXPECT_EQ(observer.received_http_response_codes[0], 0);
+
+  EXPECT_EQ(observer.received[1].first, "client_s1");
+  EXPECT_EQ(observer.received[1].second.session_id(), "client_s1");
+  EXPECT_EQ(observer.received[1].second.client_sequence_number(), 1);
+  EXPECT_EQ(observer.received_http_response_codes[1], net::HTTP_OK);
+}
+
+TEST_F(TransportChannelImplNoAuthTest,
+       SendInitialUpstreamMessageDeliversResultOnSynchronousOAuthFailure) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
+
+  base::test::TestFuture<int> future;
+  channel_->SendInitialUpstreamMessage("client_s1", PayloadType::kControl,
+                                       command, future.GetCallback());
+
+  // Callback is posted asynchronously even when OAuth fails synchronously.
+  EXPECT_FALSE(future.IsReady());
+
+  int response_code = future.Get();
+  EXPECT_EQ(response_code, -1);
+  ASSERT_EQ(observer.received_http_response_codes.size(), 2u);
+  EXPECT_EQ(observer.received_http_response_codes[0], 0);
+  EXPECT_EQ(observer.received_http_response_codes[1], -1);
 }
 
 }  // namespace

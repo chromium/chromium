@@ -71,6 +71,8 @@ class TransportChannelImpl : public TransportChannel,
   using StreamClientFactory =
       base::OnceCallback<std::unique_ptr<MessageStreamClient>(
           std::unique_ptr<StreamConnectionDelegate> resume_delegate)>;
+  using InitialSendCompleteCallback =
+      base::OnceCallback<void(int http_status_code)>;
 
   explicit TransportChannelImpl(
       std::unique_ptr<UpstreamMessageClient> upstream_message_client,
@@ -93,6 +95,20 @@ class TransportChannelImpl : public TransportChannel,
       PayloadType payload_type,
       const google::protobuf::MessageLite& message,
       std::optional<int64_t> responding_to_sequence_number) override;
+
+  // Sends the initial sequence-1 message for a client-initiated session before
+  // that session is registered locally or watched on the downstream stream.
+  // `session_id` must be a non-empty, client-generated session ID (at most
+  // `TransportSessionRegistryImpl::kMaxSessionIdLength` bytes) for an
+  // unregistered client-initiated session. Callers should verify eligibility
+  // via `TransportSessionRegistryImpl::CanCreateSession()` beforehand and
+  // graduate the session via `CreateSession()` with
+  // `InitIngressSource::kLocalChromeIngest` once the initial message succeeds.
+  void SendInitialUpstreamMessage(
+      std::string_view session_id,
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message,
+      InitialSendCompleteCallback callback);
 
   // MessageStreamClient::Observer:
   void OnStreamMessage(const std::string& message) override;
@@ -121,6 +137,16 @@ class TransportChannelImpl : public TransportChannel,
   std::string BuildWatchSessionsRequestBodyForTesting();
 
  private:
+  // Dispatches an upstream message and notifies observers. Invokes `callback`
+  // asynchronously with the result.
+  void DispatchUpstreamMessage(
+      std::string_view session_id,
+      int64_t client_sequence_number,
+      std::optional<int64_t> responding_to_sequence_number,
+      PayloadType payload_type,
+      const google::protobuf::MessageLite& message,
+      InitialSendCompleteCallback callback);
+
   // Closes the underlying stream connection.
   void Disconnect();
 
