@@ -20,8 +20,6 @@
 
 #if defined(__OBJC__)
 @class NativeWidgetMacNSWindow;
-#else
-class NativeWidgetMacNSWindow;
 #endif
 
 namespace system_media_controls {
@@ -63,8 +61,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
       RenderWidgetHostNSViewCreateCallback render_widget_host_create_callback,
       WebContentsNSViewCreateCallback web_contents_create_callback);
 
+#if defined(__OBJC__)
   void SetNSWindowCreatedCallbackForTesting(
       base::RepeatingCallback<void(NativeWidgetMacNSWindow*)> callback);
+#endif
 
   // mojom::Application:
   void CreateAlert(
@@ -101,10 +101,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ApplicationBridge
   ApplicationBridge();
   ~ApplicationBridge() override;
 
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
+
   RenderWidgetHostNSViewCreateCallback render_widget_host_create_callback_;
   WebContentsNSViewCreateCallback web_contents_create_callback_;
-  base::RepeatingCallback<void(NativeWidgetMacNSWindow*)>
-      ns_window_created_callback_;
 
   std::unique_ptr<system_media_controls::SystemMediaControlsBridge>
       system_media_controls_bridge_;

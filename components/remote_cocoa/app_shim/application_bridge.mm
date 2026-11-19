@@ -108,6 +108,11 @@ bool g_is_out_of_process_app_shim = false;
 
 }  // namespace
 
+struct ApplicationBridge::ObjCStorage {
+  base::RepeatingCallback<void(NativeWidgetMacNSWindow*)>
+      ns_window_created_callback;
+};
+
 // static
 ApplicationBridge* ApplicationBridge::Get() {
   static base::NoDestructor<ApplicationBridge> application_bridge;
@@ -139,7 +144,7 @@ void ApplicationBridge::SetContentNSViewCreateCallbacks(
 
 void ApplicationBridge::SetNSWindowCreatedCallbackForTesting(  // IN-TEST
     base::RepeatingCallback<void(NativeWidgetMacNSWindow*)> callback) {
-  ns_window_created_callback_ = std::move(callback);
+  objc_storage_->ns_window_created_callback = std::move(callback);
 }
 
 void ApplicationBridge::CreateAlert(
@@ -158,10 +163,10 @@ void ApplicationBridge::CreateNativeWidgetNSWindow(
   auto* bridge_owner =
       new NativeWidgetBridgeOwner(bridge_id, std::move(bridge_receiver),
                                   std::move(host), std::move(text_input_host));
-  if (ns_window_created_callback_) {
+  if (objc_storage_->ns_window_created_callback) {
     CHECK_IS_TEST();
     bridge_owner->bridge()->OnWindowSetForTesting(  // IN-TEST
-        ns_window_created_callback_);
+        objc_storage_->ns_window_created_callback);
   }
 }
 
@@ -226,7 +231,8 @@ void ApplicationBridge::ForwardCutCopyPasteToNSApp(
   }
 }
 
-ApplicationBridge::ApplicationBridge() = default;
+ApplicationBridge::ApplicationBridge()
+    : objc_storage_(std::make_unique<ObjCStorage>()) {}
 
 ApplicationBridge::~ApplicationBridge() = default;
 
