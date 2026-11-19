@@ -589,9 +589,8 @@ class PLATFORM_EXPORT ResourceFetcher
   void RemoveResourceLoader(ResourceLoader*);
 
   void DidLoadResourceFromMemoryCache(Resource*,
-                                      const ResourceRequest&,
-                                      bool is_static_data,
-                                      RenderBlockingBehavior);
+                                      const FetchParameters&,
+                                      bool is_static_data);
 
   DeferPolicy GetDeferPolicy(ResourceType, const FetchParameters& params) const;
 

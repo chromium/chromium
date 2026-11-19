@@ -368,6 +368,20 @@ std::string_view LinkPreloadStrForHistogram(bool link_preload) {
   return link_preload ? "LinkPreload" : "NoLinkPreload";
 }
 
+// Returns whether a fetch made with `request` and `options` must not be
+// reported to Resource Timing, regardless of whether it was served from the
+// network or from the MemoryCache.
+bool IsExcludedFromResourceTiming(const ResourceRequestHead& request,
+                                  const ResourceLoaderOptions& options) {
+  // Resources fetched by origin-dirty style sheets are not exposed.
+  if (request.IsFromOriginDirtyStyleSheet()) {
+    return true;
+  }
+  // Resource timing entries that correspond to resources fetched by extensions
+  // are precluded.
+  return options.WorldForCsp() && options.WorldForCsp()->IsIsolatedWorld();
+}
+
 }  // namespace
 
 // Used to ensure a ResourceRequest is correctly configured. Specifically
@@ -893,13 +907,15 @@ bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
 
 void ResourceFetcher::DidLoadResourceFromMemoryCache(
     Resource* resource,
-    const ResourceRequest& request,
-    bool is_static_data,
-    RenderBlockingBehavior render_blocking_behavior) {
+    const FetchParameters& params,
+    bool is_static_data) {
   if (IsDetached() || !resource_load_observer_) {
     return;
   }
   base::ElapsedTimer timer;
+  const ResourceRequest& request = params.GetResourceRequest();
+  const RenderBlockingBehavior render_blocking_behavior =
+      params.GetRenderBlockingBehavior();
 
   if (!is_static_data) {
     MarkEarlyHintConsumedIfNeeded(request.InspectorId(), resource,
@@ -930,20 +946,6 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
 
   if (!is_static_data) {
     base::TimeTicks now = base::TimeTicks::Now();
-    ResourceResponse final_response = resource->GetResponse();
-    final_response.SetResourceLoadTiming(nullptr);
-    final_response.SetEncodedDataLength(0);
-    // Resources loaded from memory cache should be reported the first time
-    // they're used.
-    KURL initial_url =
-        resource->GetResourceRequest().GetRedirectInfo().has_value()
-            ? resource->GetResourceRequest().GetRedirectInfo()->original_url
-            : resource->GetResourceRequest().Url();
-    mojom::blink::ResourceTimingInfoPtr info =
-        CreateResourceTimingInfo(now, initial_url, &final_response);
-    info->response_end = now;
-    info->render_blocking_status =
-        render_blocking_behavior == RenderBlockingBehavior::kBlocking;
 
     // Create a ResourceLoadTiming object and store LCP breakdown timings for
     // images.
@@ -951,9 +953,9 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
       // The resource_load_timing may be null in tests.
       if (ResourceLoadTiming* resource_load_timing =
               resource->GetResponse().GetResourceLoadTiming()) {
-        resource_load_timing->SetDiscoveryTime(info->start_time);
-        resource_load_timing->SetSendStart(info->start_time);
-        resource_load_timing->SetResponseEnd(info->start_time);
+        resource_load_timing->SetDiscoveryTime(now);
+        resource_load_timing->SetSendStart(now);
+        resource_load_timing->SetResponseEnd(now);
       }
     }
 
@@ -961,8 +963,29 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
                                       ? AtomicString(kEarlyHintsInitiatorType)
                                       : resource->Options().initiator_info.name;
     // If the fetch originated from user agent CSS we do not emit a resource
-    // timing entry.
-    if (initiator_type != fetch_initiator_type_names::kUacss) {
+    // timing entry. Otherwise, apply the same restrictions as for network
+    // loads (see HandleLoaderFinish() and PopulateAndAddResourceTimingInfo()),
+    // so that the MemoryCache doesn't expose entries that a network load
+    // wouldn't, e.g. for chrome-extension:// URLs or for fetches initiated by
+    // isolated worlds. Check the current request rather than `resource`, as
+    // the latter may have been fetched by another ResourceFetcher.
+    if (initiator_type != fetch_initiator_type_names::kUacss &&
+        resource->GetResponse().ShouldPopulateResourceTiming() &&
+        !IsExcludedFromResourceTiming(request, params.Options())) {
+      ResourceResponse final_response = resource->GetResponse();
+      final_response.SetResourceLoadTiming(nullptr);
+      final_response.SetEncodedDataLength(0);
+      // Resources loaded from memory cache should be reported the first time
+      // they're used.
+      KURL initial_url =
+          resource->GetResourceRequest().GetRedirectInfo().has_value()
+              ? resource->GetResourceRequest().GetRedirectInfo()->original_url
+              : resource->GetResourceRequest().Url();
+      mojom::blink::ResourceTimingInfoPtr info =
+          CreateResourceTimingInfo(now, initial_url, &final_response);
+      info->response_end = now;
+      info->render_blocking_status =
+          render_blocking_behavior == RenderBlockingBehavior::kBlocking;
       scheduled_resource_timing_reports_.push_back(
           ScheduledResourceTimingInfo{std::move(info), initiator_type});
 
@@ -1528,8 +1551,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       resource->GetStatus() == ResourceStatus::kCached &&
       !in_cached_resources_map) {
     // Loaded from MemoryCache.
-    DidLoadResourceFromMemoryCache(resource, resource_request, is_static_data,
-                                   params.GetRenderBlockingBehavior());
+    DidLoadResourceFromMemoryCache(resource, params, is_static_data);
   }
   if (!is_stale_revalidation) {
     String resource_url =
@@ -3090,9 +3112,7 @@ void ResourceFetcher::EmulateLoadStartedForInspector(
     return;
   }
   DCHECK_EQ(resource->GetStatus(), ResourceStatus::kCached);
-  DidLoadResourceFromMemoryCache(resource, params.GetResourceRequest(),
-                                 false /* is_static_data */,
-                                 params.GetRenderBlockingBehavior());
+  DidLoadResourceFromMemoryCache(resource, params, /*is_static_data=*/false);
 }
 
 void ResourceFetcher::PrepareForLeakDetection() {
@@ -3185,14 +3205,8 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
     Resource* resource,
     const PendingResourceTimingInfo& pending_info,
     base::TimeTicks response_end) {
-  if (resource->GetResourceRequest().IsFromOriginDirtyStyleSheet()) {
-    return;
-  }
-
-  // Resource timing entries that correspond to resources fetched by extensions
-  // are precluded.
-  if (resource->Options().WorldForCsp() &&
-      resource->Options().WorldForCsp()->IsIsolatedWorld()) {
+  if (IsExcludedFromResourceTiming(resource->GetResourceRequest(),
+                                   resource->Options())) {
     return;
   }
 

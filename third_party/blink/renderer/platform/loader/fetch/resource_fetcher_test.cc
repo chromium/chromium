@@ -45,6 +45,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
@@ -2700,6 +2701,219 @@ TEST_P(ResourceFetcherTest, CrossWorldExtensionResourceMismatch) {
 
   // Clean up the registered scheme.
   CommonSchemeRegistry::RemoveURLSchemeAsExtensionForTest("chrome-extension");
+}
+
+namespace {
+
+// A `MockFetchContext` that records the names of reported resource timing
+// entries.
+class ResourceTimingRecordingFetchContext final : public MockFetchContext {
+ public:
+  void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
+                         const AtomicString& initiator_type) override {
+    reported_names_.push_back(info->name);
+  }
+
+  Vector<String> TakeReportedNames() { return std::move(reported_names_); }
+
+ private:
+  Vector<String> reported_names_;
+};
+
+}  // namespace
+
+// Tests that resources served from `MemoryCache` to another `ResourceFetcher`
+// (e.g. after a same-origin reload, or in a same-origin <iframe>) are subject
+// to the same resource timing restrictions as resources loaded from the
+// network.
+class ResourceFetcherMemoryCacheResourceTimingTest
+    : public ResourceFetcherTestBase {
+ protected:
+  // Creates a `ResourceFetcher` that records resource timing entries. All the
+  // fetchers created by a test share an origin, so they can reuse each other's
+  // `MemoryCache` entries.
+  ResourceFetcher* CreateRecordingFetcher() {
+    auto* fetcher = CreateFetcher(
+        *MakeGarbageCollected<TestResourceFetcherProperties>(origin_),
+        MakeGarbageCollected<ResourceTimingRecordingFetchContext>());
+    // `MemoryCache` hits are only reported when an observer is set.
+    fetcher->SetResourceLoadObserver(
+        MakeGarbageCollected<TestResourceLoadObserver>());
+    return fetcher;
+  }
+
+  void RegisterCacheableURL(const KURL& url) {
+    ResourceResponse response(url);
+    response.SetHttpStatusCode(200);
+    response.SetHttpHeaderField(http_names::kCacheControl,
+                                AtomicString("max-age=3600"));
+    platform_->GetURLLoaderMockFactory()->RegisterURL(
+        url, WrappedResourceResponse(response),
+        test::PlatformTestDataPath(kTestResourceFilename));
+  }
+
+  Resource* Fetch(FetchParameters& params, ResourceFetcher* fetcher) {
+    Resource* resource = MockResource::Fetch(params, fetcher, nullptr);
+    platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+    return resource;
+  }
+
+  // Returns the names of the resource timing entries reported by `fetcher`
+  // since the last call, including the ones that are reported asynchronously.
+  Vector<String> TakeReportedNames(ResourceFetcher* fetcher) {
+    // `MemoryCache` hits are reported by a zero-delay timer, so run the tasks
+    // that are already due, without advancing time.
+    static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
+        ->AdvanceTimeAndRun(base::TimeDelta());
+    return static_cast<ResourceTimingRecordingFetchContext&>(fetcher->Context())
+        .TakeReportedNames();
+  }
+
+ private:
+  const scoped_refptr<const SecurityOrigin> origin_ =
+      SecurityOrigin::CreateUniqueOpaque();
+};
+
+TEST_F(ResourceFetcherMemoryCacheResourceTimingTest, HttpUrl) {
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterCacheableURL(url);
+
+  ResourceFetcher* fetcher1 = CreateRecordingFetcher();
+  FetchParameters params1 =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  Resource* resource = Fetch(params1, fetcher1);
+  ASSERT_TRUE(resource->IsLoaded());
+  EXPECT_THAT(TakeReportedNames(fetcher1),
+              testing::ElementsAre(url.GetString()));
+
+  ResourceFetcher* fetcher2 = CreateRecordingFetcher();
+  FetchParameters params2 =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  EXPECT_EQ(resource, Fetch(params2, fetcher2));
+  EXPECT_THAT(TakeReportedNames(fetcher2),
+              testing::ElementsAre(url.GetString()));
+}
+
+// Non-HTTP(S) URLs, e.g. web accessible extension resources, must not be
+// exposed to resource timing, as that would e.g. allow the page to detect
+// installed extensions.
+TEST_F(ResourceFetcherMemoryCacheResourceTimingTest, NonHttpUrl) {
+  KURL url("chrome-extension://1234/foo.png");
+  RegisterCacheableURL(url);
+
+  ResourceFetcher* fetcher1 = CreateRecordingFetcher();
+  FetchParameters params1 =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  Resource* resource = Fetch(params1, fetcher1);
+  ASSERT_TRUE(resource->IsLoaded());
+  EXPECT_THAT(TakeReportedNames(fetcher1), testing::IsEmpty());
+
+  ResourceFetcher* fetcher2 = CreateRecordingFetcher();
+  FetchParameters params2 =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  EXPECT_EQ(resource, Fetch(params2, fetcher2));
+  EXPECT_THAT(TakeReportedNames(fetcher2), testing::IsEmpty());
+}
+
+// Fetches initiated by isolated worlds (e.g. extension content scripts) must
+// not be exposed to resource timing.
+TEST_F(ResourceFetcherMemoryCacheResourceTimingTest, IsolatedWorld) {
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterCacheableURL(url);
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+
+  ResourceFetcher* fetcher1 = CreateRecordingFetcher();
+  FetchParameters params1{ResourceRequest(url),
+                          ResourceLoaderOptions(isolated_world)};
+  Resource* resource = Fetch(params1, fetcher1);
+  ASSERT_TRUE(resource->IsLoaded());
+  EXPECT_THAT(TakeReportedNames(fetcher1), testing::IsEmpty());
+
+  ResourceFetcher* fetcher2 = CreateRecordingFetcher();
+  FetchParameters params2{ResourceRequest(url),
+                          ResourceLoaderOptions(isolated_world)};
+  EXPECT_EQ(resource, Fetch(params2, fetcher2));
+  EXPECT_THAT(TakeReportedNames(fetcher2), testing::IsEmpty());
+}
+
+// Fetches initiated by origin-dirty style sheets must not be exposed to
+// resource timing, even when the cached resource was fetched by an
+// origin-clean context.
+TEST_F(ResourceFetcherMemoryCacheResourceTimingTest, OriginDirtyStyleSheet) {
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterCacheableURL(url);
+
+  ResourceFetcher* fetcher1 = CreateRecordingFetcher();
+  FetchParameters params1 =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  Resource* resource = Fetch(params1, fetcher1);
+  ASSERT_TRUE(resource->IsLoaded());
+  EXPECT_THAT(TakeReportedNames(fetcher1),
+              testing::ElementsAre(url.GetString()));
+
+  ResourceFetcher* fetcher2 = CreateRecordingFetcher();
+  FetchParameters params2 =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  params2.SetFromOriginDirtyStyleSheet(true);
+  EXPECT_EQ(resource, Fetch(params2, fetcher2));
+  EXPECT_THAT(TakeReportedNames(fetcher2), testing::IsEmpty());
+}
+
+// Conversely, an origin-clean fetch is reported, even when the cached resource
+// was fetched by an origin-dirty style sheet, as it would be when loaded from
+// the network.
+TEST_F(ResourceFetcherMemoryCacheResourceTimingTest,
+       OriginCleanFetchOfResourceFetchedByOriginDirtyStyleSheet) {
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterCacheableURL(url);
+
+  ResourceFetcher* fetcher1 = CreateRecordingFetcher();
+  FetchParameters params1 =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  params1.SetFromOriginDirtyStyleSheet(true);
+  Resource* resource = Fetch(params1, fetcher1);
+  ASSERT_TRUE(resource->IsLoaded());
+  EXPECT_THAT(TakeReportedNames(fetcher1), testing::IsEmpty());
+
+  ResourceFetcher* fetcher2 = CreateRecordingFetcher();
+  FetchParameters params2 =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  EXPECT_EQ(resource, Fetch(params2, fetcher2));
+  EXPECT_THAT(TakeReportedNames(fetcher2),
+              testing::ElementsAre(url.GetString()));
+}
+
+// `EmulateLoadStartedForInspector()` reports cached resources through the same
+// path as `MemoryCache` hits.
+TEST_F(ResourceFetcherMemoryCacheResourceTimingTest,
+       EmulateLoadStartedForInspector) {
+  KURL http_url("http://127.0.0.1:8000/foo.png");
+  KURL extension_url("chrome-extension://1234/foo.png");
+  RegisterCacheableURL(http_url);
+  RegisterCacheableURL(extension_url);
+
+  ResourceFetcher* fetcher1 = CreateRecordingFetcher();
+  FetchParameters http_params =
+      FetchParameters::CreateForTest(ResourceRequest(http_url));
+  Resource* http_resource = Fetch(http_params, fetcher1);
+  ASSERT_TRUE(http_resource->IsLoaded());
+  FetchParameters extension_params =
+      FetchParameters::CreateForTest(ResourceRequest(extension_url));
+  Resource* extension_resource = Fetch(extension_params, fetcher1);
+  ASSERT_TRUE(extension_resource->IsLoaded());
+
+  ResourceFetcher* fetcher2 = CreateRecordingFetcher();
+  fetcher2->EmulateLoadStartedForInspector(
+      http_resource, mojom::blink::RequestContextType::IMAGE,
+      network::mojom::RequestDestination::kImage,
+      fetch_initiator_type_names::kCSS);
+  fetcher2->EmulateLoadStartedForInspector(
+      extension_resource, mojom::blink::RequestContextType::IMAGE,
+      network::mojom::RequestDestination::kImage,
+      fetch_initiator_type_names::kCSS);
+  EXPECT_THAT(TakeReportedNames(fetcher2),
+              testing::ElementsAre(http_url.GetString()));
 }
 
 // Tests that a preloaded resource fetched via a Service Worker is not reused
