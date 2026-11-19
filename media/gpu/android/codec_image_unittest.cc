@@ -13,8 +13,17 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
 #include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/android_video_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/android/media_codec_bridge.h"
@@ -22,6 +31,7 @@
 #include "media/gpu/android/mock_codec_buffer_wait_coordinator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gl/gl_bindings.h"
@@ -323,6 +333,42 @@ TEST_F(CodecImageTest, RenderAfterUnusedDoesntCrash) {
   i->NotifyUnused();
   EXPECT_FALSE(i->RenderToTextureOwnerBackBuffer());
   EXPECT_FALSE(i->RenderToTextureOwnerFrontBuffer());
+}
+
+// Regression test for crbug.com/586941485: VideoImageReaderImageBacking must
+// not produce a VideoImageRepresentation, which would otherwise expose
+// CodecImage to off-GPU-main-thread access from NdkVideoEncodeAccelerator.
+TEST_F(CodecImageTest, ProduceVideoReturnsNull) {
+  auto image = NewImage(kTextureOwner);
+  auto context_state = base::MakeRefCounted<gpu::SharedContextState>(
+      share_group_, context_->default_surface(), context_,
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
+      gpu::GrContextType::kGL);
+
+  gpu::SharedImageManager shared_image_manager(/*thread_safe=*/true);
+  gpu::MemoryTypeTracker tracker(nullptr);
+  const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  const gpu::SharedImageInfo si_info(
+      viz::SinglePlaneFormat::kRGBA_8888, kFrameSize,
+      gfx::ColorSpace::CreateSRGB(),
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+      "CodecImageTest");
+  auto backing = gpu::AndroidVideoImageBacking::Create(
+      mailbox, si_info, image, context_state,
+      features::NeedThreadSafeAndroidMedia()
+          ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
+          : nullptr);
+  auto factory_ref =
+      shared_image_manager.Register(std::move(backing), &tracker);
+  ASSERT_TRUE(factory_ref);
+
+  EXPECT_FALSE(
+      shared_image_manager.ProduceVideo(/*device=*/nullptr, mailbox, &tracker));
+
+  EXPECT_CALL(*this, OnFrameInfoReady(Eq(std::nullopt), Eq(std::nullopt)));
+  factory_ref.reset();
+  image.reset();
+  context_state.reset();
 }
 
 }  // namespace media

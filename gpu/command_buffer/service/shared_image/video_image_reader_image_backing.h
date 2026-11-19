@@ -69,11 +69,6 @@ class GPU_GLES2_EXPORT VideoImageReaderImageBacking
       gpu::SharedImageManager* manager,
       gpu::MemoryTypeTracker* tracker) override;
 
-  std::unique_ptr<VideoImageRepresentation> ProduceVideo(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      VideoDevice device) override;
-
  private:
   template <typename T>
   std::unique_ptr<T> ProduceGLTextureInternal(SharedImageManager* manager,
@@ -109,7 +104,6 @@ class GPU_GLES2_EXPORT VideoImageReaderImageBacking
   class SkiaVkVideoImageRepresentation;
   class OverlayVideoImageRepresentation;
   class LegacyOverlayVideoImageRepresentation;
-  class VideoRepresentation;
 
   std::unique_ptr<ContextLostObserverHelper> context_lost_helper_;
   scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii_;
