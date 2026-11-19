@@ -200,6 +200,9 @@ test("media_unittests") {
   if (use_av1_hw_decoder && media_use_ffmpeg) {
     fuzztests += [ "AV1DecoderFuzz.DecodeDoesNotCrash" ]
   }
+  if (proprietary_codecs) {
+    fuzztests += [ "AACFuzzTest.ParseAndUseConfigDoesNotCrash" ]
+  }
 
   deps = [
     "//media/audio:unit_tests",

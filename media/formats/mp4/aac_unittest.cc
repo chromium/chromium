@@ -4,16 +4,22 @@
 
 #include "media/formats/mp4/aac.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
+#include "base/test/scoped_logging_settings.h"
+#include "media/base/media_util.h"
 #include "media/base/mock_media_log.h"
 #include "media/formats/mpeg/adts_constants.h"
 #include "media/formats/mpeg/adts_stream_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 using ::testing::AllOf;
 using ::testing::HasSubstr;
@@ -272,5 +278,88 @@ TEST_F(AACTest, FitsInAdts_ExplicitFrequencyReturnsFalse) {
   EXPECT_TRUE(Parse(data));
   EXPECT_FALSE(aac_.fits_in_adts());
 }
+
+class AACFuzzTest {
+ public:
+  AACFuzzTest() {
+    // The parser logs every rejected input to the console; silence that so
+    // fuzzing stays fast and the unit test output stays readable.
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
+  }
+
+  // Drives the parser the way MP4StreamParser and FFmpegDemuxer do with
+  // attacker-controlled bytes, then exercises every accessor that consumes the
+  // parsed state, including ADTS header generation.
+  void ParseAndUseConfigDoesNotCrash(const std::vector<uint8_t>& data) {
+    NullMediaLog media_log;
+    AAC aac;
+    if (!aac.Parse(data, &media_log)) {
+      return;
+    }
+
+    for (bool sbr_in_mimetype : {false, true}) {
+      aac.GetOutputSamplesPerSecond(sbr_in_mimetype);
+      aac.GetChannelLayout(sbr_in_mimetype);
+    }
+    aac.GetProfile();
+    aac.codec_specific_data();
+
+    // CreateAdtsFromEsds() only looks at the frame's size, so the config bytes
+    // double as the frame payload here.
+    if (aac.fits_in_adts()) {
+      size_t adts_header_size = 0;
+      aac.CreateAdtsFromEsds(data, &adts_header_size);
+    }
+  }
+
+ private:
+  logging::ScopedLoggingSettings scoped_logging_settings_;
+};
+
+// ADTS stores the frame size in 13 bits, so anything past this can't be
+// wrapped in an ADTS header.
+constexpr size_t kMaxAdtsFrameSize = 1 << 13;
+constexpr size_t kMaxFuzzInputSize = 2 * kMaxAdtsFrameSize;
+
+// AAC-LC, 44.1 kHz, stereo followed by padding: too large to fit in ADTS.
+std::vector<uint8_t> OversizedAacConfig() {
+  std::vector<uint8_t> oversized(kMaxAdtsFrameSize, 0);
+  oversized[0] = 0x12;
+  oversized[1] = 0x10;
+  return oversized;
+}
+
+// Real configs are a handful of bytes; the size cap keeps mutation focused
+// while still leaving room for the oversized seed. The seeds are valid
+// AudioSpecificConfigs covering the parser's corners: explicit and
+// backward-compatible SBR signalling, Parametric Stereo, the 24-bit sampling
+// frequency escape and the xHE-AAC profile escape, plus an oversized input that
+// hits the 13-bit ADTS frame size limit in CreateAdtsFromEsds().
+FUZZ_TEST_F(AACFuzzTest, ParseAndUseConfigDoesNotCrash)
+    .WithDomains(fuzztest::Arbitrary<std::vector<uint8_t>>().WithMaxSize(
+        kMaxFuzzInputSize))
+    .WithSeeds({
+        // AAC-LC, 44.1 kHz, stereo.
+        std::vector<uint8_t>{0x12, 0x10},
+        // AAC-LC, 44.1 kHz, mono.
+        std::vector<uint8_t>{0x12, 0x08},
+        // AAC-LC, 48 kHz, stereo.
+        std::vector<uint8_t>{0x11, 0x90},
+        // AAC-LC, 44.1 kHz, 5.1.
+        std::vector<uint8_t>{0x12, 0x30},
+        // AAC-SSR, 44.1 kHz, stereo.
+        std::vector<uint8_t>{0x1a, 0x10},
+        // HE-AAC v1, explicit SBR, 22.05 kHz core / 44.1 kHz output, stereo.
+        std::vector<uint8_t>{0x2b, 0x92, 0x08, 0x00},
+        // HE-AAC v2, backward-compatible SBR + PS extensions, 24 kHz, mono.
+        std::vector<uint8_t>{0x13, 0x08, 0x56, 0xe5, 0x9d, 0x48, 0x80},
+        // HE-AAC v2, backward-compatible SBR + PS extensions, 44.1 kHz, stereo.
+        std::vector<uint8_t>{0x12, 0x10, 0x56, 0xe5, 0x9d, 0x48, 0x80},
+        // AAC-LC, explicit 24-bit sampling frequency of 44100 Hz, stereo.
+        std::vector<uint8_t>{0x17, 0x80, 0x56, 0x22, 0x10},
+        // xHE-AAC (USAC, object type 42 via the escape), 44.1 kHz, stereo.
+        std::vector<uint8_t>{0xf9, 0x48, 0x40},
+        OversizedAacConfig(),
+    });
 
 }  // namespace media::mp4
