@@ -151,6 +151,7 @@ using intelligence::actor::kSpacingLarge;
   }
   _actuationActive = active;
   _headerView.loading = active;
+  _fullView.actuating = active;
   [self updateVisibility];
 }
 
@@ -301,6 +302,7 @@ using intelligence::actor::kSpacingLarge;
 
   _fullView = [[ActuationWorklogView alloc] initWithFrame:CGRectZero];
   _fullView.delegate = self;
+  _fullView.actuating = _actuationActive;
   _fullView.translatesAutoresizingMaskIntoConstraints = NO;
   [_scrollView addSubview:_fullView];
 

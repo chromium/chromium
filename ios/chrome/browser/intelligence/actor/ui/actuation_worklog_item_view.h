@@ -81,6 +81,9 @@ enum class ActuationWorklogConnectorVisibility {
 // Reflects whether the item is collapsed. Updating rotates the caret icon.
 @property(nonatomic, assign) BOOL collapsed;
 
+// Whether the item is the step in progress. Defaults to YES.
+@property(nonatomic, assign, getter=isCurrent) BOOL current;
+
 // Read-only access to the underlying item model.
 @property(nonatomic, readonly) ActuationWorklogItem* item;
 

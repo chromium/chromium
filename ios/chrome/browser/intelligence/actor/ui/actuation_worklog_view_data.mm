@@ -46,7 +46,6 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
                      subtitle:(NSString*)subtitle
                          icon:(UIImage*)icon
                         style:(ActuationWorklogItemStyle)style
-                       active:(BOOL)active
                 accessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem {
   CHECK(title);
   CHECK(!accessoryItem || style == ActuationWorklogItemStyle::kCard);
@@ -57,7 +56,6 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
     _subtitle = [subtitle copy];
     _icon = icon;
     _style = style;
-    _active = active;
     _accessoryItem = accessoryItem;
   }
   return self;
@@ -66,56 +64,48 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
 - (instancetype)initWithTitle:(NSString*)title
                      subtitle:(NSString*)subtitle
                          icon:(UIImage*)icon
-                        style:(ActuationWorklogItemStyle)style
-                       active:(BOOL)active {
+                        style:(ActuationWorklogItemStyle)style {
   return [self initWithTitle:title
                     subtitle:subtitle
                         icon:icon
                        style:style
-                      active:active
                accessoryItem:nil];
 }
 
 #pragma mark - Factory Constructors
 
-+ (instancetype)simpleItemWithTitle:(NSString*)title active:(BOOL)active {
++ (instancetype)simpleItemWithTitle:(NSString*)title {
   return [[ActuationWorklogItem alloc]
       initWithTitle:title
            subtitle:nil
                icon:nil
               style:ActuationWorklogItemStyle::kSimple
-             active:active
       accessoryItem:nil];
 }
 
 + (instancetype)labeledItemWithTitle:(NSString*)title
                             subtitle:(NSString*)subtitle
-                                icon:(UIImage*)icon
-                              active:(BOOL)active {
+                                icon:(UIImage*)icon {
   return [[ActuationWorklogItem alloc]
       initWithTitle:title
            subtitle:subtitle
                icon:icon
               style:ActuationWorklogItemStyle::kLabeled
-             active:active
       accessoryItem:nil];
 }
 
 + (instancetype)cardItemWithTitle:(NSString*)title
                          subtitle:(NSString*)subtitle
-                             icon:(UIImage*)icon
-                           active:(BOOL)active {
+                             icon:(UIImage*)icon {
   return [self cardItemWithTitle:title
                         subtitle:subtitle
                             icon:icon
-                          active:active
                    accessoryItem:nil];
 }
 
 + (instancetype)cardItemWithTitle:(NSString*)title
                          subtitle:(NSString*)subtitle
                              icon:(UIImage*)icon
-                           active:(BOOL)active
                     accessoryItem:
                         (ActuationWorklogAccessoryItem*)accessoryItem {
   return [[ActuationWorklogItem alloc]
@@ -123,7 +113,6 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
            subtitle:subtitle
                icon:icon
               style:ActuationWorklogItemStyle::kCard
-             active:active
       accessoryItem:accessoryItem];
 }
 
@@ -133,17 +122,7 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
            subtitle:nil
                icon:nil
               style:ActuationWorklogItemStyle::kFreeform
-             active:NO
       accessoryItem:nil];
-}
-
-- (instancetype)withActive:(BOOL)active {
-  return [[ActuationWorklogItem alloc] initWithTitle:self.title
-                                            subtitle:self.subtitle
-                                                icon:self.icon
-                                               style:self.style
-                                              active:active
-                                       accessoryItem:self.accessoryItem];
 }
 
 @end

@@ -175,6 +175,8 @@ const CGFloat kCompactBottomBufferHeight = kToolChipHeight + kSpacingMedium;
 }
 
 - (void)prepareForTransition:(ActuationWorklogPendingTransition*)transition {
+  // The outgoing item is no longer the current step.
+  _currentView.current = NO;
   _nextView = [self addViewWithItem:transition.item
                           connector:ActuationWorklogConnectorVisibility::kBoth];
   CGFloat chipHeight = transition.chip ? kCompactBottomBufferHeight : 0.0;

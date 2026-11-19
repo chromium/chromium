@@ -27,8 +27,13 @@
 // Delegate receiving interaction events.
 @property(nonatomic, weak) id<ActuationWorklogViewDelegate> delegate;
 
-// Whether the worklog is collapsed to its first and active items.
+// Whether the worklog is collapsed to its first and in-progress items.
 @property(nonatomic, assign, getter=isCollapsed) BOOL collapsed;
+
+// Whether actuation is in progress. While YES, the last item is the current
+// step. While NO, no item is current and the tool chip is hidden. Defaults to
+// YES.
+@property(nonatomic, assign, getter=isActuating) BOOL actuating;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;

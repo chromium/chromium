@@ -83,8 +83,8 @@ TEST_F(ActuationWorklogCoordinatorTest,
 
   NSArray<ActorFormSuggestion*>* suggestions =
       @[ CreateCredentialSuggestion(u"user@example.com", u"example.com") ];
-  ActuationWorklogItem* item = [ActuationWorklogItem simpleItemWithTitle:@"Item"
-                                                                  active:YES];
+  ActuationWorklogItem* item =
+      [ActuationWorklogItem simpleItemWithTitle:@"Item"];
   [consumer setSuggestions:suggestions forActiveWorklogItem:item];
   id<ActuationSuggestionsPresenter> presenter =
       coordinator.viewController.suggestionsPresenter;
@@ -95,7 +95,7 @@ TEST_F(ActuationWorklogCoordinatorTest,
   EXPECT_EQ(suggestions_coordinator.worklogItem, item);
 
   ActuationWorklogItem* updated_item =
-      [ActuationWorklogItem simpleItemWithTitle:@"Updated" active:YES];
+      [ActuationWorklogItem simpleItemWithTitle:@"Updated"];
   [consumer setSuggestions:suggestions forActiveWorklogItem:updated_item];
   EXPECT_EQ(coordinator.viewController.suggestionsPresenter, presenter);
   EXPECT_EQ(suggestions_coordinator.worklogItem, updated_item);
@@ -117,8 +117,8 @@ TEST_F(ActuationWorklogCoordinatorTest,
 
   id<ActuationSuggestionsConsumer> consumer =
       static_cast<id<ActuationSuggestionsConsumer>>(coordinator);
-  ActuationWorklogItem* item = [ActuationWorklogItem simpleItemWithTitle:@"Item"
-                                                                  active:YES];
+  ActuationWorklogItem* item =
+      [ActuationWorklogItem simpleItemWithTitle:@"Item"];
 
   [consumer setSuggestions:@[ CreateCredentialSuggestion(u"user1@example.com",
                                                          u"example.com") ]
@@ -157,7 +157,7 @@ TEST_F(ActuationWorklogCoordinatorTest,
   ActorFormSuggestion* suggestion1 =
       CreateCredentialSuggestion(u"user1@example.com", u"example.com");
   ActuationWorklogItem* item1 =
-      [ActuationWorklogItem simpleItemWithTitle:@"Item 1" active:YES];
+      [ActuationWorklogItem simpleItemWithTitle:@"Item 1"];
   [consumer setSuggestions:@[ suggestion1 ] forActiveWorklogItem:item1];
   id<ActuationSuggestionsPresenter> presenter1 =
       coordinator.viewController.suggestionsPresenter;
@@ -169,7 +169,7 @@ TEST_F(ActuationWorklogCoordinatorTest,
   ActorFormSuggestion* suggestion2 =
       CreateCredentialSuggestion(u"user2@example.com", u"example.com");
   ActuationWorklogItem* item2 =
-      [ActuationWorklogItem simpleItemWithTitle:@"Item 2" active:YES];
+      [ActuationWorklogItem simpleItemWithTitle:@"Item 2"];
   [consumer setSuggestions:@[ suggestion2 ] forActiveWorklogItem:item2];
   id<ActuationSuggestionsPresenter> presenter2 =
       coordinator.viewController.suggestionsPresenter;
@@ -198,7 +198,7 @@ TEST_F(ActuationWorklogCoordinatorTest,
   ActorFormSuggestion* suggestion1 =
       CreateCredentialSuggestion(u"user1@example.com", u"example.com");
   ActuationWorklogItem* item1 =
-      [ActuationWorklogItem simpleItemWithTitle:@"Item 1" active:YES];
+      [ActuationWorklogItem simpleItemWithTitle:@"Item 1"];
   [consumer setSuggestions:@[ suggestion1 ] forActiveWorklogItem:item1];
   EXPECT_NE(coordinator.viewController.suggestionsPresenter, nil);
 
@@ -210,7 +210,7 @@ TEST_F(ActuationWorklogCoordinatorTest,
   ActorFormSuggestion* suggestion2 =
       CreateCredentialSuggestion(u"user2@example.com", u"example.com");
   ActuationWorklogItem* item2 =
-      [ActuationWorklogItem simpleItemWithTitle:@"Item 2" active:YES];
+      [ActuationWorklogItem simpleItemWithTitle:@"Item 2"];
   [consumer setSuggestions:@[ suggestion2 ] forActiveWorklogItem:item2];
   EXPECT_NE(coordinator.viewController.suggestionsPresenter, nil);
 

@@ -65,9 +65,6 @@ enum class ActuationWorklogItemStyle {
 // Optional icon image.
 @property(nonatomic, strong, readonly) UIImage* icon;
 
-// True if this node is currently active.
-@property(nonatomic, assign, readonly, getter=isActive) BOOL active;
-
 // The layout style of this node.
 @property(nonatomic, assign, readonly) ActuationWorklogItemStyle style;
 
@@ -81,50 +78,40 @@ enum class ActuationWorklogItemStyle {
                      subtitle:(NSString*)subtitle
                          icon:(UIImage*)icon
                         style:(ActuationWorklogItemStyle)style
-                       active:(BOOL)active
                 accessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithTitle:(NSString*)title
                      subtitle:(NSString*)subtitle
                          icon:(UIImage*)icon
-                        style:(ActuationWorklogItemStyle)style
-                       active:(BOOL)active;
+                        style:(ActuationWorklogItemStyle)style;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 #pragma mark - Factory Constructors
 
 // Creates a simple timeline step with a dot indicator.
-+ (instancetype)simpleItemWithTitle:(NSString*)title active:(BOOL)active;
++ (instancetype)simpleItemWithTitle:(NSString*)title;
 
 // Creates a labeled timeline step.
 + (instancetype)labeledItemWithTitle:(NSString*)title
                             subtitle:(NSString*)subtitle
-                                icon:(UIImage*)icon
-                              active:(BOOL)active;
+                                icon:(UIImage*)icon;
 
 // Creates a card layout step without an accessory item.
 + (instancetype)cardItemWithTitle:(NSString*)title
                          subtitle:(NSString*)subtitle
-                             icon:(UIImage*)icon
-                           active:(BOOL)active;
+                             icon:(UIImage*)icon;
 
 // Creates a card layout step with a nested accessory item.
 + (instancetype)cardItemWithTitle:(NSString*)title
                          subtitle:(NSString*)subtitle
                              icon:(UIImage*)icon
-                           active:(BOOL)active
                     accessoryItem:(ActuationWorklogAccessoryItem*)accessoryItem;
 
 // Creates a freeform text-only item without timeline decoration. `text` is
 // exposed through `title`.
 + (instancetype)freeformItemWithText:(NSString*)text;
-
-#pragma mark - Helpers
-
-// Returns a copy of the item with the active state updated.
-- (instancetype)withActive:(BOOL)active;
 
 @end
 
@@ -296,7 +283,8 @@ enum class ActuationHeaderPrimaryAction {
 // rendered by every UI observing the task.
 @interface ActuationWorklogState : NSObject
 
-// Whether actuation is actively executing.
+// Whether actuation is actively executing. While it is, the last entry is the
+// step in progress.
 @property(nonatomic, assign, readonly, getter=isActuationActive)
     BOOL actuationActive;
 

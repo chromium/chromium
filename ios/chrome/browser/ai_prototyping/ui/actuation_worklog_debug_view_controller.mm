@@ -154,7 +154,7 @@ NSString* const kMockResponseSummary =
   UITextField* _titleField;
   UITextField* _subtitleField;
   UISegmentedControl* _stepStyleSelector;
-  UISwitch* _activeSwitch;
+  UISwitch* _actuatingSwitch;
 
   UITextField* _chipField;
   UISegmentedControl* _chipIconSelector;
@@ -226,10 +226,13 @@ NSString* const kMockResponseSummary =
   _titleField = [self textField:@"Step Title"];
   [stepTitleRow addArrangedSubview:_titleField];
 
-  _activeSwitch = [[UISwitch alloc] init];
-  _activeSwitch.on = YES;
-  [stepTitleRow addArrangedSubview:[self labelWithText:@"Active"]];
-  [stepTitleRow addArrangedSubview:_activeSwitch];
+  _actuatingSwitch = [[UISwitch alloc] init];
+  _actuatingSwitch.on = YES;
+  [_actuatingSwitch addTarget:self
+                       action:@selector(actuatingSwitchChanged:)
+             forControlEvents:UIControlEventValueChanged];
+  [stepTitleRow addArrangedSubview:[self labelWithText:@"Actuating"]];
+  [stepTitleRow addArrangedSubview:_actuatingSwitch];
 
   _subtitleField = [self textField:@"Step Subtitle (optional)"];
   [stepInputsStack addArrangedSubview:_subtitleField];
@@ -344,12 +347,11 @@ NSString* const kMockResponseSummary =
            subtitle:@"Use Gemini carefully and take control if needed. You are "
                     @"responsible for Gemini's actions during tasks."
                icon:SymbolTemplateWithPointSize(SymbolPlayFill, kIconSize)
-              style:ActuationWorklogItemStyle::kLabeled
-             active:NO];
-  ActuationWorklogItem* step2 = [self item:@"Opening a new Tab." active:NO];
-  ActuationWorklogItem* step3 = [self item:@"Searching theaters." active:NO];
-  ActuationWorklogItem* step4 = [self item:@"Searching showtimes." active:NO];
-  ActuationWorklogItem* step5 = [self item:@"Finding MTL venues." active:YES];
+              style:ActuationWorklogItemStyle::kLabeled];
+  ActuationWorklogItem* step2 = [self item:@"Opening a new Tab."];
+  ActuationWorklogItem* step3 = [self item:@"Searching theaters."];
+  ActuationWorklogItem* step4 = [self item:@"Searching showtimes."];
+  ActuationWorklogItem* step5 = [self item:@"Finding MTL venues."];
 
   _worklogItems = [@[ step1, step2, step3, step4, step5 ] mutableCopy];
   [_worklogView setItems:_worklogItems];
@@ -358,8 +360,6 @@ NSString* const kMockResponseSummary =
 #pragma mark - Actions
 
 - (void)add:(id)sender {
-  [self updateLastItemActive:NO];
-
   ActuationWorklogItem* newItem = [self stepFromInputs:@"New Step"];
   [_worklogItems addObject:newItem];
   [_worklogView addItem:newItem];
@@ -373,7 +373,6 @@ NSString* const kMockResponseSummary =
   }
   [_worklogItems removeLastObject];
   [_worklogView setLastItem:nil];
-  [self updateLastItemActive:YES];
   [self scrollToBottomAnimated:YES];
 }
 
@@ -407,7 +406,13 @@ NSString* const kMockResponseSummary =
   [self populateMockWorklog];
   [self resetStepConfigSection];
   [self resetChipSection];
+  _actuatingSwitch.on = YES;
+  _worklogView.actuating = YES;
   [self scrollToBottomAnimated:YES];
+}
+
+- (void)actuatingSwitchChanged:(UISwitch*)sender {
+  _worklogView.actuating = sender.on;
 }
 
 #pragma mark - Helpers
@@ -444,16 +449,6 @@ NSString* const kMockResponseSummary =
   }
 }
 
-- (void)updateLastItemActive:(BOOL)active {
-  ActuationWorklogItem* lastItem = _worklogItems.lastObject;
-  if (lastItem) {
-    NSUInteger lastIndex = _worklogItems.count - 1;
-    ActuationWorklogItem* updatedItem = [lastItem withActive:active];
-    _worklogItems[lastIndex] = updatedItem;
-    [_worklogView setLastItem:updatedItem];
-  }
-}
-
 // Scrolls to the bottom of the collection view. Laying out first lets a worklog
 // height change schedule its cell resize; the scroll then waits for that resize
 // so it targets the new content size.
@@ -479,13 +474,8 @@ NSString* const kMockResponseSummary =
   }
 }
 
-- (ActuationWorklogItem*)item:(NSString*)title active:(BOOL)active {
-  return [[ActuationWorklogItem alloc]
-      initWithTitle:title
-           subtitle:nil
-               icon:nil
-              style:ActuationWorklogItemStyle::kSimple
-             active:active];
+- (ActuationWorklogItem*)item:(NSString*)title {
+  return [ActuationWorklogItem simpleItemWithTitle:title];
 }
 
 - (ActuationWorklogItem*)stepFromInputs:(NSString*)defaultTitle {
@@ -503,8 +493,7 @@ NSString* const kMockResponseSummary =
   return [[ActuationWorklogItem alloc] initWithTitle:title
                                             subtitle:subtitle
                                                 icon:icon
-                                               style:style
-                                              active:_activeSwitch.on];
+                                               style:style];
 }
 
 - (UILabel*)headerLabel:(NSString*)text {
@@ -576,7 +565,6 @@ NSString* const kMockResponseSummary =
   _titleField.text = @"";
   _subtitleField.text = @"";
   _stepStyleSelector.selectedSegmentIndex = 0;
-  _activeSwitch.on = YES;
   [_titleField resignFirstResponder];
   [_subtitleField resignFirstResponder];
 }

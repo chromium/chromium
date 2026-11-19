@@ -53,16 +53,17 @@ class ActuationWorklogViewTest : public PlatformTest {
 };
 
 // Tests that collapsing the worklog hides intermediate items, keeps the first
-// and active trailing items visible, and hides an inactive trailing item.
+// and in-progress trailing items visible, and hides the trailing item once
+// actuation ends.
 TEST_F(ActuationWorklogViewTest, CollapseUpdatesItemVisibility) {
   ActuationWorklogItem* first =
-      [ActuationWorklogItem simpleItemWithTitle:@"Task started" active:NO];
+      [ActuationWorklogItem simpleItemWithTitle:@"Task started"];
   ActuationWorklogItem* middle =
-      [ActuationWorklogItem simpleItemWithTitle:@"Step 1" active:NO];
-  ActuationWorklogItem* active_last =
-      [ActuationWorklogItem simpleItemWithTitle:@"Step 2" active:YES];
+      [ActuationWorklogItem simpleItemWithTitle:@"Step 1"];
+  ActuationWorklogItem* last =
+      [ActuationWorklogItem simpleItemWithTitle:@"Step 2"];
 
-  [worklog_view_ setItems:@[ first, middle, active_last ]];
+  [worklog_view_ setItems:@[ first, middle, last ]];
   NSArray<ActuationWorklogItemView*>* views =
       FindViewsByClass<ActuationWorklogItemView>(worklog_view_);
   ASSERT_EQ(3u, views.count);
@@ -71,8 +72,8 @@ TEST_F(ActuationWorklogViewTest, CollapseUpdatesItemVisibility) {
   EXPECT_FALSE(views[1].hidden);
   EXPECT_FALSE(views[2].hidden);
 
-  // While the trailing item is active, collapsing keeps the first and last
-  // items visible and hides the middle one.
+  // While actuating, collapsing keeps the first and last items visible and
+  // hides the middle one.
   worklog_view_.collapsed = YES;
   EXPECT_TRUE(worklog_view_.isCollapsed);
   EXPECT_TRUE(views[0].collapsed);
@@ -80,8 +81,8 @@ TEST_F(ActuationWorklogViewTest, CollapseUpdatesItemVisibility) {
   EXPECT_TRUE(views[1].hidden);
   EXPECT_FALSE(views[2].hidden);
 
-  // Deactivating the trailing item hides it while collapsed.
-  [worklog_view_ setLastItem:[active_last withActive:NO]];
+  // Ending actuation hides the trailing item while collapsed.
+  worklog_view_.actuating = NO;
   EXPECT_FALSE(views[0].hidden);
   EXPECT_TRUE(views[1].hidden);
   EXPECT_TRUE(views[2].hidden);
@@ -90,8 +91,8 @@ TEST_F(ActuationWorklogViewTest, CollapseUpdatesItemVisibility) {
 // Tests that tapping the first item toggles the collapsed state.
 TEST_F(ActuationWorklogViewTest, TappingFirstItemTogglesCollapsed) {
   [worklog_view_ setItems:@[
-    [ActuationWorklogItem simpleItemWithTitle:@"Task started" active:NO],
-    [ActuationWorklogItem simpleItemWithTitle:@"Step 1" active:YES],
+    [ActuationWorklogItem simpleItemWithTitle:@"Task started"],
+    [ActuationWorklogItem simpleItemWithTitle:@"Step 1"],
   ]];
   NSArray<ActuationWorklogItemView*>* views =
       FindViewsByClass<ActuationWorklogItemView>(worklog_view_);
@@ -117,7 +118,6 @@ TEST_F(ActuationWorklogViewTest, ForwardsAccessoryTapToDelegate) {
       [ActuationWorklogItem cardItemWithTitle:@"Sign in"
                                      subtitle:nil
                                          icon:nil
-                                       active:YES
                                 accessoryItem:accessory];
   [worklog_view_ setItems:@[ card ]];
   NSArray<ActuationWorklogItemView*>* views =
@@ -135,8 +135,8 @@ TEST_F(ActuationWorklogViewTest, ForwardsAccessoryTapToDelegate) {
 TEST_F(ActuationWorklogViewTest, DoesNotStretchInTallerHost) {
   const CGSize kHostSize = CGSizeMake(320, 1000);
   [worklog_view_ setItems:@[
-    [ActuationWorklogItem simpleItemWithTitle:@"Task started" active:NO],
-    [ActuationWorklogItem simpleItemWithTitle:@"Step 1" active:YES],
+    [ActuationWorklogItem simpleItemWithTitle:@"Task started"],
+    [ActuationWorklogItem simpleItemWithTitle:@"Step 1"],
   ]];
   const CGFloat content_height =
       [worklog_view_

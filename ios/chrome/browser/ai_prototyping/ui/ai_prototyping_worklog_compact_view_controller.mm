@@ -151,8 +151,7 @@ struct MockStepConfig {
         [[ActuationWorklogItem alloc] initWithTitle:config.title
                                            subtitle:config.subtitle
                                                icon:icon
-                                              style:config.style
-                                             active:YES];
+                                              style:config.style];
     [steps addObject:item];
 
     ActuationWorklogChip* chip = nil;

@@ -27,7 +27,7 @@ ActuationWorklogChip* ChipWithText(NSString* text) {
 ActuationWorklogEntry* Entry(NSString* title,
                              ActuationWorklogChip* chip = nil) {
   return [[ActuationWorklogEntry alloc]
-      initWithItem:[ActuationWorklogItem simpleItemWithTitle:title active:YES]
+      initWithItem:[ActuationWorklogItem simpleItemWithTitle:title]
               chip:chip];
 }
 

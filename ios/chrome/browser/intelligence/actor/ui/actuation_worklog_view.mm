@@ -54,6 +54,7 @@ ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
   self = [super initWithFrame:frame];
   if (self) {
     _itemViews = [NSMutableArray array];
+    _actuating = YES;
 
     _itemsStackView = [[UIStackView alloc] init];
     _itemsStackView.axis = UILayoutConstraintAxisVertical;
@@ -95,6 +96,23 @@ ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
 
 - (void)setCollapsed:(BOOL)collapsed {
   [self setCollapsed:collapsed animated:NO];
+}
+
+- (void)setActuating:(BOOL)actuating {
+  if (_actuating == actuating) {
+    return;
+  }
+  _actuating = actuating;
+  if (!actuating) {
+    [self setChipVisible:NO];
+  }
+  [UIView transitionWithView:self
+                    duration:kAnimationDuration
+                     options:UIViewAnimationOptionTransitionCrossDissolve
+                  animations:^{
+                    [self updateVisibilityAndConnectors];
+                  }
+                  completion:nil];
 }
 
 - (void)setItems:(NSArray<ActuationWorklogItem*>*)items {
@@ -172,7 +190,7 @@ ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
 }
 
 - (void)setChip:(ActuationWorklogChip*)chip {
-  if (!chip) {
+  if (!chip || !self.actuating) {
     [self setChipVisible:NO];
     [self updateVisibilityAndConnectors];
     return;
@@ -261,15 +279,19 @@ ActuationWorklogConnectorVisibility ConnectorVisibility(BOOL top, BOOL bottom) {
     return;
   }
 
-  ActuationWorklogItemView* lastView = _itemViews.lastObject;
   // Collapsing is only meaningful when multiple items exist in the worklog.
   BOOL shouldCollapse = _collapsed && (count > 1);
-  // Keep the trailing item visible during collapse if it is actively running.
-  BOOL showLast = shouldCollapse && lastView.item.active;
+  BOOL actuating = self.actuating;
+  // Keep the trailing item visible during collapse while it is in progress.
+  // Freeform items aren't timeline steps, so they collapse like past steps.
+  BOOL showLast =
+      shouldCollapse && actuating && [self isTimelineItemAtIndex:count - 1];
   for (NSInteger i = 0; i < count; ++i) {
     ActuationWorklogItemView* view = _itemViews[i];
     BOOL isFirst = (i == 0);
     BOOL isLast = (i == count - 1);
+    // Only the trailing item of an ongoing actuation is in progress.
+    view.current = isLast && actuating;
     // In collapsed mode, only show the header and any active in-progress items.
     BOOL shouldBeVisible = !shouldCollapse || isFirst || (showLast && isLast);
 

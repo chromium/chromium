@@ -77,7 +77,6 @@ ActuationWorklogItem* CardItemForNonFederatedCredential(
       cardItemWithTitle:cardTitle
                subtitle:cardSubtitle
                    icon:SymbolWithPointSize(SymbolPassword, kIconSize)
-                 active:YES
           accessoryItem:credentialAccessory];
 }
 
@@ -124,7 +123,6 @@ ActuationWorklogItem* CardItemForAddress(FormSuggestion* suggestion) {
       cardItemWithTitle:l10n_util::GetNSString(cardTitleId)
                subtitle:nil
                    icon:nil
-                 active:YES
           accessoryItem:addressAccessory];
 }
 
@@ -155,7 +153,6 @@ ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
       cardItemWithTitle:cardTitle
                subtitle:cardSubtitle
                    icon:SymbolWithPointSize(SymbolCreditCard, kIconSize)
-                 active:YES
           accessoryItem:paymentAccessory];
 }
 
@@ -274,8 +271,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
                                IDS_IOS_GEMINI_FIRST_ACTUATION_STEP_TITLE)
                   subtitle:l10n_util::GetNSString(
                                IDS_IOS_GEMINI_FIRST_ACTUATION_STEP_SUBTITLE)
-                      icon:SymbolWithPointSize(SymbolPlayFill, kIconSize)
-                    active:YES];
+                      icon:SymbolWithPointSize(SymbolPlayFill, kIconSize)];
   [self appendItem:firstItem toolType:std::nullopt];
 
   // The initial task update follows the Gemini first step.
@@ -542,8 +538,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
     return NO;
   }
   _latestTaskUpdate = [taskUpdate copy];
-  [self appendItem:[ActuationWorklogItem simpleItemWithTitle:taskUpdate
-                                                      active:YES]
+  [self appendItem:[ActuationWorklogItem simpleItemWithTitle:taskUpdate]
           toolType:toolType];
   return YES;
 }

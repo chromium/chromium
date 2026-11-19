@@ -147,8 +147,8 @@ ActuationWorklogItem* ActuationWorklogItemForUserResponse(NSString* response) {
                   subtitle:l10n_util::GetNSStringF(
                                IDS_IOS_ACTOR_WORKLOG_USER_RESPONSE,
                                base::SysNSStringToUTF16(response))
-                      icon:SymbolWithPointSize(SymbolEllipsisMessage, kIconSize)
-                    active:YES];
+                      icon:SymbolWithPointSize(SymbolEllipsisMessage,
+                                               kIconSize)];
 }
 
 ActuationWorklogItem* ActuationWorklogItemForTaskContinues() {
@@ -156,8 +156,7 @@ ActuationWorklogItem* ActuationWorklogItemForTaskContinues() {
       labeledItemWithTitle:l10n_util::GetNSString(
                                IDS_IOS_ACTOR_WORKLOG_TASK_CONTINUES)
                   subtitle:nil
-                      icon:SymbolWithPointSize(SymbolPlayFill, kIconSize)
-                    active:YES];
+                      icon:SymbolWithPointSize(SymbolPlayFill, kIconSize)];
 }
 
 ActuationWorklogItem* ActuationWorklogItemForTaskEnded() {
@@ -165,6 +164,5 @@ ActuationWorklogItem* ActuationWorklogItemForTaskEnded() {
       labeledItemWithTitle:l10n_util::GetNSString(
                                IDS_IOS_ACTOR_WORKLOG_TASK_ENDED)
                   subtitle:nil
-                      icon:SymbolWithPointSize(SymbolStopFill, kIconSize)
-                    active:NO];
+                      icon:SymbolWithPointSize(SymbolStopFill, kIconSize)];
 }

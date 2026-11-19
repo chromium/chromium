@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_task_card_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_item_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
@@ -39,6 +40,7 @@
 namespace {
 
 using chrome_test_util::FindViewById;
+using chrome_test_util::FindViewsByClass;
 
 // Arbitrary identifier for the test action.
 constexpr InterventionActionIdentifier kActionIdentifier =
@@ -113,7 +115,7 @@ TEST_F(ActuationWorklogViewControllerTest, TestResetClearsContent) {
                                              compactContent:header_content
                                             expandedContent:header_content]];
   ActuationWorklogItem* item =
-      [ActuationWorklogItem simpleItemWithTitle:@"Step 1" active:YES];
+      [ActuationWorklogItem simpleItemWithTitle:@"Step 1"];
   [consumer() updateWorklogWithItem:item chip:nil animated:NO];
   [consumer() reset];
 
@@ -257,6 +259,47 @@ TEST_F(ActuationWorklogViewControllerTest, TestHeaderPrimaryAction) {
   EXPECT_NE(FindViewById(view_controller_.view,
                          kActuationHeaderCloseButtonAccessibilityIdentifier),
             nil);
+}
+
+// Tests that only the trailing item of an ongoing actuation is current in the
+// full worklog, without the items being replaced, and that the compact worklog
+// displays the trailing item as current.
+TEST_F(ActuationWorklogViewControllerTest, TestOnlyTrailingItemIsCurrent) {
+  UIView* full_scroll_view = FindViewById(
+      view_controller_.view, kFullWorklogScrollViewAccessibilityIdentifier);
+  UIView* compact_view = FindViewById(view_controller_.view,
+                                      kCompactWorklogAccessibilityIdentifier);
+  ASSERT_NE(full_scroll_view, nil);
+  ASSERT_NE(compact_view, nil);
+  ActuationWorklogChip* chip =
+      [[ActuationWorklogChip alloc] initWithText:@"Clicking" icon:nil];
+
+  [consumer() setActuationActive:YES];
+  [consumer()
+      updateWorklogWithItem:[ActuationWorklogItem simpleItemWithTitle:@"Step 1"]
+                       chip:nil
+                   animated:NO];
+  [consumer()
+      updateWorklogWithItem:[ActuationWorklogItem simpleItemWithTitle:@"Step 2"]
+                       chip:chip
+                   animated:NO];
+
+  NSArray<ActuationWorklogItemView*>* full_item_views =
+      FindViewsByClass<ActuationWorklogItemView>(full_scroll_view);
+  ASSERT_EQ(full_item_views.count, 2u);
+  EXPECT_FALSE(full_item_views[0].current);
+  EXPECT_TRUE(full_item_views[1].current);
+  NSArray<ActuationWorklogItemView*>* compact_item_views =
+      FindViewsByClass<ActuationWorklogItemView>(compact_view);
+  ASSERT_EQ(compact_item_views.count, 1u);
+  EXPECT_TRUE(compact_item_views[0].current);
+
+  [consumer() setActuationActive:NO];
+
+  EXPECT_EQ(
+      FindViewsByClass<ActuationWorklogItemView>(full_scroll_view).lastObject,
+      full_item_views[1]);
+  EXPECT_FALSE(full_item_views[1].current);
 }
 
 }  // namespace

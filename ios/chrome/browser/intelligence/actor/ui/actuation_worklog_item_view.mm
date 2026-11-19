@@ -125,6 +125,7 @@ ItemStyleConfig ConfigForStyle(ActuationWorklogItemStyle style) {
   if (self) {
     self.clipsToBounds = YES;
     _connectorVisibility = ActuationWorklogConnectorVisibility::kNone;
+    _current = YES;
 
     [self setupSubviews];
     [self setupConstraints];
@@ -142,6 +143,16 @@ ItemStyleConfig ConfigForStyle(ActuationWorklogItemStyle style) {
   [self updateFontsAndColors];
   [self updateDotAppearance];
   [self setNeedsLayout];
+}
+
+- (void)setCurrent:(BOOL)current {
+  if (_current == current) {
+    return;
+  }
+  _current = current;
+  if (_item) {
+    [self updateDotAppearance];
+  }
 }
 
 - (void)setConnectorVisibility:
@@ -421,9 +432,8 @@ ItemStyleConfig ConfigForStyle(ActuationWorklogItemStyle style) {
 }
 
 // Updates the indicator's visibility, size and colors based on its kind and
-// the item's active state.
+// whether the item is current.
 - (void)updateDotAppearance {
-  BOOL active = _item.isActive;
   UIColor* backgroundColor = nil;
   CGFloat dotSize = 0.0;
   CGFloat borderWidth = 0.0;
@@ -431,12 +441,14 @@ ItemStyleConfig ConfigForStyle(ActuationWorklogItemStyle style) {
   switch (_config.indicator) {
     case IndicatorKind::kNone:
       break;
-    case IndicatorKind::kSmallDot:
-      backgroundColor = active ? [UIColor colorNamed:kSolidWhiteColor]
-                               : [UIColor colorNamed:kGrey400Color];
-      dotSize = active ? (kDotSizeSimple + kDotBorderWidth) : kDotSizeSimple;
-      borderWidth = active ? kDotBorderWidth : 0.0;
+    case IndicatorKind::kSmallDot: {
+      BOOL current = self.current;
+      backgroundColor = current ? [UIColor colorNamed:kSolidWhiteColor]
+                                : [UIColor colorNamed:kGrey400Color];
+      dotSize = current ? (kDotSizeSimple + kDotBorderWidth) : kDotSizeSimple;
+      borderWidth = current ? kDotBorderWidth : 0.0;
       break;
+    }
     case IndicatorKind::kLargeCircle:
       backgroundColor = [UIColor colorNamed:kGrey200Color];
       dotSize = kDotSizeLabeled;
