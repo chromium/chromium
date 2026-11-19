@@ -317,10 +317,14 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
     _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
     SetViewHiddenIfNecessary(_placeholderView, YES);
     [_placeholderViewWrapper addSubview:_placeholderView];
-    // Avoid conflicting with `_placeholderView`'s minimum width when hidden.
+    // Not required, to avoid conflicting with `_placeholderView`'s minimum
+    // width when the wrapper is hidden. Must still outrank the location label's
+    // `UILayoutPriorityDefaultHigh` horizontal positioning constraints,
+    // otherwise the wrapper shrinks and `_placeholderView` overlaps the
+    // location label.
     NSLayoutConstraint* trailingConstraint = [_placeholderView.trailingAnchor
         constraintEqualToAnchor:_placeholderViewWrapper.trailingAnchor];
-    trailingConstraint.priority = UILayoutPriorityDefaultHigh;
+    trailingConstraint.priority = UILayoutPriorityDefaultHigh + 1;
     [NSLayoutConstraint activateConstraints:@[
       [_placeholderView.leadingAnchor
           constraintEqualToAnchor:_placeholderViewWrapper.leadingAnchor],
