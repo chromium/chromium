@@ -8,14 +8,12 @@
 #include <string_view>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -376,8 +374,7 @@ void EditorMenuControllerImpl::EditorCardSession::OnEditorModeChanged(
 
 LobsterMode EditorMenuControllerImpl::EditorCardSession::GetLobsterMode()
     const {
-  if (!base::FeatureList::IsEnabled(ash::features::kLobsterRightClickMenu) ||
-      lobster_manager() == nullptr) {
+  if (lobster_manager() == nullptr) {
     return LobsterMode::kBlocked;
   }
 
