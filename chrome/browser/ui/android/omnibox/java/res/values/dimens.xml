@@ -242,6 +242,7 @@ found in the LICENSE file.
     <!-- go/keep-sorted end -->
 
     <!-- go/keep-sorted start group_start_regex=<item -->
+    <item name="activation_chip_activated_hover_alpha" format="float" type="dimen">0.10</item>
     <item name="fusebox_popover_navigate_button_focused_alpha" format="float" type="dimen">0.24</item>
     <item name="fusebox_popover_navigate_button_hovered_alpha" format="float" type="dimen">0.20</item>
     <item name="fusebox_popover_navigate_button_pressed_alpha" format="float" type="dimen">0.32</item>

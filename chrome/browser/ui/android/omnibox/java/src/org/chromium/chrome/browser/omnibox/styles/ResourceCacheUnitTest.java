@@ -61,6 +61,16 @@ public class ResourceCacheUnitTest {
     }
 
     @Test
+    public void testGetFloat() {
+        float float1 = mCache.getFloat(R.dimen.activation_chip_activated_hover_alpha);
+        float float2 = mCache.getFloat(R.dimen.activation_chip_activated_hover_alpha);
+        float expected =
+                mContext.getResources().getFloat(R.dimen.activation_chip_activated_hover_alpha);
+        assertEquals(expected, float1, 0f);
+        assertEquals(float1, float2, 0f);
+    }
+
+    @Test
     public void testGetColor() {
         int color1 = mCache.getColor(R.color.default_icon_color_light);
         int color2 = mCache.getColor(R.color.default_icon_color_light);

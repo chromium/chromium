@@ -669,11 +669,28 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
+     * Resolves the on-primary color, for content drawn on the vivid primary color: the navigate
+     * (send) button's icon, and the activation chip's text and icon in AI Mode.
+     */
+    public @ColorInt int getColorOnPrimary() {
+        return IncognitoColors.getColorOnPrimary(mContext, isIncognito());
+    }
+
+    /**
      * Resolves the vivid color used for the border of the tool chip when used as a hint to enter AI
-     * Mode, as well as the background of the send button.
+     * Mode, as well as the background of the send button and of the activation chip in AI Mode.
      */
     public @ColorInt int getColorPrimary() {
         return IncognitoColors.getColorPrimary(mContext, isIncognito());
+    }
+
+    /**
+     * Resolves the primary color with an on-primary hover layer blended in. Used for the activation
+     * chip while hovered in AI Mode.
+     */
+    public @ColorInt int getColorPrimaryHovered() {
+        float alpha = mCache.getFloat(R.dimen.activation_chip_activated_hover_alpha);
+        return ColorUtils.overlayColor(getColorPrimary(), getColorOnPrimary(), alpha);
     }
 
     /** Resolves the icon tint to be used for secondary image gen icons, not the banana. */
@@ -761,11 +778,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     /** Resolves the divider line color for the popup. */
     public @ColorInt int getPopupDividerLineColor() {
         return IncognitoColors.getDividerLineBgColor(mContext, isIncognito());
-    }
-
-    /** Resolves the icon tint for the plus button on top of the vivid send button. */
-    public @ColorInt int getSendIconContrastColor() {
-        return IncognitoColors.getColorOnPrimary(mContext, isIncognito());
     }
 
     /** Resolves the text appearance for the active tool button. */

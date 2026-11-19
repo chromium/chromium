@@ -47,10 +47,15 @@ import org.chromium.ui.base.WindowAndroid;
 /** This class represents the location bar where the user types in URLs and search terms. */
 @NullMarked
 public class LocationBarLayout extends ConstraintLayout {
-    private static final int[][] HOVER_STATES =
+    private static final int[][] ACTIVATION_CHIP_STATES =
             new int[][] {
-                new int[] {android.R.attr.state_hovered}, new int[] {} // Default, must be last
+                new int[] {android.R.attr.state_activated, android.R.attr.state_hovered},
+                new int[] {android.R.attr.state_activated},
+                new int[] {android.R.attr.state_hovered},
+                new int[] {}
             };
+    private static final int[][] ACTIVATION_CHIP_CONTENT_STATES =
+            new int[][] {new int[] {android.R.attr.state_activated}, new int[] {}};
 
     protected ImageButton mDeleteButton;
     protected ImageButton mMicButton;
@@ -239,20 +244,35 @@ public class LocationBarLayout extends ConstraintLayout {
     }
 
     private void updateActivationChipVisuals() {
-        @ColorInt int buttonColor = mResourceProvider.getColorSurfaceContainerHigh();
+        @ColorInt int buttonColorActivatedHovered = mResourceProvider.getColorPrimaryHovered();
+        @ColorInt int buttonColorActivated = mResourceProvider.getColorPrimary();
         @ColorInt int buttonColorHovered = mResourceProvider.getColorSurfaceContainerHighest();
-        int[] backgroundColors = new int[] {buttonColorHovered, buttonColor};
+        @ColorInt int buttonColor = mResourceProvider.getColorSurfaceContainerHigh();
+        int[] backgroundColors =
+                new int[] {
+                    buttonColorActivatedHovered,
+                    buttonColorActivated,
+                    buttonColorHovered,
+                    buttonColor
+                };
 
-        mActivationChip.setBackgroundTintList(new ColorStateList(HOVER_STATES, backgroundColors));
+        mActivationChip.setBackgroundTintList(
+                new ColorStateList(ACTIVATION_CHIP_STATES, backgroundColors));
 
-        @ColorInt int colorOnSurface = mResourceProvider.getColorOnSurface();
-        mActivationChip.setTextColor(colorOnSurface);
+        ColorStateList contentColors =
+                new ColorStateList(
+                        ACTIVATION_CHIP_CONTENT_STATES,
+                        new int[] {
+                            mResourceProvider.getColorOnPrimary(),
+                            mResourceProvider.getColorOnSurface()
+                        });
+        mActivationChip.setTextColor(contentColors);
         boolean shouldTintIcon =
                 mSearchEngineService == null
                         || mSearchEngineService.getAiModeButtonIconSupplier().get().getIconRes()
                                 != 0;
         if (shouldTintIcon) {
-            mActivationChip.setIconTint(ColorStateList.valueOf(colorOnSurface));
+            mActivationChip.setIconTint(contentColors);
         }
         @ColorInt int focusRingColor = mResourceProvider.getColorPrimary();
         mActivationChip.setForegroundTintList(ColorStateList.valueOf(focusRingColor));
@@ -637,6 +657,9 @@ public class LocationBarLayout extends ConstraintLayout {
 
     /* package */ void setAiModeButtonState(@AiModeButtonState int state) {
         setButtonVisibility(mActivationChip, state != AiModeButtonState.HIDDEN);
+        mActivationChip.setActivated(
+                state == AiModeButtonState.VISIBLE_ACTIVE
+                        || state == AiModeButtonState.VISIBLE_SEND);
     }
 
     /**

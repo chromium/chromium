@@ -36,6 +36,7 @@ class ResourceCache {
     private final Context mContext;
     private final SparseArray<String> mStrings = new SparseArray<>();
     private final SparseIntArray mInts = new SparseIntArray();
+    private final SparseArray<Float> mFloats = new SparseArray<>();
     private final SparseArray<ColorStateList> mColorStateLists = new SparseArray<>();
     private final SparseArray<ConstantState> mDrawables = new SparseArray<>();
 
@@ -65,6 +66,17 @@ class ResourceCache {
         int size = mContext.getResources().getDimensionPixelSize(resId);
         mInts.put(resId, size);
         return size;
+    }
+
+    /** Resolves a float dimension (format="float" type="dimen") and caches the result. */
+    float getFloat(@DimenRes int resId) {
+        ThreadUtils.assertOnUiThread();
+        Float value = mFloats.get(resId);
+        if (value == null) {
+            value = mContext.getResources().getFloat(resId);
+            mFloats.put(resId, value);
+        }
+        return value;
     }
 
     /** Resolves a color resource and caches the result. */

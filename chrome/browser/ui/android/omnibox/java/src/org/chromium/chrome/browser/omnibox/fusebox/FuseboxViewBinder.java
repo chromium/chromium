@@ -636,7 +636,7 @@ class FuseboxViewBinder {
     }
 
     private void updateNavigateButton(FuseboxViewHolder view) {
-        @ColorInt int sendIconContrastColor = mResourceProvider.getSendIconContrastColor();
+        @ColorInt int sendIconContrastColor = mResourceProvider.getColorOnPrimary();
         view.navigateButton.getDrawable().setTint(sendIconContrastColor);
         view.navigateButton.setBackground(mResourceProvider.getPopoverNavigateButtonBackground());
         @ColorInt int colorPrimary = mResourceProvider.getColorPrimary();
