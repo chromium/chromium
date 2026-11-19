@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.profiles;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -26,6 +27,8 @@ public class Profile implements BrowserContextHandle {
 
     private final boolean mIsIncognitoBranded;
 
+    private final String mBaseName;
+
     /** Pointer to the Native-side Profile. */
     private long mNativeProfile;
 
@@ -33,10 +36,15 @@ public class Profile implements BrowserContextHandle {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
-    Profile(long nativeProfile, @Nullable OtrProfileId otrProfileId, boolean isIncognitoBranded) {
+    Profile(
+            long nativeProfile,
+            @Nullable OtrProfileId otrProfileId,
+            boolean isIncognitoBranded,
+            @JniType("std::string") String baseName) {
         mNativeProfile = nativeProfile;
         mOtrProfileId = otrProfileId;
         mIsIncognitoBranded = isIncognitoBranded;
+        mBaseName = baseName;
         assert !mIsIncognitoBranded || mOtrProfileId != null;
     }
 
@@ -97,6 +105,18 @@ public class Profile implements BrowserContextHandle {
     /** Return whether this Profile represents the initially created "Default" Profile. */
     public boolean isInitialProfile() {
         return ProfileJni.get().isInitialProfile(mNativeProfile);
+    }
+
+    /**
+     * Returns the base name of the profile directory within the user data directory (e.g.
+     * "Default", "Profile 1"), i.e. native {@code Profile::GetBaseName()}. For an off-the-record
+     * profile, returns the base name of its original profile.
+     *
+     * <p>The value is passed in by native when this object is created and never changes, so it can
+     * be read from any thread without crossing JNI, including after native destruction.
+     */
+    public String getBaseName() {
+        return mBaseName;
     }
 
     /**

@@ -62,7 +62,8 @@ ScopedJavaLocalRef<jobject> Profile::GetJavaObject() const {
             ? otr_profile_id_->ConvertToJavaOTRProfileID(env)
             : nullptr;
     j_obj_ = Java_Profile_Constructor(env, reinterpret_cast<intptr_t>(this),
-                                      j_otr_profile_id, IsIncognitoBranded());
+                                      j_otr_profile_id, IsIncognitoBranded(),
+                                      GetBaseName().value());
     if (notified_java_will_be_destroyed_) {
       Java_Profile_onProfileWillBeDestroyed(env, j_obj_);
     }
