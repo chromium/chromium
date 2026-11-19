@@ -10,12 +10,14 @@ import android.content.res.Resources;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.core.widget.TextViewCompat;
 
+import org.chromium.base.SelectionActionMenuClientWrapper.DefaultItem;
 import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -45,6 +47,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Implementation of {@link SelectionActionMenuDelegate} that provides custom menu item behavior for
@@ -55,8 +58,34 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
     private final Tab mTab;
     private @Nullable String mSelectedText;
 
+    // These are relative orders within the DEFAULT_ITEMS section. With these and the secondary
+    // assist below, an order value identical to an existing item in the menu means the new item
+    // will appear immediately after it.
+    static final int COPY_LINK_TO_HIGHLIGHT = 4;
+    static final int ASK_GEMINI = 4;
+    static final int OPEN_IN_READING_MODE = 5;
+    static final int READ_ALOUD_READ_ONLY = 6;
+
+    // Within SECONDARY_ASSIST_ITEMS:
+    static final int WEB_SEARCH_EDITABLE = 1;
+    static final int SHARE_EDITABLE = 3;
+    static final int READ_ALOUD_EDITABLE = 4;
+
     public TextSelectionActionMenuDelegate(Tab tab) {
         mTab = tab;
+    }
+
+    @Override
+    public @DefaultItem int[] getDefaultMenuItemOrder(@MenuType int menuType) {
+        return new @DefaultItem int[] {
+            DefaultItem.CUT,
+            DefaultItem.COPY,
+            DefaultItem.PASTE,
+            DefaultItem.PASTE_AS_PLAIN_TEXT,
+            DefaultItem.SELECT_ALL,
+            DefaultItem.WEB_SEARCH,
+            DefaultItem.SHARE
+        };
     }
 
     @Override
@@ -73,12 +102,27 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                             .setId(R.id.contextmenu_open_in_reading_mode)
                             .setGroupId(R.id.select_action_menu_delegate_items)
                             .setOrderAndCategory(
-                                    SelectionMenuItem.ItemOrder.OPEN_IN_READING_MODE,
+                                    OPEN_IN_READING_MODE,
                                     SelectionMenuItem.ItemGroupOffset.DEFAULT_ITEMS)
                             .setShowAsActionFlags(
                                     MenuItem.SHOW_AS_ACTION_NEVER
                                             | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
                             .build());
+        }
+        if (menuType == MenuType.DROPDOWN
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT)
+                && isSelectionReadOnly) {
+            boolean isCopyLinkEnabled = !selectedText.isEmpty() && !isSelectionPassword;
+            SelectionMenuItem copyLinkItem =
+                    new SelectionMenuItem.Builder(R.string.contextmenu_copy_link_to_highlight)
+                            .setId(R.id.contextmenu_copy_link_to_highlight)
+                            .setGroupId(org.chromium.content.R.id.select_action_menu_delegate_items)
+                            .setOrderAndCategory(
+                                    COPY_LINK_TO_HIGHLIGHT, ItemGroupOffset.DEFAULT_ITEMS)
+                            .setIsEnabled(isCopyLinkEnabled)
+                            .build();
+
+            items.add(copyLinkItem);
         }
         if (shouldShowAskGeminiForSelection(isSelectionPassword, selectedText)) {
             SelectionMenuItem.Builder builder =
@@ -95,23 +139,66 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
             setAskGeminiOrderAndCategory(builder);
             items.add(builder.build());
         }
-        if (menuType == MenuType.DROPDOWN
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT)
-                && isSelectionReadOnly) {
-            boolean isCopyLinkEnabled = !selectedText.isEmpty() && !isSelectionPassword;
-            SelectionMenuItem copyLinkItem =
-                    new SelectionMenuItem.Builder(R.string.contextmenu_copy_link_to_highlight)
-                            .setId(R.id.contextmenu_copy_link_to_highlight)
-                            .setGroupId(org.chromium.content.R.id.select_action_menu_delegate_items)
-                            .setOrderAndCategory(
-                                    SelectionMenuItem.ItemOrder.COPY_LINK_TO_HIGHLIGHT,
-                                    ItemGroupOffset.DEFAULT_ITEMS)
-                            .setIsEnabled(isCopyLinkEnabled)
-                            .build();
-
-            items.add(copyLinkItem);
-        }
         return items;
+    }
+
+    @Override
+    public @Nullable SelectionMenuItem buildItem(
+            @MenuType int menuType,
+            boolean isSelectionReadOnly,
+            String selectedText,
+            SelectionMenuItem.Builder builder) {
+        Context context = mTab.getContext();
+        if (menuType == MenuType.FLOATING && !builder.isEnabled()) {
+            return null;
+        }
+        if (!builder.isEnabled() && isSelectionReadOnly) {
+            if (builder.getId() == R.id.select_action_menu_cut
+                    || builder.getId() == android.R.id.paste
+                    || builder.getId() == android.R.id.pasteAsPlainText
+                    || builder.getId() == R.id.select_action_menu_select_all) {
+                return null;
+            }
+        }
+        if (builder.getId() == R.id.select_action_menu_share) {
+            if (!isSelectionReadOnly && menuType == MenuType.DROPDOWN) {
+                builder.setOrderAndCategory(SHARE_EDITABLE, ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
+            }
+        } else if (builder.getId() == R.id.select_action_menu_web_search) {
+            // Limited the title, "Search <default search engine> for <selected text>", to context
+            // menu triggered by cursor right click (or touchpad double tap) only. Otherwise, using
+            // default title "Web Search".
+            if (menuType == MenuType.DROPDOWN) {
+                String customTitle = getWebSearchMenuItemTitle(context, selectedText);
+                if (customTitle != null) {
+                    builder.setTitle(customTitle);
+                }
+                if (!isSelectionReadOnly) {
+                    builder.setOrderAndCategory(
+                            WEB_SEARCH_EDITABLE, ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
+                }
+            }
+        } else if (builder.getId() == Menu.NONE && isReadAloud(builder.getTitle(context))) {
+            if (isSelectionReadOnly || menuType != MenuType.DROPDOWN) {
+                builder.setOrderAndCategory(READ_ALOUD_READ_ONLY, ItemGroupOffset.DEFAULT_ITEMS);
+            } else {
+                builder.setOrderAndCategory(
+                        READ_ALOUD_EDITABLE, ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
+            }
+        }
+        return builder.build();
+    }
+
+    private static boolean isReadAloud(@Nullable CharSequence title) {
+        if (title != null) {
+            String lowerTitle = title.toString().toLowerCase(Locale.US);
+            if (lowerTitle.contains("read aloud")
+                    || lowerTitle.contains("listen")
+                    || lowerTitle.contains("reading mode")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -294,7 +381,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
     private void setAskGeminiOrderAndCategory(SelectionMenuItem.Builder builder) {
         String position = GlicContextMenuUtils.getAskGeminiSelectionMenuPosition();
         // By default "Ask Gemini" is interposed among the default items, in the gap just before
-        // Web Search (see SelectionMenuItem.ItemOrder.ASK_GEMINI). The field trial can opt into
+        // Web Search (see ASK_GEMINI). The field trial can opt into
         // the primary assist slot ("assist", shown first) or the secondary assist section
         // ("secondary", shown after Web Search) instead.
         if (GlicContextMenuUtils.ASK_GEMINI_POSITION_ASSIST.equals(position)) {
@@ -302,8 +389,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
         } else if (GlicContextMenuUtils.ASK_GEMINI_POSITION_SECONDARY.equals(position)) {
             builder.setOrderAndCategory(0, ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
         } else {
-            builder.setOrderAndCategory(
-                    SelectionMenuItem.ItemOrder.ASK_GEMINI, ItemGroupOffset.DEFAULT_ITEMS);
+            builder.setOrderAndCategory(ASK_GEMINI, ItemGroupOffset.DEFAULT_ITEMS);
         }
     }
 

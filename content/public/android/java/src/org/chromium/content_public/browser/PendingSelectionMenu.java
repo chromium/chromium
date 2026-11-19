@@ -73,6 +73,12 @@ public final class PendingSelectionMenu {
         mGroupTotals = new int[LogicalGroup.NUM_ENTRIES];
     }
 
+    /** Add item to menu if it is non-null. Otherwise, do nothing. */
+    public void maybeAddMenuItem(@Nullable SelectionMenuItem menuItem) {
+        if (menuItem == null) return;
+        addMenuItem(menuItem);
+    }
+
     public void addMenuItem(SelectionMenuItem menuItem) {
         int group = determineGroup(menuItem);
         mGroupsWithIcon[group] |= menuItem.getIcon(mContext) != null;
