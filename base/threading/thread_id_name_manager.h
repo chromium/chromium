@@ -70,8 +70,7 @@ class BASE_EXPORT ThreadIdNameManager {
       ThreadIdToHandleMap;
   typedef std::map<PlatformThreadHandle::Handle, std::string*>
       ThreadHandleToInternedNameMap;
-  typedef std::map<std::string, raw_ptr<std::string, CtnExperimental>>
-      NameToInternedNameMap;
+  typedef std::map<std::string, raw_ptr<std::string>> NameToInternedNameMap;
 
   ThreadIdNameManager();
   ~ThreadIdNameManager();
@@ -90,7 +89,7 @@ class BASE_EXPORT ThreadIdNameManager {
 
   // There's no point using a base::ObserverList behind a lock, so we just use
   // an std::vector instead.
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_;
+  std::vector<raw_ptr<Observer>> observers_;
 };
 
 }  // namespace base

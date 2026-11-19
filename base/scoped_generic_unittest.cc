@@ -215,9 +215,9 @@ TEST(ScopedGenericTest, ReceiverMoveAssign) {
 namespace {
 
 struct TrackedIntTraits : public ScopedGenericOwnershipTracking {
-  using OwnerMap = std::unordered_map<
-      int,
-      raw_ptr<const ScopedGeneric<int, TrackedIntTraits>, CtnExperimental>>;
+  using OwnerMap =
+      std::unordered_map<int,
+                         raw_ptr<const ScopedGeneric<int, TrackedIntTraits>>>;
   TrackedIntTraits(absl::flat_hash_set<int>* freed, OwnerMap* owners)
       : freed(freed), owners(owners) {}
 

@@ -25,7 +25,7 @@ class TestSource {
   size_t num_observers() const { return observers_.size(); }
 
  private:
-  std::vector<raw_ptr<TestSourceObserver, VectorExperimental>> observers_;
+  std::vector<raw_ptr<TestSourceObserver>> observers_;
 };
 
 void TestSource::AddObserver(TestSourceObserver* observer) {

@@ -31,8 +31,7 @@ std::pair<std::string_view, const Feature*> MakeNameToFeaturePair(
 }
 
 template <typename T>
-using ParamMapping =
-    flat_map<std::string, raw_ptr<const FeatureParam<T>, CtnExperimental>>;
+using ParamMapping = flat_map<std::string, raw_ptr<const FeatureParam<T>>>;
 
 std::string MakeParamKey(std::string_view feature_name,
                          std::string_view param_name) {
@@ -42,8 +41,7 @@ std::string MakeParamKey(std::string_view feature_name,
 template <typename T>
 ParamMapping<T> MakeParamMapping(
     base::span<const FeatureParam<T>* const> params_exposed_to_java) {
-  return MakeFlatMap<std::string,
-                     raw_ptr<const FeatureParam<T>, CtnExperimental>>(
+  return MakeFlatMap<std::string, raw_ptr<const FeatureParam<T>>>(
       params_exposed_to_java, {}, [](const FeatureParam<T>* param) {
         return std::make_pair(MakeParamKey(param->feature->name, param->name),
                               param);
@@ -72,9 +70,8 @@ FeatureMap::FeatureMap(
     base::span<const FeatureParam<double>* const> double_params_exposed_to_java,
     base::span<const FeatureParam<std::string>* const>
         string_params_exposed_to_java) {
-  mapping_ =
-      MakeFlatMap<std::string_view, raw_ptr<const Feature, CtnExperimental>>(
-          features_exposed_to_java, {}, &MakeNameToFeaturePair);
+  mapping_ = MakeFlatMap<std::string_view, raw_ptr<const Feature>>(
+      features_exposed_to_java, {}, &MakeNameToFeaturePair);
   boolean_params_mapping_ = MakeParamMapping(boolean_params_exposed_to_java);
   int_params_mapping_ = MakeParamMapping(int_params_exposed_to_java);
   double_params_mapping_ = MakeParamMapping(double_params_exposed_to_java);

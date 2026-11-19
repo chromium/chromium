@@ -56,18 +56,16 @@ class BASE_EXPORT FeatureMap {
       const std::string& param_name);
 
  private:
-  flat_map<std::string_view, raw_ptr<const Feature, CtnExperimental>> mapping_;
+  flat_map<std::string_view, raw_ptr<const Feature>> mapping_;
 
   // Keyed by "{feature_name}:{param_name}". Unlike `mapping_`, the keys are
   // built at runtime, so they must be owned by the maps.
-  flat_map<std::string, raw_ptr<const FeatureParam<bool>, CtnExperimental>>
+  flat_map<std::string, raw_ptr<const FeatureParam<bool>>>
       boolean_params_mapping_;
-  flat_map<std::string, raw_ptr<const FeatureParam<int>, CtnExperimental>>
-      int_params_mapping_;
-  flat_map<std::string, raw_ptr<const FeatureParam<double>, CtnExperimental>>
+  flat_map<std::string, raw_ptr<const FeatureParam<int>>> int_params_mapping_;
+  flat_map<std::string, raw_ptr<const FeatureParam<double>>>
       double_params_mapping_;
-  flat_map<std::string,
-           raw_ptr<const FeatureParam<std::string>, CtnExperimental>>
+  flat_map<std::string, raw_ptr<const FeatureParam<std::string>>>
       string_params_mapping_;
 };
 

@@ -254,7 +254,7 @@ class FooRemover : public Foo {
   void AddFooToRemove(Foo* foo) { foos_.push_back(foo); }
 
   void Observe(int x) override {
-    std::vector<raw_ptr<Foo, VectorExperimental>> tmp;
+    std::vector<raw_ptr<Foo>> tmp;
     tmp.swap(foos_);
     for (Foo* it : tmp) {
       list_->RemoveObserver(it);
@@ -263,7 +263,7 @@ class FooRemover : public Foo {
 
  private:
   const scoped_refptr<ObserverListThreadSafe<Foo>> list_;
-  std::vector<raw_ptr<Foo, VectorExperimental>> foos_;
+  std::vector<raw_ptr<Foo>> foos_;
 };
 
 TEST(ObserverListThreadSafeTest, RemoveMultipleObservers) {

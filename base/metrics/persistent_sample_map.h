@@ -31,7 +31,7 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
  public:
   using SampleToCountMap =
       std::map<HistogramBase::Sample32,
-               raw_ptr<std::atomic<HistogramBase::Count32>, CtnExperimental>>;
+               raw_ptr<std::atomic<HistogramBase::Count32>>>;
 
   // Constructs a persistent sample map using a PersistentHistogramAllocator
   // as the data source for persistent records.
