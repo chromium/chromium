@@ -445,46 +445,9 @@ class UnitTest(unittest.TestCase):
       {
         'status': 'Found dependency',
         'compile_targets': ['foo:foo_unittests'],
-        'gn_labels': ['//foo:foo_unittests'],
         'test_targets': ['foo_unittests'],
       },
     )
-
-  def test_analyze_gn_labels(self):
-    files = {
-      '/tmp/in.json': '''{\
-               "files": ["foo/foo.cc"],
-               "test_targets": ["foo_unittests"],
-               "additional_compile_targets": ["all"]
-             }''',
-      '/tmp/out.json.gn': '''{\
-               "status": "Found dependency",
-               "compile_targets": ["//foo:foo"],
-               "test_targets": ["//foo:foo_unittests"]
-             }''',
-    }
-
-    mbw = self.fake_mbw(files)
-    mbw.Call = lambda cmd, env=None, capture_output=True, input='': (0, '', '')
-
-    self.check(
-      [
-        'analyze',
-        '-c',
-        'debug_remoteexec',
-        '//out/Default',
-        '/tmp/in.json',
-        '/tmp/out.json',
-      ],
-      mbw=mbw,
-      ret=0,
-    )
-    out = json.loads(mbw.files['/tmp/out.json'])
-
-    # gn_labels covers the affected test targets too, which the caller
-    # builds along with compile_targets.
-    self.assertEqual(['foo:foo'], out['compile_targets'])
-    self.assertEqual(['//foo:foo', '//foo:foo_unittests'], out['gn_labels'])
 
   def test_analyze_optimizes_compile_for_all(self):
     files = {
@@ -519,7 +482,6 @@ class UnitTest(unittest.TestCase):
 
     # check that 'foo_unittests' is not in the compile_targets
     self.assertEqual(['all'], out['compile_targets'])
-    self.assertEqual(['all'], out['gn_labels'])
 
   def test_analyze_handles_other_toolchains(self):
     files = {
@@ -559,7 +521,6 @@ class UnitTest(unittest.TestCase):
     # output compile_targets should include all of the input test_targets and
     # additional_compile_targets.
     self.assertEqual(['all', 'foo_unittests'], out['compile_targets'])
-    self.assertEqual(['all'], out['gn_labels'])
 
   def test_analyze_handles_way_too_many_results(self):
     too_many_files = ', '.join(['"//foo:foo%d"' % i for i in range(40 * 1024)])
@@ -600,7 +561,6 @@ class UnitTest(unittest.TestCase):
     # build. The output compile_targets should include all of the input
     # test_targets and additional_compile_targets.
     self.assertEqual(['all', 'foo_unittests'], out['compile_targets'])
-    self.assertEqual(['all'], out['gn_labels'])
 
   def test_check(self):
     files = {

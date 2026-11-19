@@ -67,11 +67,6 @@ fields:
     list may contain entries that are *not* listed in the input (see
     the description of `additional_compile_targets` above and
     [design_spec.md](the design spec) for how this works).
-  * `gn_labels`: the GN labels of the `compile_targets` and of the
-    affected `test_targets`, for tools that take labels instead of ninja
-    targets, such as `gn check`. If `compile_targets` falls back to the
-    input targets, this lists the labels of the input targets. It is
-    `["all"]` if it would contain `all`.
   * `invalid_targets`: a list of any targets that were passed in
     either of the input lists that weren't actually found in the graph.
   * `test_targets`: the subset of the input `test_targets` that are
