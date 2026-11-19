@@ -4,9 +4,11 @@
 
 package org.chromium.base;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -16,6 +18,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** junit tests for {@link PathUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -80,5 +84,58 @@ public class PathUtilsTest {
         assertEquals(expectedDataDir, dataDir);
         assertEquals(expectedCacheDir, cacheDir);
         assertEquals(expectedThumbnailDir, thumbnailDir);
+    }
+
+    @Test
+    public void testGetDownloadsDirectoryCaching() {
+        AtomicInteger callCount = new AtomicInteger();
+        AtomicReference<File[]> externalDirsRef = new AtomicReference<>(new File[0]);
+        Context wrapper =
+                new ContextWrapper(ApplicationProvider.getApplicationContext()) {
+                    @Override
+                    public File[] getExternalFilesDirs(String type) {
+                        callCount.incrementAndGet();
+                        return externalDirsRef.get();
+                    }
+                };
+        ContextUtils.initApplicationContextForTests(wrapper);
+
+        // Unmounted storage returning empty array should not be cached.
+        assertEquals("", PathUtils.getDownloadsDirectory());
+        assertEquals(1, callCount.get());
+
+        // Once mounted, the primary downloads directory is resolved and cached.
+        externalDirsRef.set(
+                new File[] {
+                    new File("/storage/emulated/0/Download"), new File("/storage/sdcard1/Download")
+                });
+        assertEquals("/storage/emulated/0/Download", PathUtils.getDownloadsDirectory());
+        assertEquals(2, callCount.get());
+
+        // Subsequent getDownloadsDirectory() calls hit the cache without invoking
+        // getExternalFilesDirs(), while getAllPrivateDownloadsDirectories() remains live.
+        externalDirsRef.set(
+                new File[] {
+                    new File("/storage/emulated/0/Download2"), new File("/storage/sdcard2/Download")
+                });
+        assertEquals("/storage/emulated/0/Download", PathUtils.getDownloadsDirectory());
+        assertEquals(2, callCount.get());
+        assertArrayEquals(
+                new String[] {"/storage/emulated/0/Download2", "/storage/sdcard2/Download"},
+                PathUtils.getAllPrivateDownloadsDirectories());
+        assertEquals(3, callCount.get());
+
+        // resetForTesting() clears the cached downloads directory.
+        PathUtils.resetForTesting();
+        assertEquals("/storage/emulated/0/Download2", PathUtils.getDownloadsDirectory());
+        assertEquals(4, callCount.get());
+
+        // setAllPrivateDownloadsDirectoriesForTesting() overrides the populated cache.
+        PathUtils.setAllPrivateDownloadsDirectoriesForTesting(
+                new String[] {"/storage/override/Download"});
+        assertEquals("/storage/override/Download", PathUtils.getDownloadsDirectory());
+        PathUtils.setAllPrivateDownloadsDirectoriesForTesting(new String[0]);
+        assertEquals("", PathUtils.getDownloadsDirectory());
+        assertEquals(4, callCount.get());
     }
 }

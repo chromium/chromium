@@ -24,6 +24,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PathUtils;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
@@ -278,6 +279,11 @@ public class ProcessInitializationHandler {
         // - Pixel 2: ~10 ms
         // - Nokia 1 (Android Go): 20-200 ms
         warmUpSharedPrefs();
+        // Pre-warm the primary downloads directory off the UI thread before native loads so
+        // post-native callers hit the cached path instead of blocking on StorageManager Binder IPC.
+        // Uses USER_VISIBLE_MAY_BLOCK so the task is not startup-fenced if migrated to the native
+        // ThreadPool before running.
+        PostTask.postTask(TaskTraits.USER_VISIBLE_MAY_BLOCK, PathUtils::getDownloadsDirectory);
         ContentFiltersObserverBridge.warmUp();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                 && ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()) {

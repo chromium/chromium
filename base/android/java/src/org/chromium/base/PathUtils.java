@@ -53,6 +53,16 @@ public abstract class PathUtils {
     private static @Nullable String sCacheSubDirectory;
     private static @Nullable String sDataDirectoryBasePath;
     private static @Nullable String sCacheDirectoryBasePath;
+    // Kept separate from sDirPathFetchTask: unlike the app-internal directories above (direct
+    // stat/mkdir on /data/data), Context.getExternalFilesDirs() makes StorageManager Binder IPCs
+    // and touches MediaProvider FUSE storage (/storage/emulated/0), even without a physical SD
+    // card. Sharing sDirPathFetchTask would:
+    // 1. Block getDataDirectory()/getCacheDirectory() on those Binder/FUSE stalls, regress WebView
+    //    startup (AwDataDirLock), create Android/data/<host_app>/files/Download in WebView host
+    //    apps, and fail in isolated/SDK-sandbox processes where StorageManager IPC is disallowed.
+    // 2. Permanently cache "" in the one-shot String[] if emulated storage is not yet mounted
+    //    (e.g. Direct Boot / early unlock).
+    private static volatile @Nullable String sDownloadsDirectory;
 
     // Prevent instantiation.
     private PathUtils() {}
@@ -66,6 +76,7 @@ public abstract class PathUtils {
         sCacheSubDirectory = null;
         sDataDirectoryBasePath = null;
         sCacheDirectoryBasePath = null;
+        sDownloadsDirectory = null;
     }
 
     /**
@@ -275,12 +286,26 @@ public abstract class PathUtils {
     @CalledByNative
     public static @JniType("std::string") String getDownloadsDirectory() {
         if (sDownloadsDirectoryForTesting != null) return sDownloadsDirectoryForTesting;
+        if (sAllPrivateDownloadsDirectoriesForTesting != null) {
+            return sAllPrivateDownloadsDirectoriesForTesting.length == 0
+                    ? ""
+                    : sAllPrivateDownloadsDirectoriesForTesting[0];
+        }
+        String cached = sDownloadsDirectory;
+        if (cached != null) return cached;
+
+        // Pre-warmed on a background thread before native loads and cached once resolved.
         // TODO(crbug.com/41187555): Move calls to getDownloadsDirectory() to background thread.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+        try (TraceEvent te = TraceEvent.scoped("PathUtils.getDownloadsDirectory")) {
             // https://developer.android.com/preview/privacy/scoped-storage
             String[] dirs = getAllPrivateDownloadsDirectories();
-            assert dirs != null;
-            return dirs.length == 0 ? "" : dirs[0];
+            if (dirs.length > 0 && !dirs[0].isEmpty()) {
+                sDownloadsDirectory = dirs[0];
+                return dirs[0];
+            }
+            // Don't cache empty results in case external storage is not mounted yet (e.g. Direct
+            // Boot / early unlock).
+            return "";
         }
     }
 
