@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/observers/soft_navigation_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -38,9 +39,12 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/navigation/navigation_type_for_navigation_api.mojom-shared.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace page_load_metrics {
@@ -1764,6 +1768,150 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationTest, BackForwardCache) {
       "PageLoad.SoftNavigation.SoftNavigationPageLoadMetricsObserverState",
       SoftNavigationPageLoadMetricsObserverState::kRestoredFromBackForwardCache,
       3);
+}
+
+class SoftNavigationPreNavigationInputTest : public SoftNavigationTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SoftNavigationTest::SetUpCommandLine(command_line);
+    // Explicitly remove --allow-pre-commit-input so normal production
+    // paint-holding and pre-commit input suppression remain active.
+    command_line->RemoveSwitch(blink::switches::kAllowPreCommitInput);
+  }
+};
+
+// Regression test for crbug.com/585428860: an input event whose real OS
+// timestamp predates the committed document's `navigation_start` (e.g. queued
+// across navigation / `beforeunload` while remaining within
+// `ui::ValidateEventTimeClock`'s 60-second validity window) must not crash
+// `SoftNavigationHeuristics::ReportSoftNavigationToMetrics`.
+IN_PROC_BROWSER_TEST_F(SoftNavigationPreNavigationInputTest,
+                       PreNavigationEventTimestamp) {
+  Serve("/beforeunload.html",
+        "<!doctype html><script>"
+        "window.addEventListener('beforeunload', () => {});"
+        "</script>");
+  Start();
+  Load("/beforeunload.html");
+
+  // Record a real monotonic timestamp before starting the navigation to the
+  // soft-navigation page. The `beforeunload` handler ensures a full
+  // browser -> renderer -> browser round-trip before
+  // `NavigationRequest::UpdateNavigationStartTime` advances `navigation_start`,
+  // guaranteeing `pre_navigation_timestamp < ReferenceMonotonicTime()` without
+  // sleeping.
+  const base::TimeTicks pre_navigation_timestamp = ui::EventTimeForNow();
+
+  PageLoadMetricsTestWaiter waiter(web_contents());
+  waiter.AddPageExpectation(PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+  waiter.AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+  waiter.AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kLargestContentfulPaint);
+  Load("/soft_navigation.html#text");
+  waiter.Wait();
+  WaitForFrameReady(web_contents());
+
+  // Confirm that `pre_navigation_timestamp` passes Chromium's OS event clock
+  // validation untouched (i.e. within `IsValidTimebase`'s 60-second window).
+  base::TimeTicks validated_timestamp = pre_navigation_timestamp;
+  ui::ValidateEventTimeClock(&validated_timestamp);
+  ASSERT_EQ(validated_timestamp, pre_navigation_timestamp);
+
+  // Register a click listener that waits two animation frames after
+  // `loadNextPage()` so Blink completes paint and executes
+  // `SoftNavigationHeuristics::ReportSoftNavigationToMetrics`.
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    (() => {
+      globals.staleClickPainted = new Promise(resolve => {
+        document.getElementById('next-page').addEventListener('click', () => {
+          requestAnimationFrame(() => requestAnimationFrame(resolve));
+        }, { once: true });
+      });
+    })();
+  )"));
+
+  const gfx::Point point =
+      gfx::ToFlooredPoint(content::GetCenterCoordinatesOfElementWithId(
+          web_contents(), "next-page"));
+  const gfx::Rect offset = web_contents()->GetContainerBounds();
+  blink::WebMouseEvent mouse_event(blink::WebInputEvent::Type::kMouseDown,
+                                   blink::WebInputEvent::kNoModifiers,
+                                   validated_timestamp);
+  mouse_event.button = blink::WebMouseEvent::Button::kLeft;
+  mouse_event.click_count = 1;
+  mouse_event.SetPositionInWidget(point.x(), point.y());
+  mouse_event.SetPositionInScreen(point.x() + offset.x(),
+                                  point.y() + offset.y());
+  GetRenderWidgetHost()->ForwardMouseEvent(mouse_event);
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  GetRenderWidgetHost()->ForwardMouseEvent(mouse_event);
+
+  ASSERT_TRUE(ExecJs(web_contents(), "globals.staleClickPainted"));
+  EXPECT_EQ(1, EvalJs(web_contents(), "globals.currentPage"));
+  EXPECT_TRUE(web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
+
+  // Verify that a subsequent normal soft navigation still succeeds and reports
+  // cleanly to `page_load_metrics`.
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    (() => {
+      globals.normalClickHandled = new Promise(resolve => {
+        document.getElementById('next-page').addEventListener(
+            'click', resolve, { once: true });
+      });
+    })();
+  )"));
+  TriggerSoftNavigationAndWait(web_contents(), &waiter,
+                               /*expected_soft_nav_count=*/1,
+                               /*element_id=*/"next-page");
+  ASSERT_TRUE(ExecJs(web_contents(), "globals.normalClickHandled"));
+  EXPECT_EQ(2, EvalJs(web_contents(), "globals.currentPage"));
+  EXPECT_TRUE(web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
+
+  // Navigate away to flush UKM/metrics and confirm downstream tracking stays
+  // consistent.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Fetch renderer histograms and verify the pre-navigation click recorded
+  // `kInvalidTimeOrigin` while the subsequent normal click recorded
+  // `kSoftNavigationDetected`.
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  constexpr int kSoftNavigationDetected = 0;
+  constexpr int kInvalidTimeOrigin = 16;
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Internal.SoftNavigationOutcome", kInvalidTimeOrigin, 1);
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Internal.SoftNavigationOutcome", kSoftNavigationDetected, 1);
+  histogram_tester().ExpectTotalCount("PageLoad.Internal.SoftNavigationOutcome",
+                                      2);
+  histogram_tester().ExpectUniqueSample(
+      "PageLoad.SoftNavigation.SoftNavigationPageLoadMetricsObserverState",
+      SoftNavigationPageLoadMetricsObserverState::kStarted, 1);
+
+  // Verify UKM recorded only the second (valid) soft navigation (?id=2#text)
+  // with a positive start time, and that the PageLoad entry for
+  // /soft_navigation.html#text reports SoftNavigationCount == 1.
+  const auto source_id_to_start_time =
+      GetSoftNavigationMetrics(ukm_recorder(), SoftNavigation::kStartTimeName);
+  ASSERT_EQ(source_id_to_start_time.size(), 1u);
+  const auto& [soft_nav_source_id, soft_nav_start_time] =
+      *source_id_to_start_time.begin();
+  EXPECT_GT(soft_nav_start_time, 0);
+  const UkmSource* soft_nav_source =
+      ukm_recorder().GetSourceForSourceId(soft_nav_source_id);
+  ASSERT_TRUE(soft_nav_source);
+  EXPECT_THAT(soft_nav_source->url().spec(),
+              EndsWith("/soft_navigation.html?id=2#text"));
+
+  const auto page_load_entries =
+      GetMergedUkmEntries(ukm_recorder(), PageLoad::kEntryName);
+  const GURL soft_nav_page_url = embedded_test_server()->GetURL(
+      "example.com", "/soft_navigation.html#text");
+  auto page_load_it = page_load_entries.find(soft_nav_page_url);
+  ASSERT_NE(page_load_it, page_load_entries.end());
+  EXPECT_THAT(page_load_it->second.get(),
+              HasMetricWithValue(PageLoad::kSoftNavigationCountName, 1));
 }
 }  // namespace
 }  // namespace page_load_metrics
