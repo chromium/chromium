@@ -47,6 +47,7 @@ class RecordingPopupHost : public OmniboxPopupHost {
   }
   void RequestFocus() override { calls_->push_back("RequestFocus"); }
   bool IsShown() const override { return shown_; }
+  bool IsBrowserOrPopupActive() override { return true; }
   OmniboxPopupWebUIBaseContent* GetWebUIContent() override { return nullptr; }
   void OnOmniboxFocused() override {}
   void SetPermissionPromptShowing(bool showing) override {}

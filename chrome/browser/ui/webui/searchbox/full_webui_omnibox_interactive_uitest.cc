@@ -406,20 +406,13 @@ class FullWebUIOmniboxInteractiveTestBase
  protected:
   auto GetActivePopupWebView() {
     return base::BindLambdaForTesting([this]() -> views::View* {
-      auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-      if (!browser_view || !browser_view->GetLocationBar()) {
-        return nullptr;
-      }
-      auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-          browser_view->GetLocationBar()->GetOmniboxPopupView());
-      if (!popup_view || !popup_view->popup_host()) {
-        return nullptr;
-      }
-      return popup_view->popup_host()->GetWebUIContent();
+      return GetPopupWebUIContentForBrowser(browser());
     });
   }
 
-  auto CheckWebUIInputFocus(bool expected_focus) {
+  auto CheckWebUIInputFocus(
+      bool expected_focus,
+      ui::ElementIdentifier popup_web_view = kPopupWebView) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWebUIInputFocusChanged);
     StateChange focus_changed;
     focus_changed.event = kWebUIInputFocusChanged;
@@ -438,7 +431,7 @@ class FullWebUIOmniboxInteractiveTestBase
             })",
         expected_focus ? "true" : "false");
     focus_changed.continue_across_navigation = true;
-    return WaitForStateChange(kPopupWebView, focus_changed);
+    return WaitForStateChange(popup_web_view, focus_changed);
   }
 
   auto WaitForLocationBarFocusRingHidden() {
@@ -718,7 +711,9 @@ class FullWebUIOmniboxInteractiveTestBase
         WaitForOmniboxFocus(true));
   }
 
-  auto WaitForWebUIInputValue(const std::string& expected_value) {
+  auto WaitForWebUIInputValue(
+      const std::string& expected_value,
+      ui::ElementIdentifier popup_web_view = kPopupWebView) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWebUIInputValueChanged);
     StateChange value_changed;
     value_changed.event = kWebUIInputValueChanged;
@@ -726,7 +721,7 @@ class FullWebUIOmniboxInteractiveTestBase
     value_changed.test_function = base::StringPrintf(
         "(el) => el && el.value === '%s'", expected_value.c_str());
     value_changed.continue_across_navigation = true;
-    return WaitForStateChange(kPopupWebView, value_changed);
+    return WaitForStateChange(popup_web_view, value_changed);
   }
 
   auto InputWebUIText(const std::string& text) {
@@ -832,6 +827,23 @@ class FullWebUIOmniboxInteractiveTestBase
         ClickMouse());
   }
 
+  // Waits until `element` is rendered and lies entirely inside the viewport of
+  // a popup WebView (`kPopupWebView` or `kAimPopupWebView`). The popup widget
+  // resizes to fit its content after the content lays out, so an element in a
+  // newly added row can have a size while it is still outside the widget, where
+  // `ClickPopupElement()` can't target it.
+  auto WaitForPopupElementInViewport(const ui::ElementIdentifier& contents_id,
+                                     const DeepQuery& element) {
+    return InAnyContext(WaitForJsConditionAt(contents_id, element, R"((el) => {
+      if (!el) {
+        return false;
+      }
+      const r = el.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && r.left >= 0 && r.top >= 0 &&
+             r.right <= window.innerWidth && r.bottom <= window.innerHeight;
+    })"));
+  }
+
   auto ClearWebUIText() {
     return Steps(InAnyContext(ExecuteJsAt(kPopupWebView, kWebUIInput,
                                           R"(el => {
@@ -870,18 +882,23 @@ class FullWebUIOmniboxInteractiveTestBase
 
   // Sends a real key press to a popup WebView (`kPopupWebView` or
   // `kAimPopupWebView`) for each character of `text`, which must be lowercase
-  // ASCII letters or spaces. Unlike `InputWebUIText()`, which sets the input's
-  // value from JS, this goes through the platform's key event routing to the
-  // popup widget and Blink's text editing, as real typing does.
+  // ASCII letters, digits, or spaces. Unlike `InputWebUIText()`, which sets the
+  // input's value from JS, this goes through the platform's key event routing
+  // to the popup widget and Blink's text editing, as real typing does.
   auto TypeWebUITextWithKeyPresses(
       std::string_view text,
       const ui::ElementIdentifier& contents_id = kPopupWebView) {
     MultiStep steps;
     for (const char c : text) {
-      CHECK(base::IsAsciiLower(c) || c == ' ');
-      const ui::KeyboardCode key =
-          (c == ' ') ? ui::VKEY_SPACE
-                     : static_cast<ui::KeyboardCode>(ui::VKEY_A + (c - 'a'));
+      ui::KeyboardCode key;
+      if (c == ' ') {
+        key = ui::VKEY_SPACE;
+      } else if (base::IsAsciiLower(c)) {
+        key = static_cast<ui::KeyboardCode>(ui::VKEY_A + (c - 'a'));
+      } else {
+        CHECK(base::IsAsciiDigit(c));
+        key = static_cast<ui::KeyboardCode>(ui::VKEY_0 + (c - '0'));
+      }
       AddStep(steps, InAnyContext(SendKeyPress(contents_id, key, ui::EF_NONE)));
     }
     return steps;
@@ -1117,16 +1134,28 @@ class FullWebUIOmniboxInteractiveTestBase
     });
   }
 
-  // Returns `target_browser`'s popup widget, or null if there is none (it is
-  // destroyed on hide when `kOmniboxFullWebUIDestroyWidgetOnHide` is enabled).
-  static views::Widget* GetPopupWidget(BrowserWindowInterface* target_browser) {
+  static OmniboxController* GetOmniboxController(
+      BrowserWindowInterface* target_browser) {
+    auto* view = BrowserView::GetBrowserViewForBrowser(target_browser);
+    auto* location_bar = view ? view->GetLocationBar() : nullptr;
+    return location_bar ? location_bar->GetOmniboxController() : nullptr;
+  }
+
+  static OmniboxPopupWebUIBaseContent* GetPopupWebUIContentForBrowser(
+      BrowserWindowInterface* target_browser) {
     auto* view = BrowserView::GetBrowserViewForBrowser(target_browser);
     auto* location_bar = view ? view->GetLocationBar() : nullptr;
     OmniboxPopupView* popup_view =
         location_bar ? location_bar->GetOmniboxPopupView() : nullptr;
     OmniboxPopupHost* host = popup_view ? popup_view->popup_host() : nullptr;
+    return host ? host->GetWebUIContent() : nullptr;
+  }
+
+  // Returns `target_browser`'s popup widget, or null if there is none (it is
+  // destroyed on hide when `kOmniboxFullWebUIDestroyWidgetOnHide` is enabled).
+  static views::Widget* GetPopupWidget(BrowserWindowInterface* target_browser) {
     OmniboxPopupWebUIBaseContent* content =
-        host ? host->GetWebUIContent() : nullptr;
+        GetPopupWebUIContentForBrowser(target_browser);
     return content ? content->GetWidget() : nullptr;
   }
 
@@ -4217,6 +4246,126 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, TabSwitchKeepsPopup) {
                    popup_view->popup_host()->IsShown();
           },
           true, "PopupIsShown"));
+}
+
+// Verifies that switching to a tab in another window from a closing NTP with
+// an unload listener activates and keeps active the target window rather than
+// re-activating the source window when the deferred NTP close completes.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       SwitchToTabFromClosingNtpActivatesOtherWindow) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL fg_url = embedded_test_server()->GetURL("/simple.html");
+  const GURL second_url = embedded_test_server()->GetURL("/title2.html");
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondPopupWebView);
+  const DeepQuery kSwitchToTabChip = {
+      "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
+      "cr-searchbox-match[has-action]", "cr-searchbox-action#action"};
+
+  // Open the switch target as a background tab in the first window.
+  AddTypedUrlToHistory(target_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), target_url));
+
+  auto is_second_popup_active = [this]() {
+    auto* popup_widget = GetPopupWidget(second_browser_);
+    auto* controller = GetOmniboxController(second_browser_);
+    return popup_widget && popup_widget->IsVisible() &&
+           popup_widget->IsActive() && controller &&
+           controller->edit_model()->has_focus();
+  };
+
+  RunTestSequence(
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, fg_url),
+      WaitForWebContentsReady(kTab1), CheckActiveTabIndex(1),
+      // Open a second window with a background tab and a closing NTP that has
+      // an unload listener, then focus its omnibox.
+      OpenAndActivateSecondBrowserWindow(), Do([this, second_url]() {
+        ASSERT_TRUE(ui_test_utils::NavigateToURL(second_browser_, second_url));
+        chrome::ExecuteCommand(second_browser_, IDC_NEW_TAB);
+      }),
+      PollUntil(
+          [this]() {
+            return second_browser_->GetTabStripModel()->count() == 2 &&
+                   second_browser_->GetTabStripModel()->active_index() == 1;
+          },
+          "WaitForSecondNtpTabCreated"),
+      Do([this, is_second_popup_active]() {
+        content::WebContents* ntp =
+            second_browser_->GetTabStripModel()->GetActiveWebContents();
+        ASSERT_TRUE(ntp);
+        ASSERT_TRUE(content::WaitForLoadStop(ntp));
+        ASSERT_TRUE(content::ExecJs(
+            ntp, "window.addEventListener('unload', () => {});"));
+        if (!is_second_popup_active()) {
+          chrome::ExecuteCommand(second_browser_, IDC_FOCUS_LOCATION);
+        }
+      }),
+      PollUntil(is_second_popup_active, "WaitForSecondPopupActive"),
+      InAnyContext(InstrumentNonTabWebView(
+          kSecondPopupWebView,
+          base::BindLambdaForTesting([this]() -> views::View* {
+            return GetPopupWebUIContentForBrowser(second_browser_);
+          }))),
+      InSameContextAs(
+          kSecondPopupWebView,
+          WaitForWebContentsReady(kSecondPopupWebView,
+                                  GURL(chrome::kChromeUIOmniboxPopupURL))),
+      CheckWebUIInputFocus(true, kSecondPopupWebView),
+      // Type the target URL's title and click the switch-to-tab chip.
+      TypeWebUITextWithKeyPresses("title1", kSecondPopupWebView),
+      InAnyContext(WaitForWebUIInputValue("title1", kSecondPopupWebView)),
+      WaitForPopupElementInViewport(kSecondPopupWebView, kSwitchToTabChip),
+      ClickPopupElement(kSecondPopupWebView, kSwitchToTabChip),
+      // The deferred NTP close finishes after the first window is shown; verify
+      // the first window switches to the target tab and stays active.
+      PollUntil(
+          [this]() {
+            return second_browser_->GetTabStripModel()->count() == 1;
+          },
+          "WaitForClosingNtpDetached"),
+      PollUntil(
+          [this, target_url]() {
+            return browser()
+                       ->tab_strip_model()
+                       ->GetActiveWebContents()
+                       ->GetLastCommittedURL() == target_url;
+          },
+          "WaitForTargetTabActivated"),
+      PollUntil(
+          [this]() {
+            return BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetWidget()
+                ->IsActive();
+          },
+          "WaitForTargetWindowActive"),
+      CheckResult([this]() { return IsBrowserOrPopupActive(second_browser_); },
+                  false, "SourceWindowInactive"));
+}
+
+// Verifies that switching tabs inside the active browser window while the Full
+// WebUI popup is focused restores focus to the newly active tab's page.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       SwitchTabInActiveWindowWithPopupFocusedFocusesPage) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      AddInstrumentedTab(kTab2, GURL("chrome://credits/")),
+      WaitForWebContentsReady(kTab2), ClickWebPageBody(kTab2),
+      WaitForOmniboxFocus(false), UninstrumentWebContents(kPopupWebView),
+      SwitchTabAndRestorePopup(kTabStripElementId, 1), WaitForPopupActive(),
+      WaitForOmniboxFocus(true), SwitchTab(kTabStripElementId, 2),
+      WaitForPopupDismissed(), WaitForOmniboxFocus(false),
+      WaitForBrowserWidgetActive(),
+      PollUntil(
+          [this]() {
+            auto* browser_view =
+                BrowserView::GetBrowserViewForBrowser(browser());
+            auto* focus_manager =
+                browser_view ? browser_view->GetFocusManager() : nullptr;
+            return focus_manager &&
+                   focus_manager->GetFocusedView() ==
+                       browser_view->GetActiveContentsWebView();
+          },
+          "WaitForTab2PageFocused"));
 }
 
 // Verifies that opening a new tab (which auto-focuses the omnibox) keeps the

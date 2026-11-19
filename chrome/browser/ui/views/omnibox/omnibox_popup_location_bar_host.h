@@ -49,6 +49,7 @@ class OmniboxPopupLocationBarHost : public OmniboxPopupHost,
   void Hide() override;
   void RequestFocus() override;
   bool IsShown() const override;
+  bool IsBrowserOrPopupActive() override;
   OmniboxPopupWebUIBaseContent* GetWebUIContent() override;
   void OnOmniboxFocused() override {}
   void SetPermissionPromptShowing(bool showing) override;

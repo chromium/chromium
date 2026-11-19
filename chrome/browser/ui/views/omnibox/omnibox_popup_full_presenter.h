@@ -269,17 +269,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // otherwise the full URL if `show_full_url`, or the permanent display text.
   std::u16string GetOmniboxText(bool show_full_url);
 
-  // Returns the browser window's widget. In macOS immersive fullscreen this is
-  // not the location bar's widget, which is then a non-activatable overlay.
-  views::Widget* GetBrowserWidget();
-
-  // Returns whether the browser widget or this popup's widget is active. This
-  // is true while the omnibox is focused, since the popup then holds
-  // activation, and false once another window, such as a bubble anchored to
-  // the browser window, takes activation. Returns false if there is no browser
-  // widget.
-  bool IsBrowserOrPopupActive();
-
   // Returns whether a focus request may activate the popup. This is
   // `IsBrowserOrPopupActive()`, plus, on Mac, a child widget such as a bubble
   // anchored to the browser window holding activation.

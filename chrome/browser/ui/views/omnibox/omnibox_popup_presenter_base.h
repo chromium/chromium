@@ -122,6 +122,8 @@ class OmniboxPopupPresenterBase
   // Tells whether the popup widget exists.
   bool IsShown() const override;
 
+  bool IsBrowserOrPopupActive() override;
+
   // Request focus on the popup widget and its web contents.
   void RequestFocus() override;
 
@@ -373,6 +375,10 @@ class OmniboxPopupPresenterBase
   LocationBar* location_bar() const { return location_bar_.get(); }
 
   OmniboxController* controller() const { return controller_.get(); }
+
+  // Returns the browser window's widget. In macOS immersive fullscreen this is
+  // not the location bar's widget, which is then a non-activatable overlay.
+  views::Widget* GetBrowserWidget();
 
   // permissions::PermissionRequestManager::Observer:
   void OnPromptAdded() override;

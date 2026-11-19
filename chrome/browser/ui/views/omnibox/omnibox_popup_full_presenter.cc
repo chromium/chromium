@@ -1319,15 +1319,6 @@ OmniboxFullPopupWebUIContent* OmniboxPopupFullPresenter::GetWebUIContent() {
       OmniboxPopupPresenterBase::GetWebUIContent());
 }
 
-bool OmniboxPopupFullPresenter::IsBrowserOrPopupActive() {
-  views::Widget* browser_widget = GetBrowserWidget();
-  if (!browser_widget) {
-    return false;
-  }
-  return browser_widget->IsActive() ||
-         (GetWidget() && GetWidget()->IsActive());
-}
-
 bool OmniboxPopupFullPresenter::CanTakeFocus() {
   if (IsBrowserOrPopupActive()) {
     return true;
@@ -1342,11 +1333,6 @@ bool OmniboxPopupFullPresenter::CanTakeFocus() {
 #else
   return false;
 #endif  // BUILDFLAG(IS_MAC)
-}
-
-views::Widget* OmniboxPopupFullPresenter::GetBrowserWidget() {
-  views::Widget* widget = delegate().GetLocationBarWidget();
-  return widget ? widget->GetTopLevelWidget() : nullptr;
 }
 
 views::FocusManager* OmniboxPopupFullPresenter::GetBrowserFocusManager() {

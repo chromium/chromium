@@ -108,6 +108,12 @@ bool OmniboxPopupLocationBarHost::IsShown() const {
   return content_ && content_->GetVisible();
 }
 
+bool OmniboxPopupLocationBarHost::IsBrowserOrPopupActive() {
+  views::Widget* widget = location_bar_view_->GetWidget();
+  views::Widget* top_level = widget ? widget->GetTopLevelWidget() : nullptr;
+  return top_level && top_level->IsActive();
+}
+
 OmniboxPopupWebUIBaseContent* OmniboxPopupLocationBarHost::GetWebUIContent() {
   return content_;
 }

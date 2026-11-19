@@ -31,6 +31,8 @@ class OmniboxPopupHost {
   virtual void RequestFocus() = 0;
   // Returns whether the WebUI is shown.
   virtual bool IsShown() const = 0;
+  // Returns whether the browser window or its popup widget is active.
+  virtual bool IsBrowserOrPopupActive() = 0;
   // Returns the WebUI content view. May return null before the content is
   // created.
   virtual OmniboxPopupWebUIBaseContent* GetWebUIContent() = 0;
