@@ -6,14 +6,19 @@
 
 #include <string>
 
+#include "base/check.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/webui/settings/on_device_ai_settings_handler.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,11 +29,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/events/event.h"
-#include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/test/button_test_api.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -48,14 +52,17 @@ class AIPageActionControllerBrowserTest : public InProcessBrowserTest {
         {});
   }
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    WaitForInitialWebUIToolbar(browser());
+  }
+
   AIPageActionController& controller() {
     return *AIPageActionController::From(browser());
   }
 
-  page_actions::PageActionView& chip() {
-    return *BrowserElementsViews::From(browser())
-                ->GetViewAs<page_actions::PageActionView>(
-                    kPageActionOnDeviceAiElementId);
+  page_actions::PageActionTestAccessor chip() {
+    return page_actions::PageActionTestAccessor(browser(), kActionOnDeviceAi);
   }
 
   views::DialogDelegate* GetBubbleDialog() {
@@ -66,20 +73,47 @@ class AIPageActionControllerBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsExpandedChipShowing() {
-    if (chip().GetSlideAnimationForTesting().is_animating()) {
-      chip().GetSlideAnimationForTesting().End();
+    chip().FinishAnimation();
+    if (!chip().ShouldShowSuggestionChip()) {
+      return false;
     }
-    return chip().GetVisible() && chip().IsChipVisible();
+    return base::test::RunUntil([&]() { return chip().IsChipShowing(); });
   }
 
   views::DialogDelegate* ClickChip() {
-    views::test::ButtonTestApi(&chip()).NotifyClick(
-        ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE));
-    return GetBubbleDialog();
+    if (!base::test::RunUntil(
+            [&]() { return chip().GetElement() != nullptr; })) {
+      ADD_FAILURE() << "Timed out waiting for page action element.";
+      return nullptr;
+    }
+    views::DialogDelegate* dialog = nullptr;
+    base::RunLoop run_loop;
+    const ui::ElementTracker::Subscription subscription =
+        ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+            kOnDeviceAiBubbleElementId,
+            BrowserElementsViews::From(browser())->GetContext(),
+            base::BindLambdaForTesting([&](ui::TrackedElement* element) {
+              if (!element) {
+                return;
+              }
+              dialog = GetBubbleDialog();
+              CHECK(dialog);
+              // Clicking in WebUI mode opens the bubble asynchronously; disable
+              // close-on-deactivate during `Widget::Show()` so concurrent
+              // browser tests on Xvfb cannot steal focus and close it early.
+              auto* const bubble = dialog->AsBubbleDialogDelegate();
+              CHECK(bubble);
+              bubble->set_close_on_deactivate(false);
+              run_loop.Quit();
+            }));
+    chip().Click(page_actions::PageActionTrigger::kKeyboard);
+    run_loop.Run();
+    return dialog;
   }
 
   void CloseBubble(bool accept = true) {
     views::DialogDelegate* const dialog = GetBubbleDialog();
+    ASSERT_TRUE(dialog);
     views::test::WidgetDestroyedWaiter waiter(dialog->GetWidget());
     if (accept) {
       dialog->AcceptDialog();
@@ -90,9 +124,13 @@ class AIPageActionControllerBrowserTest : public InProcessBrowserTest {
   }
 
   bool WaitForChipCollapse() {
+    chip().FinishAnimation();
     return base::test::RunUntil([&]() {
-      return !IsExpandedChipShowing() && chip().GetVisible() &&
-             !chip().GetLabelForTesting()->GetVisible();
+      if (chip().IsAnimating()) {
+        chip().FinishAnimation();
+      }
+      return !chip().ShouldShowSuggestionChip() && !chip().IsChipShowing() &&
+             chip().GetVisible() && !chip().IsLabelVisible();
     });
   }
 
@@ -112,7 +150,9 @@ IN_PROC_BROWSER_TEST_F(AIPageActionControllerBrowserTest, AddedChipAndBubble) {
   EXPECT_FALSE(GetBubbleDialog());
 
   views::DialogDelegate* const dialog = ClickChip();
-  EXPECT_TRUE(chip().IsChipVisible());
+  ASSERT_TRUE(dialog);
+  EXPECT_TRUE(chip().ShouldShowSuggestionChip());
+  EXPECT_TRUE(chip().IsChipShowing());
   EXPECT_EQ(ready_title, dialog->GetWindowTitle());
   EXPECT_EQ(2u, dialog->GetContentsView()->children().size());
 
@@ -120,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(AIPageActionControllerBrowserTest, AddedChipAndBubble) {
   EXPECT_TRUE(WaitForChipCollapse());
 
   // Clicking the collapsed icon reopens the bubble.
-  EXPECT_TRUE(ClickChip());
+  ASSERT_TRUE(ClickChip());
   CloseBubble();
   EXPECT_TRUE(WaitForChipCollapse());
 }
@@ -147,6 +187,7 @@ IN_PROC_BROWSER_TEST_F(AIPageActionControllerBrowserTest,
   EXPECT_FALSE(GetBubbleDialog());
 
   views::DialogDelegate* const dialog = ClickChip();
+  ASSERT_TRUE(dialog);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ON_DEVICE_AI_UPDATED_BUBBLE_TITLE),
             dialog->GetWindowTitle());
   EXPECT_EQ(1u, dialog->GetContentsView()->children().size());
@@ -197,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(AIPageActionControllerBrowserTest,
 
   browser()->GetTabStripModel()->ActivateTabAt(0);
   EXPECT_TRUE(IsExpandedChipShowing());
-  ClickChip();
+  ASSERT_TRUE(ClickChip());
   CloseBubble();
   EXPECT_TRUE(WaitForChipCollapse());
 
@@ -206,7 +247,11 @@ IN_PROC_BROWSER_TEST_F(AIPageActionControllerBrowserTest,
   controller().OnModelUninstalled(OnDeviceBaseModel::kGemma4);
   controller().OnModelInstalled(OnDeviceBaseModel::kGemma4);
   controller().OnModelSessionCreated(OnDeviceBaseModel::kGemma4, tab0);
-  EXPECT_FALSE(chip().IsChipVisible());
+  chip().FinishAnimation();
+  EXPECT_TRUE(chip().IsIconVisible());
+  EXPECT_FALSE(chip().ShouldShowSuggestionChip());
+  EXPECT_FALSE(chip().IsChipShowing());
+  EXPECT_FALSE(chip().IsLabelVisible());
 }
 
 }  // namespace
