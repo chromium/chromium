@@ -37,6 +37,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ttc/app/public/conversation.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/point.h"
@@ -453,24 +454,32 @@ void SessionControllerImpl::EnsureActorTaskCreated() {
 }
 
 void SessionControllerImpl::OnPageContextFetched(
+    content::Page& page,
     const PageContextResult& result) {
+  // `page` is guaranteed to be the primary page of
+  // `GetVoiceFocusedWebContents()` because:
+  //
+  //  a) `page_context_monitor_` is guaranteed to be monitoring
+  //     `GetVoiceFocusedWebContents()`
+  //  b) `page_context_monitor_` will only run this callback with the primary
+  //     page of its observed WebContents
+  content::WebContents* contents = GetVoiceFocusedWebContents();
+  CHECK(contents);
+  CHECK_EQ(&contents->GetPrimaryPage(), &page);
+
   if (!result.has_value()) {
     // Replace the model's context with just the tab, so that it doesn't keep
     // using context of a page that's no longer shown. Only share the origin of
     // a page whose context may not be shared.
     // TODO(b/555804152): Tell the model why there's no page content.
-    content::WebContents* contents = GetVoiceFocusedWebContents();
-    if (!contents) {
-      return;
-    }
-    content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
+    content::RenderFrameHost& main_frame = page.GetMainDocument();
     if (result.error() == page_content_annotations::FetchPageContextError::
                               kPageContextNotEligible) {
       conversation_->SendContextUpdate(
-          main_frame->GetLastCommittedOrigin().GetURL(),
+          main_frame.GetLastCommittedOrigin().GetURL(),
           /*title=*/std::string(), /*apc=*/{});
     } else {
-      conversation_->SendContextUpdate(main_frame->GetLastCommittedURL(),
+      conversation_->SendContextUpdate(main_frame.GetLastCommittedURL(),
                                        base::UTF16ToUTF8(contents->GetTitle()),
                                        /*apc=*/{});
     }

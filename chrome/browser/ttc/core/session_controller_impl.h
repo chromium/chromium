@@ -32,6 +32,7 @@
 #include "components/ttc/app/public/conversation.h"
 
 namespace content {
+class Page;
 class WebContents;
 }  // namespace content
 
@@ -126,7 +127,10 @@ class SessionControllerImpl : public SessionController,
   base::TimeTicks user_turn_start() const { return user_turn_start_; }
 
  private:
-  void OnPageContextFetched(const PageContextResult& result);
+  // Sends the context `result` fetched for `page`, the primary page of the
+  // voice-focused contents, to the conversation.
+  void OnPageContextFetched(content::Page& page,
+                            const PageContextResult& result);
   void OnInactivityTimeout();
   void OnSessionEndConditionDetected(
       SessionEndConditionDetector::Reason reason);

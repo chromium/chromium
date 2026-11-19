@@ -58,11 +58,13 @@ class TtcPageContextMonitor
   // that invalidates previously obtained page context.
   using PageContextInvalidatedCallback = base::RepeatingClosure;
 
-  // Invoked when fresh page context is extracted for the monitored page, or
-  // with an error when page context can't be provided for it, e.g. because its
-  // renderer crashed or its URL isn't supported.
+  // Invoked when fresh page context is extracted for `page`, the monitored
+  // page, or with an error when page context can't be provided for it, e.g.
+  // because its renderer crashed or its URL isn't supported. `page` is still
+  // the primary page of the monitored WebContents when this is invoked.
   using PageContextFetchedCallback =
-      base::RepeatingCallback<void(const PageContextResult&)>;
+      base::RepeatingCallback<void(content::Page& page,
+                                   const PageContextResult&)>;
 
   TtcPageContextMonitor(
       content::WebContents& web_contents,

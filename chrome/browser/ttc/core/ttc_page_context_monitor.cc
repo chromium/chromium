@@ -243,6 +243,7 @@ void TtcPageContextMonitor::PrimaryMainFrameRenderProcessGone(
   fetch_weak_ptr_factory_.InvalidateWeakPtrs();
   weak_ptr_factory_.InvalidateWeakPtrs();
   on_page_context_fetched_.Run(
+      web_contents()->GetPrimaryPage(),
       base::unexpected(page_content_annotations::FetchPageContextError::
                            kPageContextNotEligible));
 }
@@ -287,13 +288,14 @@ void TtcPageContextMonitor::NotifyPageContextFetched(
     // TODO(b/555804152): Figure out how to send specific error messages to
     // the server.
     on_page_context_fetched_.Run(
+        *weak_page,
         base::unexpected(page_content_annotations::FetchPageContextError::
                              kPageContextNotEligible));
     return;
   }
   GetJournal().Log("TtcPageContextUpdated",
                    actor::JournalDetailsBuilder().Add("url", url).Build());
-  on_page_context_fetched_.Run(result);
+  on_page_context_fetched_.Run(*weak_page, result);
 }
 
 void TtcPageContextMonitor::OnFetchCompleted(
