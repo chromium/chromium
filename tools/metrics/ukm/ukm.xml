@@ -14377,7 +14377,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="MediaRouter.SiteInitiatedMirroringStarted">
-  <owner>muyaoxu@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Recorded whenever user starts a site-initiated mirroring session via Media
@@ -21096,7 +21097,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Presentation.StartResult">
-  <owner>muyaoxu@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Records when users start a Presentation and receive a response from the
