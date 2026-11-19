@@ -4,3 +4,6 @@ fmalita@chromium.org
 fs@opera.com
 pdr@chromium.org
 wangxianzhu@chromium.org
+
+per-file gap_decorations_painter.cc=javiercon@microsoft.com
+per-file gap_decorations_painter.h=javiercon@microsoft.com
