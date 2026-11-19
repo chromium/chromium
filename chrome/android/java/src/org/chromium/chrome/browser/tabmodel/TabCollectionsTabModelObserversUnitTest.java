@@ -52,6 +52,8 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
@@ -76,9 +78,13 @@ public class TabCollectionsTabModelObserversUnitTest {
 
     @Mock private TabModelJniBridge.Natives mTabModelJniBridgeJni;
     @Mock private TabCollectionTabModelImpl.Natives mTabCollectionTabModelImplJni;
-    @Mock private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureDevicesDispatcherAndroidJni;
+
+    @Mock
+    private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureDevicesDispatcherAndroidJni;
+
     @Mock private UkmRecorder.Natives mUkmRecorderJni;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJni;
+    @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJni;
     @Mock private Profile mProfile;
     @Mock private TabCreator mRegularTabCreator;
     @Mock private TabCreator mIncognitoTabCreator;
@@ -105,6 +111,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                 mMediaCaptureDevicesDispatcherAndroidJni);
         UkmRecorderJni.setInstanceForTesting(mUkmRecorderJni);
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJni);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJni);
         when(mTabGroupSyncFeaturesJni.isTabGroupSyncEnabled(any())).thenReturn(false);
 
         when(mProfile.isOffTheRecord()).thenReturn(false);

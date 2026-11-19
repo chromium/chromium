@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +57,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TabUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -268,6 +270,38 @@ public class TabUtilsUnitTest {
                 DisplayUtil.getUiDensityForAutomotive(
                         ContextUtils.getApplicationContext(), DisplayMetrics.DENSITY_DEFAULT),
                 bitmap.getDensity());
+    }
+
+    @Test
+    public void testUnmuteMedia_soundBlocked() {
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mWebContents.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mWebsitePreferenceBridgeJniMock.getContentSetting(
+                        mProfile,
+                        ContentSettingsType.SOUND,
+                        JUnitTestGURLs.EXAMPLE_URL,
+                        JUnitTestGURLs.EXAMPLE_URL))
+                .thenReturn(ContentSetting.BLOCK);
+
+        TabUtils.unmuteMedia(mTab);
+
+        verify(mWebContents, never()).setAudioMuted(false);
+    }
+
+    @Test
+    public void testUnmuteMedia_soundAllowed() {
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mWebContents.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mWebsitePreferenceBridgeJniMock.getContentSetting(
+                        mProfile,
+                        ContentSettingsType.SOUND,
+                        JUnitTestGURLs.EXAMPLE_URL,
+                        JUnitTestGURLs.EXAMPLE_URL))
+                .thenReturn(ContentSetting.ALLOW);
+
+        TabUtils.unmuteMedia(mTab);
+
+        verify(mWebContents).setAudioMuted(false);
     }
 
     private void callAndVerifyGetTabThumbnailAspectRatio(

@@ -141,7 +141,7 @@ public class SuspendedTab implements TabObserver, UserData, TabViewProvider {
         WebContents webContents = mTab.getWebContents();
         if (webContents != null) {
             webContents.updateWebContentsVisibility(Visibility.VISIBLE);
-            webContents.setAudioMuted(false);
+            TabUtils.unmuteMedia(mTab);
         }
 
         mView = null;

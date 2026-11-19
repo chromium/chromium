@@ -343,10 +343,7 @@ public class CustomTabMinimizationManager
     private void updateTabForMaximization(@Nullable Tab tab) {
         if (tab == null) return;
         tab.show(FROM_USER);
-        var webContents = tab.getWebContents();
-        if (webContents != null) {
-            webContents.setAudioMuted(false);
-        }
+        TabUtils.unmuteMedia(tab);
         if (mCoordinator != null) {
             mCoordinator.dismiss();
         }

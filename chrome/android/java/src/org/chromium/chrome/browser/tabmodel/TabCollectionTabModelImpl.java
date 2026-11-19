@@ -243,8 +243,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             mTabIdToTabs.put(tab.getId(), tab);
             mTabCountSupplier.set(assumeNonNull(mTabCountSupplier.get()) + 1);
 
-            WebContents webContents = tab.getWebContents();
-            if (webContents != null) webContents.setAudioMuted(false);
+            TabUtils.unmuteMedia(tab);
 
             boolean noTabIsActivated = !(mCurrentTabSupplier.get() != null);
             if (noTabIsActivated) {

@@ -69,6 +69,10 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -82,6 +86,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -251,26 +256,7 @@ public class TabCollectionTabModelImplUnitTest {
                             return newIndex;
                         });
 
-        mTabModel =
-                new TabCollectionTabModelImpl(
-                        mProfile,
-                        ActivityType.TABBED,
-                        /* customTabProfileType= */ null,
-                        TabModelType.STANDARD,
-                        mRegularTabCreator,
-                        mIncognitoTabCreator,
-                        mOrderController,
-                        mTabContentManager,
-                        mNextTabPolicySupplier,
-                        mTabModelDelegate,
-                        mAsyncTabParamsManager,
-                        mTabRemover,
-                        mTabUngrouper,
-                        () -> {
-                            mBatchGetCount++;
-                            return mScopedStorageBatch;
-                        },
-                        /* supportUndo= */ false);
+        mTabModel = createStandardModel(mProfile, /* supportUndo= */ false);
         mTabModel.addObserver(mTabModelObserver);
 
         when(mTabModelDelegate.getCurrentModel()).thenReturn(mTabModel);
@@ -659,22 +645,7 @@ public class TabCollectionTabModelImplUnitTest {
         doReturn(true).when(mOtrProfile).isIncognitoBranded();
 
         TabCollectionTabModelImpl incognitoModel =
-                new TabCollectionTabModelImpl(
-                        mOtrProfile,
-                        ActivityType.TABBED,
-                        /* customTabProfileType= */ null,
-                        TabModelType.STANDARD,
-                        mRegularTabCreator,
-                        mIncognitoTabCreator,
-                        mOrderController,
-                        mTabContentManager,
-                        mNextTabPolicySupplier,
-                        mTabModelDelegate,
-                        mAsyncTabParamsManager,
-                        mTabRemover,
-                        mTabUngrouper,
-                        () -> mScopedStorageBatch,
-                        /* supportUndo= */ true);
+                createStandardModel(mOtrProfile, /* supportUndo= */ true);
 
         assertFalse(incognitoModel.supportsPendingClosures());
         incognitoModel.destroy();
@@ -686,22 +657,7 @@ public class TabCollectionTabModelImplUnitTest {
         doReturn(true).when(mOtrProfile).isIncognitoBranded();
 
         TabCollectionTabModelImpl incognitoModel =
-                new TabCollectionTabModelImpl(
-                        mOtrProfile,
-                        ActivityType.TABBED,
-                        /* customTabProfileType= */ null,
-                        TabModelType.STANDARD,
-                        mRegularTabCreator,
-                        mIncognitoTabCreator,
-                        mOrderController,
-                        mTabContentManager,
-                        mNextTabPolicySupplier,
-                        mTabModelDelegate,
-                        mAsyncTabParamsManager,
-                        mTabRemover,
-                        mTabUngrouper,
-                        () -> mScopedStorageBatch,
-                        /* supportUndo= */ false);
+                createStandardModel(mOtrProfile, /* supportUndo= */ false);
 
         MockTab tabToClose = createMockTab(123, mOtrProfile);
         tabToClose.setIsInitialized(true);
@@ -726,22 +682,7 @@ public class TabCollectionTabModelImplUnitTest {
         doReturn(true).when(mOtrProfile).isIncognitoBranded();
 
         TabCollectionTabModelImpl incognitoModel =
-                new TabCollectionTabModelImpl(
-                        mOtrProfile,
-                        ActivityType.TABBED,
-                        /* customTabProfileType= */ null,
-                        TabModelType.STANDARD,
-                        mRegularTabCreator,
-                        mIncognitoTabCreator,
-                        mOrderController,
-                        mTabContentManager,
-                        mNextTabPolicySupplier,
-                        mTabModelDelegate,
-                        mAsyncTabParamsManager,
-                        mTabRemover,
-                        mTabUngrouper,
-                        () -> mScopedStorageBatch,
-                        false);
+                createStandardModel(mOtrProfile, /* supportUndo= */ false);
 
         MockTab tab = createMockTab(123, mOtrProfile);
         tab.setIsInitialized(true);
@@ -784,22 +725,7 @@ public class TabCollectionTabModelImplUnitTest {
         doReturn(true).when(mOtrProfile).isIncognitoBranded();
 
         TabCollectionTabModelImpl incognitoModel =
-                new TabCollectionTabModelImpl(
-                        mOtrProfile,
-                        ActivityType.TABBED,
-                        /* customTabProfileType= */ null,
-                        TabModelType.STANDARD,
-                        mRegularTabCreator,
-                        mIncognitoTabCreator,
-                        mOrderController,
-                        mTabContentManager,
-                        mNextTabPolicySupplier,
-                        mTabModelDelegate,
-                        mAsyncTabParamsManager,
-                        mTabRemover,
-                        mTabUngrouper,
-                        () -> mScopedStorageBatch,
-                        false);
+                createStandardModel(mOtrProfile, /* supportUndo= */ false);
 
         assertEquals(mIncognitoTabCreator, incognitoModel.getTabCreator());
         incognitoModel.destroy();
@@ -914,6 +840,40 @@ public class TabCollectionTabModelImplUnitTest {
         verify(mTabModelObserver, never()).onFinishingMultipleTabClosure(any(), anyBoolean());
         assertFalse(tab1.isDestroyed());
         assertFalse(tab3.isDestroyed());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
+    public void testCancelTabClosure_soundBlockedDoesNotUnmute() {
+        WebsitePreferenceBridge.Natives websitePreferenceBridgeJni =
+                mock(WebsitePreferenceBridge.Natives.class);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(websitePreferenceBridgeJni);
+
+        TabCollectionTabModelImpl undoModel =
+                createStandardModel(mProfile, /* supportUndo= */ true);
+        when(mTabModelDelegate.getModel(false)).thenReturn(undoModel);
+        when(mTabModelDelegate.getCurrentModel()).thenReturn(undoModel);
+
+        MockTab tab = createMockTab(1, mProfile);
+        WebContents webContents = tab.getWebContents();
+        when(webContents.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(websitePreferenceBridgeJni.getContentSetting(
+                        mProfile,
+                        ContentSettingsType.SOUND,
+                        JUnitTestGURLs.EXAMPLE_URL,
+                        JUnitTestGURLs.EXAMPLE_URL))
+                .thenReturn(ContentSetting.BLOCK);
+
+        undoModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_BACKGROUND);
+        undoModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(true).build());
+        verify(webContents).setAudioMuted(true);
+        assertNull(undoModel.getTabById(tab.getId()));
+
+        undoModel.cancelTabClosure(tab.getId());
+
+        assertEquals(tab, undoModel.getTabById(tab.getId()));
+        verify(webContents, never()).setAudioMuted(false);
+        undoModel.destroy();
     }
 
     @Test
@@ -1752,6 +1712,28 @@ public class TabCollectionTabModelImplUnitTest {
                 TabLaunchType.FROM_CHROME_UI,
                 TabCreationState.LIVE_IN_BACKGROUND);
         return tab;
+    }
+
+    private TabCollectionTabModelImpl createStandardModel(Profile profile, boolean supportUndo) {
+        return new TabCollectionTabModelImpl(
+                profile,
+                ActivityType.TABBED,
+                /* customTabProfileType= */ null,
+                TabModelType.STANDARD,
+                mRegularTabCreator,
+                mIncognitoTabCreator,
+                mOrderController,
+                mTabContentManager,
+                mNextTabPolicySupplier,
+                mTabModelDelegate,
+                mAsyncTabParamsManager,
+                mTabRemover,
+                mTabUngrouper,
+                () -> {
+                    mBatchGetCount++;
+                    return mScopedStorageBatch;
+                },
+                supportUndo);
     }
 
     /** Replaces {@link #mTabModel} with an archived model backed by {@link #mTabs}. */

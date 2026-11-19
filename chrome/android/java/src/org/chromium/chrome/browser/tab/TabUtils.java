@@ -33,12 +33,16 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
 import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.url.GURL;
 
 /** Collection of utility methods that operates on Tab. */
 @NullMarked
@@ -241,6 +245,20 @@ public class TabUtils {
             webContents.suspendAllMediaPlayers();
             webContents.setAudioMuted(true);
         }
+    }
+
+    /** Unmutes media for a tab unless sound is blocked by site settings. */
+    public static void unmuteMedia(Tab tab) {
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
+
+        GURL url = webContents.getLastCommittedUrl();
+        if (WebsitePreferenceBridge.getContentSetting(
+                        tab.getProfile(), ContentSettingsType.SOUND, url, url)
+                == ContentSetting.BLOCK) {
+            return;
+        }
+        webContents.setAudioMuted(false);
     }
 
     /**

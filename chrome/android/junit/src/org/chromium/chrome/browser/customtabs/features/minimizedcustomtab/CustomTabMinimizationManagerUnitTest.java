@@ -53,10 +53,13 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.toolbar.top.ResourceFactory;
 import org.chromium.chrome.browser.toolbar.top.ResourceFactoryJni;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.web_distiller.core.WebDistillerUrlUtilsJni;
 import org.chromium.content_public.browser.WebContents;
@@ -84,6 +87,7 @@ public class CustomTabMinimizationManagerUnitTest {
     private ActivityScenario<CustomTabActivity> mActivityScenario;
     private AppCompatActivity mActivity;
     @Mock private Tab mTab;
+    @Mock private Profile mProfile;
     @Mock private WebContents mWebContents;
     @Mock private MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
     @Mock private BrowserServicesIntentDataProvider mIntentData;
@@ -91,6 +95,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private Runnable mCloseTabRunnable;
     @Mock private WebDistillerUrlUtilsJni mWebDistillerUrlUtilsJni;
     @Mock private ResourceFactory.Natives mResourceFactoryNatives;
+    @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeNatives;
     @Mock private CustomTabMinimizeDelegate.Observer mMinimizationObserver;
     @Mock private CustomTabMinimizeDelegate mOtherMinimizeDelegate;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -103,13 +108,16 @@ public class CustomTabMinimizationManagerUnitTest {
     public void setUp() {
         WebDistillerUrlUtilsJni.setInstanceForTesting(mWebDistillerUrlUtilsJni);
         ResourceFactoryJni.setInstanceForTesting(mResourceFactoryNatives);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeNatives);
 
         mActivityScenario = ActivityScenario.launch(CustomTabActivity.class);
         mActivityScenario.onActivity(activity -> mActivity = activity);
 
         CustomTabsConnection.setInstanceForTesting(mConnection);
         mActivityTabProvider.setForTesting(mTab);
+        when(mTab.getProfile()).thenReturn(mProfile);
         when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.getLastCommittedUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.getTitle()).thenReturn(TITLE);
         mManager =
