@@ -146,6 +146,7 @@ class HTMLConstructionSite final {
   bool ShouldFosterParent() const;
   void FosterParent(Node*);
   void FosterParentAlreadyParsedChild(Node*);
+  void FosterParentReplacedElement(HTMLStackItem*);
 
   bool IndexOfFirstUnopenFormattingElement(
       unsigned& first_unopen_element_index) const;

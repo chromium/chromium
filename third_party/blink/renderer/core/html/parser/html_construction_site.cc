@@ -276,7 +276,8 @@ void HTMLConstructionSite::FlushPendingText() {
 
 bool HTMLConstructionSite::ShouldInsertChild(const InsertionLocation& location,
                                              Node* child) {
-  if (!location.parent->IsDocumentNode() && sanitizer_) {
+  auto* parent_doc = DynamicTo<Document>(location.parent);
+  if ((!parent_doc || parent_doc->documentElement()) && sanitizer_) {
     if (!sanitizer_->Sanitize(child)) {
       return false;
     }
@@ -1092,6 +1093,10 @@ void HTMLConstructionSite::Reparent(HTMLStackItem* new_parent,
     return;
   }
   InsertionLocation location = AdjustInsertionLocation({parent_node, nullptr});
+  if (!location.IsValid() ||
+      RemoveChildIfValidForRemoval(location.parent, child_node)) {
+    return;
+  }
   if (!ShouldInsertChild(location, child_node)) {
     return;
   }
@@ -1583,11 +1588,24 @@ void HTMLConstructionSite::FosterParentAlreadyParsedChild(Node* child) {
     return;
   }
   InsertionLocation adjusted_location = AdjustInsertionLocation(location);
+  if (!adjusted_location.IsValid() ||
+      RemoveChildIfValidForRemoval(adjusted_location.parent, child)) {
+    return;
+  }
   if (!ShouldInsertChild(adjusted_location, child)) {
     return;
   }
   FlushPendingText();
   Insert(adjusted_location, child);
+}
+
+void HTMLConstructionSite::FosterParentReplacedElement(HTMLStackItem* item) {
+  InsertionLocation location;
+  FindFosterSite(location);
+  CHECK(location.parent);
+  InsertionLocation adjusted_location = AdjustInsertionLocation(location);
+  item->SetReplacedInsertionLocation(adjusted_location.parent,
+                                     adjusted_location.next_child);
 }
 
 void HTMLConstructionSite::PendingText::Trace(Visitor* visitor) const {

@@ -2005,6 +2005,16 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
         !tree_.OpenElements()->Contains(furthest_block->GetElement())) {
       return;
     }
+    if (common_ancestor->CausesFosterParenting()) {
+      HTMLStackItem* item = furthest_block;
+      while (item && item->NextItemInStack() != formatting_element_item) {
+        item = item->NextItemInStack();
+      }
+      if (item && tree_.CheckSanitizerAction(item->GetElement()) ==
+                      Sanitizer::Action::kReplaceWithChildren) {
+        tree_.FosterParentReplacedElement(item);
+      }
+    }
     // 4.15
     HTMLStackItem* new_item =
         tree_.CreateElementFromSavedToken(formatting_element_item);

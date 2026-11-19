@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] streamBeforeHTMLUnsafe: displacing ref_node mid-chunk drops subsequent nodes/subtrees/text/comments and errors the stream
   assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
 [FAIL] streamBeforeHTMLUnsafe: displacing ref_node mid-chunk with sanitizer and replaceWithChildrenElements drops nodes and errors the stream
@@ -96,7 +96,5 @@ Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Should have rejected: a comment as the only token after displacement must error the stream Reached unreachable code
 [FAIL] streamAfterHTMLUnsafe: moving ref_node back into parent after mid-chunk displacement does not recover the errored stream
   assert_unreached: Should have rejected: Write that attempts to insert after ref_node displacement must reject with HierarchyRequestError Reached unreachable code
-[FAIL] streamHTMLUnsafe: a replaceWithChildrenElements element foster parented before a table that became the document element is dropped with its children
-  assert_equals: expected "<table id=\\"t\\"><script>document.replaceChild(document.getElementById('t'), document.documentElement);</script></table>" but got "<table id=\\"t\\"><script>document.replaceChild(document.getElementById('t'), document.documentElement);</script>x<b>y</b></table>"
 Harness: the test ran to completion.
 
