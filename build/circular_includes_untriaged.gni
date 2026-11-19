@@ -60,7 +60,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/fusebox:fusebox",
   "//chrome/browser/ash/guest_os:guest_os",
   "//chrome/browser/ash/input_method:input_method",
-  "//chrome/browser/ash/kcer:kcer",
   "//chrome/browser/ash/login/auth:auth",
   "//chrome/browser/ash/login/demo_mode:demo_mode",
   "//chrome/browser/ash/login/demo_mode:demo_mode_login",

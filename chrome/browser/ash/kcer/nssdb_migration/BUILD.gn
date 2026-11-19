@@ -13,6 +13,7 @@ static_library("nssdb_migration") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chrome/browser/ash/kcer",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/net",
     "//chrome/browser/profiles:profile",
