@@ -5438,6 +5438,9 @@ TEST_F(FileUtilTest, IsReservedNameOnWindows) {
           FILE_PATH_LITERAL("My Computer"),
           FILE_PATH_LITERAL("conin$.txt"),
           FILE_PATH_LITERAL("conout$.log"),
+          FILE_PATH_LITERAL("COM1 x.url"),
+          FILE_PATH_LITERAL("COM10 .url"),
+          FILE_PATH_LITERAL("desktop .ini"),
       });
 
   static constexpr auto kDisallowedBasenames =
@@ -5454,6 +5457,17 @@ TEST_F(FileUtilTest, IsReservedNameOnWindows) {
           FILE_PATH_LITERAL("NUL.zip"),
           FILE_PATH_LITERAL("desktop.ini"),
           FILE_PATH_LITERAL("desktop.ini "),
+          FILE_PATH_LITERAL("COM1 .x"),
+          FILE_PATH_LITERAL("COM1  .x.url"),
+          FILE_PATH_LITERAL("NUL .tar.gz"),
+          // Windows also recognizes superscript 1, 2, and 3 as device digits.
+          FILE_PATH_LITERAL("com\u00b9.url"),
+          FILE_PATH_LITERAL("COM\u00b2.url"),
+          FILE_PATH_LITERAL("COM\u00b3.url"),
+          FILE_PATH_LITERAL("lpt\u00b9.url"),
+          FILE_PATH_LITERAL("LPT\u00b2.url"),
+          FILE_PATH_LITERAL("LPT\u00b3.url"),
+          FILE_PATH_LITERAL("COM\u00b9 .url"),
       });
 
   for (const base::FilePath::CharType* basename : kAllowedBasenames) {

@@ -838,10 +838,10 @@ BASE_EXPORT std::optional<std::string> CopyFileToDownloadsCollection(
 #endif
 
 // Returns whether the specified file name is a reserved name on Windows.
-// This includes names like "com2.zip" (which correspond to devices) and
-// desktop.ini and thumbs.db which have special meaning to the Windows shell.
-// Even on other platforms, this will return whether or not a file name is
-// reserved on Windows.
+// This includes names like "com2.zip" and "com2 .zip" (which correspond to
+// devices) and desktop.ini and thumbs.db which have special meaning to the
+// shell. Even on other platforms, this will return whether or not a file name
+// is reserved on Windows.
 BASE_EXPORT bool IsReservedNameOnWindows(
     const base::FilePath::StringType& filename);
 

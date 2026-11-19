@@ -1217,6 +1217,95 @@ TEST_F(OSExchangeDataWinTest, SetURLWithMaxPath) {
   data.SetURL(GURL("http://google.com"), long_title);
 }
 
+namespace {
+
+struct URLShortcutFilenameTestCase {
+  const char* name;
+  std::u16string title;
+  std::wstring expected_filename = L"_" + base::UTF16ToWide(title) + L".url";
+};
+
+const URLShortcutFilenameTestCase kURLShortcutFilenameTestCases[] = {
+    {"CON", u"CON"},
+    {"prn", u"prn"},
+    {"AUX", u"AUX"},
+    {"NUL", u"NUL"},
+    {"COM1", u"COM1"},
+    {"COM2", u"COM2"},
+    {"COM3", u"COM3"},
+    {"COM4", u"COM4"},
+    {"COM5", u"COM5"},
+    {"COM6", u"COM6"},
+    {"COM7", u"COM7"},
+    {"COM8", u"COM8"},
+    {"COM9", u"COM9"},
+    {"LPT1", u"LPT1"},
+    {"LPT2", u"LPT2"},
+    {"LPT3", u"LPT3"},
+    {"LPT4", u"LPT4"},
+    {"LPT5", u"LPT5"},
+    {"LPT6", u"LPT6"},
+    {"LPT7", u"LPT7"},
+    {"LPT8", u"LPT8"},
+    {"LPT9", u"LPT9"},
+    {"MixedCaseCOM1", u"cOm1"},
+    {"COM1WithExtension", u"COM1.txt"},
+    {"NULWithExtensions", u"NUL.tar.gz"},
+    {"Clock", u"clock$"},
+    // Windows also recognizes superscript 1, 2, and 3 as device digits.
+    {"COMSuperscript1", u"COM\u00b9"},
+    {"COMSuperscript2", u"COM\u00b2"},
+    {"COMSuperscript3", u"COM\u00b3"},
+    {"LPTSuperscript1", u"LPT\u00b9"},
+    {"LPTSuperscript2", u"LPT\u00b2"},
+    {"LPTSuperscript3", u"LPT\u00b3"},
+    {"COM1WithSpace", u"COM1 .x"},
+    {"COM1WithSpaces", u"COM1  .x"},
+    {"NULWithSpace", u"NUL .tar.gz"},
+    {"COMSuperscript1WithSpace", u"COM\u00b9 .x"},
+    {"TruncatedCOM1", u"COM1" + std::u16string(MAX_PATH, u' ') + u"x",
+     L"_COM1" +
+         std::wstring(MAX_PATH / 2 - std::wstring(L"_COM1.url").size() - 1,
+                      L' ') +
+         L".url"},
+    {"OrdinaryFilename", u"example", L"example.url"},
+    {"COM1WithSuffix", u"COM1 x", L"COM1 x.url"},
+    {"COM10WithSpace", u"COM10 .x", L"COM10 .x.url"},
+};
+
+}  // namespace
+
+class OSExchangeDataWinURLShortcutTest
+    : public OSExchangeDataWinTest,
+      public testing::WithParamInterface<URLShortcutFilenameTestCase> {};
+
+TEST_P(OSExchangeDataWinURLShortcutTest, Filename) {
+  OSExchangeData data;
+  data.SetURL(GURL("http://google.com/"), GetParam().title);
+
+  FORMATETC format = ClipboardFormatType::FileDescriptorType().ToFormatEtc();
+  STGMEDIUM medium = {};
+  IDataObject* data_object = OSExchangeDataProviderWin::GetIDataObject(data);
+  ASSERT_EQ(S_OK, data_object->GetData(&format, &medium));
+  ASSERT_EQ(TYMED_HGLOBAL, medium.tymed);
+  {
+    base::win::ScopedHGlobal<FILEGROUPDESCRIPTORW*> descriptor(medium.hGlobal);
+    ASSERT_EQ(1u, descriptor->cItems);
+    const std::wstring filename(descriptor->fgd[0].cFileName);
+    EXPECT_EQ(GetParam().expected_filename, filename);
+    EXPECT_LT(filename.size(), static_cast<size_t>(MAX_PATH / 2));
+  }
+  ReleaseStgMedium(&medium);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OSExchangeDataWinURLShortcutTest,
+    testing::ValuesIn(kURLShortcutFilenameTestCases),
+    [](const testing::TestParamInfo<URLShortcutFilenameTestCase>& info) {
+      return info.param.name;
+    });
+
 TEST_F(OSExchangeDataWinTest, ProvideURLForPlainTextURL) {
   OSExchangeData data;
   data.SetString(u"http://google.com");

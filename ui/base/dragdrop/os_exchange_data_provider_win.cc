@@ -27,6 +27,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/json/json_writer.h"
@@ -1628,9 +1629,16 @@ std::wstring CreateValidFileNameFromTitle(const GURL& url,
   static constexpr size_t kMaxFileTitleLength =
       kMaxFileNameLength - std::size(kExtension);
 
-  if (validated.size() > kMaxFileTitleLength)
+  if (validated.size() > kMaxFileTitleLength) {
     validated.erase(kMaxFileTitleLength);
+  }
   validated += kExtension;
+  if (base::IsReservedNameOnWindows(validated)) {
+    validated.insert(validated.begin(), L'_');
+    if (validated.size() >= kMaxFileNameLength) {
+      validated.erase(kMaxFileTitleLength, 1);
+    }
+  }
 
   return validated;
 }
