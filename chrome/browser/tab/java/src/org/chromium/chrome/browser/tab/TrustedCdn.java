@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UnownedUserDataKey;
-import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -22,10 +20,10 @@ import org.chromium.url.GURL;
 
 /** Provides a trusted CDN publisher URL for the current web contents in a Tab. */
 @NullMarked
-public class TrustedCdn implements UserData {
-    @VisibleForTesting public static final Class<TrustedCdn> USER_DATA_KEY = TrustedCdn.class;
+public final class TrustedCdn {
+    private static @Nullable GURL sPublisherUrlForTesting;
 
-    private final Tab mTab;
+    private TrustedCdn() {}
 
     /**
      * UnownedUserData shared across all tabs to get the publisher url visibility. This hangs off of
@@ -74,65 +72,52 @@ public class TrustedCdn implements UserData {
     }
 
     /**
-     * @return The publisher URL if the current page is hosted on a trusted CDN, or null otherwise
+     * Sets a test override for the publisher URL. Passing {@code null} clears the override rather
+     * than forcing a {@code null} publisher URL.
      */
-    public static @Nullable GURL getPublisherUrl(@Nullable Tab tab) {
-        TrustedCdn cdn = get(tab);
-        return cdn != null ? cdn.getPublisherUrl() : null;
+    public static void setPublisherUrlForTesting(@Nullable GURL publisherUrl) {
+        sPublisherUrlForTesting = publisherUrl;
+        ResettersForTesting.register(() -> sPublisherUrlForTesting = null);
     }
 
     /**
-     * @param tab Tab object currently being shown.
-     * @return The name of the publisher of the content if it can be reliably extracted, or null
-     *         otherwise.
+     * @return The publisher URL if the current page is hosted on a trusted CDN, or null otherwise
      */
-    public static @Nullable String getContentPublisher(Tab tab) {
-        if (tab == null) return null;
+    public static @Nullable GURL getPublisherUrl(@Nullable Tab tab) {
+        if (tab == null || tab.isDestroyed()) return null;
+        if (sPublisherUrlForTesting != null) return sPublisherUrlForTesting;
 
-        GURL publisherUrl = TrustedCdn.getPublisherUrl(tab);
-        if (publisherUrl != null) {
-            return UrlUtilities.extractPublisherFromPublisherUrl(publisherUrl);
-        }
-
-        return null;
-    }
-
-    static TrustedCdn from(Tab tab) {
-        TrustedCdn trustedCdn = get(tab);
-        if (trustedCdn == null) {
-            trustedCdn = tab.getUserDataHost().setUserData(USER_DATA_KEY, new TrustedCdn(tab));
-        }
-        return trustedCdn;
-    }
-
-    public static void initForTesting(Tab tab) {
-        from(tab);
-    }
-
-    private static @Nullable TrustedCdn get(@Nullable Tab tab) {
-        return tab != null ? tab.getUserDataHost().getUserData(USER_DATA_KEY) : null;
-    }
-
-    private TrustedCdn(Tab tab) {
-        mTab = tab;
-    }
-
-    @VisibleForTesting
-    public @Nullable GURL getPublisherUrl() {
-        WebContents webContents = mTab.getWebContents();
+        WebContents webContents = tab.getWebContents();
         if (webContents == null) return null;
 
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return null;
 
         PublisherUrlVisibility publisherUrlVisibility = PublisherUrlVisibility.from(windowAndroid);
-        if (publisherUrlVisibility == null || !publisherUrlVisibility.canShowPublisherUrl(mTab)) {
+        if (publisherUrlVisibility == null || !publisherUrlVisibility.canShowPublisherUrl(tab)) {
             return null;
         }
         int level = SecurityStateModel.getSecurityLevelForWebContents(webContents);
         if (level != ConnectionSecurityLevel.SECURE) return null;
         GURL publisherUrl = TrustedCdnJni.get().getPublisherUrl(webContents);
         return publisherUrl.isValid() ? publisherUrl : null;
+    }
+
+    /**
+     * Returns the name of the publisher of the content if it can be reliably extracted, or null
+     * otherwise.
+     *
+     * @param tab Tab object currently being shown.
+     * @return The name of the publisher of the content if it can be reliably extracted, or null
+     *     otherwise.
+     */
+    public static @Nullable String getContentPublisher(@Nullable Tab tab) {
+        GURL publisherUrl = TrustedCdn.getPublisherUrl(tab);
+        if (publisherUrl != null) {
+            return UrlUtilities.extractPublisherFromPublisherUrl(publisherUrl);
+        }
+
+        return null;
     }
 
     @NativeMethods

@@ -28,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -101,8 +100,6 @@ public final class ToolbarSecurityIconTest {
 
     @Mock private Profile mMockProfile;
 
-    @Mock private TrustedCdn mTrustedCdn;
-
     @Before
     public void setUp() throws ExecutionException {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
@@ -136,9 +133,6 @@ public final class ToolbarSecurityIconTest {
                                                     ControlsPosition.TOP)));
                     ProfileManager.setLastUsedProfileForTesting(mMockProfile);
                     mLocationBarModel.initializeWithNative();
-                    UserDataHost userDataHost = new UserDataHost();
-                    userDataHost.setUserData(TrustedCdn.USER_DATA_KEY, mTrustedCdn);
-                    doReturn(userDataHost).when(mTab).getUserDataHost();
                 });
     }
 
@@ -172,12 +166,12 @@ public final class ToolbarSecurityIconTest {
         doReturn(ConnectionSecurityLevel.SECURE)
                 .when(mLocationBarModel)
                 .getSecurityLevelFromStateModel(any());
-        doReturn(new GURL("https://example.com")).when(mTrustedCdn).getPublisherUrl();
+        TrustedCdn.setPublisherUrlForTesting(new GURL("https://example.com"));
         assertEquals(
                 "Wrong security level returned for HTTPS publisher URL",
                 ConnectionSecurityLevel.SECURE,
                 mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));
-        doReturn(new GURL("http://example.com")).when(mTrustedCdn).getPublisherUrl();
+        TrustedCdn.setPublisherUrlForTesting(new GURL("http://example.com"));
         assertEquals(
                 "Wrong security level returned for HTTP publisher URL",
                 ConnectionSecurityLevel.WARNING,
@@ -186,7 +180,7 @@ public final class ToolbarSecurityIconTest {
         doReturn(ConnectionSecurityLevel.DANGEROUS)
                 .when(mLocationBarModel)
                 .getSecurityLevelFromStateModel(any());
-        doReturn(null).when(mTrustedCdn).getPublisherUrl();
+        TrustedCdn.setPublisherUrlForTesting(null);
         assertEquals(
                 "Wrong security level returned for publisher URL on insecure page",
                 ConnectionSecurityLevel.DANGEROUS,
