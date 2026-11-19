@@ -201,7 +201,8 @@ public class TabGroupMenuActionHandlerUnitTest {
         TabModelSelector otherSelector = mock(TabModelSelector.class);
         TabModel otherModel = mock(TabModel.class);
         when(otherSelector.getModel(false)).thenReturn(otherModel);
-        when(otherModel.getAllTabGroupIds()).thenReturn(Collections.singleton(otherGroupId));
+        when(otherModel.getAllTabGroupIds())
+                .thenReturn(Collections.singleton(TabGroupId.fromRawToken(otherGroupId)));
         when(otherModel.containsTabGroup(TabGroupId.fromOptionalToken(otherGroupId)))
                 .thenReturn(true);
         when(tabWindowManager.getAllTabModelSelectors()).thenReturn(List.of(otherSelector));

@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 
-import org.chromium.base.Token;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -23,6 +22,7 @@ import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupsExistCondition;
 import org.chromium.chrome.test.transit.ui.BottomSheetFacility;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.List;
 
@@ -34,14 +34,14 @@ import java.util.List;
 public class TabGroupListBottomSheetFacility<
                 HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>
         extends BottomSheetFacility<HostStationT> {
-    private final List<Token> mTabGroupIds;
+    private final List<TabGroupId> mTabGroupIds;
     public final ViewElement<View> titleElement;
     public final ViewElement<RecyclerView> recyclerViewElement;
     public final ViewElement<View> newTabGroupRow;
 
     /** Constructor. Expects a specific title and selected color. */
     public TabGroupListBottomSheetFacility(
-            List<Token> expectedTabGroupIds, boolean isNewTabGroupRowVisible) {
+            List<TabGroupId> expectedTabGroupIds, boolean isNewTabGroupRowVisible) {
 
         mTabGroupIds = expectedTabGroupIds;
 

@@ -5,12 +5,12 @@
 package org.chromium.chrome.test.transit.tabmodel;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.Token;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,9 +18,9 @@ import java.util.function.Supplier;
 
 /** Checks that one new tab group was created. */
 @NullMarked
-public class TabGroupCreatedCondition extends ConditionWithResult<Token> {
+public class TabGroupCreatedCondition extends ConditionWithResult<TabGroupId> {
     private final Supplier<TabModel> mTabModelSupplier;
-    private @Nullable Set<Token> mOriginalTabGroupIds;
+    private @Nullable Set<TabGroupId> mOriginalTabGroupIds;
 
     public TabGroupCreatedCondition(Supplier<TabModel> tabModelSupplier) {
         super(/* isRunOnUiThread= */ true);
@@ -36,12 +36,12 @@ public class TabGroupCreatedCondition extends ConditionWithResult<Token> {
     }
 
     @Override
-    protected ConditionStatusWithResult<Token> resolveWithSuppliers() throws Exception {
+    protected ConditionStatusWithResult<TabGroupId> resolveWithSuppliers() throws Exception {
         if (mOriginalTabGroupIds == null) {
             return notFulfilled().withoutResult();
         }
 
-        Set<Token> newTabGroupIds = new HashSet<>(mTabModelSupplier.get().getAllTabGroupIds());
+        Set<TabGroupId> newTabGroupIds = new HashSet<>(mTabModelSupplier.get().getAllTabGroupIds());
         newTabGroupIds.removeAll(mOriginalTabGroupIds);
 
         int changeInTabGroupCount = newTabGroupIds.size();
@@ -51,7 +51,7 @@ public class TabGroupCreatedCondition extends ConditionWithResult<Token> {
                             changeInTabGroupCount)
                     .withoutResult();
         }
-        Token newGroupId = newTabGroupIds.iterator().next();
+        TabGroupId newGroupId = newTabGroupIds.iterator().next();
         return fulfilled().withResult(newGroupId);
     }
 

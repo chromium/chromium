@@ -3751,7 +3751,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     public void testAddToGroup() {
         setUpMocksForPageMenu();
         Token token1 = new Token(1L, 1L);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
@@ -4448,7 +4448,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(anotherSelector.getModel(false)).thenReturn(anotherTabModel);
         when(anotherTabModel.getTabGroupCount()).thenReturn(1);
         Token groupId = Token.createRandom();
-        when(anotherTabModel.getAllTabGroupIds()).thenReturn(Set.of(groupId));
+        when(anotherTabModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(groupId)));
         when(anotherTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId)))
                 .thenReturn(true);
         when(anotherTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))

@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.test.transit.tabmodel;
 
-import org.chromium.base.Token;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -18,11 +18,11 @@ import java.util.function.Supplier;
 /** Check that this list of tab group matches the expected list of tab groups. */
 public class TabGroupsExistCondition extends UiThreadCondition {
 
-    private final List<Token> mExpectedTabGroups;
+    private final List<TabGroupId> mExpectedTabGroups;
     private final Supplier<TabModel> mTabModelProvider;
 
     public TabGroupsExistCondition(
-            List<Token> expectedTabGroups, Supplier<TabModel> tabModelProvider) {
+            List<TabGroupId> expectedTabGroups, Supplier<TabModel> tabModelProvider) {
         mExpectedTabGroups = expectedTabGroups;
         mTabModelProvider = dependOnSupplier(tabModelProvider, "TabModel");
     }
@@ -30,7 +30,7 @@ public class TabGroupsExistCondition extends UiThreadCondition {
     @Override
     protected ConditionStatus checkWithSuppliers() {
         TabModel tabModel = mTabModelProvider.get();
-        Set<Token> allTabGroupIds = tabModel.getAllTabGroupIds();
+        Set<TabGroupId> allTabGroupIds = tabModel.getAllTabGroupIds();
         if (!matchExpectedTabGroups(allTabGroupIds, mExpectedTabGroups)) {
             return notFulfilled(
                     "Expected tab groups are different to actual. Expected: %s, Actual: %s",
@@ -41,8 +41,8 @@ public class TabGroupsExistCondition extends UiThreadCondition {
     }
 
     private static boolean matchExpectedTabGroups(
-            Set<Token> allTabGroupIds, List<Token> expectedTabGroups) {
-        for (Token tabGroupId : expectedTabGroups) {
+            Set<TabGroupId> allTabGroupIds, List<TabGroupId> expectedTabGroups) {
+        for (TabGroupId tabGroupId : expectedTabGroups) {
             if (!allTabGroupIds.contains(tabGroupId)) return false;
         }
         return expectedTabGroups.size() == allTabGroupIds.size();
@@ -55,12 +55,12 @@ public class TabGroupsExistCondition extends UiThreadCondition {
                 tabGroupIdCollectionToString(mExpectedTabGroups));
     }
 
-    private String tabGroupIdCollectionToString(Collection<Token> tabGroupIds) {
+    private String tabGroupIdCollectionToString(Collection<TabGroupId> tabGroupIds) {
         StringBuilder result = new StringBuilder("[");
 
         int i = 0;
         int collectionSize = tabGroupIds.size();
-        Iterator<Token> iterator = tabGroupIds.iterator();
+        Iterator<TabGroupId> iterator = tabGroupIds.iterator();
 
         // Stop before the final element.
         while (i < collectionSize - 2) {

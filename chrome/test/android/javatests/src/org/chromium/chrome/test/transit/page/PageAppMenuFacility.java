@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.Token;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -26,6 +25,7 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
@@ -140,7 +140,7 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
         assert !TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mHostStation.getActivity());
 
         TabModel tabModel = mHostStation.getTabModel();
-        Set<Token> tabGroupIds =
+        Set<TabGroupId> tabGroupIds =
                 ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getAllTabGroupIds());
         return mAddToGroup
                 .scrollToAndSelectTo()

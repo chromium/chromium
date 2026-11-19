@@ -20,7 +20,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.Token;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
@@ -31,6 +30,7 @@ import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabsPinnedStatusCondition;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
+import org.chromium.components.tab_groups.TabGroupId;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 
@@ -96,7 +96,7 @@ public class TabSwitcherTabCardContextMenuFacility<
         checkItemsAbsent(addTabToNewGroup, moveTabToGroup);
 
         TabModel tabModel = mHostStation.tabModelElement.value();
-        List<Token> allTabGroupIds =
+        List<TabGroupId> allTabGroupIds =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new ArrayList<>(tabModel.getAllTabGroupIds()));
         return addTabToGroup

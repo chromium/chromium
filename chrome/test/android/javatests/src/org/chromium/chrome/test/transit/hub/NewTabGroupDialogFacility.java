@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.Token;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
@@ -135,7 +134,7 @@ public class NewTabGroupDialogFacility<
     }
 
     private void initTabGroupCreatedCondition() {
-        Element<Token> tabGroupIdElement =
+        Element<TabGroupId> tabGroupIdElement =
                 declareEnterConditionAsElement(
                         new TabGroupCreatedCondition(mHostStation.tabModelElement));
 
@@ -145,10 +144,7 @@ public class NewTabGroupDialogFacility<
                     TabModel tabModel = mHostStation.tabModelElement.value();
                     List<Tab> tabsInGroup =
                             runOnUiThreadBlocking(
-                                    () ->
-                                            tabModel.getTabsInGroup(
-                                                    TabGroupId.fromOptionalToken(
-                                                            tabGroupIdElement.value())));
+                                    () -> tabModel.getTabsInGroup(tabGroupIdElement.value()));
                     mTabIdsToGroup = TabModelUtils.getTabIds(tabsInGroup);
                     mTitle = TabGroupUtil.getNumberOfTabsString(mTabIdsToGroup.size());
                     titleInputElement = delayedElements.declareView(createTitleViewSpec());

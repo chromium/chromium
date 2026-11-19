@@ -413,7 +413,8 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TAB_GROUP_ID));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(TAB_GROUP_ID)));
         when(mTabModel.getTabCountForGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(1);
         when(mTabModel.getTabsInGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
@@ -1429,7 +1430,8 @@ public class TabContextMenuCoordinatorUnitTest {
         TabContextMenuCoordinator coordinator = createCoordinatorWithUiActionHandler();
 
         when(mTab1.isClosing()).thenReturn(true);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TAB_GROUP_ID));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(TAB_GROUP_ID)));
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(TAB_GROUP_ID)))
                 .thenReturn(false);
         List<Tab> tabList = List.of(mTab1, mTabOutsideOfGroup);
@@ -1573,7 +1575,9 @@ public class TabContextMenuCoordinatorUnitTest {
         when(tab2.getTabGroupId()).thenReturn(token2);
         when(tab2.getUrl()).thenReturn(EXAMPLE_URL);
 
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(
+                        Set.of(TabGroupId.fromRawToken(token1), TabGroupId.fromRawToken(token2)));
         when(mTabModel.getTabById(101)).thenReturn(tab1);
         when(mTabModel.getTabById(102)).thenReturn(tab2);
         when(mTabModel.getCount()).thenReturn(2);

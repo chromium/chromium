@@ -1107,8 +1107,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     protected List<Token> listTabGroups() {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null) return Collections.emptyList();
-        return TabCollectionTabModelImplJni.get()
-                .getAllTabGroupIds(mNativeTabCollectionTabModelImplPtr);
+        List<Token> tokens = new ArrayList<>();
+        for (TabGroupId id :
+                TabCollectionTabModelImplJni.get()
+                        .getAllTabGroupIds(mNativeTabCollectionTabModelImplPtr)) {
+            tokens.add(id.getToken());
+        }
+        return tokens;
     }
 
     @Override
@@ -1526,7 +1531,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public Set<Token> getAllTabGroupIds() {
+    public Set<TabGroupId> getAllTabGroupIds() {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == null) return Collections.emptySet();
         return new ArraySet<>(
@@ -1556,7 +1561,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
 
         if (!includePendingClosures && tabsToExclude.isEmpty()) {
-            return LazyOneshotSupplier.fromSupplier(() -> getAllTabGroupIds());
+            return LazyOneshotSupplier.fromSupplier(
+                    () -> {
+                        Set<Token> tokens = new ArraySet<>();
+                        for (TabGroupId id : getAllTabGroupIds()) {
+                            tokens.add(id.getToken());
+                        }
+                        return tokens;
+                    });
         }
 
         // TODO(crbug.com/428692223): A dedicated JNI method for the !includePendingClosures case
@@ -1885,18 +1897,17 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (params.isAllTabs) {
             tabsToClose = new ArrayList<>(getAllTabs());
             if (canHideTabGroups) {
-                for (Token tabGroupId : getAllTabGroupIds()) {
-                    mHidingTabGroups.add(tabGroupId);
+                for (TabGroupId tabGroupId : getAllTabGroupIds()) {
+                    mHidingTabGroups.add(tabGroupId.getToken());
                 }
             }
         } else {
             tabsToClose = new ArrayList<>(assumeNonNull(params.tabs));
             if (canHideTabGroups) {
                 Set<Tab> closingTabIds = new ArraySet<>(tabsToClose);
-                for (Token tabGroupId : getAllTabGroupIds()) {
-                    if (closingTabIds.containsAll(
-                            getTabsInGroup(TabGroupId.fromOptionalToken(tabGroupId)))) {
-                        mHidingTabGroups.add(tabGroupId);
+                for (TabGroupId tabGroupId : getAllTabGroupIds()) {
+                    if (closingTabIds.containsAll(getTabsInGroup(tabGroupId))) {
+                        mHidingTabGroups.add(tabGroupId.getToken());
                     }
                 }
             }
@@ -2981,8 +2992,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         @JniType("std::vector<TabAndroid*>")
         List<Tab> getAllTabs(JniPtr<NativeTabCollectionTabModelImpl> self);
 
-        @JniType("std::vector<base::Token>")
-        List<Token> getAllTabGroupIds(JniPtr<NativeTabCollectionTabModelImpl> self);
+        @JniType("std::vector<tab_groups::TabGroupId>")
+        List<TabGroupId> getAllTabGroupIds(JniPtr<NativeTabCollectionTabModelImpl> self);
 
         @JniType("std::vector<TabAndroid*>")
         List<Tab> getRepresentativeTabList(JniPtr<NativeTabCollectionTabModelImpl> self);

@@ -624,7 +624,7 @@ public interface TabModel extends TabList {
     void undoGroupOperationExpired(UndoGroupMetadata undoGroupMetadata);
 
     /** Get all tab group IDs that are associated with tab groups. */
-    Set<Token> getAllTabGroupIds();
+    Set<TabGroupId> getAllTabGroupIds();
 
     /** Returns whether the tab state is initialized. */
     boolean isTabStateInitialized();

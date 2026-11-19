@@ -790,9 +790,11 @@ public class TabCollectionTabModelImplTest {
                     Token groupId0 = tab0.getTabGroupId();
                     assertNotNull(groupId0);
 
-                    Set<Token> groupIds = mCollectionModel.getAllTabGroupIds();
+                    Set<TabGroupId> groupIds = mCollectionModel.getAllTabGroupIds();
                     assertEquals("Should be 1 group.", 1, groupIds.size());
-                    assertTrue("Set should contain group 0 id.", groupIds.contains(groupId0));
+                    assertTrue(
+                            "Set should contain group 0 id.",
+                            groupIds.contains(TabGroupId.fromRawToken(groupId0)));
                     assertEquals(
                             "getTabGroupCount should be 1.",
                             1,
@@ -804,8 +806,12 @@ public class TabCollectionTabModelImplTest {
 
                     groupIds = mCollectionModel.getAllTabGroupIds();
                     assertEquals("Should be 2 groups.", 2, groupIds.size());
-                    assertTrue("Set should contain group 0 id.", groupIds.contains(groupId0));
-                    assertTrue("Set should contain group 1 id.", groupIds.contains(groupId1));
+                    assertTrue(
+                            "Set should contain group 0 id.",
+                            groupIds.contains(TabGroupId.fromRawToken(groupId0)));
+                    assertTrue(
+                            "Set should contain group 1 id.",
+                            groupIds.contains(TabGroupId.fromRawToken(groupId1)));
                     assertEquals(
                             "getTabGroupCount should be 2.",
                             2,
@@ -818,8 +824,12 @@ public class TabCollectionTabModelImplTest {
 
                     groupIds = mCollectionModel.getAllTabGroupIds();
                     assertEquals("Should be 1 group left.", 1, groupIds.size());
-                    assertFalse("Set should not contain group 0 id.", groupIds.contains(groupId0));
-                    assertTrue("Set should still contain group 1 id.", groupIds.contains(groupId1));
+                    assertFalse(
+                            "Set should not contain group 0 id.",
+                            groupIds.contains(TabGroupId.fromRawToken(groupId0)));
+                    assertTrue(
+                            "Set should still contain group 1 id.",
+                            groupIds.contains(TabGroupId.fromRawToken(groupId1)));
                     assertEquals(
                             "getTabGroupCount should be 1.",
                             1,

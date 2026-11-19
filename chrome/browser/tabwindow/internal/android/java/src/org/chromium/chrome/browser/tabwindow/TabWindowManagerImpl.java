@@ -756,7 +756,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
             }
             for (boolean isIncognito : List.of(false, true)) {
                 TabModel tabModel = selector.getModel(isIncognito);
-                for (Token tabGroupId : tabModel.getAllTabGroupIds()) {
+                for (TabGroupId tabGroupId : tabModel.getAllTabGroupIds()) {
                     tabGroupIdTokenStrings.add(tabGroupId.toString());
                 }
             }

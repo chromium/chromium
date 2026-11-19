@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.Token;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Outcome;
 import org.chromium.base.test.transit.ScrollableFacility;
@@ -20,6 +19,7 @@ import org.chromium.chrome.test.transit.CtaAppMenuFacility;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
+import org.chromium.components.tab_groups.TabGroupId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +110,7 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
             boolean isNewTabGroupRowVisible) {
         checkItemsAbsent(mAddTabsToNewGroupMenuItem);
         TabModel tabModel = mHostStation.tabModelElement.value();
-        List<Token> allTabGroupIds =
+        List<TabGroupId> allTabGroupIds =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new ArrayList<>(tabModel.getAllTabGroupIds()));
         return mAddTabsToGroupMenuItem

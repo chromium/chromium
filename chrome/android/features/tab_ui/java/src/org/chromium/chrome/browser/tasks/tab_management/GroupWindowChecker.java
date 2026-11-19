@@ -155,7 +155,8 @@ public class GroupWindowChecker {
             TabGroupSelectionPredicate tabGroupSelectionPredicate,
             Set<Token> seenGroups) {
         for (TabModel model : getAllTabModels()) {
-            for (Token groupId : model.getAllTabGroupIds()) {
+            for (TabGroupId groupIdObj : model.getAllTabGroupIds()) {
+                Token groupId = groupIdObj.getToken();
                 if (!seenGroups.add(groupId)) {
                     continue;
                 }
@@ -324,7 +325,8 @@ public class GroupWindowChecker {
 
     private void indexTabModel(TabModel model) {
         indexComprehensiveModel(model);
-        for (Token groupId : model.getAllTabGroupIds()) {
+        for (TabGroupId groupIdObj : model.getAllTabGroupIds()) {
+            Token groupId = groupIdObj.getToken();
             indexGroupId(model, groupId);
         }
     }

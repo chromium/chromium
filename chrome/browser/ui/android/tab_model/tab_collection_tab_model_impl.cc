@@ -309,16 +309,8 @@ std::vector<TabAndroid*> TabCollectionTabModelImpl::GetAllTabs() const {
   return tabs;
 }
 
-std::vector<base::Token> TabCollectionTabModelImpl::GetAllTabGroupIds() const {
-  std::vector<TabGroupId> group_ids =
-      tab_strip_collection_->GetAllTabGroupIds();
-
-  std::vector<base::Token> tokens;
-  tokens.reserve(group_ids.size());
-  for (const TabGroupId& group_id : group_ids) {
-    tokens.push_back(group_id.token());
-  }
-  return tokens;
+std::vector<TabGroupId> TabCollectionTabModelImpl::GetAllTabGroupIds() const {
+  return tab_strip_collection_->GetAllTabGroupIds();
 }
 
 std::vector<TabAndroid*> TabCollectionTabModelImpl::GetRepresentativeTabList()

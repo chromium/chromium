@@ -434,7 +434,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void undoGroupOperationExpired(UndoGroupMetadata undoGroupMetadata) {}
 
     @Override
-    public Set<Token> getAllTabGroupIds() {
+    public Set<TabGroupId> getAllTabGroupIds() {
         return Collections.emptySet();
     }
 

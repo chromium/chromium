@@ -320,17 +320,17 @@ public class TabsDeterministicSimulationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabUngrouper ungrouper = mCollectionModel.getTabUngrouper();
-                    List<Token> groupIds = new ArrayList<>(mCollectionModel.getAllTabGroupIds());
+                    List<TabGroupId> groupIds =
+                            new ArrayList<>(mCollectionModel.getAllTabGroupIds());
                     if (groupIds.isEmpty() && !mGlobalRandom.nextBoolean()) return;
 
-                    Token groupId;
+                    TabGroupId groupId;
                     if (!groupIds.isEmpty() && mGlobalRandom.nextBoolean()) {
                         groupId = groupIds.get(mGlobalRandom.nextInt(groupIds.size()));
                     } else {
-                        groupId = Token.createRandom(); // Invalid group ID
+                        groupId = TabGroupId.generateNew(); // Invalid group ID
                     }
-                    List<Tab> tabsInGroup =
-                            mCollectionModel.getTabsInGroup(TabGroupId.fromOptionalToken(groupId));
+                    List<Tab> tabsInGroup = mCollectionModel.getTabsInGroup(groupId);
 
                     if (tabsInGroup.isEmpty()) return;
 
@@ -351,9 +351,7 @@ public class TabsDeterministicSimulationTest {
                         // Ungroup the whole group.
                         Log.i(TAG, "ungroupTabsOrGroup: ungroupTabGroup(" + groupId + ")");
                         ungrouper.ungroupTabGroup(
-                                TabGroupId.fromRawToken(groupId),
-                                mGlobalRandom.nextBoolean(),
-                                /* allowDialog= */ false);
+                                groupId, mGlobalRandom.nextBoolean(), /* allowDialog= */ false);
                     }
                 });
     }
@@ -361,12 +359,13 @@ public class TabsDeterministicSimulationTest {
     private void updateGroupVisualData() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    List<Token> groupIds = new ArrayList<>(mCollectionModel.getAllTabGroupIds());
+                    List<TabGroupId> groupIds =
+                            new ArrayList<>(mCollectionModel.getAllTabGroupIds());
                     // TabCollectionTabModelImpl asserts or crashes if one of these operations
                     // happens on an invalid group ID.
                     if (groupIds.isEmpty()) return;
 
-                    Token groupId = groupIds.get(mGlobalRandom.nextInt(groupIds.size()));
+                    TabGroupId groupId = groupIds.get(mGlobalRandom.nextInt(groupIds.size()));
 
                     int choice = mGlobalRandom.nextInt(3);
                     if (choice == 0) {
@@ -378,7 +377,7 @@ public class TabsDeterministicSimulationTest {
                                         + ", "
                                         + title
                                         + ")");
-                        mCollectionModel.setTabGroupTitle(TabGroupId.fromRawToken(groupId), title);
+                        mCollectionModel.setTabGroupTitle(groupId, title);
                     } else if (choice == 1) {
                         int color = mGlobalRandom.nextInt(TabGroupColorId.NUM_ENTRIES);
                         Log.i(
@@ -388,11 +387,9 @@ public class TabsDeterministicSimulationTest {
                                         + ", "
                                         + color
                                         + ")");
-                        mCollectionModel.setTabGroupColor(TabGroupId.fromRawToken(groupId), color);
+                        mCollectionModel.setTabGroupColor(groupId, color);
                     } else {
-                        boolean collapsed =
-                                !mCollectionModel.getTabGroupCollapsed(
-                                        TabGroupId.fromRawToken(groupId));
+                        boolean collapsed = !mCollectionModel.getTabGroupCollapsed(groupId);
                         Log.i(
                                 TAG,
                                 "updateGroupVisualData: setTabGroupCollapsed("
@@ -400,8 +397,7 @@ public class TabsDeterministicSimulationTest {
                                         + ", "
                                         + collapsed
                                         + ")");
-                        mCollectionModel.setTabGroupCollapsed(
-                                TabGroupId.fromRawToken(groupId), collapsed, false);
+                        mCollectionModel.setTabGroupCollapsed(groupId, collapsed, false);
                     }
                 });
     }
@@ -430,13 +426,11 @@ public class TabsDeterministicSimulationTest {
                         remover.closeTabs(TabClosureParams.closeTabs(tabsToClose).build(), false);
                     } else if (choice == 2 && mCollectionModel.getTabGroupCount() > 0) {
                         // Close a group
-                        List<Token> groupIds =
+                        List<TabGroupId> groupIds =
                                 new ArrayList<>(mCollectionModel.getAllTabGroupIds());
-                        Token groupId = groupIds.get(mGlobalRandom.nextInt(groupIds.size()));
+                        TabGroupId groupId = groupIds.get(mGlobalRandom.nextInt(groupIds.size()));
                         Log.i(TAG, "closeTabs: closeTabGroup(" + groupId + ")");
-                        var params =
-                                TabClosureParams.forCloseTabGroup(
-                                        mCollectionModel, TabGroupId.fromRawToken(groupId));
+                        var params = TabClosureParams.forCloseTabGroup(mCollectionModel, groupId);
                         if (params != null) {
                             remover.closeTabs(params.build(), false);
                         }

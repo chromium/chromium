@@ -133,8 +133,8 @@ public class TabGroupItemBuilderUnitTest {
                         inv -> {
                             TabModel model = (TabModel) inv.getMock();
                             TabGroupId groupId = inv.getArgument(0);
-                            Set<Token> ids = model.getAllTabGroupIds();
-                            return groupId != null && ids.contains(groupId.getToken());
+                            Set<TabGroupId> ids = model.getAllTabGroupIds();
+                            return ids.contains(groupId);
                         });
 
         mTabGroupItemBuilder =
@@ -154,7 +154,7 @@ public class TabGroupItemBuilderUnitTest {
         Token token1 = new Token(1L, 1L);
         when(tabModel.getCount()).thenReturn(2);
         when(tabModel.getTabGroupCount()).thenReturn(1);
-        when(tabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(tabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
         when(tabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1))).thenReturn("Group 1");
         when(tabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(token1)))
                 .thenReturn(TabGroupColorId.BLUE);
@@ -180,7 +180,7 @@ public class TabGroupItemBuilderUnitTest {
     public void testTabGroupsSubmenu_WithGroups() {
         Token token1 = new Token(1L, 1L);
         when(mTabModel.getTabGroupCount()).thenReturn(1);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1))).thenReturn("Group 1");
         when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(token1)))
                 .thenReturn(TabGroupColorId.BLUE);
@@ -366,7 +366,7 @@ public class TabGroupItemBuilderUnitTest {
     public void testBuildTabGroupsParentItem_NullCurrentTab_WithGroups() {
         Token token1 = new Token(1L, 1L);
         when(mTabModel.getTabGroupCount()).thenReturn(1);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
 
         assertTrue(mTabGroupItemBuilder.shouldShowTabGroupsParentItem(/* currentTab= */ null));
 
@@ -391,7 +391,9 @@ public class TabGroupItemBuilderUnitTest {
 
         // Case 1: Tab is in token1, model has token1 and token2 (other group exists).
         when(mTab.getTabGroupId()).thenReturn(token1);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(
+                        Set.of(TabGroupId.fromRawToken(token1), TabGroupId.fromRawToken(token2)));
         ListItem item1 = mTabGroupItemBuilder.buildAddToGroupItem(mTab, /* showIcon= */ false);
         assertEquals(
                 mContext.getString(R.string.menu_move_tab_to_group),
@@ -399,7 +401,7 @@ public class TabGroupItemBuilderUnitTest {
 
         // Case 2: Tab is not in group, model has token1 (other group exists).
         when(mTab.getTabGroupId()).thenReturn(null);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
         ListItem item2 = mTabGroupItemBuilder.buildAddToGroupItem(mTab, /* showIcon= */ false);
         assertEquals(
                 mContext.getString(R.string.menu_add_tab_to_group),
@@ -413,11 +415,13 @@ public class TabGroupItemBuilderUnitTest {
 
         // Tab in token1, model only has token1 -> false (no other group).
         when(mTab.getTabGroupId()).thenReturn(token1);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
         assertFalse(mTabGroupItemBuilder.shouldShowAddToGroup(mTab));
 
         // Tab in token1, model has token1 and token2 -> true.
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(
+                        Set.of(TabGroupId.fromRawToken(token1), TabGroupId.fromRawToken(token2)));
         assertTrue(mTabGroupItemBuilder.shouldShowAddToGroup(mTab));
 
         // Tab not in group, model has no groups -> false.
@@ -426,7 +430,7 @@ public class TabGroupItemBuilderUnitTest {
         assertFalse(mTabGroupItemBuilder.shouldShowAddToGroup(mTab));
 
         // Tab not in group, model has token1 -> true.
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
         assertTrue(mTabGroupItemBuilder.shouldShowAddToGroup(mTab));
     }
 
@@ -436,7 +440,9 @@ public class TabGroupItemBuilderUnitTest {
         Token token2 = new Token(2L, 2L);
 
         when(mTab.getTabGroupId()).thenReturn(token1);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(
+                        Set.of(TabGroupId.fromRawToken(token1), TabGroupId.fromRawToken(token2)));
         doReturn(true).when(mTabModel).containsTabGroup(TabGroupId.fromOptionalToken(token2));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token2))).thenReturn("Group 2");
         when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(token2)))
@@ -763,7 +769,8 @@ public class TabGroupItemBuilderUnitTest {
 
         Token token1 = new Token(1L, 1L);
         when(mIncognitoTabModel.getTabGroupCount()).thenReturn(1);
-        when(mIncognitoTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mIncognitoTabModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
         when(mIncognitoTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1)))
                 .thenReturn(true);
         when(mIncognitoTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1)))
@@ -1554,7 +1561,8 @@ public class TabGroupItemBuilderUnitTest {
 
         Token token1 = new Token(1L, 1L);
         when(mIncognitoTabModel.getTabGroupCount()).thenReturn(1);
-        when(mIncognitoTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mIncognitoTabModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
         when(mIncognitoTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1)))
                 .thenReturn(true);
         when(mIncognitoTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1)))
@@ -2030,7 +2038,9 @@ public class TabGroupItemBuilderUnitTest {
         Token token1 = new Token(1L, 1L);
         Token token2 = new Token(2L, 2L);
         when(mTab.getTabGroupId()).thenReturn(token1);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(
+                        Set.of(TabGroupId.fromRawToken(token1), TabGroupId.fromRawToken(token2)));
         doReturn(true).when(mTabModel).containsTabGroup(TabGroupId.fromOptionalToken(token2));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token2))).thenReturn("Group 2");
         when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(token2)))
@@ -2188,7 +2198,8 @@ public class TabGroupItemBuilderUnitTest {
         Tab tabCurrent =
                 createMockTab(101, "Current Tab", JUnitTestGURLs.URL_1, tokenCurrent, false);
         when(mTabModel.getTabGroupCount()).thenReturn(1);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(tokenCurrent));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(tokenCurrent)));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(tokenCurrent)))
                 .thenReturn("Current Group");
         when(mTabModel.getTabGroupColorWithFallback(TabGroupId.fromRawToken(tokenCurrent)))

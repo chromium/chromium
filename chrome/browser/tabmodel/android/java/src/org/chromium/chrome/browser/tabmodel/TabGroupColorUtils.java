@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -48,11 +47,11 @@ public class TabGroupColorUtils {
             colorCountMap.put(colorId, 0);
         }
 
-        Set<Token> tabGroupIds = tabModel.getAllTabGroupIds();
+        Set<TabGroupId> tabGroupIds = tabModel.getAllTabGroupIds();
 
         // Filter all tab groups for ones that already have a color assigned.
-        for (Token tabGroupId : tabGroupIds) {
-            int colorId = tabModel.getTabGroupColor(TabGroupId.fromRawToken(tabGroupId));
+        for (TabGroupId tabGroupId : tabGroupIds) {
+            int colorId = tabModel.getTabGroupColor(tabGroupId);
 
             // If the tab group has a color stored on shared prefs, increment the colorId map count.
             if (colorId != INVALID_COLOR_ID) {

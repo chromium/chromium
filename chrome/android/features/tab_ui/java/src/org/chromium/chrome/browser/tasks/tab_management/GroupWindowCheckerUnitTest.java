@@ -147,7 +147,8 @@ public class GroupWindowCheckerUnitTest {
     public void testGetSortedGroupList_zeroSyncGroupsIncludesLocalGroups() {
         Token localGroupId = Token.createRandom();
         when(mSyncService.getAllGroupIds()).thenReturn(new String[0]);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(localGroupId));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(localGroupId)));
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(localGroupId)))
                 .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(localGroupId)))
@@ -180,7 +181,7 @@ public class GroupWindowCheckerUnitTest {
         when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"sync1"});
         when(mSyncService.getGroup("sync1")).thenReturn(group);
 
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(groupId));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(groupId)));
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(groupId))).thenReturn(true);
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(groupId)))
                 .thenReturn("Local Title");
@@ -356,7 +357,7 @@ public class GroupWindowCheckerUnitTest {
         when(mTabModel.isIncognito()).thenReturn(true);
         Token group1 = Token.createRandom();
         Token group2 = Token.createRandom();
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(group1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(group1)));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(group1)))
                 .thenReturn("Incognito Group 1");
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(group1))).thenReturn(true);
@@ -369,7 +370,8 @@ public class GroupWindowCheckerUnitTest {
         TabList otherTabList = mock(TabList.class);
         when(otherIncognitoModel.getComprehensiveModel()).thenReturn(otherTabList);
         when(otherIncognitoModel.isIncognito()).thenReturn(true);
-        when(otherIncognitoModel.getAllTabGroupIds()).thenReturn(Set.of(group2));
+        when(otherIncognitoModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(group2)));
         when(otherIncognitoModel.getTabGroupTitle(TabGroupId.fromRawToken(group2)))
                 .thenReturn("Incognito Group 2");
         when(otherIncognitoModel.getTabsInGroup(TabGroupId.fromOptionalToken(group2)))
@@ -402,7 +404,7 @@ public class GroupWindowCheckerUnitTest {
         when(mTabModel.isIncognito()).thenReturn(true);
         Token group1 = Token.createRandom();
         Token group2 = Token.createRandom();
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(group1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(group1)));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(group1)))
                 .thenReturn("Incognito Group 1");
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(group1))).thenReturn(true);
@@ -415,7 +417,8 @@ public class GroupWindowCheckerUnitTest {
         TabList otherTabList = mock(TabList.class);
         when(otherIncognitoModel.getComprehensiveModel()).thenReturn(otherTabList);
         when(otherIncognitoModel.isIncognito()).thenReturn(true);
-        when(otherIncognitoModel.getAllTabGroupIds()).thenReturn(Set.of(group2));
+        when(otherIncognitoModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(group2)));
         when(otherIncognitoModel.getTabGroupTitle(TabGroupId.fromRawToken(group2)))
                 .thenReturn("Incognito Group 2");
         when(otherIncognitoModel.getTabsInGroup(TabGroupId.fromOptionalToken(group2)))
@@ -446,7 +449,7 @@ public class GroupWindowCheckerUnitTest {
 
         when(mTabModel.isIncognito()).thenReturn(true);
         Token group1 = Token.createRandom();
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(group1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(group1)));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(group1)))
                 .thenReturn("Incognito Group 1");
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(group1))).thenReturn(true);
@@ -545,7 +548,7 @@ public class GroupWindowCheckerUnitTest {
     public void testHasOtherGroups() {
         when(mTabModel.isIncognito()).thenReturn(true);
         Token token1 = Token.createRandom();
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1))).thenReturn("title1");
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
         Tab tab1 = mock(Tab.class);
@@ -557,7 +560,9 @@ public class GroupWindowCheckerUnitTest {
         assertTrue(mSyncUtils.hasOtherGroups(null));
 
         Token token2 = Token.createRandom();
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(
+                        Set.of(TabGroupId.fromRawToken(token1), TabGroupId.fromRawToken(token2)));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token2))).thenReturn("title2");
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token2))).thenReturn(true);
         Tab tab2 = mock(Tab.class);
@@ -571,7 +576,7 @@ public class GroupWindowCheckerUnitTest {
     @Test
     public void testHasOtherGroups_regularModel_unsyncedLocalGroups() {
         Token token1 = Token.createRandom();
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TabGroupId.fromRawToken(token1)));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token1))).thenReturn("title1");
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token1))).thenReturn(true);
         Tab tab1 = mock(Tab.class);
@@ -583,7 +588,9 @@ public class GroupWindowCheckerUnitTest {
         assertTrue(mSyncUtils.hasOtherGroups(null));
 
         Token token2 = Token.createRandom();
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(
+                        Set.of(TabGroupId.fromRawToken(token1), TabGroupId.fromRawToken(token2)));
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(token2))).thenReturn("title2");
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(token2))).thenReturn(true);
         Tab tab2 = mock(Tab.class);
@@ -664,7 +671,8 @@ public class GroupWindowCheckerUnitTest {
     public void testGetDefaultSortedGroupList_closingLocalGroupExcluded() {
         when(mTabModel.isIncognito()).thenReturn(true);
         Token closingToken = Token.createRandom();
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(closingToken));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(closingToken)));
         when(mTab1.getTabGroupId()).thenReturn(closingToken);
         when(mTab1.isClosing()).thenReturn(true);
         when(mTabList.iterator()).thenAnswer(invocation -> List.of(mTab1).iterator());
@@ -867,7 +875,8 @@ public class GroupWindowCheckerUnitTest {
         when(closingTab.isClosing()).thenReturn(true);
 
         when(mSyncService.getAllGroupIds()).thenReturn(new String[0]);
-        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(localGroupId));
+        when(mTabModel.getAllTabGroupIds())
+                .thenReturn(Set.of(TabGroupId.fromRawToken(localGroupId)));
         when(mTabModel.containsTabGroup(TabGroupId.fromOptionalToken(localGroupId)))
                 .thenReturn(true);
         when(mTabModel.getTabGroupTitle(TabGroupId.fromRawToken(localGroupId)))

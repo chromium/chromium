@@ -118,7 +118,7 @@ class TabCollectionTabModelImpl {
   std::vector<TabAndroid*> GetAllTabs() const;
 
   // Gets a list of all tab group IDs.
-  std::vector<base::Token> GetAllTabGroupIds() const;
+  std::vector<tab_groups::TabGroupId> GetAllTabGroupIds() const;
 
   // Gets a list of representative tabs.
   std::vector<TabAndroid*> GetRepresentativeTabList() const;

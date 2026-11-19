@@ -210,10 +210,10 @@ public class TabCollectionsTabModelObserversUnitTest {
         when(mTabCollectionTabModelImplJni.getAllTabGroupIds(any()))
                 .thenAnswer(
                         invocation -> {
-                            Set<Token> groupIds = new HashSet<>();
+                            Set<TabGroupId> groupIds = new HashSet<>();
                             for (Tab t : mTabs) {
                                 if (t.getTabGroupId() != null) {
-                                    groupIds.add(t.getTabGroupId());
+                                    groupIds.add(TabGroupId.fromRawToken(t.getTabGroupId()));
                                 }
                             }
                             return new ArrayList<>(groupIds);
