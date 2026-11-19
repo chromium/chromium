@@ -795,10 +795,7 @@ chromium-metrics-reviews@google.com.
     considers whether to add the visit to a new cluster or an existing cluster.
 
     This histogram records the processing breakdown for persisting visits to
-    group them into context clusters. Recorded each time {Segment}. The
-    histograms here summed up with the histograms as part of
-    `History.Clusters.ContextClusterer.VisitProcessingLatency` record the total
-    latency for context clustering.
+    group them into context clusters. Recorded each time {Segment}.
   </summary>
   <token key="Segment">
     <variant name="AddVisitsToCluster"
@@ -809,31 +806,6 @@ chromium-metrics-reviews@google.com.
         summary="additional visit metadata has been calculated for an
                  existing visit already part of a cluster and needs to be
                  updated"/>
-  </token>
-</histogram>
-
-<histogram
-    name="History.Clusters.ContextClusterer.VisitProcessingLatency.{Segment}"
-    units="ms" expires_after="2024-10-06">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    When the user visits a page, `ContextClustererHistoryServiceObserver`
-    considers whether to add the visit to a new cluster or an existing cluster.
-
-    This histogram records the processing breakdown for processing visits to
-    group them into context clusters. Recorded each time {Segment}. The
-    histograms here summed up with the histograms as part of
-    `History.Clusters.ContextClusterer.DbLatency` record the total latency for
-    context clustering.
-  </summary>
-  <token key="Segment">
-    <variant name="CleanUpTimer"
-        summary="a clean-up pass has invoked, roughly once every ten minutes
-                 (Finch-configurable)"/>
-    <variant name="UrlsDeleted" summary="a set of URLs has beeen deleted"/>
-    <variant name="UrlVisited" summary="a URL is visited"/>
   </token>
 </histogram>
 

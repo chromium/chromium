@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -73,46 +72,6 @@ void LogDbLatencyHistogram(ContextClustererDbLatencyType db_latency_type,
                           base::TimeTicks::Now() - start_time);
 }
 
-enum class VisitProcessingStage {
-  kUrlVisited = 0,
-  kUrlsDeleted = 1,
-  kCleanUpTimer = 2,
-
-  // If adding more values here, please add the new stage to the variants under
-  // the `History.Clusters.ContextClusterer.VisitProcessingLatency` in
-  // history/histograms.xml.
-};
-
-std::string VisitProcessingStageHistogramSuffix(
-    VisitProcessingStage visit_processing_stage) {
-  switch (visit_processing_stage) {
-    case VisitProcessingStage::kUrlVisited:
-      return ".UrlVisited";
-    case VisitProcessingStage::kUrlsDeleted:
-      return ".UrlsDeleted";
-    case VisitProcessingStage::kCleanUpTimer:
-      return ".CleanUpTimer";
-  };
-}
-
-class ScopedVisitProcessingTimer {
- public:
-  explicit ScopedVisitProcessingTimer(
-      VisitProcessingStage visit_processing_stage)
-      : visit_processing_stage_(visit_processing_stage) {}
-  ~ScopedVisitProcessingTimer() {
-    base::UmaHistogramTimes(
-        "History.Clusters.ContextClusterer.VisitProcessingLatency" +
-            VisitProcessingStageHistogramSuffix(visit_processing_stage_),
-        elapsed_timer_.Elapsed());
-  }
-
- private:
-  VisitProcessingStage visit_processing_stage_;
-
-  base::ElapsedTimer elapsed_timer_;
-};
-
 }  // namespace
 
 InProgressCluster::InProgressCluster() = default;
@@ -161,9 +120,6 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
       history::VisitResponseCodeCategory::k404) {
     return;
   }
-
-  ScopedVisitProcessingTimer url_visited_processing_timer(
-      VisitProcessingStage::kUrlVisited);
 
   // Update the normalized URL if it's a search URL.
   const history::URLRow& url_row = visited_url_info.url_row;
@@ -321,8 +277,6 @@ void ContextClustererHistoryServiceObserver::OnHistoryDeletions(
     const history::DeletionInfo& deletion_info) {
   TRACE_EVENT0("browser",
                "ContextClusteringHistoryServiceObserver::OnHistoryDeletions");
-  ScopedVisitProcessingTimer urls_deleted_processing_timer(
-      VisitProcessingStage::kUrlsDeleted);
 
   // Clear out everything if the user deleted all history.
   if (deletion_info.IsAllHistory()) {
@@ -361,9 +315,6 @@ void ContextClustererHistoryServiceObserver::OnHistoryDeletions(
 void ContextClustererHistoryServiceObserver::CleanUpClusters() {
   TRACE_EVENT0("browser",
                "ContextClusteringHistoryServiceObserver::CleanUpClusters");
-
-  ScopedVisitProcessingTimer clean_up_timer(
-      VisitProcessingStage::kCleanUpTimer);
 
   if (in_progress_clusters_.empty()) {
     // Nothing to clean up, just return.

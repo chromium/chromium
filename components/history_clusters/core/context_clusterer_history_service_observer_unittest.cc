@@ -582,8 +582,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   EXPECT_EQ(1u, num_get_score_invocations());
 
   histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlVisited", 1);
-  histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.DbLatency.UpdateClusterVisit", 1);
 
   // Visit the same host. We only expect for the engagement score provider to be
@@ -636,10 +634,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SkipsBlocklistedHost) {
 
   EXPECT_EQ(0, GetNumClustersCreated());
 
-  // Visit processing histogram should still be recorded.
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlVisited", 1);
-
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.DbLatency.ReserveNextClusterId", 0);
 }
@@ -661,9 +655,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, Skips404Visits) {
       "History.Clusters.ContextClusterer.DbLatency.ReserveNextClusterId", 0);
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.DbLatency.UpdateClusterVisit", 0);
-  // Visit processing histogram should not be recorded.
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlVisited", 0);
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, MultipleClusters) {
@@ -680,8 +671,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, MultipleClusters) {
 
 TEST_F(ContextClustererHistoryServiceObserverTest, CleansUpClusters) {
   {
-    base::HistogramTester histogram_tester;
-
     // Simulate a now time that is "old"-ish to make sure these get cleaned up
     // appropriately.
     base::Time now =
@@ -702,13 +691,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, CleansUpClusters) {
 
     // Force a cleanup pass.
     MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlVisited",
-        5);
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.ContextClusterer.VisitProcessingLatency.CleanUpTimer",
-        1);
   }
 
   // This should create a new cluster.
@@ -721,8 +703,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, CleansUpClusters) {
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, DeleteAllHistory) {
-  base::HistogramTester histogram_tester;
-
   VisitURL(GURL("https://example.com"), 1, Now());
   VisitURL(GURL("https://example.com/2"), 2, Now());
 
@@ -731,15 +711,9 @@ TEST_F(ContextClustererHistoryServiceObserverTest, DeleteAllHistory) {
 
   // Force a cleanup pass.
   MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlsDeleted",
-      1);
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, DeleteSelectURLs) {
-  base::HistogramTester histogram_tester;
-
   VisitURL(GURL("https://example.com"), 1, Now());
   VisitURL(GURL("https://example.com/2"), 2, Now());
   VisitURL(GURL("https://default-engine.com/search?q=foo"), 3, Now());
@@ -751,10 +725,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, DeleteSelectURLs) {
 
   // Force a cleanup pass.
   MoveClockForwardBy(GetConfig().context_clustering_clean_up_duration);
-
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlsDeleted",
-      1);
 }
 
 }  // namespace history_clusters
