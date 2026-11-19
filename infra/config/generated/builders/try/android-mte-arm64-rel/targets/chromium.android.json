@@ -24,8 +24,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -36,7 +37,8 @@
       {
         "args": [
           "-v",
-          "-v"
+          "-v",
+          "--isolated-script-test-filter=-SystemUtils.PageFaultHandlerProtect"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -50,8 +52,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -84,8 +87,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -116,8 +120,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -148,8 +153,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -160,6 +166,7 @@
       {
         "args": [
           "--git-revision=${got_revision}",
+          "--gtest_filter=-PushPullFIFOBasicTest.BasicTests:PushPullFIFOChannelCountTest.ChannelMismatchDeathTests",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -186,8 +193,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -218,8 +226,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -251,8 +260,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -283,8 +293,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -316,8 +327,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -348,8 +360,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -380,8 +393,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -413,8 +427,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -447,8 +462,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -460,6 +476,7 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.content_unittests.filter",
+          "--gtest_filter=-FontUniqueNameLookupTest.TestMatchPostScriptNameTtc:All/PermissionControllerImplTestWithApproxLocation.RequestPermissionsFromCurrentDocumentDelegatesIffMissingOverrides/*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -481,8 +498,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -515,8 +533,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -547,8 +566,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -580,8 +600,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -612,8 +633,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -644,8 +666,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -676,8 +699,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -708,8 +732,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -740,8 +765,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -772,8 +798,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -784,6 +811,7 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.gwp_asan_unittests.filter",
+          "--gtest_filter=-ExtremeLightweightDetectorMallocShimsTest.Basic",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -805,8 +833,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -837,8 +866,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -869,8 +899,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -902,8 +933,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -934,8 +966,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -966,8 +999,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -999,8 +1033,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1031,8 +1066,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1063,8 +1099,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1095,8 +1132,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1129,8 +1167,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1161,8 +1200,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1193,8 +1233,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1225,8 +1266,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1257,8 +1299,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1289,8 +1332,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1321,8 +1365,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1353,8 +1398,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1385,8 +1431,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1417,8 +1464,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1449,8 +1497,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1481,8 +1530,9 @@
         },
         "swarming": {
           "dimensions": {
+            "device_os": "AP4A.241205.013",
             "device_os_type": "userdebug",
-            "device_type": "shiba",
+            "device_type": "tokay",
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"

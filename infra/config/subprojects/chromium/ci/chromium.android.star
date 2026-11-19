@@ -4596,12 +4596,25 @@ ci.builder(
         ],
         mixins = [
             "has_native_resultdb_integration",
-            "shiba",
+            "tokay_on_15",
         ],
         per_test_modifications = {
+            "angle_unittests": targets.mixin(
+                args = [
+                    # TODO(anglebug.com/42265874): Re-enable once crrev.com/c/8829389 rolls in.
+                    "--isolated-script-test-filter=-SystemUtils.PageFaultHandlerProtect",
+                ],
+            ),
             "base_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.base_unittests.filter",
+                ],
+            ),
+            "blink_platform_unittests": targets.mixin(
+                args = [
+                    # Sequential threadsafe death tests time out dumping MTE tags on Android 15.
+                    ("--gtest_filter=-PushPullFIFOBasicTest.BasicTests:" +
+                     "PushPullFIFOChannelCountTest.ChannelMismatchDeathTests"),
                 ],
             ),
             "components_unittests": targets.mixin(
@@ -4617,6 +4630,10 @@ ci.builder(
             "content_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.content_unittests.filter",
+                    # crbug.com/362295873
+                    ("--gtest_filter=-FontUniqueNameLookupTest.TestMatchPostScriptNameTtc:" +
+                     # Sequential threadsafe death tests time out dumping MTE tags on Android 15.
+                     "All/PermissionControllerImplTestWithApproxLocation.RequestPermissionsFromCurrentDocumentDelegatesIffMissingOverrides/*"),
                 ],
             ),
             "crashpad_tests": targets.mixin(
@@ -4627,6 +4644,8 @@ ci.builder(
             "gwp_asan_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.device.gwp_asan_unittests.filter",
+                    # crbug.com/328565730
+                    "--gtest_filter=-ExtremeLightweightDetectorMallocShimsTest.Basic",
                 ],
             ),
             "media_unittests": targets.mixin(

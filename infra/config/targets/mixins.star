@@ -2013,17 +2013,6 @@ targets.mixin(
     ),
 )
 
-# Pixel 8
-targets.mixin(
-    name = "shiba",
-    swarming = targets.swarming(
-        dimensions = {
-            "device_type": "shiba",
-            "os": "Android",
-        },
-    ),
-)
-
 targets.mixin(
     name = "out_dir_arg",
     args = [
@@ -2123,6 +2112,18 @@ targets.mixin(
     swarming = targets.swarming(
         hard_timeout_sec = 1800,
         io_timeout_sec = 1800,
+    ),
+)
+
+# Pixel 9 on Android 15
+targets.mixin(
+    name = "tokay_on_15",
+    swarming = targets.swarming(
+        dimensions = {
+            "device_type": "tokay",
+            "device_os": "AP4A.241205.013",  # Android 15
+            "os": "Android",
+        },
     ),
 )
 

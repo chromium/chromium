@@ -3,3 +3,11 @@
 -All/NavigationEntryScreenshotBrowserTest.SameOriginIFrame_NotCaptured/SameOrigin_BFCacheDisabled
 -All/NavigationEntryScreenshotBrowserTest.SameOriginIFrame_NotCaptured/SameOrigin_BFCacheEnabled
 -CrossPlatformAccessibilityBrowserTest.ImplicitRootScroller
+
+# crbug.com/362879099: Failing on Pixel 9 (Android 15)
+-All/NavigationControllerBrowserTest.ReloadWithUrlAnchor/*
+-All/NavigationControllerBrowserTest.ReloadWithUrlAnchorAndScroll/*
+-All/NavigationControllerBrowserTest.SameUrlNavigationWithScroll/*
+-All/NavigationControllerBrowserTest.SameUrlNavigationWithUrlAnchorAndScroll/*
+-GpuHostImplPersistentCacheTest.ClearCacheOnCrash
+-GpuHostImplPersistentCacheTest.SetChannelPersistentCacheFileCalled
