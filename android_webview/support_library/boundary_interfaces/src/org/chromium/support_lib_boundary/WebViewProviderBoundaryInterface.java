@@ -94,6 +94,10 @@ public interface WebViewProviderBoundaryInterface {
 
     void saveState(Bundle outState, int maxSize, boolean includeForwardState);
 
+    byte @Nullable [] serializeState(int maxSize, boolean includeForwardState);
+
+    boolean restoreState(byte[] state);
+
     void addWebViewNavigationListener(
             Executor executor, /* WebViewNavigationListener */ InvocationHandler listener);
 

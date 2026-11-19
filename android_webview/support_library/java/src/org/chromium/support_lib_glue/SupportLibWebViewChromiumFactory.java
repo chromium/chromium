@@ -174,6 +174,7 @@ public class SupportLibWebViewChromiumFactory
                 Features.PROFILE_SELECTED_SITE_ISOLATION_V1,
                 Features.WEBGPU + Features.DEV_SUFFIX,
                 WebFeatures.WEB_CONTENT_V2,
+                Features.SERIALIZE_STATE + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from
@@ -446,6 +447,8 @@ public class SupportLibWebViewChromiumFactory
         ApiCall.SET_WEB_GRAPHICS_ENABLED,
         ApiCall.GET_WEB_GRAPHICS_ENABLED,
         ApiCall.GET_WGPU_PROC_GET_PROC_ADDRESS,
+        ApiCall.SERIALIZE_STATE,
+        ApiCall.RESTORE_SERIALIZED_STATE,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -702,8 +705,11 @@ public class SupportLibWebViewChromiumFactory
         int SET_WEB_GRAPHICS_ENABLED = 244;
         int GET_WEB_GRAPHICS_ENABLED = 245;
         int GET_WGPU_PROC_GET_PROC_ADDRESS = 246;
+        int SERIALIZE_STATE = 247;
+        int RESTORE_SERIALIZED_STATE = 248;
+
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 247;
+        int COUNT = 249;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

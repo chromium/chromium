@@ -312,6 +312,20 @@ public class SharedWebViewChromium {
         mAwContents.saveState(outState, maxSize, includeForwardState);
     }
 
+    public byte[] serializeState(int maxSize, boolean includeForwardState) {
+        ThreadUtils.checkUiThread();
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.WEBVIEW_INSTANCE_SAVE_STATE);
+        return mAwContents.serializeState(maxSize, includeForwardState);
+    }
+
+    public boolean restoreState(byte[] state) {
+        ThreadUtils.checkUiThread();
+        mStartupController.triggerAndWaitForChromiumStarted(
+                StartupCallSite.WEBVIEW_INSTANCE_RESTORE_STATE);
+        return mAwContents.restoreState(state);
+    }
+
     public List<String> addJavascriptInterfaces(
             List<Object> objects, List<String> names, List<List<String>> originPatterns) {
         // This is called specifically from the WebViewBuilder API which always builds

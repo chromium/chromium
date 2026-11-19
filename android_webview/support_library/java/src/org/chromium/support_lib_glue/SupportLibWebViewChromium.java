@@ -503,6 +503,33 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
     }
 
     @Override
+    public byte @Nullable [] serializeState(int maxSize, boolean includeForwardState) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.SERIALIZE_STATE")) {
+            recordApiCall(ApiCall.SERIALIZE_STATE);
+            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
+            if (sharedWebViewChromium == null) {
+                throw new IllegalStateException(
+                        "Support lib method called on WebView that no longer exists.");
+            }
+            return sharedWebViewChromium.serializeState(maxSize, includeForwardState);
+        }
+    }
+
+    @Override
+    public boolean restoreState(byte[] state) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.RESTORE_SERIALIZED_STATE")) {
+            recordApiCall(ApiCall.RESTORE_SERIALIZED_STATE);
+            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
+            if (sharedWebViewChromium == null) {
+                throw new IllegalStateException(
+                        "Support lib method called on WebView that no longer exists.");
+            }
+            return sharedWebViewChromium.restoreState(state);
+        }
+    }
+
+    @Override
     public void addWebViewNavigationListener(
             Executor executor, /* WebViewNavigationListener */ InvocationHandler listener) {
         assert ThreadUtils.runningOnUiThread();

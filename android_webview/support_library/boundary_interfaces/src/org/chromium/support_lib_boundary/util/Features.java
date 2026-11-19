@@ -347,6 +347,10 @@ public class Features {
     // WebViewCompat.saveState
     public static final String SAVE_STATE = "SAVE_STATE";
 
+    // WebViewCompat.serializeState
+    // WebViewCompat.restoreState(WebView, byte[])
+    public static final String SERIALIZE_STATE = "SERIALIZE_STATE";
+
     // Navigation & navigation client set/getter and callbacks:
     //
     // WebView.getWebViewNavigation

@@ -4106,20 +4106,33 @@ public class AwContents implements SmartClipProvider {
      * @return False if saving state failed.
      */
     public boolean saveState(Bundle outState, int maxSize, boolean includeForwardState) {
-        if (TRACE) Log.i(TAG, "%s saveState", this);
         if (isDestroyed(WARN) || outState == null) return false;
-        if (maxSize < 0) {
-            throw new IllegalArgumentException("maxSize can't be less than zero.");
-        }
 
-        byte[] state =
-                AwContentsJni.get().getOpaqueState(mNativeAwContents, maxSize, includeForwardState);
+        byte[] state = serializeState(maxSize, includeForwardState);
         if (state == null) return false;
 
         int stateSizeKb = state.length / 1024;
         RecordHistogram.recordCount1000Histogram("Android.WebView.SaveState.Size", stateSizeKb);
         outState.putByteArray(SAVE_RESTORE_STATE_KEY, state);
         return true;
+    }
+
+    /**
+     * Save the state of this AwContents into a byte array.
+     *
+     * @param maxSize a limit on the size of the state.
+     * @param includeForwardState whether to include state accessible through goForward (not
+     *     necessary for embedders without a forward button).
+     * @return The state, or null if saving state failed.
+     */
+    public @Nullable byte[] serializeState(int maxSize, boolean includeForwardState) {
+        if (TRACE) Log.i(TAG, "%s serializeState", this);
+        if (isDestroyed(WARN)) return null;
+        if (maxSize < 0) {
+            throw new IllegalArgumentException("maxSize can't be less than zero.");
+        }
+
+        return AwContentsJni.get().getOpaqueState(mNativeAwContents, maxSize, includeForwardState);
     }
 
     /** See {@link AwContents#saveState(Bundle, int, boolean)}. */
@@ -4134,11 +4147,24 @@ public class AwContents implements SmartClipProvider {
      * @return False if restoring state failed.
      */
     public boolean restoreState(Bundle inState) {
-        if (TRACE) Log.i(TAG, "%s restoreState", this);
         if (isDestroyed(WARN) || inState == null) return false;
 
         byte[] state = inState.getByteArray(SAVE_RESTORE_STATE_KEY);
         if (state == null) return false;
+
+        return restoreState(state);
+    }
+
+    /**
+     * Restore the state of this AwContents from a byte array.
+     *
+     * @param state The state to restore. It may come from an older WebView version. The state must
+     *     come from a byte array returned by {@link #serializeState(int, boolean)}.
+     * @return False if restoring state failed.
+     */
+    public boolean restoreState(byte[] state) {
+        if (TRACE) Log.i(TAG, "%s restoreState(byte[])", this);
+        if (isDestroyed(WARN) || state == null) return false;
 
         boolean result = AwContentsJni.get().restoreFromOpaqueState(mNativeAwContents, state);
 

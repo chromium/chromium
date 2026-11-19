@@ -1157,6 +1157,8 @@ chromium-metrics-reviews@google.com.
   <int value="244" label="WebSettingsCompat.setWebGraphicsEnabled"/>
   <int value="245" label="WebSettingsCompat.getWebGraphicsEnabled"/>
   <int value="246" label="WebGPU.getWGPUProcGetProcAddress"/>
+  <int value="247" label="WebViewCompat.serializeState"/>
+  <int value="248" label="WebViewCompat.restoreState"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
