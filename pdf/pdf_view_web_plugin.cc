@@ -599,8 +599,8 @@ bool PdfViewWebPlugin::InitializeCommon() {
 
   SendSetSmoothScrolling();
 
-  pdf_accessibility_data_handler_ =
-      client_->CreateAccessibilityDataHandler(this, client_->PluginContainer());
+  pdf_accessibility_data_handler_ = client_->CreateAccessibilityDataHandler(
+      this, this, client_->PluginContainer());
   CHECK(pdf_accessibility_data_handler_);
 
   // Skip the remaining initialization when in Print Preview mode. Loading will
@@ -2760,6 +2760,13 @@ void PdfViewWebPlugin::LoadOrReloadAccessibility() {
   if (document_load_state_ == DocumentLoadState::kComplete) {
     LoadAccessibility();
   }
+}
+
+SkBitmap PdfViewWebPlugin::GetImageBitmap(uint32_t page_index,
+                                          int32_t page_object_index,
+                                          uint32_t max_image_dimension) {
+  return engine_->GetImageBitmap(page_index, page_object_index,
+                                 max_image_dimension);
 }
 
 void PdfViewWebPlugin::OnViewportChanged(

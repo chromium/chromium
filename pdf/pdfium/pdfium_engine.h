@@ -252,6 +252,15 @@ class PDFiumEngine : public DocumentLoader::Client,
   // passing a valid `page_index`.
   std::u16string GetPageText(int page_index);
 
+  // Returns the decoded bitmap (with width and height at most
+  // `max_image_dimension`) for the image object at `page_object_index` on the
+  // page at `page_index`. Returns an empty bitmap if `page_index` or
+  // `page_object_index` is out of bounds or not an image. Virtual to support
+  // testing.
+  virtual SkBitmap GetImageBitmap(uint32_t page_index,
+                                  int page_object_index,
+                                  uint32_t max_image_dimension);
+
   // Applies the document layout options proposed by a call to
   // PDFiumEngineClient::ProposeDocumentLayout(), returning the overall size of
   // the new effective layout.

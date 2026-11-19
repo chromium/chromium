@@ -3009,6 +3009,14 @@ std::u16string PDFiumEngine::GetPageText(int page_index) {
   return range.GetText();
 }
 
+SkBitmap PDFiumEngine::GetImageBitmap(uint32_t page_index,
+                                      int page_object_index,
+                                      uint32_t max_image_dimension) {
+  PDFiumPage* page = GetPage(page_index);
+  return page ? page->GetImageBitmap(page_object_index, max_image_dimension)
+              : SkBitmap();
+}
+
 void PDFiumEngine::InvalidateAllPages() {
   CancelPaints();
   StopFind();

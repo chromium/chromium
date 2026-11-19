@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -320,13 +321,16 @@ void RecordHeaderFooterRepetitionMetrics(const ui::AXNode* root) {
 PdfAccessibilityTree::PdfAccessibilityTree(
     content::RenderFrame* render_frame,
     chrome_pdf::PdfAccessibilityActionHandler* action_handler,
+    chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
     blink::WebPluginContainer* plugin_container)
     : content::RenderFrameObserver(render_frame),
       blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
       action_handler_(action_handler),
+      image_fetcher_(image_fetcher),
       plugin_container_(plugin_container) {
   DCHECK(render_frame);
   DCHECK(action_handler_);
+  CHECK(image_fetcher_);
   MaybeHandleAccessibilityChange(/*always_load_or_reload_accessibility=*/false);
 }
 

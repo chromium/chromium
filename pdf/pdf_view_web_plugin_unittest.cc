@@ -375,7 +375,9 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
 
   MOCK_METHOD(std::unique_ptr<PdfAccessibilityDataHandler>,
               CreateAccessibilityDataHandler,
-              (PdfAccessibilityActionHandler*, blink::WebPluginContainer*),
+              (PdfAccessibilityActionHandler*,
+               PdfAccessibilityImageFetcher*,
+               blink::WebPluginContainer*),
               (override));
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   MOCK_METHOD(void,
@@ -1163,6 +1165,18 @@ TEST_F(PdfViewWebPluginTest, IsPasswordProtected) {
   base::test::TestFuture<bool> future;
   plugin_->IsPasswordProtected(future.GetCallback());
   EXPECT_TRUE(future.Get());
+}
+
+TEST_F(PdfViewWebPluginTest, GetImageBitmap) {
+  SkBitmap expected_bitmap;
+  expected_bitmap.allocN32Pixels(24, 36);
+  EXPECT_CALL(*engine_ptr_, GetImageBitmap(1u, 3, 4096u))
+      .WillOnce(Return(expected_bitmap));
+
+  SkBitmap result = plugin_->GetImageBitmap(1u, 3, 4096u);
+  EXPECT_FALSE(result.drawsNothing());
+  EXPECT_EQ(24, result.width());
+  EXPECT_EQ(36, result.height());
 }
 
 TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithCopyAccessibleAllowed) {

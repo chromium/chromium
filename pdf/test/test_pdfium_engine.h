@@ -101,6 +101,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(bool, IsPageVisible, (int), (const override));
 
+  MOCK_METHOD(SkBitmap, GetImageBitmap, (uint32_t, int, uint32_t), (override));
+
   MOCK_METHOD(gfx::Rect, GetPageContentsRect, (int), (override));
 
   MOCK_METHOD(gfx::Rect, GetPageScreenRect, (int), (const override));

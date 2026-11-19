@@ -1299,6 +1299,7 @@ if (use_blink) {
         "//components/pdf/renderer",
         "//pdf:accessibility",
         "//pdf:features",
+        "//skia",
         "//ui/strings:auto_image_annotation_strings",
       ]
     }
@@ -1307,7 +1308,6 @@ if (use_blink) {
       deps += [
         "//services/screen_ai",
         "//services/screen_ai/public/mojom",
-        "//skia",
       ]
     }
 

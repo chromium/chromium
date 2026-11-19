@@ -31,6 +31,7 @@
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_accessibility_action_handler.h"
+#include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"
@@ -107,6 +108,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                                public PostMessageReceiver::Client,
                                public PaintManager::Client,
                                public PdfAccessibilityActionHandler,
+                               public PdfAccessibilityImageFetcher,
                                public PreviewModeClient::Client,
                                public blink::mojom::AnnotationAgentContainer {
  public:
@@ -242,6 +244,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
         PdfAccessibilityActionHandler* action_handler,
+        PdfAccessibilityImageFetcher* image_fetcher,
         blink::WebPluginContainer* plugin_container) = 0;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -471,6 +474,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void HandleAccessibilityAction(
       const AccessibilityActionData& action_data) override;
   void LoadOrReloadAccessibility() override;
+
+  // PdfAccessibilityImageFetcher:
+  SkBitmap GetImageBitmap(uint32_t page_index,
+                          int32_t page_object_index,
+                          uint32_t max_image_dimension) override;
 
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;

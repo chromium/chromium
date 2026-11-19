@@ -35,12 +35,14 @@
 #include "content/public/test/render_view_test.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_accessibility_action_handler.h"
+#include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -59,7 +61,6 @@
 #include "ui/strings/grit/auto_image_annotation_strings.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -411,6 +412,20 @@ class TestPdfAccessibilityActionHandler
   chrome_pdf::AccessibilityActionData received_action_data_;
 };
 
+class TestPdfAccessibilityImageFetcher
+    : public chrome_pdf::PdfAccessibilityImageFetcher {
+ public:
+  TestPdfAccessibilityImageFetcher() = default;
+  ~TestPdfAccessibilityImageFetcher() override = default;
+
+  // chrome_pdf::PdfAccessibilityImageFetcher:
+  SkBitmap GetImageBitmap(uint32_t page_index,
+                          int32_t page_object_index,
+                          uint32_t max_image_dimension) override {
+    return SkBitmap();
+  }
+};
+
 struct ImagePosition {
   int32_t page_index;
   int32_t page_object_index;
@@ -428,9 +443,11 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
  public:
   TestPdfAccessibilityTree(
       content::RenderFrame* render_frame,
-      chrome_pdf::PdfAccessibilityActionHandler* action_handler)
+      chrome_pdf::PdfAccessibilityActionHandler* action_handler,
+      chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher)
       : PdfAccessibilityTree(render_frame,
                              action_handler,
+                             image_fetcher,
                              /*plugin_container=*/nullptr) {
     ForcePluginAXObjectForTesting(blink::WebAXObject::FromWebNode(
         render_frame->GetWebFrame()->GetDocument().Body()));
@@ -587,7 +604,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
     pdf_accessibility_tree_ = std::make_unique<TestPdfAccessibilityTree>(
-        render_frame, &action_handler_);
+        render_frame, &action_handler_, &image_fetcher_);
     WaitForThreadTasks();
   }
 
@@ -876,6 +893,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   chrome_pdf::AccessibilityPageObjects page_objects_;
   std::unique_ptr<TestPdfAccessibilityTree> pdf_accessibility_tree_;
   TestPdfAccessibilityActionHandler action_handler_;
+  TestPdfAccessibilityImageFetcher image_fetcher_;
 };
 
 TEST_F(PdfAccessibilityTreeTest, TestEmptyPDFPage) {

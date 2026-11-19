@@ -34,6 +34,7 @@ class WebPluginContainer;
 namespace chrome_pdf {
 
 class PdfAccessibilityActionHandler;
+class PdfAccessibilityImageFetcher;
 
 }  // namespace chrome_pdf
 
@@ -58,6 +59,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
   PdfAccessibilityTree(
       content::RenderFrame* render_frame,
       chrome_pdf::PdfAccessibilityActionHandler* action_handler,
+      chrome_pdf::PdfAccessibilityImageFetcher* image_fetcher,
       blink::WebPluginContainer* plugin_container);
   ~PdfAccessibilityTree() override;
 
@@ -247,6 +249,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*,
 
   // Unowned. Must outlive `this`.
   const raw_ptr<chrome_pdf::PdfAccessibilityActionHandler> action_handler_;
+  const raw_ptr<chrome_pdf::PdfAccessibilityImageFetcher> image_fetcher_;
   const raw_ptr<blink::WebPluginContainer> plugin_container_;
 
   // `zoom_` signifies the zoom level set in for the browser content.

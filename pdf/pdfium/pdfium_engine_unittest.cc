@@ -1382,6 +1382,38 @@ TEST_P(PDFiumEngineTest, OnFirstContentPaintedNotFiredForPrintPreview) {
   ASSERT_TRUE(PaintUntilReady(*engine, kPaintRect));
 }
 
+TEST_P(PDFiumEngineTest, GetImageBitmap) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("text_with_image.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  constexpr uint32_t kMaxImageDimension = 4096;
+
+  // Out-of-bounds page index returns an empty bitmap.
+  EXPECT_TRUE(engine->GetImageBitmap(1, 1, kMaxImageDimension).drawsNothing());
+
+  // Non-image object (index 0) and out-of-bounds object index return an empty
+  // bitmap.
+  EXPECT_TRUE(engine->GetImageBitmap(0, 0, kMaxImageDimension).drawsNothing());
+  EXPECT_TRUE(
+      engine->GetImageBitmap(0, 1000, kMaxImageDimension).drawsNothing());
+
+  // Valid image object (index 1) returns a 50x50 bitmap.
+  SkBitmap bitmap = engine->GetImageBitmap(0, 1, kMaxImageDimension);
+  EXPECT_FALSE(bitmap.drawsNothing());
+  EXPECT_EQ(50, bitmap.width());
+  EXPECT_EQ(50, bitmap.height());
+
+  // Smaller `max_image_dimension` downscales the returned bitmap.
+  SkBitmap downscaled_bitmap =
+      engine->GetImageBitmap(0, 1, /*max_image_dimension=*/25);
+  EXPECT_FALSE(downscaled_bitmap.drawsNothing());
+  EXPECT_EQ(25, downscaled_bitmap.width());
+  EXPECT_EQ(25, downscaled_bitmap.height());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());
 
 class PDFiumEngineSelectionTest : public PDFiumEngineTest {
