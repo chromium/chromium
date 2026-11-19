@@ -101,6 +101,14 @@ void ArcPackageSyncDataTypeController::OnArcInitialStart() {
   sync_service_->DataTypePreconditionChanged(type());
 }
 
+void ArcPackageSyncDataTypeController::OnAppConnectionClosed() {
+  CHECK(CalledOnValidSequence(), base::NotFatalUntil::M160);
+  // `ArcAppListPrefs` resets `package_list_initial_refreshed()` to false on
+  // disconnect. Notify Sync so the datatype stops and cancels any in-flight
+  // initial sync update before `MergeDataAndStartSyncing()` can run.
+  sync_service_->DataTypePreconditionChanged(type());
+}
+
 void ArcPackageSyncDataTypeController::OnPackageListInitialRefreshed() {
   CHECK(CalledOnValidSequence(), base::NotFatalUntil::M160);
   sync_service_->DataTypePreconditionChanged(type());

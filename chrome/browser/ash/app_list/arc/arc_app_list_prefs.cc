@@ -1683,10 +1683,9 @@ void ArcAppListPrefs::OnConnectionClosed() {
   CancelDefaultAppLoadingTimeout();
   ClearIconRequestRecord();
 
-  if (sync_service_) {
-    sync_service_->StopSyncing(syncer::ARC_PACKAGE);
-    sync_service_ = nullptr;
-  }
+  // `SyncableServiceBasedBridge` owns `ArcPackageSyncableService`'s sync
+  // lifecycle across `KEEP_METADATA` pauses.
+  sync_service_ = nullptr;
 
   is_initialized_ = false;
   package_list_initial_refreshed_ = false;

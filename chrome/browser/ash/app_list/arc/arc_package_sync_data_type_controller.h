@@ -51,6 +51,7 @@ class ArcPackageSyncDataTypeController : public syncer::DataTypeController,
       const PreconditionContext& context) const override;
 
   // ArcAppListPrefs::Observer overrides.
+  void OnAppConnectionClosed() override;
   void OnPackageListInitialRefreshed() override;
 
   // ArcSessionManagerObserver:
