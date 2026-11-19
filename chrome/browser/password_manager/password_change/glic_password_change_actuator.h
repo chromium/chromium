@@ -25,6 +25,7 @@ class WebContents;
 
 namespace password_manager {
 struct LeakedPasswordDetails;
+struct PasswordForm;
 class PasswordFormManager;
 }  // namespace password_manager
 
@@ -84,6 +85,9 @@ class GlicPasswordChangeActuator
   void CloseGlicSession();
   void ResetInternalState(actor::ActorTask::StoppedReason stop_reason);
   void NotifyStateChanged(PasswordChangeActuator::State new_state);
+  // Saves the generated password, keeping the old password as a backup. Must be
+  // called at most once, when the password change finishes successfully.
+  void SaveGeneratedPassword();
 
   void SubscribeForTriggeringUpdates(
       base::WeakPtr<glic::GlicInstance> instance);
@@ -94,6 +98,7 @@ class GlicPasswordChangeActuator
   const affiliations::AffiliationService::ChangePasswordUrlMatch
       change_password_url_match_;
   std::optional<password_manager::PasswordString> generated_password_;
+  std::unique_ptr<password_manager::PasswordForm> parsed_form_;
   // Copy of the form manager of the change password form, used to save the
   // generated password as a backup and to promote it later.
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;

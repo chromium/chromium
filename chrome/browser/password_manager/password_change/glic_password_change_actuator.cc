@@ -354,16 +354,31 @@ GlicPasswordChangeActuator::GetOrGenerateNewPassword(
   // Save the generated password as a backup of the credential being changed,
   // so that it isn't lost if the website accepts it but Chrome doesn't save
   // it.
-  password_manager::PasswordForm form_to_save(*parsed_form);
-  form_to_save.username_value = credential_.username_value;
+  parsed_form_ = std::make_unique<password_manager::PasswordForm>(*parsed_form);
+  parsed_form_->username_value = credential_.username_value;
   // TODO(crbug.com/422125487): Fix metrics duplication.
-  form_manager_->Clone()->SaveWithBackupPassword(std::move(form_to_save),
-                                                 credential_.password_value,
-                                                 *generated_password_);
+  form_manager_->Clone()->SaveWithBackupPassword(
+      *parsed_form_, credential_.password_value, *generated_password_);
   // Refetch the credentials so that `form_manager_` is aware of the backup.
   form_manager_->GetFormFetcher()->Fetch();
 
   return *generated_password_;
+}
+
+void GlicPasswordChangeActuator::SaveGeneratedPassword() {
+  if (!form_manager_) {
+    return;
+  }
+  CHECK(parsed_form_);
+  // TODO(crbug.com/581337075): Figure out if waiting for `OnFetchCompleted()`
+  // is worth it.
+  form_manager_->SaveWithBackupPassword(std::move(*parsed_form_),
+                                        *generated_password_,
+                                        credential_.password_value);
+  // Load-bearing: `form_manager_` stays alive so any save scheduled for
+  // `OnFetchCompleted()` is not dropped, so resetting `parsed_form_` enforces
+  // that `SaveGeneratedPassword()` is called at most once.
+  parsed_form_.reset();
 }
 
 void GlicPasswordChangeActuator::AddObserver(
@@ -469,6 +484,8 @@ void GlicPasswordChangeActuator::ResetInternalState(
   actor_task_state_subscription_ = {};
 
   task_id_ = std::nullopt;
+  parsed_form_.reset();
+  form_manager_.reset();
 }
 
 void GlicPasswordChangeActuator::NotifyStateChanged(
@@ -569,6 +586,7 @@ void GlicPasswordChangeActuator::OnUpdate(
       CloseGlicSession();
       switch (*parsed) {
         case TaskResult::kPasswordChangeFinishedSuccessfully:
+          SaveGeneratedPassword();
           NotifyStateChanged(
               PasswordChangeActuator::State::kPasswordSuccessfullyChanged);
           return;

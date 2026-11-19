@@ -14,7 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/gmock_move_support.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
@@ -46,16 +46,17 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/origin_gating/core/task_policy_config.h"
 #include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
-#include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_prediction_waiter.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
-#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -70,7 +71,6 @@
 namespace {
 
 using ::testing::_;
-using ::testing::DoAll;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -604,10 +604,22 @@ class GlicPasswordChangeActuatorNewPasswordTest
  public:
   void SetUp() override {
     GlicPasswordChangeActuatorTest::SetUp();
+    password_store_->Init();
     ON_CALL(client_, GetProfilePasswordStore)
         .WillByDefault(Return(password_store_.get()));
     ON_CALL(driver_, GetPasswordGenerationHelper)
         .WillByDefault(Return(&generation_helper_));
+  }
+
+  void TearDown() override {
+    // Destroy `FormFetcherImpl` consumers/observers before shutting down
+    // `password_store_` (which must happen while the UI thread is still alive,
+    // before member destructors run).
+    actuator()->Cancel();
+    form_manager_.reset();
+    form_fetcher_.reset();
+    password_store_->ShutdownOnUIThread();
+    GlicPasswordChangeActuatorTest::TearDown();
   }
 
   // Creates a form manager observing a change password form, which is aware
@@ -621,13 +633,26 @@ class GlicPasswordChangeActuatorNewPasswordTest
   password_manager::PasswordFormManager* CreateFormManager(
       const autofill::FormData& form_data,
       const std::vector<password_manager::PasswordForm>& stored_credentials) {
+    // Destroy `form_manager_` before replacing `form_fetcher_`, which it
+    // observes.
+    form_manager_.reset();
+    for (const password_manager::PasswordForm& credential :
+         stored_credentials) {
+      base::test::TestFuture<void> stored_future;
+      password_store_->AddLogin(password_manager::FromPasswordForm(credential),
+                                stored_future.GetCallback());
+      EXPECT_TRUE(stored_future.Wait());
+    }
+    form_fetcher_ = std::make_unique<password_manager::FormFetcherImpl>(
+        password_manager::PasswordFormDigest(form_data), &client_,
+        /*should_migrate_http_passwords=*/false);
     form_manager_ = std::make_unique<password_manager::PasswordFormManager>(
-        &client_, driver_.AsWeakPtr(), form_data, &form_fetcher_,
+        &client_, driver_.AsWeakPtr(), form_data, form_fetcher_.get(),
         std::make_unique<password_manager::PasswordSaveManagerImpl>(&client_),
         /*metrics_recorder=*/nullptr);
-    form_fetcher_.SetBestMatches(stored_credentials);
-    form_fetcher_.SetNonFederated(stored_credentials);
-    form_fetcher_.NotifyFetchCompleted();
+    form_fetcher_->Fetch();
+    EXPECT_TRUE(base::test::RunUntil(
+        [this]() { return form_manager_->IsFetchCompleted(); }));
     static_cast<password_manager::PasswordFormPredictionWaiter::Client*>(
         form_manager_.get())
         ->OnWaitCompleted();
@@ -648,24 +673,30 @@ class GlicPasswordChangeActuatorNewPasswordTest
     return credential;
   }
 
+  std::vector<password_manager::PasswordForm> GetStoredCredentials() {
+    password_manager::TestPasswordStore::PasswordMap stored_map =
+        password_manager::GetAllLoginsSync(password_store_.get());
+    auto it = stored_map.find(GURL(kTestUrl).GetWithEmptyPath().spec());
+    if (it == stored_map.end()) {
+      return {};
+    }
+    return it->second;
+  }
+
   MockGenerationPasswordManagerDriver& driver() { return driver_; }
   MockPasswordGenerationFrameHelper& generation_helper() {
     return generation_helper_;
-  }
-  password_manager::MockPasswordStoreInterface& password_store() {
-    return *password_store_;
   }
 
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
   NiceMock<MockGenerationPasswordManagerClient> client_;
-  scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_ =
-      base::MakeRefCounted<
-          NiceMock<password_manager::MockPasswordStoreInterface>>();
+  scoped_refptr<password_manager::TestPasswordStore> password_store_ =
+      base::MakeRefCounted<password_manager::TestPasswordStore>();
   NiceMock<MockGenerationPasswordManagerDriver> driver_;
   NiceMock<MockPasswordGenerationFrameHelper> generation_helper_{&client_,
                                                                  &driver_};
-  password_manager::FakeFormFetcher form_fetcher_;
+  std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
   std::unique_ptr<password_manager::PasswordFormManager> form_manager_;
 };
 
@@ -682,18 +713,17 @@ TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
           autofill::password_generation::PasswordGenerationType::kAutomatic, _,
           _, _))
       .WillOnce(Return(spec));
-  password_manager::StoredCredential saved_credential;
-  EXPECT_CALL(password_store(), UpdateLogin)
-      .WillOnce(MoveArg<0>(&saved_credential));
 
   PasswordChangeActuator::NewPasswordResult new_password =
       actuator()->GetOrGenerateNewPassword(form_manager);
 
   ASSERT_TRUE(new_password.has_value());
   EXPECT_EQ(new_password->size(), 10u);
-  EXPECT_EQ(saved_credential.username_value, kTestUsername);
-  EXPECT_EQ(saved_credential.password_value.value(), kTestPassword);
-  EXPECT_EQ(saved_credential.GetPasswordBackup(), new_password->value());
+  std::vector<password_manager::PasswordForm> stored = GetStoredCredentials();
+  ASSERT_EQ(stored.size(), 1u);
+  EXPECT_EQ(stored[0].username_value, kTestUsername);
+  EXPECT_EQ(stored[0].password_value.value(), kTestPassword);
+  EXPECT_EQ(stored[0].GetPasswordBackup(), new_password->value());
   EXPECT_THAT(actuator()->GetOrGenerateNewPassword(/*form_manager=*/nullptr),
               base::test::ValueIs(*new_password));
 }
@@ -703,7 +733,6 @@ TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
   password_manager::PasswordFormManager* form_manager =
       CreateFormManager({CreateStoredCredential(kTestPassword)});
   EXPECT_CALL(generation_helper(), GetPasswordRequirementsSpec).Times(1);
-  EXPECT_CALL(password_store(), UpdateLogin).Times(1);
 
   PasswordChangeActuator::NewPasswordResult first_password =
       actuator()->GetOrGenerateNewPassword(form_manager);
@@ -713,6 +742,9 @@ TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
   ASSERT_TRUE(first_password.has_value());
   EXPECT_FALSE(first_password->empty());
   EXPECT_EQ(first_password, second_password);
+  std::vector<password_manager::PasswordForm> stored = GetStoredCredentials();
+  ASSERT_EQ(stored.size(), 1u);
+  EXPECT_EQ(stored[0].GetPasswordBackup(), first_password->value());
 }
 
 TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
@@ -742,6 +774,7 @@ TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
       actuator()->GetOrGenerateNewPassword(/*form_manager=*/nullptr),
       base::test::ErrorIs(password_manager::PasswordChangeCredentialsProvider::
                               Error::kGenerationFailed));
+  EXPECT_TRUE(GetStoredCredentials().empty());
 }
 
 TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
@@ -750,11 +783,136 @@ TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
       CreateFormManager({CreateStoredCredential(kTestPassword)});
   EXPECT_CALL(driver(), GetPasswordGenerationHelper)
       .WillRepeatedly(Return(nullptr));
-  EXPECT_CALL(password_store(), UpdateLogin).Times(0);
-  EXPECT_CALL(password_store(), AddLogin).Times(0);
 
   EXPECT_THAT(
       actuator()->GetOrGenerateNewPassword(form_manager),
       base::test::ErrorIs(password_manager::PasswordChangeCredentialsProvider::
                               Error::kGenerationFailed));
+  std::vector<password_manager::PasswordForm> stored = GetStoredCredentials();
+  ASSERT_EQ(stored.size(), 1u);
+  EXPECT_EQ(stored[0].GetPasswordBackup(), std::nullopt);
+}
+
+TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
+       SavesGeneratedPasswordAsMainPasswordAfterSuccessfulChange) {
+  password_manager::PasswordFormManager* form_manager =
+      CreateFormManager({CreateStoredCredential(kTestPassword)});
+  PasswordChangeActuator::NewPasswordResult new_password =
+      actuator()->GetOrGenerateNewPassword(form_manager);
+  ASSERT_TRUE(new_password.has_value());
+  ASSERT_EQ(GetStoredCredentials().size(), 1u);
+
+  auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update->type =
+      glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  update->data = "PASSWORD_CHANGE_FINISHED_SUCCESSFULLY";
+  actuator()->OnUpdate(std::move(update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
+
+  std::vector<password_manager::PasswordForm> stored = GetStoredCredentials();
+  ASSERT_EQ(stored.size(), 1u);
+  EXPECT_EQ(stored[0].username_value, kTestUsername);
+  EXPECT_EQ(stored[0].password_value, *new_password);
+  EXPECT_EQ(stored[0].GetPasswordBackup(), kTestPassword);
+}
+
+TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
+       SavesGeneratedPasswordEvenIfFormHasNoNewPasswordField) {
+  password_manager::PasswordFormManager* form_manager = CreateFormManager(
+      CreateLoginFormData(), {CreateStoredCredential(kTestPassword)});
+  ASSERT_FALSE(
+      form_manager->GetParsedObservedForm()->new_password_element_renderer_id);
+  PasswordChangeActuator::NewPasswordResult new_password =
+      actuator()->GetOrGenerateNewPassword(form_manager);
+  ASSERT_TRUE(new_password.has_value());
+  ASSERT_EQ(GetStoredCredentials().size(), 1u);
+
+  auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update->type =
+      glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  update->data = "PASSWORD_CHANGE_FINISHED_SUCCESSFULLY";
+  actuator()->OnUpdate(std::move(update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
+
+  std::vector<password_manager::PasswordForm> stored = GetStoredCredentials();
+  ASSERT_EQ(stored.size(), 1u);
+  EXPECT_EQ(stored[0].username_value, kTestUsername);
+  EXPECT_EQ(stored[0].password_value, *new_password);
+  EXPECT_EQ(stored[0].GetPasswordBackup(), kTestPassword);
+}
+
+TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
+       SavesGeneratedPasswordForNewCredentialAfterSuccessfulChange) {
+  password_manager::PasswordFormManager* form_manager =
+      CreateFormManager(/*stored_credentials=*/{});
+  PasswordChangeActuator::NewPasswordResult new_password =
+      actuator()->GetOrGenerateNewPassword(form_manager);
+  ASSERT_TRUE(new_password.has_value());
+  ASSERT_EQ(GetStoredCredentials().size(), 1u);
+
+  auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update->type =
+      glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  update->data = "PASSWORD_CHANGE_FINISHED_SUCCESSFULLY";
+  actuator()->OnUpdate(std::move(update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
+
+  std::vector<password_manager::PasswordForm> stored = GetStoredCredentials();
+  ASSERT_EQ(stored.size(), 1u);
+  EXPECT_EQ(stored[0].username_value, kTestUsername);
+  EXPECT_EQ(stored[0].password_value, *new_password);
+  EXPECT_EQ(stored[0].GetPasswordBackup(), kTestPassword);
+}
+
+TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
+       SavesGeneratedPasswordWhilePasswordsNotFetchedYet) {
+  password_manager::PasswordFormManager* form_manager =
+      CreateFormManager({CreateStoredCredential(kTestPassword)});
+  PasswordChangeActuator::NewPasswordResult new_password =
+      actuator()->GetOrGenerateNewPassword(form_manager);
+  ASSERT_TRUE(new_password.has_value());
+
+  // `TestPasswordStore` services `Fetch()` via a posted task, so without
+  // spinning a `RunLoop` the refetch is still in flight when `OnUpdate()` runs.
+  auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update->type =
+      glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  update->data = "PASSWORD_CHANGE_FINISHED_SUCCESSFULLY";
+  actuator()->OnUpdate(std::move(update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
+
+  // Verify the update write was deferred behind the in-flight `Fetch()` rather
+  // than queued synchronously during `OnUpdate()`.
+  std::vector<password_manager::PasswordForm> stored = GetStoredCredentials();
+  ASSERT_EQ(stored.size(), 1u);
+  EXPECT_EQ(stored[0].password_value.value(), kTestPassword);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    stored = GetStoredCredentials();
+    return stored.size() == 1u && stored[0].password_value == *new_password;
+  }));
+  EXPECT_EQ(stored[0].username_value, kTestUsername);
+  EXPECT_EQ(stored[0].GetPasswordBackup(), kTestPassword);
+}
+
+TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
+       DoesNotSaveNewPasswordAfterFailedChange) {
+  password_manager::PasswordFormManager* form_manager =
+      CreateFormManager({CreateStoredCredential(kTestPassword)});
+  PasswordChangeActuator::NewPasswordResult new_password =
+      actuator()->GetOrGenerateNewPassword(form_manager);
+  ASSERT_TRUE(new_password.has_value());
+
+  auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update->type =
+      glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  update->data = "FAILED_TO_CHANGE_PASSWORD";
+  actuator()->OnUpdate(std::move(update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
+
+  std::vector<password_manager::PasswordForm> stored = GetStoredCredentials();
+  ASSERT_EQ(stored.size(), 1u);
+  EXPECT_EQ(stored[0].username_value, kTestUsername);
+  EXPECT_EQ(stored[0].password_value.value(), kTestPassword);
+  EXPECT_EQ(stored[0].GetPasswordBackup(), new_password->value());
 }
