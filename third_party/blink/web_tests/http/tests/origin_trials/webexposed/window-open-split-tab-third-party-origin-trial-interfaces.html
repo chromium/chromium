@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://github.com/mfreed7/split-tabs">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script src="http://localhost:8000/origin_trials/webexposed/resources/window-open-split-tab-third-party-origin-trial.js"></script>
+
+<script>
+'use strict';
+
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this, {
+    'HTMLAnchorElement': ['windowFeatures'],
+    'HTMLAreaElement': ['windowFeatures'],
+    'HTMLFormElement': ['windowFeatures'],
+  });
+}, 'windowFeatures IDL attributes are exposed via a third-party origin trial token');
+</script>
