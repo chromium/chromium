@@ -19,6 +19,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.ActivityOptions;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -39,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
@@ -46,7 +48,6 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -671,9 +672,6 @@ public class ActorNotificationClickIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_equals = VERSION_CODES.UPSIDE_DOWN_CAKE,
-            message = "https://crbug.com/585203398")
     public void testNotificationTapAfterActivityFinished_RestoresTabAndRecordsNotificationLaunch()
             throws Exception {
         int taskId = 306;
@@ -697,13 +695,16 @@ public class ActorNotificationClickIntegrationTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "MobileStartup.LaunchCause", LaunchCauseMetrics.LaunchCause.NOTIFICATION);
 
+        ActivityOptions options = ActivityOptions.makeBasic();
+        ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartAllowAlways(options);
         ChromeTabbedActivity activity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
                         Stage.CREATED,
                         () -> {
                             try {
-                                notification.contentIntent.send();
+                                notification.contentIntent.send(
+                                        mContext, 0, null, null, null, null, options.toBundle());
                             } catch (PendingIntent.CanceledException e) {
                                 throw new AssertionError(e);
                             }
