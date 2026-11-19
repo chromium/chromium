@@ -448,7 +448,7 @@ The video license is [libaom LICENSE].
 
 #### av1-svc-L2T2.ivf
 AV1 data that has spatial and temporal layers.
-This is the same as av1-1-b8-22-svc-L2T2.ivf in [libaom test vectors].
+This is the same as av1-1-b8-22-svc-L2T2-2.ivf in [libaom test vectors].
 The video license is [libaom LICENSE].
 
 #### av1-show_existing_frame.ivf
