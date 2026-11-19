@@ -373,11 +373,15 @@ void TabSharingUIViews::OnTabStripModelChanged(
   }
 }
 
-void TabSharingUIViews::OnTabChangedAt(tabs::TabInterface* tab,
-                                       TabChangeType change_type) {
-  content::WebContents* contents = tab->GetContents();
+void TabSharingUIViews::OnTabChanged(tabs::TabHandle tab,
+                                     TabChangeType change_type) {
+  tabs::TabInterface* tab_interface = tab.Get();
+  if (!tab_interface) {
+    return;
+  }
+  content::WebContents* contents = tab_interface->GetContents();
   // Sad tab cannot be shared so don't create an infobar for it.
-  auto* sad_tab_helper = SadTabHelper::From(tab);
+  auto* sad_tab_helper = SadTabHelper::From(tab_interface);
   if (sad_tab_helper && sad_tab_helper->sad_tab()) {
     return;
   }
