@@ -48,6 +48,37 @@ try_.builder(
 )
 
 try_.builder(
+    name = "3pp-linux-arm64-packager",
+    description_html = "Chromium 3PP packager for the Linux ARM64 platform.",
+    executable = "recipe:chromium_3pp",
+    builderless = True,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    # The snap runtime downloads .debs from snapshot.ubuntu.com, which has no
+    # IPv6 address. The ssd:1 try bots are IPv6-only, so pin the IPv4 ssd:0
+    # bots.
+    # TODO(crbug.com/548320842): Move to IPv4 bots that survive the ssd:0 pool
+    # removal.
+    ssd = False,
+    contact_team_email = "chrome-linux-engprod@google.com",
+    # TODO(crbug.com/579508504): Uncomment once the builder is verified to work.
+    # cq_settings = try_.cq_settings(
+    #     location_filters = [
+    #         # Only the snap runtime is built by this linux-arm64 packager.
+    #         "chrome/installer/linux/snap/runtime/3pp/.+",
+    #     ],
+    # ),
+    execution_timeout = 6 * time.hour,
+    properties = {
+        "$build/chromium_3pp": {
+            "platform": "linux-arm64",
+            "package_prefix": "chromium_3pp",
+            "gclient_config": "chromium",
+        },
+    },
+)
+
+try_.builder(
     name = "3pp-mac-amd64-packager",
     description_html = "Chromium 3PP packager on Mac AMD64 platform.",
     executable = "recipe:chromium_3pp",

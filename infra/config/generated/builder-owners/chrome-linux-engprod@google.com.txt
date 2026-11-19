@@ -1,3 +1,4 @@
+ci/3pp-linux-arm64-packager
 ci/Linux Builder
 ci/Linux Builder (Wayland)
 ci/Linux Builder (dbg)
@@ -12,6 +13,7 @@ ci/linux-bfcache-rel
 ci/linux-extended-tracing-rel
 ci/linux-wayland-mutter-rel-tests
 ci/linux-wayland-weston-rel-tests
+try/3pp-linux-arm64-packager
 try/linux-arm64-dbg
 try/linux-arm64-rel-fyi
 try/linux-arm64-wayland-rel-fyi

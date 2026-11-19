@@ -72,6 +72,37 @@ packager_builder(
 )
 
 packager_builder(
+    name = "3pp-linux-arm64-packager",
+    description_html = "Chromium 3PP packager for the Linux ARM64 platform.",
+    executable = "recipe:chromium_3pp",
+    # Every 6 hours starting at 5am UTC.
+    schedule = "0 5/6 * * * *",
+    triggered_by = [],
+    pool = "luci.chromium.provenance.ci",
+    # Only the snap runtime is built for linux-arm64. It only needs Python (no
+    # toolchain or docker), so it is built on builderless Linux AMD64 bots.
+    # snapshot.ubuntu.com has no IPv6 address, so this needs IPv4 bots.
+    builderless = True,
+    ssd = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "packager|3pp|linux",
+        short_name = "arm64",
+    ),
+    contact_team_email = "chrome-linux-engprod@google.com",
+    execution_timeout = 7 * time.hour,
+    notifies = ["chromium-infra"],
+    properties = {
+        "$build/chromium_3pp": {
+            "platform": "linux-arm64",
+            "gclient_config": "chromium",
+            "package_paths_to_build": [
+                "chrome/installer/linux/snap/runtime",
+            ],
+        },
+    },
+)
+
+packager_builder(
     name = "3pp-mac-amd64-packager",
     description_html = "Chromium 3PP packager on Mac AMD64 platform.",
     executable = "recipe:chromium_3pp",

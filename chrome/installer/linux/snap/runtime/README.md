@@ -96,5 +96,6 @@ For example, for Ubuntu security updates:
 
 1. Run `3pp/update.py [--snapshot <YYYYMMDDTHHMMSSZ>]`.
 2. Land the change. The `3pp-linux-amd64-packager` try builder checks it on the
-   CQ, and the CI builders upload the new versions within 6 hours.
+   CQ, and the `3pp-linux-amd64-packager` and `3pp-linux-arm64-packager` CI
+   builders upload the new versions within 6 hours.
 3. Update the version in `//DEPS`.
