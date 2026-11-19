@@ -433,6 +433,8 @@ source_set("provider_spec_impl") {
   ]
   if (is_android) {
     deps += [ "//components/guest_view/common" ]
+  } else {
+    deps += [ "//components/omnibox/common" ]
   }
 }
 
@@ -777,6 +779,8 @@ source_set("impl") {
       "host/context/glic_focused_tab_manager.h",
       "host/glic_drive_picker_account_util.cc",
       "host/glic_drive_picker_account_util.h",
+      "host/glic_drive_picker_manager.cc",
+      "host/glic_drive_picker_manager.h",
       "host/glic_tools_desktop.cc",
       "public/glic_whats_new_invoke.cc",
       "selection/selection_overlay_invocation_helper.cc",
@@ -819,6 +823,8 @@ source_set("impl") {
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views",
+      "//chrome/browser/ui/views/drive_picker_host",
+      "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:opaque_browser_frame_view_layout",
       "//chrome/browser/ui/views/frame/",
@@ -830,6 +836,7 @@ source_set("impl") {
       "//chrome/browser/ui/waap:window_creation",
       "//chrome/browser/ui/waap:window_metrics_manager",
       "//chrome/browser/ui/webui/ai_overlay_dialog",
+      "//chrome/browser/ui/webui/drive_picker_host:drive_picker_host_request",
       "//components/password_manager/core/browser/actor_login:common",
       "//components/strings",
       "//components/vector_icons",
@@ -1099,6 +1106,7 @@ source_set("unit_tests") {
       "host/context/glic_tab_data_unittest.cc",
       "host/glic_cookie_synchronizer_unittest.cc",
       "host/glic_drive_picker_account_util_unittest.cc",
+      "host/glic_drive_picker_manager_unittest.cc",
       "public/glic_context_menu_invocation_helper_unittest.cc",
       "public/glic_enabling_metrics_unittest.cc",
       "public/glic_whats_new_invoke_unittest.cc",
@@ -1123,11 +1131,16 @@ source_set("unit_tests") {
       "//chrome/browser/notifications",
       "//chrome/browser/status_icons",
       "//chrome/browser/ui:browser_manager_service",
+      "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/ui/views/drive_picker_host",
+      "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
+      "//chrome/browser/ui/webui/drive_picker_host:drive_picker_host_request",
       "//chrome/common:chrome_features",
       "//chrome/test/base:scoped_metrics_service",
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/metrics",
+      "//components/omnibox/common",
       "//components/signin/public/base:test_support",
       "//components/signin/public/identity_manager:test_support",
       "//components/skills:features",
@@ -1135,8 +1148,10 @@ source_set("unit_tests") {
       "//components/skills/public:metrics",
       "//components/viz/common",
       "//components/web_modal:test_support",
+      "//mojo/public/cpp/test_support:test_utils",
       "//services/network:test_support",
       "//ui/base",
+      "//ui/base:test_support",
       "//ui/compositor",
       "//ui/compositor:test_support",
     ]

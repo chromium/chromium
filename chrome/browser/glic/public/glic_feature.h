@@ -61,8 +61,10 @@ enum class GlicFeature {
   kPersonalContext,
   // The context menu item shown for text selections.
   kTextSelectionContextMenu,
+  // Chrome's modal Google Drive file picker (`chrome://drive-picker-host`).
+  kDrivePicker,
 
-  kMaxValue = kTextSelectionContextMenu,
+  kMaxValue = kDrivePicker,
 };
 
 }  // namespace glic

@@ -27,6 +27,13 @@ enum class DrivePickerAccountError {
   kWebSessionSignedOut,
 };
 
+// Checks only the primary account, `expected_gaia` match, and refresh token
+// health, without inspecting the Gaia cookie jar (so callers on enabling
+// observer paths do not trigger `/ListAccounts` fetches).
+std::optional<DrivePickerAccountError> CheckDrivePickerPrimaryAccount(
+    signin::IdentityManager* identity_manager,
+    const GaiaId& expected_gaia);
+
 // Returns why Chrome's Drive picker must not be shown (or must be closed) for
 // the web client signed in as `expected_gaia`, or nullopt if it may be shown.
 // The picker authenticates with the primary account's OAuth token, and the

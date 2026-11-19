@@ -20,6 +20,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/omnibox/common/omnibox_features.h"
+#endif
+
 namespace glic {
 namespace {
 
@@ -235,6 +239,33 @@ TEST(GlicProviderSpecImplTest,
                                  features::kGlicTextSelectionContextMenu);
 }
 
+TEST(GlicProviderSpecImplTest, GeminiDrivePickerFollowsGlicDrivePicker) {
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicDrivePicker);
+  EXPECT_FALSE(GeminiSupportsFeature(GlicFeature::kDrivePicker));
+#else
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kGlicDrivePicker, omnibox::kDrivePickerV2Scope}, {});
+    EXPECT_TRUE(GeminiSupportsFeature(GlicFeature::kDrivePicker));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kGlicDrivePicker},
+                                  {omnibox::kDrivePickerV2Scope});
+    EXPECT_FALSE(GeminiSupportsFeature(GlicFeature::kDrivePicker));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({omnibox::kDrivePickerV2Scope},
+                                  {features::kGlicDrivePicker});
+    EXPECT_FALSE(GeminiSupportsFeature(GlicFeature::kDrivePicker));
+  }
+#endif
+}
+
 TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
   std::vector<base::test::FeatureRef> enabled_features = {
       features::kGlicLiveMode,
@@ -244,10 +275,14 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
       features::kGlicSelectionPrompt,
       features::kGlicCaptureRegion,
       features::kGlicTextSelectionContextMenu,
+      features::kGlicDrivePicker,
       ::features::kSkillsEnabled,
       ::features::kSkillsWebViewV2Enabled,
       features::kIndigoOpenGlic,
       features::kGlicMarketingAutoOpen,
+#if !BUILDFLAG(IS_ANDROID)
+      omnibox::kDrivePickerV2Scope,
+#endif
 #if BUILDFLAG(ENABLE_PDF)
       features::kPdfGlicSummarize,
 #endif

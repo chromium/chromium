@@ -45,6 +45,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/guest_view/common/guest_view_features.h"  // nogncheck
+#else
+#include "components/omnibox/common/omnibox_features.h"
 #endif
 
 namespace glic {
@@ -262,6 +264,13 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
         return base::FeatureList::IsEnabled(features::kIndigoOpenGlic);
       case GlicFeature::kDynamicChromeTools:
         return base::FeatureList::IsEnabled(features::kGlicDynamicChromeTools);
+      case GlicFeature::kDrivePicker:
+#if BUILDFLAG(IS_ANDROID)
+        return false;
+#else
+        return base::FeatureList::IsEnabled(features::kGlicDrivePicker) &&
+               base::FeatureList::IsEnabled(omnibox::kDrivePickerV2Scope);
+#endif
     }
     NOTREACHED();
   }
@@ -395,6 +404,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kDynamicChromeTools:
       case GlicFeature::kPersonalContext:
       case GlicFeature::kTextSelectionContextMenu:
+      case GlicFeature::kDrivePicker:
         return false;
     }
     NOTREACHED();

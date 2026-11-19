@@ -111,6 +111,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #else
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/host/glic_drive_picker_manager.h"
 #include "chrome/browser/glic/media/glic_media_integration.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #endif
@@ -253,6 +254,10 @@ GlicKeyedService::GlicKeyedService(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
+  if (provider_spec().SupportsFeature(GlicFeature::kDrivePicker)) {
+    drive_picker_manager_ = std::make_unique<GlicDrivePickerManager>(
+        profile_, identity_manager, enabling_.get());
+  }
   GlicMediaIntegration::EnsurePeerConnectionTrackerInitialized(profile_);
 #endif
 
@@ -340,6 +345,9 @@ void GlicKeyedService::Shutdown() {
   if (activity_manager_) {
     activity_manager_->Shutdown();
   }
+#if !BUILDFLAG(IS_ANDROID)
+  drive_picker_manager_.reset();
+#endif
   instance_coordinator().Shutdown();
   if (legacy_activity_manager_) {
     legacy_activity_manager_->Shutdown();

@@ -70,6 +70,8 @@ class GlicExperimentalOptInController;
 class GlicExperimentalTriggeringTransportHandlerFactory;
 #if BUILDFLAG(IS_ANDROID)
 class MicPermissionUi;
+#else
+class GlicDrivePickerManager;
 #endif
 
 enum class GlicPrewarmingChecksResult;
@@ -281,6 +283,13 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   GlicActivityManager& activity_manager();
   LegacyGlicActivityManager& legacy_activity_manager();
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Null when Drive picker is disabled by feature flag or provider spec.
+  GlicDrivePickerManager* drive_picker_manager() {
+    return drive_picker_manager_.get();
+  }
+#endif
+
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
   // callbacks.
@@ -340,6 +349,10 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
       experimental_triggering_transport_handler_factory_;
 
   base::CallbackListSubscription experimental_triggering_state_subscription_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<GlicDrivePickerManager> drive_picker_manager_;
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   base::flat_map<BrowserWindowInterface*,

@@ -18,31 +18,6 @@ namespace glic {
 
 namespace {
 
-std::optional<DrivePickerAccountError> CheckPrimaryAccountAndToken(
-    signin::IdentityManager* identity_manager,
-    const GaiaId& expected_gaia) {
-  if (!identity_manager) {
-    return DrivePickerAccountError::kChromeSignInRequired;
-  }
-  const CoreAccountInfo primary =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (primary.IsEmpty() || primary.gaia.empty()) {
-    return DrivePickerAccountError::kChromeSignInRequired;
-  }
-  // The web client must be signed in as Chrome's primary account, since the
-  // picker's OAuth token is minted for the primary account.
-  if (expected_gaia.empty() || expected_gaia != primary.gaia) {
-    return DrivePickerAccountError::kAccountMismatch;
-  }
-  // Without a valid refresh token the picker's token fetch would fail.
-  if (!identity_manager->HasAccountWithRefreshToken(primary.account_id) ||
-      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary.account_id)) {
-    return DrivePickerAccountError::kChromeSignInRequired;
-  }
-  return std::nullopt;
-}
-
 std::optional<DrivePickerAccountError> CheckCookieJar(
     const GaiaId& expected_gaia,
     const signin::AccountsInCookieJarInfo& cookie_info) {
@@ -67,11 +42,36 @@ std::optional<DrivePickerAccountError> CheckCookieJar(
 
 }  // namespace
 
+std::optional<DrivePickerAccountError> CheckDrivePickerPrimaryAccount(
+    signin::IdentityManager* identity_manager,
+    const GaiaId& expected_gaia) {
+  if (!identity_manager) {
+    return DrivePickerAccountError::kChromeSignInRequired;
+  }
+  const CoreAccountInfo primary =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (primary.IsEmpty() || primary.gaia.empty()) {
+    return DrivePickerAccountError::kChromeSignInRequired;
+  }
+  // The web client must be signed in as Chrome's primary account, since the
+  // picker's OAuth token is minted for the primary account.
+  if (expected_gaia.empty() || expected_gaia != primary.gaia) {
+    return DrivePickerAccountError::kAccountMismatch;
+  }
+  // Without a valid refresh token the picker's token fetch would fail.
+  if (!identity_manager->HasAccountWithRefreshToken(primary.account_id) ||
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          primary.account_id)) {
+    return DrivePickerAccountError::kChromeSignInRequired;
+  }
+  return std::nullopt;
+}
+
 std::optional<DrivePickerAccountError> CheckDrivePickerAccount(
     signin::IdentityManager* identity_manager,
     const GaiaId& expected_gaia) {
   if (std::optional<DrivePickerAccountError> error =
-          CheckPrimaryAccountAndToken(identity_manager, expected_gaia)) {
+          CheckDrivePickerPrimaryAccount(identity_manager, expected_gaia)) {
     return error;
   }
   return CheckCookieJar(expected_gaia,
@@ -116,8 +116,8 @@ void DrivePickerAccountWatcher::OnAccountsInCookieUpdated(
     return;
   }
   if (std::optional<DrivePickerAccountError> reason =
-          CheckPrimaryAccountAndToken(observation_.GetSource(),
-                                      expected_gaia_)) {
+          CheckDrivePickerPrimaryAccount(observation_.GetSource(),
+                                         expected_gaia_)) {
     Report(*reason);
     return;
   }
@@ -138,8 +138,8 @@ void DrivePickerAccountWatcher::OnIdentityManagerShutdown(
 
 void DrivePickerAccountWatcher::EvaluatePrimaryAccountAndToken() {
   if (std::optional<DrivePickerAccountError> reason =
-          CheckPrimaryAccountAndToken(observation_.GetSource(),
-                                      expected_gaia_)) {
+          CheckDrivePickerPrimaryAccount(observation_.GetSource(),
+                                         expected_gaia_)) {
     Report(*reason);
   }
 }
