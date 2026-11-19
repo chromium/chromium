@@ -168,6 +168,7 @@
 -AutofillAcrossIframesFillSecurityTest.XoriginTrigger_SensitiveFieldsOnMainOrigin
 -AutofillAcrossIframesTest.Fill_MainFrameForm
 -AutofillAcrossIframesTest.Fill_MultiFrameForm
+-AutofillAcrossIframesTest.FillMultiFrameForm_SingleField
 -AutofillAcrossIframesTest.FrameAndFormIdsDontMatch
 -AutofillAcrossIframesTest.TriggerExtraction_AcrossFrames
 
