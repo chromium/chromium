@@ -606,7 +606,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.CountryFilteringResult2.{AccountType}"
-    enum="GlicFilteringResult" expires_after="2026-11-29">
+    enum="GlicFilteringResult" expires_after="2027-05-12">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
@@ -1259,7 +1259,7 @@ ApiRequestType variants; see go/geic-metrics-split. -->
 </histogram>
 
 <histogram name="Glic.LocaleFilteringResult" enum="GlicFilteringResult"
-    expires_after="2026-08-01">
+    expires_after="2027-05-12">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
