@@ -323,7 +323,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
             .min_package_version =
                 {
                     .major = 0,
-                    .minor = 4,
+                    .minor = 6,
                     .build = 0,
                     .revision = 0,
                 },
