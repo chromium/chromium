@@ -122,6 +122,39 @@ TEST(HighlightBorderGeneratorTest, Insets) {
   EXPECT_EQ(gfx::Insets::TLBR(18, 18, 18, 2),
             HighlightBorderGenerator::GetNineboxApertureInsets(
                 pill, gfx::RoundedCornersF(18, 0, 0, 18)));
+
+  const HighlightBorderValue half_insets(
+      kHighlight, kBorder, /*thickness=*/1,
+      /*is_pill_shaped=*/false, HighlightBorderValue::InsetsType::kHalfInsets);
+  EXPECT_EQ(gfx::Outsets(1), HighlightBorderGenerator::GetMargins(half_insets));
+  EXPECT_EQ(gfx::Insets(10), HighlightBorderGenerator::GetNineboxApertureInsets(
+                                 half_insets, gfx::RoundedCornersF(8)));
+
+  const HighlightBorderValue half_insets_pill(
+      kHighlight, kBorder, /*thickness=*/1,
+      /*is_pill_shaped=*/true, HighlightBorderValue::InsetsType::kHalfInsets);
+  EXPECT_EQ(gfx::Outsets(1),
+            HighlightBorderGenerator::GetMargins(half_insets_pill));
+  EXPECT_EQ(gfx::Insets(19), HighlightBorderGenerator::GetNineboxApertureInsets(
+                                 half_insets_pill, gfx::RoundedCornersF(18)));
+  EXPECT_EQ(gfx::Insets::TLBR(19, 19, 19, 2),
+            HighlightBorderGenerator::GetNineboxApertureInsets(
+                half_insets_pill, gfx::RoundedCornersF(18, 0, 0, 18)));
+
+  const HighlightBorderValue full_insets(
+      kHighlight, kBorder, /*thickness=*/1,
+      /*is_pill_shaped=*/false, HighlightBorderValue::InsetsType::kFullInsets);
+  EXPECT_EQ(gfx::Outsets(2), HighlightBorderGenerator::GetMargins(full_insets));
+  EXPECT_EQ(gfx::Insets(10), HighlightBorderGenerator::GetNineboxApertureInsets(
+                                 full_insets, gfx::RoundedCornersF(8)));
+
+  const HighlightBorderValue full_insets_pill(
+      kHighlight, kBorder, /*thickness=*/1,
+      /*is_pill_shaped=*/true, HighlightBorderValue::InsetsType::kFullInsets);
+  EXPECT_EQ(gfx::Outsets(2),
+            HighlightBorderGenerator::GetMargins(full_insets_pill));
+  EXPECT_EQ(gfx::Insets(20), HighlightBorderGenerator::GetNineboxApertureInsets(
+                                 full_insets_pill, gfx::RoundedCornersF(18)));
 }
 
 // Tests that the details cache is keyed on the corner radii and every field of
@@ -174,6 +207,22 @@ TEST(HighlightBorderGeneratorTest, DetailsCacheKey) {
       radii, HighlightBorderValue(kUniqueHighlight, kUniqueBorder,
                                   /*thickness=*/1, /*is_pill_shaped=*/true)));
   EXPECT_EQ(base_size + 5,
+            HighlightBorderDetails::GetDetailsCacheSizeForTest());
+
+  details.push_back(HighlightBorderDetails::Get(
+      radii,
+      HighlightBorderValue(kUniqueHighlight, kUniqueBorder,
+                           /*thickness=*/1, /*is_pill_shaped=*/false,
+                           HighlightBorderValue::InsetsType::kHalfInsets)));
+  EXPECT_EQ(base_size + 6,
+            HighlightBorderDetails::GetDetailsCacheSizeForTest());
+
+  details.push_back(HighlightBorderDetails::Get(
+      radii,
+      HighlightBorderValue(kUniqueHighlight, kUniqueBorder,
+                           /*thickness=*/1, /*is_pill_shaped=*/false,
+                           HighlightBorderValue::InsetsType::kFullInsets)));
+  EXPECT_EQ(base_size + 7,
             HighlightBorderDetails::GetDetailsCacheSizeForTest());
 }
 

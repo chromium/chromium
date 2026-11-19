@@ -22,10 +22,12 @@ DEFINE_SAFE_CAST_TARGET(HighlightBorder)
 
 HighlightBorder::HighlightBorder(SkColor highlight_color,
                                  SkColor border_color,
-                                 int thickness)
+                                 int thickness,
+                                 InsetsType insets_type)
     : highlight_color_(highlight_color),
       border_color_(border_color),
-      thickness_(thickness) {
+      thickness_(thickness),
+      insets_type_(insets_type) {
   CHECK_GT(thickness_, 0, base::NotFatalUntil::M163);
 }
 
@@ -51,6 +53,15 @@ void HighlightBorder::SetThickness(int thickness) {
   NotifyDecorationChanged();
 }
 
+void HighlightBorder::SetInsetsType(InsetsType insets_type) {
+  if (insets_type_ == insets_type) {
+    return;
+  }
+
+  insets_type_ = insets_type;
+  NotifyDecorationChanged();
+}
+
 std::optional<HighlightBorderValue> HighlightBorder::GetSpec(
     const gfx::Rect& content_bounds,
     const gfx::RoundedCornersF& rounded_corners) const {
@@ -60,24 +71,37 @@ std::optional<HighlightBorderValue> HighlightBorder::GetSpec(
       std::min(content_bounds.width(), content_bounds.height());
   const float max_radius = std::floor(smaller_dimension / 2.0f);
 
-  // The ninebox assumption breaks down when the content is too small for the
-  // desired thickness: normally each border patch spans two thicknesses plus
-  // the corner insets on each side (needing four thicknesses plus the corner
-  // insets across opposite patches), while for pill-shaped content the rings
-  // sit within the corner insets so opposite patches only need four thicknesses
-  // (see HighlightBorderGenerator). Thin the rings to the most the content can
-  // hold, and draw nothing once not even a hairline fits.
+  // Thin the rings to the most the content can hold, and draw nothing once not
+  // even a hairline fits.
   const bool is_pill_shaped = (max_radius == rounded_corners.upper_left() ||
                                max_radius == rounded_corners.upper_right() ||
                                max_radius == rounded_corners.lower_right() ||
                                max_radius == rounded_corners.lower_left());
   const gfx::Insets corner_insets = GetInsetsForRoundedCorners(rounded_corners);
-  const int max_safe_thickness =
+  const int available_space =
       is_pill_shaped
-          ? smaller_dimension / 4
+          ? smaller_dimension
           : std::min(content_bounds.width() - corner_insets.width(),
-                     content_bounds.height() - corner_insets.height()) /
-                4;
+                     content_bounds.height() - corner_insets.height());
+
+  int max_safe_thickness = 0;
+  switch (insets_type_) {
+    case InsetsType::kNoInsets:
+      // Both rings sit inside the content (4 thicknesses across opposite
+      // border patches).
+      max_safe_thickness = available_space / 4;
+      break;
+    case InsetsType::kHalfInsets:
+      // Only the inner ring sits inside the content (2 thicknesses across
+      // opposite border patches).
+      max_safe_thickness = available_space / 2;
+      break;
+    case InsetsType::kFullInsets:
+      // Both rings sit outside the content, so the content size does not limit
+      // the ring thickness.
+      max_safe_thickness = thickness_;
+      break;
+  }
   const int size_adjusted_thickness = std::min(max_safe_thickness, thickness_);
   CHECK_GE(size_adjusted_thickness, 0);
 
@@ -86,7 +110,8 @@ std::optional<HighlightBorderValue> HighlightBorder::GetSpec(
   }
 
   return HighlightBorderValue(highlight_color_, border_color_,
-                              size_adjusted_thickness, is_pill_shaped);
+                              size_adjusted_thickness, is_pill_shaped,
+                              insets_type_);
 }
 
 std::optional<DecorationSource::Details> HighlightBorder::GetDetails(
@@ -101,10 +126,10 @@ std::optional<DecorationSource::Details> HighlightBorder::GetDetails(
   const HighlightBorderDetails& details =
       HighlightBorderDetails::Get(rounded_corners, *value);
 
-  // Both rings sit inside the content, so only the content inside the border
-  // patches is guaranteed to be covered.
+  // Only the content inside the border patches is guaranteed to be covered.
   gfx::Rect occlusion_rect(content_bounds.size());
-  occlusion_rect.Inset(details.aperture_insets);
+  occlusion_rect.Inset(HighlightBorderGenerator::GetInwardApertureInsets(
+      *value, rounded_corners));
 
   return Details{
       .appearance =

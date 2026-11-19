@@ -24,9 +24,12 @@ class COMPONENT_EXPORT(UI_DECORATION) HighlightBorder
  public:
   DECLARE_SAFE_CAST_TARGET()
 
+  using InsetsType = HighlightBorderValue::InsetsType;
+
   HighlightBorder(SkColor highlight_color,
                   SkColor border_color,
-                  int thickness = 1);
+                  int thickness = 1,
+                  InsetsType insets_type = InsetsType::kNoInsets);
 
   HighlightBorder(const HighlightBorder&) = delete;
   HighlightBorder& operator=(const HighlightBorder&) = delete;
@@ -42,6 +45,9 @@ class COMPONENT_EXPORT(UI_DECORATION) HighlightBorder
   // the content allows it.
   void SetThickness(int thickness);
   int thickness() const { return thickness_; }
+
+  void SetInsetsType(InsetsType insets_type);
+  InsetsType insets_type() const { return insets_type_; }
 
   // Computes the size-adjusted highlight border value for `content_bounds` and
   // `rounded_corners`. Returns std::nullopt when the content is too small to
@@ -61,6 +67,7 @@ class COMPONENT_EXPORT(UI_DECORATION) HighlightBorder
   // Color of the outer ring.
   SkColor border_color_;
   int thickness_;
+  InsetsType insets_type_;
 };
 
 }  // namespace ui::decoration

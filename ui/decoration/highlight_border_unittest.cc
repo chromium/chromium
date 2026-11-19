@@ -199,6 +199,56 @@ TEST(HighlightBorderTest, SettersNotifyOnlyOnChange) {
   EXPECT_EQ(3, notifications);
   EXPECT_EQ(2, border.thickness());
   EXPECT_FALSE(last_duration.has_value());
+
+  border.SetInsetsType(HighlightBorder::InsetsType::kNoInsets);
+  EXPECT_EQ(3, notifications);
+  border.SetInsetsType(HighlightBorder::InsetsType::kHalfInsets);
+  EXPECT_EQ(4, notifications);
+  EXPECT_EQ(HighlightBorder::InsetsType::kHalfInsets, border.insets_type());
+  EXPECT_FALSE(last_duration.has_value());
+}
+
+TEST(HighlightBorderTest, InsetsTypes) {
+  const gfx::Rect content(50, 50, 200, 200);
+  const gfx::RoundedCornersF radii(8);
+
+  // `kHalfInsets`: outer ring (1px) sits outside the content, inner ring (1px)
+  // sits inside.
+  HighlightBorder half_border(kHighlight, kBorder, /*thickness=*/1,
+                              HighlightBorder::InsetsType::kHalfInsets);
+  std::optional<DecorationSource::Details> details =
+      half_border.GetDetails(content, radii);
+  ASSERT_TRUE(details.has_value());
+  EXPECT_EQ(gfx::Outsets(1), details->appearance.margins);
+  EXPECT_EQ(gfx::Insets(10), details->appearance.aperture_insets);
+  EXPECT_EQ(gfx::Size(21, 21), details->appearance.nine_patch_image.size());
+  EXPECT_EQ(gfx::Rect(9, 9, 182, 182), details->occlusion_rect);
+
+  const gfx::RoundedCornersF square;
+  EXPECT_TRUE(half_border.GetDetails(gfx::Rect(2, 2), square).has_value());
+  EXPECT_FALSE(half_border.GetDetails(gfx::Rect(1, 2), square).has_value());
+
+  HighlightBorder thick_half_border(kHighlight, kBorder, /*thickness=*/2,
+                                    HighlightBorder::InsetsType::kHalfInsets);
+  const gfx::RoundedCornersF rounded(4);
+  std::optional<HighlightBorderValue> spec =
+      thick_half_border.GetSpec(gfx::Rect(12, 12), rounded);
+  ASSERT_TRUE(spec.has_value());
+  EXPECT_EQ(2, spec->thickness());
+  spec = thick_half_border.GetSpec(gfx::Rect(10, 10), rounded);
+  ASSERT_TRUE(spec.has_value());
+  EXPECT_EQ(1, spec->thickness());
+
+  // `kFullInsets`: both rings (2px) sit outside the content.
+  HighlightBorder full_border(kHighlight, kBorder, /*thickness=*/1,
+                              HighlightBorder::InsetsType::kFullInsets);
+  details = full_border.GetDetails(content, radii);
+  ASSERT_TRUE(details.has_value());
+  EXPECT_EQ(gfx::Outsets(2), details->appearance.margins);
+  EXPECT_EQ(gfx::Insets(10), details->appearance.aperture_insets);
+  EXPECT_EQ(gfx::Size(21, 21), details->appearance.nine_patch_image.size());
+  EXPECT_EQ(gfx::Rect(8, 8, 184, 184), details->occlusion_rect);
+  EXPECT_TRUE(full_border.GetDetails(gfx::Rect(1, 1), square).has_value());
 }
 
 class HighlightBorderDecorationTest : public testing::Test {
@@ -290,6 +340,25 @@ TEST_F(HighlightBorderDecorationTest, SetThicknessUpdatesGeometry) {
   EXPECT_EQ(gfx::Rect(12, 12, 1, 1), decoration_layer()->aperture());
   EXPECT_EQ(gfx::Rect(12, 12, 24, 24), decoration_layer()->border());
   EXPECT_EQ(gfx::Rect(12, 12, 176, 176), decoration_layer()->occlusion());
+
+  // `kHalfInsets` extends the layer bounds by one ring thickness beyond the
+  // content while keeping the ninebox occlusion aligned with the stretched
+  // center patch.
+  decoration().GetSourceAs<HighlightBorder>()->SetInsetsType(
+      HighlightBorder::InsetsType::kHalfInsets);
+  EXPECT_EQ(gfx::Rect(48, 48, 204, 204), decoration().layer()->bounds());
+  EXPECT_EQ(gfx::Rect(12, 12, 1, 1), decoration_layer()->aperture());
+  EXPECT_EQ(gfx::Rect(12, 12, 24, 24), decoration_layer()->border());
+  EXPECT_EQ(gfx::Rect(12, 12, 180, 180), decoration_layer()->occlusion());
+
+  // `kFullInsets` extends the layer bounds by two ring thicknesses beyond the
+  // content.
+  decoration().GetSourceAs<HighlightBorder>()->SetInsetsType(
+      HighlightBorder::InsetsType::kFullInsets);
+  EXPECT_EQ(gfx::Rect(46, 46, 208, 208), decoration().layer()->bounds());
+  EXPECT_EQ(gfx::Rect(12, 12, 1, 1), decoration_layer()->aperture());
+  EXPECT_EQ(gfx::Rect(12, 12, 24, 24), decoration_layer()->border());
+  EXPECT_EQ(gfx::Rect(12, 12, 184, 184), decoration_layer()->occlusion());
 }
 
 TEST_F(HighlightBorderDecorationTest, PillShapedLayerGeometry) {

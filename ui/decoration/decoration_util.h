@@ -59,13 +59,17 @@ void DrawHighlightBorder(gfx::Canvas* canvas,
                          const gfx::RoundedCornersF& rounded_corners,
                          const gfx::Rect& bounds);
 
-// Generator for highlight border decoration rendering and insets. Both rings
-// sit inside the content.
+// Generator for highlight border decoration rendering and insets.
 struct COMPONENT_EXPORT(UI_DECORATION) HighlightBorderGenerator {
   static gfx::Outsets GetMargins(const HighlightBorderValue& value);
 
+  // Returns how far the ninebox border patches reach inside `content_rect`.
+  static gfx::Insets GetInwardApertureInsets(
+      const HighlightBorderValue& value,
+      const gfx::RoundedCornersF& rounded_corners);
+
   // Returns the insets for the ninebox aperture given the border and corner
-  // radii.
+  // radii (measured from the ninebox's outer edge).
   static gfx::Insets GetNineboxApertureInsets(
       const HighlightBorderValue& value,
       const gfx::RoundedCornersF& rounded_corners);

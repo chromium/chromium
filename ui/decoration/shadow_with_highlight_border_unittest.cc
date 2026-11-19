@@ -200,6 +200,24 @@ TEST_F(ShadowWithHighlightBorderTest, CombinedGeometryAndLayerBounds) {
   // Occlusion rect is inset by two ring thicknesses (2) plus the corner
   // radius (10).
   EXPECT_EQ(gfx::Rect(12, 12, 276, 276), details->occlusion_rect);
+
+  // With `kHalfInsets`, only the inner ring (1) plus the corner radius (10)
+  // insets the occlusion rect inside the content.
+  source->highlight_border()->SetInsetsType(
+      HighlightBorder::InsetsType::kHalfInsets);
+  const std::optional<DecorationSource::Details> half_insets_details =
+      source->GetDetails(content_bounds, corners);
+  ASSERT_TRUE(half_insets_details.has_value());
+  EXPECT_EQ(gfx::Rect(11, 11, 278, 278), half_insets_details->occlusion_rect);
+
+  // With `kFullInsets`, both rings sit outside the content so only the corner
+  // radius (10) insets the occlusion rect.
+  source->highlight_border()->SetInsetsType(
+      HighlightBorder::InsetsType::kFullInsets);
+  const std::optional<DecorationSource::Details> full_insets_details =
+      source->GetDetails(content_bounds, corners);
+  ASSERT_TRUE(full_insets_details.has_value());
+  EXPECT_EQ(gfx::Rect(10, 10, 280, 280), full_insets_details->occlusion_rect);
 }
 
 // Pill-shaped content renders both shadow and highlight border without
