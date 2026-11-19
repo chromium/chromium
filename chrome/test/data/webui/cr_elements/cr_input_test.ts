@@ -14,6 +14,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isAndroid} from 'chrome://resources/js/platform.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 // clang-format on
 
@@ -129,7 +130,8 @@ suite('cr-input', function() {
     assertEquals(crInput.value, input.value);
   });
 
-  test('focusState', async () => {
+  // TODO(crbug.com/587460417): Flaky transitionend ordering on Android.
+  (isAndroid ? test.skip : test)('focusState', async () => {
     assertFalse(crInput.hasAttribute('focused_'));
 
     const underline = crInput.$.underline;
