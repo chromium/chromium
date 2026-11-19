@@ -110,19 +110,19 @@ std::vector<std::unique_ptr<HidCollection>> HidCollection::BuildCollections(
           state.global_stack.pop_back();
         }
         break;
-      case HidReportDescriptorItem::kTagReportId:
+      case HidReportDescriptorItem::kTagReportId: {
         // Update the current report ID. The report ID is global, but is not
-        // affected by push and pop. Changes to the report ID are propagated to
-        // all ancestor collections.
-        if (state.collection) {
-          state.report_id = current_item->GetShortData();
-          auto* collection = state.collection.get();
-          while (collection) {
-            collection->report_ids_.push_back(state.report_id);
-            collection = collection->parent_;
-          }
+        // affected by push and pop. It remains in effect until it is changed,
+        // including when it precedes the first collection. Valid report IDs
+        // are 1 to 255, and an out of range value is malformed and leaves the
+        // current report ID in effect.
+        uint32_t report_id = current_item->GetShortData();
+        if (report_id != 0 &&
+            report_id <= std::numeric_limits<uint8_t>::max()) {
+          state.report_id = report_id;
         }
         break;
+      }
       case HidReportDescriptorItem::kTagUsagePage:
       case HidReportDescriptorItem::kTagLogicalMinimum:
       case HidReportDescriptorItem::kTagLogicalMaximum:
@@ -202,6 +202,12 @@ void HidCollection::AddReportItem(HidReportDescriptorItem::Tag tag,
     reports = &feature_reports_;
   } else {
     return;
+  }
+  // Associate the report ID with this collection. A report ID of zero is only
+  // used by devices that do not use report IDs.
+  if (state.report_id != 0 &&
+      !std::ranges::contains(report_ids_, state.report_id)) {
+    report_ids_.push_back(state.report_id);
   }
   // Fetch the report with the |report_id| matching this item, or insert a new
   // report into the map if it does not yet exist.

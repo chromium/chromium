@@ -2019,6 +2019,83 @@ TEST_F(HidReportDescriptorTest, FourByteLogicalMinMax) {
   ValidateCollections(base::span(kFourByteLogicalMinMaxDescriptor));
 }
 
+TEST_F(HidReportDescriptorTest, ReportIdBeforeFirstCollection) {
+  // Report ID is a global item and stays in effect until it is changed, so a
+  // Report ID item that precedes the first Collection item still applies to the
+  // reports within that collection.
+  // clang-format off
+  static const uint8_t kReportIdBeforeFirstCollectionDescriptor[] = {
+      0x85, 0x01,  // Report ID (1)
+      0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
+      0x09, 0x06,  // Usage (Keyboard)
+      0xA1, 0x01,  // Collection (Application)
+      0x75, 0x08,  //   Report Size (8)
+      0x95, 0x02,  //   Report Count (2)
+      0x81, 0x02,  //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No
+                   //   Null Position)
+      0xC0,        // End Collection
+  };
+  // clang-format on
+  auto report_descriptor_data =
+      base::span(kReportIdBeforeFirstCollectionDescriptor);
+
+  auto keyboard = HidCollectionInfo::New();
+  keyboard->usage = HidUsageAndPage::New(mojom::kGenericDesktopKeyboard,
+                                         mojom::kPageGenericDesktop);
+  keyboard->report_ids = {0x01};
+  AddTopCollectionInfo(std::move(keyboard));
+  ValidateDetails(true, 2, 0, 0, report_descriptor_data);
+
+  auto* top = AddTopCollection(kUsageGenericDesktopKeyboard,
+                               kCollectionTypeApplication);
+  SetReportId(0x01);
+  SetReportSizeAndCount(8, 2);
+  AddReportConstant(top, kInput, kAbsoluteVariable);
+  ValidateCollections(report_descriptor_data);
+}
+
+TEST_F(HidReportDescriptorTest, ReportIdOutOfRange) {
+  // Valid report IDs are 1 to 255. Report ID zero is reserved for devices that
+  // do not use report IDs, and a value wider than one byte would be truncated,
+  // so both leave report ID 1 in effect for all three report items.
+  // clang-format off
+  static const uint8_t kReportIdOutOfRangeDescriptor[] = {
+      0x85, 0x01,  // Report ID (1)
+      0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
+      0x09, 0x06,  // Usage (Keyboard)
+      0xA1, 0x01,  // Collection (Application)
+      0x75, 0x08,  //   Report Size (8)
+      0x95, 0x02,  //   Report Count (2)
+      0x81, 0x02,  //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No
+                   //   Null Position)
+      0x85, 0x00,  //   Report ID (0)
+      0x81, 0x02,  //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No
+                   //   Null Position)
+      0x86, 0x00, 0x01,  //   Report ID (256)
+      0x81, 0x02,  //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No
+                   //   Null Position)
+      0xC0,        // End Collection
+  };
+  // clang-format on
+  auto report_descriptor_data = base::span(kReportIdOutOfRangeDescriptor);
+
+  auto keyboard = HidCollectionInfo::New();
+  keyboard->usage = HidUsageAndPage::New(mojom::kGenericDesktopKeyboard,
+                                         mojom::kPageGenericDesktop);
+  keyboard->report_ids.push_back(1);
+  AddTopCollectionInfo(std::move(keyboard));
+  ValidateDetails(true, 6, 0, 0, report_descriptor_data);
+
+  auto* top = AddTopCollection(kUsageGenericDesktopKeyboard,
+                               kCollectionTypeApplication);
+  SetReportId(1);
+  SetReportSizeAndCount(8, 2);
+  AddReportConstant(top, kInput, kAbsoluteVariable);
+  AddReportConstant(top, kInput, kAbsoluteVariable);
+  AddReportConstant(top, kInput, kAbsoluteVariable);
+  ValidateCollections(report_descriptor_data);
+}
+
 TEST_F(HidReportDescriptorTest, ReportDescriptorTooLarge) {
   // A large report descriptor where every byte is 0xA0 (start collection).
   std::vector<uint8_t> large_report_descriptor(65536, 0xA0);
