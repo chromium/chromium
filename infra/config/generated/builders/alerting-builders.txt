@@ -279,6 +279,7 @@ ci/android-15-x64-rel
 ci/android-16-x64-dbg-tests
 ci/android-16-x64-leakcanary-rel
 ci/android-16-x64-rel
+ci/android-17-x64-rel
 ci/android-androidx-packager
 ci/android-angle-chromium-arm64-builder
 ci/android-angle-chromium-arm64-pixel2
@@ -458,6 +459,7 @@ try/android-15-x64-rel
 try/android-16-x64-dbg
 try/android-16-x64-leakcanary-rel
 try/android-16-x64-rel
+try/android-17-x64-rel
 try/android-angle-chromium-try
 try/android-arm-compile-dbg
 try/android-arm64-compile-dbg

@@ -4300,8 +4300,7 @@ ci.builder(
 
 ci.builder(
     name = "android-17-x64-rel",
-    # TODO(crbug.com/558813685): Enable when green.
-    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run chromium tests on Android 17 emulators.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -4423,9 +4422,7 @@ ci.builder(
         os_type = targets.os_type.ANDROID,
     ),
     ssd = None,
-    gardener_rotations = args.ignore_default(None),
-    # TODO(crbug.com/558813685): Enable when green.
-    tree_closing = False,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x64|rel",
         short_name = "17",
