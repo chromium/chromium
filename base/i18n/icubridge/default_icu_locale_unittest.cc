@@ -83,6 +83,10 @@ TEST(DefaultIcuLocaleTest, OnDefaultLocaleUpdatedCallback) {
 }
 
 TEST(DefaultIcuLocaleTest, ThreadSafety) {
+  // Capture and restore the pre-test locale after `task_environment` joins all
+  // worker threads. Concurrent inner `ScopedDefaultIcuLocale` instances may
+  // destroy out of LIFO order and leave `pt-BR` or `fr-FR` installed.
+  ScopedDefaultIcuLocale restore_locale(GetKnownLanguageTag("en-US"));
   base::test::TaskEnvironment task_environment;
 
   // Run multiple reader and writer tasks concurrently on the ThreadPool.

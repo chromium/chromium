@@ -19,7 +19,6 @@
 #include "build/blink_buildflags.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/icu/source/common/unicode/locid.h"
 
 namespace base::i18n {
 
@@ -865,8 +864,7 @@ TEST_F(DateTimeFormatterTest, FormatWithLanguageTagExtensions) {
 TEST_F(DateTimeFormatterTest, FormatWithInvalidLanguageTag) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2011-04-30 15:42:07", &time));
-  UErrorCode status = U_ZERO_ERROR;
-  icu::Locale::setDefault(icu::Locale::getUK(), status);
+  ScopedDefaultIcuLocale scoped_locale(GetKnownLanguageTag("en-GB"));
 
   // Use a bogus/invalid tag that doesn't parse to a valid locale.
   // LanguageTag itself might catch some, but if one gets through that ICU
