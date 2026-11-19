@@ -110,7 +110,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/system_web_apps/apps/personalization_app:personalization_app",
   "//chrome/browser/ash/system_web_apps:system_web_apps",
   "//chrome/browser/ash/tether:tether",
-  "//chrome/browser/ash/usb:usb",
   "//chrome/browser/ash/video_conference:video_conference",
   "//chrome/browser/chromeos/enterprise/cloud_storage:cloud_storage",
   "//chrome/browser/chromeos/policy/dlp:dlp",

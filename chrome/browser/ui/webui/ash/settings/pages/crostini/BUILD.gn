@@ -33,6 +33,7 @@ static_library("crostini") {
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/usb",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/views/bruschetta",
     "//chrome/browser/ui/views/crostini",
