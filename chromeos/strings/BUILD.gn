@@ -3,8 +3,12 @@
 # found in the LICENSE file.
 
 # Forwarding targets while callers are migrated to //chromeos/resources.
-source_set("strings_grit") {
-  public = [ "grit/chromeos_strings.h" ]
+# Copy the forwarding header into $target_gen_dir so incremental builds
+# overwrite any stale generated chromeos/strings/grit/chromeos_strings.h
+# (since -Igen precedes -I../..).
+copy("strings_grit") {
+  sources = [ "grit/chromeos_strings.h" ]
+  outputs = [ "$target_gen_dir/grit/chromeos_strings.h" ]
   public_deps = [ "//chromeos/resources:strings_grit" ]
 }
 

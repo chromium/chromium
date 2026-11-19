@@ -5,7 +5,9 @@
 #ifndef CHROMEOS_STRINGS_GRIT_CHROMEOS_STRINGS_H_
 #define CHROMEOS_STRINGS_GRIT_CHROMEOS_STRINGS_H_
 
-// Forwards to //chromeos/resources:strings while callers are migrated.
+// Copied to $target_gen_dir/grit/chromeos_strings.h so incremental builds
+// overwrite any stale generated header while callers migrate to
+// //chromeos/resources:strings.
 #include "chromeos/resources/grit/chromeos_strings.h"  // IWYU pragma: export
 
 #endif  // CHROMEOS_STRINGS_GRIT_CHROMEOS_STRINGS_H_
