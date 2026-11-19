@@ -2029,6 +2029,10 @@ AvatarToolbarButtonInterface* ToolbarView::GetAvatarToolbarButtonInterface() {
   return avatar_;
 }
 
+ToolbarButton* ToolbarView::GetBackButton() {
+  return back_;
+}
+
 ReloadControl* ToolbarView::GetReloadButton() {
   if (features::IsWebUIReloadButtonEnabled()) {
     if (toolbar_webview_) {

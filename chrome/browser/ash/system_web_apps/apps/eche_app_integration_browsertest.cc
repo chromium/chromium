@@ -9,9 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -121,8 +119,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, MinimalUiWithoutReloadButton) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser);
   ToolbarButtonProvider* provider = browser_view->toolbar_button_provider();
-  EXPECT_TRUE(
-      BrowserElements::From(browser)->GetElement(kToolbarBackButtonElementId));
+  EXPECT_TRUE(provider->GetBackButton());
   EXPECT_FALSE(provider->GetReloadButton());
 }
 

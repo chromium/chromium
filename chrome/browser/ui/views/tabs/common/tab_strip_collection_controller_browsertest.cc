@@ -19,8 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -332,8 +330,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   ToolbarButtonProvider* button_provider =
       browser_view->toolbar_button_provider();
   EXPECT_TRUE(toolbar->IsDrawn());
-  EXPECT_TRUE(BrowserElements::From(browser())->GetElement(
-      kToolbarBackButtonElementId));
+  EXPECT_TRUE(button_provider->GetBackButton()->IsDrawn());
   EXPECT_TRUE(toolbar->forward_button()->IsDrawn());
   if (toolbar->reload_button()) {
     EXPECT_TRUE(toolbar->reload_button()->IsDrawn());

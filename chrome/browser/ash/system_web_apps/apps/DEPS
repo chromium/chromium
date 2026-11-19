@@ -62,8 +62,6 @@ specific_include_rules = {
     "+chrome/browser/ash/policy/core/device_local_account.h",
   ],
   "eche_app_integration_browsertest\\.cc": [
-    "+chrome/browser/ui/browser_element_identifiers.h",
-    "+chrome/browser/ui/interaction/browser_elements.h",
     "+chrome/browser/ui/views",
   ],
   "graduation_app_integration_browsertest\\.cc": [
