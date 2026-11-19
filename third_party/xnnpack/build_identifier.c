@@ -1,3 +1,4 @@
+
 // clang-format off
 // Copyright 2024 Google LLC
 //
@@ -5,7 +6,7 @@
 // LICENSE file in the root directory of this source tree.
 
 // Auto-generated file. Do not edit!
-//   Generator: generate_build_identifier
+//   Generator: scripts/generate-build-identifier.py
 //
 // The following inputs were used to generate this file.
 // - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-11x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
@@ -19,44 +20,6 @@
 // - external/xnnpack+/src/bf16-rminmax/gen/bf16-rmax-scalar-u2-acc2.c
 // - external/xnnpack+/src/bf16-rminmax/gen/bf16-rmin-scalar-u2-acc2.c
 // - external/xnnpack+/src/bf16-rminmax/gen/bf16-rminmax-scalar-u2-acc2.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vadd-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vadd-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vaddc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vaddc-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vdiv-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vdiv-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vdivc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vdivc-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vmax-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vmax-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vmaxc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vmaxc-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vmin-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vmin-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vminc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vminc-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vmul-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vmul-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vmulc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vmulc-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vprelu-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vprelu-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vpreluc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vpreluc-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vrdivc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vrdivc-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vrpreluc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vrpreluc-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vrsubc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vrsubc-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vsqrdiff-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vsqrdiff-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vsqrdiffc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vsqrdiffc-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vsub-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vsub-avx512skx-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vsubc-avx512bf16-u32.c
-// - external/xnnpack+/src/bf16-vbinary/gen/bf16-vsubc-avx512skx-u32.c
 // - external/xnnpack+/src/bf16-vunary/gen/bf16-vunary-avx512skx.c
 // - external/xnnpack+/src/bf16-vunary/gen/bf16-vunary-scalar.c
 // - external/xnnpack+/src/configs/hardware-config.c
@@ -242,6 +205,8 @@
 // - external/xnnpack+/src/f32-dwconv/gen/f32-dwconv-25p16c-minmax-avx.c
 // - external/xnnpack+/src/f32-dwconv/gen/f32-dwconv-25p16c-minmax-avx512f.c
 // - external/xnnpack+/src/f32-dwconv/gen/f32-dwconv-25p16c-minmax-fma3.c
+// - external/xnnpack+/src/f32-dwconv/gen/f32-dwconv-25p1c-minmax-scalar-acc2.c
+// - external/xnnpack+/src/f32-dwconv/gen/f32-dwconv-25p1c-scalar-acc2.c
 // - external/xnnpack+/src/f32-dwconv/gen/f32-dwconv-25p2c-minmax-scalar-acc2.c
 // - external/xnnpack+/src/f32-dwconv/gen/f32-dwconv-25p2c-scalar-acc2.c
 // - external/xnnpack+/src/f32-dwconv/gen/f32-dwconv-25p8c-minmax-sse.c
@@ -649,18 +614,10 @@
 // - external/xnnpack+/src/qd8-bf16-qb4w-gemm/gen/qd8-bf16-qb4w-gemm-8x16c8-minmax-avx512vnni.c
 // - external/xnnpack+/src/qd8-f16-qb4w-gemm/gen/qd8-f16-qb4w-gemm-1x8c8-minmax-avx2.c
 // - external/xnnpack+/src/qd8-f16-qb4w-gemm/gen/qd8-f16-qb4w-gemm-3x8c8-minmax-avx2.c
-// - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-1x16c8-minmax-avx512skx-madd-prfm.c
-// - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-1x16c8-minmax-avx512vnni-prfm.c
-// - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-1x16c8-minmax-avx512vnnigfni-prfm.c
 // - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-1x2-minmax-scalar.c
-// - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-1x4c8-minmax-f16c-madd-prfm.c
 // - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-1x8c8-minmax-avx2-madd.c
 // - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-1x8c8-minmax-avxvnni.c
-// - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-4x4c8-minmax-f16c-madd-prfm.c
 // - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-5x8c8-minmax-avxvnni.c
-// - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-8x16c8-minmax-avx512skx-madd-prfm.c
-// - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-8x16c8-minmax-avx512vnni-prfm.c
-// - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-8x16c8-minmax-avx512vnnigfni-prfm.c
 // - external/xnnpack+/src/qd8-f16-qc2w-gemm/gen/qd8-f16-qc2w-gemm-8x8c8-minmax-avx2-madd.c
 // - external/xnnpack+/src/qd8-f16-qc4w-gemm/gen/qd8-f16-qc4w-gemm-1x8c8-minmax-avx2-madd-prfm.c
 // - external/xnnpack+/src/qd8-f16-qc4w-gemm/gen/qd8-f16-qc4w-gemm-1x8c8-minmax-avx256skx-madd-prfm.c
@@ -704,20 +661,12 @@
 // - external/xnnpack+/src/qd8-f32-qb4w-gemm/gen/qd8-f32-qb4w-gemm-4x4c8-minmax-avx-ld128.c
 // - external/xnnpack+/src/qd8-f32-qb4w-gemm/gen/qd8-f32-qb4w-gemm-4x4c8-minmax-sse2-ld128.c
 // - external/xnnpack+/src/qd8-f32-qb4w-gemm/gen/qd8-f32-qb4w-gemm-8x16c8-minmax-avx512vnni-prfm.c
-// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x16c8-minmax-avx512skx-madd-prfm.c
-// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x16c8-minmax-avx512vnni-prfm.c
-// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x16c8-minmax-avx512vnnigfni-prfm.c
 // - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x2-minmax-scalar.c
-// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x4c8-minmax-avx-madd-prfm.c
 // - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x4c8-minmax-ssse3-madd.c
 // - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x8c8-minmax-avx2-madd.c
 // - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-1x8c8-minmax-avxvnni.c
-// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-4x4c8-minmax-avx-madd-prfm.c
 // - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-4x4c8-minmax-ssse3-madd.c
 // - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-5x8c8-minmax-avxvnni.c
-// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-8x16c8-minmax-avx512skx-madd-prfm.c
-// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-8x16c8-minmax-avx512vnni-prfm.c
-// - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-8x16c8-minmax-avx512vnnigfni-prfm.c
 // - external/xnnpack+/src/qd8-f32-qc2w-gemm/gen/qd8-f32-qc2w-gemm-8x8c8-minmax-avx2-madd.c
 // - external/xnnpack+/src/qd8-f32-qc4w-gemm/gen/qd8-f32-qc4w-gemm-14x16c8-minmax-avx512vnnigfni-prfm.c
 // - external/xnnpack+/src/qd8-f32-qc4w-gemm/gen/qd8-f32-qc4w-gemm-16x64c4-minmax-avx512amx.c
@@ -781,10 +730,6 @@
 // - external/xnnpack+/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-5x8c8-minmax-avxvnni-prfm.c
 // - external/xnnpack+/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-8x16c8-minmax-avx512skx-prfm.c
 // - external/xnnpack+/src/qd8-f32-qc8w-igemm/gen/qd8-f32-qc8w-igemm-8x8c8-minmax-avx256skx.c
-// - external/xnnpack+/src/qs8-avgpool/gen/qs8-avgpool-9p-minmax-fp32-avx2-u32.c
-// - external/xnnpack+/src/qs8-avgpool/gen/qs8-avgpool-9p-minmax-fp32-avx512skx-u32.c
-// - external/xnnpack+/src/qs8-avgpool/gen/qs8-avgpool-9p-minmax-fp32-scalar-fmagic-u1.c
-// - external/xnnpack+/src/qs8-avgpool/gen/qs8-avgpool-9p-minmax-fp32-sse41-u16.c
 // - external/xnnpack+/src/qs8-dwconv/gen/qs8-dwconv-25p16c-minmax-fp32-avx-mul16-add16.c
 // - external/xnnpack+/src/qs8-dwconv/gen/qs8-dwconv-25p16c-minmax-fp32-avx2-mul32.c
 // - external/xnnpack+/src/qs8-dwconv/gen/qs8-dwconv-25p1c-minmax-fp32-scalar-fmagic.c
@@ -987,10 +932,6 @@
 // - external/xnnpack+/src/qs8-vpreluc/gen/qs8-vpreluc-scalar-u8.c
 // - external/xnnpack+/src/qs8-vrpreluc/gen/qs8-vrpreluc-avx2-u16.c
 // - external/xnnpack+/src/qs8-vrpreluc/gen/qs8-vrpreluc-scalar-u8.c
-// - external/xnnpack+/src/qu8-avgpool/gen/qu8-avgpool-9p-minmax-fp32-avx2-u32.c
-// - external/xnnpack+/src/qu8-avgpool/gen/qu8-avgpool-9p-minmax-fp32-avx512skx-u32.c
-// - external/xnnpack+/src/qu8-avgpool/gen/qu8-avgpool-9p-minmax-fp32-scalar-fmagic-u1.c
-// - external/xnnpack+/src/qu8-avgpool/gen/qu8-avgpool-9p-minmax-fp32-sse41-u16.c
 // - external/xnnpack+/src/qu8-dwconv/gen/qu8-dwconv-25p16c-minmax-fp32-avx-mul16.c
 // - external/xnnpack+/src/qu8-dwconv/gen/qu8-dwconv-25p16c-minmax-fp32-avx2-mul32.c
 // - external/xnnpack+/src/qu8-dwconv/gen/qu8-dwconv-25p1c-minmax-fp32-scalar-fmagic.c
@@ -1208,10 +1149,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  115, 138,  91,  68, 138, 197,  75, 215,
-  141, 201,  75, 217, 228, 143, 178, 170,
-   93, 122, 218, 127, 130, 172,  32,  69,
-   27,  29,  62, 121, 198, 107, 254, 204
+  132, 194, 159, 176,  23, 136, 101,   4,
+  144, 152, 107, 183,  96, 241, 147, 247,
+  202, 237, 239, 186,  46,  30, 228,  26,
+   22, 144, 164, 115,  26, 109, 129,  72
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
@@ -1223,7 +1164,7 @@ const void* xnn_experimental_get_build_identifier_data() {
 }
 
 bool xnn_experimental_check_build_identifier(const void* data, const size_t size) {
-  if (size != xnn_experimental_get_build_identifier_size()) {
+  if(size != xnn_experimental_get_build_identifier_size()) {
     return false;
   }
   return !memcmp(data, xnn_build_identifier, size);
