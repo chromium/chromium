@@ -96,7 +96,7 @@ class SkillsGeicBrowserTest : public InProcessBrowserTest {
 // Skills are disabled for Gemini Enterprise, even though Glic is enabled.
 IN_PROC_BROWSER_TEST_F(SkillsGeicBrowserTest, SkillsDisabled) {
   Profile* profile = browser()->GetProfile();
-  ASSERT_EQ(glic::GlicProviderLatch::GetProvider(*profile),
+  ASSERT_EQ(glic::GlicProviderLatch::GetProviderForTesting(*profile),
             glic::GlicProvider::kGeminiEnterprise);
   ASSERT_TRUE(glic::GlicEnabling::IsEnabledForProfile(profile));
 
@@ -126,8 +126,9 @@ IN_PROC_BROWSER_TEST_F(SkillsGeicBrowserTest, SkillsDisabled) {
 // chrome://skills shows the unsupported error page with a link to Gemini
 // Enterprise skills for Gemini Enterprise profiles.
 IN_PROC_BROWSER_TEST_F(SkillsGeicBrowserTest, SkillsPageShowsUnsupportedError) {
-  ASSERT_EQ(glic::GlicProviderLatch::GetProvider(*browser()->GetProfile()),
-            glic::GlicProvider::kGeminiEnterprise);
+  ASSERT_EQ(
+      glic::GlicProviderLatch::GetProviderForTesting(*browser()->GetProfile()),
+      glic::GlicProvider::kGeminiEnterprise);
 
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(chrome::kChromeUISkillsURL)));

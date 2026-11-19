@@ -24,8 +24,6 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_fre_store.h"
-#include "chrome/browser/glic/public/glic_provider.h"
-#include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -116,7 +114,6 @@ class GlicInternalsGeicBrowserTest : public GlicInternalsBrowserTest {
 IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
                        RevokeGlicConsentResetsConsumerFreAndLocalState) {
   Profile* profile = chrome_test_utils::GetProfile(this);
-  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
   profile->GetPrefs()->SetInteger(
       prefs::kGlicCompletedFre,
       std::to_underlying(prefs::FreStatus::kCompleted));
@@ -137,8 +134,6 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicInternalsGeicBrowserTest,
                        RevokeGlicConsentResetsGeicFre) {
   Profile* profile = chrome_test_utils::GetProfile(this);
-  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile),
-            GlicProvider::kGeminiEnterprise);
   GetGlicProviderSpec(profile).GetFreStore().SetStatus(
       profile, prefs::FreStatus::kCompleted);
   ASSERT_TRUE(GlicEnabling::HasConsentedForProfile(profile));
@@ -166,9 +161,6 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsGeicBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest, ReportsGeminiProvider) {
-  Profile* profile = chrome_test_utils::GetProfile(this);
-  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
-
   mojom::InternalsDataPayloadPtr data =
       GetInternalsData(chrome_test_utils::GetActiveWebContents(this));
 
@@ -178,8 +170,6 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest, ReportsGeminiProvider) {
 
 IN_PROC_BROWSER_TEST_F(GlicInternalsGeicBrowserTest, ReportsGeicProvider) {
   Profile* profile = chrome_test_utils::GetProfile(this);
-  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile),
-            GlicProvider::kGeminiEnterprise);
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
 

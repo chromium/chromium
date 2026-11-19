@@ -62,7 +62,9 @@ GlicProviderChange GlicProviderLatchFactory::GetPendingProviderChange(
   if (!latch) {
     return GlicProviderChange::kNone;
   }
-  GlicProviderKey latched_key = latch->GetSpec().GetProviderKey();
+  const GlicProviderKeyPassKey key_pass_key =
+      GlicProviderKeyPasskeyProvider::GetPassKey();
+  GlicProviderKey latched_key = latch->GetSpec().GetProviderKey(key_pass_key);
   GlicProviderKey resolved_key = GlicProviderKey::Gemini();
   GURL resolved_url = geic::ResolveGeicGuestUrl(context);
   // Make the same decision as `BuildServiceInstanceForBrowserContext()`, so
@@ -73,7 +75,7 @@ GlicProviderChange GlicProviderLatchFactory::GetPendingProviderChange(
     resolved_key =
         CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise,
                                {.guest_url = std::move(resolved_url)})
-            ->GetProviderKey();
+            ->GetProviderKey(key_pass_key);
   }
   return ClassifyProviderChange(latched_key, resolved_key);
 }

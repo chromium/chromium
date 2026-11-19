@@ -327,7 +327,7 @@ class GlicDrivePickerManagerGeicTest : public GlicDrivePickerManagerTest {
 };
 
 TEST_F(GlicDrivePickerManagerGeicTest, UnsupportedForGeminiEnterprise) {
-  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile_),
+  ASSERT_EQ(GlicProviderLatch::GetProviderForTesting(*profile_),
             GlicProvider::kGeminiEnterprise);
   EXPECT_EQ(GlicKeyedService::Get(profile_)->drive_picker_manager(), nullptr);
 

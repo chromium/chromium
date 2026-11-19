@@ -176,8 +176,13 @@ class GlicProviderSpec {
   // none. Gemini Enterprise: the latched guest URL without `hl` or `idp`.
   // Persisted; must not change.
   virtual std::string GetGuestUrlKey() const = 0;
-  // Identifies this provider for detecting provider changes.
-  virtual GlicProviderKey GetProviderKey() const = 0;
+  // Identifies this provider for detecting provider changes. Restricted by
+  // `GlicProviderKeyPasskeyProvider`.
+  GlicProviderKey GetProviderKey(GlicProviderKeyPassKey) const {
+    return GetProviderKeyImpl();
+  }
+  // Like `GetProviderKey()`, for tests.
+  GlicProviderKey GetProviderKeyForTesting() const;
   // Whether the web client's data in the webview partition's localStorage is
   // copied into `GlicClientDataStorage` (see `MaybeMigrateGlicLocalStorage()`).
   // Only true for providers whose web client was ever loaded in the webview.
@@ -199,7 +204,9 @@ class GlicProviderSpec {
   // system and OS requirements and FRE consent) still apply.
   virtual bool RequiresGeminiAccountEligibility() const = 0;
   // Whether this provider authenticates the guest via a Gemini Enterprise
-  // sign-in browser tab rather than Chrome profile primary-account reauth.
+  // sign-in browser tab rather than Chrome profile primary-account reauth. Also
+  // lets the guest bind `mojom::GeminiEnterpriseHandler` to open its sign-in
+  // and connector OAuth tabs.
   virtual bool UsesGeicSignIn() const = 0;
   // Returns whether `feature` is enabled for the profile if the provider
   // supports it, otherwise false. For the consumer provider, this checks the
@@ -226,6 +233,10 @@ class GlicProviderSpec {
   // Whether daisy-chained tabs (e.g. tabs opened via CreateTab or link clicks)
   // are automatically pinned as shared context when bound to a Glic instance.
   virtual bool PinOnBindEnabled() const = 0;
+
+ private:
+  // Implements `GetProviderKey()`.
+  virtual GlicProviderKey GetProviderKeyImpl() const = 0;
 };
 
 }  // namespace glic

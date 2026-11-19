@@ -123,16 +123,6 @@ TEST_F(GeicFreTest, DisabledWithoutGeicFreFeature) {
   EXPECT_TRUE(profile.GetPrefs()->GetDict(prefs::kGeicCompletedFre).empty());
 }
 
-TEST_F(GeicFreTest, DisabledWithoutGeic) {
-  base::test::ScopedFeatureList disabled;
-  disabled.InitAndDisableFeature(features::kGeic);
-  TestingProfile profile;
-
-  EXPECT_EQ(GetFreStatus(&profile), std::nullopt);
-  CompleteFre(&profile);
-  EXPECT_TRUE(profile.GetPrefs()->GetDict(prefs::kGeicCompletedFre).empty());
-}
-
 TEST_F(GeicFreTest, DefaultsToNotStarted) {
   EXPECT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kNotStarted);
 }

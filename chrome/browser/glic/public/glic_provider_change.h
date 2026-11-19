@@ -10,9 +10,15 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/glic/public/glic_provider.h"
 
+class Profile;
+
 namespace glic {
+
+class GlicInternalsPageHandler;
+class GlicProviderLatchFactory;
 
 // How the provider that the current configuration resolves to differs from the
 // provider latched for a profile. The latch is fixed for the profile's
@@ -47,11 +53,6 @@ class GlicProviderKey {
   }
   const std::string& ToPrefString() const { return guest_url_key_; }
 
-  GlicProvider provider() const {
-    return guest_url_key_.empty() ? GlicProvider::kGemini
-                                  : GlicProvider::kGeminiEnterprise;
-  }
-
   friend bool operator==(const GlicProviderKey&,
                          const GlicProviderKey&) = default;
   friend std::ostream& operator<<(std::ostream& os,
@@ -62,8 +63,18 @@ class GlicProviderKey {
   }
 
  private:
+  friend GlicProviderChange ClassifyProviderChange(const GlicProviderKey& from,
+                                                   const GlicProviderKey& to);
+
   explicit GlicProviderKey(std::string guest_url_key)
       : guest_url_key_(std::move(guest_url_key)) {}
+
+  // Not public, so that callers can't branch on the raw provider; see
+  // `GlicProviderLatch`.
+  GlicProvider provider() const {
+    return guest_url_key_.empty() ? GlicProvider::kGemini
+                                  : GlicProvider::kGeminiEnterprise;
+  }
 
   // Empty iff Gemini.
   std::string guest_url_key_;
@@ -82,6 +93,30 @@ inline GlicProviderChange ClassifyProviderChange(const GlicProviderKey& from,
              ? GlicProviderChange::kGeicToGemini
              : GlicProviderChange::kGeicToOtherGeic;
 }
+
+// Restricts who may read a provider's `GlicProviderKey`
+// (`GlicProviderSpec::GetProviderKey()`): only code that detects provider
+// changes, and chrome://glic-internals to display the provider. Everything else
+// should use `GlicProviderSpec` capabilities instead of identifying the
+// provider. Reach out to c/b/glic/API_OWNERS before adding new friends.
+class GlicProviderKeyPasskeyProvider {
+ public:
+  using PassKey = base::PassKey<GlicProviderKeyPasskeyProvider>;
+
+ private:
+  static PassKey GetPassKey() { return PassKey(); }
+
+  friend class GlicInternalsPageHandler;
+  friend class GlicProviderLatchFactory;
+  // glic_provider_switch_notice.h:
+  friend void UpdateKnownProviderAtStartup(
+      base::PassKey<GlicProviderLatchFactory>,
+      Profile& profile);
+  friend void OnLatchedProviderFreStatusChanged(Profile& profile);
+  friend GlicProviderChange GetProviderSwitchNotice(Profile& profile);
+};
+
+using GlicProviderKeyPassKey = GlicProviderKeyPasskeyProvider::PassKey;
 
 }  // namespace glic
 

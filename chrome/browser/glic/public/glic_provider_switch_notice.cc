@@ -35,7 +35,9 @@ bool OnboardedToLatchedProvider(Profile& profile,
 
 // Records the latched provider as known if no provider is known yet and the
 // user has onboarded to it.
-void MaybeInitKnownProvider(Profile& profile, const GlicProviderLatch& latch) {
+void MaybeInitKnownProvider(GlicProviderKeyPassKey key_pass_key,
+                            Profile& profile,
+                            const GlicProviderLatch& latch) {
   PrefService& prefs = *profile.GetPrefs();
   if (prefs.HasPrefPath(prefs::kGlicProviderSwitchNoticeKnownProviderKey)) {
     return;
@@ -44,7 +46,7 @@ void MaybeInitKnownProvider(Profile& profile, const GlicProviderLatch& latch) {
     return;
   }
   prefs.SetString(prefs::kGlicProviderSwitchNoticeKnownProviderKey,
-                  latch.GetSpec().GetProviderKey().ToPrefString());
+                  latch.GetSpec().GetProviderKey(key_pass_key).ToPrefString());
 }
 
 }  // namespace
@@ -65,13 +67,15 @@ void UpdateKnownProviderAtStartup(base::PassKey<GlicProviderLatchFactory>,
   // Otherwise keep the known provider, so that a notice the user hasn't seen
   // yet stays due across restarts. If no provider is known, record the latched
   // one once the user has onboarded to it.
-  MaybeInitKnownProvider(profile, *latch);
+  MaybeInitKnownProvider(GlicProviderKeyPasskeyProvider::GetPassKey(), profile,
+                         *latch);
 }
 
 void OnLatchedProviderFreStatusChanged(Profile& profile) {
   if (const GlicProviderLatch* latch =
           GlicProviderLatch::GetIfLatched(profile)) {
-    MaybeInitKnownProvider(profile, *latch);
+    MaybeInitKnownProvider(GlicProviderKeyPasskeyProvider::GetPassKey(),
+                           profile, *latch);
   }
 }
 
@@ -100,7 +104,8 @@ GlicProviderChange GetProviderSwitchNotice(Profile& profile) {
   return ClassifyProviderChange(
       GlicProviderKey::FromPrefString(
           prefs.GetString(prefs::kGlicProviderSwitchNoticeKnownProviderKey)),
-      latch->GetSpec().GetProviderKey());
+      latch->GetSpec().GetProviderKey(
+          GlicProviderKeyPasskeyProvider::GetPassKey()));
 }
 
 }  // namespace glic

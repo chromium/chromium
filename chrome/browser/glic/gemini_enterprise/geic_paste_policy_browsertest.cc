@@ -139,7 +139,7 @@ class GeicPastePolicyBrowserTest : public GlicBrowserTest {
       ADD_FAILURE() << "GEiC client did not become ready: " << ready.error();
       return nullptr;
     }
-    EXPECT_EQ(GlicProviderLatch::GetProvider(*GetProfile()),
+    EXPECT_EQ(GlicProviderLatch::GetProviderForTesting(*GetProfile()),
               GlicProvider::kGeminiEnterprise);
     EXPECT_TRUE(GlicKeyedService::IsNoWebviewEnabled(GetProfile()));
 
