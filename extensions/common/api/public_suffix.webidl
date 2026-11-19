@@ -31,7 +31,7 @@ dictionary DomainOptions {
   boolean allowUnknownSuffix;
 };
 
-// Use the <code>chrome.publicSuffix</code> API to query the browser's Public
+// Use the <code>browser.publicSuffix</code> API to query the browser's Public
 // Suffix List (PSL).
 interface PublicSuffix {
   // Determines whether |hostname| is itself a known public suffix.

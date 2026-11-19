@@ -178,7 +178,7 @@ dictionary ContentScriptFilter {
   sequence<DOMString> ids;
 };
 
-// Use the <code>chrome.scripting</code> API to execute script in different
+// Use the <code>browser.scripting</code> API to execute script in different
 // contexts.
 interface Scripting {
   // Injects a script into a target context. By default, the script will be run

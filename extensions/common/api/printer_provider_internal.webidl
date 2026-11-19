@@ -12,15 +12,15 @@ typedef object PrinterProviderPrintError;
 typedef object Blob;
 
 // printerProviderInternal
-// Internal API used to run callbacks passed to chrome.printerProvider API
+// Internal API used to run callbacks passed to browser.printerProvider API
 // events.
-// When dispatching a chrome.printerProvider API event, its arguments will be
+// When dispatching a browser.printerProvider API event, its arguments will be
 // massaged in custom bindings so a callback is added. The callback uses
-// chrome.printerProviderInternal API to report the event results.
+// browser.printerProviderInternal API to report the event results.
 // In order to identify the event for which the callback is called, the event is
 // internally dispatched having a requestId argument (which is removed from the
 // argument list before the event actually reaches the event listeners). The
-// requestId is forwarded to the chrome.printerProviderInternal API functions.
+// requestId is forwarded to the browser.printerProviderInternal API functions.
 [implemented_in="extensions/browser/api/printer_provider/printer_provider_internal_api.h"]
 interface PrinterProviderInternal {
   // Runs callback to printerProvider.onGetPrintersRequested event.
