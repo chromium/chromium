@@ -1309,15 +1309,16 @@ public class ToolbarPositionControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testMaybeForceBottomToolbarLayoutUpdateAndCapture() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        mActivityTabSupplier.set(mTab);
+        mController.onToEdgeChange(50, true, LayoutType.BROWSING);
+
         // Active tab is an NTP: skip layout update and capture.
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ true);
         verify(mControlContainer, never()).doSynchronousLayout(anyBoolean());
 
         // First transition to BOTTOM after top edge-to-edge padding was applied at TOP: clear the
         // top padding and recapture immediately without requiring a prior position change.
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        mActivityTabSupplier.set(mTab);
-        mController.onToEdgeChange(50, true, LayoutType.BROWSING);
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
         verify(mControlContainer).doSynchronousLayout(true);
