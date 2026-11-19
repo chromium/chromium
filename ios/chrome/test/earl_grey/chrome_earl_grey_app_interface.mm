@@ -1257,6 +1257,10 @@ NSSet<UISceneSession*>* AllSceneSessions() {
   return IsDuoSimulator();
 }
 
++ (BOOL)prepareForSimulatedDuoHingeAngle:(double)angleInDegrees {
+  return PrepareForSimulatedDuoHingeAngle(angleInDegrees);
+}
+
 + (BOOL)dispatchSimulatedDuoHingeAngle:(double)angleInDegrees {
   return DispatchSimulatedDuoHingeAngle(angleInDegrees);
 }

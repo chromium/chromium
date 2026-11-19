@@ -404,14 +404,19 @@ enum class TipsNotificationType;
 // Returns YES if running on an iPhone Duo simulator.
 + (BOOL)isDuoSimulator;
 
-// Dispatches simulated Duo hinge angle `angleInDegrees`. Returns YES on
-// success.
+// Prepares in-app tracking before setting simulated Duo hinge angle
+// `angleInDegrees`. Returns YES if a posture transition is needed.
++ (BOOL)prepareForSimulatedDuoHingeAngle:(double)angleInDegrees;
+
+// Dispatches simulated Duo hinge angle `angleInDegrees` via the legacy virtual
+// IOHID service (fallback for Xcode / iOS Simulator < 27.3).
 + (BOOL)dispatchSimulatedDuoHingeAngle:(double)angleInDegrees;
 
 // Returns YES if the window and hinge posture match `angleInDegrees`.
 + (BOOL)isSimulatedDuoHingePostureSettled:(double)angleInDegrees;
 
-// Dispatches simulated Duo orientation `orientation`. Returns YES on success.
+// Dispatches simulated Duo orientation `orientation` via the legacy virtual
+// IOHID service (fallback for Xcode / iOS Simulator < 27.3).
 + (BOOL)dispatchSimulatedDuoOrientation:(UIDeviceOrientation)orientation;
 
 // Returns YES if the scene and window orientation match `orientation`.

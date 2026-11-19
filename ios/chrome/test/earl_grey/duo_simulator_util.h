@@ -16,8 +16,13 @@ bool IsDuoSimulator();
 // available.
 bool IsDuoCoverDisplaySize(CGSize size);
 
-// Sends a simulated hinge angle event (0.0 = Closed, 130.0 = Book,
-// 180.0 = Open).
+// Prepares in-app tracking before setting the simulated hinge angle (0.0 =
+// Closed, 130.0 = Book, 180.0 = Open). Returns true if a posture transition is
+// needed, or false if the window and hinge status are already settled.
+bool PrepareForSimulatedDuoHingeAngle(double angle_in_degrees);
+
+// Sends a simulated hinge angle event via the legacy virtual IOHID service
+// (used when running under Xcode or iOS Simulator < 27.3).
 bool DispatchSimulatedDuoHingeAngle(double angle_in_degrees);
 
 // Returns true if the window and hinge status (`Closed`, `PartiallyOpen`, or
@@ -26,7 +31,8 @@ bool DispatchSimulatedDuoHingeAngle(double angle_in_degrees);
 // only that the hinge status matches the bucket for that angle.
 bool IsSimulatedDuoHingePostureSettled(double angle_in_degrees);
 
-// Sends a simulated device orientation event.
+// Sends a simulated device orientation event via the legacy virtual IOHID
+// service (used when running under Xcode or iOS Simulator < 27.3).
 bool DispatchSimulatedDuoOrientation(UIDeviceOrientation orientation);
 
 // Returns true if the scene and window orientation match `orientation`.

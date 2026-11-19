@@ -548,7 +548,7 @@ void RestoreDeviceOrientation(UIInterfaceOrientation interface_orientation) {
       [ChromeEarlGrey interfaceOrientation];
   if (currentOrientation != UIInterfaceOrientationUnknown) {
     if ([ChromeEarlGrey isDuoSimulator]) {
-      // Reset the Duo simulator to Closed/Portrait via its virtual HID service.
+      // Reset the Duo simulator to Closed/Portrait.
       [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
       if (@available(iOS 27.1, *)) {
         [ChromeEarlGrey setSimulatedDuoHingeStatus:UIHingeStatusClosed];
@@ -674,14 +674,13 @@ void RestoreDeviceOrientation(UIInterfaceOrientation interface_orientation) {
                                            error:error];
   }
 
-  // On Duo, standard XCUIDevice.setOrientation does not trigger simulator
-  // rotation. Map requested interface orientation to device orientation.
+  // Map requested interface orientation to device orientation. If the Duo is
+  // unfolded (inner display), holding it in portrait yields a landscape
+  // interface aspect ratio, and vice versa, which breaks EarlGreyImpl's 1:1
+  // orientation wait. Invert device orientation accordingly so the resulting
+  // interface orientation matches what was requested.
   UIDeviceOrientation deviceOrientation = [GREYConstants
       deviceOrientationForInterfaceOrientation:interfaceOrientation];
-
-  // If the Duo is unfolded (inner display), holding it in portrait yields a
-  // landscape interface aspect ratio, and vice versa. Invert device orientation
-  // accordingly so the interface orientation matches what was requested.
   if (![ChromeEarlGrey isCompactWidth]) {
     if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
       deviceOrientation = UIDeviceOrientationLandscapeRight;
@@ -691,7 +690,9 @@ void RestoreDeviceOrientation(UIInterfaceOrientation interface_orientation) {
   }
 
   [ChromeEarlGrey setSimulatedDuoOrientation:deviceOrientation];
-  [[XCUIDevice sharedDevice] setOrientation:deviceOrientation];
+  if (XCUIDevice.sharedDevice.orientation != deviceOrientation) {
+    XCUIDevice.sharedDevice.orientation = deviceOrientation;
+  }
 
   [[NSNotificationCenter defaultCenter]
       postNotificationName:UIDeviceOrientationDidChangeNotification

@@ -397,6 +397,24 @@
                             chrome_test_util::ToolsMenuButton()];
       }
     }
+
+    // Also verify EarlGrey's interface-orientation rotation API while unfolded.
+    GREYAssertTrue(
+        [EarlGrey
+            rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil],
+        @"Failed to rotate unfolded Duo to landscape interface.");
+    GREYAssertTrue(
+        UIInterfaceOrientationIsLandscape(
+            [ChromeEarlGrey interfaceOrientation]),
+        @"Expected landscape interface orientation after EarlGrey rotation.");
+    GREYAssertTrue(
+        [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                         error:nil],
+        @"Failed to rotate unfolded Duo to portrait interface.");
+    GREYAssertTrue(
+        UIInterfaceOrientationIsPortrait([ChromeEarlGrey interfaceOrientation]),
+        @"Expected portrait interface orientation after EarlGrey rotation.");
   }
 }
 

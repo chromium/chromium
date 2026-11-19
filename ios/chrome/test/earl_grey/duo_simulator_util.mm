@@ -19,26 +19,19 @@
 
 // How iPhone Duo Simulator Posture & Orientation Control Works:
 //
-// Standard `XCUIDevice.sharedDevice.orientation` calls do not drive the
-// foldable posture/orientation state machine on the iPhone Duo (`iPhone19,4`)
-// simulator. Instead, `Simulator.app` (`DeviceHub.app`) controls the simulated
-// hinge and device orientation by sending binary-serialized property list
-// dictionaries (`provider = com.apple.Virtualization.VirtualMachines`,
+// On Xcode 27.3+ with the iOS 27.3+ simulator runtime, `ChromeEarlGrey` drives
+// posture and orientation directly via `XCUIDevice.sharedDevice.hinge.angle`
+// and `XCUIDevice.sharedDevice.orientation`, using the helpers here only to
+// wait for window geometry and `UIHingeInteraction` status to settle.
+//
+// On Xcode or iOS Simulator < 27.3, `XCUIDevice.hinge` is unavailable and
+// `XCUIDevice.sharedDevice.orientation` does not drive the foldable state
+// machine on iPhone Duo (`iPhone19,4`). As a fallback, `ChromeEarlGrey`
+// dispatches binary-serialized property list dictionaries
+// (`provider = com.apple.Virtualization.VirtualMachines`,
 // `source = hinge-slider-control` or `orientation-picker-control`) inside
 // vendor-defined IOHID events (`PrimaryUsagePage = 0xFF61`,
-// `PrimaryUsage = 0x005B`). Inside the simulator runtime, `locationd`
-// subscribes to those HID events via `IOHIDEventSystemClient` and forwards the
-// resulting device posture and orientation transitions to `SpringBoard`.
-//
-// Troubleshooting Future Simulator Releases:
-//
-// If a future Xcode or iOS Simulator release changes this protocol, inspect
-// `DeviceHub.app`'s device control extensions (`strings` / `otool`) for updated
-// HID usage pages or payload dictionary keys, and stream `locationd` and
-// `SpringBoard` logs while interacting with the hinge slider or orientation
-// buttons in `Simulator.app`:
-//   xcrun simctl spawn booted log stream --level debug \
-//       --predicate 'process IN {"locationd", "SpringBoard"}'
+// `PrimaryUsage = 0x005B`) to `locationd`.
 
 namespace {
 
@@ -49,7 +42,8 @@ NSString* const kDuoSimulatorModelIdentifier = @"iPhone19,4";
 constexpr CGFloat kCoverDisplayMaxShortDimension = 500.0;
 
 #if TARGET_OS_SIMULATOR
-// Vendor-defined HID usage monitored by locationd for simulator posture events.
+// Vendor-defined HID usage monitored by locationd for simulator posture events
+// (legacy fallback for Xcode / iOS Simulator < 27.3).
 constexpr uint32_t kVendorDefinedUsagePage = 0xFF61;
 constexpr uint32_t kVendorDefinedUsage = 0x005B;
 constexpr int32_t kVirtualEventSystemClientType = 4;
@@ -305,8 +299,8 @@ bool IsWindowTransitionSettled(UIWindow* window) {
   return true;
 }
 
-bool IsWindowInExpectedHingeStatus(UIWindow* window, double angle_in_degrees) {
-  if (!IsWindowTransitionSettled(window)) {
+bool IsWindowInExpectedHingePosture(UIWindow* window, double angle_in_degrees) {
+  if (!window) {
     return false;
   }
   CGFloat min_dimension =
@@ -331,6 +325,11 @@ bool IsWindowInExpectedHingeStatus(UIWindow* window, double angle_in_degrees) {
   return true;
 }
 
+bool IsWindowInExpectedHingeStatus(UIWindow* window, double angle_in_degrees) {
+  return IsWindowTransitionSettled(window) &&
+         IsWindowInExpectedHingePosture(window, angle_in_degrees);
+}
+
 #endif  // TARGET_OS_SIMULATOR
 
 }  // namespace
@@ -346,17 +345,32 @@ bool IsDuoCoverDisplaySize(CGSize size) {
          short_dimension < kCoverDisplayMaxShortDimension;
 }
 
-bool DispatchSimulatedDuoHingeAngle(double angle_in_degrees) {
+bool PrepareForSimulatedDuoHingeAngle(double angle_in_degrees) {
 #if TARGET_OS_SIMULATOR
   UIWindow* window = GetAnyKeyWindow();
   EnsureHingeInteractionInstalled(window);
+  if (IsWindowInExpectedHingeStatus(window, angle_in_degrees)) {
+    return false;
+  }
 #if defined(__IPHONE_27_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_27_1
   if (@available(iOS 27.1, *)) {
-    if (!IsSimulatedDuoHingePostureSettled(angle_in_degrees)) {
+    // Only clear cached hinge status when the posture actually differs; an
+    // unrelated window animation should not wipe the status because setting
+    // the same angle may not emit a new `UIHingeInteraction` update.
+    if (!IsWindowInExpectedHingePosture(window, angle_in_degrees)) {
       g_latest_hinge_status = std::nullopt;
     }
   }
 #endif
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool DispatchSimulatedDuoHingeAngle(double angle_in_degrees) {
+#if TARGET_OS_SIMULATOR
+  PrepareForSimulatedDuoHingeAngle(angle_in_degrees);
   NSDictionary* payload = @{
     kPayloadProviderKey : kPayloadProviderValue,
     kPayloadSourceKey : kPayloadHingeSliderSource,

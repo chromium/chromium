@@ -52,6 +52,7 @@ source_set("unit_tests") {
   sources = [ "duo_simulator_util_unittest.mm" ]
   deps = [
     ":duo_simulator_util",
+    "//ios/chrome/test:test_support",
     "//testing/gtest",
   ]
   frameworks = [ "UIKit.framework" ]

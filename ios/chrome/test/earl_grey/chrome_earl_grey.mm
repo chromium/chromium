@@ -14,6 +14,7 @@
 #import "base/format_macros.h"
 #import "base/json/json_reader.h"
 #import "base/logging.h"
+#import "base/numerics/angle_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -32,6 +33,18 @@
 #import "ios/web/public/test/element_selector.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/device_form_factor.h"
+
+#if !defined(__IPHONE_27_3) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_27_3
+// Forward-declare the Xcode 27.3 `XCUIHinge` interface so binaries compiled
+// with older Xcode SDKs can still drive the hinge when run under Xcode 27.3+.
+@protocol CRBXCUIHinge <NSObject>
+@property(nonatomic) CGFloat angle;
+@end
+
+@interface XCUIDevice (DuoHingeForwardDeclaration)
+@property(readonly, strong) id<CRBXCUIHinge> hinge API_AVAILABLE(ios(27.3));
+@end
+#endif
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
@@ -124,6 +137,32 @@ double SimulatedDuoHingeAngleForStatus(UIHingeStatus status) {
     case UIHingeStatusFullyOpen:
       return 180.0;
   }
+}
+
+// Sets the Duo hinge angle via `XCUIDevice.hinge` when both the Xcode runner
+// and simulator runtime (iOS 27.3+) support it. Returns true if dispatched.
+bool TrySetNativeDuoHingeAngle(double angle_in_degrees) {
+  if (@available(iOS 27.3, *)) {
+    XCUIDevice* device = XCUIDevice.sharedDevice;
+    if ([device respondsToSelector:@selector(hinge)]) {
+      auto hinge = device.hinge;
+      if (hinge != nil) {
+        hinge.angle = base::DegToRad(angle_in_degrees);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// Returns true when both the Xcode runner (`XCUIHinge`) and the simulator
+// runtime (`iOS 27.3+ testmanagerd`) support native foldable XCUITest APIs.
+bool SupportsNativeDuoXCUITestAPIs() {
+  if (@available(iOS 27.3, *)) {
+    XCUIDevice* device = XCUIDevice.sharedDevice;
+    return [device respondsToSelector:@selector(hinge)] && device.hinge != nil;
+  }
+  return false;
 }
 
 // Accessibility ID of the Activity menu.
@@ -376,21 +415,27 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (void)setSimulatedDuoHingeStatus:(UIHingeStatus)hingeStatus {
   double angleInDegrees = SimulatedDuoHingeAngleForStatus(hingeStatus);
-  if ([ChromeEarlGreyAppInterface
-          isSimulatedDuoHingePostureSettled:angleInDegrees]) {
+  if (![ChromeEarlGreyAppInterface
+          prepareForSimulatedDuoHingeAngle:angleInDegrees]) {
     return;
   }
-  NSString* description = [NSString
-      stringWithFormat:@"Failed to set simulated Duo hinge angle to %f.",
+  if (!TrySetNativeDuoHingeAngle(angleInDegrees)) {
+    NSString* dispatchDescription = [NSString
+        stringWithFormat:@"Failed to dispatch Duo hinge angle %f degrees.",
+                         angleInDegrees];
+    EG_TEST_HELPER_ASSERT_TRUE(
+        [ChromeEarlGreyAppInterface
+            dispatchSimulatedDuoHingeAngle:angleInDegrees],
+        dispatchDescription);
+  }
+  NSString* settleDescription = [NSString
+      stringWithFormat:@"Failed to settle Duo hinge posture at %f degrees.",
                        angleInDegrees];
-  EG_TEST_HELPER_ASSERT_TRUE([ChromeEarlGreyAppInterface
-                                 dispatchSimulatedDuoHingeAngle:angleInDegrees],
-                             description);
   bool settled = WaitForDuoTransitionToSettle(^BOOL {
     return [ChromeEarlGreyAppInterface
         isSimulatedDuoHingePostureSettled:angleInDegrees];
   });
-  EG_TEST_HELPER_ASSERT_TRUE(settled, description);
+  EG_TEST_HELPER_ASSERT_TRUE(settled, settleDescription);
 }
 
 - (void)setSimulatedDuoOrientation:(UIDeviceOrientation)orientation {
@@ -398,17 +443,24 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
           isSimulatedDuoOrientationSettled:orientation]) {
     return;
   }
-  NSString* description = [NSString
-      stringWithFormat:@"Failed to set simulated Duo orientation to %ld.",
-                       static_cast<long>(orientation)];
-  EG_TEST_HELPER_ASSERT_TRUE(
-      [ChromeEarlGreyAppInterface dispatchSimulatedDuoOrientation:orientation],
-      description);
+  if (SupportsNativeDuoXCUITestAPIs()) {
+    XCUIDevice.sharedDevice.orientation = orientation;
+  } else {
+    NSString* dispatchDescription =
+        [NSString stringWithFormat:@"Failed to dispatch Duo orientation %ld.",
+                                   static_cast<long>(orientation)];
+    EG_TEST_HELPER_ASSERT_TRUE([ChromeEarlGreyAppInterface
+                                   dispatchSimulatedDuoOrientation:orientation],
+                               dispatchDescription);
+  }
+  NSString* settleDescription =
+      [NSString stringWithFormat:@"Failed to settle Duo orientation to %ld.",
+                                 static_cast<long>(orientation)];
   bool settled = WaitForDuoTransitionToSettle(^BOOL {
     return [ChromeEarlGreyAppInterface
         isSimulatedDuoOrientationSettled:orientation];
   });
-  EG_TEST_HELPER_ASSERT_TRUE(settled, description);
+  EG_TEST_HELPER_ASSERT_TRUE(settled, settleDescription);
 }
 
 #pragma mark - Profile Utilities (EG2)
