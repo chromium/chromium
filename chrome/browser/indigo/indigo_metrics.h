@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/time/time.h"
 #include "google_apis/common/api_error_codes.h"
 
@@ -44,7 +45,9 @@ enum class IndigoTransformationResult {
   kPrimaryImageTooSmall = 17,
   kNoPrimaryImageFound = 18,
   kPrimaryImageReplacementCreationFailed = 19,
-  kMaxValue = kPrimaryImageReplacementCreationFailed,
+  kCountryNotAllowed = 20,
+  kLocaleNotAllowed = 21,
+  kMaxValue = kLocaleNotAllowed,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationResult)
@@ -188,7 +191,40 @@ enum class IndigoMaybeInvokeGlicResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoMaybeInvokeGlicResult)
 
+// Whether the client's region allows Indigo. If neither the country nor the
+// locale is allowed, the country takes precedence.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(IndigoRegionFilterResult)
+enum class IndigoRegionFilterResult {
+  kAllowed = 0,
+  kCountryNotAllowed = 1,
+  kLocaleNotAllowed = 2,
+  kMaxValue = kLocaleNotAllowed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoRegionFilterResult)
+
 IndigoApiStatus MapApiErrorCodeToStatus(google_apis::ApiErrorCode code);
+
+// Records whether the client's region allows Indigo, at most once per browser
+// session.
+void RecordRegionFilterResultOncePerSession(IndigoRegionFilterResult result);
+
+// While an instance exists, the region filter result can be recorded again, as
+// though no result had yet been recorded this session. The previous state is
+// restored on destruction.
+class ScopedRegionFilterResultForTesting {
+ public:
+  ScopedRegionFilterResultForTesting();
+  ScopedRegionFilterResultForTesting(
+      const ScopedRegionFilterResultForTesting&) = delete;
+  ScopedRegionFilterResultForTesting& operator=(
+      const ScopedRegionFilterResultForTesting&) = delete;
+  ~ScopedRegionFilterResultForTesting();
+
+ private:
+  base::AutoReset<bool> auto_reset_;
+};
 
 // Records UMA histogram and UserAction for shown entry points.
 void RecordShownEntryPoint(IndigoPageActionEntryPoint entry_point);

@@ -1315,6 +1315,27 @@ const base::FeatureParam<std::string> kIndigoSavedUrl{
 const base::FeatureParam<std::string> kIndigoScopes{
     &kIndigo, "indigo_scopes",
     "https://www.googleapis.com/auth/userinfo.email"};
+// Enforces the region lists below. Until this is enabled, availability is
+// restricted to supported regions by Finch filters instead.
+// TODO(b/585609452): Enable by default once Finch configs that enable Indigo
+// for other regions specify region params, then remove this feature.
+BASE_FEATURE(kIndigoRegionFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kIndigoEnabledCountries{
+    &kIndigo, "indigo_enabled_countries", "us"};
+const base::FeatureParam<std::string> kIndigoDisabledCountries{
+    &kIndigo, "indigo_disabled_countries", ""};
+const base::FeatureParam<std::string> kIndigoEnabledLocales{
+    &kIndigo, "indigo_enabled_locales", "en-US"};
+const base::FeatureParam<std::string> kIndigoDisabledLocales{
+    &kIndigo, "indigo_disabled_locales", ""};
+constexpr base::FeatureParam<IndigoCountryMatch>::Option
+    kIndigoCountryMatchOptions[] = {
+        {IndigoCountryMatch::kSession, "session"},
+        {IndigoCountryMatch::kSessionOrPermanent, "session_or_permanent"},
+};
+const base::FeatureParam<IndigoCountryMatch> kIndigoCountryMatch{
+    &kIndigo, "indigo_country_match", IndigoCountryMatch::kSessionOrPermanent,
+    &kIndigoCountryMatchOptions};
 
 const base::FeatureParam<bool> kIndigoContextualCueingV2OverrideUcbScoring{
     &kIndigoContextualCueingV2,

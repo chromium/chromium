@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/country_locale_filter/country_locale_filter.h"
 #include "chrome/browser/indigo/fake_api.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
@@ -232,6 +233,9 @@ class IndigoInteractiveUiTest : public InteractiveBrowserTest,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Make the region deterministic, regardless of where the test runs.
+  ScopedRegionSignalsOverrideForTesting region_override_{
+      TestRegion::kUSEnglish};
   FakeApi fake_api_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;

@@ -19,6 +19,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/country_locale_filter/country_locale_filter.h"
 #include "chrome/browser/indigo/fake_api.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 #include "chrome/browser/indigo/indigo_metrics.h"
@@ -463,6 +464,9 @@ class IndigoBrowserTestMixin : public T {
   virtual bool ToolbarFollowsReplacedImage() const { return false; }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Make the region deterministic, regardless of where the test runs.
+  ScopedRegionSignalsOverrideForTesting region_override_{
+      TestRegion::kUSEnglish};
   FakeApi fake_api_;
 
  private:

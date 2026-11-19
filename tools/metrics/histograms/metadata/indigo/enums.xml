@@ -77,6 +77,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoPageActionEntryPoint) -->
 
+<!-- LINT.IfChange(IndigoRegionFilterResult) -->
+
+<enum name="IndigoRegionFilterResult">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Country not allowed"/>
+  <int value="2" label="Locale not allowed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoRegionFilterResult) -->
+
 <!-- LINT.IfChange(IndigoTransformationResult) -->
 
 <enum name="IndigoTransformationResult">
@@ -100,6 +110,8 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Primary image too small"/>
   <int value="18" label="No primary image found"/>
   <int value="19" label="Primary image replacement creation failed"/>
+  <int value="20" label="Country not allowed"/>
+  <int value="21" label="Locale not allowed"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoTransformationResult) -->

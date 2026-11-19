@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/tag_converters.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -17,8 +18,10 @@
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_cueing/prefs.h"
+#include "chrome/browser/country_locale_filter/country_locale_filter.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/proto/indigo_config.pb.h"
 #include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
@@ -49,12 +52,26 @@
 
 namespace indigo {
 
+namespace {
+
+country_locale_filter::RegionSignals MakeRegionSignals(
+    std::string_view permanent_country,
+    std::string_view session_country,
+    std::string_view locale) {
+  return country_locale_filter::RegionSignals(
+      std::string(permanent_country), std::string(session_country),
+      base::i18n::GetLanguageTagFromString(locale).value());
+}
+
+}  // namespace
+
 class IndigoServiceTest : public testing::Test {
  public:
   IndigoServiceTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kIndigo,
           {{features::kIndigoSkipEnterpriseCheck.name, "true"}}},
+         {features::kIndigoRegionFiltering, {}},
          {contextual_cueing::kContextualCueingV2, {}}},
         {});
   }
@@ -162,6 +179,10 @@ class IndigoServiceTest : public testing::Test {
   // stopped before scoped state is torn down.
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  // Make the region deterministic, regardless of where the test runs.
+  ScopedRegionSignalsOverrideForTesting region_override_{
+      TestRegion::kUSEnglish};
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
@@ -186,6 +207,157 @@ TEST_F(IndigoServiceTest, SignIn) {
   CreateService();
   MakeAccountAvailableAndCapable();
   EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+}
+
+TEST_F(IndigoServiceTest, CountryNotAllowedByDefault) {
+  region_override_.Set(MakeRegionSignals("ca", "", "en-US"));
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_EQ(service_->GetLocalEligibility(),
+            LocalEligibility::kCountryNotAllowed);
+  EXPECT_FALSE(service_->IsLocallyEligible());
+}
+
+TEST_F(IndigoServiceTest, LocaleNotAllowedByDefault) {
+  region_override_.Set(MakeRegionSignals("us", "", "en-GB"));
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_EQ(service_->GetLocalEligibility(),
+            LocalEligibility::kLocaleNotAllowed);
+  EXPECT_FALSE(service_->IsLocallyEligible());
+}
+
+TEST_F(IndigoServiceTest, RegionCheckedBeforeSignIn) {
+  region_override_.Set(MakeRegionSignals("ca", "", "fr"));
+  CreateService();
+  EXPECT_EQ(service_->GetLocalEligibility(),
+            LocalEligibility::kCountryNotAllowed);
+
+  region_override_.Set(MakeRegionSignals("us", "", "fr"));
+  service_->OnCountryOrAdminAreaChanged();
+  EXPECT_EQ(service_->GetLocalEligibility(),
+            LocalEligibility::kLocaleNotAllowed);
+}
+
+TEST_F(IndigoServiceTest, SessionOrPermanentCountryMatch) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{features::kIndigo,
+        {{features::kIndigoSkipEnterpriseCheck.name, "true"},
+         {features::kIndigoCountryMatch.name, "session_or_permanent"}}},
+       {features::kIndigoRegionFiltering, {}}},
+      {});
+  region_override_.Set(MakeRegionSignals("ca", "us", "en-US"));
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  region_override_.Set(MakeRegionSignals("us", "ca", "en-US"));
+  service_->OnCountryOrAdminAreaChanged();
+  EXPECT_EQ(service_->GetLocalEligibility(), LocalEligibility::kEligible);
+}
+
+TEST_F(IndigoServiceTest, SessionCountryMatch) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{features::kIndigo,
+        {{features::kIndigoSkipEnterpriseCheck.name, "true"},
+         {features::kIndigoCountryMatch.name, "session"}}},
+       {features::kIndigoRegionFiltering, {}}},
+      {});
+  // The permanent country alone doesn't suffice if the session country is
+  // known.
+  region_override_.Set(MakeRegionSignals("us", "ca", "en-US"));
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_EQ(service_->GetLocalEligibility(),
+            LocalEligibility::kCountryNotAllowed);
+
+  region_override_.Set(MakeRegionSignals("ca", "us", "en-US"));
+  service_->OnCountryOrAdminAreaChanged();
+  EXPECT_EQ(service_->GetLocalEligibility(), LocalEligibility::kEligible);
+
+  // If the session country isn't known yet, the permanent country is used.
+  region_override_.Set(MakeRegionSignals("us", "", "en-US"));
+  service_->OnCountryOrAdminAreaChanged();
+  EXPECT_EQ(service_->GetLocalEligibility(), LocalEligibility::kEligible);
+
+  region_override_.Set(MakeRegionSignals("ca", "", "en-US"));
+  service_->OnCountryOrAdminAreaChanged();
+  EXPECT_EQ(service_->GetLocalEligibility(),
+            LocalEligibility::kCountryNotAllowed);
+}
+
+TEST_F(IndigoServiceTest, RegionFilteringDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{features::kIndigo,
+        {{features::kIndigoSkipEnterpriseCheck.name, "true"}}}},
+      {features::kIndigoRegionFiltering});
+  base::HistogramTester histogram_tester;
+  ScopedRegionFilterResultForTesting scoped_region_filter_result;
+  region_override_.Set(MakeRegionSignals("ca", "", "fr"));
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  // The would-be result is still recorded.
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.RegionFilterResult", IndigoRegionFilterResult::kCountryNotAllowed,
+      1);
+}
+
+TEST_F(IndigoServiceTest, RegionListsConfigurable) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{features::kIndigo,
+        {{features::kIndigoSkipEnterpriseCheck.name, "true"},
+         {features::kIndigoEnabledCountries.name, "ca,gb"},
+         {features::kIndigoDisabledCountries.name, "gb"},
+         {features::kIndigoEnabledLocales.name, "*"},
+         {features::kIndigoDisabledLocales.name, "fr"}}},
+       {features::kIndigoRegionFiltering, {}}},
+      {});
+  region_override_.Set(MakeRegionSignals("ca", "", "en-GB"));
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  region_override_.Set(MakeRegionSignals("us", "", "en-US"));
+  service_->OnCountryOrAdminAreaChanged();
+  EXPECT_EQ(service_->GetLocalEligibility(),
+            LocalEligibility::kCountryNotAllowed);
+
+  region_override_.Set(MakeRegionSignals("gb", "", "en-GB"));
+  service_->OnCountryOrAdminAreaChanged();
+  EXPECT_EQ(service_->GetLocalEligibility(),
+            LocalEligibility::kCountryNotAllowed);
+
+  region_override_.Set(MakeRegionSignals("ca", "", "fr"));
+  service_->OnCountryOrAdminAreaChanged();
+  EXPECT_EQ(service_->GetLocalEligibility(),
+            LocalEligibility::kLocaleNotAllowed);
+}
+
+TEST_F(IndigoServiceTest, CountryChangeNotifies) {
+  region_override_.Set(MakeRegionSignals("", "", "en-US"));
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_EQ(service_->GetLocalEligibility(),
+            LocalEligibility::kCountryNotAllowed);
+
+  base::MockCallback<IndigoService::LocalEligibilityChangedCallback> callback;
+  auto subscription =
+      service_->RegisterLocalEligibilityChangedCallback(callback.Get());
+  EXPECT_CALL(callback, Run(LocalEligibility::kEligible));
+  region_override_.Set(MakeRegionSignals("us", "", "en-US"));
+  service_->OnCountryOrAdminAreaChanged();
+  EXPECT_EQ(service_->GetLocalEligibility(), LocalEligibility::kEligible);
+  ::testing::Mock::VerifyAndClearExpectations(&callback);
+
+  // No notification if nothing changed.
+  EXPECT_CALL(callback, Run).Times(0);
+  service_->OnCountryOrAdminAreaChanged();
 }
 
 TEST_F(IndigoServiceTest, IsModelImprovementAllowed) {

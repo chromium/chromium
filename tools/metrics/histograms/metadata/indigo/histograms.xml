@@ -239,6 +239,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Indigo.RegionFilterResult" enum="IndigoRegionFilterResult"
+    expires_after="2027-05-13">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <summary>
+    Records whether the client's country and locale allow Indigo, according to
+    the client-side region filter. This is recorded whether or not the filter is
+    enforced (IndigoRegionFiltering), so that its effect can be estimated before
+    it is. Recorded at most once per browser session, when Indigo's profile
+    service is first created. On a first run without a variations seed, the
+    country may be an estimate derived from OS settings. If neither the country
+    nor the locale is allowed, CountryNotAllowed is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Indigo.Transformation.IsCacheHit" enum="BooleanCacheHit"
     expires_after="2027-05-13">
   <owner>jbroman@chromium.org</owner>

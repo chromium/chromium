@@ -24,9 +24,11 @@
 #include "base/token.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/country_locale_filter/country_locale_filter.h"
 #include "chrome/browser/indigo/fake_api.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
+#include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -468,6 +470,9 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
       identity_test_env_adaptor_;
   FakeApi fake_api_;
   base::test::ScopedFeatureList feature_list_;
+  // Make the region deterministic, regardless of where the test runs.
+  ScopedRegionSignalsOverrideForTesting region_override_{
+      TestRegion::kUSEnglish};
   base::ScopedTempDir temp_dir_;
   base::FilePath script_path_;
 };

@@ -886,6 +886,31 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kIndigoSavedUrl;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kIndigoScopes;
+// Countries and locales in which Indigo is available. See
+// chrome/browser/country_locale_filter/country_locale_filter.h for the format.
+// These are only enforced if kIndigoRegionFiltering is enabled.
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kIndigoRegionFiltering);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kIndigoEnabledCountries;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kIndigoDisabledCountries;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kIndigoEnabledLocales;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kIndigoDisabledLocales;
+// Which variations country signals are matched against the country lists.
+enum class IndigoCountryMatch {
+  // Only the session (latest) country, or the permanent country if no session
+  // country is known yet (e.g., before the first seed fetch). This matches how
+  // Finch filters studies with session consistency.
+  kSession,
+  // Either the session or the permanent country. This is more permissive, e.g.
+  // for travelers, and matches Glic.
+  kSessionOrPermanent,
+};
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<IndigoCountryMatch> kIndigoCountryMatch;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>

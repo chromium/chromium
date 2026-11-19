@@ -40,6 +40,10 @@ indigo_internals::mojom::LocalEligibility MapLocalEligibility(
       return indigo_internals::mojom::LocalEligibility::kGlicDisabledForProfile;
     case indigo::LocalEligibility::kEnterpriseDisallowed:
       return indigo_internals::mojom::LocalEligibility::kEnterpriseDisallowed;
+    case indigo::LocalEligibility::kCountryNotAllowed:
+      return indigo_internals::mojom::LocalEligibility::kCountryNotAllowed;
+    case indigo::LocalEligibility::kLocaleNotAllowed:
+      return indigo_internals::mojom::LocalEligibility::kLocaleNotAllowed;
   }
 }
 

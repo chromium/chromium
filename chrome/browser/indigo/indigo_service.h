@@ -15,8 +15,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/country_locale_filter/country_locale_filter.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/service/variations_service.h"
 #include "url/origin.h"
 
 class PrefChangeRegistrar;
@@ -26,6 +28,7 @@ class Profile;
 namespace indigo {
 
 class ApiClient;
+enum class IndigoRegionFilterResult;
 
 struct RemoteEligibility {
   bool is_service_supported_for_account = false;
@@ -44,6 +47,10 @@ enum class LocalEligibility {
   // TODO(b:512247450): Deprecate this enum when the enterprise clients are
   // allowed to use indigo.
   kEnterpriseDisallowed,
+  // The feature is not available in the client's country.
+  kCountryNotAllowed,
+  // The feature is not available in the client's locale.
+  kLocaleNotAllowed,
 };
 
 // Combined eligibility status including local constraints (features, profile
@@ -65,8 +72,45 @@ struct CombinedEligibility {
   bool ReadyToOnboard() const;
 };
 
+// Common regions for tests.
+enum class TestRegion {
+  // United States (as both the permanent and session country), with the en-US
+  // locale.
+  kUSEnglish,
+};
+
+// While an instance exists, IndigoService uses its region signals instead of
+// consulting the browser process. Instances may be nested; the most recently
+// constructed one wins, and they must be destroyed in reverse order.
+class ScopedRegionSignalsOverrideForTesting {
+ public:
+  explicit ScopedRegionSignalsOverrideForTesting(
+      country_locale_filter::RegionSignals signals);
+  explicit ScopedRegionSignalsOverrideForTesting(TestRegion region);
+  ScopedRegionSignalsOverrideForTesting(
+      const ScopedRegionSignalsOverrideForTesting&) = delete;
+  ScopedRegionSignalsOverrideForTesting& operator=(
+      const ScopedRegionSignalsOverrideForTesting&) = delete;
+  ~ScopedRegionSignalsOverrideForTesting();
+
+  // Replaces the overridden signals. Callers are responsible for notifying any
+  // observers that would ordinarily learn of the change.
+  void Set(country_locale_filter::RegionSignals signals) {
+    signals_ = std::move(signals);
+  }
+
+  const country_locale_filter::RegionSignals& signals() const {
+    return signals_;
+  }
+
+ private:
+  country_locale_filter::RegionSignals signals_;
+  raw_ptr<ScopedRegionSignalsOverrideForTesting> previous_;
+};
+
 class IndigoService : public KeyedService,
-                      public signin::IdentityManager::Observer {
+                      public signin::IdentityManager::Observer,
+                      public variations::VariationsService::Observer {
  public:
   using LocalEligibilityChangedCallback =
       base::RepeatingCallback<void(LocalEligibility)>;
@@ -169,6 +213,10 @@ class IndigoService : public KeyedService,
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
 
+  // variations::VariationsService::Observer:
+  void OnCountryOrAdminAreaChanged() override;
+  void OnVariationsServiceDestroyed() override;
+
   void SetRemoteEligibilityFetcherForTesting(RemoteEligibilityFetcher fetcher);
   void SetPromptsLoadedCallbackForTesting(base::OnceClosure callback);
   void SetLocalEligibilityForTesting(LocalEligibility eligibility) {
@@ -176,6 +224,9 @@ class IndigoService : public KeyedService,
   }
 
  private:
+  // Evaluates the client's region against the configured region lists,
+  // regardless of whether region filtering is enforced.
+  static IndigoRegionFilterResult EvaluateRegion();
   LocalEligibility ComputeLocalEligibility() const;
   void UpdateLocalEligibilityAndNotify();
   void OnRemoteEligibilityReceived(
@@ -199,6 +250,9 @@ class IndigoService : public KeyedService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+  base::ScopedObservation<variations::VariationsService,
+                          variations::VariationsService::Observer>
+      variations_service_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::CallbackListSubscription indigo_component_ready_subscription_;
   std::unique_ptr<ApiClient> api_client_;
@@ -211,7 +265,6 @@ class IndigoService : public KeyedService,
 
   // Overrides the server fetch for testing purposes.
   RemoteEligibilityFetcher remote_eligibility_fetcher_;
-
 
   // Callbacks waiting for the current remote eligibility fetch to complete.
   std::vector<CombinedEligibilityCallback> pending_callbacks_;

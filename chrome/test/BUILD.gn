@@ -2519,6 +2519,7 @@ test("unit_tests") {
     "//chrome/browser/context_hub/tab_group_store:unit_tests",
     "//chrome/browser/context_hub/topics:unit_tests",
     "//chrome/browser/contextual_tasks:unit_tests",
+    "//chrome/browser/country_locale_filter:unit_tests",
     "//chrome/browser/crash_upload_list:unit_tests",
     "//chrome/browser/critical_actions:unit_tests",
     "//chrome/browser/custom_handlers:unit_tests",

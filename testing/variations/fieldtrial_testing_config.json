@@ -12376,6 +12376,8 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "indigo_enabled_countries": "*",
+                        "indigo_enabled_locales": "*",
                         "indigo_saved_url": "https://www.google.com/saves"
                     },
                     "enable_features": [

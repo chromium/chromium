@@ -172,6 +172,10 @@ TEST(IndigoMetricsTest,
        IndigoTransformationResult::kGlicDisabledForProfile},
       {LocalEligibility::kEnterpriseDisallowed,
        IndigoTransformationResult::kEnterpriseDisallowed},
+      {LocalEligibility::kCountryNotAllowed,
+       IndigoTransformationResult::kCountryNotAllowed},
+      {LocalEligibility::kLocaleNotAllowed,
+       IndigoTransformationResult::kLocaleNotAllowed},
   };
 
   for (const auto& test_case : test_cases) {
@@ -225,6 +229,17 @@ TEST(IndigoMetricsTest,
     EXPECT_EQ(1,
               user_action_tester.GetActionCount(kTransformationFailureAction));
   }
+}
+
+TEST(IndigoMetricsTest, RecordRegionFilterResultOncePerSession) {
+  ScopedRegionFilterResultForTesting scoped_region_filter_result;
+  base::HistogramTester histogram_tester;
+  RecordRegionFilterResultOncePerSession(
+      IndigoRegionFilterResult::kCountryNotAllowed);
+  RecordRegionFilterResultOncePerSession(IndigoRegionFilterResult::kAllowed);
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.RegionFilterResult", IndigoRegionFilterResult::kCountryNotAllowed,
+      1);
 }
 
 }  // namespace

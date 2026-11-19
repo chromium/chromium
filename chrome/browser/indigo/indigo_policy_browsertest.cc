@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/country_locale_filter/country_locale_filter.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
@@ -86,6 +87,9 @@ class IndigoPolicyTest : public policy::PolicyTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  // Make the region deterministic, regardless of where the test runs.
+  ScopedRegionSignalsOverrideForTesting region_override_{
+      TestRegion::kUSEnglish};
 #if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedStubInstallAttributes stub_install_attributes_;
 #endif

@@ -132,6 +132,10 @@ export class IndigoInternalsAppElement extends CrLitElement {
         return 'Glic Disabled For Profile';
       case LocalEligibility.kEnterpriseDisallowed:
         return 'Enterprise Disallowed';
+      case LocalEligibility.kCountryNotAllowed:
+        return 'Country Not Allowed';
+      case LocalEligibility.kLocaleNotAllowed:
+        return 'Locale Not Allowed';
       default:
         assertNotReachedCase(this.localEligibility_);
     }
@@ -151,6 +155,8 @@ export class IndigoInternalsAppElement extends CrLitElement {
       case LocalEligibility.kManagedDomain:
       case LocalEligibility.kGlicDisabledForProfile:
       case LocalEligibility.kEnterpriseDisallowed:
+      case LocalEligibility.kCountryNotAllowed:
+      case LocalEligibility.kLocaleNotAllowed:
         return 'status-ineligible';
       default:
         assertNotReachedCase(this.localEligibility_);

@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("country_locale_filter") {
+  sources = [
+    "country_locale_filter.cc",
+    "country_locale_filter.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//base/i18n:language_tag",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "country_locale_filter_unittest.cc" ]
+
+  deps = [
+    ":country_locale_filter",
+    "//testing/gtest",
+  ]
+}

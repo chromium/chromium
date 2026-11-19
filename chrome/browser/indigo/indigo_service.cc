@@ -6,11 +6,13 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -19,16 +21,20 @@
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_cueing/prefs.h"
+#include "chrome/browser/country_locale_filter/country_locale_filter.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_extension_utils.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/proto/indigo_config.pb.h"
 #include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -38,6 +44,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/service/variations_service_utils.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -166,7 +173,66 @@ IndigoService::ConfigData LoadConfigFromDisk(const base::FilePath& file_path) {
 
 constexpr char kIndigoConfigProtoSwitch[] = "indigo-config-proto";
 
+ScopedRegionSignalsOverrideForTesting* g_region_signals_override = nullptr;
+
+// Returns the client's current region signals. Country codes come from the
+// variations service: the permanent country (falling back to the country
+// derived by country_codes if the variations service has none), and the latest
+// (session) country, which may be empty. The locale is the application (UI)
+// locale that Chrome resolved at startup, which is always one of Chrome's
+// supported UI locales (e.g., an "en-CA" OS locale resolves to "en-GB"), or
+// "und" if it is unavailable.
+country_locale_filter::RegionSignals GetCurrentRegionSignals() {
+  if (g_region_signals_override) {
+    return g_region_signals_override->signals();
+  }
+  country_locale_filter::RegionSignals signals(
+      /*permanent_country=*/std::string(), /*session_country=*/std::string(),
+      /*locale=*/base::i18n::GetKnownLanguageTag("und"));
+  if (!g_browser_process) {
+    return signals;
+  }
+  variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  signals.permanent_country =
+      variations::GetCurrentCountryCode(variations_service);
+  if (variations_service) {
+    signals.session_country = variations_service->GetLatestCountry();
+  }
+  if (GlobalFeatures* global_features = g_browser_process->GetFeatures()) {
+    if (ApplicationLocaleStorage* locale_storage =
+            global_features->application_locale_storage()) {
+      signals.locale = locale_storage->GetTag();
+    }
+  }
+  return signals;
+}
+
+country_locale_filter::RegionSignals GetTestRegionSignals(TestRegion region) {
+  switch (region) {
+    case TestRegion::kUSEnglish:
+      return country_locale_filter::RegionSignals(
+          "us", "us", base::i18n::GetKnownLanguageTag("en-US"));
+  }
+}
+
 }  // namespace
+
+ScopedRegionSignalsOverrideForTesting::ScopedRegionSignalsOverrideForTesting(
+    country_locale_filter::RegionSignals signals)
+    : signals_(std::move(signals)), previous_(g_region_signals_override) {
+  g_region_signals_override = this;
+}
+
+ScopedRegionSignalsOverrideForTesting::ScopedRegionSignalsOverrideForTesting(
+    TestRegion region)
+    : ScopedRegionSignalsOverrideForTesting(GetTestRegionSignals(region)) {}
+
+ScopedRegionSignalsOverrideForTesting::
+    ~ScopedRegionSignalsOverrideForTesting() {
+  CHECK_EQ(g_region_signals_override, this);
+  g_region_signals_override = previous_;
+}
 
 CombinedEligibility::CombinedEligibility() = default;
 CombinedEligibility::CombinedEligibility(const CombinedEligibility&) = default;
@@ -216,6 +282,13 @@ IndigoService::IndigoService(Profile* profile,
     identity_manager_observation_.Observe(identity_manager_);
   }
 
+  // The country may not be known yet, or may change during the session.
+  if (variations::VariationsService* variations_service =
+          g_browser_process ? g_browser_process->variations_service()
+                            : nullptr) {
+    variations_service_observation_.Observe(variations_service);
+  }
+
   if (pref_service_) {
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(pref_service_);
@@ -226,6 +299,8 @@ IndigoService::IndigoService(Profile* profile,
   }
 
   last_known_local_eligibility_ = ComputeLocalEligibility();
+  // Recorded even if region filtering isn't enforced, to estimate its effect.
+  RecordRegionFilterResultOncePerSession(EvaluateRegion());
   api_client_ = std::make_unique<ApiClient>(
       identity_manager, profile->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess());
@@ -263,6 +338,7 @@ void IndigoService::EnsureComponentExtensionRegistered() {
 
 void IndigoService::Shutdown() {
   identity_manager_observation_.Reset();
+  variations_service_observation_.Reset();
   pref_change_registrar_.reset();
   remote_eligibility_weak_factory_.InvalidateWeakPtrs();
 }
@@ -288,6 +364,14 @@ void IndigoService::OnErrorStateOfRefreshTokenUpdatedForAccount(
     return;
   }
   UpdateLocalEligibilityAndNotify();
+}
+
+void IndigoService::OnCountryOrAdminAreaChanged() {
+  UpdateLocalEligibilityAndNotify();
+}
+
+void IndigoService::OnVariationsServiceDestroyed() {
+  variations_service_observation_.Reset();
 }
 
 base::CallbackListSubscription
@@ -347,7 +431,52 @@ void IndigoService::ContextualCueShown() {
       features::kIndigoAnchoredMessageResetDuration.Get();
 }
 
+// static
+IndigoRegionFilterResult IndigoService::EvaluateRegion() {
+  const std::string enabled_countries = features::kIndigoEnabledCountries.Get();
+  const std::string disabled_countries =
+      features::kIndigoDisabledCountries.Get();
+  const std::string enabled_locales = features::kIndigoEnabledLocales.Get();
+  const std::string disabled_locales = features::kIndigoDisabledLocales.Get();
+  country_locale_filter::CountryMatch country_match;
+  switch (features::kIndigoCountryMatch.Get()) {
+    case features::IndigoCountryMatch::kSession:
+      country_match = country_locale_filter::CountryMatch::kSession;
+      break;
+    case features::IndigoCountryMatch::kSessionOrPermanent:
+      country_match = country_locale_filter::CountryMatch::kSessionOrPermanent;
+      break;
+  }
+  const country_locale_filter::RegionFilterResult region =
+      country_locale_filter::Evaluate(
+          {
+              .enabled_countries = enabled_countries,
+              .disabled_countries = disabled_countries,
+              .enabled_locales = enabled_locales,
+              .disabled_locales = disabled_locales,
+          },
+          GetCurrentRegionSignals(), country_match);
+  if (!region.country_allowed) {
+    return IndigoRegionFilterResult::kCountryNotAllowed;
+  }
+  if (!region.locale_allowed) {
+    return IndigoRegionFilterResult::kLocaleNotAllowed;
+  }
+  return IndigoRegionFilterResult::kAllowed;
+}
+
 LocalEligibility IndigoService::ComputeLocalEligibility() const {
+  if (base::FeatureList::IsEnabled(features::kIndigoRegionFiltering)) {
+    switch (EvaluateRegion()) {
+      case IndigoRegionFilterResult::kAllowed:
+        break;
+      case IndigoRegionFilterResult::kCountryNotAllowed:
+        return LocalEligibility::kCountryNotAllowed;
+      case IndigoRegionFilterResult::kLocaleNotAllowed:
+        return LocalEligibility::kLocaleNotAllowed;
+    }
+  }
+
   if (!GetScriptPath().has_value()) {
     return LocalEligibility::kMissingScript;
   }

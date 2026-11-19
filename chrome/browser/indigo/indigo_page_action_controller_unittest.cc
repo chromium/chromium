@@ -24,6 +24,7 @@
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/country_locale_filter/country_locale_filter.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -587,6 +588,8 @@ class IndigoPageActionControllerTestBase : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
       scoped_glic_bypass_;
+  ScopedRegionSignalsOverrideForTesting region_override_{
+      TestRegion::kUSEnglish};
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

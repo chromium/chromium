@@ -139,6 +139,24 @@ void RecordApiStatusAndLatency(IndigoApiEndpoint endpoint,
       latency);
 }
 
+namespace {
+bool g_region_filter_result_recorded = false;
+}  // namespace
+
+void RecordRegionFilterResultOncePerSession(IndigoRegionFilterResult result) {
+  if (g_region_filter_result_recorded) {
+    return;
+  }
+  g_region_filter_result_recorded = true;
+  base::UmaHistogramEnumeration("Indigo.RegionFilterResult", result);
+}
+
+ScopedRegionFilterResultForTesting::ScopedRegionFilterResultForTesting()
+    : auto_reset_(&g_region_filter_result_recorded, false) {}
+
+ScopedRegionFilterResultForTesting::~ScopedRegionFilterResultForTesting() =
+    default;
+
 void RecordTransformationTrigger(IndigoTransformationTriggerSource source) {
   base::RecordAction(base::UserMetricsAction(kTransformationTriggerAction));
   base::UmaHistogramEnumeration(kTransformationTriggerSourceHistogram, source);
@@ -182,6 +200,12 @@ void RecordTransformationResultCannotGenerateImage(
       break;
     case LocalEligibility::kEnterpriseDisallowed:
       result = IndigoTransformationResult::kEnterpriseDisallowed;
+      break;
+    case LocalEligibility::kCountryNotAllowed:
+      result = IndigoTransformationResult::kCountryNotAllowed;
+      break;
+    case LocalEligibility::kLocaleNotAllowed:
+      result = IndigoTransformationResult::kLocaleNotAllowed;
       break;
     case LocalEligibility::kEligible:
       if (!eligibility.remote_eligibility.has_value()) {
