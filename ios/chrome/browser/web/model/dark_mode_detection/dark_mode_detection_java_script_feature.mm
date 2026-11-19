@@ -8,9 +8,10 @@
 
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/values.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/script_message_dict_value.h"
+#import "ios/web/public/js_messaging/script_message_value.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -64,15 +65,16 @@ void DarkModeDetectionJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
+  const web::ScriptMessageValue& body = message.body();
+  const web::ScriptMessageDictValue* dict = body.GetIfDict();
+  if (!dict) {
     return;
   }
 
-  const base::DictValue& dict = message.legacy_body()->GetDict();
-  std::optional<bool> supports_via_meta = dict.FindBool("supportsViaMeta");
-  std::optional<bool> supports_via_css = dict.FindBool("supportsViaCss");
+  std::optional<bool> supports_via_meta = dict->FindBool("supportsViaMeta");
+  std::optional<bool> supports_via_css = dict->FindBool("supportsViaCss");
   std::optional<bool> supports_via_media_query =
-      dict.FindBool("supportsViaMediaQuery");
+      dict->FindBool("supportsViaMediaQuery");
 
   if (!supports_via_meta || !supports_via_css || !supports_via_media_query) {
     return;
