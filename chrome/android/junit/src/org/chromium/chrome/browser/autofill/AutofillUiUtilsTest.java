@@ -381,6 +381,21 @@ public class AutofillUiUtilsTest {
         Assert.assertEquals(R.drawable.google_pay, AutofillUiUtils.getGPayLogoDrawableId());
     }
 
+    @Test
+    @EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
+    public void testGetGoogleWalletIconDrawableId() {
+        Assert.assertEquals(
+                R.drawable.googlewallet_icon_with_gradient,
+                AutofillUiUtils.getGoogleWalletIconDrawableId());
+    }
+
+    @Test
+    @DisableFeatures(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
+    public void testGetGoogleWalletIconDrawableIdWithGradientGoogleLogosDisabled() {
+        Assert.assertEquals(
+                R.drawable.google_wallet_24dp, AutofillUiUtils.getGoogleWalletIconDrawableId());
+    }
+
     private @ErrorType int getExpirationDateErrorForUserEnteredMonthAndYear() {
         return AutofillUiUtils.getExpirationDateErrorType(
                 mMonthInput, mYearInput, /* didFocusOnMonth= */ true, /* didFocusOnYear= */ true);

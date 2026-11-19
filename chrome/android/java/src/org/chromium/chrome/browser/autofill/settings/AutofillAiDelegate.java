@@ -12,6 +12,7 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.preference.Preference;
@@ -26,6 +27,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
@@ -543,6 +545,15 @@ public class AutofillAiDelegate {
                                         (TextView) holder.findViewById(android.R.id.summary);
                                 summaryView.setSingleLine(true);
                                 summaryView.setEllipsize(TextUtils.TruncateAt.END);
+                                if (entity.isStoredInWallet()) {
+                                    ImageView walletIcon =
+                                            (ImageView)
+                                                    holder.findViewById(R.id.google_wallet_icon);
+                                    if (walletIcon != null) {
+                                        walletIcon.setImageResource(
+                                                AutofillUiUtils.getGoogleWalletIconDrawableId());
+                                    }
+                                }
                             }
                         };
                 pref.setTitle(entity.getEntityInstanceLabel());

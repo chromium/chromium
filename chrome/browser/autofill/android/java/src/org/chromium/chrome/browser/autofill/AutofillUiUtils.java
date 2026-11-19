@@ -1036,4 +1036,17 @@ public class AutofillUiUtils {
                 ? R.drawable.googlepay_with_gradient
                 : R.drawable.google_pay;
     }
+
+    /**
+     * Returns the Google Wallet icon drawable resource ID. This helper tries to be the single place
+     * where all Google Wallet icons are retrieved from on the Java side, but certain icons passed
+     * from the C++ side aren't handled by it.
+     *
+     * @return The drawable resource ID for the Google Wallet icon.
+     */
+    public static @DrawableRes int getGoogleWalletIconDrawableId() {
+        return ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
+                ? R.drawable.googlewallet_icon_with_gradient
+                : R.drawable.google_wallet_24dp;
+    }
 }
