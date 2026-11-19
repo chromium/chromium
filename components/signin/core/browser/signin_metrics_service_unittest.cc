@@ -436,12 +436,13 @@ TEST_F(SigninMetricsServiceTest,
       pref_service().HasPrefPath(kSigninPendingStartTimePrefForTesting));
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 struct AccessPointParam {
   signin_metrics::AccessPoint access_point;
-  std::string histogram_time_name;  // Empty for no histogram expectations.
+  std::string_view histogram_time_name;  // Empty for no histogram expectations.
 };
 
-const AccessPointParam params[] = {
+constexpr AccessPointParam kAccessPointParams[] = {
     {signin_metrics::AccessPoint::kProfileMenuPrimaryButton,
      "Signin.WebSignin.TimeToChromeSignin.ProfileMenu"},
     {signin_metrics::AccessPoint::kPasswordBubble,
@@ -453,7 +454,6 @@ const AccessPointParam params[] = {
     {signin_metrics::AccessPoint::kSettings, ""},
 };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class SigninMetricsServiceAccessPointParamTest
     : public SigninMetricsServiceTest,
       public testing::WithParamInterface<AccessPointParam> {};
@@ -489,7 +489,7 @@ TEST_P(SigninMetricsServiceAccessPointParamTest, WebSigninToChromeSignin) {
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          SigninMetricsServiceAccessPointParamTest,
-                         testing::ValuesIn(params));
+                         testing::ValuesIn(kAccessPointParams));
 
 TEST_F(SigninMetricsServiceTest, WebSigninToChromeSigninAfterRestart) {
   base::HistogramTester histogram_tester;
