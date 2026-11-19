@@ -2100,6 +2100,11 @@ inline constexpr char kGlicShowNotTellTutorialsName[] =
 inline constexpr char kGlicShowNotTellTutorialsDescription[] =
     "Enables Show, not Tell Tutorials in Gemini in Chrome.";
 
+inline constexpr char kGlicActivityHubName[] = "Glic Activity Hub";
+inline constexpr char kGlicActivityHubDescription[] =
+    "Enables the unified Activity Hub for tracking asynchronous Glic "
+    "activities.";
+
 inline constexpr char kEnterprisePublishedSkillsPolicyEnabledName[] =
     "Enable EnterprisePublishedSkills policy";
 inline constexpr char kEnterprisePublishedSkillsPolicyEnabledDescription[] =

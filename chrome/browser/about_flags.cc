@@ -10987,6 +10987,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicShowNotTellTutorials,
                                     kGlicShowNotTellTutorialsVariations,
                                     "GlicShowNotTellTutorials")},
+    {"glic-activity-hub", flag_descriptions::kGlicActivityHubName,
+     flag_descriptions::kGlicActivityHubDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kGlicActivityHub)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"enterprise-published-skills-policy-enabled",

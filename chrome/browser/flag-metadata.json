@@ -5628,6 +5628,14 @@
     "expiry_milestone": 180
   },
   {
+    "name": "glic-activity-hub",
+    "owners": [
+      "bryantchandler@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "glic-actor",
     "owners": [
       "mfoltz@chromium.org",
