@@ -490,7 +490,7 @@
   {
     "name": "android-history-clustering",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "android-install-any-page-as-diy-app-stopgap",
