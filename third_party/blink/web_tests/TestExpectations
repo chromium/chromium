@@ -9237,3 +9237,10 @@ crbug.com/541016039 [ Debug Linux ] external/wpt/webdriver/tests/classic/find_el
 crbug.com/541392156 [ Debug Linux ] external/wpt/webdriver/tests/classic/get_computed_label/user_prompts.py [ Crash Failure Pass Timeout ]
 crbug.com/546373243 [ Debug Linux ] external/wpt/webdriver/tests/classic/get_element_attribute/user_prompts.py [ Crash Failure Pass Timeout ]
 crbug.com/541135280 [ Debug Linux ] external/wpt/webdriver/tests/classic/get_element_shadow_root/user_prompts.py [ Crash Failure Pass Timeout ]
+
+# Gardener 2026-11-19 (M156 branch-only)
+crbug.com/587966203 [ Debug Linux ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-invalid_integrity_header.tentative.html [ Failure Pass ]
+crbug.com/587966203 [ Debug Linux ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-no-referrer.tentative.html [ Failure Pass ]
+crbug.com/587966203 [ Debug Linux ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error-downgraded.tentative.html [ Failure Pass ]
+crbug.com/587966203 [ Debug Linux ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-mi_error.tentative.html [ Failure Pass ]
+crbug.com/587966203 [ Debug Linux ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok-no-referrer.tentative.html [ Failure Pass ]
