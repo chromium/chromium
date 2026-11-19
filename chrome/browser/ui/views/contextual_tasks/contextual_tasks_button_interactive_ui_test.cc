@@ -529,7 +529,11 @@ class ContextualTasksEphemeralButtonInteractiveTestMixin
 #endif
     this->host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(this->embedded_test_server()->Start());
-    this->browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1280, 800));
+    ui_test_utils::SetAndWaitForBounds(*this->browser(),
+                                       gfx::Rect(0, 0, 1280, 800));
+    BrowserView::GetBrowserViewForBrowser(this->browser())
+        ->GetWidget()
+        ->LayoutRootViewIfNecessary();
     if (auto* pinned_actions = ToolbarButtonProvider::From(this->browser())
                                    ->GetPinnedToolbarActions()) {
       if (auto* container = views::AsViewClass<PinnedToolbarActionsContainer>(
@@ -1827,7 +1831,10 @@ class ContextualTasksEphemeralButtonCobrowseDisabledInteractiveTest
     ContextualTasksButtonInteractiveTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-    browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1280, 800));
+    ui_test_utils::SetAndWaitForBounds(*browser(), gfx::Rect(0, 0, 1280, 800));
+    BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetWidget()
+        ->LayoutRootViewIfNecessary();
     if (auto* pinned_actions =
             ToolbarButtonProvider::From(browser())->GetPinnedToolbarActions()) {
       if (auto* container = views::AsViewClass<PinnedToolbarActionsContainer>(
