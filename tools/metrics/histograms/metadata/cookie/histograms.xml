@@ -773,20 +773,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Cookie.RequestSameSiteContext.Subsampled"
-    enum="SameSiteCookieContext" expires_after="2025-07-13">
-  <owner>morlovich@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    The same-site context of a request, i.e. the relationship between the
-    request and the navigational environment. Logged on every request to access
-    a cookie.
-
-    Subsampled to 1/1000. See kHistogramSampleProbability in
-    net/cookies/cookie_constants.h for details.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.SameSiteNoneSizeBytes.Subsampled" units="bytes"
     expires_after="2027-05-09">
   <owner>dylancutler@google.com</owner>

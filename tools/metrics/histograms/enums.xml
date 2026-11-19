@@ -25995,29 +25995,6 @@ Called by update_net_error_codes.py.-->
   <int value="15" label="Dictionary"/>
 </enum>
 
-<enum name="SameSiteCookieContext">
-  <summary>
-    The SameSiteCookieContext of a request describes the relation between the
-    cookie request and the navigational environment.
-  </summary>
-  <int value="0" label="Cross-site"/>
-  <int value="1" label="Lax method unsafe"/>
-  <int value="2" label="Laxly same-site"/>
-  <int value="3" label="Strictly same-site"/>
-  <int value="33"
-      label="Lax method unsafe insecure site-for-cookies to secure request"/>
-  <int value="34"
-      label="Laxly same-site insecure site-for-cookies to secure request"/>
-  <int value="35"
-      label="Strictly same-site insecure site-for-cookies to secure request"/>
-  <int value="65"
-      label="Lax method unsafe secure site-for-cookies to insecure request"/>
-  <int value="66"
-      label="Laxly same-site secure site-for-cookies to insecure request"/>
-  <int value="67"
-      label="Strictly same-site secure site-for-cookies to insecure request"/>
-</enum>
-
 <enum name="SameSiteCookieValue">
   <summary>
     The possible values of SameSite a cookie's SameSite attribute.

@@ -498,9 +498,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   base::TimeDelta GetLaxAllowUnsafeThresholdAge() const override;
   void PostIncludeForRequestURL(
       const CookieAccessResult& access_result,
-      const CookieOptions& options_used,
-      CookieOptions::SameSiteCookieContext::ContextType
-          cookie_inclusion_context_used) const override;
+      const CookieOptions& options_used) const override;
   void PostIsSetPermittedInContext(
       const CookieAccessResult& access_result,
       const CookieOptions& options_used) const override;

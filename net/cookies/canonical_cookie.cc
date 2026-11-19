@@ -900,16 +900,10 @@ bool CanonicalCookie::IsWebEquivalentTo(const CanonicalCookie& other) const {
 
 void CanonicalCookie::PostIncludeForRequestURL(
     const CookieAccessResult& access_result,
-    const CookieOptions& options_used,
-    CookieOptions::SameSiteCookieContext::ContextType
-        cookie_inclusion_context_used) const {
+    const CookieOptions& options_used) const {
   if (!base::ShouldRecordSubsampledMetric(kHistogramSampleProbability)) {
     return;
   }
-
-  base::UmaHistogramEnumeration(
-      "Cookie.RequestSameSiteContext", cookie_inclusion_context_used,
-      CookieOptions::SameSiteCookieContext::ContextType::COUNT);
 
   if (access_result.status.IsInclude()) {
     base::UmaHistogramEnumeration(

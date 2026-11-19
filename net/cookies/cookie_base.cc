@@ -306,7 +306,7 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
                             params.access_semantics, params.scope_semantics,
                             is_allowed_to_access_secure_cookies};
 
-  PostIncludeForRequestURL(result, options, cookie_inclusion_context);
+  PostIncludeForRequestURL(result, options);
 
   return result;
 }
