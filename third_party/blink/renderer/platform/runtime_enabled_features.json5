@@ -6831,11 +6831,6 @@
       status: "experimental",
     },
     {
-      // Don't accept the empty string as a valid value in some cases.
-      name: "SvgEmptyAttributeStringParsingFix",
-      status: "stable",
-    },
-    {
       // getBBox() returns the empty rect for shapes that are not rendered,
       // i.e. zero/negative geometry or a non-rendered ancestor.
       name: "SvgEmptyBBoxForNonRendered",

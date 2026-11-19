@@ -219,16 +219,6 @@ SVGParsingError SVGLength::SetValueAsString(const String& string) {
 SVGParsingError SVGLength::SetValueAsString(
     const String& string,
     const CSSParserContext* parser_context) {
-  // TODO(fs): Preferably we wouldn't need to special-case the null
-  // string (which we'll get for example for removeAttribute.)
-  // Hopefully work on crbug.com/225807 can help here.
-  if (!RuntimeEnabledFeatures::SvgEmptyAttributeStringParsingFixEnabled() &&
-      string.IsNull()) {
-    value_ = CSSNumericLiteralValue::Create(
-        0, CSSPrimitiveValue::UnitType::kUserUnits);
-    return SVGParseStatus::kNoError;
-  }
-
   const CSSValue* parsed = CSSParser::ParseSingleValue(
       CSSPropertyID::kX, string, GetSVGAttributeParserContext());
   const auto* new_value = DynamicTo<CSSPrimitiveValue>(parsed);
