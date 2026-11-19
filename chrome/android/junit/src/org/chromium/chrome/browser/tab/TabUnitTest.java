@@ -41,6 +41,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.util.SparseArray;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillManager;
@@ -74,6 +75,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -2210,5 +2212,41 @@ public class TabUnitTest {
 
         assertNotNull(tabWithAppId.getUserDataHost().getUserData(TabAssociatedApp.class));
         assertEquals("com.example.app", TabAssociatedApp.getAppId(tabWithAppId));
+    }
+
+    @Test
+    public void testSadTabRemovedOnPageLoadAfterReparenting() {
+        doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getContext();
+        doReturn(mTabWebContentsDelegateAndroid)
+                .when(mDelegateFactory)
+                .createWebContentsDelegate(any(Tab.class));
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        mTab.setNativePtrForTesting(1);
+        mTab.setWebContentsForTesting(mWebContents);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+
+        Context themedContext =
+                new ContextThemeWrapper(mActivity, R.style.Theme_BrowserUI_DayNight);
+        SadTab.from(mTab).show(themedContext, () -> {}, () -> {});
+        assertTrue(SadTab.isShowing(mTab));
+
+        // Detach from the first window, as ReparentingTask#detach() does.
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(null);
+        mTab.updateAttachment(/* window= */ null, /* tabDelegateFactory= */ null);
+
+        // Attach to a new window.
+        WindowAndroid newWindow = mock(WindowAndroid.class);
+        Activity newActivity = Robolectric.buildActivity(Activity.class).get();
+        doReturn(new WeakReference<>(newActivity)).when(newWindow).getActivity();
+        doReturn(new WeakReference<>(newActivity)).when(newWindow).getContext();
+        doReturn(ObservableSuppliers.alwaysFalse()).when(newWindow).getOcclusionSupplier();
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(newWindow);
+        mTab.updateAttachment(newWindow, mDelegateFactory);
+
+        GURL url = new GURL("https://example.com/");
+        mTab.didStartPageLoad(url);
+        mTab.didFinishPageLoad(url);
+
+        assertFalse(SadTab.isShowing(mTab));
     }
 }

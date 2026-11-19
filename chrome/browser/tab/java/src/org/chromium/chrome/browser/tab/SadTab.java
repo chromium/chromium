@@ -26,6 +26,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.ui_metrics.SadTabEvent;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -139,6 +140,12 @@ public class SadTab implements TabObserver, UserData, TabViewProvider {
         // Reset the succressiveRefresh counter after successfully loading a page.
         mSadTabSuccessiveRefreshCounter = 0;
         removeIfPresent();
+    }
+
+    @Override
+    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+        // Intentionally do nothing to prevent automatic observer removal on detachment. The
+        // observer is removed in destroy().
     }
 
     // UserData
