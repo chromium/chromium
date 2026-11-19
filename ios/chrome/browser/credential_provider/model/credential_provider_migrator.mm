@@ -4,8 +4,15 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
-#import <UIKit/UIKit.h>
+#import <utility>
+#import <vector>
 
+#import "base/check.h"
+#import "base/check_op.h"
+#import "base/containers/flat_set.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -88,14 +95,16 @@ void LogPasskeySignalMigrationAction(PasskeysSignalMigrationAction action) {
   return self;
 }
 
-- (void)startMigrationWithCompletion:(void (^)(BOOL success,
-                                               NSError* error))completion {
+#pragma mark - Public
+
+- (void)startMigrationWithCompletion:(CredentialMigrationCompletion)completion {
+  CHECK(completion);
   if (self.temporalStore) {
     NSError* error =
         [NSError errorWithDomain:kCredentialProviderMigratorErrorDomain
                             code:kCredentialProviderMigratorErrorAlreadyRunning
                         userInfo:nil];
-    completion(NO, error);
+    std::move(completion).Run(base::unexpected(error));
     return;
   }
 
@@ -110,6 +119,7 @@ void LogPasskeySignalMigrationAction(PasskeysSignalMigrationAction action) {
     syncIds = _passkeyStore->GetAllSyncIds();
   }
 
+  std::vector<sync_pb::WebauthnCredentialSpecifics> createdPasskeys;
   for (id<Credential> credential in credentials) {
     if (credential.isPasskey) {
       // For passkeys, gaiaID cannot be nil as passkeys require a user to be
@@ -182,6 +192,7 @@ void LogPasskeySignalMigrationAction(PasskeysSignalMigrationAction action) {
             PasskeyFromCredential(credential);
         if (webauthn::passkey_model_utils::IsGpmPasskeyValid(passkey)) {
           _passkeyStore->CreatePasskey(passkey);
+          createdPasskeys.push_back(std::move(passkey));
           LogPasskeyMigrationStatus(PasskeysMigrationStatus::kPasskeyCreated);
         } else {
           LogPasskeyMigrationStatus(PasskeysMigrationStatus::kInvalidPasskey);
@@ -207,12 +218,21 @@ void LogPasskeySignalMigrationAction(PasskeysSignalMigrationAction action) {
     [self.temporalStore
         removeCredentialWithRecordIdentifier:credential.recordIdentifier];
   }
-  __weak __typeof__(self) weakSelf = self;
-  [self.temporalStore saveDataWithCompletion:^(NSError* error) {
-    DCHECK(!error);
-    weakSelf.temporalStore = nil;
-    completion(error == nil, error);
-  }];
+  __weak CredentialProviderMigrator* weakSelf = self;
+  [self.temporalStore
+      saveDataWithCompletion:
+          base::CallbackToBlock(base::BindOnce(
+              [](CredentialProviderMigrator* migrator,
+                 std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+                 CredentialMigrationCompletion callback, NSError* error) {
+                migrator.temporalStore = nil;
+                if (error) {
+                  std::move(callback).Run(base::unexpected(error));
+                  return;
+                }
+                std::move(callback).Run(std::move(passkeys));
+              },
+              weakSelf, std::move(createdPasskeys), std::move(completion)))];
 }
 
 #pragma mark - PasskeyModelObserverDelegate

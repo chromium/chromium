@@ -7,33 +7,48 @@
 #import <algorithm>
 #import <deque>
 #import <map>
+#import <memory>
+#import <string>
+#import <utility>
+#import <vector>
 
+#import "base/check.h"
 #import "base/functional/bind.h"
-#import "base/functional/callback.h"
-#import "base/functional/callback_helpers.h"
-#import "base/memory/raw_ptr.h"
+#import "base/location.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/memory/weak_ptr.h"
+#import "base/not_fatal_until.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
-#import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
+#import "ios/chrome/browser/credential_provider/model/ios_credential_provider_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -41,33 +56,40 @@
 #import "ios/chrome/common/credential_provider/credential_provider_migration_notifier.h"
 #import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 
-@interface CredentialProviderMigratorAppAgent () <PasskeyModelObserverDelegate>
-
-// Invoked when -startMigrationWithCompletion: completes for a given profile.
-// The `profile` pointer may be null if the profile has been destroyed before
-// the callback is invoked.
-- (void)migrationCompleteForProfile:(ProfileIOS*)profile
-                        profileName:(const std::string&)profileName;
-
-@end
-
 namespace {
 
-// Helper function that call -migrationCompleteForProfile:... while allowing
-// to use base::BindOnce(...) which is safer as is avoid capturing implicitly
-// pointer to C++ objects.
-void MigrationCompleteForProfile(
-    __weak CredentialProviderMigratorAppAgent* app_agent,
-    base::WeakPtr<ProfileIOS> weak_profile,
-    const std::string& profile_name,
-    BOOL success,
-    NSError* error) {
-  DCHECK(success) << error.localizedDescription;
-  [app_agent migrationCompleteForProfile:weak_profile.get()
-                             profileName:profile_name];
+// Maximum age since a passkey's `creation_time` for migration to present a
+// confirmation infobar, suppressing stale passkeys created in other apps during
+// earlier sessions.
+constexpr base::TimeDelta kRecentlyAddedDelay = base::Seconds(5);
+
+// Attempts to present the passkey creation infobar on `scene`'s active browser.
+// Returns true if the infobar was added.
+bool TryShowPasskeyCreationInfobarInScene(
+    SceneState* scene,
+    const std::string& account_email,
+    const sync_pb::WebauthnCredentialSpecifics& passkey) {
+  // `scene` is nil when no `foregroundActiveScene` exists, and `browser` or
+  // `SettingsCommands` may not yet be wired if `scene` is mid-connection.
+  Browser* browser = scene.browserProviderInterface.currentBrowser;
+  if (!browser) {
+    return false;
+  }
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  if (![dispatcher dispatchingForProtocol:@protocol(SettingsCommands)]) {
+    return false;
+  }
+  id<SettingsCommands> settings_handler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+  return IOSCredentialProviderInfoBarDelegate::DisplayForWebState(
+      browser->GetWebStateList()->GetActiveWebState(), account_email, passkey,
+      settings_handler);
 }
 
 }  // namespace
+
+@interface CredentialProviderMigratorAppAgent () <PasskeyModelObserverDelegate>
+@end
 
 @implementation CredentialProviderMigratorAppAgent {
   CredentialProviderMigrationNotifier* _credentialProviderMigrationNotifier;
@@ -190,15 +212,46 @@ void MigrationCompleteForProfile(
          forKey:AppGroupUserDefaultsCredentialProviderMultiProfileSetting()];
 }
 
-// Sets whether the passkey updates are allowed to show an infobar to the user.
-// This should normally only happen during the credential migration.
-- (void)allowInfobarForProfile:(ProfileIOS*)profile allowed:(BOOL)allowed {
-  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
-    if (auto* agent = CredentialProviderBrowserAgent::FromBrowser(browser)) {
-      agent->SetInfobarAllowed(allowed);
+// Presents the passkey creation infobar on at most one foreground scene
+// belonging to `profile`, preferring the foreground-active scene.
+- (void)showPasskeyCreationInfobarForProfile:(ProfileIOS*)profile
+                                     passkey:(const sync_pb::
+                                                  WebauthnCredentialSpecifics&)
+                                                 passkey {
+  // The primary account may have signed out while async migration persistence
+  // was in flight.
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identityManager) {
+    return;
+  }
+
+  CoreAccountInfo account =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account.email.empty()) {
+    return;
+  }
+
+  for (ProfileState* profileState in [self.appState profileStates]) {
+    if (profileState.profile != profile) {
+      continue;
     }
+
+    SceneState* activeScene = profileState.foregroundActiveScene;
+    if (TryShowPasskeyCreationInfobarInScene(activeScene, account.email,
+                                             passkey)) {
+      return;
+    }
+
+    for (SceneState* scene in profileState.foregroundScenes) {
+      if (scene == activeScene) {
+        continue;
+      }
+      if (TryShowPasskeyCreationInfobarInScene(scene, account.email, passkey)) {
+        return;
+      }
+    }
+    return;
   }
 }
 
@@ -303,21 +356,36 @@ void MigrationCompleteForProfile(
                                                  passwordStore:storeToSave
                                                   passkeyStore:passkeyModel];
   _migratorMap.insert(std::make_pair(profile->GetProfileName(), migrator));
-  [self allowInfobarForProfile:profile allowed:YES];
 
-  __weak __typeof__(self) weakSelf = self;
-  [migrator startMigrationWithCompletion:base::CallbackToBlock(base::BindOnce(
-                                             &MigrationCompleteForProfile,
-                                             weakSelf, profile->AsWeakPtr(),
-                                             profile->GetProfileName()))];
+  __weak CredentialProviderMigratorAppAgent* weakSelf = self;
+  [migrator startMigrationWithCompletion:
+                base::BindOnce(
+                    [](CredentialProviderMigratorAppAgent* appAgent,
+                       base::WeakPtr<ProfileIOS> weakProfile,
+                       const std::string& profileName,
+                       CredentialMigrationResult result) {
+                      CHECK(result.has_value(), base::NotFatalUntil::M164)
+                          << base::SysNSStringToUTF8(
+                                 result.error().localizedDescription);
+                      [appAgent migrationCompleteForProfile:weakProfile.get()
+                                                profileName:profileName
+                                                     result:std::move(result)];
+                    },
+                    weakSelf, profile->AsWeakPtr(), profile->GetProfileName())];
 }
 
+// Invoked when `-startMigrationWithCompletion:` completes for a given profile.
+// `profile` may be null if the profile was unloaded before completion ran.
 - (void)migrationCompleteForProfile:(ProfileIOS*)profile
-                        profileName:(const std::string&)profileName {
+                        profileName:(const std::string&)profileName
+                             result:(CredentialMigrationResult)result {
   auto iter = _migratorMap.find(profileName);
   CHECK(iter != _migratorMap.end());
   _migratorMap.erase(iter);
+  // `profile` may have been unloaded while `saveDataWithCompletion:` was in
+  // flight on the background queue; advance the queue for remaining profiles.
   if (!profile) {
+    [self migrateNextProfile];
     return;
   }
 
@@ -327,7 +395,17 @@ void MigrationCompleteForProfile(
     [self removeObserverForPasskeyModel:passkeyModel];
   }
 
-  [self allowInfobarForProfile:profile allowed:NO];
+  if (result.has_value() && !result->empty()) {
+    const auto newestPasskeyIter = std::ranges::max_element(
+        *result, {}, &sync_pb::WebauthnCredentialSpecifics::creation_time);
+    const base::TimeDelta age =
+        base::Time::Now() - base::Time::FromMillisecondsSinceUnixEpoch(
+                                newestPasskeyIter->creation_time());
+    if (!age.is_negative() && age < kRecentlyAddedDelay) {
+      [self showPasskeyCreationInfobarForProfile:profile
+                                         passkey:*newestPasskeyIter];
+    }
+  }
 
   [self migrateNextProfile];
 }

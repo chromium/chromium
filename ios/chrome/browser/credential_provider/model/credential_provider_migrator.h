@@ -7,7 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import <vector>
+
+#import "base/functional/callback.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/types/expected.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 
 namespace webauthn {
 class PasskeyModel;
@@ -51,6 +57,13 @@ typedef enum : NSInteger {
   kCredentialProviderMigratorErrorAlreadyRunning,
 } CredentialProviderMigratorErrors;
 
+// Result of migrating credentials from the Credential Provider Extension:
+// either the newly created passkeys migrated in this batch, or an error.
+using CredentialMigrationResult =
+    base::expected<std::vector<sync_pb::WebauthnCredentialSpecifics>, NSError*>;
+using CredentialMigrationCompletion =
+    base::OnceCallback<void(CredentialMigrationResult)>;
+
 @interface CredentialProviderMigrator : NSObject
 - (instancetype)
     initWithUserDefaults:(NSUserDefaults*)userDefaults
@@ -62,11 +75,9 @@ typedef enum : NSInteger {
             passkeyStore:(webauthn::PasskeyModel*)passkeyStore;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Starts migration from the temporal store to the password store. `completion`
-// is called with any error that could have happened. Migration happens in a
-// background thread.
-- (void)startMigrationWithCompletion:(void (^)(BOOL success,
-                                               NSError* error))completion;
+// Starts migration from the temporal store to the password and passkey stores
+// and invokes `completion` with `CredentialMigrationResult`.
+- (void)startMigrationWithCompletion:(CredentialMigrationCompletion)completion;
 
 @end
 

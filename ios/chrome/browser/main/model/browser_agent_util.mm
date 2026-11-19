@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/data_sharing_browser_agent.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h"
-#import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
@@ -72,10 +71,6 @@
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
 #import "ios/web/common/features.h"
-
-#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
-#import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
-#endif
 
 namespace {
 
@@ -212,10 +207,6 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   if (!browser_is_off_record && IsEnableEnterpriseWatermarkingIOS()) {
     DataProtectionBrowserAgent::CreateForBrowser(browser);
   }
-
-#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
-  CredentialProviderBrowserAgent::CreateForBrowser(browser);
-#endif
 
   if (!browser_is_inactive && !browser_is_temporary && IsActorEnabled()) {
     ActorBrowserAgent::CreateForBrowser(browser);

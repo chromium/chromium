@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_test_util.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -99,15 +101,12 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
   // Start migration.
   PasswordForm expected = PasswordFormFromCredential(credential);
   EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected), _));
-  base::test::TestFuture<BOOL, NSError*> future;
-  auto* future_ptr = &future;
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    future_ptr->SetValue(success, error);
-  }];
-  auto [migration_success, migration_error] = future.Take();
-  EXPECT_TRUE(migration_success);
-  EXPECT_TRUE(migration_error == nil)
-      << SysNSStringToUTF8([migration_error localizedDescription]);
+  base::test::TestFuture<CredentialMigrationResult> future;
+  [migrator startMigrationWithCompletion:future.GetCallback()];
+  CredentialMigrationResult result = future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, IsEmpty());
 
   // Reload temp store.
   store =
@@ -146,15 +145,16 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   // Start migration.
   sync_pb::WebauthnCredentialSpecifics expected =
       PasskeyFromCredential(credential);
-  base::test::TestFuture<BOOL, NSError*> future;
-  auto* future_ptr = &future;
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    future_ptr->SetValue(success, error);
-  }];
-  auto [migration_success, migration_error] = future.Take();
-  EXPECT_TRUE(migration_success);
-  EXPECT_TRUE(migration_error == nil)
-      << SysNSStringToUTF8([migration_error localizedDescription]);
+  base::test::TestFuture<CredentialMigrationResult> future;
+  [migrator startMigrationWithCompletion:future.GetCallback()];
+  CredentialMigrationResult result = future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  ASSERT_THAT(*result, SizeIs(1));
+  EXPECT_EQ((*result)[0].sync_id(), expected.sync_id());
+  EXPECT_EQ((*result)[0].credential_id(), expected.credential_id());
+  EXPECT_EQ((*result)[0].rp_id(), expected.rp_id());
+  EXPECT_EQ((*result)[0].user_name(), expected.user_name());
 
   histogram_tester_.ExpectBucketCount(
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyCreated, 1);
@@ -192,8 +192,7 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   histogram_tester_.ExpectBucketCount(
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyUpdated, 0);
 
-  base::test::TestFuture<BOOL, NSError*> update_future;
-  auto* update_future_ptr = &update_future;
+  base::test::TestFuture<CredentialMigrationResult> update_future;
 
   migrator = [[CredentialProviderMigrator alloc]
       initWithUserDefaults:user_defaults_
@@ -202,13 +201,11 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
 
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    update_future_ptr->SetValue(success, error);
-  }];
-  auto [update_success, update_error] = update_future.Take();
-  EXPECT_TRUE(update_success);
-  EXPECT_TRUE(update_error == nil)
-      << SysNSStringToUTF8([update_error localizedDescription]);
+  [migrator startMigrationWithCompletion:update_future.GetCallback()];
+  CredentialMigrationResult update_result = update_future.Take();
+  ASSERT_TRUE(update_result.has_value())
+      << SysNSStringToUTF8(update_result.error().localizedDescription);
+  EXPECT_THAT(*update_result, IsEmpty());
 
   histogram_tester_.ExpectBucketCount(
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyUpdated, 1);
@@ -258,15 +255,12 @@ TEST_F(CredentialProviderMigratorTest, InvalidPasskeyMigration) {
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kInvalidPasskey, 0);
 
   // Start migration.
-  base::test::TestFuture<BOOL, NSError*> future;
-  auto* future_ptr = &future;
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    future_ptr->SetValue(success, error);
-  }];
-  auto [migration_success, migration_error] = future.Take();
-  EXPECT_TRUE(migration_success);
-  EXPECT_TRUE(migration_error == nil)
-      << SysNSStringToUTF8([migration_error localizedDescription]);
+  base::test::TestFuture<CredentialMigrationResult> future;
+  [migrator startMigrationWithCompletion:future.GetCallback()];
+  CredentialMigrationResult result = future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, IsEmpty());
 
   histogram_tester_.ExpectBucketCount(
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kInvalidPasskey, 1);
@@ -312,15 +306,12 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesHidden) {
       PasskeysSignalMigrationAction::kPasskeyHidden, 0);
 
   // Start initial migration.
-  base::test::TestFuture<BOOL, NSError*> future;
-  auto* future_ptr = &future;
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    future_ptr->SetValue(success, error);
-  }];
-  auto [migration_success, migration_error] = future.Take();
-  EXPECT_TRUE(migration_success);
-  EXPECT_TRUE(migration_error == nil)
-      << SysNSStringToUTF8([migration_error localizedDescription]);
+  base::test::TestFuture<CredentialMigrationResult> future;
+  [migrator startMigrationWithCompletion:future.GetCallback()];
+  CredentialMigrationResult result = future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, SizeIs(1));
 
   // Verify the passkey was migrated and is not hidden.
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
@@ -346,8 +337,7 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesHidden) {
   EXPECT_EQ(store.credentials.count, 1u);
 
   // Start migration again.
-  base::test::TestFuture<BOOL, NSError*> update_future;
-  auto* update_future_ptr = &update_future;
+  base::test::TestFuture<CredentialMigrationResult> update_future;
 
   migrator = [[CredentialProviderMigrator alloc]
       initWithUserDefaults:user_defaults_
@@ -356,13 +346,11 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesHidden) {
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
 
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    update_future_ptr->SetValue(success, error);
-  }];
-  auto [update_success, update_error] = update_future.Take();
-  EXPECT_TRUE(update_success);
-  EXPECT_TRUE(update_error == nil)
-      << SysNSStringToUTF8([update_error localizedDescription]);
+  [migrator startMigrationWithCompletion:update_future.GetCallback()];
+  CredentialMigrationResult update_result = update_future.Take();
+  ASSERT_TRUE(update_result.has_value())
+      << SysNSStringToUTF8(update_result.error().localizedDescription);
+  EXPECT_THAT(*update_result, IsEmpty());
 
   // Verify temporal store is empty again.
   store =
@@ -423,15 +411,12 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationRestoresHiddenPasskey) {
       PasskeysSignalMigrationAction::kPasskeyRestored, 0);
 
   // Start migration.
-  base::test::TestFuture<BOOL, NSError*> future;
-  auto* future_ptr = &future;
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    future_ptr->SetValue(success, error);
-  }];
-  auto [migration_success, migration_error] = future.Take();
-  EXPECT_TRUE(migration_success);
-  EXPECT_TRUE(migration_error == nil)
-      << SysNSStringToUTF8([migration_error localizedDescription]);
+  base::test::TestFuture<CredentialMigrationResult> future;
+  [migrator startMigrationWithCompletion:future.GetCallback()];
+  CredentialMigrationResult result = future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, IsEmpty());
 
   // Verify temporal store is empty.
   store =
@@ -475,15 +460,12 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesUsername) {
       "Passkeys.IOSMigration.SignalAction",
       PasskeysSignalMigrationAction::kPasskeyDetailsUpdated, 0);
 
-  base::test::TestFuture<BOOL, NSError*> future;
-  auto* future_ptr = &future;
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    future_ptr->SetValue(success, error);
-  }];
-  auto [migration_success, migration_error] = future.Take();
-  EXPECT_TRUE(migration_success);
-  EXPECT_TRUE(migration_error == nil)
-      << SysNSStringToUTF8([migration_error localizedDescription]);
+  base::test::TestFuture<CredentialMigrationResult> future;
+  [migrator startMigrationWithCompletion:future.GetCallback()];
+  CredentialMigrationResult result = future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  EXPECT_THAT(*result, SizeIs(1));
 
   // Verify the passkey was migrated and has the initial names.
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
@@ -509,8 +491,7 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesUsername) {
   EXPECT_EQ(store.credentials.count, 1u);
 
   // Start migration again.
-  base::test::TestFuture<BOOL, NSError*> update_future;
-  auto* update_future_ptr = &update_future;
+  base::test::TestFuture<CredentialMigrationResult> update_future;
 
   migrator = [[CredentialProviderMigrator alloc]
       initWithUserDefaults:user_defaults_
@@ -519,13 +500,11 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesUsername) {
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
 
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    update_future_ptr->SetValue(success, error);
-  }];
-  auto [update_success, update_error] = update_future.Take();
-  EXPECT_TRUE(update_success);
-  EXPECT_TRUE(update_error == nil)
-      << SysNSStringToUTF8([update_error localizedDescription]);
+  [migrator startMigrationWithCompletion:update_future.GetCallback()];
+  CredentialMigrationResult update_result = update_future.Take();
+  ASSERT_TRUE(update_result.has_value())
+      << SysNSStringToUTF8(update_result.error().localizedDescription);
+  EXPECT_THAT(*update_result, IsEmpty());
 
   // Verify temporal store is empty again.
   store =
@@ -585,13 +564,11 @@ TEST_F(CredentialProviderMigratorTest, MigrationFiltersByGaiaID) {
   // Start migration. Only the matching one should be migrated.
   PasswordForm expected = PasswordFormFromCredential(matchingCredential);
   EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected), _));
-  base::test::TestFuture<BOOL, NSError*> future;
-  auto* future_ptr = &future;
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    future_ptr->SetValue(success, error);
-  }];
-  auto [migration_success, migration_error] = future.Take();
-  EXPECT_TRUE(migration_success);
+  base::test::TestFuture<CredentialMigrationResult> future;
+  [migrator startMigrationWithCompletion:future.GetCallback()];
+  CredentialMigrationResult result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(*result, IsEmpty());
 
   // Reload temp store.
   store =
@@ -624,18 +601,112 @@ TEST_F(CredentialProviderMigratorTest, MigrationAllowsNilGaiaID) {
 
   PasswordForm expected = PasswordFormFromCredential(credential);
   EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected), _));
-  base::test::TestFuture<BOOL, NSError*> future;
-  auto* future_ptr = &future;
-  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    future_ptr->SetValue(success, error);
-  }];
-  auto [migration_success, migration_error] = future.Take();
-  EXPECT_TRUE(migration_success);
+  base::test::TestFuture<CredentialMigrationResult> future;
+  [migrator startMigrationWithCompletion:future.GetCallback()];
+  CredentialMigrationResult result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(*result, IsEmpty());
 
   store =
       [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
                                                             key:store_key_];
   EXPECT_EQ(store.credentials.count, 0u);
+}
+
+// Tests that starting a second migration while one is already in progress
+// returns `kCredentialProviderMigratorErrorAlreadyRunning`.
+TEST_F(CredentialProviderMigratorTest, AlreadyRunningReturnsError) {
+  CredentialProviderMigrator* migrator =
+      [[CredentialProviderMigrator alloc] initWithUserDefaults:user_defaults_
+                                                           key:store_key_
+                                                          gaia:nil
+                                                 passwordStore:mock_store_
+                                                  passkeyStore:nil];
+
+  base::test::TestFuture<CredentialMigrationResult> first_future;
+  [migrator startMigrationWithCompletion:first_future.GetCallback()];
+
+  base::test::TestFuture<CredentialMigrationResult> second_future;
+  [migrator startMigrationWithCompletion:second_future.GetCallback()];
+  CredentialMigrationResult second_result = second_future.Take();
+  ASSERT_FALSE(second_result.has_value());
+  EXPECT_NSEQ(second_result.error().domain,
+              kCredentialProviderMigratorErrorDomain);
+  EXPECT_EQ(second_result.error().code,
+            kCredentialProviderMigratorErrorAlreadyRunning);
+
+  CredentialMigrationResult first_result = first_future.Take();
+  ASSERT_TRUE(first_result.has_value());
+  EXPECT_THAT(*first_result, IsEmpty());
+}
+
+// Tests that migrating a mixed batch containing newly created passkeys, an
+// update to an existing passkey, an invalid passkey, and a password returns
+// only the newly created valid passkeys in `CredentialMigrationResult`.
+TEST_F(CredentialProviderMigratorTest,
+       MixedBatchReturnsOnlyNewlyCreatedPasskeys) {
+  ArchivableCredential* existing_passkey = TestPasskeyCredential({
+      .record_identifier = @"existing_record",
+      .sync_id = TestDataFromString("syncIdExisting16"),
+      .username = @"existing_user",
+      .credential_id = TestDataFromString("credIdExisting16"),
+  });
+  test_passkey_model_.AddNewPasskeyForTesting(
+      PasskeyFromCredential(existing_passkey));
+  existing_passkey.lastUsedTime = kDefaultLastUsedTime + 50;
+
+  ArchivableCredential* created_passkey_1 = TestPasskeyCredential({
+      .record_identifier = @"created_record_1",
+      .sync_id = TestDataFromString("syncIdCreated116"),
+      .username = @"created_user_1",
+      .credential_id = TestDataFromString("credIdCreated116"),
+  });
+  ArchivableCredential* created_passkey_2 = TestPasskeyCredential({
+      .record_identifier = @"created_record_2",
+      .sync_id = TestDataFromString("syncIdCreated216"),
+      .username = @"created_user_2",
+      .credential_id = TestDataFromString("credIdCreated216"),
+  });
+  ArchivableCredential* invalid_passkey = TestPasskeyCredential({
+      .record_identifier = @"invalid_record",
+      .sync_id = TestDataFromString("syncIdInvalid016"),
+      .credential_id = TestDataFromString("credIdInvalid016"),
+      .rp_id = nil,
+  });
+  ArchivableCredential* password_credential =
+      TestPasswordCredential(kDefaultGaia);
+
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  [store addCredential:existing_passkey];
+  [store addCredential:created_passkey_1];
+  [store addCredential:invalid_passkey];
+  [store addCredential:password_credential];
+  [store addCredential:created_passkey_2];
+  base::test::TestFuture<NSError*> save_future;
+  [store
+      saveDataWithCompletion:base::CallbackToBlock(save_future.GetCallback())];
+  ASSERT_FALSE(save_future.Get());
+
+  PasswordForm expected_password =
+      PasswordFormFromCredential(password_credential);
+  EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected_password), _));
+
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:kDefaultGaia
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+  base::test::TestFuture<CredentialMigrationResult> migration_future;
+  [migrator startMigrationWithCompletion:migration_future.GetCallback()];
+  CredentialMigrationResult result = migration_future.Take();
+  ASSERT_TRUE(result.has_value())
+      << SysNSStringToUTF8(result.error().localizedDescription);
+  ASSERT_THAT(*result, SizeIs(2));
+  EXPECT_EQ("created_user_1", (*result)[0].user_name());
+  EXPECT_EQ("created_user_2", (*result)[1].user_name());
 }
 
 }  // namespace
