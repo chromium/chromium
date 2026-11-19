@@ -30,14 +30,40 @@ var tipOfBranch = appendBranchWithDepth(50);
 appendChildren(tipOfBranch, 500);
 var customEvent = new Event('foo');
 
-function run()
+function dispatchToLeaves()
 {
     for (var node = tipOfBranch.firstChild; node; node = node.nextSibling)
       node.dispatchEvent(customEvent);
 }
 
-PerfTestRunner.measureRunsPerSecond({
+// Each dispatch allocates its event path on the Oilpan heap, so timing one
+// long loop of dispatches (as measureRunsPerSecond() does) also measures
+// however many GCs happen to land inside the loop, which made this test
+// bimodal and sensitive to unrelated changes in heap state. See
+// crbug.com/573744922. Instead, time short batches of dispatches, and force
+// a GC (outside of the timed region) before each one. A batch allocates far
+// less than it takes to trigger a GC, so GC does not run while dispatching.
+var timeToRun = 750;
+var runsPerBatch = 20;
+
+function run()
+{
+    var totalTime = 0;
+    var numberOfRuns = 0;
+    while (totalTime < timeToRun) {
+        PerfTestRunner.gc();
+        var startTime = PerfTestRunner.now();
+        for (var i = 0; i < runsPerBatch; i++)
+            dispatchToLeaves();
+        totalTime += PerfTestRunner.now() - startTime;
+        numberOfRuns += runsPerBatch;
+    }
+    return numberOfRuns * 1000 / totalTime;
+}
+
+PerfTestRunner.measureValue({
     description: "Measure events dispatching",
+    unit: "runs/s",
     run: run
 });
 </script>
