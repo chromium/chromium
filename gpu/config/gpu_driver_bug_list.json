@@ -207,23 +207,6 @@
       ]
     },
     {
-      "id": 110,
-      "description": "EGL Sync server causes crashes on Adreno 2xx and 3xx drivers",
-      "cr_bugs": [482298],
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Qualcomm.*",
-      "gl_renderer": "Adreno \\(TM\\) [23].*",
-      "driver_version": {
-        "op": "<",
-        "value": "95"
-      },
-      "disabled_extensions": [
-        "EGL_KHR_wait_sync"
-      ]
-    },
-    {
       "id": 112,
       "cr_bugs": [477514],
       "description": "EXT_disjoint_timer_query fails after 2 queries on adreno 3xx in lollypop",
@@ -346,20 +329,6 @@
       "features": [
         "force_cube_complete"
       ]
-    },
-    {
-      "id": 138,
-      "description": "NVIDIA drivers before 346 lack features in NV_path_rendering and related extensions to implement driver level path rendering.",
-      "cr_bugs": [344330],
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "NVIDIA.*",
-      "driver_version": {
-        "op": "<",
-        "value": "346"
-      },
-      "disabled_extensions": ["GL_NV_path_rendering"]
     },
     {
       "id": 140,
@@ -488,19 +457,6 @@
       "vendor_id": "0x80ee",
       "features": [
         "disable_post_sub_buffers_for_onscreen_surfaces"
-      ]
-    },
-    {
-      "id": 176,
-      "description": "glClear does not work on Acer Predator GT-810",
-      "cr_bugs": [633634],
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Intel.*",
-      "gl_renderer": ".*Atom.*x5/x7.*",
-      "features": [
-        "gl_clear_broken"
       ]
     },
     {
@@ -878,9 +834,6 @@
         "type": "linux"
       },
       "gl_vendor": "VMware.*",
-      "features": [
-        "disable_timestamp_queries"
-      ],
       "disabled_extensions": [
         "GL_ARB_timer_query",
         "GL_EXT_timer_query",
