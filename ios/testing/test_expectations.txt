@@ -751,3 +751,6 @@ crbug.com/586867871 [ iOS26 iOS27 Simulator ] BookmarksEntriesTestCase/testConte
 # Gardening suppression 2026-11-18
 crbug.com/587350667 [ iOS27 Simulator ] InternalOneTapTestCase/testNoConsent [ Pass Failure ]
 crbug.com/587350667 [ ASan ] InternalOneTapTestCase/testNoConsent [ Crash ]
+
+# Gardening suppression 2026-11-19
+crbug.com/587935331 [ iPad Simulator ] ReadingListAccountStorageTestCase/testMoveItemThenRefreshSignIn [ Pass Failure ]
