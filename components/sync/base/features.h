@@ -81,11 +81,6 @@ bool IsContactInfoDataTypeForCustomPassphraseUsersEnabled();
 
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
 
-// Returns true if replacing sync promos with sign-in promos is enabled.
-// Always returns true on all platforms.
-// TODO(crbug.com/40067025): Remove this function and clean up callers.
-bool IsReplaceSyncPromosWithSignInPromosEnabled();
-
 // AutofillAi is launched globally on desktop, but restricted to certain
 // countries on mobile.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

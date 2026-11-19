@@ -60,10 +60,6 @@ bool IsContactInfoDataTypeForCustomPassphraseUsersEnabled() {
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsReplaceSyncPromosWithSignInPromosEnabled() {
-  return true;
-}
-
 // Like DECLARE_SYNC_AUTOFILL_AI_FEATURE but for the definition.
 #if BUILDFLAG(IS_ANDROID)
 #define DEFINE_SYNC_AUTOFILL_AI_FEATURE(feature_name)                         \
