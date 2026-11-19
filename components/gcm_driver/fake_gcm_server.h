@@ -74,6 +74,18 @@ class FakeGCMServer {
   // Closes all active client MCS TCP connections.
   void DisconnectAllClients();
 
+  // When `defer` is true, incoming HTTP unregistration (`delete=true`) requests
+  // are held before modifying server state or sending an HTTP response. When
+  // switched back to false, all held delete requests are processed and answered
+  // in arrival order. Useful for testing out-of-order arrival of concurrent
+  // unregistration and registration requests.
+  void SetDeferDeleteRequests(bool defer);
+
+  // Blocks until at least one deferred `delete=true` request is held (returning
+  // immediately if one has already arrived). `SetDeferDeleteRequests(true)`
+  // must be called first.
+  void WaitForDeferredDeleteRequest();
+
  private:
   class StateCore;
 

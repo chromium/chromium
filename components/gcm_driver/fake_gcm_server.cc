@@ -18,16 +18,20 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -135,13 +139,46 @@ class FakeGCMServer::StateCore
     } else {
       const std::string* auth_header =
           base::FindOrNull(request.headers, "Authorization");
-      response->set_code(
-          HandleRegisterRequest(auth_header ? *auth_header : std::string_view(),
-                                request.content, response_content));
+      const std::string_view auth_header_view =
+          auth_header ? *auth_header : std::string_view();
+      if (ShouldDeferRegisterRequest(request.content)) {
+        return std::make_unique<DeferredDeleteHttpResponse>(
+            this, std::string(auth_header_view), request.content);
+      }
+      response->set_code(HandleRegisterRequest(
+          auth_header_view, request.content, response_content));
       response->set_content_type("text/plain");
     }
     response->set_content(std::move(response_content));
     return response;
+  }
+
+  void SetDeferDeleteRequests(bool defer) {
+    std::vector<DeferredDeleteCallback> callbacks_to_run;
+    {
+      base::AutoLock auto_lock(lock_);
+      defer_delete_requests_ = defer;
+      if (!defer) {
+        callbacks_to_run = std::exchange(deferred_delete_callbacks_, {});
+      }
+    }
+    for (DeferredDeleteCallback& entry : callbacks_to_run) {
+      entry.io_task_runner->PostTask(FROM_HERE, std::move(entry.callback));
+    }
+  }
+
+  void WaitForDeferredDeleteRequest() {
+    base::RunLoop run_loop;
+    {
+      base::AutoLock auto_lock(lock_);
+      CHECK(defer_delete_requests_);
+      if (!deferred_delete_callbacks_.empty()) {
+        return;
+      }
+      CHECK(!deferred_delete_waiter_);
+      deferred_delete_waiter_ = run_loop.QuitClosure();
+    }
+    run_loop.Run();
   }
 
   // Looks up `registration_token` and builds the target `ResolvedDataMessage`
@@ -173,6 +210,42 @@ class FakeGCMServer::StateCore
  private:
   friend class base::RefCountedThreadSafe<StateCore>;
 
+  struct DeferredDeleteCallback {
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner;
+    base::OnceClosure callback;
+  };
+
+  class DeferredDeleteHttpResponse : public net::test_server::HttpResponse {
+   public:
+    DeferredDeleteHttpResponse(scoped_refptr<StateCore> state_core,
+                               std::string authorization_header,
+                               std::string request_content)
+        : state_core_(std::move(state_core)),
+          authorization_header_(std::move(authorization_header)),
+          request_content_(std::move(request_content)) {}
+
+    DeferredDeleteHttpResponse(const DeferredDeleteHttpResponse&) = delete;
+    DeferredDeleteHttpResponse& operator=(const DeferredDeleteHttpResponse&) =
+        delete;
+
+    ~DeferredDeleteHttpResponse() override = default;
+
+    void SendResponse(base::WeakPtr<net::test_server::HttpResponseDelegate>
+                          delegate) override {
+      // Hand all state to `StateCore` up front because `SendRegisterResponse()`
+      // can synchronously finish the HTTP connection and destroy `this`.
+      scoped_refptr<StateCore> state_core = state_core_;
+      state_core->SendOrDeferRegisterResponse(std::move(authorization_header_),
+                                              std::move(request_content_),
+                                              std::move(delegate));
+    }
+
+   private:
+    const scoped_refptr<StateCore> state_core_;
+    std::string authorization_header_;
+    std::string request_content_;
+  };
+
   struct RegistrationRecord {
     uint64_t android_id = 0;
     std::string category;
@@ -182,6 +255,56 @@ class FakeGCMServer::StateCore
   };
 
   ~StateCore() = default;
+
+  bool ShouldDeferRegisterRequest(std::string_view request_content) const {
+    if (FindParamOrEmpty(ExtractParamsFromRequest(request_content), "delete") !=
+        "true") {
+      return false;
+    }
+    base::AutoLock auto_lock(lock_);
+    return defer_delete_requests_;
+  }
+
+  void SendOrDeferRegisterResponse(
+      std::string authorization_header,
+      std::string request_content,
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
+    base::ReleasableAutoLock auto_lock(&lock_);
+    if (defer_delete_requests_) {
+      deferred_delete_callbacks_.push_back(DeferredDeleteCallback{
+          .io_task_runner = base::SequencedTaskRunner::GetCurrentDefault(),
+          .callback = base::BindOnce(
+              &StateCore::SendRegisterResponse, base::WrapRefCounted(this),
+              std::move(authorization_header), std::move(request_content),
+              std::move(delegate)),
+      });
+      base::OnceClosure waiter = std::move(deferred_delete_waiter_);
+      auto_lock.Release();
+      if (waiter) {
+        std::move(waiter).Run();
+      }
+      return;
+    }
+    auto_lock.Release();
+    SendRegisterResponse(std::move(authorization_header),
+                         std::move(request_content), std::move(delegate));
+  }
+
+  void SendRegisterResponse(
+      std::string authorization_header,
+      std::string request_content,
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
+    if (!delegate) {
+      return;
+    }
+    net::test_server::BasicHttpResponse response;
+    std::string response_content;
+    response.set_code(HandleRegisterRequest(authorization_header,
+                                            request_content, response_content));
+    response.set_content_type("text/plain");
+    response.set_content(std::move(response_content));
+    response.SendResponse(std::move(delegate));
+  }
 
   net::HttpStatusCode HandleCheckinRequest(std::string_view request_content,
                                            std::string& response_content) {
@@ -249,15 +372,19 @@ class FakeGCMServer::StateCore
     }
 
     if (is_delete) {
-      base::EraseIf(registrations_, [&](const auto& entry) {
-        const RegistrationRecord& record = entry.second;
-        const bool sender_matches =
-            sender_id == "*" || record.sender_id == sender_id;
-        return record.android_id == credentials->android_id &&
-               record.category == category && record.subtype == subtype &&
-               sender_matches;
-      });
-      WriteStateToDiskLocked();
+      // Match `instance_id` (`appid`) in addition to the device/app/subtype so
+      // an out-of-order delete request for an old InstanceID cannot erase a
+      // newer registration created after `InstanceID::DeleteID()`.
+      if (base::EraseIf(registrations_, [&](const auto& entry) {
+            const RegistrationRecord& record = entry.second;
+            const bool sender_matches =
+                sender_id == "*" || record.sender_id == sender_id;
+            return record.android_id == credentials->android_id &&
+                   record.category == category && record.subtype == subtype &&
+                   record.instance_id == instance_id && sender_matches;
+          }) > 0) {
+        WriteStateToDiskLocked();
+      }
       response_content = base::StrCat({"token=", subtype});
       return net::HTTP_OK;
     }
@@ -392,6 +519,10 @@ class FakeGCMServer::StateCore
   base::flat_map<uint64_t, uint64_t> devices_ GUARDED_BY(lock_);
   base::flat_map<std::string, RegistrationRecord> registrations_
       GUARDED_BY(lock_);
+  bool defer_delete_requests_ GUARDED_BY(lock_) = false;
+  std::vector<DeferredDeleteCallback> deferred_delete_callbacks_
+      GUARDED_BY(lock_);
+  base::OnceClosure deferred_delete_waiter_ GUARDED_BY(lock_);
 };
 
 FakeGCMServer::FakeGCMServer()
@@ -445,6 +576,14 @@ bool FakeGCMServer::SendMessage(std::string_view registration_token,
 
 void FakeGCMServer::DisconnectAllClients() {
   mcs_server_.DisconnectAllClients();
+}
+
+void FakeGCMServer::SetDeferDeleteRequests(bool defer) {
+  state_core_->SetDeferDeleteRequests(defer);
+}
+
+void FakeGCMServer::WaitForDeferredDeleteRequest() {
+  state_core_->WaitForDeferredDeleteRequest();
 }
 
 }  // namespace gcm

@@ -161,6 +161,9 @@ class GCMDriverDesktopIntegrationTest : public testing::Test {
     return future.Get();
   }
 
+  instance_id::InstanceIDDriver* instance_id_driver() {
+    return instance_id_driver_.get();
+  }
   FakeGCMServer* fake_gcm_server() { return fake_gcm_server_.get(); }
   FakeGCMAppHandler* app_handler1() { return app_handler1_.get(); }
   FakeGCMAppHandler* app_handler2() { return app_handler2_.get(); }
@@ -230,6 +233,94 @@ TEST_F(GCMDriverDesktopIntegrationTest,
 
   EXPECT_EQ(DeleteID(kTestAppId1), instance_id::InstanceID::SUCCESS);
   EXPECT_FALSE(fake_gcm_server()->SendMessage(token, "after_delete_id"));
+}
+
+TEST_F(GCMDriverDesktopIntegrationTest,
+       OutOfOrderDeleteIDDoesNotEraseNewRegistration) {
+  auto [old_token, old_result] =
+      GetToken(kTestAppId1, kAuthorizedEntity, kScope);
+  ASSERT_EQ(old_result, instance_id::InstanceID::SUCCESS);
+  ASSERT_FALSE(old_token.empty());
+
+  // Hold incoming `delete=true` requests on `FakeGCMServer` while `DeleteID()`
+  // clears the local InstanceID and sends an unregistration (`sender=*`) for
+  // the old InstanceID.
+  fake_gcm_server()->SetDeferDeleteRequests(true);
+  base::test::TestFuture<instance_id::InstanceID::Result> delete_id_future;
+  instance_id_driver()
+      ->GetInstanceID(kTestAppId1)
+      ->DeleteID(delete_id_future.GetCallback());
+  fake_gcm_server()->WaitForDeferredDeleteRequest();
+
+  // Concurrently obtain a new token, which generates a fresh InstanceID
+  // (`appid`) for the same `kTestAppId1` (`X-subtype`) and registers on the
+  // server before the held `DeleteID` request is processed.
+  auto [new_token, new_result] =
+      GetToken(kTestAppId1, kAuthorizedEntity, kScope);
+  ASSERT_EQ(new_result, instance_id::InstanceID::SUCCESS);
+  ASSERT_FALSE(new_token.empty());
+  ASSERT_NE(new_token, old_token);
+
+  // Release the held `DeleteID` request so it executes after the new
+  // registration.
+  fake_gcm_server()->SetDeferDeleteRequests(false);
+  EXPECT_EQ(delete_id_future.Get(), instance_id::InstanceID::SUCCESS);
+
+  // The old registration must be erased, while the new registration (under the
+  // new InstanceID) must remain intact and able to receive messages.
+  EXPECT_FALSE(fake_gcm_server()->SendMessage(old_token, "for_old_token"));
+  ASSERT_TRUE(
+      fake_gcm_server()->SendMessage(new_token, "after_out_of_order_delete"));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return app_handler1()->received_messages().size() == 1u; }));
+  EXPECT_EQ(app_handler1()->received_event(), FakeGCMAppHandler::MESSAGE_EVENT);
+  EXPECT_EQ(app_handler1()->app_id(), kTestAppId1);
+  EXPECT_EQ(app_handler1()->message().raw_data, "after_out_of_order_delete");
+}
+
+TEST_F(GCMDriverDesktopIntegrationTest,
+       OutOfOrderDeleteTokenDoesNotEraseNewRegistration) {
+  auto [old_token, old_result] =
+      GetToken(kTestAppId1, kAuthorizedEntity, kScope);
+  ASSERT_EQ(old_result, instance_id::InstanceID::SUCCESS);
+  ASSERT_FALSE(old_token.empty());
+
+  // Hold incoming `delete=true` requests while `DeleteToken()` removes the
+  // cached token locally and sends an unregistration for the old InstanceID.
+  fake_gcm_server()->SetDeferDeleteRequests(true);
+  base::test::TestFuture<instance_id::InstanceID::Result> delete_token_future;
+  instance_id_driver()
+      ->GetInstanceID(kTestAppId1)
+      ->DeleteToken(kAuthorizedEntity, kScope,
+                    delete_token_future.GetCallback());
+  fake_gcm_server()->WaitForDeferredDeleteRequest();
+
+  // Delete the old InstanceID (completes immediately because the token was
+  // already removed from the local cache) and register a new token under a
+  // fresh InstanceID before the held `DeleteToken` request is processed.
+  ASSERT_EQ(DeleteID(kTestAppId1), instance_id::InstanceID::SUCCESS);
+  auto [new_token, new_result] =
+      GetToken(kTestAppId1, kAuthorizedEntity, kScope);
+  ASSERT_EQ(new_result, instance_id::InstanceID::SUCCESS);
+  ASSERT_FALSE(new_token.empty());
+  ASSERT_NE(new_token, old_token);
+
+  // Release the held `DeleteToken` request so it executes after the new
+  // registration.
+  fake_gcm_server()->SetDeferDeleteRequests(false);
+  EXPECT_EQ(delete_token_future.Get(), instance_id::InstanceID::SUCCESS);
+
+  // The old registration must be erased, while the new registration (under the
+  // new InstanceID) must remain intact and able to receive messages.
+  EXPECT_FALSE(fake_gcm_server()->SendMessage(old_token, "for_old_token"));
+  ASSERT_TRUE(fake_gcm_server()->SendMessage(
+      new_token, "after_out_of_order_delete_token"));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return app_handler1()->received_messages().size() == 1u; }));
+  EXPECT_EQ(app_handler1()->received_event(), FakeGCMAppHandler::MESSAGE_EVENT);
+  EXPECT_EQ(app_handler1()->app_id(), kTestAppId1);
+  EXPECT_EQ(app_handler1()->message().raw_data,
+            "after_out_of_order_delete_token");
 }
 
 TEST_F(GCMDriverDesktopIntegrationTest, MultipleAppsAndTokensIsolatedDelivery) {
