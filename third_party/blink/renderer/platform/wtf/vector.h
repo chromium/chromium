@@ -582,6 +582,15 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
 
   void AcquireBuffer(VectorBufferBase&& other) {
     AsAtomicPtr(&buffer_)->store(other.buffer_, std::memory_order_relaxed);
+    // The concurrent marker may load |buffer_| and trace the new backing before
+    // the write barrier below runs (the barrier then bails out because the
+    // backing is already marked). The elements were moved into that backing
+    // without barriers, so they must be visible to every thread that can
+    // observe the new pointer.
+    AsAtomicPtr(&buffer_)->store(other.buffer_,
+                                 Allocator::kIsGarbageCollected
+                                     ? std::memory_order_release
+                                     : std::memory_order_relaxed);
     Allocator::BackingWriteBarrier(&buffer_);
     capacity_ = other.capacity_;
   }
