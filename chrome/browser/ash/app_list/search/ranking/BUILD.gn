@@ -60,6 +60,8 @@ static_library("ranking") {
     # instead after fixing cyclic dependency.
     "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/apps/app_preload_service/proto",
+    "//extensions/common:mojom",
+    "//extensions/common/api",
   ]
 }
 
