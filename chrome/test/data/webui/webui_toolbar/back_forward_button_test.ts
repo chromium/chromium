@@ -13,6 +13,7 @@ import {BrowserProxyImpl} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.
 import type {BackForwardButtonElement, BrowserProxy} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
+import {simulatePointerPress} from './test_util.js';
 
 class TestBrowserControlsHandler extends TestBrowserProxy {
   constructor() {
@@ -278,29 +279,8 @@ suite('BackForwardButtonTest', function() {
     const button = backForwardButton.shadowRoot.querySelector('cr-icon-button');
     assertTrue(!!button);
 
-    const rect = button.getBoundingClientRect();
-    const clientX = rect.left + rect.width / 2;
-    const clientY = rect.top + rect.height / 2;
-
     // Click on the internal button
-    button.dispatchEvent(new PointerEvent('pointerdown', {
-      button: 0,
-      pointerType: 'mouse',
-      detail: 1,
-      clientX: clientX,
-      clientY: clientY,
-      bubbles: true,
-      composed: true,
-    }));
-    button.dispatchEvent(new PointerEvent('pointerup', {
-      button: 0,
-      pointerType: 'mouse',
-      detail: 1,
-      clientX: clientX,
-      clientY: clientY,
-      bubbles: true,
-      composed: true,
-    }));
+    simulatePointerPress(button, {detail: 1});
 
     // Verify the back action was triggered
     assertEquals(1, browserControlsHandler.getCallCount('back'));
@@ -332,24 +312,8 @@ suite('BackForwardButtonTest', function() {
         await microtasksFinished();
 
         const buttonWrapper = backForwardButton.$.buttonWrapper;
-        buttonWrapper.dispatchEvent(new PointerEvent('pointerdown', {
-          button: 0,
-          pointerType: 'mouse',
-          detail: 1,
-          clientX: 5,
-          clientY: 5,
-          bubbles: true,
-          composed: true,
-        }));
-        buttonWrapper.dispatchEvent(new PointerEvent('pointerup', {
-          button: 0,
-          pointerType: 'mouse',
-          detail: 1,
-          clientX: 5,
-          clientY: 5,
-          bubbles: true,
-          composed: true,
-        }));
+        simulatePointerPress(
+            buttonWrapper, {detail: 1, clientX: 5, clientY: 5});
 
         assertEquals(0, browserControlsHandler.getCallCount('back'));
       });
@@ -420,25 +384,7 @@ suite('BackForwardButtonTest', function() {
     assertEquals('webui-toolbar:arrow_back', button.getAttribute('iron-icon'));
 
     // Trigger click
-    const rect = button.getBoundingClientRect();
-    const clientX = rect.left + rect.width / 2;
-    const clientY = rect.top + rect.height / 2;
-    button.dispatchEvent(new PointerEvent('pointerdown', {
-      button: 0,
-      pointerType: 'mouse',
-      clientX: clientX,
-      clientY: clientY,
-      bubbles: true,
-      composed: true,
-    }));
-    button.dispatchEvent(new PointerEvent('pointerup', {
-      button: 0,
-      pointerType: 'mouse',
-      clientX: clientX,
-      clientY: clientY,
-      bubbles: true,
-      composed: true,
-    }));
+    simulatePointerPress(button);
 
     await browserControlsHandler.whenCalled('back');
     // We need to wait for:
@@ -491,25 +437,7 @@ suite('BackForwardButtonTest', function() {
     assertEquals('webui-toolbar:arrow_back', button.getAttribute('iron-icon'));
 
     // Trigger click (pointerup with mouse left click)
-    const rect = button.getBoundingClientRect();
-    const clientX = rect.left + rect.width / 2;
-    const clientY = rect.top + rect.height / 2;
-    button.dispatchEvent(new PointerEvent('pointerdown', {
-      button: 0,
-      pointerType: 'mouse',
-      clientX: clientX,
-      clientY: clientY,
-      bubbles: true,
-      composed: true,
-    }));
-    button.dispatchEvent(new PointerEvent('pointerup', {
-      button: 0,
-      pointerType: 'mouse',
-      clientX: clientX,
-      clientY: clientY,
-      bubbles: true,
-      composed: true,
-    }));
+    simulatePointerPress(button);
 
     await browserControlsHandler.whenCalled('back');
     await backForwardButton.updateComplete;
@@ -535,25 +463,7 @@ suite('BackForwardButtonTest', function() {
     assertEquals('webui-toolbar:arrow_back', button.getAttribute('iron-icon'));
 
     // Trigger middle click (pointerup with button 1)
-    const rect = button.getBoundingClientRect();
-    const clientX = rect.left + rect.width / 2;
-    const clientY = rect.top + rect.height / 2;
-    button.dispatchEvent(new PointerEvent('pointerdown', {
-      button: 1,
-      pointerType: 'mouse',
-      clientX: clientX,
-      clientY: clientY,
-      bubbles: true,
-      composed: true,
-    }));
-    button.dispatchEvent(new PointerEvent('pointerup', {
-      button: 1,
-      pointerType: 'mouse',
-      clientX: clientX,
-      clientY: clientY,
-      bubbles: true,
-      composed: true,
-    }));
+    simulatePointerPress(button, {button: 1});
 
     await browserControlsHandler.whenCalled('back');
     await backForwardButton.updateComplete;
@@ -616,22 +526,9 @@ suite('BackForwardButtonTest', function() {
 
       const button =
           backForwardButton.shadowRoot.querySelector('cr-icon-button')!;
-      const rect = button.getBoundingClientRect();
-      const clickMouse = () => {
-        const opts = {
-          button: 0,
-          pointerType: 'mouse',
-          clientX: rect.left + rect.width / 2,
-          clientY: rect.top + rect.height / 2,
-          bubbles: true,
-          composed: true,
-        };
-        button.dispatchEvent(new PointerEvent('pointerdown', opts));
-        button.dispatchEvent(new PointerEvent('pointerup', opts));
-      };
 
       // Default behavior follows @media (prefers-reduced-motion).
-      clickMouse();
+      simulatePointerPress(button);
       await browserControlsHandler.whenCalled('back');
       await backForwardButton.updateComplete;
       await button.updateComplete;
@@ -660,7 +557,7 @@ suite('BackForwardButtonTest', function() {
       AnimationTracker.showAnimations = false;
       beginElementCalls = 0;
       browserControlsHandler.resetResolver('back');
-      clickMouse();
+      simulatePointerPress(button);
       await browserControlsHandler.whenCalled('back');
       await backForwardButton.updateComplete;
       await button.updateComplete;
@@ -673,7 +570,7 @@ suite('BackForwardButtonTest', function() {
       // when prefers-reduced-motion: reduce is active.
       AnimationTracker.showAnimations = true;
       browserControlsHandler.resetResolver('back');
-      clickMouse();
+      simulatePointerPress(button);
       await browserControlsHandler.whenCalled('back');
       await backForwardButton.updateComplete;
       await button.updateComplete;

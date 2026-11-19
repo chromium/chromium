@@ -10,6 +10,8 @@ import type {LocationBarElement} from 'chrome://webui-toolbar.top-chrome/lazy_lo
 import {OmniboxTextColor, SecurityChipRole} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {LocationBarState} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
+import {simulatePointerPress} from './test_util.js';
+
 suite('LocationBar', function() {
   let locationBar: LocationBarElement;
   let initialState: LocationBarState;
@@ -222,23 +224,7 @@ suite('LocationBar', function() {
     const input = searchbox.inputElement;
 
     // Test 1: Pointer events (pointerdown + pointerup) should clear the input.
-    const rect = clearButton.getBoundingClientRect();
-    clearButton.dispatchEvent(new PointerEvent('pointerdown', {
-      button: 0,
-      pointerId: 1,
-      clientX: rect.left,
-      clientY: rect.top,
-      bubbles: true,
-      composed: true,
-    }));
-    clearButton.dispatchEvent(new PointerEvent('pointerup', {
-      button: 0,
-      pointerId: 1,
-      clientX: rect.left,
-      clientY: rect.top,
-      bubbles: true,
-      composed: true,
-    }));
+    simulatePointerPress(clearButton);
     await microtasksFinished();
 
     assertEquals('', input.value);

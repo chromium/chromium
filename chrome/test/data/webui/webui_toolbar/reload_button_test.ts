@@ -14,6 +14,7 @@ import {BrowserProxyImpl, ContextMenuType, PressHandler} from 'chrome://webui-to
 import type {BrowserProxy, ReloadButtonElement} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
+import {simulatePointerPress} from './test_util.js';
 
 class TestBrowserControlsHandler extends TestBrowserProxy {
   constructor() {
@@ -107,11 +108,6 @@ suite('ReloadButtonTest', function() {
     }));
   }
 
-  function clickButton() {
-    dispatchPointerEvent('pointerdown');
-    dispatchPointerEvent('pointerup');
-  }
-
   // Tests that the standard cr-icon-button ink drop ripple is suppressed
   // when Glow Up is enabled, since Glow Up defines its own interactive
   // hover/click animations.
@@ -169,7 +165,7 @@ suite('ReloadButtonTest', function() {
     // Default fallback icon when not animating.
     assertEquals('webui-toolbar:refresh', button.getAttribute('iron-icon'));
 
-    clickButton();
+    simulatePointerPress(button);
     await browserControlsHandler.whenCalled('reloadFromClick');
 
     // Simulate Mojo updating state to loading. We must reassign the state
@@ -227,7 +223,7 @@ suite('ReloadButtonTest', function() {
     assertEquals('webui-toolbar:close', button.getAttribute('iron-icon'));
 
     // Click it to stop.
-    clickButton();
+    simulatePointerPress(button);
     await browserControlsHandler.whenCalled('stopLoad');
 
     // Should start 'end' (Stop -> Reload transition) animation immediately on
@@ -263,7 +259,7 @@ suite('ReloadButtonTest', function() {
     const button = reloadButton.shadowRoot.querySelector('cr-icon-button')!;
     assertEquals('webui-toolbar:refresh', button.getAttribute('iron-icon'));
 
-    clickButton();
+    simulatePointerPress(button);
     await browserControlsHandler.whenCalled('reloadFromClick');
 
     // Simulate fast load: immediately set loading to false before the
@@ -443,7 +439,7 @@ suite('ReloadButtonTest', function() {
       assertEquals('webui-toolbar:refresh', button.getAttribute('iron-icon'));
 
       // Default behavior follows @media (prefers-reduced-motion).
-      clickButton();
+      simulatePointerPress(button);
       await browserControlsHandler.whenCalled('reloadFromClick');
       (reloadButton as any).state = {
         ...(reloadButton as any).state,
@@ -474,7 +470,7 @@ suite('ReloadButtonTest', function() {
       // and fast-load double animations.
       AnimationTracker.showAnimations = false;
       beginElementCalls = 0;
-      clickButton();
+      simulatePointerPress(button);
       await browserControlsHandler.whenCalled('stopLoad');
       await reloadButton.updateComplete;
       await new Promise(resolve => setTimeout(resolve, 0));
@@ -484,7 +480,7 @@ suite('ReloadButtonTest', function() {
       assertEquals(0, beginElementCalls);
 
       browserControlsHandler.resetResolver('reloadFromClick');
-      clickButton();
+      simulatePointerPress(button);
       await browserControlsHandler.whenCalled('reloadFromClick');
       (reloadButton as any).state = {
         ...(reloadButton as any).state,
@@ -501,7 +497,7 @@ suite('ReloadButtonTest', function() {
       // when prefers-reduced-motion: reduce is active.
       AnimationTracker.showAnimations = true;
       browserControlsHandler.resetResolver('reloadFromClick');
-      clickButton();
+      simulatePointerPress(button);
       await browserControlsHandler.whenCalled('reloadFromClick');
       (reloadButton as any).state = {
         ...(reloadButton as any).state,
@@ -534,7 +530,7 @@ suite('ReloadButtonTest', function() {
       // animation when 'start' finishes.
       AnimationTracker.showAnimations = true;
       browserControlsHandler.resetResolver('reloadFromClick');
-      clickButton();
+      simulatePointerPress(button);
       await browserControlsHandler.whenCalled('reloadFromClick');
       (reloadButton as any).state = {
         ...(reloadButton as any).state,
