@@ -465,7 +465,7 @@ bool SwapPressureDiscardingPolicyAndroid::DiscardUnderSwapPressure(
   if (any_discarded) {
     base::UmaHistogramMemoryLargeMB(
         "PerformanceManager.AndroidSwapPressure.EstimatedReclaimedMb",
-        base::saturated_cast<int>(estimated_reclaimed.InMiB()));
+        estimated_reclaimed);
   }
 
   const int remaining_live_tabs = live_tab_count - discarded_count;
@@ -504,7 +504,7 @@ void SwapPressureDiscardingPolicyAndroid::CheckSwapPressure(
         thresholds.swap_free_pct);
     base::UmaHistogramMemoryLargeMB(
         "PerformanceManager.AndroidSwapPressure.FileCacheMb",
-        base::saturated_cast<int>(thresholds.file_cache.InMiB()));
+        thresholds.file_cache);
   }
 
   const bool under_pressure = swap_under_pressure && file_cache_under_pressure;

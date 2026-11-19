@@ -191,7 +191,7 @@ void MetricsProviderCommon::RecordAvailableMemoryMetrics() {
   auto total_bytes = base::SysInfo::AmountOfTotalPhysicalMemory();
 
   base::UmaHistogramMemoryLargeMB("Memory.Experimental.AvailableMemoryMB",
-                                  available_bytes.InMiB());
+                                  available_bytes);
   base::UmaHistogramPercentage(
       "Memory.Experimental.AvailableMemoryPercent",
       available_bytes.InBytes() * 100 / total_bytes.InBytes());

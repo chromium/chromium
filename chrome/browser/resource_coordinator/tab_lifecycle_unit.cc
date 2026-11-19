@@ -499,11 +499,9 @@ void TabLifecycleUnitSource::TabLifecycleUnit::DidStopLoading() {
 
   // Record the estimated memory savings from the original discard. This serves
   // as the "resource benefit" metric.
-  // Convert the estimate to MiB for readability in the histogram.
   if (last_discard_memory_estimate_ != base::ByteSize()) {
-    base::UmaHistogramMemoryMB(
-        "Tab.Discarding.Reload.FreedMemoryMB",
-        static_cast<int>(last_discard_memory_estimate_.InMiB()));
+    base::UmaHistogramMemoryMB("Tab.Discarding.Reload.FreedMemoryMB",
+                               last_discard_memory_estimate_);
   }
   // Reset the flag to ensure metrics are not recorded for subsequent
   // in-page navigations or loading events that are not related to the
