@@ -44,7 +44,8 @@ AudioCodec SymphoniaCodecToAudioCodec(SymphoniaCodec codec) {
   }
 }
 
-SampleFormat SymphoniaCodecToSampleFormat(SymphoniaCodec codec) {
+SampleFormat SymphoniaCodecToSampleFormat(SymphoniaCodec codec,
+                                          uint32_t bits_per_sample) {
   switch (codec) {
     case SymphoniaCodec::PcmU8:
       return kSampleFormatU8;
@@ -67,8 +68,12 @@ SampleFormat SymphoniaCodecToSampleFormat(SymphoniaCodec codec) {
     case SymphoniaCodec::PcmF32Planar:
       return kSampleFormatPlanarF32;
 
-    // Compressed audio decoded to S16 by default in Symphonia decoder.
+    // FLAC deeper than 16 bits (for example, 24-bit) decodes to 32-bit signed
+    // linear PCM in both Symphonia and Chromium decoders.
     case SymphoniaCodec::Flac:
+      return bits_per_sample > 16 ? kSampleFormatS32 : kSampleFormatS16;
+
+    // Compressed audio decoded to S16 by default in Symphonia decoder.
     case SymphoniaCodec::Mp3:
     case SymphoniaCodec::Vorbis:
     case SymphoniaCodec::Aac:

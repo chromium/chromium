@@ -4,11 +4,23 @@
 
 #include "media/filters/symphonia_demuxer_util.h"
 
+#include <stdint.h>
+
 #include "base/test/scoped_feature_list.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
+
+namespace {
+
+// `SymphoniaCodecToSampleFormat()` only reads the bit depth for FLAC. Other
+// codecs ignore it.
+constexpr uint32_t kIgnoredBitsPerSample = 16;
+constexpr uint32_t k16BitFlac = 16;
+constexpr uint32_t k24BitFlac = 24;
+
+}  // namespace
 
 using container_names::MediaContainerName;
 
@@ -40,33 +52,46 @@ TEST(SymphoniaDemuxerUtilTest, UnsupportedCodecsAreUnknown) {
             AudioCodec::kUnknown);
   EXPECT_EQ(SymphoniaCodecToAudioCodec(SymphoniaCodec::Vp9),
             AudioCodec::kUnknown);
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::Unknown),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::Unknown,
+                                         kIgnoredBitsPerSample),
             kUnknownSampleFormat);
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::H264),
-            kUnknownSampleFormat);
+  EXPECT_EQ(
+      SymphoniaCodecToSampleFormat(SymphoniaCodec::H264, kIgnoredBitsPerSample),
+      kUnknownSampleFormat);
 }
 
 TEST(SymphoniaDemuxerUtilTest, SampleFormats) {
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmU8),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmU8,
+                                         kIgnoredBitsPerSample),
             kSampleFormatU8);
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmU8Planar),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmU8Planar,
+                                         kIgnoredBitsPerSample),
             kSampleFormatPlanarU8);
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmS16be),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmS16be,
+                                         kIgnoredBitsPerSample),
             kSampleFormatS16);
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmS16Planar),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmS16Planar,
+                                         kIgnoredBitsPerSample),
             kSampleFormatPlanarS16);
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmS24be),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmS24be,
+                                         kIgnoredBitsPerSample),
             kSampleFormatS24);
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmS32Planar),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmS32Planar,
+                                         kIgnoredBitsPerSample),
             kSampleFormatPlanarS32);
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmF32),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmF32,
+                                         kIgnoredBitsPerSample),
             kSampleFormatF32);
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::Flac),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::Flac, k16BitFlac),
             kSampleFormatS16);
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::Flac, k24BitFlac),
+            kSampleFormatS32);
   // G.711 decodes to 16-bit linear PCM, even though it is 8 bits on the wire.
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmAlaw),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmAlaw,
+                                         kIgnoredBitsPerSample),
             kSampleFormatS16);
-  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmMulaw),
+  EXPECT_EQ(SymphoniaCodecToSampleFormat(SymphoniaCodec::PcmMulaw,
+                                         kIgnoredBitsPerSample),
             kSampleFormatS16);
 }
 

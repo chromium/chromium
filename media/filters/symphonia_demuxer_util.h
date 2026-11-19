@@ -5,6 +5,8 @@
 #ifndef MEDIA_FILTERS_SYMPHONIA_DEMUXER_UTIL_H_
 #define MEDIA_FILTERS_SYMPHONIA_DEMUXER_UTIL_H_
 
+#include <stdint.h>
+
 #include <string_view>
 
 #include "media/base/audio_codecs.h"
@@ -27,8 +29,10 @@ namespace media {
 MEDIA_EXPORT AudioCodec SymphoniaCodecToAudioCodec(SymphoniaCodec codec);
 
 // Returns the sample format that `codec` decodes to, or `kUnknownSampleFormat`
-// for video codecs and unknown codecs.
-MEDIA_EXPORT SampleFormat SymphoniaCodecToSampleFormat(SymphoniaCodec codec);
+// for video codecs and unknown codecs. `bits_per_sample` is the track's coded
+// bit depth, which picks the format for FLAC.
+MEDIA_EXPORT SampleFormat
+SymphoniaCodecToSampleFormat(SymphoniaCodec codec, uint32_t bits_per_sample);
 
 // Maps a Symphonia `FormatInfo::short_name` to a `MediaContainerName` for
 // metrics. The names must match the format readers exactly; for example, the

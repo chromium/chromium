@@ -43,6 +43,9 @@
 #include "media/base/test_data_util.h"
 #include "media/base/timestamp_constants.h"
 #include "media/filters/demuxer_manager.h"
+#if BUILDFLAG(ENABLE_FFMPEG)
+#include "media/filters/ffmpeg_demuxer.h"
+#endif  // BUILDFLAG(ENABLE_FFMPEG)
 #include "media/filters/file_data_source.h"
 #include "media/filters/mock_demuxer_manager_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -418,6 +421,67 @@ TEST_F(SymphoniaDemuxerTest, InitializeFlac) {
   EXPECT_EQ(demuxer_->GetContainerForMetrics(),
             container_names::MediaContainerName::kContainerFLAC);
 }
+
+TEST_F(SymphoniaDemuxerTest, FlacSampleFormatFollowsBitDepth) {
+  struct {
+    const char* filename;
+    SampleFormat expected;
+  } constexpr kCases[] = {
+      {"bear.flac", kSampleFormatS16},
+      {"sfx.flac", kSampleFormatS32},
+      {"sine-s32-stereo.flac", kSampleFormatS32},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.filename);
+    CreateDemuxer(test_case.filename);
+    InitializeDemuxer();
+    SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+    ASSERT_NE(stream, nullptr);
+    EXPECT_EQ(stream->audio_decoder_config().sample_format(),
+              test_case.expected);
+    demuxer_->Stop();
+    demuxer_.reset();
+    testing::Mock::VerifyAndClearExpectations(&host_);
+  }
+}
+
+#if BUILDFLAG(ENABLE_FFMPEG)
+// SymphoniaDemuxer must report the same FLAC sample format as FFmpegDemuxer.
+TEST_F(SymphoniaDemuxerTest, FlacSampleFormatMatchesFFmpegDemuxer) {
+  for (const char* filename :
+       {"bear.flac", "sfx.flac", "sine-s32-stereo.flac"}) {
+    SCOPED_TRACE(filename);
+    FileDataSource data_source;
+    ASSERT_TRUE(data_source.Initialize(GetTestDataFilePath(filename)));
+    FFmpegDemuxer ffmpeg_demuxer(
+        base::SingleThreadTaskRunner::GetCurrentDefault(), &data_source,
+        base::DoNothing(), base::DoNothing(), &media_log_,
+        /*is_local_file=*/true);
+    EXPECT_CALL(host_, SetDuration(_)).Times(AnyNumber());
+    base::test::TestFuture<PipelineStatus> status;
+    ffmpeg_demuxer.Initialize(&host_, status.GetCallback());
+    ASSERT_EQ(status.Get(), PIPELINE_OK);
+    DemuxerStream* ffmpeg_stream = nullptr;
+    for (DemuxerStream* stream : ffmpeg_demuxer.GetAllStreams()) {
+      if (stream->type() == DemuxerStream::AUDIO) {
+        ffmpeg_stream = stream;
+      }
+    }
+    ASSERT_NE(ffmpeg_stream, nullptr);
+    ffmpeg_demuxer.Stop();
+
+    CreateDemuxer(filename);
+    InitializeDemuxer();
+    SymphoniaDemuxerStream* stream = GetStream(DemuxerStream::AUDIO);
+    ASSERT_NE(stream, nullptr);
+    EXPECT_EQ(stream->audio_decoder_config().sample_format(),
+              ffmpeg_stream->audio_decoder_config().sample_format());
+    demuxer_->Stop();
+    demuxer_.reset();
+    testing::Mock::VerifyAndClearExpectations(&host_);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 TEST_F(SymphoniaDemuxerTest, InitializeMp3) {
   CreateDemuxer("sfx.mp3");

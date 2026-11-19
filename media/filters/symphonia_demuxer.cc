@@ -390,10 +390,10 @@ void SymphoniaDemuxer::AddAudioStream(const SymphoniaTrackInfo& track,
 
   std::vector<uint8_t> extra_data(track.extra_data.begin(),
                                   track.extra_data.end());
-  AudioDecoderConfig config(codec, SymphoniaCodecToSampleFormat(track.codec),
-                            ChannelLayoutConfig::Guess(track.channels),
-                            track.sample_rate, std::move(extra_data),
-                            EncryptionScheme::kUnencrypted);
+  AudioDecoderConfig config(
+      codec, SymphoniaCodecToSampleFormat(track.codec, track.bits_per_sample),
+      ChannelLayoutConfig::Guess(track.channels), track.sample_rate,
+      std::move(extra_data), EncryptionScheme::kUnencrypted);
   if (!config.IsValidConfig()) {
     return;
   }
