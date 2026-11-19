@@ -1165,18 +1165,8 @@ BASE_FEATURE(kOrcaForManagedUsers,
              "kOrcaForManagedUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables Orca dragging support.
-BASE_FEATURE(kOrcaDraggingSupport, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Orca capability check.
 BASE_FEATURE(kOrcaUseAccountCapabilities, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables Orca on Workspace.
-BASE_FEATURE(kOrcaForceFetchContextOnGetEditorPanelContext,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables new Orca service connection logic.
-BASE_FEATURE(kOrcaServiceConnection, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables proto-based Orca service communication logic.
 BASE_FEATURE(kOrcaServiceProto, base::FEATURE_DISABLED_BY_DEFAULT);

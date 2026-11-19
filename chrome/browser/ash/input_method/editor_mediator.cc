@@ -131,8 +131,7 @@ void EditorMediator::OnContextUpdated() {
 }
 
 void EditorMediator::OnImeChange(std::string_view engine_id) {
-  if (base::FeatureList::IsEnabled(ash::features::kOrcaServiceConnection) &&
-      service_connection_) {
+  if (service_connection_) {
     ResetEditorConnections();
   }
 }
@@ -177,8 +176,7 @@ void EditorMediator::OnBlur() {
 void EditorMediator::OnActivateIme(std::string_view engine_id) {
   editor_context_.OnActivateIme(engine_id);
 
-  if (base::FeatureList::IsEnabled(ash::features::kOrcaServiceConnection) &&
-      IsServiceConnected()) {
+  if (IsServiceConnected()) {
     ResetEditorConnections();
   }
 }

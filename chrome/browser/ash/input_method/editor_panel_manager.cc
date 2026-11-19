@@ -7,7 +7,6 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
@@ -50,11 +49,6 @@ EditorPanelManagerImpl::EditorPanelManagerImpl(Delegate* delegate)
 EditorPanelManagerImpl::~EditorPanelManagerImpl() = default;
 
 void EditorPanelManagerImpl::BindEditorClient() {
-  if (editor_client_remote_.is_bound() &&
-      !base::FeatureList::IsEnabled(ash::features::kOrcaServiceConnection)) {
-    return;
-  }
-
   editor_client_remote_.reset();
   delegate_->BindEditorClient(
       editor_client_remote_.BindNewPipeAndPassReceiver());
