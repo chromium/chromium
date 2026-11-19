@@ -42,6 +42,8 @@ MockAimEligibilityService::MockAimEligibilityService(
       .WillByDefault(testing::Return(false));
   ON_CALL(*this, HasAimUrlParams(testing::_))
       .WillByDefault(testing::Return(true));
+  ON_CALL(*this, GetMostRecentResponse())
+      .WillByDefault(testing::ReturnRef(mock_response_));
   ON_CALL(*this, GetSearchboxConfig())
       .WillByDefault(testing::Return(&mock_config));
   ON_CALL(*this, GetVariationsService())

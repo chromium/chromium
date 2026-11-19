@@ -112,6 +112,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/base/base_window.h"
@@ -2923,6 +2924,57 @@ TEST_F(ContextualSearchboxHandlerTest, DynamicAimFulfillment_NotOptedIn) {
   handler().SubmitQuery(kQueryText, 1, false, false, false, false,
                         /*is_voice_search=*/false);
   EXPECT_EQ(search_url_type, SearchUrlType::kAim);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, PassesServerSrpInputModeToModel) {
+  auto* aim_service = static_cast<MockAimEligibilityService*>(
+      AimEligibilityServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(aim_service);
+
+  omnibox::AimEligibilityResponse response;
+  response.set_srp_input_mode(
+      omnibox::AimEligibilityResponse::SRP_INPUT_MODE_MULTI_IMAGE);
+  EXPECT_CALL(*aim_service, GetMostRecentResponse())
+      .WillRepeatedly(testing::ReturnRef(response));
+
+  // Without opt-in, model does not receive the server mode.
+  ASSERT_TRUE(handler().input_state_model());
+  EXPECT_EQ(handler().input_state_model()->server_srp_input_mode(),
+            std::nullopt);
+
+  // Opt-in passes the server mode from the response.
+  handler().OptInToDynamicAimFulfillment();
+  EXPECT_EQ(handler().input_state_model()->server_srp_input_mode(),
+            contextual_search::SrpInputMode::kMultiImage);
+
+  // When eligibility changes, the updated mode is forwarded.
+  omnibox::AimEligibilityResponse updated_response;
+  updated_response.set_srp_input_mode(
+      omnibox::AimEligibilityResponse::SRP_INPUT_MODE_NONE);
+  EXPECT_CALL(*aim_service, GetMostRecentResponse())
+      .WillRepeatedly(testing::ReturnRef(updated_response));
+  handler().OnAimEligibilityChanged();
+  EXPECT_EQ(handler().input_state_model()->server_srp_input_mode(),
+            contextual_search::SrpInputMode::kNone);
+
+  // If the field is unset, server_srp_input_mode is cleared.
+  omnibox::AimEligibilityResponse empty_response;
+  EXPECT_CALL(*aim_service, GetMostRecentResponse())
+      .WillRepeatedly(testing::ReturnRef(empty_response));
+  handler().OnAimEligibilityChanged();
+  EXPECT_EQ(handler().input_state_model()->server_srp_input_mode(),
+            std::nullopt);
+
+  // If the server sends an unknown/newer enum value, it falls back to
+  // kAnyCombinationAllTypes.
+  omnibox::AimEligibilityResponse unknown_response;
+  unknown_response.set_srp_input_mode(
+      static_cast<omnibox::AimEligibilityResponse::SrpInputMode>(999));
+  EXPECT_CALL(*aim_service, GetMostRecentResponse())
+      .WillRepeatedly(testing::ReturnRef(unknown_response));
+  handler().OnAimEligibilityChanged();
+  EXPECT_EQ(handler().input_state_model()->server_srp_input_mode(),
+            contextual_search::SrpInputMode::kAnyCombinationAllTypes);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {

@@ -2371,6 +2371,41 @@ TEST_F(InputStateModelDynamicAimTest, AttachmentsRouteByMode) {
   EXPECT_TRUE(WillFulfillInAim());
 }
 
+TEST_F(InputStateModelDynamicAimTest, ServerSrpInputModeUsedWhenEnabled) {
+  input_state_model_->EnableDynamicAimFulfillment();
+
+  // With use_server_input_rules disabled (default), server mode is ignored.
+  input_state_model_->SetServerSrpInputMode(SrpInputMode::kMultiImage);
+  EXPECT_EQ(input_state_model_->server_srp_input_mode(),
+            SrpInputMode::kMultiImage);
+  // Default Finch mode is single_image, so 2 images go to AIM.
+  SetInputs(/*images=*/2);
+  EXPECT_TRUE(WillFulfillInAim());
+
+  // Enable use_server_input_rules:
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kDynamicAimFulfillment, {{"use_server_input_rules", "true"}});
+
+  // Clear model back to SRP mode with 2 images:
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  // Server mode is kMultiImage, so 2 images stay on SRP!
+  EXPECT_FALSE(WillFulfillInAim());
+  EXPECT_EQ(ActiveModel(), omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+
+  // Changing server mode to kSingleImage flips 2 images to AIM.
+  input_state_model_->SetServerSrpInputMode(SrpInputMode::kSingleImage);
+  EXPECT_TRUE(WillFulfillInAim());
+
+  // If server mode is cleared (std::nullopt), falls back to Finch mode
+  // (single_image).
+  input_state_model_->SetActiveModel(
+      omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  input_state_model_->SetServerSrpInputMode(std::nullopt);
+  EXPECT_TRUE(WillFulfillInAim());
+}
+
 // Before the first server config, queries go to AI Mode without entering it.
 TEST_F(InputStateModelDynamicAimTest, ColdStartDoesNotEnterAimMode) {
   input_state_model_ = std::make_unique<InputStateModel>(

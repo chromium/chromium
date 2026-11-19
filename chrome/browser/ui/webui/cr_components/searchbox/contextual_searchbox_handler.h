@@ -608,6 +608,10 @@ class ContextualSearchboxHandler
   std::unique_ptr<ContextualSearchboxTabFaviconHelper> tab_favicon_helper_;
   base::CallbackListSubscription aim_eligibility_subscription_;
 
+  // Passes the server SRP input mode from `AimEligibilityService` to the
+  // `InputStateModel` if opted in to dynamic AIM fulfillment.
+  void UpdateServerSrpInputMode();
+
   // Whether `OptInToDynamicAimFulfillment()` was called.
   bool opted_in_to_dynamic_aim_fulfillment_ = false;
 

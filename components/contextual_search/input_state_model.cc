@@ -964,6 +964,19 @@ void InputStateModel::EnableDynamicAimFulfillment() {
   NotifySubscribers();
 }
 
+void InputStateModel::SetServerSrpInputMode(
+    std::optional<SrpInputMode> server_srp_input_mode) {
+  if (server_srp_input_mode_ == server_srp_input_mode) {
+    return;
+  }
+  server_srp_input_mode_ = server_srp_input_mode;
+  if (!dynamic_aim_fulfillment_enabled_) {
+    return;
+  }
+  UpdateDisabledState();
+  NotifySubscribers();
+}
+
 void InputStateModel::EnterAimMode() {
   aim_mode_active_ = true;
   UpdateDisabledState();
@@ -983,10 +996,14 @@ void InputStateModel::RecomputeRouting() {
     pending_tabs =
         GetPendingTabContextCount(*session_handle_, file_infos.size());
   }
+  const SrpInputMode srp_input_mode =
+      omnibox::kDynamicAimFulfillmentUseServerInputRules.Get() &&
+              server_srp_input_mode_.has_value()
+          ? *server_srp_input_mode_
+          : SrpInputModeFromFeatureParams();
   const FulfillmentDecision decision = ComputeFulfillment(
       state_, aim_mode_active_, CountAttachments(file_infos, pending_tabs),
-      EligibleAttachmentsForMode(SrpInputModeFromFeatureParams()),
-      has_valid_config_);
+      EligibleAttachmentsForMode(srp_input_mode), has_valid_config_);
   state_.will_fulfill_in_aim = decision.will_fulfill_in_aim;
   // Going to AIM enters AI Mode, unless it's only because no config has
   // arrived yet.

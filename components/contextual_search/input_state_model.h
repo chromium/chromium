@@ -143,6 +143,14 @@ class InputStateModel {
     return dynamic_aim_fulfillment_enabled_;
   }
 
+  // Sets the server-provided SRP input mode. If present and
+  // `kDynamicAimFulfillmentUseServerInputRules` is enabled, this is used
+  // instead of the Finch `srp_input_mode` param.
+  void SetServerSrpInputMode(std::optional<SrpInputMode> server_srp_input_mode);
+  std::optional<SrpInputMode> server_srp_input_mode() const {
+    return server_srp_input_mode_;
+  }
+
   // Enters AI Mode without picking a model, e.g. for the Omnibox AI Mode
   // button. With dynamic AIM fulfillment, routing then shows the default model,
   // including once the models arrive or the model opts in later.
@@ -293,6 +301,9 @@ class InputStateModel {
   bool aim_mode_active_ = false;
   // URL params of the last routing result, for submit.
   UrlParams fulfillment_url_params_;
+
+  // Server-provided SRP input mode from `AimEligibilityResponse`.
+  std::optional<SrpInputMode> server_srp_input_mode_;
 
   base::WeakPtrFactory<InputStateModel> weak_ptr_factory_{this};
 };

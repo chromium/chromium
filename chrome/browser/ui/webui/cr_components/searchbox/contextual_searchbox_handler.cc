@@ -73,6 +73,7 @@
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/page_classification_functions.h"
@@ -94,6 +95,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "ui/base/base_window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -961,6 +963,7 @@ void ContextualSearchboxHandler::OnAimEligibilityChanged() {
   if (config) {
     input_state_model_->UpdateConfig(*config);
   }
+  UpdateServerSrpInputMode();
 }
 
 contextual_search::ContextualSearchMetricsRecorder*
@@ -1852,6 +1855,34 @@ void ContextualSearchboxHandler::OptInToDynamicAimFulfillment() {
   opted_in_to_dynamic_aim_fulfillment_ = true;
   if (input_state_model_) {
     input_state_model_->EnableDynamicAimFulfillment();
+    UpdateServerSrpInputMode();
+  }
+}
+
+void ContextualSearchboxHandler::UpdateServerSrpInputMode() {
+  if (!input_state_model_ || !opted_in_to_dynamic_aim_fulfillment_) {
+    return;
+  }
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  if (!aim_eligibility_service) {
+    input_state_model_->SetServerSrpInputMode(std::nullopt);
+    return;
+  }
+  const omnibox::AimEligibilityResponse& response =
+      aim_eligibility_service->GetMostRecentResponse();
+  if (response.has_srp_input_mode()) {
+    if (omnibox::AimEligibilityResponse::SrpInputMode_IsValid(
+            response.srp_input_mode())) {
+      input_state_model_->SetServerSrpInputMode(
+          static_cast<contextual_search::SrpInputMode>(
+              response.srp_input_mode()));
+    } else {
+      input_state_model_->SetServerSrpInputMode(
+          contextual_search::SrpInputMode::kAnyCombinationAllTypes);
+    }
+  } else {
+    input_state_model_->SetServerSrpInputMode(std::nullopt);
   }
 }
 
@@ -1864,6 +1895,7 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
   // The model can be created or replaced here, so apply the opt-in to it.
   if (opted_in_to_dynamic_aim_fulfillment_) {
     input_state_model_->EnableDynamicAimFulfillment();
+    UpdateServerSrpInputMode();
   }
   input_state_model_->SetSmartTabSharingActive(IsSmartTabSharingActive());
   input_state_model_->TogglePermanentlyDisabledInputType(
