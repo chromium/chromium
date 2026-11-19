@@ -39,6 +39,7 @@
 #include "components/actor/core/actor_ui_mode.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
@@ -228,7 +229,7 @@ std::unique_ptr<ActorTask> ActorTask::CreateForTesting(
     const ActorTaskOptions& options) {
   // Service-level creation options are handled by ActorKeyedService and are
   // ignored when constructing an ActorTask directly.
-  CHECK(options.execution_mode == ActorTaskOptions::ExecutionMode::kHeaded);
+  CHECK(options.execution_mode == proto::TargetSurface::HEADED);
   CHECK(!options.agent_container_config.has_value());
   CHECK(!options.webui_task_options ||
         !options.webui_task_options->actuation_tab_id.has_value());

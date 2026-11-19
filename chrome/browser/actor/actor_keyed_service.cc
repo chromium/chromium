@@ -62,6 +62,7 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/browser_actuator/public/features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -754,7 +755,7 @@ TaskId ActorKeyedService::CreateTaskImpl(
         options.webui_task_options->actuation_tab_id.value());
   }
   if (initial_actor_surface.is_null() &&
-      options.execution_mode == ActorTaskOptions::ExecutionMode::kHeadless) {
+      options.execution_mode == proto::TargetSurface::HEADLESS) {
     ScopedHeadlessActorSurface headless_surface = CreateHeadlessActorSurface();
     initial_actor_surface = headless_surface.actor_surface_handle();
     task_headless_surfaces_.emplace(task_id, std::move(headless_surface));

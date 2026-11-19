@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "chrome/common/glic_enums.mojom.h"
+#include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace actor {
@@ -19,13 +20,6 @@ class ActorTaskDelegate;
 
 // Options for creating an ActorTask.
 struct ActorTaskOptions {
-  // Initial surface behavior when the task has no initial surface. kHeaded
-  // creates no surface. kHeadless creates a headless surface for the task.
-  enum class ExecutionMode {
-    kHeaded,
-    kHeadless,
-  };
-
   ActorTaskOptions();
   ActorTaskOptions(const ActorTaskOptions&) = delete;
   ActorTaskOptions& operator=(const ActorTaskOptions&) = delete;
@@ -53,7 +47,10 @@ struct ActorTaskOptions {
       agent_container_config;
 
   // Initial surface creation mode when no initial surface is provided.
-  ExecutionMode execution_mode = ExecutionMode::kHeaded;
+  // HEADLESS creates a headless surface for the task. Other values create no
+  // surface.
+  proto::TargetSurface::ExecutionMode execution_mode =
+      proto::TargetSurface::HEADED;
 
   // Whether navigations and critical actions performed during the task should
   // be excluded from Chrome history and critical action logging.

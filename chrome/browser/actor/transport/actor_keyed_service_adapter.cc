@@ -273,7 +273,7 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
     // the registry lookup below finds no surface.
     if (surface.tab_id() == 0 &&
         surface.execution_mode() == proto::TargetSurface::HEADLESS) {
-      options.execution_mode = ActorTaskOptions::ExecutionMode::kHeadless;
+      options.execution_mode = proto::TargetSurface::HEADLESS;
     } else if (actor_service_->GetSurfaceRegistry().Get(
                    ActorSurfaceHandle::FromRawValue(surface.tab_id()))) {
       options.webui_task_options->actuation_tab_id = surface.tab_id();

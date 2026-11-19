@@ -76,11 +76,11 @@ on it has completed. This also covers surfaces whose task was never created.
 and it can't be used after the task has completed. Surfaces still alive at
 profile shutdown are destroyed by `ActorKeyedService::Shutdown()`.
 
-**Surfaces created for a task.** A feature can instead pass
-`ExecutionMode::kHeadless` and no initial surface to
-`ActorKeyedService::CreateTaskWithOptions()`. `ActorKeyedService` then creates
-a headless surface for the task, holds its `ScopedHeadlessActorSurface`, and
-destroys the surface when the task completes.
+**Surfaces created for a task.** A feature can instead set
+`ActorTaskOptions::execution_mode` to `TargetSurface::HEADLESS` and pass no
+initial surface to `ActorKeyedService::CreateTaskWithOptions()`.
+`ActorKeyedService` then creates a headless surface for the task, holds its
+`ScopedHeadlessActorSurface`, and destroys the surface when the task completes.
 `ActorKeyedServiceAdapter::StartTask()` does this for a HEADLESS target without
 a surface ID.
 

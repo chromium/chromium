@@ -35,6 +35,7 @@
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/origin_gating_checker.h"
 #include "components/origin_gating/core/task_policy_config_slot.h"
@@ -391,11 +392,11 @@ TEST_F(ActorKeyedServiceTest, InitialUnknownSurfaceNotAssociated) {
   EXPECT_TRUE(task->GetActorSurfaces().empty());
 }
 
-// A kHeadless task that has no initial surface gets a new headless surface.
+// A HEADLESS task that has no initial surface gets a new headless surface.
 TEST_F(ActorKeyedServiceTest, HeadlessModeCreatesHeadlessSurface) {
   auto* actor_service = ActorKeyedService::Get(profile());
   ActorTaskOptions options;
-  options.execution_mode = ActorTaskOptions::ExecutionMode::kHeadless;
+  options.execution_mode = proto::TargetSurface::HEADLESS;
   TaskId id = actor_service->CreateTaskWithOptions(
       TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
       std::move(options));
@@ -414,7 +415,7 @@ TEST_F(ActorKeyedServiceTest, HeadlessModeCreatesHeadlessSurface) {
 TEST_F(ActorKeyedServiceTest, StoppingTaskDestroysItsHeadlessSurface) {
   auto* actor_service = ActorKeyedService::Get(profile());
   ActorTaskOptions options;
-  options.execution_mode = ActorTaskOptions::ExecutionMode::kHeadless;
+  options.execution_mode = proto::TargetSurface::HEADLESS;
   TaskId id = actor_service->CreateTaskWithOptions(
       TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
       std::move(options));
@@ -428,7 +429,7 @@ TEST_F(ActorKeyedServiceTest, StoppingTaskDestroysItsHeadlessSurface) {
   EXPECT_FALSE(actor_service->GetSurfaceRegistry().Get(handle));
 }
 
-// A kHeadless task that already has an initial surface uses that surface, and
+// A HEADLESS task that already has an initial surface uses that surface, and
 // the service does not destroy it.
 TEST_F(ActorKeyedServiceTest, HeadlessModeKeepsCallerOwnedSurface) {
   auto* actor_service = ActorKeyedService::Get(profile());
@@ -438,7 +439,7 @@ TEST_F(ActorKeyedServiceTest, HeadlessModeKeepsCallerOwnedSurface) {
   ActorTaskOptions options;
   options.webui_task_options = webui::mojom::TaskOptions::New();
   options.webui_task_options->actuation_tab_id = handle.raw_value();
-  options.execution_mode = ActorTaskOptions::ExecutionMode::kHeadless;
+  options.execution_mode = proto::TargetSurface::HEADLESS;
   TaskId id = actor_service->CreateTaskWithOptions(
       TestTaskSourceInfo(), NoEnterprisePolicyChecker(), ui_state_manager(),
       std::move(options));

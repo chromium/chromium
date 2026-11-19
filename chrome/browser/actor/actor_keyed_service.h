@@ -145,7 +145,7 @@ class ActorKeyedService : public KeyedService,
   // The provided `policy_checker` and `ui_state_manager` must be non-null and
   // must outlive the ActorTask.
   //
-  // If `options.execution_mode` is kHeadless and `options` has no initial
+  // If `options.execution_mode` is HEADLESS and `options` has no initial
   // surface, CreateTaskWithOptions() creates a headless surface for the task.
   // This service destroys the surface when the task completes.
   TaskId CreateTask(
