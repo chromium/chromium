@@ -50,6 +50,24 @@ constexpr std::string_view kSecureCustomScheme =
 constexpr std::string_view kInsecureCustomScheme =
     BUILDFLAG(INSECURE_CUSTOM_SCHEME);
 
+// Returns whether `url` uses one of Chrome's custom schemes.
+bool IsCustomSchemeURL(const GURL& url) {
+  return url.SchemeIs(kSecureCustomScheme) ||
+         url.SchemeIs(kInsecureCustomScheme);
+}
+
+// Returns `url` with Chrome's custom scheme replaced by https (secure scheme)
+// or http, or `url` unchanged if it doesn't use a custom scheme.
+GURL ReplaceCustomSchemeWithHTTP(const GURL& url) {
+  if (!IsCustomSchemeURL(url)) {
+    return url;
+  }
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(
+      url.SchemeIs(kSecureCustomScheme) ? url::kHttpsScheme : url::kHttpScheme);
+  return url.ReplaceComponents(replacements);
+}
+
 // If `url` is a handled Google One deep link URL and the feature is enabled,
 // populates `out_url` (if non-null) with the normalized HTTPS GURL and returns
 // true.
@@ -59,8 +77,7 @@ bool GetGoogleOneDeepLinkURL(NSURL* url, GURL* out_url) {
   }
   GURL external_gurl = net::GURLWithNSURL(url);
   if (!external_gurl.SchemeIsHTTPOrHTTPS() &&
-      !external_gurl.SchemeIs(kSecureCustomScheme) &&
-      !external_gurl.SchemeIs(kInsecureCustomScheme)) {
+      !IsCustomSchemeURL(external_gurl)) {
     return false;
   }
   GURL candidate_url;
@@ -145,11 +162,12 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
 }
 
 - (void)handleCommandWithSceneState:(SceneState*)sceneState {
-  NSURL* url = self.URLContext.URL;
-  if (!url) {
+  const GURL openedGURL = net::GURLWithNSURL(self.URLContext.URL);
+  const BOOL openedViaCustomScheme = IsCustomSchemeURL(openedGURL);
+  GURL externalGURL = ReplaceCustomSchemeWithHTTP(openedGURL);
+  if (!externalGURL.is_valid()) {
     return;
   }
-  GURL externalGURL = net::GURLWithNSURL(url);
   GURL virtualGURL;
   ProceduralBlock postOpeningCompletion = nil;
   ApplicationModeForTabOpening targetMode =
@@ -167,23 +185,7 @@ BOOL ShouldFetchAppSwitcherParam(NSString* source_app_id, PrefService* prefs) {
     }
     targetMode = ApplicationModeForTabOpening::NORMAL;
   } else {
-    // TODO(crbug.com/586922825): Replace the custom schemes at the top of the
-    // method, so that invalid URLs are discarded with a single early return.
-    const BOOL openedViaCustomScheme = !externalGURL.SchemeIsHTTPOrHTTPS();
-    if (openedViaCustomScheme) {
-      if (externalGURL.SchemeIs(kSecureCustomScheme)) {
-        GURL::Replacements replaceScheme;
-        replaceScheme.SetSchemeStr(url::kHttpsScheme);
-        externalGURL = externalGURL.ReplaceComponents(replaceScheme);
-      } else if (externalGURL.SchemeIs(kInsecureCustomScheme)) {
-        GURL::Replacements replaceScheme;
-        replaceScheme.SetSchemeStr(url::kHttpScheme);
-        externalGURL = externalGURL.ReplaceComponents(replaceScheme);
-      } else {
-        return;
-      }
-    }
-    if (!externalGURL.is_valid()) {
+    if (!externalGURL.SchemeIsHTTPOrHTTPS()) {
       return;
     }
     [self notifyURLOpenedWithSceneState:sceneState
