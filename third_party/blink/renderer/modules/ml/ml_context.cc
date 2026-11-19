@@ -14,6 +14,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -136,6 +137,7 @@ blink::V8MLInputOperandLayout::Enum InputOperandLayoutToBlink(
   }
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Flatten N-D shape into 2D size for shared image creation.
 // For example:
 //   shape = [2,3,4]  W=4 x H=6 = 24 elements
@@ -221,6 +223,7 @@ gpu::SharedImageUsageSet OperandUsageToSharedImageUsageSet(
   }
   return shared_image_usage_set;
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)
 // CoreML uses OneComponent16Half pixel buffer for webgpu interop, with last
@@ -1447,6 +1450,25 @@ ScriptPromise<MLTensor> MLContext::createExportableTensor(
                     return ScriptPromise<MLTensor>();
                   });
 
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+  // Only Windows (D3D) and macOS (IOSurface) SharedImage backing factories
+  // support SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR. Calling
+  // CreateSharedImageForMLTensor() on other platforms fails in SharedImageStub
+  // and tears down the renderer's GpuChannel.
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kNotSupportedError,
+      "WebGPU interop is not supported on this platform.");
+  return EmptyPromise();
+#else
+  // In-renderer contexts do not have access to GPU-process SharedImageManager
+  // for WebGPU interop. Reject before allocating a SharedImage.
+  if (in_renderer_context_handle_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "WebGPU interop is not supported in this context.");
+    return EmptyPromise();
+  }
+
   // Map the IDL tensor usage flags to the `MLTensorUsage` enumset.
   //
   // This assertion protects against the usage flags changing without updating
@@ -1541,6 +1563,7 @@ ScriptPromise<MLTensor> MLContext::createExportableTensor(
       shared_image_create_finished_token);
 
   return resolver->Promise();
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 }
 
 ScriptPromise<MLTensor> MLContext::createConstantTensor(
