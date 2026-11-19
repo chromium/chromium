@@ -27,6 +27,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
@@ -35,13 +36,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_io_thread.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
@@ -346,6 +347,25 @@ class ScopedCallbacks {
   size_t other_process_count_ = 0;
 };
 
+#if ENABLE_MULTIPROCESS_TESTS
+// Initializes Mojo IPC support on a dedicated IO thread so outgoing IPC writes
+// (such as TestConnector::Disconnect) are still pumped while the main thread
+// blocks in WaitForMultiprocessTestChildExit.
+class ScopedMojoIPCSupport {
+ public:
+  ScopedMojoIPCSupport() = default;
+  ScopedMojoIPCSupport(const ScopedMojoIPCSupport&) = delete;
+  ScopedMojoIPCSupport& operator=(const ScopedMojoIPCSupport&) = delete;
+  ~ScopedMojoIPCSupport() = default;
+
+ private:
+  base::TestIOThread io_thread_{base::TestIOThread::kAutoStart};
+  mojo::core::ScopedIPCSupport enable_mojo_{
+      io_thread_.task_runner(),
+      mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN};
+};
+#endif  // ENABLE_MULTIPROCESS_TESTS
+
 class ProfilerSetUpMixin {
  public:
   ProfilerSetUpMixin(const std::vector<FeatureRefAndParams>& enabled_features,
@@ -364,6 +384,10 @@ class ProfilerSetUpMixin {
 
   base::test::TaskEnvironment& task_env() { return task_environment_; }
 
+#if ENABLE_MULTIPROCESS_TESTS
+  void EnableMojoIPCSupport() { mojo_ipc_support_.emplace(); }
+#endif
+
  private:
   // Initialize `mute_hooks_` before `task_environment_` so that memory
   // allocations aren't sampled while TaskEnvironment creates a thread. The
@@ -375,6 +399,14 @@ class ProfilerSetUpMixin {
   // Create `feature_list_` before `task_environment_` and destroy it after to
   // avoid a race in destruction.
   base::test::ScopedFeatureList feature_list_;
+
+#if ENABLE_MULTIPROCESS_TESTS
+  // Declared before `task_environment_` (and any subclass members such as
+  // `profile_collector_receivers_`) so all Mojo endpoints and tasks using them
+  // are destroyed before `ScopedIPCSupport` and the dedicated IO thread shut
+  // down, even if a test exits early on an `ASSERT_*` failure.
+  std::optional<ScopedMojoIPCSupport> mojo_ipc_support_;
+#endif
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
@@ -400,9 +432,14 @@ class MultiprocessTestChild final : public mojom::TestConnector,
       const std::vector<FeatureRefAndParams>& enabled_features,
       const std::vector<FeatureRef>& disabled_features)
       : ProfilerSetUpMixin(enabled_features, disabled_features),
-        quit_closure_(task_env().QuitClosure()) {}
+        quit_closure_(task_env().QuitClosure()) {
+    EnableMojoIPCSupport();
+  }
 
-  ~MultiprocessTestChild() final = default;
+  ~MultiprocessTestChild() final {
+    metrics::CallStackProfileBuilder::
+        ResetChildCallStackProfileCollectorForTesting();
+  }
 
   MultiprocessTestChild(const MultiprocessTestChild&) = delete;
   MultiprocessTestChild& operator=(const MultiprocessTestChild&) = delete;
@@ -425,10 +462,20 @@ class MultiprocessTestChild final : public mojom::TestConnector,
         command_line->GetSwitchValueASCII(kTestNumAllocationsSwitch),
         &num_allocations));
 
-    // Set up mojo support and attach to the parent's pipe.
-    mojo::core::ScopedIPCSupport enable_mojo(
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
+    const bool expect_child_profile =
+        command_line->HasSwitch(kTestExpectChildProfileSwitch);
+    std::optional<base::StatisticsRecorder::HistogramWaiter> histogram_waiter;
+    if (expect_child_profile) {
+      // Unsampled children log metrics asynchronously on a BEST_EFFORT sequence
+      // without sending a profile back to the parent, so `Disconnect()` can
+      // arrive before logging finishes. `RetrieveAndLogSnapshot()` emits the
+      // per-process histogram synchronously before this aggregate histogram on
+      // the same sequence, so waiting on the aggregate histogram ensures both
+      // are recorded.
+      histogram_waiter.emplace("HeapProfiling.InProcess.SamplesPerSnapshot");
+    }
+
+    // Attach to the parent's pipe.
     mojo::IncomingInvitation invitation = mojo::IncomingInvitation::Accept(
         mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
             *command_line));
@@ -459,11 +506,13 @@ class MultiprocessTestChild final : public mojom::TestConnector,
 
     // Loop until the TestConnector::Disconnect() message.
     task_env().RunUntilQuit();
+    if (histogram_waiter) {
+      histogram_waiter->Wait();
+    }
 
     // Profiler stats should be logged whether or not a snapshot was taken, as
     // long as the child is profiled at all.
-    size_t expected_histogram_count =
-        command_line->HasSwitch(kTestExpectChildProfileSwitch) ? 1 : 0;
+    size_t expected_histogram_count = expect_child_profile ? 1 : 0;
     switch (profiler_process_type) {
       case ProfilerProcessType::kGpu:
         histogram_tester.ExpectTotalCount(
@@ -1493,7 +1542,11 @@ constexpr const auto kMultipleChildConfigs = std::to_array<FeatureTestParams>({
     },
 });
 
-using HeapProfilerControllerMultipleChildTest = HeapProfilerControllerTest;
+class HeapProfilerControllerMultipleChildTest
+    : public HeapProfilerControllerTest {
+ protected:
+  HeapProfilerControllerMultipleChildTest() { EnableMojoIPCSupport(); }
+};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HeapProfilerControllerMultipleChildTest,
@@ -1509,11 +1562,6 @@ MULTIPROCESS_TEST_MAIN(HeapProfilerControllerChildMain) {
 }
 
 TEST_P(HeapProfilerControllerMultipleChildTest, EndToEnd) {
-  // Initialize mojo IPC support.
-  mojo::core::ScopedIPCSupport enable_mojo(
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
-      mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
-
   // Process types to test. Each will make a different
   // number of memory allocations so their reports are all different.
   const std::vector<std::pair<ProfilerProcessType, size_t>> kProcessesToTest{
