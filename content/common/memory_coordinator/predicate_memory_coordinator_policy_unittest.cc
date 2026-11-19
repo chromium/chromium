@@ -205,6 +205,69 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest, ChangeReleaseMemory) {
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
 }
 
+TEST_F(PredicateMemoryCoordinatorPolicyTest, ReleaseMemory) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId;
+  const ChildProcessId kOtherChildId(1);
+
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                              &host);
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER,
+                                              kOtherChildId, &host);
+
+  const std::string kConsumerName1 = "consumer1";
+  const uint32_t kConsumerId1 = base::PersistentHash(kConsumerName1);
+  const std::string kConsumerName2 = "consumer2";
+  const uint32_t kConsumerId2 = base::PersistentHash(kConsumerName2);
+  const std::string kConsumerName3 = "consumer3";
+  const uint32_t kConsumerId3 = base::PersistentHash(kConsumerName3);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId1, kConsumerName1,
+                                        kTestTraits, kChildId);
+  policy_manager().OnConsumerGroupAdded(kConsumerId2, kConsumerName2,
+                                        kTestTraits, kChildId);
+  // Doesn't match the predicate.
+  policy_manager().OnConsumerGroupAdded(kConsumerId3, kConsumerName3,
+                                        kTestTraits, kOtherChildId);
+
+  PredicateMemoryCoordinatorPolicy policy(
+      policy_manager(),
+      base::BindRepeating(
+          [](uint32_t consumer_id, std::string_view consumer_name,
+             base::MemoryConsumerTraits traits, ProcessType process_type,
+             ChildProcessId child_process_id) {
+            return child_process_id.is_null();
+          }));
+  MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
+
+  // Only consumers that match both the predicate and the filter are asked to
+  // release memory, and their limit doesn't change.
+  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
+                        kConsumerId1, std::nullopt, true})));
+  policy.ReleaseMemory([&](uint32_t consumer_id, std::string_view consumer_name,
+                           base::MemoryConsumerTraits traits,
+                           ProcessType process_type,
+                           ChildProcessId child_process_id) {
+    return consumer_id == kConsumerId1 || consumer_id == kConsumerId3;
+  });
+  Mock::VerifyAndClearExpectations(&host);
+
+  // The release request doesn't apply to consumers added later.
+  const std::string kConsumerName4 = "consumer4";
+  const uint32_t kConsumerId4 = base::PersistentHash(kConsumerName4);
+  EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
+  policy_manager().OnConsumerGroupAdded(kConsumerId4, kConsumerName4,
+                                        kTestTraits, kChildId);
+  Mock::VerifyAndClearExpectations(&host);
+
+  policy_manager().OnConsumerGroupRemoved(kConsumerId1, kChildId);
+  policy_manager().OnConsumerGroupRemoved(kConsumerId2, kChildId);
+  policy_manager().OnConsumerGroupRemoved(kConsumerId3, kOtherChildId);
+  policy_manager().OnConsumerGroupRemoved(kConsumerId4, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kOtherChildId);
+}
+
 TEST_F(PredicateMemoryCoordinatorPolicyTest, DefaultStatePersistence) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kChildId;

@@ -70,28 +70,32 @@ void PredicateMemoryCoordinatorPolicy::SetLimit(base::MemoryLimit memory_limit,
       memory_limit_, release_memory_);
 }
 
-void PredicateMemoryCoordinatorPolicy::TriggerRepeatedRelease() {
+void PredicateMemoryCoordinatorPolicy::ReleaseMemory(ConsumerFilterRef filter) {
   manager().UpdateConsumers(
       this,
-      [this](uint32_t consumer_id, std::string_view consumer_name,
-             base::MemoryConsumerTraits traits, ProcessType process_type,
-             ChildProcessId child_process_id) {
-        // Don't repeat the signal for consumers that don't match the policy's
-        // predicate.
-        if (!predicate_.Run(consumer_id, consumer_name, traits, process_type,
-                            child_process_id)) {
-          return false;
-        }
-
-        // Don't repeat the signal for stateful consumers. They are trusted to
-        // self-regulate once they receive the limit. However, consumers that
-        // don't use stateful memory pressure (see
-        // base::ShouldUseStatefulMemoryPressure()) operate in stateless mode
-        // regardless of their declared traits, so they still require repeated
-        // signals.
-        return !base::IsEffectivelyStateful(consumer_name, traits);
+      [this, filter](uint32_t consumer_id, std::string_view consumer_name,
+                     base::MemoryConsumerTraits traits,
+                     ProcessType process_type,
+                     ChildProcessId child_process_id) {
+        return predicate_.Run(consumer_id, consumer_name, traits, process_type,
+                              child_process_id) &&
+               filter(consumer_id, consumer_name, traits, process_type,
+                      child_process_id);
       },
       std::nullopt, true);
+}
+
+void PredicateMemoryCoordinatorPolicy::TriggerRepeatedRelease() {
+  // Don't repeat the signal for stateful consumers. They are trusted to
+  // self-regulate once they receive the limit. However, consumers that don't
+  // use stateful memory pressure (see base::ShouldUseStatefulMemoryPressure())
+  // operate in stateless mode regardless of their declared traits, so they
+  // still require repeated signals.
+  ReleaseMemory([](uint32_t consumer_id, std::string_view consumer_name,
+                   base::MemoryConsumerTraits traits, ProcessType process_type,
+                   ChildProcessId child_process_id) {
+    return !base::IsEffectivelyStateful(consumer_name, traits);
+  });
 }
 
 }  // namespace content

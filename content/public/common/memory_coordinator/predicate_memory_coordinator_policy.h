@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
@@ -39,6 +40,12 @@ class CONTENT_EXPORT PredicateMemoryCoordinatorPolicy
                                    base::MemoryConsumerTraits traits,
                                    ProcessType process_type,
                                    ChildProcessId child_process_id)>;
+  using ConsumerFilterRef =
+      base::FunctionRef<bool(uint32_t consumer_id,
+                             std::string_view consumer_name,
+                             base::MemoryConsumerTraits traits,
+                             ProcessType process_type,
+                             ChildProcessId child_process_id)>;
 
   PredicateMemoryCoordinatorPolicy(MemoryCoordinatorPolicyManager& manager,
                                    ConsumerPredicate predicate);
@@ -63,6 +70,11 @@ class CONTENT_EXPORT PredicateMemoryCoordinatorPolicy
   // matching the predicate. This will also apply to any matching consumer
   // added in the future.
   void SetLimit(base::MemoryLimit memory_limit, bool release_memory);
+
+  // Asks all consumers that match both the predicate and `filter` to release
+  // memory, without changing their memory limit. Unlike SetLimit(), this is a
+  // one-time request that doesn't apply to consumers added in the future.
+  void ReleaseMemory(ConsumerFilterRef filter);
 
  private:
   const ConsumerPredicate predicate_;
