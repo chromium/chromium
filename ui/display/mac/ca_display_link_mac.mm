@@ -39,6 +39,50 @@ CGEventRef CGEventCreateNextEvent(CGSConnectionID connection_id);
 // `framework_dirs = [ "$mac_sdk_path/System/Library/PrivateFrameworks" ]` is
 // added to //ui/display/BUILD.gn to link SkyLight.framework. Remove this
 // private framework dependency after Apple provides a public API for this.
+/*!
+    @function   SLSGetDisplayLink
+    @abstract   Vends a CADisplayLink synchronized to a specific display's
+   refresh timing.
+    @discussion
+        Resolves the given CGSDisplayID to its underlying Display timing
+        source and returns a CADisplayLink bound to that display, rather than
+        the default main-display link. This allows a client to receive frame
+        callbacks paced to the vsync of a specific screen, which matters on
+        multi-display or single setups where screens may run at different
+        refresh rates. (VFR/VRR)
+
+        The underlying Display for a given displayID is created lazily
+        and cached per-client; repeated calls for the same displayID reuse the
+        same timing source. The display map is invalidated/refreshed on
+        display reconfiguration and on wake (kCGSDisplayDidWake).
+
+        This call is a factory only, it does not schedule the returned link on
+        a run loop. Callers are responsible for calling -addToRunLoop:forMode:
+        (or equivalent) themselves, and for invalidating the link when it's no
+        longer needed or when the target display changes.
+
+    @param  display_id
+        The CGSDisplayID of the display to synchronize with. Pass
+        CGSMainDisplayID() for the main display. If the display is not
+        currently online (see CGDisplayIsOnline), this call fails.
+
+    @param  target
+        The object that will receive the per-frame callback. Not retained
+        beyond what CADisplayLink itself retains.
+
+    @param  action
+        The selector invoked on target for each display refresh. Expected
+        signature: - (void)selectorName:(CADisplayLink *)displayLink.
+
+    @result
+        A new CADisplayLink instance bound to the requested display's timing,
+        or NULL if displayID is invalid/offline, or if display-link support is
+        unavailable on this platform configuration. Callers must check for
+        NULL before use.
+
+    @availability
+         Private, Unsupported
+*/
 CADisplayLink* SLSGetDisplayLink(CGDirectDisplayID display_id,
                                  id target,
                                  SEL action) API_AVAILABLE(macos(14.0));
