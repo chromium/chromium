@@ -396,6 +396,7 @@ public class SettingsActivityTest {
         // Automotive devices do not support display rotation.
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     })
+    @DisabledTest(message = "https://crbug.com/586171951")
     public void testRootSettingsShownAfterEnteringSearchAndRotatingLandscapeToPortrait() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         assumeNotLandscapeDeviceOnAndroid14OrEarlier(activity);
