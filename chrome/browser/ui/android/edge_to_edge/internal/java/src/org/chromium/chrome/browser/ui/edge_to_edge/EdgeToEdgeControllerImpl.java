@@ -17,6 +17,7 @@ import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
@@ -60,6 +61,9 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSo
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Controls use of the Android Edge To Edge feature that allows an App to draw beneath the Status
  * and Navigation Bars. For Chrome, we intend to sometimes draw under the Status Bar (e.g. for
@@ -74,6 +78,28 @@ public class EdgeToEdgeControllerImpl
                 LayoutStateProvider.LayoutStateObserver,
                 FullscreenManager.Observer {
     private static final String TAG = "E2E_ControllerImpl";
+
+    /** Bitmask flags indicating which window insets should be consumed. */
+    @IntDef(
+            flag = true,
+            value = {
+                ConsumeInset.NONE,
+                ConsumeInset.TOP,
+                ConsumeInset.BOTTOM,
+                ConsumeInset.LEFT,
+                ConsumeInset.RIGHT,
+                ConsumeInset.DISPLAY_CUTOUT,
+            })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface ConsumeInset {
+        int NONE = 0;
+        int TOP = 1 << 0;
+        int BOTTOM = 1 << 1;
+        int LEFT = 1 << 2;
+        int RIGHT = 1 << 3;
+        int DISPLAY_CUTOUT = 1 << 4;
+    }
 
     /** The outermost view in our view hierarchy that is identified with a resource ID. */
     private static final int ROOT_UI_VIEW_ID = android.R.id.content;
@@ -132,6 +158,7 @@ public class EdgeToEdgeControllerImpl
 
     private InsetObserver mInsetObserver;
     private Insets mSystemInsets = Insets.NONE;
+    private Insets mDisplayCutoutInsets = Insets.NONE;
     private Insets mAppliedContentViewPadding = Insets.NONE;
     private @Nullable Insets mKeyboardInsets;
     private final @Nullable WindowInsetsConsumer mWindowInsetsConsumer;
@@ -147,6 +174,7 @@ public class EdgeToEdgeControllerImpl
     private boolean mIsPageOptedIntoTopEdgeToEdge;
     private boolean mConsumeTopInset;
     private boolean mIsDrawingFullTopEdgeToEdge;
+    private boolean mIsConsumingSideDisplayCutout;
     private boolean mIsTabSwitcherShowing;
     private boolean mStatusIndicatorVisible;
     private @Nullable HomepageStateListener mHomepageStateListener;
@@ -426,7 +454,9 @@ public class EdgeToEdgeControllerImpl
         mIsDrawingFullTopEdgeToEdge = tabShouldDrawFullTopEdgeToEdge();
         boolean changedFullTopEdge = wasDrawingFullTopEdgeToEdge != mIsDrawingFullTopEdgeToEdge;
 
-        return changedTopEdge || changedFullTopEdge;
+        boolean changedSideCutout = updateSideDisplayCutoutState();
+
+        return changedTopEdge || changedFullTopEdge || changedSideCutout;
     }
 
     private void drawToTopEdge() {
@@ -733,7 +763,23 @@ public class EdgeToEdgeControllerImpl
     void drawToBottomEdge(boolean pageOptedIntoBottomEdgeToEdge, boolean changedWindowState) {
         boolean bottomEdgeChanged =
                 updateBottomEdgeState(pageOptedIntoBottomEdgeToEdge, changedWindowState);
+        boolean sideCutoutChanged = updateSideDisplayCutoutState();
         applyEdgeStateChanges(bottomEdgeChanged);
+        // Side display cutout consumption is restricted to LayoutType.BROWSING. On in-app layout
+        // transitions (!changedWindowState, e.g. BROWSING <-> HUB where onFinishedHiding(HUB) runs
+        // before getActiveLayoutType() updates), Android does not dispatch new WindowInsets:
+        if (sideCutoutChanged && !changedWindowState) {
+            // applyEdgeStateChanges(true) already called pushSafeAreaInsetUpdate().
+            if (!bottomEdgeChanged) {
+                pushSafeAreaInsetUpdate();
+            }
+            // Retrigger the WindowInsetsConsumer chain (not done by applyEdgeStateChanges()) so
+            // handleWindowInsets() updates left/right displayCutout consumption and
+            // EdgeToEdgeLayoutCoordinator.onApplyWindowInsets updates root-view pillarboxing.
+            if (mInsetObserver != null) {
+                mInsetObserver.retriggerOnApplyWindowInsets();
+            }
+        }
     }
 
     /**
@@ -853,12 +899,28 @@ public class EdgeToEdgeControllerImpl
         Insets newInsets =
                 getSystemInsets(windowInsets, mInsetObserver.hasSeenNonZeroNavigationBarInsets());
         Insets newKeyboardInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
+        Insets rawDisplayCutout = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
+        Insets newDisplayCutoutInsets;
+        if (EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()) {
+            newDisplayCutoutInsets = rawDisplayCutout;
+        } else if (mIsEdgeToEdgeRefactorEnabled) {
+            // Under the refactor alone (without web top edge-to-edge), native pages such as
+            // customized NTPs still draw to the top edge and consume displayCutout.top (clearing
+            // InsetObserver's mDisplayCutoutRect.top), while side display cutouts are never
+            // consumed. Track rawDisplayCutout.top so pushSafeAreaInsetUpdate() accounts for a top
+            // cutout deeper than statusBars().top.
+            newDisplayCutoutInsets = Insets.of(0, rawDisplayCutout.top, 0, 0);
+        } else {
+            newDisplayCutoutInsets = Insets.NONE;
+        }
 
         if (updateVisibilityRects(rootView)
                 || !newInsets.equals(originalSystemInsets)
-                || !newKeyboardInsets.equals(mKeyboardInsets)) {
+                || !newKeyboardInsets.equals(mKeyboardInsets)
+                || !newDisplayCutoutInsets.equals(mDisplayCutoutInsets)) {
             mSystemInsets = newInsets;
             mKeyboardInsets = newKeyboardInsets;
+            mDisplayCutoutInsets = newDisplayCutoutInsets;
 
             // When a foldable goes to/from tablet mode we must reassess.
             // TODO(https://crbug.com/325356134) Find a cleaner check and remedy.
@@ -889,14 +951,27 @@ public class EdgeToEdgeControllerImpl
                     originalSystemInsets, newInsets, mAppliedContentViewPadding);
         }
 
+        @ConsumeInset int insetsToConsume = ConsumeInset.NONE;
         boolean consumeTopInsets =
                 mIsEdgeToEdgeRefactorEnabled
                         ? shouldConsumeTopInsets()
                         : (mAppliedContentViewPadding.top == 0);
-        boolean consumeTopDisplayCutout = shouldConsumeTopDisplayCutout();
-        boolean consumeBottomInsets = mAppliedContentViewPadding.bottom == 0;
-        return consumeWindowInsets(
-                windowInsets, consumeTopInsets, consumeTopDisplayCutout, consumeBottomInsets);
+        if (consumeTopInsets) {
+            insetsToConsume |= ConsumeInset.TOP;
+        }
+        if (mAppliedContentViewPadding.bottom == 0) {
+            insetsToConsume |= ConsumeInset.BOTTOM;
+        }
+        if (shouldConsumeLeftInsets()) {
+            insetsToConsume |= ConsumeInset.LEFT;
+        }
+        if (shouldConsumeRightInsets()) {
+            insetsToConsume |= ConsumeInset.RIGHT;
+        }
+        if (shouldConsumeDisplayCutout()) {
+            insetsToConsume |= ConsumeInset.DISPLAY_CUTOUT;
+        }
+        return consumeWindowInsets(windowInsets, insetsToConsume);
     }
 
     // Consume top insets when in persistent fullscreen, when top edge-to-edge is enabled
@@ -913,7 +988,7 @@ public class EdgeToEdgeControllerImpl
         return isDrawingToTopEdge();
     }
 
-    private boolean shouldConsumeTopDisplayCutout() {
+    private boolean shouldConsumeDisplayCutout() {
         if (!mIsEdgeToEdgeRefactorEnabled) {
             return false;
         }
@@ -921,6 +996,42 @@ public class EdgeToEdgeControllerImpl
             return false;
         }
         return shouldConsumeTopInsets();
+    }
+
+    private boolean shouldConsumeLeftInsets() {
+        return mAppliedContentViewPadding.left == 0 && shouldConsumeSideDisplayCutout();
+    }
+
+    private boolean shouldConsumeRightInsets() {
+        return mAppliedContentViewPadding.right == 0 && shouldConsumeSideDisplayCutout();
+    }
+
+    private boolean updateSideDisplayCutoutState() {
+        boolean shouldConsume = shouldConsumeSideDisplayCutout();
+        if (mIsConsumingSideDisplayCutout == shouldConsume) {
+            return false;
+        }
+        mIsConsumingSideDisplayCutout = shouldConsume;
+        return true;
+    }
+
+    private boolean shouldConsumeSideDisplayCutout() {
+        if (!EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                || !EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity)) {
+            return false;
+        }
+        if (mFullscreenManager.getPersistentFullscreenMode()) {
+            return false;
+        }
+        @LayoutType
+        int activeLayoutType =
+                mLayoutManager != null ? mLayoutManager.getActiveLayoutType() : LayoutType.NONE;
+        if (activeLayoutType != LayoutType.BROWSING) {
+            return false;
+        }
+        // Only consume side cutouts on web pages opted into viewport-fit=cover (for non-native
+        // tabs, mIsPageOptedIntoTopEdgeToEdge is true iff the page has viewport-fit=cover).
+        return mCurrentTab != null && !mCurrentTab.isNativePage() && mIsPageOptedIntoTopEdgeToEdge;
     }
 
     private boolean updateVisibilityRects(View rootView) {
@@ -1057,13 +1168,25 @@ public class EdgeToEdgeControllerImpl
                 Math.max(mSystemInsets.bottom - mAppliedContentViewPadding.bottom, 0);
 
         int bottomInsetOnSafeArea = hasBottomSafeArea ? bottomSafeAreaInsets : 0;
-        mInsetObserver.updateBottomInsetForEdgeToEdge(bottomInsetOnSafeArea);
 
         boolean hasTopSafeArea =
                 (isDrawingToTopEdge() && !mFullscreenManager.getPersistentFullscreenMode());
-        int topSafeAreaInsets = Math.max(mSystemInsets.top - mAppliedContentViewPadding.top, 0);
+        int topSafeAreaInsets =
+                Math.max(
+                        Math.max(mSystemInsets.top, mDisplayCutoutInsets.top)
+                                - mAppliedContentViewPadding.top,
+                        0);
         int topInsetOnSafeArea = hasTopSafeArea ? topSafeAreaInsets : 0;
-        mInsetObserver.updateTopInsetForEdgeToEdge(topInsetOnSafeArea);
+
+        int leftInsetOnSafeArea = shouldConsumeLeftInsets() ? mDisplayCutoutInsets.left : 0;
+        int rightInsetOnSafeArea = shouldConsumeRightInsets() ? mDisplayCutoutInsets.right : 0;
+
+        mInsetObserver.updateSafeAreaInsetsForEdgeToEdge(
+                Insets.of(
+                        leftInsetOnSafeArea,
+                        topInsetOnSafeArea,
+                        rightInsetOnSafeArea,
+                        bottomInsetOnSafeArea));
     }
 
     @SuppressWarnings("NullAway")
@@ -1135,6 +1258,10 @@ public class EdgeToEdgeControllerImpl
         mSystemInsets = systemInsetsForTesting;
     }
 
+    void setDisplayCutoutInsetsForTesting(Insets displayCutoutInsetsForTesting) {
+        mDisplayCutoutInsets = displayCutoutInsetsForTesting;
+    }
+
     void setKeyboardInsetsForTesting(Insets keyboardInsetsForTesting) {
         mKeyboardInsets = keyboardInsetsForTesting;
     }
@@ -1149,13 +1276,15 @@ public class EdgeToEdgeControllerImpl
 
     @VisibleForTesting
     static WindowInsetsCompat consumeWindowInsets(
-            WindowInsetsCompat windowInsets,
-            boolean consumeTopInsets,
-            boolean consumeTopDisplayCutout,
-            boolean consumeBottomInsets) {
-        if (!consumeTopInsets && !consumeTopDisplayCutout && !consumeBottomInsets) {
+            WindowInsetsCompat windowInsets, @ConsumeInset int insetsToConsume) {
+        if (insetsToConsume == ConsumeInset.NONE) {
             return windowInsets;
         }
+        boolean consumeTopInsets = (insetsToConsume & ConsumeInset.TOP) != 0;
+        boolean consumeBottomInsets = (insetsToConsume & ConsumeInset.BOTTOM) != 0;
+        boolean consumeLeftInsets = (insetsToConsume & ConsumeInset.LEFT) != 0;
+        boolean consumeRightInsets = (insetsToConsume & ConsumeInset.RIGHT) != 0;
+        boolean consumeDisplayCutout = (insetsToConsume & ConsumeInset.DISPLAY_CUTOUT) != 0;
         var builder = new WindowInsetsCompat.Builder(windowInsets);
 
         builder.setInsets(
@@ -1169,30 +1298,36 @@ public class EdgeToEdgeControllerImpl
                         ? Insets.NONE
                         : windowInsets.getInsets(WindowInsetsCompat.Type.captionBar()));
 
-        // TODO(crbug.com/498302496): Only the top display cutout is consumed for now.
-        // Support for drawing into display cutouts on the side with pillarboxing will be
-        // added in future iterations.
         Insets displayCutout = windowInsets.getInsets(WindowInsetsCompat.Type.displayCutout());
-        if (displayCutout.top > 0) {
+        if (consumeDisplayCutout && !displayCutout.equals(Insets.NONE)) {
+            // Do not consume displayCutout.bottom, as the bottom chin only covers
+            // mSystemInsets.bottom and EdgeToEdgeLayoutCoordinator should still pad any bottom
+            // display cutout.
             builder.setInsets(
                     WindowInsetsCompat.Type.displayCutout(),
                     Insets.of(
-                            displayCutout.left,
-                            consumeTopDisplayCutout ? 0 : displayCutout.top,
-                            displayCutout.right,
+                            consumeLeftInsets ? 0 : displayCutout.left,
+                            consumeTopInsets ? 0 : displayCutout.top,
+                            consumeRightInsets ? 0 : displayCutout.right,
                             displayCutout.bottom));
         }
 
+        Insets navigationBars = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
         builder.setInsets(
                 WindowInsetsCompat.Type.navigationBars(),
-                consumeBottomInsets
-                        ? Insets.NONE
-                        : windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()));
+                Insets.of(
+                        consumeLeftInsets ? 0 : navigationBars.left,
+                        consumeTopInsets ? 0 : navigationBars.top,
+                        consumeRightInsets ? 0 : navigationBars.right,
+                        consumeBottomInsets ? 0 : navigationBars.bottom));
+        Insets tappableElement = windowInsets.getInsets(WindowInsetsCompat.Type.tappableElement());
         builder.setInsets(
                 WindowInsetsCompat.Type.tappableElement(),
-                consumeBottomInsets
-                        ? Insets.NONE
-                        : windowInsets.getInsets(WindowInsetsCompat.Type.tappableElement()));
+                Insets.of(
+                        consumeLeftInsets ? 0 : tappableElement.left,
+                        consumeTopInsets ? 0 : tappableElement.top,
+                        consumeRightInsets ? 0 : tappableElement.right,
+                        consumeBottomInsets ? 0 : tappableElement.bottom));
         builder.setInsets(
                 WindowInsetsCompat.Type.ime(),
                 consumeBottomInsets
@@ -1204,9 +1339,9 @@ public class EdgeToEdgeControllerImpl
         builder.setInsets(
                 WindowInsetsCompat.Type.mandatorySystemGestures(),
                 Insets.of(
-                        mandatorySystemGestures.left,
+                        consumeLeftInsets ? 0 : mandatorySystemGestures.left,
                         mandatorySystemGestures.top,
-                        mandatorySystemGestures.right,
+                        consumeRightInsets ? 0 : mandatorySystemGestures.right,
                         consumeBottomInsets ? 0 : mandatorySystemGestures.bottom));
 
         return builder.build();

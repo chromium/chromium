@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl.ConsumeInset;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.IneligibilityReason;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.SupportedConfigurationSwitch;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.TopScalpPageLoadState;
@@ -1561,6 +1562,51 @@ public class EdgeToEdgeControllerTest {
         assertTopInsetForSafeArea(TOP_INSET);
     }
 
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void pushSafeAreaInsetUpdate_notDrawingToSideEdge() {
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.AUTO);
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.setDisplayCutoutInsetsForTesting(Insets.of(40, 0, 50, 0));
+        clearInvocations(mInsetObserver);
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(0);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void pushSafeAreaInsetUpdate_drawingToSideEdgeNoPadding() {
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.setDisplayCutoutInsetsForTesting(Insets.of(40, 0, 50, 0));
+        clearInvocations(mInsetObserver);
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+        assertLeftInsetForSafeArea(40);
+        assertRightInsetForSafeArea(50);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void pushSafeAreaInsetUpdate_drawingToSideEdgeInFullscreen() {
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.setDisplayCutoutInsetsForTesting(Insets.of(40, 0, 50, 0));
+        clearInvocations(mInsetObserver);
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(0);
+    }
+
     void assertToEdgeExpectations() {
         // Pad the top only, bottom is ToEdge.
         Insets appliedPadding = mEdgeToEdgeControllerImpl.getAppliedContentViewPaddingForTesting();
@@ -1591,18 +1637,32 @@ public class EdgeToEdgeControllerTest {
     }
 
     void assertBottomInsetForSafeArea(int bottomInset) {
-        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
-        verify(mInsetObserver, atLeastOnce()).updateBottomInsetForEdgeToEdge(captor.capture());
+        ArgumentCaptor<Insets> captor = ArgumentCaptor.forClass(Insets.class);
+        verify(mInsetObserver, atLeastOnce()).updateSafeAreaInsetsForEdgeToEdge(captor.capture());
         assertEquals(
                 "Bottom insets for safe area does not match.",
                 bottomInset,
-                (int) captor.getValue());
+                captor.getValue().bottom);
     }
 
     void assertTopInsetForSafeArea(int topInset) {
-        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
-        verify(mInsetObserver, atLeastOnce()).updateTopInsetForEdgeToEdge(captor.capture());
-        assertEquals("Top insets for safe area does not match.", topInset, (int) captor.getValue());
+        ArgumentCaptor<Insets> captor = ArgumentCaptor.forClass(Insets.class);
+        verify(mInsetObserver, atLeastOnce()).updateSafeAreaInsetsForEdgeToEdge(captor.capture());
+        assertEquals("Top insets for safe area does not match.", topInset, captor.getValue().top);
+    }
+
+    void assertLeftInsetForSafeArea(int leftInset) {
+        ArgumentCaptor<Insets> captor = ArgumentCaptor.forClass(Insets.class);
+        verify(mInsetObserver, atLeastOnce()).updateSafeAreaInsetsForEdgeToEdge(captor.capture());
+        assertEquals(
+                "Left insets for safe area does not match.", leftInset, captor.getValue().left);
+    }
+
+    void assertRightInsetForSafeArea(int rightInset) {
+        ArgumentCaptor<Insets> captor = ArgumentCaptor.forClass(Insets.class);
+        verify(mInsetObserver, atLeastOnce()).updateSafeAreaInsetsForEdgeToEdge(captor.capture());
+        assertEquals(
+                "Right insets for safe area does not match.", rightInset, captor.getValue().right);
     }
 
     // --- Top Edge-to-Edge Migrated Tests (from TopInsetCoordinatorUnitTest) ---
@@ -2883,7 +2943,8 @@ public class EdgeToEdgeControllerTest {
                 Insets.of(0, 0, 0, 0),
                 mEdgeToEdgeControllerImpl.getAppliedContentViewPaddingForTesting());
         verify(mChangeObserver, times(1)).onToEdgeChange(eq(BOTTOM_INSET), eq(true), eq(true));
-        verify(mInsetObserver, times(1)).updateBottomInsetForEdgeToEdge(eq(BOTTOM_INSET));
+        verify(mInsetObserver, times(1))
+                .updateSafeAreaInsetsForEdgeToEdge(eq(Insets.of(0, TOP_INSET, 0, BOTTOM_INSET)));
     }
 
     @Test
@@ -3007,7 +3068,7 @@ public class EdgeToEdgeControllerTest {
         // 1. Neither top, top display cutout, nor bottom consumed: returns original windowInsets
         // instance.
         WindowInsetsCompat noneConsumed =
-                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, false, false, false);
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, ConsumeInset.NONE);
         assertEquals(inputInsets, noneConsumed);
         assertEquals(statusBars, noneConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(captionBar, noneConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
@@ -3020,10 +3081,11 @@ public class EdgeToEdgeControllerTest {
                 mandatoryGestures,
                 noneConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
 
-        // 2. Top and top display cutout consumed: statusBars, captionBar, and top displayCutout
+        // 2. Top and display cutout consumed: statusBars, captionBar, and top displayCutout
         // are cleared.
         WindowInsetsCompat topConsumed =
-                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, true, true, false);
+                EdgeToEdgeControllerImpl.consumeWindowInsets(
+                        inputInsets, ConsumeInset.TOP | ConsumeInset.DISPLAY_CUTOUT);
         assertEquals(Insets.NONE, topConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(Insets.NONE, topConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
         assertEquals(
@@ -3036,10 +3098,10 @@ public class EdgeToEdgeControllerTest {
                 mandatoryGestures,
                 topConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
 
-        // 3. Top consumed but top display cutout preserved (e.g. persistent fullscreen):
+        // 3. Top consumed but display cutout preserved (e.g. persistent fullscreen):
         // statusBars and captionBar are cleared, while displayCutout is untouched.
         WindowInsetsCompat topWithoutCutoutConsumed =
-                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, true, false, false);
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, ConsumeInset.TOP);
         assertEquals(
                 Insets.NONE,
                 topWithoutCutoutConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
@@ -3064,7 +3126,7 @@ public class EdgeToEdgeControllerTest {
         // 4. Only bottom consumed: navigationBars, tappableElement, ime, and bottom mandatory
         // system gestures are cleared.
         WindowInsetsCompat bottomConsumed =
-                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, false, false, true);
+                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, ConsumeInset.BOTTOM);
         assertEquals(statusBars, bottomConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(captionBar, bottomConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
         assertEquals(
@@ -3078,9 +3140,12 @@ public class EdgeToEdgeControllerTest {
                 Insets.of(5, TOP_INSET, 15, 0),
                 bottomConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
 
-        // 5. Both top (including top display cutout) and bottom consumed.
+        // 5. Both top and bottom (including display cutout) consumed; bottom displayCutout is
+        // preserved.
         WindowInsetsCompat bothConsumed =
-                EdgeToEdgeControllerImpl.consumeWindowInsets(inputInsets, true, true, true);
+                EdgeToEdgeControllerImpl.consumeWindowInsets(
+                        inputInsets,
+                        ConsumeInset.TOP | ConsumeInset.BOTTOM | ConsumeInset.DISPLAY_CUTOUT);
         assertEquals(Insets.NONE, bothConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
         assertEquals(Insets.NONE, bothConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
         assertEquals(
@@ -3093,6 +3158,333 @@ public class EdgeToEdgeControllerTest {
         assertEquals(
                 Insets.of(5, TOP_INSET, 15, 0),
                 bothConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
+
+        // 6. Left and right (including display cutout) consumed: left and right displayCutout and
+        // mandatorySystemGestures are cleared.
+        WindowInsetsCompat sidesConsumed =
+                EdgeToEdgeControllerImpl.consumeWindowInsets(
+                        inputInsets,
+                        ConsumeInset.LEFT | ConsumeInset.RIGHT | ConsumeInset.DISPLAY_CUTOUT);
+        assertEquals(statusBars, sidesConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(captionBar, sidesConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
+        assertEquals(
+                Insets.of(0, 20, 0, 40),
+                sidesConsumed.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertEquals(navBars, sidesConsumed.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(tappable, sidesConsumed.getInsets(WindowInsetsCompat.Type.tappableElement()));
+        assertEquals(ime, sidesConsumed.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                Insets.of(0, TOP_INSET, 0, BOTTOM_INSET),
+                sidesConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
+
+        // 7. All edges consumed (top, bottom, left, right, and display cutout); bottom
+        // displayCutout is still preserved.
+        WindowInsetsCompat allConsumed =
+                EdgeToEdgeControllerImpl.consumeWindowInsets(
+                        inputInsets,
+                        ConsumeInset.TOP
+                                | ConsumeInset.BOTTOM
+                                | ConsumeInset.LEFT
+                                | ConsumeInset.RIGHT
+                                | ConsumeInset.DISPLAY_CUTOUT);
+        assertEquals(Insets.NONE, allConsumed.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(Insets.NONE, allConsumed.getInsets(WindowInsetsCompat.Type.captionBar()));
+        assertEquals(
+                Insets.of(0, 0, 0, 40),
+                allConsumed.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertEquals(Insets.NONE, allConsumed.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(Insets.NONE, allConsumed.getInsets(WindowInsetsCompat.Type.tappableElement()));
+        assertEquals(Insets.NONE, allConsumed.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                Insets.of(0, TOP_INSET, 0, 0),
+                allConsumed.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures()));
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_ConsumedWhenDrawingToTopEdge() {
+        Insets sideDisplayCutout = Insets.of(40, 0, 50, 0);
+        WindowInsetsCompat insetsWithSideCutout =
+                new WindowInsetsCompat.Builder(SYSTEM_BARS_WINDOW_INSETS)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), sideDisplayCutout)
+                        .build();
+
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+
+        // 1. Default web page (viewport-fit=auto): isDrawingToTopEdge() is false, so side display
+        // cutout insets are preserved.
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        clearInvocations(mInsetObserver);
+        WindowInsetsCompat autoResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithSideCutout);
+        assertEquals(
+                sideDisplayCutout, autoResult.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(0);
+
+        // 2. Opted-in web page (viewport-fit=cover): isDrawingToTopEdge() is true, so left and
+        // right display cutout insets are consumed and pushed to safe area.
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        clearInvocations(mInsetObserver);
+        WindowInsetsCompat coverResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithSideCutout);
+        assertEquals(Insets.NONE, coverResult.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertLeftInsetForSafeArea(40);
+        assertRightInsetForSafeArea(50);
+
+        // 3. Persistent fullscreen: side display cutout insets are preserved for
+        // DisplayCutoutController and EdgeToEdgeLayoutCoordinator to handle.
+        clearInvocations(mInsetObserver);
+        doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.onEnterFullscreen(
+                mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
+        WindowInsetsCompat fullscreenResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithSideCutout);
+        assertEquals(
+                sideDisplayCutout,
+                fullscreenResult.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(0);
+
+        // 4. Exiting fullscreen restores side display cutout consumption and safe area insets.
+        clearInvocations(mInsetObserver);
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.onExitFullscreen(mTab);
+        assertLeftInsetForSafeArea(40);
+        assertRightInsetForSafeArea(50);
+
+        // 5. Showing the status indicator disables top edge-to-edge, while left and right display
+        // cutout insets remain consumed and pushed to safe area.
+        mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(true);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        clearInvocations(mInsetObserver);
+        WindowInsetsCompat statusIndicatorResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithSideCutout);
+        assertEquals(
+                Insets.NONE,
+                statusIndicatorResult.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertTopInsetForSafeArea(0);
+        assertLeftInsetForSafeArea(40);
+        assertRightInsetForSafeArea(50);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_LandscapeRotationUpdatesSafeArea() {
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+
+        // Landscape 90°: cutout on the left.
+        WindowInsetsCompat leftCutoutInsets =
+                new WindowInsetsCompat.Builder(SYSTEM_BARS_WINDOW_INSETS)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), Insets.of(40, 0, 0, 0))
+                        .build();
+        clearInvocations(mInsetObserver);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, leftCutoutInsets);
+        assertLeftInsetForSafeArea(40);
+        assertRightInsetForSafeArea(0);
+
+        // Rotate 90° -> 270°: systemBars remain unchanged, cutout moves to the right.
+        WindowInsetsCompat rightCutoutInsets =
+                new WindowInsetsCompat.Builder(SYSTEM_BARS_WINDOW_INSETS)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), Insets.of(0, 0, 50, 0))
+                        .build();
+        clearInvocations(mInsetObserver);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, rightCutoutInsets);
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(50);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_PreservedInHubLayout() {
+        Insets sideDisplayCutout = Insets.of(40, 0, 50, 0);
+        WindowInsetsCompat insetsWithSideCutout =
+                new WindowInsetsCompat.Builder(SYSTEM_BARS_WINDOW_INSETS)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), sideDisplayCutout)
+                        .build();
+        doAnswer(
+                        (inv) -> {
+                            mWindowInsetsListenerCaptor
+                                    .getValue()
+                                    .onApplyWindowInsets(mView, insetsWithSideCutout);
+                            return null;
+                        })
+                .when(mInsetObserver)
+                .retriggerOnApplyWindowInsets();
+
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+
+        // On a non-opted-in page, entering HUB does not flip side cutout consumption.
+        clearInvocations(mInsetObserver);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.HUB);
+        mEdgeToEdgeControllerImpl.onStartedShowing(LayoutType.HUB);
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mEdgeToEdgeControllerImpl.onStartedShowing(LayoutType.BROWSING);
+
+        clearInvocations(mInsetObserver);
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        WindowInsetsCompat browsingResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithSideCutout);
+        assertEquals(
+                Insets.NONE, browsingResult.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertLeftInsetForSafeArea(40);
+        assertRightInsetForSafeArea(50);
+
+        // Entering Hub keeps side display cutout insets unconsumed for pillarboxing and clears
+        // left/right safe area insets.
+        clearInvocations(mInsetObserver);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.HUB);
+        mEdgeToEdgeControllerImpl.onStartedShowing(LayoutType.HUB);
+        mEdgeToEdgeControllerImpl.onFinishedShowing(LayoutType.HUB);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        WindowInsetsCompat hubResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithSideCutout);
+        assertEquals(
+                sideDisplayCutout, hubResult.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(0);
+
+        // Returning to BROWSING restores side display cutout consumption and safe area insets.
+        // Match LayoutManagerImpl#doneHiding(), which fires onFinishedHiding(HUB) before switching
+        // getActiveLayoutType() to BROWSING and firing onStartedShowing(BROWSING).
+        mEdgeToEdgeControllerImpl.onFinishedHiding(LayoutType.HUB);
+        clearInvocations(mInsetObserver);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mEdgeToEdgeControllerImpl.onStartedShowing(LayoutType.BROWSING);
+        mEdgeToEdgeControllerImpl.onFinishedShowing(LayoutType.BROWSING);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        WindowInsetsCompat returnedResult =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithSideCutout);
+        assertEquals(
+                Insets.NONE, returnedResult.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertLeftInsetForSafeArea(40);
+        assertRightInsetForSafeArea(50);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideDisplayCutout_PreservedOnCustomNtp() {
+        Insets sideDisplayCutout = Insets.of(40, 0, 50, 0);
+        WindowInsetsCompat insetsWithSideCutout =
+                new WindowInsetsCompat.Builder(SYSTEM_BARS_WINDOW_INSETS)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), sideDisplayCutout)
+                        .build();
+
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        Tab customNtpTab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ true,
+                        /* supportsTopEdgeToEdge= */ true);
+        mTabProvider.set(customNtpTab);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.tabShouldDrawFullTopEdgeToEdge());
+
+        clearInvocations(mInsetObserver);
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithSideCutout);
+        assertEquals(sideDisplayCutout, result.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertLeftInsetForSafeArea(0);
+        assertRightInsetForSafeArea(0);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testBottomDisplayCutout_PreservedOnAutoPageWithTopScalpAndBottomChin() {
+        Insets bottomCutout = Insets.of(0, 0, 0, BOTTOM_INSET + 30);
+        WindowInsetsCompat insetsWithBottomCutout =
+                new WindowInsetsCompat.Builder(SYSTEM_BARS_WINDOW_INSETS)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), bottomCutout)
+                        .build();
+
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+
+        clearInvocations(mInsetObserver);
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithBottomCutout);
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.statusBars()));
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(bottomCutout, result.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertBottomInsetForSafeArea(BOTTOM_INSET);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
+    public void testBottomDisplayCutout_PreservedOnCustomNtpRefactorOnly() {
+        Insets cutout = Insets.of(0, TOP_INSET + 20, 0, BOTTOM_INSET + 30);
+        WindowInsetsCompat insetsWithCutout =
+                new WindowInsetsCompat.Builder(SYSTEM_BARS_WINDOW_INSETS)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), cutout)
+                        .build();
+
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        Tab customNtpTab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ true,
+                        /* supportsTopEdgeToEdge= */ true);
+        when(customNtpTab.getNativePage().supportsEdgeToEdgeOnBottom()).thenReturn(true);
+        mTabProvider.set(customNtpTab);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+
+        clearInvocations(mInsetObserver);
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, insetsWithCutout);
+        assertEquals(
+                Insets.of(0, 0, 0, BOTTOM_INSET + 30),
+                result.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertTopInsetForSafeArea(TOP_INSET + 20);
+        assertBottomInsetForSafeArea(BOTTOM_INSET);
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_WITH_TOP_E2E)
+    public void testSideInsets_LandscapeThreeButtonNav_PreservesSideNavBar() {
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
+
+        Insets leftCutout = Insets.of(40, 0, 0, 0);
+        Insets rightNavBar = Insets.of(0, 0, BOTTOM_INSET, 0);
+        WindowInsetsCompat landscapeThreeButtonInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.statusBars(),
+                                Insets.of(0, TOP_INSET_LANDSCAPE, 0, 0))
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), rightNavBar)
+                        .setInsets(WindowInsetsCompat.Type.tappableElement(), rightNavBar)
+                        .setInsets(WindowInsetsCompat.Type.displayCutout(), leftCutout)
+                        .build();
+
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+
+        clearInvocations(mInsetObserver);
+        WindowInsetsCompat result =
+                mEdgeToEdgeControllerImpl.handleWindowInsets(mView, landscapeThreeButtonInsets);
+        // The right 3-button navigation bar must not be consumed, while the left display cutout is
+        // consumed and pushed to safe area.
+        assertEquals(rightNavBar, result.getInsets(WindowInsetsCompat.Type.navigationBars()));
+        assertEquals(rightNavBar, result.getInsets(WindowInsetsCompat.Type.tappableElement()));
+        assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.displayCutout()));
+        assertEquals(
+                BOTTOM_INSET,
+                mEdgeToEdgeControllerImpl.getAppliedContentViewPaddingForTesting().right);
+        assertLeftInsetForSafeArea(40);
+        assertRightInsetForSafeArea(0);
     }
 
     @Test

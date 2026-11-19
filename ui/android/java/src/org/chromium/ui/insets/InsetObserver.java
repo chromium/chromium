@@ -72,9 +72,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
     private final ImmutableWeakReference<View> mRootViewReference;
     private final ImmutableWeakReference<Context> mContextReference;
-    // Insets to be added to the current safe area.
-    private int mTopInsetsForEdgeToEdge;
-    private int mBottomInsetsForEdgeToEdge;
+    // Total unpadded edge-to-edge safe area insets from each window edge.
+    private Insets mSafeAreaInsetsForEdgeToEdge = Insets.NONE;
     private final Rect mDisplayCutoutRect;
 
     private final boolean mEnableKeyboardOverlayMode;
@@ -714,18 +713,32 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         if (insets != null && context != null) {
             boolean shouldPadDisplayCutout =
                     WindowInsetsUtils.shouldPadDisplayCutout(insets, context);
+            // When display cutout is not padded, only the unconsumed portion of systemBars()
+            // pads the content view away from the cutout; subtract mSafeAreaInsetsForEdgeToEdge
+            // so cutouts deeper than the consumed system bar are not under-reported.
             extraInsets =
-                    insets.getInsets(
-                            shouldPadDisplayCutout ? systemBars() + displayCutout() : systemBars());
+                    shouldPadDisplayCutout
+                            ? insets.getInsets(systemBars() + displayCutout())
+                            : Insets.max(
+                                    Insets.subtract(
+                                            insets.getInsets(systemBars()),
+                                            mSafeAreaInsetsForEdgeToEdge),
+                                    Insets.NONE);
         }
         Rect newSafeArea =
                 new Rect(
-                        Math.max(0, mDisplayCutoutRect.left - extraInsets.left),
-                        Math.max(0, mDisplayCutoutRect.top - extraInsets.top),
-                        Math.max(0, mDisplayCutoutRect.right - extraInsets.right),
-                        Math.max(0, mDisplayCutoutRect.bottom - extraInsets.bottom));
-        newSafeArea.top += mTopInsetsForEdgeToEdge;
-        newSafeArea.bottom += mBottomInsetsForEdgeToEdge;
+                        Math.max(
+                                mDisplayCutoutRect.left - extraInsets.left,
+                                mSafeAreaInsetsForEdgeToEdge.left),
+                        Math.max(
+                                mDisplayCutoutRect.top - extraInsets.top,
+                                mSafeAreaInsetsForEdgeToEdge.top),
+                        Math.max(
+                                mDisplayCutoutRect.right - extraInsets.right,
+                                mSafeAreaInsetsForEdgeToEdge.right),
+                        Math.max(
+                                mDisplayCutoutRect.bottom - extraInsets.bottom,
+                                mSafeAreaInsetsForEdgeToEdge.bottom));
         // If the safe area has not changed then we should stop now.
         if (newSafeArea.equals(mCurrentSafeArea)) {
             return;
@@ -774,24 +787,16 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     }
 
     /**
-     * @param topInset The top system insets tracked in edge to edge.
+     * Updates the safe area insets tracked in edge-to-edge (the total unpadded obstruction from
+     * each window edge).
+     *
+     * @param insets Non-negative safe area insets from each window edge.
      */
-    public void updateTopInsetForEdgeToEdge(int topInset) {
-        if (mTopInsetsForEdgeToEdge == topInset) return;
+    public void updateSafeAreaInsetsForEdgeToEdge(Insets insets) {
+        assert insets.left >= 0 && insets.top >= 0 && insets.right >= 0 && insets.bottom >= 0;
+        if (mSafeAreaInsetsForEdgeToEdge.equals(insets)) return;
 
-        mTopInsetsForEdgeToEdge = topInset;
-        updateCurrentSafeArea();
-    }
-
-    /**
-     * @param bottomInset The bottom system insets tracked in edge to edge.
-     */
-    public void updateBottomInsetForEdgeToEdge(int bottomInset) {
-        // When updating toEdge with bottom insets, meaning we should update the safe area
-        // accordingly.
-        if (mBottomInsetsForEdgeToEdge == bottomInset) return;
-
-        mBottomInsetsForEdgeToEdge = bottomInset;
+        mSafeAreaInsetsForEdgeToEdge = insets;
         updateCurrentSafeArea();
     }
 
