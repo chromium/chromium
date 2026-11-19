@@ -8600,6 +8600,5 @@ crbug.com/566257733 tables/mozilla/bugs/bug137388-1.html [ Failure Pass ]
 crbug.com/566257733 tables/mozilla/bugs/bug137388-2.html [ Failure Pass ]
 
 # Gardener 2026-11-18
-crbug.com/587335371 [ Linux ] external/wpt/element-timing/css-generated-text.html [ Failure Pass ]
 crbug.com/587450751 [ Linux ] svg/custom/load-image-removed-in-onload.html [ Failure Pass ]
 crbug.com/587450751 [ Mac ] svg/custom/load-image-removed-in-onload.html [ Failure Pass ]
