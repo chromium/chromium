@@ -162,15 +162,16 @@ export class NamingController {
     input.value = label.textContent ?? '';
     item.setAttribute('renaming', '');
     label.parentNode!.appendChild(input);
-    input.focus();
 
-    const selectionEnd = input.value.lastIndexOf('.');
-    if (currentEntry.isFile && selectionEnd !== -1) {
-      input.selectionStart = 0;
-      input.selectionEnd = selectionEnd;
-    } else {
-      input.select();
-    }
+    // Pre-populate the selection range before focusing so Blink's kRestore
+    // focus path applies it to FrameSelection before sending the synchronous
+    // focus TextInputStateChanged IPC.
+    const lastDotIndex = input.value.lastIndexOf('.');
+    const selectionEnd = currentEntry.isFile && lastDotIndex !== -1 ?
+        lastDotIndex :
+        input.value.length;
+    input.setSelectionRange(0, selectionEnd);
+    input.focus();
 
     // This has to be set late in the process so we don't handle spurious
     // blur events.

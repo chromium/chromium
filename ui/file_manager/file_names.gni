@@ -438,6 +438,7 @@ ts_test_files = [
   "file_manager/foreground/js/file_transfer_controller_unittest.ts",
   "file_manager/foreground/js/file_type_filters_controller_unittest.ts",
   "file_manager/foreground/js/list_thumbnail_loader_unittest.ts",
+  "file_manager/foreground/js/naming_controller_unittest.ts",
   "file_manager/foreground/js/path_component_unittest.ts",
   "file_manager/foreground/js/providers_model_unittest.ts",
   "file_manager/foreground/js/spinner_controller_unittest.ts",

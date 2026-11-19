@@ -431,6 +431,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DialogActionController) {
   RunTestURL("foreground/js/dialog_action_controller_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NamingController) {
+  RunTestURL("foreground/js/naming_controller_unittest.js");
+}
+
 // Rerun some of the tests above, using CrosComponents.
 class FileManagerJsCrosComponentsTest : public FileManagerJsTest {
  public:
