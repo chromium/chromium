@@ -1,23 +1,26 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsMidiDevices}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsMidiDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
+      .category="${ContentSettingsTypes.MIDI_DEVICES}"
       ask-option-label="$i18n{siteSettingsMidiAsk}"
       ask-option-icon="privacy:piano"
       block-option-label="$i18n{siteSettingsMidiBlocked}"
       block-option-icon="privacy:piano-off">
   </settings-category-default-radio-group>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.MIDI_DEVICES]]"
+      .category="${ContentSettingsTypes.MIDI_DEVICES}"
       read-only-list
       allow-header="$i18n{siteSettingsMidiAllowedExceptions}"
       block-header="$i18n{siteSettingsMidiBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>

@@ -1,22 +1,25 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsVr}"
     search-label="$i18n{siteSettingsAllSitesSearch}"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsVrDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.VR]]"
+      .category="${ContentSettingsTypes.VR}"
       ask-option-label="$i18n{siteSettingsVrAsk}"
       ask-option-icon="privacy:cardboard"
       block-option-label="$i18n{siteSettingsVrBlocked}"
       block-option-icon="privacy:cardboard-off">
   </settings-category-default-radio-group>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.VR]]"
+      .category="${ContentSettingsTypes.VR}"
       read-only-list
       allow-header="$i18n{siteSettingsVrAllowedExceptions}"
       block-header="$i18n{siteSettingsVrBlockedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>

@@ -1,13 +1,16 @@
-<style include="settings-shared site-settings-shared"></style>
+<!-- #html_wrapper_imports_start
+import {ContentSettingsTypes} from './constants.js';
+#html_wrapper_imports_end -->
 <settings-subpage page-title="$i18n{siteSettingsBluetoothScanning}"
     search-label="$i18n{siteSettingsAllSitesFilter}"
     search-icon="settings20:filter-list"
-    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+    @search-term-changed="${this.onSearchTermChanged_}"
+    route-path="${this.routePath}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsBluetoothScanningDescription}
   </div>
   <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.BLUETOOTH_SCANNING]]"
+      .category="${ContentSettingsTypes.BLUETOOTH_SCANNING}"
       ask-option-label=
           "$i18n{siteSettingsBluetoothScanningAsk}"
       ask-option-icon="settings:bluetooth-searching"
@@ -15,12 +18,12 @@
       block-option-icon="settings:bluetooth-disabled">
   </settings-category-default-radio-group>
   <category-setting-exceptions
-      category="[[contentSettingsTypesEnum_.BLUETOOTH_SCANNING]]"
+      .category="${ContentSettingsTypes.BLUETOOTH_SCANNING}"
       read-only-list
       block-header=
           "$i18n{siteSettingsBluetoothScanningBlockedExceptions}"
       allow-header=
           "$i18n{siteSettingsBluetoothScanningAllowedExceptions}"
-      search-filter="[[searchTerm]]">
+      .searchFilter="${this.searchTerm_}">
   </category-setting-exceptions>
 </settings-subpage>
