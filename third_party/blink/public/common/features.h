@@ -1247,9 +1247,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kNavigationPredictorNewViewportFeatures);
 
-// Disables forced frame updates for web tests. Used by web test runner only.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoForcedFrameUpdatesForWebTests);
-
 // Don't throttle frames that are same-agent with with a visible frame.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoThrottlingVisibleAgent);
 

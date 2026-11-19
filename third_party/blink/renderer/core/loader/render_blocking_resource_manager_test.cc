@@ -1152,4 +1152,38 @@ TEST_F(RenderBlockingResourceManagerTest,
       WebFeature::kRenderBlockingAttributeTargetingFrameOwner));
 }
 
+TEST_F(RenderBlockingResourceManagerTest,
+       AbsenceOfBlockingDoesNotDeferFramesUntilCompleteDocumentParsed) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Write(R"HTML(
+    <!DOCTYPE html>
+    <head>
+      <script>
+        requestAnimationFrame(() => {
+          document.documentElement.setAttribute(
+              'data-raf-fired-before-last',
+              document.getElementById('last') ? 'false' : 'true');
+        });
+      </script>
+    </head>
+    <body>
+      <div id="first"></div>
+  )HTML");
+
+  EXPECT_FALSE(HasRenderBlockingResources());
+  EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
+
+  Compositor().BeginFrame();
+  EXPECT_EQ(GetDocument().documentElement()->getAttribute(
+                AtomicString("data-raf-fired-before-last")),
+            "true");
+
+  main_resource.Complete(R"HTML(
+      <div id="last"></div>
+    </body>
+  )HTML");
+  EXPECT_TRUE(GetDocument().getElementById(AtomicString("last")));
+}
+
 }  // namespace blink

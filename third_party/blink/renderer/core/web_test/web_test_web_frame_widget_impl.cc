@@ -8,7 +8,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "content/web_test/renderer/event_sender.h"
 #include "content/web_test/renderer/test_runner.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
@@ -288,15 +287,6 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(
   DCHECK(!LayerTreeHost()->GetSettings().single_thread_proxy_scheduler);
 
   if (!LayerTreeHost()->IsVisible()) {
-    if (callback) {
-      std::move(callback).Run();
-    }
-    return;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::kNoForcedFrameUpdatesForWebTests) &&
-      LayerTreeHost()->MainFrameUpdatesAreDeferred()) {
     if (callback) {
       std::move(callback).Run();
     }

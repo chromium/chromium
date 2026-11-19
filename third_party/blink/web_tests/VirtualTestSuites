@@ -2355,34 +2355,6 @@
     ],
     "expires": "never"
   },
-  "The following tests never pass in the default Blink test runner due to",
-  "forced frame updates, but still pass in the full browser.",
-  {
-    "prefix": "no-forced-frame-updates",
-    "owners": [
-      "nrosenthal@chromium.org",
-      "xiaochengh@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "dom/domparsing/document-render-blocking-no-block.html",
-      "external/wpt/css/css-transitions/render-blocking",
-      "external/wpt/html/browsers/browsing-the-web/history-traversal/pagereveal",
-      "external/wpt/html/dom/render-blocking",
-      "external/wpt/dom/nodes/moveBefore/preserve-render-blocking-script.html",
-      "external/wpt/dom/nodes/moveBefore/preserve-render-blocking-style.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=NoForcedFrameUpdatesForWebTests",
-      "--disable-features=KeepAliveInBrowserMigration"
-    ],
-    "expires": "Dec 1, 2024"
-  },
   "The non-overlay-scrollbar virtual suite is testing a feature that is",
   "enabled or not based on platform and settings, so it should not expire.",
   {

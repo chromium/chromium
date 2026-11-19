@@ -1634,9 +1634,6 @@ BASE_FEATURE(kNavigationPredictorNewViewportFeatures,
 #endif
 );
 
-BASE_FEATURE(kNoForcedFrameUpdatesForWebTests,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNoReferrerForPreloadFromSubresource,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
