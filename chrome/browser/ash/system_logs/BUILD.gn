@@ -53,8 +53,8 @@ static_library("system_logs") {
   deps = [
     "//ash",
     "//ash/keyboard/ui",
+    "//ash/strings",
     "//ash/webui/os_feedback_ui/mojom",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/net/network_health",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/feedback",

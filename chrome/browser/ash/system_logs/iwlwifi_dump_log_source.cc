@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/system_logs/iwlwifi_dump_log_source.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 
